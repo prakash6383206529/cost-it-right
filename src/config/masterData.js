@@ -2613,6 +2613,7 @@ export const PartComponent = [
     { label: 'ECNNumber', value: 'ECNNumber', },
     { label: 'RevisionNo', value: 'RevisionNo', },
     { label: 'DrawingNo', value: 'DrawingNo', },
+    { label: 'TechnologyName', value: 'TechnologyName', },
     { label: 'EffectiveDate', value: 'EffectiveDate', }, //,* maybe only star
     { label: 'Remark', value: 'Remark', },
 ]
@@ -2626,6 +2627,7 @@ export const PartComponentTempData = [
         'ECNNumber': '1',
         'RevisionNo': '1',
         'DrawingNo': '1',
+        'TechnologyName': 'Sheet Metal',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text',
     }
@@ -4302,7 +4304,7 @@ export const OPERATION_DOWNLOAD_EXCEl = [
     { label: "Plant (Code)", value: "Plants", },
     { label: "Vendor (Code)", value: "VendorName", },
     { label: "Customer (Code)", value: "CustomerName", },
-    { label: "UOM", value: "UnitOfMeasurement", },
+    { label: "UOM", value: "UOM", },
     { label: "Rate", value: "Rate", },
     { label: "Effective Date", value: "EffectiveDate", },
 ]

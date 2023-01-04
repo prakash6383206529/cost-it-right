@@ -266,7 +266,7 @@ function AddProcess(props) {
     });
     return isContainProcess
   }
-  const isRowSelectable = rowNode => !findProcessId(rowNode.data)
+  const isRowSelectable = rowNode => initialConfiguration?.IsAllowSingleProcessMultipleTime ? true : !findProcessId(rowNode.data)
 
   const resetState = () => {
     gridOptions.columnApi.resetColumnState();

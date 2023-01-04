@@ -2138,9 +2138,9 @@ export const CBCTypeIdFull = Number(reactLocalStorage.getObject('CostingHeadsLis
 export const NCCTypeIdFull = Number(reactLocalStorage.getObject('CostingHeadsListFullForm')[NCC])
 export const ZBCADDMORE = 0
 
-//AUTOCOMPLETE IN PART
-
+//AUTOCOMPLETE IN PART AND VENDOR
 export const searchCount = 3
+export const dropdownLimit = 100
 
 // KEY AND IVgit
 export const KEY = 'gQUJ79YKYm22Cazw';
@@ -2150,4 +2150,4 @@ export const KEYRFQ = "UAGSqTBCbZ8JqHJl"
 export const IVRFQ = "8vFNmRQEl91nOtrM"
 
 //VERSION 
-export const VERSION = "V2.1.35";
+export const VERSION = "V2.1.37";
