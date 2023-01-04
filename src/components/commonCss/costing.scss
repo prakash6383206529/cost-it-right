@@ -1,92 +1,116 @@
 @import "cssVariable.scss";
 
 .costing-raw-material-section {
+
   th,
   td {
     // text-align: center;
     padding-top: 12px !important;
     padding-bottom: 12px !important;
+
     &:first-child {
       text-align: left;
     }
   }
+
   .form-group {
     input {
       padding: 6px !important;
       max-width: 86px;
       max-height: calc(38px * 80 / 100);
     }
+
     .text-help {
       bottom: -8px;
       font-size: calc(0.875rem * 80 / 100);
     }
   }
+
   .weight-calculator {
     text-align: center;
     width: 135px;
   }
+
   .rm-table-header {
     th {
       &:nth-child(2) {
         width: 8%;
       }
+
       &:nth-child(3) {
         width: 8%;
       }
+
       &:nth-child(4) {
         width: 10%;
       }
+
       &:nth-child(5) {
         width: 9%;
       }
+
       &:nth-child(6) {
         width: 9%;
       }
+
       &:nth-child(7) {
         width: 9%;
       }
+
       &:nth-child(8) {
         width: 10%;
       }
+
       &:nth-child(9) {
         width: 9%;
       }
+
       &:nth-child(10) {
         width: 9%;
       }
+
       &:last-child {
         width: 8%;
         min-width: 88px;
       }
+
       &.weight-calculator {
         width: 9%;
         min-width: 130px;
       }
+
       &.scrap-recovery {
         width: 11%;
         min-width: 136px;
       }
-      &.net-rm-cost, &.scrap-weight {
+
+      &.net-rm-cost,
+      &.scrap-weight {
         width: 10% !important;
       }
     }
   }
-//   .gross-weight,
-//   .finish-weight {
-//     text-align: center;
-//   }
+
+  //   .gross-weight,
+  //   .finish-weight {
+  //     text-align: center;
+  //   }
   //
 }
+
 .costing-process-cost-section {
   @extend .costing-raw-material-section;
+
   .form-group {
     .text-help {
       white-space: nowrap;
       bottom: -12px;
     }
+
     .error-overflow {
       white-space: nowrap;
     }
+
     .text-error-title {
       .text-help {
         bottom: -25px !important;
@@ -95,26 +119,33 @@
     }
   }
 }
+
 .costing-operation-cost-section {
   @extend .costing-raw-material-section;
+
   .header-without-labour-rate {
     th {
+
       &:nth-child(3),
       &:nth-child(4),
       &:nth-child(5) {
         width: 15%;
       }
+
       &:nth-child(6) {
         width: 11%;
       }
+
       &:nth-child(7) {
         width: 7%;
         min-width: 130px;
       }
     }
   }
+
   .header-with-labour-rate {
     th {
+
       &:nth-child(3),
       &:nth-child(4),
       &:nth-child(5),
@@ -122,9 +153,11 @@
       &:nth-child(7) {
         width: 11%;
       }
+
       &:nth-child(8) {
         width: 8%;
       }
+
       &:nth-child(9) {
         width: 7%;
         min-width: 100px;
@@ -132,18 +165,23 @@
     }
   }
 }
+
 .costing-bop-cost-section {
   @extend .costing-raw-material-section;
+
   .table-header {
     th {
+
       &:nth-child(3),
       &:nth-child(4),
       &:nth-child(5) {
         width: 15%;
       }
+
       &:nth-child(6) {
         width: 11%;
       }
+
       &:nth-child(7) {
         text-align: right;
         width: 7%;
@@ -152,47 +190,58 @@
     }
   }
 }
+
 .handling-charge {
   align-items: center;
   min-height: 85px;
+
   .text-help {
     position: absolute;
   }
+
   .before-box {
     padding-left: 0;
   }
 }
+
 .costing-surface-section {
   @extend .costing-raw-material-section;
 }
+
 @media screen and (min-width: $middleDesktop) {
   .costing-main-container {
     .rmcc-main-headings {
       .costing-raw-material-section {
+
         td,
         th {
           padding-top: 15px !important;
           padding-bottom: 15px !important;
         }
+
         .form-group {
           .text-help {
             font-size: calc(1rem * 80 / 100);
             bottom: -9px;
           }
         }
+
         .weight-calculator {
           width: 155px;
         }
       }
     }
+
     .costing-process-cost-section {
       .form-group {
         .text-help {
           bottom: -11px !important;
         }
+
         .error-overflow {
           white-space: nowrap;
         }
+
         .text-error-title {
           .text-help {
             white-space: nowrap;
@@ -209,20 +258,24 @@
   display: flex;
   justify-content: flex-end;
   grid-gap: 4px;
+
   .secondary-btn {
     color: #3d4465;
     font-weight: 600;
+
     .CalculatorIcon {
       width: 14px;
       height: 16px;
       margin-right: 5px;
       margin-top: 5px;
     }
+
     &:hover {
       color: #fff;
     }
   }
 }
+
 .scrap-recovery {
   .text-error-title {
     .text-help {
@@ -230,28 +283,34 @@
     }
   }
 }
+
 .costing-error-container {
   .text-error-title {
     .text-help {
       top: -2px;
     }
+
     .error-overflow {
       width: calc(100% + 19px);
     }
   }
 }
+
 .fixed-error {
   bottom: -10px;
 }
+
 .assembly-button-container {
   display: flex;
   grid-gap: 3px;
   justify-content: flex-end;
+
   button {
     padding-left: 8px !important;
     padding-right: 8px !important;
   }
 }
+
 .add-container {
   display: flex;
   align-items: center;
@@ -259,59 +318,104 @@
   padding-bottom: 10px;
 
   grid-gap: 5px;
+
   .form-group-searchable-select {
     max-width: 230px;
     min-height: auto !important;
     margin-bottom: 0 !important;
   }
+
   button {
     margin-top: 30px;
   }
 }
+
 .part-cost-table {
+
   .form-group-searchable-select,
   .inputbox {
     min-height: auto !important;
     margin-bottom: 0 !important;
     max-width: 100px;
+
     label {
       display: none;
     }
   }
+
   .delta-warpper {
     display: flex;
     grid-gap: 5px;
+
     .form-group-searchable-select {
       max-width: 100px;
     }
   }
 }
+
 .net-rm-cost {
   .tooltip-inner {
     min-width: 270px;
   }
 }
+
 .header-tooltip {
   float: unset;
   margin-top: 4px;
   margin-left: 3px;
 }
+
 .process-net-cost {
   .tooltip-inner {
     min-width: 410px;
     text-align: left;
   }
+
   .tooltip.show {
     opacity: 1 !important;
   }
 }
+
 .inner-diameter {
   .tooltip-inner {
     min-width: 210px;
   }
 }
+
 .weight-of-sheet {
   .tooltip-inner {
     min-width: 310px;
+  }
+}
+
+.sticky-headers {
+  position: sticky;
+  top: 182px;
+  z-index: 1;
+  background-color: $agGridBorder;
+
+  @media screen and (min-height:768px) and (max-height: 1092px) {
+    top: 165px;
+  }
+}
+
+.pin-btn-container {
+  display: flex;
+  align-items: center;
+  justify-content: end;
+  grid-gap: 3px;
+
+  .pinned {
+    position: relative;
+
+    .unpin {
+      position: absolute;
+      height: 18px;
+      width: 1px;
+      background-color: $colorPrimary;
+      transform: rotate(-15deg);
+      right: 9px;
+      top: 1px;
+    }
   }
 }
