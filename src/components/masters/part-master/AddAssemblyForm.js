@@ -169,7 +169,7 @@ class AddAssemblyForm extends Component {
 
         const filterList = async (inputValue) => {
             const { partName, selectedParts } = this.state
-            const resultInput = inputValue.slice(0, 3)
+            const resultInput = inputValue.slice(0, searchCount)
             if (inputValue?.length >= searchCount && partName !== resultInput) {
                 let obj = {
                     technologyId: this.props?.TechnologySelected.value,
@@ -181,22 +181,18 @@ class AddAssemblyForm extends Component {
                 this.setState({ isLoader: false })
                 this.setState({ partName: resultInput })
                 let partDataAPI = res?.data?.SelectList
-                reactLocalStorage?.setObject('PartData', partDataAPI)
-                let partData = []
                 if (inputValue) {
-                    partData = reactLocalStorage?.getObject('PartData')
-                    return autoCompleteDropdown(inputValue, partData, true, selectedParts)
+                    return autoCompleteDropdown(inputValue, partDataAPI, true, selectedParts, true)
                 } else {
-                    return partData
+                    return partDataAPI
                 }
             }
             else {
                 if (inputValue?.length < searchCount) return false
                 else {
-                    let partData = reactLocalStorage?.getObject('PartData')
+                    let partData = reactLocalStorage?.getObject('Data')
                     if (inputValue) {
-                        partData = reactLocalStorage?.getObject('PartData')
-                        return autoCompleteDropdown(inputValue, partData, true, selectedParts)
+                        return autoCompleteDropdown(inputValue, partData, true, selectedParts, false)
                     } else {
                         return partData
                     }

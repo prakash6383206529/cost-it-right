@@ -861,30 +861,25 @@ class AddAssemblyPart extends Component {
     const { handleSubmit, initialConfiguration } = this.props;
     const { isEditFlag, isOpenChildDrawer, isOpenBOMViewerDrawer, isViewMode, setDisable, convertPartToAssembly, BOMViewerData } = this.state;
     const filterList = async (inputValue) => {
-      const { partName } = this.state
-      const resultInput = inputValue.slice(0, 3)
+      const { partName, selectedParts } = this.state
+      const resultInput = inputValue.slice(0, searchCount)
       if (inputValue?.length >= searchCount && partName !== resultInput) {
-        this.setState({ isLoader: true })
+
         const res = await getPartSelectList(resultInput)
-        this.setState({ isLoader: false })
         this.setState({ partName: resultInput })
         let partDataAPI = res?.data?.SelectList
-        reactLocalStorage?.setObject('PartData', partDataAPI)
-        let partData = []
         if (inputValue) {
-          partData = reactLocalStorage?.getObject('PartData')
-          return autoCompleteDropdown(inputValue, partData)
+          return autoCompleteDropdown(inputValue, partDataAPI, true, selectedParts, true)
         } else {
-          return partData
+          return partDataAPI
         }
       }
       else {
         if (inputValue?.length < searchCount) return false
         else {
-          let partData = reactLocalStorage?.getObject('PartData')
+          let partData = reactLocalStorage?.getObject('Data')
           if (inputValue) {
-            partData = reactLocalStorage?.getObject('PartData')
-            return autoCompleteDropdown(inputValue, partData)
+            return autoCompleteDropdown(inputValue, partData, true, selectedParts, false)
           } else {
             return partData
           }

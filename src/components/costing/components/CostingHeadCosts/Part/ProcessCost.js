@@ -46,6 +46,9 @@ function ProcessCost(props) {
   const [calculatorTechnology, setCalculatorTechnology] = useState('')
   const [calculatorData, setCalculatorDatas] = useState({})
   const [isFromApi, setIsFromApi] = useState(true)
+  const [singleProcessRemark, setSingleProcessRemark] = useState(true)
+  const [groupProcessRemark, setGroupProcessRemark] = useState(true)
+  const [headerPinned, setHeaderPinned] = useState(true)
   const [groupNameMachine, setGroupNameMachine] = useState('')
   const [groupNameIndex, setGroupNameIndex] = useState('')
   const dispatch = useDispatch()
@@ -318,7 +321,7 @@ function ProcessCost(props) {
 
 
   const onRemarkPopUpClick = (index) => {
-    if (errors.rmGridFields && errors.rmGridFields[index]?.remarkPopUp !== undefined) {
+    if (errors.ProcessGridFields && errors.ProcessGridFields[index]?.remarkPopUp !== undefined) {
       return false
     }
     let tempArr = []
@@ -349,6 +352,10 @@ function ProcessCost(props) {
 
   const onRemarkPopUpClosee = (index) => {
     var button = document.getElementById(`popUpTriggers${index}`)
+    if (errors && errors.ProcessGridFields && errors.ProcessGridFields[index].remarkPopUp) {
+      delete errors.ProcessGridFields[index].remarkPopUp;
+      setSingleProcessRemark(false)
+    }
     button.click()
   }
 
@@ -393,6 +400,10 @@ function ProcessCost(props) {
 
   const onRemarkPopUpCloseGroup = (index, parentIndex) => {
     let button = document.getElementById(`popUpTriggers${index}.${parentIndex}`)
+    if (errors && errors.ProcessGridFields && errors.ProcessGridFields[index].remarkPopUp) {
+      delete errors.ProcessGridFields[index].remarkPopUp;
+      setGroupProcessRemark(false)
+    }
     button.click()
 
   }
@@ -1017,7 +1028,6 @@ function ProcessCost(props) {
   const SingleProcessGridField = 'SingleProcessGridField'
 
   const processNetCostFormula = (value) => {
-    console.log('value: ', value);
     let processNetCostFormulaText;
     switch (value) {
       case 'Hours':
@@ -1127,10 +1137,12 @@ function ProcessCost(props) {
                     register={register}
                     mandatory={false}
                     rules={{
-                      validate: { checkWhiteSpaces },
-                      maxLength: REMARKMAXLENGTH
+                      maxLength: groupProcessRemark && REMARKMAXLENGTH
                     }}
-                    handleChange={(e) => { }}
+                    handleChange={(e) => {
+                      setGroupProcessRemark(true)
+                      console.log(e.target.value)
+                    }}
                     defaultValue={item.Remark ?? item.Remark}
                     className=""
                     customClassName={"withBorder"}
@@ -1196,8 +1208,8 @@ function ProcessCost(props) {
           <Row>
             {/*OPERATION COST GRID */}
             <Col md="12">
-              <Table className="table cr-brdr-main costing-process-cost-section" size="sm">
-                <thead>
+              <Table className="table cr-brdr-main costing-process-cost-section p-relative" size="sm">
+                <thead className={`${headerPinned ? 'sticky-headers' : ''}`}>
                   <tr>
                     <th style={{ width: "220px" }}>{`Process`}</th>
                     {processGroup && <th style={{ width: "150px" }}>{`Sub Process`}</th>}
@@ -1207,7 +1219,7 @@ function ProcessCost(props) {
                     <th style={{ width: "160px" }}>{`Parts/Hour`}</th>
                     <th style={{ width: "180px" }}><span>Quantity  <div class="tooltip-n ml-1"><i className="fa fa-info-circle text-primary tooltip-icon"></i><span class="tooltiptext process-tooltip">{tooltipText}</span></div></span></th>
                     <th style={{ width: "110px" }} >{`Net Cost`}</th>
-                    <th style={{ width: "145px", textAlign: "right" }}>{`Action`}</th>
+                    <th style={{ width: "145px" }}><div className='pin-btn-container'><span>Action</span><button onClick={() => setHeaderPinned(!headerPinned)} className='pinned' title={headerPinned ? 'pin' : 'unpin'}><div className={`${headerPinned ? '' : 'unpin'}`}></div></button></div></th>
                   </tr>
                 </thead>
                 <tbody>
@@ -1237,7 +1249,6 @@ function ProcessCost(props) {
                               {
 
                                 < div className='d-flex align-items-center'>
-                                  {console.log('item.BoughtOutPartUOM: ', item)}
                                   <span className="d-inline-block mr-2">
                                     {
                                       <TextFieldHookForm
@@ -1319,10 +1330,9 @@ function ProcessCost(props) {
                                     register={register}
                                     mandatory={false}
                                     rules={{
-                                      validate: { checkWhiteSpaces },
-                                      maxLength: REMARKMAXLENGTH
+                                      maxLength: singleProcessRemark && REMARKMAXLENGTH
                                     }}
-                                    handleChange={(e) => { }}
+                                    handleChange={(e) => { setSingleProcessRemark(true) }}
                                     defaultValue={item.Remark ?? item.Remark}
                                     className=""
                                     customClassName={"withBorder"}

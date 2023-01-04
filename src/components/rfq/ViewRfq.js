@@ -565,12 +565,14 @@ function RfqListing(props) {
                                         <Link to={"rfq-compare-drawer"} smooth={true} spy={true} offset={-250}>
                                             <button
                                                 type="button"
-                                                className={'user-btn mb-2 comparison-btn ml-2'}
+                                                className={'user-btn mb-2 comparison-btn ml-1'}
                                                 disabled={addComparisonButton}
                                                 onClick={addComparisonDrawerToggle}
                                             >
                                                 <div className="compare-arrows"></div>Compare</button>
                                         </Link>
+                                        <button type="button" className={"apply ml-1"} onClick={cancel}> <div className={'back-icon'}></div>Back</button>
+
                                     </>
                                 }
                             </Col>
@@ -708,36 +710,23 @@ function RfqListing(props) {
                 }
 
             </div >
-            <Row className="sf-btn-footer no-gutters justify-content-between">
+            {addComparisonToggle && disableApproveRejectButton && <Row className="sf-btn-footer no-gutters justify-content-between">
                 <div className="col-sm-12 text-right bluefooter-butn">
-                    <Fragment>
-                        <button
-                            type={'button'}
-                            className=" mr5 cancel-btn"
-                            onClick={cancel}
-                        >
-                            <div className={'cancel-icon'}></div> {'Cancel'}
-                        </button>
-                        {addComparisonToggle && disableApproveRejectButton && <>
-                            <button type={'button'} className="mr5 approve-reject-btn" onClick={() => setRejectDrawer(true)} >
-                                <div className={'cancel-icon-white mr5'}></div>
-                                {'Reject'}
-                            </button>
-                            <button
-                                type="button"
-                                className="approve-button mr5 approve-hover-btn"
-                                onClick={() => approvemDetails("", selectedRows)}
-                            >
-                                <div className={'save-icon'}></div>
-                                {'Approve'}
-                            </button>
 
-
-                        </>}
-
-                    </Fragment >
-                </div >
-            </Row >
+                    <button type={'button'} className="mr5 approve-reject-btn" onClick={() => setRejectDrawer(true)} >
+                        <div className={'cancel-icon-white mr5'}></div>
+                        {'Reject'}
+                    </button>
+                    <button
+                        type="button"
+                        className="approve-button mr5 approve-hover-btn"
+                        onClick={() => approvemDetails("", selectedRows)}
+                    >
+                        <div className={'save-icon'}></div>
+                        {'Approve'}
+                    </button>
+                </div>
+            </Row>}
             {
                 showPopup && <PopupMsgWrapper isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${MESSAGES.RAW_MATERIAL_DETAIL_DELETE_ALERT}`} />
             }

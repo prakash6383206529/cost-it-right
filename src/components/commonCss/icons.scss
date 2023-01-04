@@ -65,6 +65,7 @@
 
 .cost-movement {
     @include icons("../../assests/images/cost-movement.svg", $shadowColor: #0cbeeb, $borderColor: #bbe8f9);
+    @include extra-icon-styles;
 
 }
 
@@ -382,6 +383,15 @@
 
 .link-icon {
     @include icons("../../assests/images/link.svg", 20px, 20px)
+}
+
+.pinned {
+    @include icons("../../assests/images/pinned.svg", 20px, 20px);
+
+    &:focus {
+        box-shadow: none;
+        border: none;
+    }
 }
 
 .broken-link-icon {

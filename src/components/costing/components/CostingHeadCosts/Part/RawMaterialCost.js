@@ -58,6 +58,7 @@ function RawMaterialCost(props) {
   const { CostingEffectiveDate } = useSelector(state => state.costing)
   const [showPopup, setShowPopup] = useState(false)
   const [masterBatch, setMasterBatch] = useState(false)
+  const [remarkError, setRemarkError] = useState(true)
 
   const { ferrousCalculatorReset } = useSelector(state => state.costWorking)
   const RMDivisor = (item?.CostingPartDetails?.RMDivisor !== null) ? item?.CostingPartDetails?.RMDivisor : 0;
@@ -854,6 +855,10 @@ function RawMaterialCost(props) {
   const onRemarkPopUpClose = (index) => {
     var button = document.getElementById(`popUpTrigger${index}`)
     setValue(`${rmGridFields}.${index}.remarkPopUp`, gridData[index].Remark)
+    if (errors && errors.rmGridFields && errors.rmGridFields[index].remarkPopUp) {
+      delete errors.rmGridFields[index].remarkPopUp;
+      setRemarkError(false)
+    }
     button.click()
   }
 
@@ -1241,10 +1246,9 @@ function RawMaterialCost(props) {
                                     register={register}
                                     mandatory={false}
                                     rules={{
-                                      validate: { checkWhiteSpaces },
-                                      maxLength: REMARKMAXLENGTH
+                                      maxLength: remarkError && REMARKMAXLENGTH
                                     }}
-                                    handleChange={(e) => { }}
+                                    handleChange={(e) => { setRemarkError(true) }}
                                     defaultValue={item.Remark ?? item.Remark}
                                     className=""
                                     customClassName={"withBorder"}

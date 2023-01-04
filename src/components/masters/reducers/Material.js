@@ -356,7 +356,6 @@ export default function materialReducer(state = initialState, action) {
             if (action?.payload[0]?.OperationId !== undefined && action?.payload[0]?.OperationId !== null) {
                 array = action.payload && action.payload.filter((item) => {
                     return (item.TechnologyName = item.Technology,
-                        item.UOM = item.UnitOfMeasurement,
                         item.BasicRate = item.Rate
 
                     )

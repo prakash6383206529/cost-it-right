@@ -115,6 +115,7 @@ export const API = {
   activeInactivePartStatus: `${BASE_URL}/masters-part/active-component-part`,
   checkStatusCodeAPI: `${BASE_URL}/masters-part/check-status-code`,
   productComponentBulkUpload: `${BASE_URL}/masters-product/bulk-upload-for-product-json`,
+  checkRFQBulkUpload: `${BASE_URL}/rfq-quotation/check-valid-part-via-bulk-upload`,
 
   // PRODUCT MASTER 
   getProductDataList: `${BASE_URL}/masters-product/get-all`,
@@ -1650,6 +1651,7 @@ export const GET_REPORT_FORM_GRID_DATA = 'GET_REPORT_FORM_GRID_DATA'
 //RFQ CONSTANTS
 export const GET_QUOTATION_BY_ID = 'GET_QUOTATION_BY_ID'
 export const GET_QUOTATION_LIST = 'GET_QUOTATION_LIST'
+export const CHECK_RFQ_BULK_UPLOAD = 'CHECK_RFQ_BULK_UPLOAD'
 
 //COSTING STATUS
 export const GET_COSTING_STATUS = 'GET_COSTING_STATUS'
@@ -1667,6 +1669,8 @@ export const ERROR = 'Error'
 export const POUPDATED = 'POUpdated'
 export const LINKED = 'Linked'
 export const REJECTED_BY_SYSTEM = 'RejectedBySystem'
+export const UNDER_APPROVAL = 'Under Approval'
+export const CANCELLED = 'Cancelled'
 
 // MASTER APPROVAL STATUS ID
 export const APPROVED_STATUS = '3,5'
@@ -1807,6 +1811,8 @@ export const RFQ_LISTING = '/rfq-listing'
 
 export const EMPTY_GUID = "00000000-0000-0000-0000-000000000000"
 export const EMPTY_GUID_0 = "0"
+
+export const PART_COST = 'Part Cost'
 
 export const VIEW_COSTING_DATA = {
   costingHeadCheck: 'ZBC v/s VBC v/s NCC v/s CBC',
@@ -2053,6 +2059,7 @@ export const FUELBULKUPLOAD = 'Fuel';
 export const INTERESTRATEBULKUPLOAD = 'InterestRate'
 export const ACTUALVOLUMEBULKUPLOAD = 'ActualVolume'
 export const BUDGETEDVOLUMEBULKUPLOAD = 'BudgetedVolume'
+export const ADDRFQ = 'ADDRFQ'
 
 
 //STATUS FILTER DROPDOWN OPTIONS
@@ -2131,9 +2138,9 @@ export const CBCTypeIdFull = Number(reactLocalStorage.getObject('CostingHeadsLis
 export const NCCTypeIdFull = Number(reactLocalStorage.getObject('CostingHeadsListFullForm')[NCC])
 export const ZBCADDMORE = 0
 
-//AUTOCOMPLETE IN PART
-
+//AUTOCOMPLETE IN PART AND VENDOR
 export const searchCount = 3
+export const dropdownLimit = 100
 
 // KEY AND IVgit
 export const KEY = 'gQUJ79YKYm22Cazw';
@@ -2143,4 +2150,4 @@ export const KEYRFQ = "UAGSqTBCbZ8JqHJl"
 export const IVRFQ = "8vFNmRQEl91nOtrM"
 
 //VERSION 
-export const VERSION = "V2.1.27";
+export const VERSION = "V2.1.39";

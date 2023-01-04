@@ -17,7 +17,7 @@ function RenderGraphList(props) {
     ]
 
     useEffect(() => {
-        setValue('singleDropDown', { label: "List", value: "1" })
+        setValue('singleDropDown', { label: "Line Chart", value: "1" })
     }, [])
 
     const valueChanged = (event) => {

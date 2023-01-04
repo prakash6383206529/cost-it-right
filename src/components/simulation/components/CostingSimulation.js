@@ -279,6 +279,7 @@ function CostingSimulation(props) {
             setLoader(false)
             let tempObj = {}
             tempObj.EffectiveDate = Data.EffectiveDate
+            tempObj.CostingHead = Data?.SimulatedCostingList[0]?.CostingHead
             tempObj.SimulationHeadId = Data.SimulationHeadId
             tempObj.SimulationAppliedOn = Data.SimulationAppliedOn
             tempObj.Technology = Data.SimulatedCostingList[0].Technology
@@ -1198,16 +1199,6 @@ function CostingSimulation(props) {
                                                 <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}>
                                                     <div className="refresh mr-0"></div>
                                                 </button>
-                                            </div>
-                                        </Col>
-
-                                    </Row>
-                                    <Row>
-                                        <Col>
-                                            <div className={`ag-grid-wrapper ${(tableData && tableData?.length <= 0) || noData ? "overlay-contain" : ""}`}>
-                                                <div className="ag-grid-header">
-                                                    <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
-                                                </div>
                                             </div>
                                         </Col>
                                     </Row>

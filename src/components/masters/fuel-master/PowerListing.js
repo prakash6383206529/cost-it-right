@@ -269,6 +269,7 @@ class PowerListing extends Component {
   onPressVendor = () => {
     this.setState({
       IsVendor: !this.state.IsVendor,
+      dataCount: 0
     }, () => {
       this.getDataList()
     });
