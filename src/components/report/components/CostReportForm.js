@@ -260,7 +260,7 @@ function CostReportForm(props) {
             setpartName(resultInput)
             let partDataAPI = res?.data?.SelectList
             if (inputValue) {
-                return autoCompleteDropdown(inputValue, partDataAPI)
+                return autoCompleteDropdown(inputValue, partDataAPI, false, [], true)
             } else {
                 return partDataAPI
             }
@@ -270,7 +270,7 @@ function CostReportForm(props) {
             else {
                 let partData = reactLocalStorage.getObject('Data')
                 if (inputValue) {
-                    return autoCompleteDropdown(inputValue, partData)
+                    return autoCompleteDropdown(inputValue, partData, false, [], false)
                 } else {
                     return partData
                 }
