@@ -118,7 +118,10 @@ class BulkUpload extends Component {
 
                 } else {
                     fileHeads = resp.rows[0];
+
                     let checkForFileHead
+
+
                     switch (String(this.props.fileName)) {
                         case String(RMDOMESTICBULKUPLOAD):
                             if (this.state.costingHead === 'ZBC') {
@@ -217,6 +220,7 @@ class BulkUpload extends Component {
                     }
                     this.setState({ bulkUploadLoader: false })
                     if (!checkForFileHead) {
+
                         Toaster.warning('Please select file of same Master')
                         return false
                     }
