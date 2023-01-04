@@ -1717,6 +1717,7 @@ export const VOLUME_ACTUAL_ZBC = [
     { label: 'PlantCode', value: 'PlantCode', }, //*
     { label: 'PartNumber', value: 'PartNumber', }, //*
     { label: 'PartName', value: 'PartName', }, //NOUI
+    { label: 'RevisionNumber', value: 'RevisionNumber', },
     { label: 'Year', value: 'Year', }, //*
     { label: 'Month', value: 'Month', }, //NOUI,*
     { label: 'ActualQuantity', value: 'ActualQuantity', }, //*
@@ -1727,6 +1728,7 @@ export const VOLUME_ACTUAL_ZBC_TEMPDATA = [
         'PlantCode': 'P1',
         'PartNumber': 'Screw01',
         'PartName': 'Screw',
+        'RevisionNumber': '1',
         'Year': `${DayTime().$y}-${DayTime().$y + 1}`,
         'Month': DayTime().format('MMMM'),
         'ActualQuantity': 100,
@@ -1742,6 +1744,7 @@ export const VOLUME_ACTUAL_VBC = [
     { label: 'DestinationPlantCode', value: 'DestinationPlantCode', }, //*
     { label: 'PartNumber', value: 'PartNumber', }, //*
     { label: 'PartName', value: 'PartName', }, //NOUI
+    { label: 'RevisionNumber', value: 'RevisionNumber', },
     { label: 'Year', value: 'Year', }, //*
     { label: 'Month', value: 'Month', }, //NOUI ,*
     { label: 'ActualQuantity', value: 'ActualQuantity', }, //*
@@ -1754,6 +1757,7 @@ export const VOLUME_ACTUAL_VBC_TEMPDATA = [
         'DestinationPlantCode': 1032,
         'PartNumber': 'Screw Jack',
         'PartName': 'Screw',
+        'RevisionNumber': '1',
         'Year': `${DayTime().$y}-${DayTime().$y + 1}`,
         'Month': DayTime().format('MMMM'),
         'ActualQuantity': 50,
@@ -1768,6 +1772,7 @@ export const VOLUME_ACTUAL_CBC = [
     { label: 'DestinationPlantCode', value: 'DestinationPlantCode', }, //*
     { label: 'PartNumber', value: 'PartNumber', }, //*
     { label: 'PartName', value: 'PartName', }, //NOUI
+    { label: 'RevisionNumber', value: 'RevisionNumber', },
     { label: 'Year', value: 'Year', }, //*
     { label: 'Month', value: 'Month', }, //NOUI ,*
     { label: 'ActualQuantity', value: 'ActualQuantity', }, //*
@@ -1780,6 +1785,7 @@ export const VOLUME_ACTUAL_CBC_TEMPDATA = [
         'DestinationPlantCode': 1032,
         'PartNumber': 'Screw Jack',
         'PartName': 'Screw',
+        'RevisionNumber': '1',
         'Year': `${DayTime().$y}-${DayTime().$y + 1}`,
         'Month': DayTime().format('MMMM'),
         'ActualQuantity': 50,
@@ -1792,6 +1798,7 @@ export const VOLUME_BUDGETED_ZBC = [
     { label: 'PlantCode', value: 'PlantCode', }, //*
     { label: 'PartNumber', value: 'PartNumber', }, //*
     { label: 'PartName', value: 'PartName', }, //NOUI
+    { label: 'RevisionNumber', value: 'RevisionNumber', },
     { label: 'Year', value: 'Year', }, //*
     { label: 'Month', value: 'Month', }, //NOUI
     { label: 'BudgetedQuantity', value: 'BudgetedQuantity', }, //*
@@ -1803,6 +1810,7 @@ export const VOLUME_BUDGETED_ZBC_TEMPDATA = [
         'PlantCode': 'Systematix01',
         'PartNumber': 'Screw01',
         'PartName': 'Screw',
+        'RevisionNumber': '1',
         'Year': `${DayTime().$y}-${DayTime().$y + 1}`,
         'Month': DayTime().format('MMMM'),
         'BudgetedQuantity': 10,
@@ -1819,6 +1827,7 @@ export const VOLUME_BUDGETED_VBC = [
     { label: 'DestinationPlantCode', value: 'DestinationPlantCode', }, //*
     { label: 'PartNumber', value: 'PartNumber', }, //*
     { label: 'PartName', value: 'PartName', },//NOUI
+    { label: 'RevisionNumber', value: 'RevisionNumber', },
     { label: 'Year', value: 'Year', }, //*
     { label: 'Month', value: 'Month', }, //NOUI
     { label: 'BudgetedQuantity', value: 'BudgetedQuantity', }, //*
@@ -1832,6 +1841,7 @@ export const VOLUME_BUDGETED_VBC_TEMPDATA = [
         'DestinationPlantCode': "1032",
         'PartNumber': 'Screw01',
         'PartName': 'Screw',
+        'RevisionNumber': '1',
         'Year': `${DayTime().$y}-${DayTime().$y + 1}`,
         'Month': DayTime().format('MMMM'),
         'BudgetedQuantity': 25,
@@ -1844,6 +1854,7 @@ export const VOLUME_BUDGETED_CBC = [
     { label: 'DestinationPlantCode', value: 'DestinationPlantCode', }, //*
     { label: 'PartNumber', value: 'PartNumber', }, //*
     { label: 'PartName', value: 'PartName', },//NOUI
+    { label: 'RevisionNumber', value: 'RevisionNumber', },
     { label: 'Year', value: 'Year', }, //*
     { label: 'Month', value: 'Month', }, //NOUI
     { label: 'BudgetedQuantity', value: 'BudgetedQuantity', }, //*
@@ -1856,6 +1867,7 @@ export const VOLUME_BUDGETED_CBC_TEMPDATA = [
         'DestinationPlantCode': "1032",
         'PartNumber': 'Screw01',
         'PartName': 'Screw',
+        'RevisionNumber': '1',
         'Year': `${DayTime().$y}-${DayTime().$y + 1}`,
         'Month': DayTime().format('MMMM'),
         'BudgetedQuantity': 25,
