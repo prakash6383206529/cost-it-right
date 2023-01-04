@@ -397,7 +397,11 @@ function CostMovementGraph(props) {
                     boxWidth: 16,
                     boxHeight: 14,
                     borderWidth: 0,
-                    color: '#000'
+                    color: '#000',
+                    font: {
+                        size: 16,
+                        weight: 500
+                    }
                 }
             },
             tooltip: {
