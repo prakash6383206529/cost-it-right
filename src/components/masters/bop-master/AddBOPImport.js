@@ -4,7 +4,7 @@ import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import {
   required, checkForNull, checkForDecimalAndNull, acceptAllExceptSingleSpecialCharacter, maxLength20,
-  maxLength10, positiveAndDecimalNumber, maxLength512, decimalLengthsix, checkWhiteSpaces, checkSpacesInString, maxLength80
+  maxLength10, positiveAndDecimalNumber, maxLength512, decimalLengthsix, checkWhiteSpaces, checkSpacesInString, maxLength80, postiveNumber
 } from "../../../helper/validation";
 import { renderText, searchableSelect, renderTextAreaField, renderDatePicker, renderNumberInputField, focusOnError } from "../../layout/FormInputs";
 import { getPlantBySupplier, getUOMSelectList, getCurrencySelectList, getPlantSelectListByType, getCityByCountry, getAllCity } from '../../../actions/Common';
@@ -490,10 +490,12 @@ class AddBOPImport extends Component {
     }
   };
 
+
   handleCalculation = () => {
     const { fieldsObj, initialConfiguration } = this.props
+    const NoOfPieces = fieldsObj && fieldsObj.NumberOfPieces !== undefined ? fieldsObj.NumberOfPieces : 1; // MAY BE USED LATER IF USED IN CALCULATION
     const BasicRate = fieldsObj && fieldsObj.BasicRate !== undefined ? fieldsObj.BasicRate : 0;
-    const NetLandedCost = checkForNull((BasicRate) * this.state.currencyValue)
+    const NetLandedCost = checkForNull((BasicRate / NoOfPieces) * this.state.currencyValue)
 
 
     if (this.state.isEditFlag && Number(checkForDecimalAndNull(NetLandedCost, initialConfiguration.NoOfDecimalForPrice)) === Number(checkForDecimalAndNull(this.state.DataToChange?.NetLandedCostConversion, initialConfiguration.NoOfDecimalForPrice))) {
@@ -512,7 +514,6 @@ class AddBOPImport extends Component {
     // this.setState({ netLandedcost: (BasicRate), netLandedConverionCost: NetLandedCost })
     // this.props.change('NetLandedCost', checkForDecimalAndNull((BasicRate), initialConfiguration.NoOfDecimalForPrice))
   }
-
   /**
   * @method handleChange
   * @description Handle Effective Date
@@ -726,7 +727,7 @@ class AddBOPImport extends Component {
         UnitOfMeasurementId: UOM.value,
         NetLandedCostConversion: netLandedConverionCost,
         IsForcefulUpdated: isDateChange ? false : isSourceChange ? false : true,
-        NumberOfPieces: 1,
+        NumberOfPieces: values.NumberOfPieces,
         IsFinancialDataChanged: isDateChange ? true : false
       }
 
@@ -794,7 +795,7 @@ class AddBOPImport extends Component {
         SourceLocation: sourceLocation.value,
         EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD'),
         BasicRate: values.BasicRate,
-        NumberOfPieces: 1,
+        NumberOfPieces: values.NumberOfPieces,
         NetLandedCost: this.state.netLandedcost,
         Remark: values.Remark,
         IsActive: true,
@@ -1186,6 +1187,22 @@ class AddBOPImport extends Component {
                               {this.state.showErrorOnFocusDate && this.state.effectiveDate === '' && <div className='text-help mt-1 p-absolute bottom-7'>This field is required.</div>}
                             </div>
                           </Col>
+
+                          <Col md="3">
+                            <Field
+                              label={`Minimum Order Quantity`}
+                              name={"NumberOfPieces"}
+                              type="text"
+                              placeholder={"Enter"}
+                              validate={[postiveNumber, maxLength10]}
+                              component={renderText}
+                              required={false}
+                              className=""
+                              customClassName=" withBorder"
+                              disabled={isViewMode}
+                            />
+                          </Col>
+
                           <Col md="3">
                             <Field
                               label={`Basic Rate (${this.state.currency.label === undefined ? 'Currency' : this.state.currency.label})`}
@@ -1451,6 +1468,7 @@ function mapStateToProps(state) {
       Specification: bopData.Specification,
       Source: bopData.Source,
       BasicRate: bopData.BasicRate,
+      NumberOfPieces: bopData.NumberOfPieces,
       NetLandedCost: bopData.NetLandedCost,
       Remark: bopData.Remark,
     }

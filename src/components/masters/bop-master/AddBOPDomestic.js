@@ -4,7 +4,7 @@ import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import {
   required, checkForNull, number, checkForDecimalAndNull, acceptAllExceptSingleSpecialCharacter, maxLength20,
-  maxLength, maxLength10, positiveAndDecimalNumber, maxLength512, maxLength80, checkWhiteSpaces, decimalLengthsix, checkSpacesInString
+  maxLength, maxLength10, positiveAndDecimalNumber, maxLength512, maxLength80, checkWhiteSpaces, decimalLengthsix, checkSpacesInString, postiveNumber
 } from "../../../helper/validation";
 import { renderText, searchableSelect, renderTextAreaField, focusOnError, renderDatePicker, renderNumberInputField } from "../../layout/FormInputs";
 import { getCityBySupplier, getPlantBySupplier, getUOMSelectList, getPlantSelectListByType, getCityByCountry, getAllCity } from '../../../actions/Common';
@@ -434,10 +434,15 @@ class AddBOPDomestic extends Component {
     this.setState({ isOpenUOM: false })
   }
 
+
   handleCalculation = () => {
     const { fieldsObj, initialConfiguration } = this.props
     const BasicRate = fieldsObj && fieldsObj.BasicRate !== undefined ? fieldsObj.BasicRate : 0;
-    const NetLandedCost = checkForNull(BasicRate)
+    const NoOfPieces = fieldsObj && fieldsObj.NumberOfPieces !== undefined ? fieldsObj.NumberOfPieces : 1;
+    console.log('NoOfPieces: ', NoOfPieces);
+    const NetLandedCost = checkForNull((BasicRate / NoOfPieces)) // THIS CALCULATION IS FOR BASE
+    console.log('NetLandedCost: ', NetLandedCost);
+
 
     if (this.state.isEditFlag && Number(NetLandedCost) === Number(this.state.DataToCheck?.NetLandedCost)) {
 
@@ -454,6 +459,7 @@ class AddBOPDomestic extends Component {
     })
     this.props.change('NetLandedCost', NetLandedCost !== 0 ? checkForDecimalAndNull(NetLandedCost, initialConfiguration.NoOfDecimalForPrice) : 0)
   }
+
 
   /**
   * @method handleChange
@@ -642,7 +648,7 @@ class AddBOPDomestic extends Component {
         Attachements: updatedFiles,
         UnitOfMeasurementId: UOM.value,
         IsForcefulUpdated: isDateChange ? false : isSourceChange ? false : true,
-        NumberOfPieces: 1,
+        NumberOfPieces: values.NumberOfPieces,
         VendorPlant: [],
         IsFinancialDataChanged: isDateChange ? true : false
       }
@@ -705,7 +711,7 @@ class AddBOPDomestic extends Component {
         SourceLocation: sourceLocation.value,
         EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD'),
         BasicRate: values.BasicRate,
-        NumberOfPieces: 1,
+        NumberOfPieces: values.NumberOfPieces,
         NetLandedCost: this.state.NetLandedCost,
         Remark: values.Remark,
         IsActive: true,
@@ -1108,6 +1114,22 @@ class AddBOPDomestic extends Component {
                             {this.state.showErrorOnFocusDate && this.state.effectiveDate === '' && <div className='text-help mt-1 p-absolute bottom-22'>This field is required.</div>}
                           </Col>
 
+
+                          <Col md="3">
+                            <Field
+                              label={`Minimum Order Quantity`}
+                              name={"NumberOfPieces"}
+                              type="text"
+                              placeholder={"Enter"}
+                              validate={[postiveNumber, maxLength10]}
+                              component={renderText}
+                              required={false}
+                              className=""
+                              customClassName=" withBorder"
+                              disabled={isViewMode}
+                            />
+                          </Col>
+
                           <Col md="3">
                             <Field
                               label={this.labelWithUOM(this.state.UOM.label ? this.state.UOM.label : 'UOM')}
@@ -1345,8 +1367,8 @@ class AddBOPDomestic extends Component {
 * @param {*} state
 */
 function mapStateToProps(state) {
-  const { comman, supplier, boughtOutparts, part, auth } = state;
-  const fieldsObj = selector(state, 'BasicRate', 'NoOfPieces');
+  const { comman, supplier, boughtOutparts, part, auth, client } = state;
+  const fieldsObj = selector(state, 'BasicRate', 'NumberOfPieces');
 
   const { bopCategorySelectList, bopData, } = boughtOutparts;
   const { plantList, filterPlantList, filterCityListBySupplier, cityList, UOMSelectList, plantSelectList, } = comman;
@@ -1362,6 +1384,7 @@ function mapStateToProps(state) {
       Specification: bopData.Specification,
       Source: bopData.Source,
       BasicRate: bopData.BasicRate,
+      NumberOfPieces: bopData.NumberOfPieces,
       NetLandedCost: bopData.NetLandedCost,
       Remark: bopData.Remark,
     }
