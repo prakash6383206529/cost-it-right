@@ -1,8 +1,8 @@
 import React from 'react';
 import { useState, useEffect, } from 'react';
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { Row, Col, } from 'reactstrap';
-import { APPROVED, CANCELLED, DRAFT, EMPTY_DATA, FILE_URL, UNDER_APPROVAL, } from '../.././config/constants'
+import { APPROVED, CANCELLED, DRAFT, EMPTY_DATA, FILE_URL, RFQ, UNDER_APPROVAL, } from '../.././config/constants'
 import NoContentFound from '.././common/NoContentFound';
 import { MESSAGES } from '../.././config/message';
 import Toaster from '.././common/Toaster';
@@ -17,6 +17,7 @@ import SelectRowWrapper from '.././common/SelectRowWrapper';
 import { getQuotationList, cancelRfqQuotation, sendReminderForQuotation } from './actions/rfq';
 import ViewRfq from './ViewRfq';
 import AddRfq from './AddRfq';
+import { checkPermission } from '../../helper';
 const gridOptions = {};
 
 
@@ -34,14 +35,35 @@ function RfqListing(props) {
     const [dataCount, setDataCount] = useState(0)
     const [viewRfq, setViewRfq] = useState(false)
     const [viewRfqData, setViewRfqData] = useState("")
-
+    const [addAccessibility, setAddAccessibility] = useState(false);
+    const [editAccessibility, setEditAccessibility] = useState(false);
+    const [viewAccessibility, setViewAccessibility] = useState(false);
+    const { topAndLeftMenuData } = useSelector(state => state.auth);
 
     useEffect(() => {
         setloader(true)
         getDataList()
+        applyPermission(topAndLeftMenuData)
+    }, [topAndLeftMenuData])
+    /**
+      * @method applyPermission
+      * @description ACCORDING TO PERMISSION HIDE AND SHOW, ACTION'S
+      */
+    const applyPermission = (topAndLeftMenuData) => {
+        if (topAndLeftMenuData !== undefined) {
+            console.log('topAndLeftMenuData: ', topAndLeftMenuData);
+            const Data = topAndLeftMenuData && topAndLeftMenuData.find(el => el.ModuleName === RFQ);
+            const accessData = Data && Data.Pages.find(el => el.PageName === RFQ)
+            const permmisionData = accessData && accessData.Actions && checkPermission(accessData.Actions)
+            console.log('permmisionData: ', permmisionData);
 
-    }, [])
-
+            if (permmisionData !== undefined) {
+                setAddAccessibility(permmisionData && permmisionData.Add ? permmisionData.Add : false)
+                setEditAccessibility(permmisionData && permmisionData.Edit ? permmisionData.Edit : false)
+                setViewAccessibility(permmisionData && permmisionData.View ? permmisionData.View : false)
+            }
+        }
+    }
     /**
     * @method hideForm
     * @description HIDE DOMESTIC, IMPORT FORMS
@@ -124,13 +146,12 @@ function RfqListing(props) {
 
         return (
             <>
-                < button title='View' className="View mr-1" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, true)} />
-                {(status === DRAFT) && <button title='Edit' className="Edit mr-1" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, false)} />}
+                {viewAccessibility && <button title='View' className="View mr-1" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, true)} />}
+                {((status === DRAFT) && editAccessibility) && <button title='Edit' className="Edit mr-1" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, false)} />}
                 {(status !== APPROVED && status !== UNDER_APPROVAL && status !== CANCELLED) && <button title='Cancel' className="CancelIcon mr-1" type={'button'} onClick={() => cancelItem(cellValue)} />}
             </>
         )
     };
-
 
 
     const formToggle = () => {
@@ -290,7 +311,7 @@ function RfqListing(props) {
                                         <>
                                             <div className="d-flex justify-content-end bd-highlight w100">
                                                 <>
-                                                    <button
+                                                    {addAccessibility && (<button
                                                         type="button"
                                                         className={"user-btn mr5"}
                                                         onClick={formToggle}
@@ -298,7 +319,7 @@ function RfqListing(props) {
                                                     >
                                                         <div className={"plus mr-0"}></div>
                                                         {/* ADD */}
-                                                    </button>
+                                                    </button>)}
 
                                                 </>
                                             </div>
