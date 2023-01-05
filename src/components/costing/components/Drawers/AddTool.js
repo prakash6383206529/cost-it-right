@@ -361,10 +361,6 @@ function AddTool(props) {
                       control={control}
                       register={register}
                       mandatory={false}
-                      rules={{
-                        required: false,
-                        validate: { number, checkWhiteSpaces, decimalNumberLimit6 }
-                      }}
                       handleChange={() => { }}
                       defaultValue={''}
                       className=""
