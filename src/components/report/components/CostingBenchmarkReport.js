@@ -80,17 +80,17 @@ function CostingBenchmarkReport(props) {
         setShowInsight(false)
         dispatch(setMasterForSimulation(value))
         setRunReportButton(true)
-        setblueDivison(true)
+        setblueDivison(false)
         setShowMasterList(false)
-        setLoader(true)
-
-        setTimeout(() => {
+        if (Number(value.value) === Number(7)) { //SURFACE TREATMENT
             setTimeout(() => {
-                setLoader(false)
-            }, 400);
+                setShowMasterList(true)
+                setblueDivison(true)
+            }, 100);
+        } else {
             setShowMasterList(true)
-        }, 200);
-
+            setblueDivison(true)
+        }
         setMaster(value)
     }
 
