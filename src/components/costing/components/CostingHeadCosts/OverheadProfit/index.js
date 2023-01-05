@@ -395,7 +395,6 @@ function OverheadProfit(props) {
             let OverheadCCPercentage = (dataObj?.IsOverheadCCApplicable ? checkForNull(dataObj?.OverheadCCPercentage) : '')
 
             const CutOffCost = checkForNull(CostingDataList && CostingDataList[0]?.RawMaterialCostWithCutOff)
-            const CutOffRMC = CutOffCost;
             const IsCutOffApplicable = CostingDataList[0]?.IsRMCutOffApplicable;
 
             // IF BLOCK WILL GET EXECUTED WHEN TECHNOLOGY FOR COSTING IS ASSEMBLY FOR OTHER TECHNOLOGIES ELSE WILL EXECUTE
@@ -407,8 +406,8 @@ function OverheadProfit(props) {
                 OverheadCCTotalCost = OverheadCCCost * calculatePercentage(OverheadCCPercentage)
                 OverheadBOPTotalCost = OverheadBOPCost * calculatePercentage(OverheadBOPPercentage)
             } else {
-                OverheadRMCost = IsCutOffApplicable ? checkForNull(CutOffRMC) : checkForNull(headerCosts?.NetRawMaterialsCost)
-                OverheadRMTotalCost = (IsCutOffApplicable ? checkForNull(CutOffRMC) : checkForNull(headerCosts?.NetRawMaterialsCost)) * calculatePercentage(checkForNull(OverheadRMPercentage))
+                OverheadRMCost = IsCutOffApplicable ? checkForNull(CutOffCost) : checkForNull(headerCosts?.NetRawMaterialsCost)
+                OverheadRMTotalCost = (IsCutOffApplicable ? checkForNull(CutOffCost) : checkForNull(headerCosts?.NetRawMaterialsCost)) * calculatePercentage(checkForNull(OverheadRMPercentage))
                 OverheadBOPCost = checkForNull(headerCosts && headerCosts?.NetBoughtOutPartCost)
                 OverheadBOPTotalCost = checkForNull(OverheadBOPCost) * calculatePercentage(checkForNull(OverheadBOPPercentage))
                 OverheadCCCost = (checkForNull(headerCosts && headerCosts?.ProcessCostTotal) + checkForNull(headerCosts && headerCosts?.OperationCostTotal))
@@ -798,21 +797,11 @@ function OverheadProfit(props) {
                 BOP_CC = headerCosts?.NetBoughtOutPartCost + ConversionCostForCalculation;
                 RM_BOP = (IsCutOffApplicable ? CutOffRMC : headerCosts?.NetRawMaterialsCost) + headerCosts?.NetBoughtOutPartCost;
 
-                // const ConversionCostForCalculation = costData.IsAssemblyPart ? (checkForNull(headerCosts.NetConversionCost) - checkForNull(headerCosts.TotalOtherOperationCostPerAssembly)) : headerCosts.ProcessCostTotal + headerCosts.OperationCostTotal
-                // const RMBOPCC = headerCosts.NetRawMaterialsCost + headerCosts.NetBoughtOutPartCost + ConversionCostForCalculation
-                // const CutOffCost = checkForNull(CostingDataList && CostingDataList[0]?.RawMaterialCostWithCutOff)
-                // const CutOffRMBOPCCTotal = (IsCutOffApplicable && headerCosts) ? (CutOffCost + headerCosts.NetBoughtOutPartCost + ConversionCostForCalculation) : RMBOPCC;
-                // const NetConversionCost = ConversionCostForCalculation 
             }
-
-
-            // ____________/
-
 
             setOverheadValues(overheadObj, false)
             setProfitValues(profitObj, false)
 
-            // ____________/
             // START HERE ADD CC IN OVERHEAD
             if (IsIncludedSurfaceInOverheadProfit && IsSurfaceTreatmentAdded === false && overheadObj && overheadObj?.IsOverheadCCApplicable) {
 
@@ -821,7 +810,6 @@ function OverheadProfit(props) {
 
                 setValue('OverheadCCCost', checkForDecimalAndNull(overheadCCCost, initialConfiguration.NoOfDecimalForPrice))
                 setValue('OverheadCCTotalCost', checkForDecimalAndNull(totalOverheadCost, initialConfiguration.NoOfDecimalForPrice))
-                // setIsSurfaceTreatmentAdded(true)
 
                 setOverheadObj({
                     ...overheadObj,
@@ -864,7 +852,6 @@ function OverheadProfit(props) {
                 const profitTotalCost = checkForNull(profitCCCost) * calculatePercentage(checkForNull(ProfitCCPercentage))
                 setValue('ProfitCCCost', checkForDecimalAndNull(profitCCCost, initialConfiguration.NoOfDecimalForPrice))
                 setValue('ProfitCCTotalCost', checkForDecimalAndNull(profitTotalCost, initialConfiguration.NoOfDecimalForPrice))
-                // setIsSurfaceTreatmentAdded(true)
                 setProfitObj({
                     ...profitObj,
                     ProfitCCCost: profitCCCost,
@@ -910,7 +897,6 @@ function OverheadProfit(props) {
                         setValue('OverheadPercentage', checkForDecimalAndNull(OverheadPercentage, initialConfiguration.NoOfDecimalForPrice))
                         setValue('OverheadCombinedCost', checkForDecimalAndNull(overheadCombinedCost, initialConfiguration.NoOfDecimalForPrice))
                         setValue('OverheadCombinedTotalCost', checkForDecimalAndNull(overheadTotalCost, initialConfiguration.NoOfDecimalForPrice))
-                        // setIsSurfaceTreatmentAdded(true)
                         setOverheadObj({
                             ...overheadObj,
                             OverheadCombinedCost: overheadCombinedCost,
@@ -927,7 +913,6 @@ function OverheadProfit(props) {
                         setValue('OverheadPercentage', checkForDecimalAndNull(OverheadPercentage, initialConfiguration.NoOfDecimalForPrice))
                         setValue('OverheadCombinedCost', checkForDecimalAndNull(overheadCombinedCost, initialConfiguration.NoOfDecimalForPrice))
                         setValue('OverheadCombinedTotalCost', checkForDecimalAndNull(overheadTotalCost, initialConfiguration.NoOfDecimalForPrice))
-                        // setIsSurfaceTreatmentAdded(true)
                         setOverheadObj({
                             ...overheadObj,
                             OverheadCombinedCost: overheadCombinedCost,
@@ -943,7 +928,6 @@ function OverheadProfit(props) {
                         setValue('OverheadPercentage', checkForDecimalAndNull(OverheadPercentage, initialConfiguration.NoOfDecimalForPrice))
                         setValue('OverheadCombinedCost', checkForDecimalAndNull(overheadCombinedCost, initialConfiguration.NoOfDecimalForPrice))
                         setValue('OverheadCombinedTotalCost', checkForDecimalAndNull(overheadTotalCost, initialConfiguration.NoOfDecimalForPrice))
-                        // setIsSurfaceTreatmentAdded(true)
                         setOverheadObj({
                             ...overheadObj,
                             OverheadCombinedCost: overheadCombinedCost,
@@ -960,7 +944,6 @@ function OverheadProfit(props) {
                         setValue('OverheadPercentage', checkForDecimalAndNull(OverheadPercentage, initialConfiguration.NoOfDecimalForPrice))
                         setValue('OverheadCombinedCost', checkForDecimalAndNull(overheadCombinedCost, initialConfiguration.NoOfDecimalForPrice))
                         setValue('OverheadCombinedTotalCost', checkForDecimalAndNull(overheadTotalCost, initialConfiguration.NoOfDecimalForPrice))
-                        // setIsSurfaceTreatmentAdded(true)
                         setOverheadObj({
                             ...overheadObj,
                             OverheadCombinedCost: overheadCombinedCost,
@@ -1059,7 +1042,6 @@ function OverheadProfit(props) {
                         setValue('ProfitPercentage', checkForDecimalAndNull(ProfitPercentage, initialConfiguration.NoOfDecimalForPrice))
                         setValue('ProfitCombinedCost', checkForDecimalAndNull(profitCombinedCost, initialConfiguration.NoOfDecimalForPrice))
                         setValue('ProfitCombinedTotalCost', checkForDecimalAndNull(profitTotalCost, initialConfiguration.NoOfDecimalForPrice))
-                        // setIsSurfaceTreatmentAdded(true)
                         setProfitObj({
                             ...profitObj,
                             ProfitCombinedCost: profitCombinedCost,
@@ -1076,7 +1058,6 @@ function OverheadProfit(props) {
                         setValue('ProfitPercentage', checkForDecimalAndNull(ProfitPercentage, initialConfiguration.NoOfDecimalForPrice))
                         setValue('ProfitCombinedCost', checkForDecimalAndNull(profitCombinedCost, initialConfiguration.NoOfDecimalForPrice))
                         setValue('ProfitCombinedTotalCost', checkForDecimalAndNull(profitTotalCost, initialConfiguration.NoOfDecimalForPrice))
-                        // setIsSurfaceTreatmentAdded(true)
                         setProfitObj({
                             ...profitObj,
                             ProfitCombinedCost: profitCombinedCost,
@@ -1092,7 +1073,6 @@ function OverheadProfit(props) {
                         setValue('ProfitPercentage', checkForDecimalAndNull(ProfitPercentage, initialConfiguration.NoOfDecimalForPrice))
                         setValue('ProfitCombinedCost', checkForDecimalAndNull(profitCombinedCost, initialConfiguration.NoOfDecimalForPrice))
                         setValue('ProfitCombinedTotalCost', checkForDecimalAndNull(profitTotalCost, initialConfiguration.NoOfDecimalForPrice))
-                        // setIsSurfaceTreatmentAdded(true)
                         setProfitObj({
                             ...profitObj,
                             ProfitCombinedCost: profitCombinedCost,
@@ -1109,7 +1089,6 @@ function OverheadProfit(props) {
                         setValue('ProfitPercentage', checkForDecimalAndNull(ProfitPercentage, initialConfiguration.NoOfDecimalForPrice))
                         setValue('ProfitCombinedCost', checkForDecimalAndNull(profitCombinedCost, initialConfiguration.NoOfDecimalForPrice))
                         setValue('ProfitCombinedTotalCost', checkForDecimalAndNull(profitTotalCost, initialConfiguration.NoOfDecimalForPrice))
-                        // setIsSurfaceTreatmentAdded(true)
                         setProfitObj({
                             ...profitObj,
                             ProfitCombinedCost: profitCombinedCost,
@@ -1288,7 +1267,7 @@ function OverheadProfit(props) {
 
                             <Col md="12" className="">
                                 <div className="left-border">
-                                    {`Overheads ${overheadObj && overheadObj.OverheadApplicability ? '(' + overheadObj.OverheadApplicability + ')' : ''}`}
+                                    {`Overheads ${overheadObj && overheadObj.OverheadApplicability ? '(' + overheadObj.OverheadApplicability + ')' : '-'}`}
                                 </div>
                             </Col>
 
@@ -1321,7 +1300,7 @@ function OverheadProfit(props) {
                                         <>
                                             <Col md="3">
                                                 <label className="col-label">
-                                                    {`${overheadObj && overheadObj.OverheadApplicability ? overheadObj.OverheadApplicability : ''}`}
+                                                    {`${overheadObj && overheadObj.OverheadApplicability ? overheadObj.OverheadApplicability : '-'}`}
                                                 </label>
                                             </Col>
                                             <Col md="3">
@@ -1385,7 +1364,7 @@ function OverheadProfit(props) {
                                         <>
                                             <Col md="3">
                                                 <label className="col-label">
-                                                    {`${overheadObj && overheadObj.OverheadApplicability ? '(' + overheadObj.OverheadApplicability + ')' : ''}`}
+                                                    {`${overheadObj && overheadObj.OverheadApplicability ? '(' + overheadObj.OverheadApplicability + ')' : '-'}`}
                                                 </label>
                                             </Col>
                                             <Col md="3">
@@ -1519,7 +1498,7 @@ function OverheadProfit(props) {
                                         <>
                                             <Col md="3">
                                                 <label className="col-label">
-                                                    {`${overheadObj && overheadObj.OverheadApplicability ? 'BOP' : ''}`}
+                                                    {`${overheadObj && overheadObj.OverheadApplicability ? 'BOP' : '-'}`}
                                                 </label>
                                             </Col>
                                             <Col md="3">
@@ -1578,7 +1557,7 @@ function OverheadProfit(props) {
                                         <>
                                             <Col md="3">
                                                 <label className="col-label">
-                                                    {`${overheadObj && overheadObj.OverheadApplicability ? 'CC' : ''}`}
+                                                    {`${overheadObj && overheadObj.OverheadApplicability ? 'CC' : '-'}`}
                                                 </label>
                                             </Col>
                                             <Col md="3">
@@ -1637,7 +1616,7 @@ function OverheadProfit(props) {
                             {/* new section from below with heasing */}
                             <Col md="12" className="pt-3">
                                 <div className="left-border">
-                                    {`Profits ${profitObj && profitObj.ProfitApplicability ? '(' + profitObj.ProfitApplicability + ')' : ''}`}
+                                    {`Profits ${profitObj && profitObj.ProfitApplicability ? '(' + profitObj.ProfitApplicability + ')' : '-'}`}
                                 </div>
                             </Col>
                             <Col md="12">
@@ -1669,7 +1648,7 @@ function OverheadProfit(props) {
                                         <>
                                             <Col md="3">
                                                 <label className="col-label">
-                                                    {`${profitObj && profitObj.ProfitApplicability ? '(' + profitObj.ProfitApplicability + ')' : ''}`}
+                                                    {`${profitObj && profitObj.ProfitApplicability ? '(' + profitObj.ProfitApplicability + ')' : '-'}`}
                                                 </label>
                                             </Col>
                                             <Col md="3">
@@ -1733,7 +1712,7 @@ function OverheadProfit(props) {
                                         <>
                                             <Col md="3">
                                                 <label className="col-label">
-                                                    {`${profitObj && profitObj.ProfitApplicability ? '(' + profitObj.ProfitApplicability + ')' : ''}`}
+                                                    {`${profitObj && profitObj.ProfitApplicability ? '(' + profitObj.ProfitApplicability + ')' : '-'}`}
                                                 </label>
                                             </Col>
                                             <Col md="3">
@@ -1864,7 +1843,7 @@ function OverheadProfit(props) {
                                         <>
                                             <Col md="3">
                                                 <label className="col-label">
-                                                    {`${profitObj && profitObj.ProfitApplicability ? 'BOP' : ''}`}
+                                                    {`${profitObj && profitObj.ProfitApplicability ? 'BOP' : '-'}`}
                                                 </label>
                                             </Col>
                                             <Col md="3">
@@ -1923,7 +1902,7 @@ function OverheadProfit(props) {
                                         <>
                                             <Col md="3">
                                                 <label className="col-label">
-                                                    {`${profitObj && profitObj.ProfitApplicability ? 'CC' : ''}`}
+                                                    {`${profitObj && profitObj.ProfitApplicability ? 'CC' : '-'}`}
                                                 </label>
                                             </Col>
                                             <Col md="3">
