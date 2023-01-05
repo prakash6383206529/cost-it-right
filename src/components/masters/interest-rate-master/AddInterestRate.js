@@ -39,7 +39,7 @@ class AddInterestRate extends Component {
       InterestRateId: '',
       effectiveDate: '',
       Data: [],
-      DropdownChanged: true,
+      DropdownNotChanged: true,
       updatedObj: {},
       setDisable: false,
       inputLoader: false,
@@ -177,8 +177,11 @@ class AddInterestRate extends Component {
     } else {
       this.setState({ ICCApplicability: [], })
     }
-    if (this.state.isEditFlag) {
-      this.setState({ isDataChanged: false })
+    if (this.state.ICCApplicability.value === newValue.value) {
+      this.setState({ isDataChanged: true, DropdownNotChanged: true })
+    }
+    else {
+      this.setState({ isDataChanged: false, DropdownNotChanged: false })
     }
   };
 
@@ -192,8 +195,11 @@ class AddInterestRate extends Component {
     } else {
       this.setState({ PaymentTermsApplicability: [], })
     }
-    if (this.state.isEditFlag) {
-      this.setState({ isDataChanged: false })
+    if (this.state.PaymentTermsApplicability.value === newValue.value) {
+      this.setState({ isDataChanged: true, DropdownNotChanged: true })
+    }
+    else {
+      this.setState({ isDataChanged: false, DropdownNotChanged: false })
     }
   };
 
@@ -246,7 +252,7 @@ class AddInterestRate extends Component {
   */
   handleEffectiveDateChange = (date) => {
     this.setState({ effectiveDate: DayTime(date).isValid() ? DayTime(date) : '', });
-    this.setState({ DropdownChanged: false })
+    this.setState({ DropdownNotChanged: false })
   };
   /** 
    * @method handlePlant
@@ -254,7 +260,7 @@ class AddInterestRate extends Component {
    */
   handlePlant = (e) => {
     this.setState({ selectedPlants: e })
-    this.setState({ DropdownChanged: false })
+    this.setState({ DropdownNotChanged: false })
   }
   handleSinglePlant = (newValue) => {
     this.setState({ singlePlantSelected: newValue })
@@ -353,7 +359,7 @@ class AddInterestRate extends Component {
   */
 
   onSubmit = debounce((values) => {
-    const { Data, vendorName, costingTypeId, client, ICCApplicability, singlePlantSelected, selectedPlants, PaymentTermsApplicability, InterestRateId, effectiveDate, DropdownChanged } = this.state;
+    const { Data, vendorName, costingTypeId, client, ICCApplicability, singlePlantSelected, selectedPlants, PaymentTermsApplicability, InterestRateId, effectiveDate, DropdownNotChanged } = this.state;
     const userDetail = userDetails()
     const userDetailsInterest = JSON.parse(localStorage.getItem('userDetail'))
     let plantArray = []
@@ -392,7 +398,7 @@ class AddInterestRate extends Component {
       if (Data.ICCApplicability === ICCApplicability.label && Data.ICCPercent === values.ICCPercent &&
         Data.PaymentTermApplicability === PaymentTermsApplicability.label &&
         Data.PaymentTermPercent === values.PaymentTermPercent &&
-        Data.RepaymentPeriod === values.RepaymentPeriod && DropdownChanged) {
+        Data.RepaymentPeriod === values.RepaymentPeriod && DropdownNotChanged) {
 
         this.cancel('cancel')
         return false;

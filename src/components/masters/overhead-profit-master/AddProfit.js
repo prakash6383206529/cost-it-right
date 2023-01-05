@@ -60,7 +60,7 @@ class AddProfit extends Component {
       isHideCC: false,
       isHideBOP: false,
       effectiveDate: '',
-      DropdownChanged: true,
+      DropdownNotChanged: true,
       DataToChange: [],
       uploadAttachements: true,
       updatedObj: {},
@@ -115,7 +115,12 @@ class AddProfit extends Component {
     } else {
       this.setState({ ModelType: [], })
     }
-    this.setState({ DropdownChanged: false, isDataChanged: false })
+    if (this.state.ModelType.value === Number(newValue.value)) {
+      this.setState({ isDataChanged: true, DropdownNotChanged: true })
+    }
+    else {
+      this.setState({ isDataChanged: false, DropdownNotChanged: false })
+    }
   };
 
   /**
@@ -279,7 +284,7 @@ class AddProfit extends Component {
    */
   handlePlant = (e) => {
     this.setState({ selectedPlants: e })
-    this.setState({ DropdownChanged: false })
+    this.setState({ DropdownNotChanged: false })
   }
   handleSinglePlant = (newValue) => {
     this.setState({ singlePlantSelected: newValue })
@@ -354,7 +359,12 @@ class AddProfit extends Component {
         isHideRM: false,
       })
     }
-    this.setState({ DropdownChanged: false, isDataChanged: false })
+    if (this.state.profitAppli.value === newValue.value) {
+      this.setState({ isDataChanged: true, DropdownNotChanged: true })
+    }
+    else {
+      this.setState({ isDataChanged: false, DropdownNotChanged: false })
+    }
   };
 
   /**
@@ -679,7 +689,7 @@ class AddProfit extends Component {
   */
   onSubmit = debounce((values) => {
     const { IsVendor, ModelType, costingTypeId, vendorName, client, selectedPlants, profitAppli, remarks, ProfitID,
-      isRM, isCC, isBOP, isProfitPercent, isEditFlag, files, singlePlantSelected, effectiveDate, DataToChange, DropdownChanged, uploadAttachements } = this.state;
+      isRM, isCC, isBOP, isProfitPercent, isEditFlag, files, singlePlantSelected, effectiveDate, DataToChange, DropdownNotChanged, uploadAttachements } = this.state;
     const userDetail = userDetails()
     const userDetailsProfit = JSON.parse(localStorage.getItem('userDetail'))
     let plantArray = []
@@ -727,7 +737,7 @@ class AddProfit extends Component {
       }
 
       if (
-        DropdownChanged && Number(DataToChange.ProfitBOPPercentage) === Number(values.ProfitBOPPercentage) && Number(DataToChange.ProfitMachiningCCPercentage) === Number(values.ProfitMachiningCCPercentage)
+        DropdownNotChanged && Number(DataToChange.ProfitBOPPercentage) === Number(values.ProfitBOPPercentage) && Number(DataToChange.ProfitMachiningCCPercentage) === Number(values.ProfitMachiningCCPercentage)
         && Number(DataToChange.ProfitPercentage) === Number(values.ProfitPercentage) && Number(DataToChange.ProfitRMPercentage) === Number(values.ProfitRMPercentage)
         && String(DataToChange.Remark) === String(values.Remark) && uploadAttachements) {
 
