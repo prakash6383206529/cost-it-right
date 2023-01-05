@@ -47,7 +47,7 @@ function RMImportListing(props) {
   const [isBulkUpload, setisBulkUpload] = useState(false);
   const [gridApi, setgridApi] = useState(null);   // DONT DELETE THIS STATE , IT IS USED BY AG GRID
   const [gridColumnApi, setgridColumnApi] = useState(null);   // DONT DELETE THIS STATE , IT IS USED BY AG GRID
-  const [loader, setloader] = useState(false);
+  const [loader, setloader] = useState(true);
   const [isFinalLevelUser, setIsFinalLevelUser] = useState(false)
   const dispatch = useDispatch();
   const rmImportDataList = useSelector((state) => state.material.rmImportDataList);
@@ -173,23 +173,7 @@ function RMImportListing(props) {
         setvalue({ min: 0, max: 0 });
       }
     }, 300);
-    if (!props.stopApiCallOnCancel) {
-      if (isSimulation && selectionForListingMasterAPI === 'Combined') {
-        props?.changeSetLoader(true)
-        dispatch(getListingForSimulationCombined(objectForMultipleSimulation, RMIMPORT, (res) => {
-          props?.changeSetLoader(false)
 
-        }))
-
-      } else {
-        if (isSimulation) {
-          props?.changeTokenCheckBox(false)
-        }
-        getDataList(null, null, null, null, null, 0, 0, defaultPageSize, true, floatingFilterData)
-      }
-
-      setvalue({ min: 0, max: 0 });
-    }
   }, [])
 
 

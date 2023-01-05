@@ -53,7 +53,7 @@ class BOPImportListing extends Component {
             rowData: null,
             sideBar: { toolPanels: ['columns'] },
             showData: false,
-            isLoader: false,
+            isLoader: true,
             showPopup: false,
             deletedId: '',
             isFinalApprovar: false,
