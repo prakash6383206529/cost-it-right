@@ -65,7 +65,7 @@ class OperationListing extends Component {
             selectedRowData: [],
             showPopup: false,
             deletedId: '',
-            isLoader: false,
+            isLoader: true,
             isFinalApprovar: false,
             disableFilter: true,
             disableDownload: false,
