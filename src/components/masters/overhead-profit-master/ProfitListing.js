@@ -140,7 +140,6 @@ function ProfitListing(props) {
         if (isPagination === true) {
             setIsLoader(true)
         }
-        dataObj.IsCustomerDataShow = reactLocalStorage.getObject('cbcCostingPermission')
         let obj = { ...dataObj }
         dispatch(getProfitDataList(filterData, skip, take, isPagination, dataObj, (res) => {
             setIsLoader(false)
@@ -395,7 +394,7 @@ function ProfitListing(props) {
 
 
     const closePopUp = () => {
-        showPopup(false)
+        setShowPopup(false)
     }
 
 
