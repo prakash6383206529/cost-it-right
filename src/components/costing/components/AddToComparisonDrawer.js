@@ -506,8 +506,8 @@ function AddToComparisonDrawer(props) {
           obj.customerName = dataFromAPI?.CustomerName ? dataFromAPI?.CustomerName : ''
           obj.customerCode = dataFromAPI?.CustomerCode ? dataFromAPI?.CustomerCode : ''
           obj.customer = dataFromAPI?.Customer ? dataFromAPI?.Customer : ''
-          obj.plantExcel = dataFromAPI.CostingTypeId === ZBCTypeId ? `${dataFromAPI.PlantName} (${dataFromAPI.PlantCode})` : `${dataFromAPI.DestinationPlantName} (${dataFromAPI.DestinationPlantCode})`
-
+          obj.plantExcel = dataFromAPI.CostingTypeId === ZBCTypeId ? `${dataFromAPI.PlantName}` : `${dataFromAPI.DestinationPlantName}`
+          obj.vendorExcel = dataFromAPI.VendorName ? `${dataFromAPI.VendorName} (${dataFromAPI.VendorCode})` : ''
           // FOR MULTIPLE TECHNOLOGY COSTING SUMMARY DATA
           obj.netChildPartsCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetChildPartsCost ? dataFromAPI?.CostingPartDetails?.NetChildPartsCost : 0
           obj.netOperationCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetOperationCost ? dataFromAPI?.CostingPartDetails?.NetOperationCost : 0
