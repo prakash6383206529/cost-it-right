@@ -40,6 +40,7 @@ import {
   SET_OVERHEAD_PROFIT_ERRORS,
   SET_TOOLS_ERRORS,
   SET_DISCOUNT_ERRORS,
+  SET_SURFACE_COST_FOR_REJECTION_DATA,
 } from '../../../config/constants'
 import { apiErrors } from '../../../helper/util'
 import { MESSAGES } from '../../../config/message'
@@ -2370,6 +2371,20 @@ export function saveAssemblyNumber(assemblyNumber) {
     })
   }
 }
+
+/**
+ * @method setSurfaceCostInOverheadProfitRejection
+ * @description SET SURFACE TREATMENT COST FOR REJECTION
+ */
+export function setSurfaceCostInOverheadProfitRejection(IsIncluded, callback) {
+  return (dispatch) => {
+    dispatch({
+      type: SET_SURFACE_COST_FOR_REJECTION_DATA,
+      payload: IsIncluded,
+    });
+    callback();
+  }
+};
 
 /**
  * @method createCosting
