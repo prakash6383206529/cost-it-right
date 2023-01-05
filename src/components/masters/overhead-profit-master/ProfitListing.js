@@ -394,7 +394,7 @@ function ProfitListing(props) {
 
 
     const closePopUp = () => {
-        showPopup(false)
+        setShowPopup(false)
     }
 
 
