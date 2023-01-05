@@ -509,7 +509,6 @@ function TabDiscountOther(props) {
     setValue('NetPOPriceOtherCurrency', 0)
     setNetPoPriceCurrencyState(0)
     setShowWarning(false)
-    console.log('ccccc');
     dispatch(isDiscountDataChange(true))
   }
 
