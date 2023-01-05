@@ -1059,7 +1059,7 @@ function RunSimulationDrawer(props) {
                                                 </Col>
                                                 <Col md="12" className="mt-n2 warning-text-container">
                                                     <div className="warning-text ml-n3">
-                                                        <WarningMessage dClass="mr-3 " message={"Unselected norms won't be applied in future revisions"} />
+                                                        <WarningMessage dClass="mr-3 mt-4" message={"Unselected norms won't be applied in future revisions"} />
                                                     </div>
                                                 </Col>
                                             </Row>

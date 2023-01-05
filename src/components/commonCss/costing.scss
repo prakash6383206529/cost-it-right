@@ -192,6 +192,12 @@
 }
 
 .handling-charge {
+  div {
+    &:first-child {
+      width: auto;
+    }
+  }
+
   align-items: center;
   min-height: 85px;
 

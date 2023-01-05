@@ -3163,7 +3163,7 @@ button:disabled,
   &:hover,
   &:focus,
   &:active:focus {
-    background-color: #1d59af !important;
+    background-color: $primaryhoverColor !important;
     color: #fff !important;
   }
 }
@@ -7030,6 +7030,7 @@ body {
 
   .paging-container {
     margin-top: 0 !important;
+    position: relative !important;
   }
 }
 
@@ -8313,7 +8314,7 @@ body {
   .input-group-prepend {
     position: absolute;
     right: 2px;
-    top: 1px;
+    top: 24%;
     min-height: 38px;
     z-index: 10;
 
