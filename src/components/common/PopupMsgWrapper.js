@@ -4,8 +4,8 @@ import confirmImg from '../../assests/images/confirm.svg';
 
 
 function PopupMsgWrapper(props) {
-  function confirmHandler() {
-    props.confirmPopup()
+  function confirmHandler(e) {
+    props.confirmPopup(e)
     setTimeout(() => {
       document.querySelector('body').removeAttribute('style')
     }, 200);
@@ -30,7 +30,7 @@ function PopupMsgWrapper(props) {
       <ModalFooter>
         <Button
           color="primary"
-          onClick={confirmHandler}
+          onClick={(e) => confirmHandler(e)}
           className="save-btn"
           disabled={props?.disablePopup}
         >
