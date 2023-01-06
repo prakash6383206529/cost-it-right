@@ -7,7 +7,7 @@ import { AsyncSearchableSelectHookForm, NumberFieldHookForm, SearchableSelectHoo
 import { getVendorWithVendorCodeSelectList, getReporterList, fetchPlantDataAPI } from '../.././actions/Common';
 import { getCostingSpecificTechnology, getPartSelectListByTechnology, } from '../costing/actions/Costing'
 import { checkForDecimalAndNull, getConfigurationKey, loggedInUserId } from '../.././helper';
-import { postiveNumber, maxLength10, nonZero } from '../.././helper/validation'
+import { postiveNumber, maxLength10, nonZero, checkForNull } from '../.././helper/validation'
 import { EMPTY_DATA, FILE_URL, searchCount } from '../.././config/constants';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
@@ -27,6 +27,7 @@ import { autoCompleteDropdown, autoCompleteDropdownPart } from '../common/Common
 import BulkUpload from '../massUpload/BulkUpload';
 import _ from 'lodash';
 import { getPartSelectListWtihRevNo } from '../masters/actions/Volume';
+import { LOGISTICS } from '../../config/masterData';
 
 const gridOptions = {};
 
@@ -64,6 +65,7 @@ function AddRfq(props) {
     const [partNoDisable, setPartNoDisable] = useState(true)
     const [attachmentLoader, setAttachmentLoader] = useState(false)
     const [partName, setPartName] = useState(false)
+    const [technology, setTechnology] = useState({})
     const technologySelectList = useSelector((state) => state.costing.costingSpecifiTechnology)
     const partSelectListByTechnology = useSelector(state => state.costing.partSelectListByTechnology)
     const dispatch = useDispatch()
@@ -525,7 +527,7 @@ function AddRfq(props) {
         obj.Quantity = Number(getValues('annualForecastQuantity'))
         obj.PartNumber = getValues('partNumber')?.RevisionNumber ? getValues('partNumber')?.label + ' (' + getValues('partNumber')?.RevisionNumber + ')'
             : getValues('partNumber')?.label
-        obj.technology = getValues('technology')
+        obj.technology = technology
 
         if (errors.annualForecastQuantity) {
             return false;
@@ -616,6 +618,7 @@ function AddRfq(props) {
             //     setInputLoader(false)
             setPartNoDisable(false)
             setValue('partNo', "")
+            setTechnology(newValue)
             // }))
 
         }
@@ -659,7 +662,7 @@ function AddRfq(props) {
 
         const resultInput = inputValue.slice(0, searchCount)
         if (inputValue?.length >= searchCount && partName !== resultInput) {
-            const res = await getPartSelectListWtihRevNo(resultInput, getValues('technology').value)
+            const res = await getPartSelectListWtihRevNo(resultInput, technology.value)
             setPartName(resultInput)
             let partDataAPI = res?.data?.DataList
             if (inputValue) {
@@ -817,7 +820,7 @@ function AddRfq(props) {
                                                 <div className={''}></div>
                                                 RESET
                                             </button>
-                                            <button
+                                            {(checkForNull(technology?.value) === LOGISTICS) && <button
                                                 type="button"
                                                 className={"user-btn "}
                                                 onClick={bulkToggle}
@@ -825,7 +828,7 @@ function AddRfq(props) {
                                                 disabled={partNoDisable}
                                             >
                                                 <div className={"upload mr-0"}></div>
-                                            </button>
+                                            </button>}
                                         </Col>
                                     </Row>
                                     <div>
@@ -1110,7 +1113,7 @@ function AddRfq(props) {
                                             fileName={"ADDRFQ"}
                                             messageLabel={"ADDRFQ"}
                                             anchor={"right"}
-                                            technologyId={getValues('technology')}
+                                            technologyId={technology}
                                         // isFinalApprovar={isFinalLevelUser}
                                         />
                                     )
