@@ -27,7 +27,7 @@ import { autoCompleteDropdown, autoCompleteDropdownPart } from '../common/Common
 import BulkUpload from '../massUpload/BulkUpload';
 import _ from 'lodash';
 import { getPartSelectListWtihRevNo } from '../masters/actions/Volume';
-import { LOGISTICS } from '../../config/masterData';
+import { LOGISTICS, REMARKMAXLENGTH } from '../../config/masterData';
 
 const gridOptions = {};
 
@@ -986,10 +986,7 @@ function AddRfq(props) {
                                                 control={control}
                                                 rules={{
                                                     required: true,
-                                                    maxLength: {
-                                                        value: 256,
-                                                        message: "Remark should be less than 256 words"
-                                                    },
+                                                    maxLength: REMARKMAXLENGTH,
                                                 }}
                                                 register={register}
                                                 //defaultValue={DestinationPlant.length !== 0 ? DestinationPlant : ""}
