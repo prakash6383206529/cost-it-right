@@ -278,9 +278,6 @@ class ExchangeRateListing extends Component {
         params.columnApi.getAllColumns().forEach(function (column) {
             allColumnIds.push(column.colId);
         });
-
-        window.screen.width >= 1366 && params.api.sizeColumnsToFit()
-
     };
 
     onPageSizeChanged = (newPageSize) => {
@@ -449,6 +446,9 @@ class ExchangeRateListing extends Component {
                                     frameworkComponents={this.frameworkComponents}
                                     suppressRowClickSelection={true}
                                 >
+                                    <AgGridColumn field="CostingHead" headerName="Costing Head" ></AgGridColumn>
+                                    <AgGridColumn field="vendorExcel" headerName="Vendor (Code)" ></AgGridColumn>
+                                    <AgGridColumn field="customerExcel" headerName="Customer (Code)" ></AgGridColumn>
                                     <AgGridColumn field="Currency" headerName="Currency" minWidth={135}></AgGridColumn>
                                     <AgGridColumn suppressSizeToFit="true" field="CurrencyExchangeRate" headerName="Exchange Rate (INR)" minWidth={160} cellRenderer={'commonCostFormatter'}></AgGridColumn>
                                     <AgGridColumn field="BankRate" headerName="Bank Rate (INR)" minWidth={150} cellRenderer={'commonCostFormatter'}></AgGridColumn>
