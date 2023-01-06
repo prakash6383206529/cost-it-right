@@ -1619,65 +1619,63 @@ function UserRegistration(props) {
                     </div>
                       :
                       <>
-                        <Row className="mx-0 w-100 mt-5">
-                          <Col md="12">
-                            <HeaderTitle
-                              title={'Additional Details:'}
-                              customClass={'Personal-Details'} />
-                          </Col>
-                          <Col md="3">
-                            <div className="Phone phoneNumber">
-                              <AsyncSearchableSelectHookForm
-                                name="Vendor"
-                                type="text"
-                                label="Vendor (Code)"
-                                errors={errors.Vendor}
-                                Controller={Controller}
-                                control={control}
-                                register={register}
-                                mandatory={true}
-                                rules={{
-                                  required: true,
-                                }}
-                                disabled={isEditFlag ? true : false}
-                                //component={searchableSelect}
-                                placeholder={'Select Vendor'}
-                                //onKeyUp={(e) => this.changeItemDesc(e)}
-                                validate={(role == null || role.length === 0) ? [required] : []}
-                                required={true}
-                                handleChange={vendorHandler}
-                                asyncOptions={vendorFilterList}
-                                NoOptionMessage={"Enter 3 characters to show data"}
-                              />
-                            </div>
-                          </Col>
-                          <Col md="3">
-                            <div className="phoneNumber pl-0">
-                              <SearchableSelectHookForm
-                                name="Reporter"
-                                type="text"
-                                label={`Reporter`}
+                        <Col md="12" className="mt-4">
+                          <HeaderTitle
+                            title={'Additional Details:'}
+                            customClass={'Personal-Details'} />
+                        </Col>
+                        <Col md="3">
+                          <div className="Phone phoneNumber">
+                            <AsyncSearchableSelectHookForm
+                              name="Vendor"
+                              type="text"
+                              label="Vendor (Code)"
+                              errors={errors.Vendor}
+                              Controller={Controller}
+                              control={control}
+                              register={register}
+                              mandatory={true}
+                              rules={{
+                                required: true,
+                              }}
+                              disabled={isEditFlag ? true : false}
+                              //component={searchableSelect}
+                              placeholder={'Select Vendor'}
+                              //onKeyUp={(e) => this.changeItemDesc(e)}
+                              validate={(role == null || role.length === 0) ? [required] : []}
+                              required={true}
+                              handleChange={vendorHandler}
+                              asyncOptions={vendorFilterList}
+                              NoOptionMessage={"Enter 3 characters to show data"}
+                            />
+                          </div>
+                        </Col>
+                        <Col md="3">
+                          <div className="phoneNumber pl-0">
+                            <SearchableSelectHookForm
+                              name="Reporter"
+                              type="text"
+                              label={`Reporter`}
 
-                                errors={errors.Reporter}
-                                Controller={Controller}
-                                control={control}
-                                register={register}
-                                mandatory={true}
-                                rules={{
-                                  required: true,
-                                }}
-                                component={searchableSelect}
-                                placeholder={'Select Reporter'}
-                                options={searchableSelectType('reporter')}
-                                //onKeyUp={(e) => this.changeItemDesc(e)}
-                                //validate={(department == null || department.length === 0) ? [required] : []}
-                                required={true}
-                                handleChange={handleReporterChange}
-                              //valueDescription={department}
-                              />
-                            </div>
-                          </Col>
-                        </Row>
+                              errors={errors.Reporter}
+                              Controller={Controller}
+                              control={control}
+                              register={register}
+                              mandatory={true}
+                              rules={{
+                                required: true,
+                              }}
+                              component={searchableSelect}
+                              placeholder={'Select Reporter'}
+                              options={searchableSelectType('reporter')}
+                              //onKeyUp={(e) => this.changeItemDesc(e)}
+                              //validate={(department == null || department.length === 0) ? [required] : []}
+                              required={true}
+                              handleChange={handleReporterChange}
+                            //valueDescription={department}
+                            />
+                          </div>
+                        </Col>
                       </>
                     }
                   </div>
