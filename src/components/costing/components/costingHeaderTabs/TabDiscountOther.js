@@ -1155,7 +1155,7 @@ function TabDiscountOther(props) {
                         Controller={Controller}
                         control={control}
                         register={register}
-                        rows={6}
+                        rowHeight={6}
                         mandatory={false}
                         rules={{
                           validate: { checkWhiteSpaces },

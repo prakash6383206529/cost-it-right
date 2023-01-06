@@ -717,7 +717,7 @@ function AddRfq(props) {
                             <div >
                                 <form onSubmit={handleSubmit(onSubmit)}>
                                     <Row className="part-detail-wrapper">
-                                        <Col md="4">
+                                        <Col md="3">
                                             <SearchableSelectHookForm
                                                 label={"Technology"}
                                                 name={"technology"}
@@ -735,7 +735,7 @@ function AddRfq(props) {
                                                 isLoading={VendorLoaderObj}
                                             />
                                         </Col>
-                                        <Col md="4">
+                                        <Col md="3">
                                             <SearchableSelectHookForm
                                                 label={"Plant (Code)"}
                                                 name={"plant"}
@@ -757,7 +757,7 @@ function AddRfq(props) {
                                     </Row>
                                     <HeaderTitle title={'Part:'} />
                                     <Row className="part-detail-wrapper">
-                                        <Col md="4">
+                                        <Col md="3">
                                             <AsyncSearchableSelectHookForm
                                                 label={"Part No"}
                                                 name={"partNumber"}
@@ -778,7 +778,7 @@ function AddRfq(props) {
                                                 NoOptionMessage={"Enter 3 characters to show data"}
                                             />
                                         </Col>
-                                        <Col md="4">
+                                        <Col md="3">
                                             <NumberFieldHookForm
                                                 label="Annual Forecast Quantity"
                                                 name={"annualForecastQuantity"}
@@ -798,10 +798,10 @@ function AddRfq(props) {
                                                 customClassName={'withBorder'}
                                             />
                                         </Col>
-                                        <Col md="4" className='d-flex align-items-center pb-1'>
+                                        <Col md="3" className='d-flex align-items-center pb-1'>
                                             <button
                                                 type="button"
-                                                className={'user-btn pull-left ml-2'}
+                                                className={'user-btn pull-left'}
                                                 onClick={() => addRowPartNoTable()}
                                                 disabled={false}
                                             >
@@ -811,7 +811,7 @@ function AddRfq(props) {
                                                 onClick={onResetPartNoTable} // Need to change this cancel functionality
                                                 type="submit"
                                                 value="CANCEL"
-                                                className="reset ml-10 ml-2 mr5"
+                                                className="reset ml-2 mr5"
                                                 disabled={false}
                                             >
                                                 <div className={''}></div>
@@ -869,7 +869,7 @@ function AddRfq(props) {
 
                                     <HeaderTitle title={'Vendor:'} customClass="mt-4" />
                                     <Row className="mt-1 part-detail-wrapper">
-                                        <Col md="4">
+                                        <Col md="3">
                                             <AsyncSearchableSelectHookForm
                                                 label={"Vendor (Code)"}
                                                 name={"vendor"}
@@ -892,7 +892,7 @@ function AddRfq(props) {
                                         </Col>
 
 
-                                        <Col md="4">
+                                        <Col md="3">
                                             <SearchableSelectHookForm
                                                 label={"Contact Person"}
                                                 name={"contactPerson"}
@@ -911,10 +911,10 @@ function AddRfq(props) {
                                                 isLoading={plantLoaderObj}
                                             />
                                         </Col>
-                                        <Col md="4" className='d-flex align-items-center pb-1'>
+                                        <Col md="3" className='d-flex align-items-center pb-1'>
                                             <button
                                                 type="button"
-                                                className={'user-btn pull-left ml-2'}
+                                                className={'user-btn pull-left'}
                                                 onClick={() => addRowVendorTable()}
                                                 disabled={isViewFlag}
                                             >
@@ -925,7 +925,7 @@ function AddRfq(props) {
                                                 onClick={onResetVendorTable} // Need to change this cancel functionality
                                                 type="submit"
                                                 value="CANCEL"
-                                                className="reset ml-10 ml-2"
+                                                className="reset ml-2"
                                                 disabled={isViewFlag}
                                             >
                                                 <div className={''}></div>
@@ -1076,14 +1076,14 @@ function AddRfq(props) {
                                         <div className="col-sm-12 text-right">
                                             <button
                                                 type={"button"}
-                                                className="reset mr15 cancel-btn"
+                                                className="reset mr-2 cancel-btn"
                                                 onClick={cancel}
                                             >
                                                 <div className={"cancel-icon"}></div>
                                                 {"Cancel"}
                                             </button>
 
-                                            <button type="button" className="submit-button save-btn mr15"
+                                            <button type="button" className="submit-button save-btn mr-2"
                                                 onClick={handleSubmit(onSubmit)}
                                                 disabled={isViewFlag}>
                                                 <div className={"save-icon"}></div>
@@ -1093,7 +1093,7 @@ function AddRfq(props) {
                                             <button type="button" className="submit-button save-btn"
                                                 onClick={handleSubmit(onSubmit)}
                                                 disabled={isViewFlag}>
-                                                <div className={"upload"}></div>
+                                                <div className="send-for-approval mr-1"></div>
                                                 {"Send"}
                                             </button>
                                         </div>
