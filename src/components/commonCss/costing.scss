@@ -394,14 +394,22 @@
   }
 }
 
+.process-quatity-tooltip {
+  @extend .weight-of-sheet;
+
+  .tooltip-inner {
+    text-align: left;
+  }
+}
+
 .sticky-headers {
   position: sticky;
-  top: 182px;
+  top: 190px;
   z-index: 1;
   background-color: $agGridBorder;
 
   @media screen and (min-height:768px) and (max-height: 1092px) {
-    top: 165px;
+    top: 173px;
   }
 }
 
@@ -424,4 +432,8 @@
       top: 1px;
     }
   }
+}
+
+.float-unset {
+  float: unset;
 }
