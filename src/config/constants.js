@@ -1672,6 +1672,9 @@ export const LINKED = 'Linked'
 export const REJECTED_BY_SYSTEM = 'RejectedBySystem'
 export const UNDER_APPROVAL = 'Under Approval'
 export const CANCELLED = 'Cancelled'
+export const UNDER_REVISION = 'UnderRevision'
+export const RECEIVED = 'Received'
+export const SUBMITTED = 'Submitted'
 
 // MASTER APPROVAL STATUS ID
 export const APPROVED_STATUS = '3,5'
