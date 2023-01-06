@@ -244,12 +244,13 @@ export const SearchableSelectHookForm = (field) => {
 @desc: Render textarea input
 */
 export const TextAreaHookForm = (field) => {
-  const { label, Controller, control, register, name, defaultValue, mandatory, errors, rules, handleChange } = field
+  const { label, Controller, control, register, name, defaultValue, mandatory, errors, rules, handleChange, rowHeight } = field
 
   //const className = `form-group inputbox ${field.customClassName ? field.customClassName : ""} ${touched && error ? "has-danger" : ""}`;
   const className = `form-group inputbox ${field.customClassName ? field.customClassName : ""}`;
-  const InputClassName = `form-control ${field.className ? field.className : ""}`;
+  const InputClassName = `form-control text-area ${field.className ? field.className : ""}`;
   const isDisabled = field.disabled === true ? true : false;
+  let minHeight = rowHeight ? rowHeight : 4
   return (
     <>
       <div className={className}>
@@ -273,6 +274,8 @@ export const TextAreaHookForm = (field) => {
                 disabled={isDisabled}
                 value={value}
                 autoComplete={'off'}
+                rows={rowHeight && rowHeight}
+                style={{ minHeight: `${minHeight * 25}px` }}
                 onChange={(e) => {
                   handleChange(e);
                   onChange(e)

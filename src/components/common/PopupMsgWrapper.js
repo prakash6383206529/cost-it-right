@@ -4,13 +4,20 @@ import confirmImg from '../../assests/images/confirm.svg';
 
 
 function PopupMsgWrapper(props) {
+  function confirmHandler() {
+    props.confirmPopup()
+    setTimeout(() => {
+      document.querySelector('body').removeAttribute('style')
+    }, 200);
+
+  }
   return (
     <Modal
       fade={false}
       toggle={props.closePopUp}
       isOpen={props.isOpen}
       className={`popup-container ${props.customClass}`}
-    > 
+    >
       <ModalHeader toggle={props.closePopUp} className="pl-5">
         {props.header ? props.header : 'Confirm'}
       </ModalHeader>
@@ -23,7 +30,7 @@ function PopupMsgWrapper(props) {
       <ModalFooter>
         <Button
           color="primary"
-          onClick={props.confirmPopup}
+          onClick={confirmHandler}
           className="save-btn"
           disabled={props?.disablePopup}
         >
