@@ -34,7 +34,11 @@
 
   .col-md-#{$i} {
     flex: 0 0 $i * 8.33%;
-    width: 100%;
+    width: $i * 8.33%;
+  }
+
+  .mt#{$i} {
+    margin-right: #{$i}px;
   }
 }
 
@@ -66,9 +70,9 @@ table {
   }
 }
 
-table {
-  th {
-    border: 0 solid !important;
+.nav-item {
+  a.nav-link {
+    color: $headingblack;
   }
 }
 

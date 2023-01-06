@@ -286,7 +286,6 @@ function TransportationCost(props) {
                       },
                     }}
                     defaultValue={''}
-                    className="mtn1"
                     customClassName={'withBorder'}
                     handleChange={(e) => {
                       e.preventDefault()

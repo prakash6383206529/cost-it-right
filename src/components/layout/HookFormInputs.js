@@ -248,8 +248,9 @@ export const TextAreaHookForm = (field) => {
 
   //const className = `form-group inputbox ${field.customClassName ? field.customClassName : ""} ${touched && error ? "has-danger" : ""}`;
   const className = `form-group inputbox ${field.customClassName ? field.customClassName : ""}`;
-  const InputClassName = `form-control ${field.className ? field.className : ""}`;
+  const InputClassName = `form-control text-area ${field.className ? field.className : ""}`;
   const isDisabled = field.disabled === true ? true : false;
+
   return (
     <>
       <div className={className}>
