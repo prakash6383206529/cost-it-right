@@ -392,7 +392,7 @@ class AddIndivisualProduct extends Component {
                                                             name={"ProductName"}
                                                             type="text"
                                                             placeholder={isEditFlag ? '-' : "Enter"}
-                                                            validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength20]}
+                                                            validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80]}
                                                             component={renderText}
                                                             required={true}
                                                             className=""

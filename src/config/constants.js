@@ -1456,6 +1456,7 @@ export const SELECTED_IDS_OF_OPERATION = 'SELECTED_IDS_OF_OPERATION'
 export const SELECTED_PROCESS_AND_GROUPCODE = 'SELECTED_PROCESS_AND_GROUPCODE'
 export const SET_PROCESS_ID = 'SET_PROCESS_ID'
 export const SET_PROCESSGROUP_ID = 'SET_PROCESSGROUP_ID'
+export const SET_SURFACE_COST_FOR_REJECTION_DATA = 'SET_SURFACE_COST_FOR_REJECTION_DATA';
 export const SET_OVERHEAD_PROFIT_ERRORS = 'SET_OVERHEAD_PROFIT_ERRORS'
 export const SET_TOOLS_ERRORS = 'SET_TOOLS_ERRORS'
 export const SET_DISCOUNT_ERRORS = 'SET_DISCOUNT_ERRORS'
@@ -1822,7 +1823,7 @@ export const VIEW_COSTING_DATA = {
   partNumber: 'Part Number',
   partName: 'Part Name',
   RevisionNumber: 'Revision Number',
-  vendorName: 'Vendor (Code)',
+  vendorExcel: 'Vendor (Code)',
   customer: 'Customer (Code)',
   plantExcel: 'Plant (Code)',
   status: 'Status',
@@ -2150,4 +2151,4 @@ export const KEYRFQ = "UAGSqTBCbZ8JqHJl"
 export const IVRFQ = "8vFNmRQEl91nOtrM"
 
 //VERSION 
-export const VERSION = "V2.1.39";
+export const VERSION = "V2.1.42";
