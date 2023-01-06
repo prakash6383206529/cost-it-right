@@ -227,7 +227,7 @@ function SurfaceTreatmentCost(props) {
                 <thead>
                   <tr>
                     <th>{`Operation Name`}</th>
-                    <th>{`Surface Area`}</th>
+                    <th>{`Quantity`}</th>
                     <th>{`UOM`}</th>
                     <th>{`Rate/UOM`}</th>
                     {initialConfiguration &&

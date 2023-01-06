@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { reduxForm } from "redux-form";
-import { Col, } from 'reactstrap';
+import { Col, Row } from 'reactstrap';
 import $ from "jquery";
 import { focusOnError, } from "../../layout/FormInputs";
 import Toaster from '../../common/Toaster';
@@ -16,7 +16,6 @@ import { checkPermission, searchNocontentFilter, showTitleForActiveToggle } from
 import { loggedInUserId } from '../../../helper/auth';
 import { getLeftMenu, } from '../../../actions/auth/AuthActions';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
-import Row from 'reactstrap/lib/Row';
 import LoaderCustom from '../../common/LoaderCustom';
 import ReactExport from 'react-export-excel';
 import { REASON_DOWNLOAD_EXCEl } from '../../../config/masterData';
