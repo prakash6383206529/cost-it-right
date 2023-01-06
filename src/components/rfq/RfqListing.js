@@ -2,7 +2,7 @@ import React from 'react';
 import { useState, useEffect, } from 'react';
 import { useDispatch, useSelector } from 'react-redux'
 import { Row, Col, } from 'reactstrap';
-import { APPROVED, CANCELLED, DRAFT, EMPTY_DATA, FILE_URL, RFQ, UNDER_APPROVAL, } from '../.././config/constants'
+import { APPROVED, CANCELLED, DRAFT, EMPTY_DATA, FILE_URL, RECEIVED, RFQ, SUBMITTED, UNDER_APPROVAL, UNDER_REVISION, } from '../.././config/constants'
 import NoContentFound from '.././common/NoContentFound';
 import { MESSAGES } from '../.././config/message';
 import Toaster from '.././common/Toaster';
@@ -18,6 +18,7 @@ import { getQuotationList, cancelRfqQuotation, sendReminderForQuotation } from '
 import ViewRfq from './ViewRfq';
 import AddRfq from './AddRfq';
 import { checkPermission } from '../../helper';
+import TooltipCustom from '../common/Tooltip';
 const gridOptions = {};
 
 
@@ -228,7 +229,13 @@ function RfqListing(props) {
     const statusFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        return <div className={cell}>{row.Status}</div>
+        let tempStatus = '-'
+        if (row?.Status === APPROVED || row?.Status === UNDER_REVISION || row?.Status === RECEIVED || row?.Status === SUBMITTED) {
+            tempStatus = row?.Status + ' (' + row?.CostingReceived + '/' + row?.TotalCostingCount + ')'
+        } else {
+            tempStatus = row?.Status
+        }
+        return <div id={"status"} className={cell}>{tempStatus}</div>
     }
 
     const attachmentFormatter = (props) => {
