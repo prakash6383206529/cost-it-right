@@ -130,7 +130,6 @@ function OverheadListing(props) {
         if (isPagination === true) {
             setIsLoader(true)
         }
-        dataObj.IsCustomerDataShow = reactLocalStorage.getObject('cbcCostingPermission')
         dispatch(getOverheadDataList(filterData, skip, take, isPagination, dataObj, (res) => {
             setIsLoader(false)
             if (res && res.status === 204) {

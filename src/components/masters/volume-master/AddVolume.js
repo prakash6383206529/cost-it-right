@@ -22,7 +22,7 @@ import AsyncSelect from 'react-select/async';
 import { onFocus } from '../../../helper'
 import { getClientSelectList, } from '../actions/Client';
 import { reactLocalStorage } from 'reactjs-localstorage'
-import { autoCompleteDropdown } from '../../common/CommonFunctions'
+import { autoCompleteDropdown, autoCompleteDropdownPart } from '../../common/CommonFunctions'
 import PopupMsgWrapper from '../../common/PopupMsgWrapper'
 
 const gridOptions = {};
@@ -443,7 +443,7 @@ class AddVolume extends Component {
               selectedPlants: plantArray,
               vendorName: Data.VendorName && Data.VendorName !== undefined ? { label: `${Data.VendorName}`, value: Data.VendorId } : [],
               year: yearObj && yearObj !== undefined ? { label: yearObj.Text, value: yearObj.Value } : [],
-              part: Data?.PartId ? { label: Data?.PartNumber, value: Data?.PartId } : [],
+              part: Data?.PartId ? { label: Data?.PartNumber, value: Data?.PartId, RevisionNumber: Data?.RevisionNumber } : [],
               destinationPlant: Data.DestinationPlant !== undefined ? { label: Data.DestinationPlant, value: Data.DestinationPlantId } : [],
               tableData: tableArray.sort((a, b) => a.Sequence - b.Sequence),
               client: Data.CustomerName !== undefined ? { label: Data.CustomerName, value: Data.CustomerId } : [],
@@ -614,6 +614,7 @@ class AddVolume extends Component {
         VendorId: costingTypeId === VBCTypeId ? vendorName.value : userDetail.ZBCSupplierInfo.VendorId,
         PartId: part.value,
         PartNumber: part.label,
+        RevisionNumber: part.RevisionNumber,
         OldPartNumber: '',
         Year: year.label,
         VolumeApprovedDetails: approvedArray,
@@ -680,9 +681,10 @@ class AddVolume extends Component {
   render() {
     const { handleSubmit, } = this.props;
     const { isEditFlag, isOpenVendor, setDisable, costingTypeId } = this.state;
+
     const vendorFilterList = async (inputValue) => {
       const { vendorName } = this.state
-      const resultInput = inputValue.slice(0, 3)
+      const resultInput = inputValue.slice(0, searchCount)
       if (inputValue?.length >= searchCount && vendorName !== resultInput) {
         this.setState({ inputLoader: true })
         let res
@@ -690,44 +692,37 @@ class AddVolume extends Component {
         this.setState({ inputLoader: false })
         this.setState({ vendorName: resultInput })
         let vendorDataAPI = res?.data?.SelectList
-        reactLocalStorage?.setObject('vendorData', vendorDataAPI)
-        let VendorData = []
         if (inputValue) {
-          VendorData = reactLocalStorage?.getObject('vendorData')
-          return autoCompleteDropdown(inputValue, VendorData)
+          return autoCompleteDropdown(inputValue, vendorDataAPI, false, [], true)
         } else {
-          return VendorData
+          return vendorDataAPI
         }
       }
       else {
         if (inputValue?.length < searchCount) return false
         else {
-          let VendorData = reactLocalStorage?.getObject('vendorData')
+          let VendorData = reactLocalStorage?.getObject('Data')
           if (inputValue) {
-            VendorData = reactLocalStorage?.getObject('vendorData')
-            return autoCompleteDropdown(inputValue, VendorData)
+            return autoCompleteDropdown(inputValue, VendorData, false, [], false)
           } else {
             return VendorData
           }
         }
       }
     };
+
     const partFilterList = async (inputValue) => {
       const { partName } = this.state
-      const resultInput = inputValue.slice(0, 3)
+      const resultInput = inputValue.slice(0, searchCount)
       if (inputValue?.length >= searchCount && partName !== resultInput) {
-        this.setState({ isLoader: true })
         const res = await getPartSelectListWtihRevNo(resultInput)
-        this.setState({ isLoader: false })
+
         this.setState({ partName: resultInput })
-        let partDataAPI = res?.data?.SelectList
-        reactLocalStorage?.setObject('PartData', partDataAPI)
-        let partData = []
+        let partDataAPI = res?.data?.DataList
         if (inputValue) {
-          partData = reactLocalStorage?.getObject('PartData')
-          return autoCompleteDropdown(inputValue, partData)
+          return autoCompleteDropdownPart(inputValue, partDataAPI, false, [], true)
         } else {
-          return partData
+          return partDataAPI
         }
       }
       else {
@@ -735,8 +730,7 @@ class AddVolume extends Component {
         else {
           let partData = reactLocalStorage?.getObject('PartData')
           if (inputValue) {
-            partData = reactLocalStorage?.getObject('PartData')
-            return autoCompleteDropdown(inputValue, partData)
+            return autoCompleteDropdownPart(inputValue, partData, false, [], false)
           } else {
             return partData
           }

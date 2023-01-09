@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector, propTypes } from "redux-form";
 import { Row, Col, Label, } from 'reactstrap';
-import { required, positiveAndDecimalNumber, postiveNumber, maxLength10, checkPercentageValue, decimalLengthThree, } from "../../../helper/validation";
+import { required, positiveAndDecimalNumber, postiveNumber, maxLength10, checkPercentageValue, decimalLengthThree, nonZero, } from "../../../helper/validation";
 import { renderDatePicker, renderMultiSelectField, renderNumberInputField, searchableSelect, } from "../../layout/FormInputs";
 import { updateInterestRate, createInterestRate, getPaymentTermsAppliSelectList, getICCAppliSelectList, getInterestRateData, } from '../actions/InterestRateMaster';
 import { getVendorWithVendorCodeSelectList, getPlantSelectListByType } from '../../../actions/Common';
@@ -39,7 +39,7 @@ class AddInterestRate extends Component {
       InterestRateId: '',
       effectiveDate: '',
       Data: [],
-      DropdownChanged: true,
+      DropdownNotChanged: true,
       updatedObj: {},
       setDisable: false,
       inputLoader: false,
@@ -177,8 +177,11 @@ class AddInterestRate extends Component {
     } else {
       this.setState({ ICCApplicability: [], })
     }
-    if (this.state.isEditFlag) {
-      this.setState({ isDataChanged: false })
+    if (this.state.ICCApplicability.value === newValue.value) {
+      this.setState({ isDataChanged: true, DropdownNotChanged: true })
+    }
+    else {
+      this.setState({ isDataChanged: false, DropdownNotChanged: false })
     }
   };
 
@@ -192,8 +195,11 @@ class AddInterestRate extends Component {
     } else {
       this.setState({ PaymentTermsApplicability: [], })
     }
-    if (this.state.isEditFlag) {
-      this.setState({ isDataChanged: false })
+    if (this.state.PaymentTermsApplicability.value === newValue.value) {
+      this.setState({ isDataChanged: true, DropdownNotChanged: true })
+    }
+    else {
+      this.setState({ isDataChanged: false, DropdownNotChanged: false })
     }
   };
 
@@ -246,7 +252,7 @@ class AddInterestRate extends Component {
   */
   handleEffectiveDateChange = (date) => {
     this.setState({ effectiveDate: DayTime(date).isValid() ? DayTime(date) : '', });
-    this.setState({ DropdownChanged: false })
+    this.setState({ DropdownNotChanged: false })
   };
   /** 
    * @method handlePlant
@@ -254,7 +260,7 @@ class AddInterestRate extends Component {
    */
   handlePlant = (e) => {
     this.setState({ selectedPlants: e })
-    this.setState({ DropdownChanged: false })
+    this.setState({ DropdownNotChanged: false })
   }
   handleSinglePlant = (newValue) => {
     this.setState({ singlePlantSelected: newValue })
@@ -353,7 +359,7 @@ class AddInterestRate extends Component {
   */
 
   onSubmit = debounce((values) => {
-    const { Data, vendorName, costingTypeId, client, ICCApplicability, singlePlantSelected, selectedPlants, PaymentTermsApplicability, InterestRateId, effectiveDate, DropdownChanged } = this.state;
+    const { Data, vendorName, costingTypeId, client, ICCApplicability, singlePlantSelected, selectedPlants, PaymentTermsApplicability, InterestRateId, effectiveDate, DropdownNotChanged } = this.state;
     const userDetail = userDetails()
     const userDetailsInterest = JSON.parse(localStorage.getItem('userDetail'))
     let plantArray = []
@@ -392,7 +398,7 @@ class AddInterestRate extends Component {
       if (Data.ICCApplicability === ICCApplicability.label && Data.ICCPercent === values.ICCPercent &&
         Data.PaymentTermApplicability === PaymentTermsApplicability.label &&
         Data.PaymentTermPercent === values.PaymentTermPercent &&
-        Data.RepaymentPeriod === values.RepaymentPeriod && DropdownChanged) {
+        Data.RepaymentPeriod === values.RepaymentPeriod && DropdownNotChanged) {
 
         this.cancel('cancel')
         return false;
@@ -480,7 +486,7 @@ class AddInterestRate extends Component {
 
     const filterList = async (inputValue) => {
       const { vendorName } = this.state
-      const resultInput = inputValue.slice(0, 3)
+      const resultInput = inputValue.slice(0, searchCount)
       if (inputValue?.length >= searchCount && vendorName !== resultInput) {
         this.setState({ inputLoader: true })
         let res
@@ -488,22 +494,18 @@ class AddInterestRate extends Component {
         this.setState({ inputLoader: false })
         this.setState({ vendorName: resultInput })
         let vendorDataAPI = res?.data?.SelectList
-        reactLocalStorage?.setObject('vendorData', vendorDataAPI)
-        let VendorData = []
         if (inputValue) {
-          VendorData = reactLocalStorage?.getObject('vendorData')
-          return autoCompleteDropdown(inputValue, VendorData)
+          return autoCompleteDropdown(inputValue, vendorDataAPI, false, [], true)
         } else {
-          return VendorData
+          return vendorDataAPI
         }
       }
       else {
         if (inputValue?.length < searchCount) return false
         else {
-          let VendorData = reactLocalStorage?.getObject('vendorData')
+          let VendorData = reactLocalStorage?.getObject('Data')
           if (inputValue) {
-            VendorData = reactLocalStorage?.getObject('vendorData')
-            return autoCompleteDropdown(inputValue, VendorData)
+            return autoCompleteDropdown(inputValue, VendorData, false, [], false)
           } else {
             return VendorData
           }
@@ -705,7 +707,7 @@ class AddInterestRate extends Component {
                             name={"ICCPercent"}
                             type="text"
                             placeholder={isViewMode ? '-' : "Enter"}
-                            validate={[required, positiveAndDecimalNumber, decimalLengthThree]}
+                            validate={[required, positiveAndDecimalNumber, decimalLengthThree, nonZero]}
                             max={100}
                             component={renderNumberInputField}
                             required={true}
@@ -758,7 +760,7 @@ class AddInterestRate extends Component {
                               name={"RepaymentPeriod"}
                               type="text"
                               placeholder={isViewMode ? '-' : "Enter"}
-                              validate={[postiveNumber, maxLength10]}
+                              validate={[postiveNumber, maxLength10, nonZero]}
                               component={renderNumberInputField}
                               required={false}
                               onChange={(event) => this.handleChangeRepaymentPeriod(event.target.value)}
@@ -773,7 +775,7 @@ class AddInterestRate extends Component {
                               name={"PaymentTermPercent"}
                               type="text"
                               placeholder={isViewMode ? '-' : "Enter"}
-                              validate={[positiveAndDecimalNumber, decimalLengthThree]}
+                              validate={[positiveAndDecimalNumber, decimalLengthThree, nonZero]}
                               component={renderNumberInputField}
                               max={100}
                               required={false}

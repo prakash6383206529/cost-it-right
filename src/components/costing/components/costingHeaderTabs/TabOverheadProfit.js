@@ -50,6 +50,7 @@ function TabOverheadProfit(props) {
   }, [OverheadProfitTabData])
 
 
+
   //MANIPULATE TOP HEADER COSTS
   useEffect(() => {
     // CostingViewMode CONDITION IS USED TO AVOID CALCULATION IN VIEWMODE
@@ -594,8 +595,8 @@ function TabOverheadProfit(props) {
                       onChange={onPressIncludeSurfaceTreatmentRejection}
                     />
                   </label>
-                </Col>
-              </Row>
+                </Col >
+              </Row >
 
               <form noValidate className="form" onSubmit={handleSubmit(onSubmit)}              >
                 <Row>
@@ -661,10 +662,10 @@ function TabOverheadProfit(props) {
                   </Col>
                 </Row>
               </form>
-            </div>
-          </Col>
-        </Row>
-      </div>
+            </div >
+          </Col >
+        </Row >
+      </div >
     </>
   );
 };

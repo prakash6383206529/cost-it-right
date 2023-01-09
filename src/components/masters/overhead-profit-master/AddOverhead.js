@@ -61,7 +61,7 @@ class AddOverhead extends Component {
       isHideRM: false,
       isHideCC: false,
       isHideBOP: false,
-      DropdownChanged: true,
+      DropdownNotChanged: true,
       DataToChange: [],
       effectiveDate: '',
       uploadAttachements: true,
@@ -116,7 +116,12 @@ class AddOverhead extends Component {
     } else {
       this.setState({ ModelType: [], })
     }
-    this.setState({ DropdownChanged: false, isDataChanged: false })
+    if (this.state.ModelType.value === Number(newValue.value)) {
+      this.setState({ isDataChanged: true, DropdownNotChanged: true })
+    }
+    else {
+      this.setState({ isDataChanged: false, DropdownNotChanged: false })
+    }
   };
 
   /**
@@ -134,7 +139,7 @@ class AddOverhead extends Component {
   */
   handlePlant = (e) => {
     this.setState({ selectedPlants: e })
-    this.setState({ DropdownChanged: false })
+    this.setState({ DropdownNotChanged: false })
   }
   handleSinglePlant = (newValue) => {
     this.setState({ singlePlantSelected: newValue })
@@ -274,7 +279,7 @@ class AddOverhead extends Component {
     } else {
       this.setState({ vendorName: [] })
     }
-    this.setState({ DropdownChanged: false })
+    this.setState({ DropdownNotChanged: false })
   };
 
   /**
@@ -348,7 +353,12 @@ class AddOverhead extends Component {
         isHideRM: false,
       })
     }
-    this.setState({ DropdownChanged: false, isDataChanged: false })
+    if (this.state.overheadAppli.value === newValue.value) {
+      this.setState({ isDataChanged: true, DropdownNotChanged: true })
+    }
+    else {
+      this.setState({ isDataChanged: false, DropdownNotChanged: false })
+    }
   };
 
   /**
@@ -703,7 +713,7 @@ class AddOverhead extends Component {
   */
   onSubmit = debounce((values) => {
     const { client, costingTypeId, ModelType, vendorName, overheadAppli, selectedPlants, remarks, OverheadID,
-      isRM, isCC, isBOP, isOverheadPercent, singlePlantSelected, isEditFlag, files, effectiveDate, DataToChange, DropdownChanged, uploadAttachements } = this.state;
+      isRM, isCC, isBOP, isOverheadPercent, singlePlantSelected, isEditFlag, files, effectiveDate, DataToChange, DropdownNotChanged, uploadAttachements } = this.state;
     const userDetailsOverhead = JSON.parse(localStorage.getItem('userDetail'))
     let plantArray = []
     if (costingTypeId === VBCTypeId) {
@@ -751,7 +761,7 @@ class AddOverhead extends Component {
       }
 
       if (
-        DropdownChanged && Number(DataToChange.OverheadPercentage) === Number(values.OverheadPercentage) && Number(DataToChange.OverheadRMPercentage) === Number(values.OverheadRMPercentage)
+        DropdownNotChanged && Number(DataToChange.OverheadPercentage) === Number(values.OverheadPercentage) && Number(DataToChange.OverheadRMPercentage) === Number(values.OverheadRMPercentage)
         && Number(DataToChange.OverheadMachiningCCPercentage) === Number(values.OverheadMachiningCCPercentage) && Number(DataToChange.OverheadBOPPercentage) === Number(values.OverheadBOPPercentage)
         && String(DataToChange.Remark) === String(values.Remark) && uploadAttachements) {
         this.cancel('cancel')
@@ -855,7 +865,7 @@ class AddOverhead extends Component {
       isHideOverhead, isHideBOP, isHideRM, isHideCC, isViewMode, setDisable, isDataChanged, costingTypeId } = this.state;
     const filterList = async (inputValue) => {
       const { vendorName } = this.state
-      const resultInput = inputValue.slice(0, 3)
+      const resultInput = inputValue.slice(0, searchCount)
       if (inputValue?.length >= searchCount && vendorName !== resultInput) {
         this.setState({ inputLoader: true })
         let res
@@ -863,22 +873,18 @@ class AddOverhead extends Component {
         this.setState({ inputLoader: false })
         this.setState({ vendorName: resultInput })
         let vendorDataAPI = res?.data?.SelectList
-        reactLocalStorage?.setObject('vendorData', vendorDataAPI)
-        let VendorData = []
         if (inputValue) {
-          VendorData = reactLocalStorage?.getObject('vendorData')
-          return autoCompleteDropdown(inputValue, VendorData)
+          return autoCompleteDropdown(inputValue, vendorDataAPI, false, [], true)
         } else {
-          return VendorData
+          return vendorDataAPI
         }
       }
       else {
         if (inputValue?.length < searchCount) return false
         else {
-          let VendorData = reactLocalStorage?.getObject('vendorData')
+          let VendorData = reactLocalStorage?.getObject('Data')
           if (inputValue) {
-            VendorData = reactLocalStorage?.getObject('vendorData')
-            return autoCompleteDropdown(inputValue, VendorData)
+            return autoCompleteDropdown(inputValue, VendorData, false, [], false)
           } else {
             return VendorData
           }

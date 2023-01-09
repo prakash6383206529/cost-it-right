@@ -10,13 +10,83 @@
 @import "../../../node_modules/ag-grid-community/src/styles/ag-grid.scss";
 @import "../../../node_modules/ag-grid-community/src/styles/ag-theme-material/sass/ag-theme-material-mixin";
 
+@for $i from 0 through 12 {
+  .mr-#{$i} {
+    margin-right: $i * 0.25rem;
+  }
+
+  .ml-#{$i} {
+    margin-left: $i * 0.25rem;
+  }
+
+  .ml-n#{$i} {
+    margin-left: $i * -0.25rem;
+  }
+
+  .mr-n#{$i} {
+    margin-right: $i * -0.25rem;
+  }
+
+  .pr-#{$i} {
+    padding-right: $i * 0.25rem;
+  }
+
+  .pl-#{$i} {
+    padding-left: $i * 0.25rem;
+  }
+
+  .col-md-#{$i} {
+    flex: 0 0 $i * 8.33%;
+    width: $i * 8.33%;
+  }
+
+  .mt#{$i} {
+    margin-right: #{$i}px;
+  }
+}
+
+.float-right {
+  float: right;
+}
+
+.float-left {
+  float: left;
+}
+
+.fa-info-circle {
+  &::before {
+    position: absolute;
+    right: 1px;
+  }
+}
+
+table {
+
+  th,
+  td {
+    .fa-info-circle {
+      &::before {
+        position: static;
+        right: unset;
+      }
+    }
+  }
+}
+
+.nav-item {
+  a.nav-link {
+    color: $headingblack;
+  }
+}
+
 body {
   font-family: "Roboto", sans-serif !important;
   position: relative;
 }
 
 body a {
-  color: $colorPrimary;
+  color: $headingblack;
+  text-decoration: none !important;
 }
 
 ::-moz-placeholder {
@@ -43,6 +113,38 @@ body button {
 
 body a:hover {
   color: $colorgraylighter !important;
+}
+
+%nav-tabs {
+  border-bottom: 1px solid #d9e2f0;
+  margin-top: 1rem;
+
+  a.nav-link {
+    color: #8a91ac;
+    font-size: $font-15;
+    font-weight: 400;
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-top: 0;
+    background: transparent;
+    border: none;
+    padding-bottom: 10px;
+
+    &:hover {
+      border: none;
+      background: transparent;
+      color: $highlightcolor !important;
+      border-bottom: $highlightcolor 2px solid;
+    }
+  }
+
+  .nav-link.active {
+    color: $highlightcolor;
+    background-color: transparent;
+    border: none;
+    border-bottom: $highlightcolor 2px solid;
+    font-weight: 400;
+  }
 }
 
 ul,
@@ -737,13 +839,14 @@ a:hover {
               }
 
               .form-control {
-                padding: 7px 8px !important;
-                height: auto;
+                padding: 4px 8px !important;
+                height: 26px;
                 min-height: auto;
                 line-height: initial;
                 max-width: 100%;
                 overflow: hidden;
                 text-overflow: ellipsis;
+                margin-bottom: 4px;
               }
             }
 
@@ -815,7 +918,8 @@ a:hover {
 
       .paging-container {
         margin-top: -44px;
-        position: relative;
+        position: absolute;
+        right: 22px;
 
         &::before {
           content: "";
@@ -1413,8 +1517,8 @@ p {
   text-transform: uppercase;
 
   &:hover {
-    // background: $customPrimary-Hover;
-    // border-color: $customPrimary-Hover;
+    background: $primaryhoverColor;
+    border-color: $primaryhoverColor;
     color: $white;
   }
 
@@ -1660,37 +1764,7 @@ p {
     }
   }
 
-  .nav-tabs {
-    border-bottom: 1px solid #d9e2f0;
-    margin-top: 1rem;
-
-    a.nav-link {
-      color: #8a91ac;
-      font-size: $font-15;
-      font-weight: 400;
-      padding-left: 10px;
-      padding-right: 10px;
-      padding-top: 0;
-      background: transparent;
-      border: none;
-      padding-bottom: 10px;
-
-      &:hover {
-        border: none;
-        background: transparent;
-        color: $highlightcolor !important;
-        border-bottom: $highlightcolor 2px solid;
-      }
-    }
-
-    .nav-link.active {
-      color: $highlightcolor;
-      background-color: transparent;
-      border: none;
-      border-bottom: $highlightcolor 2px solid;
-      font-weight: 400;
-    }
-  }
+  @extend %nav-tabs;
 
   .filter-block {
 
@@ -2701,7 +2775,8 @@ td,
   .ApprovedByASMSimulation,
   .RejectedBySystem,
   .Cancelled,
-  .CreatedByAssembly {
+  .CreatedByAssembly,
+  .Sent {
     background-color: #da94a1;
     min-width: 90px;
     height: 26px;
@@ -2751,8 +2826,8 @@ td,
 
   .Pushed,
   .POUpdated,
-  .PO.Updated,
-  .Linked {
+  .Linked,
+  .Sent {
     background-color: #498cef;
   }
 }
@@ -3121,6 +3196,10 @@ body {
         min-height: auto !important;
       }
     }
+
+    &.border {
+      border-top: none !important;
+    }
   }
 }
 
@@ -3458,5 +3537,12 @@ input:focus,
   &:focus {
     border-color: transparent !important;
     box-shadow: none !important;
+  }
+}
+
+.volume-drawer {
+  .subtabs {
+    @extend %nav-tabs;
+    grid-gap: 5px;
   }
 }

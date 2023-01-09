@@ -15,6 +15,7 @@ import NoContentFound from '../../../../common/NoContentFound';
 import { getSingleCostingDetails, gridDataAdded, setCostingViewData } from '../../../actions/Costing';
 import CostingDetailSimulationDrawer from '../../../../simulation/components/CostingDetailSimulationDrawer';
 import { ViewCostingContext } from '../../CostingDetails';
+import { EMPTY_DATA } from '../../../../../config/constants';
 
 function EditPartCost(props) {
 
@@ -186,6 +187,15 @@ function EditPartCost(props) {
         setGridData(gridTempArr)
     }
 
+    const calculateWeightedCost = (arrayTemp = []) => {
+        let weightedCostCalc = 0
+        weightedCostCalc = arrayTemp && arrayTemp.reduce((accummlator, el) => {
+            return checkForNull(accummlator) + checkForNull(el.NetCost)
+        }, 0)
+
+        return weightedCostCalc
+    }
+
     const handleDeltaSignChange = (value, index) => {
         if (value?.label === '-') {
             if (gridData && (checkForNull(gridData[index]?.SettledPrice) < checkForNull(gridData[index]?.DeltaValue))) {
@@ -196,6 +206,7 @@ function EditPartCost(props) {
                 tempGrid.DeltaValue = 0
                 tempGrid.NetCost = 0
                 let arr = Object.assign([...gridData], { [index]: tempGrid })
+                setWeightedCost(calculateWeightedCost(arr))
                 setGridData(arr)
 
                 setTimeout(() => {
@@ -225,6 +236,7 @@ function EditPartCost(props) {
                 setValue(`${PartCostFields}.${index}.DeltaValue`, 0)
                 setValue(`${PartCostFields}.${index}.NetCost`, 0)
             }, 200);
+            setWeightedCost(calculateWeightedCost(gridData))
             return false
         }
         setTimeout(() => {
@@ -574,8 +586,8 @@ function EditPartCost(props) {
                                         })
                                         }
                                         {gridData && gridData.length === 0 && <tr>
-                                            <td colSpan={6}>
-                                                <NoContentFound />
+                                            <td colSpan={8}>
+                                                <NoContentFound title={EMPTY_DATA} />
                                             </td>
                                         </tr>}
                                     </tbody>

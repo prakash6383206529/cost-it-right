@@ -6,6 +6,7 @@ import {
     GET_QUOTATION_LIST,
     config,
     API_REQUEST,
+    CHECK_RFQ_BULK_UPLOAD,
 } from '../../../config/constants';
 import { MESSAGES } from '../../../config/message';
 import { loggedInUserId, userDetails } from '../../../helper';
@@ -246,6 +247,25 @@ export function checkExistCosting(data, callback) {
             dispatch({ type: API_FAILURE });
             apiErrors(error);
             callback(error)
+        });
+    };
+}
+
+export function checkRFQBulkUpload(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.checkRFQBulkUpload, data, config());
+        request.then((response) => {
+            if (response?.data?.Result || response?.status === 204) {
+                dispatch({
+                    type: CHECK_RFQ_BULK_UPLOAD,
+                    payload: response.status === 204 ? [] : response?.data?.Data
+                })
+            }
+            callback(response);
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+            callback(error);
         });
     };
 }

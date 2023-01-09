@@ -682,7 +682,7 @@ function SimulationApprovalListing(props) {
                     < div className={`ag-grid-react custom-pagination`}>
                         <form onSubmit={handleSubmit(() => { })} noValidate>
                             {isLoader && <LoaderCustom customClass={"simulation-history-loader"} />}
-                            <ScrollToTop pointProp={"history-go-to-top"} />
+                            {!isDashboard && <ScrollToTop pointProp={"history-go-to-top"} />}
                             <Row className="pt-4">
 
 

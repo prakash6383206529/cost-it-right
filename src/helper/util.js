@@ -764,6 +764,7 @@ export function formViewData(costingSummary, header = '') {
   obj.customerCode = dataFromAPI?.CustomerCode ? dataFromAPI?.CustomerCode : ''
   obj.customer = dataFromAPI?.Customer ? dataFromAPI?.Customer : ''
   obj.plantExcel = dataFromAPI.CostingTypeId === ZBCTypeId ? `${dataFromAPI.PlantName}` : `${dataFromAPI.DestinationPlantName}`
+  obj.vendorExcel = dataFromAPI.VendorName ? `${dataFromAPI.VendorName} (${dataFromAPI.VendorCode})` : ''
 
   // FOR MULTIPLE TECHNOLOGY COSTING SUMMARY DATA
   obj.netChildPartsCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetChildPartsCost ? dataFromAPI?.CostingPartDetails?.NetChildPartsCost : 0
@@ -1096,6 +1097,9 @@ export const scrollReset = (ID) => {
 
 //FOR SHOWING COLOR ON VALUE DECREASE AND INCREASE
 export const highlightCostingSummaryValue = (oldValue, newValue) => {
-  let className = oldValue === newValue ? '' : oldValue > newValue ? 'green-text' : 'red-text';
+  let getOldValue = oldValue ? oldValue : 0;
+  let getNewValue = newValue ? newValue : 0;
+  let className = getOldValue === getNewValue ? '' : getOldValue > getNewValue ? 'green-text' : 'red-text';
+
   return className;
 }
