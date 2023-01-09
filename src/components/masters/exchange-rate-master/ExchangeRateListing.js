@@ -443,8 +443,8 @@ class ExchangeRateListing extends Component {
                                     suppressRowClickSelection={true}
                                 >
                                     <AgGridColumn field="CostingHead" headerName="Costing Head" ></AgGridColumn>
-                                    <AgGridColumn field="vendorExcel" headerName="Vendor (Code)" ></AgGridColumn>
-                                    <AgGridColumn field="customerExcel" headerName="Customer (Code)" ></AgGridColumn>
+                                    <AgGridColumn field="vendorWithCode" headerName="Vendor (Code)" ></AgGridColumn>
+                                    <AgGridColumn field="customerWithCode" headerName="Customer (Code)" ></AgGridColumn>
                                     <AgGridColumn field="Currency" headerName="Currency" minWidth={135}></AgGridColumn>
                                     <AgGridColumn suppressSizeToFit="true" field="CurrencyExchangeRate" headerName="Exchange Rate (INR)" minWidth={160} cellRenderer={'commonCostFormatter'}></AgGridColumn>
                                     <AgGridColumn field="BankRate" headerName="Bank Rate (INR)" minWidth={150} cellRenderer={'commonCostFormatter'}></AgGridColumn>
