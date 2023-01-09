@@ -524,6 +524,13 @@ class BulkUpload extends Component {
                 this.responseHandler(res)
             });
 
+        }
+        else if ((fileName === 'BOPImport' || fileName === 'InsertImport') && costingTypeId === VBCTypeId) {
+            this.props.bulkUploadBOPImportVBC(masterUploadData, (res) => {
+                this.setState({ setDisable: false })
+                this.responseHandler(res)
+            });
+
         } else if (fileName === 'ActualVolume' && costingTypeId === ZBCTypeId) {
             this.props.bulkUploadVolumeActualZBC(uploadData, (res) => {
                 this.setState({ setDisable: false })
