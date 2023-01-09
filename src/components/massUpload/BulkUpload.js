@@ -511,6 +511,11 @@ class BulkUpload extends Component {
                 this.responseHandler(res)
             });
 
+        } else if (fileName === 'BOPImport' && costingTypeId === VBCTypeId) {
+            this.props.bulkUploadBOPImportVBC(masterUploadData, (res) => {
+                this.setState({ setDisable: false })
+                this.responseHandler(res)
+            });
         } else if (fileName === 'BOPImport' && costingTypeId === CBCTypeId) {
             this.props.bulkUploadBOPImportCBC(masterUploadData, (res) => {
                 this.setState({ setDisable: false })
