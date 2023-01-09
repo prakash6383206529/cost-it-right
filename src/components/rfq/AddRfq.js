@@ -87,6 +87,7 @@ function AddRfq(props) {
         return () => {
             reactLocalStorage?.setObject('vendorData', [])
             reactLocalStorage.setObject('PartData', [])
+            setUpdateButtonVendorTable(false)
         }
     }, []);
 
@@ -349,7 +350,7 @@ function AddRfq(props) {
         props.closeDrawer('', {})
     }
 
-    const onSubmit = dataForm => {
+    const onSubmit = (isSent) => {
         if (vendorList.length === 0) {
             Toaster.warning("Please enter vendor details")
             return false
@@ -365,14 +366,14 @@ function AddRfq(props) {
         obj.QuotationId = data.QuotationId ? data.QuotationId : ""
         obj.QuotationNumber = data.QuotationNumber ? data.QuotationNumber : ""
 
-        obj.Remark = dataForm?.remark
-        obj.TechnologyId = dataForm?.technology?.value
-        obj.PlantId = dataForm?.plant?.value
+        obj.Remark = getValues('remark')
+        obj.TechnologyId = getValues('technology').value
+        obj.PlantId = getValues('plant')?.value
         obj.LoggedInUserId = loggedInUserId()
         obj.VendorList = vendorList
         obj.PartList = partList
         obj.Attachments = files
-        obj.IsSent = true
+        obj.IsSent = isSent
 
         if (isEditFlag) {
             dispatch(updateRfqQuotation(obj, (res) => {
@@ -525,8 +526,7 @@ function AddRfq(props) {
         let obj = {}
         obj.PartId = getValues('partNumber')?.value
         obj.Quantity = Number(getValues('annualForecastQuantity'))
-        obj.PartNumber = getValues('partNumber')?.RevisionNumber ? getValues('partNumber')?.label + ' (' + getValues('partNumber')?.RevisionNumber + ')'
-            : getValues('partNumber')?.label
+        obj.PartNumber = getValues('partNumber')?.label ? getValues('partNumber')?.label : '-'
         obj.technology = technology
 
         if (errors.annualForecastQuantity) {
@@ -546,7 +546,7 @@ function AddRfq(props) {
             return false;
         }
 
-        if (obj.PartId === null || obj.PartId === undefined || obj.Quantity === null || obj.Quantity === undefined || isNaN(obj.Quantity)) {
+        if (obj.PartId === null || obj.PartId === undefined || checkForNull(obj.Quantity) === 0) {
             Toaster.warning("Please fill all the mandatory fields first.")
             return false;
         }
@@ -714,7 +714,7 @@ function AddRfq(props) {
                         <div className="shadow-lgg login-formg">
                             <div className="row">
                                 <div className="col-md-6">
-                                    <h3>{isViewFlag ? "View" : isEditFlag ? "Update" : "Add"} RFQ</h3>
+                                    <h3>{isViewFlag ? "View" : props?.isEditFlag ? "Update" : "Add"} RFQ</h3>
                                 </div>
                             </div>
                             <div >
@@ -1084,14 +1084,14 @@ function AddRfq(props) {
                                             </button>
 
                                             <button type="button" className="submit-button save-btn mr-2"
-                                                onClick={handleSubmit(onSubmit)}
+                                                onClick={() => handleSubmit(onSubmit(false))}
                                                 disabled={isViewFlag}>
                                                 <div className={"save-icon"}></div>
                                                 {"Save"}
                                             </button>
 
                                             <button type="button" className="submit-button save-btn"
-                                                onClick={handleSubmit(onSubmit)}
+                                                onClick={() => handleSubmit(onSubmit(true))}
                                                 disabled={isViewFlag}>
                                                 <div className="send-for-approval mr-1"></div>
                                                 {"Send"}
