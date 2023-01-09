@@ -1225,7 +1225,7 @@ const CostingSummaryTable = (props) => {
                                         </button>
                                       }
                                     </span>
-                                    <span className="d-flex justify-content-between align-items-center pie-chart-container"><span>{checkForDecimalAndNull(data?.poPrice, initialConfiguration.NoOfDecimalForPrice)} ({(data?.effectiveDate && data?.effectiveDate !== '') ? DayTime(data?.effectiveDate).format('DD-MM-YYYY') : "-"})</span>{(!pdfHead && !drawerDetailPDF && data.totalCost !== 0 && !simulationDrawer) && <span><button className='pie-chart' onMouseOver={() => viewPieData(index)}><span className='tooltiptext graph-tooltip'><Costratiograph data={pieChartData} options={pieChartOption} /></span></button></span>}</span>
+                                    <span className="d-flex justify-content-between align-items-center pie-chart-container"><span>{checkForDecimalAndNull(data?.poPrice, initialConfiguration.NoOfDecimalForPrice)} ({(data?.effectiveDate && data?.effectiveDate !== '') ? DayTime(data?.effectiveDate).format('DD-MM-YYYY') : "-"})</span>{(!pdfHead && !drawerDetailPDF && data.totalCost !== 0 && !simulationDrawer) && <span><button type='button' className='pie-chart' onMouseOver={() => viewPieData(index)}><span className='tooltiptext graph-tooltip'><Costratiograph data={pieChartData} options={pieChartOption} /></span></button></span>}</span>
                                     {/* USE PART NUMBER KEY HERE */}
                                     <span className="d-block">{data?.partNumber}</span>
                                     <span className="d-block">{data?.partName}</span>
