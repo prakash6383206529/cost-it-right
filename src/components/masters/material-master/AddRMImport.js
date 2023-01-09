@@ -405,8 +405,8 @@ class AddRMImport extends Component {
       })
     } else {
       if (currency && effectiveDate) {
-
-        this.props.getExchangeRateByCurrency(currency.label, DayTime(effectiveDate).format('YYYY-MM-DD'), res => {
+        const { costingTypeId, vendorName, client } = this.state
+        this.props.getExchangeRateByCurrency(currency.label, costingTypeId, DayTime(effectiveDate).format('YYYY-MM-DD'), vendorName.value, client.value, res => {
           if (Object.keys(res.data.Data).length === 0) {
             this.setState({ showWarning: true })
           }
