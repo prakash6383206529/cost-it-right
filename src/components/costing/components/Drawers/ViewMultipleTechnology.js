@@ -79,7 +79,9 @@ function ViewMultipleTechnology(props) {
                                             <td className={`${isPDFShow ? '' : ''}`}><span title={item.PartName}>{item.PartName}</span></td>
                                             <td className={`${isPDFShow ? '' : ''}`}><span title={item.PartTypeName}>{item.PartTypeName}</span></td>
 
-                                            <td className={`${isPDFShow ? '' : ''}`}><span title={item.TechnologyName}>{item.TechnologyName}</span></td>
+                                            <td className={`${isPDFShow ? '' : ''}`}>
+                                                {(item.PartTypeName === 'BoughtOutPart') ? <span >{'-'}</span> : <span title={item.TechnologyName}>{item.TechnologyName}</span>}
+                                            </td>
                                             <td> {item.Quantity}</td>
                                             <td>
                                                 {checkForDecimalAndNull(item.NetBoughtOutPartCost, initialConfiguration.NoOfDecimalForPrice)}
