@@ -72,6 +72,7 @@ function PartOverheadProfit(props) {
         "CostingNumber": costData.CostingNumber,
         "IsIncludeSurfaceTreatmentWithOverheadAndProfit": props.IsIncludeSurfaceTreatment,
         "IsIncludeSurfaceTreatmentWithRejection": props.IsIncludedSurfaceInRejection,
+        "IsIncludeToolCostWithOverheadAndProfit": props.IsIncludeToolCost,
         "NetOverheadAndProfitCost": checkForNull(item?.CostingPartDetails?.OverheadCost) + checkForNull(item?.CostingPartDetails?.RejectionCost) + checkForNull(item?.CostingPartDetails?.ProfitCost) + checkForNull(item?.CostingPartDetails?.ICCCost) + checkForNull(item?.CostingPartDetails?.PaymentTermCost),
         "CostingPartDetails": {
           ...item?.CostingPartDetails,

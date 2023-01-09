@@ -44,6 +44,7 @@ import {
   SET_OVERHEAD_PROFIT_ERRORS,
   SET_TOOLS_ERRORS,
   SET_DISCOUNT_ERRORS,
+  SET_TOOL_COST_FOR_OVERHEAD_PROFIT,
 } from '../../../config/constants'
 import { apiErrors } from '../../../helper/util'
 import { MESSAGES } from '../../../config/message'
@@ -2421,6 +2422,20 @@ export function setSurfaceCostInOverheadProfitRejection(IsIncluded, callback) {
   return (dispatch) => {
     dispatch({
       type: SET_SURFACE_COST_FOR_REJECTION_DATA,
+      payload: IsIncluded,
+    });
+    callback();
+  }
+};
+
+/**
+ * @method setToolCostInOverheadProfit
+ * @description ADD TOOL COST IN OVERHEAD & PROFIT
+ */
+export function setToolCostInOverheadProfit(IsIncluded, callback) {
+  return (dispatch) => {
+    dispatch({
+      type: SET_TOOL_COST_FOR_OVERHEAD_PROFIT,
       payload: IsIncluded,
     });
     callback();
