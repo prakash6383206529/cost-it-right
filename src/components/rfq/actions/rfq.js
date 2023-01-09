@@ -14,10 +14,10 @@ import { apiErrors } from '../../../helper/util';
 import Toaster from '../../common/Toaster';
 
 
-export function getQuotationList(callback) {
+export function getQuotationList(DepartmentCode, callback) {
     return (dispatch) => {
 
-        const request = axios.get(`${API.getQuotationList}`, config());
+        const request = axios.get(`${API.getQuotationList}?DepartmentCode=${DepartmentCode}`, config());
         request.then((response) => {
             if (response.data.Result || response.status === 204) {
 
