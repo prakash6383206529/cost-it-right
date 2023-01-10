@@ -155,6 +155,10 @@ function RfqListing(props) {
 
     const formToggle = () => {
         setAddRfq(true)
+        let data = {
+            isAddFlag: true,
+        }
+        setAddRfqData(data)
     }
 
     const closeDrawer = () => {
