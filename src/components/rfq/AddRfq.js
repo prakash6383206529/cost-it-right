@@ -1119,7 +1119,7 @@ function AddRfq(props) {
                                             isEditFlag={false}
                                             // densityAlert={densityAlert}
                                             fileName={"ADDRFQ"}
-                                            messageLabel={"ADDRFQ"}
+                                            messageLabel={"RFQ Part's"}
                                             anchor={"right"}
                                             technologyId={technology}
                                         // isFinalApprovar={isFinalLevelUser}
