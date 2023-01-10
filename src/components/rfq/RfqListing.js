@@ -70,7 +70,7 @@ function RfqListing(props) {
     * @description HIDE DOMESTIC, IMPORT FORMS
     */
     const getDataList = () => {
-        dispatch(getQuotationList(userDetails()?.DepartmentCode, (res) => {
+        dispatch(getQuotationList((res) => {
             let temp = []
             res?.data?.DataList && res?.data?.DataList.map((item) => {
                 if (item.IsActive === false) {
