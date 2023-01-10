@@ -65,9 +65,13 @@ function CostReportForm(props) {
     useEffect(() => {
         dispatch(getCostingSpecificTechnology(loggedInUserId(), () => { }))
         dispatch(getPartInfo('', () => { }))
-        setValue('fromDate', startDate ? startDate : '')
-        setValue('toDate', endDate ? endDate : '')
+        setValue('fromDate', startDate ? new Date(startDate) : '')
+        setFromDate(startDate)
 
+        setTimeout(() => {
+            setValue('toDate', endDate ? new Date(endDate) : '')
+            setToDate(endDate)
+        }, 500);
     }, [])
 
     /**
@@ -109,7 +113,7 @@ function CostReportForm(props) {
     */
     const handleFromDate = (value) => {
         setMinDate(value)
-        setFromDate(value)
+        setFromDate(DayTime(value).format("DD/MM/YYYY"))
     }
 
     /**
@@ -118,7 +122,8 @@ function CostReportForm(props) {
     */
     const handleToDate = (value) => {
         setMaxDate(value)
-        setToDate(value)
+        setToDate(DayTime(value).format("DD/MM/YYYY"))
+
     }
 
     /**
@@ -290,7 +295,7 @@ function CostReportForm(props) {
                 arr.push(item)
             }
         })
-        dispatch(getFormGridData({ toDate, fromDate, gridData: arr }))
+        dispatch(getFormGridData({ ...costReportFormData, gridData: arr }))
     }
     const buttonFormatter = (props) => {
         return (
@@ -332,7 +337,7 @@ function CostReportForm(props) {
                                 <DatePickerHookForm
                                     name={`fromDate`}
                                     label={'From Date'}
-                                    selected={fromDate !== "" ? DayTime(fromDate).format('DD/MM/YYYY') : ""}
+                                    selected={new Date(fromDate)}
                                     handleChange={(date) => {
                                         handleFromDate(date);
                                     }}
@@ -362,7 +367,7 @@ function CostReportForm(props) {
                                 <DatePickerHookForm
                                     name={`toDate`}
                                     label={'To Date'}
-                                    selected={toDate !== "" ? DayTime(toDate).format('DD/MM/YYYY') : ""}
+                                    selected={new Date(toDate)}
                                     handleChange={handleToDate}
                                     minDate={minDate}
                                     rules={{ required: isDateMandatory }}
