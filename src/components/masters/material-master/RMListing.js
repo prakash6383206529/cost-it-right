@@ -72,6 +72,7 @@ class RMListing extends Component {
             if (type === 'submit') {
                 this.setState({ isLoader: true })
                 this.getListData()
+                this.setState({ dataCount: 0 })
             }
         })
     }
@@ -91,6 +92,7 @@ class RMListing extends Component {
         this.setState({ isOpenAssociation: false }, () => {
             this.getListData()
         })
+        this.setState({ dataCount: 0 })
     }
 
     /**
@@ -123,6 +125,7 @@ class RMListing extends Component {
                 Toaster.error(res.data.Message)
             } else if (res && res.data && res.data.Result === true) {
                 Toaster.success(MESSAGES.DELETE_MATERIAL_SUCCESS);
+                this.setState({ dataCount: 0 })
                 this.getListData();
             }
         });
@@ -279,7 +282,6 @@ class RMListing extends Component {
         const defaultColDef = {
             resizable: true,
             filter: true,
-            sortable: true,
             headerCheckboxSelectionFilteredOnly: true,
             checkboxSelection: isFirstColumn
         };
@@ -321,7 +323,8 @@ class RMListing extends Component {
                             <>
                                 <>
                                     <ExcelFile filename={'RmMaterial'} fileExtension={'.xls'} element={
-                                        <button title="Download" type="button" className={'user-btn mr5'} ><div className="download mr-0"></div></button>}>
+                                        <button title={`Download ${this.state.dataCount === 0 ? "All" : "(" + this.state.dataCount + ")"}`} type="button" className={'user-btn mr5'} ><div className="download mr-1"></div>
+                                            {`${this.state.dataCount === 0 ? "All" : "(" + this.state.dataCount + ")"}`}</button>}>
                                         {this.onBtExport()}
                                     </ExcelFile>
                                 </>
@@ -343,7 +346,6 @@ class RMListing extends Component {
                         <div className={`ag-grid-wrapper height-width-wrapper ${(this.props.rawMaterialTypeDataList && this.props.rawMaterialTypeDataList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
                             <div className="ag-grid-header">
                                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={'off'} onChange={(e) => this.onFilterTextBoxChanged(e)} />
-                                <SelectRowWrapper dataCount={dataCount} />
                             </div>
                             <div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
                                 {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
@@ -367,6 +369,7 @@ class RMListing extends Component {
                                     frameworkComponents={frameworkComponents}
                                     onSelectionChanged={this.onRowSelect}
                                     onFilterModified={this.onFloatingFilterChanged}
+                                    suppressRowClickSelection={true}
                                 >
                                     {/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
                                     <AgGridColumn field="RawMaterial" headerName="Material"></AgGridColumn>

@@ -15,7 +15,7 @@ import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { ASSEMBLY, BOUGHTOUTPART, COMPONENT_PART, FILE_URL } from '../../../config/constants';
+import { ASSEMBLY, BOUGHTOUTPART, COMPONENT_PART, FILE_URL, SPACEBAR, ASSEMBLYNAME, searchCount } from '../../../config/constants';
 import AddChildDrawer from './AddChildDrawer';
 import DayTime from '../../common/DayTimeWrapper'
 import BOMViewer from './BOMViewer';
@@ -28,6 +28,9 @@ import Switch from "react-switch";
 import AsyncSelect from 'react-select/async';
 import { getCostingSpecificTechnology } from '../../costing/actions/Costing'
 import { getPartSelectList } from '../../../actions/Common';
+import { reactLocalStorage } from 'reactjs-localstorage';
+import { autoCompleteDropdown } from '../../common/CommonFunctions';
+import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 
 const selector = formValueSelector('AddAssemblyPart')
 export const PartEffectiveDate = React.createContext()
@@ -74,8 +77,9 @@ class AddAssemblyPart extends Component {
       convertPartToAssemblyPartId: "",
       uploadAttachements: true,
       showErrorOnFocusDate: false,
-      IsTechnologyUpdateRequired: false
-
+      IsTechnologyUpdateRequired: false,
+      partName: '',
+      showPopup: false
     }
   }
 
@@ -87,14 +91,8 @@ class AddAssemblyPart extends Component {
     if (!(this.state.isViewMode)) {
       this.props.getCostingSpecificTechnology(loggedInUserId(), () => { })
     }
-    this.setState({ inputLoader: true })
     if (!this.state.isViewMode) {
       this.props.getProductGroupSelectList(() => { })
-    }
-    if (!(this.props.data.isEditFlag || this.props.data.isViewFlag)) {
-      this.props.getPartSelectList((res) => {
-        this.setState({ partListingData: res?.data?.SelectList, inputLoader: false })
-      })
     }
     this.getDetails()
   }
@@ -288,7 +286,7 @@ class AddAssemblyPart extends Component {
 
     const posX = BOMViewerData && BOMViewerData.length > 0 ? 450 * (BOMViewerData.filter(el => el.Level === 'L1').length - 1) : 50;
 
-    if (Object.keys(childData).length > 0 && childData.PartType === ASSEMBLY) {
+    if (Object.keys(childData).length > 0 && childData.PartType === ASSEMBLYNAME) {
       this.props.getBOMViewerTreeDataByPartIdAndLevel(childData.PartId, 1, res => {
         let Data = res.data.Data.FlowPoints;
 
@@ -453,7 +451,7 @@ class AddAssemblyPart extends Component {
     //BELOW CONDITION WILL PASS WHEN L0 LEVEL IS NOT AVAILABLE
     if (isAvailable === -1) {
       tempArray.push(...BOMViewerData, {
-        PartType: ASSEMBLY,
+        PartType: ASSEMBLYNAME,
         PartNumber: fieldsObj && fieldsObj.AssemblyPartNumber !== undefined ? fieldsObj.AssemblyPartNumber : '',
         Position: { "x": 750, "y": 50 },
         Outputs: outputArray,
@@ -612,7 +610,16 @@ class AddAssemblyPart extends Component {
     this.props.getAssemblyPartDetail('', res => { })
     this.props.hideForm()
   }
-
+  cancelHandler = () => {
+    this.setState({ showPopup: true })
+  }
+  onPopupConfirm = () => {
+    this.cancel('cancel')
+    this.setState({ showPopup: false })
+  }
+  closePopUp = () => {
+    this.setState({ showPopup: false })
+  }
   /**
   * @method confirmDraftItem
   * @description DRAFT ASSEMBLY BOM
@@ -641,7 +648,7 @@ class AddAssemblyPart extends Component {
     let childPartArray = [];
     let isStructureChanges;
     // CONDITION CHANGE FOR (BOMViewerData.length === 0 || BOMViewerData.length === 1)
-    if (BOMViewerData && isEditFlag ? (BOMViewerData.length === 0) : (BOMViewerData.length === 0 || BOMViewerData.length === 1)) {
+    if (BOMViewerData && isEditFlag ? (BOMViewerData.length === 0 || BOMViewerData.length === 1) : (BOMViewerData.length === 0 || BOMViewerData.length === 1)) {
       Toaster.warning('Need to add Child parts');
       return false;
     }
@@ -656,7 +663,7 @@ class AddAssemblyPart extends Component {
       if (item.Level === 'L0') return false;
       if (item.Level === 'L1') {
         childPartArray.push({
-          PartId: item.PartType && (item.PartType === ASSEMBLY || item.PartType === COMPONENT_PART) ? item.PartId : '',
+          PartId: item.PartType && (item.PartType === ASSEMBLYNAME || item.PartType === COMPONENT_PART) ? item.PartId : '',
           ParentPartId: isEditFlag ? PartId : '',
           BoughtOutPartId: item.PartType && item.PartType === BOUGHTOUTPART ? ((item.BoughtOutPartId !== undefined && item.BoughtOutPartId !== null) ? item.BoughtOutPartId : item.PartId) : '',
           PartTypeId: item.PartTypeId ? item.PartTypeId : '',
@@ -848,23 +855,32 @@ class AddAssemblyPart extends Component {
   render() {
     const { handleSubmit, initialConfiguration } = this.props;
     const { isEditFlag, isOpenChildDrawer, isOpenBOMViewerDrawer, isViewMode, setDisable, convertPartToAssembly, BOMViewerData } = this.state;
+    const filterList = async (inputValue) => {
+      const { partName, selectedParts } = this.state
+      const resultInput = inputValue.slice(0, searchCount)
+      if (inputValue?.length >= searchCount && partName !== resultInput) {
 
-    const filterList = (inputValue) => {
-      let tempArr = []
-      tempArr = this.renderListing("partNo").filter(i =>
-        i.label !== null && i.label.toLowerCase().includes(inputValue.toLowerCase())
-      );
-
-      if (tempArr.length <= 100) {
-        return tempArr
-      } else {
-        return tempArr.slice(0, 100)
+        const res = await getPartSelectList(resultInput)
+        this.setState({ partName: resultInput })
+        let partDataAPI = res?.data?.SelectList
+        if (inputValue) {
+          return autoCompleteDropdown(inputValue, partDataAPI, true, selectedParts, true)
+        } else {
+          return partDataAPI
+        }
+      }
+      else {
+        if (inputValue?.length < searchCount) return false
+        else {
+          let partData = reactLocalStorage?.getObject('Data')
+          if (inputValue) {
+            return autoCompleteDropdown(inputValue, partData, true, selectedParts, false)
+          } else {
+            return partData
+          }
+        }
       }
     };
-    const promiseOptions = inputValue =>
-      new Promise(resolve => {
-        resolve(filterList(inputValue));
-      });
     return (
       <>
         <div className="container-fluid">
@@ -931,11 +947,15 @@ class AddAssemblyPart extends Component {
                                 name="partNo"
                                 ref={this.myRef}
                                 key={this.state.updateAsyncDropdown}
-                                loadOptions={promiseOptions}
+                                loadOptions={filterList}
                                 onChange={(e) => this.handlePartNo(e)}
                                 value={this.state.vendorName}
-                                noOptionsMessage={({ inputValue }) => !inputValue ? "Please enter part no" : "No results found"}
-                                isDisabled={(isEditFlag || this.state.inputLoader) ? true : false} />
+                                noOptionsMessage={({ inputValue }) => inputValue.length < 3 ? 'Enter 3 characters to show data' : "No results found"}
+                                onKeyDown={(onKeyDown) => {
+                                  if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
+                                }}
+                                isDisabled={(isEditFlag || this.state.inputLoader) ? true : false}
+                              />
                             </div>
                           </Col>
                         }
@@ -1244,7 +1264,7 @@ class AddAssemblyPart extends Component {
                         <button
                           type={"button"}
                           className=" mr15 cancel-btn"
-                          onClick={this.cancel}
+                          onClick={() => { this.cancelHandler() }}
                           disabled={setDisable}
                         >
                           <div className={"cancel-icon"}></div>
@@ -1265,7 +1285,9 @@ class AddAssemblyPart extends Component {
               </Col>
             </Row>
           </div>
-
+          {
+            this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.CANCEL_MASTER_ALERT}`} />
+          }
           {isOpenChildDrawer && (
             <AddChildDrawer
               isOpen={isOpenChildDrawer}

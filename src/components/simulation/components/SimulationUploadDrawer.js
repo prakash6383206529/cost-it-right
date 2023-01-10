@@ -300,10 +300,10 @@ class SimulationUploadDrawer extends Component {
                             resp.rows.map((val, index) => {
                                 if (val.length !== 0) {
                                     if (index > 0) {
-                                        if (val[9] !== '' && val[9] !== undefined && val[9] !== null && val[8] !== val[9]) {
+                                        if (val[10] !== '' && val[10] !== undefined && val[10] !== null && val[9] !== val[10]) {
                                             basicRateCount = 1
                                         }
-                                        if (val[9] === '' || val[9] === undefined || val[9] === null || val[8] === val[9]) {
+                                        if (val[10] === '' || val[10] === undefined || val[10] === null || val[9] === val[10]) {
                                             NoOfRowsWithoutChange = NoOfRowsWithoutChange + 1
                                             return false
                                         }

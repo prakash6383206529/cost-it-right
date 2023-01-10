@@ -3,6 +3,9 @@
 @import "./drawers.scss";
 @import "./masters.scss";
 @import "./costing.scss";
+@import "./rfq.scss";
+@import "./report.scss";
+
 @import url("https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700&display=swap");
 @import "../../../node_modules/ag-grid-community/src/styles/ag-grid.scss";
 @import "../../../node_modules/ag-grid-community/src/styles/ag-theme-material/sass/ag-theme-material-mixin";
@@ -112,6 +115,38 @@ body a:hover {
   color: $colorgraylighter !important;
 }
 
+%nav-tabs {
+  border-bottom: 1px solid #d9e2f0;
+  margin-top: 1rem;
+
+  a.nav-link {
+    color: #8a91ac;
+    font-size: $font-15;
+    font-weight: 400;
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-top: 0;
+    background: transparent;
+    border: none;
+    padding-bottom: 10px;
+
+    &:hover {
+      border: none;
+      background: transparent;
+      color: $highlightcolor !important;
+      border-bottom: $highlightcolor 2px solid;
+    }
+  }
+
+  .nav-link.active {
+    color: $highlightcolor;
+    background-color: transparent;
+    border: none;
+    border-bottom: $highlightcolor 2px solid;
+    font-weight: 400;
+  }
+}
+
 ul,
 li,
 h1,
@@ -177,6 +212,10 @@ a:hover {
 
 .w-100 {
   width: 100%;
+}
+
+.w-fit {
+  width: fit-content;
 }
 
 .min15 {
@@ -379,8 +418,8 @@ a:hover {
   &:focus,
   &:not(.disabled):active:focus {
     background-color: #fff !important;
-    border-color: #256bd1;
-    color: #256bd1;
+    border-color: $colorPrimary;
+    color: $colorPrimary;
 
     .cross-icon {
       img {
@@ -671,7 +710,7 @@ a:hover {
       .btn-secondary {
         background-color: transparent;
         border: none;
-        color: #256bd1;
+        color: $colorPrimary;
         font-size: 14px;
         padding-top: 0;
         padding-bottom: 0;
@@ -686,7 +725,7 @@ a:hover {
         &:not(:disabled):not(.disabled):active:focus {
           background-color: transparent;
           border: none;
-          color: #256bd1;
+          color: $colorPrimary;
           box-shadow: 0 0 0 0rem rgba(130, 138, 145, 0.5);
         }
 
@@ -721,7 +760,7 @@ a:hover {
 
       .ag-header-cell {
         .ag-icon-filter {
-          color: #256bd1;
+          color: $colorPrimary;
         }
       }
 
@@ -741,7 +780,8 @@ a:hover {
         // .ag-header-cell:first-child { comment for future purpose
         //   border-left: 1px solid #e5eaf9;
         // }
-        .ag-center-cols-clipper {
+        .ag-center-cols-clipper,
+        .ag-pinned-left-cols-container {
           .ag-cell {
             &:first-child {
               border-left: 1px solid #e5eaf9;
@@ -821,6 +861,13 @@ a:hover {
                 justify-content: center;
               }
             }
+
+            .ag-react-container {
+              .attachment.images {
+                border-bottom: none;
+                font-size: $font-14;
+              }
+            }
           }
         }
       }
@@ -842,7 +889,7 @@ a:hover {
           .ag-paging-description {
             span {
               &:nth-child(2) {
-                color: #256bd1;
+                color: $colorPrimary;
               }
             }
           }
@@ -855,14 +902,8 @@ a:hover {
         }
       }
 
-      .ag-cell {
-        button {
-          margin-bottom: 0px;
-        }
-      }
-
       .ag-header-icon {
-        color: #256bd1;
+        color: $colorPrimary;
         display: none;
       }
 
@@ -887,7 +928,7 @@ a:hover {
           border-bottom: 0;
           border-left: 0.3em solid transparent;
           position: absolute;
-          color: #256bd1;
+          color: $colorPrimary;
           right: 0;
           top: 14px;
           pointer-events: none;
@@ -901,7 +942,7 @@ a:hover {
           -moz-appearance: none;
           -webkit-appearance: none;
           appearance: none;
-          color: #256bd1;
+          color: $colorPrimary;
           border: none;
           cursor: pointer;
         }
@@ -965,13 +1006,13 @@ a:hover {
   }
 
   .ag-selection-checkbox.ag-invisible {
-    display: none !important;
+    display: none;
   }
 
   --ag-foreground-color: #8a91ac;
 
   .ag-paging-button:hover {
-    color: #256bd1;
+    color: $colorPrimary;
   }
 
   @include ag-theme-material((font-size: 14px,
@@ -979,9 +1020,9 @@ a:hover {
         sans-serif,
       ),
       border-color: #e5eaf9,
-      material-primary-color: #256bd1,
-      // material-active-color: #256bd1,
-      checkbox-checked-color: #256bd1,
+      material-primary-color:$colorPrimary,
+      // material-active-color:$colorPrimary,
+      checkbox-checked-color:$colorPrimary,
       checkbox-unchecked-color: #8a91ac,
       row-border-color: #e5eaf9,
       row-hover-color: null,
@@ -999,6 +1040,10 @@ a:hover {
       color: #3d4465;
     }
 
+    .ag-header-cell-text {
+      white-space: normal !important;
+    }
+
     .justify-content-center {
 
       .ag-header-cell-label,
@@ -1013,6 +1058,16 @@ a:hover {
     .ag-header-cell-text {
       font-size: 15px;
       font-weight: 500;
+    }
+  }
+
+  .ag-row,
+  .ag-cell {
+    line-height: 35px;
+    height: 35px !important;
+
+    @media screen and (min-width: $middleDesktop) {
+      height: 38px !important;
     }
   }
 
@@ -1035,7 +1090,7 @@ a:hover {
   transition: all linear;
 
   &:first-child:focus {
-    border-left: 1px solid #256bd1 !important;
+    border-left: 1px solid$colorPrimary !important;
   }
 }
 
@@ -1413,13 +1468,13 @@ p {
 .form-control:focus {
   color: #495057;
   background-color: $white;
-  border-color: #256bd1;
+  border-color: $colorPrimary;
   outline: 0;
   box-shadow: none;
 }
 
 .custom-select:focus {
-  border-color: #256bd1;
+  border-color: $colorPrimary;
   outline: 0;
   box-shadow: none;
 }
@@ -1709,37 +1764,7 @@ p {
     }
   }
 
-  .nav-tabs {
-    border-bottom: 1px solid #d9e2f0;
-    margin-top: 1rem;
-
-    a.nav-link {
-      color: #8a91ac;
-      font-size: $font-15;
-      font-weight: 400;
-      padding-left: 10px;
-      padding-right: 10px;
-      padding-top: 0;
-      background: transparent;
-      border: none;
-      padding-bottom: 10px;
-
-      &:hover {
-        border: none;
-        background: transparent;
-        color: $highlightcolor !important;
-        border-bottom: $highlightcolor 2px solid;
-      }
-    }
-
-    .nav-link.active {
-      color: $highlightcolor;
-      background-color: transparent;
-      border: none;
-      border-bottom: $highlightcolor 2px solid;
-      font-weight: 400;
-    }
-  }
+  @extend %nav-tabs;
 
   .filter-block {
 
@@ -2147,13 +2172,13 @@ form .form-control {
 
       &:hover {
         background-color: #fff;
-        border-color: #256bd1;
-        color: #256bd1;
+        border-color: $colorPrimary;
+        color: $colorPrimary;
 
         &:active {
           background-color: #fff;
-          border-color: #256bd1;
-          color: #256bd1;
+          border-color: $colorPrimary;
+          color: $colorPrimary;
         }
       }
     }
@@ -2505,7 +2530,7 @@ ul.bread-list.d-inline-flex {
     position: relative;
     padding: 3px 13px;
     display: inline-block;
-    color: #256bd1;
+    color: $colorPrimary;
   }
 }
 
@@ -2605,15 +2630,15 @@ input:disabled,
 
 .flowconnection {
   stroke-width: 2px;
-  stroke: #256bd1;
+  stroke: $colorPrimary;
 }
 
 .flowpoint {
   margin-top: 10px;
-  border: 2px solid #256bd1 !important;
+  border: 2px solid$colorPrimary !important;
 
   .flowpoint-header {
-    border-bottom: 1px solid #256bd1;
+    border-bottom: 1px solid$colorPrimary;
     position: relative;
     padding-top: 18px;
     display: flex;
@@ -2624,7 +2649,7 @@ input:disabled,
     padding-right: 10px;
 
     h3 {
-      color: #256bd1;
+      color: $colorPrimary;
       font-size: 16px;
       line-height: 21px;
       max-width: 100%;
@@ -2635,7 +2660,7 @@ input:disabled,
 
     .flowpoint-header-level {
       height: 26px;
-      background: #256bd1 0% 0% no-repeat padding-box;
+      background: $colorPrimary 0% 0% no-repeat padding-box;
       border-radius: 3px;
       text-align: center;
       font-size: 13px;
@@ -2738,6 +2763,7 @@ td,
   .POUpdated,
   .Draft,
   .Linked,
+  .Under.Approval,
   [class^="Pending"],
   [class^="Awaiting"],
   .Approved,
@@ -2747,21 +2773,24 @@ td,
   .ApprovedByAssembly,
   .ApprovedByASMSimulation,
   .RejectedBySystem,
-  .CreatedByAssembly {
+  .Cancelled,
+  .CreatedByAssembly,
+  .Sent {
     background-color: #da94a1;
     min-width: 90px;
-    height: 30px;
+    height: 26px;
     border-radius: 30px;
     text-align: center;
     color: #fff;
-    font-size: 14px;
+    font-size: 13px;
     display: inline-block;
-    line-height: 30px;
+    line-height: 26px;
     padding: 0 0.5rem;
     vertical-align: middle;
   }
 
-  [class^="Pending"] {
+  [class^="Pending"],
+  .Under.Approval {
     background-color: #f8a000;
   }
 
@@ -2785,7 +2814,8 @@ td,
   }
 
   .Rejected,
-  .RejectedBySystem {
+  .RejectedBySystem,
+  .Cancelled {
     background-color: #fc5774;
   }
 
@@ -2795,7 +2825,8 @@ td,
 
   .Pushed,
   .POUpdated,
-  .Linked {
+  .Linked,
+  .Sent {
     background-color: #498cef;
   }
 }
@@ -3121,7 +3152,7 @@ body {
     font-size: calc(15px * 80 / 100);
 
     .ag-paging-button:hover {
-      color: #256bd1;
+      color: $colorPrimary;
     }
 
     .ag-header {
@@ -3164,6 +3195,10 @@ body {
         min-height: auto !important;
       }
     }
+
+    &.border {
+      border-top: none !important;
+    }
   }
 }
 
@@ -3191,7 +3226,7 @@ body {
 }
 
 .ag-theme-material .ag-layout-auto-height .ag-center-cols-clipper {
-  min-height: 45px;
+  min-height: 35px;
 }
 
 .delete-btn {
@@ -3330,12 +3365,12 @@ body {
 //<--------------START Input and button focus CSS------->
 @keyframes example {
   from {
-    box-shadow: 0 0 0px #256bd1 !important;
-    border: 1px solid #256bd1;
+    box-shadow: 0 0 0px$colorPrimary !important;
+    border: 1px solid$colorPrimary;
   }
 
   to {
-    box-shadow: 0 0 5px #256bd1 !important;
+    box-shadow: 0 0 5px$colorPrimary !important;
   }
 }
 
@@ -3410,6 +3445,14 @@ input:focus,
       @media screen and (min-width: $middleDesktop) {
         min-height: calc(100vh - 385px) !important;
       }
+
+      &.assembly-simulaiton {
+        min-height: calc(100vh - 416px) !important;
+
+        @media screen and (min-width: $middleDesktop) {
+          min-height: calc(100vh - 416px) !important;
+        }
+      }
     }
   }
 }
@@ -3434,8 +3477,8 @@ input:focus,
     }
 
     &:focus {
-      box-shadow: 0 0 5px $inputBorderFocusColor !important;
-      border: 1px solid $inputBorderFocusColor !important;
+      box-shadow: 0 0 5px $colorPrimary !important;
+      border: 1px solid $colorPrimary !important;
       animation-name: example;
       animation-duration: 0.3s;
     }
@@ -3455,5 +3498,50 @@ input:focus,
     width: 0.65em;
     background-color: #ffff;
     right: 6px;
+  }
+}
+
+
+// CHAT FEED CUSTOM STYLE
+.chat-messages {
+  div {
+    background-color: #fff !important;
+    border-radius: none !important;
+    width: 100%;
+    padding: 0 !important;
+    padding-right: 5px !important;
+
+    p {
+      color: $grid-font !important;
+      border: 1px solid $borderColor;
+      border-radius: 5px;
+      padding: 7px 10px;
+      margin-top: 5px !important;
+    }
+
+  }
+
+}
+
+.btn-hyper-link {
+  background-color: transparent;
+  color: $colorPrimary;
+  padding: 0;
+  line-height: 1;
+
+  &:hover {
+    color: $text-hover;
+  }
+
+  &:focus {
+    border-color: transparent !important;
+    box-shadow: none !important;
+  }
+}
+
+.volume-drawer {
+  .subtabs {
+    @extend %nav-tabs;
+    grid-gap: 5px;
   }
 }

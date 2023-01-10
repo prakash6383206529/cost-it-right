@@ -121,6 +121,7 @@ class IndivisualProductListing extends Component {
                 Toaster.success(MESSAGES.PRODUCT_DELETE_SUCCESS);
 
                 this.getTableListData();
+                this.setState({ dataCount: 0 })
             }
 
         });
@@ -341,7 +342,7 @@ class IndivisualProductListing extends Component {
         const defaultColDef = {
             resizable: true,
             filter: true,
-            sortable: true,
+            sortable: false,
             headerCheckboxSelectionFilteredOnly: true,
             checkboxSelection: isFirstColumn
         };
@@ -389,7 +390,8 @@ class IndivisualProductListing extends Component {
                                     DownloadAccessibility &&
                                     <>
                                         <ExcelFile filename={'Product'} fileExtension={'.xls'} element={
-                                            <button type="button" className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
+                                            <button title={`Download ${this.state.dataCount === 0 ? "All" : "(" + this.state.dataCount + ")"}`} type="button" className={'user-btn mr5'}><div className="download mr-1" ></div>
+                                                {`${this.state.dataCount === 0 ? "All" : "(" + this.state.dataCount + ")"}`}
                                             </button>}>
                                             {this.onBtExport()}
                                         </ExcelFile>
@@ -407,7 +409,6 @@ class IndivisualProductListing extends Component {
                 <div className={`ag-grid-wrapper height-width-wrapper ${(this.props.productDataList && this.props.productDataList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
                     <div className="ag-grid-header">
                         <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={'off'} onChange={(e) => this.onFilterTextBoxChanged(e)} />
-                        <SelectRowWrapper dataCount={this.state.dataCount} />
                     </div>
                     <div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
                         {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
@@ -429,6 +430,7 @@ class IndivisualProductListing extends Component {
                             onSelectionChanged={this.onRowSelect}
                             frameworkComponents={frameworkComponents}
                             onFilterModified={this.onFloatingFilterChanged}
+                            suppressRowClickSelection={true}
                         >
 
                             <AgGridColumn field="ProductNumber" headerName="Product No."></AgGridColumn>

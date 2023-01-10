@@ -32,7 +32,7 @@ function SimulationInsights(props) {
 
     resizable: true,
     filter: true,
-    sortable: true,
+    sortable: false,
   };
   const resetState = () => {
     gridOptions.columnApi.resetColumnState();

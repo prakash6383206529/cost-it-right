@@ -187,7 +187,8 @@ li.nav-item .logo {
       &:hover,
       &:active {
         span {
-          color: #256BD1
+          color: $navbarHover;
+          font-weight: bold;
         }
       }
 
@@ -209,7 +210,8 @@ li.nav-item .logo {
     }
 
     a.IsActive {
-      color: #256bd1;
+      color: $navbarHover;
+      font-weight: bold;
     }
 
     .additional-masters {
@@ -217,6 +219,26 @@ li.nav-item .logo {
         height: 20px;
         object-fit: contain;
       }
+    }
+
+    .additional-masters {
+      min-width: 140px;
+    }
+
+    .costing {
+      min-width: 58px;
+    }
+
+    .masters {
+      min-width: 60px;
+    }
+
+    .simulation {
+      min-width: 80px;
+    }
+
+    .report {
+      min-width: 50px;
     }
   }
 
@@ -413,6 +435,83 @@ li.nav-item .logo {
   }
 }
 
+// top menu bar drop down css starts here
+.nav-item.dropdown {
+  position: unset;
+
+  .dr-icon {
+    font-size: 14px;
+  }
+
+  .dropdown-menu.sub-menu {
+    display: none;
+    position: absolute;
+    right: 29px;
+    top: 30px;
+    left: 29px;
+    z-index: 10;
+    text-align: left;
+    list-style: none;
+    padding-top: 20px;
+    background-clip: padding-box;
+    background-color: transparent;
+    border: none;
+
+    ul {
+      background-color: #fff;
+      box-shadow: 0px 5px 10px #00000033;
+      border-radius: 4px;
+      min-width: 8.4375rem;
+      padding: 25px;
+
+      li {
+        padding: 5px 10px;
+        padding: 5px 10px;
+        display: inline-block;
+        vertical-align: top;
+        width: 19.8%;
+        text-align: left;
+      }
+
+      a {
+        color: #8A91AC;
+        font-size: 15px;
+        padding: 0;
+
+        &:hover,
+        &:focus {
+          background-color: #fff;
+          color: $navbarHover !important;
+          font-weight: bold;
+        }
+      }
+
+      .active-nav {
+        color: $colorPrimary;
+        font-weight: bold;
+      }
+    }
+  }
+
+  &:hover {
+    >.nav-link {
+      color: $navbarHover;
+      font-weight: bold;
+    }
+
+    i.dr-icon {
+      transform: rotate(180deg);
+      color: $navbarHover;
+      letter-spacing: 0px !important;
+    }
+
+    .dropdown-menu.sub-menu {
+      display: block;
+    }
+  }
+}
+
+// top menu bar drop down css starts end
 .main-menu {
   .logout {
     .dropdown-menu {

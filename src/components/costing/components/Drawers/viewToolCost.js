@@ -18,7 +18,7 @@ function ViewToolCost(props) {
         <thead>
           <tr>
             <th>{`Tool Maintenance Applicability`}</th>
-            <th>{`Maintanence Tool Cost (%)`}</th>
+            <th>{`Maintenance Tool Cost (%)`}</th>
             <th>{`Cost (Applicability)`}</th>
             <th>{`Tool Maintenance Cost`}</th>
             <th>{`Tool Cost`}</th>
