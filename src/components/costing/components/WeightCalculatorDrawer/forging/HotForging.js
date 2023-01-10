@@ -4,7 +4,7 @@ import { useForm, Controller, useWatch } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 import Toaster from '../../../../common/Toaster'
 import { saveRawMaterialCalculationForForging } from '../../../actions/CostWorking'
-import { postiveNumber, maxValue100 } from "../../../../../helper/validation";
+import { postiveNumber, maxPercentValue } from "../../../../../helper/validation";
 
 import {
 
@@ -687,7 +687,7 @@ function HotForging(props) {
                   handleChange={() => { }}
                   rules={{
                     required: false,
-                    validate: { postiveNumber, maxValue100 }
+                    validate: { postiveNumber, maxPercentValue }
                   }}
                   defaultValue={''}
                   className=""
@@ -706,7 +706,7 @@ function HotForging(props) {
                   register={register}
                   rules={{
                     required: false,
-                    validate: { postiveNumber, maxValue100 }
+                    validate: { postiveNumber, maxPercentValue }
                   }}
                   mandatory={false}
                   handleChange={() => { }}
