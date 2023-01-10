@@ -1671,7 +1671,7 @@ export const ERROR = 'Error'
 export const POUPDATED = 'POUpdated'
 export const LINKED = 'Linked'
 export const REJECTED_BY_SYSTEM = 'RejectedBySystem'
-export const UNDER_APPROVAL = 'Under Approval'
+export const UNDER_APPROVAL = 'UnderApproval'
 export const CANCELLED = 'Cancelled'
 export const UNDER_REVISION = 'UnderRevision'
 export const RECEIVED = 'Received'
@@ -2157,4 +2157,4 @@ export const KEYRFQ = "UAGSqTBCbZ8JqHJl"
 export const IVRFQ = "8vFNmRQEl91nOtrM"
 
 //VERSION 
-export const VERSION = "V2.1.45.3";
+export const VERSION = "V2.1.45.4";
