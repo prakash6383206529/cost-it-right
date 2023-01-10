@@ -17,7 +17,7 @@ import SelectRowWrapper from '.././common/SelectRowWrapper';
 import { getQuotationList, cancelRfqQuotation, sendReminderForQuotation } from './actions/rfq';
 import ViewRfq from './ViewRfq';
 import AddRfq from './AddRfq';
-import { checkPermission } from '../../helper';
+import { checkPermission, userDetails } from '../../helper';
 import TooltipCustom from '../common/Tooltip';
 const gridOptions = {};
 
@@ -70,7 +70,7 @@ function RfqListing(props) {
     * @description HIDE DOMESTIC, IMPORT FORMS
     */
     const getDataList = () => {
-        dispatch(getQuotationList((res) => {
+        dispatch(getQuotationList(userDetails()?.DepartmentCode, (res) => {
             let temp = []
             res?.data?.DataList && res?.data?.DataList.map((item) => {
                 if (item.IsActive === false) {
@@ -163,6 +163,7 @@ function RfqListing(props) {
         setAddRfqData({})
         setAddRfq(false)
         getDataList()
+        setIsEdit(false)
 
     }
 
@@ -370,6 +371,8 @@ function RfqListing(props) {
                                                 <AgGridColumn field="PlantName" headerName='Plant (Code)'></AgGridColumn>
                                                 <AgGridColumn field="TechnologyName" headerName='Technology'></AgGridColumn>
                                                 <AgGridColumn field="Remark" headerName='Remark'></AgGridColumn>
+                                                <AgGridColumn field="RaisedBy" headerName='Raised By'></AgGridColumn>
+                                                <AgGridColumn field="RaisedOn" headerName='Raised On'></AgGridColumn>
                                                 <AgGridColumn field="QuotationNumber" headerName='Attachments' cellRenderer='attachmentFormatter'></AgGridColumn>
                                                 <AgGridColumn field="Status" headerName="Status" cellClass="text-center" minWidth={150} cellRenderer="statusFormatter"></AgGridColumn>
                                                 {<AgGridColumn field="QuotationId" width={150} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
