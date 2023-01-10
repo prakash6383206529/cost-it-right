@@ -17,8 +17,9 @@ export const minValue = min => value =>
 //THIS IS FOR MAX VALUE
 export const maxValue = max => value =>
     value && value > max ? `Maximum no of days should be ${max}.` : undefined;
+
 export const maxPercentageValue = max => value =>
-    value && value > max ? `Maximum value should be ${max}.` : undefined;
+    value && value > max ? `Percentage value should be equal to ${max}.` : undefined;
 
 export const minValue1 = minValue(1);
 export const minValueLessThan1 = minValue(0.1);
