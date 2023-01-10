@@ -16,12 +16,13 @@ export const minValue = min => value =>
 
 //THIS IS FOR MAX VALUE
 export const maxValue = max => value =>
-    value && value > max ? `Maximum no of days should be ${max}.` : undefined;
+    value && value > max ? `Maximum value should be ${max}.` : undefined;
 
 
 export const minValue1 = minValue(1);
 export const minValueLessThan1 = minValue(0.1);
 export const maxValue366 = maxValue(366)
+export const maxValue100 = maxValue(100)
 
 export const minLength1 = minLength(1);
 export const minLength2 = minLength(2);
