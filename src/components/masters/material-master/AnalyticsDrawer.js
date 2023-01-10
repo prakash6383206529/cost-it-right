@@ -214,6 +214,7 @@ function AnalyticsDrawer(props) {
                 <Drawer
                     anchor={props.anchor}
                     open={props.isOpen}
+                    className={"chart-drawer"}
                 // onClose={(e) => this.toggleDrawer(e)}
                 >
                     <Container>
