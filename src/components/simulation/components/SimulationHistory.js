@@ -35,7 +35,7 @@ function SimulationHistory(props) {
 
     resizable: true,
     filter: true,
-    sortable: true,
+    sortable: false,
     // headerCheckboxSelection: isFirstColumn,
     // checkboxSelection: isFirstColumn
   };

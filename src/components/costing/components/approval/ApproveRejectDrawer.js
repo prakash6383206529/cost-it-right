@@ -65,15 +65,16 @@ function ApproveRejectDrawer(props) {
     if (!isSimulation) {
       /************THIS CONDITION SI FOR COSTING*******************/
       dispatch(getAllApprovalDepartment((res) => {
-        const Data = res.data.SelectList
+
+        const Data = res?.data?.SelectList
         const departObj = Data && Data.filter(item => item.Value === userData.DepartmentId)
 
-        setValue('dept', { label: departObj[0].Text, value: departObj[0].Value })
+        setValue('dept', { label: departObj && departObj[0].Text, value: departObj && departObj[0].Value })
 
         let obj = {
           LoggedInUserId: userData.LoggedInUserId,
-          DepartmentId: departObj[0]?.Value,
-          TechnologyId: approvalData[0]?.TechnologyId,
+          DepartmentId: departObj && departObj[0]?.Value,
+          TechnologyId: approvalData && approvalData[0]?.TechnologyId,
           ReasonId: reasonId
         }
 
@@ -93,7 +94,7 @@ function ApproveRejectDrawer(props) {
         const Data = res.data.SelectList
         const departObj = Data && Data.filter(item => item.Value === (type === 'Sender' ? userData.DepartmentId : simulationDetail.DepartmentId))
         setValue('dept', { label: departObj[0].Text, value: departObj[0].Value })
-        getApproversList(departObj[0].Value)
+        getApproversList(departObj[0].Value, departObj[0].Text)
 
       }))
 
@@ -130,7 +131,7 @@ function ApproveRejectDrawer(props) {
 
 
 
-  const getApproversList = (departObj) => {
+  const getApproversList = (departObj, departmentName) => {
     let values = []
     let approverDropdownValue = []
     let count = 0
@@ -221,13 +222,13 @@ function ApproveRejectDrawer(props) {
         }
 
         dispatch(getAllSimulationApprovalList(obj, (res) => {
-          const Data = res.data.DataList[1] ? res.data.DataList[1] : []
+          const Data = res && res.data && res?.data?.DataList[1] ? res?.data?.DataList[1] : []
           if (Object.keys(Data).length > 0) {
             setValue('dept', { label: Data.DepartmentName, value: Data.DepartmentId })
           }
           setValue('approver', { label: Data.Text ? Data.Text : '', value: Data.Value ? Data.Value : '', levelId: Data.LevelId ? Data.LevelId : '', levelName: Data.LevelName ? Data.LevelName : '' })
           let tempDropdownList = []
-          res.data.DataList && res.data.DataList.map((item) => {
+          res && res.data && res?.data?.DataList && res?.data?.DataList.map((item) => {
             if (item.Value === '0') return false;
             tempDropdownList.push({
               label: item.Text,
@@ -242,6 +243,8 @@ function ApproveRejectDrawer(props) {
 
             Toaster.warning('User does not exist on next level for selected simulation.')
             setApprovalDropDown([])
+            setValue('dept', { label: departmentName, value: departObj })
+            setValue('approver', '')
             return false
           }
         }))
@@ -333,6 +336,7 @@ function ApproveRejectDrawer(props) {
     if (!isSimulation) {
       /*****************************THIS CONDITION IS FOR COSTING APPROVE OR REJECT CONDITION***********************************/
       let Data = []
+
       approvalData.map(ele => {
         Data.push({
           ApprovalProcessSummaryId: ele.ApprovalProcessSummaryId,
@@ -643,7 +647,7 @@ function ApproveRejectDrawer(props) {
         setApprovalDropDown(tempDropdownList)
       }))
     } else {
-      getApproversList(value.value)
+      getApproversList(value.value, value.label)
       // dispatch(
       //   getAllSimulationApprovalList(simObj, (res) => {
       //     res.data.DataList &&
@@ -1008,7 +1012,13 @@ function ApproveRejectDrawer(props) {
                     control={control}
                     register={register}
                     mandatory={type === 'Approve' ? false : true}
-                    rules={{ required: type === 'Approve' ? false : true }}
+                    rules={{
+                      required: type === 'Approve' ? false : true,
+                      maxLength: {
+                        value: 255,
+                        message: "Remark should be less than 255 word"
+                      },
+                    }}
                     handleChange={handleRemark}
                     //defaultValue={viewRM.RMRate}
                     className=""

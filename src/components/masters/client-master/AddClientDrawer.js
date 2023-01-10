@@ -2,16 +2,17 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, } from 'reactstrap';
-import { required, email, minLength7, maxLength70, acceptAllExceptSingleSpecialCharacter, maxLength12, minLength10, maxLength80, checkWhiteSpaces, maxLength20, postiveNumber, maxLength5 } from "../../../helper/validation";
+import { required, email, minLength7, maxLength70, acceptAllExceptSingleSpecialCharacter, maxLength12, minLength10, maxLength80, checkWhiteSpaces, maxLength20, postiveNumber, maxLength5, maxLength6 } from "../../../helper/validation";
 import { renderText, renderEmailInputField, searchableSelect, renderNumberInputField } from "../../layout/FormInputs";
-import { createClient, updateClient, getClientData } from '../actions/Client';
+import { createClient, updateClient, getClientData, checkAndGetCustomerCode } from '../actions/Client';
 import { fetchCountryDataAPI, fetchStateDataAPI, fetchCityDataAPI, getCityByCountry, } from '../../../actions/Common';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
-import { loggedInUserId, } from "../../../helper/auth";
+import { getConfigurationKey, loggedInUserId, } from "../../../helper/auth";
 import Drawer from '@material-ui/core/Drawer';
 import LoaderCustom from '../../common/LoaderCustom';
 import { debounce } from 'lodash';
+import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 
 
 
@@ -29,7 +30,11 @@ class AddClientDrawer extends Component {
             showStateCity: true,
             DropdownChanged: true,
             DataToCheck: [],
-            setDisable: false
+            setDisable: false,
+            isDisableCode: false,
+            companyCode: '',
+            companyName: '',
+            showPopup: false
         }
     }
 
@@ -152,6 +157,8 @@ class AddClientDrawer extends Component {
                         this.props.fetchStateDataAPI(Data.CountryId, () => { })
                         this.props.fetchCityDataAPI(Data.StateId, () => { })
                     }
+
+                    this.props.change('CompanyCode', Data.CompanyCode)
                     setTimeout(() => {
                         this.setState({
                             // isLoader: false,
@@ -160,7 +167,6 @@ class AddClientDrawer extends Component {
                             city: Data.CityName !== undefined ? { label: Data.CityName, value: Data.CityId } : [],
                         }, () => this.setState({ isLoader: false }))
                     }, 500)
-
                 }
             })
         } else {
@@ -195,7 +201,16 @@ class AddClientDrawer extends Component {
 
         this.toggleDrawer('', type)
     }
-
+    cancelHandler = () => {
+        this.setState({ showPopup: true })
+    }
+    onPopupConfirm = () => {
+        this.cancel('cancel')
+        this.setState({ showPopup: false })
+    }
+    closePopUp = () => {
+        this.setState({ showPopup: false })
+    }
     /**
     * @method onSubmit
     * @description Used to Submit the form
@@ -226,6 +241,7 @@ class AddClientDrawer extends Component {
                 Extension: values.Extension,
                 CityId: city.value,
                 LoggedInUserId: loggedInUserId(),
+                CompanyCode: values.CompanyCode
             }
 
             this.props.updateClient(updateData, (res) => {
@@ -249,6 +265,7 @@ class AddClientDrawer extends Component {
                 Extension: values.Extension,
                 CityId: city.value,
                 LoggedInUserId: loggedInUserId(),
+                CompanyCode: values.CompanyCode
             }
             this.props.createClient(formData, (res) => {
                 this.setState({ setDisable: false })
@@ -265,13 +282,42 @@ class AddClientDrawer extends Component {
             e.preventDefault();
         }
     };
+
+    checkUniqCode = (e) => {
+        this.setState({ companyCode: e.target.value })
+        this.props.checkAndGetCustomerCode(e.target.value, this.state.companyName, res => {
+
+            let Data = res.data.DynamicData
+            if (Data?.IsExist) {
+                if (this.state.companyName) {
+                    this.props.change('CompanyCode', res.data.DynamicData.CustomerCode ? res.data.DynamicData.CustomerCode : '')
+                } else {
+                    Toaster.warning(res.data.Message);
+                    this.props.change('CompanyCode', '')
+                }
+            }
+        })
+    }
+
+    checkUniqCodeByName = (e) => {
+        this.setState({ companyName: e.target.value })
+        this.props.checkAndGetCustomerCode(this.state.companyCode, e.target.value, res => {
+            if (res && res.data && res.data.Result === false) {
+                this.props.change('CompanyCode', res.data.DynamicData.CustomerCode ? res.data.DynamicData.CustomerCode : '')
+            } else {
+                this.setState({ isDisableCode: res.data.DynamicData.IsExist }, () => {
+                    this.props.change('CompanyCode', res.data.DynamicData.CustomerCode ? res.data.DynamicData.CustomerCode : '')
+                })
+            }
+        })
+    }
     /**
-    * @method render
-    * @description Renders the component
-    */
+     * @method render
+     * @description Renders the component
+     */
     render() {
         const { handleSubmit, isEditFlag, } = this.props;
-        const { country, isViewMode, setDisable } = this.state;
+        const { country, isViewMode, setDisable, isDisableCode } = this.state;
         return (
             <div>
                 <Drawer anchor={this.props.anchor} open={this.props.isOpen}
@@ -288,7 +334,7 @@ class AddClientDrawer extends Component {
                                 <Row className="drawer-heading">
                                     <Col>
                                         <div className={'header-wrapper left'}>
-                                            <h3>{isViewMode ? "View" : isEditFlag ? "Update" : "Add"} Client</h3>
+                                            <h3>{isViewMode ? "View" : isEditFlag ? "Update" : "Add"} Customer</h3>
                                         </div>
                                         <div
                                             onClick={(e) => this.toggleDrawer(e, 'cancel')}
@@ -305,10 +351,27 @@ class AddClientDrawer extends Component {
                                             placeholder={isViewMode ? '-' : "Enter"}
                                             validate={[required, acceptAllExceptSingleSpecialCharacter, maxLength80, checkWhiteSpaces]}
                                             component={renderText}
+                                            onBlur={this.checkUniqCodeByName}
                                             required={true}
                                             className=""
                                             customClassName={'withBorder'}
                                             disabled={isEditFlag ? true : false}
+                                        />
+                                    </Col>
+                                    <Col md="6">
+                                        <Field
+                                            label={`Company Code`}
+                                            name={'CompanyCode'}
+                                            type="text"
+                                            placeholder={(isEditFlag || isDisableCode || getConfigurationKey()?.IsAutoGeneratedCustomerCompanyCode) ? '-' : "Select"}
+                                            validate={[required]}
+                                            valueDescription={this.state.companyCode}
+                                            component={renderText}
+                                            required={true}
+                                            onChange={this.checkUniqCode}
+                                            className=" "
+                                            customClassName=" withBorder"
+                                            disabled={(isEditFlag || isDisableCode || getConfigurationKey()?.IsAutoGeneratedCustomerCompanyCode) ? true : false}
                                         />
                                     </Col>
                                     <Col md="6">
@@ -448,7 +511,7 @@ class AddClientDrawer extends Component {
                                             name={"ZipCode"}
                                             type="text"
                                             placeholder={isViewMode ? '-' : "Enter"}
-                                            validate={[postiveNumber]}
+                                            validate={[postiveNumber, maxLength6]}
                                             component={renderNumberInputField}
                                             // required={true}
                                             maxLength={6}
@@ -464,7 +527,7 @@ class AddClientDrawer extends Component {
                                             <button
                                                 type={'button'}
                                                 className="mr15 cancel-btn"
-                                                onClick={() => { this.cancel('cancel') }}
+                                                onClick={this.cancelHandler}
                                                 disabled={setDisable}
                                             >
                                                 <div className={'cancel-icon'}></div> {'Cancel'}
@@ -483,6 +546,9 @@ class AddClientDrawer extends Component {
                         </div>
                     </Container>
                 </Drawer>
+                {
+                    this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.CANCEL_MASTER_ALERT}`} />
+                }
             </div>
         );
     }
@@ -527,6 +593,7 @@ export default connect(mapStateToProps, {
     updateClient,
     getClientData,
     getCityByCountry,
+    checkAndGetCustomerCode
 })(reduxForm({
     form: 'AddClientDrawer',
     enableReinitialize: true,

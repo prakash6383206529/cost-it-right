@@ -160,7 +160,7 @@ export function activeInactiveStatus(requestData, callback) {
  */
 export function getFilteredPlantList(filterData, callback) {
     return (dispatch) => {
-        const qParams = `country_id=${filterData.country}&state_id=${filterData.state}&city_id=${filterData.city}&is_vendor=${filterData.is_vendor}`
+        const qParams = `country_id=${filterData.country}&state_id=${filterData.state}&city_id=${filterData.city}&CostingTypeId=${filterData.CostingTypeId}`
         const request = axios.get(`${API.getFilteredPlantList}?${qParams}`, config());
         request.then((response) => {
 

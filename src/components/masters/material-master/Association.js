@@ -9,6 +9,7 @@ import { getRawMaterialNameChild, getMaterialTypeDataAPI, createAssociation, get
 import { MESSAGES } from '../../../config/message';
 import Toaster from '../../common/Toaster';
 import { debounce } from 'lodash';
+import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 
 class Association extends Component {
     constructor(props) {
@@ -17,7 +18,8 @@ class Association extends Component {
             RawMaterial: [],
             RMGrade: [],
             material: [],
-            setDisable: false
+            setDisable: false,
+            showPopup: false
         }
 
     }
@@ -128,7 +130,16 @@ class Association extends Component {
         }
         this.props.closeDrawer('')
     };
-
+    cancel = () => {
+        this.setState({ showPopup: true })
+    }
+    onPopupConfirm = () => {
+        this.props.closeDrawer('')
+        this.setState({ showPopup: false })
+    }
+    closePopUp = () => {
+        this.setState({ showPopup: false })
+    }
     render() {
         const { handleSubmit } = this.props;
         const { setDisable } = this.state
@@ -230,7 +241,7 @@ class Association extends Component {
                                                 <button
                                                     type={"button"}
                                                     className=" mr15 cancel-btn"
-                                                    onClick={this.toggleDrawer}
+                                                    onClick={this.cancel}
                                                     disabled={setDisable}
                                                 >
                                                     <div className={'cancel-icon'}></div>
@@ -251,6 +262,9 @@ class Association extends Component {
                         </div>
                     </Container>
                 </Drawer>
+                {
+                    this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.CANCEL_MASTER_ALERT}`} />
+                }
             </div>
         );
     }

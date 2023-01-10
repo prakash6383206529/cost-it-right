@@ -121,7 +121,7 @@ class AddClient extends Component {
         return (
             <>
                 {/* <button className="Edit mr5" type={'button'} onClick={() => this.editItemDetails(cell)} /> */}
-                <button className="Delete" type={'button'} onClick={() => this.deleteItem(cell, rowIndex)} />
+                <button title='Delete' className="Delete" type={'button'} onClick={() => this.deleteItem(cell, rowIndex)} />
             </>
         )
     }
@@ -261,7 +261,7 @@ class AddClient extends Component {
                                     <div className="row">
                                         <div className="col-md-6">
                                             <div className="form-heading mb-0">
-                                                <h2>{this.state.isEditFlag ? 'Update Client' : 'Add Client'}</h2>
+                                                <h2>{this.state.isEditFlag ? 'Update Customer' : 'Add Customer'}</h2>
                                             </div>
                                         </div>
                                     </div>

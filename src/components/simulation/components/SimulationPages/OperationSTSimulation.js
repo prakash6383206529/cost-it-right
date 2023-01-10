@@ -3,7 +3,7 @@ import { Row, Col, } from 'reactstrap';
 import DayTime from '../../../common/DayTimeWrapper'
 import { defaultPageSize, EMPTY_DATA, OPERATIONS, SURFACETREATMENT } from '../../../../config/constants';
 import NoContentFound from '../../../common/NoContentFound';
-import { checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUserId } from '../../../../helper';
+import { checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUserId, searchNocontentFilter } from '../../../../helper';
 import Toaster from '../../../common/Toaster';
 // import { runVerifyCombinedProcessSimulation } from '../../actions/Simulation';
 import { Fragment } from 'react';
@@ -41,6 +41,7 @@ function OperationSTSimulation(props) {
     const [isWarningMessageShow, setIsWarningMessageShow] = useState(false);
     const [maxDate, setMaxDate] = useState('');
     const [titleObj, setTitleObj] = useState({})
+    const [noData, setNoData] = useState(false);
 
     const gridRef = useRef();
 
@@ -105,6 +106,11 @@ function OperationSTSimulation(props) {
         )
     }
 
+    const onFloatingFilterChanged = (value) => {
+        if (list.length !== 0) {
+            setNoData(searchNocontentFilter(value, noData))
+        }
+    }
     const oldRateFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
@@ -183,7 +189,7 @@ function OperationSTSimulation(props) {
     const defaultColDef = {
         resizable: true,
         filter: true,
-        sortable: true
+        sortable: false
     };
 
     const onGridReady = (params) => {
@@ -237,7 +243,6 @@ function OperationSTSimulation(props) {
     };
 
 
-    let obj = {}
     const verifySimulation = debounce(() => {
         /**********CONDITION FOR: IS ANY FIELD EDITED****************/
         if (!isEffectiveDateSelected) {
@@ -265,10 +270,10 @@ function OperationSTSimulation(props) {
         }
         setIsDisable(true)
         /**********POST METHOD TO CALL HERE AND AND SEND TOKEN TO VERIFY PAGE ****************/
+        let obj = {}
         obj.SimulationTechnologyId = selectedMasterForSimulation.value
         obj.LoggedInUserId = loggedInUserId()
-
-        obj.CostingHead = list[0].CostingHead === "Vendor Based" ? VBC : ZBC
+        obj.SimulationHeadId = list[0].CostingTypeId
         obj.TechnologyId = selectedTechnologyForSimulation.value
         obj.TechnologyName = selectedTechnologyForSimulation.label
 
@@ -313,12 +318,15 @@ function OperationSTSimulation(props) {
 
                             <Row>
                                 <Col className="add-min-height mb-3 sm-edit-page">
-                                    <div className={`ag-grid-wrapper height-width-wrapper ${list && list?.length <= 0 ? "overlay-contain" : ""}`}>
-                                        <div className="ag-grid-header d-flex align-items-center">
-                                            <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
-                                            <button type="button" className="user-btn float-right" title="Reset Grid" onClick={() => resetState()}>
-                                                <div className="refresh mr-0"></div>
-                                            </button>
+                                    <div className={`ag-grid-wrapper height-width-wrapper ${(list && list?.length <= 0) || noData ? "overlay-contain" : ""}`}>
+                                        <div className="ag-grid-header d-flex align-items-center justify-content-between">
+                                            <div className='d-flex align-items-center'>
+                                                <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
+                                                <button type="button" className="user-btn float-right" title="Reset Grid" onClick={() => resetState()}>
+                                                    <div className="refresh mr-0"></div>
+                                                </button>
+                                            </div>
+                                            {!isImpactedMaster && <button type="button" className={"apply"} onClick={cancel} disabled={isDisable}> <div className={'back-icon'}></div>Back</button>}
                                         </div>
                                         {
                                             isbulkUpload &&
@@ -363,7 +371,8 @@ function OperationSTSimulation(props) {
                                                 </div>
                                             </div>
                                         }
-                                        <div className="ag-theme-material" style={{ width: '100%' }}>
+                                        <div className="ag-theme-material p-relative" style={{ width: '100%' }}>
+                                            {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found simulation-lisitng" />}
                                             <AgGridReact
                                                 ref={gridRef}
                                                 floatingFilter={true}
@@ -384,16 +393,17 @@ function OperationSTSimulation(props) {
                                                 frameworkComponents={frameworkComponents}
                                                 stopEditingWhenCellsLoseFocus={true}
                                                 rowSelection={'multiple'}
+                                                onFilterModified={onFloatingFilterChanged}
                                             // frameworkComponents={frameworkComponents}
                                             >
                                                 {!isImpactedMaster && <>
                                                     <AgGridColumn field="Technology" editable='false' headerName="Technology" minWidth={190}></AgGridColumn>
-                                                    <AgGridColumn field="VendorName" editable='false' headerName="Vendor" minWidth={190}></AgGridColumn>
+                                                    <AgGridColumn field="VendorName" editable='false' headerName="Vendor (Code)" minWidth={190}></AgGridColumn>
                                                 </>}
                                                 <AgGridColumn field="OperationName" editable='false' headerName="Operation Name" minWidth={190}></AgGridColumn>
                                                 <AgGridColumn field="OperationCode" editable='false' headerName="Operation Code" minWidth={190}></AgGridColumn>
                                                 {!isImpactedMaster && <>
-                                                    <AgGridColumn field={`${isbulkUpload ? 'DestinationPlant' : 'Plants'}`} editable='false' headerName="Plant" minWidth={190}></AgGridColumn>
+                                                    <AgGridColumn field={`${isbulkUpload ? 'DestinationPlant' : 'Plants'}`} editable='false' headerName="Plant (Code)" minWidth={190}></AgGridColumn>
                                                 </>}
                                                 <AgGridColumn headerClass="justify-content-center" cellClass="text-center" minWidth={240} headerName="Net Rate" marryChildren={true} >
                                                     <AgGridColumn minWidth={120} field="Rate" editable='false' headerName="Old" colId="Rate" cellRenderer="oldRateFormatter"></AgGridColumn>
@@ -431,11 +441,6 @@ function OperationSTSimulation(props) {
                                             />
                                             {isWarningMessageShow && <WarningMessage dClass={"error-message"} textClass={"pt-1"} message={"Please select effective date"} />}
                                         </div>
-
-                                        <button type={"button"} className="mr15 cancel-btn" onClick={cancel} disabled={isDisable}>
-                                            <div className={"cancel-icon"}></div>
-                                            {"CANCEL"}
-                                        </button>
                                         <button onClick={verifySimulation} type="button" className="user-btn mr5 save-btn" disabled={isDisable}>
                                             <div className={"Run-icon"}>
                                             </div>{" "}
