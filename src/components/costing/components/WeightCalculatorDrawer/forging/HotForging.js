@@ -4,12 +4,9 @@ import { useForm, Controller, useWatch } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 import Toaster from '../../../../common/Toaster'
 import { saveRawMaterialCalculationForForging } from '../../../actions/CostWorking'
-import { number, percentageLimitValidation, checkWhiteSpaces } from "../../../../../helper/validation";
+import { maxValue100, postiveNumber } from "../../../../../helper/validation";
 
-import {
-
-  NumberFieldHookForm, TextFieldHookForm,
-} from '../../../../layout/HookFormInputs'
+import { NumberFieldHookForm } from '../../../../layout/HookFormInputs'
 import {
   checkForDecimalAndNull,
   checkForNull,
@@ -684,9 +681,12 @@ function HotForging(props) {
                   Controller={Controller}
                   control={control}
                   register={register}
-                  // id={'forging-scrapPercent'}
                   mandatory={false}
                   handleChange={() => { }}
+                  rules={{
+                    required: false,
+                    validate: { postiveNumber, maxValue100 }
+                  }}
                   defaultValue={''}
                   className=""
                   customClassName={'withBorder'}
@@ -702,7 +702,10 @@ function HotForging(props) {
                   Controller={Controller}
                   control={control}
                   register={register}
-                  // id={'machining-scrapPercent'}
+                  rules={{
+                    required: false,
+                    validate: { postiveNumber, maxValue100 }
+                  }}
                   mandatory={false}
                   handleChange={() => { }}
                   defaultValue={''}

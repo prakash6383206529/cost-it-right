@@ -7,6 +7,9 @@ import { saveRawMaterialCalculationForForging } from '../../../actions/CostWorki
 import { NumberFieldHookForm, TextFieldHookForm, } from '../../../../layout/HookFormInputs'
 import { number, percentageLimitValidation, checkWhiteSpaces } from "../../../../../helper/validation";
 import {
+  postiveNumber, maxValue100
+} from "../../../../../helper/validation"
+import {
   checkForDecimalAndNull,
   checkForNull,
   getConfigurationKey,
@@ -673,7 +676,10 @@ function ColdForging(props) {
                   Controller={Controller}
                   control={control}
                   register={register}
-                  // id={'forging-scrapPercent'}
+                  rules={{
+                    required: false,
+                    validate: { postiveNumber, maxValue100 }
+                  }}
                   mandatory={false}
                   handleChange={() => { }}
                   defaultValue={''}
@@ -691,7 +697,10 @@ function ColdForging(props) {
                   Controller={Controller}
                   control={control}
                   register={register}
-                  // id={'machining-scrapPercent'}
+                  rules={{
+                    required: false,
+                    validate: { postiveNumber, maxValue100 }
+                  }}
                   mandatory={false}
                   handleChange={() => { }}
                   defaultValue={''}
