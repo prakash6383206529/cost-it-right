@@ -6,7 +6,7 @@ import Toaster from '../../../../common/Toaster'
 import { saveRawMaterialCalculationForForging } from '../../../actions/CostWorking'
 import { NumberFieldHookForm, } from '../../../../layout/HookFormInputs'
 import {
-  postiveNumber, maxValue100
+  postiveNumber, maxPercentValue
 } from "../../../../../helper/validation"
 import {
   checkForDecimalAndNull,
@@ -677,7 +677,7 @@ function ColdForging(props) {
                   register={register}
                   rules={{
                     required: false,
-                    validate: { postiveNumber, maxValue100 }
+                    validate: { postiveNumber, maxPercentValue }
                   }}
                   mandatory={false}
                   handleChange={() => { }}
@@ -698,7 +698,7 @@ function ColdForging(props) {
                   register={register}
                   rules={{
                     required: false,
-                    validate: { postiveNumber, maxValue100 }
+                    validate: { postiveNumber, maxPercentValue }
                   }}
                   mandatory={false}
                   handleChange={() => { }}
