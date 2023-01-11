@@ -98,7 +98,7 @@ class BOPImportListing extends Component {
                         this.props?.changeSetLoader(true)
                         this.props.getListingForSimulationCombined(this.props.objectForMultipleSimulation, BOPIMPORT, () => {
                             this.props?.changeSetLoader(false)
-
+                            this.setState({ isLoader: false })
                         })
                     } else {
                         this.getDataList("", 0, "", "", 0, defaultPageSize, true, this.state.floatingFilterData)
