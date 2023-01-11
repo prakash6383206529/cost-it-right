@@ -160,7 +160,7 @@ function RMImportListing(props) {
           props?.changeSetLoader(true)
           dispatch(getListingForSimulationCombined(objectForMultipleSimulation, RMIMPORT, (res) => {
             props?.changeSetLoader(false)
-
+            setloader(false)
           }))
 
         } else {
