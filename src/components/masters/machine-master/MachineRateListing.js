@@ -53,7 +53,7 @@ class MachineRateListing extends Component {
             machineType: [],
 
             isBulkUpload: false,
-            isLoader: false,
+            isLoader: true,
             showPopup: false,
             showCopyPopup: false,
             deletedId: '',
