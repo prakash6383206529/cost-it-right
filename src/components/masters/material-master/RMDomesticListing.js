@@ -138,6 +138,7 @@ function RMDomesticListing(props) {
                 props?.changeSetLoader(true)
                 dispatch(getListingForSimulationCombined(objectForMultipleSimulation, RMDOMESTIC, (res) => {
                     props?.changeSetLoader(false)
+                    setloader(false)
                 }))
             } else {
                 if (isSimulation) {
