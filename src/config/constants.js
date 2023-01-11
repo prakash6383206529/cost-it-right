@@ -310,6 +310,8 @@ export const API = {
   getManageBOPSOBDataList: `${BASE_URL}/masters-bought-out-part/get-bought-out-part-vendor-share-of-business-by-filter`,
   getManageBOPSOBById: `${BASE_URL}/masters-bought-out-part/get-bought-out-part-vendor-share-of-business-by-bop-part-number`,
   updateBOPSOBVendors: `${BASE_URL}/masters-bought-out-part/update-bought-out-part-vendor-share-of-business`,
+  getIncoTermSelectList: `${BASE_URL}/masters-bought-out-part/get-select-list-bought-out-part-inco-terms`,
+  getPaymentTermSelectList: `${BASE_URL}/masters-bought-out-part/get-select-list-bought-out-part-payment-terms`,
 
   //BOP APPROVAL API'S
 
@@ -1201,6 +1203,8 @@ export const GET_ALL_BOP_DOMESTIC_DATA_LIST = 'GET_ALL_BOP_DOMESTIC_DATA_LIST'
 export const GET_BOP_IMPORT_DATA_LIST = 'GET_BOP_IMPORT_DATA_LIST'
 export const GET_SOB_LISTING = 'GET_SOB_LISTING'
 export const GET_BOP_APPROVAL_LIST = 'GET_BOP_APPROVAL_LIST'
+export const GET_INCO_SELECTLIST_SUCCESS = 'GET_INCO_SELECTLIST_SUCCESS'
+export const GET_PAYMENT_SELECTLIST_SUCCESS = 'GET_PAYMENT_SELECTLIST_SUCCESS'
 
 //PROCESS MASTER
 export const CREATE_PROCESS_SUCCESS = 'CREATE_PROCESS_SUCCESS'
