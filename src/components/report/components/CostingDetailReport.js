@@ -382,7 +382,6 @@ function ReportListing(props) {
         else {
             newData = data
         }
-        newData.IsCustomerDataShow = reactLocalStorage.getObject('cbcCostingPermission')
         dispatch(getCostingReport(skip, take, isPagination, newData, isLastWeek, isCallApi, (res) => {
 
             if (res) {
