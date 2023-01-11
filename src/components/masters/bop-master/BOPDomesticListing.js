@@ -56,7 +56,7 @@ class BOPDomesticListing extends Component {
             showData: false,
             showPopup: false,
             deletedId: '',
-            isLoader: false,
+            isLoader: true,
             isFinalApprovar: false,
             disableFilter: true,
             disableDownload: false,
@@ -116,19 +116,15 @@ class BOPDomesticListing extends Component {
     */
     getDataList = (bopFor = '', CategoryId = 0, vendorId = '', plantId = '', skip = 0, take = 100, isPagination = true, dataObj, isReset = false) => {
 
-
         if (this.state.filterModel?.EffectiveDateNew && !isReset) {
             if (this.state.filterModel.EffectiveDateNew.dateTo) {
                 let temp = []
                 temp.push(DayTime(this.state.filterModel.EffectiveDateNew.dateFrom).format('DD/MM/YYYY'))
                 temp.push(DayTime(this.state.filterModel.EffectiveDateNew.dateTo).format('DD/MM/YYYY'))
-
                 dataObj.dateArray = temp
             }
 
         }
-        dataObj.IsCustomerDataShow = reactLocalStorage.getObject('cbcCostingPermission')
-
 
         // TO HANDLE FUTURE CONDITIONS LIKE [APPROVED_STATUS, DRAFT_STATUS] FOR MULTIPLE STATUS
         let statusString = [APPROVED_STATUS].join(",")
@@ -839,7 +835,7 @@ class BOPDomesticListing extends Component {
                                     <AgGridColumn field="Plants" cellRenderer={'hyphenFormatter'} headerName="Plant (Code)"></AgGridColumn>
                                     <AgGridColumn field="Vendor" headerName="Vendor (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                     <AgGridColumn field="DepartmentName" headerName="Company (Code)" ></AgGridColumn>
-                                    <AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                                    {(reactLocalStorage.getObject('cbcCostingPermission')) && <AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
                                     {/* <AgGridColumn field="DepartmentName" headerName="Department"></AgGridColumn> */}
                                     <AgGridColumn field="BasicRate" headerName="Basic Rate" cellRenderer={'commonCostFormatter'} ></AgGridColumn>
                                     <AgGridColumn field="NetLandedCost" headerName="Net Cost" cellRenderer={'commonCostFormatter'} ></AgGridColumn>

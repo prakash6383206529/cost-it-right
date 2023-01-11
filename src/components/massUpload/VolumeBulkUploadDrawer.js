@@ -132,7 +132,7 @@ class VolumeBulkUploadDrawer extends Component {
                     onSubmit={handleSubmit(this.onSubmit.bind(this))}>
 
 
-                    <Col md="12">
+                    <Col md="12" className='px-3'>
                         <label>Upload File</label>
                         {this.state.fileName !== "" ? (
                             <div class="alert alert-danger" role="alert">

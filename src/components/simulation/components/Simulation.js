@@ -967,7 +967,7 @@ function Simulation(props) {
             setVendorName(resultInput)
             let vendorDataAPI = res?.data?.SelectList
             if (inputValue) {
-                return autoCompleteDropdown(inputValue, vendorDataAPI)
+                return autoCompleteDropdown(inputValue, vendorDataAPI, false, [], true)
             } else {
                 return vendorDataAPI
             }
@@ -977,7 +977,7 @@ function Simulation(props) {
             else {
                 let VendorData = reactLocalStorage?.getObject('Data')
                 if (inputValue) {
-                    return autoCompleteDropdown(inputValue, VendorData)
+                    return autoCompleteDropdown(inputValue, VendorData, false, [], false)
                 } else {
                     return VendorData
                 }

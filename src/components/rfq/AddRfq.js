@@ -7,7 +7,7 @@ import { AsyncSearchableSelectHookForm, NumberFieldHookForm, SearchableSelectHoo
 import { getVendorWithVendorCodeSelectList, getReporterList, fetchPlantDataAPI } from '../.././actions/Common';
 import { getCostingSpecificTechnology, getPartSelectListByTechnology, } from '../costing/actions/Costing'
 import { checkForDecimalAndNull, getConfigurationKey, loggedInUserId } from '../.././helper';
-import { postiveNumber, maxLength10, nonZero } from '../.././helper/validation'
+import { postiveNumber, maxLength10, nonZero, checkForNull } from '../.././helper/validation'
 import { EMPTY_DATA, FILE_URL, searchCount } from '../.././config/constants';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
@@ -27,11 +27,13 @@ import { autoCompleteDropdown, autoCompleteDropdownPart } from '../common/Common
 import BulkUpload from '../massUpload/BulkUpload';
 import _ from 'lodash';
 import { getPartSelectListWtihRevNo } from '../masters/actions/Volume';
+import { LOGISTICS, REMARKMAXLENGTH } from '../../config/masterData';
+import { setRFQBulkUpload } from './reducer/rfq';
 
 const gridOptions = {};
 
 function AddRfq(props) {
-
+    const { data: dataProps } = props
     const dropzone = useRef(null);
     const { register, handleSubmit, setValue, getValues, reset, formState: { errors }, control } = useForm({
         mode: 'onChange',
@@ -64,6 +66,7 @@ function AddRfq(props) {
     const [partNoDisable, setPartNoDisable] = useState(true)
     const [attachmentLoader, setAttachmentLoader] = useState(false)
     const [partName, setPartName] = useState(false)
+    const [technology, setTechnology] = useState({})
     const technologySelectList = useSelector((state) => state.costing.costingSpecifiTechnology)
     const partSelectListByTechnology = useSelector(state => state.costing.partSelectListByTechnology)
     const dispatch = useDispatch()
@@ -85,6 +88,8 @@ function AddRfq(props) {
         return () => {
             reactLocalStorage?.setObject('vendorData', [])
             reactLocalStorage.setObject('PartData', [])
+            setUpdateButtonVendorTable(false)
+            dispatch(setRFQBulkUpload([]))
         }
     }, []);
 
@@ -96,10 +101,10 @@ function AddRfq(props) {
     useEffect(() => {
         dispatch(getCostingSpecificTechnology(loggedInUserId(), () => { }))
         dispatch(getReporterList(() => { }))
-        if (props?.isEditFlag) {
-            setIsEditFlag(true)
-            setIsViewFlag(props?.data?.isViewFlag)
-            dispatch(getQuotationById(props?.data?.Id, (res) => {
+        if (dataProps?.isEditFlag || dataProps?.isViewFlag) {
+            setIsEditFlag(dataProps?.isEditFlag)
+            setIsViewFlag(dataProps?.isViewFlag)
+            dispatch(getQuotationById(dataProps?.Id, (res) => {
                 setPartNoDisable(false)
 
 
@@ -347,7 +352,7 @@ function AddRfq(props) {
         props.closeDrawer('', {})
     }
 
-    const onSubmit = dataForm => {
+    const onSubmit = (isSent) => {
         if (vendorList.length === 0) {
             Toaster.warning("Please enter vendor details")
             return false
@@ -363,19 +368,23 @@ function AddRfq(props) {
         obj.QuotationId = data.QuotationId ? data.QuotationId : ""
         obj.QuotationNumber = data.QuotationNumber ? data.QuotationNumber : ""
 
-        obj.Remark = dataForm?.remark
-        obj.TechnologyId = dataForm?.technology?.value
-        obj.PlantId = dataForm?.plant?.value
+        obj.Remark = getValues('remark')
+        obj.TechnologyId = getValues('technology').value
+        obj.PlantId = getValues('plant')?.value
         obj.LoggedInUserId = loggedInUserId()
         obj.VendorList = vendorList
         obj.PartList = partList
         obj.Attachments = files
-        obj.IsSent = true
+        obj.IsSent = isSent
 
-        if (isEditFlag) {
+        if (dataProps?.isEditFlag) {
             dispatch(updateRfqQuotation(obj, (res) => {
                 if (res?.data?.Result) {
-                    Toaster.success(MESSAGES.RFQ_ADD_SUCCESS)
+                    if (isSent) {
+                        Toaster.success(MESSAGES.RFQ_SENT_SUCCESS)
+                    } else {
+                        Toaster.success(MESSAGES.RFQ_ADD_SUCCESS)
+                    }
                     cancel()
                 }
             }))
@@ -384,7 +393,11 @@ function AddRfq(props) {
 
             dispatch(createRfqQuotation(obj, (res) => {
                 if (res?.data?.Result) {
-                    Toaster.success(MESSAGES.RFQ_ADD_SUCCESS)
+                    if (isSent) {
+                        Toaster.success(MESSAGES.RFQ_SENT_SUCCESS)
+                    } else {
+                        Toaster.success(MESSAGES.RFQ_ADD_SUCCESS)
+                    }
                     cancel()
                 }
             }))
@@ -418,8 +431,8 @@ function AddRfq(props) {
         let final = _.map(props?.node?.rowModel?.rowsToDisplay, 'data')
         return (
             <>
-                {< button title='Edit' className="Edit mr-2 align-middle" disabled={isEditFlag} type={'button'} onClick={() => editItemPartTable(props?.agGridReact?.gridOptions.rowData, props)} />}
-                {<button title='Delete' className="Delete align-middle" disabled={isEditFlag} type={'button'} onClick={() => deleteItemPartTable(final, props)} />}
+                {< button title='Edit' className="Edit mr-2 align-middle" disabled={dataProps?.isAddFlag ? false : (dataProps?.isViewFlag || !dataProps?.isEditFlag)} type={'button'} onClick={() => editItemPartTable(props?.agGridReact?.gridOptions.rowData, props)} />}
+                {<button title='Delete' className="Delete align-middle" disabled={dataProps?.isAddFlag ? false : (dataProps?.isViewFlag || !dataProps?.isEditFlag)} type={'button'} onClick={() => deleteItemPartTable(final, props)} />}
             </>
         )
     };
@@ -427,8 +440,8 @@ function AddRfq(props) {
     const buttonFormatterVendorTable = (props) => {
         return (
             <>
-                {<button title='Edit' className="Edit mr-2 align-middle" type={'button'} disabled={isEditFlag} onClick={() => editItemVendorTable(props?.agGridReact?.gridOptions.rowData, props)} />}
-                {<button title='Delete' className="Delete align-middle" type={'button'} disabled={isEditFlag} onClick={() => deleteItemVendorTable(props?.agGridReact?.gridOptions.rowData, props)} />}
+                {<button title='Edit' className="Edit mr-2 align-middle" type={'button'} disabled={dataProps?.isAddFlag ? false : (dataProps?.isViewFlag || !dataProps?.isEditFlag)} onClick={() => editItemVendorTable(props?.agGridReact?.gridOptions.rowData, props)} />}
+                {<button title='Delete' className="Delete align-middle" type={'button'} disabled={dataProps?.isAddFlag ? false : (dataProps?.isViewFlag || !dataProps?.isEditFlag)} onClick={() => deleteItemVendorTable(props?.agGridReact?.gridOptions.rowData, props)} />}
             </>
         )
     };
@@ -523,9 +536,8 @@ function AddRfq(props) {
         let obj = {}
         obj.PartId = getValues('partNumber')?.value
         obj.Quantity = Number(getValues('annualForecastQuantity'))
-        obj.PartNumber = getValues('partNumber')?.RevisionNumber ? getValues('partNumber')?.label + ' (' + getValues('partNumber')?.RevisionNumber + ')'
-            : getValues('partNumber')?.label
-        obj.technology = getValues('technology')
+        obj.PartNumber = getValues('partNumber')?.label ? getValues('partNumber')?.label : '-'
+        obj.technology = technology
 
         if (errors.annualForecastQuantity) {
             return false;
@@ -544,7 +556,7 @@ function AddRfq(props) {
             return false;
         }
 
-        if (obj.PartId === null || obj.PartId === undefined || obj.Quantity === null || obj.Quantity === undefined || isNaN(obj.Quantity)) {
+        if (obj.PartId === null || obj.PartId === undefined || checkForNull(obj.Quantity) === 0) {
             Toaster.warning("Please fill all the mandatory fields first.")
             return false;
         }
@@ -616,6 +628,7 @@ function AddRfq(props) {
             //     setInputLoader(false)
             setPartNoDisable(false)
             setValue('partNo', "")
+            setTechnology(newValue)
             // }))
 
         }
@@ -659,7 +672,7 @@ function AddRfq(props) {
 
         const resultInput = inputValue.slice(0, searchCount)
         if (inputValue?.length >= searchCount && partName !== resultInput) {
-            const res = await getPartSelectListWtihRevNo(resultInput, getValues('technology').value)
+            const res = await getPartSelectListWtihRevNo(resultInput, technology.value)
             setPartName(resultInput)
             let partDataAPI = res?.data?.DataList
             if (inputValue) {
@@ -711,13 +724,13 @@ function AddRfq(props) {
                         <div className="shadow-lgg login-formg">
                             <div className="row">
                                 <div className="col-md-6">
-                                    <h3>{isViewFlag ? "View" : isEditFlag ? "Update" : "Add"} RFQ</h3>
+                                    <h3>{isViewFlag ? "View" : props?.isEditFlag ? "Update" : "Add"} RFQ</h3>
                                 </div>
                             </div>
                             <div >
                                 <form onSubmit={handleSubmit(onSubmit)}>
                                     <Row className="part-detail-wrapper">
-                                        <Col md="4">
+                                        <Col md="3">
                                             <SearchableSelectHookForm
                                                 label={"Technology"}
                                                 name={"technology"}
@@ -731,11 +744,12 @@ function AddRfq(props) {
                                                 mandatory={true}
                                                 handleChange={handleTechnologyChange}
                                                 errors={errors.technology}
-                                                disabled={isEditFlag || disableTechnology}
+                                                disabled={((dataProps?.isViewFlag || dataProps?.isEditFlag) ? true : false)
+                                                    || disableTechnology}
                                                 isLoading={VendorLoaderObj}
                                             />
                                         </Col>
-                                        <Col md="4">
+                                        <Col md="3">
                                             <SearchableSelectHookForm
                                                 label={"Plant (Code)"}
                                                 name={"plant"}
@@ -751,13 +765,13 @@ function AddRfq(props) {
                                                 handleChange={() => { }}
                                                 errors={errors.plant}
                                                 isLoading={VendorLoaderObj}
-                                                disabled={false}
+                                                disabled={dataProps?.isViewFlag}
                                             />
                                         </Col>
                                     </Row>
                                     <HeaderTitle title={'Part:'} />
                                     <Row className="part-detail-wrapper">
-                                        <Col md="4">
+                                        <Col md="3">
                                             <AsyncSearchableSelectHookForm
                                                 label={"Part No"}
                                                 name={"partNumber"}
@@ -772,13 +786,13 @@ function AddRfq(props) {
                                                 // handleChange={handleDestinationPlantChange}
                                                 handleChange={() => { }}
                                                 errors={errors.partNumber}
-                                                disabled={partNoDisable}
+                                                disabled={dataProps?.isViewFlag || partNoDisable}
                                                 isLoading={plantLoaderObj}
                                                 asyncOptions={partFilterList}
                                                 NoOptionMessage={"Enter 3 characters to show data"}
                                             />
                                         </Col>
-                                        <Col md="4">
+                                        <Col md="3">
                                             <NumberFieldHookForm
                                                 label="Annual Forecast Quantity"
                                                 name={"annualForecastQuantity"}
@@ -793,17 +807,17 @@ function AddRfq(props) {
                                                     validate: { postiveNumber, maxLength10, nonZero }
                                                 }}
                                                 handleChange={() => { }}
-                                                disabled={false}
+                                                disabled={dataProps?.isViewFlag}
                                                 placeholder={'Enter'}
                                                 customClassName={'withBorder'}
                                             />
                                         </Col>
-                                        <Col md="4" className='d-flex align-items-center pb-1'>
+                                        <Col md="3" className='d-flex align-items-center pb-1'>
                                             <button
                                                 type="button"
-                                                className={'user-btn pull-left ml-2'}
+                                                className={'user-btn pull-left'}
                                                 onClick={() => addRowPartNoTable()}
-                                                disabled={false}
+                                                disabled={dataProps?.isViewFlag}
                                             >
                                                 <div className={'plus'}></div>{!updateButtonPartNoTable ? "ADD" : "UPDATE"}
                                             </button>
@@ -811,13 +825,13 @@ function AddRfq(props) {
                                                 onClick={onResetPartNoTable} // Need to change this cancel functionality
                                                 type="submit"
                                                 value="CANCEL"
-                                                className="reset ml-10 ml-2 mr5"
-                                                disabled={false}
+                                                className="reset ml-2 mr5"
+                                                disabled={dataProps?.isViewFlag}
                                             >
                                                 <div className={''}></div>
                                                 RESET
                                             </button>
-                                            <button
+                                            {(checkForNull(technology?.value) === LOGISTICS) && <button
                                                 type="button"
                                                 className={"user-btn "}
                                                 onClick={bulkToggle}
@@ -825,7 +839,7 @@ function AddRfq(props) {
                                                 disabled={partNoDisable}
                                             >
                                                 <div className={"upload mr-0"}></div>
-                                            </button>
+                                            </button>}
                                         </Col>
                                     </Row>
                                     <div>
@@ -869,7 +883,7 @@ function AddRfq(props) {
 
                                     <HeaderTitle title={'Vendor:'} customClass="mt-4" />
                                     <Row className="mt-1 part-detail-wrapper">
-                                        <Col md="4">
+                                        <Col md="3">
                                             <AsyncSearchableSelectHookForm
                                                 label={"Vendor (Code)"}
                                                 name={"vendor"}
@@ -886,13 +900,13 @@ function AddRfq(props) {
                                                 errors={errors.vendor}
                                                 isLoading={VendorLoaderObj}
                                                 asyncOptions={vendorFilterList}
-                                                disabled={isViewFlag || partList?.length === 0}
+                                                disabled={isViewFlag}
                                                 NoOptionMessage={"Enter 3 characters to show data"}
                                             />
                                         </Col>
 
 
-                                        <Col md="4">
+                                        <Col md="3">
                                             <SearchableSelectHookForm
                                                 label={"Contact Person"}
                                                 name={"contactPerson"}
@@ -911,10 +925,10 @@ function AddRfq(props) {
                                                 isLoading={plantLoaderObj}
                                             />
                                         </Col>
-                                        <Col md="4" className='d-flex align-items-center pb-1'>
+                                        <Col md="3" className='d-flex align-items-center pb-1'>
                                             <button
                                                 type="button"
-                                                className={'user-btn pull-left ml-2'}
+                                                className={'user-btn pull-left'}
                                                 onClick={() => addRowVendorTable()}
                                                 disabled={isViewFlag}
                                             >
@@ -925,7 +939,7 @@ function AddRfq(props) {
                                                 onClick={onResetVendorTable} // Need to change this cancel functionality
                                                 type="submit"
                                                 value="CANCEL"
-                                                className="reset ml-10 ml-2"
+                                                className="reset ml-2"
                                                 disabled={isViewFlag}
                                             >
                                                 <div className={''}></div>
@@ -983,10 +997,7 @@ function AddRfq(props) {
                                                 control={control}
                                                 rules={{
                                                     required: true,
-                                                    maxLength: {
-                                                        value: 256,
-                                                        message: "Remark should be less than 256 words"
-                                                    },
+                                                    maxLength: REMARKMAXLENGTH,
                                                 }}
                                                 register={register}
                                                 //defaultValue={DestinationPlant.length !== 0 ? DestinationPlant : ""}
@@ -995,7 +1006,7 @@ function AddRfq(props) {
                                                 customClassName={"withBorder"}
                                                 handleChange={() => { }}
                                                 errors={errors.remark}
-                                                disabled={false}
+                                                disabled={dataProps?.isViewFlag}
                                                 rowHeight={6}
                                             // isLoading={plantLoaderObj}
                                             />
@@ -1076,24 +1087,24 @@ function AddRfq(props) {
                                         <div className="col-sm-12 text-right">
                                             <button
                                                 type={"button"}
-                                                className="reset mr15 cancel-btn"
+                                                className="reset mr-2 cancel-btn"
                                                 onClick={cancel}
                                             >
                                                 <div className={"cancel-icon"}></div>
                                                 {"Cancel"}
                                             </button>
 
-                                            <button type="button" className="submit-button save-btn mr15"
-                                                onClick={handleSubmit(onSubmit)}
+                                            <button type="button" className="submit-button save-btn mr-2"
+                                                onClick={() => handleSubmit(onSubmit(false))}
                                                 disabled={isViewFlag}>
                                                 <div className={"save-icon"}></div>
                                                 {"Save"}
                                             </button>
 
                                             <button type="button" className="submit-button save-btn"
-                                                onClick={handleSubmit(onSubmit)}
+                                                onClick={() => handleSubmit(onSubmit(true))}
                                                 disabled={isViewFlag}>
-                                                <div className={"upload"}></div>
+                                                <div className="send-for-approval mr-1"></div>
                                                 {"Send"}
                                             </button>
                                         </div>
@@ -1108,9 +1119,9 @@ function AddRfq(props) {
                                             isEditFlag={false}
                                             // densityAlert={densityAlert}
                                             fileName={"ADDRFQ"}
-                                            messageLabel={"ADDRFQ"}
+                                            messageLabel={"RFQ Part's"}
                                             anchor={"right"}
-                                            technologyId={getValues('technology')}
+                                            technologyId={technology}
                                         // isFinalApprovar={isFinalLevelUser}
                                         />
                                     )

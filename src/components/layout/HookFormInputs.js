@@ -45,8 +45,8 @@ const errorFunc = (errors, field) => {
       return <div className="text-help">This field is required</div>
 
     default:
-      return <div className="text-error-title"><div className="text-help">{(errors?.message || errors?.type)}</div>
-        <div className="error-overflow">{(errors?.message || errors?.type)}</div> </div>
+      return <div className={`${field?.disableErrorOverflow ? '' : "text-error-title"}`}><div className="text-help">{(errors?.message || errors?.type)}</div>
+        {!field?.disableErrorOverflow && <div className="error-overflow">{(errors?.message || errors?.type)}</div>} </div>
   }
 }
 
@@ -393,8 +393,9 @@ export const TextAreaHookForm = (field) => {
 
   //const className = `form-group inputbox ${field.customClassName ? field.customClassName : ""} ${touched && error ? "has-danger" : ""}`;
   const className = `form-group inputbox ${field.customClassName ? field.customClassName : ""}`;
-  const InputClassName = `form-control ${field.className ? field.className : ""}`;
+  const InputClassName = `form-control text-area ${field.className ? field.className : ""}`;
   const isDisabled = field.disabled === true ? true : false;
+  let minHeight = rowHeight ? rowHeight : 4
   return (
     <>
       <div className={className}>
@@ -419,6 +420,7 @@ export const TextAreaHookForm = (field) => {
                 value={value}
                 autoComplete={'off'}
                 rows={rowHeight && rowHeight}
+                style={{ minHeight: `${minHeight * 25}px` }}
                 onChange={(e) => {
                   handleChange(e);
                   onChange(e)

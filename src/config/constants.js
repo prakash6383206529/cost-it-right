@@ -19,6 +19,7 @@ export const config = () => {
 
 const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
 //const BASE_URL = `http://10.10.8.117/CIR/api/v1`;
+// const BASE_URL = `http://10.10.1.100:10132/api/v1`;
 //const BASE_URL = `https://apiinsightqa.unominda.com/api/v1`;
 
 //DEVELOPMENT MIL URL
@@ -1453,6 +1454,7 @@ export const SELECTED_IDS_OF_OPERATION = 'SELECTED_IDS_OF_OPERATION'
 export const SELECTED_PROCESS_AND_GROUPCODE = 'SELECTED_PROCESS_AND_GROUPCODE'
 export const SET_PROCESS_ID = 'SET_PROCESS_ID'
 export const SET_PROCESSGROUP_ID = 'SET_PROCESSGROUP_ID'
+export const SET_SURFACE_COST_FOR_REJECTION_DATA = 'SET_SURFACE_COST_FOR_REJECTION_DATA';
 export const SET_OVERHEAD_PROFIT_ERRORS = 'SET_OVERHEAD_PROFIT_ERRORS'
 export const SET_TOOLS_ERRORS = 'SET_TOOLS_ERRORS'
 export const SET_DISCOUNT_ERRORS = 'SET_DISCOUNT_ERRORS'
@@ -1669,8 +1671,11 @@ export const ERROR = 'Error'
 export const POUPDATED = 'POUpdated'
 export const LINKED = 'Linked'
 export const REJECTED_BY_SYSTEM = 'RejectedBySystem'
-export const UNDER_APPROVAL = 'Under Approval'
+export const UNDER_APPROVAL = 'UnderApproval'
 export const CANCELLED = 'Cancelled'
+export const UNDER_REVISION = 'UnderRevision'
+export const RECEIVED = 'Received'
+export const SUBMITTED = 'Submitted'
 
 // MASTER APPROVAL STATUS ID
 export const APPROVED_STATUS = '3,5'
@@ -1821,7 +1826,7 @@ export const VIEW_COSTING_DATA = {
   partNumber: 'Part Number',
   partName: 'Part Name',
   RevisionNumber: 'Revision Number',
-  vendorName: 'Vendor (Code)',
+  vendorExcel: 'Vendor (Code)',
   customer: 'Customer (Code)',
   plantExcel: 'Plant (Code)',
   status: 'Status',
@@ -2152,4 +2157,4 @@ export const KEYRFQ = "UAGSqTBCbZ8JqHJl"
 export const IVRFQ = "8vFNmRQEl91nOtrM"
 
 //VERSION 
-export const VERSION = "V2.1.40";
+export const VERSION = "V2.1.45.4";

@@ -140,7 +140,6 @@ function ProfitListing(props) {
         if (isPagination === true) {
             setIsLoader(true)
         }
-        dataObj.IsCustomerDataShow = reactLocalStorage.getObject('cbcCostingPermission')
         let obj = { ...dataObj }
         dispatch(getProfitDataList(filterData, skip, take, isPagination, dataObj, (res) => {
             setIsLoader(false)
@@ -395,7 +394,7 @@ function ProfitListing(props) {
 
 
     const closePopUp = () => {
-        showPopup(false)
+        setShowPopup(false)
     }
 
 
@@ -735,7 +734,7 @@ function ProfitListing(props) {
                                             <AgGridColumn field="CostingHead" headerName="Costing Head" cellRenderer={checkBoxRenderer}></AgGridColumn>
                                             {(getConfigurationKey().IsPlantRequiredForOverheadProfitInterestRate || getConfigurationKey().IsDestinationPlantConfigure) && <AgGridColumn field="PlantName" headerName="Plant (Code)"></AgGridColumn>}
                                             <AgGridColumn field="VendorName" headerName="Vendor (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                                            <AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                                            {(reactLocalStorage.getObject('cbcCostingPermission')) && <AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
                                             <AgGridColumn field="ModelType" headerName="Model Type"></AgGridColumn>
                                             <AgGridColumn field="ProfitApplicabilityType" headerName="Profit Applicability" floatingFilterComponent="valuesFloatingFilter" floatingFilterComponentParams={floatingFilterProfit}></AgGridColumn>
                                             <AgGridColumn field="ProfitPercentage" headerName="Profit Applicability (%)" cellRenderer={'hyphenFormatter'} ></AgGridColumn>
