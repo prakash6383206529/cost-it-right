@@ -10,7 +10,7 @@ import { renderText, searchableSelect, renderTextAreaField, renderDatePicker, re
 import { getPlantBySupplier, getUOMSelectList, getCurrencySelectList, getPlantSelectListByType, getCityByCountry, getAllCity } from '../../../actions/Common';
 import {
   createBOPImport, updateBOPImport, getBOPCategorySelectList, getBOPImportById,
-  fileUploadBOPDomestic, fileDeleteBOPDomestic,
+  fileUploadBOPDomestic, fileDeleteBOPDomestic, getIncoTermSelectList, getPaymentTermSelectList
 } from '../actions/BoughtOutParts';
 import { getVendorWithVendorCodeSelectList, getVendorTypeBOPSelectList, } from '../actions/Supplier';
 import { masterFinalLevelUser } from '../actions/Material'
@@ -98,7 +98,9 @@ class AddBOPImport extends Component {
       showErrorOnFocus: false,
       showErrorOnFocusDate: false,
       finalApprovalLoader: false,
-      showPopup: false
+      showPopup: false,
+      incoTerm: [],
+      paymentTerm: []
     }
   }
 
@@ -124,6 +126,8 @@ class AddBOPImport extends Component {
         this.props.getCityByCountry(cityId, 0, () => { })
       })
     }
+    this.props.getIncoTermSelectList(() => { })
+    this.props.getPaymentTermSelectList(() => { })
     this.getDetails()
     if (!(this.props.data.isEditFlag || this.props.data.isViewFlag)) {
       this.props.getCurrencySelectList(() => { })
@@ -194,6 +198,22 @@ class AddBOPImport extends Component {
       this.setState({ client: [] })
     }
   };
+
+  handleIncoTerm = (newValue) => {
+    if (newValue && newValue !== '') {
+      this.setState({ incoTerm: newValue });
+    } else {
+      this.setState({ incoTerm: [] })
+    }
+  }
+  handlePaymentTerm = (newValue) => {
+    if (newValue && newValue !== '') {
+      this.setState({ paymentTerm: newValue });
+    } else {
+      this.setState({ paymentTerm: [] })
+    }
+  }
+
   closeApprovalDrawer = (e = '', type) => {
     this.setState({ approveDrawer: false, setDisable: false })
     if (type === 'submit') {
@@ -261,6 +281,8 @@ class AddBOPImport extends Component {
               files: Data.Attachements,
               UOM: ((Data.UnitOfMeasurement !== undefined) ? { label: Data.UnitOfMeasurement, value: Data.UnitOfMeasurementId } : {}),
               isLoader: false,
+              incoTerm: Data.IncoTerm !== undefined ? { label: `${Data.IncoTermDescription} (${Data.IncoTerm})`, value: Data.BoughtOutPartIncoTermId } : [],
+              paymentTerm: Data.PaymentTerm !== undefined ? { label: `${Data.PaymentTermDescription} (${Data.PaymentTerm})`, value: Data.BoughtOutPartPaymentTermId } : [],
             }, () => this.setState({ isLoader: false }))
             // ********** ADD ATTACHMENTS FROM API INTO THE DROPZONE'S PERSONAL DATA STORE **********
             let files = Data.Attachements && Data.Attachements.map((item) => {
@@ -292,7 +314,7 @@ class AddBOPImport extends Component {
   */
   renderListing = (label) => {
     const { bopCategorySelectList, partSelectList, plantSelectList, cityList,
-      UOMSelectList, currencySelectList, clientSelectList } = this.props;
+      UOMSelectList, currencySelectList, clientSelectList, IncoTermsSelectList, PaymentTermsSelectList } = this.props;
     const temp = [];
     if (label === 'BOPCategory') {
       bopCategorySelectList && bopCategorySelectList.map(item => {
@@ -350,6 +372,20 @@ class AddBOPImport extends Component {
         temp.push({ label: item.Text, value: item.Value })
         return null;
       });
+      return temp;
+    }
+    if (label === 'IncoTerms') {
+      IncoTermsSelectList && IncoTermsSelectList.map(item => {
+        temp.push({ label: `${item.IncoTermDescription} (${item.IncoTerm})`, value: item.BoughtOutPartIncoTermId })
+        return null
+      })
+      return temp;
+    }
+    if (label === 'PaymentTerms') {
+      PaymentTermsSelectList && PaymentTermsSelectList.map(item => {
+        temp.push({ label: `${item.PaymentTermDescription} (${item.PaymentTerm})`, value: item.BoughtOutPartPaymentTermId })
+        return null
+      })
       return temp;
     }
   }
@@ -713,7 +749,7 @@ class AddBOPImport extends Component {
   * @description Used to Submit the form
   */
   onSubmit = debounce((values) => {
-    const { BOPCategory, selectedPlants, costingTypeId, client, vendorName, currency, isSourceChange, sourceLocation, BOPID, isEditFlag, files, effectiveDate, oldDate, UOM, netLandedConverionCost, DataToChange, DropdownChange, uploadAttachements, isDateChange, IsFinancialDataChanged } = this.state;
+    const { BOPCategory, selectedPlants, costingTypeId, client, vendorName, currency, isSourceChange, sourceLocation, BOPID, isEditFlag, files, effectiveDate, oldDate, UOM, netLandedConverionCost, DataToChange, DropdownChange, uploadAttachements, isDateChange, IsFinancialDataChanged, incoTerm, paymentTerm } = this.state;
     const userDetailsBop = JSON.parse(localStorage.getItem('userDetail'))
     if (costingTypeId !== CBCTypeId && vendorName.length <= 0) {
       this.setState({ isVendorNameNotSelected: true, setDisable: false })      // IF VENDOR NAME IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY AND SAVE BUTTON WILL NOT BE DISABLED
@@ -752,7 +788,9 @@ class AddBOPImport extends Component {
         IsForcefulUpdated: isDateChange ? false : isSourceChange ? false : true,
         NumberOfPieces: 1,
         IsFinancialDataChanged: isDateChange ? true : false,
-        CustomerId: client.value
+        CustomerId: client.value,
+        BoughtOutPartIncoTermId: incoTerm.value,
+        BoughtOutPartPaymentTermId: paymentTerm.value
       }
 
 
@@ -830,7 +868,9 @@ class AddBOPImport extends Component {
         VendorPlant: [],
         NetLandedCostConversion: netLandedConverionCost,
         IsFinancialDataChanged: isDateChange ? true : false,
-        CustomerId: client.value
+        CustomerId: client.value,
+        BoughtOutPartIncoTermId: incoTerm.value,
+        BoughtOutPartPaymentTermId: paymentTerm.value
       }
 
       if (CheckApprovalApplicableMaster(BOP_MASTER_ID) === true && !this.state.isFinalApprovar) {
@@ -1232,6 +1272,36 @@ class AddBOPImport extends Component {
                           </Col>
                           <Col md="3">
                             <Field
+                              name="incoTerms"
+                              type="text"
+                              label={"Inco Terms"}
+                              component={searchableSelect}
+                              placeholder={isEditFlag ? '-' : "Select"}
+                              options={this.renderListing("IncoTerms")}
+                              validate={this.state.incoTerm == null || this.state.incoTerm.length === 0 ? [required] : []}
+                              // required={true}
+                              handleChangeDescription={this.handleIncoTerm}
+                              valueDescription={this.state.incoTerm}
+                              disabled={isEditFlag ? true : false}
+                            />
+                          </Col>
+                          <Col md="3">
+                            <Field
+                              name="paymentTerms"
+                              type="text"
+                              label={"Payment Terms"}
+                              component={searchableSelect}
+                              placeholder={isEditFlag ? '-' : "Select"}
+                              options={this.renderListing("PaymentTerms")}
+                              validate={this.state.paymentTerm == null || this.state.paymentTerm.length === 0 ? [required] : []}
+                              // required={true}
+                              handleChangeDescription={this.handlePaymentTerm}
+                              valueDescription={this.state.paymentTerm}
+                              disabled={isEditFlag ? true : false}
+                            />
+                          </Col>
+                          <Col md="3">
+                            <Field
                               name="Currency"
                               type="text"
                               label="Currency"
@@ -1526,7 +1596,7 @@ function mapStateToProps(state) {
   const { comman, supplier, boughtOutparts, part, auth, client } = state;
   const fieldsObj = selector(state, 'NumberOfPieces', 'BasicRate',);
 
-  const { bopCategorySelectList, bopData, } = boughtOutparts;
+  const { bopCategorySelectList, bopData, IncoTermsSelectList, PaymentTermsSelectList } = boughtOutparts;
   const { plantList, filterPlantList, filterCityListBySupplier, cityList,
     UOMSelectList, currencySelectList, plantSelectList } = comman;
   const { vendorWithVendorCodeSelectList } = supplier;
@@ -1549,7 +1619,7 @@ function mapStateToProps(state) {
 
   return {
     vendorWithVendorCodeSelectList, bopCategorySelectList, plantList, filterPlantList, filterCityListBySupplier,
-    plantSelectList, cityList, partSelectList, clientSelectList, UOMSelectList, currencySelectList, fieldsObj, initialValues, initialConfiguration,
+    plantSelectList, cityList, partSelectList, clientSelectList, UOMSelectList, currencySelectList, fieldsObj, initialValues, initialConfiguration, IncoTermsSelectList, PaymentTermsSelectList
   }
 
 }
@@ -1577,7 +1647,9 @@ export default connect(mapStateToProps, {
   masterFinalLevelUser,
   getCityByCountry,
   getAllCity,
-  getClientSelectList
+  getClientSelectList,
+  getIncoTermSelectList,
+  getPaymentTermSelectList
 })(reduxForm({
   form: 'AddBOPImport',
   touchOnChange: true,

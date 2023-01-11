@@ -228,7 +228,7 @@ function AddAssemblyOperation(props) {
             <Row className="mb-3 pt-3">
               <Col>
                 <div className="user-page p-0">
-                  <div className="cr-process-costwrap">
+                  <div className="cr-process-costwrap multi-technology-container">
                     <Row className="cr-innertool-cost">
 
                       <Col md="3" className="cr-costlabel"><span className="d-inline-block align-middle">{`Operation Cost: ${partType ? operationCostAssemblyTechnology : operationCost}`}</span></Col>
