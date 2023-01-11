@@ -132,7 +132,7 @@ class AddIndivisualPart extends Component {
           let finalData = res.data.Data
           this.props.change("Description", finalData.Description)
           this.props.change("PartName", finalData.PartName)
-          this.setState({ disablePartName: true, minEffectiveDate: finalData.EffectiveDate })
+          this.setState({ disablePartName: true, minEffectiveDate: finalData.EffectiveDate, TechnologySelected: { label: finalData.Technology, value: finalData.TechnologyId } })
         } else {
           this.props.change("Description", "")
           this.props.change("PartName", "")
@@ -627,9 +627,10 @@ class AddIndivisualPart extends Component {
                                 this.handleTechnologyChange
                               }
                               valueDescription={this.state.TechnologySelected}
-                              disabled={(isViewMode) || (isEditFlag && !((isEditFlag && this.state.IsTechnologyUpdateRequired) || (isEditFlag && this.state.isBomEditable)))}
+                              disabled={(isViewMode) || (!isEditFlag && this.state.disablePartName) || (isEditFlag && !((isEditFlag && this.state.IsTechnologyUpdateRequired) || (isEditFlag && this.state.isBomEditable)))}
                             />
                           </Col>
+
 
                           <Col md="3">
                             <div className="form-group">
