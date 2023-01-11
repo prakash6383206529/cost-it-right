@@ -19,6 +19,7 @@ import ViewRfq from './ViewRfq';
 import AddRfq from './AddRfq';
 import { checkPermission, userDetails } from '../../helper';
 import TooltipCustom from '../common/Tooltip';
+import DayTime from '../common/DayTimeWrapper';
 const gridOptions = {};
 
 
@@ -273,7 +274,10 @@ function RfqListing(props) {
         )
 
     }
-
+    const raisedOnFormatter = (props) => {
+        const cellValue = props?.value;
+        return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '-'
+    }
 
     const viewDetails = (UserId) => {
 
@@ -298,7 +302,8 @@ function RfqListing(props) {
         totalValueRenderer: buttonFormatter,
         linkableFormatter: linkableFormatter,
         attachmentFormatter: attachmentFormatter,
-        statusFormatter: statusFormatter
+        statusFormatter: statusFormatter,
+        raisedOnFormatter: raisedOnFormatter
     }
 
 
@@ -374,7 +379,7 @@ function RfqListing(props) {
                                                 <AgGridColumn field="TechnologyName" headerName='Technology'></AgGridColumn>
                                                 <AgGridColumn field="Remark" headerName='Remark'></AgGridColumn>
                                                 <AgGridColumn field="RaisedBy" headerName='Raised By'></AgGridColumn>
-                                                <AgGridColumn field="RaisedOn" headerName='Raised On'></AgGridColumn>
+                                                <AgGridColumn field="RaisedOn" headerName='Raised On' cellRenderer='raisedOnFormatter' ></AgGridColumn>
                                                 <AgGridColumn field="QuotationNumber" headerName='Attachments' cellRenderer='attachmentFormatter'></AgGridColumn>
                                                 <AgGridColumn field="Status" headerName="Status" cellClass="text-center" minWidth={150} cellRenderer="statusFormatter"></AgGridColumn>
                                                 {<AgGridColumn field="QuotationId" width={160} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
