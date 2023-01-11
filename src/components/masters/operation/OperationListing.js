@@ -96,7 +96,7 @@ class OperationListing extends Component {
                     this.props?.changeSetLoader(true)
                     this.props.getListingForSimulationCombined(this.props.objectForMultipleSimulation, OPERATIONS, (res) => {
                         this.props?.changeSetLoader(false)
-                        this.setState({ tableData: res.data.DataList })
+                        this.setState({ tableData: res.data.DataList, isLoader: false })
                     })
                 } else {
                     this.getTableListData(null, null, null, null, 0, defaultPageSize, true, this.state.floatingFilterData)
