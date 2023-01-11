@@ -214,6 +214,7 @@ class User extends Component {
                   RFQUser={false}
                   formToggle={this.displayForm}
                   getUserDetail={this.getUserDetail}
+                  tabId={this.state.activeTab}
                 />
               </TabPane>}
             {this.state.activeTab === '2' && ViewRoleAccessibility &&
@@ -239,6 +240,7 @@ class User extends Component {
                   RFQUser={true}
                   formToggle={this.displayForm}
                   getUserDetail={this.getUserDetail}
+                  tabId={this.state.activeTab}
                 />
               </TabPane>}
           </TabContent>

@@ -7,7 +7,7 @@ import $ from 'jquery';
 import { focusOnError, searchableSelect } from "../layout/FormInputs";
 import Toaster from '../common/Toaster';
 import { MESSAGES } from '../../config/message';
-import { defaultPageSize, EMPTY_DATA } from '../../config/constants';
+import { defaultPageSize, EMPTY_DATA, RFQUSER } from '../../config/constants';
 import { USER } from '../../config/constants';
 import NoContentFound from '../common/NoContentFound';
 import Switch from "react-switch";
@@ -67,21 +67,35 @@ class UsersListing extends Component {
 
 	componentDidMount() {
 		this.getUsersListData(null, null);
-
 		const { topAndLeftMenuData } = this.props;
-		if (topAndLeftMenuData !== undefined) {
-
-			const userMenu = topAndLeftMenuData && topAndLeftMenuData.find(el => el.ModuleName === 'Users');
-			const userPermissions = userMenu && userMenu.Pages.find(el => el.PageName === USER);
-			const permmisionData = userPermissions && userPermissions.Actions && checkPermission(userPermissions.Actions)
-
-			if (permmisionData !== undefined) {
-				this.setState({
-					AddAccessibility: permmisionData && permmisionData.Add ? permmisionData.Add : false,
-					EditAccessibility: permmisionData && permmisionData.Edit ? permmisionData.Edit : false,
-					DeleteAccessibility: permmisionData && permmisionData.Delete ? permmisionData.Delete : false,
-					ActivateAccessibility: permmisionData && permmisionData.Activate ? permmisionData.Activate : false,
-				})
+		if (this.props.tabId === '1') {
+			if (topAndLeftMenuData !== undefined) {
+				const userMenu = topAndLeftMenuData && topAndLeftMenuData.find(el => el.ModuleName === 'Users');
+				const userPermissions = userMenu && userMenu.Pages.find(el => el.PageName === USER);
+				const permmisionData = userPermissions && userPermissions.Actions && checkPermission(userPermissions.Actions)
+				if (permmisionData !== undefined) {
+					this.setState({
+						AddAccessibility: permmisionData && permmisionData.Add ? permmisionData.Add : false,
+						EditAccessibility: permmisionData && permmisionData.Edit ? permmisionData.Edit : false,
+						DeleteAccessibility: permmisionData && permmisionData.Delete ? permmisionData.Delete : false,
+						ActivateAccessibility: permmisionData && permmisionData.Activate ? permmisionData.Activate : false,
+					})
+				}
+			}
+		}
+		if (this.props.tabId === '5') {
+			if (topAndLeftMenuData !== undefined) {
+				const userMenu = topAndLeftMenuData && topAndLeftMenuData.find(el => el.ModuleName === 'Users');
+				const userPermissions = userMenu && userMenu.Pages.find(el => el.PageName === RFQUSER);
+				const permmisionData = userPermissions && userPermissions.Actions && checkPermission(userPermissions.Actions)
+				if (permmisionData !== undefined) {
+					this.setState({
+						AddAccessibility: permmisionData && permmisionData.Add ? permmisionData.Add : false,
+						EditAccessibility: permmisionData && permmisionData.Edit ? permmisionData.Edit : false,
+						DeleteAccessibility: permmisionData && permmisionData.Delete ? permmisionData.Delete : false,
+						ActivateAccessibility: permmisionData && permmisionData.Activate ? permmisionData.Activate : false,
+					})
+				}
 			}
 		}
 
