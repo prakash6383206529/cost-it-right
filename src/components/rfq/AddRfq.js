@@ -28,6 +28,7 @@ import BulkUpload from '../massUpload/BulkUpload';
 import _ from 'lodash';
 import { getPartSelectListWtihRevNo } from '../masters/actions/Volume';
 import { LOGISTICS, REMARKMAXLENGTH } from '../../config/masterData';
+import { setRFQBulkUpload } from './reducer/rfq';
 
 const gridOptions = {};
 
@@ -88,6 +89,7 @@ function AddRfq(props) {
             reactLocalStorage?.setObject('vendorData', [])
             reactLocalStorage.setObject('PartData', [])
             setUpdateButtonVendorTable(false)
+            dispatch(setRFQBulkUpload([]))
         }
     }, []);
 
@@ -429,8 +431,8 @@ function AddRfq(props) {
         let final = _.map(props?.node?.rowModel?.rowsToDisplay, 'data')
         return (
             <>
-                {< button title='Edit' className="Edit mr-2 align-middle" disabled={dataProps?.isViewFlag || !dataProps?.isEditFlag} type={'button'} onClick={() => editItemPartTable(props?.agGridReact?.gridOptions.rowData, props)} />}
-                {<button title='Delete' className="Delete align-middle" disabled={dataProps?.isViewFlag || !dataProps?.isEditFlag} type={'button'} onClick={() => deleteItemPartTable(final, props)} />}
+                {< button title='Edit' className="Edit mr-2 align-middle" disabled={dataProps?.isAddFlag ? false : (dataProps?.isViewFlag || !dataProps?.isEditFlag)} type={'button'} onClick={() => editItemPartTable(props?.agGridReact?.gridOptions.rowData, props)} />}
+                {<button title='Delete' className="Delete align-middle" disabled={dataProps?.isAddFlag ? false : (dataProps?.isViewFlag || !dataProps?.isEditFlag)} type={'button'} onClick={() => deleteItemPartTable(final, props)} />}
             </>
         )
     };
@@ -438,8 +440,8 @@ function AddRfq(props) {
     const buttonFormatterVendorTable = (props) => {
         return (
             <>
-                {<button title='Edit' className="Edit mr-2 align-middle" type={'button'} disabled={dataProps?.isViewFlag || !dataProps?.isEditFlag} onClick={() => editItemVendorTable(props?.agGridReact?.gridOptions.rowData, props)} />}
-                {<button title='Delete' className="Delete align-middle" type={'button'} disabled={dataProps?.isViewFlag || !dataProps?.isEditFlag} onClick={() => deleteItemVendorTable(props?.agGridReact?.gridOptions.rowData, props)} />}
+                {<button title='Edit' className="Edit mr-2 align-middle" type={'button'} disabled={dataProps?.isAddFlag ? false : (dataProps?.isViewFlag || !dataProps?.isEditFlag)} onClick={() => editItemVendorTable(props?.agGridReact?.gridOptions.rowData, props)} />}
+                {<button title='Delete' className="Delete align-middle" type={'button'} disabled={dataProps?.isAddFlag ? false : (dataProps?.isViewFlag || !dataProps?.isEditFlag)} onClick={() => deleteItemVendorTable(props?.agGridReact?.gridOptions.rowData, props)} />}
             </>
         )
     };
@@ -1117,7 +1119,7 @@ function AddRfq(props) {
                                             isEditFlag={false}
                                             // densityAlert={densityAlert}
                                             fileName={"ADDRFQ"}
-                                            messageLabel={"ADDRFQ"}
+                                            messageLabel={"RFQ Part's"}
                                             anchor={"right"}
                                             technologyId={technology}
                                         // isFinalApprovar={isFinalLevelUser}
