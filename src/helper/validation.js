@@ -145,7 +145,7 @@ export const acceptAllExceptSingleSpecialCharacter = value => {
 }
 // For alphanumeric
 export const excludeOnlySpecialCharacter = value =>
-    value && /^(?=.*[@#$%^&+=]).*$/.test(value)
+    value && /^(?=.*[@#$%^&+=/`:;"'<>?/.,|~!*()]).*$/.test(value)
         ? 'This field do not accept  special character' : undefined;
 
 export const alphabetsOnly = value =>
