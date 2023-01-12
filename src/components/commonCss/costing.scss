@@ -413,6 +413,13 @@
   }
 }
 
+//Sticky headers for multiple technology
+.multi-technology-container {
+  .sticky-headers {
+    top: 72px;
+  }
+}
+
 .pin-btn-container {
   display: flex;
   align-items: center;

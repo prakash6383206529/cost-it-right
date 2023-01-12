@@ -21,6 +21,7 @@ import NoContentFound from '../../../common/NoContentFound'
 import { getLastSimulationData } from '../../../simulation/actions/Simulation'
 import Toaster from '../../../common/Toaster'
 import PopupMsgWrapper from '../../../common/PopupMsgWrapper'
+import { reactLocalStorage } from 'reactjs-localstorage'
 
 function ApprovalSummary(props) {
   const { approvalNumber, approvalProcessId } = props.location.state
@@ -327,7 +328,7 @@ function ApprovalSummary(props) {
                       {approvalDetails.CostingTypeId === VBCTypeId && (
                         <th>{`ZBC/Vendor (Code):`}</th>
                       )}
-                      {approvalDetails.CostingTypeId === CBCTypeId && (
+                      {approvalDetails.CostingTypeId === CBCTypeId && reactLocalStorage.getObject('cbcCostingPermission') && (
                         <th>{`Customer (Code)`}</th>
                       )}
                       {

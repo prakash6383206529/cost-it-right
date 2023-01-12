@@ -96,7 +96,7 @@ class OperationListing extends Component {
                     this.props?.changeSetLoader(true)
                     this.props.getListingForSimulationCombined(this.props.objectForMultipleSimulation, OPERATIONS, (res) => {
                         this.props?.changeSetLoader(false)
-                        this.setState({ tableData: res.data.DataList })
+                        this.setState({ tableData: res.data.DataList, isLoader: false })
                     })
                 } else {
                     this.getTableListData(null, null, null, null, 0, defaultPageSize, true, this.state.floatingFilterData)
@@ -909,7 +909,7 @@ class OperationListing extends Component {
                                 <AgGridColumn field="OperationCode" headerName="Operation Code" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                 <AgGridColumn field="Plants" headerName="Plant (Code)"  ></AgGridColumn>
                                 <AgGridColumn field="VendorName" headerName="Vendor (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                                <AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                                {reactLocalStorage.getObject('cbcCostingPermission') && <AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
                                 {/* <AgGridColumn field="DepartmentName" headerName="Department"></AgGridColumn> */}
                                 <AgGridColumn field="UOM" headerName="UOM"></AgGridColumn>
                                 <AgGridColumn field="Rate" headerName="Rate" cellRenderer={'commonCostFormatter'}></AgGridColumn>

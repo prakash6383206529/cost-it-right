@@ -17,7 +17,7 @@ import SelectRowWrapper from '.././common/SelectRowWrapper';
 import { getQuotationList, cancelRfqQuotation, sendReminderForQuotation } from './actions/rfq';
 import ViewRfq from './ViewRfq';
 import AddRfq from './AddRfq';
-import { checkPermission } from '../../helper';
+import { checkPermission, userDetails } from '../../helper';
 import TooltipCustom from '../common/Tooltip';
 const gridOptions = {};
 
@@ -52,11 +52,9 @@ function RfqListing(props) {
       */
     const applyPermission = (topAndLeftMenuData) => {
         if (topAndLeftMenuData !== undefined) {
-            console.log('topAndLeftMenuData: ', topAndLeftMenuData);
             const Data = topAndLeftMenuData && topAndLeftMenuData.find(el => el.ModuleName === RFQ);
             const accessData = Data && Data.Pages.find(el => el.PageName === RFQ)
             const permmisionData = accessData && accessData.Actions && checkPermission(accessData.Actions)
-            console.log('permmisionData: ', permmisionData);
 
             if (permmisionData !== undefined) {
                 setAddAccessibility(permmisionData && permmisionData.Add ? permmisionData.Add : false)
@@ -99,7 +97,7 @@ function RfqListing(props) {
     const viewOrEditItemDetails = (Id, rowData = {}, isViewMode) => {
 
         let data = {
-            isEditFlag: true,
+            isEditFlag: !isViewMode,
             isViewFlag: isViewMode,
             rowData: rowData,
             Id: Id
@@ -157,12 +155,19 @@ function RfqListing(props) {
 
     const formToggle = () => {
         setAddRfq(true)
+
+        let data = {
+            isAddFlag: true,
+        }
+
+        setAddRfqData(data)
     }
 
     const closeDrawer = () => {
         setAddRfqData({})
         setAddRfq(false)
         getDataList()
+        setIsEdit(false)
 
     }
 
@@ -370,6 +375,8 @@ function RfqListing(props) {
                                                 <AgGridColumn field="PlantName" headerName='Plant (Code)'></AgGridColumn>
                                                 <AgGridColumn field="TechnologyName" headerName='Technology'></AgGridColumn>
                                                 <AgGridColumn field="Remark" headerName='Remark'></AgGridColumn>
+                                                <AgGridColumn field="RaisedBy" headerName='Raised By'></AgGridColumn>
+                                                <AgGridColumn field="RaisedOn" headerName='Raised On'></AgGridColumn>
                                                 <AgGridColumn field="QuotationNumber" headerName='Attachments' cellRenderer='attachmentFormatter'></AgGridColumn>
                                                 <AgGridColumn field="Status" headerName="Status" cellClass="text-center" minWidth={150} cellRenderer="statusFormatter"></AgGridColumn>
                                                 {<AgGridColumn field="QuotationId" width={150} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}

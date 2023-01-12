@@ -497,7 +497,7 @@ function ViewConversionCost(props) {
               <tr>
                 {partNumberList.length === 0 && IsAssemblyCosting && <th>{`Part No`}</th>}
                 <th>{`Operation Name`}</th>
-                <th>{`Surface Area`}</th>
+                <th>{`Quantity`}</th>
                 <th>{`UOM`}</th>
                 <th>{`Rate/UOM`}</th>
                 <th className="costing-border-right">{`Cost`}</th>
