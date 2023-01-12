@@ -1008,6 +1008,7 @@ class AddRMImport extends Component {
         IsConvertIntoCopy: isDateChange ? true : false,
         IsForcefulUpdated: isDateChange ? false : isSourceChange ? false : true,
         CutOffPrice: values.cutOffPrice,
+        CutOffPriceInINR: (values.cutOffPrice * currencyValue),
         IsCutOffApplicable: values.cutOffPrice < netCost ? true : false,
         RawMaterialCode: values.Code,
         JaliScrapCost: values.CircleScrapCost ? values.CircleScrapCost : '', // THIS KEY FOR CIRCLE SCRAP COST
@@ -1093,6 +1094,7 @@ class AddRMImport extends Component {
         RMFreightCost: values.FreightCharge,
         RMShearingCost: values.ShearingCost,
         CutOffPrice: values.cutOffPrice,
+        CutOffPriceInINR: (values.cutOffPrice * currencyValue),
         IsCutOffApplicable: values.cutOffPrice < netCost ? true : false,
         RawMaterialCode: values.Code,
         JaliScrapCost: values.CircleScrapCost ? values.CircleScrapCost : '', // THIS KEY FOR CIRCLE SCRAP COST
