@@ -87,7 +87,7 @@ class AddZBCPlant extends Component {
               country: Data.CountryName !== undefined ? { label: Data.CountryName, value: Data.CountryId } : [],
               state: Data.StateName !== undefined ? { label: Data.StateName, value: Data.StateId } : [],
               city: Data.CityName !== undefined ? { label: Data.CityName, value: Data.CityIdRef } : [],
-              company: Data.CompanyName !== undefined ? { label: Data.CompanyName, value: Data.CompanyId } : []
+              company: Data.CompanyName !== undefined ? { label: `${Data.CompanyName}${Data.CompanyCode ? ` (${Data.CompanyCode})` : ''}`, value: Data.CompanyId } : []
             }, () => this.setState({ isLoader: false }))
           }, 500)
         }
