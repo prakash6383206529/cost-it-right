@@ -156,7 +156,7 @@ function TabPackagingFreight(props) {
   * @method saveCosting
   * @description SAVE COSTING
   */
-  const saveCosting = debounce(handleSubmit((gotoNextValue) => {
+  const saveCosting = debounce((data, e, gotoNextValue) => {
 
     if (checkIsFreightPackageChange) {
 
@@ -208,7 +208,7 @@ function TabPackagingFreight(props) {
           Toaster.success(costingData.TechnologyId === LOGISTICS ? MESSAGES.FREIGHT_COSTING_SAVE_SUCCESS : MESSAGES.PACKAGE_FREIGHT_COSTING_SAVE_SUCCESS);
           dispatch(setComponentPackageFreightItemData({}, () => { }))
           InjectDiscountAPICall()
-          if (gotoNextValue) {
+          if (costingData.TechnologyId === LOGISTICS && gotoNextValue) {
             props.toggle('2')
             history.push('/costing-summary')
           }
@@ -216,7 +216,7 @@ function TabPackagingFreight(props) {
       }))
 
     }
-  }), 500)
+  }, 500)
 
 
   const InjectDiscountAPICall = () => {
@@ -285,7 +285,7 @@ function TabPackagingFreight(props) {
                   {!CostingViewMode && <button
                     type={"button"}
                     className="submit-button mr5 save-btn"
-                    onClick={(data, e) => { handleSubmit(saveCosting(false)) }}
+                    onClick={(data, e) => { handleSubmit(saveCosting(data, e, false)) }}
                   >
                     <div className={"save-icon"}></div>
                     {"Save"}
@@ -293,7 +293,7 @@ function TabPackagingFreight(props) {
                   {!CostingViewMode && costingData.TechnologyId === LOGISTICS && <button
                     type="button"
                     className="submit-button save-btn"
-                    onClick={(data, e) => { handleSubmit(saveCosting(true)) }}
+                    onClick={(data, e) => { handleSubmit(saveCosting(data, e, true)) }}
                   // disabled={isDisable}
                   >
                     {"Next"}
