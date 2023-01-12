@@ -4222,6 +4222,7 @@ export const BOP_DOMESTIC_DOWNLOAD_EXCEl = [
     { label: "Vendor (Code)", value: "Vendor", },
     { label: "Company (Code)", value: "DepartmentName", },
     { label: "Customer (Code)", value: "CustomerName", },
+    { label: "Minimum Order Quantity", value: "NumberOfPieces", },
     { label: "Basic Rate", value: "BasicRate", },
     { label: "Net Cost", value: "NetLandedCost", },
     { label: "Effective Date", value: "EffectiveDate", }
@@ -4241,6 +4242,7 @@ export const BOP_IMPORT_DOWNLOAD_EXCEl = [
     { label: "Customer (Code)", value: "CustomerName", },
     { label: "Inco Terms", value: "IncoTermDescriptionAndInfoTerm" },
     { label: "Payment Terms", value: "PaymentTermDescriptionAndPaymentTerm" },
+    { label: "Minimum Order Quantity", value: "NumberOfPieces", },
     { label: "Basic Rate", value: "BasicRate" },
     { label: "Net Cost (Currency)", value: "NetLandedCost" },
     { label: "Net Cost (INR)", value: "NetLandedCostConversion" },
