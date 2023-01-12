@@ -143,7 +143,7 @@ class BOPDomesticListing extends Component {
             this.props?.changeSetLoader(true)
             this.props.getListingForSimulationCombined(this.props.objectForMultipleSimulation, BOPDOMESTIC, (res) => {
                 this.props?.changeSetLoader(false)
-
+                this.setState({ isLoader: false })
             })
         } else {
 
