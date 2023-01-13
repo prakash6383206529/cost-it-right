@@ -133,9 +133,9 @@ function Dashboard(props) {
                     </Col>
                   </Row>
 
-                  <Row>
+                  {acc2 && <Row>
                     <Col md="12" className="mt-3">{acc2 && <Tabs isPageNoChange={isPageNoChange} costing={false} accordion={false} module={'simulation'} />}</Col>
-                  </Row>
+                  </Row>}
                 </div>
               </Row>}
 
@@ -153,9 +153,9 @@ function Dashboard(props) {
                       </button>
                     </Col>
                   </Row>
-                  <Row>
+                  {acc2 && <Row>
                     <Col md="12" className="mt-3">{acc1 && <Tabs isPageNoChange={isPageNoChange} closeDashboard={closeDashboard} costing={true} module={'costing'} accordion={true} />}</Col>
-                  </Row>
+                  </Row>}
                 </div>
               </Row>}
 
