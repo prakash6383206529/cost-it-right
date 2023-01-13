@@ -821,9 +821,9 @@ function VolumeListing(props) {
                       <BulkUpload
                         closeDrawer={closeActualBulkUploadDrawer}
                         isEditFlag={false}
-                        fileName={'ActualVolume'}
+                        fileName={'BudgetedVolume'}
                         isZBCVBCTemplate={true}
-                        messageLabel={'Volume Actual'}
+                        messageLabel={'Volume Budgeted'}
                         anchor={'right'}
                         isDrawerfasle={true}
                       />
