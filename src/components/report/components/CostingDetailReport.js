@@ -4,7 +4,7 @@ import { Row, Col } from 'reactstrap'
 import { useForm } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 import NoContentFound from '../../common/NoContentFound'
-import { REPORT_DOWNLOAD_EXCEl } from '../../../config/masterData';
+import { IdForMultiTechnology, REPORT_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import { getCostingReport } from '.././actions/ReportListing'
 import { getSingleCostingDetails, setCostingViewData } from '../../costing/actions/Costing'
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
@@ -350,12 +350,20 @@ function ReportListing(props) {
         const cellValue = props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         const costingID = row.BaseCostingId;
-        return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? <>
+        const partType = IdForMultiTechnology.includes(String(row.TechnologyId))       //CHECK IF MULTIPLE TECHNOLOGY DATA IN SUMMARY
+        return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined && !partType) ? <>
             {row.Status !== "CreatedByAssembly" ?
                 <div
                     onClick={() => viewMultipleRMDetails(costingID)}
                     className={'link'}
                 > {cellValue}</div> : <div>{cellValue}</div>} </> : '-';
+    }
+    const partCostFormatter = (props) => {
+        const cellValue = props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const partType = IdForMultiTechnology.includes(String(row.TechnologyId))
+        return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined && partType) ? <>
+            {<div>{cellValue}</div>} </> : '-';
     }
 
     const getTableData = (skip, take, isPagination, data, isLastWeek, isCallApi) => {
@@ -640,6 +648,7 @@ function ReportListing(props) {
         rmHyperLinkFormatter: rmHyperLinkFormatter,
         remarkFormatter: remarkFormatter,
         valuesFloatingFilter: MultiDropdownFloatingFilter,
+        partCostFormatter: partCostFormatter
     };
 
     const resetState = () => {
@@ -835,6 +844,7 @@ function ReportListing(props) {
                             <AgGridColumn field='RawMaterialGrossWeight' headerName='Gross Weight' cellRenderer='decimalInputOutputFormatter'></AgGridColumn>
                             <AgGridColumn field='RawMaterialFinishWeight' headerName='Finish Weight' cellRenderer='decimalInputOutputFormatter'></AgGridColumn>
                             <AgGridColumn field='NetRawMaterialsCost' headerName='Net RM Cost' cellRenderer='rmHyperLinkFormatter'></AgGridColumn>
+                            <AgGridColumn field='NetRawMaterialsCost' headerName='Part Cost/Pc' cellRenderer='partCostFormatter'></AgGridColumn>
                             <AgGridColumn field='RawMaterialRemark' headerName='RM Remark' cellRenderer='remarkFormatter'></AgGridColumn>
                             <AgGridColumn field='NetBoughtOutPartCost' headerName='Net BOP Cost' cellRenderer='decimalPriceFormatter'></AgGridColumn>
                             <AgGridColumn field='NetProcessCost' headerName='Net Process Cost' cellRenderer='decimalPriceFormatter'></AgGridColumn>
