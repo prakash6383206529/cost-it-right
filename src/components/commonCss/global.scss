@@ -2765,6 +2765,7 @@ td,
   .Draft,
   .Linked,
   .Under.Approval,
+  .UnderApproval,
   [class^="Pending"],
   [class^="Awaiting"],
   .Approved,
@@ -2791,7 +2792,8 @@ td,
   }
 
   [class^="Pending"],
-  .Under.Approval {
+  .Under.Approval,
+  .UnderApproval {
     background-color: #f8a000;
   }
 
