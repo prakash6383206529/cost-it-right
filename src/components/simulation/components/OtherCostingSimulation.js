@@ -920,7 +920,7 @@ function OtherCostingSimulation(props) {
                                                     </>}
 
                                                     {(showSurfaceTreatmentColumn) && <>
-                                                        <AgGridColumn width={140} field="OldSurfaceTreatmentCost" headerName='Existing ST Cos' cellRenderer="oldSTFormatter"></AgGridColumn>
+                                                        <AgGridColumn width={140} field="OldSurfaceTreatmentCost" headerName='Existing ST Cost' cellRenderer="oldSTFormatter"></AgGridColumn>
                                                         <AgGridColumn width={140} field="NewSurfaceTreatmentCost" headerName='New ST Cost' cellRenderer="newSTFormatter"></AgGridColumn>
                                                         <AgGridColumn width={140} field="OldTranspotationCost" headerName='Existing Extra Cost' ></AgGridColumn>
                                                         <AgGridColumn width={140} field="NewTranspotationCost" headerName='New Extra Cost' ></AgGridColumn>
