@@ -625,8 +625,11 @@ export const API = {
   generateReport: `${BASE_URL}/reports/update-costing-reports`,
   getErrorFile: `${BASE_URL}`,
   uploadCosting: `${BASE_URL}/bulk-costing/save-costing`,
+  uploadOldCosting: `${BASE_URL}/bulk-costing/component-save-costing`,
   uploadPlasticCosting: `${BASE_URL}/bulk-costing/save-costing-plastic`,
+  uploadPlasticOldCosting: `${BASE_URL}/bulk-costing/component-save-costing-plastic`,
   uploadMachiningCosting: `${BASE_URL}/bulk-costing/save-costing-machining`,
+  uploadMachiningOldCosting: `${BASE_URL}/bulk-costing/component-save-costing-machining`,
   sendStatusForApproval: `${BASE_URL}/bulk-costing/update-bulk-costing`,
   uploadCorrugatedBoxCosting: `${BASE_URL}/bulk-costing/save-costing-corrugated-box`,
   uploadAssemblyCosting: `${BASE_URL}/bulk-costing/save-costing-assembly`,
@@ -2159,4 +2162,4 @@ export const KEYRFQ = "UAGSqTBCbZ8JqHJl"
 export const IVRFQ = "8vFNmRQEl91nOtrM"
 
 //VERSION 
-export const VERSION = "V2.1.51";
+export const VERSION = "V2.1.52";
