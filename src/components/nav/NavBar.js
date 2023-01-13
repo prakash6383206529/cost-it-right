@@ -869,47 +869,12 @@ class SideBar extends Component {
                   <li className="nav-item d-xl-inline-block">
                     <div className="nav-link-user">
                       <Nav className="ml-auto top-menu logout d-inline-flex">
-                        <Dropdown
-                          isOpen={this.state.dropdownOpen}
-                          toggle={this.toggle}
-                        >
-                          <DropdownToggle caret className="username">
-                            {isLoggedIn ? (
-                              <>
-                                {/* <img
-                                  className="img-xs rounded-circle"
-                                  alt={""}
-                                  src={UserImg}
-                                 /> */}    {/* commented this code by Banti as I get instruction by TR sir 07-10-2021 */}
-                                {userData.Name}
-                              </>
-                            ) : (
-                              "Login"
-                            )}
-                          </DropdownToggle>
-
-                          {/* <DropdownMenu>
-                            {
-                              isLoggedIn ?
-                                <DropdownItem tag="a" href="javascript:void(0)" onClick={this.logout}>Logout</DropdownItem>
-                                :
-                                <DropdownItem header>
-                                  <Link className="bell-notifcation-icon" to="/login">
-                                    Login
-                                  </Link>
-                                </DropdownItem>
-                            }
-                          </DropdownMenu> */}
-                        </Dropdown>
-                        <NavbarToggler
-                          className="navbar-light float-right"
-                          onClick={this.toggleMobile}
-                        />
+                        <div className="user-name">{userData.Name}</div>
                       </Nav>
                     </div>
                   </li>
                   {isLoggedIn ? (
-                    <li className="nav-item d-xl-inline-block cr-logout-btn p-relative">
+                    <li className=" d-xl-inline-block ml-2 p-relative">
                       {this.props.disabledClass && <div title={MESSAGES.DOWNLOADING_MESSAGE} className="disabled-overflow min-width"></div>}
                       <button className="btn btn-no-border" onClick={this.logout}>
                         <img
