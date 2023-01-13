@@ -6358,5 +6358,14 @@ export const AddRFQTempData = [
     }
 ]
 
+// VISIBILITY MODE ADD RFQ
+export const DATE_STRING = 'Date'
+export const DURATION_STRING = 'Duration'
+
+export const visibilityModeDropdownArray = [
+    { label: 'Date', value:'Date' },
+    { label: 'Duration', value: 'Duration' },
+]
+
 
 
