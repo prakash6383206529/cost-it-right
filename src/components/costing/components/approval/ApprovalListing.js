@@ -983,7 +983,7 @@ function ApprovalListing(props) {
                           {reactLocalStorage.getObject('cbcCostingPermission') && <AgGridColumn field="Customer" cellRenderer='renderCustomer' headerName="Customer (Code)"></AgGridColumn>}
                           <AgGridColumn field='TechnologyName' headerName="Technology"></AgGridColumn>
                           <AgGridColumn field="NetPOPriceNew" cellRenderer='priceFormatter' headerName="New Price"></AgGridColumn>
-                          <AgGridColumn field="OldPOPriceNew" cellRenderer='oldpriceFormatter' headerName="Old PO Price"></AgGridColumn>
+                          <AgGridColumn field="OldPOPriceNew" cellRenderer='oldpriceFormatter' headerName="Existing PO Price"></AgGridColumn>
                           <AgGridColumn field="NCCPartQuantity" headerName="Quantity" cellRenderer={"reasonFormatter"} ></AgGridColumn>
                           <AgGridColumn field="IsRegularized" headerName="Is Regularized" cellRenderer={"reasonFormatter"} ></AgGridColumn>
                           <AgGridColumn field='Reason' headerName="Reason" cellRenderer={"reasonFormatter"}></AgGridColumn>

@@ -891,16 +891,11 @@ function OtherCostingSimulation(props) {
                                                     }
                                                     {(String(master) === String(COMBINED_PROCESS) || showCombinedProcessColumn) &&
                                                         <>
-                                                            <AgGridColumn width={140} field="OldNetCC" headerName='Old Net CC' cellRenderer='DecimalFormatter'></AgGridColumn>
-                                                            <AgGridColumn width={140} field="NewNetCC" headerName='New Net CC' cellRenderer='DecimalFormatter'></AgGridColumn>
-                                                        </>
-                                                    }
-                                                    <AgGridColumn width={140} field="Variance" headerName='Variance' cellRenderer='VarianceFormatter'></AgGridColumn>
-                                                    {(String(master) === String(COMBINED_PROCESS) || showCombinedProcessColumn) &&
-                                                        <>
-                                                            <AgGridColumn width={140} field="OldPOPrice" headerName='Old PO Price' cellRenderer='oldPOFormatter'></AgGridColumn>
-                                                            <AgGridColumn width={140} field="NewPOPrice" headerName='New PO Price' cellRenderer='newPOFormatter'></AgGridColumn>
-                                                            <AgGridColumn width={140} field="POVariance" headerName=' PO Variance' cellRenderer='DecimalFormatter' ></AgGridColumn>
+                                                            <AgGridColumn width={140} field="OldNetPOPriceOtherCurrency" headerName='Existing PO Price(in Currency)' cellRenderer='oldPOCurrencyFormatter'></AgGridColumn>
+                                                            <AgGridColumn width={140} field="NewNetPOPriceOtherCurrency" headerName='New PO Price (in Currency)' cellRenderer='newPOCurrencyFormatter'></AgGridColumn>
+                                                            <AgGridColumn width={140} field="POVariance" headerName='Variance w.r.t Existing Price' cellRenderer='POVarianceFormatter'></AgGridColumn>
+                                                            <AgGridColumn width={140} field="OldExchangeRate" headerName='Existing Exchange Rate' cellRenderer='oldExchangeFormatter'></AgGridColumn>
+                                                            <AgGridColumn width={140} field="NewExchangeRate" headerName='Exchange Rate New' cellRenderer='newExchangeFormatter'></AgGridColumn>
                                                         </>
                                                     }
 
@@ -909,8 +904,15 @@ function OtherCostingSimulation(props) {
                                                         <AgGridColumn field="RawMaterialGrossWeight" hide headerName='Gross Weight'></AgGridColumn>
                                                     </>}
 
+                                                    <AgGridColumn width={140} field="OldPOPrice" headerName='Existing PO Price' cellRenderer='oldPOFormatter'></AgGridColumn>
+                                                    <AgGridColumn width={140} field="NewPOPrice" headerName='New PO Price' cellRenderer='newPOFormatter'></AgGridColumn>
+                                                    <AgGridColumn width={140} field="Variance" headerName=' Variance w.r.t Existing Price' cellRenderer='variancePOFormatter' ></AgGridColumn>
+
                                                     {(showRMColumn) && <>
-                                                        <AgGridColumn width={140} field="OldNetRawMaterialsCost" headerName='Old RM Cost/Pc' cellRenderer='oldRMCFormatter'></AgGridColumn>
+                                                        {/* <AgGridColumn width={140} field="OldRMCSum" headerName='Existing RM Cost/Pc' cellRenderer='oldRMCFormatter'></AgGridColumn>
+                                                        <AgGridColumn width={140} field="NewRMCSum" headerName='New RM Cost/Pc' cellRenderer='newRMCFormatter' ></AgGridColumn>
+                                                        <AgGridColumn width={140} field="RMVarianceSum" headerName='RM Variance' cellRenderer='varianceRMCFormatter' ></AgGridColumn> */}
+                                                        <AgGridColumn width={140} field="OldNetRawMaterialsCost" headerName='Existing RM Cost/Pc' cellRenderer='oldRMCFormatter'></AgGridColumn>
                                                         <AgGridColumn width={140} field="NewNetRawMaterialsCost" headerName='New RM Cost/Pc' cellRenderer='newRMCFormatter'></AgGridColumn>
                                                         <AgGridColumn width={140} field="RMVariance" headerName='RM Variance' cellRenderer='varianceRMCFormatter' ></AgGridColumn>
                                                         <AgGridColumn width={140} field="OldScrapRate" hide></AgGridColumn>
@@ -918,28 +920,28 @@ function OtherCostingSimulation(props) {
                                                     </>}
 
                                                     {(showSurfaceTreatmentColumn) && <>
-                                                        <AgGridColumn width={140} field="OldSurfaceTreatmentCost" headerName='Old ST Cost' cellRenderer="oldSTFormatter"></AgGridColumn>
+                                                        <AgGridColumn width={140} field="OldSurfaceTreatmentCost" headerName='Existing ST Cos' cellRenderer="oldSTFormatter"></AgGridColumn>
                                                         <AgGridColumn width={140} field="NewSurfaceTreatmentCost" headerName='New ST Cost' cellRenderer="newSTFormatter"></AgGridColumn>
-                                                        <AgGridColumn width={140} field="OldTranspotationCost" headerName='Old Extra Cost' ></AgGridColumn>
+                                                        <AgGridColumn width={140} field="OldTranspotationCost" headerName='Existing Extra Cost' ></AgGridColumn>
                                                         <AgGridColumn width={140} field="NewTranspotationCost" headerName='New Extra Cost' ></AgGridColumn>
-                                                        <AgGridColumn width={140} field="OldNetSurfaceTreatmentCost" headerName='Old Net ST Cost' cellRenderer="oldNetSTFormatter"></AgGridColumn>
+                                                        <AgGridColumn width={140} field="OldNetSurfaceTreatmentCost" headerName='Existing Net ST Cost' cellRenderer="oldNetSTFormatter"></AgGridColumn>
                                                         <AgGridColumn width={140} field="NewNetSurfaceTreatmentCost" headerName='New Net ST Cost' cellRenderer="newNetSTFormatter"></AgGridColumn>
                                                         <AgGridColumn width={140} field="NetSurfaceTreatmentCostVariance" headerName='ST Variance' cellRenderer='varianceSTFormatter' ></AgGridColumn>
                                                     </>}
 
                                                     {(showOperationColumn) && <>
-                                                        <AgGridColumn width={140} field="OldOperationCost" headerName='Old Oper Cost' cellRenderer="oldOperFormatter"></AgGridColumn>
-                                                        <AgGridColumn width={140} field="NewOperationCost" headerName='New Oper Cost' cellRenderer="newOperFormatter"></AgGridColumn>
-                                                        <AgGridColumn width={140} field="OperationCostVariance" headerName='Oper Variance' cellRenderer='varianceOperationFormatter' ></AgGridColumn>
+                                                        <AgGridColumn width={140} field="OldOperationCost" headerName='Existing Oper Cost' cellRenderer="oldOPERFormatter"></AgGridColumn>
+                                                        <AgGridColumn width={140} field="NewOperationCost" headerName='New Oper Cost' cellRenderer="newOPERFormatter"></AgGridColumn>
+                                                        <AgGridColumn width={140} field="OperationCostVariance" headerName='Oper Variance' ></AgGridColumn>
                                                     </>}
 
                                                     {(showBOPColumn) && <>
-                                                        <AgGridColumn width={140} field="OldBasicRate" headerName='Old Basic Rate' ></AgGridColumn>
+                                                        <AgGridColumn width={140} field="OldBasicRate" headerName='Existing Basic Rate' ></AgGridColumn>
                                                         <AgGridColumn width={140} field="NewBasicRate" headerName='New Basic Rate' ></AgGridColumn>
                                                     </>}
 
                                                     {showMachineRateColumn && <>
-                                                        <AgGridColumn width={140} field="OldMachineRate" headerName='Old Machine Rate' ></AgGridColumn>
+                                                        <AgGridColumn width={140} field="OldMachineRate" headerName='Existing Machine Rate' ></AgGridColumn>
                                                         <AgGridColumn width={140} field="NewMachineRate" headerName='New Machine Rate' ></AgGridColumn>
                                                     </>}
 

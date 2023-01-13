@@ -17,7 +17,6 @@ import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import { debounce } from 'lodash';
-import CostingSimulation from './CostingSimulation';
 import { PaginationWrapper } from '../../common/commonPagination';
 const gridOptions = {};
 
@@ -328,10 +327,10 @@ function OtherVerifySimulation(props) {
                                                 <AgGridColumn width={110} field="ECNNumber" cellRenderer='ecnFormatter' headerName="ECN No."></AgGridColumn>
                                                 <AgGridColumn width={130} field="RevisionNumber" cellRenderer='revisionFormatter' headerName="Revision No."></AgGridColumn>
                                                 {isExchangeRate && <AgGridColumn width={130} field="Currency" headerName="Currency"></AgGridColumn>}
-                                                {isExchangeRate && <AgGridColumn width={130} field="POPrice" headerName="PO Price Old" cellRenderer='decimalFormatter'></AgGridColumn>}
+                                                <AgGridColumn width={130} field="POPrice" headerName="Existing PO Price"></AgGridColumn>
 
 
-                                                {isExchangeRate && <AgGridColumn width={145} field="OldExchangeRate" headerName="Old Exchange Rate"></AgGridColumn>}
+                                                {isExchangeRate && <AgGridColumn width={145} field="OldExchangeRate" headerName="Existing Exchange Rate"></AgGridColumn>}
                                                 {isExchangeRate && <AgGridColumn width={150} field="NewExchangeRate" cellRenderer='newExchangeRateFormatter' headerName="New Exchange Rate"></AgGridColumn>}
 
                                                 {isCombinedProcess && <AgGridColumn width={130} field="OldPOPrice" headerName="PO Price Old" cellRenderer='decimalFormatter'></AgGridColumn>}
