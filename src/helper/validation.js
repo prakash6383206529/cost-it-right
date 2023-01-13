@@ -441,3 +441,7 @@ export const isDateFormatter = value =>
     value && !/^(0?[1-9]|[12][0-9]|3[01])[\/\-](0?[1-9]|1[012])[\/\-]\d{4}$/.test(value)
         ? false : true;
 
+export const timeValidation = value =>
+    value && !/^([0-9]*):([0-5]?[0-9])$/.test(value)
+        ? 'Input should not contain #.' : undefined;
+
