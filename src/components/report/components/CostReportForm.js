@@ -65,9 +65,10 @@ function CostReportForm(props) {
     useEffect(() => {
         dispatch(getCostingSpecificTechnology(loggedInUserId(), () => { }))
         dispatch(getPartInfo('', () => { }))
-        setValue('fromDate', startDate ? startDate : '')
-        setValue('toDate', endDate ? endDate : '')
-
+        if (props.isDataClear) {
+            setValue('fromDate', startDate ? startDate : '')
+            setValue('toDate', endDate ? endDate : '')
+        }
     }, [])
 
     /**
@@ -99,7 +100,7 @@ function CostReportForm(props) {
         }
         let arr = [...gridData, obj];
 
-        dispatch(getFormGridData({ toDate, fromDate, gridData: arr }))
+        dispatch(getFormGridData({ ...costReportFormData, gridData: arr }))
         resetData()
     }
 
@@ -110,6 +111,8 @@ function CostReportForm(props) {
     const handleFromDate = (value) => {
         setMinDate(value)
         setFromDate(value)
+        dispatch(getFormGridData({ ...costReportFormData, fromDate: value }))
+
     }
 
     /**
@@ -119,6 +122,7 @@ function CostReportForm(props) {
     const handleToDate = (value) => {
         setMaxDate(value)
         setToDate(value)
+        dispatch(getFormGridData({ ...costReportFormData, toDate: value }))
     }
 
     /**
