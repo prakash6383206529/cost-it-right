@@ -1,13 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useForm, Controller } from "react-hook-form";
 import { useDispatch, useSelector } from 'react-redux';
-import { Container, Row, Col, } from 'reactstrap';
-import Drawer from '@material-ui/core/Drawer';
-import { AsyncSearchableSelectHookForm, DatePickerHookForm, DateTimePickerHookForm, NumberFieldHookForm, SearchableSelectHookForm, TextAreaHookForm, TextFieldHookForm, } from '.././layout/HookFormInputs'
+import { Row, Col, } from 'reactstrap';
+import { AsyncSearchableSelectHookForm, SearchableSelectHookForm, TextAreaHookForm, TextFieldHookForm, } from '.././layout/HookFormInputs'
 import { getVendorWithVendorCodeSelectList, getReporterList, fetchPlantDataAPI } from '../.././actions/Common';
-import { getCostingSpecificTechnology } from '../costing/actions/Costing'
+import { getCostingSpecificTechnology, } from '../costing/actions/Costing'
 import { checkForDecimalAndNull, getConfigurationKey, loggedInUserId } from '../.././helper';
-import { postiveNumber, maxLength10, nonZero, checkForNull, timeValidation } from '../.././helper/validation'
+import { checkForNull } from '../.././helper/validation'
 import { EMPTY_DATA, FILE_URL, searchCount } from '../.././config/constants';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
@@ -16,7 +15,7 @@ import Dropzone from 'react-dropzone-uploader'
 import 'react-dropzone-uploader/dist/styles.css'
 import Toaster from '../common/Toaster';
 import { MESSAGES } from '../../config/message';
-import { createRfqQuotation, fileDeleteQuotation, fileUploadQuotation, getQuotationById, updateRfqQuotation, getContactPerson, checkExistCosting, setCheckRFQBulkUpload, setRFQBulkUpload } from './actions/rfq';
+import { createRfqQuotation, fileDeleteQuotation, fileUploadQuotation, getQuotationById, updateRfqQuotation, getContactPerson, checkExistCosting, setRFQBulkUpload } from './actions/rfq';
 import PopupMsgWrapper from '../common/PopupMsgWrapper';
 import LoaderCustom from '../common/LoaderCustom';
 import redcrossImg from '../../assests/images/red-cross.png'
@@ -25,12 +24,13 @@ import HeaderTitle from '../common/HeaderTitle';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { autoCompleteDropdown, autoCompleteDropdownPart } from '../common/CommonFunctions';
 import BulkUpload from '../massUpload/BulkUpload';
-import _ from 'lodash';
+import _, { debounce } from 'lodash';
 import { getPartSelectListWtihRevNo } from '../masters/actions/Volume';
 import { DATE_STRING, DURATION_STRING, LOGISTICS, REMARKMAXLENGTH, visibilityModeDropdownArray } from '../../config/masterData';
 import DayTime from '../common/DayTimeWrapper';
 import DatePicker from 'react-datepicker'
 import { label } from 'react-dom-factories';
+import WarningMessage from '../common/WarningMessage';
 
 const gridOptions = {};
 
@@ -81,6 +81,7 @@ function AddRfq(props) {
     const [dateAndTime, setDateAndTime] = useState('')
     const [time, setTime] = useState(new Date())
     const [isConditionalVisible, setIsConditionalVisible] = useState(false)
+    const [isWarningMessageShow, setIsWarningMessageShow] = useState(false)
     const technologySelectList = useSelector((state) => state.costing.costingSpecifiTechnology)
     const dispatch = useDispatch()
     const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
@@ -114,10 +115,19 @@ function AddRfq(props) {
     const convertToPartList = (partListTemp) => {
         let tempArr = []
         partListTemp && partListTemp?.map((item) => {
-            item.SOPQuantity[2].PartNo = item.PartNumber
-            item.SOPQuantity[2].PartNo = item.PartId
+            item.SOPQuantity.map((ele, ind) => {
+                if (ind !== 2) {
+                    ele.PartNo = ele.PartNumber
+                    ele.PartId = item.PartId
+                    delete ele.PartNumber
+                } else {
+                    ele.PartNo = ele.PartNumber
+                    ele.PartId = item.PartId
+                }
+            })
             tempArr = [...tempArr, ...item?.SOPQuantity]
         })
+
         return tempArr
     }
 
@@ -141,12 +151,11 @@ function AddRfq(props) {
                     })
                     // setInitialFiles(data?.Attachments)
                     // setValue('SubmissionDate', data?.LastSubmissionDate)
-                    // setSubmissionDate(DayTime(data?.LastSubmissionDate).format('DD/MM/YYYY'))
+                    setSubmissionDate(data?.LastSubmissionDate)
                     setIsConditionalVisible(data?.IsConditionallyVisible)
                     setValue('VisibilityMode', { value: data?.VisibilityMode, label: data?.VisibilityMode })
                     setVisibilityMode({ value: data?.VisibilityMode, label: data?.VisibilityMode })
                     setDateAndTime(data?.VisibilityDate)
-
                     setTime(data?.VisibilityDuration)
                     setValue('Time', data?.VisibilityDuration)
                     setFiles(data?.Attachments)
@@ -378,7 +387,7 @@ function AddRfq(props) {
         props.closeDrawer('', {})
     }
 
-    const onSubmit = handleSubmit((data, e) => {
+    const onSubmit = debounce((data, e, isSent) => {
         if (vendorList.length === 0) {
             Toaster.warning("Please enter vendor details")
             return false
@@ -388,14 +397,11 @@ function AddRfq(props) {
         } else if (files?.length === 0) {
             Toaster.warning("Please add atleast one attachment file")
             return false
+        } else if (!submissionDate) {
+            setIsWarningMessageShow(true)
+            return false
         } else if (Object.keys(errors).length > 0) {
             return false
-        }
-        let isSent = ''
-        if (e.target.value === 'send') {
-            isSent = true
-        } else {
-            isSent = false
         }
         let obj = {}
         obj.QuotationId = data.QuotationId ? data.QuotationId : ""
@@ -412,7 +418,7 @@ function AddRfq(props) {
         obj.VisibilityMode = visibilityMode?.label
         obj.VisibilityDate = dateAndTime
         obj.VisibilityDuration = getValues('Time')
-        obj.LastSubmissionDate = submissionDate
+        obj.LastSubmissionDate = DayTime(submissionDate).format('YYYY-MM-DD HH:mm:ss')
 
         obj.VendorList = vendorList
 
@@ -465,7 +471,7 @@ function AddRfq(props) {
             }))
 
         }
-    })
+    }, 500)
 
 
     const defaultColDef = {
@@ -749,12 +755,12 @@ function AddRfq(props) {
     const afcFormatter = (props) => {
         let final = _.map(props?.node?.rowModel?.rowsToDisplay, 'data')
         const cell = props?.value;
-        // const value = beforeSaveCell(cell)
+        const value = beforeSaveCell(cell)
 
         setPartList(final)
         return (
             <>
-                {<span className='form-control height33' >{cell ? cell : ''}</span>}
+                {<span className='form-control height33' >{value ? Number(cell) : 0}</span>}
             </>
         )
     }
@@ -775,6 +781,7 @@ function AddRfq(props) {
      */
     const handleSubmissionDateChange = (value) => {
         setSubmissionDate(value)
+        setIsWarningMessageShow(false)
     }
 
     const handleChangeDateAndTime = (value) => {
@@ -800,6 +807,7 @@ function AddRfq(props) {
         return value
 
     }
+
     const frameworkComponents = {
         hyphenFormatter: hyphenFormatter,
         buttonFormatterFirst: buttonFormatterFirst,
@@ -877,20 +885,23 @@ function AddRfq(props) {
                                                         <DatePicker
                                                             name={'SubmissionDate'}
                                                             placeholder={'Select'}
-                                                            selected={submissionDate}
-                                                            handleChange={(e) => { handleSubmissionDateChange(e); }}
+                                                            //selected={submissionDate}
+                                                            selected={DayTime(submissionDate).isValid() ? new Date(submissionDate) : ''}
+                                                            onChange={handleSubmissionDateChange}
                                                             showMonthDropdown
                                                             showYearDropdown
-                                                            dateFormat="DD/MM/YYYY"
+                                                            dateFormat="dd/MM/yyyy"
                                                             dropdownMode="select"
                                                             placeholderText="Select date"
                                                             className="withBorder"
                                                             autoComplete={"off"}
+                                                            mandatory={true}
                                                             errors={errors.SubmissionDate}
                                                             disabledKeyboardNavigation
                                                             onChangeRaw={(e) => e.preventDefault()}
                                                             disabled={false}
                                                         />
+                                                        {isWarningMessageShow && <WarningMessage dClass={"error-message"} textClass={"pt-1"} message={"Please select effective date"} />}
                                                     </div>
                                                 </div>
                                             </div>
@@ -986,6 +997,7 @@ function AddRfq(props) {
                                         </Col>
                                     </Row>
                                     <div>
+                                        { }
                                         {true && <div className={`ag-grid-react`}>
                                             <Row>
                                                 <Col>
@@ -1215,12 +1227,17 @@ function AddRfq(props) {
                                                             <TextFieldHookForm
                                                                 label=""
                                                                 name={'Time'}
+                                                                selected={'00:00'}
                                                                 Controller={Controller}
                                                                 control={control}
                                                                 register={register}
                                                                 rules={{
                                                                     required: false,
-                                                                    validate: { timeValidation },
+                                                                    pattern: {
+                                                                        // value: ([01]?[0-9]|2[0-3]):[0-5][0-9],
+                                                                        value: /^([0-9]?[0-9]|2[0-9]):[0-5][0-9]$/i,
+                                                                        message: 'Hours should be in hh:mm format.',
+                                                                    },
                                                                 }}
                                                                 mandatory={false}
                                                                 handleChange={() => { }}
