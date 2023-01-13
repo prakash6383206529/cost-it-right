@@ -5246,7 +5246,6 @@ body {
     .cr-logout-btn {
       .nav-link {
         padding-top: calc(2px * 80 / 100);
-        padding-right: calc(2px * 80 / 100);
         margin-left: calc(4px * 80 / 100);
 
         img {
@@ -6199,6 +6198,7 @@ body {
       .Draft,
       .Cancelled,
       .Under.Approval,
+      .UnderApproval,
       [class^="Pending"],
       [class^="Awaiting"],
       .Approved,
