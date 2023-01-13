@@ -72,6 +72,7 @@ class ExchangeRateListing extends Component {
                         this.props?.changeSetLoader(false)
                     })
                 }
+                this.setState({ isLoader: false })
                 if (this.props.selectionForListingMasterAPI === 'Master') {
                     this.getTableListData()
                 }
