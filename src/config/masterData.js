@@ -3898,20 +3898,20 @@ export const CostingSimulationDownloadRM = [
     { label: "Revision Number", value: "RevisionNumber" },
     { label: "Finish Weight", value: "RawMaterialFinishWeight" },
     { label: "Gross Weight", value: "RawMaterialGrossWeight" },
-    { label: "Old PO Price", value: "OldPOPrice" },
+    { label: "Existing PO Price", value: "OldPOPrice" },
     { label: "New PO Price", value: "NewPOPrice" },
-    { label: "PO Variance", value: "Variance" },
-    { label: "Old Basic Rate", value: "OldRMRate" },
+    { label: "Variance w.r.t Existing Price", value: "Variance" },
+    { label: "Existing Basic Rate", value: "OldRMRate" },
     { label: 'New Basic Rate', value: 'NewRMRate' },
     { label: "ScrapRate", value: "OldScrapRate" },
     { label: 'NewScrapRate', value: 'NewScrapRate' },
-    { label: "Old RM Cost/Pc", value: "OldRMPrice" },
+    { label: "Existing RM Cost/Pc", value: "OldRMPrice" },
     { label: "New RM Cost/Pc", value: "NewRMPrice" },
     { label: "RM Variance", value: "RMCVariance" },
 
-    { label: "Impact for Quarter(INR)", value: "ImpactPerQuarter" },
+    { label: "Total Impact/Quarter (INR)", value: "ImpactPerQuarter" },
     { label: "Budgeted Price Impact Per Quarter(INR)", value: "BudgetedPriceImpactPerQuarter" },
-    { label: "Budgeted Price Variance(INR)", value: "BudgetedPriceVariance" },
+    { label: "Variance w.r.t Budgeted Price(INR)", value: "BudgetedPriceVariance" },
     { label: "Budgeted Price(INR)", value: "BudgetedPrice" },
 
     { label: "OldOverheadCost", value: "OldOverheadCost" },
@@ -3953,9 +3953,9 @@ export const CostingSimulationDownloadST = [
     { label: "Part Name", value: "PartName" },
     { label: "ECN Number", value: "ECNNumber" },
     { label: "Revision Number", value: "RevisionNumber" },
-    { label: "Old PO Price", value: "OldPOPrice" },
+    { label: "Existing PO Price", value: "OldPOPrice" },
     { label: "New PO Price", value: "NewPOPrice" },
-    { label: "PO Variance", value: "Variance" },
+    { label: "Variance w.r.t Existing Price", value: "Variance" },
 
     { label: "SurfaceArea", value: "SurfaceArea" },
     { label: "OldSurfaceTreatmentRate", value: "OldSurfaceTreatmentRate" },
@@ -3970,9 +3970,9 @@ export const CostingSimulationDownloadST = [
     { label: "NewNetSurfaceTreatmentCost", value: "NewNetSurfaceTreatmentCost" },
     { label: "STVariance", value: "STVariance" },
 
-    { label: "Impact for Quarter(INR)", value: "ImpactPerQuarter" },
+    { label: "Total Impact/Quarter (INR)", value: "ImpactPerQuarter" },
     { label: "Budgeted Price Impact Per Quarter(INR)", value: "BudgetedPriceImpactPerQuarter" },
-    { label: "Budgeted Price Variance(INR)", value: "BudgetedPriceVariance" },
+    { label: "Variance w.r.t Budgeted Price(INR)", value: "BudgetedPriceVariance" },
     { label: "Budgeted Price(INR)", value: "BudgetedPrice" },
 
     { label: "OldOverheadCost", value: "OldOverheadCost" },
@@ -4014,9 +4014,9 @@ export const CostingSimulationDownloadOperation = [
     { label: "Part Name", value: "PartName" },
     { label: "ECN Number", value: "ECNNumber" },
     { label: "Revision Number", value: "RevisionNumber" },
-    { label: "Old PO Price", value: "OldPOPrice" },
+    { label: "Existing PO Price", value: "OldPOPrice" },
     { label: "New PO Price", value: "NewPOPrice" },
-    { label: "PO Variance", value: "Variance" },
+    { label: "Variance w.r.t Existing Price", value: "Variance" },
 
     { label: "OperationName", value: "OperationName" },
     { label: "OperationCode", value: "OperationCode" },
@@ -4030,9 +4030,9 @@ export const CostingSimulationDownloadOperation = [
     { label: "NewNetOperationCost", value: "NewNetOperationCost" },
     { label: "OperationCostVariance", value: "OperationCostVariance" },
 
-    { label: "Impact for Quarter(INR)", value: "ImpactPerQuarter" },
+    { label: "Total Impact/Quarter (INR)", value: "ImpactPerQuarter" },
     { label: "Budgeted Price Impact Per Quarter(INR)", value: "BudgetedPriceImpactPerQuarter" },
-    { label: "Budgeted Price Variance(INR)", value: "BudgetedPriceVariance" },
+    { label: "Variance w.r.t Budgeted Price(INR)", value: "BudgetedPriceVariance" },
     { label: "Budgeted Price(INR)", value: "BudgetedPrice" },
 
     { label: "OldOverheadCost", value: "OldOverheadCost" },
@@ -4074,9 +4074,9 @@ export const CostingSimulationDownloadBOP = [
     { label: "Part Name", value: "PartName" },
     { label: "ECN Number", value: "ECNNumber" },
     { label: "Revision Number", value: "RevisionNumber" },
-    { label: "Old PO Price", value: "OldPOPrice" },
+    { label: "Existing PO Price", value: "OldPOPrice" },
     { label: "New PO Price", value: "NewPOPrice" },
-    { label: "PO Variance", value: "Variance" },
+    { label: "Variance w.r.t Existing Price", value: "Variance" },
 
     { label: "InsertName", value: "BoughtOutPartName" },
     { label: "InsertNumber", value: "BoughtOutPartNumber" },
@@ -4090,9 +4090,9 @@ export const CostingSimulationDownloadBOP = [
     { label: "NewNetBoughtOutPartCost", value: "NewNetBoughtOutPartCost" },
     { label: "NetBoughtOutPartCostVariance", value: "NetBoughtOutPartCostVariance" },
 
-    { label: "Impact for Quarter(INR)", value: "ImpactPerQuarter" },
+    { label: "Total Impact/Quarter (INR)", value: "ImpactPerQuarter" },
     { label: "Budgeted Price Impact Per Quarter(INR)", value: "BudgetedPriceImpactPerQuarter" },
-    { label: "Budgeted Price Variance(INR)", value: "BudgetedPriceVariance" },
+    { label: "Variance w.r.t Budgeted Price(INR)", value: "BudgetedPriceVariance" },
     { label: "Budgeted Price(INR)", value: "BudgetedPrice" },
 
     { label: "OldOverheadCost", value: "OldOverheadCost" },
@@ -4135,13 +4135,13 @@ export const SIMULATIONAPPROVALSUMMARYDOWNLOADRM = [
     { label: "Revision Number", value: "RevisionNumber" },
     { label: "Vendor (Code)", value: "VendorName" },
     { label: "Plant (Code)", value: "PlantName" },
-    { label: "Old PO Price", value: "OldPOPrice" },
+    { label: "Existing PO Price", value: "OldPOPrice" },
     { label: "New PO Price", value: "NewPOPrice" },
-    { label: "PO Variance", value: "POVariance" },
-    { label: "Old RM Cost", value: "OldRMPrice" },
+    { label: "Variance w.r.t Existing Price", value: "POVariance" },
+    { label: "Existing RM Cost", value: "OldRMPrice" },
     { label: "New RM Cost", value: "NewRMPrice" },
     { label: "RM Variance", value: "RMVariance" },
-    { label: "Impact for Quarter(INR)", value: "ImpactPerQuarter" },
+    { label: "Total Impact/Quarter (INR)", value: "ImpactPerQuarter" },
 
 ]
 
@@ -4156,13 +4156,13 @@ export const SIMULATIONAPPROVALSUMMARYDOWNLOADST = [
     { label: "Plant (Code)", value: "PlantName" },
     { label: "Operation Name", value: "OperationName" },
     { label: "Operation Code", value: "OperationCode" },
-    { label: "Old Net ST Cost", value: "OldNetSurfaceTreatmentCost" },
+    { label: "Existing Net ST Cost", value: "OldNetSurfaceTreatmentCost" },
     { label: "New Net ST Cost", value: "NewNetSurfaceTreatmentCost" },
     { label: "ST Variance", value: "NetSurfaceTreatmentCostVariance" },
-    { label: "Old PO Price", value: "OldPOPrice" },
+    { label: "Existing PO Price", value: "OldPOPrice" },
     { label: "New PO Price", value: "NewPOPrice" },
-    { label: "PO Variance", value: "POVariance" },
-    { label: "Impact for Quarter(INR)", value: "ImpactPerQuarter" },
+    { label: "Variance w.r.t Existing Price", value: "POVariance" },
+    { label: "Total Impact/Quarter (INR)", value: "ImpactPerQuarter" },
 ]
 
 export const SIMULATIONAPPROVALSUMMARYDOWNLOADOPERATION = [
@@ -4179,12 +4179,12 @@ export const SIMULATIONAPPROVALSUMMARYDOWNLOADOPERATION = [
     { label: "OldOperationCost", value: "OldOperationCost" },
     { label: "NewOperationCost", value: "NewOperationCost" },
     { label: "OperationCostVariance", value: "OperationCostVariance" },
-    { label: "Old PO Price", value: "OldPOPrice" },
+    { label: "Existing PO Price", value: "OldPOPrice" },
     { label: "New PO Price", value: "NewPOPrice" },
-    { label: "PO Variance", value: "POVariance" },
-    { label: "Impact for Quarter(INR)", value: "ImpactPerQuarter" },
+    { label: "Variance w.r.t Existing Price", value: "POVariance" },
+    { label: "Total Impact/Quarter (INR)", value: "ImpactPerQuarter" },
     { label: "Budgeted Price Impact Per Quarter(INR)", value: "BudgetedPriceImpactPerQuarter" },
-    { label: "Budgeted Price Variance(INR)", value: "BudgetedPriceVariance" },
+    { label: "Variance w.r.t Budgeted Price(INR)", value: "BudgetedPriceVariance" },
     { label: "Budgeted Price(INR)", value: "BudgetedPrice" },
 ]
 
@@ -4196,18 +4196,18 @@ export const SIMULATIONAPPROVALSUMMARYDOWNLOADBOP = [
     { label: "ECN Number", value: "ECNNumber" },
     { label: "Revision Number", value: "RevisionNumber" },
     { label: "Vendor (Code)", value: "VendorName" },
-    { label: "Plant (Code)", value: "PlantCode" },
-
+    { label: "Plant (Code)", value: "PlantName" },
     { label: "Insert Name", value: "BoughtOutPartName" },
     { label: "Insert Number", value: "BoughtOutPartNumber" },
-    { label: "Old Insert Cost", value: "OldNetBoughtOutPartCost" },
+    { label: "Existing Insert Cost", value: "OldNetBoughtOutPartCost" },
     { label: "New Insert Cost", value: "NewNetBoughtOutPartCost" },
     { label: "Insert Variance", value: "NetBoughtOutPartCostVariance" },
+    { label: "Existing PO Price", value: "OldPOPrice" },
     { label: "New PO Price", value: "NewPOPrice" },
-    { label: "PO Variance", value: "POVariance" },
-    { label: "Impact for Quarter(INR)", value: "ImpactPerQuarter" },
+    { label: "Variance w.r.t Existing Price", value: "POVariance" },
+    { label: "Total Impact/Quarter (INR)", value: "ImpactPerQuarter" },
     { label: "Budgeted Price Impact Per Quarter(INR)", value: "BudgetedPriceImpactPerQuarter" },
-    { label: "Budgeted Price Variance(INR)", value: "BudgetedPriceVariance" },
+    { label: "Variance w.r.t Budgeted Price(INR)", value: "BudgetedPriceVariance" },
     { label: "Budgeted Price(INR)", value: "BudgetedPrice" },
 ]
 
@@ -4641,9 +4641,9 @@ export const ASSEMBLY_WISEIMPACT_DOWNLOAD_EXCEl = [
     { label: "Revision Number", value: "RevisionNumber", },
     { label: "Name", value: "PartName", },
     { label: "Child's Level", value: "Level", },
-    { label: "Old PO Price/Assembly", value: "OldPrice", },
+    { label: "Existing PO Price/Assembly", value: "OldPrice", },
     { label: "New PO Price/Assembly", value: "NewPrice", },
-    { label: "Variance/Assembly", value: "Variance", },
+    { label: "Variance/Assembly w.r.t Existing Price", value: "Variance", },
 
 ]
 
@@ -4665,27 +4665,28 @@ export const OperationGridForToken = [
     { label: "Operation Name", value: "OperationName" },
     { label: "Operation Code", value: "OperationCode" },
     { label: "Operation Quantity", value: "Quantity" },
-    { label: "OldOperationCost", value: "OldOperationCost" },
+    { label: "ExistingOperationCost", value: "OldOperationCost" },
     { label: "NewOperationCost", value: "NewOperationCost" },
     { label: "OperationCostVariance", value: "OperationCostVariance" },
 
 ]
 
 export const RMGridForToken = [
-    { label: "Old RM Cost/Pc", value: "OldNetRawMaterialsCost" },
+    { label: "Variance w.r.t Existing Price", value: "Variance" },
+    { label: "Existing RM Cost/Pc", value: "OldNetRawMaterialsCost" },
     { label: 'New RM Cost/Pc', value: 'NewNetRawMaterialsCost' },
     { label: "RM Variance", value: "RMVariance" }
 ]
 
 export const STGridForToken = [
-    { label: "OldSurfaceTreatmentRate", value: "OldSurfaceTreatmentRate" },
+    { label: "ExistingSurfaceTreatmentRate", value: "OldSurfaceTreatmentRate" },
     { label: "NewSurfaceTreatmentRate", value: "NewSurfaceTreatmentRate" },
     { label: "SurfaceArea", value: "SurfaceArea" },
-    { label: "OldSurfaceTreatmentCost", value: "OldSurfaceTreatmentCost" },
+    { label: "ExistingSurfaceTreatmentCost", value: "OldSurfaceTreatmentCost" },
     { label: "NewSurfaceTreatmentCost", value: "NewSurfaceTreatmentCost" },
-    { label: "OldTranspotationCost", value: "OldTranspotationCost" },
+    { label: "ExistingTranspotationCost", value: "OldTranspotationCost" },
     { label: "NewTranspotationCost", value: "NewTranspotationCost" },
-    { label: "OldNetSurfaceTreatmentCost", value: "OldNetSurfaceTreatmentCost" },
+    { label: "ExistingNetSurfaceTreatmentCost", value: "OldNetSurfaceTreatmentCost" },
     { label: "NewNetSurfaceTreatmentCost", value: "NewNetSurfaceTreatmentCost" },
     { label: "STVariance", value: "STVariance" },
 
@@ -4693,18 +4694,18 @@ export const STGridForToken = [
 
 export const BOPGridForToken = [
     { label: "Insert Quantity", value: "BoughtOutPartQuantity" },
-    { label: "OldInsertCost", value: "OldNetBoughtOutPartCost" },
+    { label: "ExistingInsertCost", value: "OldNetBoughtOutPartCost" },
     { label: "NewInsertCost", value: "NewNetBoughtOutPartCost" },
     { label: "Insert Variance", value: "NetBoughtOutPartCostVariance" },
 
 ]
 export const ERGridForToken = [
     { label: "Currency", value: "Currency" },
-    { label: "OldPOPrice", value: "OldPOPrice" },
-    { label: "OldNetPOPriceOtherCurrency", value: "OldNetPOPriceOtherCurrency" },
+    { label: "ExistingPOPrice", value: "OldPOPrice" },
+    { label: "ExistingNetPOPriceOtherCurrency", value: "OldNetPOPriceOtherCurrency" },
     { label: "NewNetPOPriceOtherCurrency", value: "NewNetPOPriceOtherCurrency" },
-    { label: "POVariance", value: "POVariance" },
-    { label: "OldExchangeRate", value: "OldExchangeRate" },
+    { label: "Variance w.r.t Existing Price", value: "POVariance" },
+    { label: "ExistingExchangeRate", value: "OldExchangeRate" },
     { label: "NewExchangeRate", value: "NewExchangeRate" },
 ]
 
@@ -4720,37 +4721,37 @@ export const InitialGridForToken = [
     { label: "Part Name", value: "PartName" },
     { label: "ECN Number", value: "ECNNumber" },
     { label: "Revision Number", value: "RevisionNumber" },
-    { label: "Old PO Price", value: "OldPOPrice" },
+    { label: "Existing PO Price", value: "OldPOPrice" },
     { label: "New PO Price", value: "NewPOPrice" },
-    { label: "PO Variance", value: "Variance" },
+    { label: "Variance w.r.t Existing Price", value: "Variance" },
 ]
 
 export const LastGridForToken = [
-    { label: "Impact for Quarter(INR)", value: "ImpactPerQuarter" },
-    { label: "OldOverheadCost", value: "OldOverheadCost" },
+    { label: "Total Impact/Quarter (INR)", value: "ImpactPerQuarter" },
+    { label: "ExistingOverheadCost", value: "OldOverheadCost" },
     { label: "NewOverheadCost", value: "NewOverheadCost" },
-    { label: "OldProfitCost", value: "OldProfitCost" },
+    { label: "ExistingProfitCost", value: "OldProfitCost" },
     { label: "NewProfitCost", value: "NewProfitCost" },
-    { label: "OldRejectionCost", value: "OldRejectionCost" },
+    { label: "ExistingRejectionCost", value: "OldRejectionCost" },
     { label: "NewRejectionCost", value: "NewRejectionCost" },
-    { label: "OldICCCost", value: "OldICCCost" },
+    { label: "ExistingICCCost", value: "OldICCCost" },
     { label: "NewICCCost", value: "NewICCCost" },
-    { label: "OldPaymentTermsCost", value: "OldPaymentTermsCost" },
+    { label: "ExistingPaymentTermsCost", value: "OldPaymentTermsCost" },
     { label: "NewPaymentTermsCost", value: "NewPaymentTermsCost" },
-    { label: "OldOtherCost", value: "OldOtherCost" },
+    { label: "ExistingOtherCost", value: "OldOtherCost" },
     { label: "NewOtherCost", value: "NewOtherCost" },
-    { label: "OldDiscountCost", value: "OldDiscountCost" },
+    { label: "ExistingDiscountCost", value: "OldDiscountCost" },
     { label: "NewDiscountCost", value: "NewDiscountCost" },
-    { label: "OldNetOverheadAndProfitCost", value: "OldNetOverheadAndProfitCost" },
+    { label: "ExistingNetOverheadAndProfitCost", value: "OldNetOverheadAndProfitCost" },
     { label: "NewNetOverheadAndProfitCost", value: "NewNetOverheadAndProfitCost" },
     { label: "NewNetToolCost", value: "NewNetToolCost" },
-    { label: "OldNetToolCost", value: "OldNetToolCost" },
+    { label: "ExistingNetToolCost", value: "OldNetToolCost" },
     { label: "NewNetFreightCost", value: "NewNetFreightCost" },
-    { label: "OldNetFreightCost", value: "OldNetFreightCost" },
+    { label: "ExistingNetFreightCost", value: "OldNetFreightCost" },
     { label: "NewNetPackagingCost", value: "NewNetPackagingCost" },
-    { label: "OldNetPackagingCost", value: "OldNetPackagingCost" },
+    { label: "ExistingNetPackagingCost", value: "OldNetPackagingCost" },
     { label: "NewNetFreightAndPackagingCost", value: "NewNetFreightPackagingCost" },
-    { label: "OldNetFreightAndPackagingCost", value: "OldNetFreightPackagingCost" },
+    { label: "ExistingNetFreightAndPackagingCost", value: "OldNetFreightPackagingCost" },
     // { label: "EffectiveDate", value: "EffectiveDate" },
 ]
 
@@ -4766,17 +4767,17 @@ export const InitialGridForTokenSummary = [
 ]
 
 export const LastGridForTokenSummary = [
-    { label: "Impact for Quarter(INR)", value: "ImpactPerQuarter" },
-    { label: "Old PO Price", value: "OldPOPrice" },
+    { label: "Total Impact/Quarter (INR)", value: "ImpactPerQuarter" },
+    { label: "Existing PO Price", value: "OldPOPrice" },
     { label: "New PO Price", value: "NewPOPrice" },
-    { label: "PO Variance", value: "POVariance" },
+    { label: "Variance w.r.t Existing Price", value: "POVariance" },
     { label: "Draft PO Price", value: "DraftPOPrice" },
 ]
 
 export const OperationGridForTokenSummary = [
     { label: "Operation Name", value: "OperationName" },
     { label: "Operation Code", value: "OperationCode" },
-    { label: "Old Operation Cost", value: "OldOperationCost" },
+    { label: "Existing Operation Cost", value: "OldOperationCost" },
     { label: "New Operation Cost", value: "NewOperationCost" },
     { label: "Operation Variance", value: "OperationCostVariance" },
 
@@ -4787,7 +4788,7 @@ export const RMGridForTokenSummary = [
     { label: "RawMaterial Grade", value: "RMGrade" },
     { label: "RawMaterial Code", value: "RMCode" },
     { label: "RawMaterial Spec", value: "RMSpecs" },
-    { label: "Old RM Cost", value: "OldRMPrice" },
+    { label: "Existing RM Cost", value: "OldRMPrice" },
     { label: "New RM Cost", value: "NewRMPrice" },
     { label: "RM Variance", value: "RMVariance" },
 
@@ -4796,7 +4797,7 @@ export const RMGridForTokenSummary = [
 export const STGridForTokenSummary = [
     { label: "Operation Name", value: "OperationName" },
     { label: "Operation Code", value: "OperationCode" },
-    { label: "Old Net ST Cost", value: "OldNetSurfaceTreatmentCost" },
+    { label: "Existing Net ST Cost", value: "OldNetSurfaceTreatmentCost" },
     { label: "New Net ST Cost", value: "NewNetSurfaceTreatmentCost" },
     { label: "ST Variance", value: "NetSurfaceTreatmentCostVariance" },
 ]
@@ -4804,7 +4805,7 @@ export const STGridForTokenSummary = [
 export const BOPGridForTokenSummary = [
     { label: "Insert Name", value: "BoughtOutPartName" },
     { label: "Insert Number", value: "BoughtOutPartNumber" },
-    { label: "Old Insert Cost", value: "OldBOPCost" },
+    { label: "Existing Insert Cost", value: "OldBOPCost" },
     { label: "New Insert Cost", value: "NewBOPCost" },
     { label: "Insert Variance", value: "NetBoughtOutPartCostVariance" },
 ]
@@ -4818,9 +4819,9 @@ export const ImpactedRMDownload = [
     { label: "TechnologyName", value: "TechnologyName" },
     { label: "VendorName", value: "VendorName" },
     { label: "UOM", value: "UOM" },
-    { label: "OldBasicRate", value: "OldBasicRate" },
+    { label: "ExistingBasicRate", value: "OldBasicRate" },
     { label: "NewBasicRate", value: "NewBasicRate" },
-    { label: "OldScrapRate", value: "OldScrapRate" },
+    { label: "ExistingScrapRate", value: "OldScrapRate" },
     { label: "NewScrapRate", value: "NewScrapRate" },
     { label: "RMFreightCost", value: "RMFreightCost" },
     { label: "RMShearingCost", value: "RMShearingCost" },
@@ -4833,9 +4834,9 @@ export const ImpactedBOPDownload = [
     { label: "Category", value: "Category" },
     { label: "Vendor", value: "Vendor" },
     { label: "PartNumber", value: "PartNumber" },
-    { label: "OldInsertRate", value: "OldBOPRate" },
+    { label: "ExistingInsertRate", value: "OldBOPRate" },
     { label: "NewInsertRate", value: "NewBOPRate" },
-    { label: "OldPOPrice", value: "OldPOPrice" },
+    { label: "ExistingPOPrice", value: "OldPOPrice" },
     { label: "NewPOPrice", value: "NewPOPrice" },
     { label: "EffectiveDate", value: "EffectiveDate" },
 ]
@@ -4843,7 +4844,7 @@ export const ImpactedOPERATIONDownload = [
     { label: "OperationName", value: "OperationName" },
     { label: "OperationCode", value: "OperationCode" },
     { label: "UOM", value: "UOM" },
-    { label: "OldOperationRate", value: "OldOperationRate" },
+    { label: "ExistingOperationRate", value: "OldOperationRate" },
     { label: "NewOperationRate", value: "NewOperationRate" },
     { label: "EffectiveDate", value: "EffectiveDate" },
 ]
@@ -4868,7 +4869,7 @@ export const ImpactedERDownload = [
     { label: "CustomRate", value: "CustomRate" },
     { label: "CurrencyExchangeRate", value: "CurrencyExchangeRate" },
     { label: "NewExchangeRate", value: "NewExchangeRate" },
-    { label: "OldExchangeRate", value: "OldExchangeRate" },
+    { label: "ExistingExchangeRate", value: "OldExchangeRate" },
     { label: "EffectiveDate", value: "EffectiveDate" },
 ]
 
@@ -4881,15 +4882,15 @@ export const EXCHANGESIMULATIONDOWNLOAD = [
     { label: "Revision Number", value: "RevisionNumber" },
     { label: "Vendor (Code)", value: "VendorName" },
     { label: "Currency", value: "Currency" },
-    { label: "OldNetPOPriceOtherCurrency", value: "OldNetPOPriceOtherCurrency" },
+    { label: "ExistingNetPOPriceOtherCurrency", value: "OldNetPOPriceOtherCurrency" },
     { label: "NewNetPOPriceOtherCurrency", value: "NewNetPOPriceOtherCurrency" },
-    { label: "Old Exchange Rate", value: "OldExchangeRate" },
+    { label: "Existing Exchange Rate", value: "OldExchangeRate" },
     { label: "NewExchangeRate", value: "NewExchangeRate" },
     { label: "PO Price", value: "OldPOPrice" },
-    { label: "Variance", value: "Variance" },
-    { label: "Impact for Quarter(INR)", value: "ImpactPerQuarter" },
+    { label: "Variance w.r.t Existing Price", value: "Variance" },
+    { label: "Total Impact/Quarter (INR)", value: "ImpactPerQuarter" },
     { label: "Budgeted Price Impact Per Quarter(INR)", value: "BudgetedPriceImpactPerQuarter" },
-    { label: "Budgeted Price Variance(INR)", value: "BudgetedPriceVariance" },
+    { label: "Variance w.r.t Budgeted Price(INR)", value: "BudgetedPriceVariance" },
     { label: "Budgeted Price(INR)", value: "BudgetedPrice" },
 ]
 
@@ -4904,57 +4905,57 @@ export const CostingSimulationDownloadMR = [
     { label: "Part Name", value: "PartName" },
     { label: "ECN Number", value: "ECNNumber" },
     { label: "Revision Number", value: "RevisionNumber" },
-    { label: "Old PO Price", value: "OldPOPrice" },
+    { label: "Existing PO Price", value: "OldPOPrice" },
     { label: "New PO Price", value: "NewPOPrice" },
-    { label: "PO Variance", value: "Variance" },
+    { label: "Variance w.r.t Existing Price", value: "Variance" },
 
     { label: "MachineName", value: "MachineName" },
     { label: "MachineNumber", value: "MachineNumber" },
-    { label: "OldMachineRate", value: "OldMachineRate" },
+    { label: "ExistingMachineRate", value: "OldMachineRate" },
     { label: "NewMachineRate", value: "NewMachineRate" },
     { label: "MachineRateVariance", value: "MRVariance" },
     { label: "Quantity", value: "Quantity" },
     { label: "ProcessName", value: "ProcessName" },
     { label: "ProcessCode", value: "ProcessCode" },
-    { label: "OldProcessCost", value: "OldProcessCost" },
+    { label: "ExistingProcessCost", value: "OldProcessCost" },
     { label: "NewProcessCost", value: "NewProcessCost" },
     { label: "ProcessCostVariance", value: "ProcessCostVariance" },
 
-    { label: "Impact for Quarter(INR)", value: "ImpactPerQuarter" },
+    { label: "Total Impact/Quarter (INR)", value: "ImpactPerQuarter" },
     { label: "Budgeted Price Impact Per Quarter(INR)", value: "BudgetedPriceImpactPerQuarter" },
-    { label: "Budgeted Price Variance(INR)", value: "BudgetedPriceVariance" },
+    { label: "Variance w.r.t Budgeted Price(INR)", value: "BudgetedPriceVariance" },
     { label: "Budgeted Price(INR)", value: "BudgetedPrice" },
 
-    { label: "OldOverheadCost", value: "OldOverheadCost" },
+    { label: "ExistingOverheadCost", value: "OldOverheadCost" },
     { label: "NewOverheadCost", value: "NewOverheadCost" },
-    { label: "OldProfitCost", value: "OldProfitCost" },
+    { label: "ExistingProfitCost", value: "OldProfitCost" },
     { label: "NewProfitCost", value: "NewProfitCost" },
-    { label: "OldRejectionCost", value: "OldRejectionCost" },
+    { label: "ExistingRejectionCost", value: "OldRejectionCost" },
     { label: "NewRejectionCost", value: "NewRejectionCost" },
-    { label: "OldICCCost", value: "OldICCCost" },
+    { label: "ExistingICCCost", value: "OldICCCost" },
     { label: "NewICCCost", value: "NewICCCost" },
-    { label: "OldPaymentTermsCost", value: "OldPaymentTermsCost" },
+    { label: "ExistingPaymentTermsCost", value: "OldPaymentTermsCost" },
     { label: "NewPaymentTermsCost", value: "NewPaymentTermsCost" },
-    { label: "OldOtherCost", value: "OldOtherCost" },
+    { label: "ExistingOtherCost", value: "OldOtherCost" },
     { label: "NewOtherCost", value: "NewOtherCost" },
-    { label: "OldDiscountCost", value: "OldDiscountCost" },
+    { label: "ExistingDiscountCost", value: "OldDiscountCost" },
     { label: "NewDiscountCost", value: "NewDiscountCost" },
-    { label: "OldNetOverheadAndProfitCost", value: "OldNetOverheadAndProfitCost" },
+    { label: "ExistingNetOverheadAndProfitCost", value: "OldNetOverheadAndProfitCost" },
     { label: "NewNetOverheadAndProfitCost", value: "NewNetOverheadAndProfitCost" },
     { label: "NewNetToolCost", value: "NewNetToolCost" },
-    { label: "OldNetToolCost", value: "OldNetToolCost" },
+    { label: "ExistingNetToolCost", value: "OldNetToolCost" },
     { label: "NewNetFreightCost", value: "NewNetFreightCost" },
-    { label: "OldNetFreightCost", value: "OldNetFreightCost" },
+    { label: "ExistingNetFreightCost", value: "OldNetFreightCost" },
     { label: "NewNetPackagingCost", value: "NewNetPackagingCost" },
-    { label: "OldNetPackagingCost", value: "OldNetPackagingCost" },
+    { label: "ExistingNetPackagingCost", value: "OldNetPackagingCost" },
     { label: "NewNetFreightAndPackagingCost", value: "NewNetFreightPackagingCost" },
-    { label: "OldNetFreightAndPackagingCost", value: "OldNetFreightPackagingCost" },
+    { label: "ExistingNetFreightAndPackagingCost", value: "OldNetFreightPackagingCost" },
 
     // { label: "EffectiveDate", value: "EffectiveDate" },
 ]
 
 export const MRGridForToken = [
-    { label: "OldNetProcessCost", value: "OldNetProcessCost" },
+    { label: "ExistingNetProcessCost", value: "OldNetProcessCost" },
     { label: "NewNetProcessCost", value: "NewNetProcessCost" },
     { label: "NetProcessCostVariance", value: "NetProcessCostVariance" },
 ]
@@ -4968,21 +4969,21 @@ export const SIMULATIONAPPROVALSUMMARYDOWNLOADMR = [
     { label: "Revision Number", value: "RevisionNumber" },
     { label: "Vendor (Code)", value: "VendorName" },
     { label: "Plant (Code)", value: "PlantName" },
-    { label: "Old Net Process Cost", value: "OldNetProcessCost" },
+    { label: "Existing Net Process Cost", value: "OldNetProcessCost" },
     { label: "New Net Process Cost", value: "NewNetProcessCost" },
-    { label: "Old PO Price", value: "OldPOPrice" },
+    { label: "Existing PO Price", value: "OldPOPrice" },
     { label: "New PO Price", value: "NewPOPrice" },
-    { label: "PO Variance", value: "POVariance" },
-    { label: "Impact for Quarter(INR)", value: "ImpactPerQuarter" },
+    { label: "Variance w.r.t Existing Price", value: "POVariance" },
+    { label: "Total Impact/Quarter (INR)", value: "ImpactPerQuarter" },
     { label: "Budgeted Price Impact Per Quarter(INR)", value: "BudgetedPriceImpactPerQuarter" },
-    { label: "Budgeted Price Variance(INR)", value: "BudgetedPriceVariance" },
+    { label: "Variance w.r.t Budgeted Price(INR)", value: "BudgetedPriceVariance" },
     { label: "Budgeted Price(INR)", value: "BudgetedPrice" },
 ]
 
 export const MRGridForTokenSummary = [
     { label: "Process Name", value: "ProcessName" },
     { label: "Process Code", value: "ProcessCode" },
-    { label: "Old Net Process Cost", value: "OldNetProcessCost" },
+    { label: "Existing Net Process Cost", value: "OldNetProcessCost" },
     { label: "New Net Process Cost", value: "NewNetProcessCost" },
     { label: "Process Variance", value: "NetProcessCostVariance" },
 ]
@@ -6300,14 +6301,14 @@ export const CostingSimulationDownloadAssemblyTechnology = [
 
     { label: "OldNetChildPartsCostWithQuantity", value: "OldNetChildPartsCostWithQuantity" },
     { label: "NewNetChildPartsCostWithQuantity", value: "NewNetChildPartsCostWithQuantity" },
-    { label: "Variance", value: "Variance" },
+    { label: "Variance w.r.t Existing Price", value: "Variance" },
     { label: "OldNetBoughtOutPartCost", value: "OldNetBoughtOutPartCost" },
     { label: "NewNetBoughtOutPartCost", value: "NewNetBoughtOutPartCost" },
     { label: "NetBoughtOutPartCostVariance", value: "NetBoughtOutPartCostVariance" },
 
-    { label: "Impact for Quarter(INR)", value: "ImpactPerQuarter" },
+    { label: "Total Impact/Quarter (INR)", value: "ImpactPerQuarter" },
     { label: "Budgeted Price Impact Per Quarter(INR)", value: "BudgetedPriceImpactPerQuarter" },
-    { label: "Budgeted Price Variance(INR)", value: "BudgetedPriceVariance" },
+    { label: "Variance w.r.t Budgeted Price(INR)", value: "BudgetedPriceVariance" },
     { label: "Budgeted Price(INR)", value: "BudgetedPrice" },
 
     { label: "OldOverheadCost", value: "OldOverheadCost" },
@@ -6347,13 +6348,13 @@ export const SIMULATIONAPPROVALSUMMARYDOWNLOADASSEMBLYTECHNOLOGY = [
     { label: "Vendor (Code)", value: "VendorName" },
     { label: "Plant", value: "PlantName" },
     { label: "Plant Code", value: "PlantCode" },
-    { label: "Old PO Price", value: "OldPOPrice" },
+    { label: "Existing PO Price", value: "OldPOPrice" },
     { label: "New PO Price", value: "NewPOPrice" },
-    { label: "PO Variance", value: "POVariance" },
+    { label: "Variance w.r.t Existing Price", value: "POVariance" },
     { label: "OldNetBoughtOutPartCost", value: "OldNetBoughtOutPartCost" },
     { label: "NewNetBoughtOutPartCost", value: "NewNetBoughtOutPartCost" },
     { label: "NetBoughtOutPartCostVariance", value: "NetBoughtOutPartCostVariance" },
-    { label: "Impact for Quarter(INR)", value: "ImpactPerQuarter" },
+    { label: "Total Impact/Quarter (INR)", value: "ImpactPerQuarter" },
 ]
 
 export const AddRFQUpload = [

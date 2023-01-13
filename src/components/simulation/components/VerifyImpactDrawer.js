@@ -109,7 +109,7 @@ function VerifyImpactDrawer(props) {
                         <th>Master:</th>
                         <th>Costing Head:</th>
                         <th>Effective Date:</th>
-                        <th>Impact for Quarter(INR):</th>
+                        <th>Total Impact/Quarter (INR):</th>
                         <th>Total Budgeted Price Impact/Quarter(INR):</th>
                       </tr>
                     </tbody>
