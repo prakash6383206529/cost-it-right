@@ -436,3 +436,8 @@ export const NoSignNoDecimalRegex = /^\d*$/i;
 
 export const NoSignMaxLengthMessage = `Input should be numeric, and should not exceed ${NUMBERMAXLENGTH} digit before and after decimal.`
 export const NoSignNoDecimalMessage = `Input should be integer.`
+
+export const timeValidation = value =>
+    value && !/^([0-9]*):([0-5]?[0-9])$/.test(value)
+        ? 'Input should not contain #.' : undefined;
+
