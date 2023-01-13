@@ -52,11 +52,9 @@ function RfqListing(props) {
       */
     const applyPermission = (topAndLeftMenuData) => {
         if (topAndLeftMenuData !== undefined) {
-            console.log('topAndLeftMenuData: ', topAndLeftMenuData);
             const Data = topAndLeftMenuData && topAndLeftMenuData.find(el => el.ModuleName === RFQ);
             const accessData = Data && Data.Pages.find(el => el.PageName === RFQ)
             const permmisionData = accessData && accessData.Actions && checkPermission(accessData.Actions)
-            console.log('permmisionData: ', permmisionData);
 
             if (permmisionData !== undefined) {
                 setAddAccessibility(permmisionData && permmisionData.Add ? permmisionData.Add : false)
@@ -70,7 +68,7 @@ function RfqListing(props) {
     * @description HIDE DOMESTIC, IMPORT FORMS
     */
     const getDataList = () => {
-        dispatch(getQuotationList(userDetails()?.DepartmentCode, (res) => {
+        dispatch(getQuotationList((res) => {
             let temp = []
             res?.data?.DataList && res?.data?.DataList.map((item) => {
                 if (item.IsActive === false) {
@@ -99,7 +97,7 @@ function RfqListing(props) {
     const viewOrEditItemDetails = (Id, rowData = {}, isViewMode) => {
 
         let data = {
-            isEditFlag: true,
+            isEditFlag: !isViewMode,
             isViewFlag: isViewMode,
             rowData: rowData,
             Id: Id
@@ -157,6 +155,12 @@ function RfqListing(props) {
 
     const formToggle = () => {
         setAddRfq(true)
+
+        let data = {
+            isAddFlag: true,
+        }
+
+        setAddRfqData(data)
     }
 
     const closeDrawer = () => {

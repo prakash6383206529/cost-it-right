@@ -16,7 +16,7 @@ import Dropzone from 'react-dropzone-uploader'
 import 'react-dropzone-uploader/dist/styles.css'
 import Toaster from '../common/Toaster';
 import { MESSAGES } from '../../config/message';
-import { createRfqQuotation, fileDeleteQuotation, fileUploadQuotation, getQuotationById, updateRfqQuotation, getContactPerson, checkExistCosting, setCheckRFQBulkUpload } from './actions/rfq';
+import { createRfqQuotation, fileDeleteQuotation, fileUploadQuotation, getQuotationById, updateRfqQuotation, getContactPerson, checkExistCosting, setCheckRFQBulkUpload, setRFQBulkUpload } from './actions/rfq';
 import PopupMsgWrapper from '../common/PopupMsgWrapper';
 import LoaderCustom from '../common/LoaderCustom';
 import redcrossImg from '../../assests/images/red-cross.png'
@@ -32,7 +32,7 @@ import { LOGISTICS, REMARKMAXLENGTH } from '../../config/masterData';
 const gridOptions = {};
 
 function AddRfq(props) {
-
+    const { data: dataProps } = props
     const dropzone = useRef(null);
     const { register, handleSubmit, setValue, getValues, reset, formState: { errors }, control } = useForm({
         mode: 'onChange',
@@ -88,6 +88,7 @@ function AddRfq(props) {
             reactLocalStorage?.setObject('vendorData', [])
             reactLocalStorage.setObject('PartData', [])
             setUpdateButtonVendorTable(false)
+            dispatch(setRFQBulkUpload([]))
         }
     }, []);
 
@@ -99,10 +100,10 @@ function AddRfq(props) {
     useEffect(() => {
         dispatch(getCostingSpecificTechnology(loggedInUserId(), () => { }))
         dispatch(getReporterList(() => { }))
-        if (props?.isEditFlag) {
-            setIsEditFlag(true)
-            setIsViewFlag(props?.data?.isViewFlag)
-            dispatch(getQuotationById(props?.data?.Id, (res) => {
+        if (dataProps?.isEditFlag || dataProps?.isViewFlag) {
+            setIsEditFlag(dataProps?.isEditFlag)
+            setIsViewFlag(dataProps?.isViewFlag)
+            dispatch(getQuotationById(dataProps?.Id, (res) => {
                 setPartNoDisable(false)
 
 
@@ -375,10 +376,14 @@ function AddRfq(props) {
         obj.Attachments = files
         obj.IsSent = isSent
 
-        if (isEditFlag) {
+        if (dataProps?.isEditFlag) {
             dispatch(updateRfqQuotation(obj, (res) => {
                 if (res?.data?.Result) {
-                    Toaster.success(MESSAGES.RFQ_ADD_SUCCESS)
+                    if (isSent) {
+                        Toaster.success(MESSAGES.RFQ_SENT_SUCCESS)
+                    } else {
+                        Toaster.success(MESSAGES.RFQ_ADD_SUCCESS)
+                    }
                     cancel()
                 }
             }))
@@ -387,7 +392,11 @@ function AddRfq(props) {
 
             dispatch(createRfqQuotation(obj, (res) => {
                 if (res?.data?.Result) {
-                    Toaster.success(MESSAGES.RFQ_ADD_SUCCESS)
+                    if (isSent) {
+                        Toaster.success(MESSAGES.RFQ_SENT_SUCCESS)
+                    } else {
+                        Toaster.success(MESSAGES.RFQ_ADD_SUCCESS)
+                    }
                     cancel()
                 }
             }))
@@ -421,8 +430,8 @@ function AddRfq(props) {
         let final = _.map(props?.node?.rowModel?.rowsToDisplay, 'data')
         return (
             <>
-                {< button title='Edit' className="Edit mr-2 align-middle" disabled={isEditFlag} type={'button'} onClick={() => editItemPartTable(props?.agGridReact?.gridOptions.rowData, props)} />}
-                {<button title='Delete' className="Delete align-middle" disabled={isEditFlag} type={'button'} onClick={() => deleteItemPartTable(final, props)} />}
+                {< button title='Edit' className="Edit mr-2 align-middle" disabled={dataProps?.isAddFlag ? false : (dataProps?.isViewFlag || !dataProps?.isEditFlag)} type={'button'} onClick={() => editItemPartTable(props?.agGridReact?.gridOptions.rowData, props)} />}
+                {<button title='Delete' className="Delete align-middle" disabled={dataProps?.isAddFlag ? false : (dataProps?.isViewFlag || !dataProps?.isEditFlag)} type={'button'} onClick={() => deleteItemPartTable(final, props)} />}
             </>
         )
     };
@@ -430,8 +439,8 @@ function AddRfq(props) {
     const buttonFormatterVendorTable = (props) => {
         return (
             <>
-                {<button title='Edit' className="Edit mr-2 align-middle" type={'button'} disabled={isEditFlag} onClick={() => editItemVendorTable(props?.agGridReact?.gridOptions.rowData, props)} />}
-                {<button title='Delete' className="Delete align-middle" type={'button'} disabled={isEditFlag} onClick={() => deleteItemVendorTable(props?.agGridReact?.gridOptions.rowData, props)} />}
+                {<button title='Edit' className="Edit mr-2 align-middle" type={'button'} disabled={dataProps?.isAddFlag ? false : (dataProps?.isViewFlag || !dataProps?.isEditFlag)} onClick={() => editItemVendorTable(props?.agGridReact?.gridOptions.rowData, props)} />}
+                {<button title='Delete' className="Delete align-middle" type={'button'} disabled={dataProps?.isAddFlag ? false : (dataProps?.isViewFlag || !dataProps?.isEditFlag)} onClick={() => deleteItemVendorTable(props?.agGridReact?.gridOptions.rowData, props)} />}
             </>
         )
     };
@@ -734,7 +743,8 @@ function AddRfq(props) {
                                                 mandatory={true}
                                                 handleChange={handleTechnologyChange}
                                                 errors={errors.technology}
-                                                disabled={isEditFlag || disableTechnology}
+                                                disabled={((dataProps?.isViewFlag || dataProps?.isEditFlag) ? true : false)
+                                                    || (partList?.length !== 0)}
                                                 isLoading={VendorLoaderObj}
                                             />
                                         </Col>
@@ -754,7 +764,7 @@ function AddRfq(props) {
                                                 handleChange={() => { }}
                                                 errors={errors.plant}
                                                 isLoading={VendorLoaderObj}
-                                                disabled={false}
+                                                disabled={dataProps?.isViewFlag}
                                             />
                                         </Col>
                                     </Row>
@@ -775,7 +785,7 @@ function AddRfq(props) {
                                                 // handleChange={handleDestinationPlantChange}
                                                 handleChange={() => { }}
                                                 errors={errors.partNumber}
-                                                disabled={partNoDisable}
+                                                disabled={dataProps?.isViewFlag || partNoDisable}
                                                 isLoading={plantLoaderObj}
                                                 asyncOptions={partFilterList}
                                                 NoOptionMessage={"Enter 3 characters to show data"}
@@ -796,7 +806,7 @@ function AddRfq(props) {
                                                     validate: { postiveNumber, maxLength10, nonZero }
                                                 }}
                                                 handleChange={() => { }}
-                                                disabled={false}
+                                                disabled={dataProps?.isViewFlag}
                                                 placeholder={'Enter'}
                                                 customClassName={'withBorder'}
                                             />
@@ -806,7 +816,7 @@ function AddRfq(props) {
                                                 type="button"
                                                 className={'user-btn pull-left'}
                                                 onClick={() => addRowPartNoTable()}
-                                                disabled={false}
+                                                disabled={dataProps?.isViewFlag}
                                             >
                                                 <div className={'plus'}></div>{!updateButtonPartNoTable ? "ADD" : "UPDATE"}
                                             </button>
@@ -815,7 +825,7 @@ function AddRfq(props) {
                                                 type="submit"
                                                 value="CANCEL"
                                                 className="reset ml-2 mr5"
-                                                disabled={false}
+                                                disabled={dataProps?.isViewFlag}
                                             >
                                                 <div className={''}></div>
                                                 RESET
@@ -889,7 +899,7 @@ function AddRfq(props) {
                                                 errors={errors.vendor}
                                                 isLoading={VendorLoaderObj}
                                                 asyncOptions={vendorFilterList}
-                                                disabled={isViewFlag || partList?.length === 0}
+                                                disabled={isViewFlag}
                                                 NoOptionMessage={"Enter 3 characters to show data"}
                                             />
                                         </Col>
@@ -995,7 +1005,7 @@ function AddRfq(props) {
                                                 customClassName={"withBorder"}
                                                 handleChange={() => { }}
                                                 errors={errors.remark}
-                                                disabled={false}
+                                                disabled={dataProps?.isViewFlag}
                                                 rowHeight={6}
                                             // isLoading={plantLoaderObj}
                                             />
@@ -1108,7 +1118,7 @@ function AddRfq(props) {
                                             isEditFlag={false}
                                             // densityAlert={densityAlert}
                                             fileName={"ADDRFQ"}
-                                            messageLabel={"ADDRFQ"}
+                                            messageLabel={"RFQ Part's"}
                                             anchor={"right"}
                                             technologyId={technology}
                                         // isFinalApprovar={isFinalLevelUser}

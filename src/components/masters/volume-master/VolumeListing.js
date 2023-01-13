@@ -745,7 +745,7 @@ function VolumeListing(props) {
                   <AgGridColumn field="Year" headerName="Year"></AgGridColumn>
                   <AgGridColumn field="Month" headerName="Month"></AgGridColumn>
                   <AgGridColumn field="VendorName" headerName="Vendor (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                  <AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                  {reactLocalStorage.getObject('cbcCostingPermission') && <AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
                   <AgGridColumn field="Plant" headerName="Plant (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                   <AgGridColumn field="PartNumber" headerName="Part No. (Revision No.)" width={200}></AgGridColumn>
                   <AgGridColumn field="PartName" headerName="Part Name"></AgGridColumn>

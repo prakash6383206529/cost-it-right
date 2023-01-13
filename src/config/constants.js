@@ -312,6 +312,8 @@ export const API = {
   getManageBOPSOBDataList: `${BASE_URL}/masters-bought-out-part/get-bought-out-part-vendor-share-of-business-by-filter`,
   getManageBOPSOBById: `${BASE_URL}/masters-bought-out-part/get-bought-out-part-vendor-share-of-business-by-bop-part-number`,
   updateBOPSOBVendors: `${BASE_URL}/masters-bought-out-part/update-bought-out-part-vendor-share-of-business`,
+  getIncoTermSelectList: `${BASE_URL}/masters-bought-out-part/get-select-list-bought-out-part-inco-terms`,
+  getPaymentTermSelectList: `${BASE_URL}/masters-bought-out-part/get-select-list-bought-out-part-payment-terms`,
 
   //BOP APPROVAL API'S
 
@@ -1203,6 +1205,8 @@ export const GET_ALL_BOP_DOMESTIC_DATA_LIST = 'GET_ALL_BOP_DOMESTIC_DATA_LIST'
 export const GET_BOP_IMPORT_DATA_LIST = 'GET_BOP_IMPORT_DATA_LIST'
 export const GET_SOB_LISTING = 'GET_SOB_LISTING'
 export const GET_BOP_APPROVAL_LIST = 'GET_BOP_APPROVAL_LIST'
+export const GET_INCO_SELECTLIST_SUCCESS = 'GET_INCO_SELECTLIST_SUCCESS'
+export const GET_PAYMENT_SELECTLIST_SUCCESS = 'GET_PAYMENT_SELECTLIST_SUCCESS'
 
 //PROCESS MASTER
 export const CREATE_PROCESS_SUCCESS = 'CREATE_PROCESS_SUCCESS'
@@ -1670,7 +1674,7 @@ export const ERROR = 'Error'
 export const POUPDATED = 'POUpdated'
 export const LINKED = 'Linked'
 export const REJECTED_BY_SYSTEM = 'RejectedBySystem'
-export const UNDER_APPROVAL = 'Under Approval'
+export const UNDER_APPROVAL = 'UnderApproval'
 export const CANCELLED = 'Cancelled'
 export const UNDER_REVISION = 'UnderRevision'
 export const RECEIVED = 'Received'
@@ -1861,8 +1865,8 @@ export const VIEW_COSTING_DATA = {
   // rejectionOn: 'Rejection On',
   // iccOn: 'ICC On',
   // paymentTerms: 'Payment Terms',
-  overHeadApplicablity: 'OverHead Applicability',
-  overHeadApplicablityValue: 'OverHead Value',
+  overHeadApplicablity: 'Overhead Applicability',
+  overHeadApplicablityValue: 'Overhead Value',
   ProfitApplicablity: 'Profit Applicability',
   ProfitApplicablityValue: 'Profit Value',
   rejectionApplicablity: 'Rejection Applicability',
@@ -2154,4 +2158,4 @@ export const KEYRFQ = "UAGSqTBCbZ8JqHJl"
 export const IVRFQ = "8vFNmRQEl91nOtrM"
 
 //VERSION 
-export const VERSION = "V2.1.45";
+export const VERSION = "V2.1.53";
