@@ -637,7 +637,7 @@ function Pipe(props) {
                   />
                 </Col>
                 <Col md="3">
-                  <TooltipCustom disabledIcon={true} tooltipClass='length-of-scrap' id={'length-of-scrap'} tooltipText="Length of Scrap = (Remainder of no of parts/Sheet)" />
+                  <TooltipCustom disabledIcon={true} tooltipClass='length-of-scrap' id={'length-of-scrap'} tooltipText="Length of Scrap = Remainder of no. of parts/Sheet" />
 
                   <NumberFieldHookForm
                     label={`Length of Scrap(cm)`}

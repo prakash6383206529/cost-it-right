@@ -316,7 +316,7 @@ function Ferrous(props) {
                             </Table>
                             <Row className={"mx-0"}>
                                 <Col md="3">
-                                    <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'rm-rate-ferrous'} tooltipText={'Net RM Rate = RM1 Rate * Percentage / 100 + RM2 Rate * Percentage / 100 + ....'} />
+                                    <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'rm-rate-ferrous'} tooltipText={'Net RM Rate = (RM1 Rate * Percentage / 100) + (RM2 Rate * Percentage / 100) + ....'} />
                                     <NumberFieldHookForm
                                         label={`Net RM Rate`}
                                         name={'NetRMRate'}
@@ -334,7 +334,7 @@ function Ferrous(props) {
                                     />
                                 </Col>
                                 <Col md="3">
-                                    <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'srape-rate-ferrous'} tooltipText={'Net Scrap Rate = RM1 Scrap Rate * Percentage / 100 + RM2 Scrap Rate * Percentage / 100 + ....'} />
+                                    <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'srape-rate-ferrous'} tooltipText={'Net Scrap Rate = (RM1 Scrap Rate * Percentage / 100) + (RM2 Scrap Rate * Percentage / 100) + ....'} />
                                     <NumberFieldHookForm
                                         label={`Net Scrap Rate`}
                                         name={'NetScrapRate'}
