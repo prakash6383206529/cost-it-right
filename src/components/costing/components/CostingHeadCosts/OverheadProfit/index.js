@@ -385,7 +385,7 @@ function OverheadProfit(props) {
     const setOverheadValues = (dataObj, IsAPIResponse) => {
         let totalToolCost = 0
         if (IsIncludedToolCost) {
-            totalToolCost = checkForDecimalAndNull(ToolTabData[0]?.CostingPartDetails?.TotalToolCost, 2)
+            totalToolCost = checkForDecimalAndNull(ToolTabData[0]?.CostingPartDetails?.TotalToolCost, initialConfiguration.NoOfDecimalForPrice)
         } else {
             totalToolCost = 0
         }
@@ -577,7 +577,7 @@ function OverheadProfit(props) {
     const setProfitValues = (dataObj, IsAPIResponse) => {
         let totalToolCost = 0
         if (IsIncludedToolCost) {
-            totalToolCost = checkForDecimalAndNull(ToolTabData[0]?.CostingPartDetails?.TotalToolCost, 2)
+            totalToolCost = checkForDecimalAndNull(ToolTabData[0]?.CostingPartDetails?.TotalToolCost, initialConfiguration.NoOfDecimalForPrice)
         } else {
             totalToolCost = 0
         }
@@ -770,7 +770,7 @@ function OverheadProfit(props) {
 
         let totalToolCost = 0
         if (IsIncludedToolCost) {
-            totalToolCost = checkForDecimalAndNull(ToolTabData[0]?.CostingPartDetails?.TotalToolCost, 2)
+            totalToolCost = checkForDecimalAndNull(ToolTabData[0]?.CostingPartDetails?.TotalToolCost, initialConfiguration.NoOfDecimalForPrice)
         } else {
             totalToolCost = 0
         }
