@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import ReactExport from 'react-export-excel';
 import { Field, reduxForm } from "redux-form";
-import { Container, Row, Col, } from 'reactstrap';
+import { Container, Row, Col, Label, } from 'reactstrap';
 import Toaster from '../../common/Toaster';
 import Drawer from '@material-ui/core/Drawer';
 import Dropzone from 'react-dropzone-uploader'
@@ -24,7 +24,8 @@ class CostingBulkUploadDrawer extends Component {
             fileData: '',
             fileName: '',
             Technology: [],
-            attachmentLoader: false
+            attachmentLoader: false,
+            costingVersion: 'OLD'
         }
     }
 
@@ -154,16 +155,19 @@ class CostingBulkUploadDrawer extends Component {
     }
 
     onSubmit = (value) => {
-
-
         const { fileData } = this.state
+
+        if (fileData.length === 0) {
+            Toaster.warning('Please select a file to upload.')
+            return false
+        }
 
         let data = new FormData()
         data.append('file', fileData)
 
         switch (Number(this.state.Technology.value)) {
             case SHEETMETAL_GROUP_BULKUPLOAD:
-                this.props.bulkUploadCosting(data, (res) => {
+                this.props.bulkUploadCosting(data, this.state.costingVersion, (res) => {
                     let Data = res.data[0]
                     const { files } = this.state
                     files.push(Data)
@@ -171,7 +175,7 @@ class CostingBulkUploadDrawer extends Component {
                 this.cancel()
                 break;
             case PLASTIC_GROUP_BULKUPLOAD:
-                this.props.plasticBulkUploadCosting(data, (res) => {
+                this.props.plasticBulkUploadCosting(data, this.state.costingVersion, (res) => {
                     let Data = res.data[0]
                     const { files } = this.state
                     files.push(Data)
@@ -179,7 +183,7 @@ class CostingBulkUploadDrawer extends Component {
                 this.cancel()
                 break;
             case MACHINING_GROUP_BULKUPLOAD:
-                this.props.machiningBulkUploadCosting(data, (res) => {
+                this.props.machiningBulkUploadCosting(data, this.state.costingVersion, (res) => {
                     let Data = res.data[0]
                     const { files } = this.state
                     files.push(Data)
@@ -192,6 +196,10 @@ class CostingBulkUploadDrawer extends Component {
         }
     }
 
+    setCostingVersion = (value) => {
+
+        this.setState({ costingVersion: value })
+    }
 
     render() {
         const { handleSubmit } = this.props
@@ -243,6 +251,35 @@ class CostingBulkUploadDrawer extends Component {
                                         </div>
 
                                     </Col> */}
+
+                                    <Row>
+                                        <Col md="12">
+                                            <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
+                                                <input
+                                                    type="radio"
+                                                    name="costingHead"
+                                                    defaultChecked={true}
+                                                    onClick={() =>
+                                                        this.setCostingVersion("OLD")
+                                                    }
+                                                    disabled={false}
+                                                />{" "}
+                                                <span>Old Version</span>
+                                            </Label>
+                                            <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
+                                                <input
+                                                    type="radio"
+                                                    name="costingHead"
+                                                    onClick={() =>
+                                                        this.setCostingVersion("NEW")
+                                                    }
+                                                    disabled={false}
+                                                />{" "}
+                                                <span>New Version</span>
+                                            </Label>
+
+                                        </Col>
+                                    </Row>
 
                                     <Col md="12">
 
