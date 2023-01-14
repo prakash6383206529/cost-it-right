@@ -367,11 +367,12 @@ function RfqListing(props) {
                                                 frameworkComponents={frameworkComponents}
                                                 rowSelection={'multiple'}
                                                 suppressRowClickSelection={true}
+                                                enableBrowserTooltips={true}
                                             >
                                                 <AgGridColumn cellClass="has-checkbox" field="QuotationNumber" headerName='RFQ No.' cellRenderer={'linkableFormatter'} ></AgGridColumn>
-                                                <AgGridColumn field="PartNumber" headerName="Part No." width={150}></AgGridColumn>
+                                                <AgGridColumn field="PartNumber" tooltipField="PartNumber" headerName="Part No." width={150}></AgGridColumn>
                                                 <AgGridColumn field="CostingReceived" headerName='No. of Quotation Received' maxWidth={150}></AgGridColumn>
-                                                <AgGridColumn field="VendorName" headerName='Vendor (Code)'></AgGridColumn>
+                                                <AgGridColumn field="VendorName" tooltipField="VendorName" headerName='Vendor (Code)'></AgGridColumn>
                                                 <AgGridColumn field="PlantName" headerName='Plant (Code)'></AgGridColumn>
                                                 <AgGridColumn field="TechnologyName" headerName='Technology'></AgGridColumn>
                                                 <AgGridColumn field="Remark" headerName='Remark'></AgGridColumn>
@@ -379,7 +380,7 @@ function RfqListing(props) {
                                                 <AgGridColumn field="RaisedOn" headerName='Raised On'></AgGridColumn>
                                                 <AgGridColumn field="QuotationNumber" headerName='Attachments' cellRenderer='attachmentFormatter'></AgGridColumn>
                                                 <AgGridColumn field="Status" headerName="Status" cellClass="text-center" minWidth={150} cellRenderer="statusFormatter"></AgGridColumn>
-                                                {<AgGridColumn field="QuotationId" width={150} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
+                                                {<AgGridColumn field="QuotationId" width={160} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
 
                                             </AgGridReact>
                                             <PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} globalTake={10} />
