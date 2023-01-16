@@ -1098,3 +1098,7 @@ export const highlightCostingSummaryValue = (oldValue, newValue) => {
 
   return className;
 }
+
+export function addDays(theDate, days) {
+  return new Date(theDate.getTime() + days * 24 * 60 * 60 * 1000);
+}
