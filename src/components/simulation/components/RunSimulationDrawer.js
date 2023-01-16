@@ -199,6 +199,7 @@ function RunSimulationDrawer(props) {
         const Packaging = selectedData.includes("Packaging")
         const Freight = selectedData.includes("Freight")
         const BOPHandlingCharge = selectedData.includes("BOP Handling Charge")
+        const LatestExchangeRate = selectedData.includes("Latest Exchange Rate")
 
         let temp = []
         obj.IsOverhead = Overhead
@@ -231,6 +232,7 @@ function RunSimulationDrawer(props) {
         obj.AdditionalFreightApplicability = freightCostApplicability.label
         obj.IsAdditionalFreight = additionalFreight
         obj.AdditionalFreightValue = toggleSwitchAdditionalFreight ? getValues("FreightPercent") : getValues("Freight")
+        obj.IsApplyLatestExchangeRate = LatestExchangeRate
 
         // obj.IsProvisional = provisionalCheck
         // obj.LinkingTokenNumber = linkingTokenNumber != '' ? linkingTokenNumber : tokenNo
@@ -421,7 +423,6 @@ function RunSimulationDrawer(props) {
                                                                         onChange={() => handleApplicabilityChange(el)}
                                                                     >
                                                                         {el.Text}
-
                                                                         <input
                                                                             type="checkbox"
                                                                             value={"All"}
