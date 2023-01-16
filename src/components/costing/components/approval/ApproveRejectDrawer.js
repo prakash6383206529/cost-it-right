@@ -417,6 +417,9 @@ function ApproveRejectDrawer(props) {
             Toaster.success('Costing Rejected')
             props.closeDrawer('', 'submit')
           }
+          if (props?.isRFQApproval) {
+            props?.cancel()
+          }
         }))
       }
     } else {
