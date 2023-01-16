@@ -209,7 +209,7 @@ class AddBOPImport extends Component {
     if (isEditFlag && (DataToChange.BoughtOutPartIncoTermId !== newValue.value)) {
       this.setState({ IsFinancialDataChanged: true })
     }
-    else {
+    else if (isEditFlag) {
       this.setState({ IsFinancialDataChanged: false })
     }
   }
@@ -223,7 +223,7 @@ class AddBOPImport extends Component {
     if (isEditFlag && (DataToChange.BoughtOutPartPaymentTermId !== newValue.value)) {
       this.setState({ IsFinancialDataChanged: true })
     }
-    else {
+    else if (isEditFlag) {
       this.setState({ IsFinancialDataChanged: false })
     }
   }
@@ -808,8 +808,6 @@ class AddBOPImport extends Component {
         BoughtOutPartIncoTermId: incoTerm.value,
         BoughtOutPartPaymentTermId: paymentTerm.value
       }
-
-      console.log(IsFinancialDataChanged, isDateChange, 'date');
       if (IsFinancialDataChanged) {
         if (isDateChange && (DayTime(oldDate).format("DD/MM/YYYY") !== DayTime(effectiveDate).format("DD/MM/YYYY"))) {
           this.props.updateBOPImport(requestData, (res) => {
