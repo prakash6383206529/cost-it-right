@@ -411,12 +411,12 @@ function BDSimulation(props) {
                                             {!isImpactedMaster && <AgGridColumn field="Vendor" editable='false' headerName="Vendor (Code)" minWidth={140}></AgGridColumn>}
                                             {!isImpactedMaster && <AgGridColumn field="Plants" editable='false' headerName="Plant (Code)" minWidth={140}></AgGridColumn>}
 
-                                            <AgGridColumn headerClass="justify-content-center" cellClass="text-center" headerName={selectedMasterForSimulation?.label === 'BOP Import' ? "Basic Rate (Currency)" : "Basic Rate (INR)"} marryChildren={true} width={240}>
+                                            <AgGridColumn headerClass="justify-content-center" cellClass="text-center" headerName={Number(selectedMasterForSimulation.value) === 5 ? "Basic Rate (Currency)" : "Basic Rate (INR)"} marryChildren={true} width={240}>
                                                 <AgGridColumn width={120} field="BasicRate" editable='false' cellRenderer='oldBasicRateFormatter' headerName="Old" colId="BasicRate"></AgGridColumn>
                                                 <AgGridColumn width={120} cellRenderer='newBasicRateFormatter' editable={!isImpactedMaster} onCellValueChanged='cellChange' field="NewBasicRate" headerName="New" colId='NewBasicRate'></AgGridColumn>
                                             </AgGridColumn>
 
-                                            <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName={selectedMasterForSimulation?.label === 'BOP Import' ? "Net Cost (Currency)" : "Net Cost (INR)"} marryChildren={true}>
+                                            <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName={Number(selectedMasterForSimulation.value) === 5 ? "Net Cost (Currency)" : "Net Cost (INR)"} marryChildren={true}>
                                                 {/* {!isImpactedMaster &&<AgGridColumn width={120} field="OldNetLandedCost" editable='false' cellRenderer={'OldcostFormatter'} headerName="Old" colId='NetLandedCost'></AgGridColumn>} */}
                                                 <AgGridColumn width={120} field="OldNetLandedCost" editable='false' cellRenderer={'OldcostFormatter'} headerName="Old" colId='NetLandedCost'></AgGridColumn>
                                                 <AgGridColumn width={120} field="NewNetLandedCost" editable='false' valueGetter='data.NewBasicRate' cellRenderer={'NewcostFormatter'} headerName="New" colId='NewNetLandedCost'></AgGridColumn>
