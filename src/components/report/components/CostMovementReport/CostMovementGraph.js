@@ -49,8 +49,8 @@ function CostMovementGraph(props) {
     useEffect(() => {
 
         let obj = {}
-        obj.FromDate = startDate
-        obj.ToDate = endDate
+        obj.FromDate = DayTime(startDate).format('MM/DD/YYYY')
+        obj.ToDate = DayTime(endDate).format('MM/DD/YYYY')
         let sampleArray = []
         let allEffectiveDates = []
 

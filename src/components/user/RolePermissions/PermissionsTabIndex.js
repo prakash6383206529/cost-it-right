@@ -157,7 +157,11 @@ class PermissionsTabIndex extends Component {
                 activeTab: tab
             });
         }
-        this.setState({ scrollReset: !this.state.scrollReset })
+        if (Number(tab) === Number(4)) { //THIS CODE WILL EXECUTE ONLY FOR COSTING TAB
+            setTimeout(() => {
+                this.setState({ scrollReset: !this.state.scrollReset })
+            }, 100);
+        }
     }
 
     permissionHandler = (data, ModuleName) => {

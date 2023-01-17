@@ -405,11 +405,7 @@ li.nav-item .logo {
       height: 25px;
       background-color: #d9e2f0;
       left: 0;
-      top: 9px;
-
-      @media screen and (max-width:$max1367) {
-        top: 4px;
-      }
+      top: 0px;
     }
   }
 
@@ -675,6 +671,13 @@ ul.ml-auto.top-menu.logout.nav {
       left: auto;
     }
   }
+}
+
+.user-name {
+  text-transform: uppercase;
+  color: $colorPrimary;
+  margin-left: 12px;
+  font-size: 15px;
 }
 
 /* media query */
