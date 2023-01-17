@@ -98,6 +98,9 @@ export const resetState = (gridOptions, thisReference, master) => {
     }
 
     thisReference.setState({ floatingFilterData: obj, warningMessage: false, pageNo: 1, pageNoNew: 1, currentRowIndex: 0 })
+    if (thisReference?.props?.isSimulation) {
+        thisReference.props.isReset()
+    }
 
     switch (master) {
         case "BOP":
