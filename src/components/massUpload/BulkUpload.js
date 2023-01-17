@@ -583,7 +583,7 @@ class BulkUpload extends Component {
                 this.setState({ setDisable: false })
                 this.responseHandler(res)
             });
-        } else if (fileName === 'ADDRFQ') {
+        } else if (fileName === 'ADD RFQ') {
             let uploadDataRFQ = {}
             uploadDataRFQ.PartList = fileData
             uploadDataRFQ.LoggedInUserId = loggedInUserId()
@@ -640,7 +640,7 @@ class BulkUpload extends Component {
                                 <Row className="pl-3">
                                     {isZBCVBCTemplate &&
                                         <Col md="12">
-                                            {(fileName !== 'InterestRate') && (fileName !== 'ADDRFQ') &&
+                                            {(fileName !== 'InterestRate') && (fileName !== 'ADD RFQ') &&
                                                 <Label sm={isMachineMoreTemplate ? 6 : 4} className={'pl0 pr0 radio-box mb-0 pb-0'} check>
                                                     <input
                                                         type="radio"
@@ -653,7 +653,7 @@ class BulkUpload extends Component {
                                                     <span>Zero Based</span>
                                                 </Label>
                                             }
-                                            {(fileName !== 'ADDRFQ') && <Label sm={isMachineMoreTemplate ? 6 : 4} className={'pl0 pr0 radio-box mb-0 pb-0'} check>
+                                            {(fileName !== 'ADD RFQ') && <Label sm={isMachineMoreTemplate ? 6 : 4} className={'pl0 pr0 radio-box mb-0 pb-0'} check>
                                                 <input
                                                     type="radio"
                                                     name="costingHead"
@@ -662,7 +662,7 @@ class BulkUpload extends Component {
                                                 />{' '}
                                                 <span>Vendor Based</span>
                                             </Label>}
-                                            {(fileName !== 'ADDRFQ') && <Label sm={isMachineMoreTemplate ? 6 : 4} className={'pl0 pr0 radio-box mb-0 pb-0'} check>
+                                            {(fileName !== 'ADD RFQ') && <Label sm={isMachineMoreTemplate ? 6 : 4} className={'pl0 pr0 radio-box mb-0 pb-0'} check>
                                                 <input
                                                     type="radio"
                                                     name="costingHead"
@@ -740,7 +740,7 @@ class BulkUpload extends Component {
                     <Row className="pl-3">
                         {isZBCVBCTemplate &&
                             <Col md="12">
-                                {(fileName !== 'InterestRate') && (fileName !== 'ADDRFQ') &&
+                                {(fileName !== 'InterestRate') && (fileName !== 'ADD RFQ') &&
                                     <Label sm={isMachineMoreTemplate ? 6 : 4} className={'pl0 pr0 radio-box mb-0 pb-0'} check>
                                         <input
                                             type="radio"
@@ -753,7 +753,7 @@ class BulkUpload extends Component {
                                         <span>Zero Based</span>
                                     </Label>
                                 }
-                                {(fileName !== 'ADDRFQ') && <Label sm={isMachineMoreTemplate ? 6 : 4} className={'pl0 pr0 radio-box mb-0 pb-0'} check>
+                                {(fileName !== 'ADD RFQ') && <Label sm={isMachineMoreTemplate ? 6 : 4} className={'pl0 pr0 radio-box mb-0 pb-0'} check>
                                     <input
                                         type="radio"
                                         name="costingHead"
@@ -762,7 +762,7 @@ class BulkUpload extends Component {
                                     />{' '}
                                     <span>Vendor Based</span>
                                 </Label>}
-                                {(fileName !== 'ADDRFQ') && <Label sm={isMachineMoreTemplate ? 6 : 4} className={'pl0 pr0 radio-box mb-0 pb-0'} check>
+                                {(fileName !== 'ADD RFQ') && <Label sm={isMachineMoreTemplate ? 6 : 4} className={'pl0 pr0 radio-box mb-0 pb-0'} check>
                                     <input
                                         type="radio"
                                         name="costingHead"

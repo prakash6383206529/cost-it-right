@@ -112,7 +112,7 @@ class Downloadxls extends React.Component {
                 return this.returnExcelColumn(ProductComponent, ProductComponentTempData);
             case 'BOM':
                 return this.returnExcelColumn(BOMUpload, BOMUploadTempData);
-            case 'ADDRFQ':
+            case 'ADD RFQ':
                 return this.returnExcelColumn(AddRFQUpload, AddRFQTempData);
             default:
                 return 'foo';
@@ -264,7 +264,7 @@ class Downloadxls extends React.Component {
             );
         }
         // DOWNLOAD FILE:- CALLED WHEN FILE FAILED APART FROM ZBC AND VBC
-        if (isFailedFlag && (fileName === 'RMSpecification' || fileName === 'Vendor' || fileName === 'Overhead' || fileName === 'Fuel' || fileName === 'Labour' || fileName === 'PartComponent' || fileName === 'ProductComponent' || fileName === 'ADDRFQ')) {
+        if (isFailedFlag && (fileName === 'RMSpecification' || fileName === 'Vendor' || fileName === 'Overhead' || fileName === 'Fuel' || fileName === 'Labour' || fileName === 'PartComponent' || fileName === 'ProductComponent' || fileName === 'ADD RFQ')) {
             return (
                 <ExcelFile hideElement={true} filename={fileName} fileExtension={'.xls'} >
                     {this.renderSwitch(fileName)}
