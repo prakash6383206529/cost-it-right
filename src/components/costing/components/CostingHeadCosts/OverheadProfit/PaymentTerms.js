@@ -179,6 +179,7 @@ function PaymentTerms(props) {
             const RMBOPCC = headerCosts.NetRawMaterialsCost + headerCosts.NetBoughtOutPartCost + ConversionCostForCalculation
             const RMBOP = headerCosts.NetRawMaterialsCost + headerCosts.NetBoughtOutPartCost;
             const RMCC = headerCosts.NetRawMaterialsCost + ConversionCostForCalculation;
+            const BOPCC = headerCosts.NetBoughtOutPartCost + ConversionCostForCalculation;
             const RepaymentPeriodDays = getValues('RepaymentPeriodDays')
             const RepaymentPeriodPercentage = getValues('RepaymentPeriodPercentage')
             const RepaymentCost = (calculatePercentage(RepaymentPeriodPercentage) / 90) * RepaymentPeriodDays;
@@ -189,6 +190,23 @@ function PaymentTerms(props) {
                     setTempPaymentTermObj({
                         ...tempPaymentTermObj,
                         NetCost: checkForNull(headerCosts?.NetRawMaterialsCost * RepaymentCost)
+                    })
+                    break;
+
+                case 'BOP':
+                    setValue('RepaymentPeriodCost', checkForDecimalAndNull((headerCosts.NetBoughtOutPartCost * RepaymentCost), initialConfiguration.NoOfDecimalForPrice))
+                    setTempPaymentTermObj({
+                        ...tempPaymentTermObj,
+                        NetCost: checkForNull(headerCosts.NetBoughtOutPartCost * RepaymentCost),
+                    })
+                    break;
+
+                case 'CC':
+                    setValue('CostApplicability', checkForDecimalAndNull((ConversionCostForCalculation * RepaymentCost), initialConfiguration.NoOfDecimalForPrice))
+                    setValue('NetICCTotal', checkForDecimalAndNull((ConversionCostForCalculation * RepaymentCost), initialConfiguration.NoOfDecimalForPrice))
+                    setTempPaymentTermObj({
+                        ...tempPaymentTermObj,
+                        NetCost: checkForNull(ConversionCostForCalculation * RepaymentCost),
                     })
                     break;
 
@@ -209,6 +227,15 @@ function PaymentTerms(props) {
                     setTempPaymentTermObj({
                         ...tempPaymentTermObj,
                         NetCost: checkForNull(RMBOP * RepaymentCost)
+                    })
+                    break;
+
+                case 'BOP + CC':
+                    setValue('RepaymentPeriodCost', checkForDecimalAndNull((BOPCC * RepaymentCost), initialConfiguration.NoOfDecimalForPrice))
+
+                    setTempPaymentTermObj({
+                        ...tempPaymentTermObj,
+                        NetCost: checkForNull(BOPCC * RepaymentCost)
                     })
                     break;
 

@@ -158,6 +158,7 @@ function Icc(props) {
             const RMBOPCC = headerCosts.NetRawMaterialsCost + headerCosts.NetBoughtOutPartCost + ConversionCostForCalculation
             const RMBOP = headerCosts.NetRawMaterialsCost + headerCosts.NetBoughtOutPartCost;
             const RMCC = headerCosts.NetRawMaterialsCost + ConversionCostForCalculation;
+            const BOPCC = headerCosts.NetBoughtOutPartCost + ConversionCostForCalculation;
             const InterestRatePercentage = getValues('InterestRatePercentage')
 
             switch (Text) {
@@ -169,6 +170,26 @@ function Icc(props) {
                         ...tempInventoryObj,
                         CostApplicability: checkForNull(headerCosts.NetRawMaterialsCost),
                         NetICCTotal: checkForNull(headerCosts?.NetRawMaterialsCost) * calculatePercentage(InterestRatePercentage)
+                    })
+                    break;
+
+                case 'BOP':
+                    setValue('CostApplicability', checkForDecimalAndNull(headerCosts.NetBoughtOutPartCost, initialConfiguration.NoOfDecimalForPrice))
+                    setValue('NetICCTotal', checkForDecimalAndNull((headerCosts.NetBoughtOutPartCost * calculatePercentage(InterestRatePercentage)), initialConfiguration.NoOfDecimalForPrice))
+                    setTempInventoryObj({
+                        ...tempInventoryObj,
+                        CostApplicability: checkForNull(headerCosts.NetBoughtOutPartCost),
+                        NetICCTotal: checkForNull(headerCosts?.NetBoughtOutPartCost) * calculatePercentage(InterestRatePercentage)
+                    })
+                    break;
+
+                case 'CC':
+                    setValue('CostApplicability', checkForDecimalAndNull(ConversionCostForCalculation, initialConfiguration.NoOfDecimalForPrice))
+                    setValue('NetICCTotal', checkForDecimalAndNull((ConversionCostForCalculation * calculatePercentage(InterestRatePercentage)), initialConfiguration.NoOfDecimalForPrice))
+                    setTempInventoryObj({
+                        ...tempInventoryObj,
+                        CostApplicability: checkForNull(ConversionCostForCalculation),
+                        NetICCTotal: checkForNull(ConversionCostForCalculation) * calculatePercentage(InterestRatePercentage)
                     })
                     break;
 
@@ -191,6 +212,16 @@ function Icc(props) {
                         ...tempInventoryObj,
                         CostApplicability: checkForNull(RMBOP),
                         NetICCTotal: checkForNull(RMBOP) * calculatePercentage(InterestRatePercentage)
+                    })
+                    break;
+
+                case 'BOP + CC':
+                    setValue('CostApplicability', checkForDecimalAndNull(BOPCC, initialConfiguration.NoOfDecimalForPrice))
+                    setValue('NetICCTotal', checkForDecimalAndNull((BOPCC * calculatePercentage(InterestRatePercentage)), initialConfiguration.NoOfDecimalForPrice))
+                    setTempInventoryObj({
+                        ...tempInventoryObj,
+                        CostApplicability: checkForNull(BOPCC),
+                        NetICCTotal: checkForNull(BOPCC) * calculatePercentage(InterestRatePercentage)
                     })
                     break;
 
