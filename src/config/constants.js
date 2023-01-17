@@ -2073,7 +2073,7 @@ export const FUELBULKUPLOAD = 'Fuel';
 export const INTERESTRATEBULKUPLOAD = 'InterestRate'
 export const ACTUALVOLUMEBULKUPLOAD = 'ActualVolume'
 export const BUDGETEDVOLUMEBULKUPLOAD = 'BudgetedVolume'
-export const ADDRFQ = 'ADDRFQ'
+export const ADDRFQ = 'ADD RFQ'
 
 
 //STATUS FILTER DROPDOWN OPTIONS
@@ -2164,4 +2164,4 @@ export const KEYRFQ = "UAGSqTBCbZ8JqHJl"
 export const IVRFQ = "8vFNmRQEl91nOtrM"
 
 //VERSION 
-export const VERSION = "V2.1.53";
+export const VERSION = "V2.1.56";
