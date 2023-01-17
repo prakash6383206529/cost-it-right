@@ -647,6 +647,8 @@ function RfqListing(props) {
                         closeDrawer={closeDrawer}
                         //  tokenNo={approvalNumber}
                         anchor={'right'}
+                        isRFQApproval={true}
+                        cancel={cancel}
                     // IsFinalLevel={!showFinalLevelButtons}
                     // reasonId={approvalDetails.ReasonId}
                     // IsPushDrawer={showPushDrawer}
