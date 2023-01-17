@@ -638,7 +638,8 @@ class BulkUpload extends Component {
                                 <Row className="pl-3">
                                     {isZBCVBCTemplate &&
                                         <Col md="12">
-                                            {(fileName !== 'Interest Rate') && (fileName !== 'ADD RFQ') &&
+                                            {
+                                                (fileName !== 'Interest Rate') && (fileName !== 'ADD RFQ') &&
                                                 <Label sm={isMachineMoreTemplate ? 6 : 4} className={'pl0 pr0 radio-box mb-0 pb-0'} check>
                                                     <input
                                                         type="radio"
@@ -651,25 +652,30 @@ class BulkUpload extends Component {
                                                     <span>Zero Based</span>
                                                 </Label>
                                             }
-                                            {(fileName !== 'ADD RFQ') && <Label sm={isMachineMoreTemplate ? 6 : 4} className={'pl0 pr0 radio-box mb-0 pb-0'} check>
-                                                <input
-                                                    type="radio"
-                                                    name="costingHead"
-                                                    checked={costingTypeId === VBCTypeId ? true : fileName === 'Interest Rate' ? true : false}
-                                                    onClick={() => this.onPressHeads(VBCTypeId)}
-                                                />{' '}
-                                                <span>Vendor Based</span>
-                                            </Label>}
-                                            {(fileName !== 'ADD RFQ') && <Label sm={isMachineMoreTemplate ? 6 : 4} className={'pl0 pr0 radio-box mb-0 pb-0'} check>
-                                                <input
-                                                    type="radio"
-                                                    name="costingHead"
-                                                    checked={costingTypeId === CBCTypeId ? true : false}
-                                                    onClick={() => this.onPressHeads(CBCTypeId)}
-                                                />{' '}
-                                                <span>Customer Based</span>
-                                            </Label>}
-                                            {isMachineMoreTemplate &&
+                                            {
+                                                (fileName !== 'ADD RFQ') && <Label sm={isMachineMoreTemplate ? 6 : 4} className={'pl0 pr0 radio-box mb-0 pb-0'} check>
+                                                    <input
+                                                        type="radio"
+                                                        name="costingHead"
+                                                        checked={costingTypeId === VBCTypeId ? true : fileName === 'Interest Rate' ? true : false}
+                                                        onClick={() => this.onPressHeads(VBCTypeId)}
+                                                    />{' '}
+                                                    <span>Vendor Based</span>
+                                                </Label>
+                                            }
+                                            {
+                                                (fileName !== 'ADD RFQ') && <Label sm={isMachineMoreTemplate ? 6 : 4} className={'pl0 pr0 radio-box mb-0 pb-0'} check>
+                                                    <input
+                                                        type="radio"
+                                                        name="costingHead"
+                                                        checked={costingTypeId === CBCTypeId ? true : false}
+                                                        onClick={() => this.onPressHeads(CBCTypeId)}
+                                                    />{' '}
+                                                    <span>Customer Based</span>
+                                                </Label>
+                                            }
+                                            {
+                                                isMachineMoreTemplate &&
                                                 <Label sm={6} className={'pl0 pr0 radio-box mb-0 pb-0'} check>
                                                     <input
                                                         type="radio"
@@ -678,8 +684,9 @@ class BulkUpload extends Component {
                                                         onClick={() => this.onPressHeads(ZBCADDMORE)}
                                                     />{' '}
                                                     <span>ZBC More Details</span>
-                                                </Label>}
-                                        </Col>}
+                                                </Label>
+                                            }
+                                        </Col >}
 
                                     <div className="input-group mt25 col-md-12 input-withouticon download-btn" >
                                         <Downloadxls
@@ -707,7 +714,7 @@ class BulkUpload extends Component {
                                         </div>
                                     </div>
 
-                                </Row>
+                                </Row >
                                 <Row className=" justify-content-between">
                                     <div className="col-sm-12  text-right">
                                         <button
@@ -728,17 +735,18 @@ class BulkUpload extends Component {
                                         </button>
                                     </div>
                                 </Row>
-                            </form>
-                        </div>
-                    </Container>
-                </Drawer> : <form
+                            </form >
+                        </div >
+                    </Container >
+                </Drawer > : <form
                     noValidate
                     className="form"
                     onSubmit={handleSubmit(this.onSubmit.bind(this))}>
                     <Row className="pl-3">
                         {isZBCVBCTemplate &&
                             <Col md="12">
-                                {(fileName !== 'Interest Rate') && (fileName !== 'ADD RFQ') &&
+                                {
+                                    (fileName !== 'Interest Rate') && (fileName !== 'ADD RFQ') &&
                                     <Label sm={isMachineMoreTemplate ? 6 : 4} className={'pl0 pr0 radio-box mb-0 pb-0'} check>
                                         <input
                                             type="radio"
@@ -751,25 +759,30 @@ class BulkUpload extends Component {
                                         <span>Zero Based</span>
                                     </Label>
                                 }
-                                {(fileName !== 'ADD RFQ') && <Label sm={isMachineMoreTemplate ? 6 : 4} className={'pl0 pr0 radio-box mb-0 pb-0'} check>
-                                    <input
-                                        type="radio"
-                                        name="costingHead"
-                                        checked={costingTypeId === VBCTypeId ? true : fileName === 'Interest Rate' ? true : false}
-                                        onClick={() => this.onPressHeads(VBCTypeId)}
-                                    />{' '}
-                                    <span>Vendor Based</span>
-                                </Label>}
-                                {(fileName !== 'ADD RFQ') && <Label sm={isMachineMoreTemplate ? 6 : 4} className={'pl0 pr0 radio-box mb-0 pb-0'} check>
-                                    <input
-                                        type="radio"
-                                        name="costingHead"
-                                        checked={costingTypeId === CBCTypeId ? true : false}
-                                        onClick={() => this.onPressHeads(CBCTypeId)}
-                                    />{' '}
-                                    <span>Customer Based</span>
-                                </Label>}
-                                {isMachineMoreTemplate &&
+                                {
+                                    (fileName !== 'ADD RFQ') && <Label sm={isMachineMoreTemplate ? 6 : 4} className={'pl0 pr0 radio-box mb-0 pb-0'} check>
+                                        <input
+                                            type="radio"
+                                            name="costingHead"
+                                            checked={costingTypeId === VBCTypeId ? true : fileName === 'Interest Rate' ? true : false}
+                                            onClick={() => this.onPressHeads(VBCTypeId)}
+                                        />{' '}
+                                        <span>Vendor Based</span>
+                                    </Label>
+                                }
+                                {
+                                    (fileName !== 'ADD RFQ') && <Label sm={isMachineMoreTemplate ? 6 : 4} className={'pl0 pr0 radio-box mb-0 pb-0'} check>
+                                        <input
+                                            type="radio"
+                                            name="costingHead"
+                                            checked={costingTypeId === CBCTypeId ? true : false}
+                                            onClick={() => this.onPressHeads(CBCTypeId)}
+                                        />{' '}
+                                        <span>Customer Based</span>
+                                    </Label>
+                                }
+                                {
+                                    isMachineMoreTemplate &&
                                     <Label sm={6} className={'pl0 pr0 radio-box mb-0 pb-0'} check>
                                         <input
                                             type="radio"
@@ -778,8 +791,9 @@ class BulkUpload extends Component {
                                             onClick={() => this.onPressHeads(ZBCADDMORE)}
                                         />{' '}
                                         <span>ZBC More Details</span>
-                                    </Label>}
-                            </Col>}
+                                    </Label>
+                                }
+                            </Col >}
 
                         <div className="input-group mt25 col-md-12 input-withouticon download-btn" >
                             <Downloadxls
@@ -807,7 +821,7 @@ class BulkUpload extends Component {
                             </div>
                         </div>
 
-                    </Row>
+                    </Row >
                     <Row className=" justify-content-between">
                         <div className="col-sm-12  text-right">
                             <button
@@ -828,7 +842,7 @@ class BulkUpload extends Component {
                             </button>
                         </div>
                     </Row>
-                </form>}
+                </form >}
                 {
                     this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.CANCEL_MASTER_ALERT}`} />
                 }
