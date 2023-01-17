@@ -7,6 +7,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Row, Table } from 'reactstrap';
 import { EMPTY_DATA } from '../../../../config/constants';
 import { checkForDecimalAndNull } from '../../../../helper';
+import DayTime from '../../../common/DayTimeWrapper';
 import LoaderCustom from '../../../common/LoaderCustom';
 import NoContentFound from '../../../common/NoContentFound';
 import { colorArray } from '../../../dashboard/ChartsDashboard';
@@ -34,8 +35,8 @@ const CostRatioListing = (props) => {
     useEffect(() => {
 
         let obj = {}
-        obj.FromDate = startDate
-        obj.ToDate = endDate
+        obj.FromDate = DayTime(startDate).format('MM/DD/YYYY')
+        obj.ToDate = DayTime(endDate).format('MM/DD/YYYY')
         let sampleArray = []
 
         gridData && gridData.map((item) => {

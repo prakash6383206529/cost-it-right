@@ -337,6 +337,7 @@ export const MESSAGES = {
   //RFQ
   RFQ_ADD_SUCCESS: 'RFQ details added successfully',
   RFQ_SENT_SUCCESS: 'RFQ raised successfully',
+  RFQ_DETAIL_CANCEL_ALERT: 'Are you sure you want to cancel this RFQ?',
 
   //SIMULATION
   DELETE_SIMULATION_DRAFT_TOKEN: 'Are you sure you want to delete simulation token ?',
