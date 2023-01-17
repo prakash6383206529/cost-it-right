@@ -702,6 +702,9 @@ function RMImportListing(props) {
     setPageSize(prevState => ({ ...prevState, pageSize10: true, pageSize50: false, pageSize100: false }))
     setDataCount(0)
     reactLocalStorage.setObject('selectedRow', {})
+    if (isSimulation) {
+      props.isReset()
+    }
   }
 
 

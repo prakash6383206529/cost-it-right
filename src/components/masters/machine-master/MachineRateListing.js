@@ -235,6 +235,7 @@ class MachineRateListing extends Component {
             resetState(gridOptions, this, "Machine")  //COMMON PAGINATION FUNCTION
         }, 300);
         this.props.setSelectedRowForPagination([])
+        this.state.gridApi.deselectAll()
     }
 
     onBtPrevious = () => {
@@ -548,10 +549,10 @@ class MachineRateListing extends Component {
         this.state.gridApi.setQuickFilter(e.target.value);
     }
 
-    resetState() {
-        gridOptions.columnApi.resetColumnState();
-        gridOptions.api.setFilterModel(null);
-    }
+    // resetState() {
+    //     gridOptions.columnApi.resetColumnState();
+    //     gridOptions.api.setFilterModel(null);
+    // }
 
     /**
     * @method render
