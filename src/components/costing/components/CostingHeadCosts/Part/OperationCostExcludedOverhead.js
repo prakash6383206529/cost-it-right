@@ -162,7 +162,12 @@ function OperationCostExcludedOverhead(props) {
       return true;
     })
     setIds(Ids && Ids.filter(item => item !== OperationId))
+    setValue(`${OperationGridFields}.${index}.remarkPopUp`, '')
     setGridData(tempArr)
+    tempArr && tempArr.map((el, i) => {
+      setValue(`${OperationGridFields}.${i}.remarkPopUp`, el.Remark)
+    })
+
     dispatch(setSelectedIds(Ids && Ids.filter(item => item !== OperationId)))
   }
 

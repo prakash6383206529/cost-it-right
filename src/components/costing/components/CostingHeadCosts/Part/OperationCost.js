@@ -186,6 +186,10 @@ function OperationCost(props) {
     })
     setIds(Ids && Ids.filter(item => item !== OperationId))
     setGridData(tempArr)
+    setValue(`${OperationGridFields}.${index}.remarkPopUp`, '')
+    tempArr && tempArr.map((el, i) => {
+      setValue(`${OperationGridFields}.${i}.remarkPopUp`, el.Remark)
+    })
     dispatch(setSelectedIdsOperation(Ids && Ids.filter(item => item !== OperationId)))
     let totalFinishWeight = 0
     totalFinishWeight = tempArr && tempArr.reduce((accummlator, el) => {

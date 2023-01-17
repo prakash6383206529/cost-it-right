@@ -667,9 +667,11 @@ function ProcessCost(props) {
       setIds(selectedIds)
       setMachineIds(selectedMachineIds)
       setTabData(tempArr2)
+      setValue(`${ProcessGridFields}.${index}.remarkPopUp`, '')
       tempArrAfterDelete && tempArrAfterDelete.map((el, i) => {
         setValue(`${ProcessGridFields}.${i}.ProcessCost`, checkForDecimalAndNull(el.ProcessCost, initialConfiguration.NoOfDecimalForPrice))
         setValue(`${ProcessGridFields}.${i}.Quantity`, checkForDecimalAndNull(el.Quantity, getConfigurationKey().NoOfDecimalForInputOutput))
+        setValue(`${ProcessGridFields}.${i}.remarkPopUp`, el.Remark)
         return null
       })
     }, 200)
@@ -717,6 +719,9 @@ function ProcessCost(props) {
     setValue(`${ProcessGridFields}.${parentIndex}.ProcessCost`, checkForDecimalAndNull(ProcessCostTotal, initialConfiguration.NoOfDecimalForPrice))
     setValue(`${ProcessGridFields}.${parentIndex}.Quantity`, checkForDecimalAndNull(QuantityTotal, initialConfiguration.NoOfDecimalForPrice))
 
+    setValue(`${SingleProcessGridField}.${index}.${parentIndex}.remarkPopUp`, '')
+    setValue(`${SingleProcessGridField}.${index}.remarkPopUp`, '')
+
 
     parentTempData = {
       ...parentTempData,
@@ -742,6 +747,8 @@ function ProcessCost(props) {
     tempArrAfterDelete && tempArrAfterDelete.map((el, i) => {
       setValue(`${SingleProcessGridField}.${i}.${parentIndex}.ProcessCost`, checkForDecimalAndNull(el.ProcessCost, initialConfiguration.NoOfDecimalForPrice))
       setValue(`${SingleProcessGridField}.${i}${parentIndex}${el.ProcessName}.Quantity`, checkForDecimalAndNull(el.Quantity, getConfigurationKey().NoOfDecimalForInputOutput))
+      setValue(`${SingleProcessGridField}.${index}.${parentIndex}.remarkPopUp`, el.Remark)
+      setValue(`${SingleProcessGridField}.${index}.remarkPopUp`, el.Remark)
       return null
     })
 
@@ -1130,9 +1137,11 @@ function ProcessCost(props) {
                     mandatory={false}
                     rules={{
                       validate: { checkWhiteSpaces },
-                      maxLength: REMARKMAXLENGTH
+                      maxLength: groupProcessRemark && REMARKMAXLENGTH
                     }}
-                    handleChange={(e) => { }}
+                    handleChange={(e) => {
+                      setGroupProcessRemark(true)
+                    }}
                     defaultValue={item.Remark ?? item.Remark}
                     className=""
                     customClassName={"withBorder"}
