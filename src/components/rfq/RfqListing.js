@@ -28,7 +28,6 @@ function RfqListing(props) {
     const [gridColumnApi, setgridColumnApi] = useState(null);          // DONT DELETE THIS STATE , IT IS USED BY AG GRID
     const [loader, setloader] = useState(false);
     const dispatch = useDispatch();
-    const [showPopup, setShowPopup] = useState(false)
     const [addRfq, setAddRfq] = useState(false);
     const [addRfqData, setAddRfqData] = useState({});
     const [isEdit, setIsEdit] = useState(false);
@@ -40,6 +39,8 @@ function RfqListing(props) {
     const [addAccessibility, setAddAccessibility] = useState(false);
     const [editAccessibility, setEditAccessibility] = useState(false);
     const [viewAccessibility, setViewAccessibility] = useState(false);
+    const [confirmPopup, setConfirmPopup] = useState(false);
+    const [deleteId, setDeleteId] = useState('');
     const { topAndLeftMenuData } = useSelector(state => state.auth);
 
     useEffect(() => {
@@ -109,30 +110,24 @@ function RfqListing(props) {
     }
 
     const cancelItem = (id) => {
-        dispatch(cancelRfqQuotation(id, (res) => {
+        setConfirmPopup(true)
+        setDeleteId(id)
+    }
+
+    const onPopupConfirm = () => {
+        dispatch(cancelRfqQuotation(deleteId, (res) => {
             if (res.status === 200) {
                 Toaster.success('Quotation has been cancelled successfully.')
                 setTimeout(() => {
                     getDataList()
                 }, 500);
             }
+            setConfirmPopup(false)
         }))
     }
 
-    /**
-    * @method confirmDelete
-    * @description confirm delete Raw Material details
-    */
-    const confirmDelete = (ID) => {
-        setShowPopup(false)
-    }
-
-    const onPopupConfirm = () => {
-        confirmDelete();
-    }
-
     const closePopUp = () => {
-        setShowPopup(false)
+        setConfirmPopup(false)
     }
     /**
     * @method buttonFormatter
@@ -406,7 +401,7 @@ function RfqListing(props) {
                     }
 
                     {
-                        showPopup && <PopupMsgWrapper isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${MESSAGES.RAW_MATERIAL_DETAIL_DELETE_ALERT}`} />
+                        confirmPopup && <PopupMsgWrapper isOpen={confirmPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${MESSAGES.RFQ_DETAIL_CANCEL_ALERT}`} />
                     }
 
                 </div >
