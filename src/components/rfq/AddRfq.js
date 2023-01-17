@@ -822,7 +822,7 @@ function AddRfq(props) {
                                             </button>
                                             <button
                                                 onClick={onResetPartNoTable} // Need to change this cancel functionality
-                                                type="submit"
+                                                type="button"
                                                 value="CANCEL"
                                                 className="reset ml-2 mr5"
                                                 disabled={dataProps?.isViewFlag}
@@ -936,7 +936,7 @@ function AddRfq(props) {
 
                                             <button
                                                 onClick={onResetVendorTable} // Need to change this cancel functionality
-                                                type="submit"
+                                                type="button"
                                                 value="CANCEL"
                                                 className="reset ml-2"
                                                 disabled={isViewFlag}
