@@ -1296,7 +1296,7 @@ class AddBOPImport extends Component {
                               required={getConfigurationKey().IsPaymentTermsAndIncoTermsRequiredForBoughtOutPart ? true : false}
                               handleChangeDescription={this.handleIncoTerm}
                               valueDescription={this.state.incoTerm}
-                              disabled={isViewMode ? true : false}
+                              disabled={isViewMode || (isEditFlag && isBOPAssociated)}
                             />
                           </Col>
                           <Col md="3">
@@ -1311,7 +1311,7 @@ class AddBOPImport extends Component {
                               required={getConfigurationKey().IsPaymentTermsAndIncoTermsRequiredForBoughtOutPart ? true : false}
                               handleChangeDescription={this.handlePaymentTerm}
                               valueDescription={this.state.paymentTerm}
-                              disabled={isViewMode ? true : false}
+                              disabled={isViewMode || (isEditFlag && isBOPAssociated)}
                             />
                           </Col>
                           <Col md="3">
