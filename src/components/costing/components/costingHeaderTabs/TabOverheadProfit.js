@@ -586,7 +586,7 @@ function TabOverheadProfit(props) {
                   </Col>
                 } */}
 
-                <Col md="12" className="px-30 py-4 d-flex">
+                <Col md="12" className="py-4 overhead-profit-tab d-flex">
                   <label
                     className={`custom-checkbox mb-0 w-fit-content`}
                     onChange={onPressIncludeSurfaceTreatment}
