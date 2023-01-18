@@ -166,14 +166,15 @@ const CostingSummaryTable = (props) => {
     checkForDecimalAndNull(tempObj.nOverheadProfit, initialConfiguration.NoOfDecimalForPrice),
     checkForDecimalAndNull(tempObj.nPackagingAndFreight, initialConfiguration.NoOfDecimalForPrice),
     checkForDecimalAndNull(tempObj.totalToolCost, initialConfiguration.NoOfDecimalForPrice),
+    checkForDecimalAndNull(tempObj.otherDiscountCost, initialConfiguration.NoOfDecimalForPrice),
+    checkForDecimalAndNull(tempObj.anyOtherCost, initialConfiguration.NoOfDecimalForPrice),
     ]
     setPieChartDataArray(temp)
     let labelArray = []
-    let labels = ['RM', 'BOP', 'CC', 'ST', 'O&P', 'P&F', 'TC']
+    let labels = ['RM', 'BOP', 'CC', 'ST', 'O&P', 'P&F', 'TC', 'OTHER DIS', 'ANY OTHER COST']
     temp && temp.map((item, index) => {
       if (item !== 0) {
         labelArray.push(labels[index])
-        console.log(labelArray);
       }
     })
     let dataArray = []
@@ -199,6 +200,12 @@ const CostingSummaryTable = (props) => {
           break;
         case 'TC':
           dataArray.push(checkForDecimalAndNull(tempObj.totalToolCost, initialConfiguration.NoOfDecimalForPrice))
+          break;
+        case 'OTHER DIS':
+          dataArray.push(checkForDecimalAndNull(tempObj.otherDiscountCost, initialConfiguration.NoOfDecimalForPrice))
+          break;
+        case 'ANY OTHER COST':
+          dataArray.push(checkForDecimalAndNull(tempObj.anyOtherCost, initialConfiguration.NoOfDecimalForPrice))
           break;
         default:
           break;
@@ -1050,7 +1057,6 @@ const CostingSummaryTable = (props) => {
         break;
     }
   }
-  console.log(pieChartDataArray, colorArray, pieChartLabel);
   const pieChartData = {
     labels: pieChartLabel,
     datasets: [
