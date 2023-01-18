@@ -208,7 +208,7 @@ class AddBOPImport extends Component {
     if (isEditFlag && (DataToChange.BoughtOutPartIncoTermId !== newValue.value)) {
       this.setState({ IsFinancialDataChanged: true })
     }
-    else {
+    else if (isEditFlag) {
       this.setState({ IsFinancialDataChanged: false })
     }
   }
@@ -222,7 +222,7 @@ class AddBOPImport extends Component {
     if (isEditFlag && (DataToChange.BoughtOutPartPaymentTermId !== newValue.value)) {
       this.setState({ IsFinancialDataChanged: true })
     }
-    else {
+    else if (isEditFlag) {
       this.setState({ IsFinancialDataChanged: false })
     }
   }
@@ -806,8 +806,6 @@ class AddBOPImport extends Component {
         BoughtOutPartIncoTermId: incoTerm.value,
         BoughtOutPartPaymentTermId: paymentTerm.value
       }
-
-      console.log(IsFinancialDataChanged, isDateChange, 'date');
       if (IsFinancialDataChanged) {
         if (isDateChange && (DayTime(oldDate).format("DD/MM/YYYY") !== DayTime(effectiveDate).format("DD/MM/YYYY"))) {
           this.props.updateBOPImport(requestData, (res) => {
@@ -1299,7 +1297,7 @@ class AddBOPImport extends Component {
                               required={getConfigurationKey().IsPaymentTermsAndIncoTermsRequiredForBoughtOutPart ? true : false}
                               handleChangeDescription={this.handleIncoTerm}
                               valueDescription={this.state.incoTerm}
-                              disabled={isViewMode ? true : false}
+                              disabled={isViewMode || (isEditFlag && isBOPAssociated)}
                             />
                           </Col>
                           <Col md="3">
@@ -1314,7 +1312,7 @@ class AddBOPImport extends Component {
                               required={getConfigurationKey().IsPaymentTermsAndIncoTermsRequiredForBoughtOutPart ? true : false}
                               handleChangeDescription={this.handlePaymentTerm}
                               valueDescription={this.state.paymentTerm}
-                              disabled={isViewMode ? true : false}
+                              disabled={isViewMode || (isEditFlag && isBOPAssociated)}
                             />
                           </Col>
                           <Col md="3">

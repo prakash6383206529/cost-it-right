@@ -289,7 +289,7 @@ class OperationListing extends Component {
             resetState(gridOptions, this, "Operation")  //COMMON PAGINATION FUNCTION
         }, 400);
         this.props.setSelectedRowForPagination([])
-
+        this.state.gridApi.deselectAll()
     }
 
     onBtPrevious = () => {
