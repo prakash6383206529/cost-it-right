@@ -344,7 +344,7 @@ function UomTimeProcessDefaultCalculator(props) {
                                         </Col>
 
                                         <Col md="4">
-                                            <TooltipCustom disabledIcon={true} id={'feed'} tooltipText={'Feed = (Spindle Speed * Feed * No of Tooth)'} />
+                                            <TooltipCustom disabledIcon={true} id={'feed'} tooltipText={'Feed = (Spindle Speed * Feed * No. of Tooth)'} />
                                             <NumberFieldHookForm
                                                 label="Feed(mm/min)"
                                                 id={'feed'}
@@ -441,7 +441,7 @@ function UomTimeProcessDefaultCalculator(props) {
                                         </Col>
 
                                         <Col md="4">
-                                            <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'total-length-depth'} tooltipText={'Total Length/Depth = (Length / Depth) * (No of Passes / Holes)'} />
+                                            <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'total-length-depth'} tooltipText={'Total Length/Depth = (Length / Depth) * (No. of Passes / Holes)'} />
                                             <NumberFieldHookForm
                                                 label={`Total Length/Depth(mm)`}
                                                 name={'totalLengthDepth'}
