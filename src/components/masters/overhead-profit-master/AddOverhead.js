@@ -986,7 +986,7 @@ class AddOverhead extends Component {
                         {costingTypeId === VBCTypeId && (
                           <Col md="3" >
                             <label>{"Vendor (Code)"}<span className="asterisk-required">*</span></label>
-                            <div className='p-relative'>
+                            <div className='p-relative vendor-loader'>
                               {this.state.inputLoader && <LoaderCustom customClass={`input-loader`} />}
                               <AsyncSelect
                                 name="vendorName"
