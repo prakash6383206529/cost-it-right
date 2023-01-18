@@ -6,7 +6,8 @@ import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Row, Table } from 'reactstrap';
 import { EMPTY_DATA } from '../../../../config/constants';
-import { checkForDecimalAndNull } from '../../../../helper';
+import { checkForDecimalAndNull, getConfigurationKey, getCurrencySymbol } from '../../../../helper';
+import DayTime from '../../../common/DayTimeWrapper';
 import LoaderCustom from '../../../common/LoaderCustom';
 import NoContentFound from '../../../common/NoContentFound';
 import { colorArray } from '../../../dashboard/ChartsDashboard';
@@ -34,8 +35,8 @@ const CostRatioListing = (props) => {
     useEffect(() => {
 
         let obj = {}
-        obj.FromDate = startDate
-        obj.ToDate = endDate
+        obj.FromDate = startDate ? DayTime(startDate).format('MM/DD/YYYY') : ''
+        obj.ToDate = endDate ? DayTime(endDate).format('MM/DD/YYYY') : ''
         let sampleArray = []
 
         gridData && gridData.map((item) => {
@@ -222,8 +223,8 @@ const CostRatioListing = (props) => {
                                             <div className='column-data'>{item.RevisionNumber ? item.RevisionNumber : '-'} </div>
                                             <div className={`column-data code-container`} ref={divRef} >{(item.VendorName || item.VendorCode) ? <div className={`code-specific ${tableData?.length >= 3 ? 'max-height-reduce' : ''}`} style={{ maxWidth: divRef?.current?.clientWidth }}><span className='name'>{item.VendorName}</span> <span>({item.VendorCode})</span></div> : '-'}</div>
                                             <div className='column-data code-container' ref={divRef} >{(item.PlantName || item.PlantCode) ? <div className={`code-specific ${tableData?.length >= 3 ? 'max-height-reduce' : ''}`} style={{ maxWidth: divRef?.current?.clientWidth }}><span className='name'>{item.PlantName}</span> <span>({item.PlantCode})</span></div> : '-'}</div>
-                                            <div className='column-data'>{checkForDecimalAndNull(item.NetPOPriceINR, initialConfiguration.NoOfDecimalForPrice)} </div>
-                                            <div className='column-data'>{checkForDecimalAndNull(item.NetPOPriceOtherCurrency, initialConfiguration.NoOfDecimalForPrice)}</div>
+                                            <div className='column-data'>{getCurrencySymbol(getConfigurationKey().BaseCurrency)} {checkForDecimalAndNull(item.NetPOPriceINR, initialConfiguration.NoOfDecimalForPrice)} </div>
+                                            <div className='column-data'>{item.Currency ? getCurrencySymbol(item.Currency) : ''} {checkForDecimalAndNull(item.NetPOPriceOtherCurrency, initialConfiguration.NoOfDecimalForPrice)}</div>
                                             <div className='column-data'>{item.NetPOPriceINR && <button className='view-pie-button btn-hyper-link ml-0' onMouseOver={() => viewPieData(index)}><span className='tooltiptext graph-tooltip'><div className='mb-2'><strong>All value is showing in Percentage</strong></div><Costratiograph data={pieChartData} options={pieChartOption} /></span>View Graph</button>}</div>
 
                                         </th>

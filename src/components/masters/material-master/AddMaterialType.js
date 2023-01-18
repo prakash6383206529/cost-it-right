@@ -213,7 +213,7 @@ class AddMaterialType extends Component {
                                             /> */}
                       <button
                         onClick={this.cancelHandler}
-                        type="submit"
+                        type="button"
                         value="CANCEL"
                         className="mr15 cancel-btn"
                         disabled={setDisable}

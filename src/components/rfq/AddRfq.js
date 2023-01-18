@@ -1020,12 +1020,12 @@ function AddRfq(props) {
                                                                 frameworkComponents={frameworkComponents}
                                                                 stopEditingWhenCellsLoseFocus={true}
                                                             >
-                                                                <AgGridColumn width={"230px"} field="PartNumber" headerName="Part No" cellRenderer={'partNumberFormatter'}></AgGridColumn>
+                                                                <AgGridColumn width={"230px"} field="PartNumber" headerName="Part No" cellClass={"colorWhite"} cellRenderer={'partNumberFormatter'}></AgGridColumn>
 
                                                                 <AgGridColumn width={"230px"} field="YearName" headerName="YearName" cellRenderer={'sopFormatter'}></AgGridColumn>
                                                                 <AgGridColumn width={"230px"} field="Quantity" headerName="Annual Forecast Quantity" cellRenderer={'afcFormatter'} editable={EditableCallback} colId="Quantity"></AgGridColumn>
                                                                 <AgGridColumn width={"0px"} field="PartId" headerName="Part Id" hide={true} cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                                                                <AgGridColumn width={"190px"} field="PartId" headerName="Action" floatingFilter={false} type="rightAligned" cellRenderer={'buttonFormatterFirst'}></AgGridColumn>
+                                                                <AgGridColumn width={"190px"} field="PartId" headerName="Action" cellClass={"colorWhite text-right"} floatingFilter={false} type="rightAligned" cellRenderer={'buttonFormatterFirst'}></AgGridColumn>
                                                             </AgGridReact>
 
                                                         </div>
@@ -1143,11 +1143,11 @@ function AddRfq(props) {
                                     </div>
 
                                     <HeaderTitle title={'Date & Time:'} customClass="mt-4" />
-                                    <Row className="mt-1">
-                                        <Col md="3">
-                                            < div className="custom-check1 d-inline-block">
+                                    <Row className="mt-1 conditional-date">
+                                        <Col md="2">
+                                            < div className="custom-check1">
                                                 <label
-                                                    className="custom-checkbox pl-0 mb-0"
+                                                    className="custom-checkbox mb-0"
                                                     onChange={() => checkBoxHandler()}
                                                 >
                                                     {'Is Conditionally Visible'}
@@ -1298,7 +1298,7 @@ function AddRfq(props) {
                                                     accept="*"
                                                     initialFiles={initialFiles}
                                                     maxFiles={4}
-                                                    maxSizeBytes={20000000}
+                                                    maxSizeBytes={2000000}
                                                     inputContent={(files, extra) =>
                                                         extra.reject ? (
                                                             "Image, audio and video files only"
@@ -1327,7 +1327,7 @@ function AddRfq(props) {
                                                 />
                                             </div>
                                         </Col>
-                                        <Col md="4">
+                                        <Col md="4" className=' p-relative'>
                                             <div className={"attachment-wrapper"}>
                                                 {attachmentLoader && <LoaderCustom customClass="attachment-loader" />}
                                                 {files &&
@@ -1355,8 +1355,9 @@ function AddRfq(props) {
                                         </Col>
                                     </Row>
 
-                                    <Row className="justify-content-between">
-                                        <div className="col-sm-12 text-right">
+                                    <Row className="justify-content-between sf-btn-footer no-gutters justify-content-between bottom-footer sticky-btn-footer">
+
+                                        <div className="col-sm-12 text-right bluefooter-butn">
                                             <button
                                                 type={"button"}
                                                 className="reset mr-2 cancel-btn"
@@ -1390,7 +1391,7 @@ function AddRfq(props) {
                                             closeDrawer={closeBulkUploadDrawer}
                                             isEditFlag={false}
                                             // densityAlert={densityAlert}
-                                            fileName={"ADDRFQ"}
+                                            fileName={"ADD RFQ"}
                                             messageLabel={"RFQ Part's"}
                                             anchor={"right"}
                                             technologyId={technology}

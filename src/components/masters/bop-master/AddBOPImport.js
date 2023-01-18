@@ -103,10 +103,9 @@ class AddBOPImport extends Component {
       paymentTerm: []
     }
   }
-
   /**
-  * @method componentWillMount
-  * @description Called before render the component
+   * @method componentWillMount
+   * @description Called before render the component
   */
   UNSAFE_componentWillMount() {
     if (!(this.props.data.isEditFlag || this.props.data.isViewFlag)) {
@@ -200,17 +199,31 @@ class AddBOPImport extends Component {
   };
 
   handleIncoTerm = (newValue) => {
+    const { isEditFlag, DataToChange } = this.state
     if (newValue && newValue !== '') {
       this.setState({ incoTerm: newValue });
     } else {
       this.setState({ incoTerm: [] })
     }
+    if (isEditFlag && (DataToChange.BoughtOutPartIncoTermId !== newValue.value)) {
+      this.setState({ IsFinancialDataChanged: true })
+    }
+    else if (isEditFlag) {
+      this.setState({ IsFinancialDataChanged: false })
+    }
   }
   handlePaymentTerm = (newValue) => {
+    const { isEditFlag, DataToChange } = this.state
     if (newValue && newValue !== '') {
       this.setState({ paymentTerm: newValue });
     } else {
       this.setState({ paymentTerm: [] })
+    }
+    if (isEditFlag && (DataToChange.BoughtOutPartPaymentTermId !== newValue.value)) {
+      this.setState({ IsFinancialDataChanged: true })
+    }
+    else if (isEditFlag) {
+      this.setState({ IsFinancialDataChanged: false })
     }
   }
 
@@ -243,6 +256,10 @@ class AddBOPImport extends Component {
 
           this.props.change('EffectiveDate', DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
           this.setState({ minEffectiveDate: Data.EffectiveDate })
+          setTimeout(() => {
+            this.props.change('NetLandedCostCurrency', Data.NetLandedCostConversion)
+            this.setState({ netLandedConverionCost: Data.NetLandedCostConversion })
+          }, 600);
 
           setTimeout(() => {
             let plantObj;
@@ -262,7 +279,7 @@ class AddBOPImport extends Component {
                 else {
                   this.setState({ showWarning: false })
                 }
-                this.setState({ currencyValue: checkForNull(res.data.Data.CurrencyExchangeRate), showCurrency: true }, () => {
+                this.setState({ currencyValue: checkForNull(res.data.Data.CurrencyExchangeRate) }, () => {
                   this.handleCalculation()
                 })
               })
@@ -282,8 +299,9 @@ class AddBOPImport extends Component {
               files: Data.Attachements,
               UOM: ((Data.UnitOfMeasurement !== undefined) ? { label: Data.UnitOfMeasurement, value: Data.UnitOfMeasurementId } : {}),
               isLoader: false,
-              incoTerm: Data.IncoTerm !== undefined ? { label: `${Data.IncoTermDescription} (${Data.IncoTerm})`, value: Data.BoughtOutPartIncoTermId } : [],
-              paymentTerm: Data.PaymentTerm !== undefined ? { label: `${Data.PaymentTermDescription} (${Data.PaymentTerm})`, value: Data.BoughtOutPartPaymentTermId } : [],
+              incoTerm: Data.IncoTerm !== undefined ? { label: `${Data.IncoTermDescription ? Data.IncoTermDescription : ''} ${Data.IncoTerm ? `(${Data.IncoTerm})` : '-'}`, value: Data.BoughtOutPartIncoTermId } : [],
+              paymentTerm: Data.PaymentTerm !== undefined ? { label: `${Data.PaymentTermDescription ? Data.PaymentTermDescription : ''} ${Data.PaymentTerm ? `(${Data.PaymentTerm})` : '-'}`, value: Data.BoughtOutPartPaymentTermId } : [],
+              showCurrency: true
             }, () => this.setState({ isLoader: false }))
             // ********** ADD ATTACHMENTS FROM API INTO THE DROPZONE'S PERSONAL DATA STORE **********
             let files = Data.Attachements && Data.Attachements.map((item) => {
@@ -560,7 +578,7 @@ class AddBOPImport extends Component {
     const NetLandedCost = checkForNull((BasicRate) * this.state.currencyValue)
 
 
-    if (this.state.isEditFlag && Number(checkForDecimalAndNull(NetLandedCost, initialConfiguration.NoOfDecimalForPrice)) === Number(checkForDecimalAndNull(this.state.DataToChange?.NetLandedCostConversion, initialConfiguration.NoOfDecimalForPrice))) {
+    if (this.state.isEditFlag && Number(checkForDecimalAndNull(NetLandedCost, initialConfiguration.NoOfDecimalForPrice)) === Number(checkForDecimalAndNull(this.state.DataToChange?.NetLandedCostConversion, initialConfiguration.NoOfDecimalForPrice)) && (this.state.DataToChange.BoughtOutPartIncoTermId === this.state.incoTerm.value) && (this.state.DataToChange.BoughtOutPartPaymentTermId === this.state.paymentTerm.value)) {
       this.setState({ IsFinancialDataChanged: false })
     } else if (this.state.isEditFlag) {
       this.setState({ IsFinancialDataChanged: true })
@@ -795,8 +813,6 @@ class AddBOPImport extends Component {
         BoughtOutPartIncoTermId: incoTerm.value,
         BoughtOutPartPaymentTermId: paymentTerm.value
       }
-
-
       if (IsFinancialDataChanged) {
         if (isDateChange && (DayTime(oldDate).format("DD/MM/YYYY") !== DayTime(effectiveDate).format("DD/MM/YYYY"))) {
           this.props.updateBOPImport(requestData, (res) => {
@@ -816,10 +832,12 @@ class AddBOPImport extends Component {
 
       }
       else {
+
+
         if (DropdownChange && String(DataToChange.Source) === String(values.Source) &&
           Number(DataToChange.BasicRate) === Number(values.BasicRate) && DataToChange.Remark === values.Remark && JSON.stringify(updatedFiles) === JSON.stringify(DataToChange.Attachements) &&
           ((DataToChange.Source ? DataToChange.Source : '-') === (values.Source ? values.Source : '-')) &&
-          ((DataToChange.SourceLocation ? DataToChange.SourceLocation : '-') === (sourceLocation.value ? sourceLocation.value : '-'))) {
+          ((DataToChange.SourceLocation ? DataToChange.SourceLocation : '-') === (sourceLocation.value ? sourceLocation.value : '-')) && (DataToChange.BoughtOutPartIncoTermId === incoTerm.value)) {
           this.cancel('submit')
           return false;
         }
@@ -1281,11 +1299,11 @@ class AddBOPImport extends Component {
                               component={searchableSelect}
                               placeholder={isEditFlag ? '-' : "Select"}
                               options={this.renderListing("IncoTerms")}
-                              validate={this.state.incoTerm == null || this.state.incoTerm.length === 0 ? [required] : []}
-                              // required={true}
+                              validate={getConfigurationKey().getconIsPaymentTermsAndIncoTermsRequiredForBoughtOutPart ? [required] : []}
+                              required={getConfigurationKey().IsPaymentTermsAndIncoTermsRequiredForBoughtOutPart ? true : false}
                               handleChangeDescription={this.handleIncoTerm}
                               valueDescription={this.state.incoTerm}
-                              disabled={isEditFlag ? true : false}
+                              disabled={isViewMode || (isEditFlag && isBOPAssociated)}
                             />
                           </Col>
                           <Col md="3">
@@ -1296,11 +1314,11 @@ class AddBOPImport extends Component {
                               component={searchableSelect}
                               placeholder={isEditFlag ? '-' : "Select"}
                               options={this.renderListing("PaymentTerms")}
-                              validate={this.state.paymentTerm == null || this.state.paymentTerm.length === 0 ? [required] : []}
-                              // required={true}
+                              validate={getConfigurationKey().getconIsPaymentTermsAndIncoTermsRequiredForBoughtOutPart ? [required] : []}
+                              required={getConfigurationKey().IsPaymentTermsAndIncoTermsRequiredForBoughtOutPart ? true : false}
                               handleChangeDescription={this.handlePaymentTerm}
                               valueDescription={this.state.paymentTerm}
-                              disabled={isEditFlag ? true : false}
+                              disabled={isViewMode || (isEditFlag && isBOPAssociated)}
                             />
                           </Col>
                           <Col md="3">

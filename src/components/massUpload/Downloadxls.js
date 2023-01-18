@@ -112,7 +112,7 @@ class Downloadxls extends React.Component {
                 return this.returnExcelColumn(ProductComponent, ProductComponentTempData);
             case 'BOM':
                 return this.returnExcelColumn(BOMUpload, BOMUploadTempData);
-            case 'ADDRFQ':
+            case 'ADD RFQ':
                 return this.returnExcelColumn(AddRFQUpload, AddRFQTempData);
             default:
                 return 'foo';
@@ -213,19 +213,19 @@ class Downloadxls extends React.Component {
     */
     returnExcelColumn = (data = [], TempData) => {
         const { fileName, failedData, isFailedFlag } = this.props;
-
+        let dataList = [...data]
         if (isFailedFlag) {
 
             //BELOW CONDITION TO ADD 'REASON' COLUMN WHILE DOWNLOAD EXCEL SHEET IN CASE OF FAILED
-            let isContentReason = data.filter(d => d.label === 'Reason')
+            let isContentReason = dataList.filter(d => d.label === 'Reason')
             if (isContentReason.length === 0) {
                 let addObj = { label: 'Reason', value: 'Reason' }
-                data.push(addObj)
+                dataList.push(addObj)
             }
         }
 
         return (<ExcelSheet data={isFailedFlag ? failedData : TempData} name={fileName}>
-            {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
+            {dataList && dataList.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
         </ExcelSheet>);
     }
 
@@ -259,7 +259,7 @@ class Downloadxls extends React.Component {
             );
         }
         // DOWNLOAD FILE:- CALLED WHEN FILE FAILED APART FROM ZBC AND VBC
-        if (isFailedFlag && (fileName === 'RMSpecification' || fileName === 'Vendor' || fileName === 'Overhead' || fileName === 'Fuel' || fileName === 'Labour' || fileName === 'PartComponent' || fileName === 'ProductComponent' || fileName === 'ADDRFQ')) {
+        if (isFailedFlag && (fileName === 'RMSpecification' || fileName === 'Vendor' || fileName === 'Overhead' || fileName === 'Fuel' || fileName === 'Labour' || fileName === 'PartComponent' || fileName === 'ProductComponent' || fileName === 'ADD RFQ')) {
             return (
                 <ExcelFile hideElement={true} filename={fileName} fileExtension={'.xls'} >
                     {this.renderSwitch(fileName)}

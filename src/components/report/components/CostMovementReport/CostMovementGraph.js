@@ -49,8 +49,8 @@ function CostMovementGraph(props) {
     useEffect(() => {
 
         let obj = {}
-        obj.FromDate = startDate
-        obj.ToDate = endDate
+        obj.FromDate = startDate ? DayTime(startDate).format('MM/DD/YYYY') : ''
+        obj.ToDate = endDate ? DayTime(endDate).format('MM/DD/YYYY') : ''
         let sampleArray = []
         let allEffectiveDates = []
 
@@ -515,7 +515,7 @@ function CostMovementGraph(props) {
                     {showBarGraph &&
                         <Row className="mt-2 ">
                             <Col md="12">
-                                <Costmovementgraph graphData={data1} options1={barChartOptions} graphHeight={120} currency={getCurrencySymbol(getConfigurationKey().BaseCurrency)} />
+                                <Costmovementgraph graphData={data1} options1={barChartOptions} graphHeight={120} currency={getConfigurationKey().BaseCurrency} />
                             </Col>
                         </Row>
 
@@ -524,7 +524,7 @@ function CostMovementGraph(props) {
                     {showLineGraph && noRecordFound &&
                         <Row>
                             <Col className='pr-3 d-flex align-items-center mt-2'>
-                                <div className='mb-5 pb-5 mr-2'><strong>{getCurrencySymbol(getConfigurationKey().BaseCurrency)}</strong></div>
+                                <div className='mb-5 pb-5 mr-2' title={getConfigurationKey().BaseCurrency}>{getCurrencySymbol(getConfigurationKey().BaseCurrency)}</div>
                                 <Line
                                     data={state}
                                     height={120}

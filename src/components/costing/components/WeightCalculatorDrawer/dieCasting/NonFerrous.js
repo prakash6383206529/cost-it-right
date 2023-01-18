@@ -311,7 +311,7 @@ function NonFerrous(props) {
                                             />
                                         </Col>
                                         <Col md="3">
-                                            <TooltipCustom disabledIcon={true} id={'buring-nonferrous'} tooltipText={"Burning Value = Shot Weight * (Burning Percentage / 100) * No of Cavity"} />
+                                            <TooltipCustom disabledIcon={true} id={'buring-nonferrous'} tooltipText={"Burning Value = Shot Weight * (Burning Percentage / 100) * No. of Cavity"} />
                                             <NumberFieldHookForm
                                                 label={`Burning Value`}
                                                 name={'burningValue'}

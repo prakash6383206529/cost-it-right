@@ -27,7 +27,6 @@ function RfqListing(props) {
     const [gridColumnApi, setgridColumnApi] = useState(null);          // DONT DELETE THIS STATE , IT IS USED BY AG GRID
     const [loader, setloader] = useState(false);
     const dispatch = useDispatch();
-    const [showPopup, setShowPopup] = useState(false)
     const [addRfq, setAddRfq] = useState(false);
     const [addRfqData, setAddRfqData] = useState({});
     const [isEdit, setIsEdit] = useState(false);
@@ -39,6 +38,8 @@ function RfqListing(props) {
     const [addAccessibility, setAddAccessibility] = useState(false);
     const [editAccessibility, setEditAccessibility] = useState(false);
     const [viewAccessibility, setViewAccessibility] = useState(false);
+    const [confirmPopup, setConfirmPopup] = useState(false);
+    const [deleteId, setDeleteId] = useState('');
     const { topAndLeftMenuData } = useSelector(state => state.auth);
 
     useEffect(() => {
@@ -108,30 +109,24 @@ function RfqListing(props) {
     }
 
     const cancelItem = (id) => {
-        dispatch(cancelRfqQuotation(id, (res) => {
+        setConfirmPopup(true)
+        setDeleteId(id)
+    }
+
+    const onPopupConfirm = () => {
+        dispatch(cancelRfqQuotation(deleteId, (res) => {
             if (res.status === 200) {
                 Toaster.success('Quotation has been cancelled successfully.')
                 setTimeout(() => {
                     getDataList()
                 }, 500);
             }
+            setConfirmPopup(false)
         }))
     }
 
-    /**
-    * @method confirmDelete
-    * @description confirm delete Raw Material details
-    */
-    const confirmDelete = (ID) => {
-        setShowPopup(false)
-    }
-
-    const onPopupConfirm = () => {
-        confirmDelete();
-    }
-
     const closePopUp = () => {
-        setShowPopup(false)
+        setConfirmPopup(false)
     }
     /**
     * @method buttonFormatter
@@ -367,11 +362,12 @@ function RfqListing(props) {
                                                 frameworkComponents={frameworkComponents}
                                                 rowSelection={'multiple'}
                                                 suppressRowClickSelection={true}
+                                                enableBrowserTooltips={true}
                                             >
                                                 <AgGridColumn cellClass="has-checkbox" field="QuotationNumber" headerName='RFQ No.' cellRenderer={'linkableFormatter'} ></AgGridColumn>
-                                                <AgGridColumn field="PartNumber" headerName="Part No." width={150}></AgGridColumn>
+                                                <AgGridColumn field="PartNumber" tooltipField="PartNumber" headerName="Part No." width={150}></AgGridColumn>
                                                 <AgGridColumn field="CostingReceived" headerName='No. of Quotation Received' maxWidth={150}></AgGridColumn>
-                                                <AgGridColumn field="VendorName" headerName='Vendor (Code)'></AgGridColumn>
+                                                <AgGridColumn field="VendorName" tooltipField="VendorName" headerName='Vendor (Code)'></AgGridColumn>
                                                 <AgGridColumn field="PlantName" headerName='Plant (Code)'></AgGridColumn>
                                                 <AgGridColumn field="TechnologyName" headerName='Technology'></AgGridColumn>
                                                 <AgGridColumn field="Remark" headerName='Remark'></AgGridColumn>
@@ -379,7 +375,7 @@ function RfqListing(props) {
                                                 <AgGridColumn field="RaisedOn" headerName='Raised On'></AgGridColumn>
                                                 <AgGridColumn field="QuotationNumber" headerName='Attachments' cellRenderer='attachmentFormatter'></AgGridColumn>
                                                 <AgGridColumn field="Status" headerName="Status" cellClass="text-center" minWidth={150} cellRenderer="statusFormatter"></AgGridColumn>
-                                                {<AgGridColumn field="QuotationId" width={150} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
+                                                {<AgGridColumn field="QuotationId" width={160} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
 
                                             </AgGridReact>
                                             <PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} globalTake={10} />
@@ -402,7 +398,7 @@ function RfqListing(props) {
                     }
 
                     {
-                        showPopup && <PopupMsgWrapper isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${MESSAGES.RAW_MATERIAL_DETAIL_DELETE_ALERT}`} />
+                        confirmPopup && <PopupMsgWrapper isOpen={confirmPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${MESSAGES.RFQ_DETAIL_CANCEL_ALERT}`} />
                     }
 
                 </div >

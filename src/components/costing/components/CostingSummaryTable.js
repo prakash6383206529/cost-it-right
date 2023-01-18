@@ -34,7 +34,7 @@ import { IdForMultiTechnology } from '../../../config/masterData'
 import ViewMultipleTechnology from './Drawers/ViewMultipleTechnology'
 import TooltipCustom from '../../common/Tooltip'
 import { Costratiograph } from '../../dashboard/CostRatioGraph'
-import { graphColor1, graphColor2, graphColor3, graphColor4, graphColor5, graphColor6 } from '../../dashboard/ChartsDashboard'
+import { colorArray } from '../../dashboard/ChartsDashboard'
 import { LOGISTICS } from '../../../config/masterData'
 
 const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
@@ -92,6 +92,7 @@ const CostingSummaryTable = (props) => {
   const [isLockedState, setIsLockedState] = useState(false)
   const [viewMultipleTechnologyDrawer, setViewMultipleTechnologyDrawer] = useState(false)
   const [multipleTechnologyData, setMultipleTechnologyData] = useState([])
+  const [pieChartLabel, setPieChartLabel] = useState([])
 
   const viewCostingData = useSelector((state) => state.costing.viewCostingDetailData)
 
@@ -165,8 +166,53 @@ const CostingSummaryTable = (props) => {
     checkForDecimalAndNull(tempObj.nOverheadProfit, initialConfiguration.NoOfDecimalForPrice),
     checkForDecimalAndNull(tempObj.nPackagingAndFreight, initialConfiguration.NoOfDecimalForPrice),
     checkForDecimalAndNull(tempObj.totalToolCost, initialConfiguration.NoOfDecimalForPrice),
+    checkForDecimalAndNull(tempObj.otherDiscountCost, initialConfiguration.NoOfDecimalForPrice),
+    checkForDecimalAndNull(tempObj.anyOtherCost, initialConfiguration.NoOfDecimalForPrice),
     ]
     setPieChartDataArray(temp)
+    let labelArray = []
+    let labels = ['RM', 'BOP', 'CC', 'ST', 'O&P', 'P&F', 'TC', 'OTHER DIS', 'ANY OTHER COST']
+    temp && temp.map((item, index) => {
+      if (item !== 0) {
+        labelArray.push(labels[index])
+      }
+    })
+    let dataArray = []
+    labelArray && labelArray.map(item => {
+      switch (item) {
+        case 'RM':
+          dataArray.push(checkForDecimalAndNull(tempObj.netRM, initialConfiguration.NoOfDecimalForPrice))
+          break;
+        case 'BOP':
+          dataArray.push(checkForDecimalAndNull(tempObj.netBOP, initialConfiguration.NoOfDecimalForPrice))
+          break;
+        case 'CC':
+          dataArray.push(checkForDecimalAndNull(tempObj.nConvCost, initialConfiguration.NoOfDecimalForPrice))
+          break;
+        case 'ST':
+          dataArray.push(checkForDecimalAndNull(tempObj.nsTreamnt, initialConfiguration.NoOfDecimalForPrice))
+          break;
+        case 'O&P':
+          dataArray.push(checkForDecimalAndNull(tempObj.nOverheadProfit, initialConfiguration.NoOfDecimalForPrice))
+          break;
+        case 'P&F':
+          dataArray.push(checkForDecimalAndNull(tempObj.nPackagingAndFreight, initialConfiguration.NoOfDecimalForPrice))
+          break;
+        case 'TC':
+          dataArray.push(checkForDecimalAndNull(tempObj.totalToolCost, initialConfiguration.NoOfDecimalForPrice))
+          break;
+        case 'OTHER DIS':
+          dataArray.push(checkForDecimalAndNull(tempObj.otherDiscountCost, initialConfiguration.NoOfDecimalForPrice))
+          break;
+        case 'ANY OTHER COST':
+          dataArray.push(checkForDecimalAndNull(tempObj.anyOtherCost, initialConfiguration.NoOfDecimalForPrice))
+          break;
+        default:
+          break;
+      }
+    })
+    setPieChartLabel(labelArray)
+    setPieChartDataArray(dataArray);
   }, [400])
   useEffect(() => {
     applyPermission(topAndLeftMenuData, selectedTechnology)
@@ -1011,31 +1057,13 @@ const CostingSummaryTable = (props) => {
         break;
     }
   }
-
   const pieChartData = {
-    labels: ['RM', 'BOP', 'CC', 'ST', 'O&P', 'P&F', 'TC'],
+    labels: pieChartLabel,
     datasets: [
       {
         label: '',
         data: pieChartDataArray,
-        backgroundColor: [
-          graphColor1,
-          graphColor2,
-          graphColor3,
-          graphColor4,
-          graphColor5,
-          graphColor6,
-          graphColor4,
-        ],
-        borderColor: [
-          '#fff',
-          '#fff',
-          '#fff',
-          '#fff',
-          '#fff',
-          '#fff',
-          '#fff',
-        ],
+        backgroundColor: colorArray,
         borderWidth: 1,
       },
     ],
@@ -1048,15 +1076,8 @@ const CostingSummaryTable = (props) => {
         labels: {
           boxWidth: 15,
           borderWidth: 1,
-          borderColor: [
-            graphColor1,
-            graphColor2,
-            graphColor3,
-            graphColor4,
-            graphColor5,
-            graphColor6,
-            graphColor4,
-          ],
+          padding: 8,
+          color: '#000'
         }
       },
     },
