@@ -1298,7 +1298,7 @@ function AddRfq(props) {
                                                     accept="*"
                                                     initialFiles={initialFiles}
                                                     maxFiles={4}
-                                                    maxSizeBytes={20000000}
+                                                    maxSizeBytes={2000000}
                                                     inputContent={(files, extra) =>
                                                         extra.reject ? (
                                                             "Image, audio and video files only"
@@ -1391,7 +1391,7 @@ function AddRfq(props) {
                                             closeDrawer={closeBulkUploadDrawer}
                                             isEditFlag={false}
                                             // densityAlert={densityAlert}
-                                            fileName={"ADDRFQ"}
+                                            fileName={"ADD RFQ"}
                                             messageLabel={"RFQ Part's"}
                                             anchor={"right"}
                                             technologyId={technology}
