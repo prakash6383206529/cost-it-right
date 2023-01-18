@@ -393,7 +393,7 @@ function Broaching(props) {
                                         </Col>
 
                                         <Col md="4">
-                                            <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'broaching-force'} tooltipText={'Broaching Force in Ton = Cutting Resistance * (Cutting Length / Module) * (No of Teeth * Module * Step Forward Thinning)  / 1000'} />
+                                            <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'broaching-force'} tooltipText={'Broaching Force in Ton = Cutting Resistance * (Cutting Length / Module) * (No. of Teeth * Module * Step Forward Thinning)  / 1000'} />
                                             <NumberFieldHookForm
                                                 label={`Broaching Force in Ton`}
                                                 name={'broachingForceInTon'}
