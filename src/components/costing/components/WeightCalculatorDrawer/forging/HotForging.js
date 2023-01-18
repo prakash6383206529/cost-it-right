@@ -635,7 +635,7 @@ function HotForging(props) {
               </Col>
 
               <Col md="3">
-                <TooltipCustom disabledIcon={true} id={'input-weight'} tooltipClass={'weight-of-sheet'} tooltipText={'Total Input Weight = (Net Loss + Forged Weight + Endt Bit Loss)'} />
+                <TooltipCustom disabledIcon={true} id={'input-weight'} tooltipClass={'weight-of-sheet'} tooltipText={'Total Input Weight = (Net Loss + Forged Weight + End Bit Loss)'} />
                 <NumberFieldHookForm
                   label={`Total Input Weight(Kg)`}
                   name={'TotalInputWeight'}
