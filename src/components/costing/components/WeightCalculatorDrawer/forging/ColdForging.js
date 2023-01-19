@@ -409,7 +409,7 @@ function ColdForging(props) {
     }
   };
   const inputLengthTooltipMessage = <div>Input Length = (Forged Weight + Loss Weight / 0.7857 * Billet Diameter<sup>2</sup>) * Density / 1000000</div>
-  const endBitLossTooltipMessage = <div>End Bit Loss = (0.7857 * Billet Diameter<sup>2</sup> * End Bit Length * (Density / 1000000) / No of Part per Length)</div>
+  const endBitLossTooltipMessage = <div>End Bit Loss = (0.7857 * Billet Diameter<sup>2</sup> * End Bit Length * (Density / 1000000) / No. of Part per Length)</div>
   return (
     <Fragment>
       <Row>
@@ -584,7 +584,7 @@ function ColdForging(props) {
                 />
               </Col>
               <Col md="3">
-                <TooltipCustom disabledIcon={true} id={'end-bit-input'} tooltipClass={'weight-of-sheet'} tooltipText={'End Bit Length = Input Bar Length - (Input Length * No of Parts per Length)'} />
+                <TooltipCustom disabledIcon={true} id={'end-bit-input'} tooltipClass={'weight-of-sheet'} tooltipText={'End Bit Length = Input Bar Length - (Input Length * No. of Parts per Length)'} />
                 <NumberFieldHookForm
                   label={`End Bit Length`}
                   name={'EndBitLength'}
@@ -622,7 +622,7 @@ function ColdForging(props) {
               </Col>
 
               <Col md="3">
-                <TooltipCustom disabledIcon={true} id={'input-weight'} tooltipClass={'weight-of-sheet'} tooltipText={'Total Input Weight = (Net Loss + Forged Weight + Endt Bit Loss)'} />
+                <TooltipCustom disabledIcon={true} id={'input-weight'} tooltipClass={'weight-of-sheet'} tooltipText={'Total Input Weight = (Net Loss + Forged Weight + End Bit Loss)'} />
                 <NumberFieldHookForm
                   label={`Total Input Weight(Kg)`}
                   name={'TotalInputWeight'}

@@ -6200,6 +6200,8 @@ body {
       .Cancelled,
       .Under.Approval,
       .UnderApproval,
+      .Under.Revision,
+      .Open,
       [class^="Pending"],
       [class^="Awaiting"],
       .Approved,
@@ -8061,7 +8063,7 @@ body {
 // <----------Corrugated box labels UI------------>
 .corrugated-box-label-wrapper {
   label {
-    min-height: 42px;
+    min-height: 45px;
     display: flex;
     align-items: center;
   }
@@ -8481,7 +8483,7 @@ table.group-process-table {
 }
 
 .currency-symbol {
-  font-weight: 600;
+  font-size: 16px;
   margin-right: 1px;
 }
 
@@ -8880,4 +8882,17 @@ table.group-process-table {
 
 .pie-chart-container {
   height: 30px;
+}
+
+.right-tooltip {
+  .tooltip {
+    margin-right: 15px;
+    margin-top: 8px;
+  }
+}
+
+.attachment.images {
+  a {
+    color: $colorPrimary;
+  }
 }

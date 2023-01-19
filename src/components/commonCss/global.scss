@@ -848,6 +848,10 @@ a:hover {
                 text-overflow: ellipsis;
                 margin-bottom: 4px;
               }
+
+              .attachment.images {
+                padding: 0;
+              }
             }
 
             &:not(.has-checkbox) {
@@ -2765,6 +2769,8 @@ td,
   .Linked,
   .Under.Approval,
   .UnderApproval,
+  .Under.Revision,
+  .Open,
   [class^="Pending"],
   [class^="Awaiting"],
   .Approved,
@@ -2791,12 +2797,13 @@ td,
   }
 
   [class^="Pending"],
-  .Under.Approval,
-  .UnderApproval {
+  .Under.Revision {
     background-color: #f8a000;
   }
 
-  [class^="Awaiting"] {
+  [class^="Awaiting"],
+  .UnderApproval,
+  .Under.Approval {
     background-color: #eac607;
   }
 

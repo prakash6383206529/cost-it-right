@@ -1051,16 +1051,24 @@ export function getErrorFile(costingId, callback) {
  * @description Costing Bulk Upload (SHEET METAL)
 */
 
-export function bulkUploadCosting(data, callback) {
+export function bulkUploadCosting(data, costingVersion, callback) {
 
   return (dispatch) => {
-    const request = axios.post(API.uploadCosting, data, config());
+    let request;
+    if (costingVersion === 'NEW') {  // BULK UPLOAD NEW COSTING
+      request = axios.post(API.uploadCosting, data, config());
+    } else {  // BULK UPLOAD OLD COSTING
+      request = axios.post(API.uploadOldCosting, data, config());
+    }
     request.then((response) => {
       if (response.status === 200) {
         callback(response);
       }
     }).catch((error) => {
       dispatch({ type: API_FAILURE });
+      if (error?.response?.status === 400) {
+        callback(error.response)
+      }
       apiErrors(error);
     });
   };
@@ -1195,31 +1203,49 @@ export function getProcessDefaultCalculation(processCalculationId, callback) {
  * @description Costing Bulk Upload
 */
 
-export function plasticBulkUploadCosting(data, callback) {
+export function plasticBulkUploadCosting(data, costingVersion, callback) {
 
   return (dispatch) => {
-    const request = axios.post(API.uploadPlasticCosting, data, config());
+
+    let request;
+    if (costingVersion === 'NEW') {  // BULK UPLOAD NEW COSTING
+      request = axios.post(API.uploadPlasticCosting, data, config());
+    } else {  // BULK UPLOAD OLD COSTING
+      request = axios.post(API.uploadPlasticOldCosting, data, config());
+    }
     request.then((response) => {
       if (response.status === 200) {
         callback(response);
       }
     }).catch((error) => {
       dispatch({ type: API_FAILURE });
+      if (error?.response?.status === 400) {
+        callback(error.response)
+      }
       apiErrors(error);
     });
   };
 }
 
-export function machiningBulkUploadCosting(data, callback) {
+export function machiningBulkUploadCosting(data, costingVersion, callback) {
 
   return (dispatch) => {
-    const request = axios.post(API.uploadMachiningCosting, data, config());
+
+    let request;
+    if (costingVersion === 'NEW') {  // BULK UPLOAD NEW COSTING
+      request = axios.post(API.uploadMachiningCosting, data, config());
+    } else {  // BULK UPLOAD OLD COSTING
+      request = axios.post(API.uploadMachiningOldCosting, data, config());
+    }
     request.then((response) => {
       if (response.status === 200) {
         callback(response);
       }
     }).catch((error) => {
       dispatch({ type: API_FAILURE });
+      if (error?.response?.status === 400) {
+        callback(error.response)
+      }
       apiErrors(error);
     });
   };
@@ -1236,6 +1262,9 @@ export function corrugatedBoxBulkUploadCosting(data, callback) {
       }
     }).catch((error) => {
       dispatch({ type: API_FAILURE });
+      if (error?.response?.status === 400) {
+        callback(error.response)
+      }
       apiErrors(error);
     });
   };
@@ -1251,6 +1280,9 @@ export function assemblyBulkUploadCosting(data, callback) {
       }
     }).catch((error) => {
       dispatch({ type: API_FAILURE });
+      if (error?.response?.status === 400) {
+        callback(error.response)
+      }
       apiErrors(error);
     });
   };
