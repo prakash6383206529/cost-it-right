@@ -1991,6 +1991,8 @@ export const PROFIT = 'Profits'
 export const SHEETMETAL_GROUP_BULKUPLOAD = 1
 export const PLASTIC_GROUP_BULKUPLOAD = 2
 export const MACHINING_GROUP_BULKUPLOAD = 3
+export const CORRUGATED_BOX = 4
+export const ASSEMBLY = 5
 
 
 export const REASON_ID = 2

@@ -1066,6 +1066,9 @@ export function bulkUploadCosting(data, costingVersion, callback) {
       }
     }).catch((error) => {
       dispatch({ type: API_FAILURE });
+      if (error?.response?.status === 400) {
+        callback(error.response)
+      }
       apiErrors(error);
     });
   };
@@ -1216,6 +1219,9 @@ export function plasticBulkUploadCosting(data, costingVersion, callback) {
       }
     }).catch((error) => {
       dispatch({ type: API_FAILURE });
+      if (error?.response?.status === 400) {
+        callback(error.response)
+      }
       apiErrors(error);
     });
   };
@@ -1237,10 +1243,53 @@ export function machiningBulkUploadCosting(data, costingVersion, callback) {
       }
     }).catch((error) => {
       dispatch({ type: API_FAILURE });
+      if (error?.response?.status === 400) {
+        callback(error.response)
+      }
       apiErrors(error);
     });
   };
 }
+
+
+export function corrugatedBoxBulkUploadCosting(data, callback) {
+
+  return (dispatch) => {
+    const request = axios.post(API.uploadCorrugatedBoxCosting, data, config());
+    request.then((response) => {
+      if (response.status === 200) {
+        callback(response);
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      if (error?.response?.status === 400) {
+        callback(error.response)
+      }
+      apiErrors(error);
+    });
+  };
+}
+
+export function assemblyBulkUploadCosting(data, callback) {
+
+  return (dispatch) => {
+    const request = axios.post(API.uploadAssemblyCosting, data, config());
+    request.then((response) => {
+      if (response.status === 200) {
+        callback(response);
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      if (error?.response?.status === 400) {
+        callback(error.response)
+      }
+      apiErrors(error);
+    });
+  };
+}
+
+
+
 export function setFerrousCalculatorReset(data) {
   return (dispatch) => {
     dispatch({

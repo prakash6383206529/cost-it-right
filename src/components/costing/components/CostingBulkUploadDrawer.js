@@ -8,7 +8,7 @@ import Drawer from '@material-ui/core/Drawer';
 import Dropzone from 'react-dropzone-uploader'
 import { bulkUploadCosting, plasticBulkUploadCosting, machiningBulkUploadCosting } from '../actions/CostWorking'
 import { TechnologyDropdownBulkUpload } from '../../../config/masterData'
-import { MACHINING_GROUP_BULKUPLOAD, PLASTIC_GROUP_BULKUPLOAD, SHEETMETAL_GROUP_BULKUPLOAD } from '../../../config/constants';
+import { ASSEMBLY, CORRUGATED_BOX, MACHINING_GROUP_BULKUPLOAD, PLASTIC_GROUP_BULKUPLOAD, SHEETMETAL_GROUP_BULKUPLOAD, FILE_URL } from '../../../config/constants';
 import { getCostingTechnologySelectList, } from '../actions/Costing'
 import { searchableSelect } from '../../layout/FormInputs';
 import LoaderCustom from '../../common/LoaderCustom';
@@ -168,25 +168,76 @@ class CostingBulkUploadDrawer extends Component {
         switch (Number(this.state.Technology.value)) {
             case SHEETMETAL_GROUP_BULKUPLOAD:
                 this.props.bulkUploadCosting(data, this.state.costingVersion, (res) => {
-                    let Data = res.data[0]
-                    const { files } = this.state
-                    files.push(Data)
+                    if (res.status === 400) {
+                        let Data = res.data.Data
+                        const withOutTild = Data?.FileURL?.replace("~", "");
+                        const fileURL = `${FILE_URL}${withOutTild}`;
+                        window.open(fileURL, '_blank');
+                    } else {
+                        let Data = res.data[0]
+                        const { files } = this.state
+                        files.push(Data)
+                    }
                 })
                 this.cancel()
                 break;
             case PLASTIC_GROUP_BULKUPLOAD:
                 this.props.plasticBulkUploadCosting(data, this.state.costingVersion, (res) => {
-                    let Data = res.data[0]
-                    const { files } = this.state
-                    files.push(Data)
+                    if (res.status === 400) {
+                        let Data = res.data.Data
+                        const withOutTild = Data?.FileURL?.replace("~", "");
+                        const fileURL = `${FILE_URL}${withOutTild}`;
+                        window.open(fileURL, '_blank');
+                    } else {
+                        let Data = res.data[0]
+                        const { files } = this.state
+                        files.push(Data)
+                    }
                 })
                 this.cancel()
                 break;
             case MACHINING_GROUP_BULKUPLOAD:
                 this.props.machiningBulkUploadCosting(data, this.state.costingVersion, (res) => {
-                    let Data = res.data[0]
-                    const { files } = this.state
-                    files.push(Data)
+                    if (res.status === 400) {
+                        let Data = res.data.Data
+                        const withOutTild = Data?.FileURL?.replace("~", "");
+                        const fileURL = `${FILE_URL}${withOutTild}`;
+                        window.open(fileURL, '_blank');
+                    } else {
+                        let Data = res.data[0]
+                        const { files } = this.state
+                        files.push(Data)
+                    }
+                })
+                this.cancel()
+                break;
+            case CORRUGATED_BOX:
+                this.props.corrugatedBoxBulkUploadCosting(data, (res) => {
+                    if (res.status === 400) {
+                        let Data = res.data.Data
+                        const withOutTild = Data?.FileURL?.replace("~", "");
+                        const fileURL = `${FILE_URL}${withOutTild}`;
+                        window.open(fileURL, '_blank');
+                    } else {
+                        let Data = res.data[0]
+                        const { files } = this.state
+                        files.push(Data)
+                    }
+                })
+                this.cancel()
+                break;
+            case ASSEMBLY:
+                this.props.assemblyBulkUploadCosting(data, (res) => {
+                    if (res.status === 400) {
+                        let Data = res.data.Data
+                        const withOutTild = Data?.FileURL?.replace("~", "");
+                        const fileURL = `${FILE_URL}${withOutTild}`;
+                        window.open(fileURL, '_blank');
+                    } else {
+                        let Data = res.data[0]
+                        const { files } = this.state
+                        files.push(Data)
+                    }
                 })
                 this.cancel()
                 break;
