@@ -1066,6 +1066,9 @@ export function bulkUploadCosting(data, costingVersion, callback) {
       }
     }).catch((error) => {
       dispatch({ type: API_FAILURE });
+      if (error?.response?.status === 400) {
+        callback(error.response)
+      }
       apiErrors(error);
     });
   };
@@ -1216,6 +1219,9 @@ export function plasticBulkUploadCosting(data, costingVersion, callback) {
       }
     }).catch((error) => {
       dispatch({ type: API_FAILURE });
+      if (error?.response?.status === 400) {
+        callback(error.response)
+      }
       apiErrors(error);
     });
   };
@@ -1237,6 +1243,9 @@ export function machiningBulkUploadCosting(data, costingVersion, callback) {
       }
     }).catch((error) => {
       dispatch({ type: API_FAILURE });
+      if (error?.response?.status === 400) {
+        callback(error.response)
+      }
       apiErrors(error);
     });
   };
@@ -1253,6 +1262,9 @@ export function corrugatedBoxBulkUploadCosting(data, callback) {
       }
     }).catch((error) => {
       dispatch({ type: API_FAILURE });
+      if (error?.response?.status === 400) {
+        callback(error.response)
+      }
       apiErrors(error);
     });
   };
@@ -1268,6 +1280,9 @@ export function assemblyBulkUploadCosting(data, callback) {
       }
     }).catch((error) => {
       dispatch({ type: API_FAILURE });
+      if (error?.response?.status === 400) {
+        callback(error.response)
+      }
       apiErrors(error);
     });
   };
