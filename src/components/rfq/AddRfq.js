@@ -1203,7 +1203,7 @@ function AddRfq(props) {
                                                                 errors={errors.startPlanDate}
                                                                 disabledKeyboardNavigation
                                                                 onChangeRaw={(e) => e.preventDefault()}
-                                                                disabled={dataProps?.isViewFlag || !isEditAll ? true : false}
+                                                                disabled={dataProps?.isAddFlag ? false : (dataProps?.isViewFlag || !isEditAll)}
                                                             />
                                                         </div>
                                                     </div>
