@@ -6200,6 +6200,8 @@ body {
       .Cancelled,
       .Under.Approval,
       .UnderApproval,
+      .Under.Revision,
+      .Open,
       [class^="Pending"],
       [class^="Awaiting"],
       .Approved,
@@ -8880,4 +8882,17 @@ table.group-process-table {
 
 .pie-chart-container {
   height: 30px;
+}
+
+.right-tooltip {
+  .tooltip {
+    margin-right: 15px;
+    margin-top: 8px;
+  }
+}
+
+.attachment.images {
+  a {
+    color: $colorPrimary;
+  }
 }
