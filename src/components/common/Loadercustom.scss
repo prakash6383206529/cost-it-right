@@ -372,8 +372,11 @@
 }
 
 .costing-table {
-    .loaderinner {
-        max-height: 160px;
+    position: relative;
+    min-height: calc(100vh - 500px);
+
+    @media screen and (max-height: 768px) {
+        min-height: calc(100vh - 400px);
     }
 }
 
