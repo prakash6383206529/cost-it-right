@@ -1654,7 +1654,7 @@ function UserRegistration(props) {
                             <SearchableSelectHookForm
                               name="Reporter"
                               type="text"
-                              label={`Reporter`}
+                              label={`Point of Contact`}
 
                               errors={errors.Reporter}
                               Controller={Controller}
