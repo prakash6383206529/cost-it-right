@@ -6207,6 +6207,8 @@ body {
       .Cancelled,
       .Under.Approval,
       .UnderApproval,
+      .Under.Revision,
+      .Open,
       [class^="Pending"],
       [class^="Awaiting"],
       .Approved,
