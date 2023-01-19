@@ -16,7 +16,7 @@ import SendForApproval from './approval/SendForApproval'
 import Toaster from '../../common/Toaster'
 import { checkForDecimalAndNull, checkForNull, checkPermission, formViewData, getTechnologyPermission, loggedInUserId, userDetails, allEqual, getConfigurationKey, getCurrencySymbol, highlightCostingSummaryValue, checkVendorPlantConfigurable } from '../../../helper'
 import Attachament from './Drawers/Attachament'
-import { BOPDOMESTIC, BOPIMPORT, COSTING, DRAFT, FILE_URL, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, VARIANCE, VBC, ZBC, VIEW_COSTING_DATA, NCC, EMPTY_GUID, CBC, ZBCTypeId, VBCTypeId, NCCTypeId, CBCTypeId } from '../../../config/constants'
+import { BOPDOMESTIC, BOPIMPORT, COSTING, DRAFT, FILE_URL, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, VARIANCE, VBC, ZBC, VIEW_COSTING_DATA, NCC, EMPTY_GUID, CBC, ZBCTypeId, VBCTypeId, NCCTypeId, CBCTypeId, VIEW_COSTING_DATA_LOGISTICS } from '../../../config/constants'
 import { useHistory } from "react-router-dom";
 import WarningMessage from '../../common/WarningMessage'
 import DayTime from '../../common/DayTimeWrapper'
@@ -893,8 +893,9 @@ const CostingSummaryTable = (props) => {
     }
 
     let costingSummary = []
-    for (var prop in VIEW_COSTING_DATA) {
+    let templateObj = viewCostingData[0]?.technologyId === LOGISTICS ? VIEW_COSTING_DATA_LOGISTICS : VIEW_COSTING_DATA
 
+    for (var prop in templateObj) {
       if (partType) {
         if (prop !== "netRM" && prop !== "netBOP" && prop !== 'fWeight' && prop !== 'BurningLossWeight' && prop !== 'gWeight' && prop !== 'ScrapWeight' && prop !== 'scrapRate' && prop !== 'rmRate' && prop !== 'rm')
           costingSummary.push({ label: VIEW_COSTING_DATA[prop], value: prop, })
@@ -1092,7 +1093,7 @@ const CostingSummaryTable = (props) => {
             )}
 
 
-            {!props.isRfqCosting && <Col md={simulationMode ? "12" : "8"} className="text-right">
+            {<Col md={simulationMode || props.isRfqCosting ? "12" : "8"} className="text-right">
 
               {
                 DownloadAccessibility ? <LoaderCustom customClass="pdf-loader" /> :
@@ -1102,7 +1103,7 @@ const CostingSummaryTable = (props) => {
                     </ExcelFile>
                   </>
               }
-              {!simulationMode &&
+              {!simulationMode && !props.isRfqCosting &&
                 <ReactToPrint
                   bodyClass='mx-2 mt-3 remove-space-border'
                   documentTitle={`${pdfName}-detailed-costing`}
@@ -1112,7 +1113,7 @@ const CostingSummaryTable = (props) => {
                   trigger={reactToPrintTriggerDetail}
                 />
               }
-              {!simulationDrawer && !drawerViewMode && <ReactToPrint
+              {!simulationDrawer && !drawerViewMode && !props.isRfqCosting && <ReactToPrint
                 bodyClass={`my-3 simple-pdf ${simulationMode ? 'mx-1 simulation-print' : 'mx-2'}`}
                 documentTitle={`${simulationMode ? 'Compare-costing.pdf' : `${pdfName}-costing`}`}
                 content={reactToPrintContent}
@@ -1121,9 +1122,9 @@ const CostingSummaryTable = (props) => {
                 trigger={reactToPrintTrigger}
               />}
               {
-                !simulationMode && <>
+                !simulationMode && !props.isRfqCosting && <>
 
-                  {(!viewMode && !isFinalApproverShow) && (
+                  {(!viewMode && !isFinalApproverShow) && !props.isRfqCosting && (
                     <button className="user-btn mr-1 mb-2 approval-btn" disabled={isWarningFlag} onClick={() => checkCostings()}>
                       <div className="send-for-approval"></div>
                       {'Send For Approval'}
