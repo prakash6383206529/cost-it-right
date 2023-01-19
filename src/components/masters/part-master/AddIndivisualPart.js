@@ -4,7 +4,7 @@ import { Field, reduxForm } from "redux-form";
 import { Row, Col } from 'reactstrap';
 import { required, checkWhiteSpaces, alphaNumeric, acceptAllExceptSingleSpecialCharacter, maxLength20, maxLength80, maxLength85, maxLength512, checkSpacesInString } from "../../../helper/validation";
 import { getConfigurationKey, loggedInUserId } from "../../../helper/auth";
-import { focusOnError, renderDatePicker, renderMultiSelectField, renderText, renderTextAreaField } from "../../layout/FormInputs";
+import { focusOnError, renderDatePicker, renderMultiSelectField, renderText, renderTextAreaField, searchableSelect } from "../../layout/FormInputs";
 import { createPart, updatePart, getPartData, fileUploadPart, fileDeletePart, getProductGroupSelectList, getPartDescription } from '../actions/Part';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
@@ -18,6 +18,8 @@ import LoaderCustom from '../../common/LoaderCustom';
 import imgRedcross from "../../../assests/images/red-cross.png";
 import _, { debounce } from 'lodash';
 import { onFocus, showDataOnHover } from '../../../helper';
+import PopupMsgWrapper from '../../common/PopupMsgWrapper';
+import { getCostingSpecificTechnology } from '../../costing/actions/Costing'
 
 class AddIndivisualPart extends Component {
   constructor(props) {
@@ -30,12 +32,12 @@ class AddIndivisualPart extends Component {
       isLoader: false,
       PartId: '',
       isViewMode: this.props?.data?.isViewMode ? true : false,
-
+      IsTechnologyUpdateRequired: false,
       selectedPlants: [],
       effectiveDate: '',
       ProductGroup: [],
       oldProductGroup: [],
-
+      TechnologySelected: [],
       files: [],
       DataToCheck: [],
       DropdownChanged: true,
@@ -46,7 +48,8 @@ class AddIndivisualPart extends Component {
       minEffectiveDate: '',
       disablePartName: false,
       attachmentLoader: false,
-      showErrorOnFocusDate: false
+      showErrorOnFocusDate: false,
+      showPopup: false
     }
   }
 
@@ -57,6 +60,7 @@ class AddIndivisualPart extends Component {
   componentDidMount() {
     if (!this.state.isViewMode) {
       this.props.getProductGroupSelectList(() => { })
+      this.props.getCostingSpecificTechnology(loggedInUserId(), () => { })
     }
     this.getDetails()
   }
@@ -92,7 +96,9 @@ class AddIndivisualPart extends Component {
               files: Data.Attachements,
               ProductGroup: productArray,
               oldProductGroup: productArray,
-              isBomEditable: Data.IsBOMEditable
+              isBomEditable: Data.IsBOMEditable,
+              TechnologySelected: ({ label: Data.TechnologyName, value: Data.TechnologyIdRef }),
+              IsTechnologyUpdateRequired: Data.IsTechnologyUpdateRequired
             }, () => this.setState({ isLoader: false }))
             // ********** ADD ATTACHMENTS FROM API INTO THE DROPZONE'S PERSONAL DATA STORE **********
             let files = Data.Attachements && Data.Attachements.map((item) => {
@@ -124,7 +130,7 @@ class AddIndivisualPart extends Component {
           let finalData = res.data.Data
           this.props.change("Description", finalData.Description)
           this.props.change("PartName", finalData.PartName)
-          this.setState({ disablePartName: true, minEffectiveDate: finalData.EffectiveDate })
+          this.setState({ disablePartName: true, minEffectiveDate: finalData.EffectiveDate, TechnologySelected: { label: finalData.Technology, value: finalData.TechnologyId } })
         } else {
           this.props.change("Description", "")
           this.props.change("PartName", "")
@@ -161,7 +167,7 @@ class AddIndivisualPart extends Component {
   * @description Used show listing of unit of measurement
   */
   renderListing = (label) => {
-    const { plantSelectList, productGroupSelectList } = this.props;
+    const { plantSelectList, productGroupSelectList, costingSpecifiTechnology } = this.props;
     const temp = [];
     if (label === 'plant') {
       plantSelectList && plantSelectList.map(item => {
@@ -180,6 +186,21 @@ class AddIndivisualPart extends Component {
       return temp;
     }
 
+    if (label === 'technology') {
+      costingSpecifiTechnology &&
+        costingSpecifiTechnology.map((item) => {
+
+          if (item.Value === '0') return false
+          temp.push({ label: item.Text, value: item.Value })
+          return null
+        })
+      return temp
+    }
+
+  }
+
+  handleTechnologyChange = (event) => {
+    this.setState({ DropdownChanged: true, TechnologySelected: event, })
   }
 
   /**
@@ -289,10 +310,19 @@ class AddIndivisualPart extends Component {
       RawMaterial: [],
       selectedPlants: [],
     })
-    this.props.getPartData('', res => { })
+    // this.props.getPartData('', res => { })
     this.props.hideForm(type)
   }
-
+  cancelHandler = () => {
+    this.setState({ showPopup: true })
+  }
+  onPopupConfirm = () => {
+    this.cancel('cancel')
+    this.setState({ showPopup: false })
+  }
+  closePopUp = () => {
+    this.setState({ showPopup: false })
+  }
   /**
   * @method onSubmit
   * @description Used to Submit the form
@@ -367,7 +397,10 @@ class AddIndivisualPart extends Component {
         Attachements: updatedFiles,
         IsForcefulUpdated: false,
         GroupCodeList: productArray,
-        IsStructureChanges: isStructureChanges
+        IsStructureChanges: isStructureChanges,
+        TechnologyIdRef: this.state.TechnologySelected.value ? this.state.TechnologySelected.value : "",
+        TechnologyName: this.state.TechnologySelected.label ? this.state.TechnologySelected.label : "",
+        IsTechnologyUpdateRequired: false,
       }
 
       this.props.updatePart(updateData, (res) => {
@@ -395,7 +428,9 @@ class AddIndivisualPart extends Component {
         DrawingNumber: values.DrawingNumber,
         GroupCode: values.GroupCode,
         Attachements: files,
-        GroupCodeList: productArray
+        GroupCodeList: productArray,
+        TechnologyIdRef: this.state.TechnologySelected.value ? this.state.TechnologySelected.value : "",
+        TechnologyName: this.state.TechnologySelected.label ? this.state.TechnologySelected.label : "",
       }
 
       this.props.createPart(formData, (res) => {
@@ -576,10 +611,28 @@ class AddIndivisualPart extends Component {
                           </Col>
 
                           <Col md="3">
+                            <Field
+                              label="Technology"
+                              type="text"
+                              name="TechnologyId"
+                              component={searchableSelect}
+                              placeholder={isViewMode ? '-' : "Select"}
+                              options={this.renderListing("technology")}
+                              validate={
+                                this.state.TechnologySelected == null || Object.keys(this.state.TechnologySelected).length === 0 ? [required] : []}
+                              required={true}
+                              handleChangeDescription={
+                                this.handleTechnologyChange
+                              }
+                              valueDescription={this.state.TechnologySelected}
+                              disabled={(isViewMode) || (!isEditFlag && this.state.disablePartName) || (isEditFlag && !((isEditFlag && this.state.IsTechnologyUpdateRequired) || (isEditFlag && this.state.isBomEditable)))}
+                            />
+                          </Col>
+
+
+                          <Col md="3">
                             <div className="form-group">
-
                               <div className="inputbox date-section">
-
                                 <Field
                                   label="Effective Date"
                                   name="EffectiveDate"
@@ -710,7 +763,7 @@ class AddIndivisualPart extends Component {
                           <button
                             type={"button"}
                             className="mr15 cancel-btn"
-                            onClick={() => { this.cancel('submit') }}
+                            onClick={() => { this.cancelHandler() }}
                             disabled={setDisable}
                           >
                             <div className={"cancel-icon"}></div>
@@ -732,6 +785,9 @@ class AddIndivisualPart extends Component {
               </Row>
             </div>
           </div>
+          {
+            this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.CANCEL_MASTER_ALERT}`} />
+          }
         </div>
       </>
     );
@@ -743,10 +799,11 @@ class AddIndivisualPart extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ comman, part, auth }) {
+function mapStateToProps({ comman, part, auth, costing }) {
   const { plantSelectList, } = comman;
   const { partData, productGroupSelectList } = part;
   const { initialConfiguration } = auth;
+  const { costingSpecifiTechnology } = costing
 
   let initialValues = {};
   if (partData && Object.keys(partData).length > 0) {
@@ -763,7 +820,7 @@ function mapStateToProps({ comman, part, auth }) {
     }
   }
 
-  return { plantSelectList, partData, initialValues, initialConfiguration, productGroupSelectList }
+  return { plantSelectList, partData, initialValues, initialConfiguration, productGroupSelectList, costingSpecifiTechnology }
 }
 
 /**
@@ -779,7 +836,8 @@ export default connect(mapStateToProps, {
   fileUploadPart,
   fileDeletePart,
   getProductGroupSelectList,
-  getPartDescription
+  getPartDescription,
+  getCostingSpecificTechnology
 })(reduxForm({
   form: 'AddIndivisualPart',
   enableReinitialize: true,

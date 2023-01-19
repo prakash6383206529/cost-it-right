@@ -72,6 +72,7 @@ class ExchangeRateListing extends Component {
                         this.props?.changeSetLoader(false)
                     })
                 }
+                this.setState({ isLoader: false })
                 if (this.props.selectionForListingMasterAPI === 'Master') {
                     this.getTableListData()
                 }
@@ -171,6 +172,7 @@ class ExchangeRateListing extends Component {
                 Toaster.success(MESSAGES.DELETE_EXCHANGE_SUCCESS);
 
                 this.getTableListData()
+                this.setState({ dataCount: 0 })
             }
         });
         this.setState({ showPopup: false })
@@ -360,7 +362,7 @@ class ExchangeRateListing extends Component {
         const defaultColDef = {
             resizable: true,
             filter: true,
-            sortable: true,
+            sortable: false,
             headerCheckboxSelectionFilteredOnly: true,
             checkboxSelection: isFirstColumn
         };
@@ -381,7 +383,6 @@ class ExchangeRateListing extends Component {
                             <Row className="pt-4 blue-before zindex-0">
                                 <Col md="6">
                                     <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={'off'} onChange={(e) => this.onFilterTextBoxChanged(e)} />
-                                    <SelectRowWrapper dataCount={dataCount} className="mb-n2" />
                                 </Col>
                                 <Col md="6" className=" mb-3">
                                     <div className="d-flex justify-content-end bd-highlight w100">
@@ -402,7 +403,8 @@ class ExchangeRateListing extends Component {
                                                 DownloadAccessibility &&
                                                 <>
                                                     <ExcelFile filename={ExchangeMaster} fileExtension={'.xls'} element={
-                                                        <button type="button" className={'user-btn mr5'} title="Download"><div className="download mr-0"></div></button>}>
+                                                        <button title={`Download ${this.state.dataCount === 0 ? "All" : "(" + this.state.dataCount + ")"}`} type="button" className={'user-btn mr5'} ><div className="download mr-1"></div>
+                                                            {`${this.state.dataCount === 0 ? "All" : "(" + this.state.dataCount + ")"}`}</button>}>
                                                         {this.onBtExport()}
                                                     </ExcelFile>
                                                 </>
@@ -442,12 +444,13 @@ class ExchangeRateListing extends Component {
                                     rowSelection={'multiple'}
                                     onSelectionChanged={this.onRowSelect}
                                     frameworkComponents={this.frameworkComponents}
+                                    suppressRowClickSelection={true}
                                 >
                                     <AgGridColumn field="Currency" headerName="Currency" minWidth={135}></AgGridColumn>
-                                    <AgGridColumn suppressSizeToFit="true" field="CurrencyExchangeRate" headerName="Exchange Rate(INR)" minWidth={160} cellRenderer={'commonCostFormatter'}></AgGridColumn>
-                                    <AgGridColumn field="BankRate" headerName="Bank Rate(INR)" minWidth={150} cellRenderer={'commonCostFormatter'}></AgGridColumn>
-                                    <AgGridColumn suppressSizeToFit="true" field="BankCommissionPercentage" headerName="Bank Commission % " minWidth={160} cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                                    <AgGridColumn field="CustomRate" headerName="Custom Rate(INR)" minWidth={160} cellRenderer={'commonCostFormatter'}></AgGridColumn>
+                                    <AgGridColumn suppressSizeToFit="true" field="CurrencyExchangeRate" headerName="Exchange Rate (INR)" minWidth={160} cellRenderer={'commonCostFormatter'}></AgGridColumn>
+                                    <AgGridColumn field="BankRate" headerName="Bank Rate (INR)" minWidth={150} cellRenderer={'commonCostFormatter'}></AgGridColumn>
+                                    <AgGridColumn suppressSizeToFit="true" field="BankCommissionPercentage" headerName="Bank Commission (%) " minWidth={160} cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                                    <AgGridColumn field="CustomRate" headerName="Custom Rate (INR)" minWidth={160} cellRenderer={'commonCostFormatter'}></AgGridColumn>
                                     <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer='effectiveDateRenderer' filter="agDateColumnFilter" filterParams={filterParams} minWidth={160}></AgGridColumn>
                                     <AgGridColumn suppressSizeToFit="true" field="DateOfModification" headerName="Date of Modification" cellRenderer='effectiveDateRenderer' filter="agDateColumnFilter" filterParams={filterParams} minWidth={160}></AgGridColumn>
                                     {!this.props.isSimulation && <AgGridColumn suppressSizeToFit="true" field="ExchangeRateId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer='totalValueRenderer' minWidth={160} ></AgGridColumn>}

@@ -153,3 +153,21 @@ export function getClientSelectList(callback) {
         });
     };
 }
+/**
+ * @method checkAndGetCustomerCode
+ * @description CHECK AND GET CUSTOMER CODE
+ */
+export function checkAndGetCustomerCode(code, name, callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.checkAndGetCustomerCode}?customerCode=${code}&customerName=${name}`, config());
+        request.then((response) => {
+            if (response && response.status === 200) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    };
+}

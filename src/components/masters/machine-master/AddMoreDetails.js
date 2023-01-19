@@ -17,7 +17,7 @@ import { getLabourTypeByMachineTypeSelectList } from '../actions/Labour';
 import { getFuelByPlant, } from '../actions/Fuel';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
-import { EMPTY_DATA, EMPTY_GUID, TIME } from '../../../config/constants'
+import { EMPTY_DATA, EMPTY_GUID, TIME, ZBCTypeId } from '../../../config/constants'
 import { loggedInUserId, userDetails, getConfigurationKey } from "../../../helper/auth";
 import Switch from "react-switch";
 import Dropzone from 'react-dropzone-uploader';
@@ -40,6 +40,8 @@ import { animateScroll as scroll } from 'react-scroll';
 import { ProcessGroup } from '../masterUtil';
 import _ from 'lodash'
 import LoaderCustom from '../../common/LoaderCustom';
+import TooltipCustom from '../../common/Tooltip';
+import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 
 const selector = formValueSelector('AddMoreDetails');
 
@@ -130,7 +132,8 @@ class AddMoreDetails extends Component {
       labourDetailId: '',
       IsIncludeMachineRateDepreciation: false,
       powerIdFromAPI: EMPTY_GUID,
-      finalApprovalLoader: false
+      finalApprovalLoader: false,
+      showPopup: false
     }
     this.dropzone = React.createRef();
   }
@@ -195,7 +198,7 @@ class AddMoreDetails extends Component {
       const { fieldsObj, machineType, selectedPlants, selectedTechnology } = nextProps.data;
       if (Object.keys(selectedPlants)?.length > 0) {
         this.handlePlants(selectedPlants)
-        if (machineType?.value !== null) {
+        if (machineType.value) {
           const data = {
             machineTypeId: machineType?.value ? machineType?.value : '',
             plantId: selectedPlants?.value ? selectedPlants?.value : '',
@@ -337,11 +340,11 @@ class AddMoreDetails extends Component {
           })
           this.props.change('EffectiveDate', DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
           this.setState({ minDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '' })
-          const { machineType, selectedPlants, effectiveDate } = this.state;
+          const { machineType, effectiveDate } = this.state;
           if (machineType.value) {
             const data = {
               machineTypeId: machineType?.value,
-              plantId: selectedPlants?.value,
+              plantId: Data.Plant[0].PlantId,
               effectiveDate: effectiveDate
             }
             this.props.getLabourTypeByMachineTypeSelectList(data, () => { })
@@ -585,7 +588,7 @@ class AddMoreDetails extends Component {
         effectiveDate: ''
       }
       this.setState({ machineType: [], labourGrid: [], })
-      if (newValue?.value !== null) {
+      if (newValue.value) {
         this.props.getLabourTypeByMachineTypeSelectList(data, () => { })
       }
     }
@@ -1239,8 +1242,9 @@ class AddMoreDetails extends Component {
       const totalPowerCostPerHour = PowerRatingPerKW * calculatePercentage(UtilizationFactorPercentage) * checkForNull(PowerCostPerUnit)
       const totalPowerCostPrYer = totalPowerCostPerHour * NumberOfWorkingHoursPerYear
       machineFullValue.totalPowerCostPrYer = totalPowerCostPrYer
-      this.setState({ machineFullValue: { ...machineFullValue, totalPowerCostPrYer: machineFullValue.totalPowerCostPrYer } })
+      this.setState({ machineFullValue: { ...machineFullValue, totalPowerCostPrYer: machineFullValue.totalPowerCostPrYer, TotalPowerCostPerHour: totalPowerCostPerHour } })
       this.props.change('TotalPowerCostPerYear', checkForDecimalAndNull(totalPowerCostPrYer, initialConfiguration.NoOfDecimalForPrice))
+      this.props.change('TotalPowerCostPerHour', checkForDecimalAndNull(totalPowerCostPerHour, initialConfiguration.NoOfDecimalForPrice))
       // }
     }
   }
@@ -1893,7 +1897,16 @@ class AddMoreDetails extends Component {
     }
     //this.props.getRawMaterialDetailsAPI('', false, res => { })
   }
-
+  cancelHandler = () => {
+    this.setState({ showPopup: true })
+  }
+  onPopupConfirm = () => {
+    this.cancel()
+    this.setState({ showPopup: false })
+  }
+  closePopUp = () => {
+    this.setState({ showPopup: false })
+  }
   /**
   * @method onSubmit
   * @description Used to Submit the form
@@ -1920,6 +1933,7 @@ class AddMoreDetails extends Component {
     let updatedFiles = files.map((file) => ({ ...file, ContextId: MachineID }))
 
     let requestData = {
+      CostingTypeId: ZBCTypeId,
       MachineId: MachineID,
       Manufacture: values.Manufacture,
       YearOfManufacturing: values.YearOfManufacturing,
@@ -1966,6 +1980,7 @@ class AddMoreDetails extends Component {
       PowerCostPerUnit: machineFullValue.PowerCostPerUnit,
       PowerRatingPerKW: values.PowerRatingPerKW,
       TotalPowerCostPerYear: machineFullValue.totalPowerCostPrYer,
+      TotalPowerCostPerHour: machineFullValue.TotalPowerCostPerHour,
       IsUsesSolarPower: IsUsesSolarPower,
       FuleId: fuelType ? fuelType.value : '',
       FuelCostPerUnit: machineFullValue.FuelCostPerUnit,
@@ -2056,6 +2071,7 @@ class AddMoreDetails extends Component {
       // EXECUTED WHEN:- ADD MORE MACHINE DETAIL CALLED FROM ADDMACHINERATE.JS FILE
 
       const formData = {
+        CostingTypeId: ZBCTypeId,
         MachineId: MachineID,
         Manufacture: values.Manufacture,
         YearOfManufacturing: values.YearOfManufacturing,
@@ -2102,6 +2118,7 @@ class AddMoreDetails extends Component {
         PowerCostPerUnit: machineFullValue.PowerCostPerUnit,
         PowerRatingPerKW: values.PowerRatingPerKW,
         TotalPowerCostPerYear: machineFullValue.totalPowerCostPrYer,
+        TotalPowerCostPerHour: machineFullValue.TotalPowerCostPerHour,
         IsUsesSolarPower: IsUsesSolarPower,
         FuleId: fuelType ? fuelType.value : '',
         FuelCostPerUnit: machineFullValue.FuelCostPerUnit,
@@ -2423,7 +2440,7 @@ class AddMoreDetails extends Component {
                           <Field
                             name="Plant"
                             type="text"
-                            label="Plant"
+                            label="Plant (Code)"
                             component={searchableSelect}
                             placeholder={(isEditFlag || isViewFlag) || (isMachineAssociated) ? '-' : 'Select'}
                             options={this.renderListing('plant')}
@@ -2654,7 +2671,7 @@ class AddMoreDetails extends Component {
                             customClassName="withBorder"
                           />
                         </Col>
-                        <Col md="3">
+                        <Col md="3"> <TooltipCustom tooltipClass={'machine-tooltip'} id="total-cost" tooltipText={"Total Cost = (Machine Cost + Accessories Cost + Installation Charges)"} />
                           <Field
                             label={`Total Cost(INR)`}
                             name={this.props.fieldsObj.TotalCost === 0 ? '' : "TotalCost"}
@@ -2728,7 +2745,7 @@ class AddMoreDetails extends Component {
                           <div className="accordian-content row mx-0 w-100">
                             <Col md="4">
                               <Field
-                                label={`Loan(%)`}
+                                label={`Loan (%)`}
                                 name={"LoanPercentage"}
                                 type="text"
                                 placeholder={disableAllForm ? '-' : 'Enter'}
@@ -2742,7 +2759,7 @@ class AddMoreDetails extends Component {
                             </Col>
                             <Col md="4">
                               <Field
-                                label={`Equity (Owned)(%)`}
+                                label={`Equity (Owned) (%)`}
                                 name={"EquityPercentage"}
                                 type="text"
                                 placeholder={'-'}
@@ -2757,7 +2774,7 @@ class AddMoreDetails extends Component {
 
                             <Col md="4">
                               <Field
-                                label={`Rate Of Interest(%) / Annum`}
+                                label={`Rate Of Interest (%) / Annum`}
                                 name={this.props.fieldsObj.RateOfInterestPercentage === 0 ? '-' : "RateOfInterestPercentage"}
                                 type="text"
                                 placeholder={disableAllForm ? '-' : 'Enter'}
@@ -2880,7 +2897,7 @@ class AddMoreDetails extends Component {
                               <div className="d-flex justify-space-between align-items-center filled-icon-inside">
                                 <div className="fullinput-icon">
                                   <Field
-                                    label={`Availability(%)`}
+                                    label={`Availability (%)`}
                                     name={"EfficiencyPercentage"}
                                     type="text"
                                     placeholder={disableAllForm ? '-' : 'Enter'}
@@ -2954,7 +2971,7 @@ class AddMoreDetails extends Component {
                               this.state.depreciationType.value !== SLM &&
                               <Col md="3">
                                 <Field
-                                  label={`Depreciation Rate(%)`}
+                                  label={`Depreciation Rate (%)`}
                                   name={"DepreciationRatePercentage"}
                                   type="text"
                                   placeholder={disableAllForm ? '-' : 'Enter'}
@@ -3378,7 +3395,7 @@ class AddMoreDetails extends Component {
                             <>
                               <Col md="3">
                                 <Field
-                                  label={`Efficiency(%)`}
+                                  label={`Efficiency (%)`}
                                   name={"UtilizationFactorPercentage"}
                                   type="text"
                                   placeholder={disableAllForm ? '-' : 'Enter'}
@@ -3439,10 +3456,10 @@ class AddMoreDetails extends Component {
                                   customClassName="withBorder"
                                 />
                               </Col>
-                              {/* <Col md="3">
+                              <Col md="3">
                                 <Field
                                   label={`Power Cost/Hour(INR)`}
-                                  name={this.props.fieldsObj.TotalFuelCostPerYear === 0 ? '-' : "TotalPowerCostPerHour"}
+                                  name={this.props.fieldsObj.TotalPowerCostPerHour === 0 ? '-' : "TotalPowerCostPerHour"}
                                   type="text"
                                   placeholder={'-'}
                                   //validate={[required]}
@@ -3452,7 +3469,7 @@ class AddMoreDetails extends Component {
                                   className=" "
                                   customClassName="withBorder"
                                 />
-                              </Col> */}
+                              </Col>
                               <Col md="3">
                                 <Field
                                   label={`Power Cost/Annum(INR)`}
@@ -3525,7 +3542,7 @@ class AddMoreDetails extends Component {
                                 name={"NumberOfLabour"}
                                 type="text"
                                 placeholder={disableAllForm ? '-' : 'Enter'}
-                                validate={[maxLength10, number, postiveNumber]}
+                                validate={[maxLength10, number]}
                                 component={renderNumberInputField}
                                 //onChange={this.handleLabourCalculation}
                                 //required={true}
@@ -3605,8 +3622,8 @@ class AddMoreDetails extends Component {
                                           <td>{item.NumberOfLabour}</td>
                                           <td>{item.LabourCost}</td>
                                           <td>
-                                            <button className="Edit mr-2" type={'button'} disabled={disableAllForm} onClick={() => this.editLabourItemDetails(index)} />
-                                            <button className="Delete" type={'button'} disabled={disableAllForm} onClick={() => this.deleteLabourItem(index)} />
+                                            <button title='Edit' className="Edit mr-2" type={'button'} disabled={disableAllForm} onClick={() => this.editLabourItemDetails(index)} />
+                                            <button title='Delete' className="Delete" type={'button'} disabled={disableAllForm} onClick={() => this.deleteLabourItem(index)} />
                                           </td>
                                         </tr>
                                       )
@@ -3802,8 +3819,8 @@ class AddMoreDetails extends Component {
                                           <td>{checkForDecimalAndNull(item.OutputPerYear, initialConfiguration.NoOfDecimalForInputOutput)}</td> */}
                                           <td>{checkForDecimalAndNull(item.MachineRate, initialConfiguration.NoOfDecimalForPrice)}</td>
                                           <td>
-                                            <button className="Edit mr-2" type={'button'} disabled={this.state.isViewMode || (isEditFlag && isMachineAssociated)} onClick={() => this.editItemDetails(index)} />
-                                            <button className="Delete" type={'button'} onClick={() => this.deleteItem(index) || (isEditFlag && isMachineAssociated)} disabled={UniqueProcessId?.includes(item.ProcessId) || this.state.isViewMode} />
+                                            <button title='Edit' className="Edit mr-2" type={'button'} disabled={this.state.isViewMode || (isEditFlag && isMachineAssociated) || UniqueProcessId?.includes(item.ProcessId)} onClick={() => this.editItemDetails(index)} />
+                                            <button title='Delete' className="Delete" type={'button'} onClick={() => this.deleteItem(index) || (isEditFlag && isMachineAssociated)} disabled={UniqueProcessId?.includes(item.ProcessId) || this.state.isViewMode} />
                                           </td>
                                         </tr>
                                       )
@@ -3929,32 +3946,31 @@ class AddMoreDetails extends Component {
                         <button
                           type={'button'}
                           className=" mr15 cancel-btn"
-                          onClick={this.cancel} >
+                          onClick={this.cancelHandler} >
                           <div className={"cancel-icon"}></div> {'Cancel'}
                         </button>
 
 
 
-                        {
-                          (CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true && !this.state.isFinalApprovar) ?
-                            <button type="submit"
-                              class="user-btn approval-btn save-btn mr5"
+                        {!isViewMode && (CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true && !this.state.isFinalApprovar) ?
+                          <button type="submit"
+                            class="user-btn approval-btn save-btn mr5"
 
-                              disabled={this.state.isViewMode || this.state.setDisable}
-                            >
-                              <div className="send-for-approval"></div>
-                              {'Send For Approval'}
-                            </button>
-                            :
+                            disabled={this.state.isViewMode || this.state.setDisable}
+                          >
+                            <div className="send-for-approval"></div>
+                            {'Send For Approval'}
+                          </button>
+                          :
 
-                            <button
-                              type="submit"
-                              className="user-btn mr5 save-btn"
-                              disabled={this.state.isViewMode || this.state.setDisable}
-                            >
-                              <div className={"save-icon"}></div>
-                              {isEditFlag ? "Update" : "Save"}
-                            </button>
+                          <button
+                            type="submit"
+                            className="user-btn mr5 save-btn"
+                            disabled={this.state.isViewMode || this.state.setDisable}
+                          >
+                            <div className={"save-icon"}></div>
+                            {isEditFlag ? "Update" : "Save"}
+                          </button>
                         }
                       </div>
                     </Row>
@@ -3965,6 +3981,9 @@ class AddMoreDetails extends Component {
             </div>
           </div>
         </div >
+        {
+          this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.CANCEL_MASTER_ALERT}`} />
+        }
         {isOpenMachineType && <AddMachineTypeDrawer
           isOpen={isOpenMachineType}
           closeDrawer={this.closeMachineTypeDrawer}
@@ -4029,7 +4048,7 @@ function mapStateToProps(state) {
     'AnnualMaintancePercentage', 'AnnualMaintanceAmount', 'AnnualConsumablePercentage', 'AnnualConsumableAmount',
     'AnnualInsurancePercentage', 'AnnualInsuranceAmount',
     'BuildingCostPerSquareFeet', 'MachineFloorAreaPerSquareFeet', 'AnnualAreaCost', 'OtherYearlyCost', 'TotalMachineCostPerAnnum',
-    'UtilizationFactorPercentage', 'PowerRatingPerKW', 'PowerCostPerUnit', 'TotalPowerCostPerYear',
+    'UtilizationFactorPercentage', 'PowerRatingPerKW', 'PowerCostPerUnit', 'TotalPowerCostPerYear', 'TotalPowerCostPerHour',
     'FuelCostPerUnit', 'ConsumptionPerYear', 'TotalFuelCostPerYear',
     'NumberOfLabour', 'LabourCost', 'OutputPerHours', 'OutputPerYear', 'MachineRate', 'DateOfPurchase', 'Description', 'Specification');
 
@@ -4085,6 +4104,7 @@ function mapStateToProps(state) {
       PowerRatingPerKW: machineData.PowerRatingPerKW,
       PowerCostPerUnit: machineData.PowerCostPerUnit,
       TotalPowerCostPerYear: machineData.TotalPowerCostPerYear,
+      TotalPowerCostPerHour: machineData.TotalPowerCostPerHour,
       FuelCostPerUnit: machineData.FuelCostPerUnit,
       ConsumptionPerYear: machineData.ConsumptionPerYear,
       TotalFuelCostPerYear: machineData.TotalFuelCostPerYear,

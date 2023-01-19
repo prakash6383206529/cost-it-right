@@ -288,7 +288,7 @@ export const MESSAGES = {
   ADDITIONAL_PERMISSION_ADDED_SUCCESSFULLY: 'Additional permission added successfully',
 
   //MHR
-  MHR_DELETE_ALERT: 'Are you sure you want to delete this machine rate?',
+  MHR_DELETE_ALERT: 'Are you sure,  you want to delete this machine rate?',
   DELETE_MHR_SUCCESS: 'Machine rate deleted successfully',
   MHR_MASTER_ADD_SUCCESS: 'Machine rate added successfully',
   UPDATE_MHR_SUCCESSFULLY: 'Machine rate updated successfully',
@@ -306,10 +306,10 @@ export const MESSAGES = {
   VOLUME_UPDATE_SUCCESS: 'Actual/Budget Volume updated successfully',
 
   //CLIENT MASTER
-  CLIENT_ADD_SUCCESS: 'Client added successfully',
-  CLIENT_DELETE_ALERT: 'Are you sure you want to delete this client?',
-  DELETE_CLIENT_SUCCESS: 'Client deleted successfully',
-  CLIENT_UPDATE_SUCCESS: 'Client updated successfully',
+  CLIENT_ADD_SUCCESS: 'Customer added successfully',
+  CLIENT_DELETE_ALERT: 'Are you sure you want to delete this Customer?',
+  DELETE_CLIENT_SUCCESS: 'Customer deleted successfully',
+  CLIENT_UPDATE_SUCCESS: 'Customer updated successfully',
 
   //EXCHANGE MASTER
   EXCHANGE_ADD_SUCCESS: 'Exchange Rate added successfully',
@@ -327,17 +327,24 @@ export const MESSAGES = {
   OVERHEAD_PROFIT_COSTING_SAVE_SUCCESS: 'Overhead & Profit saved successfully.',
   OTHER_DISCOUNT_COSTING_SAVE_SUCCESS: 'Discount & Other Cost saved successfully.',
   PACKAGE_FREIGHT_COSTING_SAVE_SUCCESS: 'Packaging & Freight Cost saved successfully.',
+  FREIGHT_COSTING_SAVE_SUCCESS: 'Freight Cost has been successfully saved.',
   SURFACE_TREATMENT_COSTING_SAVE_SUCCESS: 'Surface Treatment Cost saved successfully.',
   TOOL_TAB_COSTING_SAVE_SUCCESS: 'Tool Cost saved successfully.',
   RMCC_TAB_COSTING_SAVE_SUCCESS: 'RM CC BOP Cost saved successfully.',
   COSTING_DELETE_ALERT: 'Are you sure you want to delete costing?',
 
 
+  //RFQ
+  RFQ_ADD_SUCCESS: 'RFQ details added successfully',
+  RFQ_SENT_SUCCESS: 'RFQ raised successfully',
+  RFQ_DETAIL_CANCEL_ALERT: 'Are you sure you want to cancel this RFQ?',
+
   //SIMULATION
   DELETE_SIMULATION_DRAFT_TOKEN: 'Are you sure you want to delete simulation token ?',
 
   // COMMON MESSAGES 
   DOWNLOADING_MESSAGE: 'Please wait while data is downloading',
+  CANCEL_MASTER_ALERT: 'Are you sure, you want to cancel?',
 
   //ERROR MESSAGES
   PRICE_VALIDATION_MESSAGE: `Maximum length for integer is ${Number(getConfigurationKey().NoOfDecimalForPrice)} and for decimal is ${Number(getConfigurationKey().NoOfDecimalForPrice)}.`,

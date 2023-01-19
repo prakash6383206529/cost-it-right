@@ -1,15 +1,20 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Col, Row, } from 'reactstrap';
-import { NumberFieldHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs';
-import { calculatePercentage, checkForDecimalAndNull, checkForNull, getConfigurationKey, } from '../../../../../helper';
-import { getInventoryDataByHeads, gridDataAdded, isOverheadProfitDataChange, } from '../../../actions/Costing';
+import { TextFieldHookForm } from '../../../../layout/HookFormInputs';
+import { calculatePercentage, checkForDecimalAndNull, checkForNull, decimalAndNumberValidationBoolean, getConfigurationKey, } from '../../../../../helper';
+import { getInventoryDataByHeads, gridDataAdded, isOverheadProfitDataChange, setOverheadProfitErrors, } from '../../../actions/Costing';
 import { ViewCostingContext } from '../../CostingDetails';
 import { costingInfoContext, netHeadCostContext } from '../../CostingDetailStepTwo';
-import { EMPTY_GUID } from '../../../../../config/constants';
+import { CBCTypeId, EMPTY_GUID, VBCTypeId, ZBCTypeId } from '../../../../../config/constants';
 import Switch from "react-switch";
 import DayTime from '../../../../common/DayTimeWrapper';
+import { IdForMultiTechnology } from '../../../../../config/masterData';
+import { MESSAGES } from '../../../../../config/message';
+import WarningMessage from '../../../../common/WarningMessage';
+import { number, percentageLimitValidation, checkWhiteSpaces, NoSignNoDecimalMessage, isNumber } from "../../../../../helper/validation";
 
+let counter = 0;
 function Icc(props) {
 
     const { Controller, control, register, data, setValue, getValues, errors, useWatch, CostingInterestRateDetail } = props
@@ -29,6 +34,9 @@ function Icc(props) {
     const [ICCapplicability, setICCapplicability] = useState(ICCApplicabilityDetail !== undefined ? { label: ICCApplicabilityDetail.ICCApplicability, value: ICCApplicabilityDetail.ICCApplicability } : {})
 
     const [ICCInterestRateId, setICCInterestRateId] = useState(ICCApplicabilityDetail !== undefined ? ICCApplicabilityDetail.InterestRateId : '')
+    const [InterestRateFixedLimit, setInterestRateFixedLimit] = useState(false)
+    const [errorMessage, setErrorMessage] = useState('')
+
     const { CostingEffectiveDate } = useSelector(state => state.costing)
 
     const dispatch = useDispatch()
@@ -51,6 +59,7 @@ function Icc(props) {
 
         dispatch(gridDataAdded(true))
         dispatch(isOverheadProfitDataChange(true))
+        setInterestRateFixedLimit(false)
     }
 
 
@@ -61,9 +70,10 @@ function Icc(props) {
     const callInventoryAPI = (callAPI) => {
         if (Object.keys(costData).length > 0 && callAPI && !CostingViewMode) {
             const reqParams = {
-                vendorId: costData.IsVendor ? costData.VendorId : EMPTY_GUID,
-                isVendor: costData.IsVendor,
-                plantId: (getConfigurationKey()?.IsPlantRequiredForOverheadProfitInterestRate && !costData?.IsVendor) ? costData.PlantId : (getConfigurationKey()?.IsDestinationPlantConfigure && costData?.IsVendor) ? costData.DestinationPlantId : EMPTY_GUID,
+                VendorId: costData?.CostingTypeId === VBCTypeId ? costData.VendorId : EMPTY_GUID,
+                costingTypeId: costData.CostingTypeId,
+                plantId: (getConfigurationKey()?.IsPlantRequiredForOverheadProfitInterestRate && costData?.CostingTypeId === ZBCTypeId) ? costData.PlantId : ((getConfigurationKey()?.IsDestinationPlantConfigure && costData?.CostingTypeId === VBCTypeId) || costData?.CostingTypeId === CBCTypeId) ? costData.DestinationPlantId : EMPTY_GUID,
+                customerId: costData?.CostingTypeId === CBCTypeId ? costData.CustomerId : EMPTY_GUID,
                 effectiveDate: CostingEffectiveDate ? (DayTime(CostingEffectiveDate).format('DD/MM/YYYY')) : ''
             }
             dispatch(getInventoryDataByHeads(reqParams, res => {
@@ -148,10 +158,12 @@ function Icc(props) {
             const RMBOPCC = headerCosts.NetRawMaterialsCost + headerCosts.NetBoughtOutPartCost + ConversionCostForCalculation
             const RMBOP = headerCosts.NetRawMaterialsCost + headerCosts.NetBoughtOutPartCost;
             const RMCC = headerCosts.NetRawMaterialsCost + ConversionCostForCalculation;
+            const BOPCC = headerCosts.NetBoughtOutPartCost + ConversionCostForCalculation;
             const InterestRatePercentage = getValues('InterestRatePercentage')
 
             switch (Text) {
                 case 'RM':
+                case 'Part Cost':
                     setValue('CostApplicability', checkForDecimalAndNull(headerCosts.NetRawMaterialsCost, initialConfiguration.NoOfDecimalForPrice))
                     setValue('NetICCTotal', checkForDecimalAndNull((headerCosts.NetRawMaterialsCost * calculatePercentage(InterestRatePercentage)), initialConfiguration.NoOfDecimalForPrice))
                     setTempInventoryObj({
@@ -161,7 +173,28 @@ function Icc(props) {
                     })
                     break;
 
+                case 'BOP':
+                    setValue('CostApplicability', checkForDecimalAndNull(headerCosts.NetBoughtOutPartCost, initialConfiguration.NoOfDecimalForPrice))
+                    setValue('NetICCTotal', checkForDecimalAndNull((headerCosts.NetBoughtOutPartCost * calculatePercentage(InterestRatePercentage)), initialConfiguration.NoOfDecimalForPrice))
+                    setTempInventoryObj({
+                        ...tempInventoryObj,
+                        CostApplicability: checkForNull(headerCosts.NetBoughtOutPartCost),
+                        NetICCTotal: checkForNull(headerCosts?.NetBoughtOutPartCost) * calculatePercentage(InterestRatePercentage)
+                    })
+                    break;
+
+                case 'CC':
+                    setValue('CostApplicability', checkForDecimalAndNull(ConversionCostForCalculation, initialConfiguration.NoOfDecimalForPrice))
+                    setValue('NetICCTotal', checkForDecimalAndNull((ConversionCostForCalculation * calculatePercentage(InterestRatePercentage)), initialConfiguration.NoOfDecimalForPrice))
+                    setTempInventoryObj({
+                        ...tempInventoryObj,
+                        CostApplicability: checkForNull(ConversionCostForCalculation),
+                        NetICCTotal: checkForNull(ConversionCostForCalculation) * calculatePercentage(InterestRatePercentage)
+                    })
+                    break;
+
                 case 'RM + CC':
+                case 'Part Cost + CC':
                     setValue('CostApplicability', checkForDecimalAndNull(RMCC, initialConfiguration.NoOfDecimalForPrice))
                     setValue('NetICCTotal', checkForDecimalAndNull((RMCC * calculatePercentage(InterestRatePercentage)), initialConfiguration.NoOfDecimalForPrice))
                     setTempInventoryObj({
@@ -172,6 +205,7 @@ function Icc(props) {
                     break;
 
                 case 'RM + BOP':
+                case 'Part Cost + BOP':
                     setValue('CostApplicability', checkForDecimalAndNull(RMBOP, initialConfiguration.NoOfDecimalForPrice))
                     setValue('NetICCTotal', checkForDecimalAndNull((RMBOP * calculatePercentage(InterestRatePercentage)), initialConfiguration.NoOfDecimalForPrice))
                     setTempInventoryObj({
@@ -181,7 +215,18 @@ function Icc(props) {
                     })
                     break;
 
+                case 'BOP + CC':
+                    setValue('CostApplicability', checkForDecimalAndNull(BOPCC, initialConfiguration.NoOfDecimalForPrice))
+                    setValue('NetICCTotal', checkForDecimalAndNull((BOPCC * calculatePercentage(InterestRatePercentage)), initialConfiguration.NoOfDecimalForPrice))
+                    setTempInventoryObj({
+                        ...tempInventoryObj,
+                        CostApplicability: checkForNull(BOPCC),
+                        NetICCTotal: checkForNull(BOPCC) * calculatePercentage(InterestRatePercentage)
+                    })
+                    break;
+
                 case 'RM + CC + BOP':
+                case 'Part Cost + CC + BOP':
                     setValue('CostApplicability', checkForDecimalAndNull(RMBOPCC, initialConfiguration.NoOfDecimalForPrice)) //NEED TO ASK HERE ALSO
                     setValue('NetICCTotal', checkForDecimalAndNull((RMBOPCC * calculatePercentage(InterestRatePercentage)), initialConfiguration.NoOfDecimalForPrice))
                     setTempInventoryObj({
@@ -253,7 +298,26 @@ function Icc(props) {
         }, 200)
     }, [tempInventoryObj])
 
+    const handleChangeInterestRateFixedLimit = (event) => {
+        let message = ''
+        if (decimalAndNumberValidationBoolean(event.target.value)) {
+            setInterestRateFixedLimit(true)
+            message = MESSAGES.OTHER_VALIDATION_ERROR_MESSAGE
+        } if (!isNumber(event.target.value)) {
+            setInterestRateFixedLimit(true)
+            message = NoSignNoDecimalMessage
+        }
+        setErrorMessage(message)
+        dispatch(isOverheadProfitDataChange(true))
+    }
 
+    if (Object.keys(errors).length > 0 && counter < 2) {
+        counter = counter + 1;
+        dispatch(setOverheadProfitErrors(errors))
+    } else if (Object.keys(errors).length === 0 && counter > 0) {
+        counter = 0
+        dispatch(setOverheadProfitErrors({}))
+    }
 
     return (
         <>
@@ -289,7 +353,7 @@ function Icc(props) {
                         </Col>
                         <Col md="3">
                             {ICCapplicability.label !== 'Fixed' ?
-                                <NumberFieldHookForm
+                                <TextFieldHookForm
                                     label={`Interest Rate (%)`}
                                     name={'InterestRatePercentage'}
                                     Controller={Controller}
@@ -298,10 +362,7 @@ function Icc(props) {
                                     mandatory={false}
                                     rules={{
                                         required: false,
-                                        pattern: {
-                                            value: /^\d*\.?\d*$/,
-                                            message: 'Invalid Number.'
-                                        },
+                                        validate: { number, checkWhiteSpaces, percentageLimitValidation },
                                         max: {
                                             value: 100,
                                             message: 'Percentage cannot be greater than 100'
@@ -315,27 +376,22 @@ function Icc(props) {
                                     disabled={(CostingViewMode || ICCapplicability.label !== 'Fixed') ? true : false}
                                 />
                                 :
-                                <NumberFieldHookForm
-                                    label={`Interest Rate`}
-                                    name={'InterestRatePercentage'}
-                                    Controller={Controller}
-                                    control={control}
-                                    register={register}
-                                    mandatory={false}
-                                    rules={{
-                                        required: false,
-                                        pattern: {
-                                            value: /^\d*\.?\d*$/,
-                                            message: 'Invalid Number.'
-                                        },
-                                    }}
-                                    handleChange={() => { dispatch(isOverheadProfitDataChange(true)) }}
-                                    defaultValue={''}
-                                    className=""
-                                    customClassName={'withBorder'}
-                                    errors={errors.InterestRatePercentage}
-                                    disabled={CostingViewMode ? true : false}
-                                />}
+                                <div className='p-relative error-wrapper'>
+                                    <TextFieldHookForm
+                                        label={`Interest Rate`}
+                                        name={'InterestRatePercentage'}
+                                        Controller={Controller}
+                                        control={control}
+                                        register={register}
+                                        mandatory={false}
+                                        handleChange={(e) => handleChangeInterestRateFixedLimit(e)}
+                                        defaultValue={''}
+                                        className=""
+                                        customClassName={'withBorder'}
+                                        disabled={CostingViewMode ? true : false}
+                                    />
+                                    {ICCapplicability.label === 'Fixed' && InterestRateFixedLimit && <WarningMessage dClass={"error-message fixed-error"} message={errorMessage} />}           {/* //MANUAL CSS FOR ERROR VALIDATION MESSAGE */}
+                                </div>}
                         </Col>
                         {ICCapplicability.label !== 'Fixed' &&
                             <Col md="3">

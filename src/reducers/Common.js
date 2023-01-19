@@ -57,7 +57,8 @@ import {
   STATUS_COLUMN_DATA,
   IS_RESET,
   GET_GRID_HEIGHT,
-  GET_STATE_WHILE_DOWNLOADING
+  GET_STATE_WHILE_DOWNLOADING,
+  GET_REPORTER_LIST
 } from '../config/constants';
 
 const initialState = {
@@ -414,6 +415,13 @@ export default function commanReducer(state = initialState, action) {
         loading: false,
         error: true,
         vendorWithVendorCodeSelectList: action.payload
+      };
+    case GET_REPORTER_LIST:
+      return {
+        ...state,
+        loading: false,
+        error: true,
+        getReporterListDropDown: action.payload
       };
     case GET_UOM_SELECTLIST_BY_UNITTYPE:
       return {

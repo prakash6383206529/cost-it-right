@@ -6,7 +6,7 @@ import { costingInfoContext } from '../../CostingDetailStepTwo'
 import NoContentFound from '../../../../common/NoContentFound'
 import { useDispatch, useSelector } from 'react-redux'
 import { EMPTY_DATA } from '../../../../../config/constants'
-import { NumberFieldHookForm, TextFieldHookForm, TextAreaHookForm } from '../../../../layout/HookFormInputs'
+import { TextFieldHookForm, TextAreaHookForm } from '../../../../layout/HookFormInputs'
 import Toaster from '../../../../common/Toaster'
 import { calculatePercentage, calculatePercentageValue, checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected, getConfigurationKey, isRMDivisorApplicable } from '../../../../../helper'
 import OpenWeightCalculator from '../../WeightCalculatorDrawer'
@@ -18,10 +18,11 @@ import Popup from 'reactjs-popup';
 import 'reactjs-popup/dist/index.css';
 import { setFerrousCalculatorReset } from '../../../actions/CostWorking'
 import { gridDataAdded, isDataChange, setMasterBatchObj, setRMCCErrors, setRMCutOff } from '../../../actions/Costing'
-import { getTechnology, technologyForDensity, isMultipleRMAllow, } from '../../../../../config/masterData'
+import { getTechnology, technologyForDensity, isMultipleRMAllow, STRINGMAXLENGTH, REMARKMAXLENGTH, } from '../../../../../config/masterData'
 import PopupMsgWrapper from '../../../../common/PopupMsgWrapper';
 import { SHEETMETAL, RUBBER, FORGING, DIE_CASTING, PLASTIC, CORRUGATEDBOX, Ferrous_Casting } from '../../../../../config/masterData'
 import { debounce } from 'lodash'
+import { number, checkWhiteSpaces, hashValidation, percentageLimitValidation, decimalNumberLimit6 } from "../../../../../helper/validation";
 
 let counter = 0;
 function RawMaterialCost(props) {
@@ -57,6 +58,7 @@ function RawMaterialCost(props) {
   const { CostingEffectiveDate } = useSelector(state => state.costing)
   const [showPopup, setShowPopup] = useState(false)
   const [masterBatch, setMasterBatch] = useState(false)
+  const [remarkError, setRemarkError] = useState(true)
 
   const { ferrousCalculatorReset } = useSelector(state => state.costWorking)
   const RMDivisor = (item?.CostingPartDetails?.RMDivisor !== null) ? item?.CostingPartDetails?.RMDivisor : 0;
@@ -756,6 +758,7 @@ function RawMaterialCost(props) {
         dispatch(setRMCCErrors({})) //USED FOR ERROR HANDLING
         counter = 0 //USED FOR ERROR HANDLING 
       }, 400)
+      errors.rmGridFields = []
       setGridData(tempArr)
 
       if (Number(costData?.TechnologyId) === Number(Ferrous_Casting)) {
@@ -830,6 +833,9 @@ function RawMaterialCost(props) {
   }
 
   const onRemarkPopUpClick = (index) => {
+    if (errors.rmGridFields && errors.rmGridFields[index]?.remarkPopUp !== undefined) {
+      return false
+    }
     let tempArr = []
     let tempData = gridData[index]
     tempData = {
@@ -849,6 +855,10 @@ function RawMaterialCost(props) {
   const onRemarkPopUpClose = (index) => {
     var button = document.getElementById(`popUpTrigger${index}`)
     setValue(`${rmGridFields}.${index}.remarkPopUp`, gridData[index].Remark)
+    if (errors && errors.rmGridFields && errors.rmGridFields[index].remarkPopUp) {
+      delete errors.rmGridFields[index].remarkPopUp;
+      setRemarkError(false)
+    }
     button.click()
   }
 
@@ -1098,11 +1108,11 @@ function RawMaterialCost(props) {
                       <th>{`Gross Weight`}</th>
                       <th>{`Finish Weight`}</th>
                       {(costData?.TechnologyId === Ferrous_Casting) && <th>Percentage</th>}
-                      {isScrapRecoveryPercentageApplied && <th className='scrap-recovery'>{`Scrap Recovery(%)`}</th>}
+                      {isScrapRecoveryPercentageApplied && <th className='scrap-recovery'>{`Scrap Recovery (%)`}</th>}
                       {costData?.TechnologyId === PLASTIC && <th>{'Burning Loss Weight'}</th>}
-                      <th>{`Scrap Weight`}</th>
+                      <th className='scrap-weight'>Scrap Weight </th>
                       {/* //Add i here for MB+ */}
-                      <th>{`Net RM Cost ${isRMDivisorApplicable(costData.TechnologyName) ? '/(' + RMDivisor + ')' : ''}`}</th>
+                      <th className='net-rm-cost'>{`Net RM Cost ${isRMDivisorApplicable(costData.TechnologyName) ? '/(' + RMDivisor + ')' : ''}`}  </th>
                       <th style={{ textAlign: "right" }}>{`Action`}</th>
                     </tr>
                   </thead>
@@ -1128,7 +1138,7 @@ function RawMaterialCost(props) {
                             }
                             <td>
                               <div className='costing-error-container'>
-                                <NumberFieldHookForm
+                                <TextFieldHookForm
                                   label=""
                                   name={`${rmGridFields}.${index}.GrossWeight`}
                                   Controller={Controller}
@@ -1137,10 +1147,7 @@ function RawMaterialCost(props) {
                                   mandatory={false}
                                   rules={{
                                     required: true,
-                                    pattern: {
-                                      value: /^\d{0,6}(\.\d{0,6})?$/i,
-                                      message: 'Maximum length for integer is 6 and for decimal is 6.',
-                                    },
+                                    validate: { number, checkWhiteSpaces, decimalNumberLimit6 },
                                   }}
                                   defaultValue={item.GrossWeight}
                                   className=""
@@ -1156,7 +1163,7 @@ function RawMaterialCost(props) {
                             </td>
                             <td>
                               <div className='costing-error-container'>
-                                <NumberFieldHookForm
+                                <TextFieldHookForm
                                   label=""
                                   name={`${rmGridFields}.${index}.FinishWeight`}
                                   Controller={Controller}
@@ -1165,10 +1172,7 @@ function RawMaterialCost(props) {
                                   mandatory={false}
                                   rules={{
                                     required: true,
-                                    pattern: {
-                                      value: /^\d{0,6}(\.\d{0,6})?$/i,
-                                      message: 'Maximum length for integer is 6 and for decimal is 6.',
-                                    },
+                                    validate: { number, checkWhiteSpaces, decimalNumberLimit6 },
                                   }}
                                   defaultValue={item.FinishWeight}
                                   className=""
@@ -1190,7 +1194,7 @@ function RawMaterialCost(props) {
                               isScrapRecoveryPercentageApplied &&
                               <td>
                                 <div className='costing-error-container'>
-                                  <NumberFieldHookForm
+                                  <TextFieldHookForm
                                     label=""
                                     name={`${rmGridFields}.${index}.ScrapRecoveryPercentage`}
                                     Controller={Controller}
@@ -1199,10 +1203,7 @@ function RawMaterialCost(props) {
                                     mandatory={false}
                                     rules={{
                                       required: true,
-                                      pattern: {
-                                        value: /^\d*\.?\d*$/,
-                                        message: 'Invalid Number.',
-                                      },
+                                      validate: { number, checkWhiteSpaces, percentageLimitValidation },
                                       max: {
                                         value: 100,
                                         message: 'Percentage should be less than 100'
@@ -1221,21 +1222,22 @@ function RawMaterialCost(props) {
                                 </div>
                               </td>
                             }
-                            <td>{checkForDecimalAndNull(item.ScrapWeight, initialConfiguration.NoOfDecimalForPrice)}</td>
+                            <td><div className='w-fit' id={`scrap-weight${index}`}>{checkForDecimalAndNull(item.ScrapWeight, initialConfiguration.NoOfDecimalForPrice)} <TooltipCustom disabledIcon={true} tooltipClass={isScrapRecoveryPercentageApplied && "net-rm-cost"} id={`scrap-weight${index}`} tooltipText={isScrapRecoveryPercentageApplied ? "Scrap weight = ((Gross Weight - Finish Weight) * Recovery Percentage / 100)" : "Scrap weight = (Gross Weight - Finish Weight)"} /></div></td>
                             {costData?.TechnologyId === 6 && <td>{checkForDecimalAndNull(item.Percentage, initialConfiguration.NoOfDecimalForPrice)}</td>}
                             <td>
-                              {item?.NetLandedCost !== undefined ? checkForDecimalAndNull(item.NetLandedCost, initialConfiguration.NoOfDecimalForPrice) : ''}
-                            </td>
+                              <div className='w-fit' id={`net-rm-cost${index}`}><TooltipCustom disabledIcon={true} tooltipClass="net-rm-cost" id={`net-rm-cost${index}`} tooltipText="Net RM Cost = (RM Rate * Gross Weight) - (Scrap Weight * Scrap Rate)" />{item?.NetLandedCost !== undefined ? checkForDecimalAndNull(item.NetLandedCost, initialConfiguration.NoOfDecimalForPrice) : ''}
+                              </div></td>
                             <td>
 
                               <div className='action-btn-wrapper'>
                                 {!CostingViewMode && !IsLocked && !(initialConfiguration?.IsCopyCostingFinishAndGrossWeightEditable && item?.IsRMCopied) && < button
                                   className="Delete "
+                                  title='Delete'
                                   type={'button'}
                                   onClick={() => deleteItem(index)}
                                 />}
-                                <Popup className='rm-popup' trigger={<button id={`popUpTrigger${index}`} className="Comment-box" type={'button'} />}
-                                  position="top center">
+                                <Popup className='rm-popup' trigger={<button id={`popUpTrigger${index}`} title="Remark" className="Comment-box" type={'button'} />}
+                                  position="top right">
                                   <TextAreaHookForm
                                     label="Remark:"
                                     name={`${rmGridFields}.${index}.remarkPopUp`}
@@ -1244,12 +1246,9 @@ function RawMaterialCost(props) {
                                     register={register}
                                     mandatory={false}
                                     rules={{
-                                      maxLength: {
-                                        value: 75,
-                                        message: "Remark should be less than 75 word"
-                                      },
+                                      maxLength: remarkError && REMARKMAXLENGTH
                                     }}
-                                    handleChange={(e) => { }}
+                                    handleChange={(e) => { setRemarkError(true) }}
                                     defaultValue={item.Remark ?? item.Remark}
                                     className=""
                                     customClassName={"withBorder"}
@@ -1304,7 +1303,7 @@ function RawMaterialCost(props) {
                       onChange={onPressApplyMasterBatch}
                     />
                   </label>
-                  <TooltipCustom customClass="float-none ml-n3 " tooltipText="Can only be added with 1 RM" />
+                  <TooltipCustom id={"added-rm-indicate"} customClass="float-none ml-n3 " tooltipText="Can only be added with 1 RM" />
                 </Col>
               }
 
@@ -1340,7 +1339,11 @@ function RawMaterialCost(props) {
                       control={control}
                       register={register}
                       mandatory={false}
-                      rules={{}}
+                      rules={{
+                        required: false,
+                        validate: { checkWhiteSpaces, hashValidation },
+                        maxLength: STRINGMAXLENGTH
+                      }}
                       handleChange={(e) => { }}
                       defaultValue={""}
                       className=""
@@ -1357,7 +1360,10 @@ function RawMaterialCost(props) {
                       control={control}
                       register={register}
                       mandatory={false}
-                      rules={{}}
+                      rules={{
+                        required: false,
+                        validate: { number, checkWhiteSpaces, decimalNumberLimit6 }
+                      }}
                       handleChange={() => { }}
                       defaultValue={""}
                       className=""
@@ -1367,7 +1373,7 @@ function RawMaterialCost(props) {
                     />
                   </Col>
                   <Col md="2">
-                    <NumberFieldHookForm
+                    <TextFieldHookForm
                       label="Percentage"
                       name={`MBPercentage`}
                       Controller={Controller}
@@ -1375,11 +1381,8 @@ function RawMaterialCost(props) {
                       register={register}
                       mandatory={false}
                       rules={{
-                        //required: true,
-                        pattern: {
-                          value: /^\d*\.?\d*$/,
-                          message: 'Invalid Number.'
-                        },
+                        required: false,
+                        validate: { number, checkWhiteSpaces, percentageLimitValidation },
                         max: {
                           value: 100,
                           message: 'Percentage cannot be greater than 100'
