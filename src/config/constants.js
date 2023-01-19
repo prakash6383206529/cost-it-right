@@ -1912,6 +1912,21 @@ export const VIEW_COSTING_DATA = {
   // approvalButton: '',
 }
 
+export const VIEW_COSTING_DATA_LOGISTICS = {
+  costingHeadCheck: 'ZBC v/s VBC v/s NCC v/s CBC',
+  costingVersion: 'Costing Version',
+  PoPriceWithDate: 'PO Price (Effective from)',
+  partNumber: 'Part Number',
+  partName: 'Part Name',
+  RevisionNumber: 'Revision Number',
+  plantExcel: 'Plant (Code)',
+  nPackagingAndFreight: 'Net Freight',
+  nPOPrice: 'Net PO Price (INR)',
+  currencyTitle: 'Currency',
+  nPoPriceCurrency: 'Net PO Price (In Currency)',
+  remark: 'Remarks',
+}
+
 //UOM ENUMS (Need to change name)
 export const KG = "Kilogram"
 export const HOUR = "Hours"
