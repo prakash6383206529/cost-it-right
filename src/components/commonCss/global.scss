@@ -848,6 +848,10 @@ a:hover {
                 text-overflow: ellipsis;
                 margin-bottom: 4px;
               }
+
+              .attachment.images {
+                padding: 0;
+              }
             }
 
             &:not(.has-checkbox) {
