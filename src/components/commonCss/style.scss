@@ -8889,3 +8889,10 @@ table.group-process-table {
 .pie-chart-container {
   height: 30px;
 }
+
+.right-tooltip {
+  .tooltip {
+    margin-right: 15px;
+    margin-top: 8px;
+  }
+}
