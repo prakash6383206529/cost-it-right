@@ -7307,16 +7307,6 @@ body {
   padding-top: 50px;
 }
 
-.mb-width {
-  label {
-    width: fit-content;
-  }
-
-  min-width: 14.675rem;
-  margin-top: 15px;
-  margin-bottom: 15px;
-}
-
 .re-warning {
   margin-left: 15px;
   margin-top: -15px;
@@ -8894,5 +8884,12 @@ table.group-process-table {
 .attachment.images {
   a {
     color: $colorPrimary;
+  }
+}
+
+.apply-mb {
+  .custom-checkbox {
+    white-space: nowrap;
+    margin-top: 15px;
   }
 }

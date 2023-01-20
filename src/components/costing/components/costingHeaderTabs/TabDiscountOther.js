@@ -802,6 +802,12 @@ function TabDiscountOther(props) {
     counter = 0
     dispatch(setDiscountErrors({}))
   }
+  const resetDataOtherCOst = () => {
+    setValue('OtherCostApplicability', "")
+  }
+  const resetDataDiscount = () => {
+    setValue('DiscountCostApplicability', "")
+  }
 
   return (
     <>
@@ -865,6 +871,7 @@ function TabDiscountOther(props) {
                           disabled={CostingViewMode ? true : false}
                           handleChange={handleOherCostApplicabilityChange}
                           errors={errors.OtherCostApplicability}
+                          buttonCross={resetDataOtherCOst}
                         />
                       </Col>
                     }
@@ -978,6 +985,7 @@ function TabDiscountOther(props) {
                           disabled={CostingViewMode ? true : false}
                           handleChange={handleDiscountApplicabilityChange}
                           errors={errors.DiscountCostApplicability}
+                          buttonCross={resetDataDiscount}
                         />
                       </Col>
                     }
