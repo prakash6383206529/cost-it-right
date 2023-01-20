@@ -3870,16 +3870,14 @@ export const CostingSimulationDownloadRM = [
     { label: "RevisedDiscountCost", value: "NewDiscountCost" },
     { label: "ExistingNetOverheadAndProfitCost", value: "OldNetOverheadAndProfitCost" },
     { label: "RevisedNetOverheadAndProfitCost", value: "NewNetOverheadAndProfitCost" },
-    { label: "RevisedNetToolCost", value: "NewNetToolCost" },
-    { label: "ExistingNetToolCost", value: "OldNetToolCost" },
-    { label: "RevisedNetFreightCost", value: "NewNetFreightCost" },
     { label: "ExistingNetFreightCost", value: "OldNetFreightCost" },
-    { label: "RevisedNetPackagingCost", value: "NewNetPackagingCost" },
+    { label: "RevisedNetFreightCost", value: "NewNetFreightCost" },
     { label: "ExistingNetPackagingCost", value: "OldNetPackagingCost" },
-    { label: "RevisedNetFreightAndPackagingCost", value: "NewNetFreightPackagingCost" },
+    { label: "RevisedNetPackagingCost", value: "NewNetPackagingCost" },
     { label: "ExistingNetFreightAndPackagingCost", value: "OldNetFreightPackagingCost" },
-
-    // { label: "EffectiveDate", value: "EffectiveDate" },
+    { label: "RevisedNetFreightAndPackagingCost", value: "NewNetFreightPackagingCost" },
+    { label: "ExistingNetToolCost", value: "OldNetToolCost" },
+    { label: "RevisedNetToolCost", value: "NewNetToolCost" },
 ]
 
 export const COMBINEDPROCESSSIMULATION = [
@@ -3971,16 +3969,14 @@ export const CostingSimulationDownloadST = [
     { label: "RevisedDiscountCost", value: "NewDiscountCost" },
     { label: "ExistingNetOverheadAndProfitCost", value: "OldNetOverheadAndProfitCost" },
     { label: "RevisedNetOverheadAndProfitCost", value: "NewNetOverheadAndProfitCost" },
-    { label: "RevisedNetToolCost", value: "NewNetToolCost" },
-    { label: "ExistingNetToolCost", value: "OldNetToolCost" },
-    { label: "RevisedNetFreightCost", value: "NewNetFreightCost" },
     { label: "ExistingNetFreightCost", value: "OldNetFreightCost" },
-    { label: "RevisedNetPackagingCost", value: "NewNetPackagingCost" },
+    { label: "RevisedNetFreightCost", value: "NewNetFreightCost" },
     { label: "ExistingNetPackagingCost", value: "OldNetPackagingCost" },
-    { label: "RevisedNetFreightAndPackagingCost", value: "NewNetFreightPackagingCost" },
+    { label: "RevisedNetPackagingCost", value: "NewNetPackagingCost" },
     { label: "ExistingNetFreightAndPackagingCost", value: "OldNetFreightPackagingCost" },
-
-    // { label: "EffectiveDate", value: "EffectiveDate" },
+    { label: "RevisedNetFreightAndPackagingCost", value: "NewNetFreightPackagingCost" },
+    { label: "ExistingNetToolCost", value: "OldNetToolCost" },
+    { label: "RevisedNetToolCost", value: "NewNetToolCost" },
 ]
 
 export const CostingSimulationDownloadOperation = [
@@ -4028,16 +4024,14 @@ export const CostingSimulationDownloadOperation = [
     { label: "RevisedDiscountCost", value: "NewDiscountCost" },
     { label: "ExistingNetOverheadAndProfitCost", value: "OldNetOverheadAndProfitCost" },
     { label: "RevisedNetOverheadAndProfitCost", value: "NewNetOverheadAndProfitCost" },
-    { label: "RevisedNetToolCost", value: "NewNetToolCost" },
-    { label: "ExistingNetToolCost", value: "OldNetToolCost" },
-    { label: "RevisedNetFreightCost", value: "NewNetFreightCost" },
     { label: "ExistingNetFreightCost", value: "OldNetFreightCost" },
-    { label: "RevisedNetPackagingCost", value: "NewNetPackagingCost" },
+    { label: "RevisedNetFreightCost", value: "NewNetFreightCost" },
     { label: "ExistingNetPackagingCost", value: "OldNetPackagingCost" },
-    { label: "RevisedNetFreightAndPackagingCost", value: "NewNetFreightPackagingCost" },
+    { label: "RevisedNetPackagingCost", value: "NewNetPackagingCost" },
     { label: "ExistingNetFreightAndPackagingCost", value: "OldNetFreightPackagingCost" },
-
-    // { label: "EffectiveDate", value: "EffectiveDate" },
+    { label: "RevisedNetFreightAndPackagingCost", value: "NewNetFreightPackagingCost" },
+    { label: "ExistingNetToolCost", value: "OldNetToolCost" },
+    { label: "RevisedNetToolCost", value: "NewNetToolCost" },
 ]
 
 export const CostingSimulationDownloadBOP = [
@@ -4063,7 +4057,7 @@ export const CostingSimulationDownloadBOP = [
     { label: "RevisedBOPRate", value: "NewBOPRate" },
     { label: "ExistingBOPCost", value: "OldBOPCost" },
     { label: "RevisedBOPCost", value: "NewBOPCost" },
-    { label: "Variance (w.r.t BOP Cost)", value: "BOPVariance" },
+    { label: "Variance (BOP Cost)", value: "BOPVariance" },
     { label: "ExistingNetBoughtOutPartCost", value: "OldNetBoughtOutPartCost" },
     { label: "RevisedNetBoughtOutPartCost", value: "NewNetBoughtOutPartCost" },
     { label: "NetBoughtOutPartCostVariance", value: "NetBoughtOutPartCostVariance" },
@@ -4085,16 +4079,14 @@ export const CostingSimulationDownloadBOP = [
     { label: "RevisedDiscountCost", value: "NewDiscountCost" },
     { label: "ExistingNetOverheadAndProfitCost", value: "OldNetOverheadAndProfitCost" },
     { label: "RevisedNetOverheadAndProfitCost", value: "NewNetOverheadAndProfitCost" },
-    { label: "RevisedNetToolCost", value: "NewNetToolCost" },
-    { label: "ExistingNetToolCost", value: "OldNetToolCost" },
-    { label: "RevisedNetFreightCost", value: "NewNetFreightCost" },
     { label: "ExistingNetFreightCost", value: "OldNetFreightCost" },
-    { label: "RevisedNetPackagingCost", value: "NewNetPackagingCost" },
+    { label: "RevisedNetFreightCost", value: "NewNetFreightCost" },
     { label: "ExistingNetPackagingCost", value: "OldNetPackagingCost" },
-    { label: "RevisedNetFreightAndPackagingCost", value: "NewNetFreightPackagingCost" },
+    { label: "RevisedNetPackagingCost", value: "NewNetPackagingCost" },
     { label: "ExistingNetFreightAndPackagingCost", value: "OldNetFreightPackagingCost" },
-
-    // { label: "EffectiveDate", value: "EffectiveDate" },
+    { label: "RevisedNetFreightAndPackagingCost", value: "NewNetFreightPackagingCost" },
+    { label: "ExistingNetToolCost", value: "OldNetToolCost" },
+    { label: "RevisedNetToolCost", value: "NewNetToolCost" },
 ]
 
 export const SIMULATIONAPPROVALSUMMARYDOWNLOADRM = [
@@ -4750,15 +4742,14 @@ export const LastGridForToken = [
     { label: "RevisedDiscountCost", value: "NewDiscountCost" },
     { label: "ExistingNetOverheadAndProfitCost", value: "OldNetOverheadAndProfitCost" },
     { label: "RevisedNetOverheadAndProfitCost", value: "NewNetOverheadAndProfitCost" },
-    { label: "RevisedNetToolCost", value: "NewNetToolCost" },
-    { label: "ExistingNetToolCost", value: "OldNetToolCost" },
-    { label: "RevisedNetFreightCost", value: "NewNetFreightCost" },
     { label: "ExistingNetFreightCost", value: "OldNetFreightCost" },
-    { label: "RevisedNetPackagingCost", value: "NewNetPackagingCost" },
+    { label: "RevisedNetFreightCost", value: "NewNetFreightCost" },
     { label: "ExistingNetPackagingCost", value: "OldNetPackagingCost" },
-    { label: "RevisedNetFreightAndPackagingCost", value: "NewNetFreightPackagingCost" },
+    { label: "RevisedNetPackagingCost", value: "NewNetPackagingCost" },
     { label: "ExistingNetFreightAndPackagingCost", value: "OldNetFreightPackagingCost" },
-    // { label: "EffectiveDate", value: "EffectiveDate" },
+    { label: "RevisedNetFreightAndPackagingCost", value: "NewNetFreightPackagingCost" },
+    { label: "ExistingNetToolCost", value: "OldNetToolCost" },
+    { label: "RevisedNetToolCost", value: "NewNetToolCost" },
 ]
 
 export const InitialGridForTokenSummary = [
@@ -4957,16 +4948,14 @@ export const CostingSimulationDownloadMR = [
     { label: "RevisedDiscountCost", value: "NewDiscountCost" },
     { label: "ExistingNetOverheadAndProfitCost", value: "OldNetOverheadAndProfitCost" },
     { label: "RevisedNetOverheadAndProfitCost", value: "NewNetOverheadAndProfitCost" },
-    { label: "RevisedNetToolCost", value: "NewNetToolCost" },
-    { label: "ExistingNetToolCost", value: "OldNetToolCost" },
-    { label: "RevisedNetFreightCost", value: "NewNetFreightCost" },
     { label: "ExistingNetFreightCost", value: "OldNetFreightCost" },
-    { label: "RevisedNetPackagingCost", value: "NewNetPackagingCost" },
+    { label: "RevisedNetFreightCost", value: "NewNetFreightCost" },
     { label: "ExistingNetPackagingCost", value: "OldNetPackagingCost" },
-    { label: "RevisedNetFreightAndPackagingCost", value: "NewNetFreightPackagingCost" },
+    { label: "RevisedNetPackagingCost", value: "NewNetPackagingCost" },
     { label: "ExistingNetFreightAndPackagingCost", value: "OldNetFreightPackagingCost" },
-
-    // { label: "EffectiveDate", value: "EffectiveDate" },
+    { label: "RevisedNetFreightAndPackagingCost", value: "NewNetFreightPackagingCost" },
+    { label: "ExistingNetToolCost", value: "OldNetToolCost" },
+    { label: "RevisedNetToolCost", value: "NewNetToolCost" },
 ]
 
 export const MRGridForToken = [
@@ -6157,16 +6146,14 @@ export const CostingSimulationDownloadAssemblyTechnology = [
     { label: "RevisedDiscountCost", value: "NewDiscountCost" },
     { label: "ExistingNetOverheadAndProfitCost", value: "OldNetOverheadAndProfitCost" },
     { label: "RevisedNetOverheadAndProfitCost", value: "NewNetOverheadAndProfitCost" },
-    { label: "RevisedNetToolCost", value: "NewNetToolCost" },
-    { label: "ExistingNetToolCost", value: "OldNetToolCost" },
-    { label: "RevisedNetFreightCost", value: "NewNetFreightCost" },
     { label: "ExistingNetFreightCost", value: "OldNetFreightCost" },
-    { label: "RevisedNetPackagingCost", value: "NewNetPackagingCost" },
+    { label: "RevisedNetFreightCost", value: "NewNetFreightCost" },
     { label: "ExistingNetPackagingCost", value: "OldNetPackagingCost" },
-    { label: "RevisedNetFreightAndPackagingCost", value: "NewNetFreightPackagingCost" },
+    { label: "RevisedNetPackagingCost", value: "NewNetPackagingCost" },
     { label: "ExistingNetFreightAndPackagingCost", value: "OldNetFreightPackagingCost" },
-
-    // { label: "EffectiveDate", value: "EffectiveDate" },
+    { label: "RevisedNetFreightAndPackagingCost", value: "NewNetFreightPackagingCost" },
+    { label: "ExistingNetToolCost", value: "OldNetToolCost" },
+    { label: "RevisedNetToolCost", value: "NewNetToolCost" },
 ]
 
 export const SIMULATIONAPPROVALSUMMARYDOWNLOADASSEMBLYTECHNOLOGY = [
