@@ -1296,7 +1296,7 @@ class AddBOPImport extends Component {
                               component={searchableSelect}
                               placeholder={isEditFlag ? '-' : "Select"}
                               options={this.renderListing("IncoTerms")}
-                              validate={getConfigurationKey().getconIsPaymentTermsAndIncoTermsRequiredForBoughtOutPart ? [required] : []}
+                              validate={getConfigurationKey().IsPaymentTermsAndIncoTermsRequiredForBoughtOutPart ? [required] : []}
                               required={getConfigurationKey().IsPaymentTermsAndIncoTermsRequiredForBoughtOutPart ? true : false}
                               handleChangeDescription={this.handleIncoTerm}
                               valueDescription={this.state.incoTerm}
@@ -1311,7 +1311,7 @@ class AddBOPImport extends Component {
                               component={searchableSelect}
                               placeholder={isEditFlag ? '-' : "Select"}
                               options={this.renderListing("PaymentTerms")}
-                              validate={getConfigurationKey().getconIsPaymentTermsAndIncoTermsRequiredForBoughtOutPart ? [required] : []}
+                              validate={getConfigurationKey().IsPaymentTermsAndIncoTermsRequiredForBoughtOutPart ? [required] : []}
                               required={getConfigurationKey().IsPaymentTermsAndIncoTermsRequiredForBoughtOutPart ? true : false}
                               handleChangeDescription={this.handlePaymentTerm}
                               valueDescription={this.state.paymentTerm}
