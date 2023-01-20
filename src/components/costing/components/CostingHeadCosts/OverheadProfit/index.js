@@ -16,6 +16,7 @@ import { Link } from 'react-scroll'
 import { IdForMultiTechnology } from '../../../../../config/masterData';
 import _, { debounce } from 'lodash';
 import { number, checkWhiteSpaces, decimalNumberLimit6 } from "../../../../../helper/validation";
+import TooltipCustom from '../../../../common/Tooltip';
 
 let counter = 0;
 function OverheadProfit(props) {
@@ -1251,8 +1252,8 @@ function OverheadProfit(props) {
                 <label>
                   {''}
                 </label>
-                <button type="button" className={'refresh-icon mt9 tooltip-n'} onClick={() => IncludeSurfaceTreatmentCall()}>
-                  <span class="tooltiptext">Refresh to update Overhead and Profit cost</span>
+                <button type="button" id="overhead-refresh" className={'refresh-icon mt12'} onClick={() => IncludeSurfaceTreatmentCall()}>
+                  <TooltipCustom disabledIcon={true} id="overhead-refresh" tooltipText="Refresh to update Overhead and Profit cost" />
                 </button>
               </Col>
 
