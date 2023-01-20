@@ -41,6 +41,10 @@
   }
 
   .mt#{$i} {
+    margin-top: #{$i}px;
+  }
+
+  .mr#{$i} {
     margin-right: #{$i}px;
   }
 }
