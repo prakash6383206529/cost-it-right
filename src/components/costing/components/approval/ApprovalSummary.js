@@ -57,9 +57,9 @@ function ApprovalSummary(props) {
   const [IsRegularized, setIsRegularized] = useState("")
   const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
 
-  const headerName = ['Revision No.', 'Name', 'Old Cost/Pc', 'New Cost/Pc', 'Quantity', 'Impact/Pc', 'Volume/Year', 'Impact/Quarter', 'Impact/Year']
+  const headerName = ['Revision No.', 'Name', 'Existing Cost/Pc', 'Revised Cost/Pc', 'Quantity', 'Impact/Pc', 'Volume/Year', 'Impact/Quarter', 'Impact/Year']
   const parentField = ['PartNumber', '-', 'PartName', '-', '-', '-', 'VariancePerPiece', 'VolumePerYear', 'ImpactPerQuarter', 'ImpactPerYear']
-  const childField = ['PartNumber', 'ECNNumber', 'PartName', 'OldCost', 'NewCost', 'Quantity', 'VariancePerPiece', '-', '-', '-']
+  const childField = ['PartNumber', 'ECNNumber', 'PartName', 'ExistingCost', 'RevisedCost', 'Quantity', 'VariancePerPiece', '-', '-', '-']
   useEffect(() => {
     approvalSummaryHandler()
   }, [])
@@ -343,8 +343,8 @@ function ApprovalSummary(props) {
 
                       <th>{`SOB (%):`}</th>
                       {/* <th>{`ECN Ref No`}</th> */}
-                      <th>{`Old/Current Price:`}</th>
-                      <th>{`New/Revised Price:`}</th>
+                      <th>{`Existing Price:`}</th>
+                      <th>{`Revised Price:`}</th>
                       <th>{`Variance:`}</th>
                       {approvalDetails.CostingTypeId !== NCCTypeId && <th>{`Consumption Quantity:`}</th>}
                       {approvalDetails.CostingTypeId !== NCCTypeId && <th>{`Remaining Quantity:`}</th>}
