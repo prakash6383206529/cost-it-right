@@ -406,8 +406,8 @@ function OperationSTSimulation(props) {
                                                     <AgGridColumn field={`${isbulkUpload ? 'DestinationPlant' : 'Plants'}`} editable='false' headerName="Plant (Code)" minWidth={190}></AgGridColumn>
                                                 </>}
                                                 <AgGridColumn headerClass="justify-content-center" cellClass="text-center" minWidth={240} headerName="Net Rate" marryChildren={true} >
-                                                    <AgGridColumn minWidth={120} field="Rate" editable='false' headerName="Old" colId="Rate" cellRenderer="oldRateFormatter"></AgGridColumn>
-                                                    <AgGridColumn minWidth={120} cellRenderer='newRateFormatter' editable={!isImpactedMaster} field="NewRate" headerName="New" colId='NewRate'></AgGridColumn>
+                                                    <AgGridColumn minWidth={120} field="Rate" editable='false' headerName="Existing" colId="Rate" cellRenderer="oldRateFormatter"></AgGridColumn>
+                                                    <AgGridColumn minWidth={120} cellRenderer='newRateFormatter' editable={!isImpactedMaster} field="NewRate" headerName="Revised" colId='NewRate'></AgGridColumn>
                                                 </AgGridColumn>
                                                 <AgGridColumn field="EffectiveDate" headerName="Effective Date" editable='false' minWidth={190} cellRenderer='effectiveDateRenderer'></AgGridColumn>
                                                 <AgGridColumn field="CostingId" hide={true}></AgGridColumn>
