@@ -91,7 +91,7 @@ function RMSimulation(props) {
         obj.Masters = master
         obj.LoggedInUserId = loggedInUserId()
 
-        obj.TechnologyId = list[0].TechnologyId ? list[0].TechnologyId : technologyId
+        obj.TechnologyId = technologyId
 
         if (filteredRMData.plantId && filteredRMData.plantId.value) {
             obj.PlantId = filteredRMData.plantId ? filteredRMData.plantId.value : ''
