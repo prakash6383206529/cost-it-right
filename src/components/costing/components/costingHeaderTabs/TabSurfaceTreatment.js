@@ -1233,13 +1233,13 @@ function TabSurfaceTreatment(props) {
                     <Table className="table cr-brdr-main surfacetreatment-main-headings" size="sm">
                       <thead>
                         <tr>
-                          <th className="py-3 align-middle" style={{ width: "100px" }}>{`Part Number`}</th>
+                          <th className="py-3 align-middle" style={{ width: "140px" }}>{`Part Number`}</th>
                           <th className="py-3 align-middle" style={{ width: '100px' }}>{`Level`}</th>
                           <th className="py-3 align-middle" style={{ width: '100px' }}>{`Type`}</th>
-                          <th className="py-3 align-middle" style={{ width: "120px" }}>{`Surface Treatment Cost`}</th>
+                          <th className="py-3 align-middle word-nowrap" style={{ width: "120px" }}>{`Surface Treatment Cost`}</th>
                           <th className="py-3 align-middle" style={{ width: "150px" }}>{`Extra Cost`}</th>
                           <th className="py-align-middle" style={{ width: "100px" }}>{`Quantity`}</th>
-                          <th className="py-3 align-middle" style={{ width: "150px" }}>{`Total Surface Treatment Cost`}</th>
+                          <th className="py-3 align-middle word-nowrap" style={{ width: "150px" }}>{`Total Surface Treatment Cost`}</th>
                           <th className="py-3 align-middle" style={{ width: "100px" }}>{``}</th>
                         </tr>
                       </thead>
