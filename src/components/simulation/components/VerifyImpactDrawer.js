@@ -29,6 +29,7 @@ function VerifyImpactDrawer(props) {
   const [masterIdForLastRevision, setMasterIdForLastRevision] = useState('')
   const [editWarning, setEditWarning] = useState(false)
   const [accDisable, setAccDisable] = useState(false)
+
   const dispatch = useDispatch()
 
   const toggleDrawer = (event, type = 'cancel') => {
@@ -113,8 +114,8 @@ function VerifyImpactDrawer(props) {
                         <th>Master:</th>
                         <th>Costing Head:</th>
                         <th>Effective Date:</th>
-                        <th>Total Impact/Quarter (INR):</th>
-                        <th>Total Budgeted Price Impact/Quarter(INR):</th>
+                        <th>Impact/Quarter (w.r.t. Existing):</th>
+                        <th>Impact/Quarter (w.r.t. Budgeted):</th>
                       </tr>
                     </tbody>
                     <tbody>
