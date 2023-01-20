@@ -422,8 +422,8 @@ function MRSimulation(props) {
                                                     </>
                                                 }
                                                 <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName="Net Machine Rate" marryChildren={true} >
-                                                    <AgGridColumn width={120} field="MachineRate" editable='false' headerName="Old" cellRenderer='oldRateFormatter' colId="MachineRate"></AgGridColumn>
-                                                    <AgGridColumn width={120} cellRenderer='newRateFormatter' editable={!isImpactedMaster} field="NewMachineRate" headerName="New" colId='NewMachineRate'></AgGridColumn>
+                                                    <AgGridColumn width={120} field="MachineRate" editable='false' headerName="Existing" cellRenderer='oldRateFormatter' colId="MachineRate"></AgGridColumn>
+                                                    <AgGridColumn width={120} cellRenderer='newRateFormatter' editable={!isImpactedMaster} field="NewMachineRate" headerName="Revised" colId='NewMachineRate'></AgGridColumn>
                                                 </AgGridColumn>
                                                 <AgGridColumn field="EffectiveDate" headerName="Effective Date" editable='false' minWidth={190} cellRenderer='effectiveDateRenderer'></AgGridColumn>
                                                 <AgGridColumn field="CostingId" hide={true}></AgGridColumn>
