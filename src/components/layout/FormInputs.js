@@ -348,8 +348,8 @@ export function renderTextInputField(field) {
     meta: { touched, error, active },
     ...others
   } = field;
-  const inputbox = `inputbox ${active ? "active" : ""}`;
-  const className = `form-group ${touched && error ? "has-danger" : ""}`;
+  const inputbox = `${active ? "active" : ""}`;
+  const className = `form-group inputbox  withBorder ${touched && error ? "has-danger" : ""}`;
   const inputStyle = field.inputStyle ? field.inputStyle : "";
   const inputIconStyle = field.inputIconStyle ? field.inputIconStyle : "";
   const InputClassName = `form-control ${field.className ? field.className : ""
