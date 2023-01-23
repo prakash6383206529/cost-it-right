@@ -218,7 +218,7 @@ function AssemblyWiseImpact(props) {
                                 {impactType === 'Assembly' && <AgGridColumn field="Quantity" headerName='Applicable Quantity' cellRenderer={'hyphenFormatter'}></AgGridColumn>}
                                 <AgGridColumn field="OldPrice" headerName='Existing PO Price/Assembly' cellRenderer={'costFormatter'}></AgGridColumn>
                                 {impactType === 'AssemblySummary' && <AgGridColumn field="NewPrice" headerName='Revised PO Price/Assembly' cellRenderer={'costFormatter'}></AgGridColumn>}
-                                <AgGridColumn field="Variance" headerName='Variance/Assembly' cellRenderer={'costFormatter'}></AgGridColumn>
+                                <AgGridColumn field="Variance" headerName='Variance/Assembly (w.r.t. Existing)' cellRenderer={'costFormatter'}></AgGridColumn>
                                 <AgGridColumn width={120} field="CostingId" headerName='Actions' type="rightAligned" floatingFilter={false} cellRenderer='buttonFormatter' pinned="right"></AgGridColumn>
                             </AgGridReact>
                             {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />}
