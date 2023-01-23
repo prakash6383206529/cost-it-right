@@ -6200,6 +6200,8 @@ body {
       .Cancelled,
       .Under.Approval,
       .UnderApproval,
+      .Under.Revision,
+      .Open,
       [class^="Pending"],
       [class^="Awaiting"],
       .Approved,
@@ -7303,16 +7305,6 @@ body {
 
 .verify-simulation-overlay {
   padding-top: 50px;
-}
-
-.mb-width {
-  label {
-    width: fit-content;
-  }
-
-  min-width: 14.675rem;
-  margin-top: 15px;
-  margin-bottom: 15px;
 }
 
 .re-warning {
@@ -8880,4 +8872,24 @@ table.group-process-table {
 
 .pie-chart-container {
   height: 30px;
+}
+
+.right-tooltip {
+  .tooltip {
+    margin-right: 15px;
+    margin-top: 8px;
+  }
+}
+
+.attachment.images {
+  a {
+    color: $colorPrimary;
+  }
+}
+
+.apply-mb {
+  .custom-checkbox {
+    white-space: nowrap;
+    margin-top: 15px;
+  }
 }

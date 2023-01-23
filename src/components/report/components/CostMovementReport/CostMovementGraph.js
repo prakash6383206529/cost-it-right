@@ -528,7 +528,7 @@ function CostMovementGraph(props) {
                     {showLineGraph && noRecordFound &&
                         <Row>
                             <Col className='pr-3 d-flex align-items-center mt-2'>
-                                <div className='mb-5 pb-5 mr-2' title={getConfigurationKey().BaseCurrency}>{getCurrencySymbol(getConfigurationKey().BaseCurrency)}</div>
+                                <div className='mb-5 pb-5 mr-2 currency-symbol' title={getConfigurationKey().BaseCurrency}>{getCurrencySymbol(getConfigurationKey().BaseCurrency)}</div>
                                 <Line
                                     data={state}
                                     height={120}

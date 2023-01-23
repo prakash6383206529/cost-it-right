@@ -19,6 +19,7 @@ import ViewRfq from './ViewRfq';
 import AddRfq from './AddRfq';
 import { checkPermission, userDetails } from '../../helper';
 import TooltipCustom from '../common/Tooltip';
+import Attachament from '../costing/components/Drawers/Attachament';
 const gridOptions = {};
 
 
@@ -39,6 +40,8 @@ function RfqListing(props) {
     const [editAccessibility, setEditAccessibility] = useState(false);
     const [viewAccessibility, setViewAccessibility] = useState(false);
     const [confirmPopup, setConfirmPopup] = useState(false);
+    const [attachment, setAttachment] = useState(false);
+    const [viewAttachment, setViewAttachment] = useState([])
     const [deleteId, setDeleteId] = useState('');
     const { topAndLeftMenuData } = useSelector(state => state.auth);
 
@@ -238,6 +241,15 @@ function RfqListing(props) {
         return <div id={"status"} className={cell}>{tempStatus}</div>
     }
 
+    const viewAttachmentData = (index) => {
+        setAttachment(true)
+        setViewAttachment(index)
+    }
+
+    const closeAttachmentDrawer = (e = '') => {
+        setAttachment(false)
+    }
+
     const attachmentFormatter = (props) => {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         let files = row?.Attachments
@@ -245,26 +257,22 @@ function RfqListing(props) {
         return (
             <>
                 <div className={"attachment images"}>
-                    {files && files.length > 0 &&
-                        files.map((f, index) => {
+                    {files && files.length === 1 ?
+                        files.map((f) => {
                             const withOutTild = f.FileURL?.replace("~", "");
                             const fileURL = `${FILE_URL}${withOutTild}`;
+                            return (
+                                <a href={fileURL} target="_blank" rel="noreferrer">
+                                    {f.OriginalFileName}
+                                </a>
+                            )
 
-                            if (index === 0) {
-                                return (
-                                    <a href={fileURL} target="_blank" rel="noreferrer">
-                                        {f.OriginalFileName}
-                                    </a>
-                                )
-
-                            } else {
-                                return (
-                                    <a href={fileURL} target="_blank" rel="noreferrer">
-                                        , {f.OriginalFileName}
-                                    </a>
-                                )
-                            }
-                        })}
+                        }) : <button
+                            type='button'
+                            title='View Attachment'
+                            className='btn-a pl-0'
+                            onClick={() => viewAttachmentData(row)}
+                        >View Attachment</button>}
                 </div>
             </>
         )
@@ -418,6 +426,17 @@ function RfqListing(props) {
                     closeDrawer={closeDrawer}
                 />
 
+            }
+            {
+                attachment && (
+                    <Attachament
+                        isOpen={attachment}
+                        index={viewAttachment}
+                        closeDrawer={closeAttachmentDrawer}
+                        anchor={'right'}
+                        gridListing={true}
+                    />
+                )
             }
 
 
