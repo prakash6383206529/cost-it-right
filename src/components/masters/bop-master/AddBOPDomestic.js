@@ -1219,7 +1219,7 @@ class AddBOPDomestic extends Component {
                               required={false}
                               className=""
                               customClassName=" withBorder"
-                              disabled={isViewMode}
+                              disabled={isViewMode || (isEditFlag && isBOPAssociated)}
                             />
                           </Col>
 

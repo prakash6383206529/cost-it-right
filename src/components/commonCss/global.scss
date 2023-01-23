@@ -41,6 +41,10 @@
   }
 
   .mt#{$i} {
+    margin-top: #{$i}px;
+  }
+
+  .mr#{$i} {
     margin-right: #{$i}px;
   }
 }
@@ -3555,4 +3559,8 @@ input:focus,
     @extend %nav-tabs;
     grid-gap: 5px;
   }
+}
+
+.word-nowrap {
+  white-space: nowrap;
 }
