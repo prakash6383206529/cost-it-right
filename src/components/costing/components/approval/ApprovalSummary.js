@@ -419,7 +419,7 @@ function ApprovalSummary(props) {
                       {/* <th>{`ECN Ref No`}</th> */}
                       <th>{`Existing Price:`}</th>
                       <th>{`Revised Price:`}</th>
-                      <th>{`Variance:`}</th>
+                      <th>{`Variance (w.r.t. Existing):`}</th>
                       {approvalDetails.CostingTypeId !== NCCTypeId && <th>{`Consumption Quantity:`}</th>}
                       {approvalDetails.CostingTypeId !== NCCTypeId && <th>{`Remaining Quantity:`}</th>}
                       {approvalDetails.CostingTypeId === NCCTypeId && (
