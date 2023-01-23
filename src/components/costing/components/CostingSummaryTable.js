@@ -171,7 +171,7 @@ const CostingSummaryTable = (props) => {
     ]
     setPieChartDataArray(temp)
     let labelArray = []
-    let labels = ['RM', 'BOP', 'CC', 'ST', 'O&P', 'P&F', 'TC', 'OTHER DIS', 'ANY OTHER COST']
+    let labels = ['RM', 'BOP', 'CC', 'ST', 'O&P', 'P&F', 'TC', 'HUNDI/DIS', 'ANY OTHER COST']
     temp && temp.map((item, index) => {
       if (item !== 0) {
         labelArray.push(labels[index])
@@ -1840,7 +1840,7 @@ const CostingSummaryTable = (props) => {
                         <tr className='border-right'>
                           <td width={"20%"}>
                             <span className="d-block small-grey-text">
-                              Hundi/Other Discount
+                              Hundi/Discount
                             </span>
                             <span className="d-block small-grey-text"></span>
                           </td>
