@@ -164,18 +164,11 @@ function CostMovementGraph(props) {
                         else if (perPartData[i]) {
                             finalPartData.push(perPartData[i])
                         } else {
-
-                            if (finalPartData[i - 1]) {
-                                finalPartData.push(finalPartData[i - 1])
-                            } else {
-                                finalPartData.push(undefined)
-                            }
+                            finalPartData.push(null)
                         }
                     }
 
-
                     lineDataSet.push({         //PUSHING VALUE FOR LINE CHART
-
                         label: `${uniquePlantLabel}`,
                         fill: false,
                         lineTension: 0,
@@ -183,6 +176,7 @@ function CostMovementGraph(props) {
                         borderColor: getGraphColour(uniqueIndex),
                         borderWidth: 2,
                         data: finalPartData,
+                        spanGaps: true,
                         pointBackgroundColor: getGraphColour(uniqueIndex)
                     })
 
@@ -253,6 +247,7 @@ function CostMovementGraph(props) {
     const state = {
         labels: dateRangeArray,
         datasets: lineDataSets
+
     }
 
 
@@ -288,6 +283,12 @@ function CostMovementGraph(props) {
     }
 
     const POPriceFormatter = (props) => {
+        const cellValue = props?.value;
+        const currencySymbol = getCurrencySymbol(getConfigurationKey().BaseCurrency)
+        return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined && cellValue !== 0) ? currencySymbol + " " + cellValue : '-';
+    }
+
+    const POPriceCurrencyFormatter = (props) => {
         const cellValue = props?.value;
         const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
         const currencySymbol = getCurrencySymbol(rowData?.Currency ? rowData?.Currency : getConfigurationKey().BaseCurrency)
@@ -504,6 +505,7 @@ function CostMovementGraph(props) {
                                                 {<AgGridColumn field="VendorNameWithCode" headerName="Vendor (Code)" cellRenderer={hyphenFormatter} floatingFilter={true}></AgGridColumn>}
                                                 {(ModeId === 1 || ModeId === 2) && importEntry && <AgGridColumn field="NetLandedCostCurrency" headerName="Landed Total (Currency)" cellRenderer={hyphenFormatter} floatingFilter={true}></AgGridColumn>}
                                                 {<AgGridColumn field="NetPOPrice" headerName="Net PO Price" cellRenderer={POPriceFormatter} floatingFilter={true}></AgGridColumn>}
+                                                {<AgGridColumn field="NetPOPriceCurrency" headerName="Net PO Price (Currency)" cellRenderer={POPriceCurrencyFormatter} floatingFilter={true}></AgGridColumn>}
                                                 {<AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer='effectiveDateRenderer' floatingFilter={true}></AgGridColumn>}
                                             </AgGridReact>
                                             <PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />
