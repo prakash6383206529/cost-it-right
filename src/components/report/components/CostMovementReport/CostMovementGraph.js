@@ -155,7 +155,6 @@ function CostMovementGraph(props) {
                     let finalPartData = [] // ARRAY FOR LINE CHART
                     for (let i = 0; i < perPartData.length; i++) {    //FOR LOOP IS FOR LINE CHART (COVERT UNDEFINED VALUE IN ARRAY TO PREVOUS VALUE TO SHOW LINE
                         if (i === 0) {
-
                             if (perPartData[i]) {
                                 finalPartData.push(perPartData[i])
                             } else {
@@ -165,10 +164,15 @@ function CostMovementGraph(props) {
                         else if (perPartData[i]) {
                             finalPartData.push(perPartData[i])
                         } else {
-                            finalPartData.push(perPartData[i - 1])
-                        }
 
+                            if (finalPartData[i - 1]) {
+                                finalPartData.push(finalPartData[i - 1])
+                            } else {
+                                finalPartData.push(undefined)
+                            }
+                        }
                     }
+
 
                     lineDataSet.push({         //PUSHING VALUE FOR LINE CHART
 
