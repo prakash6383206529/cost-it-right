@@ -134,7 +134,7 @@ class AddIndivisualPart extends Component {
         } else {
           this.props.change("Description", "")
           this.props.change("PartName", "")
-          this.setState({ disablePartName: false, minEffectiveDate: "" })
+          this.setState({ disablePartName: false, minEffectiveDate: "", TechnologySelected: "" })
         }
       })
     }
