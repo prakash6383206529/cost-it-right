@@ -779,6 +779,8 @@ function AddRfq(props) {
 
     const handleVisibilityMode = (value) => {
         setVisibilityMode(value)
+        setValue('startPlanDate', '')
+        setValue('Time', '')
     }
 
     const partNumberFormatter = (props) => {
@@ -806,6 +808,10 @@ function AddRfq(props) {
 
     const checkBoxHandler = () => {
         setIsConditionalVisible(!isConditionalVisible)
+        setVisibilityMode('')
+        setValue('VisibilityMode', '')
+        setValue('startPlanDate', '')
+        setValue('Time', '')
     }
 
     const EditableCallback = (props) => {
@@ -1149,15 +1155,14 @@ function AddRfq(props) {
                                         }
                                     </div>
 
-                                    <HeaderTitle title={'Date & Time:'} customClass="mt-4" />
-                                    <Row className="mt-1 conditional-date">
+                                    <Row className="mt-3 conditional-date">
                                         <Col md="2">
                                             < div className="custom-check1">
                                                 <label
                                                     className="custom-checkbox mb-0"
                                                     onChange={() => checkBoxHandler()}
                                                 >
-                                                    {'Is Conditionally Visible'}
+                                                    {'Visibility'}
                                                     <input
                                                         type="checkbox"
                                                         value={"All"}
@@ -1264,7 +1269,7 @@ function AddRfq(props) {
                                     </Row>
 
 
-                                    <HeaderTitle title={'Remark and Attachments:'} customClass="mt-4" />
+                                    <HeaderTitle title={'Remark and Attachments:'} customClass="mt-3" />
                                     <Row className='part-detail-wrapper'>
                                         <Col md="4">
                                             <TextAreaHookForm
