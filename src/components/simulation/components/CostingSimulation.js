@@ -861,51 +861,51 @@ function CostingSimulation(props) {
     const hideColumn = (props) => {
         let data = { ...hideDataColumn }
         costingList && costingList.map((item, i) => {
-            if (costingList[i].NewOverheadCost !== 0 && costingList[i].OldOverheadCost !== costingList[i].NewOverheadCost) {
+            if (costingList[i].NewOverheadCost !== 0 && Number(costingList[i].OldOverheadCost) !== Number(costingList[i].NewOverheadCost)) {
                 data = { ...data, hideOverhead: false }
             }
 
-            if (costingList[i].NewProfitCost !== 0 && costingList[i].OldProfitCost !== costingList[i].NewProfitCost) {
+            if (costingList[i].NewProfitCost !== 0 && Number(costingList[i].OldProfitCost) !== Number(costingList[i].NewProfitCost)) {
                 data = { ...data, hideProfit: false }
             }
 
-            if (costingList[i].NewRejectionCost !== 0 && costingList[i].OldRejectionCost !== costingList[i].NewRejectionCost) {
+            if (costingList[i].NewRejectionCost !== 0 && Number(costingList[i].OldRejectionCost) !== Number(costingList[i].NewRejectionCost)) {
                 data = { ...data, hideRejection: false }
             }
 
-            if (costingList[i].NewICCCost !== 0 && costingList[i].OldICCCost !== costingList[i].NewICCCost) {
+            if (costingList[i].NewICCCost !== 0 && Number(costingList[i].OldICCCost) !== Number(costingList[i].NewICCCost)) {
                 data = { ...data, hideICC: false }
             }
-            if (costingList[i].NewPaymentTermsCost !== 0 && costingList[i].OldPaymentTermsCost !== costingList[i].NewPaymentTermsCost) {
+            if (costingList[i].NewPaymentTermsCost !== 0 && Number(costingList[i].OldPaymentTermsCost) !== Number(costingList[i].NewPaymentTermsCost)) {
                 data = { ...data, hidePayment: false }
             }
 
-            if (costingList[i].NewOtherCost !== 0 && costingList[i].OldOtherCost !== costingList[i].NewOtherCost) {
+            if (costingList[i].NewOtherCost !== 0 && Number(costingList[i].OldOtherCost) !== Number(costingList[i].NewOtherCost)) {
                 data = { ...data, hideOtherCost: false }
             }
 
-            if (costingList[i].NewDiscountCost !== 0 && costingList[i].OldDiscountCost !== costingList[i].NewDiscountCost) {
+            if (costingList[i].NewDiscountCost !== 0 && Number(costingList[i].OldDiscountCost) !== Number(costingList[i].NewDiscountCost)) {
                 data = { ...data, hideDiscount: false }
             }
 
-            if (costingList[i].NewNetOverheadAndProfitCost !== 0 && costingList[i].OldNetOverheadAndProfitCost !== costingList[i].NewNetOverheadAndProfitCost) {
+            if (costingList[i].NewNetOverheadAndProfitCost !== 0 && Number(costingList[i].OldNetOverheadAndProfitCost) !== Number(costingList[i].NewNetOverheadAndProfitCost)) {
                 data = { ...data, hideOveheadAndProfit: false }
             }
 
-            if (costingList[i].NewNetToolCost !== 0 && costingList[i].OldNetToolCost !== costingList[i].NewNetToolCost) {
+            if (costingList[i].NewNetToolCost !== 0 && Number(costingList[i].OldNetToolCost) !== Number(costingList[i].NewNetToolCost)) {
                 data = { ...data, hideToolCost: false }
             }
 
-            if (costingList[i].NewNetFreightCost !== 0 && costingList[i].OldNetFreightCost !== costingList[i].NewNetFreightCost) {
+            if (costingList[i].NewNetFreightCost !== 0 && Number(costingList[i].OldNetFreightCost) !== Number(costingList[i].NewNetFreightCost)) {
 
                 data = { ...data, hideFrieghtCost: false }
             }
 
-            if (costingList[i].NewNetPackagingCost !== 0 && costingList[i].OldNetPackagingCost !== costingList[i].NewNetPackagingCost) {
+            if (costingList[i].NewNetPackagingCost !== 0 && Number(costingList[i].OldNetPackagingCost) !== Number(costingList[i].NewNetPackagingCost)) {
                 data = { ...data, hidePackagingCost: false }
             }
 
-            if (costingList[i].NewNetFreightPackagingCost !== 0 && costingList[i].OldNetFreightPackagingCost !== costingList[i].NewNetFreightPackagingCost) {
+            if (costingList[i].NewNetFreightPackagingCost !== 0 && Number(costingList[i].OldNetFreightPackagingCost) !== Number(costingList[i].NewNetFreightPackagingCost)) {
                 data = { ...data, hideFreightPackagingCost: false }
             }
 
@@ -920,8 +920,8 @@ function CostingSimulation(props) {
             }
 
         })
-        setHideDataColumn(prevState => ({ ...prevState, showBoughtOutPartCost: true }))
 
+        setHideDataColumn({ ...hideDataColumn, ...data })
         setShowBOPColumn(costingSimulationListAllKeys?.IsBoughtOutPartSimulation === true ? true : false)
         setShowSurfaceTreatmentColumn(costingSimulationListAllKeys?.IsSurfaceTreatmentSimulation === true ? true : false)
         setShowOperationColumn(costingSimulationListAllKeys?.IsOperationSimulation === true ? true : false)
