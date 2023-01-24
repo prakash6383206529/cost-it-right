@@ -394,8 +394,6 @@ function TabDiscountOther(props) {
           ...discountObj,
           HundiOrDiscountPercentage: checkForNull(event.target.value)
         })
-      } else {
-        Toaster.warning('Please enter valid number.')
       }
     }
   }
@@ -887,7 +885,7 @@ function TabDiscountOther(props) {
                     }
                     {
                       <Col className={`${otherCostType.value === 'Percentage' ? 'col-md-2' : 'col-md-4'}`}>
-                        <NumberFieldHookForm
+                        <TextFieldHookForm
                           label="Percentage (%)"
                           name={"PercentageOtherCost"}
                           Controller={Controller}

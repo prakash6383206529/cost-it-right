@@ -2,14 +2,14 @@ import React, { Fragment, useState, useEffect, useContext } from 'react'
 import { Row, Col } from 'reactstrap'
 import { useForm, Controller, useWatch } from 'react-hook-form'
 import { useDispatch } from 'react-redux'
-import { NumberFieldHookForm, } from '../../../../layout/HookFormInputs'
+import { NumberFieldHookForm, TextFieldHookForm, } from '../../../../layout/HookFormInputs'
 import { clampingTime, feedByMin, findRpm, passesNo, totalMachineTime, } from './CommonFormula'
 import { checkForDecimalAndNull, getConfigurationKey, loggedInUserId } from '../../../../../helper'
 import { costingInfoContext } from '../../CostingDetailStepTwo'
 import { saveProcessCostCalculationData } from '../../../actions/CostWorking'
 import Toaster from '../../../../common/Toaster'
 import { debounce } from 'lodash'
-
+import { number, percentageLimitValidation, checkWhiteSpaces } from "../../../../../helper/validation";
 
 function Facing(props) {
   const { calculateMachineTime } = props
@@ -17,7 +17,6 @@ function Facing(props) {
   const costData = useContext(costingInfoContext);
 
   const dispatch = useDispatch()
-
 
   const defaultValues = {
     cutLength: WeightCalculatorRequest && WeightCalculatorRequest.CutLength !== undefined ? WeightCalculatorRequest.CutLength : '',
@@ -428,7 +427,7 @@ function Facing(props) {
                       />
                     </Col>
                     <Col md="4">
-                      <NumberFieldHookForm
+                      <TextFieldHookForm
                         label={`Additional Time (%)`}
                         name={'clampingPercentage'}
                         Controller={Controller}
@@ -437,9 +436,10 @@ function Facing(props) {
                         mandatory={true}
                         rules={{
                           required: true,
-                          pattern: {
-                            value: /^[0-9]\d*(\.\d+)?$/i,
-                            message: 'Invalid Number.',
+                          validate: { number, checkWhiteSpaces, percentageLimitValidation },
+                          max: {
+                            value: 100,
+                            message: 'Percentage cannot be greater than 100'
                           },
                         }}
                         handleChange={onClampingPercantageChange}
