@@ -248,6 +248,10 @@ function RfqListing(props) {
     const closeAttachmentDrawer = (e = '') => {
         setAttachment(false)
     }
+    const dateFormater = (props) => {
+        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '-';
+    }
 
     const attachmentFormatter = (props) => {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
@@ -306,7 +310,8 @@ function RfqListing(props) {
         linkableFormatter: linkableFormatter,
         attachmentFormatter: attachmentFormatter,
         statusFormatter: statusFormatter,
-        raisedOnFormatter: raisedOnFormatter
+        raisedOnFormatter: raisedOnFormatter,
+        dateFormater: dateFormater
     }
 
 
@@ -383,7 +388,8 @@ function RfqListing(props) {
                                                 <AgGridColumn field="TechnologyName" headerName='Technology'></AgGridColumn>
                                                 <AgGridColumn field="Remark" headerName='Remark'></AgGridColumn>
                                                 <AgGridColumn field="RaisedBy" headerName='Raised By'></AgGridColumn>
-                                                <AgGridColumn field="RaisedOn" headerName='Raised On' cellRenderer='raisedOnFormatter' ></AgGridColumn>
+                                                <AgGridColumn field="RaisedOn" headerName='Raised On' cellRenderer='dateFormater'></AgGridColumn>
+                                                <AgGridColumn field="LastSubmissionDate" headerName='Last Submission Date' cellRenderer='dateFormater'></AgGridColumn>
                                                 <AgGridColumn field="QuotationNumber" headerName='Attachments' cellRenderer='attachmentFormatter'></AgGridColumn>
                                                 <AgGridColumn field="Status" headerName="Status" cellClass="text-center" minWidth={150} cellRenderer="statusFormatter"></AgGridColumn>
                                                 {<AgGridColumn field="QuotationId" width={160} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
