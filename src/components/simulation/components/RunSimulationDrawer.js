@@ -60,6 +60,7 @@ function RunSimulationDrawer(props) {
     const [disableAdditionalFreight, setDisableAdditionalFreight] = useState(false)
     const [disablePackaging, setDisablePackaging] = useState(false)
     const [disableAdditionalPackaging, setDisableAdditionalPackaging] = useState(false)
+    const [showToolWarning, setShowToolWarning] = useState(false)
 
     const selectedMasterForSimulation = useSelector(state => state.simulation.selectedMasterForSimulation)
     const selectedTechnologyForSimulation = useSelector(state => state.simulation.selectedTechnologyForSimulation)
@@ -149,6 +150,7 @@ function RunSimulationDrawer(props) {
             }
             setAdditionalTool(!additionalTool)
             setDisableTool(!disableTool)
+            setShowToolWarning(!showToolWarning)
 
         } else if (value === 'Packaging') {
             if (additionalPackaging) {
@@ -876,7 +878,7 @@ function RunSimulationDrawer(props) {
                                                     </div>
                                                 </Col>
 
-                                                <Col md="12" className={`mb-3 p-0 ${!getConfigurationKey().IsProvisionalSimulation ? 'mb-4 pb-2' : ''}`}>
+                                                <Col md="12" className={`${showToolWarning ? '' : 'mb-3'} p-0 ${!getConfigurationKey().IsProvisionalSimulation ? 'mb-4 pb-2' : ''}`}>
                                                     <div class={`custom-check1 d-inline-block drawer-side-input-other `}>
                                                         {(
                                                             <div className="input-group col-md-12 mb-3 px-0 m-height-auto">
@@ -996,6 +998,7 @@ function RunSimulationDrawer(props) {
                                                             </Fragment> : " "
                                                         }
                                                     </div>
+                                                    {showToolWarning && <WarningMessage dClass="mt-3" message="This tool cost won't be added in Overhead and Profit" />}
                                                 </Col>
                                             </Row>
 
