@@ -30,7 +30,7 @@ const gridOptions = {
 
 
 function RMSimulation(props) {
-    const { list, isbulkUpload, rowCount, technology, master, isImpactedMaster, costingAndPartNo, tokenForMultiSimulation } = props
+    const { list, isbulkUpload, rowCount, technology, master, isImpactedMaster, costingAndPartNo, tokenForMultiSimulation, technologyId } = props
     const [showRunSimulationDrawer, setShowRunSimulationDrawer] = useState(false)
     const [showverifyPage, setShowVerifyPage] = useState(false)
     const [token, setToken] = useState('')
@@ -92,7 +92,7 @@ function RMSimulation(props) {
         obj.Masters = master
         obj.LoggedInUserId = loggedInUserId()
 
-        obj.TechnologyId = list[0].TechnologyId
+        obj.TechnologyId = technologyId
 
         if (filteredRMData.plantId && filteredRMData.plantId.value) {
             obj.PlantId = filteredRMData.plantId ? filteredRMData.plantId.value : ''
@@ -241,7 +241,12 @@ function RMSimulation(props) {
 
         return (cell === true || cell === 'Vendor Based') ? 'Vendor Based' : 'Zero Based';
     }
-
+    const vendorFormatter = (props) => {
+        return (isbulkUpload ? props?.value : props?.data.VendorName);
+    }
+    const plantFormatter = (props) => {
+        return (isbulkUpload ? props?.value : props?.data.Plant);
+    }
     const newBasicRateFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
@@ -412,7 +417,9 @@ function RMSimulation(props) {
         newBasicRateFormatter: newBasicRateFormatter,
         cellChange: cellChange,
         oldBasicRateFormatter: oldBasicRateFormatter,
-        oldScrapRateFormatter: oldScrapRateFormatter
+        oldScrapRateFormatter: oldScrapRateFormatter,
+        vendorFormatter: vendorFormatter,
+        plantFormatter: plantFormatter
     };
 
     const closePopUp = () => {
@@ -494,7 +501,8 @@ function RMSimulation(props) {
                                                 </div>
                                                 <div className='d-flex pl-3'>
                                                     <label className='mr-1'>Vendor (Code):</label>
-                                                    <p title={list[0].VendorName}>{list[0].VendorName}</p>
+                                                    <p title={list[0].VendorName}>{list[0].VendorName ? list[0].VendorName : list[0]['Vendor (Code)']}</p>
+
                                                 </div>
                                                 <button type="button" className={"apply ml-2"} onClick={cancel} disabled={isDisable}> <div className={'back-icon'}></div>Back</button>
                                             </div>}
@@ -535,8 +543,8 @@ function RMSimulation(props) {
                                             <AgGridColumn width={115} field="RawMaterialCode" editable='false' headerName='RM Code' cellRenderer='hyphenFormatter'></AgGridColumn>
                                             {!isImpactedMaster && <AgGridColumn width={110} field="Category" editable='false' headerName="Category"></AgGridColumn>}
                                             {!isImpactedMaster && <AgGridColumn width={125} field="TechnologyName" editable='false' headerName="Technology" ></AgGridColumn>}
-                                            {!isImpactedMaster && <AgGridColumn width={100} field="VendorName" editable='false' headerName="Vendor (Code)"></AgGridColumn>}
-                                            {!isImpactedMaster && <AgGridColumn width={100} field="Plant" editable='false' headerName="Plant (Code)"></AgGridColumn>}
+                                            {!isImpactedMaster && <AgGridColumn width={100} field="Vendor (Code)" editable='false' headerName="Vendor (Code)" cellRenderer='vendorFormatter'></AgGridColumn>}
+                                            {!isImpactedMaster && <AgGridColumn width={100} field="Plant (Code)" editable='false' headerName="Plant (Code)" cellRenderer='plantFormatter' ></AgGridColumn>}
                                             <AgGridColumn width={100} field="UOM" editable='false' headerName="UOM"></AgGridColumn>
 
                                             {costingAndPartNo && <AgGridColumn field="CostingNumber" editable='false' headerName="Costing No" minWidth={190}></AgGridColumn>}
@@ -544,18 +552,18 @@ function RMSimulation(props) {
 
 
                                             <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName="Basic Rate (INR)" marryChildren={true} >
-                                                <AgGridColumn width={120} cellRenderer='oldBasicRateFormatter' field="BasicRate" editable='false' headerName="Old" colId="BasicRate"></AgGridColumn>
-                                                <AgGridColumn width={120} cellRenderer='newBasicRateFormatter' onCellValueChanged='cellChange' field="NewBasicRate" headerName="New" colId='NewBasicRate' editable={!isImpactedMaster} ></AgGridColumn>
+                                                <AgGridColumn width={120} cellRenderer='oldBasicRateFormatter' field="BasicRate" editable='false' headerName="Existing" colId="BasicRate"></AgGridColumn>
+                                                <AgGridColumn width={120} cellRenderer='newBasicRateFormatter' onCellValueChanged='cellChange' field="NewBasicRate" headerName="Revised" colId='NewBasicRate' editable={!isImpactedMaster} ></AgGridColumn>
                                             </AgGridColumn>
                                             <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} marryChildren={true} headerName="Scrap Rate (INR)">
-                                                <AgGridColumn width={120} field="ScrapRate" editable='false' cellRenderer='oldScrapRateFormatter' headerName="Old" colId="ScrapRate" ></AgGridColumn>
-                                                <AgGridColumn width={120} cellRenderer={'newScrapRateFormatter'} field="NewScrapRate" headerName="New" colId="NewScrapRate" editable={!isImpactedMaster} ></AgGridColumn>
+                                                <AgGridColumn width={120} field="ScrapRate" editable='false' cellRenderer='oldScrapRateFormatter' headerName="Existing" colId="ScrapRate" ></AgGridColumn>
+                                                <AgGridColumn width={120} cellRenderer={'newScrapRateFormatter'} field="NewScrapRate" headerName="Revised" colId="NewScrapRate" editable={!isImpactedMaster} ></AgGridColumn>
                                             </AgGridColumn>
                                             <AgGridColumn width={150} field="RMFreightCost" editable='false' cellRenderer={'freightCostFormatter'} headerName="RM Freight Cost"></AgGridColumn>
                                             <AgGridColumn width={170} field="RMShearingCost" editable='false' cellRenderer={'shearingCostFormatter'} headerName="RM Shearing Cost" ></AgGridColumn>
                                             {!isImpactedMaster && <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName="Net Cost (INR)">
-                                                <AgGridColumn width={120} field="NetLandedCost" editable='false' cellRenderer={'costFormatter'} headerName="Old" colId='NetLandedCost'></AgGridColumn>
-                                                <AgGridColumn width={120} field="NewNetLandedCost" editable='false' valueGetter='data.NewBasicRate + data.RMFreightCost+data.RMShearingCost' cellRenderer={'NewcostFormatter'} headerName="New" colId='NewNetLandedCost'></AgGridColumn>
+                                                <AgGridColumn width={120} field="NetLandedCost" editable='false' cellRenderer={'costFormatter'} headerName="Existing" colId='NetLandedCost'></AgGridColumn>
+                                                <AgGridColumn width={120} field="NewNetLandedCost" editable='false' valueGetter='data.NewBasicRate + data.RMFreightCost+data.RMShearingCost' cellRenderer={'NewcostFormatter'} headerName="Revised" colId='NewNetLandedCost'></AgGridColumn>
                                             </AgGridColumn>
                                             }
                                             <AgGridColumn width={140} field="EffectiveDate" editable='false' cellRenderer={'effectiveDateFormatter'} headerName="Effective Date" ></AgGridColumn>

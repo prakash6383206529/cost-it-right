@@ -1892,10 +1892,10 @@ export const VIEW_COSTING_DATA = {
   // totalCost: 'Total Cost',
   // otherDiscount: 'Hundi/Other Discount',
   // otherDiscountValue: '',
-  otherDiscountType: 'Other Discount Type',
-  otherDiscountApplicablity: 'Other Discount Applicability',
-  otherDiscountValuePercent: 'Other Discount Value',
-  otherDiscountCost: 'Other Discount Cost',
+  otherDiscountType: 'Hundi/Discount Type',
+  otherDiscountApplicablity: 'Hundi/Discount Applicability',
+  otherDiscountValuePercent: 'Hundi/Discount Value',
+  otherDiscountCost: 'Hundi/Discount Cost',
   anyOtherCostType: 'Any Other Cost Type',
   anyOtherCostApplicablity: 'Any Other Cost Applicability',
   anyOtherCostPercent: 'Any Other Cost Value',
@@ -2176,4 +2176,4 @@ export const KEYRFQ = "UAGSqTBCbZ8JqHJl"
 export const IVRFQ = "8vFNmRQEl91nOtrM"
 
 //VERSION 
-export const VERSION = "V2.1.59";
+export const VERSION = "V2.1.61";

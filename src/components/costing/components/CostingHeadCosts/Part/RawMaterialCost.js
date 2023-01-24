@@ -1286,7 +1286,7 @@ function RawMaterialCost(props) {
             <Row>
               {/* IF THERE IS NEED TO APPLY FOR MULTIPLE TECHNOLOGY, CAN MODIFIED BELOW CONDITION */}
               {costData?.TechnologyId === PLASTIC &&
-                <Col md="2" className="py-3 pr-1 mb-width">
+                <Col md="2" className="py-3 pr-0 apply-mb">
                   <label
                     className={`custom-checkbox mb-0`}
                     onChange={onPressApplyMasterBatch}
@@ -1310,9 +1310,9 @@ function RawMaterialCost(props) {
               {/* IF THERE IS NEED TO APPLY FOR MULTIPLE TECHNOLOGY, CAN MODIFIED BELOW CONDITION */}
               {IsApplyMasterBatch && costData?.TechnologyId === PLASTIC &&
                 <>
-                  <div>
+                  <Col md="2">
                     <button onClick={MasterBatchToggle} title={'Add Master Batch'} disabled={(CostingViewMode || IsLocked || masterBatch)} type="button" class="user-btn mt30"><div class="plus"></div>Add Master Batch</button>
-                  </div>
+                  </Col>
                   {/* <Col md="2" > */}
                   <TextFieldHookForm
                     label="MB Id"
