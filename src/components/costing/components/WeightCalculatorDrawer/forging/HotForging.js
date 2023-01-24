@@ -4,10 +4,11 @@ import { useForm, Controller, useWatch } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 import Toaster from '../../../../common/Toaster'
 import { saveRawMaterialCalculationForForging } from '../../../actions/CostWorking'
+import { number, percentageLimitValidation, checkWhiteSpaces } from "../../../../../helper/validation";
 
 import {
 
-  NumberFieldHookForm,
+  NumberFieldHookForm, TextFieldHookForm,
 } from '../../../../layout/HookFormInputs'
 import {
   checkForDecimalAndNull,
@@ -671,7 +672,7 @@ function HotForging(props) {
                 />
               </Col>
               <Col md="3">
-                <NumberFieldHookForm
+                <TextFieldHookForm
                   label={`Scrap Recovery (%)`}
                   name={'ScrapRecoveryPercentage'}
                   Controller={Controller}
@@ -680,10 +681,7 @@ function HotForging(props) {
                   mandatory={true}
                   rules={{
                     required: true,
-                    pattern: {
-                      value: /^[0-9]\d*(\.\d+)?$/i,
-                      message: 'Invalid Number.',
-                    },
+                    validate: { number, checkWhiteSpaces, percentageLimitValidation },
                     max: {
                       value: 100,
                       message: 'Percentage cannot be greater than 100'

@@ -421,8 +421,6 @@ function TabDiscountOther(props) {
           ...discountObj,
           HundiOrDiscountPercentage: checkForNull(event.target.value)
         })
-      } else {
-        Toaster.warning('Please enter valid number.')
       }
     }
   }

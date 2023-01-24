@@ -4,7 +4,7 @@ import { Row, Col } from 'reactstrap'
 import { useForm, Controller, useWatch } from 'react-hook-form'
 import { useDispatch } from 'react-redux'
 import { costingInfoContext } from '../../CostingDetailStepTwo';
-import { NumberFieldHookForm, } from '../../../../layout/HookFormInputs'
+import { NumberFieldHookForm, TextFieldHookForm, } from '../../../../layout/HookFormInputs'
 import { checkForDecimalAndNull, checkForNull, checkPercentageValue, getConfigurationKey, loggedInUserId } from '../../../../../helper'
 import { AREA, DIMENSIONLESS, MASS, TIME, VOLUMETYPE } from '../../../../../config/constants';
 import { saveDefaultProcessCostCalculationData } from '../../../actions/CostWorking';
@@ -14,6 +14,7 @@ import { findProcessCost } from '../../../CostingUtil';
 import { debounce } from 'lodash';
 import { nonZero } from '../../../../../helper/validation'
 import TooltipCustom from '../../../../common/Tooltip';
+import { number, percentageLimitValidation, checkWhiteSpaces } from "../../../../../helper/validation";
 
 function SheetMetalBaicDrawer(props) {
 
@@ -129,13 +130,13 @@ function SheetMetalBaicDrawer(props) {
 
   }, [prodHr])
 
-  const onSubmit = debounce(handleSubmit((value) => {
+  const onSubmit = debounce((value) => {
 
     if (Number(getValues('Quantity')) === Number(0) || Number(getValues('Efficiency')) === Number(0)) {
       Toaster.warning('Mandatory fields can not be zero')
       return false
     }
-
+    if (Object.keys(errors).length > 0) return false
     setIsDisable(true)
     let obj = {}
     obj.ProcessDefaultCalculatorId = props.calculatorData.ProcessDefaultCalculatorId ? props.calculatorData.ProcessDefaultCalculatorId : "00000000-0000-0000-0000-000000000000"
@@ -165,7 +166,7 @@ function SheetMetalBaicDrawer(props) {
         calculateMachineTime('0.00', obj)
       }
     }))
-  }), 500);
+  }, 500);
   /**
    * @method calculateProcessCost
    * @description FOR CALCULATING PROCESS COST 
@@ -247,21 +248,6 @@ function SheetMetalBaicDrawer(props) {
     }
   }
 
-  const checlPercentageForEfficiency = (e) => {
-    if (!props.CostingViewMode) {
-
-      if (checkPercentageValue(e.target.value, "Efficiency can not be more than 100%.")) {
-        setValue('Efficiency', e.target.value)
-      } else {
-
-        setTimeout(() => {
-
-          setValue('Efficiency', 100)
-        }, 100);
-      }
-    }
-
-  }
 
 
   const handleKeyDown = function (e) {
@@ -274,8 +260,9 @@ function SheetMetalBaicDrawer(props) {
     <Fragment>
       <Row>
         <Col>
-          <form noValidate className="form"
-            onKeyDown={(e) => { handleKeyDown(e, onSubmit.bind(this)); }}>
+          <form onSubmit={handleSubmit(onSubmit)} noValidate className="form"
+            onKeyDown={(e) => { handleKeyDown(e, onSubmit.bind(this)); }}
+          >
             <Col md="12" className={''}>
               <div className="border pl-3 pr-3 pt-3">
 
@@ -349,7 +336,7 @@ function SheetMetalBaicDrawer(props) {
                   </Col>
 
                   <Col md="4">
-                    <NumberFieldHookForm
+                    <TextFieldHookForm
                       label={`Efficiency (%)`}
                       name={'Efficiency'}
                       Controller={Controller}
@@ -358,15 +345,13 @@ function SheetMetalBaicDrawer(props) {
                       mandatory={true}
                       rules={{
                         required: true,
-                        pattern: {
-                          //value: /^[0-9]*$/i,
-                          value: /^[0-9]\d*(\.\d+)?$/i,
-                          message: 'Invalid Number.',
+                        validate: { number, checkWhiteSpaces, percentageLimitValidation },
+                        max: {
+                          value: 100,
+                          message: 'Percentage cannot be greater than 100'
                         },
-                        validate: { nonZero }
-                        // maxLength: 4,
                       }}
-                      handleChange={checlPercentageForEfficiency}
+                      handleChange={() => { }}
                       defaultValue={100}
                       className=""
                       customClassName={'withBorder'}
