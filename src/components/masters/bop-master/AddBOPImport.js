@@ -256,6 +256,10 @@ class AddBOPImport extends Component {
 
           this.props.change('EffectiveDate', DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
           this.setState({ minEffectiveDate: Data.EffectiveDate })
+          setTimeout(() => {
+            this.props.change('NetLandedCostCurrency', Data.NetLandedCostConversion)
+            this.setState({ netLandedConverionCost: Data.NetLandedCostConversion })
+          }, 600);
 
           setTimeout(() => {
             let plantObj;
@@ -295,8 +299,8 @@ class AddBOPImport extends Component {
               files: Data.Attachements,
               UOM: ((Data.UnitOfMeasurement !== undefined) ? { label: Data.UnitOfMeasurement, value: Data.UnitOfMeasurementId } : {}),
               isLoader: false,
-              incoTerm: Data.IncoTerm !== undefined ? { label: `${Data.IncoTermDescription} (${Data.IncoTerm})`, value: Data.BoughtOutPartIncoTermId } : [],
-              paymentTerm: Data.PaymentTerm !== undefined ? { label: `${Data.PaymentTermDescription} (${Data.PaymentTerm})`, value: Data.BoughtOutPartPaymentTermId } : [],
+              incoTerm: Data.IncoTerm !== undefined ? { label: `${Data.IncoTermDescription ? Data.IncoTermDescription : ''} ${Data.IncoTerm ? `(${Data.IncoTerm})` : '-'}`, value: Data.BoughtOutPartIncoTermId } : [],
+              paymentTerm: Data.PaymentTerm !== undefined ? { label: `${Data.PaymentTermDescription ? Data.PaymentTermDescription : ''} ${Data.PaymentTerm ? `(${Data.PaymentTerm})` : '-'}`, value: Data.BoughtOutPartPaymentTermId } : [],
               showCurrency: true
             }, () => this.setState({ isLoader: false }))
             // ********** ADD ATTACHMENTS FROM API INTO THE DROPZONE'S PERSONAL DATA STORE **********
@@ -838,7 +842,6 @@ class AddBOPImport extends Component {
           return false;
         }
         else {
-          console.log('inelse');
           // if (isSourceChange) {
           this.props.updateBOPImport(requestData, (res) => {
             this.setState({ setDisable: false })

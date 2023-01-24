@@ -12,6 +12,7 @@ import { getCostMovementReport } from '../../../actions/Common';
 import RenderGraphList from '../../common/RenderGraphList';
 import HeaderTitle from '../../common/HeaderTitle';
 import { PaginationWrapper } from '../../common/commonPagination';
+import { getConfigurationKey, getCurrencySymbol } from '../../../helper';
 
 
 function AnalyticsDrawer(props) {
@@ -300,7 +301,7 @@ function AnalyticsDrawer(props) {
                                 {showBarGraph &&
                                     <Row className="mt-4">
                                         <Col md="12" className='pr-0'>
-                                            <Costmovementgraph graphData={data1} graphHeight={120} options1={Options} />
+                                            <Costmovementgraph graphData={data1} graphHeight={120} options1={Options} currency={rowData?.Currency ? rowData?.Currency : getConfigurationKey().BaseCurrency} />
                                         </Col>
                                     </Row>
 
@@ -309,7 +310,8 @@ function AnalyticsDrawer(props) {
 
                                 {showLineGraph &&
                                     <Row>
-                                        <Col className='pr-0'>
+                                        <Col className='pr-0 d-flex align-items-center'>
+                                            <div className='mb-5 pb-5 mr-2' title={rowData?.Currency ? rowData?.Currency : getConfigurationKey().BaseCurrency}>{getCurrencySymbol(rowData?.Currency ? rowData?.Currency : getConfigurationKey().BaseCurrency)}</div>
                                             <Line
                                                 data={state}
                                                 height={120}
