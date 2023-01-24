@@ -803,6 +803,22 @@ function TabDiscountOther(props) {
     dispatch(setDiscountErrors({}))
   }
 
+  const resetData = (type) => {
+    switch (type) {
+      case 'other':
+        return function resetField() {
+          setValue('OtherCostApplicability', "")
+        }
+
+      case 'discount':
+        return function resetField() {
+          setValue('DiscountCostApplicability', "")
+        }
+
+      default:
+        break;
+    }
+  }
   return (
     <>
       <div className="login-container signup-form">
@@ -865,6 +881,7 @@ function TabDiscountOther(props) {
                           disabled={CostingViewMode ? true : false}
                           handleChange={handleOherCostApplicabilityChange}
                           errors={errors.OtherCostApplicability}
+                          buttonCross={resetData("other")}
                         />
                       </Col>
                     }
@@ -978,6 +995,7 @@ function TabDiscountOther(props) {
                           disabled={CostingViewMode ? true : false}
                           handleChange={handleDiscountApplicabilityChange}
                           errors={errors.DiscountCostApplicability}
+                          buttonCross={resetData('discount')}
                         />
                       </Col>
                     }
