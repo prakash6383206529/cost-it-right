@@ -1106,7 +1106,7 @@ function AddRfq(props) {
                                     </Row>
 
                                     <div>
-                                        {true && <div className={`ag-grid-react`}>
+                                        {!loader ? <div className={`ag-grid-react`}>
                                             <Row>
                                                 <Col>
                                                     <div className={`ag-grid-wrapper height-width-wrapper ${vendorList && vendorList.length <= 0 ? "overlay-contain border" : ""} `}>
@@ -1138,6 +1138,8 @@ function AddRfq(props) {
                                                     </div>
                                                 </Col>
                                             </Row>
+                                        </div> : <div>
+                                            <LoaderCustom />
                                         </div>
                                         }
                                     </div>
