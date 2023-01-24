@@ -438,7 +438,7 @@ export function Clientbasedcostingdrawer(props) {
                                         customClassName="withBorder" />
                                 </Col>
                                 <Col md="3" className="two-filled-container">
-                                    <label>Hundi/Other Discount</label>
+                                    <label>Hundi/Discount</label>
                                     <Row className="p-0">
                                         <div className="col-md-6">
                                             <Field

@@ -171,7 +171,7 @@ const CostingSummaryTable = (props) => {
     ]
     setPieChartDataArray(temp)
     let labelArray = []
-    let labels = ['RM', 'BOP', 'CC', 'ST', 'O&P', 'P&F', 'TC', 'OTHER DIS', 'ANY OTHER COST']
+    let labels = ['RM', 'BOP', 'CC', 'ST', 'O&P', 'P&F', 'TC', 'HUNDI/DIS', 'ANY OTHER COST']
     temp && temp.map((item, index) => {
       if (item !== 0) {
         labelArray.push(labels[index])
@@ -1084,7 +1084,7 @@ const CostingSummaryTable = (props) => {
     },
   }
 
-
+  const PDFPageStyle = "@page { size: A4 landscape; }";
   return (
     <Fragment>
       {
@@ -1114,6 +1114,7 @@ const CostingSummaryTable = (props) => {
                   bodyClass='mx-2 mt-3 remove-space-border'
                   documentTitle={`${pdfName}-detailed-costing`}
                   content={reactToPrintContent}
+                  pageStyle={PDFPageStyle}
                   onAfterPrint={handleAfterPrintDetail}
                   onBeforeGetContent={handleOnBeforeGetContentDetail}
                   trigger={reactToPrintTriggerDetail}
@@ -1839,7 +1840,7 @@ const CostingSummaryTable = (props) => {
                         <tr className='border-right'>
                           <td width={"20%"}>
                             <span className="d-block small-grey-text">
-                              Hundi/Other Discount
+                              Hundi/Discount
                             </span>
                             <span className="d-block small-grey-text"></span>
                           </td>
