@@ -318,7 +318,7 @@ class UsersListing extends Component {
 		const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
 		const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
 		const { EditAccessibility } = this.state;
-		if (cellValue === loggedInUserId()) return null;
+		if (rowData?.UserId === loggedInUserId()) return null;
 		return (
 			<div className="">
 				{EditAccessibility && <button title='Edit' className="Edit " type={'button'} onClick={() => this.editItemDetails(rowData?.UserId, false)} />}
