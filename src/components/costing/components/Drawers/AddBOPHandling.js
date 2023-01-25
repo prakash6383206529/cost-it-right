@@ -7,11 +7,11 @@ import { ViewCostingContext } from '../CostingDetails';
 import { useContext } from 'react';
 import { useEffect } from 'react';
 import { calculatePercentage, checkForDecimalAndNull, checkForNull, getConfigurationKey } from '../../../../helper';
-import Toaster from '../../../common/Toaster';
 import { useDispatch, useSelector } from 'react-redux';
 import { isDataChange } from '../../actions/Costing';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { IdForMultiTechnology } from '../../../../config/masterData';
+import { number, percentageLimitValidation, checkWhiteSpaces } from "../../../../helper/validation";
 
 function AddBOPHandling(props) {
   const { item, isAssemblyTechnology } = props
@@ -92,7 +92,6 @@ function AddBOPHandling(props) {
     } else {
       setValue('BOPHandlingCharges', 0)
       setValue('BOPHandlingPercentage', 0)
-      Toaster.warning('Please enter valid number.')
     }
   }
 
@@ -148,6 +147,7 @@ function AddBOPHandling(props) {
   };
 
   const saveHandleCharge = () => {
+    if (Object.keys(errors).length > 0) return false
     // WILL BE EXECUTED WHEN COSTING TECHNOLOGY IS ASSEMBLY FOR OTHER TECHNOLOGIES ELSE WILL GET EXECUTED
     let percentage = getValues('BOPHandlingPercentage')
     let obj = {
@@ -258,10 +258,7 @@ function AddBOPHandling(props) {
                           mandatory={false}
                           rules={{
                             required: true,
-                            pattern: {
-                              value: /^[0-9]\d*(\.\d+)?$/i,
-                              message: 'Invalid Number.'
-                            },
+                            validate: { number, checkWhiteSpaces, percentageLimitValidation },
                             max: {
                               value: 100,
                               message: 'Percentage cannot be greater than 100'

@@ -452,7 +452,7 @@ class IndivisualProductListing extends Component {
                     isOpen={isBulkUpload}
                     closeDrawer={this.closeBulkUploadDrawer}
                     isEditFlag={false}
-                    fileName={'ProductComponent'}
+                    fileName={'Product Component'}
                     isZBCVBCTemplate={false}
                     messageLabel={'Product'}
                     anchor={'right'}

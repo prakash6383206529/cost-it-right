@@ -5,12 +5,13 @@ import { Container, Row, Col } from "reactstrap";
 import Drawer from "@material-ui/core/Drawer";
 
 import { getCostingSpecificTechnology } from "../../costing/actions/Costing";
-import { NumberFieldHookForm, SearchableSelectHookForm } from "../../layout/HookFormInputs";
+import { NumberFieldHookForm, SearchableSelectHookForm, TextFieldHookForm } from "../../layout/HookFormInputs";
 import { checkForDecimalAndNull, getConfigurationKey, loggedInUserId } from "../../../helper";
 import Toaster from "../../common/Toaster";
 import { createVolumeLimit, getVolumeLimit, updateVolumeLimit } from "../actions/Volume";
 import PopupMsgWrapper from "../../common/PopupMsgWrapper";
 import { MESSAGES } from "../../../config/message";
+import { number, percentageLimitValidation, checkWhiteSpaces } from "../../../helper/validation";
 
 const AddLimit = (props) => {
     const {
@@ -226,14 +227,21 @@ const AddLimit = (props) => {
                                     />
                                 </Col>
                                 <Col md="12">
-                                    <NumberFieldHookForm
+                                    <TextFieldHookForm
                                         label="Max Deviation Limit (%)"
                                         name={"MaxDeviation"}
                                         Controller={Controller}
                                         control={control}
                                         register={register}
                                         mandatory={true}
-                                        rules={{ required: true }}
+                                        rules={{
+                                            required: true,
+                                            validate: { number, checkWhiteSpaces, percentageLimitValidation },
+                                            max: {
+                                                value: 100,
+                                                message: 'Percentage cannot be greater than 100'
+                                            },
+                                        }}
                                         handleChange={handleMaxDeviationLimit}
                                         defaultValue={""}
                                         className=""
