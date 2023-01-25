@@ -1269,7 +1269,6 @@ export const Labour = [
     { label: 'RatePerPersonPerAnnum', value: 'RatePerPersonPerAnnum', }, //*
     { label: 'EffectiveDate', value: 'EffectiveDate', },
 ]
-
 export const LabourTempData = [
     {
         'EmploymentTerms': 'Contractual',
@@ -1294,7 +1293,35 @@ export const LabourTempData = [
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
     }
 ]
-
+export const Volume = [
+    { label: 'ActualVolumeDetailId', value: 'ActualVolumeDetailId', },
+    { label: 'PartNumber', value: 'PartNumber', },
+    { label: 'RevisionNumber', value: 'RevisionNumber', },
+    { label: 'PlantCode', value: 'PlantCode', },
+    { label: 'VendorCode', value: 'VendorCode', },
+    { label: 'ActualVolumeDate', value: 'ActualVolumeDate', },
+    { label: 'ActualQauntity', value: 'ActualQauntity', },
+]
+export const VolumeTempData = [
+    {
+        'ActualVolumeDetailId': '1',
+        'PartNumber': 'DH103776',
+        'RevisionNumber': '1',
+        'PlantCode': '911',
+        'VendorCode': '1517',
+        'ActualVolumeDate': '16-12-2022',
+        'ActualQauntity': '15',
+    },
+    {
+        'ActualVolumeDetailId': '2',
+        'PartNumber': 'Component-TEST-M-07',
+        'RevisionNumber': '0',
+        'PlantCode': '1569',
+        'VendorCode': '1569',
+        'ActualVolumeDate': '14-12-2022',
+        'ActualQauntity': '100',
+    }
+]
 /** 
 * @desc USED IN EXCEL HEADER FOR BULK UPLOAD
 */
