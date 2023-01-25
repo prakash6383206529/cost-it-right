@@ -562,7 +562,6 @@ class UsersListing extends Component {
 			departmentFormatter: this.departmentFormatter,
 			linkableFormatter: this.linkableFormatter
 		};
-
 		return (
 			<div className={"ag-grid-react"} id={'userlist-go-to-top'}>
 				<ScrollToTop pointProp={"userlist-go-to-top"} />
@@ -631,7 +630,7 @@ class UsersListing extends Component {
 								<div className="d-flex justify-content-end bd-highlight w100">
 									{AddAccessibility && (
 										<div>
-											<ExcelFile filename={'User Listing'} fileExtension={'.xls'} element={<button title={`Download ${this.state.dataCount === 0 ? "All" : "(" + this.state.dataCount + ")"}`} type="button" className={'user-btn mr5'} ><div className="download mr-1"></div>
+											<ExcelFile filename={`${this.props.RFQUser ? 'RFQ User Listing' : 'User Listing'}`} fileExtension={'.xls'} element={<button title={`Download ${this.state.dataCount === 0 ? "All" : "(" + this.state.dataCount + ")"}`} type="button" className={'user-btn mr5'} ><div className="download mr-1"></div>
 												{`${this.state.dataCount === 0 ? "All" : "(" + this.state.dataCount + ")"}`}</button>}>
 												{this.onBtExport()}
 											</ExcelFile>
