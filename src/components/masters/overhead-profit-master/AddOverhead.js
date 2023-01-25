@@ -2,8 +2,8 @@ import React, { Component, } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col, Label } from 'reactstrap';
-import { required, getVendorCode, positiveAndDecimalNumber, maxLength15, checkPercentageValue, decimalLengthThree } from "../../../helper/validation";
-import { searchableSelect, renderTextAreaField, renderDatePicker, renderNumberInputField, renderMultiSelectField } from "../../layout/FormInputs";
+import { required, getVendorCode, positiveAndDecimalNumber, maxLength15, checkPercentageValue, decimalLengthThree, number, maxPercentValue, checkWhiteSpaces, percentageLimitValidation } from "../../../helper/validation";
+import { searchableSelect, renderTextAreaField, renderDatePicker, renderNumberInputField, renderMultiSelectField, renderText } from "../../layout/FormInputs";
 import { fetchModelTypeAPI, fetchCostingHeadsAPI, getPlantSelectListByType } from '../../../actions/Common';
 import { getVendorWithVendorCodeSelectList } from '../actions/Supplier';
 import {
@@ -298,19 +298,6 @@ class AddOverhead extends Component {
     if (prevProps.filedObj !== this.props.filedObj) {
 
       const { filedObj } = this.props;
-      if (this.props.filedObj.OverheadPercentage) {
-        checkPercentageValue(this.props.filedObj.OverheadPercentage, "Overhead percentage should not be more than 100") ? this.props.change('OverheadPercentage', this.props.filedObj.OverheadPercentage) : this.props.change('OverheadPercentage', 0)
-      }
-      if (this.props.filedObj.OverheadRMPercentage) {
-        checkPercentageValue(this.props.filedObj.OverheadRMPercentage, "Overhead RM percentage should not be more than 100") ? this.props.change('OverheadRMPercentage', this.props.filedObj.OverheadRMPercentage) : this.props.change('OverheadRMPercentage', 0)
-      }
-      if (this.props.filedObj.OverheadMachiningCCPercentage) {
-        checkPercentageValue(this.props.filedObj.OverheadMachiningCCPercentage, "Overhead CC percentage should not be more than 100") ? this.props.change('OverheadMachiningCCPercentage', this.props.filedObj.OverheadMachiningCCPercentage) : this.props.change('OverheadMachiningCCPercentage', 0)
-      }
-      if (this.props.filedObj.OverheadBOPPercentage) {
-        checkPercentageValue(this.props.filedObj.OverheadBOPPercentage, "Overhead BOP percentage should not be more than 100") ? this.props.change('OverheadBOPPercentage', this.props.filedObj.OverheadBOPPercentage) : this.props.change('OverheadBOPPercentage', 0)
-      }
-
       const OverheadPercentage = filedObj && filedObj.OverheadPercentage !== undefined && filedObj.OverheadPercentage !== '' ? true : false;
       const OverheadRMPercentage = filedObj && filedObj.OverheadRMPercentage !== undefined && filedObj.OverheadRMPercentage !== '' ? true : false;
       const OverheadMachiningCCPercentage = filedObj && filedObj.OverheadMachiningCCPercentage !== undefined && filedObj.OverheadMachiningCCPercentage !== '' ? true : false;
@@ -1101,9 +1088,9 @@ class AddOverhead extends Component {
                               type="text"
                               placeholder={isOverheadPercent || isViewMode ? "-" : "Enter"}
                               validate={
-                                !isOverheadPercent ? [required, positiveAndDecimalNumber, maxLength15, decimalLengthThree] : []
+                                !isOverheadPercent ? [required, number, maxPercentValue, checkWhiteSpaces, percentageLimitValidation] : []
                               }
-                              component={renderNumberInputField}
+                              component={renderText}
                               onBlur={this.handlePercent}
                               required={!isOverheadPercent ? true : false}
                               onChange={(event) => this.handleChangeOverheadPercentage(event.target.value)}
@@ -1121,8 +1108,8 @@ class AddOverhead extends Component {
                               name={"OverheadRMPercentage"}
                               type="text"
                               placeholder={isRM || isViewMode ? "-" : "Enter"}
-                              validate={!isRM ? [required, positiveAndDecimalNumber, maxLength15, decimalLengthThree] : []}
-                              component={renderNumberInputField}
+                              validate={!isRM ? [required, number, maxPercentValue, checkWhiteSpaces, percentageLimitValidation] : []}
+                              component={renderText}
                               required={!isRM ? true : false}
                               onChange={(event) => this.handleChangeOverheadPercentageRM(event.target.value)}
                               className=""
@@ -1138,8 +1125,8 @@ class AddOverhead extends Component {
                               name={"OverheadMachiningCCPercentage"}
                               type="text"
                               placeholder={isCC || isViewMode ? "-" : "Enter"}
-                              validate={!isCC ? [required, positiveAndDecimalNumber, maxLength15, decimalLengthThree] : []}
-                              component={renderNumberInputField}
+                              validate={!isCC ? [required, number, maxPercentValue, checkWhiteSpaces, percentageLimitValidation] : []}
+                              component={renderText}
                               required={!isCC ? true : false}
                               onChange={(event) => this.handleChangeOverheadPercentageCC(event.target.value)}
                               className=""
@@ -1155,8 +1142,8 @@ class AddOverhead extends Component {
                               name={"OverheadBOPPercentage"}
                               type="text"
                               placeholder={isBOP || isViewMode ? "-" : "Enter"}
-                              validate={!isBOP ? [required, positiveAndDecimalNumber, maxLength15, decimalLengthThree] : []}
-                              component={renderNumberInputField}
+                              validate={!isBOP ? [required, number, maxPercentValue, checkWhiteSpaces, percentageLimitValidation] : []}
+                              component={renderText}
                               required={!isBOP ? true : false}
                               onChange={(event) => this.handleChangeOverheadPercentageBOP(event.target.value)}
                               className=""
