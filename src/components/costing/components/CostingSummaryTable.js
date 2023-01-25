@@ -987,7 +987,7 @@ const CostingSummaryTable = (props) => {
     let temp = []
     temp = TempData
     return (
-      <ExcelSheet data={temp} name={"CostingSummary"}>
+      <ExcelSheet data={temp} name={"Costing Summary"}>
         {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
       </ExcelSheet>
     );
@@ -1106,7 +1106,7 @@ const CostingSummaryTable = (props) => {
               {
                 DownloadAccessibility ? <LoaderCustom customClass="pdf-loader" /> :
                   <>
-                    <ExcelFile filename={'CostingSummary'} fileExtension={'.xls'} element={<button type="button" className={'user-btn excel-btn mr5 mb-2'} title="Excel"><img src={ExcelIcon} alt="download" /></button>}>
+                    <ExcelFile filename={'Costing Summary'} fileExtension={'.xls'} element={<button type="button" className={'user-btn excel-btn mr5 mb-2'} title="Excel"><img src={ExcelIcon} alt="download" /></button>}>
                       {onBtExport()}
                     </ExcelFile>
                   </>

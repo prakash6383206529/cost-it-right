@@ -973,7 +973,7 @@ function RMImportListing(props) {
             closeDrawer={closeBulkUploadDrawer}
             isEditFlag={false}
             densityAlert={densityAlert}
-            fileName={"RMImport"}
+            fileName={"RM Import"}
             isZBCVBCTemplate={true}
             messageLabel={"RM Import"}
             anchor={"right"}

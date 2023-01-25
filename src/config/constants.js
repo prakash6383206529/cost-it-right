@@ -2009,7 +2009,7 @@ export const MachineRate = "Machine-rate"
 export const ProcessMaster = "Process "
 
 export const VendorMaster = "Vendor"
-export const Clientmaster = "Client"
+export const Clientmaster = "Customer"
 export const PlantZbc = "Plant-zbc"
 export const PlantVbc = "Plant-vbc"
 
@@ -2070,25 +2070,26 @@ export const LEVEL1 = 'L1';
 export const SUB_ASSEMBLY = 'Sub Assembly';
 
 //MASTER NAMES FOR BULK UPLOAD
-export const RMDOMESTICBULKUPLOAD = 'RMDomestic';
-export const RMIMPORTBULKUPLOAD = 'RMImport';
-export const RMSPECIFICATION = 'RMSpecification'
-export const BOPDOMESTICBULKUPLOAD = 'BOPDomestic';
+export const RMDOMESTICBULKUPLOAD = 'RM Domestic';
+export const RMIMPORTBULKUPLOAD = 'RM Import';
+export const RMSPECIFICATION = 'RM Specification'
+export const BOPDOMESTICBULKUPLOAD = 'BOP Domestic';
 export const INSERTDOMESTICBULKUPLOAD = 'InsertDomestic';
 export const BOPIMPORTBULKUPLOAD = 'BOPImport';
 export const INSERTIMPORTBULKUPLOAD = 'InsertImport';
 export const BOMBULKUPLOAD = 'BOM';
-export const PARTCOMPONENTBULKUPLOAD = 'PartComponent';
-export const PRODUCTCOMPONENTBULKUPLOAD = 'ProductComponent';
+export const PARTCOMPONENTBULKUPLOAD = 'Part Component';
+export const PRODUCTCOMPONENTBULKUPLOAD = 'Product Component';
 export const MACHINEBULKUPLOAD = 'Machine';
 export const VENDORBULKUPLOAD = 'Vendor';
 export const LABOURBULKUPLOAD = 'Labour'
 export const OPERAIONBULKUPLOAD = 'Operation';
 export const FUELBULKUPLOAD = 'Fuel';
-export const INTERESTRATEBULKUPLOAD = 'InterestRate'
-export const ACTUALVOLUMEBULKUPLOAD = 'ActualVolume'
-export const BUDGETEDVOLUMEBULKUPLOAD = 'BudgetedVolume'
+export const INTERESTRATEBULKUPLOAD = 'Interest Rate'
+export const ACTUALVOLUMEBULKUPLOAD = 'Actual Volume'
+export const BUDGETEDVOLUMEBULKUPLOAD = 'Budgeted Volume'
 export const ADDRFQ = 'ADD RFQ'
+export const VOLUMEBULKUPLOAD = 'Volume'
 
 
 //STATUS FILTER DROPDOWN OPTIONS

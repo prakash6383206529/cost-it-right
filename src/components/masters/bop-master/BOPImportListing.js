@@ -792,7 +792,7 @@ class BOPImportListing extends Component {
                         isOpen={isBulkUpload}
                         closeDrawer={this.closeBulkUploadDrawer}
                         isEditFlag={false}
-                        fileName={'BOPImport'}
+                        fileName={'BOP Import'}
                         isZBCVBCTemplate={true}
                         messageLabel={'BOP Import'}
                         anchor={'right'}
