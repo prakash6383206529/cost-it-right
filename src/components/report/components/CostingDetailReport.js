@@ -652,12 +652,13 @@ function ReportListing(props) {
     };
 
     const resetState = () => {
+        reactLocalStorage.setObject('selectedRow', {})
+        gridApi?.deselectAll()
         dispatch(agGridStatus("", ""))
         dispatch(isResetClick(true, "applicablity"))
         setIsFilterButtonClicked(false)
         gridOptions?.columnApi?.resetColumnState();
         setSearchButtonClicked(false)
-        gridApi.deselectAll()
         for (var prop in floatingFilterData) {
             floatingFilterData[prop] = ""
         }
@@ -784,7 +785,7 @@ function ReportListing(props) {
                                 {`${dataCount === 0 ? "All" : "(" + dataCount + ")"}`}
                             </button>
 
-                            <ExcelFile filename={'ReportMaster'} fileExtension={'.xls'} element={
+                            <ExcelFile filename={'Costing Breakup Details'} fileExtension={'.xls'} element={
                                 <button id={'Excel-Downloads'} type="button" className='p-absolute right-22'>
                                 </button>}>
                                 {renderColumn(ReportMaster)}
