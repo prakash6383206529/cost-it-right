@@ -120,12 +120,12 @@ function CorrugatedBox(props) {
     const setLengthCuttingAllowance = () => {
 
         let data = {
-            widthSheet: dataSend.widthSheetWithDecimal,
+            lengthSheet: dataSend.lengthSheetWithDecimal,
             cuttingAllowanceForLength: getValues('cuttingAllowanceForLength'),
         }
 
         if (data.cuttingAllowanceForLength) {
-            const lengthIncCuttingAllowance = ((data.widthSheet) + 2 * (data.cuttingAllowanceForLength));            // Formula to calculate length inc cutting allowance
+            const lengthIncCuttingAllowance = ((data.lengthSheet) + 2 * (data.cuttingAllowanceForLength));            // Formula to calculate length inc cutting allowance
             setDataSend(prevState => ({ ...prevState, LengthCuttingAllowance: lengthIncCuttingAllowance }))
             setTimeout(() => {
 
@@ -566,7 +566,7 @@ function CorrugatedBox(props) {
                                 </Col>
 
                                 <Col md="3" className='mt-2'>
-                                    <TooltipCustom disabledIcon={true} id={'length-cutting-al'} tooltipClass={'weight-of-sheet'} tooltipText={'Length Cutting Allowance = (Width Sheet + 2 * Cutting Allowance)'} />
+                                    <TooltipCustom disabledIcon={true} id={'length-cutting-al'} tooltipClass={'weight-of-sheet'} tooltipText={'Length Cutting Allowance = (Length Sheet + 2 * Cutting Allowance)'} />
                                     <NumberFieldHookForm
                                         label={`Length(sheet) inc. Cutting allowance`}
                                         name={'length_inc_cutting_allowance'}
