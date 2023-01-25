@@ -254,17 +254,6 @@ function OperationCost(props) {
       setOperationCostAssemblyTechnology(value)
       setGridData(tempArr)
 
-    } else {
-      const WithLaboutCost = checkForNull(tempData.Rate) * 0;
-      const WithOutLabourCost = tempData.IsLabourRateExist ? checkForNull(tempData.LabourRate) * tempData.LabourQuantity : 0;
-      const OperationCost = WithLaboutCost + WithOutLabourCost;
-      tempData = { ...tempData, Quantity: 0, OperationCost: OperationCost }
-      tempArr = Object.assign([...gridData], { [index]: tempData })
-      setGridData(tempArr)
-      // Toaster.warning('Please enter valid number.')
-      setTimeout(() => {
-        setValue(`${OperationGridFields}.${index}.Quantity`, '')
-      }, 200)
     }
   }
 
