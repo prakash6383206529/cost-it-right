@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col, Label, } from 'reactstrap';
-import { required, positiveAndDecimalNumber, maxLength10, checkPercentageValue, decimalLengthsix, decimalLengthThree, } from "../../../helper/validation";
+import { required, positiveAndDecimalNumber, maxLength10, decimalLengthsix, decimalLengthThree, maxPercentValue, number, checkWhiteSpaces, percentageLimitValidation, checkPercentageValue, } from "../../../helper/validation";
 import { createExchangeRate, getExchangeRateData, updateExchangeRate, getCurrencySelectList, } from '../actions/ExchangeRateMaster';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
@@ -10,7 +10,7 @@ import { loggedInUserId, } from "../../../helper/auth";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import DayTime from '../../common/DayTimeWrapper'
-import { renderNumberInputField, searchableSelect, } from "../../layout/FormInputs";
+import { renderNumberInputField, renderText, searchableSelect, } from "../../layout/FormInputs";
 import LoaderCustom from '../../common/LoaderCustom';
 import { debounce } from 'lodash';
 import { onFocus } from '../../../helper';
@@ -554,8 +554,8 @@ class AddExchangeRate extends Component {
                           name={"BankCommissionPercentage"}
                           type="text"
                           placeholder={isViewMode ? '-' : 'Enter'}
-                          validate={[positiveAndDecimalNumber, maxLength10, decimalLengthThree]}
-                          component={renderNumberInputField}
+                          validate={[number, maxPercentValue, checkWhiteSpaces, percentageLimitValidation]}
+                          component={renderText}
                           max={100}
                           disabled={isViewMode}
                           onChange={this.onFinancialDataChange}

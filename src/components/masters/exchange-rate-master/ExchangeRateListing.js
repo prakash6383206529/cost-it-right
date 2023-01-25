@@ -306,6 +306,9 @@ class ExchangeRateListing extends Component {
                 item.BankCommissionPercentage = ' '
             } else if (item.CustomRate === null) {
                 item.CustomRate = ' '
+            } else if (item?.EffectiveDate?.includes('T') || item?.DateOfModification?.includes('T')) {
+                item.EffectiveDate = DayTime(item.EffectiveDate).format('DD/MM/YYYY')
+                item.DateOfModification = DayTime(item.DateOfModification).format('DD/MM/YYYY')
             }
             return item
         })

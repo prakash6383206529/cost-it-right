@@ -800,7 +800,7 @@ class BOPDomesticListing extends Component {
                         isOpen={isBulkUpload}
                         closeDrawer={this.closeBulkUploadDrawer}
                         isEditFlag={false}
-                        fileName={'BOPDomestic'}
+                        fileName={'BOP Domestic'}
                         isZBCVBCTemplate={true}
                         messageLabel={'BOP Domestic'}
                         anchor={'right'}

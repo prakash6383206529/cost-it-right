@@ -4,21 +4,9 @@ import { useForm, Controller, useWatch } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 import Toaster from '../../../../common/Toaster'
 import { saveRawMaterialCalculationForForging } from '../../../actions/CostWorking'
-import {
-  postiveNumber, maxPercentValue
-} from "../../../../../helper/validation"
-
-import {
-
-  NumberFieldHookForm,
-} from '../../../../layout/HookFormInputs'
-import {
-  checkForDecimalAndNull,
-  checkForNull,
-  getConfigurationKey,
-  loggedInUserId
-
-} from '../../../../../helper'
+import { postiveNumber, maxPercentValue, number, percentageLimitValidation, checkWhiteSpaces } from "../../../../../helper/validation"
+import { NumberFieldHookForm, TextFieldHookForm, } from '../../../../layout/HookFormInputs'
+import { checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUserId } from '../../../../../helper'
 import MachiningStockTable from '../MachiningStockTable'
 import LossStandardTable from '../LossStandardTable'
 import { debounce } from 'lodash'
@@ -795,7 +783,7 @@ function HotForging(props) {
                   errors={errors.ScrapCost}
                   disabled={true}
                 />
-              </Col>
+              </Col >
 
               <Col md="3">
                 <TooltipCustom disabledIcon={true} id={'rm-cost'} tooltipClass={'weight-of-sheet'} tooltipText={' Net RM Cost = (Total Input Weight * RM Rate - Scrap Cost)'} />
@@ -816,7 +804,7 @@ function HotForging(props) {
                 />
               </Col>
 
-            </Row>
+            </Row >
 
             <div className="mt25 col-md-12 text-right">
               <button
@@ -839,10 +827,10 @@ function HotForging(props) {
                 {'SAVE'}
               </button>
             </div>
-          </form>
-        </Col>
-      </Row>
-    </Fragment>
+          </form >
+        </Col >
+      </Row >
+    </Fragment >
   )
 }
 

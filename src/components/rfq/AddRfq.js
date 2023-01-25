@@ -1071,7 +1071,7 @@ function AddRfq(props) {
 
                                         <Col md="3">
                                             <SearchableSelectHookForm
-                                                label={"Contact Person"}
+                                                label={"Point of Contact"}
                                                 name={"contactPerson"}
                                                 placeholder={"Select"}
                                                 Controller={Controller}
@@ -1136,7 +1136,7 @@ function AddRfq(props) {
                                                             >
                                                                 <AgGridColumn field="Vendor" headerName="Vendor (Code)" ></AgGridColumn>
 
-                                                                <AgGridColumn width={"270px"} field="ContactPerson" headerName="Contact Person" ></AgGridColumn>
+                                                                <AgGridColumn width={"270px"} field="ContactPerson" headerName="Point of Contact" ></AgGridColumn>
                                                                 <AgGridColumn width={"270px"} field="VendorId" headerName="Vendor Id" hide={true} cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                                                 <AgGridColumn width={"180px"} field="partId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'buttonFormatterVendorTable'}></AgGridColumn>
                                                             </AgGridReact>

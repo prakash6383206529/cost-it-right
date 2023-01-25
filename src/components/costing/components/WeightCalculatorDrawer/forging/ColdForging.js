@@ -4,7 +4,8 @@ import { useForm, Controller, useWatch } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 import Toaster from '../../../../common/Toaster'
 import { saveRawMaterialCalculationForForging } from '../../../actions/CostWorking'
-import { NumberFieldHookForm, } from '../../../../layout/HookFormInputs'
+import { NumberFieldHookForm, TextFieldHookForm, } from '../../../../layout/HookFormInputs'
+import { number, percentageLimitValidation, checkWhiteSpaces } from "../../../../../helper/validation";
 import {
   postiveNumber, maxPercentValue
 } from "../../../../../helper/validation"

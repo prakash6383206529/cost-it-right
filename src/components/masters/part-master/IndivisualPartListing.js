@@ -717,7 +717,7 @@ class IndivisualPartListing extends Component {
                         isOpen={isBulkUpload}
                         closeDrawer={this.closeBulkUploadDrawer}
                         isEditFlag={false}
-                        fileName={'PartComponent'}
+                        fileName={'Part Component'}
                         isZBCVBCTemplate={false}
                         messageLabel={'Part'}
                         anchor={'right'}
