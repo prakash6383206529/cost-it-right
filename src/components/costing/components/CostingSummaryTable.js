@@ -903,15 +903,17 @@ const CostingSummaryTable = (props) => {
     let templateObj = viewCostingData[0]?.technologyId === LOGISTICS ? VIEW_COSTING_DATA_LOGISTICS : VIEW_COSTING_DATA
     for (var prop in templateObj) {
 
-      if (partType) {
+      if (partType) {  // IF TECHNOLOGY WILL BE ASSEMBLY THIS BLOCK WILL BE EXCECUTED
         if (prop !== "netRM" && prop !== "netBOP" && prop !== 'fWeight' && prop !== 'BurningLossWeight' && prop !== 'gWeight' && prop !== 'ScrapWeight' && prop !== 'scrapRate' && prop !== 'rmRate' && prop !== 'rm')
           costingSummary.push({ label: VIEW_COSTING_DATA[prop], value: prop, })
       }
       else if (IsNccCosting) {
-        costingSummary.push({ label: VIEW_COSTING_DATA[prop], value: prop, })
-      } else {
+        if (prop !== "netChildPartsCost" && prop !== "netBoughtOutPartCost" && prop !== "netProcessCost" && prop !== "netOperationCost" && prop !== "nTotalRMBOPCC") {  // THESE 5 KEYS WILL NOT BE VISIBLE FOR OTHER TECHNOLOGY ( VISIBLE ONLY FOR ASSEMBLY)
+          costingSummary.push({ label: VIEW_COSTING_DATA[prop], value: prop, })
+        }
 
-        if (prop !== "NCCPartQuantity" && prop !== "IsRegularized")
+      } else {
+        if (prop !== "NCCPartQuantity" && prop !== "IsRegularized" && prop !== "netChildPartsCost" && prop !== "netBoughtOutPartCost" && prop !== "netProcessCost" && prop !== "netOperationCost" && prop !== "nTotalRMBOPCC")  // THESE 5 KEYS WILL NOT BE VISIBLE FOR OTHER TECHNOLOGY ( VISIBLE ONLY FOR ASSEMBLY)
           costingSummary.push({ label: VIEW_COSTING_DATA[prop], value: prop, })
       }
     }
@@ -985,7 +987,7 @@ const CostingSummaryTable = (props) => {
     let temp = []
     temp = TempData
     return (
-      <ExcelSheet data={temp} name={"CostingSummary"}>
+      <ExcelSheet data={temp} name={"Costing Summary"}>
         {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
       </ExcelSheet>
     );
@@ -1104,7 +1106,7 @@ const CostingSummaryTable = (props) => {
               {
                 DownloadAccessibility ? <LoaderCustom customClass="pdf-loader" /> :
                   <>
-                    <ExcelFile filename={'CostingSummary'} fileExtension={'.xls'} element={<button type="button" className={'user-btn excel-btn mr5 mb-2'} title="Excel"><img src={ExcelIcon} alt="download" /></button>}>
+                    <ExcelFile filename={'Costing Summary'} fileExtension={'.xls'} element={<button type="button" className={'user-btn excel-btn mr5 mb-2'} title="Excel"><img src={ExcelIcon} alt="download" /></button>}>
                       {onBtExport()}
                     </ExcelFile>
                   </>
