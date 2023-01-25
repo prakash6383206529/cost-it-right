@@ -239,7 +239,7 @@ function TabToolCost(props) {
 
     if (IsApplicableProcessWise && props.activeTab === '5') {
       dispatch(getToolsProcessWiseDataListByCostingID(costData.CostingId, (res) => {
-        if (res) { setGridData(res.data.DataList) }
+        if (res?.data?.DataList[0]?.ProcessOrOperation) { setGridData(res.data.DataList) }
       }))
     }
 
