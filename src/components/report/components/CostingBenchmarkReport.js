@@ -82,7 +82,7 @@ function CostingBenchmarkReport(props) {
         setRunReportButton(true)
         setblueDivison(false)
         setShowMasterList(false)
-        if (Number(value.value) === Number(7)) { //SURFACE TREATMENT
+        if ((Number(value.value) === Number(7)) || (Number(master.value) === Number(7) && Number(value.value) === Number(6))) { //SURFACE TREATMENT & OPERATION
             setTimeout(() => {
                 setShowMasterList(true)
                 setblueDivison(true)
