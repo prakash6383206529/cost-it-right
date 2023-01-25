@@ -2,13 +2,14 @@ import React, { useState, useEffect, Fragment } from 'react'
 import { Col, Row, Table } from 'reactstrap'
 import { useForm, Controller, useWatch } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
-import { NumberFieldHookForm, } from '../../../layout/HookFormInputs'
+import { NumberFieldHookForm, TextFieldHookForm, } from '../../../layout/HookFormInputs'
 import { calculatePercentageValue, checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUserId } from '../../../../helper'
 import LossStandardTable from './LossStandardTable'
 import { saveRawMaterialCalculationForFerrous } from '../../actions/CostWorking'
 import Toaster from '../../../common/Toaster'
 import { debounce } from 'lodash'
 import TooltipCustom from '../../../common/Tooltip'
+import { number, percentageLimitValidation, checkWhiteSpaces } from "../../../../helper/validation";
 
 function Ferrous(props) {
     const WeightCalculatorRequest = props.rmRowData.WeightCalculatorRequest
@@ -466,7 +467,7 @@ function Ferrous(props) {
                                     />
                                 </Col>
                                 <Col md="3">
-                                    <NumberFieldHookForm
+                                    <TextFieldHookForm
                                         label={`Recovery (%)`}
                                         name={'recovery'}
                                         Controller={Controller}
@@ -475,13 +476,10 @@ function Ferrous(props) {
                                         mandatory={false}
                                         rules={{
                                             required: true,
-                                            pattern: {
-                                                value: /^\d*\.?\d*$/,
-                                                message: 'Invalid Number.',
-                                            },
+                                            validate: { number, checkWhiteSpaces, percentageLimitValidation },
                                             max: {
                                                 value: 100,
-                                                message: 'Percentage should be less than 100'
+                                                message: 'Percentage cannot be greater than 100'
                                             },
                                         }}
                                         handleChange={() => { }}
