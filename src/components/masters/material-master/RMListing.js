@@ -323,7 +323,7 @@ class RMListing extends Component {
                             DownloadAccessibility &&
                             <>
                                 <>
-                                    <ExcelFile filename={'RmMaterial'} fileExtension={'.xls'} element={
+                                    <ExcelFile filename={'Rm Material'} fileExtension={'.xls'} element={
                                         <button title={`Download ${this.state.dataCount === 0 ? "All" : "(" + this.state.dataCount + ")"}`} type="button" className={'user-btn mr5'} ><div className="download mr-1"></div>
                                             {`${this.state.dataCount === 0 ? "All" : "(" + this.state.dataCount + ")"}`}</button>}>
                                         {this.onBtExport()}

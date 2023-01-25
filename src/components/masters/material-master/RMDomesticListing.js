@@ -938,7 +938,7 @@ function RMDomesticListing(props) {
                         closeDrawer={closeBulkUploadDrawer}
                         isEditFlag={false}
                         densityAlert={densityAlert}
-                        fileName={"RMDomestic"}
+                        fileName={"RM Domestic"}
                         isZBCVBCTemplate={true}
                         messageLabel={"RM Domestic"}
                         anchor={"right"}
