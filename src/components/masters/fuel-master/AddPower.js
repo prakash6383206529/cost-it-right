@@ -2,8 +2,8 @@ import React, { Component, } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col, Table } from 'reactstrap';
-import { required, checkForNull, getVendorCode, checkForDecimalAndNull, positiveAndDecimalNumber, maxLength10, checkPercentageValue, decimalLengthFour, decimalLengthThree } from "../../../helper/validation";
-import { renderNumberInputField, searchableSelect, renderMultiSelectField, focusOnError, renderDatePicker } from "../../layout/FormInputs";
+import { required, checkForNull, getVendorCode, checkForDecimalAndNull, positiveAndDecimalNumber, maxLength10, checkPercentageValue, decimalLengthFour, decimalLengthThree, number, maxPercentValue, checkWhiteSpaces, percentageLimitValidation } from "../../../helper/validation";
+import { renderNumberInputField, searchableSelect, renderMultiSelectField, focusOnError, renderDatePicker, renderText } from "../../layout/FormInputs";
 import { getPowerTypeSelectList, getUOMSelectList, getPlantBySupplier, getAllCity, fetchStateDataAPI } from '../../../actions/Common';
 import { getVendorWithVendorCodeSelectList, } from '../actions/Supplier';
 import {
@@ -116,18 +116,10 @@ class AddPower extends Component {
 
   componentDidUpdate(prevProps) {
     if (this.props.fieldsObj !== prevProps.fieldsObj) {
-      const { SelfPowerContribution, SEBPowerContributaion } = this.props.fieldsObj
-      // if (Number(SelfPowerContribution) > 100 || Number(SelfPowerContribution) !== 0) {
-      checkPercentageValue(SelfPowerContribution, "Power contribution percentage should not be more than 100") ? this.props.change('SelfPowerContribution', SelfPowerContribution) : this.props.change('SelfPowerContribution', 0)
-      // }
-      // if (Number(SEBPowerContributaion) > 100 || Number(SEBPowerContributaion) !== 0) {
-      checkPercentageValue(SEBPowerContributaion, "Power contribution percentage should not be more than 100") ? this.props.change('SEBPowerContributaion', SEBPowerContributaion) : this.props.change('SEBPowerContributaion', 0)
-      // }
       this.SEBPowerCalculation()
       this.selfPowerCalculation()
       this.powerContributionCalculation()
       this.minMonthlyChargeCalculation()
-
     }
   }
   componentWillUnmount() {
@@ -1692,8 +1684,8 @@ class AddPower extends Component {
                                   name={"SEBPowerContributaion"}
                                   type="text"
                                   placeholder={isViewMode ? '-' : 'Enter'}
-                                  validate={[required, positiveAndDecimalNumber, maxLength10, decimalLengthThree]}
-                                  component={renderNumberInputField}
+                                  validate={[required, number, maxPercentValue, checkWhiteSpaces, percentageLimitValidation]}
+                                  component={renderText}
                                   required={true}
                                   className=""
                                   customClassName=" withBorder"
