@@ -19,6 +19,7 @@ import ViewRfq from './ViewRfq';
 import AddRfq from './AddRfq';
 import { checkPermission, userDetails } from '../../helper';
 import TooltipCustom from '../common/Tooltip';
+import DayTime from '../common/DayTimeWrapper';
 const gridOptions = {};
 
 
@@ -238,6 +239,11 @@ function RfqListing(props) {
         return <div id={"status"} className={cell}>{tempStatus}</div>
     }
 
+    const dateFormater = (props) => {
+        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '-';
+    }
+
     const attachmentFormatter = (props) => {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         let files = row?.Attachments
@@ -295,7 +301,8 @@ function RfqListing(props) {
         totalValueRenderer: buttonFormatter,
         linkableFormatter: linkableFormatter,
         attachmentFormatter: attachmentFormatter,
-        statusFormatter: statusFormatter
+        statusFormatter: statusFormatter,
+        dateFormater: dateFormater
     }
 
 
@@ -372,7 +379,8 @@ function RfqListing(props) {
                                                 <AgGridColumn field="TechnologyName" headerName='Technology'></AgGridColumn>
                                                 <AgGridColumn field="Remark" headerName='Remark'></AgGridColumn>
                                                 <AgGridColumn field="RaisedBy" headerName='Raised By'></AgGridColumn>
-                                                <AgGridColumn field="RaisedOn" headerName='Raised On'></AgGridColumn>
+                                                <AgGridColumn field="RaisedOn" headerName='Raised On' cellRenderer='dateFormater'></AgGridColumn>
+                                                <AgGridColumn field="LastSubmissionDate" headerName='Last Submission Date' cellRenderer='dateFormater'></AgGridColumn>
                                                 <AgGridColumn field="QuotationNumber" headerName='Attachments' cellRenderer='attachmentFormatter'></AgGridColumn>
                                                 <AgGridColumn field="Status" headerName="Status" cellClass="text-center" minWidth={150} cellRenderer="statusFormatter"></AgGridColumn>
                                                 {<AgGridColumn field="QuotationId" width={160} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
