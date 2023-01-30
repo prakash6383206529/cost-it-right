@@ -773,6 +773,8 @@ function OverheadProfit(props) {
             let ProfitPercentage = profitObj?.ProfitPercentage
             let ProfitApplicability = profitObj?.ProfitApplicability
 
+            dispatch(isOverheadProfitDataChange(true))
+
             // IF BLOCK WILL GET EXECUTED WHEN TECHNOLOGY FOR COSTING IS ASSEMBLY FOR OTHER TECHNOLOGIES ELSE WILL EXECUTE
             if (partType) {
                 let combinedCost = checkForNull(headerCosts?.ProcessCostTotal) + checkForNull(headerCosts?.OperationCostTotal)
