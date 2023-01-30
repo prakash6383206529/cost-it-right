@@ -123,6 +123,7 @@ function AnalyticsDrawer(props) {
                 borderColor: primaryColor,
                 borderWidth: 2,
                 data: netLandedCostArray,
+                spanGaps: true,
                 pointBackgroundColor: secondryColor
             },
         ]

@@ -26,9 +26,9 @@ function VerifyImpactDrawer(props) {
   const [lastRevisionDataAcc, setLastRevisionDataAcc] = useState(false)
   const [masterIdForLastRevision, setMasterIdForLastRevision] = useState('')
   const [editWarning, setEditWarning] = useState(false)
-  const headerName = ['Revision No.', 'Name', 'Old Cost/Pc', 'New Cost/Pc', 'Quantity', 'Impact/Pc', 'Volume/Year', 'Impact/Quarter', 'Impact/Year']
+  const headerName = ['Revision No.', 'Name', 'Existing Cost/Pc', 'Revised Cost/Pc', 'Quantity', 'Impact/Pc', 'Volume/Year', 'Impact/Quarter', 'Impact/Year']
   const parentField = ['PartNumber', '-', 'PartName', '-', '-', '-', 'VariancePerPiece', 'VolumePerYear', 'ImpactPerQuarter', 'ImpactPerYear']
-  const childField = ['PartNumber', 'ECNNumber', 'PartName', 'OldCost', 'NewCost', 'Quantity', 'VariancePerPiece', '-', '-', '-']
+  const childField = ['PartNumber', 'ECNNumber', 'PartName', 'ExistingCost', 'RevisedCost', 'Quantity', 'VariancePerPiece', '-', '-', '-']
 
   const dispatch = useDispatch()
 
@@ -109,8 +109,8 @@ function VerifyImpactDrawer(props) {
                         <th>Master:</th>
                         <th>Costing Head:</th>
                         <th>Effective Date:</th>
-                        <th>Total Impact/Quarter (INR):</th>
-                        <th>Total Budgeted Price Impact/Quarter(INR):</th>
+                        <th>Impact/Quarter (w.r.t. Existing):</th>
+                        <th>Impact/Quarter (w.r.t. Budgeted):</th>
                       </tr>
                     </tbody>
                     <tbody>

@@ -17,7 +17,7 @@ import { debounce } from 'lodash';
 import { IdForMultiTechnology } from '../../../../../config/masterData';
 import TooltipCustom from '../../../../common/Tooltip';
 import { errorCheckObject } from '../../../CostingUtil';
-import { number, decimalNumberLimit6, checkWhiteSpaces, NoSignNoDecimalMessage, isNumber } from "../../../../../helper/validation";
+import { number, decimalNumberLimit6, checkWhiteSpaces, NoSignNoDecimalMessage, isNumber, percentageLimitValidation } from "../../../../../helper/validation";
 
 let counter = 0;
 function Tool(props) {
@@ -90,19 +90,6 @@ function Tool(props) {
   }, [getValues('NetToolCost')])
 
 
-  const handleMaintainenceToolCostChange = (e) => {
-    let message = ''
-    if (!isNumber(e.target.value)) {
-      setPercentageLimit(true)
-      message = NoSignNoDecimalMessage
-    } else if (e?.target?.value > 100) {
-      setPercentageLimit(true)
-      message = "Percentage cannot be greater than 100."
-    } else {
-      setPercentageLimit(false)
-    }
-    setErrorMessage(message)
-  }
 
 
 
@@ -678,21 +665,28 @@ function Tool(props) {
                             e.preventDefault()
                             dispatch(isToolDataChange(true))
                             setValueByAPI(false)
-                            handleMaintainenceToolCostChange(e)
+                          }}
+                          rules={{
+                            required: true,
+                            validate: { number, checkWhiteSpaces, percentageLimitValidation },
+                            max: {
+                              value: 100,
+                              message: 'Percentage cannot be greater than 100'
+                            },
                           }}
                           defaultValue={''}
                           className=""
                           customClassName={'withBorder'}
+                          errors={errors.maintanencePercentage}
                           disabled={CostingViewMode ? true : false}
                         />
-                        {percentageLimit && <WarningMessage dClass={"error-message"} textClass={"pt-1"} message={errorMessage} />}
                       </div>
                       :
                       //THIS FIELD WILL RENDER WHEN APPLICABILITY TYPE FIXED
                       <div className='mb-2'>
                         <TextFieldHookForm
                           label={`Maintenance Tool Cost`}
-                          name={'maintanencePercentage'}
+                          name={'maintanenceToolCost'}
                           Controller={Controller}
                           control={control}
                           register={register}
@@ -710,7 +704,7 @@ function Tool(props) {
                           defaultValue={''}
                           className=""
                           customClassName={'withBorder'}
-                          errors={errors.maintanencePercentage}
+                          errors={errors.maintanenceToolCost}
                           disabled={CostingViewMode ? true : false}
 
                         />
@@ -753,10 +747,6 @@ function Tool(props) {
                       control={control}
                       register={register}
                       mandatory={false}
-                      rules={{
-                        required: false,
-                        validate: { number, checkWhiteSpaces, decimalNumberLimit6 }
-                      }}
                       defaultValue={''}
                       className=""
                       customClassName={'withBorder'}
@@ -824,10 +814,6 @@ function Tool(props) {
                       control={control}
                       register={register}
                       mandatory={false}
-                      rules={{
-                        required: false,
-                        validate: { number, checkWhiteSpaces, decimalNumberLimit6 }
-                      }}
                       defaultValue={''}
                       className=""
                       customClassName={'withBorder'}
@@ -847,10 +833,6 @@ function Tool(props) {
                       control={control}
                       register={register}
                       mandatory={false}
-                      rules={{
-                        required: false,
-                        validate: { number, checkWhiteSpaces, decimalNumberLimit6 }
-                      }}
                       defaultValue={''}
                       className=""
                       customClassName={'withBorder'}

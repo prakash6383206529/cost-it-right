@@ -446,7 +446,7 @@ class InterestRateListing extends Component {
                         DownloadAccessibility &&
                         <>
 
-                          <ExcelFile filename={'InterestMaster'} fileExtension={'.xls'} element={
+                          <ExcelFile filename={'Interest Master'} fileExtension={'.xls'} element={
                             <button title={`Download ${this.state.dataCount === 0 ? "All" : "(" + this.state.dataCount + ")"}`} type="button" className={'user-btn mr5'}><div className="download mr-1" ></div>
                               {/* DOWNLOAD */}
                               {`${this.state.dataCount === 0 ? "All" : "(" + this.state.dataCount + ")"}`}
@@ -516,7 +516,7 @@ class InterestRateListing extends Component {
                 isOpen={isBulkUpload}
                 closeDrawer={this.closeBulkUploadDrawer}
                 isEditFlag={false}
-                fileName={'InterestRate'}
+                fileName={'Interest Rate'}
                 isZBCVBCTemplate={true}
                 messageLabel={'Interest Rate'}
                 anchor={'right'}

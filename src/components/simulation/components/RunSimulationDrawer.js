@@ -12,6 +12,7 @@ import { EXCHNAGERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, MACHI
 import { NumberFieldHookForm, SearchableSelectHookForm } from '../../layout/HookFormInputs';
 import { TextFieldHookForm, } from '../../layout/HookFormInputs';
 import { checkForNull, getConfigurationKey, setValueAccToUOM } from '../../../helper';
+import { number, percentageLimitValidation, checkWhiteSpaces } from "../../../helper/validation";
 import Switch from 'react-switch'
 import { Fragment } from 'react';
 import { debounce } from 'lodash';
@@ -482,21 +483,17 @@ function RunSimulationDrawer(props) {
                                                                                             handleChange={handleOherCostApplicabilityChange}
                                                                                             errors={errors.otherCostApplicability}
                                                                                         />
-                                                                                        <NumberFieldHookForm
+                                                                                        <TextFieldHookForm
                                                                                             label="Percentage"
                                                                                             name={"OtherCostPercent"}
                                                                                             Controller={Controller}
                                                                                             rules={{
                                                                                                 required: true,
-                                                                                                pattern: {
-                                                                                                    value: /^\d*\.?\d*$/,
-                                                                                                    message: 'Invalid Number.'
-                                                                                                },
-
+                                                                                                validate: { number, checkWhiteSpaces, percentageLimitValidation },
                                                                                                 max: {
                                                                                                     value: 100,
-                                                                                                    message: "Should not be greater than 100"
-                                                                                                }
+                                                                                                    message: 'Percentage cannot be greater than 100'
+                                                                                                },
                                                                                             }}
                                                                                             control={control}
                                                                                             register={register}
@@ -579,21 +576,17 @@ function RunSimulationDrawer(props) {
                                                                                             errors={errors.DiscountCostApplicability}
                                                                                             customClassName={"auto-width"}
                                                                                         />
-                                                                                        <NumberFieldHookForm
+                                                                                        <TextFieldHookForm
                                                                                             label="Percentage"
                                                                                             name={"DiscountPercent"}
                                                                                             Controller={Controller}
                                                                                             rules={{
                                                                                                 required: true,
-                                                                                                pattern: {
-                                                                                                    value: /^\d*\.?\d*$/,
-                                                                                                    message: 'Invalid Number.'
-                                                                                                },
-
+                                                                                                validate: { number, checkWhiteSpaces, percentageLimitValidation },
                                                                                                 max: {
                                                                                                     value: 100,
-                                                                                                    message: "Should not be greater than 100"
-                                                                                                }
+                                                                                                    message: 'Percentage cannot be greater than 100'
+                                                                                                },
                                                                                             }}
                                                                                             control={control}
                                                                                             register={register}
@@ -709,21 +702,17 @@ function RunSimulationDrawer(props) {
                                                                                 errors={errors.PackagingCostApplicability}
                                                                                 customClassName={"auto-width"}
                                                                             />
-                                                                            <NumberFieldHookForm
+                                                                            <TextFieldHookForm
                                                                                 label="Percentage"
                                                                                 name={"PackagingPercent"}
                                                                                 Controller={Controller}
                                                                                 rules={{
                                                                                     required: true,
-                                                                                    pattern: {
-                                                                                        value: /^\d*\.?\d*$/,
-                                                                                        message: 'Invalid Number.'
-                                                                                    },
-
+                                                                                    validate: { number, checkWhiteSpaces, percentageLimitValidation },
                                                                                     max: {
                                                                                         value: 100,
-                                                                                        message: "Should not be greater than 100"
-                                                                                    }
+                                                                                        message: 'Percentage cannot be greater than 100'
+                                                                                    },
                                                                                 }}
                                                                                 control={control}
                                                                                 register={register}
@@ -833,20 +822,17 @@ function RunSimulationDrawer(props) {
                                                                                 errors={errors.FreightCostApplicability}
                                                                                 customClassName={"auto-width"}
                                                                             />
-                                                                            <NumberFieldHookForm
+                                                                            <TextFieldHookForm
                                                                                 label="Percentage"
                                                                                 name={"FreightPercent"}
                                                                                 Controller={Controller}
                                                                                 rules={{
                                                                                     required: true,
-                                                                                    pattern: {
-                                                                                        value: /^\d*\.?\d*$/,
-                                                                                        message: 'Invalid Number.'
-                                                                                    },
+                                                                                    validate: { number, checkWhiteSpaces, percentageLimitValidation },
                                                                                     max: {
                                                                                         value: 100,
-                                                                                        message: "Should not be greater than 100"
-                                                                                    }
+                                                                                        message: 'Percentage cannot be greater than 100'
+                                                                                    },
                                                                                 }}
                                                                                 control={control}
                                                                                 register={register}
@@ -960,21 +946,17 @@ function RunSimulationDrawer(props) {
                                                                                 errors={errors.ToolCostApplicability}
                                                                                 customClassName={"auto-width"}
                                                                             />
-                                                                            <NumberFieldHookForm
+                                                                            <TextFieldHookForm
                                                                                 label="Percentage"
                                                                                 name={"ToolPercent"}
                                                                                 Controller={Controller}
                                                                                 rules={{
                                                                                     required: true,
-                                                                                    pattern: {
-                                                                                        value: /^\d*\.?\d*$/,
-                                                                                        message: 'Invalid Number.'
-                                                                                    },
-
+                                                                                    validate: { number, checkWhiteSpaces, percentageLimitValidation },
                                                                                     max: {
                                                                                         value: 100,
-                                                                                        message: "Should not be greater than 100"
-                                                                                    }
+                                                                                        message: 'Percentage cannot be greater than 100'
+                                                                                    },
                                                                                 }}
                                                                                 control={control}
                                                                                 register={register}
