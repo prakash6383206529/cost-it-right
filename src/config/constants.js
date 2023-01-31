@@ -2095,12 +2095,15 @@ export const VOLUMEBULKUPLOAD = 'Volume'
 //STATUS FILTER DROPDOWN OPTIONS
 export const statusOptionsMasters = [
 
-  { label: "Draft", value: "1" },
-  { label: "PendingForApproval", value: "2" },
   { label: "Approved", value: "3" },
-  { label: "Rejected", value: "4" },
-  { label: "History", value: "5" },
   { label: "AwaitingApproval", value: "6" },
+  { label: "Draft", value: "1" },
+  { label: "History", value: "5" },
+  { label: "PendingForApproval", value: "2" },
+
+  { label: "Rejected", value: "4" },
+
+
 ]
 
 
