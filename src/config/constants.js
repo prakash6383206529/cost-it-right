@@ -2100,10 +2100,7 @@ export const statusOptionsMasters = [
   { label: "Draft", value: "1" },
   { label: "History", value: "5" },
   { label: "PendingForApproval", value: "2" },
-
   { label: "Rejected", value: "4" },
-
-
 ]
 
 
