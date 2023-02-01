@@ -1837,7 +1837,7 @@ export const VIEW_COSTING_DATA = {
   customer: 'Customer (Code)',
   plantExcel: 'Plant (Code)',
   status: 'Status',
-  rm: 'RM Name-Grade',
+  rm: 'RM-Grade',
   rmRate: 'RM Rate',
   scrapRate: 'Scrap Rate',
   gWeight: 'Gross Weight',
@@ -2177,4 +2177,4 @@ export const KEYRFQ = "UAGSqTBCbZ8JqHJl"
 export const IVRFQ = "8vFNmRQEl91nOtrM"
 
 //VERSION 
-export const VERSION = "V2.1.65";
+export const VERSION = "V2.1.67";

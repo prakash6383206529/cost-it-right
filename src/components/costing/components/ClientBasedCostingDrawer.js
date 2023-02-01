@@ -130,7 +130,7 @@ export function Clientbasedcostingdrawer(props) {
                                 </Col>
                                 <Col md="3">
                                     <Field
-                                        label={`RM Name-Grade`}
+                                        label={`Grade`}
                                         type="text"
                                         placeholder={"Enter"}
                                         component={renderText}
