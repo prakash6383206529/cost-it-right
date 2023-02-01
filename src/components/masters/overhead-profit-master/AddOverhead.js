@@ -320,6 +320,9 @@ class AddOverhead extends Component {
       if (newValue?.label?.includes('Part Cost')) {
         this.setState({ showPartCost: true })
       }
+      else {
+        this.setState({ showPartCost: false })
+      }
       this.setState({ overheadAppli: newValue, isRM: false, isCC: false, isBOP: false, isOverheadPercent: false }, () => {
         this.checkOverheadFields()
       });
