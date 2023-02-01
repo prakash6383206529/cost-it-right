@@ -17,9 +17,9 @@ function CorrugatedBoxCalculator(props) {
 
     const getTabno = (layout) => {
         switch (layout) {
-            case 'Hot':
+            case 'Corrugated':
                 return '1'
-            case 'Cold':
+            case 'Mesh':
                 return '2'
             default:
                 break;
