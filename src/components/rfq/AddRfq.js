@@ -361,6 +361,11 @@ function AddRfq(props) {
         } else if (files?.length === 0) {
             Toaster.warning("Please add atleast one attachment file")
             return false
+        } else if (!getValues('plant')) {
+            Toaster.warning("Please add Plant")
+            return false
+        } else if (Object.keys(errors).length > 0) {
+            return false
         }
 
         let obj = {}
@@ -1093,14 +1098,14 @@ function AddRfq(props) {
                                                 {"Cancel"}
                                             </button>
 
-                                            <button type="button" className="submit-button save-btn mr-2"
+                                            <button type="submit" className="submit-button save-btn mr-2"
                                                 onClick={() => handleSubmit(onSubmit(false))}
                                                 disabled={isViewFlag}>
                                                 <div className={"save-icon"}></div>
                                                 {"Save"}
                                             </button>
 
-                                            <button type="button" className="submit-button save-btn"
+                                            <button type="submit" className="submit-button save-btn"
                                                 onClick={() => handleSubmit(onSubmit(true))}
                                                 disabled={isViewFlag}>
                                                 <div className="send-for-approval mr-1"></div>
