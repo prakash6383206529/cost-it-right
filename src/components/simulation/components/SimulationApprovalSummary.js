@@ -1176,9 +1176,9 @@ function SimulationApprovalSummary(props) {
                                                                 <AgGridColumn width={160} field="CostingNumber" headerName="Costing Id"></AgGridColumn>
 
 
-                                                                {(isRMDomesticOrRMImport || keysForDownloadSummary.IsRawMaterialSimulation) && <AgGridColumn width={192} field="RMName" headerName="Raw Material-Grade" cellRenderer='rawMaterailFormat' ></AgGridColumn>}
-                                                                {(isRMDomesticOrRMImport || keysForDownloadSummary.IsRawMaterialSimulation) && <AgGridColumn width={192} field="RMCode" headerName="Raw Material Code" cellRenderer='rawMaterailCodeSpecFormatter'></AgGridColumn>}
-                                                                {(isRMDomesticOrRMImport || keysForDownloadSummary.IsRawMaterialSimulation) && <AgGridColumn width={192} field="RMSpecs" headerName="Raw Material Spec" cellRenderer='rawMaterailCodeSpecFormatter'></AgGridColumn>}
+                                                                {(isRMDomesticOrRMImport || keysForDownloadSummary.IsRawMaterialSimulation) && <AgGridColumn width={192} field="RMName" headerName="RM-Grade" cellRenderer='rawMaterailFormat' ></AgGridColumn>}
+                                                                {(isRMDomesticOrRMImport || keysForDownloadSummary.IsRawMaterialSimulation) && <AgGridColumn width={192} field="RMCode" headerName="Code" cellRenderer='rawMaterailCodeSpecFormatter'></AgGridColumn>}
+                                                                {(isRMDomesticOrRMImport || keysForDownloadSummary.IsRawMaterialSimulation) && <AgGridColumn width={192} field="RMSpecs" headerName="Spec" cellRenderer='rawMaterailCodeSpecFormatter'></AgGridColumn>}
 
 
                                                                 <AgGridColumn width={136} field="PartNo" headerName="Part No."></AgGridColumn>

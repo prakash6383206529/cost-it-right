@@ -536,9 +536,9 @@ function RMSimulation(props) {
                                                 <AgGridColumn width={140} field="CostingHead" headerName="Costing Head" editable='false' cellRenderer={'costingHeadFormatter'}></AgGridColumn>
                                             }
                                             <AgGridColumn width={140} field="RawMaterial" editable='false' headerName="Raw Material"></AgGridColumn>
-                                            <AgGridColumn width={115} field="RMGrade" editable='false' headerName="RM Grade" ></AgGridColumn>
-                                            <AgGridColumn width={115} field="RMSpec" editable='false' headerName="RM Spec"></AgGridColumn>
-                                            <AgGridColumn width={115} field="RawMaterialCode" editable='false' headerName='RM Code' cellRenderer='hyphenFormatter'></AgGridColumn>
+                                            <AgGridColumn width={115} field="RMGrade" editable='false' headerName="Grade" ></AgGridColumn>
+                                            <AgGridColumn width={115} field="RMSpec" editable='false' headerName="Spec"></AgGridColumn>
+                                            <AgGridColumn width={115} field="RawMaterialCode" editable='false' headerName='Code' cellRenderer='hyphenFormatter'></AgGridColumn>
                                             {!isImpactedMaster && <AgGridColumn width={110} field="Category" editable='false' headerName="Category"></AgGridColumn>}
                                             {!isImpactedMaster && <AgGridColumn width={125} field="TechnologyName" editable='false' headerName="Technology" ></AgGridColumn>}
                                             {!isImpactedMaster && <AgGridColumn width={100} field="Vendor (Code)" editable='false' headerName="Vendor (Code)" cellRenderer='vendorFormatter'></AgGridColumn>}
