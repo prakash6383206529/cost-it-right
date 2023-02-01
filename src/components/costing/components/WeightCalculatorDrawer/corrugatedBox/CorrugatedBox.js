@@ -47,7 +47,7 @@ function CorrugatedBox(props) {
     const fieldValues = useWatch({
         control,
         // name: ['no_of_ply', 'gsm', 'bursting_factor', 'length_box', 'height_box', 'cutting_allowance', 'width_inc_cutting'],
-        name: ['no_of_ply', 'gsm', 'bursting_factor', 'length_box', 'height_box', 'cutting_allowance', 'cuttingAllowanceForLength'],
+        name: ['no_of_ply', 'gsm', 'bursting_factor', 'length_box', 'height_box', 'cutting_allowance', 'cuttingAllowanceForLength', 'fluteTypePercent'],
     })
 
     useEffect(() => {
@@ -179,8 +179,11 @@ function CorrugatedBox(props) {
                 heightBox: getValues('height_box'),
                 stichingLength: getValues('stiching_length'),
                 no_of_ply: getValues('no_of_ply'),
-                gsm: getValues('gsm')
+                gsm: getValues('gsm'),
+                ftp: Number(getValues('fluteTypePercent')), //FTP
             }
+
+            const fluteTypePercent = checkForNull(data.ftp)
 
             let widthSheet = (Number(data.widthBox) + (parseInt(data.heightBox) * 2)) / 15.4;
             let width_inc_cutting = widthSheet + 1
@@ -199,7 +202,7 @@ function CorrugatedBox(props) {
             const NoOfPly = parseInt(data.no_of_ply);
             const Gsm = parseInt(data.gsm);
 
-            const gross = (width_inc_cutting * length_inc_cutting_allowance * NoOfPly * Gsm) / 1550;
+            const gross = (width_inc_cutting * length_inc_cutting_allowance * NoOfPly * Gsm * fluteTypePercent) / 1550;
             const finalGross = gross / 1000;
 
             setDataSend(prevState => ({ ...prevState, paperWithDecimal: finalGross }))
@@ -823,6 +826,30 @@ function CorrugatedBox(props) {
                                         customClassName={'withBorder'}
                                         errors={errors.round_off_length}
                                         disabled={true}
+                                    />
+                                </Col>
+
+                                <Col md="3">
+                                    <NumberFieldHookForm
+                                        label={`Flute Type Percentage`}
+                                        name={'fluteTypePercent'}
+                                        Controller={Controller}
+                                        control={control}
+                                        register={register}
+                                        mandatory={false}
+                                        rules={{
+                                            required: false,
+                                            pattern: {
+                                                value: /^\d{0,4}(\.\d{0,6})?$/i,
+                                                message: 'Maximum length for integer is 4 and for decimal is 6',
+                                            },
+                                        }}
+                                        handleChange={() => { }}
+                                        defaultValue={''}
+                                        className=""
+                                        customClassName={'withBorder'}
+                                        errors={errors.fluteTypePercent}
+                                        disabled={props.CostingViewMode ? props.CostingViewMode : false}
                                     />
                                 </Col>
                             </Row>}
