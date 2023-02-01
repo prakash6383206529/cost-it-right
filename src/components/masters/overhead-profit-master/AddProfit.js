@@ -329,6 +329,9 @@ class AddProfit extends Component {
       if (newValue?.label?.includes('Part Cost')) {
         this.setState({ showPartCost: true })
       }
+      else {
+        this.setState({ showPartCost: false })
+      }
       this.setState({ profitAppli: newValue, isRM: false, isCC: false, isBOP: false, isProfitPercent: false }, () => {
         this.checkProfitFields()
       });
