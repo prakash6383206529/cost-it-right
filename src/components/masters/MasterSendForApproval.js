@@ -177,13 +177,13 @@ function MasterSendForApproval(props) {
             senderObj.EffectiveDate = approvalObj && Object.keys(approvalObj).length > 0 ? approvalObj.EffectiveDate : DayTime(new Date()).format('YYYY-MM-DD HH:mm:ss')
             senderObj.PurchasingGroup = ''
             senderObj.MaterialGroup = ''
-            senderObj.CostingTypeId = approvalObj.CostingTypeId
+            senderObj.CostingTypeId = approvalObj?.CostingTypeId
             let tempArray = []
             switch (masterId) {
                 case 1:                        // CASE 1 FOR RAW MATERIAL
                     if (isBulkUpload) {
                         approvalData && approvalData.map(item => {
-                            tempArray.push({ RawMaterialId: item.RawMaterialId, IsImportEntery: item.EnteryType === 'Domestic' ? false : true, RawMaterialRequest: {} })
+                            tempArray.push({ RawMaterialId: item.RawMaterialId, IsImportEntery: item.EnteryType === 'Domestic' ? false : true, RawMaterialRequest: {}, CostingTypeId: item.CostingTypeId })
                             return null
                         })
                     } else {
@@ -208,7 +208,7 @@ function MasterSendForApproval(props) {
 
                     if (isBulkUpload) {
                         approvalData && approvalData.map(item => {
-                            tempArray.push({ BoughtOutPartId: item.BoughtOutPartId, IsImportEntery: item.EnteryType === 'Domestic' ? false : true, BoughtoutPartRequest: {} })
+                            tempArray.push({ BoughtOutPartId: item.BoughtOutPartId, IsImportEntery: item.EnteryType === 'Domestic' ? false : true, BoughtoutPartRequest: {}, CostingTypeId: item.CostingTypeId })
                             return null
                         })
                     } else {
@@ -231,7 +231,7 @@ function MasterSendForApproval(props) {
 
                     if (isBulkUpload) {
                         approvalData && approvalData.map(item => {
-                            tempArray.push({ OperationId: item.OperationId, IsImportEntery: item.EnteryType === 'Domestic' ? false : true, OperationRequest: {} })
+                            tempArray.push({ OperationId: item.OperationId, IsImportEntery: item.EnteryType === 'Domestic' ? false : true, OperationRequest: {}, CostingTypeId: item.CostingTypeId })
                             return null
                         })
                     } else {
@@ -254,7 +254,7 @@ function MasterSendForApproval(props) {
 
                     if (isBulkUpload) {
                         approvalData && approvalData.map(item => {
-                            tempArray.push({ MachineId: item.MachineId, IsImportEntery: item.EnteryType === 'Domestic' ? false : true, MachineRequest: {} })
+                            tempArray.push({ MachineId: item.MachineId, IsImportEntery: item.EnteryType === 'Domestic' ? false : true, MachineRequest: {}, CostingTypeId: item.CostingTypeId })
                             return null
                         })
                     } else {
