@@ -14,12 +14,13 @@ import TooltipCustom from '../../../../common/Tooltip'
 function CorrugatedBox(props) {
     const [dataSend, setDataSend] = useState({})
     const [isDisable, setIsDisable] = useState(false)
-    const [bodySeparator, setBodySeparator] = useState(false)
     const localStorage = reactLocalStorage.getObject('InitialConfiguration');
     const WeightCalculatorRequest = props.rmRowData.WeightCalculatorRequest;
+    const [bodySeparator, setBodySeparator] = useState(WeightCalculatorRequest && WeightCalculatorRequest.IsIncludingBodySeparator !== null ? WeightCalculatorRequest.IsIncludingBodySeparator : false)
     const { rmRowData, CostingViewMode, item } = props
     const dispatch = useDispatch()
     const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
+
     const defaultValues = {
         no_of_ply: WeightCalculatorRequest && WeightCalculatorRequest.NoOfPly !== null ? WeightCalculatorRequest.NoOfPly : '',
         gsm: WeightCalculatorRequest && WeightCalculatorRequest.GSM !== null ? WeightCalculatorRequest.GSM : '',
@@ -36,7 +37,19 @@ function CorrugatedBox(props) {
         cuttingAllowanceForLength: WeightCalculatorRequest && WeightCalculatorRequest.CuttingAllowanceLength !== null ? WeightCalculatorRequest.CuttingAllowanceLength : '',
         length_inc_cutting_allowance: WeightCalculatorRequest && WeightCalculatorRequest.LengthSheetIncCuttingAllowance !== null ? checkForDecimalAndNull(WeightCalculatorRequest.LengthSheetIncCuttingAllowance, initialConfiguration.NoOfDecimalForInputOutput) : '',
         paper_process: WeightCalculatorRequest && WeightCalculatorRequest.PaperWeightAndProcessRejectionSum !== null ? checkForDecimalAndNull(WeightCalculatorRequest.PaperWeightAndProcessRejectionSum, initialConfiguration.NoOfDecimalForInputOutput) : '',
+        fluteTypePercent: WeightCalculatorRequest && WeightCalculatorRequest.FluteTypePercentage !== null ? checkForDecimalAndNull(WeightCalculatorRequest.FluteTypePercentage, initialConfiguration.NoOfDecimalForInputOutput) : '',
     }
+
+
+    useEffect(() => {
+        console.log(WeightCalculatorRequest.WidthSheetIncCuttingAllowance, "WeightCalculatorRequest.WidthSheetIncCuttingAllowance")
+        setTimeout(() => {
+            setValue('width_inc_cutting', WeightCalculatorRequest && WeightCalculatorRequest.WidthSheetIncCuttingAllowance !== null ? WeightCalculatorRequest.WidthSheetIncCuttingAllowance : '')
+            setValue('length_inc_cutting_allowance', WeightCalculatorRequest && WeightCalculatorRequest.LengthSheetIncCuttingAllowance !== null ? WeightCalculatorRequest.LengthSheetIncCuttingAllowance : '')
+        }, 300);
+    }, [])
+
+
     const {
         register, handleSubmit, control, setValue, getValues, formState: { errors }, } = useForm({
             mode: 'onChange',
@@ -46,7 +59,6 @@ function CorrugatedBox(props) {
 
     const fieldValues = useWatch({
         control,
-        // name: ['no_of_ply', 'gsm', 'bursting_factor', 'length_box', 'height_box', 'cutting_allowance', 'width_inc_cutting'],
         name: ['no_of_ply', 'gsm', 'bursting_factor', 'length_box', 'height_box', 'cutting_allowance', 'cuttingAllowanceForLength', 'fluteTypePercent'],
     })
 
@@ -149,7 +161,6 @@ function CorrugatedBox(props) {
             length_inc_cutting_allowance: dataSend.LengthCuttingAllowance,
             no_of_ply: getValues('no_of_ply'),
             gsm: getValues('gsm')
-
         }
 
         if (data.length_inc_cutting_allowance) {
@@ -184,18 +195,15 @@ function CorrugatedBox(props) {
             }
 
             const fluteTypePercent = checkForNull(data.ftp)
-
             let widthSheet = (Number(data.widthBox) + (parseInt(data.heightBox) * 2)) / 15.4;
             let width_inc_cutting = widthSheet + 1
 
             const lengthSheet = (Number(data.lengthBox) + (parseInt(data.heightBox) * 2)) / 15.4;
             let length_inc_cutting_allowance = lengthSheet + 1
 
-
             let inv = 1.0 / 0.25
             let width_RoundOff = Math.round(width_inc_cutting)
             let length_RoundOff = Math.round(length_inc_cutting_allowance * inv) / inv
-
 
             // const WidthIncCuttingAllowance = Number(data.width_inc_cutting);
             // const LengthIncCuttingAllowance = parseInt(data.length_inc_cutting_allowance);
@@ -207,7 +215,7 @@ function CorrugatedBox(props) {
 
             setDataSend(prevState => ({ ...prevState, paperWithDecimal: finalGross }))
 
-            setDataSend(prevState => ({ ...prevState, widthSheetWithDecimal: widthSheet, lengthSheetWithDecimal: lengthSheet }))
+            setDataSend(prevState => ({ ...prevState, widthSheetWithDecimal: widthSheet, lengthSheetWithDecimal: lengthSheet, LengthCuttingAllowance: length_inc_cutting_allowance, widthIncCuttingDecimal: width_inc_cutting }))
             setTimeout(() => {
 
                 setValue('width_sheet_body', checkForDecimalAndNull(widthSheet, localStorage.NoOfDecimalForInputOutput))
@@ -231,6 +239,7 @@ function CorrugatedBox(props) {
     const onSubmit = debounce(handleSubmit((Values) => {
         setIsDisable(true)
         let data = {
+            LayoutType: 'Corrugated',
             CorrugatedBoxWeightCalculatorId: WeightCalculatorRequest && WeightCalculatorRequest.CorrugatedBoxWeightCalculatorId ? WeightCalculatorRequest.CorrugatedBoxWeightCalculatorId : "0",
             BaseCostingIdRef: item.CostingId,
             CostingRawMaterialDetailId: rmRowData.RawMaterialDetailId,
@@ -254,6 +263,8 @@ function CorrugatedBox(props) {
             WidthBox: Values.width_box,
             WidthSheetIncCuttingAllowance: dataSend.widthIncCuttingDecimal,
             WidthSheet: dataSend.widthSheetWithDecimal,
+            FluteTypePercentage: Values.fluteTypePercent,
+            IsIncludingBodySeparator: bodySeparator
         }
 
         dispatch(saveRawMaterialCalculationForCorrugatedBox(data, res => {
@@ -500,20 +511,26 @@ function CorrugatedBox(props) {
                                         title={'Sheet Details'}
                                         customClass={'underLine-title'}
                                     />
-
-                                    <input
-                                        type="checkbox"
-                                        value={"All"}
-                                        className='mr-2 mt-1'
-                                        // disabled={true}
-                                        // checked={false}
-                                        onClick={() => {
-                                            setBodySeparator(!bodySeparator)
-                                            bodySeparatorCalculations(!bodySeparator)
-                                        }
-                                        }
-                                    />
-                                    Body Separator
+                                    <label
+                                        className="custom-checkbox mb-0"
+                                    >
+                                        Body Separator
+                                        <input
+                                            type="checkbox"
+                                            value={"All"}
+                                            className='mr-2 mt-1'
+                                            disabled={props.CostingViewMode ? props.CostingViewMode : false}
+                                            checked={bodySeparator}
+                                            onClick={() => {
+                                                setBodySeparator(!bodySeparator)
+                                                bodySeparatorCalculations(!bodySeparator)
+                                            }
+                                            }
+                                        />
+                                        <span
+                                            className=" before-box"
+                                        />
+                                    </label>
                                 </Col>
                             </Row>
                             {!bodySeparator && <Row className={'mt15 corrugated-box-label-wrapper'}>
@@ -536,8 +553,6 @@ function CorrugatedBox(props) {
                                         disabled={true}
                                     />
                                 </Col>
-
-
 
                                 <Col md="3">
                                     <TextFieldHookForm
@@ -564,7 +579,6 @@ function CorrugatedBox(props) {
                                     />
                                 </Col>
 
-
                                 <Col md="3">
                                     <TooltipCustom disabledIcon={true} id={'sheet-width-cutting'} tooltipClass={'weight-of-sheet'} tooltipText={'Width Cutting Allowance = (Width Sheet + 2 * Cutting Allowance)'} />
                                     <NumberFieldHookForm
@@ -590,7 +604,6 @@ function CorrugatedBox(props) {
                                         disabled={true}
                                     />
                                 </Col>
-
 
                                 <Col md="3">
                                     <TooltipCustom disabledIcon={true} id={'length-sheet'} tooltipClass={'weight-of-sheet'} tooltipText={'Length Sheet = (2 * (Length Box + Width Box) + Length Sheet) / 25.4'} />
@@ -669,8 +682,6 @@ function CorrugatedBox(props) {
                                     />
                                 </Col>
                             </Row>}
-
-
 
                             {bodySeparator && <Row className={'mt15 corrugated-box-label-wrapper'}>
 
@@ -769,7 +780,6 @@ function CorrugatedBox(props) {
                                         disabled={true}
                                     />
                                 </Col>
-
 
                                 <Col md="3" className='mt-2'>
                                     <TooltipCustom disabledIcon={true} id={'length-cutting-al'} tooltipClass={'weight-of-sheet'} tooltipText={'Length Cutting Allowance = (Length + 1) '} />

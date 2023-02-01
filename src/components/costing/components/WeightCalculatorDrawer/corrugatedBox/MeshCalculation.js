@@ -18,6 +18,7 @@ function MeshCalculation(props) {
     const WeightCalculatorRequest = props.rmRowData.WeightCalculatorRequest;
     const { rmRowData, CostingViewMode, item } = props
     const dispatch = useDispatch()
+
     const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
     const defaultValues = {
         no_of_ply: WeightCalculatorRequest && WeightCalculatorRequest.NoOfPly !== null ? WeightCalculatorRequest.NoOfPly : '',
@@ -27,7 +28,6 @@ function MeshCalculation(props) {
         length_box: WeightCalculatorRequest && WeightCalculatorRequest.LengthBox !== null ? WeightCalculatorRequest.LengthBox : '',
         width_box: WeightCalculatorRequest && WeightCalculatorRequest.WidthBox !== null ? WeightCalculatorRequest.WidthBox : '',
         height_box: WeightCalculatorRequest && WeightCalculatorRequest.HeightBox !== null ? WeightCalculatorRequest.HeightBox : '',
-        stiching_length: WeightCalculatorRequest && WeightCalculatorRequest.StitchingLengthInchPerJoint !== null ? WeightCalculatorRequest.StitchingLengthInchPerJoint : '',
         width_sheet: WeightCalculatorRequest && WeightCalculatorRequest.WidthSheet !== null ? checkForDecimalAndNull(WeightCalculatorRequest.WidthSheet, initialConfiguration.NoOfDecimalForInputOutput) : '', //
         cutting_allowance: WeightCalculatorRequest && WeightCalculatorRequest.CuttingAllowanceWidth !== undefined ? WeightCalculatorRequest.CuttingAllowanceWidth : '',
         width_inc_cutting: WeightCalculatorRequest && WeightCalculatorRequest.WidthSheetIncCuttingAllowance !== null ? WeightCalculatorRequest.WidthSheetIncCuttingAllowance : '',
@@ -35,6 +35,12 @@ function MeshCalculation(props) {
         cuttingAllowanceForLength: WeightCalculatorRequest && WeightCalculatorRequest.CuttingAllowanceLength !== null ? WeightCalculatorRequest.CuttingAllowanceLength : '',
         length_inc_cutting_allowance: WeightCalculatorRequest && WeightCalculatorRequest.LengthSheetIncCuttingAllowance !== null ? checkForDecimalAndNull(WeightCalculatorRequest.LengthSheetIncCuttingAllowance, initialConfiguration.NoOfDecimalForInputOutput) : '',
         paper_process: WeightCalculatorRequest && WeightCalculatorRequest.PaperWeightAndProcessRejectionSum !== null ? checkForDecimalAndNull(WeightCalculatorRequest.PaperWeightAndProcessRejectionSum, initialConfiguration.NoOfDecimalForInputOutput) : '',
+        noOfMeshLength: WeightCalculatorRequest && WeightCalculatorRequest.NosOfMeshInLength !== null ? WeightCalculatorRequest.NosOfMeshInLength : '',
+        noOfMeshWidth: WeightCalculatorRequest && WeightCalculatorRequest.NosOfMeshInWidth !== null ? WeightCalculatorRequest.NosOfMeshInWidth : '',
+        meshArrangement: WeightCalculatorRequest && WeightCalculatorRequest.MeshArrangement !== null ? { label: WeightCalculatorRequest.MeshArrangement, value: 2 } : '',
+        fluteTypePercent: WeightCalculatorRequest && WeightCalculatorRequest.FluteTypePercentage !== null ? checkForDecimalAndNull(WeightCalculatorRequest.FluteTypePercentage, initialConfiguration.NoOfDecimalForInputOutput) : '',
+        width_RoundOff: WeightCalculatorRequest && WeightCalculatorRequest.RoundOffWidthSheetInchCuttingAllowance !== null ? checkForDecimalAndNull(WeightCalculatorRequest.RoundOffWidthSheetInchCuttingAllowance, initialConfiguration.NoOfDecimalForInputOutput) : '',
+        length_RoundOff: WeightCalculatorRequest && WeightCalculatorRequest.RoundOffLengthSheetInchCuttingAllowance !== null ? checkForDecimalAndNull(WeightCalculatorRequest.RoundOffLengthSheetInchCuttingAllowance, initialConfiguration.NoOfDecimalForInputOutput) : '',
     }
     const {
         register, handleSubmit, control, setValue, getValues, formState: { errors }, } = useForm({
@@ -45,32 +51,16 @@ function MeshCalculation(props) {
 
     const fieldValues = useWatch({
         control,
-        name: ['no_of_ply', 'gsm', 'bursting_factor', 'length_box', 'width_box', 'noOfMeshLength', 'noOfMeshWidth', 'fluteTypePercent', 'cutting_allowance', 'width_inc_cutting'],
+        name: ['no_of_ply', 'gsm', 'bursting_factor', 'length_box', 'width_box', 'noOfMeshLength', 'noOfMeshWidth', 'fluteTypePercent', 'cutting_allowance'],
     })
 
     useEffect(() => {
         if (!CostingViewMode) {
             setBurstingStrength()
             setWidthSheet_LengthSheet()//
-
-
-
-            // setWidthCuttingAllowance()
-            // setLengthCuttingAllowance()
             setFinalGrossWeight()
         }
     }, [fieldValues])
-
-    useEffect(() => {
-
-
-        setTimeout(() => {
-            // setValue('width_inc_cutting', 0)
-            // setValue('length_inc_cutting_allowance', 0)
-            setValue('width_RoundOff', 0)
-            setValue('length_RoundOff', 0)
-        }, 700);
-    }, [])
 
     const setBurstingStrength = () => {
         let data = {
@@ -99,19 +89,23 @@ function MeshCalculation(props) {
         let inv = 1.0 / 0.25
 
         let widthSheet = (checkForNull(data.widthBox) * checkForNull(data.noOfMeshWidth)) / 25.4;
-        let width_inc_cutting = widthSheet + 1
+
+        let width_inc_cutting = 0
+        if (widthSheet) {
+            width_inc_cutting = widthSheet + 1
+        }
+
         let roundOffWidth = Math.round(width_inc_cutting)
-
-
-
         const lengthSheet = (checkForNull(data.noOfMeshLength) * checkForNull(data.lengthBox)) / 25.4;
-        let length_inc_cutting_allowance = lengthSheet + 1
 
-
+        let length_inc_cutting_allowance = 0
+        if (lengthSheet) {
+            length_inc_cutting_allowance = lengthSheet + 1
+        }
 
         let length_RoundOff = Math.round(length_inc_cutting_allowance * inv) / inv
 
-        setDataSend(prevState => ({ ...prevState, widthSheetWithDecimal: widthSheet, lengthSheetWithDecimal: lengthSheet, widthIncCuttingAllowance: width_inc_cutting, roundOffWidth: roundOffWidth, length_inc_cutting_allowance: length_inc_cutting_allowance }))
+        setDataSend(prevState => ({ ...prevState, widthSheetWithDecimal: widthSheet, lengthSheetWithDecimal: lengthSheet, widthIncCuttingAllowance: width_inc_cutting, roundOffWidth: roundOffWidth, length_RoundOff: length_RoundOff, length_inc_cutting_allowance: length_inc_cutting_allowance }))
         setTimeout(() => {
 
             setValue('width_sheet', checkForDecimalAndNull(widthSheet, localStorage.NoOfDecimalForInputOutput))
@@ -128,41 +122,6 @@ function MeshCalculation(props) {
 
     }
 
-    // const setWidthCuttingAllowance = () => {
-    //     let data1 = {
-    //         cuttingAllowance: getValues('cutting_allowance'),
-    //         widthSheet: dataSend.widthSheetWithDecimal
-
-    //     }
-    //     if (data1.cuttingAllowance) {
-
-    //         const widthCuttingAllowance = data1.widthSheet + (2 * data1.cuttingAllowance);              //
-    //         const widthIncCuttingAllowance = Math.round(widthCuttingAllowance);
-    //         setDataSend(prevState => ({ ...prevState, widthIncCuttingDecimal: widthIncCuttingAllowance }))
-
-    //         setTimeout(() => {
-
-    //             setValue('width_inc_cutting', widthIncCuttingAllowance);
-    //         }, 200);
-    //     }
-    // }
-
-    // const setLengthCuttingAllowance = () => {
-
-    //     let data = {
-    //         widthSheet: dataSend.widthSheetWithDecimal,
-    //         cuttingAllowanceForLength: getValues('cuttingAllowanceForLength'),
-    //     }
-
-    //     if (data.cuttingAllowanceForLength) {
-    //         const lengthIncCuttingAllowance = ((data.widthSheet) + 2 * (data.cuttingAllowanceForLength));            // Formula to calculate length inc cutting allowance
-    //         setDataSend(prevState => ({ ...prevState, LengthCuttingAllowance: lengthIncCuttingAllowance }))
-    //         setTimeout(() => {
-
-    //             setValue('length_inc_cutting_allowance', checkForDecimalAndNull(lengthIncCuttingAllowance, localStorage.NoOfDecimalForInputOutput));
-    //         }, 200);
-    //     }
-    // }
 
     const setFinalGrossWeight = () => {
 
@@ -194,6 +153,7 @@ function MeshCalculation(props) {
     const onSubmit = debounce(handleSubmit((Values) => {
         setIsDisable(true)
         let data = {
+            LayoutType: 'Mesh',
             CorrugatedBoxWeightCalculatorId: WeightCalculatorRequest && WeightCalculatorRequest.CorrugatedBoxWeightCalculatorId ? WeightCalculatorRequest.CorrugatedBoxWeightCalculatorId : "0",
             BaseCostingIdRef: item.CostingId,
             CostingRawMaterialDetailId: rmRowData.RawMaterialDetailId,
@@ -202,22 +162,28 @@ function MeshCalculation(props) {
             RawMaterialCost: dataSend.paperWithDecimal * rmRowData.RMRate,  //(GROSS WEIGHT * RM RATE)
             GrossWeight: dataSend.paperWithDecimal,
             FinishWeight: dataSend.paperWithDecimal,
-            BurstingFactor: Values.bursting_factor,
-            BurstingStrength: dataSend.burstingStrengthWithDecimal,
             CuttingAllowanceWidth: Values.cutting_allowance,
             CuttingAllowanceLength: Values.cuttingAllowanceForLength,
-            GSM: Values.gsm,
             HeightBox: Values.height_box,
-            LengthBox: Values.length_box,
-            LengthSheetIncCuttingAllowance: dataSend.LengthCuttingAllowance,
-            LengthSheet: dataSend.lengthSheetWithDecimal,
             NoOfPly: Values.no_of_ply,
-            PaperWeightAndProcessRejectionSum: dataSend.paperWithDecimal,
-            StitchingLengthInchperJoint: Values.stiching_length,
+            GSM: Values.gsm,
+            BurstingFactor: Values.bursting_factor,
+            BurstingStrength: dataSend.burstingStrengthWithDecimal,
+            LengthBox: Values.length_box,
             WidthBox: Values.width_box,
-            WidthSheetIncCuttingAllowance: dataSend.widthIncCuttingDecimal,
+            NosOfMeshInLength: Values.noOfMeshLength,
+            NosOfMeshInWidth: Values.noOfMeshWidth,
+            MeshArrangement: Values.meshArrangement.label,
+            PaperWeightAndProcessRejectionSum: dataSend.paperWithDecimal,
+            FluteTypePercentage: Values.fluteTypePercent,
             WidthSheet: dataSend.widthSheetWithDecimal,
+            WidthSheetIncCuttingAllowance: dataSend.widthIncCuttingAllowance,
+            RoundOffWidthSheetInchCuttingAllowance: dataSend.roundOffWidth,
+            LengthSheet: dataSend.lengthSheetWithDecimal,
+            LengthSheetIncCuttingAllowance: dataSend.length_inc_cutting_allowance,
+            RoundOffLengthSheetInchCuttingAllowance: dataSend.length_RoundOff,
         }
+
 
         dispatch(saveRawMaterialCalculationForCorrugatedBox(data, res => {
             setIsDisable(false)
