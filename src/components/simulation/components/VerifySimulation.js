@@ -613,7 +613,7 @@ function VerifySimulation(props) {
                                             <AgGridColumn width={120} field="PartName" cellRenderer='descriptionFormatter' headerName="Part Name"></AgGridColumn>
                                             <AgGridColumn width={130} field="RevisionNumber" cellRenderer='revisionFormatter' headerName="Revision No."></AgGridColumn>
                                             {isRMDomesticOrRMImport === true && <AgGridColumn width={120} field="RMName" headerName="RM Name" ></AgGridColumn>}
-                                            {isRMDomesticOrRMImport === true && <AgGridColumn width={120} field="RMGrade" headerName="RM Grade" ></AgGridColumn>}
+                                            {isRMDomesticOrRMImport === true && <AgGridColumn width={120} field="RMGrade" headerName="Grade" ></AgGridColumn>}
                                             {isMachineRate && <AgGridColumn width={145} field="ProcessName" headerName="Process Name"></AgGridColumn>}
                                             {isMachineRate && <AgGridColumn width={150} field="MachineNumber" headerName="Machine Number"></AgGridColumn>}
                                             {isBOPDomesticOrImport === true && <AgGridColumn width={130} field="BoughtOutPartCode" headerName="BOP Number"></AgGridColumn>}

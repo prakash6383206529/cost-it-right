@@ -1383,7 +1383,7 @@ class AddRMDomestic extends Component {
                                 <Field
                                   name="RawMaterialSpecificationId"
                                   type="text"
-                                  label="Specs"
+                                  label="Spec"
                                   component={searchableSelect}
                                   placeholder={"Select"}
                                   options={this.renderListing("specification")}
@@ -1398,7 +1398,7 @@ class AddRMDomestic extends Component {
                             </div>
                           </Col>
                           <Col md="3">
-                            <TooltipCustom id="category" tooltipText="RM category will come here like CutToFit, CutToLength." />
+                            <TooltipCustom id="category" tooltipText="Category will come here like CutToFit, CutToLength." />
                             <Field
                               name="CategoryId"
                               type="text"

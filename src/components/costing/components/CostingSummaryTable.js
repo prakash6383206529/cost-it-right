@@ -1383,7 +1383,7 @@ const CostingSummaryTable = (props) => {
                           <>
                             {!drawerDetailPDF ? <tr>
                               <td>
-                                <span className="d-block small-grey-text">RM Name-Grade</span>
+                                <span className="d-block small-grey-text">RM-Grade</span>
                                 <span className={`d-block small-grey-text ${isApproval && viewCostingData?.length > 1 && highlightCostingSummaryValue(viewCostingData[0]?.rmRate, viewCostingData[1]?.rmRate)}`}>RM Rate</span>
                                 <span className={`d-block small-grey-text ${isApproval && viewCostingData?.length > 1 && highlightCostingSummaryValue(viewCostingData[0]?.scrapRate, viewCostingData[1]?.scrapRate)}`}>Scrap Rate</span>
                                 <span className={`d-block small-grey-text ${isApproval && viewCostingData?.length > 1 && highlightCostingSummaryValue(reducer(viewCostingData[0]?.netRMCostView), reducer(viewCostingData[1]?.netRMCostView))}`}>Gross Weight</span>

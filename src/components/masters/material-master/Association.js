@@ -200,7 +200,7 @@ class Association extends Component {
                                                     <Field
                                                         name="GradeId"
                                                         type="text"
-                                                        label="RM Grade"
+                                                        label="Grade"
                                                         component={searchableSelect}
                                                         placeholder={"Select"}
                                                         options={this.renderListing("RMGrade")}

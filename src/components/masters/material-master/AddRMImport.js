@@ -1380,7 +1380,7 @@ class AddRMImport extends Component {
                           <Col md="3">
                             <div className="d-flex justify-space-between align-items-center inputwith-icon">
                               <div className="fullinput-icon">
-                                <TooltipCustom id={'category'} tooltipText="RM category will come here like CutToFit, CutToLength." />
+                                <TooltipCustom id={'category'} tooltipText="Category will come here like CutToFit, CutToLength." />
                                 <Field
                                   name="CategoryId"
                                   type="text"

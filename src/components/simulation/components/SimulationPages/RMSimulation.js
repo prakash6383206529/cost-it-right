@@ -538,9 +538,9 @@ function RMSimulation(props) {
                                                 <AgGridColumn width={140} field="CostingHead" headerName="Costing Head" editable='false' cellRenderer={'costingHeadFormatter'}></AgGridColumn>
                                             }
                                             <AgGridColumn width={140} field="RawMaterial" editable='false' headerName="Raw Material"></AgGridColumn>
-                                            <AgGridColumn width={115} field="RMGrade" editable='false' headerName="RM Grade" ></AgGridColumn>
-                                            <AgGridColumn width={115} field="RMSpec" editable='false' headerName="RM Spec"></AgGridColumn>
-                                            <AgGridColumn width={115} field="RawMaterialCode" editable='false' headerName='RM Code' cellRenderer='hyphenFormatter'></AgGridColumn>
+                                            <AgGridColumn width={115} field="RMGrade" editable='false' headerName="Grade" ></AgGridColumn>
+                                            <AgGridColumn width={115} field="RMSpec" editable='false' headerName="Spec"></AgGridColumn>
+                                            <AgGridColumn width={115} field="RawMaterialCode" editable='false' headerName='Code' cellRenderer='hyphenFormatter'></AgGridColumn>
                                             {!isImpactedMaster && <AgGridColumn width={110} field="Category" editable='false' headerName="Category"></AgGridColumn>}
                                             {!isImpactedMaster && <AgGridColumn width={125} field="TechnologyName" editable='false' headerName="Technology" ></AgGridColumn>}
                                             {!isImpactedMaster && <AgGridColumn width={100} field="Vendor (Code)" editable='false' headerName="Vendor (Code)" cellRenderer='vendorFormatter'></AgGridColumn>}
@@ -559,8 +559,8 @@ function RMSimulation(props) {
                                                 <AgGridColumn width={120} field="ScrapRate" editable='false' cellRenderer='oldScrapRateFormatter' headerName="Existing" colId="ScrapRate" ></AgGridColumn>
                                                 <AgGridColumn width={120} cellRenderer={'newScrapRateFormatter'} field="NewScrapRate" headerName="Revised" colId="NewScrapRate" editable={!isImpactedMaster} ></AgGridColumn>
                                             </AgGridColumn>
-                                            <AgGridColumn width={150} field="RMFreightCost" editable='false' cellRenderer={'freightCostFormatter'} headerName="RM Freight Cost"></AgGridColumn>
-                                            <AgGridColumn width={170} field="RMShearingCost" editable='false' cellRenderer={'shearingCostFormatter'} headerName="RM Shearing Cost" ></AgGridColumn>
+                                            <AgGridColumn width={150} field="RMFreightCost" editable='false' cellRenderer={'freightCostFormatter'} headerName="Freight Cost"></AgGridColumn>
+                                            <AgGridColumn width={170} field="RMShearingCost" editable='false' cellRenderer={'shearingCostFormatter'} headerName="Shearing Cost" ></AgGridColumn>
                                             {!isImpactedMaster && <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName="Net Cost (INR)">
                                                 <AgGridColumn width={120} field="NetLandedCost" editable='false' cellRenderer={'costFormatter'} headerName="Existing" colId='NetLandedCost'></AgGridColumn>
                                                 <AgGridColumn width={120} field="NewNetLandedCost" editable='false' valueGetter='data.NewBasicRate + data.RMFreightCost+data.RMShearingCost' cellRenderer={'NewcostFormatter'} headerName="Revised" colId='NewNetLandedCost'></AgGridColumn>
