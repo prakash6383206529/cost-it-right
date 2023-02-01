@@ -436,3 +436,7 @@ export const NoSignMaxLengthMessage = `Input should be numeric, and should not e
 export const NoSignNoDecimalMessage = `Input should be integer.`
 
 
+export const isDateFormatter = value =>
+    value && !/^(0?[1-9]|[12][0-9]|3[01])[\/\-](0?[1-9]|1[012])[\/\-]\d{4}$/.test(value)
+        ? false : true;
+
