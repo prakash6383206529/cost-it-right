@@ -4,9 +4,9 @@ import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col, Label, } from 'reactstrap';
 import {
   required, checkForNull, checkForDecimalAndNull, acceptAllExceptSingleSpecialCharacter, maxLength20,
-  maxLength10, positiveAndDecimalNumber, maxLength512, decimalLengthsix, checkWhiteSpaces, checkSpacesInString, maxLength80, postiveNumber
+  maxLength10, positiveAndDecimalNumber, maxLength512, decimalLengthsix, checkWhiteSpaces, checkSpacesInString, maxLength80, number, postiveNumber
 } from "../../../helper/validation";
-import { renderText, searchableSelect, renderTextAreaField, renderDatePicker, renderNumberInputField, focusOnError } from "../../layout/FormInputs";
+import { renderText, searchableSelect, renderTextAreaField, renderDatePicker, renderTextInputField, focusOnError } from "../../layout/FormInputs";
 import { getPlantBySupplier, getUOMSelectList, getCurrencySelectList, getPlantSelectListByType, getCityByCountry, getAllCity } from '../../../actions/Common';
 import {
   createBOPImport, updateBOPImport, getBOPCategorySelectList, getBOPImportById,
@@ -1386,8 +1386,8 @@ class AddBOPImport extends Component {
                               name={"BasicRate"}
                               type="text"
                               placeholder={isEditFlag || (isEditFlag && isBOPAssociated) ? '-' : "Enter"}
-                              validate={[required, positiveAndDecimalNumber, maxLength10, decimalLengthsix]}
-                              component={renderNumberInputField}
+                              validate={[required, positiveAndDecimalNumber, maxLength10, decimalLengthsix, number]}
+                              component={renderTextInputField}
                               required={true}
                               disabled={isViewMode || (isEditFlag && isBOPAssociated)}
                               className=" "
@@ -1401,7 +1401,7 @@ class AddBOPImport extends Component {
                               type="text"
                               placeholder={"-"}
                               validate={[]}
-                              component={renderNumberInputField}
+                              component={renderTextInputField}
                               required={false}
                               disabled={true}
                               className=" "
@@ -1417,7 +1417,7 @@ class AddBOPImport extends Component {
                                 type="text"
                                 placeholder={"-"}
                                 validate={[]}
-                                component={renderNumberInputField}
+                                component={renderTextInputField}
                                 required={false}
                                 disabled={true}
                                 className=" "

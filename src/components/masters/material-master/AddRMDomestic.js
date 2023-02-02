@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col, Label, } from 'reactstrap';
 import { required, getVendorCode, positiveAndDecimalNumber, maxLength15, acceptAllExceptSingleSpecialCharacter, maxLength70, maxLength512, checkForDecimalAndNull, checkForNull, decimalLengthsix, number } from "../../../helper/validation";
-import { renderText, renderNumberInputField, renderTextInputField, searchableSelect, renderMultiSelectField, renderTextAreaField, focusOnError, renderDatePicker, } from '../../layout/FormInputs'
+import { renderText, renderTextInputField, searchableSelect, renderMultiSelectField, renderTextAreaField, focusOnError, renderDatePicker, } from '../../layout/FormInputs'
 import { AcceptableRMUOM } from '../../../config/masterData'
 import {
   getRawMaterialCategory, fetchGradeDataAPI, fetchSpecificationDataAPI, getCityBySupplier, getPlantByCity,
@@ -1636,8 +1636,8 @@ class AddRMDomestic extends Component {
                               name={"BasicRate"}
                               type="text"
                               placeholder={isViewFlag || (isEditFlag && isRMAssociated) ? '-' : "Enter"}
-                              validate={[required, positiveAndDecimalNumber, maxLength15, decimalLengthsix]}
-                              component={renderNumberInputField}
+                              validate={[required, positiveAndDecimalNumber, maxLength15, decimalLengthsix, number]}
+                              component={renderTextInputField}
                               onChange={this.handleBasicRate}
                               required={true}
                               disabled={isViewFlag || (isEditFlag && isRMAssociated)}
@@ -1654,8 +1654,8 @@ class AddRMDomestic extends Component {
                                 name={"ScrapRate"}
                                 type="text"
                                 placeholder={isViewFlag || (isEditFlag && isRMAssociated) ? '-' : "Enter"}
-                                validate={[required, positiveAndDecimalNumber, maxLength15, decimalLengthsix]}
-                                component={renderNumberInputField}
+                                validate={[required, positiveAndDecimalNumber, maxLength15, decimalLengthsix, number]}
+                                component={renderTextInputField}
                                 required={true}
                                 className=""
                                 customClassName=" withBorder"
@@ -1672,8 +1672,8 @@ class AddRMDomestic extends Component {
                               type="text"
                               placeholder={isViewFlag || (isEditFlag && isRMAssociated) ? '-' : "Enter"}
                               // onChange={this.handleFreightCharges}
-                              validate={[positiveAndDecimalNumber, maxLength15, decimalLengthsix]}
-                              component={renderNumberInputField}
+                              validate={[positiveAndDecimalNumber, maxLength15, decimalLengthsix, number]}
+                              component={renderTextInputField}
                               required={false}
                               className=""
                               customClassName=" withBorder"
@@ -1687,8 +1687,8 @@ class AddRMDomestic extends Component {
                               name={"ShearingCost"}
                               type="text"
                               placeholder={isViewFlag || (isEditFlag && isRMAssociated) ? '-' : "Enter"}
-                              validate={[positiveAndDecimalNumber, maxLength15, decimalLengthsix]}
-                              component={renderNumberInputField}
+                              validate={[positiveAndDecimalNumber, maxLength15, decimalLengthsix, number]}
+                              component={renderTextInputField}
                               required={false}
                               className=""
                               customClassName=" withBorder"
@@ -1738,7 +1738,7 @@ class AddRMDomestic extends Component {
                               name={`${this.state.netLandedCost === 0 ? '-' : "NetLandedCost"}`}
                               type="text"
                               placeholder={"-"}
-                              validate={[required]}
+                              validate={[]}
                               component={renderText}
                               required={false}
                               disabled={true}
