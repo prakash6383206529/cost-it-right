@@ -4,9 +4,9 @@ import { Field, reduxForm } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import {
     required, email, minLength7, maxLength70, minLength10, acceptAllExceptSingleSpecialCharacter,
-    maxLength80, maxLength20, postiveNumber, maxLength5, maxLength12, checkWhiteSpaces, checkSpacesInString
+    maxLength80, maxLength20, postiveNumber, maxLength5, maxLength12, checkWhiteSpaces, checkSpacesInString, number
 } from "../../../helper/validation";
-import { renderText, renderEmailInputField, searchableSelect, renderNumberInputField, } from "../../layout/FormInputs";
+import { renderText, renderEmailInputField, searchableSelect, renderTextInputField, } from "../../layout/FormInputs";
 import { createClient, updateClient, getClientData } from '../actions/Client';
 import { fetchStateDataAPI, fetchCityDataAPI } from '../../../actions/Common';
 import Toaster from '../../common/Toaster';
@@ -322,8 +322,8 @@ class AddClient extends Component {
                                                             name={"PhoneNumber"}
                                                             type="text"
                                                             placeholder={isEditFlag ? '-' : "Enter"}
-                                                            validate={[required, postiveNumber, minLength10, maxLength12, checkWhiteSpaces]}
-                                                            component={renderNumberInputField}
+                                                            validate={[required, postiveNumber, minLength10, maxLength12, checkWhiteSpaces, number]}
+                                                            component={renderTextInputField}
                                                             required={true}
                                                             // maxLength={10}
                                                             className=""
@@ -336,8 +336,8 @@ class AddClient extends Component {
                                                             name={"Extension"}
                                                             type="text"
                                                             placeholder={isEditFlag ? '-' : "Enter"}
-                                                            validate={[required, postiveNumber, maxLength5, checkWhiteSpaces]}
-                                                            component={renderNumberInputField}
+                                                            validate={[required, postiveNumber, maxLength5, checkWhiteSpaces, number]}
+                                                            component={renderTextInputField}
                                                             required={true}
                                                             // maxLength={3}
                                                             className=""
@@ -355,9 +355,9 @@ class AddClient extends Component {
                                                     label="Mobile No."
                                                     type="text"
                                                     placeholder={isEditFlag ? '-' : "Enter"}
-                                                    component={renderNumberInputField}
+                                                    component={renderTextInputField}
                                                     isDisabled={false}
-                                                    validate={[required, postiveNumber, minLength10, maxLength12, checkWhiteSpaces]}
+                                                    validate={[required, postiveNumber, minLength10, maxLength12, checkWhiteSpaces, number]}
                                                     required={true}
                                                     // maxLength={10}
                                                     customClassName={'withBorder'}

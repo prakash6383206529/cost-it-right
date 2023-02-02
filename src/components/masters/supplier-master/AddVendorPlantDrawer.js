@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, } from 'reactstrap';
 import { required, number, minLength10, maxLength12, maxLength6 } from "../../../helper/validation";
-import { renderNumberInputField, renderText, searchableSelect } from "../../layout/FormInputs";
+import { renderText, renderTextInputField, searchableSelect } from "../../layout/FormInputs";
 import { createPlantAPI, } from '../actions/Plant';
 import { fetchCountryDataAPI, fetchStateDataAPI, fetchCityDataAPI, fetchSupplierCityDataAPI, getCityByCountry, } from '../../../actions/Common';
 import Toaster from '../../common/Toaster';
@@ -300,7 +300,7 @@ class AddVendorPlantDrawer extends Component {
                           type="text"
                           placeholder={""}
                           validate={[required, number, minLength10, maxLength12]}
-                          component={renderNumberInputField}
+                          component={renderTextInputField}
                           required={true}
                           maxLength={12}
                           className=""
@@ -313,8 +313,8 @@ class AddVendorPlantDrawer extends Component {
                           name={"Extension"}
                           type="text"
                           placeholder={""}
-                          validate={[required]}
-                          component={renderNumberInputField}
+                          validate={[required, number]}
+                          component={renderTextInputField}
                           required={true}
                           maxLength={5}
                           className=""
