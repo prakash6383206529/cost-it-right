@@ -642,8 +642,8 @@ const SendForApproval = (props) => {
             {viewApprovalData &&
               viewApprovalData.map((data, index) => {
 
-                return (
-                  <div className="" key={index}>
+                return (<>
+                  {props.isRfq && data.costingId && <div className="" key={index}>
                     <Row className="px-3">
                       <Col md="12">
                         <h6 className="left-border d-inline-block mr-4">
@@ -811,7 +811,8 @@ const SendForApproval = (props) => {
                         </Row>
                       </div>
                     </div>
-                  </div>
+                  </div>}
+                </>
                 );
               })}
             <div className="">
