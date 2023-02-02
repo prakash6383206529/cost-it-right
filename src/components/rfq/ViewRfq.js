@@ -1,6 +1,6 @@
 import React from 'react';
 import { useState, useEffect, } from 'react';
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { Row, Col, } from 'reactstrap';
 import { DRAFT, EMPTY_DATA, EMPTY_GUID, VBCTypeId, } from '../.././config/constants'
 import NoContentFound from '.././common/NoContentFound';
@@ -27,6 +27,7 @@ import { Link } from 'react-scroll';
 import RemarkHistoryDrawer from './RemarkHistoryDrawer';
 import DayTime from '../common/DayTimeWrapper';
 import { hyphenFormatter } from '../masters/masterUtil';
+import _ from 'lodash';
 const gridOptions = {};
 
 
@@ -54,6 +55,7 @@ function RfqListing(props) {
     const [remarkHistoryDrawer, setRemarkHistoryDrawer] = useState(false)
     const [disableApproveRejectButton, setDisableApproveRejectButton] = useState(true)
     const [remarkRowData, setRemarkRowData] = useState([])
+    const viewCostingData = useSelector((state) => state.costing.viewCostingDetailData)
 
     const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
 
@@ -65,14 +67,24 @@ function RfqListing(props) {
 
     useEffect(() => {
 
-
         if (selectedCostings?.length === selectedRows?.length && selectedRows?.length > 0) {
-
             dispatch(setCostingViewData(selectedCostings))
             setaddComparisonToggle(true)
         }
 
     }, [selectedCostings])
+
+    useEffect(() => {
+        let filteredArr = _.map(viewCostingData, 'costingId')
+        let arr = []
+        filteredArr.map(item => selectedRows.filter(el => {
+            if (el.CostingId === item) {
+                arr.push(el)
+            }
+        }))
+        const isApproval = arr.filter(item => item.ShowApprovalButton)
+        setDisableApproveRejectButton(isApproval.length > 0)
+    }, [viewCostingData])
 
     /**
     * @method hideForm
@@ -81,7 +93,28 @@ function RfqListing(props) {
     const getDataList = () => {
         dispatch(getQuotationDetailsList(props.data, (res) => {
 
-            setRowData(res?.data?.DataList)
+            let grouped_data = _.groupBy(res?.data?.DataList, 'PartNumber')                           // GROUPING OF THE ROWS FOR SEPERATE PARTS
+            let data = []
+            for (let x in grouped_data) {
+                let seprateData = grouped_data[x]
+                seprateData[Math.round(seprateData.length / 2) - 1].PartNo = x;                      // SHOWING PART NUMBER IN MIDDLE
+                seprateData[seprateData.length - 1].LastRow = true;                                 // ADDING LASTROW KEY FOR SHOWING SEPERATE BORDER
+                seprateData[Math.round(seprateData.length / 2) - 1].RowMargin = seprateData.length >= 2 && seprateData.length % 2 === 0 && 'margin-top';    // ADDING ROWMARGIN KEY IN THE GRID FOR EVEN ROW AND AS WELL AS PARTS HAVE TWO OR MORE COSTING
+                data.push(seprateData)
+            }
+
+            let newArray = []
+            // SET ROW DATA FOR GRID
+            data.map((item) => {
+                newArray = [...newArray, ...item]
+                let temp = item.filter(el => el.CostingId !== null)
+                if (temp.length > 0) {
+                    item[Math.round(item.length / 2) - 1].ShowCheckBox = true;                      // SET CHECKBOX FOR CREATED COSTINGS
+                }
+            })
+
+            setRowData(newArray)
+
             setTechnologyId(res?.data?.DataList[0].TechnologyId)
         }))
     }
@@ -103,6 +136,13 @@ function RfqListing(props) {
     * @description edit material type
     */
     const approvemDetails = (Id, rowData = {}) => {
+        let filteredArr = _.map(viewCostingData, 'costingId')
+        let arr = []
+        filteredArr.map(item => rowData.filter(el => {
+            if (el.CostingId === item) {
+                arr.push(el)
+            }
+        }))
 
         // let data = {
         //     isEditFlag: true,
@@ -114,7 +154,7 @@ function RfqListing(props) {
         // setAddRfq(true)
         dispatch(storePartNumber(rowData))
 
-        sendForApprovalData(rowData)
+        sendForApprovalData(arr)
         setSendForApproval(true)
     }
 
@@ -403,12 +443,13 @@ function RfqListing(props) {
 
 
     const onGridReady = (params) => {
-        setgridApi(params.api);
-        setgridColumnApi(params.columnApi);
-        params.api.paginationGoToPage(0);
         setTimeout(() => {
+            setgridApi(params.api);
+            setgridColumnApi(params.columnApi);
+            params.api.paginationGoToPage(0);
             params.api.sizeColumnsToFit()
         }, 400);
+
     };
 
 
@@ -458,12 +499,8 @@ function RfqListing(props) {
         let temp = []
         let tempObj = {}
 
-        selectedRows && selectedRows.map((item) => {
-            if (item?.ShowApprovalButton === false) {
-                setDisableApproveRejectButton(false)
-            }
-
-        })
+        const isApproval = selectedRows.filter(item => item.ShowApprovalButton)
+        setDisableApproveRejectButton(isApproval.length > 0)
 
         dispatch(getMultipleCostingDetails(selectedRows, (res) => {
 
@@ -497,7 +534,19 @@ function RfqListing(props) {
 
     const onRowSelect = () => {
         const selectedRows = gridApi?.getSelectedRows()
-        setSelectedRows(selectedRows)
+        let partNumber = []
+
+        selectedRows.map(item => partNumber.push(item.PartNo))                 //STORE ALL PARS NUMBER
+
+        let data = partNumber.map(item => rowData.filter(el => el.PartNumber === item))             // SELECTED ALL COSTING ON THE CLICK ON PART
+        let newArray = []
+
+        data.map((item) => {
+            newArray = [...newArray, ...item]
+        })
+
+
+        setSelectedRows(newArray)
         setDataCount(selectedRows.length)
         if (selectedRows.length === 0) {
             setAddComparisonButton(true)
@@ -512,7 +561,7 @@ function RfqListing(props) {
         return (cellValue != null && cellValue !== '' && cellValue !== undefined) ? DayTime(cellValue).format('DD/MM/YYYY') : '';
     }
 
-    const isRowSelectable = rowNode => rowNode.data ? (rowNode?.data?.CostingId !== null) : false;
+    const isRowSelectable = rowNode => rowNode.data ? rowNode?.data?.ShowCheckBox : false;
 
 
     const defaultColDef = {
@@ -525,6 +574,9 @@ function RfqListing(props) {
         hyphenFormatter: hyphenFormatter
     };
 
+    const cellClass = (props) => {
+        return `${props?.data?.LastRow ? `border-color` : ''} ${props?.data?.RowMargin} colorWhite`          // ADD SCSS CLASSES FOR ROW MERGING
+    }
 
     const frameworkComponents = {
         totalValueRenderer: buttonFormatter,
@@ -598,9 +650,9 @@ function RfqListing(props) {
                                             rowSelection={'multiple'}
                                             onRowSelected={onRowSelect}
                                             isRowSelectable={isRowSelectable}
-                                        // suppressRowClickSelection={true}
+                                            suppressRowClickSelection={true}
                                         >
-                                            <AgGridColumn cellClass="has-checkbox" field="PartNumber" headerName='Part No'  ></AgGridColumn>
+                                            <AgGridColumn cellClass={cellClass} field="PartNo" headerName='Part No' ></AgGridColumn>
                                             <AgGridColumn field="TechnologyName" headerName='Technology'></AgGridColumn>
                                             <AgGridColumn field="VendorName" headerName='Vendor (Code)'></AgGridColumn>
                                             <AgGridColumn field="PlantName" headerName='Plant (Code)'></AgGridColumn>
@@ -705,7 +757,7 @@ function RfqListing(props) {
                 }
 
             </div >
-            {addComparisonToggle && disableApproveRejectButton && <Row className="sf-btn-footer no-gutters justify-content-between">
+            {addComparisonToggle && disableApproveRejectButton && viewCostingData.length > 0 && <Row className="sf-btn-footer no-gutters justify-content-between">
                 <div className="col-sm-12 text-right bluefooter-butn">
 
                     <button type={'button'} className="mr5 approve-reject-btn" onClick={() => setRejectDrawer(true)} >
