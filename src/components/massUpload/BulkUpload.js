@@ -297,6 +297,12 @@ class BulkUpload extends Component {
                                 if (fileHeads[i] === 'MachineSpecification') {
                                     fileHeads[i] = 'Description'
                                 }
+                                else if (fileHeads[i] === 'Grade') {
+                                    fileHeads[i] = 'RMGrade'
+                                }
+                                else if (fileHeads[i] === 'Spec') {
+                                    fileHeads[i] = 'RMSpec'
+                                }
                                 obj[fileHeads[i]] = el;
                                 return null;
                             })
