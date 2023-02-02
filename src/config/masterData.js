@@ -64,9 +64,9 @@ export const Masters = [
 export const RMDomesticZBC = [
     //{ label: "CostingHead", value: "CostingHead" },
     { label: "RawMaterial", value: "RawMaterial" }, //*
-    { label: "RMGrade", value: "RMGrade" }, //*
-    { label: "RMSpec", value: "RMSpec" }, //*
-    { label: "RawMaterialCode", value: "RawMaterialCode" }, //*
+    { label: "Grade", value: "RMGrade" }, //*
+    { label: "Spec", value: "RMSpec" }, //*
+    { label: "Code", value: "RawMaterialCode" }, //*
     { label: "Category", value: "Category" }, //*
     { label: "TechnologyName", value: "TechnologyName" }, //*
     { label: "PlantCode", value: "PlantCode" }, //*
@@ -191,9 +191,9 @@ export const RMDomesticZBCTempData = [
 export const RMDomesticVBC = [
     //{ label: "CostingHead", value: "CostingHead" },
     { label: "RawMaterial", value: "RawMaterial" }, //*
-    { label: "RMGrade", value: "RMGrade" }, //*
-    { label: "RMSpec", value: "RMSpec" }, //*
-    { label: "RawMaterialCode", value: "RawMaterialCode" }, //*
+    { label: "Grade", value: "RMGrade" }, //*
+    { label: "Spec", value: "RMSpec" }, //*
+    { label: "Code", value: "RawMaterialCode" }, //*
     { label: "Category", value: "Category" }, //*
     { label: "TechnologyName", value: "TechnologyName" }, //*
     { label: "VendorName", value: "VendorName" }, //*
@@ -321,9 +321,9 @@ export const RMDomesticVBCTempData = [
 export const RMImportZBC = [
     //{ label: "CostingHead", value: "CostingHead" },
     { label: "RawMaterial", value: "RawMaterial" }, //*
-    { label: "RMGrade", value: "RMGrade" }, //*
-    { label: "RMSpec", value: "RMSpec" }, //*
-    { label: "RawMaterialCode", value: "RawMaterialCode" }, //*
+    { label: "Grade", value: "RMGrade" }, //*
+    { label: "Spec", value: "RMSpec" }, //*
+    { label: "Code", value: "RawMaterialCode" }, //*
     { label: "Category", value: "Category" }, //*
     { label: "TechnologyName", value: "TechnologyName" }, //*
     { label: "PlantCode", value: "PlantCode" }, //*
@@ -530,9 +530,9 @@ export const RMImportZBCTempData = [
 ]
 export const RMDomesticCBC = [
     { label: "RawMaterial", value: "RawMaterial" }, //*
-    { label: "RMGrade", value: "RMGrade" }, //*
-    { label: "RMSpec", value: "RMSpec" }, //*
-    { label: "RawMaterialCode", value: "RawMaterialCode" }, //*
+    { label: "Grade", value: "RMGrade" }, //*
+    { label: "Spec", value: "RMSpec" }, //*
+    { label: "Code", value: "RawMaterialCode" }, //*
     { label: "Category", value: "Category" }, //*
     { label: "TechnologyName", value: "TechnologyName" }, //*
     { label: "CustomerName", value: "CustomerName" }, //*
@@ -555,9 +555,9 @@ export const RMDomesticCBC = [
 export const RMImportVBC = [
     //{ label: "CostingHead", value: "CostingHead" },
     { label: "RawMaterial", value: "RawMaterial" }, //*
-    { label: "RMGrade", value: "RMGrade" }, //*
-    { label: "RMSpec", value: "RMSpec" }, //*
-    { label: "RawMaterialCode", value: "RawMaterialCode" }, //*
+    { label: "Grade", value: "RMGrade" }, //*
+    { label: "Spec", value: "RMSpec" }, //*
+    { label: "Code", value: "RawMaterialCode" }, //*
     { label: "Category", value: "Category" }, //*
     { label: "TechnologyName", value: "TechnologyName" }, //*
     { label: "VendorName", value: "VendorName" },
@@ -686,9 +686,9 @@ export const RMImportVBCTempData = [
 export const RMImportCBC = [
     //{ label: "CostingHead", value: "CostingHead" },
     { label: "RawMaterial", value: "RawMaterial" }, //*
-    { label: "RMGrade", value: "RMGrade" }, //*
-    { label: "RMSpec", value: "RMSpec" }, //*
-    { label: "RawMaterialCode", value: "RawMaterialCode" }, //*
+    { label: "Grade", value: "RMGrade" }, //*
+    { label: "Spec", value: "RMSpec" }, //*
+    { label: "Code", value: "RawMaterialCode" }, //*
     { label: "Category", value: "Category" }, //*
     { label: "TechnologyName", value: "TechnologyName" }, //*
     { label: "CustomerName", value: "CustomerName" },
@@ -797,7 +797,7 @@ export const RMImportCBCTempData = [
 */
 export const RMSpecification = [
     { label: "RawMaterialName", value: "RawMaterialName" },//*
-    { label: "RMGrade", value: "RMGrade" },//*
+    { label: "Grade", value: "RMGrade" },//*
     { label: "Material", value: "Material" },//*
     { label: "Density", value: "Density" },//*
     { label: "Specification", value: "Specification" },//*
@@ -3261,9 +3261,9 @@ export const RMDomesticSimulation = [
 export const RMImportSimulation = [
     { label: "CostingHead", value: "CostingHead" },
     { label: "RawMaterial", value: "RawMaterial" },
-    { label: "RMGrade", value: "RMGrade" },
-    { label: "RMSpec", value: "RMSpec" },
-    { label: "RawMaterialCode", value: "RawMaterialCode", },
+    { label: "Grade", value: "RMGrade" },
+    { label: "Spec", value: "RMSpec" },
+    { label: "Code", value: "RawMaterialCode", },
     { label: "Category", value: "Category" },
     { label: "TechnologyName", value: "TechnologyName" },
     //{ label: "Plant", value: "Plant" },
@@ -4121,7 +4121,7 @@ export const CostingSimulationDownloadBOP = [
 export const SIMULATIONAPPROVALSUMMARYDOWNLOADRM = [
     { label: "Costing Id", value: "CostingNumber" },
     { label: "RawMaterial Name", value: "RMName" },
-    { label: "RM-Grade", value: "RMGrade" },
+    { label: "Grade", value: "RMGrade" },
     { label: "Code", value: "RMCode" },
     { label: "Spec", value: "RMSpecs" },
     { label: "Part No", value: "PartNo" },
@@ -4849,9 +4849,9 @@ export const CPGridForTokenSummary = [
 
 export const ImpactedRMDownload = [
     { label: "RawMaterial", value: "RawMaterial" },
-    { label: "RMGrade", value: "RMGrade" },
-    { label: "RMSpec", value: "RMSpec" },
-    { label: "RawMaterialCode", value: "RawMaterialCode" },
+    { label: "Grade", value: "RMGrade" },
+    { label: "Spec", value: "RMSpec" },
+    { label: "Code", value: "RawMaterialCode" },
     { label: "Category", value: "Category" },
     { label: "TechnologyName", value: "TechnologyName" },
     { label: "VendorName", value: "VendorName" },
