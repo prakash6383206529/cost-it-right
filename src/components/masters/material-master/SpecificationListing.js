@@ -421,9 +421,9 @@ class SpecificationListing extends Component {
                                     onFilterModified={this.onFloatingFilterChanged}
                                     suppressRowClickSelection={true}
                                 >
-                                    <AgGridColumn field="RMName"></AgGridColumn>
-                                    <AgGridColumn field="RMGrade"></AgGridColumn>
-                                    <AgGridColumn field="RMSpec"></AgGridColumn>
+                                    <AgGridColumn field="RMName" ></AgGridColumn>
+                                    <AgGridColumn field="RMGrade" headerName='Grade'></AgGridColumn>
+                                    <AgGridColumn field="RMSpec" headerName='Spec'></AgGridColumn>
                                     <AgGridColumn field="RawMaterialCode" headerName='Code' cellRenderer='hyphenFormatter'></AgGridColumn>
                                     <AgGridColumn field="SpecificationId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                                 </AgGridReact>
