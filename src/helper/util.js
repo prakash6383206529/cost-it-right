@@ -1110,3 +1110,8 @@ export const highlightCostingSummaryValue = (oldValue, newValue) => {
 export function addDays(theDate, days) {
   return new Date(theDate.getTime() + days * 24 * 60 * 60 * 1000);
 }
+
+export function ceilByMultiple(number, multiple = 0.25) {
+  var inv = 1.0 / multiple;
+  return (Math.ceil(number * inv) / inv).toFixed(getConfigurationKey().NoOfDecimalForInputOutput);
+}
