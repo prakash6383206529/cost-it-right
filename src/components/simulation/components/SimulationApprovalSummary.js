@@ -1020,7 +1020,7 @@ function SimulationApprovalSummary(props) {
                                             <th>Master:</th>
                                             <th>Effective Date:</th>
                                             <th>Impact/Quarter (w.r.t. Existing):</th>
-                                            <th>Impact/Quarter (w.r.t. Budgeted):</th>
+                                            <th>Impact/Quarter (w.r.t. Budgeted Price):</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -1243,7 +1243,7 @@ function SimulationApprovalSummary(props) {
                                                                 {(isCombinedProcess || keysForDownloadSummary.IsCombinedProcessSimulation) && <AgGridColumn width={140} field="Variance" headerName="Variance" cellRenderer='CCVarianceFormatter'></AgGridColumn>}
 
                                                                 < AgGridColumn width={140} field="ImpactPerQuarter" headerName="Impact/Quarter (w.r.t. Existing)" cellRenderer='impactPerQuarterFormatter'></AgGridColumn>
-                                                                <AgGridColumn width={140} field="BudgetedPriceImpactPerQuarter" headerName='Impact/Quarter (w.r.t. Budgeted)' cellRenderer='impactPerQuarterFormatter'></AgGridColumn>
+                                                                <AgGridColumn width={140} field="BudgetedPriceImpactPerQuarter" headerName='Impact/Quarter (w.r.t. Budgeted Price)' cellRenderer='impactPerQuarterFormatter'></AgGridColumn>
 
                                                                 <AgGridColumn width={140} field="SimulationCostingId" pinned="right" cellRenderer='buttonFormatter' floatingFilter={false} headerName="Actions" type="rightAligned"></AgGridColumn>
                                                                 {/* <AgGridColumn field="Status" headerName='Status' cellRenderer='statusFormatter'></AgGridColumn>
