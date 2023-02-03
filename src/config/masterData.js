@@ -3365,7 +3365,7 @@ export const MachineRateSimulation = [
 ]
 
 export const BOPDomesticSimulation = [
-    { label: "CostingHead", value: "IsVendor" },
+    { label: "CostingHead", value: "CostingHead" },
     { label: "InsertPartNumber", value: "BoughtOutPartNumber" },
     { label: "InsertPartName", value: "BoughtOutPartName" },
     { label: "InsertPartCategory", value: "BoughtOutPartCategory" },
@@ -3380,7 +3380,7 @@ export const BOPDomesticSimulation = [
 ]
 
 export const BOPImportSimulation = [
-    { label: "CostingHead", value: "IsVendor" },
+    { label: "CostingHead", value: "CostingHead" },
     { label: "InsertPartNumber", value: "BoughtOutPartNumber" },
     { label: "InsertPartName", value: "BoughtOutPartName" },
     { label: "InsertPartCategory", value: "BoughtOutPartCategory" },
