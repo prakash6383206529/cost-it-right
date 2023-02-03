@@ -286,6 +286,7 @@ function CostingSimulation(props) {
             tempObj.Technology = Data.SimulatedCostingList[0].Technology
             tempObj.Vendor = Data.SimulatedCostingList[0].VendorName
             tempObj.TotalImpactPerQuarter = Data.TotalImpactPerQuarter
+            tempObj.BudgetedPriceImpactPerQuarter = Data?.SimulatedCostingList[0]?.BudgetedPriceImpactPerQuarter
             setAmendmentDetails(tempObj)
 
             //LISTING
