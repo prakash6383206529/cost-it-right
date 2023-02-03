@@ -2,6 +2,7 @@
  * Define all the constants required in application inside this file and export them
  */
 
+import _ from "lodash";
 import { reactLocalStorage } from "reactjs-localstorage";
 export const config = () => {
 
@@ -2122,20 +2123,17 @@ export const VOLUMEBULKUPLOAD = 'Volume'
 
 
 //STATUS FILTER DROPDOWN OPTIONS
-export const statusOptionsMasters = [
-
+export const statusOptionsMasters = _.sortBy([
+  { label: "Rejected", value: "4" },
   { label: "Approved", value: "3" },
   { label: "AwaitingApproval", value: "6" },
   { label: "Draft", value: "1" },
   { label: "History", value: "5" },
   { label: "PendingForApproval", value: "2" },
-  { label: "Rejected", value: "4" },
-]
+], ({ label }) => label.toLowerCase());
 
 
-export const statusOptionsCosting = [
-
-  { label: "Approved", value: "3" },
+export const statusOptionsCosting = _.sortBy([
   { label: "AwaitingApproval", value: "6" },
   { label: "Draft", value: "1" },
   { label: "Error", value: "12" },
@@ -2144,12 +2142,11 @@ export const statusOptionsCosting = [
   { label: "POUpdated", value: "14" },
   { label: "Pushed", value: "13" },
   { label: "Rejected", value: "4" },
-]
-
-
-export const statusOptionsSimulation = [
-
   { label: "Approved", value: "3" },
+]
+  , ({ label }) => label.toLowerCase());
+
+export const statusOptionsSimulation = _.sortBy([
   { label: "AwaitingApproval", value: "6" },
   { label: "Draft", value: "1" },
   { label: "Error", value: "12" },
@@ -2160,11 +2157,11 @@ export const statusOptionsSimulation = [
   { label: "Provisional", value: "15" },
   { label: "Pushed", value: "13" },
   { label: "Rejected", value: "4" },
-]
+  { label: "Approved", value: "3" },
+], ({ label }) => label.toLowerCase());
 
-export const statusOptions = [
 
-  { label: "ApprovedByASMSimulation", value: "16" },
+export const statusOptions = _.sortBy([
   { label: "ApprovedByAssembly", value: "8" },
   { label: "ApprovedBySimulation", value: "9" },
   { label: "Approved", value: "3" },
@@ -2181,8 +2178,10 @@ export const statusOptions = [
   { label: "Pushed", value: "13" },
   { label: "Rejected", value: "4" },
   { label: "RejectedBySystem", value: "18" },
+  { label: "ApprovedByASMSimulation", value: "16" },
   // { label: "SendForApproval", value: "7" },
-]
+], ({ label }) => label.toLowerCase());
+
 //AUTOCOMPLETE IN PART
 export const searchCount = 3
 export const dropdownLimit = 100
