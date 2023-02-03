@@ -140,8 +140,8 @@ function SimulationApprovalSummary(props) {
         setLoader(false)
         dispatch(getApprovalSimulatedCostingSummary(reqParams, res => {
             const { SimulationSteps, SimulatedCostingList, SimulationApprovalProcessId, Token, NumberOfCostings, IsSent, IsFinalLevelButtonShow,
-                IsPushedButtonShow, SimulationTechnologyId, SimulationApprovalProcessSummaryId, DepartmentCode, EffectiveDate, SimulationId,
-                SenderReason, ImpactedMasterDataList, AmendmentDetails, Attachements, DepartmentId, TotalImpactPerQuarter, SimulationHeadId } = res.data.Data
+                SimulationTechnologyId, SimulationApprovalProcessSummaryId, DepartmentCode, EffectiveDate, SimulationId,
+                IsPushedButtonShow, SenderReason, ImpactedMasterDataList, AmendmentDetails, Attachements, DepartmentId, TotalImpactPerQuarter, SimulationHeadId, TotalBudgetedPriceImpactPerQuarter } = res.data.Data
 
             let uniqueArr = _.uniqBy(SimulatedCostingList, function (o) {
                 return o.CostingId;
@@ -161,8 +161,7 @@ function SimulationApprovalSummary(props) {
                 SimulationTechnologyId: SimulationTechnologyId, SimulationApprovalProcessSummaryId: SimulationApprovalProcessSummaryId,
                 DepartmentCode: DepartmentCode, EffectiveDate: EffectiveDate, SimulationId: SimulationId, SenderReason: SenderReason,
                 ImpactedMasterDataList: ImpactedMasterDataList, AmendmentDetails: AmendmentDetails, Attachements: Attachements, DepartmentId: DepartmentId
-                , TotalImpactPerQuarter: TotalImpactPerQuarter, SimulationHeadId: SimulationHeadId
-
+                , TotalImpactPerQuarter: TotalImpactPerQuarter, SimulationHeadId: SimulationHeadId, TotalBudgetedPriceImpactPerQuarter: TotalBudgetedPriceImpactPerQuarter
             })
             dispatch(setAttachmentFileData(Attachements, () => { }))
             setIsApprovalDone(IsSent)
@@ -1037,7 +1036,7 @@ function SimulationApprovalSummary(props) {
                                             <td>{simulationDetail && simulationDetail.AmendmentDetails?.SimulationTechnology}</td>
                                             <td>{simulationDetail && DayTime(simulationDetail.AmendmentDetails?.EffectiveDate).format('DD/MM/YYYY')}</td>
                                             <td>{simulationDetail && (simulationDetail?.TotalImpactPerQuarter ? checkForDecimalAndNull(simulationDetail?.TotalImpactPerQuarter, getConfigurationKey().NoOfDecimalForPrice) : '-')}</td>
-                                            <td>{simulationDetail && (simulationDetail?.totalBudgetedPriceImpactPerQuarter ? checkForDecimalAndNull(simulationDetail?.totalBudgetedPriceImpactPerQuarter, getConfigurationKey().NoOfDecimalForPrice) : '-')}</td>
+                                            <td>{simulationDetail && (simulationDetail?.TotalBudgetedPriceImpactPerQuarter ? checkForDecimalAndNull(simulationDetail?.TotalBudgetedPriceImpactPerQuarter, getConfigurationKey().NoOfDecimalForPrice) : '-')}</td>
                                         </tr>
                                     </tbody>
                                 </Table>
