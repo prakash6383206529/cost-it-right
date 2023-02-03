@@ -285,6 +285,7 @@ function CostingSimulation(props) {
             tempObj.Technology = Data.SimulatedCostingList[0].Technology
             tempObj.Vendor = Data.SimulatedCostingList[0].VendorName
             tempObj.TotalImpactPerQuarter = Data.TotalImpactPerQuarter
+            tempObj.BudgetedPriceImpactPerQuarter = Data?.SimulatedCostingList[0]?.BudgetedPriceImpactPerQuarter
             setAmendmentDetails(tempObj)
 
             //LISTING
@@ -1329,7 +1330,7 @@ function CostingSimulation(props) {
 
 
                                                         <AgGridColumn width={140} field="ImpactPerQuarter" headerName='Impact/Quarter (w.r.t. Existing)' cellRenderer='impactPerQuarterFormatter'></AgGridColumn>
-                                                        <AgGridColumn width={140} field="BudgetedPriceImpactPerQuarter" headerName='Impact/Quarter (w.r.t. Budgeted)' cellRenderer='impactPerQuarterFormatter'></AgGridColumn>
+                                                        <AgGridColumn width={140} field="BudgetedPriceImpactPerQuarter" headerName='Impact/Quarter (w.r.t. Budgeted Price)' cellRenderer='impactPerQuarterFormatter'></AgGridColumn>
 
                                                         {!(isExchangeRate) && <AgGridColumn width={140} field="OldOverheadCost" hide={hideDataColumn.hideOverhead} cellRenderer='overheadFormatter' headerName='Existing Overhead'></AgGridColumn>}
                                                         {!(isExchangeRate) && <AgGridColumn width={140} field="NewOverheadCost" hide={hideDataColumn.hideOverhead} cellRenderer='overheadFormatter' headerName='Revised Overhead'></AgGridColumn>}

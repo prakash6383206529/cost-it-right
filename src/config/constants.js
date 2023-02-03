@@ -2,6 +2,7 @@
  * Define all the constants required in application inside this file and export them
  */
 
+import _ from "lodash";
 import { reactLocalStorage } from "reactjs-localstorage";
 export const config = () => {
 
@@ -2090,69 +2091,65 @@ export const VOLUMEBULKUPLOAD = 'Volume'
 
 
 //STATUS FILTER DROPDOWN OPTIONS
-export const statusOptionsMasters = [
-
-  { label: "Draft", value: "1" },
-  { label: "PendingForApproval", value: "2" },
-  { label: "Approved", value: "3" },
+export const statusOptionsMasters = _.sortBy([
   { label: "Rejected", value: "4" },
-  { label: "History", value: "5" },
-  { label: "AwaitingApproval", value: "6" },
-]
-
-
-export const statusOptionsCosting = [
-
-  { label: "Draft", value: "1" },
-  { label: "PendingForApproval", value: "2" },
   { label: "Approved", value: "3" },
-  { label: "Rejected", value: "4" },
-  { label: "History", value: "5" },
   { label: "AwaitingApproval", value: "6" },
+  { label: "Draft", value: "1" },
+  { label: "History", value: "5" },
+  { label: "PendingForApproval", value: "2" },
+], ({ label }) => label.toLowerCase());
+
+
+export const statusOptionsCosting = _.sortBy([
+  { label: "AwaitingApproval", value: "6" },
+  { label: "Draft", value: "1" },
   { label: "Error", value: "12" },
-  { label: "Pushed", value: "13" },
+  { label: "History", value: "5" },
+  { label: "PendingForApproval", value: "2" },
   { label: "POUpdated", value: "14" },
-
-]
-
-
-export const statusOptionsSimulation = [
-
-  { label: "Draft", value: "1" },
-  { label: "PendingForApproval", value: "2" },
-  { label: "Approved", value: "3" },
-  { label: "Rejected", value: "4" },
-  { label: "History", value: "5" },
-  { label: "AwaitingApproval", value: "6" },
-  { label: "Error", value: "12" },
   { label: "Pushed", value: "13" },
+  { label: "Rejected", value: "4" },
+  { label: "Approved", value: "3" },
+]
+  , ({ label }) => label.toLowerCase());
+
+export const statusOptionsSimulation = _.sortBy([
+  { label: "AwaitingApproval", value: "6" },
+  { label: "Draft", value: "1" },
+  { label: "Error", value: "12" },
+  { label: "History", value: "5" },
+  { label: "Linked", value: "17" },
+  { label: "PendingForApproval", value: "2" },
   { label: "POUpdated", value: "14" },
   { label: "Provisional", value: "15" },
-  { label: "Linked", value: "17" },
-
-]
-
-export const statusOptions = [
-
-  { label: "Draft", value: "1" },
-  { label: "PendingForApproval", value: "2" },
-  { label: "Approved", value: "3" },
+  { label: "Pushed", value: "13" },
   { label: "Rejected", value: "4" },
-  { label: "History", value: "5" },
-  { label: "AwaitingApproval", value: "6" },
-  // { label: "SendForApproval", value: "7" },
+  { label: "Approved", value: "3" },
+], ({ label }) => label.toLowerCase());
+
+
+export const statusOptions = _.sortBy([
   { label: "ApprovedByAssembly", value: "8" },
   { label: "ApprovedBySimulation", value: "9" },
+  { label: "Approved", value: "3" },
+  { label: "AwaitingApproval", value: "6" },
   { label: "CreatedByAssembly", value: "10" },
   { label: "CreatedBySimulation", value: "11" },
+  { label: "Draft", value: "1" },
   { label: "Error", value: "12" },
-  { label: "Pushed", value: "13" },
+  { label: "History", value: "5" },
+  { label: "Linked", value: "17" },
+  { label: "PendingForApproval", value: "2" },
   { label: "POUpdated", value: "14" },
   { label: "Provisional", value: "15" },
-  { label: "ApprovedByASMSimulation", value: "16" },
-  { label: "Linked", value: "17" },
+  { label: "Pushed", value: "13" },
+  { label: "Rejected", value: "4" },
   { label: "RejectedBySystem", value: "18" },
-]
+  { label: "ApprovedByASMSimulation", value: "16" },
+  // { label: "SendForApproval", value: "7" },
+], ({ label }) => label.toLowerCase());
+
 
 //CONSTANTS FOR COSTING HEAD
 export const ZBCTypeId = Number(reactLocalStorage.getObject('CostingHeadsListShortForm')[ZBC])
@@ -2177,4 +2174,4 @@ export const KEYRFQ = "UAGSqTBCbZ8JqHJl"
 export const IVRFQ = "8vFNmRQEl91nOtrM"
 
 //VERSION 
-export const VERSION = "V2.1.67";
+export const VERSION = "V2.1.72";
