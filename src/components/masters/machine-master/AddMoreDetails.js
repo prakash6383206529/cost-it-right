@@ -5,9 +5,9 @@ import { Row, Col, Table } from 'reactstrap';
 import {
   required, checkForNull, number, acceptAllExceptSingleSpecialCharacter, maxLength10,
   maxLength80, checkWhiteSpaces, checkForDecimalAndNull, postiveNumber, positiveAndDecimalNumber, maxLength20, maxLength3,
-  maxLength512, checkPercentageValue, decimalLengthFour, decimalLengthThree, decimalLength2, decimalLengthsix, checkSpacesInString, maxValue366, decimalAndNumberValidation, percentageLimitValidation, maxPercentValue
+  maxLength512, decimalLengthFour, decimalLengthThree, decimalLength2, decimalLengthsix, checkSpacesInString, maxValue366, decimalAndNumberValidation, percentageLimitValidation, maxPercentValue
 } from "../../../helper/validation";
-import { renderText, renderNumberInputField, searchableSelect, renderTextAreaField, focusOnError, renderDatePicker } from "../../layout/FormInputs";
+import { renderText, searchableSelect, renderTextAreaField, focusOnError, renderDatePicker, renderTextInputField } from "../../layout/FormInputs";
 import { getPlantSelectListByType, getPlantBySupplier, getUOMSelectList, getShiftTypeSelectList, getDepreciationTypeSelectList, } from '../../../actions/Common';
 import {
   createMachineDetails, updateMachineDetails, getMachineDetailsData, getMachineTypeSelectList, getProcessesSelectList,
@@ -2651,7 +2651,7 @@ class AddMoreDetails extends Component {
                             type="text"
                             placeholder={'-'}
                             validate={[]}
-                            component={renderNumberInputField}
+                            component={renderTextInputField}
                             required={false}
                             disabled={true}
                             className=" "
@@ -2766,7 +2766,7 @@ class AddMoreDetails extends Component {
                                 type="text"
                                 placeholder={'-'}
                                 validate={[number]}
-                                component={renderNumberInputField}
+                                component={renderTextInputField}
                                 //required={true}
                                 disabled={true}
                                 className=" "
@@ -2780,7 +2780,7 @@ class AddMoreDetails extends Component {
                                 type="text"
                                 placeholder={'-'}
                                 validate={[number]}
-                                component={renderNumberInputField}
+                                component={renderTextInputField}
                                 //required={true}
                                 disabled={true}
                                 className=" "
@@ -2796,7 +2796,7 @@ class AddMoreDetails extends Component {
                                 type="text"
                                 placeholder={'-'}
                                 validate={[number]}
-                                component={renderNumberInputField}
+                                component={renderTextInputField}
                                 //required={true}
                                 disabled={true}
                                 className=" "
@@ -2897,7 +2897,7 @@ class AddMoreDetails extends Component {
                                 type="text"
                                 placeholder={'-'}
                                 // validate={[required]}
-                                component={renderNumberInputField}
+                                component={renderTextInputField}
                                 // required={true}
                                 disabled={true}
                                 className=" "
@@ -2964,8 +2964,8 @@ class AddMoreDetails extends Component {
                                   name={"LifeOfAssetPerYear"}
                                   type="text"
                                   placeholder={disableAllForm ? '-' : 'Enter'}
-                                  validate={[required, positiveAndDecimalNumber]}
-                                  component={renderNumberInputField}
+                                  validate={[required, positiveAndDecimalNumber, number]}
+                                  component={renderTextInputField}
                                   required={true}
                                   disabled={disableAllForm}
                                   className=" "
@@ -3086,7 +3086,7 @@ class AddMoreDetails extends Component {
                                 type="text"
                                 placeholder={this.state.IsAnnualMaintenanceFixed ? '-' : (disableAllForm) ? '-' : 'Enter'}
                                 validate={[positiveAndDecimalNumber, maxLength10, decimalLengthFour]}
-                                component={renderNumberInputField}
+                                component={renderTextInputField}
                                 //required={true}
                                 disabled={this.state.IsAnnualMaintenanceFixed ? true : (disableAllForm) ? true : false}
                                 className=" "
@@ -3184,8 +3184,8 @@ class AddMoreDetails extends Component {
                                 name={"AnnualInsuranceAmount"}
                                 type="text"
                                 placeholder={this.state.IsInsuranceFixed ? '-' : (disableAllForm) ? '-' : 'Enter'}
-                                validate={[positiveAndDecimalNumber, maxLength10, decimalLengthFour]}
-                                component={renderNumberInputField}
+                                validate={[positiveAndDecimalNumber, maxLength10, decimalLengthFour, number]}
+                                component={renderTextInputField}
                                 //required={true}
                                 disabled={this.state.IsInsuranceFixed ? true : (disableAllForm) ? true : false}
                                 className=" "
@@ -3199,7 +3199,7 @@ class AddMoreDetails extends Component {
                                 type="text"
                                 placeholder={disableAllForm ? '-' : 'Enter'}
                                 validate={[number, positiveAndDecimalNumber, decimalLengthFour]}
-                                component={renderNumberInputField}
+                                component={renderTextInputField}
                                 //required={true}
                                 disabled={disableAllForm}
                                 className=" "
@@ -3213,7 +3213,7 @@ class AddMoreDetails extends Component {
                                 type="text"
                                 placeholder={isEditFlag || disableAllForm ? '-' : 'Enter'}
                                 validate={[number, positiveAndDecimalNumber]}
-                                component={renderNumberInputField}
+                                component={renderTextInputField}
                                 //required={true}
                                 disabled={isEditFlag || disableAllForm ? true : false}
                                 className=" "
@@ -3227,7 +3227,7 @@ class AddMoreDetails extends Component {
                                 type="text"
                                 placeholder={'-'}
                                 // validate={[number, postiveNumber]}
-                                component={renderNumberInputField}
+                                component={renderTextInputField}
                                 //required={true}
                                 disabled={true}
                                 className=" "
@@ -3240,8 +3240,8 @@ class AddMoreDetails extends Component {
                                 name={"OtherYearlyCost"}
                                 type="text"
                                 placeholder={disableAllForm ? '-' : 'Enter'}
-                                validate={[positiveAndDecimalNumber, maxLength10, decimalLengthFour]}
-                                component={renderNumberInputField}
+                                validate={[positiveAndDecimalNumber, maxLength10, decimalLengthFour, number]}
+                                component={renderTextInputField}
                                 //required={true}
                                 disabled={disableAllForm}
                                 className=" "
@@ -3255,7 +3255,7 @@ class AddMoreDetails extends Component {
                                 type="text"
                                 placeholder={'-'}
                                 //validate={[required]}
-                                component={renderNumberInputField}
+                                component={renderTextInputField}
                                 //required={true}
                                 disabled={true}
                                 className=" "
@@ -3327,7 +3327,7 @@ class AddMoreDetails extends Component {
                                   type="text"
                                   placeholder={'-'}
                                   //validate={[required]}
-                                  component={renderNumberInputField}
+                                  component={renderTextInputField}
                                   //required={true}
                                   disabled={true}
                                   className=" "
@@ -3422,7 +3422,7 @@ class AddMoreDetails extends Component {
                                   type="text"
                                   placeholder={'-'}
                                   //validate={[required]}
-                                  component={renderNumberInputField}
+                                  component={renderTextInputField}
                                   //required={true}
                                   disabled={true}
                                   className=" "
@@ -3436,7 +3436,7 @@ class AddMoreDetails extends Component {
                                   type="text"
                                   placeholder={'-'}
                                   //validate={[required]}
-                                  component={renderNumberInputField}
+                                  component={renderTextInputField}
                                   //required={true}
                                   disabled={true}
                                   className=" "
@@ -3450,7 +3450,7 @@ class AddMoreDetails extends Component {
                                   type="text"
                                   placeholder={'-'}
                                   //validate={[required]}
-                                  component={renderNumberInputField}
+                                  component={renderTextInputField}
                                   //required={true}
                                   disabled={true}
                                   className=" "
@@ -3501,7 +3501,7 @@ class AddMoreDetails extends Component {
                                 type="text"
                                 placeholder={'-'}
                                 //validate={[required]}
-                                component={renderNumberInputField}
+                                component={renderTextInputField}
                                 //onChange={this.handleLabourCalculation}
                                 //required={true}
                                 disabled={true}
@@ -3516,7 +3516,7 @@ class AddMoreDetails extends Component {
                                 type="text"
                                 placeholder={disableAllForm ? '-' : 'Enter'}
                                 validate={[maxLength10, number]}
-                                component={renderNumberInputField}
+                                component={renderTextInputField}
                                 //onChange={this.handleLabourCalculation}
                                 //required={true}
                                 disabled={disableAllForm}
