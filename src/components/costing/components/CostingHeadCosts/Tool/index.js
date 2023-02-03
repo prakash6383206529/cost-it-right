@@ -41,7 +41,8 @@ function Tool(props) {
     toolCostType: ObjectForOverAllApplicability && ObjectForOverAllApplicability.ToolCostType !== undefined ? { label: ObjectForOverAllApplicability.ToolCostType, value: ObjectForOverAllApplicability.ToolCostTypeId } : [],
     maintanencePercentage: ObjectForOverAllApplicability && ObjectForOverAllApplicability.ToolMaintenancePercentage !== undefined ? checkForDecimalAndNull(ObjectForOverAllApplicability.ToolMaintenancePercentage, initialConfiguration.NoOfDecimalForPrice) : '',
     MaintananceCostApplicability: ObjectForOverAllApplicability && ObjectForOverAllApplicability.ToolApplicabilityCost !== undefined ? checkForDecimalAndNull(ObjectForOverAllApplicability.ToolApplicabilityCost, initialConfiguration.NoOfDecimalForPrice) : '',
-    ToolAmortizationCost: ObjectForOverAllApplicability && ObjectForOverAllApplicability.ToolAmortizationCost !== undefined ? checkForDecimalAndNull(ObjectForOverAllApplicability.ToolAmortizationCost, initialConfiguration.NoOfDecimalForPrice) : ''
+    ToolAmortizationCost: ObjectForOverAllApplicability && ObjectForOverAllApplicability.ToolAmortizationCost !== undefined ? checkForDecimalAndNull(ObjectForOverAllApplicability.ToolAmortizationCost, initialConfiguration.NoOfDecimalForPrice) : '',
+    maintanenceToolCost: (ObjectForOverAllApplicability && ObjectForOverAllApplicability.ToolMaintenanceCost !== undefined && ObjectForOverAllApplicability.ToolCostType === 'Fixed') ? checkForDecimalAndNull(ObjectForOverAllApplicability.ToolMaintenanceCost, initialConfiguration.NoOfDecimalForPrice) : ''
   }
 
   const { register, handleSubmit, control, setValue, getValues, formState: { errors } } = useForm({
@@ -70,7 +71,7 @@ function Tool(props) {
   useEffect(() => {
     props.setToolCost(gridData, JSON.stringify(gridData) !== JSON.stringify(data && data?.CostingPartDetails?.CostingToolCostResponse?.length > 0 ? data?.CostingPartDetails?.CostingToolCostResponse : []) ? true : false)
 
-  }, [gridData]);
+  }, [gridData, getValues('maintanenceToolCost'), getValues('maintanencePercentage')]);
 
   useEffect(() => {
     dispatch(setComponentToolItemData(data, () => { }))
@@ -324,11 +325,12 @@ function Tool(props) {
       setValueOfToolCost('')
     }
     setValue('maintanencePercentage', 0)
+    setValue('maintanenceToolCost', 0)
   }
 
   const toolFieldValue = useWatch({
     control,
-    name: ['maintanencePercentage',],
+    name: ['maintanencePercentage', 'maintanenceToolCost'],
   });
 
   useEffect(() => {
@@ -355,6 +357,7 @@ function Tool(props) {
       const RMCC = headerCosts.NetRawMaterialsCost + ConversionCostForCalculation;
       const BOPCC = headerCosts.NetBoughtOutPartCost + ConversionCostForCalculation;
       const maintanencePercentage = getValues('maintanencePercentage')
+      const maintanenceToolCost = getValues('maintanenceToolCost')
 
       let dataList = CostingDataList && CostingDataList.length > 0 ? CostingDataList[0] : {}
       const totalTabCost = checkForNull(dataList.NetTotalRMBOPCC) + checkForNull(dataList.NetSurfaceTreatmentCost) + checkForNull(dataList.NetOverheadAndProfitCost) + checkForNull(dataList.NetPackagingAndFreight)
@@ -461,14 +464,14 @@ function Tool(props) {
         case 'Fixed':
 
           setValue('MaintananceCostApplicability', '-')
-          setValue('ToolMaintenanceCost', checkForDecimalAndNull(maintanencePercentage, initialConfiguration.NoOfDecimalForPrice))
+          setValue('ToolMaintenanceCost', checkForDecimalAndNull(maintanenceToolCost, initialConfiguration.NoOfDecimalForPrice))
           setToolObj({
             ...toolObj,
             ToolApplicabilityId: applicability.value,
             ToolApplicability: applicability.label,
             MaintanencePercentage: maintanencePercentage,
-            ToolApplicabilityCost: maintanencePercentage,
-            ToolMaintenanceCost: checkForNull(maintanencePercentage)
+            ToolApplicabilityCost: maintanenceToolCost,
+            ToolMaintenanceCost: checkForNull(maintanenceToolCost)
           })
           break;
 
