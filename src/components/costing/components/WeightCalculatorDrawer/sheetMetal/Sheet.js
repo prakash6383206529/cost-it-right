@@ -288,7 +288,7 @@ function Sheet(props) {
             Cavity: values.Cavity,
             Thickness: values.SheetThickness,
             LengthOfSheet: values.SheetLength,
-            WeightOfSheetInUOM: dataToSend.SheetWidth,
+            WeightOfSheetInUOM: dataToSend.WeightOfSheet,
             Width: values.SheetWidth,
             StripWidth: values.StripWidth,
             NoOfStrips: values.StripsNumber,
