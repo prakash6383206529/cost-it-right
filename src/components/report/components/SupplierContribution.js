@@ -31,6 +31,7 @@ function SupplierContributionReport(props) {
     const [isPlantSelected, setIsPlantSelected] = useState(false)
     const [vendorArray, setVendorArray] = useState([])
     const [vendorData, setVendorData] = useState([])
+    const [vendorPartCount, setVendorPartCount] = useState([])
     const [noContent, setNoContent] = useState(false)
     const [doughnutColor, setDoughnutColor] = useState([])
 
@@ -89,6 +90,7 @@ function SupplierContributionReport(props) {
             dispatch(getSupplierContributionData(data, (res) => {
                 let vendors = []
                 let vendorPrice = []
+                let vendorPartCount = []
                 setTimeout(() => {
                     setGraphListing(true)
                 }, 500);
@@ -97,9 +99,11 @@ function SupplierContributionReport(props) {
                 Data.VendorWiseData.map((item) => {
                     vendors.push(item.Vendor)
                     vendorPrice.push(item.VendorBuying)
+                    vendorPartCount.push(item.VendorPartCount)
                 })
                 setVendorArray(vendors)
                 setVendorData(vendorPrice)
+                setVendorPartCount(vendorPartCount)
                 setNoContent(false)
                 setDoughnutColor(colorArray);
             }))
@@ -136,14 +140,13 @@ function SupplierContributionReport(props) {
                 callbacks: {
                     label: function (context) {
                         let label = '';
-
                         if (label) {
                             label += ': ';
                         }
                         if (context.parsed !== null) {
                             label += new Intl.NumberFormat('en-US', { style: 'currency', currency: (props?.rowData?.Currency) ? props.rowData.Currency : 'INR' }).format(context.parsed);
                         }
-                        return label;
+                        return `Price :${label} | No. of Parts: ${context?.dataset?.vendorPartCount[context?.dataIndex] ? (context?.dataset?.vendorPartCount[context?.dataIndex]) : '-'}`;
                     }
                 }
             },
@@ -241,6 +244,13 @@ function SupplierContributionReport(props) {
                 data: vendorData,
                 backgroundColor: doughnutColor,
                 borderWidth: 1,
+                vendorPartCount: vendorPartCount,
+                // borderWidth: 1,
+                cutout: '70%',
+                width: 200,
+                height: 200
+                // borderRadius: 20,
+                // offset: 10
             },
         ],
 
