@@ -2092,66 +2092,64 @@ export const VOLUMEBULKUPLOAD = 'Volume'
 //STATUS FILTER DROPDOWN OPTIONS
 export const statusOptionsMasters = [
 
-  { label: "Draft", value: "1" },
-  { label: "PendingForApproval", value: "2" },
   { label: "Approved", value: "3" },
-  { label: "Rejected", value: "4" },
-  { label: "History", value: "5" },
   { label: "AwaitingApproval", value: "6" },
+  { label: "Draft", value: "1" },
+  { label: "History", value: "5" },
+  { label: "PendingForApproval", value: "2" },
+  { label: "Rejected", value: "4" },
 ]
 
 
 export const statusOptionsCosting = [
 
-  { label: "Draft", value: "1" },
-  { label: "PendingForApproval", value: "2" },
   { label: "Approved", value: "3" },
-  { label: "Rejected", value: "4" },
-  { label: "History", value: "5" },
   { label: "AwaitingApproval", value: "6" },
+  { label: "Draft", value: "1" },
   { label: "Error", value: "12" },
-  { label: "Pushed", value: "13" },
+  { label: "History", value: "5" },
+  { label: "PendingForApproval", value: "2" },
   { label: "POUpdated", value: "14" },
-
+  { label: "Pushed", value: "13" },
+  { label: "Rejected", value: "4" },
 ]
 
 
 export const statusOptionsSimulation = [
 
-  { label: "Draft", value: "1" },
-  { label: "PendingForApproval", value: "2" },
   { label: "Approved", value: "3" },
-  { label: "Rejected", value: "4" },
-  { label: "History", value: "5" },
   { label: "AwaitingApproval", value: "6" },
+  { label: "Draft", value: "1" },
   { label: "Error", value: "12" },
-  { label: "Pushed", value: "13" },
+  { label: "History", value: "5" },
+  { label: "Linked", value: "17" },
+  { label: "PendingForApproval", value: "2" },
   { label: "POUpdated", value: "14" },
   { label: "Provisional", value: "15" },
-  { label: "Linked", value: "17" },
-
+  { label: "Pushed", value: "13" },
+  { label: "Rejected", value: "4" },
 ]
 
 export const statusOptions = [
 
-  { label: "Draft", value: "1" },
-  { label: "PendingForApproval", value: "2" },
-  { label: "Approved", value: "3" },
-  { label: "Rejected", value: "4" },
-  { label: "History", value: "5" },
-  { label: "AwaitingApproval", value: "6" },
-  // { label: "SendForApproval", value: "7" },
+  { label: "ApprovedByASMSimulation", value: "16" },
   { label: "ApprovedByAssembly", value: "8" },
   { label: "ApprovedBySimulation", value: "9" },
+  { label: "Approved", value: "3" },
+  { label: "AwaitingApproval", value: "6" },
   { label: "CreatedByAssembly", value: "10" },
   { label: "CreatedBySimulation", value: "11" },
+  { label: "Draft", value: "1" },
   { label: "Error", value: "12" },
-  { label: "Pushed", value: "13" },
+  { label: "History", value: "5" },
+  { label: "Linked", value: "17" },
+  { label: "PendingForApproval", value: "2" },
   { label: "POUpdated", value: "14" },
   { label: "Provisional", value: "15" },
-  { label: "ApprovedByASMSimulation", value: "16" },
-  { label: "Linked", value: "17" },
+  { label: "Pushed", value: "13" },
+  { label: "Rejected", value: "4" },
   { label: "RejectedBySystem", value: "18" },
+  // { label: "SendForApproval", value: "7" },
 ]
 
 //CONSTANTS FOR COSTING HEAD
@@ -2177,4 +2175,4 @@ export const KEYRFQ = "UAGSqTBCbZ8JqHJl"
 export const IVRFQ = "8vFNmRQEl91nOtrM"
 
 //VERSION 
-export const VERSION = "V2.1.68";
+export const VERSION = "V2.1.69";
