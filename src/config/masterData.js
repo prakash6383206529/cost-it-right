@@ -3319,7 +3319,7 @@ export const MachineRateSimulation = [
 ]
 
 export const BOPDomesticSimulation = [
-    { label: "CostingHead", value: "IsVendor" },
+    { label: "CostingHead", value: "CostingHead" },
     { label: "BoughtOutPartNumber", value: "BoughtOutPartNumber" },
     { label: "BoughtOutPartName", value: "BoughtOutPartName" },
     { label: "BoughtOutPartCategory", value: "BoughtOutPartCategory" },
@@ -3333,7 +3333,7 @@ export const BOPDomesticSimulation = [
 ]
 
 export const BOPImportSimulation = [
-    { label: "CostingHead", value: "IsVendor" },
+    { label: "CostingHead", value: "CostingHead" },
     { label: "BoughtOutPartNumber", value: "BoughtOutPartNumber" },
     { label: "BoughtOutPartName", value: "BoughtOutPartName" },
     { label: "BoughtOutPartCategory", value: "BoughtOutPartCategory" },
@@ -3870,7 +3870,7 @@ export const CostingSimulationDownloadRM = [
     { label: "Revised RM Cost/Pc", value: "NewRMPrice" },
     { label: "Variance (RM Cost)", value: "RMCVariance" },
     { label: "Impact/Quarter (w.r.t. Existing)", value: "ImpactPerQuarter" },
-    { label: "Impact/Quarter (w.r.t. Budgeted)", value: "BudgetedPriceImpactPerQuarter" },
+    { label: "Impact/Quarter (w.r.t. Budgeted Price)", value: "BudgetedPriceImpactPerQuarter" },
     { label: "ExistingOverheadCost", value: "OldOverheadCost" },
     { label: "RevisedOverheadCost", value: "NewOverheadCost" },
     { label: "ExistingProfitCost", value: "OldProfitCost" },
@@ -3928,7 +3928,7 @@ export const CostingSimulationDownloadST = [
     { label: "RevisedNetSTCost", value: "NewNetSurfaceTreatmentCost" },
     { label: "Variance (ST Cost)", value: "STVariance" },
     { label: "Impact/Quarter (w.r.t. Existing)", value: "ImpactPerQuarter" },
-    { label: "Impact/Quarter (w.r.t. Budgeted)", value: "BudgetedPriceImpactPerQuarter" },
+    { label: "Impact/Quarter (w.r.t. Budgeted Price)", value: "BudgetedPriceImpactPerQuarter" },
     { label: "ExistingOverheadCost", value: "OldOverheadCost" },
     { label: "RevisedOverheadCost", value: "NewOverheadCost" },
     { label: "ExistingProfitCost", value: "OldProfitCost" },
@@ -3983,7 +3983,7 @@ export const CostingSimulationDownloadOperation = [
     { label: "RevisedNetOperationCost", value: "NewNetOperationCost" },
     { label: "Variance (Oper. Cost)", value: "OperationCostVariance" },
     { label: "Impact/Quarter (w.r.t. Existing)", value: "ImpactPerQuarter" },
-    { label: "Impact/Quarter (w.r.t. Budgeted)", value: "BudgetedPriceImpactPerQuarter" },
+    { label: "Impact/Quarter (w.r.t. Budgeted Price)", value: "BudgetedPriceImpactPerQuarter" },
     { label: "ExistingOverheadCost", value: "OldOverheadCost" },
     { label: "RevisedOverheadCost", value: "NewOverheadCost" },
     { label: "ExistingProfitCost", value: "OldProfitCost" },
@@ -4038,7 +4038,7 @@ export const CostingSimulationDownloadBOP = [
     { label: "RevisedNetBoughtOutPartCost", value: "NewNetBoughtOutPartCost" },
     { label: "NetBoughtOutPartCostVariance", value: "NetBoughtOutPartCostVariance" },
     { label: "Impact/Quarter (w.r.t. Existing)", value: "ImpactPerQuarter" },
-    { label: "Impact/Quarter (w.r.t. Budgeted)", value: "BudgetedPriceImpactPerQuarter" },
+    { label: "Impact/Quarter (w.r.t. Budgeted Price)", value: "BudgetedPriceImpactPerQuarter" },
     { label: "ExistingOverheadCost", value: "OldOverheadCost" },
     { label: "RevisedOverheadCost", value: "NewOverheadCost" },
     { label: "ExistingProfitCost", value: "OldProfitCost" },
@@ -4126,7 +4126,7 @@ export const SIMULATIONAPPROVALSUMMARYDOWNLOADOPERATION = [
     { label: "RevisedOperationCost", value: "NewOperationCost" },
     { label: "Variance (Oper. Cost)", value: "OperationCostVariance" },
     { label: "Impact/Quarter (w.r.t. Existing)", value: "ImpactPerQuarter" },
-    { label: "Impact/Quarter (w.r.t. Budgeted)", value: "BudgetedPriceImpactPerQuarter" },
+    { label: "Impact/Quarter (w.r.t. Budgeted Price)", value: "BudgetedPriceImpactPerQuarter" },
 ]
 
 export const SIMULATIONAPPROVALSUMMARYDOWNLOADBOP = [
@@ -4149,7 +4149,7 @@ export const SIMULATIONAPPROVALSUMMARYDOWNLOADBOP = [
     { label: "Revised BOP Cost", value: "NewNetBoughtOutPartCost" },
     { label: "Variance (BOP Cost)", value: "NetBoughtOutPartCostVariance" },
     { label: "Impact/Quarter (w.r.t. Existing)", value: "ImpactPerQuarter" },
-    { label: "Impact/Quarter (w.r.t. Budgeted)", value: "BudgetedPriceImpactPerQuarter" },
+    { label: "Impact/Quarter (w.r.t. Budgeted Price)", value: "BudgetedPriceImpactPerQuarter" },
 ]
 
 export const BOP_DOMESTIC_DOWNLOAD_EXCEl = [
@@ -4804,7 +4804,7 @@ export const EXCHANGESIMULATIONDOWNLOAD = [
     { label: "RevisedNetPOPriceOtherCurrency", value: "NewNetPOPriceOtherCurrency" },
     { label: "PO Price", value: "OldPOPrice" },
     { label: "Impact/Quarter (w.r.t. Existing)", value: "ImpactPerQuarter" },
-    { label: "Impact/Quarter (w.r.t. Budgeted)", value: "BudgetedPriceImpactPerQuarter" },
+    { label: "Impact/Quarter (w.r.t. Budgeted Price)", value: "BudgetedPriceImpactPerQuarter" },
 ]
 
 export const CostingSimulationDownloadMR = [
@@ -4835,7 +4835,7 @@ export const CostingSimulationDownloadMR = [
     { label: "RevisedProcessCost", value: "NewProcessCost" },
     { label: "Variance (Proc. Cost)", value: "ProcessCostVariance" },
     { label: "Impact/Quarter (w.r.t. Existing)", value: "ImpactPerQuarter" },
-    { label: "Impact/Quarter (w.r.t. Budgeted)", value: "BudgetedPriceImpactPerQuarter" },
+    { label: "Impact/Quarter (w.r.t. Budgeted Price)", value: "BudgetedPriceImpactPerQuarter" },
     { label: "ExistingOverheadCost", value: "OldOverheadCost" },
     { label: "RevisedOverheadCost", value: "NewOverheadCost" },
     { label: "ExistingProfitCost", value: "OldProfitCost" },
@@ -4885,7 +4885,7 @@ export const SIMULATIONAPPROVALSUMMARYDOWNLOADMR = [
     { label: "Existing Net Process Cost", value: "OldNetProcessCost" },
     { label: "Revised Net Process Cost", value: "NewNetProcessCost" },
     { label: "Impact/Quarter (w.r.t. Existing)", value: "ImpactPerQuarter" },
-    { label: "Impact/Quarter (w.r.t. Budgeted)", value: "BudgetedPriceImpactPerQuarter" },
+    { label: "Impact/Quarter (w.r.t. Budgeted Price)", value: "BudgetedPriceImpactPerQuarter" },
 ]
 
 export const MRGridForTokenSummary = [
@@ -6027,7 +6027,7 @@ export const CostingSimulationDownloadAssemblyTechnology = [
     { label: "NetBoughtOutPartCostVariance", value: "NetBoughtOutPartCostVariance" },
 
     { label: "Impact/Quarter (w.r.t. Existing)", value: "ImpactPerQuarter" },
-    { label: "Impact/Quarter (w.r.t. Budgeted)", value: "BudgetedPriceImpactPerQuarter" },
+    { label: "Impact/Quarter (w.r.t. Budgeted Price)", value: "BudgetedPriceImpactPerQuarter" },
     { label: "Variance (w.r.t. Budgeted)", value: "BudgetedPriceVariance" },
     { label: "Budgeted Price", value: "BudgetedPrice" },
 
