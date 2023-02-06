@@ -1080,7 +1080,7 @@ const SendForApproval = (props) => {
 
       </Drawer>
 
-    </Fragment>
+    </Fragment >
   );
 }
 
