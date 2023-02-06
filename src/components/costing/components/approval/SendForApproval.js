@@ -877,14 +877,14 @@ const SendForApproval = (props) => {
                             <div className="form-group">
                               <label>Impact for the Year</label>
                               <label className={data.oldPrice === 0 ? `form-control bg-grey input-form-control` : `form-control bg-grey input-form-control ${data.yearImpact < 0 ? 'green-value' : 'red-value'}`}>
-                                {data.yearImpact && data.yearImpact ? (checkForDecimalAndNull(data.yearImpact, initialConfiguration.NoOfDecimalForPrice)) : 0}
+                                {data.yearImpact && data.yearImpact ? checkForDecimalAndNull(data.yearImpact, initialConfiguration.NoOfDecimalForPrice) : 0}
                               </label>
                             </div>
-                          </Col >
+                          </Col>
                         </>}
-                      </Row >
-                    </div >
-                  </div >
+                      </Row>
+                    </div>
+                  </div>
                 </div>
                 );
               })}
