@@ -3,7 +3,7 @@ import { Row, Col, } from 'reactstrap';
 import DayTime from '../../../common/DayTimeWrapper'
 import { defaultPageSize, EMPTY_DATA } from '../../../../config/constants';
 import NoContentFound from '../../../common/NoContentFound';
-import { checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUserId } from '../../../../helper';
+import { checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUserId, searchNocontentFilter } from '../../../../helper';
 import Toaster from '../../../common/Toaster';
 import { runVerifyExchangeRateSimulation } from '../../actions/Simulation';
 import { Fragment } from 'react';
@@ -35,6 +35,7 @@ function ERSimulation(props) {
     const [effectiveDate, setEffectiveDate] = useState('');
     const [isEffectiveDateSelected, setIsEffectiveDateSelected] = useState(false);
     const [isWarningMessageShow, setIsWarningMessageShow] = useState(false);
+    const [noData, setNoData] = useState(false);
 
     const dispatch = useDispatch()
 
@@ -135,7 +136,7 @@ function ERSimulation(props) {
     const defaultColDef = {
         resizable: true,
         filter: true,
-        sortable: true,
+        sortable: false,
         headerCheckboxSelection: isFirstColumn,
         checkboxSelection: isFirstColumn
     };
@@ -152,7 +153,11 @@ function ERSimulation(props) {
 
         // window.screen.width <= 1366 ? params.columnApi.autoSizeColumns(allColumnIds) : params.api.sizeColumnsToFit()
     };
-
+    const onFloatingFilterChanged = (value) => {
+        if (list.length !== 0) {
+            setNoData(searchNocontentFilter(value, noData))
+        }
+    }
     const onPageSizeChanged = (newPageSize) => {
         gridApi.paginationSetPageSize(Number(newPageSize));
     };
@@ -238,14 +243,18 @@ function ERSimulation(props) {
 
                         <Row>
                             <Col className="add-min-height mb-3 sm-edit-page">
-                                <div className={`ag-grid-wrapper height-width-wrapper reset-btn-container ${list && list?.length <= 0 ? "overlay-contain" : ""}`}>
-                                    <div className="ag-grid-header d-flex ">
-                                        <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
-                                        <button type="button" className="user-btn float-right" title="Reset Grid" onClick={() => resetState()}>
-                                            <div className="refresh mr-0"></div></button>
+                                <div className={`ag-grid-wrapper height-width-wrapper reset-btn-container ${(list && list?.length <= 0) || noData ? "overlay-contain" : ""}`}>
+                                    <div className="ag-grid-header d-flex align-items-center justify-content-between">
+                                        <div className='d-flex align-items-center'>
+                                            <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
+                                            <button type="button" className="user-btn float-right" title="Reset Grid" onClick={() => resetState()}>
+                                                <div className="refresh mr-0"></div></button>
+                                        </div>
+                                        {!isImpactedMaster && <button type="button" className={"apply"} onClick={cancel} disabled={isDisable}> <div className={'back-icon'}></div>Back</button>}
                                     </div>
 
-                                    <div className="ag-theme-material" style={{ width: '100%' }}>
+                                    <div className="ag-theme-material p-relative" style={{ width: '100%' }}>
+                                        {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found simulation-lisitng" />}
                                         <AgGridReact
                                             floatingFilter={true}
                                             style={{ height: '100%', width: '100%' }}
@@ -267,6 +276,8 @@ function ERSimulation(props) {
                                             rowSelection={'multiple'}
                                             // frameworkComponents={frameworkComponents}
                                             onSelectionChanged={onRowSelect}
+                                            suppressRowClickSelection={true}
+                                            onFilterModified={onFloatingFilterChanged}
                                         >
                                             <AgGridColumn field="Currency" editable='false' headerName="Currency" minWidth={190}></AgGridColumn>
                                             {costingAndPartNo && <AgGridColumn field="CostingNumber" headerName="Costing No" minWidth={190}></AgGridColumn>}
@@ -276,8 +287,8 @@ function ERSimulation(props) {
                                             <AgGridColumn field="CustomRate" editable='false' headerName="Custom Rate(INR)" minWidth={190}></AgGridColumn>
                                             {!isImpactedMaster && <AgGridColumn suppressSizeToFit="true" field="CurrencyExchangeRate" headerName="Exchange Rate(INR)" minWidth={190}></AgGridColumn>}
                                             {isImpactedMaster && <>
-                                                <AgGridColumn suppressSizeToFit="true" field="NewExchangeRate" headerName="New Exchange Rate(INR)" minWidth={190}></AgGridColumn>
-                                                <AgGridColumn suppressSizeToFit="true" field="OldExchangeRate" headerName="Old Exchange Rate(INR)" minWidth={190}></AgGridColumn>
+                                                <AgGridColumn suppressSizeToFit="true" field="OldExchangeRate" headerName="Existing Exchange Rate(INR)" minWidth={190}></AgGridColumn>
+                                                <AgGridColumn suppressSizeToFit="true" field="NewExchangeRate" headerName="Revised Exchange Rate(INR)" minWidth={190}></AgGridColumn>
                                             </>}
                                             <AgGridColumn field="EffectiveDate" headerName="Effective Date" editable='false' minWidth={190} cellRenderer='effectiveDateRenderer'></AgGridColumn>
                                             <AgGridColumn field="ExchangeRateId" hide={true}></AgGridColumn>
@@ -311,11 +322,6 @@ function ERSimulation(props) {
                                         />
                                         {isWarningMessageShow && <WarningMessage dClass={"error-message"} textClass={"pt-1"} message={"Please select effective date"} />}
                                     </div>
-
-                                    <button type={"button"} className="mr15 cancel-btn" onClick={cancel} disabled={isDisable}>
-                                        <div className={"cancel-icon"}></div>
-                                        {"CANCEL"}
-                                    </button>
                                     <button onClick={verifySimulation} type="submit" className="user-btn mr5 save-btn" disabled={isDisable}>
                                         <div className={"Run-icon"}>
                                         </div>{" "}

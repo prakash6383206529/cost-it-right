@@ -201,7 +201,7 @@ class UOMMaster extends Component {
 
     return (
       <>
-        {EditAccessibility && <button className="Edit mr5" type={'button'} onClick={() => this.editItemDetails(cellValue)} />}
+        {EditAccessibility && <button title='Edit' className="Edit mr5" type={'button'} onClick={() => this.editItemDetails(cellValue)} />}
         {/* <button className="Delete" type={'button'} onClick={() => this.deleteItem(cell)} /> */}
       </>
     )
@@ -319,7 +319,7 @@ class UOMMaster extends Component {
     const defaultColDef = {
       resizable: true,
       filter: true,
-      sortable: true,
+      sortable: false,
       headerCheckboxSelectionFilteredOnly: true,
       checkboxSelection: isFirstColumn
     };
@@ -360,7 +360,8 @@ class UOMMaster extends Component {
                 DownloadAccessibility &&
                 <>
                   <ExcelFile filename={UomMaster} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}>
-                    <div className="download mr-0" title="Download"></div></button>}>
+                    <div title={`Download ${this.state.dataCount === 0 ? "All" : "(" + this.state.dataCount + ")"}`} className="download mr-1" ></div>
+                    {`${this.state.dataCount === 0 ? "All" : "(" + this.state.dataCount + ")"}`}</button>}>
                     {this.onBtExport()}
                   </ExcelFile>
                 </>
@@ -378,8 +379,7 @@ class UOMMaster extends Component {
 
               <div className={`ag-grid-wrapper height-width-wrapper  ${(this.state.dataList && this.state.dataList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
                 <div className="ag-grid-header">
-                  <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
-                  <SelectRowWrapper dataCount={dataCount} />
+                  <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={'off'} onChange={(e) => this.onFilterTextBoxChanged(e)} />
                 </div>
                 <div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
                   {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
@@ -401,6 +401,7 @@ class UOMMaster extends Component {
                     rowSelection={'multiple'}
                     onSelectionChanged={this.onRowSelect}
                     frameworkComponents={frameworkComponents}
+                    suppressRowClickSelection={true}
                   >
                     <AgGridColumn field="Unit" headerName="Unit"></AgGridColumn>
                     <AgGridColumn field="UnitSymbol" headerName="Unit Symbol" cellRenderer={"unitSymbol"}></AgGridColumn>

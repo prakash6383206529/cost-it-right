@@ -202,6 +202,7 @@ class ProcessListing extends Component {
       if (res.data.Result === true) {
         Toaster.success(MESSAGES.PROCESS_DELETE_SUCCESSFULLY)
         this.getDataList()
+        this.setState({ dataCount: 0 })
       }
     })
     this.setState({ showPopup: false })
@@ -328,6 +329,7 @@ class ProcessListing extends Component {
     this.setState({ isOpenProcessDrawer: false }, () => {
       if (type === 'submit')
         this.getDataList()
+      this.setState({ dataCount: 0 })
     })
 
   }
@@ -404,7 +406,7 @@ class ProcessListing extends Component {
     const defaultColDef = {
       resizable: true,
       filter: true,
-      sortable: true,
+      sortable: false,
       headerCheckboxSelectionFilteredOnly: true,
       checkboxSelection: isFirstColumn
     };
@@ -440,7 +442,8 @@ class ProcessListing extends Component {
                   {
                     DownloadAccessibility &&
                     <>
-                      <ExcelFile filename={ProcessMaster} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'} title="Download"><div className="download mr-0"></div></button>}>
+                      <ExcelFile filename={ProcessMaster} fileExtension={'.xls'} element={<button title={`Download ${this.state.dataCount === 0 ? "All" : "(" + this.state.dataCount + ")"}`} type="button" className={'user-btn mr5'} ><div className="download mr-1"></div>
+                        {`${this.state.dataCount === 0 ? "All" : "(" + this.state.dataCount + ")"}`}</button>}>
                         {this.onBtExport()}
                       </ExcelFile>
                     </>
@@ -459,8 +462,7 @@ class ProcessListing extends Component {
           <Col>
             <div className={`ag-grid-wrapper height-width-wrapper ${(this.props.processList && this.props.processList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
               <div className="ag-grid-header">
-                <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
-                <SelectRowWrapper dataCount={this.state.dataCount} />
+                <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={'off'} onChange={(e) => this.onFilterTextBoxChanged(e)} />
               </div>
               <div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
                 {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
@@ -482,6 +484,7 @@ class ProcessListing extends Component {
                   }}
                   frameworkComponents={frameworkComponents}
                   onFilterModified={this.onFloatingFilterChanged}
+                  suppressRowClickSelection={true}
                 >
                   <AgGridColumn field="ProcessName" headerName="Process Name" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
                   <AgGridColumn field="ProcessCode" headerName="Process Code"></AgGridColumn>

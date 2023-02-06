@@ -161,6 +161,7 @@ class ReasonListing extends Component {
       if (res.data.Result === true) {
         Toaster.success(MESSAGES.DELETE_REASON_SUCCESSFULLY)
         this.getTableListData()
+        this.setState({ dataCount: 0 })
       }
     })
     this.setState({ showPopup: false })
@@ -248,6 +249,7 @@ class ReasonListing extends Component {
           Toaster.success(MESSAGES.REASON_ACTIVE_SUCCESSFULLY)
         }
         this.getTableListData()
+        this.setState({ dataCount: 0 })
       }
     })
     this.setState({ showPopupToggle: false })
@@ -375,7 +377,7 @@ class ReasonListing extends Component {
     const defaultColDef = {
       resizable: true,
       filter: true,
-      sortable: true,
+      sortable: false,
       headerCheckboxSelectionFilteredOnly: true,
       checkboxSelection: isFirstColumn
     };
@@ -414,8 +416,9 @@ class ReasonListing extends Component {
                     <>
 
                       <ExcelFile filename={'Reason'} fileExtension={'.xls'} element={
-                        <button type="button" className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
+                        <button title={`Download ${this.state.dataCount === 0 ? "All" : "(" + this.state.dataCount + ")"}`} type="button" className={'user-btn mr5'}><div className="download mr-1" ></div>
                           {/* DOWNLOAD */}
+                          {`${this.state.dataCount === 0 ? "All" : "(" + this.state.dataCount + ")"}`}
                         </button>}>
 
                         {this.onBtExport()}
@@ -437,8 +440,7 @@ class ReasonListing extends Component {
           </Row>
           <div className={`ag-grid-wrapper height-width-wrapper  ${(this.props.reasonDataList && this.props.reasonDataList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
             <div className="ag-grid-header">
-              <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
-              <SelectRowWrapper dataCount={dataCount} />
+              <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={'off'} onChange={(e) => this.onFilterTextBoxChanged(e)} />
             </div>
             <div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
               {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}

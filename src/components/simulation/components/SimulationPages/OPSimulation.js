@@ -492,7 +492,7 @@ function OPSImulation(props) {
     const defaultColDef = {
         resizable: true,
         filter: true,
-        sortable: true,
+        sortable: false,
         editable: true
     };
 
@@ -898,7 +898,7 @@ function OPSImulation(props) {
                             <Col className="add-min-height mb-3 sm-edit-page">
                                 <div className={`ag-grid-wrapper height-width-wrapper ${list && list?.length <= 0 ? "overlay-contain" : ""}`}>
                                     <div className="ag-grid-header d-flex justify-content-between">
-                                        <input type="text" className="form-control table-search mr-1" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
+                                        <input type="text" className="form-control table-search mr-1" id="filter-text-box" placeholder="Search " autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
                                     </div>
                                     {
                                         isbulkUpload &&
@@ -973,33 +973,33 @@ function OPSImulation(props) {
                                             <AgGridColumn field="ModelType" editable={false} headerName="Model Type" minWidth={190}></AgGridColumn>
 
                                             <AgGridColumn headerClass="justify-content-center" cellClass="text-center" headerName="Overhead Applicability Type" marryChildren={true} >
-                                                <AgGridColumn width={160} field="OverheadApplicabilityType" editable='false' headerName="Old" cellRenderer='oldOverheadApplicabilityTypeFormatter' colId="OverheadApplicabilityType"></AgGridColumn>
-                                                <AgGridColumn width={160} cellRenderer='newOverheadApplicabilityTypeFormatter' cellEditor="agSelectCellEditor" cellEditorParams={applicabilityCellEditor} field="NewOverheadApplicabilityType" headerName="New" colId='NewOverheadApplicabilityType'></AgGridColumn>
+                                                <AgGridColumn width={160} field="OverheadApplicabilityType" editable='false' headerName="Existing" cellRenderer='oldOverheadApplicabilityTypeFormatter' colId="OverheadApplicabilityType"></AgGridColumn>
+                                                <AgGridColumn width={160} cellRenderer='newOverheadApplicabilityTypeFormatter' cellEditor="agSelectCellEditor" cellEditorParams={applicabilityCellEditor} field="NewOverheadApplicabilityType" headerName="Revised" colId='NewOverheadApplicabilityType'></AgGridColumn>
                                             </AgGridColumn>
                                             {/* <AgGridColumn field="OverheadApplicabilityType" cellEditor="agSelectCellEditor" cellEditorParams={applicabilityCellEditor} ></AgGridColumn> */}
 
                                             <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName="Overhead BOP Percentage" marryChildren={true} >
-                                                <AgGridColumn width={120} field="OverheadBOPPercentage" editable='false' headerName="Old" cellRenderer='oldOverheadBOPPercentageFormatter' colId="OverheadBOPPercentage"></AgGridColumn>
-                                                <AgGridColumn width={120} cellRenderer='newOverheadBOPPercentageFormatter' onCellValueChanged='cellChange' field="NewOverheadBOPPercentage" headerName="New" colId='NewOverheadBOPPercentage' editable={EditableCallbackForBOP}></AgGridColumn>
+                                                <AgGridColumn width={120} field="OverheadBOPPercentage" editable='false' headerName="Existing" cellRenderer='oldOverheadBOPPercentageFormatter' colId="OverheadBOPPercentage"></AgGridColumn>
+                                                <AgGridColumn width={120} cellRenderer='newOverheadBOPPercentageFormatter' onCellValueChanged='cellChange' field="NewOverheadBOPPercentage" headerName="Revised" colId='NewOverheadBOPPercentage' editable={EditableCallbackForBOP}></AgGridColumn>
                                             </AgGridColumn>
                                             {/* <AgGridColumn field="OverheadBOPPercentage" headerName="Overhead BOP Percentage" minWidth={190} editable={EditableCallbackForBOP} ></AgGridColumn> */}
 
                                             <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName="Overhead Machining CC Percentage" marryChildren={true} >
-                                                <AgGridColumn width={120} field="OverheadMachiningCCPercentage" editable='false' headerName="Old" cellRenderer='oldOverheadMachiningCCPercentageFormatter' colId="OverheadMachiningCCPercentage"></AgGridColumn>
-                                                <AgGridColumn width={120} cellRenderer='newOverheadMachiningCCPercentageFormatter' onCellValueChanged='cellChange' field="NewOverheadMachiningCCPercentage" headerName="New" colId='NewOverheadMachiningCCPercentage' editable={EditableCallbackForCC}></AgGridColumn>
+                                                <AgGridColumn width={120} field="OverheadMachiningCCPercentage" editable='false' headerName="Existing" cellRenderer='oldOverheadMachiningCCPercentageFormatter' colId="OverheadMachiningCCPercentage"></AgGridColumn>
+                                                <AgGridColumn width={120} cellRenderer='newOverheadMachiningCCPercentageFormatter' onCellValueChanged='cellChange' field="NewOverheadMachiningCCPercentage" headerName="Revised" colId='NewOverheadMachiningCCPercentage' editable={EditableCallbackForCC}></AgGridColumn>
                                             </AgGridColumn>
                                             {/* <AgGridColumn field="OverheadMachiningCCPercentage" headerName="Overhead Machining CC Percentage" editable={EditableCallbackForCC} minWidth={190}></AgGridColumn> */}
 
 
                                             <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName="Overhead RM Percentage" marryChildren={true} >
-                                                <AgGridColumn width={120} field="OverheadRMPercentage" editable='false' headerName="Old" cellRenderer='oldOverheadRMPercentageFormatter' colId="OverheadRMPercentage"></AgGridColumn>
-                                                <AgGridColumn width={120} cellRenderer='newOverheadRMPercentageFormatter' onCellValueChanged='cellChange' field="NewOverheadRMPercentage" headerName="New" colId='NewOverheadRMPercentage' editable={EditableCallbackForRM}></AgGridColumn>
+                                                <AgGridColumn width={120} field="OverheadRMPercentage" editable='false' headerName="Existing" cellRenderer='oldOverheadRMPercentageFormatter' colId="OverheadRMPercentage"></AgGridColumn>
+                                                <AgGridColumn width={120} cellRenderer='newOverheadRMPercentageFormatter' onCellValueChanged='cellChange' field="NewOverheadRMPercentage" headerName="Revised" colId='NewOverheadRMPercentage' editable={EditableCallbackForRM}></AgGridColumn>
                                             </AgGridColumn>
                                             {/* <AgGridColumn field="OverheadRMPercentage" headerName="Overhead RM Percentage" minWidth={190} editable={EditableCallbackForRM} ></AgGridColumn> */}
 
                                             <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName="Overhead Percentage" marryChildren={true} >
-                                                <AgGridColumn width={120} field="OverheadPercentage" editable='false' headerName="Old" cellRenderer='oldOverheadPercentageFormatter' colId="OverheadPercentage"></AgGridColumn>
-                                                <AgGridColumn width={120} cellRenderer='newOverheadPercentageFormatter' onCellValueChanged='cellChange' field="NewOverheadPercentage" headerName="New" colId='NewOverheadPercentage' editable={EditableCallbackForOP}></AgGridColumn>
+                                                <AgGridColumn width={120} field="OverheadPercentage" editable='false' headerName="Existing" cellRenderer='oldOverheadPercentageFormatter' colId="OverheadPercentage"></AgGridColumn>
+                                                <AgGridColumn width={120} cellRenderer='newOverheadPercentageFormatter' onCellValueChanged='cellChange' field="NewOverheadPercentage" headerName="Revised" colId='NewOverheadPercentage' editable={EditableCallbackForOP}></AgGridColumn>
                                             </AgGridColumn>
                                             {/* <AgGridColumn field="OverheadPercentage" headerName="Overhead Percentage" minWidth={190} editable={EditableCallbackForOP}></AgGridColumn> */}
 

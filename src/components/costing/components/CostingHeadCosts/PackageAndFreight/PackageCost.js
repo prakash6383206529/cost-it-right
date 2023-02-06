@@ -3,10 +3,11 @@ import { Col, Row, Table } from 'reactstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import NoContentFound from '../../../../common/NoContentFound';
 import { EMPTY_DATA } from '../../../../../config/constants';
-import { checkForDecimalAndNull } from '../../../../../helper';
+import { checkForDecimalAndNull, CheckIsCostingDateSelected } from '../../../../../helper';
 import AddPackaging from '../../Drawers/AddPackaging';
 import { ViewCostingContext } from '../../CostingDetails';
 import { gridDataAdded, isPackageAndFreightDataChange } from '../../../actions/Costing';
+import { LOGISTICS } from '../../../../../config/masterData';
 
 function PackageCost(props) {
 
@@ -21,6 +22,7 @@ function PackageCost(props) {
 
   const CostingViewMode = useContext(ViewCostingContext);
   const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
+  const { CostingEffectiveDate, costingData } = useSelector(state => state.costing)
 
   useEffect(() => {
     props.setPackageCost(gridData, JSON.stringify(gridData) !== JSON.stringify(props?.data && props?.data?.length > 0 ? props?.data : []) ? true : false)
@@ -34,6 +36,7 @@ function PackageCost(props) {
   * @description TOGGLE DRAWER
   */
   const DrawerToggle = () => {
+    if (costingData.TechnologyId === LOGISTICS && CheckIsCostingDateSelected(CostingEffectiveDate)) return false;
     setIsEditFlag(false)
     setDrawerOpen(true)
   }
@@ -82,7 +85,7 @@ function PackageCost(props) {
           <Row className="align-items-center">
             <Col md="8">
               <div className="left-border">
-                {'Packaging:'}
+                {costingData.TechnologyId === LOGISTICS ? 'Freight:' : 'Packaging:'}
               </div>
             </Col>
             <Col col={'4'}>
@@ -90,7 +93,7 @@ function PackageCost(props) {
                 type="button"
                 className={'user-btn'}
                 onClick={DrawerToggle}>
-                <div className={'plus'}></div>PACKAGING</button>}
+                <div className={'plus'}></div>{costingData.TechnologyId === LOGISTICS ? 'FREIGHT' : 'PACKAGING'}</button>}
             </Col>
           </Row>
           <Row>
@@ -101,11 +104,11 @@ function PackageCost(props) {
                 <Table className="table cr-brdr-main mb-0" size="sm">
                   <thead>
                     <tr>
-                      <th>{`Packaging Description`}</th>
-                      <th>{`Criteria/Applicability`}</th>
-                      <th>{`Packaging Type/Percentage`}</th>
+                      {costingData.TechnologyId === LOGISTICS ? <th>{`Charges`}</th> : <th>{`Packaging Description`}</th>}
+                      {costingData.TechnologyId !== LOGISTICS && <th>{`Criteria/Applicability`}</th>}
+                      {costingData.TechnologyId !== LOGISTICS && <th>{`Packaging Type/Percentage`}</th>}
                       <th>{`Cost`}</th>
-                      <th style={{ width: "130px", textAlign: "right" }} className="costing-border-right"  >{`Action`}</th>
+                      {!CostingViewMode && <th style={{ textAlign: "right" }} className="costing-border-right"  >{`Action`}</th>}
                     </tr>
                   </thead>
                   <tbody>
@@ -114,13 +117,13 @@ function PackageCost(props) {
                         return (
                           <tr key={index}>
                             <td>{item.PackagingDescription}</td>
-                            <td>{item.Applicability ? item.Applicability : '-'}</td>
-                            <td>{item.IsPackagingCostFixed === false ? 'Fixed' : item.PackagingCostPercentage}</td>
+                            {costingData.TechnologyId !== LOGISTICS && <td>{item.Applicability ? item.Applicability : '-'}</td>}
+                            {costingData.TechnologyId !== LOGISTICS && <td>{item.IsPackagingCostFixed === false ? 'Fixed' : item.PackagingCostPercentage}</td>}
                             <td>{checkForDecimalAndNull(item.PackagingCost, initialConfiguration.NoOfDecimalForPrice)}</td>
-                            <td style={{ textAlign: "right" }}>
-                              {!CostingViewMode && <button className="Edit mt15 mr5" type={'button'} onClick={() => editItem(index)} />}
-                              {!CostingViewMode && <button className="Delete mt15" type={'button'} onClick={() => deleteItem(index)} />}
-                            </td>
+                            {!CostingViewMode && <td style={{ textAlign: "right" }}>
+                              <button title='Edit' className="Edit mt15 mr5" type={'button'} onClick={() => editItem(index)} />
+                              <button title='Delete' className="Delete mt15" type={'button'} onClick={() => deleteItem(index)} />
+                            </td>}
                           </tr>
                         )
                       })
@@ -148,6 +151,7 @@ function PackageCost(props) {
         editIndex={editIndex}
         rowObjData={isEditFlag ? rowObjData : {}}
         anchor={'right'}
+        gridData={gridData}
       />}
     </ >
   );

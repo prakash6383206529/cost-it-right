@@ -23,6 +23,7 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '../common/PopupMsgWrapper';
 import { PaginationWrapper } from '../common/commonPagination';
+import ScrollToTop from '../common/ScrollToTop';
 
 const gridOptions = {};
 
@@ -335,7 +336,7 @@ class LevelsListing extends Component {
 		const defaultColDef = {
 			resizable: true,
 			filter: true,
-			sortable: true,
+			sortable: false,
 
 		};
 
@@ -345,7 +346,8 @@ class LevelsListing extends Component {
 		};
 
 		return (
-			<div className={"levellisting-page-main"}>
+			<div className={"levellisting-page-main"} id={'level-go-to-top'}>
+				<ScrollToTop pointProp={"level-go-to-top"} />
 				<div className={"ag-grid-react"}>
 					<>
 						{this.state.isLoader && <LoaderCustom />}
@@ -384,7 +386,7 @@ class LevelsListing extends Component {
 
 											<div className={`ag-grid-wrapper height-width-wrapper ${(this.props.usersListByTechnologyAndLevel && this.props.usersListByTechnologyAndLevel?.length <= 0) || noData ? "overlay-contain" : ""}`}>
 												<div className="ag-grid-header">
-													<input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
+													<input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={'off'} onChange={(e) => this.onFilterTextBoxChanged(e)} />
 												</div>
 												<div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
 													{noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}

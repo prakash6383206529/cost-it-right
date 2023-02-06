@@ -11,6 +11,8 @@ import AddSurfaceTreatment from '../../Drawers/AddSurfaceTreatment';
 import { gridDataAdded } from '../../../actions/Costing';
 import { ViewCostingContext } from '../../CostingDetails'
 import { reactLocalStorage } from 'reactjs-localstorage';
+import TooltipCustom from '../../../../common/Tooltip';
+import { number, checkWhiteSpaces, decimalNumberLimit6, noDecimal, numberLimit6 } from "../../../../../helper/validation";
 
 function SurfaceTreatmentCost(props) {
   const { item } = props
@@ -26,7 +28,7 @@ function SurfaceTreatmentCost(props) {
 
   const dispatch = useDispatch()
 
-  const [gridData, setGridData] = useState(surfaceData.CostingPartDetails?.SurfaceTreatmentDetails)
+  const [gridData, setGridData] = useState(surfaceData && surfaceData?.CostingPartDetails?.SurfaceTreatmentDetails)
   const [rowObjData, setRowObjData] = useState({})
   const [editIndex, setEditIndex] = useState('')
   const [Ids, setIds] = useState([])
@@ -44,8 +46,8 @@ function SurfaceTreatmentCost(props) {
     }
 
     if (!CostingViewMode && !IsLocked) {
-      const isEqual = JSON.stringify(gridData) !== JSON.stringify(surfaceData.CostingPartDetails?.SurfaceTreatmentDetails) ? true : false
-      props.setSurfaceData({ gridData, Params, isEqual, item })
+      const isEqual = JSON.stringify(gridData) !== JSON.stringify(surfaceData?.CostingPartDetails?.SurfaceTreatmentDetails) ? true : false
+      props.setSurfaceData({ gridData, Params, isEqual, item }, errors)
       // if (props.IsAssemblyCalculation) {
       //   props.setAssemblySurfaceCost(gridData, Params, JSON.stringify(gridData) !== JSON.stringify(OldGridData) ? true : false, props.item)
       // } else {
@@ -94,7 +96,7 @@ function SurfaceTreatmentCost(props) {
         }
       })
 
-      let tempArr = [...gridData, ...rowArray]
+      let tempArr = gridData ? [...gridData, ...rowArray] : [rowArray]
       setGridData(tempArr)
       selectedIds(tempArr)
       dispatch(gridDataAdded(true))
@@ -137,10 +139,12 @@ function SurfaceTreatmentCost(props) {
   }
 
   const SaveItem = (index) => {
+    if (errors?.OperationGridFields && (errors?.OperationGridFields[index]?.SurfaceArea !== undefined && Object.keys(errors?.OperationGridFields[index]?.SurfaceArea).length !== 0)) {
+      return false
+    }
     let operationGridData = gridData[index]
     if (operationGridData.UOM === 'Number') {
       let isValid = Number.isInteger(Number(operationGridData.SurfaceArea));
-      console.log('operationGridData.SurfaceArea: ', operationGridData);
       if (operationGridData.SurfaceArea === '0') {
         Toaster.warning('Number should not be zero')
         return false
@@ -161,6 +165,8 @@ function SurfaceTreatmentCost(props) {
     setEditIndex('')
     setGridData(tempArr)
     setRowObjData({})
+    setValue(`${OperationGridFields}.${index}.SurfaceArea`, tempArr?.Quantity)
+    errors.OperationGridFields = {}
   }
 
   const handleSurfaceAreaChange = (event, index) => {
@@ -174,8 +180,6 @@ function SurfaceTreatmentCost(props) {
       tempArr = Object.assign([...gridData], { [index]: tempData })
       setGridData(tempArr)
 
-    } else {
-      Toaster.warning('Please enter valid number.')
     }
   }
 
@@ -189,8 +193,6 @@ function SurfaceTreatmentCost(props) {
       tempArr = Object.assign([...gridData], { [index]: tempData })
       setGridData(tempArr)
 
-    } else {
-      Toaster.warning('Please enter valid number.')
     }
   }
 
@@ -255,10 +257,7 @@ function SurfaceTreatmentCost(props) {
                                   register={register}
                                   mandatory={false}
                                   rules={{
-                                    //required: true,
-                                    pattern: {
-                                      //value: /^[0-9]*$/i,
-                                    },
+                                    validate: item.UOM === "Number" ? { number, checkWhiteSpaces, noDecimal, numberLimit6 } : { number, checkWhiteSpaces, decimalNumberLimit6 },
                                   }}
                                   defaultValue={item.SurfaceArea}
                                   className=""
@@ -288,12 +287,7 @@ function SurfaceTreatmentCost(props) {
                                       register={register}
                                       mandatory={false}
                                       rules={{
-                                        //required: true,
-                                        pattern: {
-                                          value: /^[0-9]*$/i,
-                                          //value: /^[0-9]\d*(\.\d+)?$/i,
-                                          message: 'Invalid Number.'
-                                        },
+                                        validate: { number, checkWhiteSpaces, decimalNumberLimit6 }
                                       }}
                                       defaultValue={item.LabourQuantity}
                                       className=""
@@ -312,8 +306,8 @@ function SurfaceTreatmentCost(props) {
                             <td>{item.SurfaceTreatmentCost ? checkForDecimalAndNull(item.SurfaceTreatmentCost, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
                             <td>
                               <div className='action-btn-wrapper'>
-                                <button className="SaveIcon" type={'button'} disabled={CostingViewMode ? true : false} onClick={() => SaveItem(index)} />
-                                <button className="CancelIcon" type={'button'} onClick={() => CancelItem(index)} />
+                                <button title='Save' className="SaveIcon" type={'button'} disabled={CostingViewMode ? true : false} onClick={() => SaveItem(index)} />
+                                <button title='Discard' className="CancelIcon" type={'button'} onClick={() => CancelItem(index)} />
                               </div>
                             </td>
                           </tr>
@@ -327,11 +321,11 @@ function SurfaceTreatmentCost(props) {
                               initialConfiguration.IsOperationLabourRateConfigure && <td style={{ width: 200 }}>{item.IsLabourRateExist ? checkForDecimalAndNull(item.LabourRate, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>}
                             {initialConfiguration &&
                               initialConfiguration.IsOperationLabourRateConfigure && <td>{item.IsLabourRateExist ? item.LabourQuantity : '-'}</td>}
-                            <td>{item.SurfaceTreatmentCost ? checkForDecimalAndNull(item.SurfaceTreatmentCost, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
+                            <td><div className='w-fit' id={`surface-cost${index}`}><TooltipCustom disabledIcon={true} customClass="header-tooltip" id={`surface-cost${index}`} tooltipText={initialConfiguration && initialConfiguration.IsOperationLabourRateConfigure ? "Net Cost = (Quantity * Rate) + (Labour Rate * Labour Quantity)" : "Net Cost = (Quantity * Rate)"} />{item.SurfaceTreatmentCost ? checkForDecimalAndNull(item.SurfaceTreatmentCost, initialConfiguration.NoOfDecimalForPrice) : 0}</div></td>
                             <td>
                               <div className='action-btn-wrapper'>
-                                <button className="Edit" type={'button'} disabled={(CostingViewMode || IsLocked) ? true : false} onClick={() => editItem(index)} />
-                                <button className="Delete" type={'button'} disabled={(CostingViewMode || IsLocked) ? true : false} onClick={() => deleteItem(index, item.OperationId)} />
+                                <button title='Edit' className="Edit" type={'button'} disabled={(CostingViewMode || IsLocked) ? true : false} onClick={() => editItem(index)} />
+                                <button title='Delete' className="Delete" type={'button'} disabled={(CostingViewMode || IsLocked) ? true : false} onClick={() => deleteItem(index, item.OperationId)} />
                               </div>
                             </td>
                           </tr>

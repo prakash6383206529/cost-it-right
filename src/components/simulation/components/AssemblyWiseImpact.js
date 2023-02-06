@@ -156,7 +156,7 @@ function AssemblyWiseImpact(props) {
     const defaultColDef = {
         resizable: true,
         filter: true,
-        sortable: true,
+        sortable: false,
     };
 
     const frameworkComponents = {
@@ -173,7 +173,7 @@ function AssemblyWiseImpact(props) {
             <Row>
                 <Col>
                     <div className="ag-grid-header assembly-wise-impact-header">
-                        <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " value={textFilterSearch} onChange={(e) => onFilterTextBoxChanged(e)} />
+                        <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " autoComplete={'off'} value={textFilterSearch} onChange={(e) => onFilterTextBoxChanged(e)} />
                         <button type="button" className={`user-btn`} title="Reset Grid" onClick={() => resetState()}>
                             <div className="refresh mr-0"></div>
                         </button>
@@ -216,9 +216,9 @@ function AssemblyWiseImpact(props) {
                                 <AgGridColumn field="PartName" headerName='Name' cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                 <AgGridColumn field="Level" headerName="Child's Level" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                 {impactType === 'Assembly' && <AgGridColumn field="Quantity" headerName='Applicable Quantity' cellRenderer={'hyphenFormatter'}></AgGridColumn>}
-                                <AgGridColumn field="OldPrice" headerName='Old PO Price/Assembly' cellRenderer={'costFormatter'}></AgGridColumn>
-                                {impactType === 'AssemblySummary' && <AgGridColumn field="NewPrice" headerName='New PO Price/Assembly' cellRenderer={'costFormatter'}></AgGridColumn>}
-                                <AgGridColumn field="Variance" headerName='Variance/Assembly' cellRenderer={'costFormatter'}></AgGridColumn>
+                                <AgGridColumn field="OldPrice" headerName='Existing PO Price/Assembly' cellRenderer={'costFormatter'}></AgGridColumn>
+                                {impactType === 'AssemblySummary' && <AgGridColumn field="NewPrice" headerName='Revised PO Price/Assembly' cellRenderer={'costFormatter'}></AgGridColumn>}
+                                <AgGridColumn field="Variance" headerName='Variance/Assembly (w.r.t. Existing)' cellRenderer={'costFormatter'}></AgGridColumn>
                                 <AgGridColumn width={120} field="CostingId" headerName='Actions' type="rightAligned" floatingFilter={false} cellRenderer='buttonFormatter' pinned="right"></AgGridColumn>
                             </AgGridReact>
                             {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />}

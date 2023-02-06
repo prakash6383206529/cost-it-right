@@ -17,6 +17,8 @@ import { useHistory } from "react-router-dom";
 import { reactLocalStorage } from 'reactjs-localstorage';
 import LoaderCustom from '../../common/LoaderCustom';
 import { MACHINING } from '../../../config/masterData'
+import { searchCount } from '../../../config/constants'
+import { autoCompleteDropdown } from '../../common/CommonFunctions'
 
 function CostingSummary(props) {
 
@@ -44,9 +46,11 @@ function CostingSummary(props) {
   const viewCostingData = useSelector(state => state.costing.viewCostingDetailData)
   const partInfo = useSelector((state) => state.costing.partInfo)
   const [titleObj, setTitleObj] = useState({})
+  const [partName, setpartName] = useState('')
   //dropdown loader 
   const [inputLoader, setInputLoader] = useState(false)
   const [isLoader, setIsLoader] = useState(false);
+  const [costingIdExist, setCostingIdExist] = useState(true);
   const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
 
   /******************CALLED WHENEVER SUMARY TAB IS CLICKED AFTER DETAIL TAB(FOR REFRESHING DATA IF THERE IS EDITING IN CURRENT COSTING OPENED IN SUMMARY)***********************/
@@ -71,7 +75,9 @@ function CostingSummary(props) {
     if (reactLocalStorage.get('location') === '/costing-summary') {
       dispatch(getCostingSpecificTechnology(loggedInUserId(), () => { }))
       dispatch(getPartInfo('', () => { }))
-      dispatch(getPartSelectListByTechnology('', () => { }))
+    }
+    return () => {
+      reactLocalStorage.setObject('PartData', [])
     }
   }, [])
 
@@ -84,7 +90,6 @@ function CostingSummary(props) {
         setValue('Part', costingData && costingData !== undefined ? { label: costingData.PartNumber, value: costingData.PartId } : [])
         setPart(costingData && costingData !== undefined ? { label: costingData.PartNumber, value: costingData.PartId } : [])
         setDisabled(true)
-        dispatch(getPartSelectListByTechnology(costingData.TechnologyId, () => { }))
         dispatch(getPartInfo(costingData.PartId, (res) => {
           let newValue = {}
           let Data = res.data.Data
@@ -137,17 +142,17 @@ function CostingSummary(props) {
       return tempDropdownList
     }
 
-    if (label === 'PartList') {
-      partSelectListByTechnology &&
-        partSelectListByTechnology.map((item) => {
-          if (item.Value === '0') return false
-          tempDropdownList.push({ label: item.Text, value: item.Value })
-          return null
-        })
-      setPartDropdown(tempDropdownList)
+    // if (label === 'PartList') {
+    //   partSelectListByTechnology &&
+    //     partSelectListByTechnology.map((item) => {
+    //       if (item.Value === '0') return false
+    //       tempDropdownList.push({ label: item.Text, value: item.Value })
+    //       return null
+    //     })
+    //   setPartDropdown(tempDropdownList)
 
-      return tempDropdownList
-    }
+    //   return tempDropdownList
+    // }
   }
 
   /**
@@ -157,10 +162,6 @@ function CostingSummary(props) {
   const handleTechnologyChange = (newValue) => {
     dispatch(storePartNumber(''))
     if (newValue && newValue !== '') {
-      setInputLoader(true)
-      dispatch(getPartSelectListByTechnology(newValue.value, () => {
-        setInputLoader(false)
-      }))
       dispatch(getPartInfo('', () => { }))
       setTechnology(newValue)
       setPart([])
@@ -174,6 +175,8 @@ function CostingSummary(props) {
       setTechnology([])
       setIsTechnologySelected(false)
     }
+    setpartName([])
+    reactLocalStorage.setObject('PartData', [])
   }
   useEffect(() => {
 
@@ -233,7 +236,9 @@ function CostingSummary(props) {
                             setShowWarningMsg(true)
                             dispatch(setCostingViewData([]))
                             setIsLoader(false)
+                            setCostingIdExist(false)
                           } else {
+                            setCostingIdExist(true)
                             dispatch(getSingleCostingDetails(res.data.Data.CostingId, (res) => {
                               // dispatch(getSingleCostingDetails('5cdcad92-277f-48e2-8eb2-7a7c838104e1', res => {
                               if (res.data.Data) {
@@ -293,7 +298,6 @@ function CostingSummary(props) {
     dispatch(storePartNumber(''))
     dispatch(setCostingViewData([]))
     setShowWarningMsg(false)
-    dispatch(getPartSelectListByTechnology('', () => { }))
     dispatch(getPartInfo('', () => { }))
     reset({
       Technology: '',
@@ -324,26 +328,35 @@ function CostingSummary(props) {
     SetIsBulkOpen(false)
   }
 
-  const filterList = (inputValue) => {
-    if (inputValue) {
-      let tempArr = []
-      tempArr = partDropdown && partDropdown.filter(i => {
-        return i.label.toLowerCase().includes(inputValue.toLowerCase())
-      }
-      );
-      if (tempArr.length <= 100) {
-        return tempArr
+  const filterList = async (inputValue) => {
+
+    const resultInput = inputValue.slice(0, searchCount)
+    if (inputValue?.length >= searchCount && partName !== resultInput) {
+      setInputLoader(true)
+      const res = await getPartSelectListByTechnology(technology.value, resultInput);
+      setInputLoader(false)
+      setpartName(resultInput)
+      let partDataAPI = res?.data?.SelectList
+      if (inputValue) {
+        return autoCompleteDropdown(inputValue, partDataAPI, false, [], true)
+
       } else {
-        return tempArr.slice(0, 100)
+        return partDataAPI
       }
-    } else {
-      return partDropdown
     }
-  };
-  const promiseOptions = inputValue =>
-    new Promise(resolve => {
-      resolve(filterList(inputValue));
-    });
+    else {
+      if (inputValue?.length < searchCount) return false
+      else {
+        let partData = reactLocalStorage.getObject('Data')
+        if (inputValue) {
+          return autoCompleteDropdown(inputValue, partData, false, [], false)
+        } else {
+          return partData
+        }
+      }
+    }
+
+  }
 
 
   const loaderObj = { isLoader: inputLoader }
@@ -367,9 +380,9 @@ function CostingSummary(props) {
             <span className="d-block mt-1">PDF</span>
           </button> */}
 
-          <button onClick={bulkToggle} className="btn btn-link text-primary pr-0">
-            <div className="add-rounded m-auto"></div>
-            <span className="d-block mt-1">ADD BOM</span>
+          <button onClick={bulkToggle} className="btn-primary btn mt-2 float-right">
+            <div className="hirarchy-icon"></div>
+            <span>ADD BOM</span>
           </button>
         </div>
       </span>
@@ -417,15 +430,14 @@ function CostingSummary(props) {
                           rules={{ required: true }}
                           register={register}
                           defaultValue={part.length !== 0 ? part : ""}
-                          asyncOptions={promiseOptions}
+                          asyncOptions={filterList}
                           mandatory={true}
                           isLoading={loaderObj}
                           handleChange={handlePartChange}
                           errors={errors.Part}
-                          NoOptionMessage={"Please enter first few digits to see the part numbers"}
-                          disabled={(technology.length === 0 || inputLoader) ? true : false}
+                          disabled={(technology.length === 0) ? true : false}
+                          NoOptionMessage={"Enter 3 characters to show data"}
                         />
-
 
                         {/* <SearchableSelectHookForm
                           label={'Assembly No./Part No.'}
@@ -615,6 +627,8 @@ function CostingSummary(props) {
         selectedTechnology={technology.label}
         costingSummaryMainPage={true}
         setcostingOptionsSelectFromSummary={props.setcostingOptionsSelectFromSummary}
+        costingIdExist={costingIdExist}
+        storeSummary={true}
       />}
 
       {IsBulkOpen && <BOMUpload

@@ -61,7 +61,7 @@ export function Clientbasedcostingdrawer(props) {
                 DeletedBy: loggedInUserId(),
             }
             dispatch(fileDeleteCosting(deleteData, (res) => {
-                Toaster.success('File has been deleted successfully.')
+                Toaster.success('File deleted successfully.')
                 let tempArr = files && files.filter(item => item.FileId !== FileId)
                 setFiles(tempArr)
                 setIsOpen(!IsOpen)
@@ -130,7 +130,7 @@ export function Clientbasedcostingdrawer(props) {
                                 </Col>
                                 <Col md="3">
                                     <Field
-                                        label={`RM Name-Grade`}
+                                        label={`Grade`}
                                         type="text"
                                         placeholder={"Enter"}
                                         component={renderText}
@@ -438,7 +438,7 @@ export function Clientbasedcostingdrawer(props) {
                                         customClassName="withBorder" />
                                 </Col>
                                 <Col md="3" className="two-filled-container">
-                                    <label>Hundi/Other Discount</label>
+                                    <label>Hundi/Discount</label>
                                     <Row className="p-0">
                                         <div className="col-md-6">
                                             <Field
@@ -540,7 +540,7 @@ export function Clientbasedcostingdrawer(props) {
                                 <Col md="6" className="height152-label">
                                     {files && files.length >= 4 ? (
                                         <div class="alert alert-danger" role="alert">
-                                            Maximum file upload limit has been reached.
+                                            Maximum file upload limit reached.
                                         </div>
                                     ) : (
                                         <Dropzone

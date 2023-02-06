@@ -16,6 +16,7 @@ import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { PaginationWrapper } from '../../common/commonPagination';
 import { loggedInUserId } from '../../../helper';
 import Switch from "react-switch";
+import ScrollToTop from '../../common/ScrollToTop';
 
 const gridOptions = {};
 
@@ -117,7 +118,7 @@ class RolesListing extends Component {
     const { EditAccessibility, DeleteAccessibility } = this.state;
     return (
       <>
-        {EditAccessibility && <button title='Edit' className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(cellValue, rowData)} />}
+        {!(rowData?.RoleName === 'RFQUser') && EditAccessibility && <button title='Edit' className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(cellValue, rowData)} />}
         {DeleteAccessibility && <button title='Delete' className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
       </>
     )
@@ -187,7 +188,7 @@ class RolesListing extends Component {
     const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
 
     const { ActivateAccessibility } = this.state;
-    if (rowData.UserId === loggedInUserId()) return null;
+    if (rowData.UserId === loggedInUserId() || rowData.RoleName === 'RFQUser') return null;
     showTitleForActiveToggle(props)
     return (
       <>
@@ -221,7 +222,7 @@ class RolesListing extends Component {
     const defaultColDef = {
       resizable: true,
       filter: true,
-      sortable: true,
+      sortable: false,
     };
 
     const frameworkComponents = {
@@ -231,7 +232,8 @@ class RolesListing extends Component {
     };
 
     return (
-      <div className={"ag-grid-react"}>
+      <div className={"ag-grid-react"} id={'role-go-to-top'}>
+        <ScrollToTop pointProp={"role-go-to-top"} />
         <>
           {this.state.isLoader && <LoaderCustom />}
           <Row className="pt-4 ">
@@ -262,7 +264,7 @@ class RolesListing extends Component {
             <Col className="table-mt-0">
               <div className={`ag-grid-wrapper height-width-wrapper ${(this.state.tableData && this.state.tableData?.length <= 0) || noData ? "overlay-contain" : ""}`}>
                 <div className="ag-grid-header">
-                  <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
+                  <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={'off'} onChange={(e) => this.onFilterTextBoxChanged(e)} />
                 </div>
                 <div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
                   {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}

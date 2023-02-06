@@ -29,10 +29,11 @@ import WarningMessage from '../../common/WarningMessage'
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import ScrollToTop from '../../common/ScrollToTop';
 import { onFloatingFilterChanged, onSearch, resetState, onBtPrevious, onBtNext, onPageSizeChanged, PaginationWrapper } from '../../common/commonPagination'
-import { disabledClass } from '../../../actions/Common';
+import { disabledClass, isResetClick } from '../../../actions/Common';
 import SelectRowWrapper from '../../common/SelectRowWrapper';
 import { setSelectedRowForPagination } from '../../simulation/actions/Simulation'
 import _ from 'lodash';
+import MultiDropdownFloatingFilter from '../../masters/material-master/MultiDropdownFloatingFilter'
 
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -85,6 +86,12 @@ class VendorListing extends Component {
     }
 
 
+    floatingFilterVendorType = {
+        maxValue: 6,
+        suppressFilterButton: true,
+        component: "vendorType"
+    }
+
     componentWillUnmount() {
         this.props.setSelectedRowForPagination([])
     }
@@ -99,6 +106,18 @@ class VendorListing extends Component {
         if (this.props.topAndLeftMenuData !== nextProps.topAndLeftMenuData) {
             this.applyPermission(nextProps.topAndLeftMenuData)
         }
+
+
+        setTimeout(() => {
+            if (this.props.statusColumnData?.data) {
+                this.setState({ disableFilter: false, warningMessage: true })
+            } else {
+                this.setState({ warningMessage: false })
+            }
+            this.setState({ floatingFilterData: { ...this.state.floatingFilterData, VendorType: (this.props.statusColumnData?.data) ? (this.props.statusColumnData?.data) : "" } })
+        }, 500);
+
+
     }
 
 
@@ -265,6 +284,9 @@ class VendorListing extends Component {
                 Toaster.success(MESSAGES.DELETE_SUPPLIER_SUCCESS);
                 this.filterList()
                 //this.getTableListData(null, null, null)
+                this.props.setSelectedRowForPagination([])
+                this.setState({ dataCount: 0 })
+                this.state.gridApi.deselectAll()
             }
         });
         this.setState({ showPopup: false })
@@ -342,6 +364,7 @@ class VendorListing extends Component {
                     Toaster.success(MESSAGES.VENDOR_ACTIVE_SUCCESSFULLY)
                 }
                 this.filterList()
+                this.setState({ dataCount: 0 })
             }
         })
         this.setState({ showPopupToggle: false })
@@ -354,7 +377,7 @@ class VendorListing extends Component {
         if (newValue && newValue !== '') {
             this.setState({ vendorType: newValue, }, () => {
                 const { vendorType } = this.state;
-                this.props.getVendorsByVendorTypeID(vendorType.value, (res) => { })
+                this.props.getVendorsByVendorTypeID(vendorType.value, this.state.vendorName, (res) => { })
             });
         } else {
             this.setState({ vendorType: [], }, () => {
@@ -482,8 +505,7 @@ class VendorListing extends Component {
         this.setState({ isOpenVendor: true, isViewMode: false })
     }
 
-    closeVendorDrawer = (e = '', type) => {
-
+    closeVendorDrawer = (e = '', formdata, type) => {
         this.setState({
             isOpenVendor: false,
             isEditFlag: false,
@@ -519,9 +541,12 @@ class VendorListing extends Component {
 
     resetState = () => {
         this.props.setSelectedRowForPagination([])
+        this.props.isResetClick(true, "vendorType")
         resetState(gridOptions, this, "Vendor")  //COMMON PAGINATION FUNCTION
         gridOptions.columnApi.resetColumnState();
         gridOptions.api.setFilterModel(null);
+        this.state.gridApi.deselectAll()
+        this.props.setSelectedRowForPagination([])
         this.setState({ dataCount: 0 })
     }
     onExcelDownload = () => {
@@ -627,7 +652,7 @@ class VendorListing extends Component {
         const defaultColDef = {
             resizable: true,
             filter: true,
-            sortable: true,
+            sortable: false,
             headerCheckboxSelectionFilteredOnly: true,
             checkboxSelection: isFirstColumn
         };
@@ -639,22 +664,23 @@ class VendorListing extends Component {
             statusButtonFormatter: this.statusButtonFormatter,
             hyphenFormatter: this.hyphenFormatter,
             checkBoxRenderer: this.checkBoxRenderer,
+            valuesFloatingFilter: MultiDropdownFloatingFilter,
         };
 
         return (
-            <div className={`ag-grid-react container-fluid blue-before-inside custom-pagination ${DownloadAccessibility ? "show-table-btn no-tab-page" : ""}`} id='go-to-top'>
+            <div className={`ag-grid-react container-fluid blue-before-inside report-grid custom-pagination ${DownloadAccessibility ? "show-table-btn no-tab-page" : ""}`} id='go-to-top'>
                 <ScrollToTop pointProp="go-to-top" />
+                {this.state.isLoader && <LoaderCustom customClass={"loader-center"} />}
+                {this.state.disableDownload && <LoaderCustom message={MESSAGES.DOWNLOADING_MESSAGE} />}
                 <Row>
                     <Col md="12" className="d-flex justify-content-between">
                         <h1 className="mb-0">Vendor Master</h1>
                     </Col>
                 </Row>
-                <Row className="pt-4 no-filter-row zindex-2">
-                    <Col md="3"></Col>
+                <Row className="py-4 no-filter-row zindex-2">
+                    <Col md="3"> <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={'off'} onChange={(e) => this.onFilterTextBoxChanged(e)} /></Col>
                     <Col md="9">
                         <div className="d-flex justify-content-end bd-highlight w100 ">
-                            {this.state.disableDownload && <div title={MESSAGES.DOWNLOADING_MESSAGE} className="disabled-overflow"><WarningMessage dClass="ml-4 mt-1" message={MESSAGES.DOWNLOADING_MESSAGE} /></div>}
-
                             <div className="warning-message d-flex align-items-center">
                                 {this.state.warningMessage && !this.state.disableDownload && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
                             </div>
@@ -685,19 +711,15 @@ class VendorListing extends Component {
                                 {
                                     DownloadAccessibility &&
                                     <>
-                                        {this.state.disableDownload ? <div className='p-relative mr5'> <LoaderCustom customClass={"download-loader"} /> <button type="button" className={'user-btn'}><div className="download mr-0"></div>
-                                        </button></div> :
-                                            <>
-                                                <button type="button" onClick={this.onExcelDownload} className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
-                                                </button>
+                                        <button title={`Download ${this.state.dataCount === 0 ? "All" : "(" + this.state.dataCount + ")"}`} type="button" onClick={this.onExcelDownload} className={'user-btn mr5'}><div className="download mr-1" ></div>
+                                            {`${this.state.dataCount === 0 ? "All" : "(" + this.state.dataCount + ")"}`}
+                                        </button>
 
-                                                <ExcelFile filename={'Vendor'} fileExtension={'.xls'} element={
-                                                    <button id={'Excel-Downloads-vendor'} className="p-absolute" type="button" >
-                                                    </button>}>
-                                                    {this.onBtExport()}
-                                                </ExcelFile>
-                                            </>
-                                        }
+                                        <ExcelFile filename={'Vendor'} fileExtension={'.xls'} element={
+                                            <button id={'Excel-Downloads-vendor'} className="p-absolute" type="button" >
+                                            </button>}>
+                                            {this.onBtExport()}
+                                        </ExcelFile>
                                     </>
                                 }
                                 <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
@@ -707,11 +729,8 @@ class VendorListing extends Component {
                         </div>
                     </Col>
                 </Row>
-                {this.state.isLoader && <LoaderCustom />}
                 {!this.state.isLoader && <div className={`ag-grid-wrapper height-width-wrapper ${(this.props.supplierDataList && this.props.supplierDataList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
                     <div className="ag-grid-header col-md-4 pl-0">
-                        <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
-                        <SelectRowWrapper dataCount={this.state.dataCount} />
                     </div>
                     <div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
 
@@ -738,7 +757,7 @@ class VendorListing extends Component {
                             enablePivot={true}
                             enableBrowserTooltips={true}
                         >
-                            <AgGridColumn field="VendorType" tooltipField="VendorType" width={"240px"} headerName="Vendor Type" cellRenderer={'checkBoxRenderer'}></AgGridColumn>
+                            <AgGridColumn field="VendorType" tooltipField="VendorType" width={"240px"} headerName="Vendor Type" cellRenderer={'checkBoxRenderer'} floatingFilterComponent="valuesFloatingFilter" floatingFilterComponentParams={this.floatingFilterVendorType}></AgGridColumn>
                             <AgGridColumn field="VendorName" headerName="Vendor Name"></AgGridColumn>
                             <AgGridColumn field="VendorCode" headerName="Vendor Code"></AgGridColumn>
                             <AgGridColumn field="Country" headerName="Country" cellRenderer={'hyphenFormatter'}></AgGridColumn>
@@ -810,11 +829,11 @@ class VendorListing extends Component {
 */
 function mapStateToProps({ comman, supplier, auth, simulation }) {
     const { loading, vendorTypeList, vendorSelectList, vendorTypeByVendorSelectList, supplierDataList, allSupplierDataList } = supplier;
-    const { countryList } = comman;
+    const { countryList, statusColumnData } = comman;
     const { leftMenuData, topAndLeftMenuData } = auth;
     const { selectedRowForPagination } = simulation;
 
-    return { loading, vendorTypeList, countryList, leftMenuData, vendorSelectList, vendorTypeByVendorSelectList, supplierDataList, allSupplierDataList, topAndLeftMenuData, selectedRowForPagination };
+    return { statusColumnData, loading, vendorTypeList, countryList, leftMenuData, vendorSelectList, vendorTypeByVendorSelectList, supplierDataList, allSupplierDataList, topAndLeftMenuData, selectedRowForPagination };
 }
 
 /**
@@ -831,7 +850,8 @@ export default connect(mapStateToProps, {
     getVendorsByVendorTypeID,
     getVendorTypeByVendorSelectList,
     setSelectedRowForPagination,
-    disabledClass
+    disabledClass,
+    isResetClick
 })(reduxForm({
     form: 'VendorListing',
     onSubmitFail: errors => {

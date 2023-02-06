@@ -93,6 +93,7 @@ class SpecificationListing extends Component {
         this.setState({ isOpen: false }, () => {
             if (type === 'submit')
                 this.getSpecificationListData('', '');
+            this.setState({ dataCount: 0 })
         })
 
     }
@@ -140,6 +141,7 @@ class SpecificationListing extends Component {
             } else if (res && res.data && res.data.Result === true) {
                 Toaster.success(MESSAGES.DELETE_SPECIFICATION_SUCCESS);
                 this.getSpecificationListData('', '');
+                this.setState({ dataCount: 0 })
             }
             this.setState({ showPopup: false })
         });
@@ -322,7 +324,7 @@ class SpecificationListing extends Component {
         const defaultColDef = {
             resizable: true,
             filter: true,
-            sortable: true,
+            sortable: false,
             headerCheckboxSelectionFilteredOnly: true,
             checkboxSelection: isFirstColumn
         };
@@ -369,8 +371,9 @@ class SpecificationListing extends Component {
 
                                     <>
 
-                                        <ExcelFile filename={'RMSpecification'} fileExtension={'.xls'} element={
-                                            <button title="Download" type="button" className={'user-btn mr5'} ><div className="download mr-0"></div></button>}>
+                                        <ExcelFile filename={'RM Specification'} fileExtension={'.xls'} element={
+                                            <button title={`Download ${this.state.dataCount === 0 ? "All" : "(" + this.state.dataCount + ")"}`} type="button" className={'user-btn mr5'} ><div className="download mr-1"></div>
+                                                {`${this.state.dataCount === 0 ? "All" : "(" + this.state.dataCount + ")"}`}</button>}>
                                             {this.onBtExport()}
                                         </ExcelFile>
 
@@ -393,8 +396,7 @@ class SpecificationListing extends Component {
                     <Col>
                         <div className={`ag-grid-wrapper height-width-wrapper ${(this.props.rmSpecificationList && this.props.rmSpecificationList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
                             <div className="ag-grid-header">
-                                <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
-                                <SelectRowWrapper dataCount={dataCount} />
+                                <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={'off'} onChange={(e) => this.onFilterTextBoxChanged(e)} />
                             </div>
                             <div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
                                 {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
@@ -417,10 +419,11 @@ class SpecificationListing extends Component {
                                     onSelectionChanged={this.onRowSelect}
                                     frameworkComponents={frameworkComponents}
                                     onFilterModified={this.onFloatingFilterChanged}
+                                    suppressRowClickSelection={true}
                                 >
-                                    <AgGridColumn field="RMName"></AgGridColumn>
-                                    <AgGridColumn field="RMGrade"></AgGridColumn>
-                                    <AgGridColumn field="RMSpec"></AgGridColumn>
+                                    <AgGridColumn field="RMName" ></AgGridColumn>
+                                    <AgGridColumn field="RMGrade" headerName='Grade'></AgGridColumn>
+                                    <AgGridColumn field="RMSpec" headerName='Spec'></AgGridColumn>
                                     <AgGridColumn field="RawMaterialCode" headerName='Code' cellRenderer='hyphenFormatter'></AgGridColumn>
                                     <AgGridColumn field="SpecificationId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                                 </AgGridReact>
@@ -444,7 +447,7 @@ class SpecificationListing extends Component {
                     closeDrawer={this.closeBulkUploadDrawer}
                     isEditFlag={false}
                     densityAlert={this.densityAlert}
-                    fileName={'RMSpecification'}
+                    fileName={'RM Specification'}
                     messageLabel={'RM Specification'}
                     anchor={'right'}
                 />}

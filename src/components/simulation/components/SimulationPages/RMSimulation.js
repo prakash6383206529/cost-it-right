@@ -3,7 +3,7 @@ import { Row, Col, } from 'reactstrap';
 import DayTime from '../../../common/DayTimeWrapper'
 import { defaultPageSize, EMPTY_DATA } from '../../../../config/constants';
 import NoContentFound from '../../../common/NoContentFound';
-import { checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUserId } from '../../../../helper';
+import { checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUserId, searchNocontentFilter } from '../../../../helper';
 import Toaster from '../../../common/Toaster';
 import { runVerifySimulation } from '../../actions/Simulation';
 import { Fragment } from 'react';
@@ -30,7 +30,7 @@ const gridOptions = {
 
 
 function RMSimulation(props) {
-    const { list, isbulkUpload, rowCount, technology, master, isImpactedMaster, costingAndPartNo, tokenForMultiSimulation } = props
+    const { list, isbulkUpload, rowCount, technology, master, isImpactedMaster, costingAndPartNo, tokenForMultiSimulation, technologyId } = props
     const [showRunSimulationDrawer, setShowRunSimulationDrawer] = useState(false)
     const [showverifyPage, setShowVerifyPage] = useState(false)
     const [token, setToken] = useState('')
@@ -47,6 +47,7 @@ function RMSimulation(props) {
     const [showPopup, setShowPopup] = useState(false)
     const [popupMessage, setPopupMessage] = useState('There is no changes in scrap rate Do you want to continue')
     const gridRef = useRef();
+    const [noData, setNoData] = useState(false);
 
     const { register, control, setValue, formState: { errors }, } = useForm({
         mode: 'onChange',
@@ -87,11 +88,11 @@ function RMSimulation(props) {
         let obj = {}
         obj.Technology = technology
         obj.SimulationTechnologyId = selectedMasterForSimulation.value
-        obj.CostingHead = list[0].CostingHead === 'Vendor Based' ? VBC : ZBC
+        obj.SimulationHeadId = list[0].CostingTypeId
         obj.Masters = master
         obj.LoggedInUserId = loggedInUserId()
 
-        obj.TechnologyId = list[0].TechnologyId
+        obj.TechnologyId = technologyId
 
         if (filteredRMData.plantId && filteredRMData.plantId.value) {
             obj.PlantId = filteredRMData.plantId ? filteredRMData.plantId.value : ''
@@ -203,6 +204,31 @@ function RMSimulation(props) {
         window.screen.width >= 1921 && gridRef.current.api.sizeColumnsToFit();
     }
 
+    /**
+     * @method shearingCostFormatter
+     * @description Renders buttons
+     */
+    const shearingCostFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+
+        return cell != null ? cell : '-';
+    }
+
+    /**
+    * @method freightCostFormatter
+    * @description Renders buttons
+    */
+    const freightCostFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+
+        return cell != null ? cell : '-';
+    }
+
+    const onFloatingFilterChanged = (value) => {
+        if (list.length !== 0) {
+            setNoData(searchNocontentFilter(value, noData))
+        }
+    }
     const effectiveDateFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
 
@@ -215,7 +241,12 @@ function RMSimulation(props) {
 
         return (cell === true || cell === 'Vendor Based') ? 'Vendor Based' : 'Zero Based';
     }
-
+    const vendorFormatter = (props) => {
+        return (isbulkUpload ? props?.value : props?.data.VendorName);
+    }
+    const plantFormatter = (props) => {
+        return (isbulkUpload ? props?.value : props?.data.Plant);
+    }
     const newBasicRateFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
@@ -342,7 +373,7 @@ function RMSimulation(props) {
     const defaultColDef = {
         resizable: true,
         filter: true,
-        sortable: true,
+        sortable: false,
         editable: true
     };
 
@@ -384,7 +415,9 @@ function RMSimulation(props) {
         newBasicRateFormatter: newBasicRateFormatter,
         cellChange: cellChange,
         oldBasicRateFormatter: oldBasicRateFormatter,
-        oldScrapRateFormatter: oldScrapRateFormatter
+        oldScrapRateFormatter: oldScrapRateFormatter,
+        vendorFormatter: vendorFormatter,
+        plantFormatter: plantFormatter
     };
 
     const closePopUp = () => {
@@ -407,10 +440,10 @@ function RMSimulation(props) {
 
                         <Row>
                             <Col className="add-min-height mb-3 sm-edit-page">
-                                <div className={`ag-grid-wrapper height-width-wrapper reset-btn-container ${list && list?.length <= 0 ? "overlay-contain" : ""}`}>
+                                <div className={`ag-grid-wrapper height-width-wrapper reset-btn-container ${(list && list?.length <= 0) || noData ? "overlay-contain" : ""}`}>
                                     <div className="ag-grid-header d-flex justify-content-between">
                                         <div className='d-flex align-items-center'>
-                                            <input type="text" className="form-control mr-1 table-search" id="filter-text-box" value={textFilterSearch} placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
+                                            <input type="text" className="form-control mr-1 table-search" id="filter-text-box" value={textFilterSearch} placeholder="Search " autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
                                             <button type="button" className="user-btn float-right mr-3" title="Reset Grid" onClick={() => resetState()}>
                                                 <div className="refresh mr-0"></div>
                                             </button>
@@ -459,24 +492,23 @@ function RMSimulation(props) {
                                                     </div>
                                                 </div>
                                             }
-                                            {!isImpactedMaster && <div className={`d-flex simulation-label-container`}>
+                                            {!isImpactedMaster && <div className={`d-flex align-items-center simulation-label-container`}>
                                                 <div className='d-flex pl-3'>
                                                     <label>Technology: </label>
                                                     <p className='technology ml-1' title={list[0].TechnologyName}>{list[0].TechnologyName}</p>
                                                 </div>
                                                 <div className='d-flex pl-3'>
-                                                    <label className='mr-1'>Vendor:</label>
-                                                    <p title={list[0].VendorName}>{list[0].VendorName}</p>
+                                                    <label className='mr-1'>Vendor (Code):</label>
+                                                    <p title={list[0].VendorName}>{list[0].VendorName ? list[0].VendorName : list[0]['Vendor (Code)']}</p>
+
                                                 </div>
+                                                <button type="button" className={"apply ml-2"} onClick={cancel} disabled={isDisable}> <div className={'back-icon'}></div>Back</button>
                                             </div>}
-
-
                                         </div>
 
-
-
                                     </div>
-                                    <div className="ag-theme-material" style={{ width: '100%' }}>
+                                    <div className="ag-theme-material p-relative" style={{ width: '100%' }}>
+                                        {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found simulation-lisitng" />}
                                         <AgGridReact
                                             ref={gridRef}
                                             floatingFilter={true}
@@ -497,18 +529,20 @@ function RMSimulation(props) {
                                             frameworkComponents={frameworkComponents}
                                             stopEditingWhenCellsLoseFocus={true}
                                             onCellValueChanged={onCellValueChanged}
+                                            onFilterModified={onFloatingFilterChanged}
                                         >
                                             {
                                                 !isImpactedMaster &&
                                                 <AgGridColumn width={140} field="CostingHead" headerName="Costing Head" editable='false' cellRenderer={'costingHeadFormatter'}></AgGridColumn>
                                             }
                                             <AgGridColumn width={140} field="RawMaterial" editable='false' headerName="Raw Material"></AgGridColumn>
-                                            <AgGridColumn width={115} field="RMGrade" editable='false' headerName="RM Grade" ></AgGridColumn>
-                                            <AgGridColumn width={115} field="RMSpec" editable='false' headerName="RM Spec"></AgGridColumn>
-                                            <AgGridColumn width={115} field="RawMaterialCode" editable='false' headerName='RM Code' cellRenderer='hyphenFormatter'></AgGridColumn>
+                                            <AgGridColumn width={115} field="RMGrade" editable='false' headerName="Grade" ></AgGridColumn>
+                                            <AgGridColumn width={115} field="RMSpec" editable='false' headerName="Spec"></AgGridColumn>
+                                            <AgGridColumn width={115} field="RawMaterialCode" editable='false' headerName='Code' cellRenderer='hyphenFormatter'></AgGridColumn>
                                             {!isImpactedMaster && <AgGridColumn width={110} field="Category" editable='false' headerName="Category"></AgGridColumn>}
                                             {!isImpactedMaster && <AgGridColumn width={125} field="TechnologyName" editable='false' headerName="Technology" ></AgGridColumn>}
-                                            {!isImpactedMaster && <AgGridColumn width={100} field="VendorName" editable='false' headerName="Vendor"></AgGridColumn>}
+                                            {!isImpactedMaster && <AgGridColumn width={100} field="Vendor (Code)" editable='false' headerName="Vendor (Code)" cellRenderer='vendorFormatter'></AgGridColumn>}
+                                            {!isImpactedMaster && <AgGridColumn width={100} field="Plant (Code)" editable='false' headerName="Plant (Code)" cellRenderer='plantFormatter' ></AgGridColumn>}
                                             <AgGridColumn width={100} field="UOM" editable='false' headerName="UOM"></AgGridColumn>
 
                                             {costingAndPartNo && <AgGridColumn field="CostingNumber" editable='false' headerName="Costing No" minWidth={190}></AgGridColumn>}
@@ -516,16 +550,16 @@ function RMSimulation(props) {
 
 
                                             <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName="Basic Rate (INR)" marryChildren={true} >
-                                                <AgGridColumn width={120} cellRenderer='oldBasicRateFormatter' field="BasicRate" editable='false' headerName="Old" colId="BasicRate"></AgGridColumn>
-                                                <AgGridColumn width={120} cellRenderer='newBasicRateFormatter' onCellValueChanged='cellChange' field="NewBasicRate" headerName="New" colId='NewBasicRate' editable={!isImpactedMaster} ></AgGridColumn>
+                                                <AgGridColumn width={120} cellRenderer='oldBasicRateFormatter' field="BasicRate" editable='false' headerName="Existing" colId="BasicRate"></AgGridColumn>
+                                                <AgGridColumn width={120} cellRenderer='newBasicRateFormatter' onCellValueChanged='cellChange' field="NewBasicRate" headerName="Revised" colId='NewBasicRate' editable={!isImpactedMaster} ></AgGridColumn>
                                             </AgGridColumn>
                                             <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} marryChildren={true} headerName="Scrap Rate (INR)">
-                                                <AgGridColumn width={120} field="ScrapRate" editable='false' cellRenderer='oldScrapRateFormatter' headerName="Old" colId="ScrapRate" ></AgGridColumn>
-                                                <AgGridColumn width={120} cellRenderer={'newScrapRateFormatter'} field="NewScrapRate" headerName="New" colId="NewScrapRate" editable={!isImpactedMaster} ></AgGridColumn>
+                                                <AgGridColumn width={120} field="ScrapRate" editable='false' cellRenderer='oldScrapRateFormatter' headerName="Existing" colId="ScrapRate" ></AgGridColumn>
+                                                <AgGridColumn width={120} cellRenderer={'newScrapRateFormatter'} field="NewScrapRate" headerName="Revised" colId="NewScrapRate" editable={!isImpactedMaster} ></AgGridColumn>
                                             </AgGridColumn>
                                             {!isImpactedMaster && <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName="Net Cost (INR)">
-                                                <AgGridColumn width={120} field="NetLandedCost" editable='false' cellRenderer={'costFormatter'} headerName="Old" colId='NetLandedCost'></AgGridColumn>
-                                                <AgGridColumn width={120} field="NewNetLandedCost" editable='false' valueGetter='data.NewBasicRate + data.RMFreightCost+data.RMShearingCost' cellRenderer={'NewcostFormatter'} headerName="New" colId='NewNetLandedCost'></AgGridColumn>
+                                                <AgGridColumn width={120} field="NetLandedCost" editable='false' cellRenderer={'costFormatter'} headerName="Existing" colId='NetLandedCost'></AgGridColumn>
+                                                <AgGridColumn width={120} field="NewNetLandedCost" editable='false' valueGetter='data.NewBasicRate + data.RMFreightCost+data.RMShearingCost' cellRenderer={'NewcostFormatter'} headerName="Revised" colId='NewNetLandedCost'></AgGridColumn>
                                             </AgGridColumn>
                                             }
                                             <AgGridColumn width={140} field="EffectiveDate" editable='false' cellRenderer={'effectiveDateFormatter'} headerName="Effective Date" ></AgGridColumn>
@@ -561,10 +595,6 @@ function RMSimulation(props) {
                                         />
                                         {isWarningMessageShow && <WarningMessage dClass={"error-message"} textClass={"pt-1"} message={"Please select effective date"} />}
                                     </div>
-                                    <button type={"button"} className="mr15 cancel-btn" onClick={cancel} disabled={isDisable}>
-                                        <div className={"cancel-icon"}></div>
-                                        {"CANCEL"}
-                                    </button>
                                     <button onClick={verifySimulation} type="submit" className="user-btn mr5 save-btn" disabled={isDisable}>
                                         <div className={"Run-icon"}>
                                         </div>{" "}

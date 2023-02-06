@@ -13,6 +13,7 @@ import _ from 'lodash'
 
 import { COMBINED_PROCESS, BOPDOMESTIC, BOPIMPORT, MACHINERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT } from '../../../config/constants';
 import { BoughtOutPartDomesticFileHeads, BoughtOutPartImportFileHeads, CombinedProcessFileHeads, MachineRateFileHeads, OperationFileHeads, RawMaterialDomesticFileHeads, RawMaterialImportFileHeads } from '../../../config/masterData';
+import TooltipCustom from '../../common/Tooltip';
 
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -302,10 +303,10 @@ class SimulationUploadDrawer extends Component {
                             resp.rows.map((val, index) => {
                                 if (val.length !== 0) {
                                     if (index > 0) {
-                                        if (val[9] !== '' && val[9] !== undefined && val[9] !== null && val[8] !== val[9]) {
+                                        if (val[10] !== '' && val[10] !== undefined && val[10] !== null && val[9] !== val[10]) {
                                             basicRateCount = 1
                                         }
-                                        if (val[9] === '' || val[9] === undefined || val[9] === null || val[8] === val[9]) {
+                                        if (val[10] === '' || val[10] === undefined || val[10] === null || val[9] === val[10]) {
                                             NoOfRowsWithoutChange = NoOfRowsWithoutChange + 1
                                             return false
                                         }
@@ -583,9 +584,7 @@ class SimulationUploadDrawer extends Component {
                                     </Col> */}
                                     <Col md="12">
                                         <label className="d-inline-block w-auto">Upload</label>
-                                        <div class="tooltip-n ml-1 tooltip-left"><i className="fa fa-info-circle text-primary tooltip-icon"></i>
-                                            <span class="tooltiptext text-center">Please upload the file with data. The file can be downloaded from previous screen.</span>
-                                        </div>
+                                        <TooltipCustom placement="left" customClass="mt-1" tooltipClass="right-tooltip" id="upload-icon" tooltipText={'Please upload the file with data. The file can be downloaded from previous screen.'} />
                                         <div className="input-group mt-1 input-withouticon " >
                                             <div className="file-uploadsection">
                                                 <label>Drag a file here or<span className="blue-text">Browse</span> for a file to upload <img alt={''} src={imgCloud} ></img> </label>

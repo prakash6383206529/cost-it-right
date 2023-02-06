@@ -151,6 +151,7 @@ class ClientListing extends Component {
         this.props.deleteClient(ID, (res) => {
             if (res.data.Result === true) {
                 Toaster.success(MESSAGES.DELETE_CLIENT_SUCCESS);
+                this.setState({ dataCount: 0 })
                 this.getTableListData(null, null)
             }
         });
@@ -243,6 +244,7 @@ class ClientListing extends Component {
         }, () => {
             if (type === 'submit')
                 this.getTableListData(null, null)
+            this.setState({ dataCount: 0 })
         })
     }
 
@@ -329,7 +331,7 @@ class ClientListing extends Component {
         const defaultColDef = {
             resizable: true,
             filter: true,
-            sortable: true,
+            sortable: false,
             headerCheckboxSelectionFilteredOnly: true,
             checkboxSelection: isFirstColumn
         };
@@ -367,7 +369,8 @@ class ClientListing extends Component {
                                         DownloadAccessibility &&
                                         <>
                                             <>
-                                                <ExcelFile filename={Clientmaster} fileExtension={'.xls'} element={<button type="button" title="Download" className={'user-btn mr5'}><div className="download mr-0"></div></button>}>
+                                                <ExcelFile filename={Clientmaster} fileExtension={'.xls'} element={<button title={`Download ${this.state.dataCount === 0 ? "All" : "(" + this.state.dataCount + ")"}`} type="button" className={'user-btn mr5'}><div className="download mr-1"></div>
+                                                    {`${this.state.dataCount === 0 ? "All" : "(" + this.state.dataCount + ")"}`}</button>}>
                                                     {this.onBtExport()}
                                                 </ExcelFile>
                                             </>
@@ -390,8 +393,7 @@ class ClientListing extends Component {
 
                     <div className={`ag-grid-wrapper height-width-wrapper ${(this.props.clientDataList && this.props.clientDataList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
                         <div className="ag-grid-header">
-                            <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => this.onFilterTextBoxChanged(e)} />
-                            <SelectRowWrapper dataCount={this.state.dataCount} />
+                            <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " autoComplete={'off'} onChange={(e) => this.onFilterTextBoxChanged(e)} />
                         </div>
                         <div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
                             {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
@@ -416,8 +418,10 @@ class ClientListing extends Component {
                                 rowSelection={'multiple'}
                                 onSelectionChanged={this.onRowSelect}
                                 frameworkComponents={frameworkComponents}
+                                suppressRowClickSelection={true}
                             >
                                 <AgGridColumn field="CompanyName" headerName="Company Name"></AgGridColumn>
+                                <AgGridColumn field="CompanyCode" headerName="Company Code"></AgGridColumn>
                                 <AgGridColumn field="ClientName" headerName="Contact Name" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                 <AgGridColumn field="ClientEmailId" headerName="Email Id"></AgGridColumn>
                                 <AgGridColumn field="CountryName" headerName="Country"></AgGridColumn>

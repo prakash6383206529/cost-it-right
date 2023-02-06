@@ -13,7 +13,6 @@ import {
     GET_COMBINED_PROCESS_LIST,
     GET_SELECTLIST_SIMULATION_TOKENS,
     GET_FG_WISE_IMPACT_DATA,
-    SET_SELECTED_VENDOR_SIMULATION,
     GET_ASSEMBLY_SIMULATION_LIST,
     SET_DATA_TEMP,
     GET_ASSEMBLY_SIMULATION_LIST_SUMMARY,
@@ -25,8 +24,9 @@ import {
     SET_TOKEN_FOR_SIMULATION,
     GET_MASTER_SELECT_LIST_SIMUALTION,
     SET_SELECTED_ROW_FOR_PAGINATION,
-    GET_SIMULATION_APPROVAL_LIST_DRAFT
-
+    GET_SIMULATION_APPROVAL_LIST_DRAFT,
+    SET_SELECTED_VENDOR_SIMULATION,
+    GET_ALL_MULTI_TECHNOLOGY_COSTING
 } from '../../../config/constants';
 
 const initialState = {
@@ -231,6 +231,19 @@ export default function SimulationReducer(state = initialState, action) {
                 ...state,
                 loading: false,
                 selectedRowForPagination: action.payload
+            }
+
+        case SET_SELECTED_VENDOR_SIMULATION:
+            return {
+                ...state,
+                loading: false,
+                selectedVendorForSimulation: action.payload
+            }
+        case GET_ALL_MULTI_TECHNOLOGY_COSTING:
+            return {
+                ...state,
+                loading: false,
+                multiTechnologyCostinig: action.payload
             }
         default:
             return state;

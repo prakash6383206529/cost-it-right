@@ -4,7 +4,7 @@ import { Container, Row, Col, } from 'reactstrap';
 import { getSurfaceTreatmentDrawerDataList, getSurfaceTreatmentDrawerVBCDataList } from '../../actions/Costing';
 import { costingInfoContext } from '../CostingDetailStepTwo';
 import NoContentFound from '../../../common/NoContentFound';
-import { defaultPageSize, EMPTY_DATA } from '../../../../config/constants';
+import { CBCTypeId, defaultPageSize, EMPTY_DATA, NCC, NCCTypeId, VBC, VBCTypeId, ZBCTypeId } from '../../../../config/constants';
 import Toaster from '../../../common/Toaster';
 import Drawer from '@material-ui/core/Drawer';
 import { EMPTY_GUID, ZBC } from '../../../../config/constants';
@@ -12,7 +12,7 @@ import LoaderCustom from '../../../common/LoaderCustom';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
-import { checkForDecimalAndNull, getConfigurationKey } from '../../../../helper';
+import { checkForDecimalAndNull, getConfigurationKey, searchNocontentFilter } from '../../../../helper';
 import { PaginationWrapper } from '../../../common/commonPagination';
 import _ from 'lodash';
 const gridOptions = {};
@@ -24,6 +24,7 @@ function AddSurfaceTreatment(props) {
   const [selectedRowData, setSelectedRowData] = useState([]);
   const [gridApi, setGridApi] = useState(null);
   const [gridColumnApi, setGridColumnApi] = useState(null);
+  const [noData, setNoData] = useState(false);
 
   const dispatch = useDispatch()
 
@@ -43,45 +44,28 @@ function AddSurfaceTreatment(props) {
   };
 
   useEffect(() => {
-    if (costData.VendorType === ZBC) {
-      const data = {
-        PlantId: costData.PlantId,
-        TechnologyId: costData?.TechnologyId,
-        CostingId: costData.CostingId,
-        EffectiveDate: CostingEffectiveDate,
-      }
-      dispatch(getSurfaceTreatmentDrawerDataList(data, (res) => {
-        if (res && res.status === 200) {
-          let Data = res.data.DataList;
-          setTableDataList(Data)
-        } else if (res && res.response && res.response.status === 412) {
-          setTableDataList([])
-        } else {
-          setTableDataList([])
-        }
-      }))
-    } else {
 
-      const data = {
-        VendorId: costData.VendorId,
-        TechnologyId: costData?.TechnologyId,
-        VendorPlantId: initialConfiguration?.IsVendorPlantConfigurable ? costData.VendorPlantId : EMPTY_GUID,
-        DestinationPlantId: initialConfiguration?.IsDestinationPlantConfigure ? costData.DestinationPlantId : EMPTY_GUID,
-        EffectiveDate: CostingEffectiveDate,
-        CostingId: costData.CostingId,
-      }
-      dispatch(getSurfaceTreatmentDrawerVBCDataList(data, (res) => {
-        if (res && res.status === 200) {
-          let Data = res.data.DataList;
-          setTableDataList(Data)
-        } else if (res && res.response && res.response.status === 412) {
-          setTableDataList([])
-        } else {
-          setTableDataList([])
-        }
-      }))
-
+    const data = {
+      VendorId: costData.VendorId ? costData.VendorId : EMPTY_GUID,
+      TechnologyId: costData?.TechnologyId,
+      VendorPlantId: initialConfiguration?.IsVendorPlantConfigurable ? costData.VendorPlantId : EMPTY_GUID,
+      EffectiveDate: CostingEffectiveDate,
+      CostingId: costData.CostingId,
+      PlantId: (initialConfiguration?.IsDestinationPlantConfigure && (costData.CostingTypeId === VBCTypeId || costData.CostingTypeId === NCCTypeId)) || costData.CostingTypeId === CBCTypeId ? costData.DestinationPlantId : (costData.CostingTypeId === ZBCTypeId) ? costData.PlantId : EMPTY_GUID,
+      CostingTypeId: costData.CostingTypeId,
+      CustomerId: costData.CustomerId
     }
+    dispatch(getSurfaceTreatmentDrawerDataList(data, (res) => {
+      if (res && res.status === 200) {
+        let Data = res.data.DataList;
+        setTableDataList(Data)
+      } else if (res && res.response && res.response.status === 412) {
+        setTableDataList([])
+      } else {
+        setTableDataList([])
+      }
+    }))
+
   }, []);
 
   const onRowSelect = (event) => {
@@ -136,7 +120,7 @@ function AddSurfaceTreatment(props) {
   const defaultColDef = {
     resizable: true,
     filter: true,
-    sortable: true,
+    sortable: false,
     headerCheckboxSelectionFilteredOnly: true,
     headerCheckboxSelection: isFirstColumn,
     checkboxSelection: isFirstColumn
@@ -163,6 +147,11 @@ function AddSurfaceTreatment(props) {
   const rateFormat = (props) => {
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
     return cellValue !== null ? checkForDecimalAndNull(cellValue, getConfigurationKey().NoOfDecimalForPrice) : '-'
+  }
+  const onFloatingFilterChanged = (value) => {
+    if (tableData.length !== 0) {
+      setNoData(searchNocontentFilter(value, noData))
+    }
   }
 
   const frameworkComponents = {
@@ -205,7 +194,7 @@ function AddSurfaceTreatment(props) {
                     <h3>{'ADD Surface Treatment:'}</h3>
                   </div>
                   <div
-                    onClick={(e) => toggleDrawer(e)}
+                    onClick={cancel}
                     className={'close-button right'}>
                   </div>
                 </Col>
@@ -214,16 +203,15 @@ function AddSurfaceTreatment(props) {
 
               <Row className="mx-0">
                 <Col className="hidepage-size">
-                  <div className={`ag-grid-wrapper min-height-auto height-width-wrapper ${tableData && tableData?.length <= 0 ? "overlay-contain" : ""}`}>
+                  <div className={`ag-grid-wrapper min-height-auto height-width-wrapper ${(tableData && tableData?.length <= 0) || noData ? "overlay-contain" : ""}`}>
                     <div className="ag-grid-header">
-                      <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
+                      <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
                       <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}>
                         <div className="refresh mr-0"></div>
                       </button>
                     </div>
-                    <div
-                      className="ag-theme-material"
-                    >
+                    <div className="ag-theme-material p-relative">
+                      {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found drawer" />}
                       <AgGridReact
                         style={{ height: '100%', width: '100%' }}
                         defaultColDef={defaultColDef}
@@ -245,6 +233,7 @@ function AddSurfaceTreatment(props) {
                         frameworkComponents={frameworkComponents}
                         onRowSelected={onRowSelect}
                         isRowSelectable={isRowSelectable}
+                        onFilterModified={onFloatingFilterChanged}
                       >
                         <AgGridColumn field="OperationId" hide={true}></AgGridColumn>
                         <AgGridColumn field="OperationName" headerName="Operation Name"></AgGridColumn>

@@ -102,6 +102,10 @@
     z-index: 10;
     background: rgba(255, 255, 255, 0.9);
 
+    &.hidden-loader {
+        background: rgba(255, 255, 255, 0);
+    }
+
     .img_loader {
         max-width: 330px;
         object-fit: contain;
@@ -129,6 +133,12 @@
         color: inherit;
         vertical-align: middle;
         pointer-events: none;
+    }
+
+    .message {
+        position: absolute;
+        margin-top: 110px;
+        color: $colorPrimary;
     }
 }
 
@@ -362,8 +372,11 @@
 }
 
 .costing-table {
-    .loaderinner {
-        max-height: 160px;
+    position: relative;
+    min-height: calc(100vh - 500px);
+
+    @media screen and (max-height: 768px) {
+        min-height: calc(100vh - 400px);
     }
 }
 
@@ -460,5 +473,11 @@
             max-width: 80px;
             max-height: 100%;
         }
+    }
+}
+
+.vendor-loader {
+    .text-help {
+        position: absolute;
     }
 }

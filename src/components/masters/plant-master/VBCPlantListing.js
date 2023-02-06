@@ -131,8 +131,8 @@ class VBCPlantListing extends Component {
         return (
             <>
                 {ViewAccessibility && <button title='View' className="View mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, true)} />}
-                {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, false)} />}
-                {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
+                {EditAccessibility && <button title='Edit' className="Edit mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, false)} />}
+                {DeleteAccessibility && <button title='Delete' className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
             </>
         )
     }
@@ -442,7 +442,7 @@ class VBCPlantListing extends Component {
         const defaultColDef = {
             resizable: true,
             filter: true,
-            sortable: true,
+            sortable: false,
         };
 
         const frameworkComponents = {
@@ -492,7 +492,7 @@ class VBCPlantListing extends Component {
                 </form>
                 <div className={`ag-grid-wrapper height-width-wrapper ${(this.props.plantDataList && this.props.plantDataList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
                     <div className="ag-grid-header">
-                        <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
+                        <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={'off'} onChange={(e) => this.onFilterTextBoxChanged(e)} />
                         <SelectRowWrapper dataCount={this.state.dataCount} />
                     </div>
                     <div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>

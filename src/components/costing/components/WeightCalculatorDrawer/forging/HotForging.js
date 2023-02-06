@@ -4,10 +4,11 @@ import { useForm, Controller, useWatch } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 import Toaster from '../../../../common/Toaster'
 import { saveRawMaterialCalculationForForging } from '../../../actions/CostWorking'
+import { number, percentageLimitValidation, checkWhiteSpaces } from "../../../../../helper/validation";
 
 import {
 
-  NumberFieldHookForm,
+  NumberFieldHookForm, TextFieldHookForm,
 } from '../../../../layout/HookFormInputs'
 import {
   checkForDecimalAndNull,
@@ -19,6 +20,7 @@ import {
 import MachiningStockTable from '../MachiningStockTable'
 import LossStandardTable from '../LossStandardTable'
 import { debounce } from 'lodash'
+import TooltipCustom from '../../../../common/Tooltip'
 
 function HotForging(props) {
   const { rmRowData, CostingViewMode, item } = props
@@ -418,7 +420,8 @@ function HotForging(props) {
       e.preventDefault();
     }
   };
-
+  const inputLengthTooltipMessage = <div>Input Length = (Forged Weight + Loss Weight / 0.7857 * Billet Diameter<sup>2</sup>) * Density / 1000000</div>
+  const endBitLossTooltipMessage = <div>End Bit Loss = (0.7857 * Billet Diameter<sup>2</sup> * End Bit Length * (Density / 1000000) / No. of Part per Length)</div>
   return (
     <Fragment>
       <Row>
@@ -473,6 +476,7 @@ function HotForging(props) {
                 </Row>
 
                 <Col md="3" className='mt10 px-0'>
+                  <TooltipCustom disabledIcon={true} id={'forged-weight'} tooltipText={'Forged Weight = (Total Machining Stock + Finished Weight)'} />
                   <NumberFieldHookForm
                     label={`Forged Weight(Kg)`}
                     name={'forgedWeight'}
@@ -480,6 +484,7 @@ function HotForging(props) {
                     control={control}
                     register={register}
                     mandatory={false}
+                    id={'forged-weight'}
                     handleChange={() => { }}
                     defaultValue={''}
                     className=""
@@ -557,12 +562,14 @@ function HotForging(props) {
                 />
               </Col>
               <Col md="3">
+                <TooltipCustom disabledIcon={true} id={'input-length'} tooltipClass={'weight-of-sheet'} tooltipText={inputLengthTooltipMessage} />
                 <NumberFieldHookForm
                   label={`Input Length(mm)`}
                   name={'InputLength'}
                   Controller={Controller}
                   control={control}
                   register={register}
+                  id={'input-length'}
                   mandatory={false}
                   handleChange={() => { }}
                   defaultValue={''}
@@ -573,6 +580,7 @@ function HotForging(props) {
                 />
               </Col>
               <Col md="3">
+                <TooltipCustom disabledIcon={true} id={'part-per-length'} tooltipClass={'weight-of-sheet'} tooltipText={'No. of Parts per Length(Number) = (Input Bar Length / Input Length) '} />
                 <NumberFieldHookForm
                   label={`No. of Parts per Length`}
                   name={'NoOfPartsPerLength'}
@@ -580,6 +588,7 @@ function HotForging(props) {
                   control={control}
                   register={register}
                   mandatory={false}
+                  id={'part-per-length'}
                   handleChange={() => { }}
                   defaultValue={''}
                   className=""
@@ -589,11 +598,13 @@ function HotForging(props) {
                 />
               </Col>
               <Col md="3">
+                <TooltipCustom disabledIcon={true} id={'end-bit-input'} tooltipClass={'weight-of-sheet'} tooltipText={'End Bit Length = (Input Bar Length - (Input Length * No. of Parts per Length))'} />
                 <NumberFieldHookForm
                   label={`End Bit Length`}
                   name={'EndBitLength'}
                   Controller={Controller}
                   control={control}
+                  id={'end-bit-input'}
                   register={register}
                   mandatory={false}
                   handleChange={() => { }}
@@ -606,12 +617,14 @@ function HotForging(props) {
               </Col>
 
               <Col md="3">
+                <TooltipCustom disabledIcon={true} id={'end-bit-loss'} tooltipClass={'weight-of-sheet'} tooltipText={endBitLossTooltipMessage} />
                 <NumberFieldHookForm
                   label={`End Bit Loss(Kg)`}
                   name={'EndBitLoss'}
                   Controller={Controller}
                   control={control}
                   register={register}
+                  id={'end-bit-loss'}
                   mandatory={false}
                   handleChange={() => { }}
                   defaultValue={''}
@@ -623,11 +636,13 @@ function HotForging(props) {
               </Col>
 
               <Col md="3">
+                <TooltipCustom disabledIcon={true} id={'input-weight'} tooltipClass={'weight-of-sheet'} tooltipText={'Total Input Weight = (Net Loss + Forged Weight + End Bit Loss)'} />
                 <NumberFieldHookForm
                   label={`Total Input Weight(Kg)`}
                   name={'TotalInputWeight'}
                   Controller={Controller}
                   control={control}
+                  id={'input-weight'}
                   register={register}
                   mandatory={false}
                   handleChange={() => { }}
@@ -639,12 +654,14 @@ function HotForging(props) {
                 />
               </Col>
               <Col md="3">
+                <TooltipCustom disabledIcon={true} id={'scrap-weight'} tooltipText={'Scrap Weight = (Total Input Weight - Finished Weight)'} />
                 <NumberFieldHookForm
                   label={`Scrap Weight(Kg)`}
                   name={'ScrapWeight'}
                   Controller={Controller}
                   control={control}
                   register={register}
+                  id={'scrap-weight'}
                   mandatory={false}
                   handleChange={() => { }}
                   defaultValue={''}
@@ -655,8 +672,8 @@ function HotForging(props) {
                 />
               </Col>
               <Col md="3">
-                <NumberFieldHookForm
-                  label={`Scrap Recovery(%)`}
+                <TextFieldHookForm
+                  label={`Scrap Recovery (%)`}
                   name={'ScrapRecoveryPercentage'}
                   Controller={Controller}
                   control={control}
@@ -664,10 +681,7 @@ function HotForging(props) {
                   mandatory={true}
                   rules={{
                     required: true,
-                    pattern: {
-                      value: /^[0-9]\d*(\.\d+)?$/i,
-                      message: 'Invalid Number.',
-                    },
+                    validate: { number, checkWhiteSpaces, percentageLimitValidation },
                     max: {
                       value: 100,
                       message: 'Percentage cannot be greater than 100'
@@ -682,6 +696,7 @@ function HotForging(props) {
                 />
               </Col>
               <Col md="3">
+                <TooltipCustom disabledIcon={true} id={'scrap-cost'} tooltipClass={'weight-of-sheet'} tooltipText={'Scrap Cost = (Scrap Weight * Scrap Recovery Percentage * Scrap Rate / 100)'} />
                 <NumberFieldHookForm
                   label={`Scrap Cost`}
                   name={'ScrapCost'}
@@ -689,6 +704,7 @@ function HotForging(props) {
                   control={control}
                   register={register}
                   mandatory={false}
+                  id={'scrap-cost'}
                   handleChange={() => { }}
                   defaultValue={''}
                   className=""
@@ -699,12 +715,14 @@ function HotForging(props) {
               </Col>
 
               <Col md="3">
+                <TooltipCustom disabledIcon={true} id={'rm-cost'} tooltipClass={'weight-of-sheet'} tooltipText={' Net RM Cost = (Total Input Weight * RM Rate - Scrap Cost)'} />
                 <NumberFieldHookForm
                   label={`Net RM Cost/Component`}
                   name={'NetRMCostComponent'}
                   Controller={Controller}
                   control={control}
                   register={register}
+                  id={'rm-cost'}
                   mandatory={false}
                   handleChange={() => { }}
                   defaultValue={''}

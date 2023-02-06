@@ -4,12 +4,12 @@ import { Container, Row, Col, } from 'reactstrap';
 import Drawer from '@material-ui/core/Drawer';
 import { getBOPDrawerDataList, getBOPDrawerVBCDataList } from '../../actions/Costing';
 import { costingInfoContext } from '../CostingDetailStepTwo';
-import { defaultPageSize, EMPTY_GUID, ZBC } from '../../../../config/constants';
+import { CBCTypeId, defaultPageSize, EMPTY_GUID, NCC, NCCTypeId, VBC, VBCTypeId, ZBC, ZBCTypeId } from '../../../../config/constants';
 import NoContentFound from '../../../common/NoContentFound';
 import { EMPTY_DATA } from '../../../../config/constants';
 import Toaster from '../../../common/Toaster';
 import { getBOPCategorySelectList } from '../../../masters/actions/BoughtOutParts';
-import { checkForDecimalAndNull, getConfigurationKey } from '../../../../helper';
+import { checkForDecimalAndNull, getConfigurationKey, searchNocontentFilter } from '../../../../helper';
 import LoaderCustom from '../../../common/LoaderCustom';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
@@ -24,6 +24,7 @@ function AddBOP(props) {
   const [selectedRowData, setSelectedRowData] = useState([]);
   const [gridApi, setGridApi] = useState(null);
   const [gridColumnApi, setGridColumnApi] = useState(null);
+  const [noData, setNoData] = useState(false);
   const dispatch = useDispatch()
 
   const costData = useContext(costingInfoContext)
@@ -97,49 +98,27 @@ function AddBOP(props) {
     toggleDrawer('')
   }
 
-
   const getDataList = (categoryId = 0) => {
-    if (costData.VendorType === ZBC) {
-
-      const data = {
-        PlantId: costData.PlantId,
-        CostingId: costData.CostingId,
-        EffectiveDate: CostingEffectiveDate,
-        categoryId: categoryId
-      }
-      dispatch(getBOPDrawerDataList(data, (res) => {
-        if (res && res.status === 200) {
-          let Data = res.data.DataList;
-          setTableDataList(Data)
-        } else if (res && res.response && res.response.status === 412) {
-          setTableDataList([])
-        } else {
-          setTableDataList([])
-        }
-      }))
-
-    } else {
-
-      const data = {
-        VendorId: costData.VendorId,
-        VendorPlantId: initialConfiguration?.IsVendorPlantConfigurable ? costData.VendorPlantId : EMPTY_GUID,
-        DestinationPlantId: initialConfiguration?.IsDestinationPlantConfigure ? costData.DestinationPlantId : EMPTY_GUID,
-        EffectiveDate: CostingEffectiveDate,
-        CostingId: costData.CostingId,
-        categoryId: categoryId
-      }
-      dispatch(getBOPDrawerVBCDataList(data, (res) => {
-        if (res && res.status === 200) {
-          let Data = res.data.DataList;
-          setTableDataList(Data)
-        } else if (res && res.response && res.response.status === 412) {
-          setTableDataList([])
-        } else {
-          setTableDataList([])
-        }
-      }))
-
+    const data = {
+      VendorId: costData.VendorId ? costData.VendorId : EMPTY_GUID,
+      PlantId: (initialConfiguration?.IsDestinationPlantConfigure && (costData.CostingTypeId === VBCTypeId || costData.CostingTypeId === NCCTypeId)) || costData.CostingTypeId === CBCTypeId ? costData.DestinationPlantId : (costData.CostingTypeId === ZBCTypeId) ? costData.PlantId : EMPTY_GUID,
+      VendorPlantId: initialConfiguration?.IsVendorPlantConfigurable ? costData.VendorPlantId : EMPTY_GUID,
+      EffectiveDate: CostingEffectiveDate,
+      CostingId: costData.CostingId,
+      categoryId: categoryId,
+      CostingTypeId: costData.CostingTypeId,
+      CustomerId: costData.CustomerId
     }
+    dispatch(getBOPDrawerDataList(data, (res) => {
+      if (res && res.status === 200) {
+        let Data = res.data.DataList;
+        setTableDataList(Data)
+      } else if (res && res.response && res.response.status === 412) {
+        setTableDataList([])
+      } else {
+        setTableDataList([])
+      }
+    }))
 
   }
 
@@ -161,7 +140,7 @@ function AddBOP(props) {
   const defaultColDef = {
     resizable: true,
     filter: true,
-    sortable: true,
+    sortable: false,
     headerCheckboxSelectionFilteredOnly: true,
     headerCheckboxSelection: isFirstColumn,
     checkboxSelection: isFirstColumn
@@ -176,7 +155,11 @@ function AddBOP(props) {
     params.api.paginationGoToPage(0);
 
   };
-
+  const onFloatingFilterChanged = (value) => {
+    if (bopDrawerList.length !== 0) {
+      setNoData(searchNocontentFilter(value, noData))
+    }
+  }
   const onPageSizeChanged = (newPageSize) => {
     gridApi.paginationSetPageSize(Number(newPageSize));
   };
@@ -236,16 +219,15 @@ function AddBOP(props) {
 
               <Row className="mx-0">
                 <Col className="hidepage-size">
-                  <div className={`ag-grid-wrapper min-height-auto height-width-wrapper ${bopDrawerList && bopDrawerList?.length <= 0 ? "overlay-contain" : ""}`}>
+                  <div className={`ag-grid-wrapper min-height-auto height-width-wrapper ${(bopDrawerList && bopDrawerList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
                     <div className="ag-grid-header">
-                      <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
+                      <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
                       <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}>
                         <div className="refresh mr-0"></div>
                       </button>
                     </div>
-                    <div
-                      className="ag-theme-material"
-                    >
+                    <div className="ag-theme-material p-relative">
+                      {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found drawer" />}
                       <AgGridReact
                         style={{ height: '100%', width: '100%' }}
                         defaultColDef={defaultColDef}
@@ -268,6 +250,7 @@ function AddBOP(props) {
                         frameworkComponents={frameworkComponents}
                         onRowSelected={onRowSelect}
                         isRowSelectable={isRowSelectable}
+                        onFilterModified={onFloatingFilterChanged}
                       >
                         <AgGridColumn field="BoughtOutPartId" hide={true}></AgGridColumn>
                         <AgGridColumn cellClass="has-checkbox" field="EntryType" headerName="BOP Type"  ></AgGridColumn>
