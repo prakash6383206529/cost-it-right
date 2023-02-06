@@ -3,14 +3,10 @@ import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, } from 'reactstrap';
 import { required, number, maxLength6, maxLength80, minLength10, maxLength12, checkWhiteSpaces, acceptAllExceptSingleSpecialCharacter, maxLength15, postiveNumber, maxLength3, checkSpacesInString } from "../../../helper/validation";
-
 import { loggedInUserId } from "../../../helper/auth";
-import { renderNumberInputField, renderText, searchableSelect } from "../../layout/FormInputs";
+import { renderText, renderTextInputField, searchableSelect } from "../../layout/FormInputs";
 import { createPlantAPI, getPlantUnitAPI, updatePlantAPI } from '../actions/Plant';
-import {
-  fetchCountryDataAPI, fetchStateDataAPI, fetchCityDataAPI, fetchSupplierCityDataAPI, getSupplierList,
-  getCityByCountry,
-} from '../../../actions/Common';
+import { fetchCountryDataAPI, fetchStateDataAPI, fetchCityDataAPI, fetchSupplierCityDataAPI, getSupplierList, getCityByCountry, } from '../../../actions/Common';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import Drawer from '@material-ui/core/Drawer';
@@ -388,8 +384,8 @@ class AddVBCPlant extends Component {
                           name={"PhoneNumber"}
                           type="text"
                           placeholder={isViewMode ? '-' : "Enter"}
-                          validate={[postiveNumber, minLength10, maxLength12, checkWhiteSpaces]}
-                          component={renderNumberInputField}
+                          validate={[postiveNumber, minLength10, maxLength12, checkWhiteSpaces, number]}
+                          component={renderTextInputField}
                           //    required={true}
                           maxLength={12}
                           className=""

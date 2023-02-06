@@ -51,7 +51,6 @@ function InsightsBop(props) {
 
 
 
-
     let obj4 = {
         Identity: null,
         Result: true,
@@ -234,7 +233,7 @@ function InsightsBop(props) {
         //////////////////////////////////////////////////////////////////////////////////////
 
 
-        true && bopBenchmarkList.BOPSpecifications.map((item, i) => {               //ITERATION FOR ALL SPECIFICATIONS
+        bopBenchmarkList && bopBenchmarkList?.BOPSpecifications?.map((item, i) => {               //ITERATION FOR ALL SPECIFICATIONS
             let plantTemp = []
             let obj = {
                 Specification: item.BoughtOutPartName,                       //SETTING 6 VALUES FOR EACH SPECIFICATION IN OBJ

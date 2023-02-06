@@ -2,8 +2,8 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col, Table, Label } from "reactstrap";
-import { required, checkForNull, positiveAndDecimalNumber, maxLength10, checkForDecimalAndNull, decimalLengthFour } from "../../../helper/validation";
-import { renderNumberInputField, searchableSelect } from "../../layout/FormInputs";
+import { required, checkForNull, positiveAndDecimalNumber, maxLength10, checkForDecimalAndNull, decimalLengthFour, number } from "../../../helper/validation";
+import { renderTextInputField, searchableSelect } from "../../layout/FormInputs";
 import { fetchSupplierCityDataAPI, getCityByCountry, getAllCity } from "../../../actions/Common";
 import { getVendorWithVendorCodeSelectList } from "../actions/Supplier";
 import {
@@ -874,8 +874,8 @@ class AddFreight extends Component {
                               name={"LoadingUnloadingCharges"}
                               type="text"
                               placeholder={isViewMode ? '-' : 'Enter'}
-                              validate={[positiveAndDecimalNumber, maxLength10, decimalLengthFour]}
-                              component={renderNumberInputField}
+                              validate={[positiveAndDecimalNumber, maxLength10, decimalLengthFour, number]}
+                              component={renderTextInputField}
                               disabled={isViewMode}
                               className=""
                               customClassName=" withBorder mn-height-auto"
@@ -895,8 +895,8 @@ class AddFreight extends Component {
                               name={"PartTruckLoadRatePerKilogram"}
                               type="text"
                               placeholder={isViewMode ? '-' : 'Enter'}
-                              validate={[positiveAndDecimalNumber, maxLength10, decimalLengthFour]}
-                              component={renderNumberInputField}
+                              validate={[positiveAndDecimalNumber, maxLength10, decimalLengthFour, number]}
+                              component={renderTextInputField}
                               disabled={isViewMode}
                               className=" "
                               customClassName=" withBorder"
@@ -908,8 +908,8 @@ class AddFreight extends Component {
                               name={"PartTruckLoadRatePerCubicFeet"}
                               type="text"
                               placeholder={isViewMode ? '-' : 'Enter'}
-                              validate={[positiveAndDecimalNumber, maxLength10, decimalLengthFour]}
-                              component={renderNumberInputField}
+                              validate={[positiveAndDecimalNumber, maxLength10, decimalLengthFour, number]}
+                              component={renderTextInputField}
                               disabled={isViewMode}
                               className=" "
                               customClassName=" withBorder"
@@ -967,8 +967,8 @@ class AddFreight extends Component {
                               name={"Rate"}
                               type="text"
                               placeholder={isViewMode ? '-' : 'Enter'}
-                              validate={[positiveAndDecimalNumber, maxLength10]}
-                              component={renderNumberInputField}
+                              validate={[positiveAndDecimalNumber, maxLength10, number]}
+                              component={renderTextInputField}
                               required={true}
                               disabled={isViewMode}
                               className=" "

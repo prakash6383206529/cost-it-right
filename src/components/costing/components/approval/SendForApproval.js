@@ -643,175 +643,177 @@ const SendForApproval = (props) => {
             {viewApprovalData &&
               viewApprovalData.map((data, index) => {
 
-                return (<div className="" key={index}>
-                  <Row className="px-3">
-                    <Col md="12">
-                      <h6 className="left-border d-inline-block mr-4">
-                        {(data.costingTypeId === ZBCTypeId) ? ZBC : (data.costingTypeId === VBCTypeId || data.costingTypeId === NCCTypeId) ? `${data.vendorName}` : `${data.customerName}`}
-                      </h6>
-                      <div className=" d-inline-block mr-4">
-                        {`Part No:`}{" "}
-                        <span className="grey-text">{`${isApprovalisting ? data.partNo : partNo.partNumber}`}</span>
-                      </div>
-                      <div className=" d-inline-block mr-4">
-                        {(data.costingTypeId === ZBCTypeId) ? `Plant Code:` : (data.costingTypeId === VBCTypeId || data.costingTypeId === NCCTypeId) ? `Vendor Code:` : `Customer Code:`}
-                        <span className="grey-text">{(data.costingTypeId === ZBCTypeId) ? `${data.plantCode}` : (data.costingTypeId === VBCTypeId || data.costingTypeId === NCCTypeId) ? `${data.vendorCode}` : `${data.customerCode}`}</span>
-                      </div>
-                      <div className=" d-inline-block">
-                        {`Costing Id:`}{" "}
-                        <span className="grey-text">{`${data.costingName}`}</span>
-                      </div>
+                return (<>
+                  {props.isRfq && data.costingId && <div className="" key={index}>
+                    <Row className="px-3">
+                      <Col md="12">
+                        <h6 className="left-border d-inline-block mr-4">
+                          {(data.costingTypeId === ZBCTypeId) ? ZBC : (data.costingTypeId === VBCTypeId || data.costingTypeId === NCCTypeId) ? `${data.vendorName}` : `${data.customerName}`}
+                        </h6>
+                        <div className=" d-inline-block mr-4">
+                          {`Part No:`}{" "}
+                          <span className="grey-text">{`${isApprovalisting ? data.partNo : partNo.partNumber}`}</span>
+                        </div>
+                        <div className=" d-inline-block mr-4">
+                          {(data.costingTypeId === ZBCTypeId) ? `Plant Code:` : (data.costingTypeId === VBCTypeId || data.costingTypeId === NCCTypeId) ? `Vendor Code:` : `Customer Code:`}
+                          <span className="grey-text">{(data.costingTypeId === ZBCTypeId) ? `${data.plantCode}` : (data.costingTypeId === VBCTypeId || data.costingTypeId === NCCTypeId) ? `${data.vendorCode}` : `${data.customerCode}`}</span>
+                        </div>
+                        <div className=" d-inline-block">
+                          {`Costing Id:`}{" "}
+                          <span className="grey-text">{`${data.costingName}`}</span>
+                        </div>
 
-                    </Col>
-                  </Row>
-                  <div className="px-3">
-                    <div className="border-box border p-3 mb-4">
-                      <Row>
-                        <Col md="4">
-                          <SearchableSelectHookForm
-                            label={"Reason"}
-                            // name={"reason"}
-                            name={`${reasonField}reason[${index}]`}
-                            placeholder={"Select"}
-                            Controller={Controller}
-                            control={control}
-                            rules={{ required: true }}
-                            register={register}
-                            defaultValue={data.reason !== "" ? { label: data.reason, value: data.reasonId } : ""}
-                            options={renderDropdownListing("Reason")}
-                            mandatory={true}
-                            handleChange={(e) => {
-                              handleReasonChange(e, index);
-                            }}
-                            errors={errors && errors.reasonFieldreason && errors.reasonFieldreason !== undefined ? errors.reasonFieldreason[index] : ""}
-                          // errors={`${errors}.${reasonField}[${index}]reason`}
+                      </Col>
+                    </Row>
+                    <div className="px-3">
+                      <div className="border-box border p-3 mb-4">
+                        <Row>
+                          <Col md="4">
+                            <SearchableSelectHookForm
+                              label={"Reason"}
+                              // name={"reason"}
+                              name={`${reasonField}reason[${index}]`}
+                              placeholder={"Select"}
+                              Controller={Controller}
+                              control={control}
+                              rules={{ required: true }}
+                              register={register}
+                              defaultValue={data.reason !== "" ? { label: data.reason, value: data.reasonId } : ""}
+                              options={renderDropdownListing("Reason")}
+                              mandatory={true}
+                              handleChange={(e) => {
+                                handleReasonChange(e, index);
+                              }}
+                              errors={errors && errors.reasonFieldreason && errors.reasonFieldreason !== undefined ? errors.reasonFieldreason[index] : ""}
+                            // errors={`${errors}.${reasonField}[${index}]reason`}
 
-                          />
-                        </Col>
+                            />
+                          </Col>
 
-                        <Col md="4">
-                          <div className="d-flex">
-                            <div className="inputbox date-section">
-                              {
-                                data.isDate ?
-                                  <div className={'form-group inputbox withBorder'}>
-                                    <label>Effective Date</label>
-                                    <DatePicker
-                                      selected={DayTime(data.effectiveDate).isValid() ? new Date(data.effectiveDate) : ''}
-                                      dateFormat="dd/MM/yyyy"
+                          <Col md="4">
+                            <div className="d-flex">
+                              <div className="inputbox date-section">
+                                {
+                                  data.isDate ?
+                                    <div className={'form-group inputbox withBorder'}>
+                                      <label>Effective Date</label>
+                                      <DatePicker
+                                        selected={DayTime(data.effectiveDate).isValid() ? new Date(data.effectiveDate) : ''}
+                                        dateFormat="dd/MM/yyyy"
+                                        showMonthDropdown
+                                        showYearDropdown
+                                        readonly="readonly"
+                                        onBlur={() => null}
+                                        autoComplete={'off'}
+                                        disabledKeyboardNavigation
+                                        disabled={true}
+                                      />
+                                    </div>
+                                    :
+
+                                    <DatePickerHookForm
+                                      name={`${dateField}EffectiveDate.${index}`}
+                                      label={'Effective Date'}
+                                      selected={data.effectiveDate !== "" ? DayTime(data.effectiveDate).format('DD/MM/YYYY') : ""}
+                                      handleChange={(date) => {
+                                        handleEffectiveDateChange(date, index);
+                                      }}
+                                      //defaultValue={data.effectiveDate != "" ? moment(data.effectiveDate).format('DD/MM/YYYY') : ""}
+                                      rules={{ required: true }}
+                                      Controller={Controller}
+                                      control={control}
+                                      register={register}
                                       showMonthDropdown
                                       showYearDropdown
-                                      readonly="readonly"
-                                      onBlur={() => null}
-                                      autoComplete={'off'}
+                                      dateFormat="DD/MM/YYYY"
+                                      //maxDate={new Date()}
+                                      dropdownMode="select"
+                                      placeholderText="Select date"
+                                      customClassName="withBorder"
+                                      className="withBorder"
+                                      autoComplete={"off"}
                                       disabledKeyboardNavigation
-                                      disabled={true}
+                                      onChangeRaw={(e) => e.preventDefault()}
+                                      disabled={false}
+                                      mandatory={true}
+                                      errors={errors && errors.dateFieldEffectiveDate && errors.dateFieldEffectiveDate !== undefined ? errors.dateFieldEffectiveDate[index] : ""}
                                     />
-                                  </div>
-                                  :
-
-                                  <DatePickerHookForm
-                                    name={`${dateField}EffectiveDate.${index}`}
-                                    label={'Effective Date'}
-                                    selected={data.effectiveDate !== "" ? DayTime(data.effectiveDate).format('DD/MM/YYYY') : ""}
-                                    handleChange={(date) => {
-                                      handleEffectiveDateChange(date, index);
-                                    }}
-                                    //defaultValue={data.effectiveDate != "" ? moment(data.effectiveDate).format('DD/MM/YYYY') : ""}
-                                    rules={{ required: true }}
-                                    Controller={Controller}
-                                    control={control}
-                                    register={register}
-                                    showMonthDropdown
-                                    showYearDropdown
-                                    dateFormat="DD/MM/YYYY"
-                                    //maxDate={new Date()}
-                                    dropdownMode="select"
-                                    placeholderText="Select date"
-                                    customClassName="withBorder"
-                                    className="withBorder"
-                                    autoComplete={"off"}
-                                    disabledKeyboardNavigation
-                                    onChangeRaw={(e) => e.preventDefault()}
-                                    disabled={false}
-                                    mandatory={true}
-                                    errors={errors && errors.dateFieldEffectiveDate && errors.dateFieldEffectiveDate !== undefined ? errors.dateFieldEffectiveDate[index] : ""}
-                                  />
-                              }
-                            </div>
-                            {/* <i className="fa fa-calendar icon-small-primary ml-2"></i> */}
-                          </div>
-                          {/* </div> */}
-                        </Col>
-
-                        <Col md="4">
-                          <div className="form-group">
-                            <label>Existing Price</label>
-                            <label className="form-control bg-grey input-form-control">
-                              {data.oldPrice && data.oldPrice !== '-' ? checkForDecimalAndNull(data.oldPrice, initialConfiguration.NoOfDecimalForPrice) : 0}
-                            </label>
-                          </div>
-                        </Col>
-                        <Col md="4">
-                          <div className="form-group">
-                            <label>Revised Price</label>
-                            <label className="form-control bg-grey input-form-control">
-                              {data.revisedPrice ? checkForDecimalAndNull(data.revisedPrice, initialConfiguration.NoOfDecimalForPrice) : 0}
-                            </label>
-                          </div>
-                        </Col>
-                        <Col md="4">
-                          <div className="form-group">
-                            <label>Variance (w.r.t. Existing)</label>
-                            <label className={data.oldPrice === 0 ? `form-control bg-grey input-form-control` : `form-control bg-grey input-form-control ${data.variance < 0 ? 'red-value' : 'green-value'}`}>
-                              {data.variance ? checkForDecimalAndNull(data.variance, initialConfiguration.NoOfDecimalForPrice) : 0}
-                            </label>
-                          </div>
-                        </Col>
-
-                        {viewApprovalData && viewApprovalData[0]?.CostingHead !== NCC && <>
-                          <Col md="4">
-                            <div className="form-group">
-                              <label>Consumed Quantity</label>
-                              <div className="d-flex align-items-center">
-                                <label className="form-control bg-grey input-form-control">
-                                  {checkForDecimalAndNull(data.consumptionQty, initialConfiguration.NoOfDecimalForPrice)}
-                                </label>
-                                {/* <div class="plus-icon-square  right m-0 mb-1"></div> */}
+                                }
                               </div>
+                              {/* <i className="fa fa-calendar icon-small-primary ml-2"></i> */}
                             </div>
-                          </Col>
-                          <Col md="4">
-                            <div className="form-group">
-                              <label>Remaining Budgeted Quantity</label>
-                              <label className="form-control bg-grey input-form-control">
-                                {data.remainingQty && data.remainingQty !== "" ? checkForDecimalAndNull(data.remainingQty, initialConfiguration.NoOfDecimalForPrice) : 0}
-                              </label>
-                            </div>
-                          </Col>
-                          <Col md="4">
-                            <div className="form-group">
-                              <TooltipCustom id={"costing-approval"} tooltipText={`The current impact is calculated based on the data present in the volume master (${data.effectiveDate !== "" ? DayTime(data.effectiveDate).format('DD/MM/YYYY') : ""}).`} />
-                              <label>Annual Impact</label>
-                              <label className={data.oldPrice === 0 ? `form-control bg-grey input-form-control` : `form-control bg-grey input-form-control ${data.annualImpact < 0 ? 'green-value' : 'red-value'}`}>
-                                {data.annualImpact && data.annualImpact ? checkForDecimalAndNull(data.annualImpact, initialConfiguration.NoOfDecimalForPrice) : 0}
-                              </label>
-                            </div>
+                            {/* </div> */}
                           </Col>
 
                           <Col md="4">
                             <div className="form-group">
-                              <label>Impact for the Year</label>
-                              <label className={data.oldPrice === 0 ? `form-control bg-grey input-form-control` : `form-control bg-grey input-form-control ${data.yearImpact < 0 ? 'green-value' : 'red-value'}`}>
-                                {data.yearImpact && data.yearImpact ? checkForDecimalAndNull(data.yearImpact, initialConfiguration.NoOfDecimalForPrice) : 0}
+                              <label>Existing Price</label>
+                              <label className="form-control bg-grey input-form-control">
+                                {data.oldPrice && data.oldPrice !== '-' ? checkForDecimalAndNull(data.oldPrice, initialConfiguration.NoOfDecimalForPrice) : 0}
                               </label>
                             </div>
                           </Col>
-                        </>}
-                      </Row>
+                          <Col md="4">
+                            <div className="form-group">
+                              <label>Revised Price</label>
+                              <label className="form-control bg-grey input-form-control">
+                                {data.revisedPrice ? checkForDecimalAndNull(data.revisedPrice, initialConfiguration.NoOfDecimalForPrice) : 0}
+                              </label>
+                            </div>
+                          </Col>
+                          <Col md="4">
+                            <div className="form-group">
+                              <label>Variance (w.r.t. Existing)</label>
+                              <label className={data.oldPrice === 0 ? `form-control bg-grey input-form-control` : `form-control bg-grey input-form-control ${data.variance < 0 ? 'red-value' : 'green-value'}`}>
+                                {data.variance ? checkForDecimalAndNull(data.variance, initialConfiguration.NoOfDecimalForPrice) : 0}
+                              </label>
+                            </div>
+                          </Col>
+
+                          {viewApprovalData && viewApprovalData[0]?.CostingHead !== NCC && <>
+                            <Col md="4">
+                              <div className="form-group">
+                                <label>Consumed Quantity</label>
+                                <div className="d-flex align-items-center">
+                                  <label className="form-control bg-grey input-form-control">
+                                    {checkForDecimalAndNull(data.consumptionQty, initialConfiguration.NoOfDecimalForPrice)}
+                                  </label>
+                                  {/* <div class="plus-icon-square  right m-0 mb-1"></div> */}
+                                </div>
+                              </div>
+                            </Col>
+                            <Col md="4">
+                              <div className="form-group">
+                                <label>Remaining Budgeted Quantity</label>
+                                <label className="form-control bg-grey input-form-control">
+                                  {data.remainingQty && data.remainingQty !== "" ? checkForDecimalAndNull(data.remainingQty, initialConfiguration.NoOfDecimalForPrice) : 0}
+                                </label>
+                              </div>
+                            </Col>
+                            <Col md="4">
+                              <div className="form-group">
+                                <TooltipCustom id={"costing-approval"} tooltipText={`The current impact is calculated based on the data present in the volume master (${data.effectiveDate !== "" ? DayTime(data.effectiveDate).format('DD/MM/YYYY') : ""}).`} />
+                                <label>Annual Impact</label>
+                                <label className={data.oldPrice === 0 ? `form-control bg-grey input-form-control` : `form-control bg-grey input-form-control ${data.annualImpact < 0 ? 'green-value' : 'red-value'}`}>
+                                  {data.annualImpact && data.annualImpact ? checkForDecimalAndNull(data.annualImpact, initialConfiguration.NoOfDecimalForPrice) : 0}
+                                </label>
+                              </div>
+                            </Col>
+
+                            <Col md="4">
+                              <div className="form-group">
+                                <label>Impact for the Year</label>
+                                <label className={data.oldPrice === 0 ? `form-control bg-grey input-form-control` : `form-control bg-grey input-form-control ${data.yearImpact < 0 ? 'green-value' : 'red-value'}`}>
+                                  {data.yearImpact && data.yearImpact ? checkForDecimalAndNull(data.yearImpact, initialConfiguration.NoOfDecimalForPrice) : 0}
+                                </label>
+                              </div>
+                            </Col>
+                          </>}
+                        </Row>
+                      </div>
                     </div>
-                  </div>
-                </div>
+                  </div>}
+                </>
                 );
               })}
             <div className="">
