@@ -10,7 +10,7 @@ import { loggedInUserId, } from "../../../helper/auth";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import DayTime from '../../common/DayTimeWrapper'
-import { renderNumberInputField, renderText, searchableSelect, } from "../../layout/FormInputs";
+import { renderText, renderTextInputField, searchableSelect, } from "../../layout/FormInputs";
 import LoaderCustom from '../../common/LoaderCustom';
 import { debounce } from 'lodash';
 import { onFocus } from '../../../helper';
@@ -525,8 +525,8 @@ class AddExchangeRate extends Component {
                           name={"CurrencyExchangeRate"}
                           type="text"
                           placeholder={isViewMode ? '-' : 'Enter'}
-                          validate={[required, positiveAndDecimalNumber, maxLength10, decimalLengthsix]}
-                          component={renderNumberInputField}
+                          validate={[required, positiveAndDecimalNumber, maxLength10, decimalLengthsix, number]}
+                          component={renderTextInputField}
                           required={true}
                           onChange={this.onFinancialDataChange}
                           disabled={isViewMode}
@@ -540,8 +540,8 @@ class AddExchangeRate extends Component {
                           name={"BankRate"}
                           type="text"
                           placeholder={isViewMode ? '-' : 'Enter'}
-                          validate={[positiveAndDecimalNumber, maxLength10, decimalLengthsix]}
-                          component={renderNumberInputField}
+                          validate={[positiveAndDecimalNumber, maxLength10, decimalLengthsix, number]}
+                          component={renderTextInputField}
                           disabled={isViewMode}
                           onChange={this.onFinancialDataChange}
                           className=" "
@@ -570,8 +570,8 @@ class AddExchangeRate extends Component {
                           name={"CustomRate"}
                           type="text"
                           placeholder={isViewMode ? '-' : 'Enter'}
-                          validate={[positiveAndDecimalNumber, maxLength10, decimalLengthsix]}
-                          component={renderNumberInputField}
+                          validate={[positiveAndDecimalNumber, maxLength10, decimalLengthsix, number]}
+                          component={renderTextInputField}
                           disabled={isViewMode}
                           onChange={this.onFinancialDataChange}
                           className=" "

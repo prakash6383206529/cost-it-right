@@ -92,6 +92,7 @@ class MachineRateListing extends Component {
             if (!this.props.stopApiCallOnCancel) {
 
                 if (this.props.isSimulation) {
+                    this.setState({ isLoader: false })
                     if (this.props.selectionForListingMasterAPI === 'Combined') {
                         this.props?.changeSetLoader(true)
                         this.props.getListingForSimulationCombined(this.props.objectForMultipleSimulation, MACHINERATE, () => {
@@ -125,8 +126,6 @@ class MachineRateListing extends Component {
 
 
     getDataList = (costing_head = '', technology_id = 0, vendor_id = '', machine_type_id = 0, process_id = '', plant_id = '', skip = 0, take = 100, isPagination = true, dataObj) => {
-
-
         if (this.state.filterModel?.EffectiveDateNew) {
             if (this.state.filterModel.EffectiveDateNew.dateTo) {
                 let temp = []

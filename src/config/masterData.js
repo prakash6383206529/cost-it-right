@@ -64,9 +64,9 @@ export const Masters = [
 export const RMDomesticZBC = [
     //{ label: "CostingHead", value: "CostingHead" },
     { label: "RawMaterial", value: "RawMaterial" }, //*
-    { label: "RMGrade", value: "RMGrade" }, //*
-    { label: "RMSpec", value: "RMSpec" }, //*
-    { label: "RawMaterialCode", value: "RawMaterialCode" }, //*
+    { label: "Grade", value: "RMGrade" }, //*
+    { label: "Spec", value: "RMSpec" }, //*
+    { label: "Code", value: "RawMaterialCode" }, //*
     { label: "Category", value: "Category" }, //*
     { label: "TechnologyName", value: "TechnologyName" }, //*
     { label: "PlantCode", value: "PlantCode" }, //*
@@ -188,9 +188,9 @@ export const RMDomesticZBCTempData = [
 export const RMDomesticVBC = [
     //{ label: "CostingHead", value: "CostingHead" },
     { label: "RawMaterial", value: "RawMaterial" }, //*
-    { label: "RMGrade", value: "RMGrade" }, //*
-    { label: "RMSpec", value: "RMSpec" }, //*
-    { label: "RawMaterialCode", value: "RawMaterialCode" }, //*
+    { label: "Grade", value: "RMGrade" }, //*
+    { label: "Spec", value: "RMSpec" }, //*
+    { label: "Code", value: "RawMaterialCode" }, //*
     { label: "Category", value: "Category" }, //*
     { label: "TechnologyName", value: "TechnologyName" }, //*
     { label: "VendorName", value: "VendorName" }, //*
@@ -315,9 +315,9 @@ export const RMDomesticVBCTempData = [
 export const RMImportZBC = [
     //{ label: "CostingHead", value: "CostingHead" },
     { label: "RawMaterial", value: "RawMaterial" }, //*
-    { label: "RMGrade", value: "RMGrade" }, //*
-    { label: "RMSpec", value: "RMSpec" }, //*
-    { label: "RawMaterialCode", value: "RawMaterialCode" }, //*
+    { label: "Grade", value: "RMGrade" }, //*
+    { label: "Spec", value: "RMSpec" }, //*
+    { label: "Code", value: "RawMaterialCode" }, //*
     { label: "Category", value: "Category" }, //*
     { label: "TechnologyName", value: "TechnologyName" }, //*
     { label: "PlantCode", value: "PlantCode" }, //*
@@ -521,9 +521,9 @@ export const RMImportZBCTempData = [
 ]
 export const RMDomesticCBC = [
     { label: "RawMaterial", value: "RawMaterial" }, //*
-    { label: "RMGrade", value: "RMGrade" }, //*
-    { label: "RMSpec", value: "RMSpec" }, //*
-    { label: "RawMaterialCode", value: "RawMaterialCode" }, //*
+    { label: "Grade", value: "RMGrade" }, //*
+    { label: "Spec", value: "RMSpec" }, //*
+    { label: "Code", value: "RawMaterialCode" }, //*
     { label: "Category", value: "Category" }, //*
     { label: "TechnologyName", value: "TechnologyName" }, //*
     { label: "CustomerName", value: "CustomerName" }, //*
@@ -546,9 +546,9 @@ export const RMDomesticCBC = [
 export const RMImportVBC = [
     //{ label: "CostingHead", value: "CostingHead" },
     { label: "RawMaterial", value: "RawMaterial" }, //*
-    { label: "RMGrade", value: "RMGrade" }, //*
-    { label: "RMSpec", value: "RMSpec" }, //*
-    { label: "RawMaterialCode", value: "RawMaterialCode" }, //*
+    { label: "Grade", value: "RMGrade" }, //*
+    { label: "Spec", value: "RMSpec" }, //*
+    { label: "Code", value: "RawMaterialCode" }, //*
     { label: "Category", value: "Category" }, //*
     { label: "TechnologyName", value: "TechnologyName" }, //*
     { label: "VendorName", value: "VendorName" },
@@ -674,9 +674,9 @@ export const RMImportVBCTempData = [
 export const RMImportCBC = [
     //{ label: "CostingHead", value: "CostingHead" },
     { label: "RawMaterial", value: "RawMaterial" }, //*
-    { label: "RMGrade", value: "RMGrade" }, //*
-    { label: "RMSpec", value: "RMSpec" }, //*
-    { label: "RawMaterialCode", value: "RawMaterialCode" }, //*
+    { label: "Grade", value: "RMGrade" }, //*
+    { label: "Spec", value: "RMSpec" }, //*
+    { label: "Code", value: "RawMaterialCode" }, //*
     { label: "Category", value: "Category" }, //*
     { label: "TechnologyName", value: "TechnologyName" }, //*
     { label: "CustomerName", value: "CustomerName" },
@@ -785,7 +785,7 @@ export const RMImportCBCTempData = [
 */
 export const RMSpecification = [
     { label: "RawMaterialName", value: "RawMaterialName" },//*
-    { label: "RMGrade", value: "RMGrade" },//*
+    { label: "Grade", value: "RMGrade" },//*
     { label: "Material", value: "Material" },//*
     { label: "Density", value: "Density" },//*
     { label: "Specification", value: "Specification" },//*
@@ -3250,9 +3250,9 @@ export const RMDomesticSimulation = [
 export const RMImportSimulation = [
     { label: "CostingHead", value: "CostingHead" },
     { label: "RawMaterial", value: "RawMaterial" },
-    { label: "RMGrade", value: "RMGrade" },
-    { label: "RMSpec", value: "RMSpec" },
-    { label: "RawMaterialCode", value: "RawMaterialCode", },
+    { label: "Grade", value: "RMGrade" },
+    { label: "Spec", value: "RMSpec" },
+    { label: "Code", value: "RawMaterialCode", },
     { label: "Category", value: "Category" },
     { label: "TechnologyName", value: "TechnologyName" },
     //{ label: "Plant", value: "Plant" },
@@ -3319,7 +3319,7 @@ export const MachineRateSimulation = [
 ]
 
 export const BOPDomesticSimulation = [
-    { label: "CostingHead", value: "IsVendor" },
+    { label: "CostingHead", value: "CostingHead" },
     { label: "BoughtOutPartNumber", value: "BoughtOutPartNumber" },
     { label: "BoughtOutPartName", value: "BoughtOutPartName" },
     { label: "BoughtOutPartCategory", value: "BoughtOutPartCategory" },
@@ -3333,7 +3333,7 @@ export const BOPDomesticSimulation = [
 ]
 
 export const BOPImportSimulation = [
-    { label: "CostingHead", value: "IsVendor" },
+    { label: "CostingHead", value: "CostingHead" },
     { label: "BoughtOutPartNumber", value: "BoughtOutPartNumber" },
     { label: "BoughtOutPartName", value: "BoughtOutPartName" },
     { label: "BoughtOutPartCategory", value: "BoughtOutPartCategory" },
@@ -3845,9 +3845,9 @@ export const CostingSimulationDownloadRM = [
     { label: "CostingNumber", value: "CostingNumber" },
     { label: "Technology", value: "Technology" },
     { label: "Raw Material", value: "RMName" },
-    { label: "RawMaterial Grade", value: "RMGrade" },
-    { label: "RM Specs", value: "RMSpec" },
-    { label: "RM Code", value: "RMCode" },
+    { label: "Grade", value: "RMGrade" },
+    { label: "Spec", value: "RMSpec" },
+    { label: "Code", value: "RMCode" },
     { label: "Part No", value: "PartNo" },
     { label: "Part Name", value: "PartName" },
     { label: "ECN Number", value: "ECNNumber" },
@@ -3870,7 +3870,7 @@ export const CostingSimulationDownloadRM = [
     { label: "Revised RM Cost/Pc", value: "NewRMPrice" },
     { label: "Variance (RM Cost)", value: "RMCVariance" },
     { label: "Impact/Quarter (w.r.t. Existing)", value: "ImpactPerQuarter" },
-    { label: "Impact/Quarter (w.r.t. Budgeted)", value: "BudgetedPriceImpactPerQuarter" },
+    { label: "Impact/Quarter (w.r.t. Budgeted Price)", value: "BudgetedPriceImpactPerQuarter" },
     { label: "ExistingOverheadCost", value: "OldOverheadCost" },
     { label: "RevisedOverheadCost", value: "NewOverheadCost" },
     { label: "ExistingProfitCost", value: "OldProfitCost" },
@@ -3928,7 +3928,7 @@ export const CostingSimulationDownloadST = [
     { label: "RevisedNetSTCost", value: "NewNetSurfaceTreatmentCost" },
     { label: "Variance (ST Cost)", value: "STVariance" },
     { label: "Impact/Quarter (w.r.t. Existing)", value: "ImpactPerQuarter" },
-    { label: "Impact/Quarter (w.r.t. Budgeted)", value: "BudgetedPriceImpactPerQuarter" },
+    { label: "Impact/Quarter (w.r.t. Budgeted Price)", value: "BudgetedPriceImpactPerQuarter" },
     { label: "ExistingOverheadCost", value: "OldOverheadCost" },
     { label: "RevisedOverheadCost", value: "NewOverheadCost" },
     { label: "ExistingProfitCost", value: "OldProfitCost" },
@@ -3983,7 +3983,7 @@ export const CostingSimulationDownloadOperation = [
     { label: "RevisedNetOperationCost", value: "NewNetOperationCost" },
     { label: "Variance (Oper. Cost)", value: "OperationCostVariance" },
     { label: "Impact/Quarter (w.r.t. Existing)", value: "ImpactPerQuarter" },
-    { label: "Impact/Quarter (w.r.t. Budgeted)", value: "BudgetedPriceImpactPerQuarter" },
+    { label: "Impact/Quarter (w.r.t. Budgeted Price)", value: "BudgetedPriceImpactPerQuarter" },
     { label: "ExistingOverheadCost", value: "OldOverheadCost" },
     { label: "RevisedOverheadCost", value: "NewOverheadCost" },
     { label: "ExistingProfitCost", value: "OldProfitCost" },
@@ -4038,7 +4038,7 @@ export const CostingSimulationDownloadBOP = [
     { label: "RevisedNetBoughtOutPartCost", value: "NewNetBoughtOutPartCost" },
     { label: "NetBoughtOutPartCostVariance", value: "NetBoughtOutPartCostVariance" },
     { label: "Impact/Quarter (w.r.t. Existing)", value: "ImpactPerQuarter" },
-    { label: "Impact/Quarter (w.r.t. Budgeted)", value: "BudgetedPriceImpactPerQuarter" },
+    { label: "Impact/Quarter (w.r.t. Budgeted Price)", value: "BudgetedPriceImpactPerQuarter" },
     { label: "ExistingOverheadCost", value: "OldOverheadCost" },
     { label: "RevisedOverheadCost", value: "NewOverheadCost" },
     { label: "ExistingProfitCost", value: "OldProfitCost" },
@@ -4068,9 +4068,9 @@ export const CostingSimulationDownloadBOP = [
 export const SIMULATIONAPPROVALSUMMARYDOWNLOADRM = [
     { label: "Costing Id", value: "CostingNumber" },
     { label: "RawMaterial Name", value: "RMName" },
-    { label: "RawMaterial Grade", value: "RMGrade" },
-    { label: "RawMaterial Code", value: "RMCode" },
-    { label: "RawMaterial Spec", value: "RMSpecs" },
+    { label: "Grade", value: "RMGrade" },
+    { label: "Code", value: "RMCode" },
+    { label: "Spec", value: "RMSpecs" },
     { label: "Part No", value: "PartNo" },
     { label: "Part Name", value: "PartName" },
     { label: "ECN Number", value: "ECNNumber" },
@@ -4126,7 +4126,7 @@ export const SIMULATIONAPPROVALSUMMARYDOWNLOADOPERATION = [
     { label: "RevisedOperationCost", value: "NewOperationCost" },
     { label: "Variance (Oper. Cost)", value: "OperationCostVariance" },
     { label: "Impact/Quarter (w.r.t. Existing)", value: "ImpactPerQuarter" },
-    { label: "Impact/Quarter (w.r.t. Budgeted)", value: "BudgetedPriceImpactPerQuarter" },
+    { label: "Impact/Quarter (w.r.t. Budgeted Price)", value: "BudgetedPriceImpactPerQuarter" },
 ]
 
 export const SIMULATIONAPPROVALSUMMARYDOWNLOADBOP = [
@@ -4149,7 +4149,7 @@ export const SIMULATIONAPPROVALSUMMARYDOWNLOADBOP = [
     { label: "Revised BOP Cost", value: "NewNetBoughtOutPartCost" },
     { label: "Variance (BOP Cost)", value: "NetBoughtOutPartCostVariance" },
     { label: "Impact/Quarter (w.r.t. Existing)", value: "ImpactPerQuarter" },
-    { label: "Impact/Quarter (w.r.t. Budgeted)", value: "BudgetedPriceImpactPerQuarter" },
+    { label: "Impact/Quarter (w.r.t. Budgeted Price)", value: "BudgetedPriceImpactPerQuarter" },
 ]
 
 export const BOP_DOMESTIC_DOWNLOAD_EXCEl = [
@@ -4290,8 +4290,8 @@ export const RMDOMESTIC_DOWNLOAD_EXCEl = [
     { label: "Costing Head", value: "CostingHead", },
     { label: "Technology", value: "TechnologyName", },
     { label: "Raw Material", value: "RawMaterial", },
-    { label: "RM Grade", value: "RMGrade", },
-    { label: "RM Specs", value: "RMSpec", },
+    { label: "Grade", value: "RMGrade", },
+    { label: "Spec", value: "RMSpec", },
     { label: "Code", value: "RawMaterialCode", },
     { label: "Category", value: "Category", },
     { label: "Material Type", value: "MaterialType", },
@@ -4312,8 +4312,8 @@ export const RMIMPORT_DOWNLOAD_EXCEl = [
     { label: "Costing Head", value: "CostingHead", },
     { label: "Technology", value: "TechnologyName", },
     { label: "Raw Material", value: "RawMaterial", },
-    { label: "RM Grade", value: "RMGrade", },
-    { label: "RM Specs", value: "RMSpec", },
+    { label: "Grade", value: "RMGrade", },
+    { label: "Spec", value: "RMSpec", },
     { label: "Code", value: "RawMaterialCode", },
     { label: "Material Type", value: "MaterialType", },
     { label: "Category", value: "Category", },
@@ -4336,13 +4336,13 @@ export const RMLISTING_DOWNLOAD_EXCEl = [
     { label: "Material", value: "RawMaterial", },
     { label: "Density", value: "Density", },
     { label: "RM Name", value: "RMName", },
-    { label: "RM Grade", value: "RMGrade", },
+    { label: "Grade", value: "RMGrade", },
 ]
 
 export const SPECIFICATIONLISTING_DOWNLOAD_EXCEl = [
     { label: "RM Name", value: "RMName", },
-    { label: "RM Grade", value: "RMGrade", },
-    { label: "RM Spec", value: "RMSpec", },
+    { label: "Grade", value: "RMGrade", },
+    { label: "Spec", value: "RMSpec", },
     { label: "Code", value: "RawMaterialCode", },
 ]
 
@@ -4444,7 +4444,7 @@ export const VOLUME_DOWNLOAD_EXCEl = [
     { label: "Month", value: "Month", },
     { label: "Vendor (Code)", value: "VendorName", },
     { label: "Customer (Code)", value: "CustomerName", },
-    { label: "Part No.(Revision No.)", value: "PartNumber", },
+    { label: "Part No. (Revision No.)", value: "PartNumber", },
     { label: "Part Name", value: "PartName", },
     { label: "Plant (Code)", value: "Plant", },
     { label: "Budgeted Quantity", value: "BudgetedQuantity", },
@@ -4487,10 +4487,10 @@ export const REPORT_DOWNLOAD_EXCEl = [
     { label: "Department Code", value: "DepartmentCode", },
     { label: "Department Name", value: "DepartmentName", },
     { label: "Revision No.", value: "RevisionNumber", },
-    { label: "RM Code", value: "RawMaterialCode", },
+    { label: "Code", value: "RawMaterialCode", },
     { label: "RM Name", value: "RawMaterialName", },
-    { label: "RM Grade", value: "RawMaterialGrade", },
-    { label: "RM Specs", value: "RawMaterialSpecification", },
+    { label: "Grade", value: "RawMaterialGrade", },
+    { label: "Spec", value: "RawMaterialSpecification", },
     { label: "RM Rate", value: "RawMaterialRate", },
     { label: "Gross Weight", value: "RawMaterialGrossWeight", },
     { label: "Finish Weight", value: "RawMaterialFinishWeight", },
@@ -4701,9 +4701,9 @@ export const OperationGridForTokenSummary = [
 
 export const RMGridForTokenSummary = [
     { label: "RawMaterial Name", value: "RMName" },
-    { label: "RawMaterial Grade", value: "RMGrade" },
-    { label: "RawMaterial Code", value: "RMCode" },
-    { label: "RawMaterial Spec", value: "RMSpecs" },
+    { label: "Grade", value: "RMGrade" },
+    { label: "Code", value: "RMCode" },
+    { label: "Spec", value: "RMSpecs" },
     { label: "Existing RM Cost", value: "OldRMPrice" },
     { label: "Revised RM Cost", value: "NewRMPrice" },
     { label: "Variance (RM Cost)", value: "RMVariance" },
@@ -4728,9 +4728,9 @@ export const BOPGridForTokenSummary = [
 
 export const ImpactedRMDownload = [
     { label: "RawMaterial", value: "RawMaterial" },
-    { label: "RMGrade", value: "RMGrade" },
-    { label: "RMSpec", value: "RMSpec" },
-    { label: "RawMaterialCode", value: "RawMaterialCode" },
+    { label: "Grade", value: "RMGrade" },
+    { label: "Spec", value: "RMSpec" },
+    { label: "Code", value: "RawMaterialCode" },
     { label: "Category", value: "Category" },
     { label: "TechnologyName", value: "TechnologyName" },
     { label: "VendorName", value: "VendorName" },
@@ -4807,7 +4807,7 @@ export const EXCHANGESIMULATIONDOWNLOAD = [
     { label: "RevisedNetPOPriceOtherCurrency", value: "NewNetPOPriceOtherCurrency" },
     { label: "PO Price", value: "OldPOPrice" },
     { label: "Impact/Quarter (w.r.t. Existing)", value: "ImpactPerQuarter" },
-    { label: "Impact/Quarter (w.r.t. Budgeted)", value: "BudgetedPriceImpactPerQuarter" },
+    { label: "Impact/Quarter (w.r.t. Budgeted Price)", value: "BudgetedPriceImpactPerQuarter" },
 ]
 
 export const CostingSimulationDownloadMR = [
@@ -4838,7 +4838,7 @@ export const CostingSimulationDownloadMR = [
     { label: "RevisedProcessCost", value: "NewProcessCost" },
     { label: "Variance (Proc. Cost)", value: "ProcessCostVariance" },
     { label: "Impact/Quarter (w.r.t. Existing)", value: "ImpactPerQuarter" },
-    { label: "Impact/Quarter (w.r.t. Budgeted)", value: "BudgetedPriceImpactPerQuarter" },
+    { label: "Impact/Quarter (w.r.t. Budgeted Price)", value: "BudgetedPriceImpactPerQuarter" },
     { label: "ExistingOverheadCost", value: "OldOverheadCost" },
     { label: "RevisedOverheadCost", value: "NewOverheadCost" },
     { label: "ExistingProfitCost", value: "OldProfitCost" },
@@ -4888,7 +4888,7 @@ export const SIMULATIONAPPROVALSUMMARYDOWNLOADMR = [
     { label: "Existing Net Process Cost", value: "OldNetProcessCost" },
     { label: "Revised Net Process Cost", value: "NewNetProcessCost" },
     { label: "Impact/Quarter (w.r.t. Existing)", value: "ImpactPerQuarter" },
-    { label: "Impact/Quarter (w.r.t. Budgeted)", value: "BudgetedPriceImpactPerQuarter" },
+    { label: "Impact/Quarter (w.r.t. Budgeted Price)", value: "BudgetedPriceImpactPerQuarter" },
 ]
 
 export const MRGridForTokenSummary = [
@@ -6030,7 +6030,7 @@ export const CostingSimulationDownloadAssemblyTechnology = [
     { label: "NetBoughtOutPartCostVariance", value: "NetBoughtOutPartCostVariance" },
 
     { label: "Impact/Quarter (w.r.t. Existing)", value: "ImpactPerQuarter" },
-    { label: "Impact/Quarter (w.r.t. Budgeted)", value: "BudgetedPriceImpactPerQuarter" },
+    { label: "Impact/Quarter (w.r.t. Budgeted Price)", value: "BudgetedPriceImpactPerQuarter" },
     { label: "Variance (w.r.t. Budgeted)", value: "BudgetedPriceVariance" },
     { label: "Budgeted Price", value: "BudgetedPrice" },
 
