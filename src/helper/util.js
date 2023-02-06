@@ -580,6 +580,9 @@ export function formViewData(costingSummary, header = '') {
   obj.RawMaterialCalculatorId = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.RawMaterialCalculatorId ? dataFromAPI?.CostingPartDetails?.RawMaterialCalculatorId : 0
   obj.modelType = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.ModelType ? dataFromAPI?.CostingPartDetails?.ModelType : '-'
   obj.aValue = { applicability: 'Applicability', value: 'Value', }
+  obj.ForgingScrapWeight = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingRawMaterialsCost.length > 0 ? dataFromAPI?.CostingPartDetails?.CostingRawMaterialsCost[0].ForgingScrapWeight : '-'
+  obj.MachiningScrapWeight = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingRawMaterialsCost.length > 0 ? dataFromAPI?.CostingPartDetails?.CostingRawMaterialsCost[0].MachiningScrapWeight : '-'
+
   obj.overheadOn = {
     overheadTitle: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingOverheadDetail !== null && dataFromAPI?.CostingPartDetails?.CostingOverheadDetail.OverheadApplicability !== null ? dataFromAPI?.CostingPartDetails?.CostingOverheadDetail.OverheadApplicability : '-',
     overheadValue: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetOverheadCost !== null ? dataFromAPI?.CostingPartDetails?.NetOverheadCost : '-'
@@ -1097,4 +1100,8 @@ export const highlightCostingSummaryValue = (oldValue, newValue) => {
   let className = getOldValue === getNewValue ? '' : getOldValue > getNewValue ? 'green-text' : 'red-text';
 
   return className;
+}
+
+export function addDays(theDate, days) {
+  return new Date(theDate.getTime() + days * 24 * 60 * 60 * 1000);
 }

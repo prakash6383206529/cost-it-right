@@ -487,7 +487,7 @@ function TabDiscountOther(props) {
       dispatch(isDiscountDataChange(true))
       setCurrency(newValue)
       setIsInputLader(true)
-      dispatch(getExchangeRateByCurrency(newValue.label, DayTime(CostingEffectiveDate).format('YYYY-MM-DD'), res => {
+      dispatch(getExchangeRateByCurrency(newValue.label, costData.CostingTypeId, DayTime(CostingEffectiveDate).format('YYYY-MM-DD'), costData.VendorId, costData.CustomerId, res => {
         setIsInputLader(false)
         if (Object.keys(res.data.Data).length === 0) {
           setShowWarning(true)

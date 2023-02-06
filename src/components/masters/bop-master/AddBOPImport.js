@@ -270,8 +270,9 @@ class AddBOPImport extends Component {
             } else {
               plantObj = Data && Data.Plant.length > 0 ? { label: Data.Plant[0].PlantName, value: Data.Plant[0].PlantId } : []
             }
+            const { costingTypeId, vendorName, client } = this.state
             if (!this.state.isViewMode) {
-              this.props.getExchangeRateByCurrency(Data.Currency, DayTime(Data.EffectiveDate).format('YYYY-MM-DD'), res => {
+              this.props.getExchangeRateByCurrency(Data.Currency, costingTypeId, DayTime(Data.EffectiveDate).format('YYYY-MM-DD'), vendorName.value, client.value, res => {
                 if (Object.keys(res.data.Data).length === 0) {
                   this.setState({ showWarning: true })
                 }
@@ -546,7 +547,8 @@ class AddBOPImport extends Component {
       } else {
         this.setState({ showCurrency: true }, () => {
           if (this.state.effectiveDate) {
-            this.props.getExchangeRateByCurrency(newValue.label, DayTime(this.state.effectiveDate).format('YYYY-MM-DD'), res => {
+            const { costingTypeId, vendorName, client } = this.state
+            this.props.getExchangeRateByCurrency(newValue.label, costingTypeId, DayTime(this.state.effectiveDate).format('YYYY-MM-DD'), vendorName.value, client.value, res => {
               //this.props.change('NetLandedCost', (fieldsObj.BasicRate * res.data.Data.CurrencyExchangeRate))
 
               if (Object.keys(res.data.Data).length === 0) {
@@ -619,7 +621,8 @@ class AddBOPImport extends Component {
 
     } else {
       if (currency.length !== 0) {
-        this.props.getExchangeRateByCurrency(currency.label, DayTime(date).format('YYYY-MM-DD'), res => {
+        const { costingTypeId, vendorName, client } = this.state
+        this.props.getExchangeRateByCurrency(currency.label, costingTypeId, DayTime(date).format('YYYY-MM-DD'), vendorName.value, client.value, res => {
           if (Object.keys(res.data.Data).length === 0) {
 
             this.setState({ showWarning: true })

@@ -404,8 +404,8 @@ class AddRMImport extends Component {
       })
     } else {
       if (currency && effectiveDate) {
-
-        this.props.getExchangeRateByCurrency(currency.label, DayTime(effectiveDate).format('YYYY-MM-DD'), res => {
+        const { costingTypeId, vendorName, client } = this.state
+        this.props.getExchangeRateByCurrency(currency.label, costingTypeId, DayTime(effectiveDate).format('YYYY-MM-DD'), vendorName.value, client.value, res => {
           if (Object.keys(res.data.Data).length === 0) {
             this.setState({ showWarning: true })
           }
@@ -1002,6 +1002,7 @@ class AddRMImport extends Component {
         IsConvertIntoCopy: isDateChange ? true : false,
         IsForcefulUpdated: isDateChange ? false : isSourceChange ? false : true,
         CutOffPrice: values.cutOffPrice,
+        CutOffPriceInINR: (values.cutOffPrice * currencyValue),
         IsCutOffApplicable: values.cutOffPrice < netCost ? true : false,
         RawMaterialCode: values.Code,
         IsFinancialDataChanged: isDateChange ? true : false,
@@ -1086,6 +1087,7 @@ class AddRMImport extends Component {
         RMFreightCost: values.FreightCharge,
         RMShearingCost: values.ShearingCost,
         CutOffPrice: values.cutOffPrice,
+        CutOffPriceInINR: (values.cutOffPrice * currencyValue),
         IsCutOffApplicable: values.cutOffPrice < netCost ? true : false,
         RawMaterialCode: values.Code,
         IsSendForApproval: false,

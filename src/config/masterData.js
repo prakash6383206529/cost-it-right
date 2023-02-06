@@ -4199,6 +4199,9 @@ export const BOP_SOBLISTING_DOWNLOAD_EXCEl = [
 ]
 
 export const EXCHANGERATE_DOWNLOAD_EXCEl = [
+    { label: "Costing Head", value: "CostingHead", },
+    { label: "Vendor (Code)", value: "vendorWithCode", },
+    { label: "Customer (Code)", value: "customerWithCode", },
     { label: "Currency", value: "Currency", },
     { label: "Exchange Rate (INR)", value: "CurrencyExchangeRate", },
     { label: "Bank Rate (INR)", value: "BankRate", },
@@ -6092,6 +6095,15 @@ export const AddRFQTempData = [
         RevisionNumber: 'B',
         Quantity: 5
     }
+]
+
+// VISIBILITY MODE ADD RFQ
+export const DATE_STRING = 'Date'
+export const DURATION_STRING = 'Duration'
+
+export const visibilityModeDropdownArray = [
+    { label: 'Date', value:'Date' },
+    { label: 'Duration', value: 'Duration' },
 ]
 
 

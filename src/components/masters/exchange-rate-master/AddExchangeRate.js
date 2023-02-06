@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector } from "redux-form";
-import { Row, Col, } from 'reactstrap';
-import { required, positiveAndDecimalNumber, maxLength10, decimalLengthsix, maxPercentValue, number, checkWhiteSpaces, percentageLimitValidation, } from "../../../helper/validation";
+import { Row, Col, Label, } from 'reactstrap';
+import { required, positiveAndDecimalNumber, maxLength10, decimalLengthsix, decimalLengthThree, maxPercentValue, number, checkWhiteSpaces, percentageLimitValidation, checkPercentageValue, } from "../../../helper/validation";
 import { createExchangeRate, getExchangeRateData, updateExchangeRate, getCurrencySelectList, } from '../actions/ExchangeRateMaster';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
@@ -15,6 +15,12 @@ import LoaderCustom from '../../common/LoaderCustom';
 import { debounce } from 'lodash';
 import { onFocus } from '../../../helper';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
+import { CBCTypeId, searchCount, SPACEBAR, VBCTypeId, ZBCTypeId } from '../../../config/constants';
+import { reactLocalStorage } from 'reactjs-localstorage';
+import AsyncSelect from 'react-select/async';
+import { autoCompleteDropdown } from '../../common/CommonFunctions';
+import { getVendorWithVendorCodeSelectList } from '../actions/Supplier';
+import { getClientSelectList, } from '../actions/Client';
 const
   selector = formValueSelector('AddExchangeRate');
 
@@ -35,8 +41,10 @@ class AddExchangeRate extends Component {
       minEffectiveDate: '',
       isFinancialDataChange: false,
       showErrorOnFocusDate: false,
-      showPopup: false
-
+      showPopup: false,
+      costingTypeId: ZBCTypeId,
+      customer: [],
+      vendorName: []
     }
   }
 
@@ -51,12 +59,36 @@ class AddExchangeRate extends Component {
     this.getDetail()
   }
 
+
+  componentDidUpdate(prevProps) {
+    if (this.props.filedObj !== prevProps.filedObj) {
+      const { BankCommissionPercentage } = this.props.filedObj
+      if (BankCommissionPercentage) {
+        checkPercentageValue(BankCommissionPercentage, "Bank commission percentage should not be more than 100") ? this.props.change('BankCommissionPercentage', BankCommissionPercentage) : this.props.change('BankCommissionPercentage', 0)
+      }
+    }
+  }
+  /**
+   * @method onPressVendor
+   * @description Used for Vendor checked
+   */
+  onPressVendor = (costingHeadFlag) => {
+    this.setState({
+      vendorName: [],
+      costingTypeId: costingHeadFlag,
+      vendorLocation: [],
+      selectedPlants: [],
+    });
+    if (costingHeadFlag === CBCTypeId) {
+      this.props.getClientSelectList(() => { })
+    }
+  }
   /**
   * @method renderListing
   * @description Used show listing of unit of measurement
   */
   renderListing = (label) => {
-    const { currencySelectList } = this.props;
+    const { currencySelectList, clientSelectList } = this.props;
     const temp = [];
     if (label === 'currency') {
       currencySelectList && currencySelectList.map(item => {
@@ -66,7 +98,14 @@ class AddExchangeRate extends Component {
       });
       return temp;
     }
-
+    if (label === 'ClientList') {
+      clientSelectList && clientSelectList.map(item => {
+        if (item.Value === '0') return false;
+        temp.push({ label: item.Text, value: item.Value })
+        return null;
+      });
+      return temp;
+    }
   }
 
   /**
@@ -107,7 +146,6 @@ class AddExchangeRate extends Component {
         if (res && res.data && res.data.Data) {
           let Data = res.data.Data;
           this.setState({ DataToChange: Data })
-
           setTimeout(() => {
             this.setState({ minEffectiveDate: Data.EffectiveDate })
             this.setState({
@@ -115,6 +153,10 @@ class AddExchangeRate extends Component {
               // isLoader: false,
               currency: Data.Currency !== undefined ? { label: Data.Currency, value: Data.CurrencyId } : [],
               effectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(new Date(Data.EffectiveDate)).format('MM/DD/YYYY') : '',
+              costingTypeId: Data.CostingHeadId,
+              customer: Data.CustomerName !== undefined ? { label: `${Data.CustomerName} (${Data.CustomerCode})`, value: Data.CustomerId } : [],
+              vendorName: Data.VendorName !== undefined ? { label: `${Data.VendorName} (${Data.VendorCode})`, value: Data.VendorIdRef } : [],
+
             }, () => this.setState({ isLoader: false }))
           }, 500)
 
@@ -193,7 +235,7 @@ class AddExchangeRate extends Component {
   * @description Used to Submit the form
   */
   onSubmit = debounce((values) => {
-    const { isEditFlag, currency, effectiveDate, ExchangeRateId, DataToChange, DropdownChanged } = this.state;
+    const { isEditFlag, currency, effectiveDate, ExchangeRateId, DataToChange, DropdownChanged, customer, costingTypeId, vendorName } = this.state;
 
     /** Update existing detail of exchange master **/
     if (isEditFlag) {
@@ -225,7 +267,10 @@ class AddExchangeRate extends Component {
         EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
         IsActive: true,
         LoggedInUserId: loggedInUserId(),
-        IsForcefulUpdated: true
+        IsForcefulUpdated: true,
+        CustomerId: customer.value,
+        CostingHeadId: costingTypeId,
+        VendorId: vendorName.value
       }
       if (isEditFlag) {
         // if(){
@@ -251,6 +296,9 @@ class AddExchangeRate extends Component {
         BankCommissionPercentage: values.BankCommissionPercentage,
         EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
         LoggedInUserId: loggedInUserId(),
+        CustomerId: customer.value,
+        CostingHeadId: costingTypeId,
+        VendorId: vendorName.value
       }
 
       this.props.createExchangeRate(formData, (res) => {
@@ -270,14 +318,65 @@ class AddExchangeRate extends Component {
       e.preventDefault();
     }
   };
-
+  /**
+  * @method handleCustomer
+  * @description called
+  */
+  handleCustomer = (newValue, actionMeta) => {
+    if (newValue && newValue !== '') {
+      this.setState({ customer: newValue });
+    } else {
+      this.setState({ customer: [] })
+    }
+  };
+  /**
+* @method handleVendorName
+* @description called
+*/
+  handleVendorName = (newValue, actionMeta) => {
+    if (newValue && newValue !== '') {
+      this.setState({ vendorName: newValue, isVendorNameNotSelected: false, }, () => {
+      });
+    } else {
+      this.setState({ vendorName: [], })
+    }
+  };
   /**
   * @method render
   * @description Renders the component
   */
   render() {
     const { handleSubmit, } = this.props;
-    const { isEditFlag, isViewMode, setDisable } = this.state;
+    const { isEditFlag, isViewMode, setDisable, costingTypeId } = this.state;
+    const filterList = async (inputValue) => {
+      const { vendorName } = this.state
+      const resultInput = inputValue.slice(0, searchCount)
+      if (inputValue?.length >= searchCount && vendorName !== resultInput) {
+        this.setState({ inputLoader: true })
+        let res
+        res = await getVendorWithVendorCodeSelectList(resultInput)
+
+        this.setState({ inputLoader: false })
+        this.setState({ vendorName: resultInput })
+        let vendorDataAPI = res?.data?.SelectList
+        if (inputValue) {
+          return autoCompleteDropdown(inputValue, vendorDataAPI, false, [], true)
+        } else {
+          return vendorDataAPI
+        }
+      }
+      else {
+        if (inputValue?.length < searchCount) return false
+        else {
+          let VendorData = reactLocalStorage?.getObject('Data')
+          if (inputValue) {
+            return autoCompleteDropdown(inputValue, VendorData, false, [], false)
+          } else {
+            return VendorData
+          }
+        }
+      }
+    };
     return (
       <div className="container-fluid">
         {this.state.isLoader && <LoaderCustom />}
@@ -302,6 +401,102 @@ class AddExchangeRate extends Component {
                 >
                   <div className="add-min-height">
                     <Row>
+                      <Col md="12">
+                        <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
+                          <input
+                            type="radio"
+                            name="costingHead"
+                            checked={
+                              costingTypeId === ZBCTypeId ? true : false
+                            }
+                            onClick={() =>
+                              this.onPressVendor(ZBCTypeId)
+                            }
+                            disabled={isEditFlag ? true : false}
+                          />{" "}
+                          <span>Zero Based</span>
+                        </Label>
+                        <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
+                          <input
+                            type="radio"
+                            name="costingHead"
+                            checked={
+                              costingTypeId === VBCTypeId ? true : false
+                            }
+                            onClick={() =>
+                              this.onPressVendor(VBCTypeId)
+                            }
+                            disabled={isEditFlag ? true : false}
+                          />{" "}
+                          <span>Vendor Based</span>
+                        </Label>
+                        {reactLocalStorage.getObject('cbcCostingPermission') && <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 pt-0 radio-box"} check>
+                          <input
+                            type="radio"
+                            name="costingHead"
+                            checked={
+                              costingTypeId === CBCTypeId ? true : false
+                            }
+                            onClick={() =>
+                              this.onPressVendor(CBCTypeId)
+                            }
+                            disabled={isEditFlag ? true : false}
+                          />{" "}
+                          <span>Customer Based</span>
+                        </Label>}
+                      </Col>
+                    </Row>
+                    <Row>
+                      {costingTypeId === VBCTypeId && (
+                        <>
+                          <Col md="3" className='mb-4'>
+                            <label>{"Vendor (Code)"}<span className="asterisk-required">*</span></label>
+                            <div className="d-flex justify-space-between align-items-center async-select">
+                              <div className="fullinput-icon p-relative">
+                                {this.state.inputLoader && <LoaderCustom customClass={`input-loader`} />}
+                                <AsyncSelect
+                                  name="vendorName"
+                                  ref={this.myRef}
+                                  key={this.state.updateAsyncDropdown}
+                                  loadOptions={filterList}
+                                  onChange={(e) => this.handleVendorName(e)}
+                                  value={this.state.vendorName}
+                                  noOptionsMessage={({ inputValue }) => inputValue.length < 3 ? "Enter 3 characters to show data" : "No results found"}
+                                  isDisabled={(isEditFlag) ? true : false}
+                                  onFocus={() => onFocus(this)}
+                                  onKeyDown={(onKeyDown) => {
+                                    if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
+                                  }}
+                                />
+                              </div>
+                            </div>
+                            {((this.state.showErrorOnFocus && this.state.vendorName.length === 0) || this.state.isVendorNameNotSelected) && <div className='text-help mt-1'>This field is required.</div>}
+                          </Col>
+                        </>
+                      )}
+                      {costingTypeId === CBCTypeId && (
+                        <Col md="3">
+                          <Field
+                            name="clientName"
+                            type="text"
+                            label={"Customer (Code)"}
+                            component={searchableSelect}
+                            placeholder={isEditFlag ? '-' : "Select"}
+                            options={this.renderListing("ClientList")}
+                            //onKeyUp={(e) => this.changeItemDesc(e)}
+                            validate={
+                              this.state.customer == null ||
+                                this.state.customer.length === 0
+                                ? [required]
+                                : []
+                            }
+                            required={true}
+                            handleChangeDescription={this.handleCustomer}
+                            valueDescription={this.state.customer}
+                            disabled={isEditFlag ? true : false}
+                          />
+                        </Col>
+                      )}
                       <Col md="3">
                         <Field
                           name="Currency"
@@ -456,9 +651,10 @@ class AddExchangeRate extends Component {
 * @param {*} state
 */
 function mapStateToProps(state) {
-  const { exchangeRate, } = state;  //why not selector jere......from
+  const { exchangeRate, client } = state;  //why not selector jere......from
   const filedObj = selector(state, 'OperationCode', 'EffectiveDate', 'BankCommissionPercentage', 'BankRate', 'CustomRate', 'CurrencyExchangeRate');
   const { exchangeRateData, currencySelectList } = exchangeRate;
+  const { clientSelectList } = client;
 
   let initialValues = {};
   if (exchangeRateData && exchangeRateData !== undefined) {
@@ -473,7 +669,7 @@ function mapStateToProps(state) {
     }
   }
 
-  return { exchangeRateData, currencySelectList, filedObj, initialValues }
+  return { exchangeRateData, currencySelectList, filedObj, initialValues, clientSelectList }
 }
 
 /**
@@ -487,6 +683,8 @@ export default connect(mapStateToProps, {
   updateExchangeRate,
   getExchangeRateData,
   getCurrencySelectList,
+  getVendorWithVendorCodeSelectList,
+  getClientSelectList
 })(reduxForm({
   form: 'AddExchangeRate',
   enableReinitialize: true,

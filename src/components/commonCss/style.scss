@@ -8874,6 +8874,50 @@ table.group-process-table {
   height: 30px;
 }
 
+.conditional-date {
+  align-items: center;
+
+  .custom-check1 {
+    min-height: 72px;
+    display: flex;
+    align-items: center;
+
+    label {
+      margin-top: 17px;
+    }
+  }
+
+  .date-section {
+    height: unset !important;
+
+    .form-group {
+      min-height: unset !important;
+      margin-bottom: unset !important;
+    }
+  }
+
+  .form-group-searchable-select {
+    min-height: unset !important;
+    margin-bottom: unset !important;
+  }
+
+
+}
+
+.colorWhite {
+  background-color: #fff;
+}
+
+@for $i from 1 through 1000 {
+  [row-id~="#{($i * 5) - 1}"] {
+
+    [col-id="PartNumber"],
+    [aria-colindex="5"] {
+      border-bottom: 1px solid $agGridBorder !important;
+    }
+  }
+}
+
 .right-tooltip {
   .tooltip {
     margin-right: 15px;

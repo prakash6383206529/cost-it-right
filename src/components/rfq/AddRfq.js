@@ -2,10 +2,10 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useForm, Controller } from "react-hook-form";
 import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, } from 'reactstrap';
-import { AsyncSearchableSelectHookForm, NumberFieldHookForm, SearchableSelectHookForm, TextAreaHookForm, } from '.././layout/HookFormInputs'
+import { AsyncSearchableSelectHookForm, SearchableSelectHookForm, TextAreaHookForm, TextFieldHookForm, NumberFieldHookForm } from '.././layout/HookFormInputs'
 import { getVendorWithVendorCodeSelectList, getReporterList, fetchPlantDataAPI } from '../.././actions/Common';
-import { getCostingSpecificTechnology } from '../costing/actions/Costing'
-import { checkForDecimalAndNull, getConfigurationKey, loggedInUserId } from '../.././helper';
+import { getCostingSpecificTechnology, } from '../costing/actions/Costing'
+import { addDays, checkForDecimalAndNull, getConfigurationKey, loggedInUserId } from '../.././helper';
 import { postiveNumber, maxLength10, nonZero, checkForNull } from '../.././helper/validation'
 import { EMPTY_DATA, FILE_URL, searchCount } from '../.././config/constants';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
@@ -15,7 +15,7 @@ import Dropzone from 'react-dropzone-uploader'
 import 'react-dropzone-uploader/dist/styles.css'
 import Toaster from '../common/Toaster';
 import { MESSAGES } from '../../config/message';
-import { createRfqQuotation, fileDeleteQuotation, fileUploadQuotation, getQuotationById, updateRfqQuotation, getContactPerson, checkExistCosting, setCheckRFQBulkUpload, setRFQBulkUpload } from './actions/rfq';
+import { createRfqQuotation, fileDeleteQuotation, fileUploadQuotation, getQuotationById, updateRfqQuotation, getContactPerson, checkExistCosting, setRFQBulkUpload } from './actions/rfq';
 import PopupMsgWrapper from '../common/PopupMsgWrapper';
 import LoaderCustom from '../common/LoaderCustom';
 import redcrossImg from '../../assests/images/red-cross.png'
@@ -26,7 +26,11 @@ import { autoCompleteDropdown, autoCompleteDropdownPart } from '../common/Common
 import BulkUpload from '../massUpload/BulkUpload';
 import _ from 'lodash';
 import { getPartSelectListWtihRevNo } from '../masters/actions/Volume';
-import { LOGISTICS, REMARKMAXLENGTH } from '../../config/masterData';
+import { DATE_STRING, DURATION_STRING, LOGISTICS, REMARKMAXLENGTH, visibilityModeDropdownArray } from '../../config/masterData';
+import DayTime from '../common/DayTimeWrapper';
+import DatePicker from 'react-datepicker'
+import { label } from 'react-dom-factories';
+import WarningMessage from '../common/WarningMessage';
 
 const gridOptions = {};
 
@@ -38,10 +42,19 @@ function AddRfq(props) {
         reValidateMode: 'onChange',
     });
 
+    const sopObjectTemp = [
+        { sop: 'SOP1' },
+        { sop: 'SOP2' },
+        { sop: 'SOP3' },
+        { sop: 'SOP4' },
+        { sop: 'SOP5' },
+    ]
+
     const [getReporterListDropDown, setGetReporterListDropDown] = useState([]);
     const [vendor, setVendor] = useState([]);
     const [initialFiles, setInitialFiles] = useState([]);
-    const [isEditFlag, setIsEditFlag] = useState(false);
+    const [isEditAll, setIsEditAll] = useState(false);
+    const [isEditSubmissionDate, setIsEditSubmissionDate] = useState(false);
     const [isViewFlag, setIsViewFlag] = useState(false);
     const [selectedVendors, setSelectedVendors] = useState([]);
     const [inputLoader, setInputLoader] = useState(false)
@@ -64,6 +77,13 @@ function AddRfq(props) {
     const [attachmentLoader, setAttachmentLoader] = useState(false)
     const [partName, setPartName] = useState(false)
     const [technology, setTechnology] = useState({})
+    const [submissionDate, setSubmissionDate] = useState('')
+    const [visibilityMode, setVisibilityMode] = useState({})
+    const [dateAndTime, setDateAndTime] = useState('')
+    const [time, setTime] = useState(new Date())
+    const [isConditionalVisible, setIsConditionalVisible] = useState(false)
+    const [isWarningMessageShow, setIsWarningMessageShow] = useState(false)
+    const [loader, setLoader] = useState(false)
     const technologySelectList = useSelector((state) => state.costing.costingSpecifiTechnology)
     const dispatch = useDispatch()
     const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
@@ -94,18 +114,42 @@ function AddRfq(props) {
         setPartList(tempp)
     }, [checkRFQPartBulkUpload])
 
+    const convertToPartList = (partListTemp) => {
+        let tempArr = []
+        partListTemp && partListTemp?.map((item) => {
+            item.SOPQuantity.map((ele, ind) => {
+                if (ind !== 2) {
+                    ele.PartNo = ele.PartNumber
+                    ele.PartId = item.PartId
+                    delete ele.PartNumber
+                } else {
+                    ele.PartNo = ele.PartNumber
+                    ele.PartId = item.PartId
+                }
+            })
+            tempArr = [...tempArr, ...item?.SOPQuantity]
+        })
+
+        return tempArr
+    }
+
     useEffect(() => {
         dispatch(getCostingSpecificTechnology(loggedInUserId(), () => { }))
         dispatch(getReporterList(() => { }))
+
+        var newDate = addDays(new Date(), 7);
+        setSubmissionDate(newDate)
+
         if (dataProps?.isEditFlag || dataProps?.isViewFlag) {
-            setIsEditFlag(dataProps?.isEditFlag)
-            setIsViewFlag(dataProps?.isViewFlag)
+            setLoader(true)
             dispatch(getQuotationById(dataProps?.Id, (res) => {
                 setPartNoDisable(false)
 
-
                 if (res?.data?.Data) {
                     let data = res?.data?.Data
+                    setIsEditAll(data?.IsSent ? false : true)
+                    setIsEditSubmissionDate(data?.IsLastSubmissionEditable ? true : false)
+                    setIsViewFlag(dataProps?.isViewFlag)
                     setValue("technology", {
                         label: data.TechnologyName, value: data.TechnologyId
                     })
@@ -113,13 +157,23 @@ function AddRfq(props) {
                         label: data.PlantName, value: data.PlantId
                     })
                     // setInitialFiles(data?.Attachments)
+                    // setValue('SubmissionDate', data?.LastSubmissionDate)
+                    setSubmissionDate(data?.LastSubmissionDate)
+                    setIsConditionalVisible(data?.IsConditionallyVisible)
+                    setValue('VisibilityMode', { value: data?.VisibilityMode, label: data?.VisibilityMode })
+                    setVisibilityMode({ value: data?.VisibilityMode, label: data?.VisibilityMode })
+                    setDateAndTime(data?.VisibilityDate)
+                    setTime(data?.VisibilityDuration)
+                    setValue('Time', data?.VisibilityDuration)
                     setFiles(data?.Attachments)
-                    setPartList(data.PartList)
+                    setPartList(convertToPartList(data.PartList))
                     setVendorList(data.VendorList)
                     setValue("remark", data.Remark)
                     setData(data)
                 }
-
+                setTimeout(() => {
+                    setLoader(false)
+                }, 100);
             })
             )
         }
@@ -127,6 +181,9 @@ function AddRfq(props) {
 
 
     const deleteFile = (FileId, OriginalFileName) => {
+        if (dataProps?.isViewFlag || !isEditAll) {
+            return false
+        }
         if (FileId != null) {
             let deleteData = {
                 Id: FileId,
@@ -228,17 +285,9 @@ function AddRfq(props) {
 
     }
 
-    const deleteItemPartTable = (gridData, props) => {
+    const deleteItemPartTable = (rowData, final) => {
 
-        let arr = []
-        gridData && gridData.map((item) => {
-
-            if (item?.PartId !== props?.node?.data?.PartId) {
-                arr.push(item)
-            }
-            return null
-        })
-
+        let arr = final && final.filter(item => item.PartNo !== rowData?.PartNo)
         if (arr.length === 0) {
             setDisableTechnology(false)
         }
@@ -360,6 +409,9 @@ function AddRfq(props) {
         } else if (files?.length === 0) {
             Toaster.warning("Please add atleast one attachment file")
             return false
+        } else if (!submissionDate) {
+            setIsWarningMessageShow(true)
+            return false
         } else if (Object.keys(errors).length > 0) {
             return false
         }
@@ -377,8 +429,37 @@ function AddRfq(props) {
         obj.TechnologyId = getValues('technology').value
         obj.PlantId = getValues('plant')?.value
         obj.LoggedInUserId = loggedInUserId()
+        obj.StatusId = ''
+
+        obj.IsSent = isSent
+        obj.IsConditionallyVisible = isConditionalVisible
+        obj.VisibilityMode = visibilityMode?.label
+        obj.VisibilityDate = dateAndTime
+        obj.VisibilityDuration = getValues('Time')
+        obj.LastSubmissionDate = DayTime(submissionDate).format('YYYY-MM-DD HH:mm:ss')
+
         obj.VendorList = vendorList
-        obj.PartList = partList
+
+        let temppartArr = []
+        let partIdList = _.uniq(_.map(partList, 'PartId'))
+        partIdList && partIdList?.map((item) => {
+            let temppartObj = {}
+            let partListArr = []
+            temppartObj.PartId = item
+            partList && partList.map((item1) => {
+                let partListObj = {}
+                if (item1?.PartId === item) {
+                    partListObj.PartNumber = item1?.PartNo
+                    partListObj.YearName = item1?.YearName
+                    partListObj.Quantity = item1?.Quantity
+                    partListArr.push(partListObj)
+                }
+            })
+            temppartObj.SOPQuantityDetails = partListArr
+            temppartArr.push(temppartObj)
+        })
+
+        obj.PartList = temppartArr
         obj.Attachments = files
         obj.IsSent = isSent
 
@@ -431,13 +512,21 @@ function AddRfq(props) {
         return checkForDecimalAndNull(cellValue, getConfigurationKey().NoOfDecimalForInputOutput)
     }
 
+    const sopFormatter = (props) => {
+        const cellValue = props?.value;
+        return cellValue ? cellValue : '-'
+    }
+
 
     const buttonFormatterFirst = (props) => {
         let final = _.map(props?.node?.rowModel?.rowsToDisplay, 'data')
+        let show = (props?.data?.PartNumber === undefined) ? false : true
+        const row = props?.data;
         return (
             <>
-                {< button title='Edit' className="Edit mr-2 align-middle" disabled={dataProps?.isAddFlag ? false : (dataProps?.isViewFlag || !dataProps?.isEditFlag)} type={'button'} onClick={() => editItemPartTable(props?.agGridReact?.gridOptions.rowData, props)} />}
-                {<button title='Delete' className="Delete align-middle" disabled={dataProps?.isAddFlag ? false : (dataProps?.isViewFlag || !dataProps?.isEditFlag)} type={'button'} onClick={() => deleteItemPartTable(final, props)} />}
+                {/* {< button title='Edit' className="Edit mr-2 align-middle" disabled={dataProps?.isAddFlag ? false : (dataProps?.isViewFlag || !dataProps?.isEditFlag)} type={'button'} onClick={() => editItemPartTable(props?.agGridReact?.gridOptions.rowData, props)} />}
+                {<button title='Delete' className="Delete align-middle" disabled={dataProps?.isAddFlag ? false : (dataProps?.isViewFlag || !dataProps?.isEditFlag)} type={'button'} onClick={() => deleteItemPartTable(final, props)} />} */}
+                {show && <button title='Delete' className="Delete align-middle" disabled={dataProps?.isAddFlag ? false : (dataProps?.isViewFlag || !isEditAll)} type={'button'} onClick={() => deleteItemPartTable(row, final)} />}
             </>
         )
     };
@@ -445,8 +534,8 @@ function AddRfq(props) {
     const buttonFormatterVendorTable = (props) => {
         return (
             <>
-                {<button title='Edit' className="Edit mr-2 align-middle" type={'button'} disabled={dataProps?.isAddFlag ? false : (dataProps?.isViewFlag || !dataProps?.isEditFlag)} onClick={() => editItemVendorTable(props?.agGridReact?.gridOptions.rowData, props)} />}
-                {<button title='Delete' className="Delete align-middle" type={'button'} disabled={dataProps?.isAddFlag ? false : (dataProps?.isViewFlag || !dataProps?.isEditFlag)} onClick={() => deleteItemVendorTable(props?.agGridReact?.gridOptions.rowData, props)} />}
+                {<button title='Edit' className="Edit mr-2 align-middle" type={'button'} disabled={dataProps?.isAddFlag ? false : (dataProps?.isViewFlag || !isEditAll)} onClick={() => editItemVendorTable(props?.agGridReact?.gridOptions.rowData, props)} />}
+                {<button title='Delete' className="Delete align-middle" type={'button'} disabled={dataProps?.isAddFlag ? false : (dataProps?.isViewFlag || !isEditAll)} onClick={() => deleteItemVendorTable(props?.agGridReact?.gridOptions.rowData, props)} />}
             </>
         )
     };
@@ -539,64 +628,23 @@ function AddRfq(props) {
 
 
     const addRowPartNoTable = () => {
+        let arrTemp = []
+        let partNumber = getValues('partNumber')
 
-        let isDuplicateEntry = false
-        let obj = {}
-        obj.PartId = getValues('partNumber')?.value
-        obj.Quantity = Number(getValues('annualForecastQuantity'))
-        obj.PartNumber = getValues('partNumber')?.label ? getValues('partNumber')?.label : '-'
-        obj.technology = technology
-
-        if (errors.annualForecastQuantity) {
-            return false;
-        }
-
-        if (!updateButtonPartNoTable) {
-            partList && partList.map((item) => {
-                if (item.PartNumber === obj.PartNumber) {
-                    isDuplicateEntry = true
-                }
-                return null
-            })
-        }
-
-        if (isDuplicateEntry) {
-            Toaster.warning("This part no is already added.")
-            return false;
-        }
-
-        if (obj.PartId === null || obj.PartId === undefined || checkForNull(obj.Quantity) === 0) {
-            Toaster.warning("Please fill all the mandatory fields first.")
-            return false;
-        }
-
-        let arr = [...partList, obj]
-
-        if (updateButtonPartNoTable) {   //EDIT CASE
-            arr = []
-            partList && partList.map((item) => {
-                if (JSON.stringify(selectedRowPartNoTable) === JSON.stringify(item)) {
-                    return false
-                } else {
-                    arr.push(item)
-                }
-                return null
-            })
-
-            arr.map((item) => {
-                if (item.PartNumber === obj.PartNumber) {
-                    isDuplicateEntry = true
-                }
-                return null
-            })
-
-            if (isDuplicateEntry) {
-                Toaster.warning("This part no is already added.")
-                return false;
+        sopObjectTemp && sopObjectTemp.map((item, index) => {
+            let objTemp = {}
+            objTemp.YearName = `SOP${index + 1}`
+            objTemp.PartNo = partNumber?.label
+            objTemp.PartId = getValues('partNumber')?.value
+            if (index === 2) {
+                objTemp.PartNumber = partNumber?.label
             }
+            objTemp.Quantity = 0
 
-            arr.push(obj)
-        }
+            arrTemp.push(objTemp)
+        })
+
+        let arr = [...partList, ...arrTemp]
 
         setPartList(arr)
         setValue('partNumber', "")
@@ -707,9 +755,74 @@ function AddRfq(props) {
 
     }
 
+    /**
+    * @method beforeSaveCell
+    * @description CHECK FOR ENTER NUMBER IN CELL
+    */
+    const beforeSaveCell = (props) => {
+        const cellValue = props
+        if (cellValue === undefined) {
+            return true
+        }
+        if (cellValue && !/^[+]?([0-9]+(?:[\.][0-9]*)?|\.[0-9]+)$/.test(cellValue)) {
+            Toaster.warning('Please enter a valid positive numbers.')
+            return false
+        }
+        return true
+    }
+
+    const afcFormatter = (props) => {
+        let final = _.map(props?.node?.rowModel?.rowsToDisplay, 'data')
+        const cell = props?.value;
+        const value = beforeSaveCell(cell)
+
+        setPartList(final)
+        return (
+            <>
+                {<span className='form-control height33' >{value ? Number(cell) : 0}</span>}
+            </>
+        )
+    }
+
+    const handleVisibilityMode = (value) => {
+        setVisibilityMode(value)
+        setValue('startPlanDate', '')
+        setValue('Time', '')
+    }
+
     const partNumberFormatter = (props) => {
         const row = props?.data;
-        const value = row?.RevisionNumber ? (row?.PartNumber + ' (' + row?.RevisionNumber + ')') : (row?.PartNumber ? row?.PartNumber : '-')
+        const value = row?.RevisionNumber ? (row?.PartNumber + ' (' + row?.RevisionNumber + ')') : (row?.PartNumber ? row?.PartNumber : '')
+        return <div className={`${value ? '' : 'row-merge'}`}>{value}</div>
+    }
+
+    /**
+     * @method handleSubmissionDateChange
+     * @description handleSubmissionDateChange
+     */
+    const handleSubmissionDateChange = (value) => {
+        setSubmissionDate(value)
+        setIsWarningMessageShow(false)
+    }
+
+    const handleChangeDateAndTime = (value) => {
+        setDateAndTime(value)
+    }
+
+    const handleChangeTime = (value) => {
+        setTime(value)
+    }
+
+    const checkBoxHandler = () => {
+        setIsConditionalVisible(!isConditionalVisible)
+        setVisibilityMode('')
+        setValue('VisibilityMode', '')
+        setValue('startPlanDate', '')
+        setValue('Time', '')
+    }
+
+    const EditableCallback = (props) => {
+        let value = dataProps?.isAddFlag ? true : dataProps?.isViewFlag ? false : isEditAll ? true : false
         return value
     }
 
@@ -718,7 +831,10 @@ function AddRfq(props) {
         buttonFormatterFirst: buttonFormatterFirst,
         buttonFormatterVendorTable: buttonFormatterVendorTable,
         customNoRowsOverlay: NoContentFound,
-        partNumberFormatter: partNumberFormatter
+        partNumberFormatter: partNumberFormatter,
+        sopFormatter: sopFormatter,
+        EditableCallback: EditableCallback,
+        afcFormatter: afcFormatter
     };
 
     const VendorLoaderObj = { isLoader: VendorInputLoader }
@@ -755,7 +871,7 @@ function AddRfq(props) {
                                                 mandatory={true}
                                                 handleChange={handleTechnologyChange}
                                                 errors={errors.technology}
-                                                disabled={((dataProps?.isViewFlag || dataProps?.isEditFlag) ? true : false)
+                                                disabled={((dataProps?.isViewFlag || isEditAll) ? true : false)
                                                     || (partList?.length !== 0)}
                                                 isLoading={VendorLoaderObj}
                                             />
@@ -776,8 +892,38 @@ function AddRfq(props) {
                                                 handleChange={() => { }}
                                                 errors={errors.plant}
                                                 isLoading={VendorLoaderObj}
-                                                disabled={dataProps?.isViewFlag}
+                                                disabled={dataProps?.isAddFlag ? false : (dataProps?.isViewFlag || !isEditAll)}
                                             />
+                                        </Col>
+                                        <Col md="3">
+                                            <div className="inputbox date-section">
+                                                <div className="form-group">
+                                                    <label>Last Submission Date</label>
+                                                    <div className="inputbox date-section">
+                                                        <DatePicker
+                                                            name={'SubmissionDate'}
+                                                            placeholder={'Select'}
+                                                            //selected={submissionDate}
+                                                            selected={DayTime(submissionDate).isValid() ? new Date(submissionDate) : ''}
+                                                            onChange={handleSubmissionDateChange}
+                                                            showMonthDropdown
+                                                            showYearDropdown
+                                                            minDate={new Date()}
+                                                            dateFormat="dd/MM/yyyy"
+                                                            dropdownMode="select"
+                                                            placeholderText="Select date"
+                                                            className="withBorder"
+                                                            autoComplete={"off"}
+                                                            mandatory={true}
+                                                            errors={errors.SubmissionDate}
+                                                            disabledKeyboardNavigation
+                                                            onChangeRaw={(e) => e.preventDefault()}
+                                                            disabled={dataProps?.isEditFlag ? !isEditSubmissionDate : dataProps?.isViewFlag ? true : false}
+                                                        />
+                                                        {isWarningMessageShow && <WarningMessage dClass={"error-message"} textClass={"pt-1"} message={"Please select effective date"} />}
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </Col>
                                     </Row>
                                     <HeaderTitle title={'Part:'} />
@@ -797,13 +943,29 @@ function AddRfq(props) {
                                                 // handleChange={handleDestinationPlantChange}
                                                 handleChange={() => { }}
                                                 errors={errors.partNumber}
-                                                disabled={dataProps?.isViewFlag || partNoDisable}
+                                                disabled={dataProps?.isAddFlag ? partNoDisable : (dataProps?.isViewFlag || !isEditAll)}
                                                 isLoading={plantLoaderObj}
                                                 asyncOptions={partFilterList}
                                                 NoOptionMessage={"Enter 3 characters to show data"}
                                             />
                                         </Col>
-                                        <Col md="3">
+                                        {/* <Col md="3">
+                                            <NumberFieldHookForm
+                                                label="YearName"
+                                                name={"YearName"}
+                                                Controller={Controller}
+                                                control={control}
+                                                register={register}
+                                                disableErrorOverflow={true}
+                                                mandatory={true}
+                                                handleChange={() => { }}
+                                                disabled={false}
+                                                placeholder={'Enter'}
+                                                customClassName={'withBorder'}
+                                                errors={errors.YearName}
+                                            />
+                                        </Col> */}
+                                        {/* <Col md="3">
                                             <NumberFieldHookForm
                                                 label="Annual Forecast Quantity"
                                                 name={"annualForecastQuantity"}
@@ -822,13 +984,13 @@ function AddRfq(props) {
                                                 placeholder={'Enter'}
                                                 customClassName={'withBorder'}
                                             />
-                                        </Col>
+                                        </Col> */}
                                         <Col md="3" className='d-flex align-items-center pb-1'>
                                             <button
                                                 type="button"
                                                 className={'user-btn pull-left'}
                                                 onClick={() => addRowPartNoTable()}
-                                                disabled={dataProps?.isViewFlag}
+                                                disabled={dataProps?.isAddFlag ? false : (dataProps?.isViewFlag || !isEditAll)}
                                             >
                                                 <div className={'plus'}></div>{!updateButtonPartNoTable ? "ADD" : "UPDATE"}
                                             </button>
@@ -837,7 +999,7 @@ function AddRfq(props) {
                                                 type="button"
                                                 value="CANCEL"
                                                 className="reset ml-2 mr5"
-                                                disabled={dataProps?.isViewFlag}
+                                                disabled={dataProps?.isAddFlag ? false : (dataProps?.isViewFlag || !isEditAll)}
                                             >
                                                 <div className={''}></div>
                                                 RESET
@@ -854,12 +1016,13 @@ function AddRfq(props) {
                                         </Col>
                                     </Row>
                                     <div>
-                                        {true && <div className={`ag-grid-react`}>
+                                        { }
+                                        {!loader ? <div className={`ag-grid-react`}>
                                             <Row>
                                                 <Col>
                                                     <div className={`ag-grid-wrapper height-width-wrapper ${partList && partList.length <= 0 ? "overlay-contain border" : ""} `}>
 
-                                                        <div className={`ag-theme-material  max-loader-height`}>
+                                                        <div className={`ag-theme-material`}>
                                                             <AgGridReact
                                                                 defaultColDef={defaultColDef}
                                                                 //floatingFilter={true}
@@ -875,19 +1038,22 @@ function AddRfq(props) {
                                                                     title: EMPTY_DATA,
                                                                 }}
                                                                 frameworkComponents={frameworkComponents}
+                                                                stopEditingWhenCellsLoseFocus={true}
                                                             >
-                                                                <AgGridColumn width={"230px"} field="PartNumber" headerName="Part No" cellRenderer={'partNumberFormatter'}></AgGridColumn>
+                                                                <AgGridColumn width={"230px"} field="PartNumber" headerName="Part No" cellClass={"colorWhite"} cellRenderer={'partNumberFormatter'}></AgGridColumn>
 
-                                                                <AgGridColumn width={"230px"} field="Quantity" headerName="Annual Forecast Quantity" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                                                                <AgGridColumn width={"230px"} field="YearName" headerName="YearName" cellRenderer={'sopFormatter'}></AgGridColumn>
+                                                                <AgGridColumn width={"230px"} field="Quantity" headerName="Annual Forecast Quantity" cellRenderer={'afcFormatter'} editable={EditableCallback} colId="Quantity"></AgGridColumn>
                                                                 <AgGridColumn width={"0px"} field="PartId" headerName="Part Id" hide={true} cellRenderer={'hyphenFormatter'}></AgGridColumn>
-
-                                                                <AgGridColumn width={"190px"} field="PartId" headerName="Action" floatingFilter={false} type="rightAligned" cellRenderer={'buttonFormatterFirst'}></AgGridColumn>
+                                                                <AgGridColumn width={"190px"} field="PartId" headerName="Action" cellClass={"colorWhite text-right"} floatingFilter={false} type="rightAligned" cellRenderer={'buttonFormatterFirst'}></AgGridColumn>
                                                             </AgGridReact>
 
                                                         </div>
                                                     </div>
                                                 </Col>
                                             </Row>
+                                        </div> : <div>
+                                            <LoaderCustom />
                                         </div>
                                         }
                                     </div>
@@ -911,7 +1077,7 @@ function AddRfq(props) {
                                                 errors={errors.vendor}
                                                 isLoading={VendorLoaderObj}
                                                 asyncOptions={vendorFilterList}
-                                                disabled={isViewFlag}
+                                                disabled={dataProps?.isAddFlag ? false : (isViewFlag || !isEditAll)}
                                                 NoOptionMessage={"Enter 3 characters to show data"}
                                             />
                                         </Col>
@@ -932,7 +1098,7 @@ function AddRfq(props) {
                                                 // handleChange={handleDestinationPlantChange}
                                                 handleChange={() => { }}
                                                 errors={errors.contactPerson}
-                                                disabled={isViewFlag}
+                                                disabled={dataProps?.isAddFlag ? false : (isViewFlag || !isEditAll)}
                                                 isLoading={plantLoaderObj}
                                             />
                                         </Col>
@@ -941,7 +1107,7 @@ function AddRfq(props) {
                                                 type="button"
                                                 className={'user-btn pull-left'}
                                                 onClick={() => addRowVendorTable()}
-                                                disabled={isViewFlag}
+                                                disabled={dataProps?.isAddFlag ? false : (isViewFlag || !isEditAll)}
                                             >
                                                 <div className={'plus'}></div>{!updateButtonVendorTable ? "ADD" : "UPDATE"}
                                             </button>
@@ -951,7 +1117,7 @@ function AddRfq(props) {
                                                 type="button"
                                                 value="CANCEL"
                                                 className="reset ml-2"
-                                                disabled={isViewFlag}
+                                                disabled={dataProps?.isAddFlag ? false : (isViewFlag || !isEditAll)}
                                             >
                                                 <div className={''}></div>
                                                 RESET
@@ -959,9 +1125,8 @@ function AddRfq(props) {
                                         </Col>
                                     </Row>
 
-
                                     <div>
-                                        {true && <div className={`ag-grid-react`}>
+                                        {!loader ? <div className={`ag-grid-react`}>
                                             <Row>
                                                 <Col>
                                                     <div className={`ag-grid-wrapper height-width-wrapper ${vendorList && vendorList.length <= 0 ? "overlay-contain border" : ""} `}>
@@ -993,10 +1158,127 @@ function AddRfq(props) {
                                                     </div>
                                                 </Col>
                                             </Row>
+                                        </div> : <div>
+                                            <LoaderCustom />
                                         </div>
                                         }
                                     </div>
-                                    <HeaderTitle title={'Remark and Attachments:'} customClass="mt-4" />
+
+                                    <Row className="mt-3 conditional-date">
+                                        <Col md="2">
+                                            < div className="custom-check1">
+                                                <label
+                                                    className="custom-checkbox mb-0"
+                                                    onChange={() => checkBoxHandler()}
+                                                >
+                                                    {'Visibility'}
+                                                    <input
+                                                        type="checkbox"
+                                                        value={"All"}
+                                                        checked={isConditionalVisible}
+                                                        disabled={dataProps?.isAddFlag ? false : (dataProps?.isViewFlag || !isEditAll)}
+                                                    />
+                                                    <span className=" before-box"
+                                                        checked={isConditionalVisible}
+                                                    />
+                                                </label>
+                                            </div>
+                                        </Col>
+                                        {isConditionalVisible && <>
+                                            <Col md="3">
+                                                <SearchableSelectHookForm
+                                                    label={"Visibility Mode"}
+                                                    name={"VisibilityMode"}
+                                                    placeholder={"Select"}
+                                                    Controller={Controller}
+                                                    control={control}
+                                                    rules={{ required: true }}
+                                                    register={register}
+                                                    // defaultValue={vendor.length !== 0 ? vendor : ""}
+                                                    options={visibilityModeDropdownArray}
+                                                    mandatory={true}
+                                                    handleChange={handleVisibilityMode}
+                                                    errors={errors.VisibilityMode}
+                                                    isLoading={VendorLoaderObj}
+                                                    disabled={dataProps?.isAddFlag ? false : (dataProps?.isViewFlag || !isEditAll)}
+                                                />
+                                            </Col>
+                                            <Col md="3">
+                                                {visibilityMode?.value === DATE_STRING && <div className="inputbox date-section">
+                                                    <div className="form-group">
+                                                        <label>Date & Time</label>
+                                                        <div className="inputbox date-section">
+                                                            <DatePicker
+                                                                name="startPlanDate"
+                                                                selected={DayTime(dateAndTime).isValid() ? new Date(dateAndTime) : null}
+                                                                onChange={handleChangeDateAndTime}
+                                                                showMonthDropdown
+                                                                showYearDropdown
+                                                                showTimeInput
+                                                                timeFormat='HH:mm'
+                                                                dateFormat="dd/MM/yyyy HH:mm"
+                                                                dropdownMode="select"
+                                                                placeholderText="Select"
+                                                                className="withBorder"
+                                                                autoComplete={'off'}
+                                                                errors={errors.startPlanDate}
+                                                                disabledKeyboardNavigation
+                                                                onChangeRaw={(e) => e.preventDefault()}
+                                                                disabled={dataProps?.isAddFlag ? false : (dataProps?.isViewFlag || !isEditAll)}
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                </div>}
+                                                {visibilityMode?.value === DURATION_STRING && <div className="inputbox date-section">
+                                                    <div className="form-group">
+                                                        <label>Time</label>
+                                                        <div className="inputbox date-section">
+                                                            {/* <DatePicker
+                                                                name="startPlanDate"
+                                                                selected={time}
+                                                                showTimeInput
+                                                                timeFormat='HH:mm'
+                                                                showTimeSelectOnly
+                                                                dropdownMode="select"
+                                                                placeholderText="Select"
+                                                                onChange={handleChangeTime}
+                                                                disabledKeyboardNavigation
+                                                                className="withBorder"
+                                                                autoComplete={'off'}
+                                                                dateFormat="HH:mm"
+                                                            /> */}
+                                                            <TextFieldHookForm
+                                                                label=""
+                                                                name={'Time'}
+                                                                selected={'00:00'}
+                                                                Controller={Controller}
+                                                                control={control}
+                                                                register={register}
+                                                                rules={{
+                                                                    required: false,
+                                                                    pattern: {
+                                                                        value: /^([0-9]*):([0-5]?[0-9])$/i,
+                                                                        message: 'Hours should be in hh:mm format.',
+                                                                    },
+                                                                }}
+                                                                mandatory={false}
+                                                                handleChange={() => { }}
+                                                                defaultValue={''}
+                                                                className=""
+                                                                customClassName={'withBorder mn-height-auto hide-label mb-0'}
+                                                                errors={errors.Time}
+                                                                disabled={dataProps?.isAddFlag ? false : (dataProps?.isViewFlag || !isEditAll)}
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                </div>}
+                                            </Col>
+                                        </>}
+
+                                    </Row>
+
+
+                                    <HeaderTitle title={'Remark and Attachments:'} customClass="mt-3" />
                                     <Row className='part-detail-wrapper'>
                                         <Col md="4">
                                             <TextAreaHookForm
@@ -1017,7 +1299,7 @@ function AddRfq(props) {
                                                 customClassName={"withBorder"}
                                                 handleChange={() => { }}
                                                 errors={errors.remark}
-                                                disabled={dataProps?.isViewFlag}
+                                                disabled={dataProps?.isAddFlag ? false : (dataProps?.isViewFlag || !isEditAll)}
                                                 rowHeight={6}
                                             // isLoading={plantLoaderObj}
                                             />
@@ -1062,11 +1344,11 @@ function AddRfq(props) {
                                                             extra.reject ? { color: "red" } : {},
                                                     }}
                                                     classNames="draper-drop"
-                                                    disabled={isViewFlag}
+                                                    disabled={dataProps?.isAddFlag ? false : (dataProps?.isViewFlag || !isEditAll)}
                                                 />
                                             </div>
                                         </Col>
-                                        <Col md="4">
+                                        <Col md="4" className=' p-relative'>
                                             <div className={"attachment-wrapper"}>
                                                 {attachmentLoader && <LoaderCustom customClass="attachment-loader" />}
                                                 {files &&
@@ -1094,8 +1376,9 @@ function AddRfq(props) {
                                         </Col>
                                     </Row>
 
-                                    <Row className="justify-content-between">
-                                        <div className="col-sm-12 text-right">
+                                    <Row className="justify-content-between sf-btn-footer no-gutters justify-content-between bottom-footer sticky-btn-footer">
+
+                                        <div className="col-sm-12 text-right bluefooter-butn">
                                             <button
                                                 type={"button"}
                                                 className="reset mr-2 cancel-btn"

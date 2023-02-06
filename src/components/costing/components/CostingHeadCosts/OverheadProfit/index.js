@@ -20,6 +20,7 @@ import TooltipCustom from '../../../../common/Tooltip';
 
 let counter = 0;
 function OverheadProfit(props) {
+
     const { data } = props;
 
     const { CostingOverheadDetail, CostingProfitDetail, CostingRejectionDetail, CostingInterestRateDetail } = props.data?.CostingPartDetails;
@@ -27,7 +28,6 @@ function OverheadProfit(props) {
     const ICCApplicabilityDetail = CostingInterestRateDetail && CostingInterestRateDetail.ICCApplicabilityDetail !== null ? CostingInterestRateDetail.ICCApplicabilityDetail : {}
 
     const PaymentTermDetail = CostingInterestRateDetail && CostingInterestRateDetail.PaymentTermDetail !== null ? CostingInterestRateDetail.PaymentTermDetail : {}
-
     const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
 
     const defaultValues = {
@@ -64,13 +64,14 @@ function OverheadProfit(props) {
     const SurfaceTreatmentCost = useContext(SurfaceCostContext);
     const costingHead = useSelector(state => state.comman.costingHead)
 
-    const { CostingEffectiveDate, CostingDataList, IsIncludedSurfaceInOverheadProfit } = useSelector(state => state.costing)
+    const { CostingEffectiveDate, CostingDataList, IsIncludedSurfaceInOverheadProfit, IsIncludedToolCost, ToolTabData } = useSelector(state => state.costing)
 
     const [overheadObj, setOverheadObj] = useState(CostingOverheadDetail)
     const [profitObj, setProfitObj] = useState(CostingProfitDetail)
     const [tempOverheadObj, setTempOverheadObj] = useState(CostingOverheadDetail)
     const [tempProfitObj, setTempProfitObj] = useState(CostingProfitDetail)
     const [applicabilityList, setApplicabilityList] = useState(CostingProfitDetail)
+    const [totalToolCost, setTotalToolCost] = useState(0)
 
     // partType USED FOR MANAGING CONDITION IN CASE OF NORMAL COSTING AND ASSEMBLY TECHNOLOGY COSTING (TRUE FOR ASSEMBLY TECHNOLOGY)
     const partType = IdForMultiTechnology.includes(String(costData?.TechnologyId))
@@ -105,7 +106,7 @@ function OverheadProfit(props) {
 
     useEffect(() => {
         IncludeSurfaceTreatmentCall()
-    }, [IsIncludedSurfaceInOverheadProfit])
+    }, [IsIncludedSurfaceInOverheadProfit, IsIncludedToolCost])
 
     useEffect(() => {
         setIsSurfaceTreatmentAdded(false)
@@ -166,6 +167,7 @@ function OverheadProfit(props) {
     useEffect(() => {
 
         setTimeout(() => {
+
 
             let tempObj = {
                 "OverheadId": overheadObj && overheadObj.OverheadId,
@@ -382,6 +384,13 @@ function OverheadProfit(props) {
     * @description IsAPIResponse, USED TO SET FIXED VALUE IN GET ON INITIAL LOAD API CALL
     */
     const setOverheadValues = (dataObj, IsAPIResponse) => {
+        let totalToolCost = 0
+        if (IsIncludedToolCost) {
+            totalToolCost = checkForDecimalAndNull(ToolTabData[0]?.CostingPartDetails?.TotalToolCost, initialConfiguration.NoOfDecimalForPrice)
+        } else {
+            totalToolCost = 0
+        }
+
         if (!CostingViewMode) {
 
             let OverheadRMCost = 0
@@ -401,7 +410,7 @@ function OverheadProfit(props) {
             // IF BLOCK WILL GET EXECUTED WHEN TECHNOLOGY FOR COSTING IS ASSEMBLY FOR OTHER TECHNOLOGIES ELSE WILL EXECUTE
             if (partType) {
                 OverheadRMCost = checkForNull(headerCosts?.NetRawMaterialsCost)
-                OverheadCCCost = checkForNull(headerCosts?.ProcessCostTotal) + checkForNull(headerCosts?.OperationCostTotal)
+                OverheadCCCost = checkForNull(headerCosts?.ProcessCostTotal) + checkForNull(headerCosts?.OperationCostTotal) + totalToolCost
                 OverheadBOPCost = checkForNull(headerCosts?.NetBoughtOutPartCost)
                 OverheadRMTotalCost = OverheadRMCost * calculatePercentage(OverheadRMPercentage)
                 OverheadCCTotalCost = OverheadCCCost * calculatePercentage(OverheadCCPercentage)
@@ -411,7 +420,7 @@ function OverheadProfit(props) {
                 OverheadRMTotalCost = (IsCutOffApplicable ? checkForNull(CutOffCost) : checkForNull(headerCosts?.NetRawMaterialsCost)) * calculatePercentage(checkForNull(OverheadRMPercentage))
                 OverheadBOPCost = checkForNull(headerCosts && headerCosts?.NetBoughtOutPartCost)
                 OverheadBOPTotalCost = checkForNull(OverheadBOPCost) * calculatePercentage(checkForNull(OverheadBOPPercentage))
-                OverheadCCCost = (checkForNull(headerCosts && headerCosts?.ProcessCostTotal) + checkForNull(headerCosts && headerCosts?.OperationCostTotal))
+                OverheadCCCost = (checkForNull(headerCosts && headerCosts?.ProcessCostTotal) + checkForNull(headerCosts && headerCosts?.OperationCostTotal)) + totalToolCost
                 OverheadCCTotalCost = OverheadCCCost * calculatePercentage(OverheadCCPercentage)
             }
 
@@ -567,6 +576,13 @@ function OverheadProfit(props) {
     * @description  SET PROFIT VALUES IN FIXED, COMBINED, RM, CC AND FIXED
     */
     const setProfitValues = (dataObj, IsAPIResponse) => {
+        let totalToolCost = 0
+        if (IsIncludedToolCost) {
+            totalToolCost = checkForDecimalAndNull(ToolTabData[0]?.CostingPartDetails?.TotalToolCost, initialConfiguration.NoOfDecimalForPrice)
+        } else {
+            totalToolCost = 0
+        }
+
         if (!CostingViewMode) {
 
             let ProfitRMCost = 0
@@ -590,7 +606,7 @@ function OverheadProfit(props) {
             // IF BLOCK WILL GET EXECUTED WHEN TECHNOLOGY FOR COSTING IS ASSEMBLY FOR OTHER TECHNOLOGIES ELSE WILL EXECUTE
             if (partType) {
                 ProfitRMCost = checkForNull(headerCosts?.NetRawMaterialsCost)
-                ProfitCCCost = checkForNull(headerCosts?.ProcessCostTotal) + checkForNull(headerCosts?.OperationCostTotal)
+                ProfitCCCost = checkForNull(headerCosts?.ProcessCostTotal) + checkForNull(headerCosts?.OperationCostTotal) + totalToolCost
                 ProfitBOPCost = checkForNull(headerCosts?.NetBoughtOutPartCost)
                 ProfitRMTotalCost = ProfitRMCost * calculatePercentage(ProfitRMPercentage)
                 ProfitCCTotalCost = ProfitCCCost * calculatePercentage(ProfitCCPercentage)
@@ -600,7 +616,7 @@ function OverheadProfit(props) {
                 ProfitRMTotalCost = (IsCutOffApplicable ? checkForNull(CutOffRMC) : checkForNull(headerCosts?.NetRawMaterialsCost)) * calculatePercentage(checkForNull(ProfitRMPercentage))
                 ProfitBOPCost = checkForNull(headerCosts && headerCosts?.NetBoughtOutPartCost)
                 ProfitBOPTotalCost = checkForNull(ProfitBOPCost) * calculatePercentage(checkForNull(ProfitBOPPercentage))
-                ProfitCCCost = (checkForNull(headerCosts && headerCosts?.ProcessCostTotal) + checkForNull(headerCosts && headerCosts?.OperationCostTotal))
+                ProfitCCCost = (checkForNull(headerCosts && headerCosts?.ProcessCostTotal) + checkForNull(headerCosts && headerCosts?.OperationCostTotal)) + totalToolCost
                 ProfitCCTotalCost = ProfitCCCost * calculatePercentage(ProfitCCPercentage)
             }
 
@@ -752,6 +768,14 @@ function OverheadProfit(props) {
     */
 
     const IncludeSurfaceTreatmentCall = () => {
+
+        let totalToolCost = 0
+        if (IsIncludedToolCost) {
+            totalToolCost = checkForDecimalAndNull(ToolTabData[0]?.CostingPartDetails?.TotalToolCost, initialConfiguration.NoOfDecimalForPrice)
+        } else {
+            totalToolCost = 0
+        }
+
         if (!CostingViewMode) {
             let RM_CC_BOP = 0
             let RM_CC = 0
@@ -781,10 +805,10 @@ function OverheadProfit(props) {
                 const BOPTotalCost = checkForNull(headerCosts?.NetBoughtOutPartCost)
                 const PartCost = checkForNull(headerCosts?.NetRawMaterialsCost)
 
-                CC = checkForNull(headerCosts?.ProcessCostTotal) + checkForNull(headerCosts?.OperationCostTotal)
-                RM_CC_BOP = checkForNull(PartCost) + checkForNull(combinedCost) + checkForNull(BOPTotalCost)
-                RM_CC = checkForNull(PartCost) + checkForNull(combinedCost)
-                BOP_CC = checkForNull(combinedCost) + checkForNull(BOPTotalCost)
+                CC = checkForNull(headerCosts?.ProcessCostTotal) + checkForNull(headerCosts?.OperationCostTotal) + totalToolCost
+                RM_CC_BOP = checkForNull(PartCost) + checkForNull(combinedCost) + checkForNull(BOPTotalCost) + totalToolCost
+                RM_CC = checkForNull(PartCost) + checkForNull(combinedCost) + totalToolCost
+                BOP_CC = checkForNull(combinedCost) + checkForNull(BOPTotalCost) + totalToolCost
                 RM_BOP = checkForNull(PartCost) + checkForNull(BOPTotalCost)
             } else {
 
@@ -794,10 +818,10 @@ function OverheadProfit(props) {
                 const ConversionCostForCalculation = costData?.IsAssemblyPart ? (checkForNull(headerCosts?.NetConversionCost) - checkForNull(headerCosts?.TotalOtherOperationCostPerAssembly)) : (checkForNull(headerCosts?.ProcessCostTotal) + checkForNull(headerCosts?.OperationCostTotal))
                 const RMBOPCC = headerCosts?.NetRawMaterialsCost + headerCosts?.NetBoughtOutPartCost + ConversionCostForCalculation
 
-                CC = ConversionCostForCalculation
-                RM_CC_BOP = (IsCutOffApplicable && headerCosts) ? (CutOffCost + headerCosts.NetBoughtOutPartCost + ConversionCostForCalculation) : RMBOPCC;
-                RM_CC = (IsCutOffApplicable ? CutOffRMC : headerCosts?.NetRawMaterialsCost) + ConversionCostForCalculation;
-                BOP_CC = headerCosts?.NetBoughtOutPartCost + ConversionCostForCalculation;
+                CC = ConversionCostForCalculation + totalToolCost
+                RM_CC_BOP = (IsCutOffApplicable && headerCosts) ? (CutOffCost + headerCosts.NetBoughtOutPartCost + ConversionCostForCalculation) + totalToolCost : RMBOPCC + totalToolCost;
+                RM_CC = (IsCutOffApplicable ? CutOffRMC : headerCosts?.NetRawMaterialsCost) + ConversionCostForCalculation + totalToolCost;
+                BOP_CC = headerCosts?.NetBoughtOutPartCost + ConversionCostForCalculation + totalToolCost;
                 RM_BOP = (IsCutOffApplicable ? CutOffRMC : headerCosts?.NetRawMaterialsCost) + headerCosts?.NetBoughtOutPartCost;
 
             }
