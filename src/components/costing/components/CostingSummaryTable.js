@@ -913,6 +913,11 @@ const CostingSummaryTable = (props) => {
 
     let costingSummary = []
     let templateObj = viewCostingData[0]?.technologyId === LOGISTICS ? VIEW_COSTING_DATA_LOGISTICS : VIEW_COSTING_DATA
+
+    if (props?.isRfqCosting) {
+      templateObj.costingHeadCheck = 'VBC'
+    }
+
     for (var prop in templateObj) {
 
       if (partType) {  // IF TECHNOLOGY WILL BE ASSEMBLY THIS BLOCK WILL BE EXCECUTED
@@ -1252,7 +1257,7 @@ const CostingSummaryTable = (props) => {
                                 return (
                                   <td>
                                     <span className="d-flex justify-content-between bg-grey">
-                                      {`${DayTime(data?.costingDate).format('DD-MM-YYYY')}-${data?.CostingNumber}-${data?.status}`}{' '}
+                                      {`${DayTime(data?.costingDate).format('DD-MM-YYYY')}-${data?.CostingNumber}${props.costingSummaryMainPage ? '-' : ''}${props.costingSummaryMainPage ? data?.status : ''}`}{' '}
                                       {
                                         !viewMode &&
                                         <button
