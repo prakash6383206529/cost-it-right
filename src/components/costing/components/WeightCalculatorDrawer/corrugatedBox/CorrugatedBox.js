@@ -192,7 +192,7 @@ function CorrugatedBox(props) {
         if (round_length_inc_cutting_allowance) {
             const fluteTypePercent = checkForNull(data.ftp)
             const WidthIncCuttingAllowance = Number(round_width_inc_cutting);
-            const LengthIncCuttingAllowance = parseInt(round_length_inc_cutting_allowance);
+            const LengthIncCuttingAllowance = checkForNull(round_length_inc_cutting_allowance);
             const NoOfPly = parseInt(data.no_of_ply);
             const Gsm = parseInt(data.gsm);
 
