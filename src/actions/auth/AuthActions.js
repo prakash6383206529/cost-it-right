@@ -58,7 +58,7 @@ export function TokenAPI(requestData, callback) {
         } else {
             queryParams = `userName=${requestData.username}&password=${requestData.password}&grant_type=${requestData.grant_type}`;
         }
-        axios.post(API.login, queryParams, CustomHeader)
+        axios.post(API.tokenAPI, queryParams, CustomHeader)
             .then((response) => {
                 if (response && response.status === 200) {
                     callback(response);
