@@ -11,6 +11,7 @@ import HeaderTitle from '../../../../common/HeaderTitle'
 import { debounce } from 'lodash'
 import TooltipCustom from '../../../../common/Tooltip'
 import { maxPercentValue } from '../../../../../helper/validation'
+import { ceilByMultiple } from '../../../../../helper/util'
 
 function CorrugatedBox(props) {
     const [isDisable, setIsDisable] = useState(false)
@@ -159,7 +160,7 @@ function CorrugatedBox(props) {
 
         if (data.cuttingAllowanceForLength) {
             const lengthIncCuttingAllowance = ((data.lengthSheet) + 2 * (data.cuttingAllowanceForLength));            // Formula to calculate length inc cutting allowance
-            const round_length_inc_cutting_allowance = (Math.ceil(lengthIncCuttingAllowance * 4) / 4).toFixed(2);     //ROUND OFF TO 0.25
+            const round_length_inc_cutting_allowance = ceilByMultiple(lengthIncCuttingAllowance, 0.25)    //ROUND OFF TO 0.25 (Common function)
             setDataSend(prevState => ({ ...prevState, LengthSheetIncCuttingAllowance: lengthIncCuttingAllowance, round_length_inc_cutting_allowance: round_length_inc_cutting_allowance }))
             setTimeout(() => {
                 setValue('length_inc_cutting_allowance', checkForDecimalAndNull(lengthIncCuttingAllowance, localStorage.NoOfDecimalForInputOutput));
@@ -183,7 +184,7 @@ function CorrugatedBox(props) {
         }
 
         const lengthIncCuttingAllowance = ((data.lengthSheet) + 2 * (data.cuttingAllowanceForLength));            // Formula to calculate length inc cutting allowance
-        const round_length_inc_cutting_allowance = (Math.ceil(lengthIncCuttingAllowance * 4) / 4).toFixed(2);     //ROUND OFF TO 0.25
+        const round_length_inc_cutting_allowance = ceilByMultiple(lengthIncCuttingAllowance, 0.25)    //ROUND OFF TO 0.25 (Common function)
 
         const widthCuttingAllowance = data.widthSheet + (2 * data.cuttingAllowance);              //
         const round_width_inc_cutting = Math.ceil(widthCuttingAllowance)
@@ -238,7 +239,7 @@ function CorrugatedBox(props) {
             let length_inc_cutting_allowance = lengthSheet + (2 * (data.cutting_allowance_length))
 
             let width_RoundOff = Math.round(width_inc_cutting)
-            let length_RoundOff = (Math.ceil(length_inc_cutting_allowance * 4) / 4).toFixed(2); // ROUND  OFF TO 0.25
+            let length_RoundOff = ceilByMultiple(length_inc_cutting_allowance, 0.25)    //ROUND OFF TO 0.25 (Common function)
 
             // const WidthIncCuttingAllowance = Number(data.width_inc_cutting);
             // const LengthIncCuttingAllowance = parseInt(data.length_inc_cutting_allowance);
