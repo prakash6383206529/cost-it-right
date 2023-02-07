@@ -10,12 +10,14 @@ import Toaster from '../../../../common/Toaster'
 import HeaderTitle from '../../../../common/HeaderTitle'
 import { debounce } from 'lodash'
 import TooltipCustom from '../../../../common/Tooltip'
+import { maxPercentValue } from '../../../../../helper/validation'
+import { ceilByMultiple } from '../../../../../helper/util'
 
 function CorrugatedBox(props) {
-    const [dataSend, setDataSend] = useState({})
     const [isDisable, setIsDisable] = useState(false)
     const localStorage = reactLocalStorage.getObject('InitialConfiguration');
     const WeightCalculatorRequest = props.rmRowData.WeightCalculatorRequest;
+    const [dataSend, setDataSend] = useState(WeightCalculatorRequest ? WeightCalculatorRequest : {})
     const [bodySeparator, setBodySeparator] = useState(WeightCalculatorRequest && WeightCalculatorRequest.IsIncludingBodySeparator !== null ? WeightCalculatorRequest.IsIncludingBodySeparator : false)
     const { rmRowData, CostingViewMode, item } = props
     const dispatch = useDispatch()
@@ -31,21 +33,32 @@ function CorrugatedBox(props) {
         height_box: WeightCalculatorRequest && WeightCalculatorRequest.HeightBox !== null ? WeightCalculatorRequest.HeightBox : '',
         stiching_length: WeightCalculatorRequest && WeightCalculatorRequest.StitchingLengthInchPerJoint !== null ? WeightCalculatorRequest.StitchingLengthInchPerJoint : '',
         width_sheet: WeightCalculatorRequest && WeightCalculatorRequest.WidthSheet !== null ? checkForDecimalAndNull(WeightCalculatorRequest.WidthSheet, initialConfiguration.NoOfDecimalForInputOutput) : '', //
+        width_sheet_body: WeightCalculatorRequest && WeightCalculatorRequest.WidthSheet !== null ? checkForDecimalAndNull(WeightCalculatorRequest.WidthSheet, initialConfiguration.NoOfDecimalForInputOutput) : '', //
         cutting_allowance: WeightCalculatorRequest && WeightCalculatorRequest.CuttingAllowanceWidth !== undefined ? WeightCalculatorRequest.CuttingAllowanceWidth : '',
         width_inc_cutting: WeightCalculatorRequest && WeightCalculatorRequest.WidthSheetIncCuttingAllowance !== null ? WeightCalculatorRequest.WidthSheetIncCuttingAllowance : '',
+        width_inc_cutting_body: WeightCalculatorRequest && WeightCalculatorRequest.WidthSheetIncCuttingAllowance !== null ? WeightCalculatorRequest.WidthSheetIncCuttingAllowance : '',
         length_sheet: WeightCalculatorRequest && WeightCalculatorRequest.LengthSheet !== null ? checkForDecimalAndNull(WeightCalculatorRequest.LengthSheet, initialConfiguration.NoOfDecimalForInputOutput) : '',
+        length_sheet_body: WeightCalculatorRequest && WeightCalculatorRequest.LengthSheet !== null ? checkForDecimalAndNull(WeightCalculatorRequest.LengthSheet, initialConfiguration.NoOfDecimalForInputOutput) : '',
         cuttingAllowanceForLength: WeightCalculatorRequest && WeightCalculatorRequest.CuttingAllowanceLength !== null ? WeightCalculatorRequest.CuttingAllowanceLength : '',
         length_inc_cutting_allowance: WeightCalculatorRequest && WeightCalculatorRequest.LengthSheetIncCuttingAllowance !== null ? checkForDecimalAndNull(WeightCalculatorRequest.LengthSheetIncCuttingAllowance, initialConfiguration.NoOfDecimalForInputOutput) : '',
+        length_inc_cutting_allowance_body: WeightCalculatorRequest && WeightCalculatorRequest.LengthSheetIncCuttingAllowance !== null ? checkForDecimalAndNull(WeightCalculatorRequest.LengthSheetIncCuttingAllowance, initialConfiguration.NoOfDecimalForInputOutput) : '',
         paper_process: WeightCalculatorRequest && WeightCalculatorRequest.PaperWeightAndProcessRejectionSum !== null ? checkForDecimalAndNull(WeightCalculatorRequest.PaperWeightAndProcessRejectionSum, initialConfiguration.NoOfDecimalForInputOutput) : '',
         fluteTypePercent: WeightCalculatorRequest && WeightCalculatorRequest.FluteTypePercentage !== null ? checkForDecimalAndNull(WeightCalculatorRequest.FluteTypePercentage, initialConfiguration.NoOfDecimalForInputOutput) : '',
+        round_length_inc_cutting_allowance: WeightCalculatorRequest && WeightCalculatorRequest.RoundOffLengthSheetInchCuttingAllowance !== null ? checkForDecimalAndNull(WeightCalculatorRequest.RoundOffLengthSheetInchCuttingAllowance, initialConfiguration.NoOfDecimalForInputOutput) : '',
+        round_off_length_body: WeightCalculatorRequest && WeightCalculatorRequest.RoundOffLengthSheetInchCuttingAllowance !== null ? checkForDecimalAndNull(WeightCalculatorRequest.RoundOffLengthSheetInchCuttingAllowance, initialConfiguration.NoOfDecimalForInputOutput) : '',
+        round_width_inc_cutting: WeightCalculatorRequest && WeightCalculatorRequest.RoundOffWidthSheetInchCuttingAllowance !== null ? checkForDecimalAndNull(WeightCalculatorRequest.RoundOffWidthSheetInchCuttingAllowance, initialConfiguration.NoOfDecimalForInputOutput) : '',
+        round_off_width_body: WeightCalculatorRequest && WeightCalculatorRequest.RoundOffWidthSheetInchCuttingAllowance !== null ? checkForDecimalAndNull(WeightCalculatorRequest.RoundOffWidthSheetInchCuttingAllowance, initialConfiguration.NoOfDecimalForInputOutput) : ''
     }
 
 
     useEffect(() => {
-        console.log(WeightCalculatorRequest.WidthSheetIncCuttingAllowance, "WeightCalculatorRequest.WidthSheetIncCuttingAllowance")
         setTimeout(() => {
             setValue('width_inc_cutting', WeightCalculatorRequest && WeightCalculatorRequest.WidthSheetIncCuttingAllowance !== null ? WeightCalculatorRequest.WidthSheetIncCuttingAllowance : '')
             setValue('length_inc_cutting_allowance', WeightCalculatorRequest && WeightCalculatorRequest.LengthSheetIncCuttingAllowance !== null ? WeightCalculatorRequest.LengthSheetIncCuttingAllowance : '')
+            setValue('round_length_inc_cutting_allowance', WeightCalculatorRequest && WeightCalculatorRequest.RoundOffLengthSheetInchCuttingAllowance !== null ? WeightCalculatorRequest.RoundOffLengthSheetInchCuttingAllowance : '')
+            setValue('round_width_inc_cutting', WeightCalculatorRequest && WeightCalculatorRequest.RoundOffWidthSheetInchCuttingAllowance !== null ? WeightCalculatorRequest.RoundOffWidthSheetInchCuttingAllowance : '')
+            setValue('paper_process', WeightCalculatorRequest && WeightCalculatorRequest.PaperWeightAndProcessRejectionSum !== null ? checkForDecimalAndNull(WeightCalculatorRequest.PaperWeightAndProcessRejectionSum, initialConfiguration.NoOfDecimalForInputOutput) : '')
+            setDataSend(WeightCalculatorRequest ? WeightCalculatorRequest : {})
         }, 300);
     }, [])
 
@@ -59,7 +72,7 @@ function CorrugatedBox(props) {
 
     const fieldValues = useWatch({
         control,
-        name: ['no_of_ply', 'gsm', 'bursting_factor', 'length_box', 'height_box', 'cutting_allowance', 'cuttingAllowanceForLength', 'fluteTypePercent'],
+        name: ['no_of_ply', 'gsm', 'bursting_factor', 'length_box', 'height_box', 'width_box', 'cutting_allowance', 'cuttingAllowanceForLength', 'fluteTypePercent'],
     })
 
     useEffect(() => {
@@ -73,9 +86,8 @@ function CorrugatedBox(props) {
                 setWidthSheet_LengthSheet()
                 setLengthCuttingAllowance()
                 setFinalGrossWeight()
-                bodySeparatorCalculations()
+                //bodySeparatorCalculations()
             }
-
         }
     }, [fieldValues, bodySeparator])
 
@@ -111,9 +123,7 @@ function CorrugatedBox(props) {
             setValue('width_sheet', checkForDecimalAndNull(widthSheet, localStorage.NoOfDecimalForInputOutput))
         }, 200);
 
-
         setTimeout(() => {
-
             setValue('length_sheet', checkForDecimalAndNull(lengthSheet, localStorage.NoOfDecimalForInputOutput))
         }, 200);
 
@@ -125,15 +135,18 @@ function CorrugatedBox(props) {
             widthSheet: dataSend.widthSheetWithDecimal
 
         }
+
         if (data1.cuttingAllowance) {
 
             const widthCuttingAllowance = data1.widthSheet + (2 * data1.cuttingAllowance);              //
-            const widthIncCuttingAllowance = Math.round(widthCuttingAllowance);
-            setDataSend(prevState => ({ ...prevState, widthIncCuttingDecimal: widthIncCuttingAllowance }))
+            const widthIncCuttingAllowance = (widthCuttingAllowance);
+            const round_width_inc_cutting = Math.ceil(widthCuttingAllowance)
+            setDataSend(prevState => ({ ...prevState, WidthSheetIncCuttingAllowance: widthIncCuttingAllowance, round_width_inc_cutting: round_width_inc_cutting }))
 
             setTimeout(() => {
 
-                setValue('width_inc_cutting', widthIncCuttingAllowance);
+                setValue('width_inc_cutting', checkForDecimalAndNull(widthIncCuttingAllowance, initialConfiguration.NoOfDecimalForInputOutput));
+                setValue('round_width_inc_cutting', checkForDecimalAndNull(round_width_inc_cutting, initialConfiguration.NoOfDecimalForInputOutput));
             }, 200);
         }
     }
@@ -147,31 +160,45 @@ function CorrugatedBox(props) {
 
         if (data.cuttingAllowanceForLength) {
             const lengthIncCuttingAllowance = ((data.lengthSheet) + 2 * (data.cuttingAllowanceForLength));            // Formula to calculate length inc cutting allowance
-            setDataSend(prevState => ({ ...prevState, LengthCuttingAllowance: lengthIncCuttingAllowance }))
+            const round_length_inc_cutting_allowance = ceilByMultiple(lengthIncCuttingAllowance, 0.25)    //ROUND OFF TO 0.25 (Common function)
+            setDataSend(prevState => ({ ...prevState, LengthSheetIncCuttingAllowance: lengthIncCuttingAllowance, round_length_inc_cutting_allowance: round_length_inc_cutting_allowance }))
             setTimeout(() => {
-
                 setValue('length_inc_cutting_allowance', checkForDecimalAndNull(lengthIncCuttingAllowance, localStorage.NoOfDecimalForInputOutput));
+                setValue('round_length_inc_cutting_allowance', checkForDecimalAndNull(round_length_inc_cutting_allowance, localStorage.NoOfDecimalForInputOutput));
             }, 200);
+
         }
     }
 
     const setFinalGrossWeight = () => {
         let data = {
-            width_inc_cutting: dataSend.widthIncCuttingDecimal,
-            length_inc_cutting_allowance: dataSend.LengthCuttingAllowance,
+            lengthSheet: dataSend.lengthSheetWithDecimal,
+            cuttingAllowanceForLength: getValues('cuttingAllowanceForLength'),
+            round_width_inc_cutting: dataSend.round_width_inc_cutting,
+            round_length_inc_cutting_allowance: dataSend.round_length_inc_cutting_allowance,
             no_of_ply: getValues('no_of_ply'),
-            gsm: getValues('gsm')
+            gsm: getValues('gsm'),
+            ftp: Number(getValues('fluteTypePercent')), //FTP
+            cuttingAllowance: getValues('cutting_allowance'),
+            widthSheet: dataSend.widthSheetWithDecimal
         }
 
-        if (data.length_inc_cutting_allowance) {
-            const WidthIncCuttingAllowance = Number(data.width_inc_cutting);
-            const LengthIncCuttingAllowance = parseInt(data.length_inc_cutting_allowance);
+        const lengthIncCuttingAllowance = ((data.lengthSheet) + 2 * (data.cuttingAllowanceForLength));            // Formula to calculate length inc cutting allowance
+        const round_length_inc_cutting_allowance = ceilByMultiple(lengthIncCuttingAllowance, 0.25)    //ROUND OFF TO 0.25 (Common function)
+
+        const widthCuttingAllowance = data.widthSheet + (2 * data.cuttingAllowance);              //
+        const round_width_inc_cutting = Math.ceil(widthCuttingAllowance)
+
+        if (round_length_inc_cutting_allowance) {
+            const fluteTypePercent = checkForNull(data.ftp)
+            const WidthIncCuttingAllowance = Number(round_width_inc_cutting);
+            const LengthIncCuttingAllowance = parseInt(round_length_inc_cutting_allowance);
             const NoOfPly = parseInt(data.no_of_ply);
             const Gsm = parseInt(data.gsm);
 
-            const gross = (WidthIncCuttingAllowance * LengthIncCuttingAllowance * NoOfPly * Gsm) / 1550;
+            const gross = (WidthIncCuttingAllowance * LengthIncCuttingAllowance * NoOfPly * Gsm * fluteTypePercent) / 1550;
             const finalGross = gross / 1000;
-            setDataSend(prevState => ({ ...prevState, paperWithDecimal: finalGross }))
+            setDataSend(prevState => ({ ...prevState, PaperWeightAndProcessRejectionSum: finalGross }))
 
             setTimeout(() => {
                 setValue('paper_process', checkForDecimalAndNull(finalGross, localStorage.NoOfDecimalForInputOutput));
@@ -182,8 +209,16 @@ function CorrugatedBox(props) {
 
     const bodySeparatorCalculations = (value) => {
 
-        if (bodySeparator || value) {
+        if (value === false) {
+            setValue('cutting_allowance', "")
+            setTimeout(() => {
+                setValue('fluteTypePercent', "")
+                setValue('cuttingAllowanceForLength', "")
+            }, 200);
+            return false
+        }
 
+        if (bodySeparator || value) {
             let data = {
                 lengthBox: getValues('length_box'),
                 widthBox: getValues('width_box'),
@@ -192,30 +227,31 @@ function CorrugatedBox(props) {
                 no_of_ply: getValues('no_of_ply'),
                 gsm: getValues('gsm'),
                 ftp: Number(getValues('fluteTypePercent')), //FTP
+                cutting_allowance: Number(getValues('cutting_allowance')),
+                cutting_allowance_length: Number(getValues('cuttingAllowanceForLength'))
             }
 
             const fluteTypePercent = checkForNull(data.ftp)
-            let widthSheet = (Number(data.widthBox) + (parseInt(data.heightBox) * 2)) / 15.4;
-            let width_inc_cutting = widthSheet + 1
+            let widthSheet = (Number(data.widthBox) + (parseInt(data.heightBox) * 2)) / 25.4;
+            let width_inc_cutting = widthSheet + (2 * (data.cutting_allowance))
 
-            const lengthSheet = (Number(data.lengthBox) + (parseInt(data.heightBox) * 2)) / 15.4;
-            let length_inc_cutting_allowance = lengthSheet + 1
+            const lengthSheet = (Number(data.lengthBox) + (parseInt(data.heightBox) * 2)) / 25.4;
+            let length_inc_cutting_allowance = lengthSheet + (2 * (data.cutting_allowance_length))
 
-            let inv = 1.0 / 0.25
             let width_RoundOff = Math.round(width_inc_cutting)
-            let length_RoundOff = Math.round(length_inc_cutting_allowance * inv) / inv
+            let length_RoundOff = ceilByMultiple(length_inc_cutting_allowance, 0.25)    //ROUND OFF TO 0.25 (Common function)
 
             // const WidthIncCuttingAllowance = Number(data.width_inc_cutting);
             // const LengthIncCuttingAllowance = parseInt(data.length_inc_cutting_allowance);
             const NoOfPly = parseInt(data.no_of_ply);
             const Gsm = parseInt(data.gsm);
 
-            const gross = (width_inc_cutting * length_inc_cutting_allowance * NoOfPly * Gsm * fluteTypePercent) / 1550;
+            const gross = (width_RoundOff * length_RoundOff * NoOfPly * Gsm * fluteTypePercent) / 1550;
             const finalGross = gross / 1000;
 
-            setDataSend(prevState => ({ ...prevState, paperWithDecimal: finalGross }))
+            setDataSend(prevState => ({ ...prevState, PaperWeightAndProcessRejectionSum: finalGross }))
 
-            setDataSend(prevState => ({ ...prevState, widthSheetWithDecimal: widthSheet, lengthSheetWithDecimal: lengthSheet, LengthCuttingAllowance: length_inc_cutting_allowance, widthIncCuttingDecimal: width_inc_cutting }))
+            setDataSend(prevState => ({ ...prevState, widthSheetWithDecimal: widthSheet, lengthSheetWithDecimal: lengthSheet, LengthSheetIncCuttingAllowance: length_inc_cutting_allowance, WidthSheetIncCuttingAllowance: width_inc_cutting }))
             setTimeout(() => {
 
                 setValue('width_sheet_body', checkForDecimalAndNull(widthSheet, localStorage.NoOfDecimalForInputOutput))
@@ -237,6 +273,7 @@ function CorrugatedBox(props) {
     }
 
     const onSubmit = debounce(handleSubmit((Values) => {
+
         setIsDisable(true)
         let data = {
             LayoutType: 'Corrugated',
@@ -245,9 +282,9 @@ function CorrugatedBox(props) {
             CostingRawMaterialDetailId: rmRowData.RawMaterialDetailId,
             LoggedInUserId: loggedInUserId(),
             RawMaterialIdRef: rmRowData.RawMaterialId,
-            RawMaterialCost: dataSend.paperWithDecimal * rmRowData.RMRate,  //(GROSS WEIGHT * RM RATE)
-            GrossWeight: dataSend.paperWithDecimal,
-            FinishWeight: dataSend.paperWithDecimal,
+            RawMaterialCost: dataSend.PaperWeightAndProcessRejectionSum * rmRowData.RMRate,  //(GROSS WEIGHT * RM RATE)
+            GrossWeight: dataSend.PaperWeightAndProcessRejectionSum,
+            FinishWeight: dataSend.PaperWeightAndProcessRejectionSum,
             BurstingFactor: Values.bursting_factor,
             BurstingStrength: dataSend.burstingStrengthWithDecimal,
             CuttingAllowanceWidth: Values.cutting_allowance,
@@ -255,16 +292,18 @@ function CorrugatedBox(props) {
             GSM: Values.gsm,
             HeightBox: Values.height_box,
             LengthBox: Values.length_box,
-            LengthSheetIncCuttingAllowance: dataSend.LengthCuttingAllowance,
+            LengthSheetIncCuttingAllowance: dataSend.LengthSheetIncCuttingAllowance,
             LengthSheet: dataSend.lengthSheetWithDecimal,
             NoOfPly: Values.no_of_ply,
-            PaperWeightAndProcessRejectionSum: dataSend.paperWithDecimal,
+            PaperWeightAndProcessRejectionSum: dataSend.PaperWeightAndProcessRejectionSum,
             StitchingLengthInchperJoint: Values.stiching_length,
             WidthBox: Values.width_box,
-            WidthSheetIncCuttingAllowance: dataSend.widthIncCuttingDecimal,
+            WidthSheetIncCuttingAllowance: dataSend.WidthSheetIncCuttingAllowance,
             WidthSheet: dataSend.widthSheetWithDecimal,
             FluteTypePercentage: Values.fluteTypePercent,
-            IsIncludingBodySeparator: bodySeparator
+            IsIncludingBodySeparator: bodySeparator,
+            RoundOffLengthSheetInchCuttingAllowance: bodySeparator ? Values.round_off_length_body : Values.round_length_inc_cutting_allowance,
+            RoundOffWidthSheetInchCuttingAllowance: bodySeparator ? Values.round_off_width_body : Values.round_width_inc_cutting
         }
 
         dispatch(saveRawMaterialCalculationForCorrugatedBox(data, res => {
@@ -506,31 +545,33 @@ function CorrugatedBox(props) {
                             </Row>
 
                             <Row>
+
+                                <label
+                                    className="custom-checkbox mb-4 ml-2"
+                                >
+                                    Body Separator
+                                    <input
+                                        type="checkbox"
+                                        value={"All"}
+                                        className='mr-2 mt-1'
+                                        disabled={props.CostingViewMode ? props.CostingViewMode : false}
+                                        checked={bodySeparator}
+                                        onClick={() => {
+                                            setBodySeparator(!bodySeparator)
+                                            bodySeparatorCalculations(!bodySeparator)
+                                        }
+                                        }
+                                    />
+                                    <span
+                                        className=" before-box"
+                                    />
+                                </label>
                                 <Col md="12" className={''}>
                                     <HeaderTitle className="border-bottom"
-                                        title={'Sheet Details'}
+                                        title={bodySeparator ? 'Body Separator Details' : 'Sheet Details'}
                                         customClass={'underLine-title'}
                                     />
-                                    <label
-                                        className="custom-checkbox mb-0"
-                                    >
-                                        Body Separator
-                                        <input
-                                            type="checkbox"
-                                            value={"All"}
-                                            className='mr-2 mt-1'
-                                            disabled={props.CostingViewMode ? props.CostingViewMode : false}
-                                            checked={bodySeparator}
-                                            onClick={() => {
-                                                setBodySeparator(!bodySeparator)
-                                                bodySeparatorCalculations(!bodySeparator)
-                                            }
-                                            }
-                                        />
-                                        <span
-                                            className=" before-box"
-                                        />
-                                    </label>
+
                                 </Col>
                             </Row>
                             {!bodySeparator && <Row className={'mt15 corrugated-box-label-wrapper'}>
@@ -580,9 +621,9 @@ function CorrugatedBox(props) {
                                 </Col>
 
                                 <Col md="3">
-                                    <TooltipCustom disabledIcon={true} id={'sheet-width-cutting'} tooltipClass={'weight-of-sheet'} tooltipText={'Width Cutting Allowance = (Width Sheet + 2 * Cutting Allowance)'} />
+                                    <TooltipCustom disabledIcon={true} id={'sheet-width-cutting'} tooltipClass={'weight-of-sheet'} tooltipText={'Width Cutting Allowance = (Width Sheet + (2 * Cutting Allowance))'} />
                                     <NumberFieldHookForm
-                                        label={`Width(sheet) inc. Cutting allowance`}
+                                        label={`Width + Cutting Allowance`}
                                         name={'width_inc_cutting'}
                                         Controller={Controller}
                                         control={control}
@@ -601,6 +642,32 @@ function CorrugatedBox(props) {
                                         className=""
                                         customClassName={'withBorder'}
                                         errors={errors.width_inc_cutting}
+                                        disabled={true}
+                                    />
+                                </Col>
+
+                                <Col md="3">
+                                    <TooltipCustom disabledIcon={true} id={'round_sheet-width-cutting'} tooltipClass={'weight-of-sheet'} tooltipText={'Round Off (Width Cutting Allowance)'} />
+                                    <NumberFieldHookForm
+                                        label={`Round Off (Width + Cutting Allowance)`}
+                                        name={'round_width_inc_cutting'}
+                                        Controller={Controller}
+                                        control={control}
+                                        register={register}
+                                        id={'round_sheet-width-cutting'}
+                                        mandatory={false}
+                                        rules={{
+                                            required: false,
+                                            pattern: {
+                                                value: /^\d{0,4}(\.\d{0,6})?$/i,
+                                                message: 'Maximum length for integer is 4 and for decimal is 6',
+                                            },
+                                        }}
+                                        handleChange={() => { }}
+                                        defaultValue={''}
+                                        className=""
+                                        customClassName={'withBorder'}
+                                        errors={errors.round_width_inc_cutting}
                                         disabled={true}
                                     />
                                 </Col>
@@ -656,13 +723,40 @@ function CorrugatedBox(props) {
                                 </Col>
 
                                 <Col md="3" className='mt-2'>
-                                    <TooltipCustom disabledIcon={true} id={'length-cutting-al'} tooltipClass={'weight-of-sheet'} tooltipText={'Length Cutting Allowance = (Length Sheet + 2 * Cutting Allowance)'} />
+                                    <TooltipCustom disabledIcon={true} id={'length-cutting-al'} tooltipClass={'weight-of-sheet'} tooltipText={'Length Cutting Allowance = (Length Sheet + (2 * Cutting Allowance))'} />
                                     <NumberFieldHookForm
-                                        label={`Length(sheet) inc. Cutting allowance`}
+                                        label={`Length + Cutting allowance`}
                                         name={'length_inc_cutting_allowance'}
                                         Controller={Controller}
                                         control={control}
                                         id={'length-cutting-al'}
+                                        register={register}
+                                        mandatory={false}
+                                        rules={{
+                                            required: false,
+                                            pattern: {
+                                                value: /^\d{0,4}(\.\d{0,6})?$/i,
+                                                message: 'Maximum length for integer is 4 and for decimal is 6',
+                                            },
+
+                                        }}
+                                        handleChange={() => { }}
+                                        defaultValue={''}
+                                        className=""
+                                        customClassName={'withBorder'}
+                                        errors={errors.length_inc_cutting_allowance}
+                                        disabled={true}
+                                    />
+                                </Col>
+
+                                <Col md="3" className='mt-2'>
+                                    <TooltipCustom disabledIcon={true} id={'round_length-cutting-al'} tooltipClass={'weight-of-sheet'} tooltipText={'Quarter Round Off (Length + Cutting Allowance)'} />
+                                    <NumberFieldHookForm
+                                        label={`Quarter Round Off (Length + Cutting Allowance)`}
+                                        name={'round_length_inc_cutting_allowance'}
+                                        Controller={Controller}
+                                        control={control}
+                                        id={'round_length-cutting-al'}
                                         register={register}
                                         mandatory={false}
                                         rules={{
@@ -686,7 +780,7 @@ function CorrugatedBox(props) {
                             {bodySeparator && <Row className={'mt15 corrugated-box-label-wrapper'}>
 
                                 <Col md="3">
-                                    <TooltipCustom disabledIcon={true} id={'sheet-width'} tooltipText={'Width  = (Width Box + (Height Box * 2)) / 15.4'} />
+                                    <TooltipCustom disabledIcon={true} id={'sheet-width'} tooltipText={'Width  = (Width Box + (Height Box * 2)) / 25.4'} />
                                     <NumberFieldHookForm
                                         label={`Width (inch)`}
                                         name={'width_sheet_body'}
@@ -704,10 +798,36 @@ function CorrugatedBox(props) {
                                     />
                                 </Col>
 
+
                                 <Col md="3">
-                                    <TooltipCustom disabledIcon={true} id={'sheet-width-cutting'} tooltipClass={'weight-of-sheet'} tooltipText={'Width Cutting Allowance = (Width + 1)'} />
+                                    <TextFieldHookForm
+                                        label={`Cutting Allowance`}
+                                        name={'cutting_allowance'}
+                                        Controller={Controller}
+                                        control={control}
+                                        register={register}
+                                        mandatory={true}
+                                        rules={{
+                                            required: true,
+                                            pattern: {
+                                                value: /^\d{0,4}(\.\d{0,6})?$/i,
+                                                message: 'Maximum length for integer is 4 and for decimal is 6',
+                                            },
+
+                                        }}
+                                        handleChange={() => { }}
+                                        defaultValue={''}
+                                        className=""
+                                        customClassName={'withBorder'}
+                                        errors={errors.cutting_allowance}
+                                        disabled={props.CostingViewMode ? props.CostingViewMode : false}
+                                    />
+                                </Col>
+
+                                <Col md="3">
+                                    <TooltipCustom disabledIcon={true} id={'sheet-width-cutting'} tooltipClass={'weight-of-sheet'} tooltipText={'Width Cutting Allowance = (Width + (2 * Cutting Allowance))'} />
                                     <NumberFieldHookForm
-                                        label={`Width inc. Cutting allowance`}
+                                        label={`Width + Cutting allowance`}
                                         name={'width_inc_cutting_body'}
                                         Controller={Controller}
                                         control={control}
@@ -733,7 +853,7 @@ function CorrugatedBox(props) {
 
                                 <Col md="3">
                                     <TextFieldHookForm
-                                        label={`Round off to next whole inch (Width)`}
+                                        label={`Round Off (Width + Cutting Allowance)`}
                                         name={'round_off_width_body'}
                                         Controller={Controller}
                                         control={control}
@@ -756,7 +876,7 @@ function CorrugatedBox(props) {
                                 </Col>
 
                                 <Col md="3">
-                                    <TooltipCustom disabledIcon={true} id={'length-sheet'} tooltipClass={'weight-of-sheet'} tooltipText={'Length Sheet =  (Length Box + (Height Box * 2)) / 15.4'} />
+                                    <TooltipCustom disabledIcon={true} id={'length-sheet'} tooltipClass={'weight-of-sheet'} tooltipText={'Length Sheet =  (Length Box + (Height Box * 2)) / 25.4'} />
                                     <NumberFieldHookForm
                                         label={`Length (inch)`}
                                         name={'length_sheet_body'}
@@ -781,10 +901,35 @@ function CorrugatedBox(props) {
                                     />
                                 </Col>
 
+                                <Col md="3">
+                                    <TextFieldHookForm
+                                        label={`Cutting Allowance`}
+                                        name={'cuttingAllowanceForLength'}
+                                        Controller={Controller}
+                                        control={control}
+                                        register={register}
+                                        mandatory={true}
+                                        rules={{
+                                            required: true,
+                                            pattern: {
+                                                value: /^\d{0,4}(\.\d{0,6})?$/i,
+                                                message: 'Maximum length for integer is 4 and for decimal is 6',
+                                            },
+
+                                        }}
+                                        handleChange={() => { }}
+                                        defaultValue={''}
+                                        className=""
+                                        customClassName={'withBorder'}
+                                        errors={errors.cutting_allowance}
+                                        disabled={props.CostingViewMode ? props.CostingViewMode : false}
+                                    />
+                                </Col>
+
                                 <Col md="3" className='mt-2'>
-                                    <TooltipCustom disabledIcon={true} id={'length-cutting-al'} tooltipClass={'weight-of-sheet'} tooltipText={'Length Cutting Allowance = (Length + 1) '} />
+                                    <TooltipCustom disabledIcon={true} id={'length-cutting-al'} tooltipClass={'weight-of-sheet'} tooltipText={'Length Cutting Allowance = (Length + (2 * Cutting Allowance)) '} />
                                     <NumberFieldHookForm
-                                        label={`Length inc. Cutting allowance`}
+                                        label={`Length + Cutting allowance`}
                                         name={'length_inc_cutting_allowance_body'}
                                         Controller={Controller}
                                         control={control}
@@ -811,7 +956,7 @@ function CorrugatedBox(props) {
 
                                 <Col md="3" className='mt-2'>
                                     <TextFieldHookForm
-                                        label={`Rounded off to next quarter inch (Length)`}
+                                        label={`Quarter Round Off (Length + Cutting Allowance)`}
                                         name={'round_off_length_body'}
                                         Controller={Controller}
                                         control={control}
@@ -833,32 +978,32 @@ function CorrugatedBox(props) {
                                         disabled={true}
                                     />
                                 </Col>
-
-                                <Col md="3">
-                                    <NumberFieldHookForm
-                                        label={`Flute Type Percentage`}
-                                        name={'fluteTypePercent'}
-                                        Controller={Controller}
-                                        control={control}
-                                        register={register}
-                                        mandatory={false}
-                                        rules={{
-                                            required: false,
-                                            pattern: {
-                                                value: /^\d{0,4}(\.\d{0,6})?$/i,
-                                                message: 'Maximum length for integer is 4 and for decimal is 6',
-                                            },
-                                        }}
-                                        handleChange={() => { }}
-                                        defaultValue={''}
-                                        className=""
-                                        customClassName={'withBorder'}
-                                        errors={errors.fluteTypePercent}
-                                        disabled={props.CostingViewMode ? props.CostingViewMode : false}
-                                    />
-                                </Col>
                             </Row>}
 
+                            <Col md="3">
+                                <NumberFieldHookForm
+                                    label={`Flute Type Percentage`}
+                                    name={'fluteTypePercent'}
+                                    Controller={Controller}
+                                    control={control}
+                                    register={register}
+                                    mandatory={false}
+                                    rules={{
+                                        required: false,
+                                        validate: { maxPercentValue },
+                                        pattern: {
+                                            value: /^\d{0,4}(\.\d{0,6})?$/i,
+                                            message: 'Maximum length for integer is 4 and for decimal is 6',
+                                        },
+                                    }}
+                                    handleChange={() => { }}
+                                    defaultValue={''}
+                                    className=""
+                                    customClassName={'withBorder'}
+                                    errors={errors.fluteTypePercent}
+                                    disabled={props.CostingViewMode ? props.CostingViewMode : false}
+                                />
+                            </Col>
 
                             <hr className="mx-n4 w-auto" />
                             <Row>
