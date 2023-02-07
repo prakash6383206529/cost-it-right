@@ -129,16 +129,16 @@ function MeshCalculation(props) {
     const setFinalGrossWeight = () => {
 
         let data = {
-            width_inc_cutting: Number(getValues('width_RoundOff')),  //RWCA
-            length_inc_cutting_allowance: Number(getValues('length_RoundOff')), //RLCA
+            width_inc_cutting: (getValues('width_RoundOff')),  //RWCA
+            length_inc_cutting_allowance: (getValues('length_RoundOff')), //RLCA
             ftp: Number(getValues('fluteTypePercent')), //FTP
             no_of_ply: Number(getValues('no_of_ply')), //NP
             gsm: checkForNull(getValues('gsm')) //GSM
         }
 
         if (data.length_inc_cutting_allowance) {
-            const WidthIncCuttingAllowance = Number(data.width_inc_cutting);
-            const LengthIncCuttingAllowance = parseInt(data.length_inc_cutting_allowance);
+            const WidthIncCuttingAllowance = checkForNull(data.width_inc_cutting);
+            const LengthIncCuttingAllowance = checkForNull(data.length_inc_cutting_allowance);
             const NoOfPly = parseInt(data.no_of_ply);
             const Gsm = parseInt(data.gsm);
             const fluteTypePercent = checkForNull(data.ftp)
