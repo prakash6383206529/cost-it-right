@@ -12,7 +12,6 @@ import { getConfigurationKey } from './auth'
 import _ from 'lodash';
 
 
-
 /**
  * @method  apiErrors
  * @desc Response error handler.

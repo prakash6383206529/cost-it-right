@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { Col, Row } from 'reactstrap'
 import { saveRawMaterialCalculationForCorrugatedBox } from '../../../actions/CostWorking'
 import { NumberFieldHookForm, SearchableSelectHookForm, TextFieldHookForm, } from '../../../../layout/HookFormInputs'
-import { checkForDecimalAndNull, checkForNull, loggedInUserId } from '../../../../../helper'
+import { ceilByMultiple, checkForDecimalAndNull, checkForNull, loggedInUserId } from '../../../../../helper'
 import { reactLocalStorage } from 'reactjs-localstorage'
 import Toaster from '../../../../common/Toaster'
 import HeaderTitle from '../../../../common/HeaderTitle'
@@ -106,7 +106,7 @@ function MeshCalculation(props) {
             length_inc_cutting_allowance = lengthSheet + (2 * data.cuttingAllowanceForLength)
         }
 
-        let length_RoundOff = (Math.ceil(length_inc_cutting_allowance * 4) / 4).toFixed(2); // ROUND  OFF TO 0.25
+        let length_RoundOff = ceilByMultiple(length_inc_cutting_allowance, 0.25)    //ROUND OFF TO 0.25 (Common function)
 
         setDataSend(prevState => ({ ...prevState, widthSheetWithDecimal: widthSheet, lengthSheetWithDecimal: lengthSheet, widthIncCuttingAllowance: width_inc_cutting, roundOffWidth: roundOffWidth, length_RoundOff: length_RoundOff, length_inc_cutting_allowance: length_inc_cutting_allowance }))
         setTimeout(() => {
