@@ -102,7 +102,7 @@ function AddRfq(props) {
         })
         initialConfiguration?.IsDestinationPlantConfigure === false && setSelectedVendors(tempArr)
         return () => {
-            reactLocalStorage?.setObject('vendorData', [])
+            reactLocalStorage?.setObject('Data', [])
             reactLocalStorage.setObject('PartData', [])
             setUpdateButtonVendorTable(false)
             dispatch(setRFQBulkUpload([]))
@@ -675,14 +675,9 @@ function AddRfq(props) {
     */
     const handleTechnologyChange = (newValue) => {
         if (newValue && newValue !== '') {
-            // setInputLoader(true)
-            // dispatch(getPartSelectListByTechnology(newValue.value, () => {
-            //     setInputLoader(false)
             setPartNoDisable(false)
-            setValue('partNo', "")
+            setValue('partNumber', "")
             setTechnology(newValue)
-            // }))
-
         }
     }
 
@@ -693,7 +688,6 @@ function AddRfq(props) {
             setGetReporterListDropDown(res?.data?.SelectList)
             setValue('contactPerson', "")
         }))
-
     }
     const vendorFilterList = async (inputValue) => {
         const resultInput = inputValue.slice(0, searchCount)
@@ -1310,7 +1304,7 @@ function AddRfq(props) {
                                                     PreviewComponent={Preview}
                                                     //onSubmit={this.handleSubmit}
                                                     accept="*"
-                                                    initialFiles={initialFiles}
+                                                    initialFiles={[]}
                                                     maxFiles={4}
                                                     maxSizeBytes={2000000}
                                                     inputContent={(files, extra) =>
