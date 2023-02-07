@@ -1864,7 +1864,11 @@ export function getPartCostingVendorSelectList(partNumber, callback) {
 }
 
 export function getPartSelectListByTechnology(technologyId, partNumber, callback) {
-  return axios.get(`${API.getPartByTechnologyId}?technologyId=${technologyId}&partNumber=${partNumber}`, config())
+  return axios.get(`${API.getPartByTechnologyId}?technologyId=${technologyId}&partNumber=${partNumber}`, config()).catch(error => {
+    apiErrors(error);
+    callback(error);
+    return Promise.reject(error)
+  });
 }
 
 /**
