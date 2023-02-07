@@ -22,7 +22,6 @@ import {
     GET_RM_NAME_SELECTLIST,
     GET_MACHINE_DATALIST_SUCCESS,
     GET_GRADELIST_BY_RM_NAME_SELECTLIST,
-    GET_VENDORLIST_BY_VENDORTYPE_SELECTLIST,
     GET_GRADE_SELECTLIST_SUCCESS,
     GET_RAW_MATERIAL_FILTER_DYNAMIC_DATA,
     GET_GRADE_FILTER_BY_RAW_MATERIAL_SELECTLIST,
@@ -987,7 +986,11 @@ export function getGradeListByRawMaterialNameChild(ID, callback) {
  * @description get Vendor list by Vendor Type (RAW MATERIAL OR VBC)
  */
 export function getVendorListByVendorType(costingTypeId, vendorName, callback) {
-    return axios.get(`${API.getVendorListByVendorType}?costingTypeId=${costingTypeId}&vendorName=${vendorName}`, config());
+    return axios.get(`${API.getVendorListByVendorType}?costingTypeId=${costingTypeId}&vendorName=${vendorName}`, config()).catch(error => {
+        apiErrors(error);
+        callback(error);
+        return Promise.reject(error)
+    });
 }
 
 /**
@@ -995,7 +998,11 @@ export function getVendorListByVendorType(costingTypeId, vendorName, callback) {
  * @description GET VBC VENDOR WITH VENDOR CODE SELECTLIST
  */
 export function getVendorWithVendorCodeSelectList(vendorName, callback) {
-    return axios.get(`${API.getVendorWithVendorCodeSelectList}?vendorName=${vendorName}`, config());
+    return axios.get(`${API.getVendorWithVendorCodeSelectList}?vendorName=${vendorName}`, config()).catch(error => {
+        apiErrors(error);
+        callback(error);
+        return Promise.reject(error)
+    });
 }
 
 /**
@@ -1026,7 +1033,6 @@ export function getRMDomesticDataList(data, skip, take, isPagination, obj, callb
         }).catch((error) => {
             dispatch({ type: API_FAILURE, });
             callback(error);
-
             apiErrors(error);
         });
     };
