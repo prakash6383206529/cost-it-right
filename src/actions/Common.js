@@ -1367,12 +1367,12 @@ export function getPlantSelectListByType(TYPE, callback) {
   };
 }
 
-/**
- * @method getVendorWithVendorCodeSelectList
- * @description GET VBC VENDOR WITH VENDOR CODE SELECTLIST
- */
 export function getVendorWithVendorCodeSelectList(vendorName, callback) {
-  return axios.get(`${API.getVendorWithVendorCodeSelectList}?vendorName=${vendorName}`, config());
+  return axios.get(`${API.getVendorWithVendorCodeSelectList}?vendorName=${vendorName}`, config()).catch(error => {
+    apiErrors(error);
+    callback(error);
+    return Promise.reject(error)
+  });
 }
 
 
@@ -1512,7 +1512,11 @@ export function getAllCity(callback) {
 }
 
 export function getPartSelectList(callback) {
-  return axios.get(`${API.getPartSelectLists}`, config());
+  return axios.get(`${API.getPartSelectLists}`, config()).catch(error => {
+    apiErrors(error);
+    callback(error);
+    return Promise.reject(error)
+  });
 }
 
 
