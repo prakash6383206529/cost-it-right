@@ -15,7 +15,7 @@ import Dropzone from 'react-dropzone-uploader'
 import 'react-dropzone-uploader/dist/styles.css'
 import Toaster from '../common/Toaster';
 import { MESSAGES } from '../../config/message';
-import { createRfqQuotation, fileDeleteQuotation, fileUploadQuotation, getQuotationById, updateRfqQuotation, getContactPerson, checkExistCosting, setCheckRFQBulkUpload, setRFQBulkUpload } from './actions/rfq';
+import { createRfqQuotation, fileDeleteQuotation, fileUploadQuotation, getQuotationById, updateRfqQuotation, getContactPerson, checkExistCosting, setRFQBulkUpload } from './actions/rfq';
 import PopupMsgWrapper from '../common/PopupMsgWrapper';
 import LoaderCustom from '../common/LoaderCustom';
 import redcrossImg from '../../assests/images/red-cross.png'
@@ -40,7 +40,6 @@ function AddRfq(props) {
 
     const [getReporterListDropDown, setGetReporterListDropDown] = useState([]);
     const [vendor, setVendor] = useState([]);
-    const [initialFiles, setInitialFiles] = useState([]);
     const [isEditFlag, setIsEditFlag] = useState(false);
     const [isViewFlag, setIsViewFlag] = useState(false);
     const [selectedVendors, setSelectedVendors] = useState([]);
@@ -82,7 +81,7 @@ function AddRfq(props) {
         })
         initialConfiguration?.IsDestinationPlantConfigure === false && setSelectedVendors(tempArr)
         return () => {
-            reactLocalStorage?.setObject('vendorData', [])
+            reactLocalStorage?.setObject('Data', [])
             reactLocalStorage.setObject('PartData', [])
             setUpdateButtonVendorTable(false)
             dispatch(setRFQBulkUpload([]))
@@ -634,14 +633,9 @@ function AddRfq(props) {
     */
     const handleTechnologyChange = (newValue) => {
         if (newValue && newValue !== '') {
-            // setInputLoader(true)
-            // dispatch(getPartSelectListByTechnology(newValue.value, () => {
-            //     setInputLoader(false)
             setPartNoDisable(false)
-            setValue('partNo', "")
+            setValue('partNumber', "")
             setTechnology(newValue)
-            // }))
-
         }
     }
 
@@ -652,7 +646,6 @@ function AddRfq(props) {
             setGetReporterListDropDown(res?.data?.SelectList)
             setValue('contactPerson', "")
         }))
-
     }
     const vendorFilterList = async (inputValue) => {
         const resultInput = inputValue.slice(0, searchCount)
@@ -1035,7 +1028,7 @@ function AddRfq(props) {
                                                     PreviewComponent={Preview}
                                                     //onSubmit={this.handleSubmit}
                                                     accept="*"
-                                                    initialFiles={initialFiles}
+                                                    initialFiles={[]}
                                                     maxFiles={4}
                                                     maxSizeBytes={2000000}
                                                     inputContent={(files, extra) =>
