@@ -24,10 +24,12 @@
 
 .Add {
     @include icons("../../assests/images/Group 8861.svg");
+    @include extra-icon-styles;
 }
 
 .Edit {
     @include icons("../../assests/images/Group 8860.svg", $shadowColor: #f8a000, $borderColor: #feeccc);
+    @include extra-icon-styles;
 }
 
 .right-hand-arrow {
@@ -57,17 +59,17 @@
 
 .View {
     @include icons("../../assests/images/Group-8858.svg", $shadowColor: #0cbeeb, $borderColor: #bbe8f9);
-
+    @include extra-icon-styles;
 }
 
 .cost-movement {
     @include icons("../../assests/images/cost-movement.svg", $shadowColor: #0cbeeb, $borderColor: #bbe8f9);
-
+    @include extra-icon-styles;
 }
 
 .pie-chart {
     @include icons("../../assests/images/pie-chart.svg");
-
+    @include extra-icon-styles;
 }
 
 .add-process {
@@ -130,6 +132,7 @@
 
 .plus {
     @include icons("../../assests/images/Path 15286.svg", 12px, 12px);
+    @include extra-icon-styles;
 }
 
 .swap {
