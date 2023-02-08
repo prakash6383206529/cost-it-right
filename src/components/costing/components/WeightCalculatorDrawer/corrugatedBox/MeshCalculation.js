@@ -87,12 +87,8 @@ function MeshCalculation(props) {
             cutting_allowance: Number(getValues('cutting_allowance')),
             cuttingAllowanceForLength: Number(getValues('cuttingAllowanceForLength'))
         }
-        //width_sheet
-        //length_sheet
-        let inv = 1.0 / 0.25
 
         let widthSheet = (checkForNull(data.widthBox) * checkForNull(data.noOfMeshWidth)) / 25.4;
-
         let width_inc_cutting = 0
         if (widthSheet) {
             width_inc_cutting = widthSheet + (2 * data.cutting_allowance)
@@ -116,7 +112,6 @@ function MeshCalculation(props) {
             setValue('width_RoundOff', checkForDecimalAndNull(roundOffWidth, localStorage.NoOfDecimalForInputOutput))
         }, 200);
 
-
         setTimeout(() => {
             setValue('length_sheet', checkForDecimalAndNull(lengthSheet, localStorage.NoOfDecimalForInputOutput))
             setValue('length_inc_cutting_allowance', checkForDecimalAndNull(length_inc_cutting_allowance, localStorage.NoOfDecimalForInputOutput))
@@ -133,12 +128,32 @@ function MeshCalculation(props) {
             length_inc_cutting_allowance: (getValues('length_RoundOff')), //RLCA
             ftp: Number(getValues('fluteTypePercent')), //FTP
             no_of_ply: Number(getValues('no_of_ply')), //NP
-            gsm: checkForNull(getValues('gsm')) //GSM
+            gsm: checkForNull(getValues('gsm')),//GSM,
+            widthBox: Number(getValues('width_box')),
+            noOfMeshWidth: Number(getValues('noOfMeshWidth')),
+            cutting_allowance: Number(getValues('cutting_allowance')),
+            cuttingAllowanceForLength: Number(getValues('cuttingAllowanceForLength')),
+            lengthBox: Number(getValues('length_box')),
+            noOfMeshLength: Number(getValues('noOfMeshLength')),
         }
 
-        if (data.length_inc_cutting_allowance) {
-            const WidthIncCuttingAllowance = checkForNull(data.width_inc_cutting);
-            const LengthIncCuttingAllowance = checkForNull(data.length_inc_cutting_allowance);
+        let widthSheet = (checkForNull(data.widthBox) * checkForNull(data.noOfMeshWidth)) / 25.4;
+        let width_inc_cutting = 0
+        if (widthSheet) {
+            width_inc_cutting = widthSheet + (2 * data.cutting_allowance)
+        }
+        let roundOffWidth = Math.round(width_inc_cutting)
+
+        const lengthSheet = (checkForNull(data.noOfMeshLength) * checkForNull(data.lengthBox)) / 25.4;
+        let length_inc_cutting_allowance = 0
+        if (lengthSheet) {
+            length_inc_cutting_allowance = lengthSheet + (2 * data.cuttingAllowanceForLength)
+        }
+        let length_RoundOff = ceilByMultiple(length_inc_cutting_allowance, 0.25)    //ROUND OFF TO 0.25 (Common function)
+
+        if (true) {
+            const WidthIncCuttingAllowance = checkForNull(roundOffWidth);
+            const LengthIncCuttingAllowance = checkForNull(length_RoundOff);
             const NoOfPly = parseInt(data.no_of_ply);
             const Gsm = parseInt(data.gsm);
             const fluteTypePercent = checkForNull(data.ftp)
