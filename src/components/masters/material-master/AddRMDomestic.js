@@ -41,6 +41,8 @@ import { getClientSelectList, } from '../actions/Client';
 import { autoCompleteDropdown } from '../../common/CommonFunctions';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { reactLocalStorage } from 'reactjs-localstorage';
+import { checkFinalUser } from '../../../components/costing/actions/Costing'
+
 const selector = formValueSelector('AddRMDomestic')
 
 class AddRMDomestic extends Component {
@@ -141,7 +143,7 @@ class AddRMDomestic extends Component {
         this.props.getCityByCountry(cityId, 0, () => { })
       })
     }
-    if (!(this.props.data.isEditFlag || this.state.isViewFlag)) {
+    if (!(this.props.data.isEditFlag || this.state.isViewFlag) && this.state.Technology) {
       this.setState({ inputLoader: true })
       this.props.getRawMaterialCategory((res) => { })
       this.props.getCostingSpecificTechnology(loggedInUserId(), () => { this.setState({ inputLoader: false }) })
@@ -150,22 +152,38 @@ class AddRMDomestic extends Component {
     }
     if (!this.state.isViewFlag) {
       let obj = {
-        MasterId: RM_MASTER_ID,
         DepartmentId: userDetails().DepartmentId,
-        LoggedInUserLevelId: userDetails().LoggedInMasterLevelId,
-        LoggedInUserId: loggedInUserId()
+        UserId: loggedInUserId(),
+        TechnologyId: RM_MASTER_ID,
+        Mode: 'master',
+        approvalTypeId: this.state.costingTypeId,
       }
-      this.props.masterFinalLevelUser(obj, (res) => {
-        if (res.data.Result) {
-          this.setState({ isFinalApprovar: res.data.Data.IsFinalApprovar })
+      this.props.checkFinalUser(obj, (res) => {
+        if (res?.data?.Result) {
+          this.setState({ isFinalApprovar: res?.data?.Data?.IsFinalApprover })
         }
       })
     }
   }
 
-  componentDidUpdate(prevProps) {
+  componentDidUpdate(prevProps, prevState) {
     if (this.props.fieldsObj !== prevProps.fieldsObj) {
       this.calculateNetCost()
+    }
+    if (prevState?.costingTypeId !== this.state.costingTypeId) {
+      let obj = {
+        DepartmentId: userDetails().DepartmentId,
+        UserId: loggedInUserId(),
+        TechnologyId: RM_MASTER_ID,
+        Mode: 'master',
+        approvalTypeId: this.state.costingTypeId,
+      }
+      this.props.checkFinalUser(obj, (res) => {
+        if (res?.data?.Result) {
+          this.setState({ isFinalApprovar: res?.data?.Data?.IsFinalApprover })
+        }
+      })
+
     }
   }
   componentWillUnmount() {
@@ -446,7 +464,7 @@ class AddRMDomestic extends Component {
         isEditFlag: false, isLoader: true, isShowForm: true, RawMaterialID: data.Id,
       })
       this.props.getRawMaterialDetailsAPI(data, true, (res) => {
-        if (res && res.data && res.data.Result) {
+        if (res && res.data && res?.data?.Result) {
           const Data = res.data.Data
           this.setState({ DataToChange: Data })
           // this.props.getPlantBySupplier(Data.Vendor, () => { })
@@ -1967,6 +1985,7 @@ class AddRMDomestic extends Component {
                 approvalObj={this.state.approvalObj}
                 isBulkUpload={false}
                 IsImportEntery={false}
+                costingTypeId={this.state.costingTypeId}
               />
             )
           }
@@ -2054,7 +2073,8 @@ export default connect(mapStateToProps, {
   getCityByCountry,
   getAllCity,
   masterFinalLevelUser,
-  getClientSelectList
+  getClientSelectList,
+  checkFinalUser
 })(
   reduxForm({
     form: 'AddRMDomestic',

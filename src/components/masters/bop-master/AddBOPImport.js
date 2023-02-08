@@ -13,7 +13,6 @@ import {
   fileUploadBOPDomestic, fileDeleteBOPDomestic, getIncoTermSelectList, getPaymentTermSelectList
 } from '../actions/BoughtOutParts';
 import { getVendorWithVendorCodeSelectList, getVendorTypeBOPSelectList, } from '../actions/Supplier';
-import { masterFinalLevelUser } from '../actions/Material'
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import { getConfigurationKey, loggedInUserId, userDetails } from "../../../helper/auth";
@@ -39,6 +38,7 @@ import { getClientSelectList, } from '../actions/Client';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { autoCompleteDropdown } from '../../common/CommonFunctions';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
+import { checkFinalUser } from '../../../components/costing/actions/Costing'
 
 const selector = formValueSelector('AddBOPImport');
 
@@ -135,15 +135,16 @@ class AddBOPImport extends Component {
     }
     if (!this.state.isViewMode) {
       let obj = {
-        MasterId: BOP_MASTER_ID,
+        TechnologyId: BOP_MASTER_ID,
         DepartmentId: userDetails().DepartmentId,
-        LoggedInUserLevelId: userDetails().LoggedInMasterLevelId,
-        LoggedInUserId: loggedInUserId()
+        UserId: loggedInUserId(),
+        Mode: 'master',
+        approvalTypeId: this.state.costingTypeId,
       }
       this.setState({ finalApprovalLoader: true })
-      this.props.masterFinalLevelUser(obj, (res) => {
+      this.props.checkFinalUser(obj, (res) => {
         if (res.data.Result) {
-          this.setState({ isFinalApprovar: res.data.Data.IsFinalApprovar })
+          this.setState({ isFinalApprovar: res.data.Data.IsFinalApprover })
           this.setState({ finalApprovalLoader: false })
         }
       })
@@ -1599,6 +1600,7 @@ class AddBOPImport extends Component {
                 isBulkUpload={false}
                 IsImportEntery={true}
                 currency={this.state.currency}
+                costingTypeId={this.state.costingTypeId}
               />
             )
           }
@@ -1665,7 +1667,7 @@ export default connect(mapStateToProps, {
   fileDeleteBOPDomestic,
   getPlantSelectListByType,
   getExchangeRateByCurrency,
-  masterFinalLevelUser,
+  checkFinalUser,
   getCityByCountry,
   getAllCity,
   getClientSelectList,
