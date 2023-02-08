@@ -124,8 +124,6 @@ function MeshCalculation(props) {
     const setFinalGrossWeight = () => {
 
         let data = {
-            width_inc_cutting: (getValues('width_RoundOff')),  //RWCA
-            length_inc_cutting_allowance: (getValues('length_RoundOff')), //RLCA
             ftp: Number(getValues('fluteTypePercent')), //FTP
             no_of_ply: Number(getValues('no_of_ply')), //NP
             gsm: checkForNull(getValues('gsm')),//GSM,
@@ -151,21 +149,20 @@ function MeshCalculation(props) {
         }
         let length_RoundOff = ceilByMultiple(length_inc_cutting_allowance, 0.25)    //ROUND OFF TO 0.25 (Common function)
 
-        if (true) {
-            const WidthIncCuttingAllowance = checkForNull(roundOffWidth);
-            const LengthIncCuttingAllowance = checkForNull(length_RoundOff);
-            const NoOfPly = parseInt(data.no_of_ply);
-            const Gsm = parseInt(data.gsm);
-            const fluteTypePercent = checkForNull(data.ftp)
+        const WidthIncCuttingAllowance = checkForNull(roundOffWidth);
+        const LengthIncCuttingAllowance = checkForNull(length_RoundOff);
+        const NoOfPly = parseInt(data.no_of_ply);
+        const Gsm = parseInt(data.gsm);
+        const fluteTypePercent = checkForNull(data.ftp)
 
-            const gross = (WidthIncCuttingAllowance * LengthIncCuttingAllowance * NoOfPly * Gsm * fluteTypePercent) / 1550;
-            const finalGross = gross / 1000;
+        const gross = (WidthIncCuttingAllowance * LengthIncCuttingAllowance * NoOfPly * Gsm * fluteTypePercent) / 1550;
+        const finalGross = gross / 1000;
 
-            setDataSend(prevState => ({ ...prevState, paperWithDecimal: finalGross }))
-            setTimeout(() => {
-                setValue('paper_process', checkForDecimalAndNull(finalGross, localStorage.NoOfDecimalForInputOutput));
-            }, 200);
-        }
+        setDataSend(prevState => ({ ...prevState, paperWithDecimal: finalGross }))
+        setTimeout(() => {
+            setValue('paper_process', checkForDecimalAndNull(finalGross, localStorage.NoOfDecimalForInputOutput));
+        }, 200);
+
     }
 
     const onSubmit = debounce(handleSubmit((Values) => {
