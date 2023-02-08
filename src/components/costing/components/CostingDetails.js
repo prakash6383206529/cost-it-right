@@ -1962,7 +1962,7 @@ function CostingDetails(props) {
 
                     </Row>
                     {isLoader ? <div className='costing-table'><LoaderCustom /></div> :
-                      <>
+                      <div className='costing-main-container'>
                         {IsOpenVendorSOBDetails && (
                           <Row>
                             <Col md="12">
@@ -2439,7 +2439,7 @@ function CostingDetails(props) {
                             </Row>
                           </>
                         )}
-                      </>}
+                      </div>}
                     {!IsOpenVendorSOBDetails &&
                       <Row className="justify-content-between btn-row">
                         <div className="col-sm-12 text-right">
