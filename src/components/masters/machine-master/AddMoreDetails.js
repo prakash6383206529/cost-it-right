@@ -34,7 +34,6 @@ import EfficiencyDrawer from './EfficiencyDrawer';
 import DayTime from '../../common/DayTimeWrapper'
 import { AcceptableMachineUOM } from '../../../config/masterData'
 import imgRedcross from '../../../assests/images/red-cross.png'
-import { masterFinalLevelUser } from '../actions/Material'
 import MasterSendForApproval from '../MasterSendForApproval'
 import { animateScroll as scroll } from 'react-scroll';
 import { ProcessGroup } from '../masterUtil';
@@ -42,6 +41,7 @@ import _ from 'lodash'
 import LoaderCustom from '../../common/LoaderCustom';
 import TooltipCustom from '../../common/Tooltip';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
+import { checkFinalUser } from '../../../components/costing/actions/Costing'
 
 const selector = formValueSelector('AddMoreDetails');
 
@@ -159,18 +159,18 @@ class AddMoreDetails extends Component {
     }
 
     let obj = {
-      MasterId: MACHINE_MASTER_ID,
+      TechnologyId: MACHINE_MASTER_ID,
       DepartmentId: userDetails().DepartmentId,
-      LoggedInUserLevelId: userDetails().LoggedInMasterLevelId,
-      LoggedInUserId: loggedInUserId()
+      UserId: loggedInUserId(),
+      Mode: 'master',
+      approvalTypeId: this.state.costingTypeId,
     }
     this.setState({ finalApprovalLoader: true })
-    this.props.masterFinalLevelUser(obj, (res) => {
+    this.props.checkFinalUser(obj, (res) => {
       if (res.data.Result) {
-        this.setState({ isFinalApprovar: res.data.Data.IsFinalApprovar })
+        this.setState({ isFinalApprovar: res.data.Data.IsFinalApprover })
         this.setState({ finalApprovalLoader: false })
       }
-
     })
     this.getDetails()
   }
@@ -4001,6 +4001,7 @@ class AddMoreDetails extends Component {
               approvalObj={this.state.approvalObj}
               isBulkUpload={false}
               IsImportEntery={false}
+              costingTypeId={this.state.costingTypeId}
             />
           )
         }
@@ -4119,7 +4120,7 @@ export default connect(mapStateToProps, {
   getMachineDetailsData,
   fileUploadMachine,
   fileDeleteMachine,
-  masterFinalLevelUser,
+  checkFinalUser,
   getProcessGroupByMachineId,
   setGroupProcessList,
   setProcessList

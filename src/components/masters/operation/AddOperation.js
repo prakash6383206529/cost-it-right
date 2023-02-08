@@ -23,12 +23,12 @@ import { debounce } from 'lodash';
 import AsyncSelect from 'react-select/async';
 import LoaderCustom from '../../common/LoaderCustom';
 import { CheckApprovalApplicableMaster, onFocus, showDataOnHover } from '../../../helper';
-import { masterFinalLevelUser } from '../actions/Material'
 import { getCostingSpecificTechnology } from '../../costing/actions/Costing'
 import { getClientSelectList, } from '../actions/Client';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { autoCompleteDropdown } from '../../common/CommonFunctions';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
+import { checkFinalUser } from '../../../components/costing/actions/Costing'
 
 const selector = formValueSelector('AddOperation');
 
@@ -107,13 +107,14 @@ class AddOperation extends Component {
     }
     if (!this.state.isViewMode) {
       let obj = {
-        MasterId: OPERATIONS_ID,
-        DepartmentId: userDetails()?.DepartmentId,
-        LoggedInUserLevelId: userDetails()?.LoggedInMasterLevelId,
-        LoggedInUserId: loggedInUserId()
+        TechnologyId: OPERATIONS_ID,
+        DepartmentId: userDetails().DepartmentId,
+        UserId: loggedInUserId(),
+        Mode: 'master',
+        approvalTypeId: this.state.costingTypeId,
       }
       this.setState({ finalApprovalLoader: true })
-      this.props.masterFinalLevelUser(obj, (res) => {
+      this.props.checkFinalUser(obj, (res) => {
         if (res.data.Result) {
           this.setState({ isFinalApprovar: res.data.Data.IsFinalApprovar })
           this.setState({ finalApprovalLoader: false })
@@ -1310,6 +1311,7 @@ class AddOperation extends Component {
               approvalObj={this.state.approvalObj}
               isBulkUpload={false}
               IsImportEntery={false}
+              costingTypeId={this.state.costingTypeId}
             />
           )
         }
@@ -1368,7 +1370,7 @@ export default connect(mapStateToProps, {
   getOperationDataAPI,
   fileUploadOperation,
   fileDeleteOperation,
-  masterFinalLevelUser,
+  checkFinalUser,
   checkAndGetOperationCode,
   getCostingSpecificTechnology,
   getClientSelectList

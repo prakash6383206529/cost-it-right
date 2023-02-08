@@ -211,7 +211,8 @@ function SimulationApprovalSummary(props) {
                 DepartmentId: DepartmentId,
                 UserId: loggedInUserId(),
                 TechnologyId: SimulationTechnologyId,
-                Mode: 'simulation'
+                Mode: 'simulation',
+                approvalTypeId: SimulationHeadId,
             }
             dispatch(checkFinalUser(finalUserObj, res => {
                 if (res && res.data && res.data.Result) {

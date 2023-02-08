@@ -8,7 +8,6 @@ import {
 } from "../../../helper/validation";
 import { renderText, searchableSelect, renderTextAreaField, focusOnError, renderDatePicker } from "../../layout/FormInputs";
 import { getPlantSelectListByType, getPlantBySupplier, getUOMSelectList } from '../../../actions/Common';
-import { masterFinalLevelUser } from '../actions/Material';
 import {
   createMachine, updateMachine, updateMachineDetails, getMachineTypeSelectList, getProcessesSelectList, fileUploadMachine, fileDeleteMachine,
   checkAndGetMachineNumber, getMachineData, getProcessGroupByMachineId, setGroupProcessList, setProcessList
@@ -40,6 +39,7 @@ import { getClientSelectList, } from '../actions/Client';
 import { autoCompleteDropdown } from '../../common/CommonFunctions';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
+import { checkFinalUser } from '../../../components/costing/actions/Costing'
 
 
 const selector = formValueSelector('AddMachineRate');
@@ -150,19 +150,20 @@ class AddMachineRate extends Component {
     if (!editDetails.isViewMode) {
       this.props.getUOMSelectList(() => { })
       this.props.getProcessesSelectList(() => { })
+
       let obj = {
-        MasterId: MACHINE_MASTER_ID,
+        TechnologyId: MACHINE_MASTER_ID,
         DepartmentId: userDetails().DepartmentId,
-        LoggedInUserLevelId: userDetails().LoggedInMasterLevelId,
-        LoggedInUserId: loggedInUserId()
+        UserId: loggedInUserId(),
+        Mode: 'master',
+        approvalTypeId: this.state.costingTypeId,
       }
       this.setState({ finalApprovalLoader: true })
-      this.props.masterFinalLevelUser(obj, (res) => {
+      this.props.checkFinalUser(obj, (res) => {
         if (res.data.Result) {
-          this.setState({ isFinalApprovar: res.data.Data.IsFinalApprovar })
+          this.setState({ isFinalApprovar: res.data.Data.IsFinalApprover })
           this.setState({ finalApprovalLoader: false })
         }
-
       })
     }
 
@@ -1960,6 +1961,7 @@ class AddMachineRate extends Component {
               approvalObj={this.state.approvalObj}
               isBulkUpload={false}
               IsImportEntery={false}
+              costingTypeId={this.state.costingTypeId}
             />
           )
         }
@@ -2022,7 +2024,7 @@ export default connect(mapStateToProps, {
   createMachine,
   updateMachine,
   updateMachineDetails,
-  masterFinalLevelUser,
+  checkFinalUser,
   getMachineData,
   getProcessGroupByMachineId,
   setGroupProcessList,

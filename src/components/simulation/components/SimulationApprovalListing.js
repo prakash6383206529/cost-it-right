@@ -432,7 +432,7 @@ function SimulationApprovalListing(props) {
     }
 
     const viewDetails = (rowObj) => {
-        setApprovalData({ approvalProcessId: rowObj.ApprovalProcessId, approvalNumber: rowObj.ApprovalNumber, SimulationTechnologyHead: rowObj.SimulationTechnologyHead, SimulationTechnologyId: rowObj.SimulationTechnologyId })
+        setApprovalData({ approvalProcessId: rowObj?.ApprovalProcessId, approvalNumber: rowObj?.ApprovalNumber, SimulationTechnologyHead: rowObj?.SimulationTechnologyHead, SimulationTechnologyId: rowObj?.SimulationTechnologyId, SimulationHeadId: rowObj?.SimulationHeadId, DepartmentId: rowObj?.DepartmentId })
         dispatch(setMasterForSimulation({ label: rowObj.SimulationTechnologyHead, value: rowObj.SimulationTechnologyId }))
         dispatch(setTechnologyForSimulation({ label: rowObj.SimulationTechnologyHead, value: rowObj.SimulationTechnologyId }))
         if (rowObj?.Status === 'Draft' || rowObj.SimulationType === 'Provisional' || rowObj?.Status === 'Linked') {
@@ -567,7 +567,8 @@ function SimulationApprovalListing(props) {
             DepartmentId: selectedRowData[0].Status === DRAFT ? EMPTY_GUID : selectedRowData[0]?.DepartmentId,
             UserId: loggedInUserId(),
             TechnologyId: selectedRowData[0].SimulationTechnologyId,
-            Mode: 'simulation'
+            Mode: 'simulation',
+            approvalTypeId: selectedRowData[0].SimulationHeadId,
         }
 
         dispatch(checkFinalUser(obj, res => {
@@ -605,7 +606,9 @@ function SimulationApprovalListing(props) {
                     isFromApprovalListing: true,
                     approvalProcessId: approvalData.approvalProcessId,
                     master: approvalData.SimulationTechnologyId,
-                    statusForLinkedToken: statusForLinkedToken
+                    statusForLinkedToken: statusForLinkedToken,
+                    approvalTypeId: approvalData.SimulationHeadId,
+                    DepartmentId: approvalData.DepartmentId
                 }
 
             }}

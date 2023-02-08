@@ -10,7 +10,8 @@ import {
 } from '../config/constants'
 import { getConfigurationKey } from './auth'
 import _ from 'lodash';
-
+import { useDispatch } from 'react-redux';
+import { getUsersSimulationTechnologyLevelAPI } from '../actions/auth/AuthActions'
 
 /**
  * @method  apiErrors
@@ -1127,4 +1128,15 @@ export function addDays(theDate, days) {
 export function ceilByMultiple(number, multiple = 0.25) {
   var inv = 1.0 / multiple;
   return (Math.ceil(number * inv) / inv).toFixed(getConfigurationKey().NoOfDecimalForInputOutput);
+}
+
+export function userSimulationTechnologyLevelDetails(SimulationHeadId, data = []) {
+  let dataList = [...data]
+  let filteredData = dataList?.filter(element => element.ApprovalTypeId === SimulationHeadId)
+  let obj = {
+    Level: filteredData[0]?.Level,
+    LevelId: filteredData[0]?.LevelId,
+    ApprovalTypeId: filteredData[0]?.ApprovalTypeId
+  }
+  return obj
 }
