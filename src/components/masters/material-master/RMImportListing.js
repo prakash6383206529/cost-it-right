@@ -898,8 +898,8 @@ function RMImportListing(props) {
                     <AgGridColumn cellClass="has-checkbox" field="CostingHead" headerName='Costing Head' cellRenderer={checkBoxRenderer}></AgGridColumn>
                     <AgGridColumn field="TechnologyName" headerName='Technology'></AgGridColumn>
                     <AgGridColumn field="RawMaterial" ></AgGridColumn>
-                    <AgGridColumn field="RMGrade"></AgGridColumn>
-                    <AgGridColumn field="RMSpec"></AgGridColumn>
+                    <AgGridColumn field="RMGrade" headerName='Grade'></AgGridColumn>
+                    <AgGridColumn field="RMSpec" headerName='Spec'></AgGridColumn>
                     <AgGridColumn field="RawMaterialCode" headerName='Code' cellRenderer='hyphenFormatter'></AgGridColumn>
                     <AgGridColumn field="Category"></AgGridColumn>
                     <AgGridColumn field="MaterialType"></AgGridColumn>
@@ -946,7 +946,7 @@ function RMImportListing(props) {
             closeDrawer={closeBulkUploadDrawer}
             isEditFlag={false}
             densityAlert={densityAlert}
-            fileName={"RMImport"}
+            fileName={"RM Import"}
             isZBCVBCTemplate={true}
             messageLabel={"RM Import"}
             anchor={"right"}

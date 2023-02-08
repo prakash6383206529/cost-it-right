@@ -105,19 +105,19 @@ function UserRegistration(props) {
   const getReporterListDropDown = useSelector(state => state.comman.getReporterListDropDown)
 
   const defaultValues = {
-    FirstName: registerUserData && registerUserData.FirstName !== undefined ? registerUserData.FirstName : '',
-    MiddleName: registerUserData && registerUserData.MiddleName !== undefined ? registerUserData.MiddleName : '',
-    LastName: registerUserData && registerUserData.LastName !== undefined ? registerUserData.LastName : '',
-    EmailAddress: registerUserData && registerUserData.EmailAddress !== undefined ? registerUserData.EmailAddress : '',
-    UserName: registerUserData && registerUserData.UserName !== undefined ? registerUserData.UserName : '',
-    Mobile: registerUserData && registerUserData.Mobile !== undefined ? registerUserData.Mobile : '',
-    Password: registerUserData && registerUserData.Password !== undefined ? '' : '',
-    passwordConfirm: registerUserData && registerUserData.Password !== undefined ? '' : '',
-    AddressLine1: registerUserData && registerUserData.AddressLine1 !== undefined ? registerUserData.AddressLine1 : '',
-    AddressLine2: registerUserData && registerUserData.AddressLine2 !== undefined ? registerUserData.AddressLine2 : '',
-    ZipCode: registerUserData && registerUserData.ZipCode !== undefined ? registerUserData.ZipCode : '',
-    PhoneNumber: registerUserData && registerUserData.PhoneNumber !== undefined ? registerUserData.PhoneNumber : '',
-    Extension: registerUserData && registerUserData.Extension !== undefined ? registerUserData.Extension : '',
+    FirstName: props?.data?.isEditFlag && registerUserData && registerUserData.FirstName !== undefined ? registerUserData.FirstName : '',
+    MiddleName: props?.data?.isEditFlag && registerUserData && registerUserData.MiddleName !== undefined ? registerUserData.MiddleName : '',
+    LastName: props?.data?.isEditFlag && registerUserData && registerUserData.LastName !== undefined ? registerUserData.LastName : '',
+    EmailAddress: props?.data?.isEditFlag && registerUserData && registerUserData.EmailAddress !== undefined ? registerUserData.EmailAddress : '',
+    UserName: props?.data?.isEditFlag && registerUserData && registerUserData.UserName !== undefined ? registerUserData.UserName : '',
+    Mobile: props?.data?.isEditFlag && registerUserData && registerUserData.Mobile !== undefined ? registerUserData.Mobile : '',
+    Password: props?.data?.isEditFlag && registerUserData && registerUserData.Password !== undefined ? '' : '',
+    passwordConfirm: props?.data?.isEditFlag && registerUserData && registerUserData.Password !== undefined ? '' : '',
+    AddressLine1: props?.data?.isEditFlag && registerUserData && registerUserData.AddressLine1 !== undefined ? registerUserData.AddressLine1 : '',
+    AddressLine2: props?.data?.isEditFlag && registerUserData && registerUserData.AddressLine2 !== undefined ? registerUserData.AddressLine2 : '',
+    ZipCode: props?.data?.isEditFlag && registerUserData && registerUserData.ZipCode !== undefined ? registerUserData.ZipCode : '',
+    PhoneNumber: props?.data?.isEditFlag && registerUserData && registerUserData.PhoneNumber !== undefined ? registerUserData.PhoneNumber : '',
+    Extension: props?.data?.isEditFlag && registerUserData && registerUserData.Extension !== undefined ? registerUserData.Extension : '',
   }
 
 
@@ -129,9 +129,7 @@ function UserRegistration(props) {
 
 
   useEffect(() => {
-
     if (registerUserData && props?.data?.isEditFlag) {
-
       setValue('FirstName', registerUserData && registerUserData.FirstName !== undefined ? registerUserData.FirstName : '',)
       setValue('MiddleName', registerUserData && registerUserData.MiddleName !== undefined ? registerUserData.MiddleName : '')
       setValue('LastName', registerUserData && registerUserData.LastName !== undefined ? registerUserData.LastName : '',)
@@ -1767,6 +1765,7 @@ function UserRegistration(props) {
                             Controller={Controller}
                             control={control}
                             register={register}
+                            onPaste={(e) => e.preventDefault()}
                             mandatory={true}
                             disableErrorOverflow={true}
                             rules={{

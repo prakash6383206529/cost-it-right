@@ -371,7 +371,7 @@ class SpecificationListing extends Component {
 
                                     <>
 
-                                        <ExcelFile filename={'RMSpecification'} fileExtension={'.xls'} element={
+                                        <ExcelFile filename={'RM Specification'} fileExtension={'.xls'} element={
                                             <button title={`Download ${this.state.dataCount === 0 ? "All" : "(" + this.state.dataCount + ")"}`} type="button" className={'user-btn mr5'} ><div className="download mr-1"></div>
                                                 {`${this.state.dataCount === 0 ? "All" : "(" + this.state.dataCount + ")"}`}</button>}>
                                             {this.onBtExport()}
@@ -421,9 +421,9 @@ class SpecificationListing extends Component {
                                     onFilterModified={this.onFloatingFilterChanged}
                                     suppressRowClickSelection={true}
                                 >
-                                    <AgGridColumn field="RMName"></AgGridColumn>
-                                    <AgGridColumn field="RMGrade"></AgGridColumn>
-                                    <AgGridColumn field="RMSpec"></AgGridColumn>
+                                    <AgGridColumn field="RMName" ></AgGridColumn>
+                                    <AgGridColumn field="RMGrade" headerName='Grade'></AgGridColumn>
+                                    <AgGridColumn field="RMSpec" headerName='Spec'></AgGridColumn>
                                     <AgGridColumn field="RawMaterialCode" headerName='Code' cellRenderer='hyphenFormatter'></AgGridColumn>
                                     <AgGridColumn field="SpecificationId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                                 </AgGridReact>
@@ -447,7 +447,7 @@ class SpecificationListing extends Component {
                     closeDrawer={this.closeBulkUploadDrawer}
                     isEditFlag={false}
                     densityAlert={this.densityAlert}
-                    fileName={'RMSpecification'}
+                    fileName={'RM Specification'}
                     messageLabel={'RM Specification'}
                     anchor={'right'}
                 />}

@@ -5,9 +5,9 @@ import { Row, Col, Table } from 'reactstrap';
 import {
   required, checkForNull, number, acceptAllExceptSingleSpecialCharacter, maxLength10,
   maxLength80, checkWhiteSpaces, checkForDecimalAndNull, postiveNumber, positiveAndDecimalNumber, maxLength20, maxLength3,
-  maxLength512, checkPercentageValue, decimalLengthFour, decimalLengthThree, decimalLength2, decimalLengthsix, checkSpacesInString, maxValue366, decimalAndNumberValidation
+  maxLength512, decimalLengthFour, decimalLengthThree, decimalLength2, decimalLengthsix, checkSpacesInString, maxValue366, decimalAndNumberValidation, percentageLimitValidation, maxPercentValue
 } from "../../../helper/validation";
-import { renderText, renderNumberInputField, searchableSelect, renderTextAreaField, focusOnError, renderDatePicker } from "../../layout/FormInputs";
+import { renderText, searchableSelect, renderTextAreaField, focusOnError, renderDatePicker, renderTextInputField } from "../../layout/FormInputs";
 import { getPlantSelectListByType, getPlantBySupplier, getUOMSelectList, getShiftTypeSelectList, getDepreciationTypeSelectList, } from '../../../actions/Common';
 import {
   createMachineDetails, updateMachineDetails, getMachineDetailsData, getMachineTypeSelectList, getProcessesSelectList,
@@ -969,7 +969,6 @@ class AddMoreDetails extends Component {
   };
 
   componentDidUpdate(prevProps) {
-    const { LoanPercentage, RateOfInterestPercentage, DepreciationRatePercentage, EfficiencyPercentage, AnnualMaintancePercentage, AnnualConsumablePercentage, AnnualInsurancePercentage, UtilizationFactorPercentage } = this.props.fieldsObj
     if (this.props.fieldsObj !== prevProps.fieldsObj) {
       this.totalCost()
       this.calculateLoanInterest()
@@ -979,30 +978,6 @@ class AddMoreDetails extends Component {
       this.totalMachineCost()
       this.powerCost()
       this.handleLabourCalculation()
-      if (LoanPercentage) {
-        checkPercentageValue(LoanPercentage, "Loan percentage should not be more than 100") ? this.props.change('LoanPercentage', LoanPercentage) : this.props.change('LoanPercentage', 0)
-      }
-      if (RateOfInterestPercentage) {
-        checkPercentageValue(RateOfInterestPercentage, "Rate of Intrest percentage should not be more than 100") ? this.props.change('RateOfInterestPercentage', RateOfInterestPercentage) : this.props.change('RateOfInterestPercentage', 0)
-      }
-      if (DepreciationRatePercentage) {
-        checkPercentageValue(DepreciationRatePercentage, "Depriciation percentage should not be more than 100") ? this.props.change('DepreciationRatePercentage', DepreciationRatePercentage) : this.props.change('DepreciationRatePercentage', 0)
-      }
-      if (EfficiencyPercentage) {
-        checkPercentageValue(EfficiencyPercentage, "Avaliablity percentage should not be more than 100") ? this.props.change('EfficiencyPercentage', EfficiencyPercentage) : this.props.change('EfficiencyPercentage', 0)
-      }
-      if (AnnualMaintancePercentage) {
-        checkPercentageValue(AnnualMaintancePercentage, "Annual Maintainance percentage should not be more than 100") ? this.props.change('AnnualMaintancePercentage', AnnualMaintancePercentage) : this.props.change('AnnualMaintancePercentage', 0)
-      }
-      if (AnnualConsumablePercentage) {
-        checkPercentageValue(AnnualConsumablePercentage, "Consumable percentage should not be more than 100") ? this.props.change('AnnualConsumablePercentage', AnnualConsumablePercentage) : this.props.change('AnnualConsumablePercentage', 0)
-      }
-      if (AnnualInsurancePercentage) {
-        checkPercentageValue(AnnualInsurancePercentage, "Insurance percentage should not be more than 100") ? this.props.change('AnnualInsurancePercentage', AnnualInsurancePercentage) : this.props.change('AnnualInsurancePercentage', 0)
-      }
-      if (UtilizationFactorPercentage) {
-        checkPercentageValue(UtilizationFactorPercentage, "Utilization percentage should not be more than 100") ? this.props.change('UtilizationFactorPercentage', checkForNull(UtilizationFactorPercentage)) : this.props.change('UtilizationFactorPercentage', 0)
-      }
     }
   }
 
@@ -2676,7 +2651,7 @@ class AddMoreDetails extends Component {
                             type="text"
                             placeholder={'-'}
                             validate={[]}
-                            component={renderNumberInputField}
+                            component={renderTextInputField}
                             required={false}
                             disabled={true}
                             className=" "
@@ -2747,7 +2722,7 @@ class AddMoreDetails extends Component {
                                 name={"LoanPercentage"}
                                 type="text"
                                 placeholder={disableAllForm ? '-' : 'Enter'}
-                                validate={[positiveAndDecimalNumber, maxLength10, decimalLengthThree]}
+                                validate={[number, maxPercentValue, checkWhiteSpaces, percentageLimitValidation]}
                                 component={renderText}
                                 //required={true}
                                 disabled={disableAllForm}
@@ -2776,7 +2751,7 @@ class AddMoreDetails extends Component {
                                 name={this.props.fieldsObj.RateOfInterestPercentage === 0 ? '-' : "RateOfInterestPercentage"}
                                 type="text"
                                 placeholder={disableAllForm ? '-' : 'Enter'}
-                                validate={[positiveAndDecimalNumber, maxLength10, decimalLengthThree]}
+                                validate={[number, maxPercentValue, checkWhiteSpaces, percentageLimitValidation]}
                                 component={renderText}
                                 //required={true}
                                 disabled={disableAllForm}
@@ -2791,7 +2766,7 @@ class AddMoreDetails extends Component {
                                 type="text"
                                 placeholder={'-'}
                                 validate={[number]}
-                                component={renderNumberInputField}
+                                component={renderTextInputField}
                                 //required={true}
                                 disabled={true}
                                 className=" "
@@ -2805,7 +2780,7 @@ class AddMoreDetails extends Component {
                                 type="text"
                                 placeholder={'-'}
                                 validate={[number]}
-                                component={renderNumberInputField}
+                                component={renderTextInputField}
                                 //required={true}
                                 disabled={true}
                                 className=" "
@@ -2821,7 +2796,7 @@ class AddMoreDetails extends Component {
                                 type="text"
                                 placeholder={'-'}
                                 validate={[number]}
-                                component={renderNumberInputField}
+                                component={renderTextInputField}
                                 //required={true}
                                 disabled={true}
                                 className=" "
@@ -2899,7 +2874,7 @@ class AddMoreDetails extends Component {
                                     name={"EfficiencyPercentage"}
                                     type="text"
                                     placeholder={disableAllForm ? '-' : 'Enter'}
-                                    validate={[positiveAndDecimalNumber, maxLength10]}
+                                    validate={[number, maxPercentValue, checkWhiteSpaces, percentageLimitValidation]}
                                     component={renderText}
                                     required={false}
                                     disabled={disableAllForm}
@@ -2922,7 +2897,7 @@ class AddMoreDetails extends Component {
                                 type="text"
                                 placeholder={'-'}
                                 // validate={[required]}
-                                component={renderNumberInputField}
+                                component={renderTextInputField}
                                 // required={true}
                                 disabled={true}
                                 className=" "
@@ -2973,7 +2948,7 @@ class AddMoreDetails extends Component {
                                   name={"DepreciationRatePercentage"}
                                   type="text"
                                   placeholder={disableAllForm ? '-' : 'Enter'}
-                                  validate={this.state.depreciationType.value === WDM ? [required, positiveAndDecimalNumber, maxLength10, decimalLengthThree] : [decimalLengthThree]}
+                                  validate={this.state.depreciationType.value === WDM ? [required, number, maxPercentValue, checkWhiteSpaces, percentageLimitValidation] : [decimalLengthThree]}
                                   component={renderText}
                                   required={this.state.depreciationType.value === WDM ? true : false}
                                   disabled={disableAllForm}
@@ -2989,8 +2964,8 @@ class AddMoreDetails extends Component {
                                   name={"LifeOfAssetPerYear"}
                                   type="text"
                                   placeholder={disableAllForm ? '-' : 'Enter'}
-                                  validate={[required, positiveAndDecimalNumber]}
-                                  component={renderNumberInputField}
+                                  validate={[required, positiveAndDecimalNumber, number]}
+                                  component={renderTextInputField}
                                   required={true}
                                   disabled={disableAllForm}
                                   className=" "
@@ -3097,7 +3072,7 @@ class AddMoreDetails extends Component {
                                   name={"AnnualMaintancePercentage"}
                                   type="text"
                                   placeholder={disableAllForm ? '-' : 'Enter'}
-                                  validate={[positiveAndDecimalNumber, maxLength10, decimalLengthThree]}
+                                  validate={[number, maxPercentValue, checkWhiteSpaces, percentageLimitValidation]}
                                   component={renderText}
                                   //required={true}
                                   disabled={disableAllForm}
@@ -3111,7 +3086,7 @@ class AddMoreDetails extends Component {
                                 type="text"
                                 placeholder={this.state.IsAnnualMaintenanceFixed ? '-' : (disableAllForm) ? '-' : 'Enter'}
                                 validate={[positiveAndDecimalNumber, maxLength10, decimalLengthFour]}
-                                component={renderNumberInputField}
+                                component={renderTextInputField}
                                 //required={true}
                                 disabled={this.state.IsAnnualMaintenanceFixed ? true : (disableAllForm) ? true : false}
                                 className=" "
@@ -3146,8 +3121,8 @@ class AddMoreDetails extends Component {
                                   name={"AnnualConsumablePercentage"}
                                   type="text"
                                   placeholder={disableAllForm ? '-' : 'Enter'}
-                                  validate={[positiveAndDecimalNumber, maxLength10, decimalLengthThree]}
-                                  component={renderNumberInputField}
+                                  validate={[number, maxPercentValue, checkWhiteSpaces, percentageLimitValidation]}
+                                  component={renderText}
                                   //required={true}
                                   disabled={disableAllForm}
                                   customClassName="withBorder pt-1"
@@ -3196,8 +3171,8 @@ class AddMoreDetails extends Component {
                                   name={"AnnualInsurancePercentage"}
                                   type="text"
                                   placeholder={disableAllForm ? '-' : 'Enter'}
-                                  validate={[positiveAndDecimalNumber, maxLength10, decimalLengthThree]}
-                                  component={renderNumberInputField}
+                                  validate={[number, maxPercentValue, checkWhiteSpaces, percentageLimitValidation]}
+                                  component={renderText}
                                   //required={true}
                                   disabled={disableAllForm}
                                   customClassName="withBorder pt-1"
@@ -3209,8 +3184,8 @@ class AddMoreDetails extends Component {
                                 name={"AnnualInsuranceAmount"}
                                 type="text"
                                 placeholder={this.state.IsInsuranceFixed ? '-' : (disableAllForm) ? '-' : 'Enter'}
-                                validate={[positiveAndDecimalNumber, maxLength10, decimalLengthFour]}
-                                component={renderNumberInputField}
+                                validate={[positiveAndDecimalNumber, maxLength10, decimalLengthFour, number]}
+                                component={renderTextInputField}
                                 //required={true}
                                 disabled={this.state.IsInsuranceFixed ? true : (disableAllForm) ? true : false}
                                 className=" "
@@ -3224,7 +3199,7 @@ class AddMoreDetails extends Component {
                                 type="text"
                                 placeholder={disableAllForm ? '-' : 'Enter'}
                                 validate={[number, positiveAndDecimalNumber, decimalLengthFour]}
-                                component={renderNumberInputField}
+                                component={renderTextInputField}
                                 //required={true}
                                 disabled={disableAllForm}
                                 className=" "
@@ -3238,7 +3213,7 @@ class AddMoreDetails extends Component {
                                 type="text"
                                 placeholder={isEditFlag || disableAllForm ? '-' : 'Enter'}
                                 validate={[number, positiveAndDecimalNumber]}
-                                component={renderNumberInputField}
+                                component={renderTextInputField}
                                 //required={true}
                                 disabled={isEditFlag || disableAllForm ? true : false}
                                 className=" "
@@ -3252,7 +3227,7 @@ class AddMoreDetails extends Component {
                                 type="text"
                                 placeholder={'-'}
                                 // validate={[number, postiveNumber]}
-                                component={renderNumberInputField}
+                                component={renderTextInputField}
                                 //required={true}
                                 disabled={true}
                                 className=" "
@@ -3265,8 +3240,8 @@ class AddMoreDetails extends Component {
                                 name={"OtherYearlyCost"}
                                 type="text"
                                 placeholder={disableAllForm ? '-' : 'Enter'}
-                                validate={[positiveAndDecimalNumber, maxLength10, decimalLengthFour]}
-                                component={renderNumberInputField}
+                                validate={[positiveAndDecimalNumber, maxLength10, decimalLengthFour, number]}
+                                component={renderTextInputField}
                                 //required={true}
                                 disabled={disableAllForm}
                                 className=" "
@@ -3280,7 +3255,7 @@ class AddMoreDetails extends Component {
                                 type="text"
                                 placeholder={'-'}
                                 //validate={[required]}
-                                component={renderNumberInputField}
+                                component={renderTextInputField}
                                 //required={true}
                                 disabled={true}
                                 className=" "
@@ -3352,7 +3327,7 @@ class AddMoreDetails extends Component {
                                   type="text"
                                   placeholder={'-'}
                                   //validate={[required]}
-                                  component={renderNumberInputField}
+                                  component={renderTextInputField}
                                   //required={true}
                                   disabled={true}
                                   className=" "
@@ -3397,7 +3372,7 @@ class AddMoreDetails extends Component {
                                   name={"UtilizationFactorPercentage"}
                                   type="text"
                                   placeholder={disableAllForm ? '-' : 'Enter'}
-                                  validate={[positiveAndDecimalNumber, maxLength10, decimalLengthThree]}
+                                  validate={[number, maxPercentValue, checkWhiteSpaces, percentageLimitValidation]}
                                   component={renderText}
                                   //required={true}
                                   disabled={disableAllForm}
@@ -3447,7 +3422,7 @@ class AddMoreDetails extends Component {
                                   type="text"
                                   placeholder={'-'}
                                   //validate={[required]}
-                                  component={renderNumberInputField}
+                                  component={renderTextInputField}
                                   //required={true}
                                   disabled={true}
                                   className=" "
@@ -3461,7 +3436,7 @@ class AddMoreDetails extends Component {
                                   type="text"
                                   placeholder={'-'}
                                   //validate={[required]}
-                                  component={renderNumberInputField}
+                                  component={renderTextInputField}
                                   //required={true}
                                   disabled={true}
                                   className=" "
@@ -3475,7 +3450,7 @@ class AddMoreDetails extends Component {
                                   type="text"
                                   placeholder={'-'}
                                   //validate={[required]}
-                                  component={renderNumberInputField}
+                                  component={renderTextInputField}
                                   //required={true}
                                   disabled={true}
                                   className=" "
@@ -3526,7 +3501,7 @@ class AddMoreDetails extends Component {
                                 type="text"
                                 placeholder={'-'}
                                 //validate={[required]}
-                                component={renderNumberInputField}
+                                component={renderTextInputField}
                                 //onChange={this.handleLabourCalculation}
                                 //required={true}
                                 disabled={true}
@@ -3541,7 +3516,7 @@ class AddMoreDetails extends Component {
                                 type="text"
                                 placeholder={disableAllForm ? '-' : 'Enter'}
                                 validate={[maxLength10, number]}
-                                component={renderNumberInputField}
+                                component={renderTextInputField}
                                 //onChange={this.handleLabourCalculation}
                                 //required={true}
                                 disabled={disableAllForm}

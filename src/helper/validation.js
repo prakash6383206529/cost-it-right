@@ -433,3 +433,13 @@ export const NoSignNoDecimalRegex = /^\d*$/i;
 
 export const NoSignMaxLengthMessage = `Input should be numeric, and should not exceed ${NUMBERMAXLENGTH} digit before and after decimal.`
 export const NoSignNoDecimalMessage = `Input should be integer.`
+
+export const maxPercentageValue = max => value =>
+    value && value > max ? `Percentage should not be more than ${max}.` : undefined;
+
+export const maxPercentValue = maxPercentageValue(100)
+
+export const isDateFormatter = value =>
+    value && !/^[0-3]?[0-9].[0-3]?[0-9].(?:[0-9]{2})?[0-9]{2}$/.test(value)
+        ? false : true;
+

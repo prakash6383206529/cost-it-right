@@ -2,8 +2,8 @@ import React, { Component, } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col, Label, } from 'reactstrap';
-import { required, getVendorCode, positiveAndDecimalNumber, acceptAllExceptSingleSpecialCharacter, maxLength512, checkForNull, checkForDecimalAndNull, decimalLengthsix, maxLength70, maxLength15 } from "../../../helper/validation";
-import { renderText, searchableSelect, renderMultiSelectField, renderTextAreaField, renderDatePicker, renderNumberInputField } from "../../layout/FormInputs";
+import { required, getVendorCode, positiveAndDecimalNumber, acceptAllExceptSingleSpecialCharacter, maxLength512, checkForNull, checkForDecimalAndNull, decimalLengthsix, maxLength70, maxLength15, number } from "../../../helper/validation";
+import { renderText, searchableSelect, renderMultiSelectField, renderTextAreaField, renderDatePicker, renderTextInputField } from "../../layout/FormInputs";
 import {
   getRawMaterialCategory, fetchGradeDataAPI, fetchSpecificationDataAPI, getCityBySupplier, getPlantByCity,
   getPlantByCityAndSupplier, fetchRMGradeAPI, getPlantBySupplier, getUOMSelectList,
@@ -17,7 +17,6 @@ import {
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import { loggedInUserId, getConfigurationKey, userDetails } from "../../../helper/auth";
-import Switch from "react-switch";
 import AddSpecification from './AddSpecification';
 import AddGrade from './AddGrade';
 import AddCategory from './AddCategory';
@@ -1371,7 +1370,7 @@ class AddRMImport extends Component {
                           <Col md="3">
                             <div className="d-flex justify-space-between align-items-center inputwith-icon">
                               <div className="fullinput-icon">
-                                <TooltipCustom id={'category'} tooltipText="RM category will come here like CutToFit, CutToLength." />
+                                <TooltipCustom id={'category'} tooltipText="Category will come here like CutToFit, CutToLength." />
                                 <Field
                                   name="CategoryId"
                                   type="text"
@@ -1634,8 +1633,8 @@ class AddRMImport extends Component {
                               name={"cutOffPrice"}
                               type="text"
                               placeholder={(isViewFlag || !this.state.IsFinancialDataChanged) ? '-' : "Enter"}
-                              validate={[positiveAndDecimalNumber, maxLength15]}
-                              component={renderNumberInputField}
+                              validate={[positiveAndDecimalNumber, maxLength15, number]}
+                              component={renderTextInputField}
                               required={false}
                               disabled={isViewFlag || (isEditFlag && isRMAssociated)}
                               className=" "
@@ -1649,8 +1648,8 @@ class AddRMImport extends Component {
                               name={"BasicRate"}
                               type="text"
                               placeholder={isViewFlag || (isEditFlag && isRMAssociated) ? '-' : "Enter"}
-                              validate={[required, positiveAndDecimalNumber, decimalLengthsix]}
-                              component={renderNumberInputField}
+                              validate={[required, positiveAndDecimalNumber, decimalLengthsix, number]}
+                              component={renderTextInputField}
                               required={true}
                               disabled={isViewFlag || (isEditFlag && isRMAssociated) ? true : false}
                               maxLength="15"
@@ -1664,8 +1663,8 @@ class AddRMImport extends Component {
                               name={"ScrapRate"}
                               type="text"
                               placeholder={isViewFlag || (isEditFlag && isRMAssociated) ? '-' : "Enter"}
-                              validate={[required, positiveAndDecimalNumber, decimalLengthsix]}
-                              component={renderNumberInputField}
+                              validate={[required, positiveAndDecimalNumber, decimalLengthsix, number]}
+                              component={renderTextInputField}
                               required={true}
                               className=""
                               maxLength="15"
@@ -1680,8 +1679,8 @@ class AddRMImport extends Component {
                               name={"FreightCharge"}
                               type="text"
                               placeholder={isViewFlag || (isEditFlag && isRMAssociated) ? '-' : "Enter"}
-                              validate={[positiveAndDecimalNumber, decimalLengthsix]}
-                              component={renderNumberInputField}
+                              validate={[positiveAndDecimalNumber, decimalLengthsix, number]}
+                              component={renderTextInputField}
                               required={false}
                               className=""
                               maxLength="15"
@@ -1695,8 +1694,8 @@ class AddRMImport extends Component {
                               name={"ShearingCost"}
                               type="text"
                               placeholder={isViewFlag || (isEditFlag && isRMAssociated) ? '-' : "Enter"}
-                              validate={[positiveAndDecimalNumber, decimalLengthsix]}
-                              component={renderNumberInputField}
+                              validate={[positiveAndDecimalNumber, decimalLengthsix, number]}
+                              component={renderTextInputField}
                               required={false}
                               className=""
                               maxLength="15"
@@ -1711,7 +1710,7 @@ class AddRMImport extends Component {
                               type="text"
                               placeholder={"-"}
                               validate={[]}
-                              component={renderNumberInputField}
+                              component={renderTextInputField}
                               required={false}
 
                               className=" "
@@ -1728,7 +1727,7 @@ class AddRMImport extends Component {
                                 type="text"
                                 placeholder={"-"}
                                 validate={[]}
-                                component={renderNumberInputField}
+                                component={renderTextInputField}
                                 required={false}
 
                                 className=" "
