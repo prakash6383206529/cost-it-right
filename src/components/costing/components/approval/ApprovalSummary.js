@@ -58,6 +58,7 @@ function ApprovalSummary(props) {
   const [costingHead, setCostingHead] = useState("")
   const [nccPartQuantity, setNccPartQuantity] = useState("")
   const [IsRegularized, setIsRegularized] = useState("")
+  const [costingTypeId, setCostingTypeId] = useState("")
   const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
   const [accDisable, setAccDisable] = useState(false)
 
@@ -123,7 +124,7 @@ function ApprovalSummary(props) {
 
       const { PartDetails, ApprovalDetails, ApprovalLevelStep, DepartmentId, Technology, ApprovalProcessId,
         ApprovalProcessSummaryId, ApprovalNumber, IsSent, IsFinalLevelButtonShow, IsPushedButtonShow,
-        CostingId, PartId, LastCostingId, PartNumber, DepartmentCode, VendorId, IsRegularizationLimitCrossed, CostingHead, NCCPartQuantity, IsRegularized } = res?.data?.Data?.Costings[0];
+        CostingId, PartId, LastCostingId, PartNumber, DepartmentCode, VendorId, IsRegularizationLimitCrossed, CostingHead, NCCPartQuantity, IsRegularized, CostingTypeId } = res?.data?.Data?.Costings[0];
 
       setNccPartQuantity(NCCPartQuantity)
       setIsRegularized(IsRegularized)
@@ -174,7 +175,8 @@ function ApprovalSummary(props) {
         DepartmentId: DepartmentId,
         UserId: loggedInUserId(),
         TechnologyId: technologyId,
-        Mode: 'costing'
+        Mode: 'costing',
+        approvalTypeId: CostingTypeId
       }
       dispatch(checkFinalUser(obj, res => {
         if (res && res.data && res.data.Result) {
@@ -687,6 +689,7 @@ function ApprovalSummary(props) {
           IsFinalLevel={!finalLevelUser}
           IsPushDrawer={showPushDrawer}
           dataSend={[approvalDetails, partDetail]}
+          costingTypeId={costingTypeId}
         />
       )}
       {rejectDrawer && (

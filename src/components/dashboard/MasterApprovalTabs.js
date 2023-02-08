@@ -5,7 +5,6 @@ import { APPROVED, PENDING, REJECTED, WAITING_FOR_APPROVAL } from "../../config/
 import CommonApproval from "../masters/material-master/CommonApproval";
 
 const MasterApprovalTabs = (props) => {
-    console.log('props: ', props);
 
     const [activeTab, setActiveTab] = useState('1')
 

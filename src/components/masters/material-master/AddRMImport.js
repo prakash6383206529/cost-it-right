@@ -12,7 +12,7 @@ import {
 import {
   createRMImport, getRMImportDataById, updateRMImportAPI, getRawMaterialNameChild,
   getRMGradeSelectListByRawMaterial, getVendorListByVendorType, fileUploadRMDomestic, getVendorWithVendorCodeSelectList, checkAndGetRawMaterialCode,
-  masterFinalLevelUser
+  masterFinalLevelUser, fileDeleteRMDomestic
 } from '../actions/Material';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
@@ -42,7 +42,7 @@ import { getClientSelectList, } from '../actions/Client';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { autoCompleteDropdown } from '../../common/CommonFunctions';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
-
+import { checkFinalUser } from '../../../components/costing/actions/Costing'
 
 const selector = formValueSelector('AddRMImport');
 
@@ -154,15 +154,16 @@ class AddRMImport extends Component {
     }
     if (!this.state.isViewFlag) {
       let obj = {
-        MasterId: RM_MASTER_ID,
+        TechnologyId: RM_MASTER_ID,
         DepartmentId: userDetails().DepartmentId,
-        LoggedInUserLevelId: userDetails().LoggedInMasterLevelId,
-        LoggedInUserId: loggedInUserId()
+        Mode: 'master',
+        approvalTypeId: this.state.costingTypeId,
+        UserId: loggedInUserId(),
       }
       this.setState({ finalApprovalLoader: true })
-      this.props.masterFinalLevelUser(obj, (res) => {
-        if (res.data.Result) {
-          this.setState({ isFinalApprovar: res.data.Data.IsFinalApprovar })
+      this.props.checkFinalUser(obj, (res) => {
+        if (res?.data?.Result) {
+          this.setState({ isFinalApprovar: res?.data?.Data?.IsFinalApprover })
           this.setState({ finalApprovalLoader: false })
         }
       })
@@ -1970,6 +1971,7 @@ class AddRMImport extends Component {
                 isBulkUpload={false}
                 IsImportEntery={true}
                 UOM={this.state.UOM}
+                costingTypeId={this.state.costingTypeId}
               />
             )
           }
@@ -2052,6 +2054,8 @@ export default connect(mapStateToProps, {
   getVendorWithVendorCodeSelectList,
   checkAndGetRawMaterialCode,
   masterFinalLevelUser,
+  fileDeleteRMDomestic,
+  checkFinalUser,
   getCityByCountry,
   getAllCity,
   getCostingSpecificTechnology,
