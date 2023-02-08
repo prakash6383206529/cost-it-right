@@ -47,33 +47,41 @@ function SummaryDrawer(props) {
     const [isMachineApproval, setIsMachineApproval] = useState(false)
     const [isDataInMaster, setIsDataInMaster] = useState(false)
     const [finalLevelUser, setFinalLevelUser] = useState(false)
+    const [costingTypeId, setCostingTypeId] = useState('')
 
     useEffect(() => {
+        let CostingTypeId = ''
         dispatch(getMasterApprovalSummary(approvalData.approvalNumber, approvalData.approvalProcessId, props.masterId, res => {
             const Data = res.data.Data
             setApprovalLevelStep(Data.MasterSteps)
             setApprovalDetails({ IsSent: Data.IsSent, IsFinalLevelButtonShow: Data.IsFinalLevelButtonShow, ApprovalProcessId: Data.ApprovalProcessId, MasterApprovalProcessSummaryId: Data.ApprovalProcessSummaryId, Token: Data.Token, MasterId: Data.MasterId })
             setLoader(false)
             if (Number(props.masterId) === RM_MASTER_ID) {
+                CostingTypeId = Data.ImpactedMasterDataList[0]?.CostingTypeId
                 setFiles(Data.ImpactedMasterDataList[0].Files)
                 Data.ImpactedMasterDataList.length > 0 ? setIsDataInMaster(true) : setIsDataInMaster(false);
             }
             else if (Number(props.masterId) === BOP_MASTER_ID) {
+                CostingTypeId = Data.ImpactedMasterDataListBOP[0]?.CostingTypeId
                 setFiles(Data.ImpactedMasterDataListBOP[0].Files)
                 Data.ImpactedMasterDataListBOP.length > 0 ? setIsDataInMaster(true) : setIsDataInMaster(false);
             } else if (Number(props.masterId) === OPERATIONS_ID) {
+                CostingTypeId = Data.ImpactedMasterDataListOperation[0]?.CostingTypeId
                 setFiles(Data.ImpactedMasterDataListOperation[0].Files)
                 Data.ImpactedMasterDataListOperation.length > 0 ? setIsDataInMaster(true) : setIsDataInMaster(false);
             } else if (Number(props.masterId) === MACHINE_MASTER_ID) {
+                CostingTypeId = Data.ImpactedMasterDataListMachine[0]?.CostingTypeId
                 setFiles(Data.ImpactedMasterDataListMachine[0].Files)
                 Data.ImpactedMasterDataListMachine.length > 0 ? setIsDataInMaster(true) : setIsDataInMaster(false);
             }
+            setCostingTypeId(CostingTypeId)
             Data.NumberOfMaster > 0 ? setIsDataInMaster(true) : setIsDataInMaster(false);
             let obj = {
                 DepartmentId: Data.DepartmentId,
                 UserId: loggedInUserId(),
                 TechnologyId: props.masterId,
-                Mode: 'master'
+                Mode: 'master',
+                approvalTypeId: CostingTypeId
             }
             dispatch(checkFinalUser(obj, res => {
                 if (res && res.data && res.data.Result) {
@@ -202,6 +210,7 @@ function SummaryDrawer(props) {
                     masterId={approvalDetails.MasterId}
                     closeDrawer={closeApproveRejectDrawer}
                     IsFinalLevelButtonShow={finalLevelUser}
+                    costingTypeId={costingTypeId}
                 />
             }
         </div >

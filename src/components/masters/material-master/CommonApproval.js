@@ -15,7 +15,6 @@ import { DRAFT, RM_MASTER_ID } from '../../../config/constants';
 import MasterSendForApproval from '../MasterSendForApproval';
 import WarningMessage from '../../common/WarningMessage';
 import Toaster from '../../common/Toaster'
-import { masterFinalLevelUser } from '../actions/Material'
 import { PaginationWrapper } from '../../common/commonPagination';
 import { setSelectedRowForPagination } from '../../simulation/actions/Simulation';
 import { hyphenFormatter } from '../masterUtil';
@@ -23,6 +22,7 @@ import { agGridStatus, getGridHeight, isResetClick } from '../../../actions/Comm
 import _ from 'lodash';
 import SingleDropdownFloationFilter from './SingleDropdownFloationFilter';
 import { reactLocalStorage } from 'reactjs-localstorage';
+import { checkFinalUser } from '../../costing/actions/Costing';
 
 const gridOptions = {};
 
@@ -68,9 +68,9 @@ function CommonApproval(props) {
             LoggedInUserLevelId: userDetails().LoggedInMasterLevelId,
             LoggedInUserId: loggedInUserId()
         }
-        dispatch(masterFinalLevelUser(obj, (res) => {
+        dispatch(checkFinalUser(obj, (res) => {
             if (res.data.Result) {
-                setIsFinalApprover(res.data.Data.IsFinalApprovar)
+                setIsFinalApprover(res.data.Data.IsFinalApprover)
             }
         }))
         dispatch(isResetClick(false, "status"))
@@ -845,6 +845,7 @@ function CommonApproval(props) {
                     approvalData={approvalData}
                     anchor={'bottom'}
                     masterId={props?.MasterId}
+                    selectedRowData={selectedRowData[0]?.CostingHead}
                 />
             }
 

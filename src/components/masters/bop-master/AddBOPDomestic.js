@@ -9,7 +9,6 @@ import {
 import { renderText, searchableSelect, renderTextAreaField, focusOnError, renderDatePicker, renderTextInputField } from "../../layout/FormInputs";
 import { getCityBySupplier, getPlantBySupplier, getUOMSelectList, getPlantSelectListByType, getCityByCountry, getAllCity } from '../../../actions/Common';
 import { getVendorWithVendorCodeSelectList, getVendorTypeBOPSelectList, } from '../actions/Supplier';
-import { masterFinalLevelUser } from '../actions/Material'
 import { createBOPDomestic, updateBOPDomestic, getBOPCategorySelectList, getBOPDomesticById, fileUploadBOPDomestic, fileDeleteBOPDomestic, } from '../actions/BoughtOutParts';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
@@ -33,6 +32,7 @@ import { getClientSelectList, } from '../actions/Client';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { autoCompleteDropdown } from '../../common/CommonFunctions';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
+import { checkFinalUser } from '../../../components/costing/actions/Costing'
 
 
 const selector = formValueSelector('AddBOPDomestic');
@@ -118,15 +118,16 @@ class AddBOPDomestic extends Component {
       }
       if (!this.state.isViewMode) {
         let obj = {
-          MasterId: BOP_MASTER_ID,
+          TechnologyId: BOP_MASTER_ID,
           DepartmentId: userDetails().DepartmentId,
-          LoggedInUserLevelId: userDetails().LoggedInMasterLevelId,
-          LoggedInUserId: loggedInUserId()
+          UserId: loggedInUserId(),
+          Mode: 'master',
+          approvalTypeId: this.state.costingTypeId,
         }
         this.setState({ finalApprovalLoader: true })
-        this.props.masterFinalLevelUser(obj, (res) => {
+        this.props.checkFinalUser(obj, (res) => {
           if (res.data.Result) {
-            this.setState({ isFinalApprovar: res.data.Data.IsFinalApprovar })
+            this.setState({ isFinalApprovar: res.data.Data.IsFinalApprover })
             this.setState({ finalApprovalLoader: false })
           }
 
@@ -1417,6 +1418,7 @@ class AddBOPDomestic extends Component {
                 isBulkUpload={false}
                 IsImportEntery={false}
                 UOM={this.state.UOM}
+                costingTypeId={this.state.costingTypeId}
               />
             )
           }
@@ -1481,7 +1483,7 @@ export default connect(mapStateToProps, {
   fileUploadBOPDomestic,
   fileDeleteBOPDomestic,
   getPlantSelectListByType,
-  masterFinalLevelUser,
+  checkFinalUser,
   getCityByCountry,
   getAllCity,
   getClientSelectList

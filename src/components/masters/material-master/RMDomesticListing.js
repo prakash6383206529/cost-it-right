@@ -32,6 +32,7 @@ import AnalyticsDrawer from './AnalyticsDrawer'
 import _ from 'lodash';
 import { useRef } from 'react';
 import { reactLocalStorage } from 'reactjs-localstorage';
+import { checkFinalUser } from '../../../components/costing/actions/Costing'
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -161,7 +162,7 @@ function RMDomesticListing(props) {
                 LoggedInUserLevelId: userDetails().LoggedInMasterLevelId,
                 LoggedInUserId: loggedInUserId()
             }
-            dispatch(masterFinalLevelUser(obj, (res) => {
+            dispatch(checkFinalUser(obj, (res) => {
                 if (res?.data?.Result) {
                     setIsFinalLevelUser(res.data.Data.IsFinalApprovar)
                 }
