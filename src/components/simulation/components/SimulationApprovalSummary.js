@@ -591,7 +591,7 @@ function SimulationApprovalSummary(props) {
     const POVarianceFormatter = (props) => {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         let variance = checkForDecimalAndNull(row.POVariance, getConfigurationKey().NoOfDecimalForPrice)
-        variance = variance > 0 ? `-${Math.abs(variance)}` : `+${Math.abs(variance)}`;
+        variance = variance > 0 ? `+${Math.abs(variance)}` : `-${Math.abs(variance)}`;
         return variance;
     }
 
@@ -921,7 +921,6 @@ function SimulationApprovalSummary(props) {
         ERvarianceFormatter: ERvarianceFormatter,
         impactPerQuarterFormatter: impactPerQuarterFormatter,
         bopNumberFormatter: bopNumberFormatter,
-        impactPerQuarterFormatter: impactPerQuarterFormatter,
         processCodeFormatter: processCodeFormatter,
         processNameFormatter: processNameFormatter,
         decimalFormatter: decimalFormatter
@@ -1206,7 +1205,7 @@ function SimulationApprovalSummary(props) {
                                                                 {String(SimulationTechnologyId) !== EXCHNAGERATE && <AgGridColumn width={140} field="BudgetedPriceVariance" headerName='Variance (w.r.t. Budgeted)' cellRenderer='impactPerQuarterFormatter'></AgGridColumn>}
                                                                 {(isRMDomesticOrRMImport || keysForDownloadSummary.IsRawMaterialSimulation) && <AgGridColumn width={140} field="OldNetRawMaterialsCost" cellRenderer='oldRMFormatter' headerName="Existing RM Cost/pc" ></AgGridColumn>}
                                                                 {(isRMDomesticOrRMImport || keysForDownloadSummary.IsRawMaterialSimulation) && <AgGridColumn width={140} field="NewNetRawMaterialsCost" cellRenderer='newRMFormatter' headerName="Revised RM Cost/pc" ></AgGridColumn>}
-                                                                {(isRMDomesticOrRMImport || keysForDownloadSummary.IsRawMaterialSimulation) && <AgGridColumn width={140} field="RMVariance" headerName="Variance (RM Cost)" cellRenderer='varianceFormatter' ></AgGridColumn>}
+                                                                {(isRMDomesticOrRMImport || keysForDownloadSummary.IsRawMaterialSimulation) && <AgGridColumn width={140} field="RMVariance" headerName="Variance (RM Cost)" cellRenderer='RMVarianceFormatter' ></AgGridColumn>}
 
                                                                 {(isExchangeRate || keysForDownloadSummary.IsExchangeRateSimulation) && <AgGridColumn width={140} field="OldNetPOPriceOtherCurrency" cellRenderer='oldPOCurrencyFormatter' headerName="Existing PO Price (in Currency)"></AgGridColumn>}
                                                                 {(isExchangeRate || keysForDownloadSummary.IsExchangeRateSimulation) && <AgGridColumn width={140} field="NewNetPOPriceOtherCurrency" cellRenderer='newPOCurrencyFormatter' headerName="Revised PO Price (in Currency)"></AgGridColumn>}
@@ -1214,7 +1213,7 @@ function SimulationApprovalSummary(props) {
                                                                 {(isExchangeRate || keysForDownloadSummary.IsExchangeRateSimulation) && <AgGridColumn width={140} field="BudgetedPriceVariance" headerName='Variance (w.r.t. Budgeted)' cellRenderer='impactPerQuarterFormatter'></AgGridColumn>}
                                                                 {(isExchangeRate || keysForDownloadSummary.IsExchangeRateSimulation) && <AgGridColumn width={140} field="OldExchangeRate" cellRenderer='oldERFormatter' headerName="Existing Exchange Rate" ></AgGridColumn>}
                                                                 {(isExchangeRate || keysForDownloadSummary.IsExchangeRateSimulation) && <AgGridColumn width={140} field="NewExchangeRate" cellRenderer='newERFormatter' headerName="Revised Exchange Rate" ></AgGridColumn>}
-                                                                {(isExchangeRate || keysForDownloadSummary.IsExchangeRateSimulation) && <AgGridColumn width={140} field="Variance" headerName="Variance (ER Cost)" cellRenderer='varianceFormatter' ></AgGridColumn>}
+                                                                {(isExchangeRate || keysForDownloadSummary.IsExchangeRateSimulation) && <AgGridColumn width={140} field="Variance" headerName="Variance (ER Cost)" cellRenderer='ERvarianceFormatter' ></AgGridColumn>}
 
                                                                 {(isBOPDomesticOrImport || keysForDownloadSummary.IsBoughtOutPartSimulation) && <AgGridColumn width={140} field="BoughtOutPartName" headerName="Bought Out Part Name" cellRenderer='bopNameFormatter'></AgGridColumn>}
                                                                 {(isBOPDomesticOrImport || keysForDownloadSummary.IsBoughtOutPartSimulation) && <AgGridColumn width={140} field="BoughtOutPartNumber" headerName="Bought Out Part Number" cellRenderer='bopNumberFormatter'></AgGridColumn>}
