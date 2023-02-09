@@ -506,7 +506,7 @@ function ApprovalListing(props) {
   }
   const reasonFormatter = (props) => {
     const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-    return cell != null ? cell : '-';
+    return !cell ? '-' : cell;
   }
   const lastApprovalFormatter = (props) => {
     const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
