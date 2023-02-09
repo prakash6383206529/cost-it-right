@@ -11,6 +11,8 @@ import { bulkUploadVolume } from '../masters/actions/Volume';
 import { loggedInUserId } from '../../helper';
 import ExcelFile from 'react-export-excel/dist/ExcelPlugin/components/ExcelFile';
 import { Volume, VolumeTempData } from '../../config/masterData';
+import PopupMsgWrapper from '../common/PopupMsgWrapper';
+import { MESSAGES } from '../../config/message';
 
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -23,7 +25,8 @@ class VolumeBulkUploadDrawer extends Component {
             fileData: '',
             fileName: '',
             Technology: [],
-            attachmentLoader: false
+            attachmentLoader: false,
+            showPopup: false
         }
     }
 
@@ -66,7 +69,16 @@ class VolumeBulkUploadDrawer extends Component {
     cancel = () => {
         this.toggleDrawer('')
     }
-
+    cancelHandler = () => {
+        this.setState({ showPopup: true })
+    }
+    onPopupConfirm = () => {
+        this.cancel('cancel')
+        this.setState({ showPopup: false })
+    }
+    closePopUp = () => {
+        this.setState({ showPopup: false })
+    }
     Preview = ({ meta }) => {
         return (
             <span
@@ -135,7 +147,7 @@ class VolumeBulkUploadDrawer extends Component {
                     <Col md="12" className='px-3'>
                         <div>
                             <ExcelFile filename={'Volume'} fileExtension={'.xls'} element={
-                                <button type="button" className={'user-btn w-100 mb-3'}><div className="download mr-1" ></div>
+                                <button type="button" className={'btn btn-primary w-100 mb-3'}><div className="download mr-1" ></div>
                                     {"Download Volume"}
                                 </button>}>
                                 {this.onBtExport()}
@@ -187,8 +199,8 @@ class VolumeBulkUploadDrawer extends Component {
                         <div className="col-md-12 pl-3 pr-3">
                             <div className="text-right ">
                                 <button
-                                    onClick={this.cancel}
-                                    type="submit"
+                                    onClick={this.cancelHandler}
+                                    type="button"
                                     value="CANCEL"
                                     className="reset mr15 cancel-btn"
                                 >
@@ -203,6 +215,9 @@ class VolumeBulkUploadDrawer extends Component {
                         </div>
                     </Row>
                 </form>
+                {
+                    this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.CANCEL_MASTER_ALERT}`} />
+                }
             </>
         );
     }

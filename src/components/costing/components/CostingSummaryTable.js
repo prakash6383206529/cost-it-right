@@ -22,7 +22,7 @@ import WarningMessage from '../../common/WarningMessage'
 import DayTime from '../../common/DayTimeWrapper'
 import { getVolumeDataByPartAndYear } from '../../masters/actions/Volume'
 import { isFinalApprover } from '../actions/Approval';
-import cirHeader from "../../../assests/images/logo/CIRlogo.jpg";
+import cirHeader from "../../../assests/images/logo/CIRlogo.svg";
 import Logo from '../../../assests/images/logo/company-logo.svg';
 import LoaderCustom from '../../common/LoaderCustom'
 import ReactToPrint from 'react-to-print';
