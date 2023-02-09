@@ -818,7 +818,7 @@ class OperationListing extends Component {
                                         <button disabled={this.state.disableFilter} title="Filtered data" type="button" class="user-btn mr5" onClick={() => this.onSearch()}><div class="filter mr-0"></div></button>
 
                                     }
-                                    {(!isSimulation) && <>
+                                    {(!isSimulation && !this?.props?.benchMark) && <>
 
                                         {this.state.shown ?
                                             <button type="button" className="user-btn mr5 filter-btn-top mt3px" onClick={() => this.setState({ shown: !this.state.shown })}>
