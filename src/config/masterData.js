@@ -1502,7 +1502,7 @@ export const BOP_ZBC_IMPORT = [
     { label: 'Currency', value: 'Currency', }, //*
     // { label: 'MinimumOrderQuantity', value: 'MinimumOrderQuantity', }, 
     { label: 'IncoTerm', value: 'IncoTerm', },
-    { label: 'PaymentTerm', value: 'PaymentTerm', },
+    // { label: 'PaymentTerm', value: 'PaymentTerm', }, // FOR MINDA ONLY
     { label: 'BasicRate', value: 'BasicRate', }, //*
     { label: 'EffectiveDate', value: 'EffectiveDate', },
     { label: 'Remark', value: 'Remark' },
@@ -1520,7 +1520,7 @@ export const BOP_ZBC_IMPORT_TempData = [
         'VendorCode': 'VC1',
         'Currency': 'INR or USD',
         'IncoTerm': 'CFR',
-        'PaymentTerm': 'A000',
+        // 'PaymentTerm': 'A000',
         // 'MinimumOrderQuantity': '1',
         'BasicRate': '100',
         'EffectiveDate': DayTime().format('DD-MM-YYYY'),
@@ -1536,7 +1536,7 @@ export const BOP_ZBC_IMPORT_TempData = [
         'VendorCode': 'VC1',
         'Currency': 'INR or USD',
         'IncoTerm': 'CFR',
-        'PaymentTerm': 'A000',
+        // 'PaymentTerm': 'A000',
         // 'MinimumOrderQuantity': '1',
         'BasicRate': '100',
         'EffectiveDate': DayTime().format('DD-MM-YYYY'),
@@ -1552,7 +1552,7 @@ export const BOP_ZBC_IMPORT_TempData = [
         'VendorCode': 'VC1',
         'Currency': 'INR or USD',
         'IncoTerm': 'CFR',
-        'PaymentTerm': 'A000',
+        // 'PaymentTerm': 'A000',
         // 'MinimumOrderQuantity': '1',
         'BasicRate': '100',
         'EffectiveDate': DayTime().format('DD-MM-YYYY'),
@@ -1639,7 +1639,7 @@ export const BOP_VBC_IMPORT = [
     { label: 'SourceVendorLocation', value: 'SourceVendorLocation', },
     { label: 'Currency', value: 'Currency', }, //*
     { label: 'IncoTerm', value: 'IncoTerm', },
-    { label: 'PaymentTerm', value: 'PaymentTerm', },
+    // { label: 'PaymentTerm', value: 'PaymentTerm', },    // FOR MINDA ONLY 
     // { label: 'MinimumOrderQuantity', value: 'MinimumOrderQuantity', }, //*
     { label: 'BasicRate', value: 'BasicRate', }, //*
     { label: 'EffectiveDate', value: 'EffectiveDate', },
@@ -1661,7 +1661,7 @@ export const BOP_VBC_IMPORT_TempData = [
         'SourceVendorLocation': 'Jamshedpur',
         'Currency': 'INR or USD',
         'IncoTerm': 'CFR',
-        'PaymentTerm': 'A000',
+        // 'PaymentTerm': 'A000',
         'BasicRate': '100',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text'
@@ -1679,7 +1679,7 @@ export const BOP_VBC_IMPORT_TempData = [
         'SourceVendorLocation': 'Jamshedpur',
         'Currency': 'INR or USD',
         'IncoTerm': 'CFR',
-        'PaymentTerm': 'A000',
+        // 'PaymentTerm': 'A000',
         'BasicRate': '100',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text'
@@ -1697,7 +1697,7 @@ export const BOP_VBC_IMPORT_TempData = [
         'SourceVendorLocation': 'Jamshedpur',
         'Currency': 'INR or USD',
         'IncoTerm': 'CFR',
-        'PaymentTerm': 'A000',
+        // 'PaymentTerm': 'A000',
         'BasicRate': '100',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text'
@@ -1715,7 +1715,7 @@ export const BOP_CBC_IMPORT = [
     { label: 'CustomerCode', value: 'CustomerCode', }, //NOUI
     { label: 'Currency', value: 'Currency', }, //*
     { label: 'IncoTerm', value: 'IncoTerm', },
-    { label: 'PaymentTerm', value: 'PaymentTerm', },
+    // { label: 'PaymentTerm', value: 'PaymentTerm', },  // FOR MINDA ONLY 
     { label: 'BasicRate', value: 'BasicRate', }, //*
     { label: 'EffectiveDate', value: 'EffectiveDate', },
     { label: 'Remark', value: 'Remark' }
@@ -1734,7 +1734,7 @@ export const BOP_CBC_IMPORT_TempData = [
         "CustomerCode": "C-10008",
         'Currency': 'INR or USD',
         'IncoTerm': 'CFR',
-        'PaymentTerm': 'A000',
+        // 'PaymentTerm': 'A000',
         'BasicRate': '100',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text'
@@ -1750,7 +1750,7 @@ export const BOP_CBC_IMPORT_TempData = [
         "CustomerCode": "C-10008",
         'Currency': 'INR or USD',
         'IncoTerm': 'CFR',
-        'PaymentTerm': 'A000',
+        // 'PaymentTerm': 'A000',
         'BasicRate': '100',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text'
@@ -1766,7 +1766,7 @@ export const BOP_CBC_IMPORT_TempData = [
         "CustomerCode": "C-10008",
         'Currency': 'INR or USD',
         'IncoTerm': 'CFR',
-        'PaymentTerm': 'A000',
+        // 'PaymentTerm': 'A000',
         'BasicRate': '100',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text'
@@ -4250,7 +4250,7 @@ export const BOP_IMPORT_DOWNLOAD_EXCEl = [
     { label: "Vendor (Code)", value: "Vendor" },
     { label: "Customer (Code)", value: "CustomerName", },
     { label: "Inco Terms", value: "IncoTermDescriptionAndInfoTerm" },
-    { label: "Payment Terms", value: "PaymentTermDescriptionAndPaymentTerm" },
+    // { label: "Payment Terms", value: "PaymentTermDescriptionAndPaymentTerm" }, // FOR MINDA ONLY
     { label: "Basic Rate", value: "BasicRate" },
     { label: "Net Cost (Currency)", value: "NetLandedCost" },
     { label: "Net Cost (INR)", value: "NetLandedCostConversion" },
