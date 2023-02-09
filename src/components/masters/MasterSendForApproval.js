@@ -126,7 +126,8 @@ function MasterSendForApproval(props) {
             LoggedInUserId: loggedInUserId(), // user id
             DepartmentId: value.value,
             MasterId: masterId,
-            ReasonId: ''
+            ReasonId: '',
+            ApprovalTypeId: props?.costingTypeId,
         }
         dispatch(getAllMasterApprovalUserByDepartment(obj, (res) => {
             res.data.DataList &&
