@@ -1487,6 +1487,7 @@ function SimulationApprovalSummary(props) {
                     // reasonId={approvalDetails.ReasonId}
                     IsFinalLevel={finalLeveluser}
                     Attachements={simulationDetail.Attachements}
+                    SimulationHeadId={simulationDetail?.SimulationHeadId}
                 // IsPushDrawer={showPushDrawer}
                 // dataSend={[approvalDetails, partDetail]}
                 />
@@ -1506,6 +1507,7 @@ function SimulationApprovalSummary(props) {
                     // IsPushDrawer={showPushDrawer}
                     // dataSend={[approvalDetails, partDetail]}
                     Attachements={simulationDetail.Attachements}
+                    SimulationHeadId={simulationDetail?.SimulationHeadId}
                 />
             }
 

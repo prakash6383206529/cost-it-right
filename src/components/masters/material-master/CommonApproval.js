@@ -7,7 +7,7 @@ import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import LoaderCustom from '../../common/LoaderCustom'
 import NoContentFound from '../../common/NoContentFound';
 import DayTime from '../../common/DayTimeWrapper'
-import { checkForDecimalAndNull, getConfigurationKey, loggedInUserId, searchNocontentFilter, userDetails } from '../../../helper'
+import { checkForDecimalAndNull, getConfigurationKey, loggedInUserId, searchNocontentFilter, userDetails, userTechnologyDetailByMasterId } from '../../../helper'
 import { BOP_MASTER_ID, defaultPageSize, EMPTY_DATA, MACHINE_MASTER_ID, OPERATIONS_ID } from '../../../config/constants';
 import { getRMApprovalList } from '../actions/Material';
 import SummaryDrawer from '../SummaryDrawer';
@@ -52,16 +52,24 @@ function CommonApproval(props) {
     const [pageSize, setPageSize] = useState({ pageSize10: true, pageSize50: false, pageSize100: false })
     const [noData, setNoData] = useState(false)
     const [floatingFilterData, setFloatingFilterData] = useState({ ApprovalProcessId: "", ApprovalNumber: "", CostingHead: "", TechnologyName: "", RawMaterial: "", RMGrade: "", RMSpec: "", Category: "", MaterialType: "", Plant: "", VendorName: "", UOM: "", BasicRate: "", ScrapRate: "", RMFreightCost: "", RMShearingCost: "", NetLandedCost: "", EffectiveDate: "", RequestedBy: "", CreatedByName: "", LastApprovedBy: "", DisplayStatus: "", BoughtOutPartNumber: "", BoughtOutPartName: "", BoughtOutPartCategory: "", Specification: "", Plants: "", MachineNumber: "", MachineTypeName: "", MachineTonnage: "", MachineRate: "", Technology: "", OperationName: "", OperationCode: "", UnitOfMeasurement: "", Rate: "", })
+    const [levelDetails, setLevelDetails] = useState({})
     const dispatch = useDispatch()
     const { selectedCostingListSimulation } = useSelector((state => state.simulation))
     let master = props?.MasterId
     const statusColumnData = useSelector((state) => state.comman.statusColumnData);
+    const userMasterLevelAPI = useSelector((state) => state.auth.userMasterLevelAPI);
 
     useEffect(() => {
         dispatch(agGridStatus("", ""))
         dispatch(setSelectedRowForPagination([]))
         setSelectedRowData([])
         getTableData(0, 10, true, floatingFilterData)
+
+        // let levelDetailsTemp = []
+        // // levelDetailsTemp = userTechnologyDetailByMasterId(this.state.costingTypeId, RM_MASTER_ID, userMasterLevelAPI)
+        // setLevelDetails(levelDetailsTemp)
+        // // if (levelDetailsTemp?.length !== 0) {
+
         let obj = {
             MasterId: props?.MasterId,
             DepartmentId: userDetails().DepartmentId,
@@ -73,6 +81,10 @@ function CommonApproval(props) {
                 setIsFinalApprover(res.data.Data.IsFinalApprover)
             }
         }))
+        // }
+
+
+
         dispatch(isResetClick(false, "status"))
         return () => {
             // Cleanup function
@@ -860,6 +872,7 @@ function CommonApproval(props) {
                     anchor={"right"}
                     isBulkUpload={true}
                     approvalData={selectedRowData}
+                    levelDetails={this.state.levelDetails}
                 />
             }
         </div>

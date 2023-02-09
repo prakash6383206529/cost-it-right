@@ -19,7 +19,7 @@ import { EMPTY_GUID } from '../../config/constants';
 import { getUsersMasterLevelAPI } from '../../actions/auth/AuthActions';
 
 function MasterSendForApproval(props) {
-    const { type, IsFinalLevel, IsPushDrawer, reasonId, masterId, approvalObj, isBulkUpload, IsImportEntery, approvalDetails, IsFinalLevelButtonShow, approvalData } = props
+    const { type, IsFinalLevel, IsPushDrawer, reasonId, masterId, approvalObj, isBulkUpload, IsImportEntery, approvalDetails, IsFinalLevelButtonShow, approvalData, levelDetails } = props
 
 
     const { register, control, formState: { errors }, handleSubmit, setValue, getValues, reset, } = useForm({
@@ -30,7 +30,6 @@ function MasterSendForApproval(props) {
 
     const [approvalDropDown, setApprovalDropDown] = useState([])
     const [isDisable, setIsDisable] = useState(false)
-    const [levelDetails, setLevelDetails] = useState({})
 
     const dispatch = useDispatch()
     const reasonsList = useSelector((state) => state.approval.reasonsList)
@@ -86,11 +85,6 @@ function MasterSendForApproval(props) {
                     })
                 setApprovalDropDown(tempDropdownList)
             },),)
-        }))
-        let levelDetailsTemp = ''
-        dispatch(getUsersMasterLevelAPI(loggedInUserId(), masterId, (res) => {
-            levelDetailsTemp = userSimulationTechnologyLevelDetails(props?.costingTypeId, res?.data?.Data?.MasterLevels)
-            setLevelDetails(levelDetailsTemp)
         }))
     }, [])
 
