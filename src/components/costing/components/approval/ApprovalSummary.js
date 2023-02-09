@@ -704,6 +704,7 @@ function ApprovalSummary(props) {
           reasonId={approvalDetails.ReasonId}
           IsPushDrawer={showPushDrawer}
           dataSend={[approvalDetails, partDetail]}
+          costingTypeId={costingTypeId}
         />
       )}
       {pushButton && (
