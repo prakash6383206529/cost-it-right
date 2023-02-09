@@ -1576,6 +1576,7 @@ domLayout='autoHeight'
                     Attachements={simulationDetail.Attachements}
                     reasonId={simulationDetail.SenderReasonId}
                     IsFinalLevel={finalLeveluser}
+                    SimulationHeadId={simulationDetail?.SimulationHeadId}
                 // IsPushDrawer={showPushDrawer}
                 // dataSend={[approvalDetails, partDetail]}
                 />
@@ -1596,6 +1597,7 @@ domLayout='autoHeight'
                     // dataSend={[approvalDetails, partDetail]}
                     Attachements={simulationDetail.Attachements}
                     reasonId={simulationDetail.SenderReasonId}
+                    SimulationHeadId={simulationDetail?.SimulationHeadId}
                 />
             }
 

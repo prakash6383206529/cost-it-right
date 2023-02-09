@@ -3,9 +3,9 @@ import { Container, Row, Col } from 'reactstrap'
 import { useForm, Controller } from 'react-hook-form'
 import Drawer from '@material-ui/core/Drawer'
 import { useDispatch, useSelector } from 'react-redux'
-import { approvalRequestByApprove, rejectRequestByApprove, getAllApprovalUserFilterByDepartment, getAllApprovalDepartment, getReasonSelectList, approvalPushedOnSap, } from '../../../costing/actions/Approval'
-import { TextAreaHookForm, SearchableSelectHookForm, } from '../../../layout/HookFormInputs'
-import { formatRMSimulationObject, getConfigurationKey, loggedInUserId, SimulationAPICall, userDetails, userSimulationTechnologyLevelDetails } from '../../../../helper'
+import { approvalRequestByApprove, rejectRequestByApprove, getAllApprovalUserFilterByDepartment, getAllApprovalDepartment, getReasonSelectList, approvalPushedOnSap } from '../../../costing/actions/Approval'
+import { TextAreaHookForm, SearchableSelectHookForm } from '../../../layout/HookFormInputs'
+import { formatRMSimulationObject, getConfigurationKey, loggedInUserId, userDetails, userTechnologyLevelDetails } from '../../../../helper'
 import PushButtonDrawer from './PushButtonDrawer'
 import { EMPTY_GUID, INR, FILE_URL, REASON_ID } from '../../../../config/constants'
 import { getSimulationApprovalByDepartment, simulationApprovalRequestByApprove, simulationRejectRequestByApprove, simulationApprovalRequestBySender, saveSimulationForRawMaterial, getAllSimulationApprovalList, uploadSimulationAttachment } from '../../../simulation/actions/Simulation'
@@ -96,7 +96,7 @@ function ApproveRejectDrawer(props) {
         let levelDetailsTemp = ''
         dispatch(getUsersSimulationTechnologyLevelAPI(loggedInUserId(), selectedMasterForSimulation?.value, (res) => {
           if (res?.data?.Data) {
-            levelDetailsTemp = userSimulationTechnologyLevelDetails(SimulationHeadId, res?.data?.Data?.TechnologyLevels)
+            levelDetailsTemp = userTechnologyLevelDetails(SimulationHeadId, res?.data?.Data?.TechnologyLevels)
             setLevelDetails(levelDetailsTemp)
           }
         }))

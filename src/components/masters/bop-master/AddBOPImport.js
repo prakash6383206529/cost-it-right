@@ -31,7 +31,7 @@ import LoaderCustom from '../../common/LoaderCustom';
 import WarningMessage from '../../common/WarningMessage'
 import imgRedcross from '../../../assests/images/red-cross.png';
 import MasterSendForApproval from '../MasterSendForApproval'
-import { CheckApprovalApplicableMaster, onFocus } from '../../../helper';
+import { CheckApprovalApplicableMaster, onFocus, userTechnologyDetailByMasterId } from '../../../helper';
 import { debounce } from 'lodash';
 import AsyncSelect from 'react-select/async';
 import { getClientSelectList, } from '../actions/Client';
@@ -40,6 +40,7 @@ import { reactLocalStorage } from 'reactjs-localstorage';
 import { autoCompleteDropdown } from '../../common/CommonFunctions';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { checkFinalUser } from '../../../components/costing/actions/Costing'
+import { getUsersMasterLevelAPI } from '../../../actions/auth/AuthActions';
 
 const selector = formValueSelector('AddBOPImport');
 
@@ -101,7 +102,9 @@ class AddBOPImport extends Component {
       finalApprovalLoader: false,
       showPopup: false,
       incoTerm: [],
-      paymentTerm: []
+      paymentTerm: [],
+      levelDetails: {},
+      noApprovalCycle: false
     }
   }
   /**
@@ -135,6 +138,19 @@ class AddBOPImport extends Component {
 
     }
     if (!this.state.isViewMode) {
+      this.props.getUsersMasterLevelAPI(loggedInUserId(), BOP_MASTER_ID, (res) => {
+        setTimeout(() => {
+          this.commonFunction()
+        }, 100);
+      })
+    }
+  }
+
+  commonFunction() {
+    let levelDetailsTemp = []
+    levelDetailsTemp = userTechnologyDetailByMasterId(this.state.costingTypeId, BOP_MASTER_ID, this.props.userMasterLevelAPI)
+    this.setState({ levelDetails: levelDetailsTemp })
+    if (levelDetailsTemp?.length !== 0) {
       let obj = {
         TechnologyId: BOP_MASTER_ID,
         DepartmentId: userDetails().DepartmentId,
@@ -142,20 +158,27 @@ class AddBOPImport extends Component {
         Mode: 'master',
         approvalTypeId: this.state.costingTypeId,
       }
+
       this.setState({ finalApprovalLoader: true })
       this.props.checkFinalUser(obj, (res) => {
-        if (res.data.Result) {
-          this.setState({ isFinalApprovar: res.data.Data.IsFinalApprover })
+        if (res?.data?.Result) {
+          this.setState({ isFinalApprovar: res?.data?.Data?.IsFinalApprover })
           this.setState({ finalApprovalLoader: false })
         }
       })
+      this.setState({ noApprovalCycle: false })
+    } else {
+      this.setState({ noApprovalCycle: true })
     }
   }
 
-  componentDidUpdate(prevProps) {
+  componentDidUpdate(prevProps, prevState) {
     if (!this.props.data.isViewFlag) {
       if (this.props.fieldsObj !== prevProps.fieldsObj) {
         this.handleCalculation()
+      }
+      if (prevState?.costingTypeId !== this.state.costingTypeId) {
+        this.commonFunction()
       }
     }
   }
@@ -972,7 +995,7 @@ class AddBOPImport extends Component {
   */
   render() {
     const { handleSubmit, isBOPAssociated } = this.props;
-    const { isCategoryDrawerOpen, isOpenVendor, isOpenUOM, isEditFlag, isViewMode, setDisable, costingTypeId } = this.state;
+    const { isCategoryDrawerOpen, isOpenVendor, isOpenUOM, isEditFlag, isViewMode, setDisable, costingTypeId, noApprovalCycle } = this.state;
     const filterList = async (inputValue) => {
       const { vendorName } = this.state
       const resultInput = inputValue.slice(0, searchCount)
@@ -1554,7 +1577,7 @@ class AddBOPImport extends Component {
                           {!isViewMode && (CheckApprovalApplicableMaster(BOP_MASTER_ID) === true && !this.state.isFinalApprovar) ?
                             <button type="submit"
                               class="user-btn approval-btn save-btn mr5"
-                              disabled={isViewMode || setDisable}
+                              disabled={isViewMode || setDisable || noApprovalCycle}
                             >
                               <div className="send-for-approval"></div>
                               {'Send For Approval'}
@@ -1563,7 +1586,7 @@ class AddBOPImport extends Component {
                             <button
                               type="submit"
                               className="user-btn mr5 save-btn"
-                              disabled={isViewMode || setDisable}
+                              disabled={isViewMode || setDisable || noApprovalCycle}
                             >
                               <div className={"save-icon"}></div>
                               {isEditFlag ? "Update" : "Save"}
@@ -1620,6 +1643,7 @@ class AddBOPImport extends Component {
                 IsImportEntery={true}
                 currency={this.state.currency}
                 costingTypeId={this.state.costingTypeId}
+                levelDetails={this.state.levelDetails}
               />
             )
           }
@@ -1643,7 +1667,7 @@ function mapStateToProps(state) {
     UOMSelectList, currencySelectList, plantSelectList } = comman;
   const { vendorWithVendorCodeSelectList } = supplier;
   const { partSelectList } = part;
-  const { initialConfiguration } = auth;
+  const { initialConfiguration, userMasterLevelAPI } = auth;
   const { clientSelectList } = client;
 
   let initialValues = {};
@@ -1662,7 +1686,7 @@ function mapStateToProps(state) {
 
   return {
     vendorWithVendorCodeSelectList, bopCategorySelectList, plantList, filterPlantList, filterCityListBySupplier,
-    plantSelectList, cityList, partSelectList, clientSelectList, UOMSelectList, currencySelectList, fieldsObj, initialValues, initialConfiguration, IncoTermsSelectList, PaymentTermsSelectList
+    plantSelectList, cityList, partSelectList, clientSelectList, UOMSelectList, currencySelectList, fieldsObj, initialValues, initialConfiguration, IncoTermsSelectList, PaymentTermsSelectList, userMasterLevelAPI
   }
 
 }
@@ -1692,7 +1716,8 @@ export default connect(mapStateToProps, {
   getAllCity,
   getClientSelectList,
   getIncoTermSelectList,
-  getPaymentTermSelectList
+  getPaymentTermSelectList,
+  getUsersMasterLevelAPI
 })(reduxForm({
   form: 'AddBOPImport',
   touchOnChange: true,
