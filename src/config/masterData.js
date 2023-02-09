@@ -5033,7 +5033,7 @@ export const ERImpactDownloadArray = ["Currency", "CostingNumber", "PartNumber",
 
 export const CPImpactDownloadArray = ["CostingNumber", "PartNumber", "OldNetCC", "NewNetCC", "OldPOPrice", "NewPOPrice", "EffectiveDate"]
 
-export const RawMaterialDomesticFileHeads = ["CostingHead", "RawMaterial", "RMGrade", "RMSpec", "RawMaterialCode", "Category", "TechnologyName", "Plant (Code)", "Vendor (Code)", "Company (Code)", "VendorLocation", "UOM", "BasicRate", "NewBasicRate", "ScrapRate", "NewScrapRate", "NetLandedCost", "EffectiveDate", "RawMaterialId", "VendorId", "PlantId", "CostingTypeId"]
+export const RawMaterialDomesticFileHeads = ["CostingHead", "RawMaterial", "RMGrade", "RMSpec", "RawMaterialCode", "Category", "TechnologyName", "Plant (Code)", "Vendor (Code)", "VendorLocation", "UOM", "BasicRate", "RevisedBasicRate", "RMFreightCost", "RMShearingCost", "ScrapRate", "RevisedScrapRate", "NetLandedCost", "EffectiveDate", "RawMaterialId", "VendorId", "PlantId", "CostingTypeId"]
 
 export const RawMaterialImportFileHeads = ["CostingHead", "RawMaterial", "RMGrade", "RMSpec", "RawMaterialCode", "Category", "TechnologyName", "VendorName", "VendorLocation", "UOM", "BasicRate", "NewBasicRate", "ScrapRate", "NewScrapRate", "NetLandedCost", "EffectiveDate", "RawMaterialId", "VendorId", "PlantId", "RMCode"]
 
