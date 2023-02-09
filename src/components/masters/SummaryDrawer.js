@@ -12,8 +12,9 @@ import LoaderCustom from '../common/LoaderCustom';
 import OperationListing from './operation/OperationListing'
 import { BOP_MASTER_ID, RM_MASTER_ID, OPERATIONS_ID, MACHINE_MASTER_ID, FILE_URL } from '../../config/constants';
 import MachineRateListing from './machine-master/MachineRateListing';
-import { loggedInUserId } from '../../helper';
+import { loggedInUserId, userDetails, userTechnologyDetailByMasterId } from '../../helper';
 import { checkFinalUser } from '../costing/actions/Costing';
+import { getUsersMasterLevelAPI } from '../../actions/auth/AuthActions';
 
 function SummaryDrawer(props) {
     const { approvalData } = props
@@ -48,6 +49,7 @@ function SummaryDrawer(props) {
     const [isDataInMaster, setIsDataInMaster] = useState(false)
     const [finalLevelUser, setFinalLevelUser] = useState(false)
     const [costingTypeId, setCostingTypeId] = useState('')
+    const [levelDetails, setLevelDetails] = useState('')
 
     useEffect(() => {
         let CostingTypeId = ''
@@ -102,6 +104,14 @@ function SummaryDrawer(props) {
             setIsMachineApproval(true)
         }
 
+        dispatch(getUsersMasterLevelAPI(loggedInUserId(), props.masterId, res => {
+            if (res && res.data && res.data.Result) {
+                setFinalLevelUser(res.data.Data.IsFinalApprover)
+                let levelDetailsTemp = []
+                levelDetailsTemp = userTechnologyDetailByMasterId(CostingTypeId, props.masterId, res.data.Data.MasterLevels)
+                setLevelDetails(levelDetailsTemp)
+            }
+        }))
 
     }, [])
     // const [approvalData, setApprovalData] = useState('')
@@ -211,6 +221,7 @@ function SummaryDrawer(props) {
                     closeDrawer={closeApproveRejectDrawer}
                     IsFinalLevelButtonShow={finalLevelUser}
                     costingTypeId={costingTypeId}
+                    levelDetails={levelDetails}
                 />
             }
         </div >
