@@ -51,7 +51,7 @@ export const autoCompleteDropdownPart = (inputValue, dropdownArray, tempBoolean 
         tempArr && tempArr.map(item => {
             if (item.PartId === '0') return tempArr
             if (tempBoolean && selectedParts.includes(item.PartId)) return false
-            finalArr.push({ label: `${item.PartNumber}${item.RevisionNumber ? `(${item.RevisionNumber})` : ''}`, value: item.PartId, RevisionNumber: item.RevisionNumber })
+            finalArr.push({ label: `${item.PartNumber}${item.RevisionNumber ? ` (${item.RevisionNumber})` : ''}`, value: item.PartId, RevisionNumber: item.RevisionNumber })
             return null
         })
         reactLocalStorage?.setObject('PartData', finalArr)

@@ -284,9 +284,9 @@ function AnalyticsDrawer(props) {
                                                             {ModeId === 1 && <AgGridColumn field="RMFreightCost" headerName="Freight Cost" cellRenderer={hyphenFormatter}></AgGridColumn>}
                                                             {ModeId === 1 && <AgGridColumn field="RMShearingCost" headerName="Shearing Cost" cellRenderer={hyphenFormatter} ></AgGridColumn>}
                                                             {<AgGridColumn field="UnitOfMeasurement" headerName="UOM" cellRenderer={hyphenFormatter}></AgGridColumn>}
-                                                            {<AgGridColumn field="NetLandedCost" headerName="Net Landed (Total)" cellRenderer={hyphenFormatter} ></AgGridColumn>}
+                                                            {<AgGridColumn field="NetLandedCost" headerName={props.import ? "Net Landed (Currency)" : "Net Landed (Total)"} cellRenderer={hyphenFormatter} ></AgGridColumn>}
 
-                                                            {(ModeId === 1 || ModeId === 2) && importEntry && <AgGridColumn field="NetLandedCostCurrency" headerName=" Net Landed Total (Currency)" cellRenderer={hyphenFormatter} ></AgGridColumn>}
+                                                            {(ModeId === 1 || ModeId === 2) && importEntry && <AgGridColumn field="NetLandedCostCurrency" headerName="Net Landed Total (INR)" cellRenderer={hyphenFormatter} ></AgGridColumn>}
                                                             {<AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer='effectiveDateRenderer'></AgGridColumn>}
 
                                                         </AgGridReact>
