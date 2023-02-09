@@ -968,6 +968,7 @@ function RMImportListing(props) {
           isSimulation={true}
           //cellValue={cellValue}
           rowData={selectedRowData}
+          import={true}
         />
       }
 
