@@ -7,11 +7,12 @@ import { useDispatch, useSelector } from 'react-redux';
 //import CostingSimulation from './CostingSimulation';
 import { runSimulationOnSelectedCosting, getSelectListOfSimulationApplicability, runSimulationOnSelectedExchangeCosting, runSimulationOnSelectedSurfaceTreatmentCosting, runSimulationOnSelectedMachineRateCosting, runSimulationOnSelectedBoughtOutPartCosting, runSimulationOnSelectedAssemblyTechnologyCosting } from '../actions/Simulation';
 import DayTime from '../../common/DayTimeWrapper'
-import { EXCHNAGERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, MACHINERATE, BOPDOMESTIC, BOPIMPORT } from '../../../config/constants';
+import { EXCHNAGERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, MACHINERATE, BOPDOMESTIC, BOPIMPORT, SIMULATION } from '../../../config/constants';
 //import { SearchableSelectHookForm } from '../../layout/HookFormInputs';
 import { NumberFieldHookForm, SearchableSelectHookForm } from '../../layout/HookFormInputs';
 import { TextFieldHookForm, } from '../../layout/HookFormInputs';
 import { checkForNull, getConfigurationKey, setValueAccToUOM } from '../../../helper';
+import { number, percentageLimitValidation, checkWhiteSpaces } from "../../../helper/validation";
 import Switch from 'react-switch'
 import { Fragment } from 'react';
 import { debounce } from 'lodash';
@@ -22,13 +23,13 @@ import { ASSEMBLY_TECHNOLOGY } from '../../../config/masterData';
 function RunSimulationDrawer(props) {
     const { objs, masterId, date } = props
 
+    const { topAndLeftMenuData } = useSelector(state => state.auth);
     const { register, control, formState: { errors }, handleSubmit, getValues, setValue } = useForm({
         mode: 'onChange',
         reValidateMode: 'onChange',
     })
 
     const dispatch = useDispatch()
-
     const [multipleHeads, setMultipleHeads] = useState([])
     const [opposite, setIsOpposite] = useState(false)
     const [selectedData, setSelectedData] = useState([])
@@ -44,7 +45,6 @@ function RunSimulationDrawer(props) {
     const [disableDiscountAndOtherCostSecond, setDisableDiscountAndOtherCostSecond] = useState(false)
     const [otherCostApplicability, setOtherCostApplicability] = useState([])
     const [discountCostApplicability, setDiscountCostApplicability] = useState([])
-
     const [toolCostApplicability, setToolCostApplicablity] = useState([])
     const [packagingCostApplicability, setPackagingCostApplicablity] = useState([])
     const [freightCostApplicability, setFreightCostApplicablity] = useState([])
@@ -60,7 +60,8 @@ function RunSimulationDrawer(props) {
     const [disableAdditionalFreight, setDisableAdditionalFreight] = useState(false)
     const [disablePackaging, setDisablePackaging] = useState(false)
     const [disableAdditionalPackaging, setDisableAdditionalPackaging] = useState(false)
-
+    const [showToolWarning, setShowToolWarning] = useState(false)
+    const [isProvisionalAccessibility, setIsProvisionalAccessibility] = useState(false)
     const selectedMasterForSimulation = useSelector(state => state.simulation.selectedMasterForSimulation)
     const selectedTechnologyForSimulation = useSelector(state => state.simulation.selectedTechnologyForSimulation)
 
@@ -69,6 +70,57 @@ function RunSimulationDrawer(props) {
         // dispatch(getSelectListOfSimulationLinkingTokens(vendorId, simulationTechnologyId, () => { }))
 
     }, [])
+
+
+    useEffect(() => {
+        if (topAndLeftMenuData) {
+            const simulationData = topAndLeftMenuData && topAndLeftMenuData.find(el => el.ModuleName === SIMULATION)
+            let master;
+            switch (masterId) {
+                case '1':
+                    master = 'RM Domestic'
+                    break;
+                case '2':
+                    master = 'RM Import'
+                    break;
+                case '3':
+                    master = 'Combined'
+                    break;
+                case '4':
+                    master = 'BOP Domestic'
+                    break;
+                case '5':
+                    master = 'BOP Import'
+                    break;
+                case '6':
+                    master = 'Operations'
+                    break;
+                case '7':
+                    master = 'Surface'
+                    break;
+                case '8':
+                    master = 'Exchange'
+                    break;
+                case '9':
+                    master = 'Machine'
+                    break;
+                default:
+                    master = 'RM'
+                    break;
+            }
+
+            simulationData?.Pages?.map((item) => {
+                if (item.PageName.includes(master)) {
+                    item.Actions.map((ele) => {
+                        if (ele.ActionName === 'Provisional') {
+                            setIsProvisionalAccessibility(ele?.IsChecked)
+                        }
+                    })
+                }
+            })
+        }
+    }, [topAndLeftMenuData])
+
     const costingHead = useSelector(state => state.comman.costingHead)
     const { applicabilityHeadListSimulation } = useSelector(state => state.simulation)
     const toggleDrawer = (event, mode = false) => {
@@ -150,6 +202,7 @@ function RunSimulationDrawer(props) {
             }
             setAdditionalTool(!additionalTool)
             setDisableTool(!disableTool)
+            setShowToolWarning(!showToolWarning)
 
         } else if (value === 'Packaging') {
             if (additionalPackaging) {
@@ -198,6 +251,7 @@ function RunSimulationDrawer(props) {
         const Packaging = selectedData.includes("Packaging")
         const Freight = selectedData.includes("Freight")
         const BOPHandlingCharge = selectedData.includes("BOP Handling Charge")
+        const LatestExchangeRate = selectedData.includes("Latest Exchange Rate")
 
         let temp = []
         obj.IsOverhead = Overhead
@@ -230,6 +284,7 @@ function RunSimulationDrawer(props) {
         obj.AdditionalFreightApplicability = freightCostApplicability.label
         obj.IsAdditionalFreight = additionalFreight
         obj.AdditionalFreightValue = toggleSwitchAdditionalFreight ? getValues("FreightPercent") : getValues("Freight")
+        obj.IsApplyLatestExchangeRate = LatestExchangeRate
 
         // obj.IsProvisional = provisionalCheck
         // obj.LinkingTokenNumber = linkingTokenNumber != '' ? linkingTokenNumber : tokenNo
@@ -422,7 +477,6 @@ function RunSimulationDrawer(props) {
                                                                         onChange={() => handleApplicabilityChange(el)}
                                                                     >
                                                                         {el.Text}
-
                                                                         <input
                                                                             type="checkbox"
                                                                             value={"All"}
@@ -479,21 +533,17 @@ function RunSimulationDrawer(props) {
                                                                                             handleChange={handleOherCostApplicabilityChange}
                                                                                             errors={errors.otherCostApplicability}
                                                                                         />
-                                                                                        <NumberFieldHookForm
+                                                                                        <TextFieldHookForm
                                                                                             label="Percentage"
                                                                                             name={"OtherCostPercent"}
                                                                                             Controller={Controller}
                                                                                             rules={{
                                                                                                 required: true,
-                                                                                                pattern: {
-                                                                                                    value: /^\d*\.?\d*$/,
-                                                                                                    message: 'Invalid Number.'
-                                                                                                },
-
+                                                                                                validate: { number, checkWhiteSpaces, percentageLimitValidation },
                                                                                                 max: {
                                                                                                     value: 100,
-                                                                                                    message: "Should not be greater than 100"
-                                                                                                }
+                                                                                                    message: 'Percentage cannot be greater than 100'
+                                                                                                },
                                                                                             }}
                                                                                             control={control}
                                                                                             register={register}
@@ -576,21 +626,17 @@ function RunSimulationDrawer(props) {
                                                                                             errors={errors.DiscountCostApplicability}
                                                                                             customClassName={"auto-width"}
                                                                                         />
-                                                                                        <NumberFieldHookForm
+                                                                                        <TextFieldHookForm
                                                                                             label="Percentage"
                                                                                             name={"DiscountPercent"}
                                                                                             Controller={Controller}
                                                                                             rules={{
                                                                                                 required: true,
-                                                                                                pattern: {
-                                                                                                    value: /^\d*\.?\d*$/,
-                                                                                                    message: 'Invalid Number.'
-                                                                                                },
-
+                                                                                                validate: { number, checkWhiteSpaces, percentageLimitValidation },
                                                                                                 max: {
                                                                                                     value: 100,
-                                                                                                    message: "Should not be greater than 100"
-                                                                                                }
+                                                                                                    message: 'Percentage cannot be greater than 100'
+                                                                                                },
                                                                                             }}
                                                                                             control={control}
                                                                                             register={register}
@@ -706,21 +752,17 @@ function RunSimulationDrawer(props) {
                                                                                 errors={errors.PackagingCostApplicability}
                                                                                 customClassName={"auto-width"}
                                                                             />
-                                                                            <NumberFieldHookForm
+                                                                            <TextFieldHookForm
                                                                                 label="Percentage"
                                                                                 name={"PackagingPercent"}
                                                                                 Controller={Controller}
                                                                                 rules={{
                                                                                     required: true,
-                                                                                    pattern: {
-                                                                                        value: /^\d*\.?\d*$/,
-                                                                                        message: 'Invalid Number.'
-                                                                                    },
-
+                                                                                    validate: { number, checkWhiteSpaces, percentageLimitValidation },
                                                                                     max: {
                                                                                         value: 100,
-                                                                                        message: "Should not be greater than 100"
-                                                                                    }
+                                                                                        message: 'Percentage cannot be greater than 100'
+                                                                                    },
                                                                                 }}
                                                                                 control={control}
                                                                                 register={register}
@@ -830,20 +872,17 @@ function RunSimulationDrawer(props) {
                                                                                 errors={errors.FreightCostApplicability}
                                                                                 customClassName={"auto-width"}
                                                                             />
-                                                                            <NumberFieldHookForm
+                                                                            <TextFieldHookForm
                                                                                 label="Percentage"
                                                                                 name={"FreightPercent"}
                                                                                 Controller={Controller}
                                                                                 rules={{
                                                                                     required: true,
-                                                                                    pattern: {
-                                                                                        value: /^\d*\.?\d*$/,
-                                                                                        message: 'Invalid Number.'
-                                                                                    },
+                                                                                    validate: { number, checkWhiteSpaces, percentageLimitValidation },
                                                                                     max: {
                                                                                         value: 100,
-                                                                                        message: "Should not be greater than 100"
-                                                                                    }
+                                                                                        message: 'Percentage cannot be greater than 100'
+                                                                                    },
                                                                                 }}
                                                                                 control={control}
                                                                                 register={register}
@@ -890,7 +929,7 @@ function RunSimulationDrawer(props) {
                                                     </div>
                                                 </Col>
 
-                                                <Col md="12" className={`mb-3 p-0 ${!getConfigurationKey().IsProvisionalSimulation ? 'mb-4 pb-2' : ''}`}>
+                                                <Col md="12" className={`${showToolWarning ? '' : 'mb-3'} p-0 ${!getConfigurationKey().IsProvisionalSimulation ? 'mb-4 pb-2' : ''}`}>
                                                     <div class={`custom-check1 d-inline-block drawer-side-input-other `}>
                                                         {(
                                                             <div className="input-group col-md-12 mb-3 px-0 m-height-auto">
@@ -957,21 +996,17 @@ function RunSimulationDrawer(props) {
                                                                                 errors={errors.ToolCostApplicability}
                                                                                 customClassName={"auto-width"}
                                                                             />
-                                                                            <NumberFieldHookForm
+                                                                            <TextFieldHookForm
                                                                                 label="Percentage"
                                                                                 name={"ToolPercent"}
                                                                                 Controller={Controller}
                                                                                 rules={{
                                                                                     required: true,
-                                                                                    pattern: {
-                                                                                        value: /^\d*\.?\d*$/,
-                                                                                        message: 'Invalid Number.'
-                                                                                    },
-
+                                                                                    validate: { number, checkWhiteSpaces, percentageLimitValidation },
                                                                                     max: {
                                                                                         value: 100,
-                                                                                        message: "Should not be greater than 100"
-                                                                                    }
+                                                                                        message: 'Percentage cannot be greater than 100'
+                                                                                    },
                                                                                 }}
                                                                                 control={control}
                                                                                 register={register}
@@ -1014,11 +1049,12 @@ function RunSimulationDrawer(props) {
                                                             </Fragment> : " "
                                                         }
                                                     </div>
+                                                    {showToolWarning && <WarningMessage dClass="mt-3" message="This tool cost won't be added in Overhead and Profit" />}
                                                 </Col>
                                             </Row>
 
 
-                                            {getConfigurationKey().IsProvisionalSimulation && (
+                                            {getConfigurationKey().IsProvisionalSimulation && isProvisionalAccessibility && (
                                                 <Row>
                                                     <div className="input-group col-md-12 mb-3 px-0 m-height-auto">
                                                         <label

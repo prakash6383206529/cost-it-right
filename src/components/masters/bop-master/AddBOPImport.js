@@ -4,9 +4,9 @@ import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col, Label, } from 'reactstrap';
 import {
   required, checkForNull, checkForDecimalAndNull, acceptAllExceptSingleSpecialCharacter, maxLength20,
-  maxLength10, positiveAndDecimalNumber, maxLength512, decimalLengthsix, checkWhiteSpaces, checkSpacesInString, maxLength80
+  maxLength10, positiveAndDecimalNumber, maxLength512, decimalLengthsix, checkWhiteSpaces, checkSpacesInString, maxLength80, number
 } from "../../../helper/validation";
-import { renderText, searchableSelect, renderTextAreaField, renderDatePicker, renderNumberInputField, focusOnError } from "../../layout/FormInputs";
+import { renderText, searchableSelect, renderTextAreaField, renderDatePicker, renderTextInputField, focusOnError } from "../../layout/FormInputs";
 import { getPlantBySupplier, getUOMSelectList, getCurrencySelectList, getPlantSelectListByType, getCityByCountry, getAllCity } from '../../../actions/Common';
 import {
   createBOPImport, updateBOPImport, getBOPCategorySelectList, getBOPImportById,
@@ -256,6 +256,10 @@ class AddBOPImport extends Component {
 
           this.props.change('EffectiveDate', DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
           this.setState({ minEffectiveDate: Data.EffectiveDate })
+          setTimeout(() => {
+            this.props.change('NetLandedCostCurrency', Data.NetLandedCostConversion)
+            this.setState({ netLandedConverionCost: Data.NetLandedCostConversion })
+          }, 600);
 
           setTimeout(() => {
             let plantObj;
@@ -266,8 +270,9 @@ class AddBOPImport extends Component {
             } else {
               plantObj = Data && Data.Plant.length > 0 ? { label: Data.Plant[0].PlantName, value: Data.Plant[0].PlantId } : []
             }
+            const { costingTypeId, vendorName, client } = this.state
             if (!this.state.isViewMode) {
-              this.props.getExchangeRateByCurrency(Data.Currency, DayTime(Data.EffectiveDate).format('YYYY-MM-DD'), res => {
+              this.props.getExchangeRateByCurrency(Data.Currency, costingTypeId, DayTime(Data.EffectiveDate).format('YYYY-MM-DD'), vendorName.value, client.value, res => {
                 if (Object.keys(res.data.Data).length === 0) {
                   this.setState({ showWarning: true })
                 }
@@ -294,8 +299,8 @@ class AddBOPImport extends Component {
               files: Data.Attachements,
               UOM: ((Data.UnitOfMeasurement !== undefined) ? { label: Data.UnitOfMeasurement, value: Data.UnitOfMeasurementId } : {}),
               isLoader: false,
-              incoTerm: Data.IncoTerm !== undefined ? { label: `${Data.IncoTermDescription} (${Data.IncoTerm})`, value: Data.BoughtOutPartIncoTermId } : [],
-              paymentTerm: Data.PaymentTerm !== undefined ? { label: `${Data.PaymentTermDescription} (${Data.PaymentTerm})`, value: Data.BoughtOutPartPaymentTermId } : [],
+              incoTerm: Data.IncoTerm !== undefined ? { label: `${Data.IncoTermDescription ? Data.IncoTermDescription : ''} ${Data.IncoTerm ? `(${Data.IncoTerm})` : '-'}`, value: Data.BoughtOutPartIncoTermId } : [],
+              paymentTerm: Data.PaymentTerm !== undefined ? { label: `${Data.PaymentTermDescription ? Data.PaymentTermDescription : ''} ${Data.PaymentTerm ? `(${Data.PaymentTerm})` : '-'}`, value: Data.BoughtOutPartPaymentTermId } : [],
               showCurrency: true
             }, () => this.setState({ isLoader: false }))
             // ********** ADD ATTACHMENTS FROM API INTO THE DROPZONE'S PERSONAL DATA STORE **********
@@ -542,7 +547,8 @@ class AddBOPImport extends Component {
       } else {
         this.setState({ showCurrency: true }, () => {
           if (this.state.effectiveDate) {
-            this.props.getExchangeRateByCurrency(newValue.label, DayTime(this.state.effectiveDate).format('YYYY-MM-DD'), res => {
+            const { costingTypeId, vendorName, client } = this.state
+            this.props.getExchangeRateByCurrency(newValue.label, costingTypeId, DayTime(this.state.effectiveDate).format('YYYY-MM-DD'), vendorName.value, client.value, res => {
               //this.props.change('NetLandedCost', (fieldsObj.BasicRate * res.data.Data.CurrencyExchangeRate))
 
               if (Object.keys(res.data.Data).length === 0) {
@@ -615,7 +621,8 @@ class AddBOPImport extends Component {
 
     } else {
       if (currency.length !== 0) {
-        this.props.getExchangeRateByCurrency(currency.label, DayTime(date).format('YYYY-MM-DD'), res => {
+        const { costingTypeId, vendorName, client } = this.state
+        this.props.getExchangeRateByCurrency(currency.label, costingTypeId, DayTime(date).format('YYYY-MM-DD'), vendorName.value, client.value, res => {
           if (Object.keys(res.data.Data).length === 0) {
 
             this.setState({ showWarning: true })
@@ -835,7 +842,6 @@ class AddBOPImport extends Component {
           return false;
         }
         else {
-          console.log('inelse');
           // if (isSourceChange) {
           this.props.updateBOPImport(requestData, (res) => {
             this.setState({ setDisable: false })
@@ -1293,7 +1299,7 @@ class AddBOPImport extends Component {
                               component={searchableSelect}
                               placeholder={isEditFlag ? '-' : "Select"}
                               options={this.renderListing("IncoTerms")}
-                              validate={getConfigurationKey().getconIsPaymentTermsAndIncoTermsRequiredForBoughtOutPart ? [required] : []}
+                              validate={getConfigurationKey().IsPaymentTermsAndIncoTermsRequiredForBoughtOutPart ? [required] : []}
                               required={getConfigurationKey().IsPaymentTermsAndIncoTermsRequiredForBoughtOutPart ? true : false}
                               handleChangeDescription={this.handleIncoTerm}
                               valueDescription={this.state.incoTerm}
@@ -1308,7 +1314,7 @@ class AddBOPImport extends Component {
                               component={searchableSelect}
                               placeholder={isEditFlag ? '-' : "Select"}
                               options={this.renderListing("PaymentTerms")}
-                              validate={getConfigurationKey().getconIsPaymentTermsAndIncoTermsRequiredForBoughtOutPart ? [required] : []}
+                              validate={getConfigurationKey().IsPaymentTermsAndIncoTermsRequiredForBoughtOutPart ? [required] : []}
                               required={getConfigurationKey().IsPaymentTermsAndIncoTermsRequiredForBoughtOutPart ? true : false}
                               handleChangeDescription={this.handlePaymentTerm}
                               valueDescription={this.state.paymentTerm}
@@ -1365,8 +1371,8 @@ class AddBOPImport extends Component {
                               name={"BasicRate"}
                               type="text"
                               placeholder={isEditFlag || (isEditFlag && isBOPAssociated) ? '-' : "Enter"}
-                              validate={[required, positiveAndDecimalNumber, maxLength10, decimalLengthsix]}
-                              component={renderNumberInputField}
+                              validate={[required, positiveAndDecimalNumber, maxLength10, decimalLengthsix, number]}
+                              component={renderTextInputField}
                               required={true}
                               disabled={isViewMode || (isEditFlag && isBOPAssociated)}
                               className=" "
@@ -1380,7 +1386,7 @@ class AddBOPImport extends Component {
                               type="text"
                               placeholder={"-"}
                               validate={[]}
-                              component={renderNumberInputField}
+                              component={renderTextInputField}
                               required={false}
                               disabled={true}
                               className=" "
@@ -1396,7 +1402,7 @@ class AddBOPImport extends Component {
                                 type="text"
                                 placeholder={"-"}
                                 validate={[]}
-                                component={renderNumberInputField}
+                                component={renderTextInputField}
                                 required={false}
                                 disabled={true}
                                 className=" "

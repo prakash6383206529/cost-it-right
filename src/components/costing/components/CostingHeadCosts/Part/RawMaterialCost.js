@@ -727,6 +727,7 @@ function RawMaterialCost(props) {
         finishWeight = weightData.FinishWeight
         netLandedCost = weightData.RawMaterialCost
       }
+
       const FinishWeight = finishWeight
       const GrossWeight = grossWeight
       const RecoveryPercentage = weightData.RecoveryPercentage
@@ -1217,7 +1218,7 @@ function RawMaterialCost(props) {
                                       handleScrapRecoveryChange(e, index)
                                     }}
                                     errors={errors && errors.rmGridFields && errors.rmGridFields[index] !== undefined ? errors.rmGridFields[index].ScrapRecoveryPercentage : ''}
-                                    disabled={CostingViewMode || IsLocked || (gridData[index].FinishWeight === 0) || (gridData[index].FinishWeight === "") || (gridData[index].FinishWeight === null) || (gridData[index].FinishWeight === undefined) ? true : false}
+                                    disabled={CostingViewMode || IsLocked || (gridData[index].FinishWeight === 0) || (gridData[index].FinishWeight === "") || (gridData[index].FinishWeight === null) || (gridData[index].FinishWeight === undefined) || gridData[index].IsCalculatedEntry ? true : false}
                                   />
                                 </div>
                               </td>
@@ -1286,7 +1287,7 @@ function RawMaterialCost(props) {
             <Row>
               {/* IF THERE IS NEED TO APPLY FOR MULTIPLE TECHNOLOGY, CAN MODIFIED BELOW CONDITION */}
               {costData?.TechnologyId === PLASTIC &&
-                <Col md="2" className="py-3 pr-1 mb-width">
+                <Col md="2" className="py-3 pr-0 apply-mb">
                   <label
                     className={`custom-checkbox mb-0`}
                     onChange={onPressApplyMasterBatch}
@@ -1310,9 +1311,9 @@ function RawMaterialCost(props) {
               {/* IF THERE IS NEED TO APPLY FOR MULTIPLE TECHNOLOGY, CAN MODIFIED BELOW CONDITION */}
               {IsApplyMasterBatch && costData?.TechnologyId === PLASTIC &&
                 <>
-                  <div>
+                  <Col md="2">
                     <button onClick={MasterBatchToggle} title={'Add Master Batch'} disabled={(CostingViewMode || IsLocked || masterBatch)} type="button" class="user-btn mt30"><div class="plus"></div>Add Master Batch</button>
-                  </div>
+                  </Col>
                   {/* <Col md="2" > */}
                   <TextFieldHookForm
                     label="MB Id"

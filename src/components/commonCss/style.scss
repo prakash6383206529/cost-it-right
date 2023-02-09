@@ -6200,6 +6200,8 @@ body {
       .Cancelled,
       .Under.Approval,
       .UnderApproval,
+      .Under.Revision,
+      .Open,
       [class^="Pending"],
       [class^="Awaiting"],
       .Approved,
@@ -7305,16 +7307,6 @@ body {
   padding-top: 50px;
 }
 
-.mb-width {
-  label {
-    width: fit-content;
-  }
-
-  min-width: 14.675rem;
-  margin-top: 15px;
-  margin-bottom: 15px;
-}
-
 .re-warning {
   margin-left: 15px;
   margin-top: -15px;
@@ -8061,7 +8053,7 @@ body {
 // <----------Corrugated box labels UI------------>
 .corrugated-box-label-wrapper {
   label {
-    min-height: 42px;
+    min-height: 45px;
     display: flex;
     align-items: center;
   }
@@ -8481,7 +8473,7 @@ table.group-process-table {
 }
 
 .currency-symbol {
-  font-weight: 600;
+  font-size: 16px;
   margin-right: 1px;
 }
 
@@ -8880,4 +8872,68 @@ table.group-process-table {
 
 .pie-chart-container {
   height: 30px;
+}
+
+.conditional-date {
+  align-items: center;
+
+  .custom-check1 {
+    min-height: 72px;
+    display: flex;
+    align-items: center;
+
+    label {
+      margin-top: 17px;
+    }
+  }
+
+  .date-section {
+    height: unset !important;
+
+    .form-group {
+      min-height: unset !important;
+      margin-bottom: unset !important;
+    }
+  }
+
+  .form-group-searchable-select {
+    min-height: unset !important;
+    margin-bottom: unset !important;
+  }
+
+
+}
+
+.colorWhite {
+  background-color: #fff;
+}
+
+@for $i from 1 through 1000 {
+  [row-id~="#{($i * 5) - 1}"] {
+
+    [col-id="PartNumber"],
+    [aria-colindex="5"] {
+      border-bottom: 1px solid $agGridBorder !important;
+    }
+  }
+}
+
+.right-tooltip {
+  .tooltip {
+    margin-right: 15px;
+    margin-top: 8px;
+  }
+}
+
+.attachment.images {
+  a {
+    color: $colorPrimary;
+  }
+}
+
+.apply-mb {
+  .custom-checkbox {
+    white-space: nowrap;
+    margin-top: 15px;
+  }
 }

@@ -2,13 +2,12 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector, propTypes } from "redux-form";
 import { Row, Col, Label, } from 'reactstrap';
-import { required, positiveAndDecimalNumber, postiveNumber, maxLength10, checkPercentageValue, decimalLengthThree, nonZero, } from "../../../helper/validation";
-import { renderDatePicker, renderMultiSelectField, renderNumberInputField, searchableSelect, } from "../../layout/FormInputs";
+import { required, postiveNumber, maxLength10, nonZero, number, maxPercentValue, checkWhiteSpaces, percentageLimitValidation, } from "../../../helper/validation";
+import { renderDatePicker, renderMultiSelectField, renderText, renderTextInputField, searchableSelect, } from "../../layout/FormInputs";
 import { updateInterestRate, createInterestRate, getPaymentTermsAppliSelectList, getICCAppliSelectList, getInterestRateData, } from '../actions/InterestRateMaster';
 import { getVendorWithVendorCodeSelectList, getPlantSelectListByType } from '../../../actions/Common';
 import { MESSAGES } from '../../../config/message';
 import { getConfigurationKey, loggedInUserId, userDetails } from "../../../helper/auth";
-import Switch from "react-switch";
 import DayTime from '../../common/DayTimeWrapper'
 import "react-datepicker/dist/react-datepicker.css";
 import LoaderCustom from '../../common/LoaderCustom';
@@ -77,19 +76,6 @@ class AddInterestRate extends Component {
     this.props.getPaymentTermsAppliSelectList(() => { })
   }
 
-  componentDidUpdate(prevProps) {
-    if (this.props.filedObj !== prevProps.filedObj) {
-      const { ICCPercent, PaymentTermPercent } = this.props.filedObj
-
-      if (ICCPercent) {
-        checkPercentageValue(ICCPercent, "ICC percentage should not be more than 100") ? this.props.change('ICCPercent', ICCPercent) : this.props.change('ICCPercent', 0)
-      }
-      if (PaymentTermPercent) {
-        checkPercentageValue(PaymentTermPercent, "Payment percentage should not be more than 100") ? this.props.change('PaymentTermPercent', PaymentTermPercent) : this.props.change('PaymentTermPercent', 0)
-      }
-
-    }
-  }
   componentWillUnmount() {
     reactLocalStorage?.setObject('vendorData', [])
   }
@@ -420,6 +406,7 @@ class AddInterestRate extends Component {
         CreatedDate: '',
         CreatedBy: loggedInUserId(),
         Plants: costingTypeId === CBCTypeId ? cbcPlantArray : plantArray,
+        CustomerId: costingTypeId === CBCTypeId ? client.value : '',
       }
       if (this.state.isEditFlag) {
         if (DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss') === DayTime(Data?.EffectiveDate).format('YYYY-MM-DD HH:mm:ss')) {
@@ -707,9 +694,8 @@ class AddInterestRate extends Component {
                             name={"ICCPercent"}
                             type="text"
                             placeholder={isViewMode ? '-' : "Enter"}
-                            validate={[required, positiveAndDecimalNumber, decimalLengthThree, nonZero]}
-                            max={100}
-                            component={renderNumberInputField}
+                            validate={[required, number, maxPercentValue, checkWhiteSpaces, percentageLimitValidation, nonZero]}
+                            component={renderText}
                             required={true}
                             onChange={(event) => this.handleChangeAnnualIccPercentage(event.target.value)}
                             disabled={isViewMode}
@@ -760,8 +746,8 @@ class AddInterestRate extends Component {
                               name={"RepaymentPeriod"}
                               type="text"
                               placeholder={isViewMode ? '-' : "Enter"}
-                              validate={[postiveNumber, maxLength10, nonZero]}
-                              component={renderNumberInputField}
+                              validate={[postiveNumber, maxLength10, nonZero, number]}
+                              component={renderTextInputField}
                               required={false}
                               onChange={(event) => this.handleChangeRepaymentPeriod(event.target.value)}
                               disabled={isViewMode}
@@ -775,9 +761,8 @@ class AddInterestRate extends Component {
                               name={"PaymentTermPercent"}
                               type="text"
                               placeholder={isViewMode ? '-' : "Enter"}
-                              validate={[positiveAndDecimalNumber, decimalLengthThree, nonZero]}
-                              component={renderNumberInputField}
-                              max={100}
+                              validate={[number, maxPercentValue, checkWhiteSpaces, percentageLimitValidation, nonZero]}
+                              component={renderText}
                               required={false}
                               onChange={(event) => this.handleChangePaymentTermPercentage(event.target.value)}
                               disabled={isViewMode}

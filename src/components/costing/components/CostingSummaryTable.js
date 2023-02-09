@@ -16,7 +16,7 @@ import SendForApproval from './approval/SendForApproval'
 import Toaster from '../../common/Toaster'
 import { checkForDecimalAndNull, checkForNull, checkPermission, formViewData, getTechnologyPermission, loggedInUserId, userDetails, allEqual, getConfigurationKey, getCurrencySymbol, highlightCostingSummaryValue, checkVendorPlantConfigurable } from '../../../helper'
 import Attachament from './Drawers/Attachament'
-import { BOPDOMESTIC, BOPIMPORT, COSTING, DRAFT, FILE_URL, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, VARIANCE, VBC, ZBC, VIEW_COSTING_DATA, NCC, EMPTY_GUID, CBC, ZBCTypeId, VBCTypeId, NCCTypeId, CBCTypeId } from '../../../config/constants'
+import { BOPDOMESTIC, BOPIMPORT, COSTING, DRAFT, FILE_URL, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, VARIANCE, VBC, ZBC, VIEW_COSTING_DATA, VIEW_COSTING_DATA_LOGISTICS, NCC, EMPTY_GUID, CBC, ZBCTypeId, VBCTypeId, NCCTypeId, CBCTypeId, FORGING } from '../../../config/constants'
 import { useHistory } from "react-router-dom";
 import WarningMessage from '../../common/WarningMessage'
 import DayTime from '../../common/DayTimeWrapper'
@@ -166,14 +166,15 @@ const CostingSummaryTable = (props) => {
     checkForDecimalAndNull(tempObj.nOverheadProfit, initialConfiguration.NoOfDecimalForPrice),
     checkForDecimalAndNull(tempObj.nPackagingAndFreight, initialConfiguration.NoOfDecimalForPrice),
     checkForDecimalAndNull(tempObj.totalToolCost, initialConfiguration.NoOfDecimalForPrice),
+    checkForDecimalAndNull(tempObj.otherDiscountCost, initialConfiguration.NoOfDecimalForPrice),
+    checkForDecimalAndNull(tempObj.anyOtherCost, initialConfiguration.NoOfDecimalForPrice),
     ]
     setPieChartDataArray(temp)
     let labelArray = []
-    let labels = ['RM', 'BOP', 'CC', 'ST', 'O&P', 'P&F', 'TC']
+    let labels = ['RM', 'BOP', 'CC', 'ST', 'O&P', 'P&F', 'TC', 'HUNDI/DIS', 'ANY OTHER COST']
     temp && temp.map((item, index) => {
       if (item !== 0) {
         labelArray.push(labels[index])
-        console.log(labelArray);
       }
     })
     let dataArray = []
@@ -199,6 +200,12 @@ const CostingSummaryTable = (props) => {
           break;
         case 'TC':
           dataArray.push(checkForDecimalAndNull(tempObj.totalToolCost, initialConfiguration.NoOfDecimalForPrice))
+          break;
+        case 'OTHER DIS':
+          dataArray.push(checkForDecimalAndNull(tempObj.otherDiscountCost, initialConfiguration.NoOfDecimalForPrice))
+          break;
+        case 'ANY OTHER COST':
+          dataArray.push(checkForDecimalAndNull(tempObj.anyOtherCost, initialConfiguration.NoOfDecimalForPrice))
           break;
         default:
           break;
@@ -756,7 +763,6 @@ const CostingSummaryTable = (props) => {
       dispatch(getSingleCostingDetails(costingID, (res) => {
         if (res.data?.Data) {
           let dataFromAPI = res.data?.Data
-
           const tempObj = formViewData(dataFromAPI)
           dispatch(setCostingViewData(tempObj))
         }
@@ -893,17 +899,25 @@ const CostingSummaryTable = (props) => {
     }
 
     let costingSummary = []
-    for (var prop in VIEW_COSTING_DATA) {
+    let templateObj = viewCostingData[0]?.technologyId === LOGISTICS ? VIEW_COSTING_DATA_LOGISTICS : VIEW_COSTING_DATA
 
-      if (partType) {
+    if (props?.isRfqCosting) {
+      templateObj.costingHeadCheck = 'VBC'
+    }
+
+    for (var prop in templateObj) {
+
+      if (partType) {  // IF TECHNOLOGY WILL BE ASSEMBLY THIS BLOCK WILL BE EXCECUTED
         if (prop !== "netRM" && prop !== "netBOP" && prop !== 'fWeight' && prop !== 'BurningLossWeight' && prop !== 'gWeight' && prop !== 'ScrapWeight' && prop !== 'scrapRate' && prop !== 'rmRate' && prop !== 'rm')
           costingSummary.push({ label: VIEW_COSTING_DATA[prop], value: prop, })
       }
       else if (IsNccCosting) {
-        costingSummary.push({ label: VIEW_COSTING_DATA[prop], value: prop, })
-      } else {
+        if (prop !== "netChildPartsCost" && prop !== "netBoughtOutPartCost" && prop !== "netProcessCost" && prop !== "netOperationCost" && prop !== "nTotalRMBOPCC") {  // THESE 5 KEYS WILL NOT BE VISIBLE FOR OTHER TECHNOLOGY ( VISIBLE ONLY FOR ASSEMBLY)
+          costingSummary.push({ label: VIEW_COSTING_DATA[prop], value: prop, })
+        }
 
-        if (prop !== "NCCPartQuantity" && prop !== "IsRegularized")
+      } else {
+        if (prop !== "NCCPartQuantity" && prop !== "IsRegularized" && prop !== "netChildPartsCost" && prop !== "netBoughtOutPartCost" && prop !== "netProcessCost" && prop !== "netOperationCost" && prop !== "nTotalRMBOPCC")  // THESE 5 KEYS WILL NOT BE VISIBLE FOR OTHER TECHNOLOGY ( VISIBLE ONLY FOR ASSEMBLY)
           costingSummary.push({ label: VIEW_COSTING_DATA[prop], value: prop, })
       }
     }
@@ -977,7 +991,7 @@ const CostingSummaryTable = (props) => {
     let temp = []
     temp = TempData
     return (
-      <ExcelSheet data={temp} name={"CostingSummary"}>
+      <ExcelSheet data={temp} name={"Costing Summary"}>
         {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
       </ExcelSheet>
     );
@@ -1050,7 +1064,6 @@ const CostingSummaryTable = (props) => {
         break;
     }
   }
-  console.log(pieChartDataArray, colorArray, pieChartLabel);
   const pieChartData = {
     labels: pieChartLabel,
     datasets: [
@@ -1077,13 +1090,13 @@ const CostingSummaryTable = (props) => {
     },
   }
 
-
+  const PDFPageStyle = "@page { size: A4 landscape; }";
   return (
     <Fragment>
       {
         <Fragment>
           {(loader && <LoaderCustom customClass="pdf-loader" />)}
-          {(Object.keys(viewCostingData).length === 0 && costingIdExist && <LoaderCustom customClass={` ${!props.fromCostingSummary ? 'hidden-loader' : ''}`} />)}
+          {(Object.keys(viewCostingData).length === 0 && costingIdExist && !props.isRfqCosting && <LoaderCustom customClass={` ${!props.fromCostingSummary ? 'hidden-loader' : ''}`} />)}
           <Row>
             {!viewMode && (
               <Col md="4">
@@ -1092,27 +1105,28 @@ const CostingSummaryTable = (props) => {
             )}
 
 
-            {!props.isRfqCosting && <Col md={simulationMode ? "12" : "8"} className="text-right">
+            {<Col md={simulationMode || props.isRfqCosting ? "12" : "8"} className="text-right">
 
               {
                 DownloadAccessibility ? <LoaderCustom customClass="pdf-loader" /> :
                   <>
-                    <ExcelFile filename={'CostingSummary'} fileExtension={'.xls'} element={<button type="button" className={'user-btn excel-btn mr5 mb-2'} title="Excel"><img src={ExcelIcon} alt="download" /></button>}>
+                    <ExcelFile filename={'Costing Summary'} fileExtension={'.xls'} element={<button type="button" className={'user-btn excel-btn mr5 mb-2'} title="Excel"><img src={ExcelIcon} alt="download" /></button>}>
                       {onBtExport()}
                     </ExcelFile>
                   </>
               }
-              {!simulationMode &&
+              {!simulationMode && !props.isRfqCosting && !props.isRfqCosting &&
                 <ReactToPrint
                   bodyClass='mx-2 mt-3 remove-space-border'
                   documentTitle={`${pdfName}-detailed-costing`}
                   content={reactToPrintContent}
+                  pageStyle={PDFPageStyle}
                   onAfterPrint={handleAfterPrintDetail}
                   onBeforeGetContent={handleOnBeforeGetContentDetail}
                   trigger={reactToPrintTriggerDetail}
                 />
               }
-              {!simulationDrawer && !drawerViewMode && <ReactToPrint
+              {!simulationDrawer && !drawerViewMode && !props.isRfqCosting && <ReactToPrint
                 bodyClass={`my-3 simple-pdf ${simulationMode ? 'mx-1 simulation-print' : 'mx-2'}`}
                 documentTitle={`${simulationMode ? 'Compare-costing.pdf' : `${pdfName}-costing`}`}
                 content={reactToPrintContent}
@@ -1121,9 +1135,9 @@ const CostingSummaryTable = (props) => {
                 trigger={reactToPrintTrigger}
               />}
               {
-                !simulationMode && <>
+                !simulationMode && !props.isRfqCosting && <>
 
-                  {(!viewMode && !isFinalApproverShow) && (
+                  {(!viewMode && !isFinalApproverShow) && !props.isRfqCosting && (
                     <button className="user-btn mr-1 mb-2 approval-btn" disabled={isWarningFlag} onClick={() => checkCostings()}>
                       <div className="send-for-approval"></div>
                       {'Send For Approval'}
@@ -1203,7 +1217,7 @@ const CostingSummaryTable = (props) => {
                                     {((!pdfHead && !drawerDetailPDF)) && (data?.IsAssemblyCosting === true) && < button title='View BOM' className="hirarchy-btn mr-1 mb-0 align-middle" type={'button'} onClick={() => viewBomCostingDetail(index)} />}
                                     {((!viewMode && (!pdfHead && !drawerDetailPDF)) && EditAccessibility) && (data?.status === DRAFT) && <button className="Edit mr-1 mb-0 align-middle" type={"button"} title={"Edit Costing"} onClick={() => editCostingDetail(index)} />}
                                     {((!viewMode && (!pdfHead && !drawerDetailPDF)) && AddAccessibility) && <button className="Add-file mr-1 mb-0 align-middle" type={"button"} title={"Add Costing"} onClick={() => addNewCosting(index)} />}
-                                    {((!viewMode || (approvalMode && data?.CostingHeading === '-')) && (!pdfHead && !drawerDetailPDF)) && <button type="button" className="CancelIcon mb-0 align-middle" title='Discard' onClick={() => deleteCostingFromView(index)}></button>}
+                                    {((!viewMode || props.isRfqCosting || (approvalMode && data?.CostingHeading === '-')) && (!pdfHead && !drawerDetailPDF)) && <button type="button" className="CancelIcon mb-0 align-middle" title='Discard' onClick={() => deleteCostingFromView(index)}></button>}
                                   </div>
                                 </div>
                               </th>
@@ -1229,7 +1243,7 @@ const CostingSummaryTable = (props) => {
                                 return (
                                   <td>
                                     <span className="d-flex justify-content-between bg-grey">
-                                      {`${DayTime(data?.costingDate).format('DD-MM-YYYY')}-${data?.CostingNumber}-${data?.status}`}{' '}
+                                      {`${DayTime(data?.costingDate).format('DD-MM-YYYY')}-${data?.CostingNumber}${props.costingSummaryMainPage ? '-' : ''}${props.costingSummaryMainPage ? data?.status : ''}`}{' '}
                                       {
                                         !viewMode &&
                                         <button
@@ -1280,10 +1294,7 @@ const CostingSummaryTable = (props) => {
                             </td>
                             {viewCostingData &&
                               viewCostingData?.map((data, index) => {
-
-
                                 return (
-
                                   <td >
                                     <span className="d-block small-grey-text">{data?.CostingHeading !== VARIANCE ? data?.netChildPartsCost : ''}</span>
                                     <span className={`d-block small-grey-text ${isApproval && viewCostingData?.length > 1 && highlightCostingSummaryValue(viewCostingData[0]?.rmRate, viewCostingData[1]?.rmRate)}`}>
@@ -1373,19 +1384,19 @@ const CostingSummaryTable = (props) => {
                           <>
                             {!drawerDetailPDF ? <tr>
                               <td>
-                                <span className="d-block small-grey-text">RM Name-Grade</span>
+                                <span className="d-block small-grey-text">RM-Grade</span>
                                 <span className={`d-block small-grey-text ${isApproval && viewCostingData?.length > 1 && highlightCostingSummaryValue(viewCostingData[0]?.rmRate, viewCostingData[1]?.rmRate)}`}>RM Rate</span>
                                 <span className={`d-block small-grey-text ${isApproval && viewCostingData?.length > 1 && highlightCostingSummaryValue(viewCostingData[0]?.scrapRate, viewCostingData[1]?.scrapRate)}`}>Scrap Rate</span>
                                 <span className={`d-block small-grey-text ${isApproval && viewCostingData?.length > 1 && highlightCostingSummaryValue(reducer(viewCostingData[0]?.netRMCostView), reducer(viewCostingData[1]?.netRMCostView))}`}>Gross Weight</span>
                                 <span className={`d-block small-grey-text ${isApproval && viewCostingData?.length > 1 && highlightCostingSummaryValue(reducerFinish(viewCostingData[0]?.netRMCostView), reducerFinish(viewCostingData[1]?.netRMCostView))}`}>Finish Weight</span>
+                                {viewCostingData && viewCostingData[0]?.technology === FORGING && <span className={`d-block small-grey-text ${isApproval && viewCostingData?.length > 1 && highlightCostingSummaryValue(viewCostingData[0]?.ForgingScrapWeight, viewCostingData[1]?.ForgingScrapWeight)}`}>Forging Scrap Weight</span>}
+                                {viewCostingData && viewCostingData[0]?.technology === FORGING && <span className={`d-block small-grey-text ${isApproval && viewCostingData?.length > 1 && highlightCostingSummaryValue(viewCostingData[0]?.MachiningScrapWeight, viewCostingData[1]?.MachiningScrapWeight)}`}>Machining Scrap Weight</span>}
                                 <span className={`d-block small-grey-text ${isApproval && viewCostingData?.length > 1 && highlightCostingSummaryValue(viewCostingData[0]?.netRMCostView[0]?.BurningLossWeight, viewCostingData[1]?.netRMCostView[0]?.BurningLossWeight)}`}>Burning Loss Weight</span>
                                 <span className={`d-block small-grey-text ${isApproval && viewCostingData?.length > 1 && highlightCostingSummaryValue(viewCostingData[0]?.netRMCostView[0]?.ScrapWeight, viewCostingData[1]?.netRMCostView[0]?.ScrapWeight)}`}>Scrap Weight</span>
                               </td>
                               {viewCostingData &&
                                 viewCostingData?.map((data) => {
                                   return (
-
-
                                     <td >
                                       <span className="d-block small-grey-text">{data?.CostingHeading !== VARIANCE ? data?.netRMCostView && (data?.netRMCostView.length > 1 || data?.IsAssemblyCosting === true) ? 'Multiple RM' : data?.rm : ''}</span>
                                       <span className={`d-block small-grey-text ${isApproval && viewCostingData?.length > 1 && highlightCostingSummaryValue(viewCostingData[0]?.rmRate, viewCostingData[1]?.rmRate)}`}>
@@ -1402,6 +1413,14 @@ const CostingSummaryTable = (props) => {
                                         {data?.CostingHeading !== VARIANCE ? data?.IsAssemblyCosting === true ? "Multiple RM" : <span title={(data?.netRMCostView && reducerFinish(data?.netRMCostView))}>{(data?.netRMCostView && reducerFinish(data?.netRMCostView))}</span> : ''}
                                         {/* {data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.fWeight, initialConfiguration.NoOfDecimalForInputOutput) : ''} */}
                                       </span>
+                                      {data?.technology === FORGING && <span className={`d-block small-grey-text ${isApproval && viewCostingData?.length > 1 && highlightCostingSummaryValue(viewCostingData[0]?.ForgingScrapWeight, viewCostingData[1]?.ForgingScrapWeight)}`}>
+                                        {data?.CostingHeading !== VARIANCE ? data?.IsAssemblyCosting === true ? "Multiple RM" : <span title={(data?.ForgingScrapWeight && data?.ForgingScrapWeight)}>{(data?.ForgingScrapWeight ? data?.ForgingScrapWeight : "-")}</span> : '-'}
+                                        {/* {data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.fWeight, initialConfiguration.NoOfDecimalForInputOutput) : ''} */}
+                                      </span>}
+                                      {data?.technology === FORGING && <span className={`d-block small-grey-text ${isApproval && viewCostingData?.length > 1 && highlightCostingSummaryValue(viewCostingData[0]?.MachiningScrapWeight, viewCostingData[1]?.MachiningScrapWeight)}`}>
+                                        {data?.CostingHeading !== VARIANCE ? data?.IsAssemblyCosting === true ? "Multiple RM" : <span title={(data?.MachiningScrapWeight && data?.MachiningScrapWeight)}>{(data?.MachiningScrapWeight ? data?.MachiningScrapWeight : '-')}</span> : '-'}
+                                        {/* {data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.fWeight, initialConfiguration.NoOfDecimalForInputOutput) : ''} */}
+                                      </span>}
                                       <span className={`d-block small-grey-text ${isApproval && viewCostingData?.length > 1 && highlightCostingSummaryValue(viewCostingData[0]?.BurningLossWeight, viewCostingData[1]?.BurningLossWeight)}`}>
                                         {data?.CostingHeading !== VARIANCE ? data?.netRMCostView && (data?.netRMCostView.length > 1 || data?.IsAssemblyCosting === true) ? 'Multiple RM' : <span title={checkForDecimalAndNull(data?.netRMCostView && data?.netRMCostView[0] && data?.netRMCostView[0]?.BurningLossWeight, initialConfiguration.NoOfDecimalForInputOutput)}>{checkForDecimalAndNull(data?.netRMCostView && data?.netRMCostView[0] && data?.netRMCostView[0]?.BurningLossWeight, initialConfiguration.NoOfDecimalForInputOutput)}</span> : ''}
                                         {/* {data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.fWeight, initialConfiguration.NoOfDecimalForInputOutput) : ''} */}
@@ -1832,7 +1851,7 @@ const CostingSummaryTable = (props) => {
                         <tr className='border-right'>
                           <td width={"20%"}>
                             <span className="d-block small-grey-text">
-                              Hundi/Other Discount
+                              Hundi/Discount
                             </span>
                             <span className="d-block small-grey-text"></span>
                           </td>

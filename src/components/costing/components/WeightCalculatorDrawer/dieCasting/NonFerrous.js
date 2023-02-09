@@ -2,13 +2,14 @@ import React, { useState, useEffect, Fragment } from 'react'
 import { Row, Col } from 'reactstrap'
 import { useForm, Controller, useWatch } from 'react-hook-form'
 import { useDispatch } from 'react-redux'
-import { NumberFieldHookForm, } from '../../../../layout/HookFormInputs'
+import { NumberFieldHookForm, TextFieldHookForm, } from '../../../../layout/HookFormInputs'
 import { checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUserId } from '../../../../../helper'
 import LossStandardTable from '../LossStandardTable'
 import { saveRawMaterialCalculationForDieCasting } from '../../../actions/CostWorking'
 import Toaster from '../../../../common/Toaster'
 import { debounce } from 'lodash'
 import TooltipCustom from '../../../../common/Tooltip'
+import { number, percentageLimitValidation, checkWhiteSpaces } from "../../../../../helper/validation";
 
 
 function NonFerrous(props) {
@@ -283,7 +284,7 @@ function NonFerrous(props) {
                                             />
                                         </Col>
                                         <Col md="3" >
-                                            <NumberFieldHookForm
+                                            <TextFieldHookForm
                                                 label={`Burning (%)`}
                                                 name={'burningPercent'}
                                                 Controller={Controller}
@@ -292,15 +293,11 @@ function NonFerrous(props) {
                                                 mandatory={true}
                                                 rules={{
                                                     required: true,
-                                                    pattern: {
-                                                        value: /^[0-9]\d*(\.\d+)?$/i,
-                                                        message: 'Invalid Number.',
-                                                    },
+                                                    validate: { number, checkWhiteSpaces, percentageLimitValidation },
                                                     max: {
                                                         value: 100,
                                                         message: 'Percentage cannot be greater than 100'
                                                     },
-
                                                 }}
                                                 handleChange={() => { }}
                                                 defaultValue={''}
@@ -311,7 +308,7 @@ function NonFerrous(props) {
                                             />
                                         </Col>
                                         <Col md="3">
-                                            <TooltipCustom disabledIcon={true} id={'buring-nonferrous'} tooltipText={"Burning Value = Shot Weight * (Burning Percentage / 100) * No of Cavity"} />
+                                            <TooltipCustom disabledIcon={true} id={'buring-nonferrous'} tooltipText={"Burning Value = Shot Weight * (Burning Percentage / 100) * No. of Cavity"} />
                                             <NumberFieldHookForm
                                                 label={`Burning Value`}
                                                 name={'burningValue'}
@@ -448,7 +445,7 @@ function NonFerrous(props) {
                                     />
                                 </Col>
                                 <Col md="3">
-                                    <NumberFieldHookForm
+                                    <TextFieldHookForm
                                         label={`Scrap Recovery (%)`}
                                         name={'recovery'}
                                         Controller={Controller}
@@ -456,14 +453,11 @@ function NonFerrous(props) {
                                         register={register}
                                         mandatory={false}
                                         rules={{
-                                            required: false,
-                                            pattern: {
-                                                value: /^\d*\.?\d*$/,
-                                                message: 'Invalid Number.',
-                                            },
+                                            required: true,
+                                            validate: { number, checkWhiteSpaces, percentageLimitValidation },
                                             max: {
                                                 value: 100,
-                                                message: 'Percentage should be less than 100'
+                                                message: 'Percentage cannot be greater than 100'
                                             },
                                         }}
                                         handleChange={() => { }}

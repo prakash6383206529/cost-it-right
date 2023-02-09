@@ -14,10 +14,10 @@ import { apiErrors } from '../../../helper/util';
 import Toaster from '../../common/Toaster';
 
 
-export function getQuotationList(callback) {
+export function getQuotationList(DepartmentCode, callback) {
     return (dispatch) => {
 
-        const request = axios.get(`${API.getQuotationList}`, config());
+        const request = axios.get(`${API.getQuotationList}?DepartmentCode=${''}`, config());
         request.then((response) => {
             if (response.data.Result || response.status === 204) {
 
@@ -199,10 +199,10 @@ export function getMultipleCostingDetails(selectedRows, callback) {
 
         let temp = []
         selectedRows && selectedRows.map((item) => {
-
-            let request = axios.get(`${API.getCostingDetailsByCostingId}/${item.CostingId}`, config(),)
-            temp.push(request)
-
+            if (item.CostingId !== null) {
+                let request = axios.get(`${API.getCostingDetailsByCostingId}/${item.CostingId}`, config(),)
+                temp.push(request)
+            }
         })
 
         axios.all(temp).then((response) => {

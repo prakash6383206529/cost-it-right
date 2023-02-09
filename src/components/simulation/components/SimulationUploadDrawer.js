@@ -13,6 +13,7 @@ import _ from 'lodash'
 
 import { BOPDOMESTIC, BOPIMPORT, MACHINERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT } from '../../../config/constants';
 import { BoughtOutPartDomesticFileHeads, BoughtOutPartImportFileHeads, MachineRateFileHeads, OperationFileHeads, RawMaterialDomesticFileHeads, RawMaterialImportFileHeads } from '../../../config/masterData';
+import TooltipCustom from '../../common/Tooltip';
 
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -538,9 +539,7 @@ class SimulationUploadDrawer extends Component {
                                     </Col> */}
                                     <Col md="12">
                                         <label className="d-inline-block w-auto">Upload</label>
-                                        <div class="tooltip-n ml-1 tooltip-left"><i className="fa fa-info-circle text-primary tooltip-icon"></i>
-                                            <span class="tooltiptext text-center">Please upload the file with data. The file can be downloaded from previous screen.</span>
-                                        </div>
+                                        <TooltipCustom placement="left" customClass="mt-1" tooltipClass="right-tooltip" id="upload-icon" tooltipText={'Please upload the file with data. The file can be downloaded from previous screen.'} />
                                         <div className="input-group mt-1 input-withouticon " >
                                             <div className="file-uploadsection">
                                                 <label>Drag a file here or<span className="blue-text">Browse</span> for a file to upload <img alt={''} src={imgCloud} ></img> </label>

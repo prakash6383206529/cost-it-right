@@ -16,12 +16,15 @@ export const minValue = min => value =>
 
 //THIS IS FOR MAX VALUE
 export const maxValue = max => value =>
-    value && value > max ? `Maximum no of days should be ${max}.` : undefined;
+    value && value > max ? `Maximum value should be ${max}.` : undefined;
 
+export const maxPercentageValue = max => value =>
+    value && value > max ? `Percentage value should be equal to ${max}.` : undefined;
 
 export const minValue1 = minValue(1);
 export const minValueLessThan1 = minValue(0.1);
 export const maxValue366 = maxValue(366)
+export const maxPercentValue = maxPercentageValue(100)
 
 export const minLength1 = minLength(1);
 export const minLength2 = minLength(2);
@@ -433,3 +436,12 @@ export const NoSignNoDecimalRegex = /^\d*$/i;
 
 export const NoSignMaxLengthMessage = `Input should be numeric, and should not exceed ${NUMBERMAXLENGTH} digit before and after decimal.`
 export const NoSignNoDecimalMessage = `Input should be integer.`
+
+export const timeValidation = value =>
+    value && !/^([0-9]*):([0-5]?[0-9])$/.test(value)
+        ? 'Input should not contain #.' : undefined;
+
+export const isDateFormatter = value =>
+    value && !/^[0-3]?[0-9].[0-3]?[0-9].(?:[0-9]{2})?[0-9]{2}$/.test(value)
+        ? false : true;
+

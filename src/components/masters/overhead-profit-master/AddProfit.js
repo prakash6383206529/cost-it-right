@@ -2,8 +2,8 @@ import React, { Component, } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col, Label } from 'reactstrap';
-import { required, getVendorCode, maxLength512, positiveAndDecimalNumber, maxLength15, checkPercentageValue, decimalLengthThree } from "../../../helper/validation";
-import { searchableSelect, renderTextAreaField, renderDatePicker, renderNumberInputField, renderMultiSelectField } from "../../layout/FormInputs";
+import { required, getVendorCode, maxLength512, positiveAndDecimalNumber, maxLength15, checkPercentageValue, decimalLengthThree, number, maxPercentValue, checkWhiteSpaces, percentageLimitValidation } from "../../../helper/validation";
+import { searchableSelect, renderTextAreaField, renderDatePicker, renderNumberInputField, renderMultiSelectField, renderText } from "../../layout/FormInputs";
 import { fetchModelTypeAPI, fetchCostingHeadsAPI, getPlantSelectListByType } from '../../../actions/Common';
 import { getVendorWithVendorCodeSelectList } from '../actions/Supplier';
 import {
@@ -293,21 +293,6 @@ class AddProfit extends Component {
   componentDidUpdate(prevProps) {
     if (prevProps.filedObj !== this.props.filedObj) {
       const { filedObj } = this.props;
-
-      if (this.props.filedObj.ProfitPercentage) {
-        checkPercentageValue(this.props.filedObj.ProfitPercentage, "Profit percentage should not be more than 100") ? this.props.change('ProfitPercentage', this.props.filedObj.ProfitPercentage) : this.props.change('ProfitPercentage', 0)
-      }
-      if (this.props.filedObj.ProfitRMPercentage) {
-        checkPercentageValue(this.props.filedObj.ProfitRMPercentage, "Profit RM percentage should not be more than 100") ? this.props.change('ProfitRMPercentage', this.props.filedObj.ProfitRMPercentage) : this.props.change('ProfitRMPercentage', 0)
-      }
-      if (this.props.filedObj.ProfitMachiningCCPercentage) {
-        checkPercentageValue(this.props.filedObj.ProfitMachiningCCPercentage, "Profit CC percentage should not be more than 100") ? this.props.change('ProfitMachiningCCPercentage', this.props.filedObj.ProfitMachiningCCPercentage) : this.props.change('ProfitMachiningCCPercentage', 0)
-      }
-      if (this.props.filedObj.ProfitBOPPercentage) {
-        checkPercentageValue(this.props.filedObj.ProfitBOPPercentage, "Profit BOP percentage should not be more than 100") ? this.props.change('ProfitBOPPercentage', this.props.filedObj.ProfitBOPPercentage) : this.props.change('ProfitBOPPercentage', 0)
-      }
-
-
       const ProfitPercentage = filedObj && filedObj.ProfitPercentage !== undefined && filedObj.ProfitPercentage !== '' ? true : false;
       const ProfitRMPercentage = filedObj && filedObj.ProfitRMPercentage !== undefined && filedObj.ProfitRMPercentage !== '' ? true : false;
       const ProfitMachiningCCPercentage = filedObj && filedObj.ProfitMachiningCCPercentage !== undefined && filedObj.ProfitMachiningCCPercentage !== '' ? true : false;
@@ -343,6 +328,9 @@ class AddProfit extends Component {
     if (newValue && newValue !== '') {
       if (newValue?.label?.includes('Part Cost')) {
         this.setState({ showPartCost: true })
+      }
+      else {
+        this.setState({ showPartCost: false })
       }
       this.setState({ profitAppli: newValue, isRM: false, isCC: false, isBOP: false, isProfitPercent: false }, () => {
         this.checkProfitFields()
@@ -960,7 +948,7 @@ class AddProfit extends Component {
                         {costingTypeId === VBCTypeId && (
                           <Col md="3">
                             <label>{"Vendor (Code)"}<span className="asterisk-required">*</span></label>
-                            <div className='p-relative'>
+                            <div className='p-relative vendor-loader'>
                               {this.state.inputLoader && <LoaderCustom customClass={`input-loader`} />}
                               <AsyncSelect
                                 name="vendorName"
@@ -1078,13 +1066,9 @@ class AddProfit extends Component {
                               label={`Profit (%)`}
                               name={"ProfitPercentage"}
                               type="text"
-                              placeholder={
-                                isProfitPercent || isViewMode ? "-" : "Enter"
-                              }
-                              validate={
-                                !isProfitPercent ? [required, positiveAndDecimalNumber, maxLength15, decimalLengthThree] : []
-                              }
-                              component={renderNumberInputField}
+                              placeholder={isProfitPercent || isViewMode ? "-" : "Enter"}
+                              validate={!isProfitPercent ? [required, number, maxPercentValue, checkWhiteSpaces, percentageLimitValidation] : []}
+                              component={renderText}
                               onBlur={this.handlePercent}
                               required={!isProfitPercent ? true : false}
                               onChange={(event) => this.handleChangeProfitPercentage(event.target.value)}
@@ -1102,9 +1086,9 @@ class AddProfit extends Component {
                               name={"ProfitRMPercentage"}
                               type="text"
                               placeholder={isRM || isViewMode ? "-" : "Enter"}
-                              validate={!isRM ? [required, positiveAndDecimalNumber, maxLength15, decimalLengthThree] : []}
+                              validate={!isRM ? [required, number, maxPercentValue, checkWhiteSpaces, percentageLimitValidation] : []}
                               onChange={(event) => this.handleChangeProfitPercentageRM(event.target.value)}
-                              component={renderNumberInputField}
+                              component={renderText}
                               required={!isRM ? true : false}
                               className=""
                               customClassName=" withBorder"
@@ -1119,9 +1103,9 @@ class AddProfit extends Component {
                               name={"ProfitMachiningCCPercentage"}
                               type="text"
                               placeholder={isCC || isViewMode ? "-" : "Enter"}
-                              validate={!isCC ? [required, positiveAndDecimalNumber, maxLength15, decimalLengthThree] : []}
+                              validate={!isCC ? [required, number, maxPercentValue, checkWhiteSpaces, percentageLimitValidation] : []}
                               onChange={(event) => this.handleChangeProfitPercentageCC(event.target.value)}
-                              component={renderNumberInputField}
+                              component={renderText}
                               //onChange={this.handleCalculation}
                               required={!isCC ? true : false}
                               className=""
@@ -1137,9 +1121,9 @@ class AddProfit extends Component {
                               name={"ProfitBOPPercentage"}
                               type="text"
                               placeholder={isBOP || isViewMode ? "-" : "Enter"}
-                              validate={!isBOP ? [required, positiveAndDecimalNumber, maxLength15, decimalLengthThree] : []}
+                              validate={!isBOP ? [required, number, maxPercentValue, checkWhiteSpaces, percentageLimitValidation] : []}
                               onChange={(event) => this.handleChangeProfitPercentageBOP(event.target.value)}
-                              component={renderNumberInputField}
+                              component={renderText}
                               //onChange={this.handleCalculation}
                               required={!isBOP ? true : false}
                               className=""

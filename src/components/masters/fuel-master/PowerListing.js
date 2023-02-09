@@ -448,7 +448,7 @@ class PowerListing extends Component {
                       DownloadAccessibility &&
                       <>
 
-                        <ExcelFile filename={'PowerMaster'} fileExtension={'.xls'} element={
+                        <ExcelFile filename={'Power'} fileExtension={'.xls'} element={
                           <button title={`Download ${this.state.dataCount === 0 ? "All" : "(" + this.state.dataCount + ")"}`} type="button" className={'user-btn mr5'}><div className="download mr-1" ></div>
                             {/* DOWNLOAD */}
                             {`${this.state.dataCount === 0 ? "All" : "(" + this.state.dataCount + ")"}`}

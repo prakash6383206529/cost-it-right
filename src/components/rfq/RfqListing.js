@@ -19,6 +19,8 @@ import ViewRfq from './ViewRfq';
 import AddRfq from './AddRfq';
 import { checkPermission, userDetails } from '../../helper';
 import TooltipCustom from '../common/Tooltip';
+import DayTime from '../common/DayTimeWrapper';
+import Attachament from '../costing/components/Drawers/Attachament';
 const gridOptions = {};
 
 
@@ -39,6 +41,8 @@ function RfqListing(props) {
     const [editAccessibility, setEditAccessibility] = useState(false);
     const [viewAccessibility, setViewAccessibility] = useState(false);
     const [confirmPopup, setConfirmPopup] = useState(false);
+    const [attachment, setAttachment] = useState(false);
+    const [viewAttachment, setViewAttachment] = useState([])
     const [deleteId, setDeleteId] = useState('');
     const { topAndLeftMenuData } = useSelector(state => state.auth);
 
@@ -69,7 +73,7 @@ function RfqListing(props) {
     * @description HIDE DOMESTIC, IMPORT FORMS
     */
     const getDataList = () => {
-        dispatch(getQuotationList((res) => {
+        dispatch(getQuotationList(userDetails()?.DepartmentCode, (res) => {
             let temp = []
             res?.data?.DataList && res?.data?.DataList.map((item) => {
                 if (item.IsActive === false) {
@@ -141,7 +145,7 @@ function RfqListing(props) {
         return (
             <>
                 {viewAccessibility && <button title='View' className="View mr-1" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, true)} />}
-                {((status === DRAFT) && editAccessibility) && <button title='Edit' className="Edit mr-1" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, false)} />}
+                {((status !== CANCELLED) && editAccessibility) && <button title='Edit' className="Edit mr-1" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, false)} />}
                 {(status !== APPROVED && status !== UNDER_APPROVAL && status !== CANCELLED) && <button title='Cancel' className="CancelIcon mr-1" type={'button'} onClick={() => cancelItem(cellValue)} />}
             </>
         )
@@ -238,6 +242,20 @@ function RfqListing(props) {
         return <div id={"status"} className={cell}>{tempStatus}</div>
     }
 
+    const dateFormater = (props) => {
+        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '-';
+    }
+
+    const viewAttachmentData = (index) => {
+        setAttachment(true)
+        setViewAttachment(index)
+    }
+
+    const closeAttachmentDrawer = (e = '') => {
+        setAttachment(false)
+    }
+
     const attachmentFormatter = (props) => {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         let files = row?.Attachments
@@ -245,26 +263,22 @@ function RfqListing(props) {
         return (
             <>
                 <div className={"attachment images"}>
-                    {files && files.length > 0 &&
-                        files.map((f, index) => {
+                    {files && files.length === 1 ?
+                        files.map((f) => {
                             const withOutTild = f.FileURL?.replace("~", "");
                             const fileURL = `${FILE_URL}${withOutTild}`;
+                            return (
+                                <a href={fileURL} target="_blank" rel="noreferrer">
+                                    {f.OriginalFileName}
+                                </a>
+                            )
 
-                            if (index === 0) {
-                                return (
-                                    <a href={fileURL} target="_blank" rel="noreferrer">
-                                        {f.OriginalFileName}
-                                    </a>
-                                )
-
-                            } else {
-                                return (
-                                    <a href={fileURL} target="_blank" rel="noreferrer">
-                                        , {f.OriginalFileName}
-                                    </a>
-                                )
-                            }
-                        })}
+                        }) : <button
+                            type='button'
+                            title='View Attachment'
+                            className='btn-a pl-0'
+                            onClick={() => viewAttachmentData(row)}
+                        >View Attachment</button>}
                 </div>
             </>
         )
@@ -295,7 +309,8 @@ function RfqListing(props) {
         totalValueRenderer: buttonFormatter,
         linkableFormatter: linkableFormatter,
         attachmentFormatter: attachmentFormatter,
-        statusFormatter: statusFormatter
+        statusFormatter: statusFormatter,
+        dateFormater: dateFormater
     }
 
 
@@ -372,7 +387,8 @@ function RfqListing(props) {
                                                 <AgGridColumn field="TechnologyName" headerName='Technology'></AgGridColumn>
                                                 <AgGridColumn field="Remark" headerName='Remark'></AgGridColumn>
                                                 <AgGridColumn field="RaisedBy" headerName='Raised By'></AgGridColumn>
-                                                <AgGridColumn field="RaisedOn" headerName='Raised On'></AgGridColumn>
+                                                <AgGridColumn field="RaisedOn" headerName='Raised On' cellRenderer='dateFormater'></AgGridColumn>
+                                                <AgGridColumn field="LastSubmissionDate" headerName='Last Submission Date' cellRenderer='dateFormater'></AgGridColumn>
                                                 <AgGridColumn field="QuotationNumber" headerName='Attachments' cellRenderer='attachmentFormatter'></AgGridColumn>
                                                 <AgGridColumn field="Status" headerName="Status" cellClass="text-center" minWidth={150} cellRenderer="statusFormatter"></AgGridColumn>
                                                 {<AgGridColumn field="QuotationId" width={160} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
@@ -418,6 +434,17 @@ function RfqListing(props) {
                     closeDrawer={closeDrawer}
                 />
 
+            }
+            {
+                attachment && (
+                    <Attachament
+                        isOpen={attachment}
+                        index={viewAttachment}
+                        closeDrawer={closeAttachmentDrawer}
+                        anchor={'right'}
+                        gridListing={true}
+                    />
+                )
             }
 
 

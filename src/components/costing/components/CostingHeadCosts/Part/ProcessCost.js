@@ -917,45 +917,6 @@ function ProcessCost(props) {
       setGridData(processTemparr)
 
       dispatch(setProcessGroupGrid(formatReducerArray(processTemparr)))
-    } else {
-
-      const ProcessCost = tempData.MHR * 0
-      tempData = {
-        ...tempData,
-        Quantity: 0,
-        IsCalculatedEntry: false,
-        ProcessCost: ProcessCost,
-      }
-      let gridTempArr = Object.assign([...list], { [index]: tempData })
-      setTimeout(() => {
-        setValue(`${SingleProcessGridField}.${index}${parentIndex}${processName}.Quantity`, "")
-        setValue(`${SingleProcessGridField}.${index}.${parentIndex}.ProcessCost`, "")
-      }, 200)
-
-      //MAIN PROCESS ROW WITH GROUP
-      let ProcessCostTotal = 0
-      ProcessCostTotal = gridTempArr && gridTempArr.reduce((accummlator, el) => {
-        return accummlator + checkForNull(el.ProcessCost)
-      }, 0)
-
-      processTempData = {
-        ...processTempData,
-        ProcessCost: ProcessCostTotal
-      }
-      let processTemparr = Object.assign([...processGroupGrid], { [parentIndex]: processTempData })
-      let apiArr = formatMainArr(processTemparr)
-
-      tempArr = {
-        ...tabData,
-        NetConversionCost: ProcessCostTotal + checkForNull(tabData.OperationCostTotal !== null ? tabData.OperationCostTotal : 0,) + checkForNull(tabData.OtherOperationCostTotal !== null ? tabData.OtherOperationCostTotal : 0),
-        ProcessCostTotal: ProcessCostTotal,
-        CostingProcessCostResponse: apiArr,
-      }
-      setIsFromApi(false)
-      setTabData(tempArr)
-      setGridData(processTemparr)
-      dispatch(setProcessGroupGrid(formatReducerArray(processTemparr)))
-      setValue(`${ProcessGridFields}.${parentIndex}.ProcessCost`, checkForDecimalAndNull(ProcessCostTotal, initialConfiguration.NoOfDecimalForPrice))
     }
   }
 

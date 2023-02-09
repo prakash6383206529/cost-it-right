@@ -2,7 +2,7 @@ import React, { Fragment, useState, useEffect, useContext } from 'react'
 import { Row, Col } from 'reactstrap'
 import { useForm, Controller, useWatch } from 'react-hook-form'
 import { useDispatch } from 'react-redux'
-import { NumberFieldHookForm } from '../../../../layout/HookFormInputs'
+import { NumberFieldHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs'
 import { checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUserId, } from '../../../../../helper'
 import { costingInfoContext } from '../../CostingDetailStepTwo'
 import { saveMachiningProcessCostCalculationData } from '../../../actions/CostWorking'
@@ -10,6 +10,7 @@ import Toaster from '../../../../common/Toaster'
 import { debounce } from 'lodash'
 import { findProcessCost } from '../../../CostingUtil'
 import TooltipCustom from '../../../../common/Tooltip'
+import { number, percentageLimitValidation, checkWhiteSpaces } from "../../../../../helper/validation";
 
 function Broaching(props) {
     const WeightCalculatorRequest = props.calculatorData.WeightCalculatorRequest
@@ -393,7 +394,7 @@ function Broaching(props) {
                                         </Col>
 
                                         <Col md="4">
-                                            <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'broaching-force'} tooltipText={'Broaching Force in Ton = Cutting Resistance * (Cutting Length / Module) * (No of Teeth * Module * Step Forward Thinning)  / 1000'} />
+                                            <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'broaching-force'} tooltipText={'Broaching Force in Ton = Cutting Resistance * (Cutting Length / Module) * (No. of Teeth * Module * Step Forward Thinning)  / 1000'} />
                                             <NumberFieldHookForm
                                                 label={`Broaching Force in Ton`}
                                                 name={'broachingForceInTon'}
@@ -646,7 +647,7 @@ function Broaching(props) {
                                         </Col>
 
                                         <Col md="4">
-                                            <NumberFieldHookForm
+                                            <TextFieldHookForm
                                                 label={`Efficiency (%)`}
                                                 name={'efficiencyPercentage'}
                                                 Controller={Controller}
@@ -656,15 +657,11 @@ function Broaching(props) {
                                                 handleChange={() => { }}
                                                 rules={{
                                                     required: true,
-                                                    pattern: {
-                                                        value: /^\d*\.?\d*$/,
-                                                        message: 'Invalid Number.'
-                                                    },
-
+                                                    validate: { number, checkWhiteSpaces, percentageLimitValidation },
                                                     max: {
                                                         value: 100,
-                                                        message: "Should not be greater than 100"
-                                                    }
+                                                        message: 'Percentage cannot be greater than 100'
+                                                    },
                                                 }}
                                                 defaultValue={''}
                                                 className=""
