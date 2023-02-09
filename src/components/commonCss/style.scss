@@ -389,6 +389,7 @@ button.add-btn {
 .multiselect-with-border {
   border: 1px solid $borderColor;
   border-radius: 3px;
+  overflow-y: auto;
 }
 
 .fs1 {
