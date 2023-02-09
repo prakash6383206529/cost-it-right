@@ -800,6 +800,7 @@ class BOPImportListing extends Component {
                         isSimulation={true}
                         //cellValue={cellValue}
                         rowData={this.state.selectedRowData}
+                        import={true}
                     />
                 }
 
