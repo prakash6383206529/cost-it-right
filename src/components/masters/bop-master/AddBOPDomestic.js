@@ -27,7 +27,7 @@ import { AcceptableBOPUOM } from '../../../config/masterData'
 import LoaderCustom from '../../common/LoaderCustom';
 import imgRedcross from '../../../assests/images/red-cross.png';
 import MasterSendForApproval from '../MasterSendForApproval'
-import { CheckApprovalApplicableMaster, displayUOM, onFocus } from '../../../helper';   // WILL BE USED LATER WHEN BOP APPROVAL IS DONE
+import { CheckApprovalApplicableMaster, displayUOM, onFocus, userTechnologyDetailByMasterId } from '../../../helper';
 import { debounce } from 'lodash';
 import AsyncSelect from 'react-select/async';
 import { getClientSelectList, } from '../actions/Client';
@@ -35,6 +35,7 @@ import { reactLocalStorage } from 'reactjs-localstorage';
 import { autoCompleteDropdown } from '../../common/CommonFunctions';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { checkFinalUser } from '../../../components/costing/actions/Costing'
+import { getUsersMasterLevelAPI } from '../../../actions/auth/AuthActions';
 
 const selector = formValueSelector('AddBOPDomestic');
 
@@ -86,7 +87,9 @@ class AddBOPDomestic extends Component {
       finalApprovalLoader: false,
       client: [],
       costingTypeId: ZBCTypeId,
-      showPopup: false
+      showPopup: false,
+      levelDetails: {},
+      noApprovalCycle: false
     }
   }
 
@@ -118,28 +121,47 @@ class AddBOPDomestic extends Component {
         this.props.getClientSelectList(() => { })
       }
       if (!this.state.isViewMode) {
-        let obj = {
-          TechnologyId: BOP_MASTER_ID,
-          DepartmentId: userDetails().DepartmentId,
-          UserId: loggedInUserId(),
-          Mode: 'master',
-          approvalTypeId: this.state.costingTypeId,
-        }
-        this.setState({ finalApprovalLoader: true })
-        this.props.checkFinalUser(obj, (res) => {
-          if (res.data.Result) {
-            this.setState({ isFinalApprovar: res.data.Data.IsFinalApprover })
-            this.setState({ finalApprovalLoader: false })
-          }
-
+        this.props.getUsersMasterLevelAPI(loggedInUserId(), BOP_MASTER_ID, (res) => {
+          setTimeout(() => {
+            this.commonFunction()
+          }, 100);
         })
       }
     }, 300);
   }
 
-  componentDidUpdate(prevProps) {
+  commonFunction() {
+    let levelDetailsTemp = []
+    levelDetailsTemp = userTechnologyDetailByMasterId(this.state.costingTypeId, BOP_MASTER_ID, this.props.userMasterLevelAPI)
+    this.setState({ levelDetails: levelDetailsTemp })
+    if (levelDetailsTemp?.length !== 0) {
+      let obj = {
+        TechnologyId: BOP_MASTER_ID,
+        DepartmentId: userDetails().DepartmentId,
+        UserId: loggedInUserId(),
+        Mode: 'master',
+        approvalTypeId: this.state.costingTypeId
+      }
+
+      this.setState({ finalApprovalLoader: true })
+      this.props.checkFinalUser(obj, (res) => {
+        if (res?.data?.Result) {
+          this.setState({ isFinalApprovar: res?.data?.Data?.IsFinalApprover })
+          this.setState({ finalApprovalLoader: false })
+        }
+      })
+      this.setState({ noApprovalCycle: false })
+    } else {
+      this.setState({ noApprovalCycle: true })
+    }
+  }
+
+  componentDidUpdate(prevProps, prevState) {
     if (this.props.fieldsObj !== prevProps.fieldsObj) {
       this.handleCalculation()
+    }
+    if (prevState?.costingTypeId !== this.state.costingTypeId) {
+      this.commonFunction()
     }
   }
   componentWillUnmount() {
@@ -826,7 +848,7 @@ class AddBOPDomestic extends Component {
   */
   render() {
     const { handleSubmit, isBOPAssociated } = this.props;
-    const { isCategoryDrawerOpen, isOpenVendor, isOpenUOM, isEditFlag, isViewMode, setDisable, costingTypeId } = this.state;
+    const { isCategoryDrawerOpen, isOpenVendor, isOpenUOM, isEditFlag, isViewMode, setDisable, costingTypeId, noApprovalCycle } = this.state;
     const filterList = async (inputValue) => {
       const { vendorName } = this.state
       const resultInput = inputValue.slice(0, searchCount)
@@ -1352,7 +1374,7 @@ class AddBOPDomestic extends Component {
                           {!isViewMode && (CheckApprovalApplicableMaster(BOP_MASTER_ID) === true && !this.state.isFinalApprovar) ?
                             <button type="submit"
                               class="user-btn approval-btn save-btn mr5"
-                              disabled={isViewMode || setDisable}
+                              disabled={isViewMode || setDisable || noApprovalCycle}
                             >
                               <div className="send-for-approval"></div>
                               {'Send For Approval'}
@@ -1362,7 +1384,7 @@ class AddBOPDomestic extends Component {
                             <button
                               type="submit"
                               className="user-btn mr5 save-btn"
-                              disabled={isViewMode || setDisable}
+                              disabled={isViewMode || setDisable || noApprovalCycle}
                             >
                               <div className={"save-icon"}></div>
                               {isEditFlag ? "Update" : "Save"}
@@ -1422,6 +1444,7 @@ class AddBOPDomestic extends Component {
                 IsImportEntery={false}
                 UOM={this.state.UOM}
                 costingTypeId={this.state.costingTypeId}
+                levelDetails={this.state.levelDetails}
               />
             )
           }
@@ -1444,7 +1467,7 @@ function mapStateToProps(state) {
   const { plantList, filterPlantList, filterCityListBySupplier, cityList, UOMSelectList, plantSelectList, costingHead } = comman;
   const { partSelectList } = part;
   const { vendorWithVendorCodeSelectList } = supplier;
-  const { initialConfiguration } = auth;
+  const { initialConfiguration, userMasterLevelAPI } = auth;
   const { clientSelectList } = client;
 
   let initialValues = {};
@@ -1462,7 +1485,7 @@ function mapStateToProps(state) {
 
   return {
     vendorWithVendorCodeSelectList, plantList, filterPlantList, filterCityListBySupplier, cityList, UOMSelectList,
-    plantSelectList, bopCategorySelectList, bopData, partSelectList, costingHead, fieldsObj, initialValues, initialConfiguration, clientSelectList
+    plantSelectList, bopCategorySelectList, bopData, partSelectList, costingHead, fieldsObj, initialValues, initialConfiguration, clientSelectList, userMasterLevelAPI
   }
 
 }
@@ -1489,7 +1512,8 @@ export default connect(mapStateToProps, {
   checkFinalUser,
   getCityByCountry,
   getAllCity,
-  getClientSelectList
+  getClientSelectList,
+  getUsersMasterLevelAPI
 })(reduxForm({
   form: 'AddBOPDomestic',
   touchOnChange: true,

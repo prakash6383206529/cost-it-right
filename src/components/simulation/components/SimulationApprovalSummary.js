@@ -1500,6 +1500,8 @@ function SimulationApprovalSummary(props) {
                     IsFinalLevel={finalLeveluser}
                     costingList={costingList}
                     attachments={simulationDetail.Attachements}
+                    Attachements={simulationDetail.Attachements}
+                    SimulationHeadId={simulationDetail?.SimulationHeadId}
                 // IsPushDrawer={showPushDrawer}
                 // dataSend={[approvalDetails, partDetail]}
                 />
@@ -1515,9 +1517,11 @@ function SimulationApprovalSummary(props) {
                     //  tokenNo={approvalNumber}
                     anchor={'right'}
                     IsFinalLevel={!showFinalLevelButtons}
-                // reasonId={approvalDetails.ReasonId}
-                // IsPushDrawer={showPushDrawer}
-                // dataSend={[approvalDetails, partDetail]}
+                    // reasonId={approvalDetails.ReasonId}
+                    // IsPushDrawer={showPushDrawer}
+                    // dataSend={[approvalDetails, partDetail]}
+                    Attachements={simulationDetail.Attachements}
+                    SimulationHeadId={simulationDetail?.SimulationHeadId}
                 />
             }
 

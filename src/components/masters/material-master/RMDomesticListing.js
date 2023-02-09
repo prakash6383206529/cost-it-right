@@ -156,17 +156,6 @@ function RMDomesticListing(props) {
     useEffect(() => {
         reactLocalStorage.setObject('selectedRow', {})
         if (!props.stopApiCallOnCancel) {
-            let obj = {
-                MasterId: RM_MASTER_ID,
-                DepartmentId: userDetails().DepartmentId,
-                LoggedInUserLevelId: userDetails().LoggedInMasterLevelId,
-                LoggedInUserId: loggedInUserId()
-            }
-            dispatch(checkFinalUser(obj, (res) => {
-                if (res?.data?.Result) {
-                    setIsFinalLevelUser(res.data.Data.IsFinalApprovar)
-                }
-            }))
             return () => {
                 dispatch(setSelectedRowForPagination([]))
                 reactLocalStorage.setObject('selectedRow', {})
