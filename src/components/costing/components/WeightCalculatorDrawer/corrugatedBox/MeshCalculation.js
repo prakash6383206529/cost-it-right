@@ -4,12 +4,13 @@ import { useDispatch, useSelector } from 'react-redux'
 import { Col, Row } from 'reactstrap'
 import { saveRawMaterialCalculationForCorrugatedBox } from '../../../actions/CostWorking'
 import { NumberFieldHookForm, SearchableSelectHookForm, TextFieldHookForm, } from '../../../../layout/HookFormInputs'
-import { checkForDecimalAndNull, checkForNull, loggedInUserId } from '../../../../../helper'
+import { ceilByMultiple, checkForDecimalAndNull, checkForNull, loggedInUserId } from '../../../../../helper'
 import { reactLocalStorage } from 'reactjs-localstorage'
 import Toaster from '../../../../common/Toaster'
 import HeaderTitle from '../../../../common/HeaderTitle'
 import { debounce } from 'lodash'
 import TooltipCustom from '../../../../common/Tooltip'
+import { maxPercentValue } from '../../../../../helper/validation'
 
 function MeshCalculation(props) {
     const [dataSend, setDataSend] = useState({})
@@ -51,7 +52,7 @@ function MeshCalculation(props) {
 
     const fieldValues = useWatch({
         control,
-        name: ['no_of_ply', 'gsm', 'bursting_factor', 'length_box', 'width_box', 'noOfMeshLength', 'noOfMeshWidth', 'fluteTypePercent', 'cutting_allowance'],
+        name: ['no_of_ply', 'gsm', 'bursting_factor', 'length_box', 'width_box', 'noOfMeshLength', 'noOfMeshWidth', 'fluteTypePercent', 'cutting_allowance', 'cuttingAllowanceForLength'],
     })
 
     useEffect(() => {
@@ -82,17 +83,15 @@ function MeshCalculation(props) {
             heightBox: Number(getValues('height_box')),
             stichingLength: Number(getValues('stiching_length')),
             noOfMeshWidth: Number(getValues('noOfMeshWidth')),
-            noOfMeshLength: Number(getValues('noOfMeshLength'))
+            noOfMeshLength: Number(getValues('noOfMeshLength')),
+            cutting_allowance: Number(getValues('cutting_allowance')),
+            cuttingAllowanceForLength: Number(getValues('cuttingAllowanceForLength'))
         }
-        //width_sheet
-        //length_sheet
-        let inv = 1.0 / 0.25
 
         let widthSheet = (checkForNull(data.widthBox) * checkForNull(data.noOfMeshWidth)) / 25.4;
-
         let width_inc_cutting = 0
         if (widthSheet) {
-            width_inc_cutting = widthSheet + 1
+            width_inc_cutting = widthSheet + (2 * data.cutting_allowance)
         }
 
         let roundOffWidth = Math.round(width_inc_cutting)
@@ -100,10 +99,10 @@ function MeshCalculation(props) {
 
         let length_inc_cutting_allowance = 0
         if (lengthSheet) {
-            length_inc_cutting_allowance = lengthSheet + 1
+            length_inc_cutting_allowance = lengthSheet + (2 * data.cuttingAllowanceForLength)
         }
 
-        let length_RoundOff = Math.round(length_inc_cutting_allowance * inv) / inv
+        let length_RoundOff = ceilByMultiple(length_inc_cutting_allowance, 0.25)    //ROUND OFF TO 0.25 (Common function)
 
         setDataSend(prevState => ({ ...prevState, widthSheetWithDecimal: widthSheet, lengthSheetWithDecimal: lengthSheet, widthIncCuttingAllowance: width_inc_cutting, roundOffWidth: roundOffWidth, length_RoundOff: length_RoundOff, length_inc_cutting_allowance: length_inc_cutting_allowance }))
         setTimeout(() => {
@@ -112,7 +111,6 @@ function MeshCalculation(props) {
             setValue('width_inc_cutting', checkForDecimalAndNull(width_inc_cutting, localStorage.NoOfDecimalForInputOutput))
             setValue('width_RoundOff', checkForDecimalAndNull(roundOffWidth, localStorage.NoOfDecimalForInputOutput))
         }, 200);
-
 
         setTimeout(() => {
             setValue('length_sheet', checkForDecimalAndNull(lengthSheet, localStorage.NoOfDecimalForInputOutput))
@@ -126,28 +124,45 @@ function MeshCalculation(props) {
     const setFinalGrossWeight = () => {
 
         let data = {
-            width_inc_cutting: Math.round(dataSend.widthIncCuttingAllowance),  //SWA
-            length_inc_cutting_allowance: Math.round(dataSend.length_inc_cutting_allowance), //SLA
             ftp: Number(getValues('fluteTypePercent')), //FTP
             no_of_ply: Number(getValues('no_of_ply')), //NP
-            gsm: checkForNull(getValues('gsm')) //GSM
+            gsm: checkForNull(getValues('gsm')),//GSM,
+            widthBox: Number(getValues('width_box')),
+            noOfMeshWidth: Number(getValues('noOfMeshWidth')),
+            cutting_allowance: Number(getValues('cutting_allowance')),
+            cuttingAllowanceForLength: Number(getValues('cuttingAllowanceForLength')),
+            lengthBox: Number(getValues('length_box')),
+            noOfMeshLength: Number(getValues('noOfMeshLength')),
         }
 
-        if (data.length_inc_cutting_allowance) {
-            const WidthIncCuttingAllowance = Number(data.width_inc_cutting);
-            const LengthIncCuttingAllowance = parseInt(data.length_inc_cutting_allowance);
-            const NoOfPly = parseInt(data.no_of_ply);
-            const Gsm = parseInt(data.gsm);
-            const fluteTypePercent = checkForNull(data.ftp)
-
-            const gross = (WidthIncCuttingAllowance * LengthIncCuttingAllowance * NoOfPly * Gsm * fluteTypePercent) / 1550;
-            const finalGross = gross / 1000;
-
-            setDataSend(prevState => ({ ...prevState, paperWithDecimal: finalGross }))
-            setTimeout(() => {
-                setValue('paper_process', checkForDecimalAndNull(finalGross, localStorage.NoOfDecimalForInputOutput));
-            }, 200);
+        let widthSheet = (checkForNull(data.widthBox) * checkForNull(data.noOfMeshWidth)) / 25.4;
+        let width_inc_cutting = 0
+        if (widthSheet) {
+            width_inc_cutting = widthSheet + (2 * data.cutting_allowance)
         }
+        let roundOffWidth = Math.round(width_inc_cutting)
+
+        const lengthSheet = (checkForNull(data.noOfMeshLength) * checkForNull(data.lengthBox)) / 25.4;
+        let length_inc_cutting_allowance = 0
+        if (lengthSheet) {
+            length_inc_cutting_allowance = lengthSheet + (2 * data.cuttingAllowanceForLength)
+        }
+        let length_RoundOff = ceilByMultiple(length_inc_cutting_allowance, 0.25)    //ROUND OFF TO 0.25 (Common function)
+
+        const WidthIncCuttingAllowance = checkForNull(roundOffWidth);
+        const LengthIncCuttingAllowance = checkForNull(length_RoundOff);
+        const NoOfPly = parseInt(data.no_of_ply);
+        const Gsm = parseInt(data.gsm);
+        const fluteTypePercent = checkForNull(data.ftp)
+
+        const gross = (WidthIncCuttingAllowance * LengthIncCuttingAllowance * NoOfPly * Gsm * fluteTypePercent) / 1550;
+        const finalGross = gross / 1000;
+
+        setDataSend(prevState => ({ ...prevState, paperWithDecimal: finalGross }))
+        setTimeout(() => {
+            setValue('paper_process', checkForDecimalAndNull(finalGross, localStorage.NoOfDecimalForInputOutput));
+        }, 200);
+
     }
 
     const onSubmit = debounce(handleSubmit((Values) => {
@@ -494,9 +509,35 @@ function MeshCalculation(props) {
 
 
                                 <Col md="3">
-                                    <TooltipCustom disabledIcon={true} id={'sheet-width-cutting-inc'} tooltipClass={'weight-of-sheet'} tooltipText={'Width Cutting Allowance = (Width Sheet + 1)'} />
+                                    <TextFieldHookForm
+                                        label={`Cutting Allowance`}
+                                        name={'cutting_allowance'}
+                                        Controller={Controller}
+                                        control={control}
+                                        register={register}
+                                        mandatory={true}
+                                        rules={{
+                                            required: true,
+                                            pattern: {
+                                                value: /^\d{0,4}(\.\d{0,6})?$/i,
+                                                message: 'Maximum length for integer is 4 and for decimal is 6',
+                                            },
+
+                                        }}
+                                        handleChange={() => { }}
+                                        defaultValue={''}
+                                        className=""
+                                        customClassName={'withBorder'}
+                                        errors={errors.cutting_allowance}
+                                        disabled={props.CostingViewMode ? props.CostingViewMode : false}
+                                    />
+                                </Col>
+
+
+                                <Col md="3">
+                                    <TooltipCustom disabledIcon={true} id={'sheet-width-cutting-inc'} tooltipClass={'weight-of-sheet'} tooltipText={'Width Cutting Allowance = (Width Sheet + (2 * Cutting Allowance)'} />
                                     <NumberFieldHookForm
-                                        label={`Width(sheet) inc. Cutting allowance`}
+                                        label={`Sheet Width + Cutting Allowance`}
                                         name={'width_inc_cutting'}
                                         Controller={Controller}
                                         control={control}
@@ -521,9 +562,9 @@ function MeshCalculation(props) {
 
 
                                 <Col md="3">
-                                    <TooltipCustom disabledIcon={true} id={'round-off-width'} tooltipClass={'weight-of-sheet'} tooltipText={'Round off to next whole inch (Width) = Round(Width(sheet) inc. Cutting allowance)'} />
+                                    <TooltipCustom disabledIcon={true} id={'round-off-width'} tooltipClass={'weight-of-sheet'} tooltipText={'Round Off (Width + Cutting Allowance)'} />
                                     <NumberFieldHookForm
-                                        label={`Round off to next whole inch (Width)`}
+                                        label={`Round Off (Width + Cutting Allowance)`}
                                         name={'width_RoundOff'}
                                         Controller={Controller}
                                         control={control}
@@ -575,9 +616,35 @@ function MeshCalculation(props) {
 
 
                                 <Col md="3" className='mt-2'>
-                                    <TooltipCustom disabledIcon={true} id={'length-cutting-al'} tooltipClass={'weight-of-sheet'} tooltipText={'Length Cutting Allowance = (Length Sheet + 1)'} />
+                                    <TextFieldHookForm
+                                        label={`Cutting Allowance`}
+                                        name={'cuttingAllowanceForLength'}
+                                        Controller={Controller}
+                                        control={control}
+                                        register={register}
+                                        mandatory={true}
+                                        rules={{
+                                            required: true,
+                                            pattern: {
+                                                value: /^\d{0,4}(\.\d{0,6})?$/i,
+                                                message: 'Maximum length for integer is 4 and for decimal is 6',
+                                            },
+
+                                        }}
+                                        handleChange={() => { }}
+                                        defaultValue={''}
+                                        className=""
+                                        customClassName={'withBorder'}
+                                        errors={errors.cuttingAllowanceForLength}
+                                        disabled={props.CostingViewMode ? props.CostingViewMode : false}
+                                    />
+                                </Col>
+
+
+                                <Col md="3" className='mt-2'>
+                                    <TooltipCustom disabledIcon={true} id={'length-cutting-al'} tooltipClass={'weight-of-sheet'} tooltipText={'Length Cutting Allowance = (Length Sheet + (2 * Cutting Allowance))'} />
                                     <NumberFieldHookForm
-                                        label={`Length(sheet) inc. Cutting allowance`}
+                                        label={`Sheet Length + Cutting Allowance`}
                                         name={'length_inc_cutting_allowance'}
                                         Controller={Controller}
                                         control={control}
@@ -603,7 +670,7 @@ function MeshCalculation(props) {
 
                                 <Col md="3">
                                     <NumberFieldHookForm
-                                        label={`Round off to next quarter inch (Length)`}
+                                        label={`Quarter Round Off (Length + Cutting Allowance)`}
                                         name={'length_RoundOff'}
                                         Controller={Controller}
                                         control={control}
@@ -625,19 +692,17 @@ function MeshCalculation(props) {
                                     />
                                 </Col>
 
-
                                 <Col md="3">
-                                    <TooltipCustom disabledIcon={true} id={'sheet-width-cutting'} tooltipClass={'weight-of-sheet'} tooltipText={'Width Cutting Allowance = (Width Sheet + 2 * Cutting Allowance)'} />
                                     <NumberFieldHookForm
                                         label={`Flute Type Percentage`}
                                         name={'fluteTypePercent'}
                                         Controller={Controller}
                                         control={control}
                                         register={register}
-                                        id={'sheet-width-cutting'}
                                         mandatory={false}
                                         rules={{
                                             required: false,
+                                            validate: { maxPercentValue },
                                             pattern: {
                                                 value: /^\d{0,4}(\.\d{0,6})?$/i,
                                                 message: 'Maximum length for integer is 4 and for decimal is 6',

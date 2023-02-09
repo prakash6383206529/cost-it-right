@@ -755,7 +755,8 @@ function ApprovalListing(props) {
       DepartmentId: selectedRowData[0].Status === DRAFT ? EMPTY_GUID : selectedRowData[0]?.DepartmentId,
       UserId: loggedInUserId(),
       TechnologyId: selectedRowData[0].TechnologyId,
-      Mode: 'costing'
+      Mode: 'costing',
+      approvalTypeId: selectedRowData[0]?.CostingTypeId
     }
     dispatch(checkFinalUser(obj, res => {
       if (res && res.data && res.data.Result) {
@@ -1032,6 +1033,7 @@ function ApprovalListing(props) {
           approvalData={selectedRowData}
           anchor={'right'}
           IsFinalLevel={!showFinalLevelButtons}
+          costingTypeId={selectedRowData[0]?.CostingTypeId}
         />
       )}
       {

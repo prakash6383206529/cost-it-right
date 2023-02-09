@@ -70,7 +70,7 @@ function AddRfq(props) {
     const [selectedRowVendorTable, setSelectedVendorTable] = useState({})
     const [files, setFiles] = useState([])
     const [IsOpen, setIsOpen] = useState(false);
-    const [data, setData] = useState({});
+    const [apiData, setData] = useState({});
     const [isDisable, setIsDisable] = useState(false)
     const [disableTechnology, setDisableTechnology] = useState(false)
     const [partNoDisable, setPartNoDisable] = useState(true)
@@ -422,8 +422,8 @@ function AddRfq(props) {
             isSent = false
         }
         let obj = {}
-        obj.QuotationId = data.QuotationId ? data.QuotationId : ""
-        obj.QuotationNumber = data.QuotationNumber ? data.QuotationNumber : ""
+        obj.QuotationId = apiData.QuotationId ? apiData.QuotationId : ""
+        obj.QuotationNumber = apiData.QuotationNumber ? apiData.QuotationNumber : ""
 
         obj.Remark = getValues('remark')
         obj.TechnologyId = getValues('technology').value
@@ -1036,7 +1036,7 @@ function AddRfq(props) {
                                                             >
                                                                 <AgGridColumn width={"230px"} field="PartNumber" headerName="Part No" cellClass={"colorWhite"} cellRenderer={'partNumberFormatter'}></AgGridColumn>
 
-                                                                <AgGridColumn width={"230px"} field="YearName" headerName="YearName" cellRenderer={'sopFormatter'}></AgGridColumn>
+                                                                <AgGridColumn width={"230px"} field="YearName" headerName="Production Year" cellRenderer={'sopFormatter'}></AgGridColumn>
                                                                 <AgGridColumn width={"230px"} field="Quantity" headerName="Annual Forecast Quantity" cellRenderer={'afcFormatter'} editable={EditableCallback} colId="Quantity"></AgGridColumn>
                                                                 <AgGridColumn width={"0px"} field="PartId" headerName="Part Id" hide={true} cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                                                 <AgGridColumn width={"190px"} field="PartId" headerName="Action" cellClass={"colorWhite text-right"} floatingFilter={false} type="rightAligned" cellRenderer={'buttonFormatterFirst'}></AgGridColumn>

@@ -31,7 +31,7 @@ import DayTime from '../../common/DayTimeWrapper'
 import TooltipCustom from '../../common/Tooltip';
 import LoaderCustom from '../../common/LoaderCustom';
 import imgRedcross from '../../../assests/images/red-cross.png'
-import { CheckApprovalApplicableMaster, onFocus, showDataOnHover } from '../../../helper';
+import { CheckApprovalApplicableMaster, onFocus, showDataOnHover, userTechnologyDetailByMasterId } from '../../../helper';
 import MasterSendForApproval from '../MasterSendForApproval'
 import { animateScroll as scroll } from 'react-scroll';
 import AsyncSelect from 'react-select/async';
@@ -41,6 +41,9 @@ import { getClientSelectList, } from '../actions/Client';
 import { autoCompleteDropdown } from '../../common/CommonFunctions';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { reactLocalStorage } from 'reactjs-localstorage';
+import { checkFinalUser } from '../../../components/costing/actions/Costing'
+import { getUsersMasterLevelAPI } from '../../../actions/auth/AuthActions';
+
 const selector = formValueSelector('AddRMDomestic')
 
 class AddRMDomestic extends Component {
@@ -113,7 +116,9 @@ class AddRMDomestic extends Component {
       attachmentLoader: false,
       showErrorOnFocus: false,
       showErrorOnFocusDate: false,
-      showPopup: false
+      showPopup: false,
+      levelDetails: {},
+      noApprovalCycle: false
     }
   }
   /**
@@ -141,7 +146,7 @@ class AddRMDomestic extends Component {
         this.props.getCityByCountry(cityId, 0, () => { })
       })
     }
-    if (!(this.props.data.isEditFlag || this.state.isViewFlag)) {
+    if (!(this.props.data.isEditFlag || this.state.isViewFlag) && this.state.Technology) {
       this.setState({ inputLoader: true })
       this.props.getRawMaterialCategory((res) => { })
       this.props.getCostingSpecificTechnology(loggedInUserId(), () => { this.setState({ inputLoader: false }) })
@@ -149,28 +154,50 @@ class AddRMDomestic extends Component {
       this.props.getClientSelectList(() => { })
     }
     if (!this.state.isViewFlag) {
-      let obj = {
-        MasterId: RM_MASTER_ID,
-        DepartmentId: userDetails().DepartmentId,
-        LoggedInUserLevelId: userDetails().LoggedInMasterLevelId,
-        LoggedInUserId: loggedInUserId()
-      }
-      this.props.masterFinalLevelUser(obj, (res) => {
-        if (res.data.Result) {
-          this.setState({ isFinalApprovar: res.data.Data.IsFinalApprovar })
-        }
+      this.props.getUsersMasterLevelAPI(loggedInUserId(), RM_MASTER_ID, (res) => {
+        setTimeout(() => {
+          this.commonFunction()
+        }, 100);
       })
     }
   }
 
-  componentDidUpdate(prevProps) {
+  componentDidUpdate(prevProps, prevState) {
     if (this.props.fieldsObj !== prevProps.fieldsObj) {
       this.calculateNetCost()
+    }
+    if (prevState?.costingTypeId !== this.state.costingTypeId) {
+      this.commonFunction()
     }
   }
   componentWillUnmount() {
     reactLocalStorage?.setObject('vendorData', [])
   }
+
+  commonFunction() {
+    let levelDetailsTemp = []
+    levelDetailsTemp = userTechnologyDetailByMasterId(this.state.costingTypeId, RM_MASTER_ID, this.props.userMasterLevelAPI)
+    this.setState({ levelDetails: levelDetailsTemp })
+    if (levelDetailsTemp?.length !== 0) {
+      let obj = {
+        DepartmentId: userDetails().DepartmentId,
+        UserId: loggedInUserId(),
+        TechnologyId: RM_MASTER_ID,
+        Mode: 'master',
+        approvalTypeId: this.state.costingTypeId,
+      }
+
+      this.props.checkFinalUser(obj, (res) => {
+        if (res?.data?.Result) {
+          this.setState({ isFinalApprovar: res?.data?.Data?.IsFinalApprover })
+        }
+      })
+      this.setState({ noApprovalCycle: false })
+    } else {
+      this.setState({ noApprovalCycle: true })
+    }
+  }
+
   /**
    * @method handleRMChange
    * @description  used to handle row material selection
@@ -446,7 +473,7 @@ class AddRMDomestic extends Component {
         isEditFlag: false, isLoader: true, isShowForm: true, RawMaterialID: data.Id,
       })
       this.props.getRawMaterialDetailsAPI(data, true, (res) => {
-        if (res && res.data && res.data.Result) {
+        if (res && res.data && res?.data?.Result) {
           const Data = res.data.Data
           this.setState({ DataToChange: Data })
           // this.props.getPlantBySupplier(Data.Vendor, () => { })
@@ -1195,7 +1222,7 @@ class AddRMDomestic extends Component {
   render() {
 
     const { handleSubmit, initialConfiguration, isRMAssociated } = this.props
-    const { isRMDrawerOpen, isOpenGrade, isOpenSpecification, costingTypeId, isOpenCategory, isOpenVendor, isOpenUOM, isEditFlag, isViewFlag, setDisable } = this.state
+    const { isRMDrawerOpen, isOpenGrade, isOpenSpecification, costingTypeId, isOpenCategory, isOpenVendor, isOpenUOM, isEditFlag, isViewFlag, setDisable, noApprovalCycle } = this.state
     const filterList = async (inputValue) => {
       const { vendorName } = this.state
       const resultInput = inputValue.slice(0, searchCount)
@@ -1838,7 +1865,7 @@ class AddRMDomestic extends Component {
                             <button type="submit"
                               class="user-btn approval-btn save-btn mr5"
                               onClick={() => scroll.scrollToTop()}
-                              disabled={isViewFlag || setDisable}
+                              disabled={isViewFlag || setDisable || noApprovalCycle}
 
                             >
                               <div className="send-for-approval"></div>
@@ -1848,7 +1875,7 @@ class AddRMDomestic extends Component {
                             <button
                               type="submit"
                               className="user-btn mr5 save-btn"
-                              disabled={isViewFlag || setDisable}
+                              disabled={isViewFlag || setDisable || noApprovalCycle}
                             >
                               <div className={"save-icon"}></div>
                               {isEditFlag ? "Update" : "Save"}
@@ -1967,6 +1994,8 @@ class AddRMDomestic extends Component {
                 approvalObj={this.state.approvalObj}
                 isBulkUpload={false}
                 IsImportEntery={false}
+                costingTypeId={this.state.costingTypeId}
+                levelDetails={this.state.levelDetails}
               />
             )
           }
@@ -1992,7 +2021,7 @@ function mapStateToProps(state) {
     plantSelectList } = comman
   const { costingSpecifiTechnology } = costing
   const { clientSelectList } = client;
-  const { initialConfiguration } = auth;
+  const { initialConfiguration, userMasterLevelAPI } = auth;
 
   const { rawMaterialDetails, rawMaterialDetailsData, rawMaterialNameSelectList, gradeSelectList, vendorListByVendorType } = material
 
@@ -2015,7 +2044,7 @@ function mapStateToProps(state) {
     filterCityListBySupplier, rawMaterialDetailsData, initialValues, fieldsObj,
     filterPlantListByCityAndSupplier, rawMaterialNameSelectList, gradeSelectList,
     filterPlantList, UOMSelectList, vendorListByVendorType, plantSelectList,
-    initialConfiguration, costingSpecifiTechnology, costingHead, clientSelectList
+    initialConfiguration, costingSpecifiTechnology, costingHead, clientSelectList, userMasterLevelAPI
   }
 }
 
@@ -2054,7 +2083,9 @@ export default connect(mapStateToProps, {
   getCityByCountry,
   getAllCity,
   masterFinalLevelUser,
-  getClientSelectList
+  getClientSelectList,
+  checkFinalUser,
+  getUsersMasterLevelAPI
 })(
   reduxForm({
     form: 'AddRMDomestic',

@@ -29,12 +29,11 @@ import HeaderTitle from '../../common/HeaderTitle';
 import AddMachineTypeDrawer from './AddMachineTypeDrawer';
 import AddProcessDrawer from './AddProcessDrawer';
 import NoContentFound from '../../common/NoContentFound';
-import { calculatePercentage, CheckApprovalApplicableMaster, displayUOM, onFocus } from '../../../helper';
+import { calculatePercentage, CheckApprovalApplicableMaster, displayUOM, onFocus, userTechnologyDetailByMasterId } from '../../../helper';
 import EfficiencyDrawer from './EfficiencyDrawer';
 import DayTime from '../../common/DayTimeWrapper'
 import { AcceptableMachineUOM } from '../../../config/masterData'
 import imgRedcross from '../../../assests/images/red-cross.png'
-import { masterFinalLevelUser } from '../actions/Material'
 import MasterSendForApproval from '../MasterSendForApproval'
 import { animateScroll as scroll } from 'react-scroll';
 import { ProcessGroup } from '../masterUtil';
@@ -42,6 +41,8 @@ import _ from 'lodash'
 import LoaderCustom from '../../common/LoaderCustom';
 import TooltipCustom from '../../common/Tooltip';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
+import { checkFinalUser } from '../../../components/costing/actions/Costing'
+import { getUsersMasterLevelAPI } from '../../../actions/auth/AuthActions';
 
 const selector = formValueSelector('AddMoreDetails');
 
@@ -133,7 +134,9 @@ class AddMoreDetails extends Component {
       IsIncludeMachineRateDepreciation: false,
       powerIdFromAPI: EMPTY_GUID,
       finalApprovalLoader: false,
-      showPopup: false
+      showPopup: false,
+      levelDetails: {},
+      noApprovalCycle: false
     }
     this.dropzone = React.createRef();
   }
@@ -157,20 +160,10 @@ class AddMoreDetails extends Component {
     if (!this.props?.editDetails?.isEditFlag) {
       this.props.change('EquityPercentage', 100)
     }
-
-    let obj = {
-      MasterId: MACHINE_MASTER_ID,
-      DepartmentId: userDetails().DepartmentId,
-      LoggedInUserLevelId: userDetails().LoggedInMasterLevelId,
-      LoggedInUserId: loggedInUserId()
-    }
-    this.setState({ finalApprovalLoader: true })
-    this.props.masterFinalLevelUser(obj, (res) => {
-      if (res.data.Result) {
-        this.setState({ isFinalApprovar: res.data.Data.IsFinalApprovar })
-        this.setState({ finalApprovalLoader: false })
-      }
-
+    this.props.getUsersMasterLevelAPI(loggedInUserId(), MACHINE_MASTER_ID, (res) => {
+      setTimeout(() => {
+        this.commonFunction()
+      }, 100);
     })
     this.getDetails()
   }
@@ -192,6 +185,30 @@ class AddMoreDetails extends Component {
     }
   }
 
+  commonFunction() {
+    let levelDetailsTemp = []
+    levelDetailsTemp = userTechnologyDetailByMasterId(ZBCTypeId, MACHINE_MASTER_ID, this.props.userMasterLevelAPI)
+    this.setState({ levelDetails: levelDetailsTemp })
+    if (levelDetailsTemp?.length !== 0) {
+      let obj = {
+        TechnologyId: MACHINE_MASTER_ID,
+        DepartmentId: userDetails().DepartmentId,
+        UserId: loggedInUserId(),
+        Mode: 'master',
+        approvalTypeId: ZBCTypeId
+      }
+      this.setState({ finalApprovalLoader: true })
+      this.props.checkFinalUser(obj, (res) => {
+        if (res?.data?.Result) {
+          this.setState({ isFinalApprovar: res?.data?.Data?.IsFinalApprover })
+          this.setState({ finalApprovalLoader: false })
+        }
+      })
+      this.setState({ noApprovalCycle: false })
+    } else {
+      this.setState({ noApprovalCycle: true })
+    }
+  }
 
   UNSAFE_componentWillReceiveProps(nextProps) {
     if (nextProps.data !== this.props.data) {
@@ -968,7 +985,7 @@ class AddMoreDetails extends Component {
     }
   };
 
-  componentDidUpdate(prevProps) {
+  componentDidUpdate(prevProps, prevState) {
     if (this.props.fieldsObj !== prevProps.fieldsObj) {
       this.totalCost()
       this.calculateLoanInterest()
@@ -2355,7 +2372,7 @@ class AddMoreDetails extends Component {
   render() {
     const { handleSubmit, initialConfiguration, isMachineAssociated } = this.props;
     const { isLoader, isOpenAvailability, isEditFlag, isViewMode, isOpenMachineType, isOpenProcessDrawer,
-      isLoanOpen, isWorkingOpen, isDepreciationOpen, isVariableCostOpen, disableMachineType, isViewFlag, isPowerOpen, isLabourOpen, isProcessOpen, UniqueProcessId, isProcessGroupOpen, disableAllForm, UOMName } = this.state;
+      isLoanOpen, isWorkingOpen, isDepreciationOpen, isVariableCostOpen, disableMachineType, isViewFlag, isPowerOpen, isLabourOpen, isProcessOpen, UniqueProcessId, isProcessGroupOpen, disableAllForm, UOMName, noApprovalCycle } = this.state;
     return (
       <>
         {(isLoader || this.state.finalApprovalLoader) && <LoaderCustom />}
@@ -3929,7 +3946,7 @@ class AddMoreDetails extends Component {
                           <button type="submit"
                             class="user-btn approval-btn save-btn mr5"
 
-                            disabled={this.state.isViewMode || this.state.setDisable}
+                            disabled={this.state.isViewMode || this.state.setDisable || noApprovalCycle}
                           >
                             <div className="send-for-approval"></div>
                             {'Send For Approval'}
@@ -3939,7 +3956,7 @@ class AddMoreDetails extends Component {
                           <button
                             type="submit"
                             className="user-btn mr5 save-btn"
-                            disabled={this.state.isViewMode || this.state.setDisable}
+                            disabled={this.state.isViewMode || this.state.setDisable || noApprovalCycle}
                           >
                             <div className={"save-icon"}></div>
                             {isEditFlag ? "Update" : "Save"}
@@ -3999,6 +4016,7 @@ class AddMoreDetails extends Component {
               approvalObj={this.state.approvalObj}
               isBulkUpload={false}
               IsImportEntery={false}
+              costingTypeId={ZBCTypeId}
             />
           )
         }
@@ -4032,7 +4050,7 @@ function mapStateToProps(state) {
   const { labourTypeByMachineTypeSelectList } = labour;
   const { vendorListByVendorType } = material;
   const { fuelDataByPlant } = fuel;
-  const { initialConfiguration } = auth;
+  const { initialConfiguration, userMasterLevelAPI } = auth;
   let initialValues = {};
   if (machineData && machineData !== undefined) {
     initialValues = {
@@ -4088,7 +4106,7 @@ function mapStateToProps(state) {
   return {
     vendorListByVendorType, technologySelectList, plantSelectList, UOMSelectList,
     machineTypeSelectList, processSelectList, ShiftTypeSelectList, DepreciationTypeSelectList,
-    initialConfiguration, labourTypeByMachineTypeSelectList, fuelDataByPlant, fieldsObj, initialValues, loading, processGroupApiData
+    initialConfiguration, labourTypeByMachineTypeSelectList, fuelDataByPlant, fieldsObj, initialValues, loading, processGroupApiData, userMasterLevelAPI
   }
 
 }
@@ -4117,10 +4135,11 @@ export default connect(mapStateToProps, {
   getMachineDetailsData,
   fileUploadMachine,
   fileDeleteMachine,
-  masterFinalLevelUser,
+  checkFinalUser,
   getProcessGroupByMachineId,
   setGroupProcessList,
-  setProcessList
+  setProcessList,
+  getUsersMasterLevelAPI,
 })(reduxForm({
   form: 'AddMoreDetails',
   onSubmitFail: errors => {
