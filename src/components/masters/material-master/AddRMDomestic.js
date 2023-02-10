@@ -1465,7 +1465,7 @@ class AddRMDomestic extends Component {
                                 component={renderMultiSelectField}
                                 mendatory={true}
                                 disabled={isEditFlag || isViewFlag}
-                                className="multiselect-with-border"
+                              //className="multiselect-with-border"
                               />
                             </Col>)
                           )}
@@ -1483,7 +1483,7 @@ class AddRMDomestic extends Component {
                                 component={searchableSelect}
                                 valueDescription={this.state.singlePlantSelected}
                                 mendatory={true}
-                                className="multiselect-with-border"
+                                //className="multiselect-with-border"
                                 disabled={isEditFlag || isViewFlag}
                               />
                             </Col>
