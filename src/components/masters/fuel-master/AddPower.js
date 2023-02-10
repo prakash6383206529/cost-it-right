@@ -1449,7 +1449,7 @@ class AddPower extends Component {
                                       this.state.selectedPlants == null || this.state.selectedPlants.length === 0 ? [required] : []}
                                     mendatory={true}
                                     required={true}
-                                    className="multiselect-with-border"
+                                    //className="multiselect-with-border"
                                     disabled={isEditFlag ? true : false}
                                   />
                                 </div>

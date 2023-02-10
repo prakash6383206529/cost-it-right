@@ -1077,7 +1077,7 @@ class AddAssemblyPart extends Component {
                               optionValue={(option) => option.Value}
                               optionLabel={(option) => option.Text}
                               component={renderMultiSelectField}
-                              className="multiselect-with-border"
+                              //className="multiselect-with-border"
                               disabled={isViewMode}
                             />
                           </Col>

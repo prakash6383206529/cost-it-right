@@ -2033,7 +2033,7 @@ function UserRegistration(props) {
                                 //selectionChanged={departmentHandler}
                                 optionValue={(option) => option.Value}
                                 optionLabel={(option) => option.Text}
-                                className="multiselect-with-border"
+                                // className="multiselect-with-border"
                                 mendatory={true}
                               />
                             </div> :

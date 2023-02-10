@@ -449,7 +449,7 @@ class AddVendorDrawer extends Component {
                                             optionLabel={option => option.Text}
                                             component={renderMultiSelectField}
                                             mendatory={true}
-                                            className="multiselect-with-border"
+                                            //className="multiselect-with-border"
                                             disabled={isViewMode}
                                         />
                                     </Col>

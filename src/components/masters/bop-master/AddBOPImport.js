@@ -1211,7 +1211,7 @@ class AddBOPImport extends Component {
                                 valueDescription={this.state.selectedPlants}
                                 mendatory={true}
                                 required
-                                className="multiselect-with-border"
+                                //className="multiselect-with-border"
                                 disabled={isEditFlag ? true : false}
                               />
                             </Col>
