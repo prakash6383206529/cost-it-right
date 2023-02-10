@@ -55,6 +55,13 @@ function ApproveRejectDrawer(props) {
 
   useEffect(() => {
     dispatch(getReasonSelectList((res) => { }))
+    let levelDetailsTemp = ''
+    dispatch(getUsersSimulationTechnologyLevelAPI(loggedInUserId(), selectedMasterForSimulation?.value, (res) => {
+      if (res?.data?.Data) {
+        levelDetailsTemp = userTechnologyLevelDetails(SimulationHeadId, res?.data?.Data?.TechnologyLevels)
+        setLevelDetails(levelDetailsTemp)
+      }
+    }))
     setTimeout(() => {
       // dispatch(getAllApprovalDepartment((res) => { }))
       /***********************************REMOVE IT AFTER SETTING FROM SIMULATION*******************************/
@@ -86,13 +93,6 @@ function ApproveRejectDrawer(props) {
           }))
         }))
       } else {
-        let levelDetailsTemp = ''
-        dispatch(getUsersSimulationTechnologyLevelAPI(loggedInUserId(), selectedMasterForSimulation?.value, (res) => {
-          if (res?.data?.Data) {
-            levelDetailsTemp = userTechnologyLevelDetails(SimulationHeadId, res?.data?.Data?.TechnologyLevels)
-            setLevelDetails(levelDetailsTemp)
-          }
-        }))
         dispatch(getSimulationApprovalByDepartment(res => {
           const Data = res.data.SelectList
           const departObj = Data && Data.filter(item => item.Value === (type === 'Sender' ? userData.DepartmentId : simulationDetail.DepartmentId))
@@ -582,7 +582,7 @@ function ApproveRejectDrawer(props) {
         setApprovalDropDown(tempDropdownList)
       }))
     } else {
-      getApproversList(value.value, value.label)
+      getApproversList(value.value, value.label, levelDetails)
       // dispatch(
       //   getAllSimulationApprovalList(simObj, (res) => {
       //     res.data.DataList &&
