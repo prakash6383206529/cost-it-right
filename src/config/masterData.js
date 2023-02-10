@@ -1942,7 +1942,7 @@ export const BUDGET_ZBC = [
 
 let BUDGET_ZBC_DATA = []
 
-budgetCostingHeads && budgetCostingHeads.map((item, index) => {
+Array.isArray(budgetCostingHeads) && budgetCostingHeads.map((item, index) => {
     BUDGET_ZBC_DATA.push(
 
         {
@@ -1975,7 +1975,7 @@ export const BUDGET_VBC = [
 
 let BUDGET_VBC_DATA = []
 
-budgetCostingHeads && budgetCostingHeads.map((item, index) => {
+Array.isArray(budgetCostingHeads) && budgetCostingHeads.map((item, index) => {
     BUDGET_VBC_DATA.push(
         {
             'PartCostingHead': `${item.Text}`,
@@ -2007,7 +2007,7 @@ export const BUDGET_CBC = [
 
 export const BUDGET_CBC_DATA = []
 
-budgetCostingHeads && budgetCostingHeads.map((item, index) => {
+Array.isArray(budgetCostingHeads) && budgetCostingHeads.map((item, index) => {
     BUDGET_CBC_DATA.push(
         {
             'PartCostingHead': `${item.Text}`,
