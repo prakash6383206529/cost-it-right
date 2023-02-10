@@ -23,6 +23,7 @@ import _ from 'lodash';
 import SingleDropdownFloationFilter from './SingleDropdownFloationFilter';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { checkFinalUser } from '../../costing/actions/Costing';
+import { getUsersMasterLevelAPI } from '../../../actions/auth/AuthActions';
 
 const gridOptions = {};
 
@@ -64,26 +65,6 @@ function CommonApproval(props) {
         dispatch(setSelectedRowForPagination([]))
         setSelectedRowData([])
         getTableData(0, 10, true, floatingFilterData)
-
-        // let levelDetailsTemp = []
-        // // levelDetailsTemp = userTechnologyDetailByMasterId(this.state.costingTypeId, RM_MASTER_ID, userMasterLevelAPI)
-        // setLevelDetails(levelDetailsTemp)
-        // // if (levelDetailsTemp?.length !== 0) {
-
-        let obj = {
-            MasterId: props?.MasterId,
-            DepartmentId: userDetails().DepartmentId,
-            LoggedInUserLevelId: userDetails().LoggedInMasterLevelId,
-            LoggedInUserId: loggedInUserId()
-        }
-        dispatch(checkFinalUser(obj, (res) => {
-            if (res.data.Result) {
-                setIsFinalApprover(res.data.Data.IsFinalApprover)
-            }
-        }))
-        // }
-
-
 
         dispatch(isResetClick(false, "status"))
         return () => {
@@ -573,6 +554,12 @@ function CommonApproval(props) {
     const sendForApproval = () => {
 
         if (selectedRowData?.length > 0) {
+            let levelDetailsTemp = []
+            dispatch(getUsersMasterLevelAPI(loggedInUserId(), props?.MasterId, (res) => {
+                levelDetailsTemp = userTechnologyDetailByMasterId(selectedRowData[0]?.CostingTypeId, props?.MasterId, res?.data?.Data?.MasterLevels)
+                setLevelDetails(levelDetailsTemp)
+            }))
+
             let costingHead = selectedRowData[0]?.CostingHead
             let valid = true
             selectedRowData.map((item) => {
@@ -872,7 +859,8 @@ function CommonApproval(props) {
                     anchor={"right"}
                     isBulkUpload={true}
                     approvalData={selectedRowData}
-                    levelDetails={this.state.levelDetails}
+                    levelDetails={levelDetails}
+                    costingTypeId={selectedRowData[0]?.CostingTypeId}
                 />
             }
         </div>

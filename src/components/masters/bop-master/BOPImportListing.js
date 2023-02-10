@@ -751,7 +751,7 @@ class BOPImportListing extends Component {
                                     <AgGridColumn field="Vendor" headerName="Vendor (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                     {reactLocalStorage.getObject('cbcCostingPermission') && <AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
                                     <AgGridColumn field="IncoTermDescriptionAndInfoTerm" headerName="Inco Terms" ></AgGridColumn>
-                                    {/* <AgGridColumn field="PaymentTermDescriptionAndPaymentTerm" headerName="Payment Terms" ></AgGridColumn> */} {/*FOR MINDA ONLY*/}
+                                    {/* <AgGridColumn field="PaymentTermDescriptionAndPaymentTerm" headerName="Payment Terms" ></AgGridColumn> FOR MINDA ONLY*/}
                                     {/* <AgGridColumn field="DepartmentName" headerName="Department"></AgGridColumn> */}
                                     <AgGridColumn field="BasicRate" headerName="Basic Rate" cellRenderer={'commonCostFormatter'}></AgGridColumn>
                                     <AgGridColumn field="NetLandedCost" headerName="Net Cost (Currency)" cellRenderer='costFormatter'></AgGridColumn>
