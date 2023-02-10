@@ -892,6 +892,15 @@ export const API = {
   getPartSelectListWtihRevNo: `${BASE_URL}/configuration/get-part-number-and-revision-number`,
   bulkUploadVolume: `${BASE_URL}/masters-volume/save-actual-volume-details`,
 
+  //BUDGET MASTER
+  getBudgetDataList: `${BASE_URL}/master-budgeting/get-all`,
+  getApprovedPartCostingPrice: `${BASE_URL}/configuration/get-approved-part-costing-price`,
+  createBudget: `${BASE_URL}/master-budgeting/create`,
+  getPartCostingHead: `${BASE_URL}/configuration/select-list-get-part-costing-head`,
+  getMasterBudget: `${BASE_URL}/master-budgeting/get-by-id`,
+  updateBudget: `${BASE_URL}/master-budgeting/update`,
+  bulkUploadBudgetMaster: `${BASE_URL}/master-budgeting/bulk-upload-for-budgeting`,
+
   //CLIENT MASTER
   createClient: `${BASE_URL}/client/create-client`,
   updateClient: `${BASE_URL}/client/update-client`,
@@ -1784,6 +1793,7 @@ export const SIMULATION_APPROVAL_SUM = ' Simulation Approval Summary'
 export const SIMULATION_INSIGNTS = 'Simulation Insignts'
 export const COSTING_DETAIL = 'Costing Details'
 export const COST_RATIO_REPORT = 'Cost Ratio'
+export const BUDGETING = 'Budgeting'
 //export const SIMULATION_HISTORY = 'Simulation History'
 
 export const SHEET_METAL = 'Sheet Metal';
@@ -2125,6 +2135,7 @@ export const ACTUALVOLUMEBULKUPLOAD = 'Actual Volume'
 export const BUDGETEDVOLUMEBULKUPLOAD = 'Budgeted Volume'
 export const ADDRFQ = 'ADD RFQ'
 export const VOLUMEBULKUPLOAD = 'Volume'
+export const BUDGETBULKUPLOAD = 'Budget'
 
 
 //STATUS FILTER DROPDOWN OPTIONS

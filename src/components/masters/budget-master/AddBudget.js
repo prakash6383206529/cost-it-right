@@ -825,7 +825,7 @@ function AddBudget(props) {
                                                     </Col>
 
 
-                                                </Row>
+                                                </Row >
                                                 <Row>
                                                     <Col md="12">
                                                         <Row className='align-items-center'>
@@ -855,7 +855,7 @@ function AddBudget(props) {
 
                                                             </Col>
                                                         </Row>
-                                                    </Col>
+                                                    </Col >
 
                                                     <Col md="12">
                                                         <div className={`ag-grid-wrapper budgeting-table  ${tableData && tableData?.length <= 0 ? "overlay-contain" : ""}`} style={{ width: '100%', height: '100%' }}>
@@ -893,10 +893,10 @@ function AddBudget(props) {
                                                                     <AgGridColumn width={115} field="February" headerName="February" cellRenderer='budgetedQuantity'></AgGridColumn>
                                                                     <AgGridColumn width={115} field="March" headerName="March" cellRenderer='budgetedQuantity'></AgGridColumn>
                                                                     <AgGridColumn width={130} field="Sum" headerName="Sum" cellRenderer='actualQuantity' editable={false} valueGetter='(Number(data.March?data.March:0) + Number(data.January?data.January:0) + Number(data.February?data.February:0)+ Number(data.April?data.April:0)+ Number(data.May?data.May:0)+ Number(data.June?data.June:0)+ Number(data.July?data.July:0)+ Number(data.August?data.August:0)+ Number(data.September?data.September:0)+ Number(data.October?data.October:0)+ Number(data.November?data.November:0)+ Number(data.December?data.December:0))'></AgGridColumn>
-                                                                </AgGridReact>
-                                                            </div>
-                                                        </div>
-                                                    </Col>
+                                                                </AgGridReact >
+                                                            </div >
+                                                        </div >
+                                                    </Col >
                                                     <Col md="12">
                                                         <div className='budgeting-details  mt-3'>
                                                             <label className='w-fit'>Total Sum:</label>
@@ -918,8 +918,8 @@ function AddBudget(props) {
                                                             />
                                                         </div>
                                                     </Col>
-                                                </Row>
-                                            </div>
+                                                </Row >
+                                            </div >
                                             <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
                                                 <div className="col-sm-12 text-right bluefooter-butn">
                                                     <button
@@ -941,11 +941,11 @@ function AddBudget(props) {
                                                     </button>
                                                 </div>
                                             </Row>
-                                        </form></div>
-                                </div>
-                            </div>
-                        </div>}
-                </div>
+                                        </form ></div >
+                                </div >
+                            </div >
+                        </div >}
+                </div >
             </div >
 
         </>

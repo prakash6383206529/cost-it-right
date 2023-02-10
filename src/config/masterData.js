@@ -4639,6 +4639,21 @@ export const VOLUME_DOWNLOAD_EXCEl = [
     { label: "Actual Quantity", value: "ApprovedQuantity", },
 ]
 
+export const BUDGET_DOWNLOAD_EXCEl = [
+    { label: "Costing Head", value: "CostingHead", },
+    { label: "Financial Year", value: "FinancialYear", },
+    { label: "Net Po Price", value: "NetPoPrice" },
+    { label: "Budgeted Po Price", value: "BudgetedPoPrice" },
+    { label: "Part Name", value: "PartName" },
+    { label: "Part Number", value: "PartNumber", },
+    { label: "Plant Name", value: "PlantName", },
+    { label: "Plant Code", value: "PlantCode", },
+    { label: "Vendor Name", value: "VendorName", },
+    { label: "Vendor Code", value: "VendorCode", },
+    { label: "Customer Name", value: "CustomerName", },
+    { label: "CustomerCode", value: "CustomerCode", },
+]
+
 export const PROFIT_DOWNLOAD_EXCEl = [
     { label: "Costing Head", value: "CostingHead", },
     { label: "Plant (Code)", value: "PlantName", },
