@@ -4977,7 +4977,7 @@ export const BOPImpactDownloadArray = ["BoughtOutPartNumber", "BoughtOutPartName
 
 export const ERImpactDownloadArray = ["Currency", "CostingNumber", "PartNumber", "BankRate", "BankCommissionPercentage", "CustomRate", "CurrencyExchangeRate", "NewExchangeRate", "OldExchangeRate", "EffectiveDate",]
 
-export const RawMaterialDomesticFileHeads = ["CostingHead", "RawMaterial", "RMGrade", "RMSpec", "RawMaterialCode", "Category", "TechnologyName", "Plant (Code)", "Vendor (Code)", "Company (Code)", "VendorLocation", "UOM", "BasicRate", "NewBasicRate", "RMFreightCost", "RMShearingCost", "ScrapRate", "NewScrapRate", "NetLandedCost", "EffectiveDate", "RawMaterialId", "VendorId", "PlantId", "CostingTypeId"]
+export const RawMaterialDomesticFileHeads = ["CostingHead", "RawMaterial", "RMGrade", "RMSpec", "RawMaterialCode", "Category", "TechnologyName", "Plant (Code)", "Vendor (Code)", "Company (Code)", "VendorLocation", "UOM", "BasicRate", "RevisedBasicRate", "RMFreightCost", "RMShearingCost", "ScrapRate", "RevisedScrapRate", "NetLandedCost", "EffectiveDate", "RawMaterialId", "VendorId", "PlantId", "CostingTypeId"]
 
 export const RawMaterialImportFileHeads = ["CostingHead", "RawMaterial", "RMGrade", "RMSpec", "RawMaterialCode", "Category", "TechnologyName", "VendorName", "VendorLocation", "UOM", "BasicRate", "NewBasicRate", "ScrapRate", "NewScrapRate", "NetLandedCost", "EffectiveDate", "RawMaterialId", "VendorId", "PlantId", "RMCode"]
 
