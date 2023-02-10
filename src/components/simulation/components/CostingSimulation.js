@@ -1483,6 +1483,7 @@ function CostingSimulation(props) {
                                     isSimulation={true}
                                     apiData={apiData}
                                     SimulationHeadId={amendmentDetails.SimulationHeadId}
+                                    costingTypeId={approvalTypeId}
                                 // isSaveDone={isSaveDone}
                                 />
                             }
