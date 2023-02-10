@@ -1864,7 +1864,11 @@ export function getPartCostingVendorSelectList(partNumber, callback) {
 }
 
 export function getPartSelectListByTechnology(technologyId, partNumber, callback) {
-  return axios.get(`${API.getPartByTechnologyId}?technologyId=${technologyId}&partNumber=${partNumber}`, config())
+  return axios.get(`${API.getPartByTechnologyId}?technologyId=${technologyId}&partNumber=${partNumber}`, config()).catch(error => {
+    apiErrors(error);
+    callback(error);
+    return Promise.reject(error)
+  });
 }
 
 /**
@@ -2346,7 +2350,7 @@ export function saveBOMLevel(data) {
  */
 export function checkFinalUser(data, callback) {
   return (dispatch) => {
-    const queryParams = `DepartmentId=${data.DepartmentId}&TechnologyId=${data.TechnologyId}&UserId=${data.UserId}&Mode=${data.Mode}`
+    const queryParams = `DepartmentId=${data.DepartmentId}&UserId=${data.UserId}&TechnologyId=${data.TechnologyId}&Mode=${data.Mode}&approvalTypeId=${data?.approvalTypeId}`
     const request = axios.get(`${API.checkFinalUser}?${queryParams}`, config())
     request.then((response) => {
       if (response.data.Result) {

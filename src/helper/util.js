@@ -10,7 +10,8 @@ import {
 } from '../config/constants'
 import { getConfigurationKey } from './auth'
 import _ from 'lodash';
-
+import { useDispatch } from 'react-redux';
+import { getUsersSimulationTechnologyLevelAPI } from '../actions/auth/AuthActions'
 
 /**
  * @method  apiErrors
@@ -748,7 +749,7 @@ export function formViewData(costingSummary, header = '') {
   obj.otherDiscountCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.OtherCostDetails.HundiOrDiscountValue !== null ? dataFromAPI?.CostingPartDetails?.OtherCostDetails.HundiOrDiscountValue : 0
   obj.currencyTitle = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.OtherCostDetails.Currency !== null ? dataFromAPI?.CostingPartDetails?.OtherCostDetails.Currency : '-'
   obj.costingHead = dataFromAPI.TypeOfCosting && dataFromAPI.TypeOfCosting === 0 ? 'ZBC' : 'VBC'
-  obj.costingVersion = `${DayTime(obj?.costingDate).format('DD-MM-YYYY')}-${obj?.CostingNumber}-${obj?.status}`
+  obj.costingVersion = `${DayTime(obj?.costingDate).format('DD-MM-YYYY')}-${obj?.CostingNumber}${header === 'CostingSummaryMainPage' ? '-' : ''}${header === 'CostingSummaryMainPage' ? obj?.status : ''}`
   obj.PoPriceWithDate = `${obj?.poPrice} (${(obj?.effectiveDate && obj?.effectiveDate !== '') ? DayTime(obj?.effectiveDate).format('DD-MM-YYYY') : "-"})`
   obj.rmRate = obj?.netRMCostView && (obj?.netRMCostView.length > 1 || obj?.IsAssemblyCosting === true) ? 'Multiple RM' : (obj?.netRMCostView && obj?.netRMCostView[0] && obj?.netRMCostView[0].RMRate)
   obj.scrapRate = obj?.netRMCostView && (obj?.netRMCostView.length > 1 || obj?.IsAssemblyCosting === true) ? 'Multiple RM' : (obj?.netRMCostView && obj?.netRMCostView[0] && obj?.netRMCostView[0].ScrapRate)
@@ -1108,4 +1109,27 @@ export function addDays(theDate, days) {
 export function ceilByMultiple(number, multiple = 0.25) {
   var inv = 1.0 / multiple;
   return (Math.ceil(number * inv) / inv).toFixed(getConfigurationKey().NoOfDecimalForInputOutput);
+}
+
+export function userTechnologyLevelDetails(approvalTypeId, data = []) {
+  let dataList = [...data]
+  let filteredData = dataList?.filter(element => element.ApprovalTypeId === approvalTypeId)
+  let obj = {
+    Level: filteredData[0]?.Level,
+    LevelId: filteredData[0]?.LevelId,
+    ApprovalTypeId: filteredData[0]?.ApprovalTypeId
+  }
+  return obj
+}
+
+export function userTechnologyDetailByMasterId(costingTypeId, masterId, data = []) {
+  let dataList = [...data]
+  let filteredData = dataList?.filter(element => (element.MasterId === masterId && element.ApprovalTypeId === costingTypeId))
+  let obj = {
+    Level: filteredData[0]?.Level,
+    LevelId: filteredData[0]?.LevelId,
+    ApprovalTypeId: filteredData[0]?.ApprovalTypeId,
+    length: filteredData?.length
+  }
+  return obj
 }

@@ -71,7 +71,7 @@ function SimulationTab(props) {
                     </Nav>
                     <TabContent activeTab={activeTab}>
                         <TabPane tabId="1">
-                            <Simulation activeTab={activeTab} isFromApprovalListing={location?.state?.isFromApprovalListing} approvalProcessId={location?.state?.approvalProcessId} master={location?.state?.master} statusForLinkedToken={location?.state?.statusForLinkedToken} />
+                            <Simulation activeTab={activeTab} isFromApprovalListing={location?.state?.isFromApprovalListing} approvalProcessId={location?.state?.approvalProcessId} master={location?.state?.master} statusForLinkedToken={location?.state?.statusForLinkedToken} approvalTypeId={location?.state?.approvalTypeId} DepartmentId={location?.state?.DepartmentId} />
                         </TabPane>
                         <TabPane tabId="2">
                             <SimulationApprovalListing activeTab={activeTab} />

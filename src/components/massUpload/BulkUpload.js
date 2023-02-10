@@ -32,6 +32,7 @@ import LoaderCustom from '../common/LoaderCustom';
 import PopupMsgWrapper from '../common/PopupMsgWrapper';
 import { MESSAGES } from '../../config/message';
 import { checkRFQBulkUpload } from '../rfq/actions/rfq';
+import { reactLocalStorage } from 'reactjs-localstorage';
 
 class BulkUpload extends Component {
     constructor(props) {
@@ -680,7 +681,7 @@ class BulkUpload extends Component {
                                                 />{' '}
                                                 <span>Vendor Based</span>
                                             </Label>}
-                                            {(fileName !== 'ADD RFQ') && <Label sm={isMachineMoreTemplate ? 6 : 4} className={'pl0 pr0 radio-box mb-0 pb-0'} check>
+                                            {(reactLocalStorage.getObject('cbcCostingPermission')) && (fileName !== 'ADD RFQ') && <Label sm={isMachineMoreTemplate ? 6 : 4} className={'pl0 pr0 radio-box mb-0 pb-0'} check>
                                                 <input
                                                     type="radio"
                                                     name="costingHead"
@@ -780,7 +781,7 @@ class BulkUpload extends Component {
                                     />{' '}
                                     <span>Vendor Based</span>
                                 </Label>}
-                                {(fileName !== 'ADD RFQ') && <Label sm={isMachineMoreTemplate ? 6 : 4} className={'pl0 pr0 radio-box mb-0 pb-0'} check>
+                                {(reactLocalStorage.getObject('cbcCostingPermission')) && (fileName !== 'ADD RFQ') && <Label sm={isMachineMoreTemplate ? 6 : 4} className={'pl0 pr0 radio-box mb-0 pb-0'} check>
                                     <input
                                         type="radio"
                                         name="costingHead"

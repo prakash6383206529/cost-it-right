@@ -12,7 +12,7 @@ import {
 import {
   createRMImport, getRMImportDataById, updateRMImportAPI, getRawMaterialNameChild,
   getRMGradeSelectListByRawMaterial, getVendorListByVendorType, fileUploadRMDomestic, getVendorWithVendorCodeSelectList, checkAndGetRawMaterialCode,
-  masterFinalLevelUser, fileDeleteRMDomestic
+  fileDeleteRMDomestic
 } from '../actions/Material';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
@@ -32,7 +32,7 @@ import DayTime from '../../common/DayTimeWrapper'
 import LoaderCustom from '../../common/LoaderCustom';
 import WarningMessage from '../../common/WarningMessage';
 import imgRedcross from '../../../assests/images/red-cross.png'
-import { CheckApprovalApplicableMaster, onFocus, showDataOnHover } from '../../../helper';
+import { CheckApprovalApplicableMaster, onFocus, showDataOnHover, userTechnologyDetailByMasterId } from '../../../helper';
 import MasterSendForApproval from '../MasterSendForApproval';
 import { animateScroll as scroll } from 'react-scroll';
 import AsyncSelect from 'react-select/async';
@@ -42,7 +42,8 @@ import { getClientSelectList, } from '../actions/Client';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { autoCompleteDropdown } from '../../common/CommonFunctions';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
-
+import { checkFinalUser } from '../../../components/costing/actions/Costing'
+import { getUsersMasterLevelAPI } from '../../../actions/auth/AuthActions';
 
 const selector = formValueSelector('AddRMImport');
 
@@ -115,7 +116,9 @@ class AddRMImport extends Component {
       showErrorOnFocus: false,
       showErrorOnFocusDate: false,
       finalApprovalLoader: false,
-      showPopup: false
+      showPopup: false,
+      levelDetails: {},
+      noApprovalCycle: false
     }
   }
 
@@ -153,28 +156,66 @@ class AddRMImport extends Component {
       this.props.getClientSelectList(() => { })
     }
     if (!this.state.isViewFlag) {
-      let obj = {
-        MasterId: RM_MASTER_ID,
-        DepartmentId: userDetails().DepartmentId,
-        LoggedInUserLevelId: userDetails().LoggedInMasterLevelId,
-        LoggedInUserId: loggedInUserId()
-      }
-      this.setState({ finalApprovalLoader: true })
-      this.props.masterFinalLevelUser(obj, (res) => {
-        if (res.data.Result) {
-          this.setState({ isFinalApprovar: res.data.Data.IsFinalApprovar })
-          this.setState({ finalApprovalLoader: false })
-        }
+      // let obj = {
+      //   TechnologyId: RM_MASTER_ID,
+      //   DepartmentId: userDetails().DepartmentId,
+      //   Mode: 'master',
+      //   approvalTypeId: this.state.costingTypeId,
+      //   UserId: loggedInUserId(),
+      // }
+      // this.setState({ finalApprovalLoader: true })
+      // this.props.checkFinalUser(obj, (res) => {
+      //   if (res?.data?.Result) {
+      //     this.setState({ isFinalApprovar: res?.data?.Data?.IsFinalApprover })
+      //     this.setState({ finalApprovalLoader: false })
+      //   }
+      // })
+
+      this.props.getUsersMasterLevelAPI(loggedInUserId(), RM_MASTER_ID, (res) => {
+        setTimeout(() => {
+          this.commonFunction()
+        }, 100);
       })
     }
   }
 
-  componentDidUpdate(prevProps) {
+  commonFunction() {
+    let levelDetailsTemp = []
+    levelDetailsTemp = userTechnologyDetailByMasterId(this.state.costingTypeId, RM_MASTER_ID, this.props.userMasterLevelAPI)
+    this.setState({ levelDetails: levelDetailsTemp })
+    if (levelDetailsTemp?.length !== 0) {
+      let obj = {
+        DepartmentId: userDetails().DepartmentId,
+        UserId: loggedInUserId(),
+        TechnologyId: RM_MASTER_ID,
+        Mode: 'master',
+        approvalTypeId: this.state.costingTypeId,
+      }
+
+      this.setState({ finalApprovalLoader: true })
+      this.props.checkFinalUser(obj, (res) => {
+        if (res?.data?.Result) {
+          this.setState({ isFinalApprovar: res?.data?.Data?.IsFinalApprover })
+          this.setState({ finalApprovalLoader: false })
+        }
+      })
+      this.setState({ noApprovalCycle: false })
+    } else {
+      this.setState({ noApprovalCycle: true })
+    }
+  }
+
+  componentDidUpdate(prevProps, prevState) {
     if (!this.state.isViewFlag) {
       if (this.props.fieldsObj !== prevProps.fieldsObj) {
         this.handleNetCost()
       }
+      if (prevState?.costingTypeId !== this.state.costingTypeId) {
+        this.commonFunction()
+      }
+
     }
+
   }
   componentWillUnmount() {
     reactLocalStorage?.setObject('vendorData', [])
@@ -1178,7 +1219,7 @@ class AddRMImport extends Component {
   render() {
     const { handleSubmit, initialConfiguration, isRMAssociated } = this.props;
     const { isRMDrawerOpen, isOpenGrade, isOpenSpecification,
-      isOpenCategory, isOpenVendor, isOpenUOM, isEditFlag, isViewFlag, setDisable, costingTypeId } = this.state;
+      isOpenCategory, isOpenVendor, isOpenUOM, isEditFlag, isViewFlag, setDisable, costingTypeId, noApprovalCycle } = this.state;
 
     const filterList = async (inputValue) => {
       const { vendorName } = this.state
@@ -1861,7 +1902,7 @@ class AddRMImport extends Component {
                             <button type="submit"
                               class="user-btn approval-btn save-btn mr5"
                               onClick={() => scroll.scrollToTop()}
-                              disabled={isViewFlag || setDisable}
+                              disabled={isViewFlag || setDisable || noApprovalCycle}
                             >
                               <div className="send-for-approval"></div>
                               {'Send For Approval'}
@@ -1870,7 +1911,7 @@ class AddRMImport extends Component {
                             <button
                               type="submit"
                               className="user-btn mr5 save-btn"
-                              disabled={isViewFlag || setDisable}
+                              disabled={isViewFlag || setDisable || noApprovalCycle}
                             >
                               <div className={"save-icon"}></div>
                               {isEditFlag ? "Update" : "Save"}
@@ -1969,6 +2010,8 @@ class AddRMImport extends Component {
                 isBulkUpload={false}
                 IsImportEntery={true}
                 UOM={this.state.UOM}
+                costingTypeId={this.state.costingTypeId}
+                levelDetails={this.state.levelDetails}
               />
             )
           }
@@ -1992,7 +2035,7 @@ function mapStateToProps(state) {
     categoryList, filterPlantListByCity, filterPlantListByCityAndSupplier, UOMSelectList,
     currencySelectList, plantSelectList } = comman;
 
-  const { initialConfiguration } = auth;
+  const { initialConfiguration, userMasterLevelAPI } = auth;
   const { costingSpecifiTechnology } = costing
   const { clientSelectList } = client;
   const { rawMaterialDetails, rawMaterialDetailsData, rawMaterialNameSelectList,
@@ -2015,7 +2058,7 @@ function mapStateToProps(state) {
     filterPlantListByCity, filterCityListBySupplier, rawMaterialDetailsData, initialValues,
     fieldsObj, filterPlantListByCityAndSupplier, rawMaterialNameSelectList, gradeSelectList,
     filterPlantList, UOMSelectList, vendorListByVendorType, currencySelectList, plantSelectList,
-    initialConfiguration, costingSpecifiTechnology, clientSelectList
+    initialConfiguration, costingSpecifiTechnology, clientSelectList, userMasterLevelAPI
   }
 
 }
@@ -2051,11 +2094,12 @@ export default connect(mapStateToProps, {
   getVendorWithVendorCodeSelectList,
   checkAndGetRawMaterialCode,
   fileDeleteRMDomestic,
-  masterFinalLevelUser,
+  checkFinalUser,
   getCityByCountry,
   getAllCity,
   getCostingSpecificTechnology,
-  getClientSelectList
+  getClientSelectList,
+  getUsersMasterLevelAPI
 })(reduxForm({
   form: 'AddRMImport',
   enableReinitialize: true,

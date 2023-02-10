@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import AddToComparisonDrawer from './AddToComparisonDrawer'
 import {
   setCostingViewData, setCostingApprovalData, getBriefCostingById,
-  storePartNumber, getSingleCostingDetails, createCosting
+  storePartNumber, getSingleCostingDetails, createCosting, checkFinalUser
 } from '../actions/Costing'
 import ViewBOP from './Drawers/ViewBOP'
 import ViewConversionCost from './Drawers/ViewConversionCost'
@@ -21,8 +21,7 @@ import { useHistory } from "react-router-dom";
 import WarningMessage from '../../common/WarningMessage'
 import DayTime from '../../common/DayTimeWrapper'
 import { getVolumeDataByPartAndYear } from '../../masters/actions/Volume'
-import { isFinalApprover } from '../actions/Approval';
-import cirHeader from "../../../assests/images/logo/CIRlogo.jpg";
+import cirHeader from "../../../assests/images/logo/CIRlogo.svg";
 import Logo from '../../../assests/images/logo/company-logo.svg';
 import LoaderCustom from '../../common/LoaderCustom'
 import ReactToPrint from 'react-to-print';
@@ -118,30 +117,34 @@ const CostingSummaryTable = (props) => {
   const onBeforeContentResolve = useRef(null)
   const onBeforeContentResolveDetail = useRef(null)
   const [pieChartDataArray, setPieChartDataArray] = useState([])
+  const [count, setCount] = useState(0);
 
   useEffect(() => {
     applyPermission(topAndLeftMenuData, selectedTechnology)
-
-    if (!viewMode && viewCostingData && partInfo) {
-      let obj = {}
-      obj.TechnologyId = partInfo.TechnologyId
-      obj.DepartmentId = '00000000-0000-0000-0000-000000000000'
-      obj.LoggedInUserLevelId = userDetails().LoggedInLevelId
-      obj.LoggedInUserId = userDetails().LoggedInUserId
-
-      dispatch(isFinalApprover(obj, res => {
-        if (res.data?.Result) {
-          setIsFinalApproverShow(res.data?.Data?.IsFinalApprovar) // UNCOMMENT IT AFTER DEPLOTED FROM KAMAL SIR END
-          // setIsFinalApproverShow(false)
-        }
-      }))
-    }
 
     return () => {
       dispatch(setCostingViewData([]))
     }
   }, [])
 
+  useEffect(() => {
+
+    if (!viewMode && viewCostingData?.length !== 0 && partInfo && count === 0) {
+      let obj = {}
+      obj.DepartmentId = userDetails().DepartmentId
+      obj.UserId = loggedInUserId()
+      obj.TechnologyId = partInfo.TechnologyId
+      obj.Mode = 'costing'
+      obj.approvalTypeId = viewCostingData[0]?.costingTypeId
+      setCount(1)
+      dispatch(checkFinalUser(obj, res => {
+        if (res.data?.Result) {
+          setIsFinalApproverShow(res.data?.Data?.IsFinalApprover) // UNCOMMENT IT AFTER DEPLOTED FROM KAMAL SIR END
+        }
+      }))
+    }
+
+  }, [viewCostingData])
 
   useEffect(() => {
     viewCostingData && viewCostingData.map((item) => {
@@ -763,7 +766,6 @@ const CostingSummaryTable = (props) => {
       dispatch(getSingleCostingDetails(costingID, (res) => {
         if (res.data?.Data) {
           let dataFromAPI = res.data?.Data
-
           const tempObj = formViewData(dataFromAPI)
           dispatch(setCostingViewData(tempObj))
         }
@@ -901,6 +903,11 @@ const CostingSummaryTable = (props) => {
 
     let costingSummary = []
     let templateObj = viewCostingData[0]?.technologyId === LOGISTICS ? VIEW_COSTING_DATA_LOGISTICS : VIEW_COSTING_DATA
+
+    if (props?.isRfqCosting) {
+      templateObj.costingHeadCheck = 'VBC'
+    }
+
     for (var prop in templateObj) {
 
       if (partType) {  // IF TECHNOLOGY WILL BE ASSEMBLY THIS BLOCK WILL BE EXCECUTED
@@ -1239,7 +1246,7 @@ const CostingSummaryTable = (props) => {
                                 return (
                                   <td>
                                     <span className="d-flex justify-content-between bg-grey">
-                                      {`${DayTime(data?.costingDate).format('DD-MM-YYYY')}-${data?.CostingNumber}-${data?.status}`}{' '}
+                                      {`${DayTime(data?.costingDate).format('DD-MM-YYYY')}-${data?.CostingNumber}${props.costingSummaryMainPage ? '-' : ''}${props.costingSummaryMainPage ? data?.status : ''}`}{' '}
                                       {
                                         !viewMode &&
                                         <button

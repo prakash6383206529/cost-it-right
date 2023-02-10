@@ -32,6 +32,7 @@ import AnalyticsDrawer from './AnalyticsDrawer'
 import _ from 'lodash';
 import { useRef } from 'react';
 import { reactLocalStorage } from 'reactjs-localstorage';
+import { checkFinalUser } from '../../../components/costing/actions/Costing'
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -155,17 +156,6 @@ function RMDomesticListing(props) {
     useEffect(() => {
         reactLocalStorage.setObject('selectedRow', {})
         if (!props.stopApiCallOnCancel) {
-            let obj = {
-                MasterId: RM_MASTER_ID,
-                DepartmentId: userDetails().DepartmentId,
-                LoggedInUserLevelId: userDetails().LoggedInMasterLevelId,
-                LoggedInUserId: loggedInUserId()
-            }
-            dispatch(masterFinalLevelUser(obj, (res) => {
-                if (res?.data?.Result) {
-                    setIsFinalLevelUser(res.data.Data.IsFinalApprovar)
-                }
-            }))
             return () => {
                 dispatch(setSelectedRowForPagination([]))
                 reactLocalStorage.setObject('selectedRow', {})
