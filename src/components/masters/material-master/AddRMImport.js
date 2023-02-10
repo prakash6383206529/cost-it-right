@@ -1485,7 +1485,7 @@ class AddRMImport extends Component {
                                 component={searchableSelect}
                                 valueDescription={this.state.singlePlantSelected}
                                 mendatory={true}
-                                className="multiselect-with-border"
+                                //className="multiselect-with-border"
                                 disabled={isEditFlag || isViewFlag}
                               />
                             </Col>

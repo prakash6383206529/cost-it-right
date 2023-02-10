@@ -987,7 +987,7 @@ class AddProfit extends Component {
                               component={renderMultiSelectField}
                               mendatory={true}
                               disabled={isEditFlag || isViewMode}
-                              className="multiselect-with-border"
+                              //className="multiselect-with-border"
                               valueDescription={this.state.selectedPlants}
                             />
                           </Col>)
@@ -1006,7 +1006,7 @@ class AddProfit extends Component {
                               component={searchableSelect}
                               valueDescription={this.state.singlePlantSelected}
                               mendatory={true}
-                              className="multiselect-with-border"
+                              //className="multiselect-with-border"
                               disabled={isEditFlag || isViewMode}
                             />
                           </Col>
