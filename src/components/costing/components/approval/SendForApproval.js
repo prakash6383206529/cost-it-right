@@ -5,12 +5,12 @@ import { useDispatch, useSelector } from 'react-redux'
 import Toaster from '../../../common/Toaster'
 import Drawer from '@material-ui/core/Drawer'
 import { SearchableSelectHookForm, TextAreaHookForm, DatePickerHookForm, NumberFieldHookForm, } from '../../../layout/HookFormInputs'
-import { getReasonSelectList, getAllApprovalDepartment, getAllApprovalUserFilterByDepartment, sendForApprovalBySender, isFinalApprover, approvalRequestByApprove } from '../../actions/Approval'
-import { getConfigurationKey, userDetails } from '../../../../helper/auth'
+import { getReasonSelectList, getAllApprovalDepartment, getAllApprovalUserFilterByDepartment, sendForApprovalBySender, approvalRequestByApprove } from '../../actions/Approval'
+import { getConfigurationKey, loggedInUserId, userDetails } from '../../../../helper/auth'
 import { setCostingApprovalData, setCostingViewData, fileUploadCosting } from '../../actions/Costing'
 import { getVolumeDataByPartAndYear, checkRegularizationLimit } from '../../../masters/actions/Volume'
 
-import { calculatePercentageValue, checkForDecimalAndNull, checkForNull } from '../../../../helper'
+import { calculatePercentageValue, checkForDecimalAndNull, checkForNull, userTechnologyLevelDetails } from '../../../../helper'
 import DayTime from '../../../common/DayTimeWrapper'
 import WarningMessage from '../../../common/WarningMessage'
 import DatePicker from "react-datepicker";
@@ -23,6 +23,7 @@ import redcrossImg from "../../../../assests/images/red-cross.png";
 import VerifyImpactDrawer from '../../../simulation/components/VerifyImpactDrawer';
 import LoaderCustom from '../../../common/LoaderCustom'
 import TooltipCustom from '../../../common/Tooltip'
+import { getUsersTechnologyLevelAPI } from '../../../../actions/auth/AuthActions'
 
 
 const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
@@ -60,6 +61,7 @@ const SendForApproval = (props) => {
   const [effectiveDate, setEffectiveDate] = useState('')
   const [dataToChange, setDataToChange] = useState([]);
   const [IsLimitCrossed, setIsLimitCrossed] = useState(false);
+  const [levelDetails, setLevelDetails] = useState('');
   // const [showDate,setDate] = useState(false)
   // const [showDate,setDate] = useState(false)
   const userData = userDetails()
@@ -71,6 +73,8 @@ const SendForApproval = (props) => {
     obj.DepartmentId = '00000000-0000-0000-0000-000000000000'
     obj.LoggedInUserLevelId = userDetails().LoggedInLevelId
     obj.LoggedInUserId = userDetails().LoggedInUserId
+    obj.approvalTypeId = viewApprovalData[0]?.costingTypeId
+
     let drawerDataObj = {}
     drawerDataObj.EffectiveDate = viewApprovalData[0]?.effectiveDate
     drawerDataObj.CostingHead = viewApprovalData[0]?.costingTypeId === ZBCTypeId ? ZBC : VBC
@@ -81,6 +85,7 @@ const SendForApproval = (props) => {
     regularizationObj.partId = viewApprovalData[0]?.partId
     regularizationObj.destinationPlantId = viewApprovalData[0]?.destinationPlantId
     regularizationObj.vendorId = viewApprovalData[0]?.vendorId
+
     if (viewApprovalData[0]?.costingTypeId === NCCTypeId) {
       dispatch(checkRegularizationLimit(regularizationObj, (res) => {
         if (res && res?.data && res?.data?.Data) {
@@ -89,51 +94,57 @@ const SendForApproval = (props) => {
         }
       }))
     }
-    dispatch(isFinalApprover(obj, res => {
-      if (res.data.Result) {
-        setIsFinalApproverShow(res.data.Data.IsFinalApprovar) // UNCOMMENT IT AFTER DEPLOTED FROM KAMAL SIR END
-        if (props?.isRfq) {
-          setIsFinalApproverShow(false)
+    // dispatch(checkFinalUser(obj, res => {
+    //   if (res.data.Result) {
+    //     setIsFinalApproverShow(res.data.Data.IsFinalApprovar)
+    //     if (props?.isRfq) {
+    //       setIsFinalApproverShow(false)
+    //     }
+    //   }
+
+    dispatch(getReasonSelectList((res) => { }))
+    // if (!res.data.Data.IsFinalApprovar || props?.isRfq) {
+
+    dispatch(getAllApprovalDepartment((res) => {
+      const Data = res?.data?.SelectList
+      const departObj = Data && Data.filter(item => item.Value === userData.DepartmentId)
+
+      setSelectedDepartment({ label: departObj[0]?.Text, value: departObj[0]?.Value })
+      setValue('dept', { label: departObj[0]?.Text, value: departObj[0]?.Value })
+
+      let requestObject = {
+        LoggedInUserId: userData.LoggedInUserId,
+        DepartmentId: departObj[0]?.Value,
+        TechnologyId: props.technologyId,
+        ReasonId: 0, // key only for minda
+        ApprovalTypeId: viewApprovalData[0]?.costingTypeId,
+      }
+      dispatch(getAllApprovalUserFilterByDepartment(requestObject, (res) => {
+        let tempDropdownList = []
+        if (res.data.DataList.length === 1) {
+          setShowValidation(true)
+          return false
         }
-        // setIsFinalApproverShow(false)
-      }
+        res.data.DataList && res.data.DataList.map((item) => {
+          if (item.Value === '0') return false;
+          tempDropdownList.push({ label: item.Text, value: item.Value, levelId: item.LevelId, levelName: item.LevelName })
+          return null
+        })
+        const Data = res.data.DataList[1]
+        setApprover(Data.Text)
+        setSelectedApprover(Data.Value)
+        setSelectedApproverLevelId({ levelName: Data.LevelName, levelId: Data.LevelId })
+        setValue('approver', { label: Data.Text, value: Data.Value })
+        setApprovalDropDown(tempDropdownList)
+      }))
+    }))
+    // }
 
-      dispatch(getReasonSelectList((res) => { }))
-      if (!res.data.Data.IsFinalApprovar || props?.isRfq) {
-
-        dispatch(getAllApprovalDepartment((res) => {
-          const Data = res?.data?.SelectList
-          const departObj = Data && Data.filter(item => item.Value === userData.DepartmentId)
-
-          setSelectedDepartment({ label: departObj[0]?.Text, value: departObj[0]?.Value })
-          setValue('dept', { label: departObj[0]?.Text, value: departObj[0]?.Value })
-
-          let requestObject = {
-            LoggedInUserId: userData.LoggedInUserId,
-            DepartmentId: departObj[0]?.Value,
-            TechnologyId: props.technologyId,
-            ReasonId: 0 // key only for minda
-          }
-          dispatch(getAllApprovalUserFilterByDepartment(requestObject, (res) => {
-            let tempDropdownList = []
-            if (res.data.DataList.length === 1) {
-              setShowValidation(true)
-              return false
-            }
-            res.data.DataList && res.data.DataList.map((item) => {
-              if (item.Value === '0') return false;
-              tempDropdownList.push({ label: item.Text, value: item.Value, levelId: item.LevelId, levelName: item.LevelName })
-              return null
-            })
-            const Data = res.data.DataList[1]
-            setApprover(Data.Text)
-            setSelectedApprover(Data.Value)
-            setSelectedApproverLevelId({ levelName: Data.LevelName, levelId: Data.LevelId })
-            setValue('approver', { label: Data.Text, value: Data.Value })
-            setApprovalDropDown(tempDropdownList)
-          }))
-        }))
-      }
+    // }))
+    let levelDetailsTemp = ''
+    dispatch(getUsersTechnologyLevelAPI(loggedInUserId(), props.technologyId, (res) => {
+      levelDetailsTemp = userTechnologyLevelDetails(viewApprovalData[0]?.costingTypeId, res?.data?.Data?.TechnologyLevels)
+      setLevelDetails(levelDetailsTemp)
 
     }))
 
@@ -180,6 +191,7 @@ const SendForApproval = (props) => {
         LoggedInUserId: userData.LoggedInUserId,
         DepartmentId: newValue.value,
         TechnologyId: props.technologyId,
+        ApprovalTypeId: viewApprovalData[0]?.costingTypeId,
       }
       dispatch(getAllApprovalUserFilterByDepartment(requestObject, (res) => {
         if (res.data.DataList.length <= 1) {
@@ -312,9 +324,12 @@ const SendForApproval = (props) => {
         tempObj.ApprovalToken = data.ApprovalToken
         tempObj.ApproverDepartmentId = selectedDepartment.value
         tempObj.ApproverDepartmentName = selectedDepartment.label
-        tempObj.ApproverLevelId = !isFinalApproverShow ? selectedApproverLevelId.levelId : userData.LoggedInLevelId
-        tempObj.ApproverLevel = !isFinalApproverShow ? selectedApproverLevelId.levelName : userData.LoggedInLevel
-        tempObj.Approver = !isFinalApproverShow ? selectedApprover : userData.LoggedInUserId
+        // tempObj.ApproverLevelId = !isFinalApproverShow ? selectedApproverLevelId.levelId : userData.LoggedInLevelId
+        // tempObj.ApproverLevel = !isFinalApproverShow ? selectedApproverLevelId.levelName : userData.LoggedInLevel
+        // tempObj.Approver = !isFinalApproverShow ? selectedApprover : userData.LoggedInUserId
+        tempObj.ApproverLevelId = selectedApproverLevelId.levelId
+        tempObj.ApproverLevel = selectedApproverLevelId.levelName
+        tempObj.Approver = selectedApprover
 
         // ApproverLevelId: "4645EC79-B8C0-49E5-98D6-6779A8F69692", // approval dropdown data here
         // ApproverId: "566E7AB0-804F-403F-AE7F-E7B15A289362",// approval dropdown data here
@@ -349,14 +364,16 @@ const SendForApproval = (props) => {
       dispatch(approvalRequestByApprove(temp, res => {
 
         if (res?.data?.Result) {
-          if (isFinalApproverShow) {
-            Toaster.success('The costing has been approved')
+          // if (isFinalApproverShow) {
+          //   Toaster.success('The costing has been approved')
 
-          } else {
-            Toaster.success(isFinalApproverShow ? 'The costing has been approved' : 'The costing has been sent to next level for approval')
+          // } else {
+          //   Toaster.success(isFinalApproverShow ? 'The costing has been approved' : 'The costing has been sent to next level for approval')
 
-            props.closeDrawer('', 'submit')
-          }
+          //   props.closeDrawer('', 'submit')
+          // }
+          Toaster.success('The costing has been sent to next level for approval')
+          props.closeDrawer('', 'submit')
         }
         props?.cancel()
       }))
@@ -370,17 +387,21 @@ const SendForApproval = (props) => {
       let obj = {
         ApproverDepartmentId: selectedDepartment.value,
         ApproverDepartmentName: selectedDepartment.label,
-        ApproverLevelId: !isFinalApproverShow ? selectedApproverLevelId.levelId : userData.LoggedInLevelId,
-        ApproverLevel: !isFinalApproverShow ? selectedApproverLevelId.levelName : userData.LoggedInLevel,
-        ApproverId: !isFinalApproverShow ? selectedApprover : userData.LoggedInUserId,
+        ApproverLevelId: selectedApproverLevelId.levelId,
+        ApproverLevel: selectedApproverLevelId.levelName,
+        ApproverId: selectedApprover,
+        // ApproverLevelId: !isFinalApproverShow ? selectedApproverLevelId.levelId : userData.LoggedInLevelId,
+        // ApproverLevel: !isFinalApproverShow ? selectedApproverLevelId.levelName : userData.LoggedInLevel,
+        // ApproverId: !isFinalApproverShow ? selectedApprover : userData.LoggedInUserId,
 
         // ApproverLevelId: "4645EC79-B8C0-49E5-98D6-6779A8F69692", // approval dropdown data here
         // ApproverId: "566E7AB0-804F-403F-AE7F-E7B15A289362",// approval dropdown data here
-        SenderLevelId: userData.LoggedInLevelId,
-        SenderLevel: userData.LoggedInLevel,
+        SenderLevelId: levelDetails.LevelId,
+        SenderLevel: levelDetails.Level,
         SenderId: userData.LoggedInUserId,
         SenderRemark: data.remarks,
         LoggedInUserId: userData.LoggedInUserId,
+        ApprovalTypeId: viewApprovalData[0].costingTypeId,
         // Quantity: getValues('Quantity'),
         // Attachment: files,
         // IsLimitCrossed: IsLimitCrossed
@@ -438,7 +459,7 @@ const SendForApproval = (props) => {
           (data.costingTypeId === VBCTypeId) ? data.vendorName : ''
         tempObj.VendorPlantName =
           (data.costingTypeId === VBCTypeId) ? data.vendorPlantName : ''
-        tempObj.IsFinalApproved = isFinalApproverShow ? true : false
+        tempObj.IsFinalApproved = false
         tempObj.DestinationPlantCode = data.destinationPlantCode
         tempObj.DestinationPlantName = data.destinationPlantName
         tempObj.DestinationPlantId = data.destinationPlantId
@@ -817,9 +838,9 @@ const SendForApproval = (props) => {
             <div className="">
               <form >
                 {
-                  isFinalApproverShow === false ?
-                    <>
-                      {/* <Row className="px-3">
+                  // isFinalApproverShow === false ?
+                  <>
+                    {/* <Row className="px-3">
                         <Col md="12">
                           <div className="left-border">{"Push Drawer"}</div>
                         </Col>
@@ -828,104 +849,85 @@ const SendForApproval = (props) => {
                           <PushSection />
                         </Col>
                       </Row> */}
-                      <Row className="px-3">
-                        <Col md="4">
-                          <div className="left-border">{"Approver"}</div>
-                        </Col>
-                      </Row>
-                      <Row className="px-3">
-                        <Col md="6">
-                          <SearchableSelectHookForm
-                            label={`${getConfigurationKey().IsCompanyConfigureOnPlant ? 'Company' : 'Department'}`}
-                            name={"dept"}
-                            placeholder={"Select"}
-                            Controller={Controller}
-                            control={control}
-                            rules={{ required: true }}
-                            register={register}
-                            defaultValue={""}
-                            options={renderDropdownListing("Dept")}
-                            disabled={false}
-                            mandatory={true}
-                            handleChange={handleDepartmentChange}
-                            errors={errors.dept}
-                          />
-                        </Col>
-                        <Col md="6">
-                          <SearchableSelectHookForm
-                            label={"Approver"}
-                            name={"approver"}
-                            placeholder={"Select"}
-                            Controller={Controller}
-                            control={control}
-                            rules={{ required: true }}
-                            register={register}
-                            defaultValue={""}
-                            options={approvalDropDown}
-                            mandatory={true}
-                            disabled={false}
-                            handleChange={handleApproverChange}
-                            errors={errors.approver}
-                          />
-                        </Col>
-                        {
-                          showValidation && <span className="warning-top"><WarningMessage dClass="pl-3" message={'There is no approver added in this department'} /></span>
-                        }
-
-                        {viewApprovalData && viewApprovalData[0]?.costingTypeId === NCCTypeId && <><Col md="6">
-                          <NumberFieldHookForm
-                            label="Quantity"
-                            name={"Quantity"}
-                            Controller={Controller}
-                            control={control}
-                            register={register}
-                            mandatory={true}
-                            rules={{ required: true }}
-                            defaultValue={""}
-                            className=""
-                            customClassName={"withBorder"}
-                            handleChange={handleChangeQuantity}
-                            errors={errors.Quantity}
-                            disabled={false}
-                          />
-                        </Col>
-                          <Col md="6" className="d-flex align-items-center mb-2">
-                            <span className="d-inline-block">
-                              <label
-                                className={`custom-checkbox mb-0`}
-                                onChange={checkboxHandler}>
-                                Regularize
-                                <input
-                                  type="checkbox"
-                                />
-                                <span
-                                  className=" before-box"
-                                  onChange={checkboxHandler}
-                                />
-                              </label>
-                            </span>
-                          </Col>
-                        </>
-                        }
-                        <Col md="12">
-                          <TextAreaHookForm
-                            label="Remarks"
-                            name={"remarks"}
-                            Controller={Controller}
-                            control={control}
-                            register={register}
-                            mandatory={false}
-                            handleChange={() => { }}
-                            defaultValue={""}
-                            className=""
-                            customClassName={"withBorder"}
-                            errors={errors.remarks}
-                            disabled={false}
-                          />
-                        </Col>
-                      </Row>
-                    </> :
                     <Row className="px-3">
+                      <Col md="4">
+                        <div className="left-border">{"Approver"}</div>
+                      </Col>
+                    </Row>
+                    <Row className="px-3">
+                      <Col md="6">
+                        <SearchableSelectHookForm
+                          label={`${getConfigurationKey().IsCompanyConfigureOnPlant ? 'Company' : 'Department'}`}
+                          name={"dept"}
+                          placeholder={"Select"}
+                          Controller={Controller}
+                          control={control}
+                          rules={{ required: true }}
+                          register={register}
+                          defaultValue={""}
+                          options={renderDropdownListing("Dept")}
+                          disabled={false}
+                          mandatory={true}
+                          handleChange={handleDepartmentChange}
+                          errors={errors.dept}
+                        />
+                      </Col>
+                      <Col md="6">
+                        <SearchableSelectHookForm
+                          label={"Approver"}
+                          name={"approver"}
+                          placeholder={"Select"}
+                          Controller={Controller}
+                          control={control}
+                          rules={{ required: true }}
+                          register={register}
+                          defaultValue={""}
+                          options={approvalDropDown}
+                          mandatory={true}
+                          disabled={false}
+                          handleChange={handleApproverChange}
+                          errors={errors.approver}
+                        />
+                      </Col>
+                      {
+                        showValidation && <span className="warning-top"><WarningMessage dClass="pl-3" message={'There is no approver added in this department'} /></span>
+                      }
+
+                      {viewApprovalData && viewApprovalData[0]?.costingTypeId === NCCTypeId && <><Col md="6">
+                        <NumberFieldHookForm
+                          label="Quantity"
+                          name={"Quantity"}
+                          Controller={Controller}
+                          control={control}
+                          register={register}
+                          mandatory={true}
+                          rules={{ required: true }}
+                          defaultValue={""}
+                          className=""
+                          customClassName={"withBorder"}
+                          handleChange={handleChangeQuantity}
+                          errors={errors.Quantity}
+                          disabled={false}
+                        />
+                      </Col>
+                        <Col md="6" className="d-flex align-items-center mb-2">
+                          <span className="d-inline-block">
+                            <label
+                              className={`custom-checkbox mb-0`}
+                              onChange={checkboxHandler}>
+                              Regularize
+                              <input
+                                type="checkbox"
+                              />
+                              <span
+                                className=" before-box"
+                                onChange={checkboxHandler}
+                              />
+                            </label>
+                          </span>
+                        </Col>
+                      </>
+                      }
                       <Col md="12">
                         <TextAreaHookForm
                           label="Remarks"
@@ -943,6 +945,26 @@ const SendForApproval = (props) => {
                         />
                       </Col>
                     </Row>
+                  </>
+                  // :
+                  // <Row className="px-3">
+                  //   <Col md="12">
+                  //     <TextAreaHookForm
+                  //       label="Remarks"
+                  //       name={"remarks"}
+                  //       Controller={Controller}
+                  //       control={control}
+                  //       register={register}
+                  //       mandatory={false}
+                  //       handleChange={() => { }}
+                  //       defaultValue={""}
+                  //       className=""
+                  //       customClassName={"withBorder"}
+                  //       errors={errors.remarks}
+                  //       disabled={false}
+                  //     />
+                  //   </Col>
+                  // </Row>
 
                 }
                 {isRegularize ? (
@@ -1046,7 +1068,8 @@ const SendForApproval = (props) => {
                       className="btn btn-primary save-btn"
                       type="button"
                       // className="submit-button save-btn"
-                      disabled={(isDisable || isFinalApproverShow)}
+                      // disabled={(isDisable || isFinalApproverShow)}
+                      disabled={isDisable}
                       onClick={onSubmit}
                     >
                       <div className={'save-icon'}></div>

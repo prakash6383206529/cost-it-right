@@ -10,8 +10,8 @@ import {
 } from '../config/constants'
 import { getConfigurationKey } from './auth'
 import _ from 'lodash';
-
-
+import { useDispatch } from 'react-redux';
+import { getUsersSimulationTechnologyLevelAPI } from '../actions/auth/AuthActions'
 
 /**
  * @method  apiErrors
@@ -1104,4 +1104,32 @@ export const highlightCostingSummaryValue = (oldValue, newValue) => {
 
 export function addDays(theDate, days) {
   return new Date(theDate.getTime() + days * 24 * 60 * 60 * 1000);
+}
+
+export function ceilByMultiple(number, multiple = 0.25) {
+  var inv = 1.0 / multiple;
+  return (Math.ceil(number * inv) / inv).toFixed(getConfigurationKey().NoOfDecimalForInputOutput);
+}
+
+export function userTechnologyLevelDetails(approvalTypeId, data = []) {
+  let dataList = [...data]
+  let filteredData = dataList?.filter(element => element.ApprovalTypeId === approvalTypeId)
+  let obj = {
+    Level: filteredData[0]?.Level,
+    LevelId: filteredData[0]?.LevelId,
+    ApprovalTypeId: filteredData[0]?.ApprovalTypeId
+  }
+  return obj
+}
+
+export function userTechnologyDetailByMasterId(costingTypeId, masterId, data = []) {
+  let dataList = [...data]
+  let filteredData = dataList?.filter(element => (element.MasterId === masterId && element.ApprovalTypeId === costingTypeId))
+  let obj = {
+    Level: filteredData[0]?.Level,
+    LevelId: filteredData[0]?.LevelId,
+    ApprovalTypeId: filteredData[0]?.ApprovalTypeId,
+    length: filteredData?.length
+  }
+  return obj
 }

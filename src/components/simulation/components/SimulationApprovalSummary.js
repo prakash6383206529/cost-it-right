@@ -195,7 +195,8 @@ function SimulationApprovalSummary(props) {
                 DepartmentId: DepartmentId,
                 UserId: loggedInUserId(),
                 TechnologyId: SimulationTechnologyId,
-                Mode: 'simulation'
+                Mode: 'simulation',
+                approvalTypeId: SimulationHeadId,
             }
             dispatch(checkFinalUser(obj, res => {
                 if (res && res.data && res.data.Result) {
@@ -1486,6 +1487,7 @@ function SimulationApprovalSummary(props) {
                     // reasonId={approvalDetails.ReasonId}
                     IsFinalLevel={finalLeveluser}
                     Attachements={simulationDetail.Attachements}
+                    SimulationHeadId={simulationDetail?.SimulationHeadId}
                 // IsPushDrawer={showPushDrawer}
                 // dataSend={[approvalDetails, partDetail]}
                 />
@@ -1505,6 +1507,7 @@ function SimulationApprovalSummary(props) {
                     // IsPushDrawer={showPushDrawer}
                     // dataSend={[approvalDetails, partDetail]}
                     Attachements={simulationDetail.Attachements}
+                    SimulationHeadId={simulationDetail?.SimulationHeadId}
                 />
             }
 

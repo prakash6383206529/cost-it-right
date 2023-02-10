@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { checkForDecimalAndNull, getConfigurationKey, loggedInUserId, userDetails, labelWithUOMAndCurrency, displayUOM } from '../../helper';
+import { checkForDecimalAndNull, getConfigurationKey, loggedInUserId, userDetails, labelWithUOMAndCurrency, displayUOM, userSimulationTechnologyLevelDetails } from '../../helper';
 import { approvalOrRejectRequestByMasterApprove, getAllMasterApprovalDepartment, getAllMasterApprovalUserByDepartment, masterApprovalRequestBySender } from './actions/Material';
 import { masterApprovalRequestBySenderBop } from './actions/BoughtOutParts'
 import { masterApprovalRequestBySenderOperation } from './actions/OtherOperation'
@@ -16,9 +16,10 @@ import { getReasonSelectList } from '../costing/actions/Approval';
 import DayTime from '../common/DayTimeWrapper'
 import DatePicker from "react-datepicker";
 import { EMPTY_GUID } from '../../config/constants';
+import { getUsersMasterLevelAPI } from '../../actions/auth/AuthActions';
 
 function MasterSendForApproval(props) {
-    const { type, IsFinalLevel, IsPushDrawer, reasonId, masterId, approvalObj, isBulkUpload, IsImportEntery, approvalDetails, IsFinalLevelButtonShow, approvalData } = props
+    const { type, IsFinalLevel, IsPushDrawer, reasonId, masterId, approvalObj, isBulkUpload, IsImportEntery, approvalDetails, IsFinalLevelButtonShow, approvalData, levelDetails } = props
 
 
     const { register, control, formState: { errors }, handleSubmit, setValue, getValues, reset, } = useForm({
@@ -60,8 +61,9 @@ function MasterSendForApproval(props) {
 
             let obj = {
                 LoggedInUserId: loggedInUserId(),
-                DepartmentId: departObj[0].Value,
+                DepartmentId: departObj && departObj[0]?.Value,
                 MasterId: masterId,
+                ApprovalTypeId: props?.costingTypeId,
                 ReasonId: reasonId
             }
 
@@ -82,11 +84,8 @@ function MasterSendForApproval(props) {
                         return null
                     })
                 setApprovalDropDown(tempDropdownList)
-            },
-            ),
-            )
+            },),)
         }))
-
     }, [])
 
 
@@ -126,23 +125,23 @@ function MasterSendForApproval(props) {
             LoggedInUserId: loggedInUserId(), // user id
             DepartmentId: value.value,
             MasterId: masterId,
-            ReasonId: ''
+            ReasonId: '',
+            ApprovalTypeId: props?.costingTypeId,
         }
-        dispatch(
-            getAllMasterApprovalUserByDepartment(obj, (res) => {
-                res.data.DataList &&
-                    res.data.DataList.map((item) => {
-                        if (item.Value === '0') return false;
-                        tempDropdownList.push({
-                            label: item.Text,
-                            value: item.Value,
-                            levelId: item.LevelId,
-                            levelName: item.LevelName
-                        })
-                        return null
+        dispatch(getAllMasterApprovalUserByDepartment(obj, (res) => {
+            res.data.DataList &&
+                res.data.DataList.map((item) => {
+                    if (item.Value === '0') return false;
+                    tempDropdownList.push({
+                        label: item.Text,
+                        value: item.Value,
+                        levelId: item.LevelId,
+                        levelName: item.LevelName
                     })
-                setApprovalDropDown(tempDropdownList)
-            }),
+                    return null
+                })
+            setApprovalDropDown(tempDropdownList)
+        }),
         )
 
     }
@@ -168,16 +167,17 @@ function MasterSendForApproval(props) {
             senderObj.ApproverLevel = approver && approver.levelName ? approver.levelName : ''
             senderObj.ApproverDepartmentName = dept && dept.label ? dept.label : ''
             senderObj.ApproverId = approver && approver.value ? approver.value : ''
-            senderObj.SenderLevelId = userDetails().LoggedInMasterLevelId
+            senderObj.SenderLevelId = levelDetails.LevelId
             senderObj.SenderId = loggedInUserId()
-            senderObj.SenderLevel = userDetails().LoggedInMasterLevel
+            senderObj.SenderLevel = levelDetails.Level
             senderObj.SenderRemark = remark
             senderObj.LoggedInUserId = loggedInUserId()
             senderObj.IsVendor = approvalObj && Object.keys(approvalObj).length > 0 ? approvalObj.IsVendor : false
             senderObj.EffectiveDate = approvalObj && Object.keys(approvalObj).length > 0 ? approvalObj.EffectiveDate : DayTime(new Date()).format('YYYY-MM-DD HH:mm:ss')
             senderObj.PurchasingGroup = ''
             senderObj.MaterialGroup = ''
-            senderObj.CostingTypeId = approvalObj?.CostingTypeId
+            senderObj.CostingTypeId = approvalObj.CostingTypeId
+            senderObj.ApprovalTypeId = approvalObj.CostingTypeId
             let tempArray = []
             switch (masterId) {
                 case 1:                        // CASE 1 FOR RAW MATERIAL
@@ -284,9 +284,9 @@ function MasterSendForApproval(props) {
             obj.ApprovalProcessId = approvalDetails.ApprovalProcessId
             obj.ApprovalToken = approvalDetails.Token
             obj.LoggedInUserId = loggedInUserId()
-            obj.SenderLevelId = userDetails().LoggedInMasterLevelId
+            obj.SenderLevelId = levelDetails.LevelId
             obj.SenderId = loggedInUserId()
-            obj.SenderLevel = userDetails().LoggedInMasterLevel
+            obj.SenderLevel = levelDetails.Level
             obj.SenderDepartmentId = dept && dept.value ? dept.value : ''
             obj.SenderDepartmentName = dept && dept.label ? dept.label : ''
             obj.ApproverId = approver && approver.value ? approver.value : ''
