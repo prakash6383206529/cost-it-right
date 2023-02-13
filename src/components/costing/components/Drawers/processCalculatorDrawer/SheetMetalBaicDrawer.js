@@ -143,14 +143,14 @@ function SheetMetalBaicDrawer(props) {
     obj.CostingProcessDetailsIdRef = WeightCalculatorRequest && WeightCalculatorRequest.CostingProcessDetailsIdRef ? WeightCalculatorRequest.CostingProcessDetailsIdRef : "00000000-0000-0000-0000-000000000000"
     obj.BaseCostingIdRef = props?.item?.CostingId
     obj.ProcessIdRef = props.calculatorData.ProcessId
-    obj.IsChangeApplied = tempProcessObj === value.ProcessCost ? false : true
+    obj.IsChangeApplied = tempProcessObj === getValues('ProcessCost') ? false : true
     obj.TechnologyId = costData.TechnologyId
     obj.UnitOfMeasurementId = props.calculatorData.UnitOfMeasurementId
     obj.UOM = props.calculatorData.UOM
-    obj.Tonnage = value.MachineTonnage ? value.MachineTonnage : ""
-    obj.CycleTime = value.CycleTime
-    obj.Efficiency = value.Efficiency
-    obj.Cavity = value.Cavity
+    obj.Tonnage = getValues('MachineTonnage') ? getValues('MachineTonnage') : ""
+    obj.CycleTime = getValues('CycleTime')
+    obj.Efficiency = getValues('Efficiency')
+    obj.Cavity = getValues('Cavity')
     obj.Quantity = props.calculatorData.UOMType === TIME ? Number(checkForNull(processCost) / checkForNull(props.calculatorData.MHR)) : Number(quantityState)
     obj.ProcessCost = processCost
     obj.MachineRate = props?.calculatorData?.MHR
