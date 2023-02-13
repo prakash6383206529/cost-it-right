@@ -206,17 +206,7 @@ function RMSimulation(props) {
      * @method shearingCostFormatter
      * @description Renders buttons
      */
-    const shearingCostFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-
-        return cell != null ? cell : '-';
-    }
-
-    /**
-    * @method freightCostFormatter
-    * @description Renders buttons
-    */
-    const freightCostFormatter = (props) => {
+    const CostFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
 
         return cell != null ? cell : '-';
@@ -407,8 +397,7 @@ function RMSimulation(props) {
     const frameworkComponents = {
         effectiveDateFormatter: effectiveDateFormatter,
         costingHeadFormatter: costingHeadFormatter,
-        shearingCostFormatter: shearingCostFormatter,
-        freightCostFormatter: freightCostFormatter,
+        CostFormatter: CostFormatter,
         newScrapRateFormatter: newScrapRateFormatter,
         NewcostFormatter: NewcostFormatter,
         costFormatter: costFormatter,
@@ -555,9 +544,9 @@ function RMSimulation(props) {
                                                 <AgGridColumn width={120} field="ScrapRate" editable='false' cellRenderer='oldScrapRateFormatter' headerName="Existing" colId="ScrapRate" ></AgGridColumn>
                                                 <AgGridColumn width={120} cellRenderer={'newScrapRateFormatter'} field="NewScrapRate" headerName="Revised" colId="NewScrapRate" editable={!isImpactedMaster} ></AgGridColumn>
                                             </AgGridColumn>
-                                            <AgGridColumn width={150} field="RMFreightCost" editable='false' cellRenderer={'freightCostFormatter'} headerName={Number(selectedMasterForSimulation?.value) === 2 ? "RM Freight Cost (Currency)" : "RM Freight Cost (INR)"}></AgGridColumn>
-                                            <AgGridColumn width={170} field="RMShearingCost" editable='false' cellRenderer={'shearingCostFormatter'} headerName={Number(selectedMasterForSimulation?.value) === 2 ? "RM Shearing Cost (Currency)" : "RM Shearing Cost (INR)"} ></AgGridColumn>
-
+                                            <AgGridColumn width={150} field="RMFreightCost" editable='false' cellRenderer={'freightCostFormatter'} headerName={Number(selectedMasterForSimulation?.value) === 2 ? "Freight Cost (Currency)" : "Freight Cost (INR)"}></AgGridColumn>
+                                            <AgGridColumn width={170} field="RMShearingCost" editable='false' cellRenderer={'shearingCostFormatter'} headerName={Number(selectedMasterForSimulation?.value) === 2 ? "Shearing Cost (Currency)" : "Shearing Cost (INR)"} ></AgGridColumn>
+                                            <AgGridColumn width={170} field="MachiningScrapRate" editable='false' headerName="Machining Scrap Cost" cellRenderer={'CostFormatter'}></AgGridColumn>
                                             {!isImpactedMaster && <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName={Number(selectedMasterForSimulation?.value) === 2 ? "Net Cost (Currency)" : "Net Cost (INR)"}>
 
                                                 <AgGridColumn width={120} field="NetLandedCost" editable='false' cellRenderer={'costFormatter'} headerName="Existing" colId='NetLandedCost'></AgGridColumn>
