@@ -4,7 +4,7 @@ import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col, Label, } from 'reactstrap';
 import { required, getVendorCode, positiveAndDecimalNumber, maxLength15, acceptAllExceptSingleSpecialCharacter, maxLength70, maxLength512, checkForDecimalAndNull, checkForNull, decimalLengthsix, number } from "../../../helper/validation";
 import { renderText, renderTextInputField, searchableSelect, renderMultiSelectField, renderTextAreaField, focusOnError, renderDatePicker, } from '../../layout/FormInputs'
-import { AcceptableRMUOM, FORGING } from '../../../config/masterData'
+import { AcceptableRMUOM, FORGING, SHEETMETAL } from '../../../config/masterData'
 import {
   getRawMaterialCategory, fetchGradeDataAPI, fetchSpecificationDataAPI, getCityBySupplier, getPlantByCity,
   getPlantByCityAndSupplier, fetchRMGradeAPI, getSupplierList, getPlantBySupplier, getUOMSelectList, fetchSupplierCityDataAPI,
@@ -26,7 +26,7 @@ import AddVendorDrawer from '../supplier-master/AddVendorDrawer'
 import Dropzone from 'react-dropzone-uploader'
 import 'react-dropzone-uploader/dist/styles.css'
 import 'react-datepicker/dist/react-datepicker.css'
-import { FILE_URL, ZBC, RM_MASTER_ID, EMPTY_GUID, SPACEBAR, ZBCTypeId, VBCTypeId, CBCTypeId, SHEET_METAL, searchCount } from '../../../config/constants'
+import { FILE_URL, ZBC, RM_MASTER_ID, EMPTY_GUID, SPACEBAR, ZBCTypeId, VBCTypeId, CBCTypeId, searchCount } from '../../../config/constants'
 import DayTime from '../../common/DayTimeWrapper'
 import TooltipCustom from '../../common/Tooltip';
 import LoaderCustom from '../../common/LoaderCustom';
@@ -269,7 +269,7 @@ class AddRMDomestic extends Component {
   handleTechnologyChange = (newValue) => {
     if (newValue.value === String(FORGING)) {
       this.setState({ Technology: newValue, showForgingMachiningScrapCost: true, showExtraCost: false, nameDrawer: true })
-    } else if (newValue.label === SHEET_METAL) {
+    } else if (newValue.value === String(SHEETMETAL)) {
       this.setState({ Technology: newValue, showExtraCost: true, showForgingMachiningScrapCost: false, nameDrawer: true })
     } else {
       this.setState({ Technology: newValue, showForgingMachiningScrapCost: false, showExtraCost: false, nameDrawer: true })
@@ -516,7 +516,7 @@ class AddRMDomestic extends Component {
               singlePlantSelected: Data.DestinationPlantName !== undefined ? { label: Data.DestinationPlantName, value: Data.DestinationPlantId } : [],
               netLandedCost: Data.NetLandedCost ? Data.NetLandedCost : '',
               showForgingMachiningScrapCost: Data.TechnologyId === FORGING ? true : false,
-              showExtraCost: Data.TechnologyName === SHEET_METAL ? true : false,
+              showExtraCost: Data.TechnologyId === SHEETMETAL ? true : false,
             }, () => this.setState({ isLoader: false }))
             // ********** ADD ATTACHMENTS FROM API INTO THE DROPZONE'S PERSONAL DATA STORE **********
             let files = Data.FileList && Data.FileList.map((item) => {
@@ -1046,7 +1046,7 @@ class AddRMDomestic extends Component {
         BasicRatePerUOM: values.BasicRate,
         RMFreightCost: values.FrieghtCharge,
         RMShearingCost: values.ShearingCost,
-        ScrapRate: showExtraCost ? showForgingMachiningScrapCost ? values.ForgingScrap : values.JaliScrapCost : values.ScrapRate,
+        ScrapRate: showExtraCost ? values.JaliScrapCost : showForgingMachiningScrapCost ? values.ForgingScrap : values.ScrapRate,
         NetLandedCost: netLandedCost,
         LoggedInUserId: loggedInUserId(),
         EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD'),
@@ -1129,7 +1129,7 @@ class AddRMDomestic extends Component {
       formData.BasicRatePerUOM = values.BasicRate
       formData.RMFreightCost = values.FrieghtCharge
       formData.RMShearingCost = values.ShearingCost
-      formData.ScrapRate = showExtraCost ? showForgingMachiningScrapCost ? values.ForgingScrap : values.JaliScrapCost : values.ScrapRate
+      formData.ScrapRate = showExtraCost ? values.JaliScrapCost : showForgingMachiningScrapCost ? values.ForgingScrap : values.ScrapRate
       formData.NetLandedCost = netLandedCost
       formData.EffectiveDate = DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss')
       formData.Remark = remarks
