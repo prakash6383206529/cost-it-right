@@ -186,6 +186,7 @@ function VerifySimulation(props) {
                             }
                             setTokenNo(data.TokenNumber)
                             setSimualtionId(data.SimulationId)
+                            setSimulationTechnologyId(data.SimulationtechnologyId)
                             setHideRunButton(false)
                             setEffectiveDate(data.EffectiveDate)
                         }
@@ -203,6 +204,7 @@ function VerifySimulation(props) {
                             }
                             setTokenNo(data.TokenNumber)
                             setSimualtionId(data.SimulationId)
+                            setSimulationTechnologyId(data.SimulationtechnologyId)
                             setHideRunButton(false)
                             setEffectiveDate(data.EffectiveDate)
                         }
@@ -220,6 +222,7 @@ function VerifySimulation(props) {
                             }
                             setTokenNo(data.TokenNumber)
                             setSimualtionId(data.SimulationId)
+                            setSimulationTechnologyId(data.SimulationtechnologyId)
                             setHideRunButton(false)
                             setEffectiveDate(data.EffectiveDate)
                         }
@@ -730,7 +733,7 @@ function VerifySimulation(props) {
             }
             {
                 costingPage &&
-                <CostingSimulation simulationId={simulationId} master={selectedMasterForSimulation.value} approvalTypeId={''} />
+                <CostingSimulation simulationId={simulationId} master={selectedMasterForSimulation.value} approvalTypeId={simulationTechnologyId} />
             }
             {
                 simulationDrawer &&

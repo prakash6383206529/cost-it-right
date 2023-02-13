@@ -2086,6 +2086,7 @@ export const MACHINE_MASTER_ID = 4
 //approve reject drawer
 export const provisional = "Provisional"
 export const APPROVER = 'Approver'
+export const NewComponent = "New Component"
 
 //default value for page size
 export const defaultPageSize = 10;

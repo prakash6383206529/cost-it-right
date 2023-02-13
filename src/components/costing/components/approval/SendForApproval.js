@@ -17,7 +17,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import _, { debounce } from 'lodash'
 import Dropzone from 'react-dropzone-uploader'
-import { FILE_URL, NCC, NCCTypeId, VBC, VBCTypeId, ZBC, ZBCTypeId } from "../../../../config/constants";
+import { EMPTY_GUID, FILE_URL, NCC, NCCTypeId, VBC, VBCTypeId, ZBC, ZBCTypeId } from "../../../../config/constants";
 import redcrossImg from "../../../../assests/images/red-cross.png";
 import VerifyImpactDrawer from '../../../simulation/components/VerifyImpactDrawer';
 import LoaderCustom from '../../../common/LoaderCustom'
@@ -30,7 +30,7 @@ const SendForApproval = (props) => {
   const { isApprovalisting } = props
   const dispatch = useDispatch()
   const { register, handleSubmit, control, setValue, getValues, formState: { errors } } = useForm({
-    mode: 'onBlur',
+    mode: 'onChange',
     reValidateMode: 'onChange',
   })
 
@@ -181,11 +181,11 @@ const SendForApproval = (props) => {
       dispatch(getAllApprovalUserFilterByDepartment(requestObject, (res) => {
         let tempDropdownList = []
         if (res.data.DataList.length === 1) {
-          setShowValidation(true)
           return false
         }
         res.data.DataList && res.data.DataList.map((item) => {
           if (item.Value === '0') return false;
+          if (item.Value === EMPTY_GUID) return false;
           tempDropdownList.push({ label: item.Text, value: item.Value, levelId: item.LevelId, levelName: item.LevelName })
           return null
         })
@@ -193,7 +193,11 @@ const SendForApproval = (props) => {
         setApprover(Data.Text)
         setSelectedApprover(Data.Value)
         setSelectedApproverLevelId({ levelName: Data.LevelName, levelId: Data.LevelId })
-        setValue('approver', { label: Data.Text, value: Data.Value })
+        if (tempDropdownList?.length !== 0) {
+          setValue('approver', { label: Data.Text, value: Data.Value })
+        } else {
+          setShowValidation(true)
+        }
         setApprovalDropDown(tempDropdownList)
       }))
     }))
@@ -268,14 +272,15 @@ const SendForApproval = (props) => {
         ApprovalTypeId: viewApprovalData[0]?.costingTypeId,
       }
       dispatch(getAllApprovalUserFilterByDepartment(requestObject, (res) => {
-        if (res.data.DataList.length <= 1) {
-          setShowValidation(true)
-        }
         res.data.DataList && res.data.DataList.map((item) => {
           if (item.Value === '0') return false;
+          if (item.Value === EMPTY_GUID) return false;
           tempDropdownList.push({ label: item.Text, value: item.Value, levelId: item.LevelId, levelName: item.LevelName })
           return null
         })
+        if (tempDropdownList?.length === 0) {
+          setShowValidation(true)
+        }
         setApprovalDropDown(tempDropdownList)
       }))
       setSelectedDepartment(newValue)
@@ -964,7 +969,7 @@ const SendForApproval = (props) => {
                         />
                       </Col>
                       {
-                        showValidation && <span className="warning-top"><WarningMessage dClass="pl-3" message={'There is no approver added in this department'} /></span>
+                        showValidation && <span className="warning-top"><WarningMessage dClass="mt-2" message={'There is no approver added in this department'} /></span>
                       }
 
                       {viewApprovalData && viewApprovalData[0]?.costingTypeId === NCCTypeId && <><Col md="6">

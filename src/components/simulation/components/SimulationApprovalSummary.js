@@ -57,7 +57,7 @@ const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 function SimulationApprovalSummary(props) {
     // const { isDomestic, list, isbulkUpload, rowCount, technology, master } = props
     const { isbulkUpload, type } = props;
-    const { approvalNumber, approvalId, SimulationTechnologyId } = props.location.state
+    const { approvalNumber, approvalId, SimulationTechnologyId } = props?.location?.state
     const [showImpactedData, setshowImpactedData] = useState(false)
     const [fgWiseDataAcc, setFgWiseDataAcc] = useState(true)
     const [assemblyWiseAcc, setAssemblyWiseAcc] = useState(true)
