@@ -362,8 +362,8 @@ function VolumeListing(props) {
       }
       selectedRows = [...selectedRows, ...finalData]
     }
-    let uniqeArrayVolumeApprovedId = _.uniqBy(selectedRows, "VolumeApprovedId")          //UNIQBY FUNCTION IS USED TO FIND THE UNIQUE ELEMENTS & DELETE DUPLICATE ENTRY
-    let uniqeArrayVolumeBudgetedId = _.uniqBy(uniqeArrayVolumeApprovedId, "VolumeBudgetedId")          //UNIQBY FUNCTION IS USED TO FIND THE UNIQUE ELEMENTS & DELETE DUPLICATE ENTRY
+
+    let uniqeArrayVolumeBudgetedId = _.uniqBy(selectedRows, v => [v.VolumeApprovedId, v.VolumeBudgetedId].join())          //UNIQBY FUNCTION IS USED TO FIND THE UNIQUE ELEMENTS & DELETE DUPLICATE ENTRY
     dispatch(setSelectedRowForPagination(uniqeArrayVolumeBudgetedId))              //SETTING CHECKBOX STATE DATA IN REDUCER
     setDataCount(uniqeArrayVolumeBudgetedId.length)
   }
