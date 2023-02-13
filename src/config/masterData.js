@@ -4377,6 +4377,8 @@ export const RMDOMESTIC_DOWNLOAD_EXCEl = [
     { label: "Basic Rate", value: "BasicRate", },
     // { label: "Freight Cost", value: "RMFreightCost", },
     // { label: "Shearing Cost", value: "RMShearingCost", },
+    { label: "Machining Scrap Cost", value: "MachiningScrapRate", },
+    { label: "Circle Scrap Cost", value: "JaliScrapCost", },
     { label: "Scrap Rate", value: "ScrapRate", },
     { label: "Net Cost", value: "NetLandedCost", },
     // KEEP COMMENTED ON RE
@@ -4401,6 +4403,8 @@ export const RMIMPORT_DOWNLOAD_EXCEl = [
     { label: "Basic Rate", value: "BasicRate", },
     // { label: "Freight Cost", value: "RMFreightCost", },
     // { label: "Shearing Cost", value: "RMShearingCost", },
+    { label: "Machining Scrap Cost", value: "MachiningScrapRate", },
+    { label: "Circle Scrap Cost", value: "JaliScrapCost", },
     { label: "Scrap Rate", value: "ScrapRate", },
     { label: "Net Cost(Currency)", value: "NetLandedCost", },
     { label: "Net Cost(INR)", value: "NetLandedCostConversion", },
