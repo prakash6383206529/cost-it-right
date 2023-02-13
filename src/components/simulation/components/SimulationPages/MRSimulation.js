@@ -285,7 +285,7 @@ function MRSimulation(props) {
             return null;
         })
         if (ccCount === tempData.length) {
-            Toaster.warning('There is no changes in new value. Please correct the data, then run simulation')
+            Toaster.warning('Please change the machine rate, then run simulation')
             return false
         }
         setIsDisable(true)
