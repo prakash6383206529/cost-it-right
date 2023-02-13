@@ -99,7 +99,7 @@ function OPSImulation(props) {
 
         if (OverheadApplicabilityTypeCount === list.length && OverheadRMPercentageCount === list.length && OverheadMachiningCCPercentageCount === list.length
             && OverheadBOPPercentageCount === list.length) {
-            Toaster.warning('There is no changes in net cost. Please change the basic rate, then run simulation')
+            Toaster.warning('Please change the rate, then run simulation')
             return false
         }
         setIsDisable(true)
