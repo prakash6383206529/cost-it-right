@@ -216,7 +216,7 @@ function Sheet(props) {
         updatedValue.newGrossWeight = setValueAccToUOM(grossWeight, UOMDimension.label)
         setTimeout(() => {
             setDataToSend(updatedValue)
-            setGrossWeights(setValueAccToUOM(grossWeight, UOMDimension.label))
+            setGrossWeights(grossWeight)
             setValue('GrossWeight', checkForDecimalAndNull(setValueAccToUOM(grossWeight, UOMDimension.label), localStorage.NoOfDecimalForInputOutput))
         }, 200);
     }
