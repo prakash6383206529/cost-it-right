@@ -24,9 +24,9 @@ import AddUOM from '../uom-master/AddUOM';
 import AddVendorDrawer from '../supplier-master/AddVendorDrawer';
 import 'react-dropzone-uploader/dist/styles.css'
 import Dropzone from 'react-dropzone-uploader';
-import "react-datepicker/dist/react-datepicker.css";
-import { FILE_URL, INR, ZBC, RM_MASTER_ID, EMPTY_GUID, SPACEBAR, ZBCTypeId, VBCTypeId, CBCTypeId, searchCount, SHEET_METAL } from '../../../config/constants';
-import { AcceptableRMUOM, FORGING } from '../../../config/masterData'
+import "react-datepicker/dist/react-datepicker.css"
+import { FILE_URL, INR, ZBC, RM_MASTER_ID, EMPTY_GUID, SPACEBAR, ZBCTypeId, VBCTypeId, CBCTypeId, searchCount } from '../../../config/constants';
+import { AcceptableRMUOM, FORGING, SHEETMETAL } from '../../../config/masterData'
 import { getExchangeRateByCurrency, getCostingSpecificTechnology } from "../../costing/actions/Costing"
 import DayTime from '../../common/DayTimeWrapper'
 import LoaderCustom from '../../common/LoaderCustom';
@@ -285,7 +285,7 @@ class AddRMImport extends Component {
   handleTechnologyChange = (newValue) => {
     if (newValue.value === String(FORGING)) {
       this.setState({ Technology: newValue, showForgingMachiningScrapCost: true, showExtraCost: false, nameDrawer: true })
-    } else if (newValue.label === SHEET_METAL) {
+    } else if (newValue.value === String(SHEETMETAL)) {
       this.setState({ Technology: newValue, showExtraCost: true, showForgingMachiningScrapCost: false, nameDrawer: true })
     } else {
       this.setState({ Technology: newValue, showForgingMachiningScrapCost: false, showExtraCost: false, nameDrawer: true })
@@ -546,7 +546,7 @@ class AddRMImport extends Component {
               // FreightCharge:Data.FreightCharge
               netCurrencyCost: Data.NetLandedCostConversion ? Data.NetLandedCostConversion : '',
               showForgingMachiningScrapCost: Data.TechnologyId === FORGING ? true : false,
-              showExtraCost: Data.TechnologyName === SHEET_METAL ? true : false,
+              showExtraCost: Data.TechnologyId === SHEETMETAL ? true : false,
             }, () => this.setState({ isLoader: false }))
             // ********** ADD ATTACHMENTS FROM API INTO THE DROPZONE'S PERSONAL DATA STORE **********
             let files = Data.FileList && Data.FileList.map((item) => {
@@ -1040,8 +1040,8 @@ class AddRMImport extends Component {
         SourceLocation: (costingTypeId !== VBCTypeId && !HasDifferentSource) ? '' : sourceLocation.value,
         Remark: remarks,
         BasicRatePerUOM: values.BasicRate,
-        ScrapRate: showExtraCost ? showForgingMachiningScrapCost ? values.ForgingScrap : values.JaliScrapCost : values.ScrapRate,
-        ScrapRateInINR: currency === INR ? (showExtraCost ? showForgingMachiningScrapCost ? values.ForgingScrap : values.JaliScrapCost : values.ScrapRate) : ((showExtraCost ? showForgingMachiningScrapCost ? values.ForgingScrap : values.JaliScrapCost : values.ScrapRate) * currencyValue),
+        ScrapRate: showExtraCost ? values.JaliScrapCost : showForgingMachiningScrapCost ? values.ForgingScrap : values.ScrapRate,
+        ScrapRateInINR: currency === INR ? (showExtraCost ? values.JaliScrapCost : showForgingMachiningScrapCost ? values.ForgingScrap : values.ScrapRate) : ((showExtraCost ? values.JaliScrapCost : showForgingMachiningScrapCost ? values.ForgingScrap : values.ScrapRate) * currencyValue),
         NetLandedCost: netCost,
         LoggedInUserId: loggedInUserId(),
         EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
@@ -1124,8 +1124,8 @@ class AddRMImport extends Component {
         SourceLocation: (costingTypeId !== VBCTypeId && !HasDifferentSource) ? '' : sourceLocation.value,
         UOM: UOM.value,
         BasicRatePerUOM: values.BasicRate,
-        ScrapRate: showExtraCost ? showForgingMachiningScrapCost ? values.ForgingScrap : values.JaliScrapCost : values.ScrapRate,
-        ScrapRateInINR: currency === INR ? (showExtraCost ? showForgingMachiningScrapCost ? values.ForgingScrap : values.JaliScrapCost : values.ScrapRate) : ((showExtraCost ? showForgingMachiningScrapCost ? values.ForgingScrap : values.JaliScrapCost : values.ScrapRate) * currencyValue),
+        ScrapRate: showExtraCost ? values.JaliScrapCost : showForgingMachiningScrapCost ? values.ForgingScrap : values.ScrapRate,
+        ScrapRateInINR: currency === INR ? (showExtraCost ? values.JaliScrapCost : showForgingMachiningScrapCost ? values.ForgingScrap : values.ScrapRate) : ((showExtraCost ? values.JaliScrapCost : showForgingMachiningScrapCost ? values.ForgingScrap : values.ScrapRate) * currencyValue),
         NetLandedCost: netCost,
         Remark: remarks,
         LoggedInUserId: loggedInUserId(),
