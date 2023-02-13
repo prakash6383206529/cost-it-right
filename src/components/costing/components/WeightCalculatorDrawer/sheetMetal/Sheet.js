@@ -216,7 +216,7 @@ function Sheet(props) {
         updatedValue.newGrossWeight = setValueAccToUOM(grossWeight, UOMDimension.label)
         setTimeout(() => {
             setDataToSend(updatedValue)
-            setGrossWeights(setValueAccToUOM(grossWeight, UOMDimension.label))
+            setGrossWeights(grossWeight)
             setValue('GrossWeight', checkForDecimalAndNull(setValueAccToUOM(grossWeight, UOMDimension.label), localStorage.NoOfDecimalForInputOutput))
         }, 200);
     }
@@ -291,7 +291,7 @@ function Sheet(props) {
             WeightOfSheetInUOM: dataToSend.WeightOfSheet,
             Width: values.SheetWidth,
             StripWidth: values.StripWidth,
-            NoOfStrips: values.StripsNumber,
+            NumberOfStrips: values.StripsNumber,
             BlankSize: values.BlankSize,
             ComponentsPerStrip: values.ComponentPerStrip,
             NumberOfPartsPerSheet: values.NoOfComponent, //TOTAL COMPONENT PER SHEET
