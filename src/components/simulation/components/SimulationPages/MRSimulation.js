@@ -285,7 +285,7 @@ function MRSimulation(props) {
             return null;
         })
         if (ccCount === tempData.length) {
-            Toaster.warning('There is no changes in net cost. Please change the basic rate, then run simulation')
+            Toaster.warning('Please change the machine rate, then run simulation')
             return false
         }
         setIsDisable(true)
