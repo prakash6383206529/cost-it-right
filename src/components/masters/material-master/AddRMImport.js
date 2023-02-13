@@ -1058,7 +1058,8 @@ class AddRMImport extends Component {
         IsFinancialDataChanged: isDateChange ? true : false,
         VendorPlant: [],
         CustomerId: client.value,
-        MachiningScrapRate: values.MachiningScrap
+        MachiningScrapRate: values.MachiningScrap,
+        MachiningScrapRateInINR: currency === INR ? values.MachiningScrap : values.MachiningScrap * currencyValue
       }
       //DONT DELETE COMMENTED CODE BELOW
 
@@ -1144,7 +1145,8 @@ class AddRMImport extends Component {
         IsSendForApproval: false,
         VendorPlant: [],
         CustomerId: client.value,
-        MachiningScrapRate: values.MachiningScrap
+        MachiningScrapRate: values.MachiningScrap,
+        MachiningScrapRateInINR: currency === INR ? values.MachiningScrap : values.MachiningScrap * currencyValue
       }
       // let obj
       // if(CheckApprovalApplicableMaster(RM_MASTER_ID) === true){
