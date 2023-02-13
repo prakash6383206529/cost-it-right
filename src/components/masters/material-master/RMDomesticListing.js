@@ -896,6 +896,7 @@ function RMDomesticListing(props) {
                                         <AgGridColumn field="UOM"></AgGridColumn>
                                         <AgGridColumn field="BasicRate" cellRenderer='commonCostFormatter'></AgGridColumn>
                                         <AgGridColumn field="ScrapRate" cellRenderer='commonCostFormatter'></AgGridColumn>
+                                        {props.isMasterSummaryDrawer && <AgGridColumn width="140" field="MachiningScrapRate" headerName='Machining Scrap Cost'></AgGridColumn>}
                                         <AgGridColumn field="RMFreightCost" headerName="Freight Cost" cellRenderer='commonCostFormatter'></AgGridColumn>
                                         <AgGridColumn field="RMShearingCost" headerName="Shearing Cost" cellRenderer='commonCostFormatter'></AgGridColumn>
                                         <AgGridColumn field="NetLandedCost" headerName="Net Cost" cellRenderer='costFormatter'></AgGridColumn>
