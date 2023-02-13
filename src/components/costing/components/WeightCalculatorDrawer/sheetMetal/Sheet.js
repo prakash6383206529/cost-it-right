@@ -291,7 +291,7 @@ function Sheet(props) {
             WeightOfSheetInUOM: dataToSend.WeightOfSheet,
             Width: values.SheetWidth,
             StripWidth: values.StripWidth,
-            NoOfStrips: values.StripsNumber,
+            NumberOfStrips: values.StripsNumber,
             BlankSize: values.BlankSize,
             ComponentsPerStrip: values.ComponentPerStrip,
             NumberOfPartsPerSheet: values.NoOfComponent, //TOTAL COMPONENT PER SHEET
