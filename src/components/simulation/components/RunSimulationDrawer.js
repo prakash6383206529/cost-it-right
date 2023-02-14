@@ -19,7 +19,7 @@ import { Fragment } from 'react';
 import { debounce } from 'lodash';
 import WarningMessage from '../../common/WarningMessage';
 import DatePicker from "react-datepicker";
-import { ASSEMBLY_TECHNOLOGY } from '../../../config/masterData';
+import { ASSEMBLY_TECHNOLOGY_MASTER } from '../../../config/masterData';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { MESSAGES } from '../../../config/message';
 
@@ -292,7 +292,7 @@ function RunSimulationDrawer(props) {
         // obj.IsProvisional = provisionalCheck
         // obj.LinkingTokenNumber = linkingTokenNumber != '' ? linkingTokenNumber : tokenNo
         temp.push(obj)
-        if (checkForNull(selectedMasterForSimulation.value) === ASSEMBLY_TECHNOLOGY) {
+        if (checkForNull(selectedMasterForSimulation.value) === ASSEMBLY_TECHNOLOGY_MASTER) {
             dispatch(runSimulationOnSelectedAssemblyTechnologyCosting({ ...objs, EffectiveDate: DayTime(date !== null ? date : "").format('YYYY/MM/DD HH:mm'), IsProvisional: provisionalCheck, SimulationApplicability: temp, SimulationId: props?.token }, (res) => {
                 checkForResponse(res)
             }))
