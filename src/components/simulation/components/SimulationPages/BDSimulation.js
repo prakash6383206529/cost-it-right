@@ -119,8 +119,8 @@ function BDSimulation(props) {
                 tempObj.BoughtOutPartId = item.BoughtOutPartId
                 tempObj.OldBOPRate = item.BasicRate
                 tempObj.NewBOPRate = item.NewBasicRate
-                tempObj.OldNetLandedCost = checkForNull(item.BasicRate)
-                tempObj.NewNetLandedCost = checkForNull(item.NewBasicRate)
+                tempObj.OldNetLandedCost = checkForNull(item.BasicRate) / checkForNull(item.NumberOfPieces)
+                tempObj.NewNetLandedCost = checkForNull(item.NewBasicRate) / checkForNull(item.NumberOfPieces)
                 tempArr.push(tempObj)
             }
             return null;
@@ -223,10 +223,10 @@ function BDSimulation(props) {
             return row.NewNetBoughtOutPartCost ? row.NewNetBoughtOutPartCost : '-'
         } else {
             if (!row.NewBasicRate || Number(row.BasicRate) === Number(row.NewBasicRate) || row.NewBasicRate === '') return ''
-            const BasicRate = Number(row.BasicRate)
-            const NewBasicRate = Number(row.NewBasicRate)
+            const BasicRate = Number(row.BasicRate) / Number(row.NumberOfPieces)
+            const NewBasicRate = Number(row.NewBasicRate) / Number(row.NumberOfPieces)
             const classGreen = (BasicRate < NewBasicRate) ? 'red-value form-control' : (BasicRate > NewBasicRate) ? 'green-value form-control' : 'form-class'
-            return row.NewBasicRate != null ? <span className={classGreen}>{checkForDecimalAndNull(Number(row.NewBasicRate), getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
+            return row.NewBasicRate != null ? <span className={classGreen}>{checkForDecimalAndNull(Number(row.NewBasicRate) / Number(row.NumberOfPieces), getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
 
         }
     }
@@ -237,8 +237,7 @@ function BDSimulation(props) {
             return row.OldNetBoughtOutPartCost ? row.OldNetBoughtOutPartCost : '-'
         } else {
             if (!row.BasicRate || row.BasicRate === '') return ''
-
-            return row.BasicRate != null ? checkForDecimalAndNull(Number(row.BasicRate), getConfigurationKey().NoOfDecimalForPrice) : ''
+            return row.BasicRate != null ? checkForDecimalAndNull(Number(row.BasicRate) / Number(row.NumberOfPieces), getConfigurationKey().NoOfDecimalForPrice) : ''
 
         }
     }
@@ -412,14 +411,14 @@ function BDSimulation(props) {
                                             {!isImpactedMaster && <AgGridColumn field="Plants" editable='false' headerName="Plant (Code)" minWidth={140}></AgGridColumn>}
 
                                             <AgGridColumn headerClass="justify-content-center" cellClass="text-center" headerName="Basic Rate (INR)" marryChildren={true} width={240}>
-                                                <AgGridColumn width={120} field="BasicRate" editable='false' cellRenderer='oldBasicRateFormatter' headerName="Old" colId="BasicRate"></AgGridColumn>
-                                                <AgGridColumn width={120} cellRenderer='newBasicRateFormatter' editable={!isImpactedMaster} onCellValueChanged='cellChange' field="NewBasicRate" headerName="New" colId='NewBasicRate'></AgGridColumn>
+                                                <AgGridColumn width={120} field="BasicRate" editable='false' cellRenderer='oldBasicRateFormatter' headerName="Existing" colId="BasicRate"></AgGridColumn>
+                                                <AgGridColumn width={120} cellRenderer='newBasicRateFormatter' editable={!isImpactedMaster} onCellValueChanged='cellChange' field="NewBasicRate" headerName="Revised" colId='NewBasicRate'></AgGridColumn>
                                             </AgGridColumn>
 
                                             <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName="Net Cost (INR)" marryChildren={true}>
                                                 {/* {!isImpactedMaster &&<AgGridColumn width={120} field="OldNetLandedCost" editable='false' cellRenderer={'OldcostFormatter'} headerName="Old" colId='NetLandedCost'></AgGridColumn>} */}
-                                                <AgGridColumn width={120} field="OldNetLandedCost" editable='false' cellRenderer={'OldcostFormatter'} headerName="Old" colId='NetLandedCost'></AgGridColumn>
-                                                <AgGridColumn width={120} field="NewNetLandedCost" editable='false' valueGetter='data.NewBasicRate' cellRenderer={'NewcostFormatter'} headerName="New" colId='NewNetLandedCost'></AgGridColumn>
+                                                <AgGridColumn width={120} field="OldNetLandedCost" editable='false' cellRenderer={'OldcostFormatter'} headerName="Existing" colId='NetLandedCost'></AgGridColumn>
+                                                <AgGridColumn width={120} field="NewNetLandedCost" editable='false' valueGetter='data.NewBasicRate' cellRenderer={'NewcostFormatter'} headerName="Revised" colId='NewNetLandedCost'></AgGridColumn>
                                             </AgGridColumn>
 
                                             <AgGridColumn field="EffectiveDate" headerName="Effective Date" editable='false' minWidth={150} cellRenderer='effectiveDateRenderer'></AgGridColumn>

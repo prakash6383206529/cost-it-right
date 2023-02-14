@@ -2,13 +2,12 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector, propTypes } from "redux-form";
 import { Row, Col, Label, } from 'reactstrap';
-import { required, positiveAndDecimalNumber, postiveNumber, maxLength10, checkPercentageValue, decimalLengthThree, nonZero, } from "../../../helper/validation";
-import { renderDatePicker, renderMultiSelectField, renderNumberInputField, searchableSelect, } from "../../layout/FormInputs";
+import { required, postiveNumber, maxLength10, nonZero, number, positiveAndDecimalNumber, checkPercentageValue, decimalLengthThree } from "../../../helper/validation";
+import { renderDatePicker, renderMultiSelectField, renderTextInputField, searchableSelect, renderNumberInputField } from "../../layout/FormInputs";
 import { updateInterestRate, createInterestRate, getPaymentTermsAppliSelectList, getICCAppliSelectList, getInterestRateData, } from '../actions/InterestRateMaster';
 import { getVendorWithVendorCodeSelectList, getPlantSelectListByType } from '../../../actions/Common';
 import { MESSAGES } from '../../../config/message';
 import { getConfigurationKey, loggedInUserId, userDetails } from "../../../helper/auth";
-import Switch from "react-switch";
 import DayTime from '../../common/DayTimeWrapper'
 import "react-datepicker/dist/react-datepicker.css";
 import LoaderCustom from '../../common/LoaderCustom';
@@ -765,8 +764,8 @@ class AddInterestRate extends Component {
                               name={"RepaymentPeriod"}
                               type="text"
                               placeholder={isViewMode ? '-' : "Enter"}
-                              validate={[postiveNumber, maxLength10, nonZero]}
-                              component={renderNumberInputField}
+                              validate={[postiveNumber, maxLength10, nonZero, number]}
+                              component={renderTextInputField}
                               required={false}
                               onChange={(event) => this.handleChangeRepaymentPeriod(event.target.value)}
                               disabled={isViewMode}

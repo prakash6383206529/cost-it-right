@@ -199,10 +199,10 @@ export function getMultipleCostingDetails(selectedRows, callback) {
 
         let temp = []
         selectedRows && selectedRows.map((item) => {
-
-            let request = axios.get(`${API.getCostingDetailsByCostingId}/${item.CostingId}`, config(),)
-            temp.push(request)
-
+            if (item.CostingId !== null) {
+                let request = axios.get(`${API.getCostingDetailsByCostingId}/${item.CostingId}`, config(),)
+                temp.push(request)
+            }
         })
 
         axios.all(temp).then((response) => {
@@ -267,5 +267,14 @@ export function checkRFQBulkUpload(data, callback) {
             apiErrors(error);
             callback(error);
         });
+    };
+}
+
+export function setRFQBulkUpload(data) {
+    return (dispatch) => {
+        dispatch({
+            type: CHECK_RFQ_BULK_UPLOAD,
+            payload: data
+        })
     };
 }

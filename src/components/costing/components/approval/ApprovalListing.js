@@ -206,7 +206,6 @@ function ApprovalListing(props) {
     if (isDashboard) {
       dataObj.DisplayStatus = props.status
     }
-    dataObj.IsCustomerDataShow = reactLocalStorage.getObject('cbcCostingPermission')
     let filterData = {
       loggedUser: loggedUser,
       logged_in_user_level_id: userDetails().LoggedInLevelId,
@@ -362,14 +361,12 @@ function ApprovalListing(props) {
     setIsFilterButtonClicked(false)
     gridOptions?.columnApi?.resetColumnState(null);
     gridOptions?.api?.setFilterModel(null);
-
     for (var prop in floatingFilterData) {
 
       if (prop !== "DepartmentCode") {
         floatingFilterData[prop] = ""
       }
     }
-
     setFloatingFilterData(floatingFilterData)
     setWarningMessage(false)
     setPageNo(1)
@@ -976,10 +973,10 @@ function ApprovalListing(props) {
                           <AgGridColumn field="PartName" headerName="Part Name"></AgGridColumn>
                           <AgGridColumn field="VendorName" cellRenderer='renderVendor' headerName="Vendor (Code)"></AgGridColumn>
                           <AgGridColumn field="PlantName" cellRenderer='renderPlant' headerName="Plant (Code)"></AgGridColumn>
-                          <AgGridColumn field="Customer" cellRenderer='renderCustomer' headerName="Customer (Code)"></AgGridColumn>
+                          {reactLocalStorage.getObject('cbcCostingPermission') && <AgGridColumn field="Customer" cellRenderer='renderCustomer' headerName="Customer (Code)"></AgGridColumn>}
                           <AgGridColumn field='TechnologyName' headerName="Technology"></AgGridColumn>
                           <AgGridColumn field="NetPOPriceNew" cellRenderer='priceFormatter' headerName="New Price"></AgGridColumn>
-                          <AgGridColumn field="OldPOPriceNew" cellRenderer='oldpriceFormatter' headerName="Old PO Price"></AgGridColumn>
+                          <AgGridColumn field="OldPOPriceNew" cellRenderer='oldpriceFormatter' headerName="Existing PO Price"></AgGridColumn>
                           <AgGridColumn field="NCCPartQuantity" headerName="Quantity" cellRenderer={"reasonFormatter"} ></AgGridColumn>
                           <AgGridColumn field="IsRegularized" headerName="Is Regularized" cellRenderer={"reasonFormatter"} ></AgGridColumn>
                           <AgGridColumn field='Reason' headerName="Reason" cellRenderer={"reasonFormatter"}></AgGridColumn>

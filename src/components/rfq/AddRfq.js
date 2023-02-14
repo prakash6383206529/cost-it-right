@@ -1,11 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useForm, Controller } from "react-hook-form";
 import { useDispatch, useSelector } from 'react-redux';
-import { Container, Row, Col, } from 'reactstrap';
-import Drawer from '@material-ui/core/Drawer';
+import { Row, Col, } from 'reactstrap';
 import { AsyncSearchableSelectHookForm, NumberFieldHookForm, SearchableSelectHookForm, TextAreaHookForm, } from '.././layout/HookFormInputs'
 import { getVendorWithVendorCodeSelectList, getReporterList, fetchPlantDataAPI } from '../.././actions/Common';
-import { getCostingSpecificTechnology, getPartSelectListByTechnology, } from '../costing/actions/Costing'
+import { getCostingSpecificTechnology } from '../costing/actions/Costing'
 import { checkForDecimalAndNull, getConfigurationKey, loggedInUserId } from '../.././helper';
 import { postiveNumber, maxLength10, nonZero, checkForNull } from '../.././helper/validation'
 import { EMPTY_DATA, FILE_URL, searchCount } from '../.././config/constants';
@@ -16,7 +15,7 @@ import Dropzone from 'react-dropzone-uploader'
 import 'react-dropzone-uploader/dist/styles.css'
 import Toaster from '../common/Toaster';
 import { MESSAGES } from '../../config/message';
-import { createRfqQuotation, fileDeleteQuotation, fileUploadQuotation, getQuotationById, updateRfqQuotation, getContactPerson, checkExistCosting, setCheckRFQBulkUpload } from './actions/rfq';
+import { createRfqQuotation, fileDeleteQuotation, fileUploadQuotation, getQuotationById, updateRfqQuotation, getContactPerson, checkExistCosting, setCheckRFQBulkUpload, setRFQBulkUpload } from './actions/rfq';
 import PopupMsgWrapper from '../common/PopupMsgWrapper';
 import LoaderCustom from '../common/LoaderCustom';
 import redcrossImg from '../../assests/images/red-cross.png'
@@ -28,14 +27,13 @@ import BulkUpload from '../massUpload/BulkUpload';
 import _ from 'lodash';
 import { getPartSelectListWtihRevNo } from '../masters/actions/Volume';
 import { LOGISTICS, REMARKMAXLENGTH } from '../../config/masterData';
-import { setRFQBulkUpload } from './reducer/rfq';
 
 const gridOptions = {};
 
 function AddRfq(props) {
     const { data: dataProps } = props
     const dropzone = useRef(null);
-    const { register, handleSubmit, setValue, getValues, reset, formState: { errors }, control } = useForm({
+    const { register, handleSubmit, setValue, getValues, formState: { errors }, control } = useForm({
         mode: 'onChange',
         reValidateMode: 'onChange',
     });
@@ -50,7 +48,6 @@ function AddRfq(props) {
     const [VendorInputLoader, setVendorInputLoader] = useState(false)
     const [gridApi, setGridApi] = useState(null);
     const [gridColumnApi, setGridColumnApi] = useState(null);
-    const [tableData, setTableData] = useState([])
     const [partList, setPartList] = useState([])
     const [vendorList, setVendorList] = useState([])
     const [updateButtonPartNoTable, setUpdateButtonPartNoTable] = useState(false)
@@ -68,7 +65,6 @@ function AddRfq(props) {
     const [partName, setPartName] = useState(false)
     const [technology, setTechnology] = useState({})
     const technologySelectList = useSelector((state) => state.costing.costingSpecifiTechnology)
-    const partSelectListByTechnology = useSelector(state => state.costing.partSelectListByTechnology)
     const dispatch = useDispatch()
     const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
     const checkRFQPartBulkUpload = useSelector((state) => state.rfq.checkRFQPartBulkUpload)
@@ -240,6 +236,7 @@ function AddRfq(props) {
             if (item?.PartId !== props?.node?.data?.PartId) {
                 arr.push(item)
             }
+            return null
         })
 
         if (arr.length === 0) {
@@ -257,6 +254,7 @@ function AddRfq(props) {
             if (item?.VendorId !== props?.node?.data?.VendorId) {
                 arr.push(item)
             }
+            return null
         })
 
         setVendorList(arr)
@@ -352,7 +350,7 @@ function AddRfq(props) {
         props.closeDrawer('', {})
     }
 
-    const onSubmit = (isSent) => {
+    const onSubmit = handleSubmit((data, e) => {
         if (vendorList.length === 0) {
             Toaster.warning("Please enter vendor details")
             return false
@@ -362,8 +360,15 @@ function AddRfq(props) {
         } else if (files?.length === 0) {
             Toaster.warning("Please add atleast one attachment file")
             return false
+        } else if (Object.keys(errors).length > 0) {
+            return false
         }
-
+        let isSent = ''
+        if (e.target.value === 'send') {
+            isSent = true
+        } else {
+            isSent = false
+        }
         let obj = {}
         obj.QuotationId = data.QuotationId ? data.QuotationId : ""
         obj.QuotationNumber = data.QuotationNumber ? data.QuotationNumber : ""
@@ -403,7 +408,7 @@ function AddRfq(props) {
             }))
 
         }
-    }
+    })
 
 
     const defaultColDef = {
@@ -453,6 +458,7 @@ function AddRfq(props) {
         let temp = []
         partList && partList.map((item) => {
             temp.push(item.PartId)
+            return null
         })
 
         data.PartIdList = temp
@@ -484,6 +490,7 @@ function AddRfq(props) {
                         if (item.VendorId === obj.VendorId) {
                             isDuplicateEntry = true
                         }
+                        return null
                     })
                 }
 
@@ -502,13 +509,14 @@ function AddRfq(props) {
                         } else {
                             arr.push(item)
                         }
+                        return null
                     })
 
                     arr.map((item) => {
                         if (item.VendorId === obj.VendorId) {
                             isDuplicateEntry = true
                         }
-
+                        return null
                     })
 
                     if (isDuplicateEntry) {
@@ -548,6 +556,7 @@ function AddRfq(props) {
                 if (item.PartNumber === obj.PartNumber) {
                     isDuplicateEntry = true
                 }
+                return null
             })
         }
 
@@ -571,12 +580,14 @@ function AddRfq(props) {
                 } else {
                     arr.push(item)
                 }
+                return null
             })
 
             arr.map((item) => {
                 if (item.PartNumber === obj.PartNumber) {
                     isDuplicateEntry = true
                 }
+                return null
             })
 
             if (isDuplicateEntry) {
@@ -728,7 +739,7 @@ function AddRfq(props) {
                                 </div>
                             </div>
                             <div >
-                                <form onSubmit={handleSubmit(onSubmit)}>
+                                <form>
                                     <Row className="part-detail-wrapper">
                                         <Col md="3">
                                             <SearchableSelectHookForm
@@ -823,7 +834,7 @@ function AddRfq(props) {
                                             </button>
                                             <button
                                                 onClick={onResetPartNoTable} // Need to change this cancel functionality
-                                                type="submit"
+                                                type="button"
                                                 value="CANCEL"
                                                 className="reset ml-2 mr5"
                                                 disabled={dataProps?.isViewFlag}
@@ -908,7 +919,7 @@ function AddRfq(props) {
 
                                         <Col md="3">
                                             <SearchableSelectHookForm
-                                                label={"Contact Person"}
+                                                label={"Point of Contact"}
                                                 name={"contactPerson"}
                                                 placeholder={"Select"}
                                                 Controller={Controller}
@@ -937,7 +948,7 @@ function AddRfq(props) {
 
                                             <button
                                                 onClick={onResetVendorTable} // Need to change this cancel functionality
-                                                type="submit"
+                                                type="button"
                                                 value="CANCEL"
                                                 className="reset ml-2"
                                                 disabled={isViewFlag}
@@ -974,7 +985,7 @@ function AddRfq(props) {
                                                             >
                                                                 <AgGridColumn field="Vendor" headerName="Vendor (Code)" ></AgGridColumn>
 
-                                                                <AgGridColumn width={"270px"} field="ContactPerson" headerName="Contact Person" ></AgGridColumn>
+                                                                <AgGridColumn width={"270px"} field="ContactPerson" headerName="Point of Contact" ></AgGridColumn>
                                                                 <AgGridColumn width={"270px"} field="VendorId" headerName="Vendor Id" hide={true} cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                                                 <AgGridColumn width={"180px"} field="partId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'buttonFormatterVendorTable'}></AgGridColumn>
                                                             </AgGridReact>
@@ -1026,7 +1037,7 @@ function AddRfq(props) {
                                                     accept="*"
                                                     initialFiles={initialFiles}
                                                     maxFiles={4}
-                                                    maxSizeBytes={20000000}
+                                                    maxSizeBytes={2000000}
                                                     inputContent={(files, extra) =>
                                                         extra.reject ? (
                                                             "Image, audio and video files only"
@@ -1094,15 +1105,15 @@ function AddRfq(props) {
                                                 {"Cancel"}
                                             </button>
 
-                                            <button type="button" className="submit-button save-btn mr-2"
-                                                onClick={() => handleSubmit(onSubmit(false))}
+                                            <button type="button" className="submit-button save-btn mr-2" value="save"
+                                                onClick={(data, e) => onSubmit(data, e)}
                                                 disabled={isViewFlag}>
                                                 <div className={"save-icon"}></div>
                                                 {"Save"}
                                             </button>
 
-                                            <button type="button" className="submit-button save-btn"
-                                                onClick={() => handleSubmit(onSubmit(true))}
+                                            <button type="button" className="submit-button save-btn" value="send"
+                                                onClick={(data, e) => onSubmit(data, e)}
                                                 disabled={isViewFlag}>
                                                 <div className="send-for-approval mr-1"></div>
                                                 {"Send"}
@@ -1118,7 +1129,7 @@ function AddRfq(props) {
                                             closeDrawer={closeBulkUploadDrawer}
                                             isEditFlag={false}
                                             // densityAlert={densityAlert}
-                                            fileName={"ADDRFQ"}
+                                            fileName={"ADD RFQ"}
                                             messageLabel={"RFQ Part's"}
                                             anchor={"right"}
                                             technologyId={technology}

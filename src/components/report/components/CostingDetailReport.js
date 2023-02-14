@@ -6,7 +6,8 @@ import { useForm } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 import { loggedInUserId, } from '../../../helper/auth'
 import NoContentFound from '../../common/NoContentFound'
-import { REPORT_DOWNLOAD_EXCEl, REPORT_DOWNLOAD_SAP_EXCEl } from '../../../config/masterData';
+import { IdForMultiTechnology, REPORT_DOWNLOAD_EXCEl, REPORT_DOWNLOAD_SAP_EXCEl } from '../../../config/masterData';
+import { getCostingReport } from '.././actions/ReportListing'
 import { getSingleCostingDetails, setCostingViewData } from '../../costing/actions/Costing'
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
@@ -17,7 +18,6 @@ import LoaderCustom from '../../common/LoaderCustom';
 import WarningMessage from '../../common/WarningMessage'
 import CostingDetailSimulationDrawer from '../../simulation/components/CostingDetailSimulationDrawer'
 import { formViewData, checkForDecimalAndNull, userDetails, searchNocontentFilter } from '../../../helper'
-import { getCostingReport } from '.././actions/ReportListing'
 import ViewRM from '../../costing/components/Drawers/ViewRM'
 import { PaginationWrapper } from '../../common/commonPagination'
 import { agGridStatus, getGridHeight, isResetClick, disabledClass } from '../../../actions/Common'
@@ -356,12 +356,20 @@ function ReportListing(props) {
         const cellValue = props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         const costingID = row.BaseCostingId;
-        return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? <>
+        const partType = IdForMultiTechnology.includes(String(row.TechnologyId))       //CHECK IF MULTIPLE TECHNOLOGY DATA IN SUMMARY
+        return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined && !partType) ? <>
             {row.Status !== "CreatedByAssembly" ?
                 <div
                     onClick={() => viewMultipleRMDetails(costingID)}
                     className={'link'}
                 > {cellValue}</div> : <div>{cellValue}</div>} </> : '-';
+    }
+    const partCostFormatter = (props) => {
+        const cellValue = props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const partType = IdForMultiTechnology.includes(String(row.TechnologyId))
+        return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined && partType) ? <>
+            {<div>{cellValue}</div>} </> : '-';
     }
 
     const getTableData = (skip, take, isPagination, data, isLastWeek, isCallApi, sapExcel, sapEncoded) => {
@@ -382,7 +390,6 @@ function ReportListing(props) {
         else {
             newData = data
         }
-        newData.IsCustomerDataShow = reactLocalStorage.getObject('cbcCostingPermission')
         dispatch(getCostingReport(skip, take, isPagination, newData, isLastWeek, isCallApi, (res) => {
 
             if (res) {
@@ -667,16 +674,18 @@ function ReportListing(props) {
         rmHyperLinkFormatter: rmHyperLinkFormatter,
         remarkFormatter: remarkFormatter,
         valuesFloatingFilter: MultiDropdownFloatingFilter,
+        partCostFormatter: partCostFormatter
     };
 
 
     const resetState = () => {
+        reactLocalStorage.setObject('selectedRow', {})
+        gridApi?.deselectAll()
         dispatch(agGridStatus("", ""))
         dispatch(isResetClick(true, "applicablity"))
         setIsFilterButtonClicked(false)
         gridOptions?.columnApi?.resetColumnState();
         setSearchButtonClicked(false)
-        gridApi.deselectAll()
         for (var prop in floatingFilterData) {
             floatingFilterData[prop] = ""
         }
@@ -913,7 +922,8 @@ function ReportListing(props) {
                                         {/* DOWNLOAD */}
                                         {`${dataCount === 0 ? "All" : "(" + dataCount + ")"}`}
                                     </button>
-                                    <ExcelFile filename={'ReportMaster'} fileExtension={'.xls'} element={
+
+                                    <ExcelFile filename={'Costing Breakup Details'} fileExtension={'.xls'} element={
                                         <button id={'Excel-Downloads'} type="button" className='p-absolute right-22'>
                                         </button>}>
                                         {renderColumn(ReportMaster)}
@@ -986,7 +996,7 @@ function ReportListing(props) {
                             <AgGridColumn field="TechnologyName" headerName="Technology" cellRenderer='hyphenFormatter'></AgGridColumn>
                             <AgGridColumn field='Plant' headerName='Plant (Code)' cellRenderer='hyphenFormatter'></AgGridColumn>
                             <AgGridColumn field='Vendor' headerName='Vendor (Code)' cellRenderer='hyphenFormatter'></AgGridColumn>
-                            <AgGridColumn field='Customer' headerName='Customer (Code)' cellRenderer='hyphenFormatter'></AgGridColumn>
+                            {reactLocalStorage.getObject('cbcCostingPermission') && <AgGridColumn field='Customer' headerName='Customer (Code)' cellRenderer='hyphenFormatter'></AgGridColumn>}
                             <AgGridColumn field='PartNumber' headerName='Part Number' cellRenderer='hyphenFormatter'></AgGridColumn>
                             <AgGridColumn field='PartName' headerName='Part Name' cellRenderer='hyphenFormatter'></AgGridColumn>
                             <AgGridColumn field='ECNNumber' headerName='ECN Number' cellRenderer='hyphenFormatter'></AgGridColumn>
@@ -994,15 +1004,16 @@ function ReportListing(props) {
                             <AgGridColumn field='DepartmentCode' headerName='Department Code' cellRenderer='hyphenFormatter'></AgGridColumn>
                             <AgGridColumn field='DepartmentName' headerName='Department Name' cellRenderer='hyphenFormatter'></AgGridColumn>
                             <AgGridColumn field='RevisionNumber' headerName='Revision Number' cellRenderer='hyphenFormatter'></AgGridColumn>
-                            <AgGridColumn field='RawMaterialCode' headerName='RM Code' cellRenderer='partTypeAssemblyFormatter'></AgGridColumn>
+                            <AgGridColumn field='RawMaterialCode' headerName='Code' cellRenderer='partTypeAssemblyFormatter'></AgGridColumn>
                             <AgGridColumn field='RawMaterialName' headerName='RM Name' cellRenderer='partTypeAssemblyFormatter'></AgGridColumn>
-                            <AgGridColumn field='RawMaterialGrade' headerName='RM Grade' cellRenderer='partTypeAssemblyFormatter'></AgGridColumn>
-                            <AgGridColumn field='RawMaterialSpecification' headerName='RM Specs' cellRenderer='partTypeAssemblyFormatter'></AgGridColumn>
+                            <AgGridColumn field='RawMaterialGrade' headerName='Grade' cellRenderer='partTypeAssemblyFormatter'></AgGridColumn>
+                            <AgGridColumn field='RawMaterialSpecification' headerName='Specs' cellRenderer='partTypeAssemblyFormatter'></AgGridColumn>
                             <AgGridColumn field='RawMaterialRate' headerName='RM Rate' cellRenderer='partTypeAssemblyFormatter'></AgGridColumn>
                             <AgGridColumn field='RawMaterialScrapWeight' headerName='Scrap Weight' cellRenderer='decimalInputOutputFormatter'></AgGridColumn>
                             <AgGridColumn field='RawMaterialGrossWeight' headerName='Gross Weight' cellRenderer='decimalInputOutputFormatter'></AgGridColumn>
                             <AgGridColumn field='RawMaterialFinishWeight' headerName='Finish Weight' cellRenderer='decimalInputOutputFormatter'></AgGridColumn>
                             <AgGridColumn field='NetRawMaterialsCost' headerName='Net RM Cost' cellRenderer='rmHyperLinkFormatter'></AgGridColumn>
+                            <AgGridColumn field='NetRawMaterialsCost' headerName='Part Cost/Pc' cellRenderer='partCostFormatter'></AgGridColumn>
                             <AgGridColumn field='RawMaterialRemark' headerName='RM Remark' cellRenderer='remarkFormatter'></AgGridColumn>
                             <AgGridColumn field='NetBoughtOutPartCost' headerName='Net Insert Cost' cellRenderer='decimalPriceFormatter'></AgGridColumn>
                             <AgGridColumn field='NetProcessCost' headerName='Net Process Cost' cellRenderer='decimalPriceFormatter'></AgGridColumn>

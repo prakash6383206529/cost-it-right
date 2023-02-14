@@ -204,14 +204,7 @@ function AddAssemblyProcess(props) {
             <Row className="mb-3 pt-3">
               <Col>
                 <div className="user-page p-0">
-                  <div className="cr-process-costwrap">
-                    {/* <Row className="cr-innertool-cost">
-
-                      <Col md="3" className="cr-costlabel"><span className="d-inline-block align-middle">{`Process Cost: ${item?.CostingPartDetails && item?.CostingPartDetails?.TotalOperationCostPerAssembly !== null ? checkForDecimalAndNull(item?.CostingPartDetails?.TotalOperationCostPerAssembly, initialConfiguration.NoOfDecimalForPrice) : 0}`}</span></Col>
-                      <Col md="3" className="cr-costlabel text-center"><span className="d-inline-block align-middle">{``}</span></Col>
-                    </Row> */}
-
-
+                  <div className="cr-process-costwrap multi-technology-container">
                     <ProcessCost
                       index={props.index}
                       data={processGrid}

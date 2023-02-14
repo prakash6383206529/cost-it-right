@@ -23,7 +23,6 @@ function AddPlantDrawer(props) {
 
   useEffect(() => {
     const { zbcPlantGrid } = props;
-    dispatch(getVendorWithVendorCodeSelectList(() => { }))
     dispatch(getPlantSelectListByType(ZBC, () => { }))
 
     let tempArr = [];

@@ -2,6 +2,7 @@
  * Define all the constants required in application inside this file and export them
  */
 
+import _ from "lodash";
 import { reactLocalStorage } from "reactjs-localstorage";
 export const config = () => {
 
@@ -310,6 +311,8 @@ export const API = {
   getManageBOPSOBDataList: `${BASE_URL}/masters-bought-out-part/get-bought-out-part-vendor-share-of-business-by-filter`,
   getManageBOPSOBById: `${BASE_URL}/masters-bought-out-part/get-bought-out-part-vendor-share-of-business-by-bop-part-number`,
   updateBOPSOBVendors: `${BASE_URL}/masters-bought-out-part/update-bought-out-part-vendor-share-of-business`,
+  getIncoTermSelectList: `${BASE_URL}/masters-bought-out-part/get-select-list-bought-out-part-inco-terms`,
+  getPaymentTermSelectList: `${BASE_URL}/masters-bought-out-part/get-select-list-bought-out-part-payment-terms`,
 
   //BOP APPROVAL API'S
 
@@ -621,8 +624,11 @@ export const API = {
   generateReport: `${BASE_URL}/reports/update-costing-reports`,
   getErrorFile: `${BASE_URL}`,
   uploadCosting: `${BASE_URL}/bulk-costing/save-costing`,
+  uploadOldCosting: `${BASE_URL}/bulk-costing/component-save-costing`,
   uploadPlasticCosting: `${BASE_URL}/bulk-costing/save-costing-plastic`,
+  uploadPlasticOldCosting: `${BASE_URL}/bulk-costing/component-save-costing-plastic`,
   uploadMachiningCosting: `${BASE_URL}/bulk-costing/save-costing-machining`,
+  uploadMachiningOldCosting: `${BASE_URL}/bulk-costing/component-save-costing-machining`,
   sendStatusForApproval: `${BASE_URL}/bulk-costing/update-bulk-costing`,
   uploadCorrugatedBoxCosting: `${BASE_URL}/bulk-costing/save-costing-corrugated-box`,
   uploadAssemblyCosting: `${BASE_URL}/bulk-costing/save-costing-assembly`,
@@ -1201,6 +1207,8 @@ export const GET_ALL_BOP_DOMESTIC_DATA_LIST = 'GET_ALL_BOP_DOMESTIC_DATA_LIST'
 export const GET_BOP_IMPORT_DATA_LIST = 'GET_BOP_IMPORT_DATA_LIST'
 export const GET_SOB_LISTING = 'GET_SOB_LISTING'
 export const GET_BOP_APPROVAL_LIST = 'GET_BOP_APPROVAL_LIST'
+export const GET_INCO_SELECTLIST_SUCCESS = 'GET_INCO_SELECTLIST_SUCCESS'
+export const GET_PAYMENT_SELECTLIST_SUCCESS = 'GET_PAYMENT_SELECTLIST_SUCCESS'
 
 //PROCESS MASTER
 export const CREATE_PROCESS_SUCCESS = 'CREATE_PROCESS_SUCCESS'
@@ -1830,7 +1838,7 @@ export const VIEW_COSTING_DATA = {
   customer: 'Customer (Code)',
   plantExcel: 'Plant (Code)',
   status: 'Status',
-  rm: 'RM Name-Grade',
+  rm: 'RM-Grade',
   rmRate: 'RM Rate',
   scrapRate: 'Scrap Rate',
   gWeight: 'Gross Weight',
@@ -1861,8 +1869,8 @@ export const VIEW_COSTING_DATA = {
   // rejectionOn: 'Rejection On',
   // iccOn: 'ICC On',
   // paymentTerms: 'Payment Terms',
-  overHeadApplicablity: 'OverHead Applicability',
-  overHeadApplicablityValue: 'OverHead Value',
+  overHeadApplicablity: 'Overhead Applicability',
+  overHeadApplicablityValue: 'Overhead Value',
   ProfitApplicablity: 'Profit Applicability',
   ProfitApplicablityValue: 'Profit Value',
   rejectionApplicablity: 'Rejection Applicability',
@@ -1885,10 +1893,10 @@ export const VIEW_COSTING_DATA = {
   // totalCost: 'Total Cost',
   // otherDiscount: 'Hundi/Other Discount',
   // otherDiscountValue: '',
-  otherDiscountType: 'Other Discount Type',
-  otherDiscountApplicablity: 'Other Discount Applicability',
-  otherDiscountValuePercent: 'Other Discount Value',
-  otherDiscountCost: 'Other Discount Cost',
+  otherDiscountType: 'Hundi/Discount Type',
+  otherDiscountApplicablity: 'Hundi/Discount Applicability',
+  otherDiscountValuePercent: 'Hundi/Discount Value',
+  otherDiscountCost: 'Hundi/Discount Cost',
   anyOtherCostType: 'Any Other Cost Type',
   anyOtherCostApplicablity: 'Any Other Cost Applicability',
   anyOtherCostPercent: 'Any Other Cost Value',
@@ -1903,6 +1911,21 @@ export const VIEW_COSTING_DATA = {
   //nPOPrice: 'Net PO Price',
   // attachment: 'Attachment',
   // approvalButton: '',
+}
+
+export const VIEW_COSTING_DATA_LOGISTICS = {
+  costingHeadCheck: 'ZBC v/s VBC v/s NCC v/s CBC',
+  costingVersion: 'Costing Version',
+  PoPriceWithDate: 'PO Price (Effective from)',
+  partNumber: 'Part Number',
+  partName: 'Part Name',
+  RevisionNumber: 'Revision Number',
+  plantExcel: 'Plant (Code)',
+  nPackagingAndFreight: 'Net Freight',
+  nPOPrice: 'Net PO Price (INR)',
+  currencyTitle: 'Currency',
+  nPoPriceCurrency: 'Net PO Price (In Currency)',
+  remark: 'Remarks',
 }
 
 //UOM ENUMS (Need to change name)
@@ -1987,7 +2010,7 @@ export const MachineRate = "Machine-rate"
 export const ProcessMaster = "Process "
 
 export const VendorMaster = "Vendor"
-export const Clientmaster = "Client"
+export const Clientmaster = "Customer"
 export const PlantZbc = "Plant-zbc"
 export const PlantVbc = "Plant-vbc"
 
@@ -2048,90 +2071,88 @@ export const LEVEL1 = 'L1';
 export const SUB_ASSEMBLY = 'Sub Assembly';
 
 //MASTER NAMES FOR BULK UPLOAD
-export const RMDOMESTICBULKUPLOAD = 'RMDomestic';
-export const RMIMPORTBULKUPLOAD = 'RMImport';
-export const RMSPECIFICATION = 'RMSpecification'
-export const BOPDOMESTICBULKUPLOAD = 'BOPDomestic';
+export const RMDOMESTICBULKUPLOAD = 'RM Domestic';
+export const RMIMPORTBULKUPLOAD = 'RM Import';
+export const RMSPECIFICATION = 'RM Specification'
+export const BOPDOMESTICBULKUPLOAD = 'BOP Domestic';
 export const INSERTDOMESTICBULKUPLOAD = 'InsertDomestic';
 export const BOPIMPORTBULKUPLOAD = 'BOPImport';
 export const INSERTIMPORTBULKUPLOAD = 'InsertImport';
 export const BOMBULKUPLOAD = 'BOM';
-export const PARTCOMPONENTBULKUPLOAD = 'PartComponent';
-export const PRODUCTCOMPONENTBULKUPLOAD = 'ProductComponent';
+export const PARTCOMPONENTBULKUPLOAD = 'Part Component';
+export const PRODUCTCOMPONENTBULKUPLOAD = 'Product Component';
 export const MACHINEBULKUPLOAD = 'Machine';
 export const VENDORBULKUPLOAD = 'Vendor';
 export const LABOURBULKUPLOAD = 'Labour'
 export const OPERAIONBULKUPLOAD = 'Operation';
 export const FUELBULKUPLOAD = 'Fuel';
-export const INTERESTRATEBULKUPLOAD = 'InterestRate'
-export const ACTUALVOLUMEBULKUPLOAD = 'ActualVolume'
-export const BUDGETEDVOLUMEBULKUPLOAD = 'BudgetedVolume'
-export const ADDRFQ = 'ADDRFQ'
+export const INTERESTRATEBULKUPLOAD = 'Interest Rate'
+export const ACTUALVOLUMEBULKUPLOAD = 'Actual Volume'
+export const BUDGETEDVOLUMEBULKUPLOAD = 'Budgeted Volume'
+export const ADDRFQ = 'ADD RFQ'
+export const VOLUMEBULKUPLOAD = 'Volume'
 
 
 //STATUS FILTER DROPDOWN OPTIONS
-export const statusOptionsMasters = [
-
-  { label: "Draft", value: "1" },
-  { label: "PendingForApproval", value: "2" },
-  { label: "Approved", value: "3" },
+export const statusOptionsMasters = _.sortBy([
   { label: "Rejected", value: "4" },
-  { label: "History", value: "5" },
-  { label: "AwaitingApproval", value: "6" },
-]
-
-
-export const statusOptionsCosting = [
-
-  { label: "Draft", value: "1" },
-  { label: "PendingForApproval", value: "2" },
   { label: "Approved", value: "3" },
-  { label: "Rejected", value: "4" },
-  { label: "History", value: "5" },
   { label: "AwaitingApproval", value: "6" },
+  { label: "Draft", value: "1" },
+  { label: "History", value: "5" },
+  { label: "PendingForApproval", value: "2" },
+], ({ label }) => label.toLowerCase());
+
+
+export const statusOptionsCosting = _.sortBy([
+  { label: "AwaitingApproval", value: "6" },
+  { label: "Draft", value: "1" },
   { label: "Error", value: "12" },
-  { label: "Pushed", value: "13" },
+  { label: "History", value: "5" },
+  { label: "PendingForApproval", value: "2" },
   { label: "POUpdated", value: "14" },
-
-]
-
-
-export const statusOptionsSimulation = [
-
-  { label: "Draft", value: "1" },
-  { label: "PendingForApproval", value: "2" },
-  { label: "Approved", value: "3" },
-  { label: "Rejected", value: "4" },
-  { label: "History", value: "5" },
-  { label: "AwaitingApproval", value: "6" },
-  { label: "Error", value: "12" },
   { label: "Pushed", value: "13" },
+  { label: "Rejected", value: "4" },
+  { label: "Approved", value: "3" },
+]
+  , ({ label }) => label.toLowerCase());
+
+export const statusOptionsSimulation = _.sortBy([
+  { label: "AwaitingApproval", value: "6" },
+  { label: "Draft", value: "1" },
+  { label: "Error", value: "12" },
+  { label: "History", value: "5" },
+  { label: "Linked", value: "17" },
+  { label: "PendingForApproval", value: "2" },
   { label: "POUpdated", value: "14" },
   { label: "Provisional", value: "15" },
-  { label: "Linked", value: "17" },
-
-]
-
-export const statusOptions = [
-  { label: "Draft", value: "1" },
-  { label: "PendingForApproval", value: "2" },
-  { label: "Approved", value: "3" },
+  { label: "Pushed", value: "13" },
   { label: "Rejected", value: "4" },
-  { label: "History", value: "5" },
-  { label: "AwaitingApproval", value: "6" },
-  // { label: "SendForApproval", value: "7" },
+  { label: "Approved", value: "3" },
+], ({ label }) => label.toLowerCase());
+
+
+export const statusOptions = _.sortBy([
   { label: "ApprovedByAssembly", value: "8" },
   { label: "ApprovedBySimulation", value: "9" },
+  { label: "Approved", value: "3" },
+  { label: "AwaitingApproval", value: "6" },
   { label: "CreatedByAssembly", value: "10" },
   { label: "CreatedBySimulation", value: "11" },
+  { label: "Draft", value: "1" },
   { label: "Error", value: "12" },
-  { label: "Pushed", value: "13" },
+  { label: "History", value: "5" },
+  { label: "Linked", value: "17" },
+  { label: "PendingForApproval", value: "2" },
   { label: "POUpdated", value: "14" },
   { label: "Provisional", value: "15" },
-  { label: "ApprovedByASMSimulation", value: "16" },
-  { label: "Linked", value: "17" },
+  { label: "Pushed", value: "13" },
+  { label: "Rejected", value: "4" },
   { label: "RejectedBySystem", value: "18" },
-]
+  { label: "ApprovedByASMSimulation", value: "16" },
+  // { label: "SendForApproval", value: "7" },
+], ({ label }) => label.toLowerCase());
+
 
 //CONSTANTS FOR COSTING HEAD
 export const ZBCTypeId = Number(reactLocalStorage.getObject('CostingHeadsListShortForm')[ZBC])
@@ -2157,4 +2178,4 @@ export const KEYRFQ = "UAGSqTBCbZ8JqHJl"
 export const IVRFQ = "8vFNmRQEl91nOtrM"
 
 //VERSION 
-export const VERSION = "V2.1.45.4";
+export const VERSION = "V2.1.74";

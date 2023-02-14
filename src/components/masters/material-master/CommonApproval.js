@@ -743,18 +743,18 @@ function CommonApproval(props) {
                                     {props?.MasterId === RM_MASTER_ID && <AgGridColumn width="145" field="ApprovalProcessId" hide></AgGridColumn>}
                                     {props?.MasterId === RM_MASTER_ID && <AgGridColumn width="145" field="TechnologyName" headerName='Technology'></AgGridColumn>}
                                     {props?.MasterId === RM_MASTER_ID && <AgGridColumn width="145" field="RawMaterial" ></AgGridColumn>}
-                                    {props?.MasterId === RM_MASTER_ID && <AgGridColumn width="145" field="RMGrade"></AgGridColumn>}
-                                    {props?.MasterId === RM_MASTER_ID && <AgGridColumn width="150" field="RMSpec"></AgGridColumn>}
+                                    {props?.MasterId === RM_MASTER_ID && <AgGridColumn width="145" field="RMGrade" headerName='Grade'></AgGridColumn>}
+                                    {props?.MasterId === RM_MASTER_ID && <AgGridColumn width="150" field="RMSpec" headerName='Spec'></AgGridColumn>}
                                     {props?.MasterId === RM_MASTER_ID && <AgGridColumn width="140" field="Category"></AgGridColumn>}
                                     {props?.MasterId === RM_MASTER_ID && <AgGridColumn width="140" field="MaterialType"></AgGridColumn>}
                                     {props?.MasterId === RM_MASTER_ID && <AgGridColumn field="VendorName" headerName="Vendor (Code)"></AgGridColumn>}
-                                    {props?.MasterId === RM_MASTER_ID && <AgGridColumn field="CustomerName" headerName="Customer (Code)"></AgGridColumn>}
+                                    {props?.MasterId === RM_MASTER_ID && reactLocalStorage.getObject('cbcCostingPermission') && <AgGridColumn field="CustomerName" headerName="Customer (Code)"></AgGridColumn>}
                                     {props?.MasterId === RM_MASTER_ID && <AgGridColumn field="Plants" headerName='Plant (Code)'></AgGridColumn>}
                                     {props?.MasterId === RM_MASTER_ID && <AgGridColumn width="140" field="UOM"></AgGridColumn>}
                                     {props?.MasterId === RM_MASTER_ID && <AgGridColumn width="140" field="BasicRate"></AgGridColumn>}
                                     {props?.MasterId === RM_MASTER_ID && <AgGridColumn width="140" field="ScrapRate"></AgGridColumn>}
-                                    {props?.MasterId === RM_MASTER_ID && <AgGridColumn width="155" field="RMFreightCost" cellRenderer='freightCostFormatter'></AgGridColumn>}
-                                    {props?.MasterId === RM_MASTER_ID && <AgGridColumn width="165" field="RMShearingCost" cellRenderer='shearingCostFormatter'></AgGridColumn>}
+                                    {props?.MasterId === RM_MASTER_ID && <AgGridColumn width="155" field="RMFreightCost" headerName='FreightCost' cellRenderer='freightCostFormatter'></AgGridColumn>}
+                                    {props?.MasterId === RM_MASTER_ID && <AgGridColumn width="165" field="RMShearingCost" headerName='ShearingCost' cellRenderer='shearingCostFormatter'></AgGridColumn>}
                                     {props?.MasterId === RM_MASTER_ID && <AgGridColumn width="165" field="NetLandedCost" cellRenderer='costFormatter'></AgGridColumn>}
 
                                     {!props?.isApproval && <AgGridColumn headerClass="justify-content-center" pinned="right" cellClass="text-center" field="DisplayStatus" cellRenderer='statusFormatter' headerName="Status" floatingFilterComponent="statusFilter" floatingFilterComponentParams={floatingFilterStatus} ></AgGridColumn>}
@@ -770,7 +770,7 @@ function CommonApproval(props) {
                                     {props?.MasterId === BOP_MASTER_ID && <AgGridColumn width="150" field="UOM" headerName='UOM'></AgGridColumn>}
                                     {props?.MasterId === BOP_MASTER_ID && <AgGridColumn width="140" field="Specification" cellRenderer={"hyphenFormatter"} headerName='Specification'></AgGridColumn>}
                                     {props?.MasterId === BOP_MASTER_ID && <AgGridColumn field="VendorName" headerName='Vendor (Code)'></AgGridColumn>}
-                                    {props?.MasterId === BOP_MASTER_ID && <AgGridColumn field="CustomerName" headerName="Customer (Code)"></AgGridColumn>}
+                                    {props?.MasterId === BOP_MASTER_ID && reactLocalStorage.getObject('cbcCostingPermission') && <AgGridColumn field="CustomerName" headerName="Customer (Code)"></AgGridColumn>}
                                     {props?.MasterId === BOP_MASTER_ID && <AgGridColumn width="140" field="Plants" headerName='Plant (Code)'></AgGridColumn>}
                                     {props?.MasterId === BOP_MASTER_ID && <AgGridColumn width="140" field="BasicRate" headerName="Basic Rate (INR)"></AgGridColumn>}
                                     {props?.MasterId === BOP_MASTER_ID && <AgGridColumn width="140" field="NetLandedCost" headerName="Net Cost (INR)"></AgGridColumn>}
@@ -783,7 +783,7 @@ function CommonApproval(props) {
                                     {props?.MasterId === MACHINE_MASTER_ID && <AgGridColumn width="145" field="ApprovalProcessId" hide></AgGridColumn>}
                                     {props?.MasterId === MACHINE_MASTER_ID && <AgGridColumn width="145" field="TechnologyName" headerName='Technology'></AgGridColumn>}
                                     {props?.MasterId === MACHINE_MASTER_ID && <AgGridColumn width="145" field="VendorName" headerName='Vendor (Code)'></AgGridColumn>}
-                                    {props?.MasterId === MACHINE_MASTER_ID && <AgGridColumn field="CustomerName" headerName="Customer (Code)"></AgGridColumn>}
+                                    {props?.MasterId === MACHINE_MASTER_ID && reactLocalStorage.getObject('cbcCostingPermission') && <AgGridColumn field="CustomerName" headerName="Customer (Code)"></AgGridColumn>}
                                     {props?.MasterId === MACHINE_MASTER_ID && <AgGridColumn width="145" field="Plants" headerName='Plant (Code)'></AgGridColumn>}
                                     {props?.MasterId === MACHINE_MASTER_ID && <AgGridColumn width="150" field="MachineNumber" headerName='Machine Number'></AgGridColumn>}
                                     {props?.MasterId === MACHINE_MASTER_ID && <AgGridColumn width="140" field="MachineTypeName" headerName='Machine Type'></AgGridColumn>}
@@ -800,7 +800,7 @@ function CommonApproval(props) {
                                     {props?.MasterId === OPERATIONS_ID && <AgGridColumn width="145" field="OperationName" headerName='Operation Name'></AgGridColumn>}
                                     {props?.MasterId === OPERATIONS_ID && <AgGridColumn width="145" field="OperationCode" headerName='Operation Code'></AgGridColumn>}
                                     {props?.MasterId === OPERATIONS_ID && <AgGridColumn width="180" field="VendorName" headerName='Vendor (Code)'></AgGridColumn>}
-                                    {props?.MasterId === OPERATIONS_ID && <AgGridColumn field="CustomerName" headerName="Customer (Code)"></AgGridColumn>}
+                                    {props?.MasterId === OPERATIONS_ID && reactLocalStorage.getObject('cbcCostingPermission') && <AgGridColumn field="CustomerName" headerName="Customer (Code)"></AgGridColumn>}
                                     {props?.MasterId === OPERATIONS_ID && <AgGridColumn width="150" field="Plants" headerName='Plant (Code)'></AgGridColumn>}
                                     {props?.MasterId === OPERATIONS_ID && <AgGridColumn width="140" field="UOM" headerName='UOM'></AgGridColumn>}
                                     {props?.MasterId === OPERATIONS_ID && <AgGridColumn field="BasicRate" headerName='Rate'></AgGridColumn>}

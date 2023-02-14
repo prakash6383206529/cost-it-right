@@ -193,6 +193,10 @@ function OperationCost(props) {
     })
     setIds(Ids && Ids.filter(item => item !== OperationId))
     setGridData(tempArr)
+    setValue(`${OperationGridFields}.${index}.remarkPopUp`, '')
+    tempArr && tempArr.map((el, i) => {
+      setValue(`${OperationGridFields}.${i}.remarkPopUp`, el.Remark)
+    })
     dispatch(setSelectedIdsOperation(Ids && Ids.filter(item => item !== OperationId)))
     let totalFinishWeight = 0
     totalFinishWeight = tempArr && tempArr.reduce((accummlator, el) => {
@@ -257,17 +261,6 @@ function OperationCost(props) {
       setOperationCostAssemblyTechnology(value)
       setGridData(tempArr)
 
-    } else {
-      const WithLaboutCost = checkForNull(tempData.Rate) * 0;
-      const WithOutLabourCost = tempData.IsLabourRateExist ? checkForNull(tempData.LabourRate) * tempData.LabourQuantity : 0;
-      const OperationCost = WithLaboutCost + WithOutLabourCost;
-      tempData = { ...tempData, Quantity: 0, OperationCost: OperationCost }
-      tempArr = Object.assign([...gridData], { [index]: tempData })
-      setGridData(tempArr)
-      // Toaster.warning('Please enter valid number.')
-      setTimeout(() => {
-        setValue(`${OperationGridFields}.${index}.Quantity`, '')
-      }, 200)
     }
   }
 

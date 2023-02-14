@@ -688,9 +688,11 @@ function ProcessCost(props) {
       setIds(selectedIds)
       setMachineIds(selectedMachineIds)
       setTabData(tempArr2)
+      setValue(`${ProcessGridFields}.${index}.remarkPopUp`, '')
       tempArrAfterDelete && tempArrAfterDelete.map((el, i) => {
         setValue(`${ProcessGridFields}.${i}.ProcessCost`, checkForDecimalAndNull(el.ProcessCost, initialConfiguration.NoOfDecimalForPrice))
         setValue(`${ProcessGridFields}.${i}.Quantity`, checkForDecimalAndNull(el.Quantity, getConfigurationKey().NoOfDecimalForInputOutput))
+        setValue(`${ProcessGridFields}.${i}.remarkPopUp`, el.Remark)
         return null
       })
     }, 200)
@@ -738,6 +740,9 @@ function ProcessCost(props) {
     setValue(`${ProcessGridFields}.${parentIndex}.ProcessCost`, checkForDecimalAndNull(ProcessCostTotal, initialConfiguration.NoOfDecimalForPrice))
     setValue(`${ProcessGridFields}.${parentIndex}.Quantity`, checkForDecimalAndNull(QuantityTotal, initialConfiguration.NoOfDecimalForPrice))
 
+    setValue(`${SingleProcessGridField}.${index}.${parentIndex}.remarkPopUp`, '')
+    setValue(`${SingleProcessGridField}.${index}.remarkPopUp`, '')
+
 
     parentTempData = {
       ...parentTempData,
@@ -763,6 +768,8 @@ function ProcessCost(props) {
     tempArrAfterDelete && tempArrAfterDelete.map((el, i) => {
       setValue(`${SingleProcessGridField}.${i}.${parentIndex}.ProcessCost`, checkForDecimalAndNull(el.ProcessCost, initialConfiguration.NoOfDecimalForPrice))
       setValue(`${SingleProcessGridField}.${i}${parentIndex}${el.ProcessName}.Quantity`, checkForDecimalAndNull(el.Quantity, getConfigurationKey().NoOfDecimalForInputOutput))
+      setValue(`${SingleProcessGridField}.${index}.${parentIndex}.remarkPopUp`, el.Remark)
+      setValue(`${SingleProcessGridField}.${index}.remarkPopUp`, el.Remark)
       return null
     })
 
@@ -926,45 +933,6 @@ function ProcessCost(props) {
       setGridData(processTemparr)
 
       dispatch(setProcessGroupGrid(formatReducerArray(processTemparr)))
-    } else {
-
-      const ProcessCost = tempData.MHR * 0
-      tempData = {
-        ...tempData,
-        Quantity: 0,
-        IsCalculatedEntry: false,
-        ProcessCost: ProcessCost,
-      }
-      let gridTempArr = Object.assign([...list], { [index]: tempData })
-      setTimeout(() => {
-        setValue(`${SingleProcessGridField}.${index}${parentIndex}${processName}.Quantity`, "")
-        setValue(`${SingleProcessGridField}.${index}.${parentIndex}.ProcessCost`, "")
-      }, 200)
-
-      //MAIN PROCESS ROW WITH GROUP
-      let ProcessCostTotal = 0
-      ProcessCostTotal = gridTempArr && gridTempArr.reduce((accummlator, el) => {
-        return accummlator + checkForNull(el.ProcessCost)
-      }, 0)
-
-      processTempData = {
-        ...processTempData,
-        ProcessCost: ProcessCostTotal
-      }
-      let processTemparr = Object.assign([...processGroupGrid], { [parentIndex]: processTempData })
-      let apiArr = formatMainArr(processTemparr)
-
-      tempArr = {
-        ...tabData,
-        NetConversionCost: ProcessCostTotal + checkForNull(tabData.OperationCostTotal !== null ? tabData.OperationCostTotal : 0,) + checkForNull(tabData.OtherOperationCostTotal !== null ? tabData.OtherOperationCostTotal : 0),
-        ProcessCostTotal: ProcessCostTotal,
-        CostingProcessCostResponse: apiArr,
-      }
-      setIsFromApi(false)
-      setTabData(tempArr)
-      setGridData(processTemparr)
-      dispatch(setProcessGroupGrid(formatReducerArray(processTemparr)))
-      setValue(`${ProcessGridFields}.${parentIndex}.ProcessCost`, checkForDecimalAndNull(ProcessCostTotal, initialConfiguration.NoOfDecimalForPrice))
     }
   }
 
@@ -1160,7 +1128,6 @@ function ProcessCost(props) {
                     }}
                     handleChange={(e) => {
                       setGroupProcessRemark(true)
-                      console.log(e.target.value)
                     }}
                     defaultValue={item.Remark ?? item.Remark}
                     className=""

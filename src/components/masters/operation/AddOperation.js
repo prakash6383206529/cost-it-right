@@ -2,8 +2,8 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col, Label, } from 'reactstrap';
-import { required, getVendorCode, maxLength80, checkWhiteSpaces, acceptAllExceptSingleSpecialCharacter, maxLength10, maxLength15, positiveAndDecimalNumber, maxLength512, decimalLengthsix, checkSpacesInString } from "../../../helper/validation";
-import { renderText, renderMultiSelectField, searchableSelect, renderTextAreaField, renderDatePicker, renderNumberInputField, focusOnError } from "../../layout/FormInputs";
+import { required, getVendorCode, maxLength80, checkWhiteSpaces, acceptAllExceptSingleSpecialCharacter, maxLength10, maxLength15, positiveAndDecimalNumber, maxLength512, decimalLengthsix, checkSpacesInString, number } from "../../../helper/validation";
+import { renderText, renderMultiSelectField, searchableSelect, renderTextAreaField, renderDatePicker, focusOnError, renderTextInputField } from "../../layout/FormInputs";
 import { getVendorWithVendorCodeSelectList } from '../actions/Supplier';
 import { createOperationsAPI, getOperationDataAPI, updateOperationAPI, fileUploadOperation, fileDeleteOperation, checkAndGetOperationCode } from '../actions/OtherOperation';
 import { getPlantSelectListByType, getPlantBySupplier, getUOMSelectList, } from '../../../actions/Common';
@@ -1061,8 +1061,8 @@ class AddOperation extends Component {
                           name={"Rate"}
                           type="text"
                           placeholder={isViewMode || (isEditFlag && isOperationAssociated) ? '-' : "Select"}
-                          validate={[required, positiveAndDecimalNumber, maxLength10, decimalLengthsix]}
-                          component={renderNumberInputField}
+                          validate={[required, positiveAndDecimalNumber, maxLength10, decimalLengthsix, number]}
+                          component={renderTextInputField}
                           required={true}
                           disabled={isViewMode || (isEditFlag && isOperationAssociated)}
                           onChange={this.handleRateChange}
@@ -1076,8 +1076,8 @@ class AddOperation extends Component {
                           name={"LabourRatePerUOM"}
                           type="text"
                           placeholder={isViewMode ? '-' : "Select"}
-                          validate={[positiveAndDecimalNumber, maxLength10]}
-                          component={renderNumberInputField}
+                          validate={[positiveAndDecimalNumber, maxLength10, number]}
+                          component={renderTextInputField}
                           disabled={isEditFlag ? true : false}
                           className=" "
                           customClassName=" withBorder"

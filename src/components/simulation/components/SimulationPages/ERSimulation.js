@@ -287,8 +287,8 @@ function ERSimulation(props) {
                                             <AgGridColumn field="CustomRate" editable='false' headerName="Custom Rate(INR)" minWidth={190}></AgGridColumn>
                                             {!isImpactedMaster && <AgGridColumn suppressSizeToFit="true" field="CurrencyExchangeRate" headerName="Exchange Rate(INR)" minWidth={190}></AgGridColumn>}
                                             {isImpactedMaster && <>
-                                                <AgGridColumn suppressSizeToFit="true" field="NewExchangeRate" headerName="New Exchange Rate(INR)" minWidth={190}></AgGridColumn>
-                                                <AgGridColumn suppressSizeToFit="true" field="OldExchangeRate" headerName="Old Exchange Rate(INR)" minWidth={190}></AgGridColumn>
+                                                <AgGridColumn suppressSizeToFit="true" field="OldExchangeRate" headerName="Existing Exchange Rate(INR)" minWidth={190}></AgGridColumn>
+                                                <AgGridColumn suppressSizeToFit="true" field="NewExchangeRate" headerName="Revised Exchange Rate(INR)" minWidth={190}></AgGridColumn>
                                             </>}
                                             <AgGridColumn field="EffectiveDate" headerName="Effective Date" editable='false' minWidth={190} cellRenderer='effectiveDateRenderer'></AgGridColumn>
                                             <AgGridColumn field="ExchangeRateId" hide={true}></AgGridColumn>

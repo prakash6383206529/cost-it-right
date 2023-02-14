@@ -409,6 +409,9 @@ function Pipe(props) {
         setIsChangeApplied(false)
       }
     }
+
+    let grossWeight = (dataToSend.newGrossWeight === undefined || dataToSend.newGrossWeight === 0) ? dataToSend.GrossWeight : dataToSend.newGrossWeight
+
     let data = {
       LayoutType: 'Pipe',
       SheetMetalCalculationId: WeightCalculatorRequest && WeightCalculatorRequest.SheetMetalCalculationId ? WeightCalculatorRequest.SheetMetalCalculationId : "0",
@@ -417,7 +420,7 @@ function Pipe(props) {
       CostingRawMaterialDetailId: rmRowData.RawMaterialDetailId,
       RawMaterialIdRef: rmRowData.RawMaterialId,
       LoggedInUserId: loggedInUserId(),
-      RawMaterialCost: dataToSend.GrossWeight * rmRowData.RMRate - (dataToSend.GrossWeight - getValues('FinishWeightOfSheet')) * rmRowData.ScrapRate,
+      RawMaterialCost: grossWeight * rmRowData.RMRate - (grossWeight - getValues('FinishWeightOfSheet')) * rmRowData.ScrapRate,
       UOMForDimensionId: UOMDimension ? UOMDimension.value : '',
       UOMForDimension: UOMDimension ? UOMDimension.label : '',
       OuterDiameter: values.OuterDiameter,
@@ -436,7 +439,7 @@ function Pipe(props) {
       IsOneSide: isOneSide,
       // SurfaceAreaSide: isOneSide ? 'Both Side' : 'One  Side',
       NetSurfaceArea: dataToSend.NetSurfaceArea,
-      GrossWeight: (dataToSend.newGrossWeight === undefined || dataToSend.newGrossWeight === 0) ? dataToSend.GrossWeight : dataToSend.newGrossWeight,
+      GrossWeight: grossWeight,
       FinishWeight: getValues('FinishWeightOfSheet'),
     }
 
@@ -637,7 +640,7 @@ function Pipe(props) {
                   />
                 </Col>
                 <Col md="3">
-                  <TooltipCustom disabledIcon={true} tooltipClass='length-of-scrap' id={'length-of-scrap'} tooltipText="Length of Scrap = (Remainder of no of parts/Sheet)" />
+                  <TooltipCustom disabledIcon={true} tooltipClass='length-of-scrap' id={'length-of-scrap'} tooltipText="Length of Scrap = Remainder of no. of parts/Sheet" />
 
                   <NumberFieldHookForm
                     label={`Length of Scrap(cm)`}

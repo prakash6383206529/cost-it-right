@@ -111,7 +111,7 @@ function MachiningStockTable(props) {
       setRectangularMachiningStock(false)
       setIrregularMachiningStock(false)
       setTooltipClassShow(false)
-      setTooltipMessageForGross('Gross Weight = (Volume * Number / 1000000)')
+      setTooltipMessageForGross('Gross Weight = (Volume * Number  * Density / 1000000)')
     }
 
     else if (value.label === "Rectangular") {
@@ -120,7 +120,7 @@ function MachiningStockTable(props) {
       setCircularMachiningStock(false)
       setIrregularMachiningStock(false)
       setTooltipClassShow(false)
-      setTooltipMessageForGross('Gross Weight = (Volume * Number / 1000000)')
+      setTooltipMessageForGross('Gross Weight = (Volume * Number * Density / 1000000)')
     }
     else if (value.label === "Irregular") {
       setSquareMachiningStock(false)
@@ -129,7 +129,7 @@ function MachiningStockTable(props) {
       setIrregularMachiningStock(true)
       setDisable(false)
       setTooltipClassShow(false)
-      setTooltipMessageForGross('Gross Weight = (Volume * Number / 1000000)')
+      setTooltipMessageForGross('Gross Weight = (Volume * Number * Density / 1000000)')
     }
     else {
       setIrregularMachiningStock(false)
@@ -146,10 +146,10 @@ function MachiningStockTable(props) {
         setTooltipMessageForVolume(<div>(Volume = 0.7857 * (Major Diameter<sup>2</sup> - Minor Diameter <sup>2</sup>) * Length) / 4</div>)
         break;
       case 'Square':
-        setTooltipMessageForVolume(<div>(Length * Length * Length)</div>)
+        setTooltipMessageForVolume(<div>(Length * Length * Height)</div>)
         break;
       case 'Rectangular':
-        setTooltipMessageForVolume(<div>(Length * Breadth * Length)</div>)
+        setTooltipMessageForVolume(<div>(Length * Breadth * Height)</div>)
         break;
       default:
         break;

@@ -20,6 +20,7 @@ import AddRfq from './AddRfq';
 import { checkPermission, userDetails } from '../../helper';
 import TooltipCustom from '../common/Tooltip';
 import DayTime from '../common/DayTimeWrapper';
+import Attachament from '../costing/components/Drawers/Attachament';
 const gridOptions = {};
 
 
@@ -28,7 +29,6 @@ function RfqListing(props) {
     const [gridColumnApi, setgridColumnApi] = useState(null);          // DONT DELETE THIS STATE , IT IS USED BY AG GRID
     const [loader, setloader] = useState(false);
     const dispatch = useDispatch();
-    const [showPopup, setShowPopup] = useState(false)
     const [addRfq, setAddRfq] = useState(false);
     const [addRfqData, setAddRfqData] = useState({});
     const [isEdit, setIsEdit] = useState(false);
@@ -40,6 +40,10 @@ function RfqListing(props) {
     const [addAccessibility, setAddAccessibility] = useState(false);
     const [editAccessibility, setEditAccessibility] = useState(false);
     const [viewAccessibility, setViewAccessibility] = useState(false);
+    const [confirmPopup, setConfirmPopup] = useState(false);
+    const [attachment, setAttachment] = useState(false);
+    const [viewAttachment, setViewAttachment] = useState([])
+    const [deleteId, setDeleteId] = useState('');
     const { topAndLeftMenuData } = useSelector(state => state.auth);
 
     useEffect(() => {
@@ -109,30 +113,24 @@ function RfqListing(props) {
     }
 
     const cancelItem = (id) => {
-        dispatch(cancelRfqQuotation(id, (res) => {
+        setConfirmPopup(true)
+        setDeleteId(id)
+    }
+
+    const onPopupConfirm = () => {
+        dispatch(cancelRfqQuotation(deleteId, (res) => {
             if (res.status === 200) {
                 Toaster.success('Quotation has been cancelled successfully.')
                 setTimeout(() => {
                     getDataList()
                 }, 500);
             }
+            setConfirmPopup(false)
         }))
     }
 
-    /**
-    * @method confirmDelete
-    * @description confirm delete Raw Material details
-    */
-    const confirmDelete = (ID) => {
-        setShowPopup(false)
-    }
-
-    const onPopupConfirm = () => {
-        confirmDelete();
-    }
-
     const closePopUp = () => {
-        setShowPopup(false)
+        setConfirmPopup(false)
     }
     /**
     * @method buttonFormatter
@@ -242,6 +240,15 @@ function RfqListing(props) {
         return <div id={"status"} className={cell}>{tempStatus}</div>
     }
 
+    const viewAttachmentData = (index) => {
+        setAttachment(true)
+        setViewAttachment(index)
+    }
+
+    const closeAttachmentDrawer = (e = '') => {
+        setAttachment(false)
+    }
+
     const attachmentFormatter = (props) => {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         let files = row?.Attachments
@@ -249,26 +256,22 @@ function RfqListing(props) {
         return (
             <>
                 <div className={"attachment images"}>
-                    {files && files.length > 0 &&
-                        files.map((f, index) => {
+                    {files && files.length === 1 ?
+                        files.map((f) => {
                             const withOutTild = f.FileURL?.replace("~", "");
                             const fileURL = `${FILE_URL}${withOutTild}`;
+                            return (
+                                <a href={fileURL} target="_blank" rel="noreferrer">
+                                    {f.OriginalFileName}
+                                </a>
+                            )
 
-                            if (index === 0) {
-                                return (
-                                    <a href={fileURL} target="_blank" rel="noreferrer">
-                                        {f.OriginalFileName}
-                                    </a>
-                                )
-
-                            } else {
-                                return (
-                                    <a href={fileURL} target="_blank" rel="noreferrer">
-                                        , {f.OriginalFileName}
-                                    </a>
-                                )
-                            }
-                        })}
+                        }) : <button
+                            type='button'
+                            title='View Attachment'
+                            className='btn-a pl-0'
+                            onClick={() => viewAttachmentData(row)}
+                        >View Attachment</button>}
                 </div>
             </>
         )
@@ -370,11 +373,12 @@ function RfqListing(props) {
                                                 frameworkComponents={frameworkComponents}
                                                 rowSelection={'multiple'}
                                                 suppressRowClickSelection={true}
+                                                enableBrowserTooltips={true}
                                             >
                                                 <AgGridColumn cellClass="has-checkbox" field="QuotationNumber" headerName='RFQ No.' cellRenderer={'linkableFormatter'} ></AgGridColumn>
-                                                <AgGridColumn field="PartNumber" headerName="Part No." width={150}></AgGridColumn>
+                                                <AgGridColumn field="PartNumber" tooltipField="PartNumber" headerName="Part No." width={150}></AgGridColumn>
                                                 <AgGridColumn field="CostingReceived" headerName='No. of Quotation Received' maxWidth={150}></AgGridColumn>
-                                                <AgGridColumn field="VendorName" headerName='Vendor (Code)'></AgGridColumn>
+                                                <AgGridColumn field="VendorName" tooltipField="VendorName" headerName='Vendor (Code)'></AgGridColumn>
                                                 <AgGridColumn field="PlantName" headerName='Plant (Code)'></AgGridColumn>
                                                 <AgGridColumn field="TechnologyName" headerName='Technology'></AgGridColumn>
                                                 <AgGridColumn field="Remark" headerName='Remark'></AgGridColumn>
@@ -405,7 +409,7 @@ function RfqListing(props) {
                     }
 
                     {
-                        showPopup && <PopupMsgWrapper isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${MESSAGES.RAW_MATERIAL_DETAIL_DELETE_ALERT}`} />
+                        confirmPopup && <PopupMsgWrapper isOpen={confirmPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${MESSAGES.RFQ_DETAIL_CANCEL_ALERT}`} />
                     }
 
                 </div >
@@ -425,6 +429,17 @@ function RfqListing(props) {
                     closeDrawer={closeDrawer}
                 />
 
+            }
+            {
+                attachment && (
+                    <Attachament
+                        isOpen={attachment}
+                        index={viewAttachment}
+                        closeDrawer={closeAttachmentDrawer}
+                        anchor={'right'}
+                        gridListing={true}
+                    />
+                )
             }
 
 

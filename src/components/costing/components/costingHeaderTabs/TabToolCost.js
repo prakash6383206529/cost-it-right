@@ -240,7 +240,7 @@ function TabToolCost(props) {
 
     if (IsApplicableProcessWise && props.activeTab === '5') {
       dispatch(getToolsProcessWiseDataListByCostingID(costData.CostingId, (res) => {
-        if (res) { setGridData(res.data.DataList) }
+        if (res?.data?.DataList[0]?.ProcessOrOperation) { setGridData(res.data.DataList) }
       }))
     }
 
@@ -455,7 +455,7 @@ function TabToolCost(props) {
                 <Col md="3" className="border-section pl-0 d-flex justify-content-between align-items-center text-dark-blue">
                   <div>
                     {"Net Tool Cost:"}
-                    {IsApplicableProcessWise && <span className="d-inline-block pl-1 font-weight-500">{checkForDecimalAndNull(ToolTabData[0]?.CostingPartDetails?.TotalToolCost, initialConfiguration.NoOfDecimalForPrice)}</span>}
+                    <span className="d-inline-block pl-1 font-weight-500">{IsApplicableProcessWise ? checkForDecimalAndNull(ToolTabData[0]?.CostingPartDetails?.TotalToolCost, initialConfiguration.NoOfDecimalForPrice) : (ToolTabData && ToolTabData.map((item) => checkForDecimalAndNull(item?.CostingPartDetails?.TotalToolCost, initialConfiguration.NoOfDecimalForPrice)))}</span>
                   </div>
                   {IsApplicableProcessWise &&
                     <>
@@ -482,14 +482,6 @@ function TabToolCost(props) {
                           {ToolTabData && ToolTabData.map((item, index) => {
                             return (
                               <>
-                                <tr className="accordian-row" key={index}>
-                                  <td style={{ width: '75%' }}>
-                                    <span class="cr-prt-link1">
-                                      {item.PartName}
-                                    </span>
-                                  </td>
-                                  <td className="pl10">{checkForDecimalAndNull(item?.CostingPartDetails?.TotalToolCost, initialConfiguration.NoOfDecimalForPrice)}</td>
-                                </tr>
                                 <tr>
                                   <td colSpan={2} className="cr-innerwrap-td pb-3">
                                     <div>

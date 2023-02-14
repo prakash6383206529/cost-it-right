@@ -2,8 +2,8 @@ import React, { Component, } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col, Label, } from 'reactstrap';
-import { required, getVendorCode, positiveAndDecimalNumber, maxLength15, acceptAllExceptSingleSpecialCharacter, maxLength70, maxLength512, checkForDecimalAndNull, checkForNull, decimalLengthsix } from "../../../helper/validation";
-import { renderText, renderNumberInputField, searchableSelect, renderMultiSelectField, renderTextAreaField, focusOnError, renderDatePicker, } from '../../layout/FormInputs'
+import { required, getVendorCode, positiveAndDecimalNumber, maxLength15, acceptAllExceptSingleSpecialCharacter, maxLength70, maxLength512, checkForDecimalAndNull, checkForNull, decimalLengthsix, number } from "../../../helper/validation";
+import { renderText, renderTextInputField, searchableSelect, renderMultiSelectField, renderTextAreaField, focusOnError, renderDatePicker, } from '../../layout/FormInputs'
 import { AcceptableRMUOM } from '../../../config/masterData'
 import {
   getRawMaterialCategory, fetchGradeDataAPI, fetchSpecificationDataAPI, getCityBySupplier, getPlantByCity,
@@ -1051,7 +1051,7 @@ class AddRMDomestic extends Component {
 
       }
       else {
-        if ((JSON.stringify(files) === JSON.stringify(DataToChange.FileList)) && DropdownChanged && Number(DataToChange.BasicRatePerUOM) === values.BasicRate && (Number(DataToChange.ScrapRate) === this.state.showExtraCost ? Number(values.JaliScrapCost) : Number(values.ScrapRate))
+        if ((JSON.stringify(files) === JSON.stringify(DataToChange.FileList)) && DropdownChanged && Number(DataToChange.BasicRatePerUOM) === Number(values.BasicRate) && (Number(DataToChange.ScrapRate) === this.state.showExtraCost ? Number(values.JaliScrapCost) : Number(values.ScrapRate))
           && Number(DataToChange.NetLandedCost) === Number(values.NetLandedCost) && ((DataToChange.Remark ? DataToChange.Remark : '') === (values.Remark ? values.Remark : ''))
           && ((DataToChange.CutOffPrice ? Number(DataToChange.CutOffPrice) : '') === (values.cutOffPrice ? Number(values.cutOffPrice) : ''))
           && String(DataToChange.RawMaterialCode) === String(values.Code) && String(DataToChange.JaliScrapCost) === String(values.CircleScrapCost)
@@ -1122,7 +1122,7 @@ class AddRMDomestic extends Component {
       // THIS CONDITION TO CHECK IF IT IS FOR MASTER APPROVAL THEN WE WILL SEND DATA FOR APPROVAL ELSE CREATE API WILL BE CALLED
       if (CheckApprovalApplicableMaster(RM_MASTER_ID) === true && !this.state.isFinalApprovar) {
 
-        if (((files ? JSON.stringify(files) : []) === (DataToChange.FileList ? JSON.stringify(DataToChange.FileList) : [])) && DropdownChanged && Number(DataToChange.BasicRatePerUOM) === values.BasicRate && (Number(DataToChange.ScrapRate) === this.state.showExtraCost ? Number(values.JaliScrapCost) : Number(values.ScrapRate))
+        if (((files ? JSON.stringify(files) : []) === (DataToChange.FileList ? JSON.stringify(DataToChange.FileList) : [])) && DropdownChanged && Number(DataToChange.BasicRatePerUOM) === Number(values.BasicRate) && (Number(DataToChange.ScrapRate) === this.state.showExtraCost ? Number(values.JaliScrapCost) : Number(values.ScrapRate))
           && Number(DataToChange.NetLandedCost) === Number(values.NetLandedCost) && ((DataToChange.Remark ? DataToChange.Remark : '') === (values.Remark ? values.Remark : ''))
           && ((DataToChange.CutOffPrice ? Number(DataToChange.CutOffPrice) : '') === (values.cutOffPrice ? Number(values.cutOffPrice) : ''))
           && String(DataToChange.RawMaterialCode) === String(values.Code) && String(DataToChange.JaliScrapCost) === String(values.CircleScrapCost)
@@ -1383,7 +1383,7 @@ class AddRMDomestic extends Component {
                                 <Field
                                   name="RawMaterialSpecificationId"
                                   type="text"
-                                  label="Specs"
+                                  label="Spec"
                                   component={searchableSelect}
                                   placeholder={"Select"}
                                   options={this.renderListing("specification")}
@@ -1398,7 +1398,7 @@ class AddRMDomestic extends Component {
                             </div>
                           </Col>
                           <Col md="3">
-                            <TooltipCustom id="category" tooltipText="RM category will come here like CutToFit, CutToLength." />
+                            <TooltipCustom id="category" tooltipText="Category will come here like CutToFit, CutToLength." />
                             <Field
                               name="CategoryId"
                               type="text"
@@ -1621,8 +1621,8 @@ class AddRMDomestic extends Component {
                               name={"cutOffPrice"}
                               type="text"
                               placeholder={isViewFlag || (isEditFlag && isRMAssociated) ? '-' : "Enter"}
-                              validate={[positiveAndDecimalNumber, maxLength15]}
-                              component={renderNumberInputField}
+                              validate={[number, positiveAndDecimalNumber, maxLength15]}
+                              component={renderTextInputField}
                               required={false}
                               disabled={isViewFlag || (isEditFlag && isRMAssociated)}
                               onChange={this.handleCutOffPrice}
@@ -1636,8 +1636,8 @@ class AddRMDomestic extends Component {
                               name={"BasicRate"}
                               type="text"
                               placeholder={isViewFlag || (isEditFlag && isRMAssociated) ? '-' : "Enter"}
-                              validate={[required, positiveAndDecimalNumber, maxLength15, decimalLengthsix]}
-                              component={renderNumberInputField}
+                              validate={[required, positiveAndDecimalNumber, maxLength15, decimalLengthsix, number]}
+                              component={renderTextInputField}
                               onChange={this.handleBasicRate}
                               required={true}
                               disabled={isViewFlag || (isEditFlag && isRMAssociated)}
@@ -1654,8 +1654,8 @@ class AddRMDomestic extends Component {
                                 name={"ScrapRate"}
                                 type="text"
                                 placeholder={isViewFlag || (isEditFlag && isRMAssociated) ? '-' : "Enter"}
-                                validate={[required, positiveAndDecimalNumber, maxLength15, decimalLengthsix]}
-                                component={renderNumberInputField}
+                                validate={[required, positiveAndDecimalNumber, maxLength15, decimalLengthsix, number]}
+                                component={renderTextInputField}
                                 required={true}
                                 className=""
                                 customClassName=" withBorder"
@@ -1672,8 +1672,8 @@ class AddRMDomestic extends Component {
                               type="text"
                               placeholder={isViewFlag || (isEditFlag && isRMAssociated) ? '-' : "Enter"}
                               // onChange={this.handleFreightCharges}
-                              validate={[positiveAndDecimalNumber, maxLength15, decimalLengthsix]}
-                              component={renderNumberInputField}
+                              validate={[positiveAndDecimalNumber, maxLength15, decimalLengthsix, number]}
+                              component={renderTextInputField}
                               required={false}
                               className=""
                               customClassName=" withBorder"
@@ -1687,8 +1687,8 @@ class AddRMDomestic extends Component {
                               name={"ShearingCost"}
                               type="text"
                               placeholder={isViewFlag || (isEditFlag && isRMAssociated) ? '-' : "Enter"}
-                              validate={[positiveAndDecimalNumber, maxLength15, decimalLengthsix]}
-                              component={renderNumberInputField}
+                              validate={[positiveAndDecimalNumber, maxLength15, decimalLengthsix, number]}
+                              component={renderTextInputField}
                               required={false}
                               className=""
                               customClassName=" withBorder"
@@ -1738,7 +1738,7 @@ class AddRMDomestic extends Component {
                               name={`${this.state.netLandedCost === 0 ? '-' : "NetLandedCost"}`}
                               type="text"
                               placeholder={"-"}
-                              validate={[required]}
+                              validate={[]}
                               component={renderText}
                               required={false}
                               disabled={true}

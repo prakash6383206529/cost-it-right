@@ -7,7 +7,7 @@ import $ from 'jquery';
 import { focusOnError, searchableSelect } from "../layout/FormInputs";
 import Toaster from '../common/Toaster';
 import { MESSAGES } from '../../config/message';
-import { defaultPageSize, EMPTY_DATA } from '../../config/constants';
+import { defaultPageSize, EMPTY_DATA, RFQUSER } from '../../config/constants';
 import { USER } from '../../config/constants';
 import NoContentFound from '../common/NoContentFound';
 import Switch from "react-switch";
@@ -67,21 +67,35 @@ class UsersListing extends Component {
 
 	componentDidMount() {
 		this.getUsersListData(null, null);
-
 		const { topAndLeftMenuData } = this.props;
-		if (topAndLeftMenuData !== undefined) {
-
-			const userMenu = topAndLeftMenuData && topAndLeftMenuData.find(el => el.ModuleName === 'Users');
-			const userPermissions = userMenu && userMenu.Pages.find(el => el.PageName === USER);
-			const permmisionData = userPermissions && userPermissions.Actions && checkPermission(userPermissions.Actions)
-
-			if (permmisionData !== undefined) {
-				this.setState({
-					AddAccessibility: permmisionData && permmisionData.Add ? permmisionData.Add : false,
-					EditAccessibility: permmisionData && permmisionData.Edit ? permmisionData.Edit : false,
-					DeleteAccessibility: permmisionData && permmisionData.Delete ? permmisionData.Delete : false,
-					ActivateAccessibility: permmisionData && permmisionData.Activate ? permmisionData.Activate : false,
-				})
+		if (this.props.tabId === '1') {
+			if (topAndLeftMenuData !== undefined) {
+				const userMenu = topAndLeftMenuData && topAndLeftMenuData.find(el => el.ModuleName === 'Users');
+				const userPermissions = userMenu && userMenu.Pages.find(el => el.PageName === USER);
+				const permmisionData = userPermissions && userPermissions.Actions && checkPermission(userPermissions.Actions)
+				if (permmisionData !== undefined) {
+					this.setState({
+						AddAccessibility: permmisionData && permmisionData.Add ? permmisionData.Add : false,
+						EditAccessibility: permmisionData && permmisionData.Edit ? permmisionData.Edit : false,
+						DeleteAccessibility: permmisionData && permmisionData.Delete ? permmisionData.Delete : false,
+						ActivateAccessibility: permmisionData && permmisionData.Activate ? permmisionData.Activate : false,
+					})
+				}
+			}
+		}
+		if (this.props.tabId === '5') {
+			if (topAndLeftMenuData !== undefined) {
+				const userMenu = topAndLeftMenuData && topAndLeftMenuData.find(el => el.ModuleName === 'Users');
+				const userPermissions = userMenu && userMenu.Pages.find(el => el.PageName === RFQUSER);
+				const permmisionData = userPermissions && userPermissions.Actions && checkPermission(userPermissions.Actions)
+				if (permmisionData !== undefined) {
+					this.setState({
+						AddAccessibility: permmisionData && permmisionData.Add ? permmisionData.Add : false,
+						EditAccessibility: permmisionData && permmisionData.Edit ? permmisionData.Edit : false,
+						DeleteAccessibility: permmisionData && permmisionData.Delete ? permmisionData.Delete : false,
+						ActivateAccessibility: permmisionData && permmisionData.Activate ? permmisionData.Activate : false,
+					})
+				}
 			}
 		}
 
@@ -302,7 +316,7 @@ class UsersListing extends Component {
 		const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
 		const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
 		const { EditAccessibility } = this.state;
-		if (cellValue === loggedInUserId()) return null;
+		if (rowData?.UserId === loggedInUserId()) return null;
 		return (
 			<div className="">
 				{EditAccessibility && <button title='Edit' className="Edit " type={'button'} onClick={() => this.editItemDetails(rowData?.UserId, false)} />}
@@ -548,7 +562,6 @@ class UsersListing extends Component {
 			departmentFormatter: this.departmentFormatter,
 			linkableFormatter: this.linkableFormatter
 		};
-
 		return (
 			<div className={"ag-grid-react"} id={'userlist-go-to-top'}>
 				<ScrollToTop pointProp={"userlist-go-to-top"} />
@@ -617,7 +630,7 @@ class UsersListing extends Component {
 								<div className="d-flex justify-content-end bd-highlight w100">
 									{AddAccessibility && (
 										<div>
-											<ExcelFile filename={'User Listing'} fileExtension={'.xls'} element={<button title={`Download ${this.state.dataCount === 0 ? "All" : "(" + this.state.dataCount + ")"}`} type="button" className={'user-btn mr5'} ><div className="download mr-1"></div>
+											<ExcelFile filename={`${this.props.RFQUser ? 'RFQ User Listing' : 'User Listing'}`} fileExtension={'.xls'} element={<button title={`Download ${this.state.dataCount === 0 ? "All" : "(" + this.state.dataCount + ")"}`} type="button" className={'user-btn mr5'} ><div className="download mr-1"></div>
 												{`${this.state.dataCount === 0 ? "All" : "(" + this.state.dataCount + ")"}`}</button>}>
 												{this.onBtExport()}
 											</ExcelFile>

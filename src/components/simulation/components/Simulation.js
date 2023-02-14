@@ -273,6 +273,11 @@ function Simulation(props) {
         setloader(value)
     }
 
+    const isReset = () => {
+        setEditWarning(true)
+        setFilterStatus(`Please check the ${(selectedMasterForSimulation?.label)} that you want to edit.`)
+    }
+
     const changeTokenCheckBox = (value) => {
         dispatch(setTokenCheckBoxValue(value))
     }
@@ -319,21 +324,21 @@ function Simulation(props) {
         } else {
             switch (value.value) {
                 case RMDOMESTIC:
-                    return (<RMDomesticListing isSimulation={true} technology={technology.value} isMasterSummaryDrawer={masterSummaryDrawerState ? props.isMasterSummaryDrawer : false} apply={editTable} objectForMultipleSimulation={obj} selectionForListingMasterAPI={selectionForListingMasterAPI} changeSetLoader={changeSetLoader} changeTokenCheckBox={changeTokenCheckBox} ListFor='simulation' />)
+                    return (<RMDomesticListing isSimulation={true} technology={technology.value} isMasterSummaryDrawer={masterSummaryDrawerState ? props.isMasterSummaryDrawer : false} apply={editTable} objectForMultipleSimulation={obj} selectionForListingMasterAPI={selectionForListingMasterAPI} changeSetLoader={changeSetLoader} changeTokenCheckBox={changeTokenCheckBox} isReset={isReset} ListFor='simulation' />)
                 case RMIMPORT:
-                    return (<RMImportListing isSimulation={true} technology={technology.value} isMasterSummaryDrawer={masterSummaryDrawerState ? props.isMasterSummaryDrawer : false} apply={editTable} objectForMultipleSimulation={obj} selectionForListingMasterAPI={selectionForListingMasterAPI} changeSetLoader={changeSetLoader} changeTokenCheckBox={changeTokenCheckBox} ListFor='simulation' />)
+                    return (<RMImportListing isSimulation={true} technology={technology.value} isMasterSummaryDrawer={masterSummaryDrawerState ? props.isMasterSummaryDrawer : false} apply={editTable} objectForMultipleSimulation={obj} selectionForListingMasterAPI={selectionForListingMasterAPI} changeSetLoader={changeSetLoader} changeTokenCheckBox={changeTokenCheckBox} isReset={isReset} ListFor='simulation' />)
                 case MACHINERATE:
-                    return (<MachineRateListing isSimulation={true} isMasterSummaryDrawer={false} technology={technology.value} objectForMultipleSimulation={obj} apply={editTable} selectionForListingMasterAPI={selectionForListingMasterAPI} changeSetLoader={changeSetLoader} changeTokenCheckBox={changeTokenCheckBox} ListFor='simulation' />)
+                    return (<MachineRateListing isSimulation={true} isMasterSummaryDrawer={false} technology={technology.value} objectForMultipleSimulation={obj} apply={editTable} selectionForListingMasterAPI={selectionForListingMasterAPI} changeSetLoader={changeSetLoader} changeTokenCheckBox={changeTokenCheckBox} isReset={isReset} ListFor='simulation' />)
                 case BOPDOMESTIC:
-                    return (<BOPDomesticListing isSimulation={true} isMasterSummaryDrawer={masterSummaryDrawerState ? props.isMasterSummaryDrawer : false} technology={technology.value} objectForMultipleSimulation={obj} apply={editTable} selectionForListingMasterAPI={selectionForListingMasterAPI} changeSetLoader={changeSetLoader} changeTokenCheckBox={changeTokenCheckBox} ListFor='simulation' />)
+                    return (<BOPDomesticListing isSimulation={true} isMasterSummaryDrawer={masterSummaryDrawerState ? props.isMasterSummaryDrawer : false} technology={technology.value} objectForMultipleSimulation={obj} apply={editTable} selectionForListingMasterAPI={selectionForListingMasterAPI} changeSetLoader={changeSetLoader} changeTokenCheckBox={changeTokenCheckBox} isReset={isReset} ListFor='simulation' />)
                 case BOPIMPORT:
-                    return (<BOPImportListing isSimulation={true} isMasterSummaryDrawer={masterSummaryDrawerState ? props.isMasterSummaryDrawer : false} technology={technology.value} objectForMultipleSimulation={obj} apply={editTable} selectionForListingMasterAPI={selectionForListingMasterAPI} changeSetLoader={changeSetLoader} changeTokenCheckBox={changeTokenCheckBox} ListFor='simulation' />)
+                    return (<BOPImportListing isSimulation={true} isMasterSummaryDrawer={masterSummaryDrawerState ? props.isMasterSummaryDrawer : false} technology={technology.value} objectForMultipleSimulation={obj} apply={editTable} selectionForListingMasterAPI={selectionForListingMasterAPI} changeSetLoader={changeSetLoader} changeTokenCheckBox={changeTokenCheckBox} isReset={isReset} ListFor='simulation' />)
                 case EXCHNAGERATE:
                     return (<ExchangeRateListing isSimulation={true} technology={technology.value} apply={editTable} tokenArray={tokenForSimulation} objectForMultipleSimulation={obj} selectionForListingMasterAPI={selectionForListingMasterAPI} changeSetLoader={changeSetLoader} changeTokenCheckBox={changeTokenCheckBox} />)
                 case OPERATIONS:
-                    return (<OperationListing isSimulation={true} isMasterSummaryDrawer={masterSummaryDrawerState ? props.isMasterSummaryDrawer : false} technology={technology.value} objectForMultipleSimulation={obj} apply={editTable} isOperationST={OPERATIONS} selectionForListingMasterAPI={selectionForListingMasterAPI} changeSetLoader={changeSetLoader} changeTokenCheckBox={changeTokenCheckBox} ListFor='simulation' stopAPICall={false} />)
+                    return (<OperationListing isSimulation={true} isMasterSummaryDrawer={masterSummaryDrawerState ? props.isMasterSummaryDrawer : false} technology={technology.value} objectForMultipleSimulation={obj} apply={editTable} isOperationST={OPERATIONS} selectionForListingMasterAPI={selectionForListingMasterAPI} changeSetLoader={changeSetLoader} changeTokenCheckBox={changeTokenCheckBox} isReset={isReset} ListFor='simulation' stopAPICall={false} />)
                 case SURFACETREATMENT:
-                    return (<OperationListing isSimulation={true} isMasterSummaryDrawer={masterSummaryDrawerState ? props.isMasterSummaryDrawer : false} technology={technology.value} objectForMultipleSimulation={obj} apply={editTable} isOperationST={SURFACETREATMENT} selectionForListingMasterAPI={selectionForListingMasterAPI} changeSetLoader={changeSetLoader} changeTokenCheckBox={changeTokenCheckBox} ListFor='simulation' stopAPICall={false} />)
+                    return (<OperationListing isSimulation={true} isMasterSummaryDrawer={masterSummaryDrawerState ? props.isMasterSummaryDrawer : false} technology={technology.value} objectForMultipleSimulation={obj} apply={editTable} isOperationST={SURFACETREATMENT} selectionForListingMasterAPI={selectionForListingMasterAPI} changeSetLoader={changeSetLoader} changeTokenCheckBox={changeTokenCheckBox} isReset={isReset} ListFor='simulation' stopAPICall={false} />)
                 // case BOPIMPORT:
                 //     return (<OverheadListing isSimulation={true} technology={technology.value} apply={editTable} />)
                 // case BOPIMPORT:
@@ -925,7 +930,7 @@ function Simulation(props) {
         let tempObject = tokenForSimulation?.length !== 0 ? [{ SimulationId: tokenForSimulation?.value }] : []
         switch (page) {
             case RMDOMESTIC:
-                return <RMSimulation isDomestic={true} cancelEditPage={cancelEditPage} isbulkUpload={isbulkUpload} rowCount={rowCount} list={tableData.length > 0 ? tableData : getFilteredData(rmDomesticListing, RM_MASTER_ID)} technology={technology.label} master={master.label} tokenForMultiSimulation={tempObject} />  //IF WE ARE USING BULK UPLOAD THEN ONLY TABLE DATA WILL BE USED OTHERWISE DIRECT LISTING
+                return <RMSimulation isDomestic={true} cancelEditPage={cancelEditPage} isbulkUpload={isbulkUpload} rowCount={rowCount} list={tableData.length > 0 ? tableData : getFilteredData(rmDomesticListing, RM_MASTER_ID)} technology={technology.label} technologyId={technology.value} master={master.label} tokenForMultiSimulation={tempObject} />  //IF WE ARE USING BULK UPLOAD THEN ONLY TABLE DATA WILL BE USED OTHERWISE DIRECT LISTING
             case RMIMPORT:
                 return <RMSimulation isDomestic={false} cancelEditPage={cancelEditPage} isbulkUpload={isbulkUpload} rowCount={rowCount} list={tableData.length > 0 ? tableData : getFilteredData(rmImportListing, RM_MASTER_ID)} technology={technology.label} master={master.label} tokenForMultiSimulation={tempObject} />   //IF WE ARE USING BULK UPLOAD THEN ONLY TABLE DATA WILL BE USED OTHERWISE DIRECT LISTING
             case EXCHNAGERATE:

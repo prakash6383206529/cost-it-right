@@ -16,7 +16,7 @@ import SendForApproval from './approval/SendForApproval'
 import Toaster from '../../common/Toaster'
 import { checkForDecimalAndNull, checkForNull, checkPermission, formViewData, getTechnologyPermission, loggedInUserId, userDetails, allEqual, getConfigurationKey, getCurrencySymbol, highlightCostingSummaryValue, checkVendorPlantConfigurable } from '../../../helper'
 import Attachament from './Drawers/Attachament'
-import { BOPDOMESTIC, BOPIMPORT, COSTING, DRAFT, FILE_URL, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, VARIANCE, VBC, ZBC, VIEW_COSTING_DATA, NCC, EMPTY_GUID, CBC, ZBCTypeId, VBCTypeId, NCCTypeId, CBCTypeId } from '../../../config/constants'
+import { BOPDOMESTIC, BOPIMPORT, COSTING, DRAFT, FILE_URL, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, VARIANCE, VBC, ZBC, VIEW_COSTING_DATA, VIEW_COSTING_DATA_LOGISTICS, NCC, EMPTY_GUID, CBC, ZBCTypeId, VBCTypeId, NCCTypeId, CBCTypeId } from '../../../config/constants'
 import { useHistory } from "react-router-dom";
 import WarningMessage from '../../common/WarningMessage'
 import DayTime from '../../common/DayTimeWrapper'
@@ -34,7 +34,7 @@ import { IdForMultiTechnology } from '../../../config/masterData'
 import ViewMultipleTechnology from './Drawers/ViewMultipleTechnology'
 import TooltipCustom from '../../common/Tooltip'
 import { Costratiograph } from '../../dashboard/CostRatioGraph'
-import { graphColor1, graphColor2, graphColor3, graphColor4, graphColor5, graphColor6 } from '../../dashboard/ChartsDashboard'
+import { colorArray } from '../../dashboard/ChartsDashboard'
 import { LOGISTICS } from '../../../config/masterData'
 
 const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
@@ -92,6 +92,7 @@ const CostingSummaryTable = (props) => {
   const [isLockedState, setIsLockedState] = useState(false)
   const [viewMultipleTechnologyDrawer, setViewMultipleTechnologyDrawer] = useState(false)
   const [multipleTechnologyData, setMultipleTechnologyData] = useState([])
+  const [pieChartLabel, setPieChartLabel] = useState([])
 
   const viewCostingData = useSelector((state) => state.costing.viewCostingDetailData)
 
@@ -165,8 +166,53 @@ const CostingSummaryTable = (props) => {
     checkForDecimalAndNull(tempObj.nOverheadProfit, initialConfiguration.NoOfDecimalForPrice),
     checkForDecimalAndNull(tempObj.nPackagingAndFreight, initialConfiguration.NoOfDecimalForPrice),
     checkForDecimalAndNull(tempObj.totalToolCost, initialConfiguration.NoOfDecimalForPrice),
+    checkForDecimalAndNull(tempObj.otherDiscountCost, initialConfiguration.NoOfDecimalForPrice),
+    checkForDecimalAndNull(tempObj.anyOtherCost, initialConfiguration.NoOfDecimalForPrice),
     ]
     setPieChartDataArray(temp)
+    let labelArray = []
+    let labels = ['RM', 'BOP', 'CC', 'ST', 'O&P', 'P&F', 'TC', 'HUNDI/DIS', 'ANY OTHER COST']
+    temp && temp.map((item, index) => {
+      if (item !== 0) {
+        labelArray.push(labels[index])
+      }
+    })
+    let dataArray = []
+    labelArray && labelArray.map(item => {
+      switch (item) {
+        case 'RM':
+          dataArray.push(checkForDecimalAndNull(tempObj.netRM, initialConfiguration.NoOfDecimalForPrice))
+          break;
+        case 'BOP':
+          dataArray.push(checkForDecimalAndNull(tempObj.netBOP, initialConfiguration.NoOfDecimalForPrice))
+          break;
+        case 'CC':
+          dataArray.push(checkForDecimalAndNull(tempObj.nConvCost, initialConfiguration.NoOfDecimalForPrice))
+          break;
+        case 'ST':
+          dataArray.push(checkForDecimalAndNull(tempObj.nsTreamnt, initialConfiguration.NoOfDecimalForPrice))
+          break;
+        case 'O&P':
+          dataArray.push(checkForDecimalAndNull(tempObj.nOverheadProfit, initialConfiguration.NoOfDecimalForPrice))
+          break;
+        case 'P&F':
+          dataArray.push(checkForDecimalAndNull(tempObj.nPackagingAndFreight, initialConfiguration.NoOfDecimalForPrice))
+          break;
+        case 'TC':
+          dataArray.push(checkForDecimalAndNull(tempObj.totalToolCost, initialConfiguration.NoOfDecimalForPrice))
+          break;
+        case 'OTHER DIS':
+          dataArray.push(checkForDecimalAndNull(tempObj.otherDiscountCost, initialConfiguration.NoOfDecimalForPrice))
+          break;
+        case 'ANY OTHER COST':
+          dataArray.push(checkForDecimalAndNull(tempObj.anyOtherCost, initialConfiguration.NoOfDecimalForPrice))
+          break;
+        default:
+          break;
+      }
+    })
+    setPieChartLabel(labelArray)
+    setPieChartDataArray(dataArray);
   }, [400])
   useEffect(() => {
     applyPermission(topAndLeftMenuData, selectedTechnology)
@@ -854,17 +900,20 @@ const CostingSummaryTable = (props) => {
     }
 
     let costingSummary = []
-    for (var prop in VIEW_COSTING_DATA) {
+    let templateObj = viewCostingData[0]?.technologyId === LOGISTICS ? VIEW_COSTING_DATA_LOGISTICS : VIEW_COSTING_DATA
 
-      if (partType) {
+    for (var prop in templateObj) {
+      if (partType) {// IF TECHNOLOGY WILL BE ASSEMBLY THIS BLOCK WILL BE EXCECUTED
         if (prop !== "netRM" && prop !== "netBOP" && prop !== 'fWeight' && prop !== 'BurningLossWeight' && prop !== 'gWeight' && prop !== 'ScrapWeight' && prop !== 'scrapRate' && prop !== 'rmRate' && prop !== 'rm')
           costingSummary.push({ label: VIEW_COSTING_DATA[prop], value: prop, })
       }
       else if (IsNccCosting) {
-        costingSummary.push({ label: VIEW_COSTING_DATA[prop], value: prop, })
-      } else {
+        if (prop !== "netChildPartsCost" && prop !== "netBoughtOutPartCost" && prop !== "netProcessCost" && prop !== "netOperationCost" && prop !== "nTotalRMBOPCC") {  // THESE 5 KEYS WILL NOT BE VISIBLE FOR OTHER TECHNOLOGY ( VISIBLE ONLY FOR ASSEMBLY)
+          costingSummary.push({ label: VIEW_COSTING_DATA[prop], value: prop, })
+        }
 
-        if (prop !== "NCCPartQuantity" && prop !== "IsRegularized")
+      } else {
+        if (prop !== "NCCPartQuantity" && prop !== "IsRegularized" && prop !== "netChildPartsCost" && prop !== "netBoughtOutPartCost" && prop !== "netProcessCost" && prop !== "netOperationCost" && prop !== "nTotalRMBOPCC")  // THESE 5 KEYS WILL NOT BE VISIBLE FOR OTHER TECHNOLOGY ( VISIBLE ONLY FOR ASSEMBLY)
           costingSummary.push({ label: VIEW_COSTING_DATA[prop], value: prop, })
       }
     }
@@ -938,7 +987,7 @@ const CostingSummaryTable = (props) => {
     let temp = []
     temp = TempData
     return (
-      <ExcelSheet data={temp} name={"CostingSummary"}>
+      <ExcelSheet data={temp} name={"Costing Summary"}>
         {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
       </ExcelSheet>
     );
@@ -1011,31 +1060,13 @@ const CostingSummaryTable = (props) => {
         break;
     }
   }
-
   const pieChartData = {
-    labels: ['RM', 'BOP', 'CC', 'ST', 'O&P', 'P&F', 'TC'],
+    labels: pieChartLabel,
     datasets: [
       {
         label: '',
         data: pieChartDataArray,
-        backgroundColor: [
-          graphColor1,
-          graphColor2,
-          graphColor3,
-          graphColor4,
-          graphColor5,
-          graphColor6,
-          graphColor4,
-        ],
-        borderColor: [
-          '#fff',
-          '#fff',
-          '#fff',
-          '#fff',
-          '#fff',
-          '#fff',
-          '#fff',
-        ],
+        backgroundColor: colorArray,
         borderWidth: 1,
       },
     ],
@@ -1048,27 +1079,20 @@ const CostingSummaryTable = (props) => {
         labels: {
           boxWidth: 15,
           borderWidth: 1,
-          borderColor: [
-            graphColor1,
-            graphColor2,
-            graphColor3,
-            graphColor4,
-            graphColor5,
-            graphColor6,
-            graphColor4,
-          ],
+          padding: 8,
+          color: '#000'
         }
       },
     },
   }
 
-
+  const PDFPageStyle = "@page { size: A4 landscape; }";
   return (
     <Fragment>
       {
         <Fragment>
           {(loader && <LoaderCustom customClass="pdf-loader" />)}
-          {(Object.keys(viewCostingData).length === 0 && costingIdExist && <LoaderCustom customClass={` ${!props.fromCostingSummary ? 'hidden-loader' : ''}`} />)}
+          {(Object.keys(viewCostingData).length === 0 && costingIdExist && !props.isRfqCosting && <LoaderCustom customClass={` ${!props.fromCostingSummary ? 'hidden-loader' : ''}`} />)}
           <Row>
             {!viewMode && (
               <Col md="4">
@@ -1077,27 +1101,28 @@ const CostingSummaryTable = (props) => {
             )}
 
 
-            {!props.isRfqCosting && <Col md={simulationMode ? "12" : "8"} className="text-right">
+            {<Col md={simulationMode || props.isRfqCosting ? "12" : "8"} className="text-right">
 
               {
                 DownloadAccessibility ? <LoaderCustom customClass="pdf-loader" /> :
                   <>
-                    <ExcelFile filename={'CostingSummary'} fileExtension={'.xls'} element={<button type="button" className={'user-btn excel-btn mr5 mb-2'} title="Excel"><img src={ExcelIcon} alt="download" /></button>}>
+                    <ExcelFile filename={'Costing Summary'} fileExtension={'.xls'} element={<button type="button" className={'user-btn excel-btn mr5 mb-2'} title="Excel"><img src={ExcelIcon} alt="download" /></button>}>
                       {onBtExport()}
                     </ExcelFile>
                   </>
               }
-              {!simulationMode &&
+              {!simulationMode && !props.isRfqCosting &&
                 <ReactToPrint
                   bodyClass='mx-2 mt-3 remove-space-border'
                   documentTitle={`${pdfName}-detailed-costing`}
                   content={reactToPrintContent}
+                  pageStyle={PDFPageStyle}
                   onAfterPrint={handleAfterPrintDetail}
                   onBeforeGetContent={handleOnBeforeGetContentDetail}
                   trigger={reactToPrintTriggerDetail}
                 />
               }
-              {!simulationDrawer && !drawerViewMode && <ReactToPrint
+              {!simulationDrawer && !drawerViewMode && !props.isRfqCosting && <ReactToPrint
                 bodyClass={`my-3 simple-pdf ${simulationMode ? 'mx-1 simulation-print' : 'mx-2'}`}
                 documentTitle={`${simulationMode ? 'Compare-costing.pdf' : `${pdfName}-costing`}`}
                 content={reactToPrintContent}
@@ -1106,9 +1131,9 @@ const CostingSummaryTable = (props) => {
                 trigger={reactToPrintTrigger}
               />}
               {
-                !simulationMode && <>
+                !simulationMode && !props.isRfqCosting && <>
 
-                  {(!viewMode && !isFinalApproverShow) && (
+                  {(!viewMode && !isFinalApproverShow) && !props.isRfqCosting && (
                     <button className="user-btn mr-1 mb-2 approval-btn" disabled={isWarningFlag} onClick={() => checkCostings()}>
                       <div className="send-for-approval"></div>
                       {'Send For Approval'}
@@ -1188,7 +1213,7 @@ const CostingSummaryTable = (props) => {
                                     {((!pdfHead && !drawerDetailPDF)) && (data?.IsAssemblyCosting === true) && < button title='View BOM' className="hirarchy-btn mr-1 mb-0 align-middle" type={'button'} onClick={() => viewBomCostingDetail(index)} />}
                                     {((!viewMode && (!pdfHead && !drawerDetailPDF)) && EditAccessibility) && (data?.status === DRAFT) && <button className="Edit mr-1 mb-0 align-middle" type={"button"} title={"Edit Costing"} onClick={() => editCostingDetail(index)} />}
                                     {((!viewMode && (!pdfHead && !drawerDetailPDF)) && AddAccessibility) && <button className="Add-file mr-1 mb-0 align-middle" type={"button"} title={"Add Costing"} onClick={() => addNewCosting(index)} />}
-                                    {((!viewMode || (approvalMode && data?.CostingHeading === '-')) && (!pdfHead && !drawerDetailPDF)) && <button type="button" className="CancelIcon mb-0 align-middle" title='Discard' onClick={() => deleteCostingFromView(index)}></button>}
+                                    {((!viewMode || props.isRfqCosting || (approvalMode && data?.CostingHeading === '-')) && (!pdfHead && !drawerDetailPDF)) && <button type="button" className="CancelIcon mb-0 align-middle" title='Discard' onClick={() => deleteCostingFromView(index)}></button>}
                                   </div>
                                 </div>
                               </th>
@@ -1358,7 +1383,7 @@ const CostingSummaryTable = (props) => {
                           <>
                             {!drawerDetailPDF ? <tr>
                               <td>
-                                <span className="d-block small-grey-text">RM Name-Grade</span>
+                                <span className="d-block small-grey-text">RM-Grade</span>
                                 <span className={`d-block small-grey-text ${isApproval && viewCostingData?.length > 1 && highlightCostingSummaryValue(viewCostingData[0]?.rmRate, viewCostingData[1]?.rmRate)}`}>RM Rate</span>
                                 <span className={`d-block small-grey-text ${isApproval && viewCostingData?.length > 1 && highlightCostingSummaryValue(viewCostingData[0]?.scrapRate, viewCostingData[1]?.scrapRate)}`}>Scrap Rate</span>
                                 <span className={`d-block small-grey-text ${isApproval && viewCostingData?.length > 1 && highlightCostingSummaryValue(reducer(viewCostingData[0]?.netRMCostView), reducer(viewCostingData[1]?.netRMCostView))}`}>Gross Weight</span>
@@ -1817,7 +1842,7 @@ const CostingSummaryTable = (props) => {
                         <tr className='border-right'>
                           <td width={"20%"}>
                             <span className="d-block small-grey-text">
-                              Hundi/Other Discount
+                              Hundi/Discount
                             </span>
                             <span className="d-block small-grey-text"></span>
                           </td>

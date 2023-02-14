@@ -160,7 +160,7 @@ function RMImportListing(props) {
           props?.changeSetLoader(true)
           dispatch(getListingForSimulationCombined(objectForMultipleSimulation, RMIMPORT, (res) => {
             props?.changeSetLoader(false)
-
+            setloader(false)
           }))
 
         } else {
@@ -712,6 +712,9 @@ function RMImportListing(props) {
     setPageSize(prevState => ({ ...prevState, pageSize10: true, pageSize50: false, pageSize100: false }))
     setDataCount(0)
     reactLocalStorage.setObject('selectedRow', {})
+    if (isSimulation) {
+      props.isReset()
+    }
   }
 
 
@@ -906,15 +909,10 @@ function RMImportListing(props) {
                     suppressRowClickSelection={true}
                   >
                     <AgGridColumn cellClass="has-checkbox" field="CostingHead" headerName='Costing Head' cellRenderer={checkBoxRenderer}></AgGridColumn>
-
-                    <AgGridColumn field="TechnologyName" headerName="Technology"></AgGridColumn>
-
-                    <AgGridColumn field="RawMaterial" headerName="Raw Material"></AgGridColumn>
-
-                    <AgGridColumn field="RMGrade" headerName="RM Grade"></AgGridColumn>
-
-                    <AgGridColumn field="RMSpec" headerName="RM Spec"></AgGridColumn>
-
+                    <AgGridColumn field="TechnologyName" headerName='Technology'></AgGridColumn>
+                    <AgGridColumn field="RawMaterial" ></AgGridColumn>
+                    <AgGridColumn field="RMGrade" headerName='Grade'></AgGridColumn>
+                    <AgGridColumn field="RMSpec" headerName='Spec'></AgGridColumn>
                     <AgGridColumn field="RawMaterialCode" headerName='Code' cellRenderer='hyphenFormatter'></AgGridColumn>
                     <AgGridColumn field="Category"></AgGridColumn>
                     <AgGridColumn field="MaterialType"></AgGridColumn>
@@ -970,7 +968,7 @@ function RMImportListing(props) {
             closeDrawer={closeBulkUploadDrawer}
             isEditFlag={false}
             densityAlert={densityAlert}
-            fileName={"RMImport"}
+            fileName={"RM Import"}
             isZBCVBCTemplate={true}
             messageLabel={"RM Import"}
             anchor={"right"}

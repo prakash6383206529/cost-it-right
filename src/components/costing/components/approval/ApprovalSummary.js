@@ -23,6 +23,7 @@ import NoContentFound from '../../../common/NoContentFound'
 import { getLastSimulationData } from '../../../simulation/actions/Simulation'
 import Toaster from '../../../common/Toaster'
 import PopupMsgWrapper from '../../../common/PopupMsgWrapper'
+import { reactLocalStorage } from 'reactjs-localstorage'
 
 function ApprovalSummary(props) {
   const { approvalNumber, approvalProcessId } = props.location.state
@@ -58,9 +59,9 @@ function ApprovalSummary(props) {
   const [IsRegularized, setIsRegularized] = useState("")
   const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
 
-  const headerName = ['Revision No.', 'Name', 'Old Cost/Pc', 'New Cost/Pc', 'Quantity', 'Impact/Pc', 'Volume/Year', 'Impact/Quarter', 'Impact/Year']
+  const headerName = ['Revision No.', 'Name', 'Existing Cost/Pc', 'Revised Cost/Pc', 'Quantity', 'Impact/Pc', 'Volume/Year', 'Impact/Quarter', 'Impact/Year']
   const parentField = ['PartNumber', '-', 'PartName', '-', '-', '-', 'VariancePerPiece', 'VolumePerYear', 'ImpactPerQuarter', 'ImpactPerYear']
-  const childField = ['PartNumber', 'ECNNumber', 'PartName', 'OldCost', 'NewCost', 'Quantity', 'VariancePerPiece', '-', '-', '-']
+  const childField = ['PartNumber', 'ECNNumber', 'PartName', 'ExistingCost', 'RevisedCost', 'Quantity', 'VariancePerPiece', '-', '-', '-']
   useEffect(() => {
     approvalSummaryHandler()
   }, [])
@@ -381,7 +382,7 @@ function ApprovalSummary(props) {
                       {approvalDetails.CostingTypeId === VBCTypeId && (
                         <th>{`ZBC/Vendor (Code):`}</th>
                       )}
-                      {approvalDetails.CostingTypeId === CBCTypeId && (
+                      {approvalDetails.CostingTypeId === CBCTypeId && reactLocalStorage.getObject('cbcCostingPermission') && (
                         <th>{`Customer (Code)`}</th>
                       )}
                       {
@@ -396,9 +397,9 @@ function ApprovalSummary(props) {
 
                       <th>{`SOB (%):`}</th>
                       {/* <th>{`ECN Ref No`}</th> */}
-                      <th>{`Old/Current Price:`}</th>
-                      <th>{`New/Revised Price:`}</th>
-                      <th>{`Variance:`}</th>
+                      <th>{`Existing Price:`}</th>
+                      <th>{`Revised Price:`}</th>
+                      <th>{`Variance (w.r.t. Existing):`}</th>
                       {approvalDetails.CostingTypeId !== NCCTypeId && <th>{`Consumption Quantity:`}</th>}
                       {approvalDetails.CostingTypeId !== NCCTypeId && <th>{`Remaining Quantity:`}</th>}
                       {approvalDetails.CostingTypeId === NCCTypeId && (

@@ -9,6 +9,8 @@ import LoaderCustom from '../common/LoaderCustom';
 import Toaster from '../common/Toaster';
 import { bulkUploadVolume } from '../masters/actions/Volume';
 import { loggedInUserId } from '../../helper';
+import ExcelFile from 'react-export-excel/dist/ExcelPlugin/components/ExcelFile';
+import { Volume, VolumeTempData } from '../../config/masterData';
 
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -82,12 +84,10 @@ class VolumeBulkUploadDrawer extends Component {
     * @method returnExcelColumn
     * @description Used to get excel column names
     */
-    returnExcelColumn = (data = [], TempData) => {
-
+    returnExcelColumn = (data = []) => {
         const fileName = "Volume"
-
-        return (<ExcelSheet data={TempData} name={fileName}>
-            {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.label} />)}
+        return (<ExcelSheet data={VolumeTempData} name={fileName}>
+            {Volume && Volume.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
         </ExcelSheet>);
     }
     fileHandler = event => {
@@ -121,7 +121,9 @@ class VolumeBulkUploadDrawer extends Component {
             this.cancel()
         }
     }
-
+    onBtExport = () => {
+        return this.returnExcelColumn(VolumeTempData)
+    };
     render() {
         const { handleSubmit } = this.props
         return (
@@ -130,10 +132,15 @@ class VolumeBulkUploadDrawer extends Component {
                     noValidate
                     className="form"
                     onSubmit={handleSubmit(this.onSubmit.bind(this))}>
-
-
                     <Col md="12" className='px-3'>
-                        <label>Upload File</label>
+                        <div>
+                            <ExcelFile filename={'Volume'} fileExtension={'.xls'} element={
+                                <button type="button" className={'user-btn w-100 mb-3'}><div className="download mr-1" ></div>
+                                    {"Download Volume"}
+                                </button>}>
+                                {this.onBtExport()}
+                            </ExcelFile>
+                        </div>
                         {this.state.fileName !== "" ? (
                             <div class="alert alert-danger" role="alert">
                                 {this.state.fileName}

@@ -884,7 +884,7 @@ class AddMachineRate extends Component {
     this.setState({ showPopup: true })
   }
   onPopupConfirm = () => {
-    this.cancel('cancel')
+    this.cancel('submit')
     this.setState({ showPopup: false })
   }
   closePopUp = () => {

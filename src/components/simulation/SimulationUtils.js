@@ -280,7 +280,7 @@ export const ErrorMessage = (props) => {
             temp = 'success';
         }
         else {
-            temp = 'd-none'
+            temp = 'error'
         }
         return temp
     }
