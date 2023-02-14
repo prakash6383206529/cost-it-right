@@ -374,7 +374,7 @@ function ProcessCost(props) {
   }
 
   const onRemarkPopUpClickGroup = (index, parentIndex, list) => {
-    if (errors.ProcessGridFields && errors.ProcessGridFields[index]?.remarkPopUp !== undefined) {
+    if (errors.SingleProcessGridField && errors.SingleProcessGridField[`${index}${parentIndex}`].remarkPopUp !== undefined) {
       return false
     }
     let tempArr = []
@@ -414,12 +414,11 @@ function ProcessCost(props) {
 
   const onRemarkPopUpCloseGroup = (index, parentIndex) => {
     let button = document.getElementById(`popUpTriggers${index}.${parentIndex}`)
-    if (errors && errors.ProcessGridFields && errors.ProcessGridFields[index].remarkPopUp) {
-      delete errors.ProcessGridFields[index].remarkPopUp;
+    if (errors && errors.SingleProcessGridField && errors.SingleProcessGridField[`${index}${parentIndex}`].remarkPopUp) {
+      delete errors.SingleProcessGridField[`${index}${parentIndex}`].remarkPopUp
       setGroupProcessRemark(false)
     }
     button.click()
-
   }
 
   useEffect(() => {
@@ -1118,7 +1117,7 @@ function ProcessCost(props) {
                   position="top right">
                   <TextAreaHookForm
                     label="Remark:"
-                    name={`${SingleProcessGridField}.${index}.${parentIndex}.remarkPopUp`}
+                    name={`${SingleProcessGridField}.${index}${parentIndex}.remarkPopUp`}
                     Controller={Controller}
                     control={control}
                     register={register}
@@ -1132,7 +1131,7 @@ function ProcessCost(props) {
                     defaultValue={item.Remark ?? item.Remark}
                     className=""
                     customClassName={"withBorder"}
-                    errors={errors && errors.ProcessGridFields && errors.ProcessGridFields[index] !== undefined ? errors.ProcessGridFields[index].remarkPopUp : ''}
+                    errors={errors && errors.SingleProcessGridField && errors.SingleProcessGridField[`${index}${parentIndex}`] !== undefined ? errors.SingleProcessGridField[`${index}${parentIndex}`].remarkPopUp : ''}
                     //errors={errors && errors.remarkPopUp && errors.remarkPopUp[index] !== undefined ? errors.remarkPopUp[index] : ''}                        
                     disabled={(CostingViewMode || IsLocked) ? true : false}
                     hidden={false}
