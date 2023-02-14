@@ -15,7 +15,7 @@ import { Redirect } from 'react-router';
 import { checkFinalUser, setCostingViewData } from '../../costing/actions/Costing';
 import { toast } from 'react-toastify';
 import {
-    ASSEMBLY_TECHNOLOGY,
+    ASSEMBLY_TECHNOLOGY_MASTER,
     ASSEMBLY_WISEIMPACT_DOWNLOAD_EXCEl,
     BOPGridForToken,
     CostingSimulationDownloadAssemblyTechnology,
@@ -40,7 +40,7 @@ const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 function CostingSimulation(props) {
-    const { simulationId, isFromApprovalListing, master, statusForLinkedToken, approvalTypeId } = props
+    const { simulationId, isFromApprovalListing, master, statusForLinkedToken } = props
 
     const getShowSimulationPage = useSelector((state) => state.simulation.getShowSimulationPage)
 
@@ -113,7 +113,7 @@ function CostingSimulation(props) {
     const costingSimulationListAllKeys = useSelector(state => state.simulation.costingSimulationListAllKeys)
 
     const selectedMasterForSimulation = useSelector(state => state.simulation.selectedMasterForSimulation)
-    const isMultiTechnology = (checkForNull(selectedMasterForSimulation?.value) === ASSEMBLY_TECHNOLOGY) ? true : false
+    const isMultiTechnology = (checkForNull(selectedMasterForSimulation?.value) === ASSEMBLY_TECHNOLOGY_MASTER) ? true : false
     const userData = userDetails()
 
     const dispatch = useDispatch()
@@ -148,7 +148,7 @@ function CostingSimulation(props) {
                 UserId: loggedInUserId(),
                 TechnologyId: SimulationTechnologyIdState,
                 Mode: 'simulation',
-                approvalTypeId: approvalTypeId
+                approvalTypeId: amendmentDetails.SimulationHeadId
             }
 
             dispatch(checkFinalUser(obj, res => {
@@ -157,7 +157,8 @@ function CostingSimulation(props) {
                 }
             }))
         }
-    }, [SimulationTechnologyIdState])
+        console.log('amendmentDetails.SimulationHeadId: ', amendmentDetails.SimulationHeadId);
+    }, [SimulationTechnologyIdState, amendmentDetails.SimulationHeadId])
 
     useEffect(() => {
         // TO CHECK IF ANY OF THE RECORD HAS ASSEMBLY ROW
@@ -1432,8 +1433,7 @@ function CostingSimulation(props) {
                                     closeDrawer={closeDrawer}
                                     isSimulation={true}
                                     apiData={apiData}
-                                    SimulationHeadId={amendmentDetails.SimulationHeadId}
-                                    costingTypeId={approvalTypeId}
+                                    costingTypeId={amendmentDetails.SimulationHeadId}
                                 // isSaveDone={isSaveDone}
                                 />
                             }

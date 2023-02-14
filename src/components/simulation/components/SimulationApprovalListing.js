@@ -788,7 +788,7 @@ function SimulationApprovalListing(props) {
                                         isSimulationApprovalListing={true}
                                         simulationDetail={simulationDetail}
                                         IsFinalLevel={showFinalLevelButtons}
-                                        SimulationHeadId={selectedRowData[0].SimulationHeadId}
+                                        costingTypeId={selectedRowData[0].SimulationHeadId}
                                     />
                                 }
                             </div>
