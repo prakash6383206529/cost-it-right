@@ -1501,7 +1501,7 @@ function SimulationApprovalSummary(props) {
                     costingList={costingList}
                     attachments={simulationDetail.Attachements}
                     Attachements={simulationDetail.Attachements}
-                    SimulationHeadId={simulationDetail?.SimulationHeadId}
+                    costingTypeId={simulationDetail?.SimulationHeadId}
                 // IsPushDrawer={showPushDrawer}
                 // dataSend={[approvalDetails, partDetail]}
                 />
@@ -1521,7 +1521,7 @@ function SimulationApprovalSummary(props) {
                     // IsPushDrawer={showPushDrawer}
                     // dataSend={[approvalDetails, partDetail]}
                     Attachements={simulationDetail.Attachements}
-                    SimulationHeadId={simulationDetail?.SimulationHeadId}
+                    costingTypeId={simulationDetail?.SimulationHeadId}
                 />
             }
 

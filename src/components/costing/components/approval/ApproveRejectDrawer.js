@@ -15,7 +15,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import AttachmentSec from './AttachmentSec'
 import { getSelectListOfSimulationLinkingTokens } from '../../../simulation/actions/Simulation'
-import { provisional } from '../../../../config/constants'
+import { PROVISIONAL } from '../../../../config/constants'
 import LoaderCustom from '../../../common/LoaderCustom';
 import Toaster from '../../../common/Toaster'
 import { getUsersSimulationTechnologyLevelAPI } from '../../../../actions/auth/AuthActions'
@@ -24,7 +24,7 @@ function ApproveRejectDrawer(props) {
   // ********* INITIALIZE REF FOR DROPZONE ********
   const dropzone = useRef(null);
 
-  const { type, approvalData, IsFinalLevel, IsPushDrawer, isSimulation, reasonId, simulationDetail, selectedRowData, costingArr, isSaveDone, Attachements, vendorId, SimulationTechnologyId, SimulationType, costingList, isSimulationApprovalListing, attachments, apiData, SimulationHeadId, dataSend } = props
+  const { type, approvalData, IsFinalLevel, IsPushDrawer, isSimulation, dataSend, reasonId, simulationDetail, selectedRowData, costingArr, isSaveDone, Attachements, vendorId, SimulationTechnologyId, SimulationType, costingList, isSimulationApprovalListing, attachments, apiData, SimulationHeadId } = props
 
   const userLoggedIn = loggedInUserId()
   const userData = userDetails()
@@ -61,7 +61,7 @@ function ApproveRejectDrawer(props) {
     let levelDetailsTemp = ''
     dispatch(getUsersSimulationTechnologyLevelAPI(loggedInUserId(), selectedMasterForSimulation?.value, (res) => {
       if (res?.data?.Data) {
-        levelDetailsTemp = userTechnologyLevelDetails(SimulationHeadId, res?.data?.Data?.TechnologyLevels)
+        levelDetailsTemp = userTechnologyLevelDetails(props?.costingTypeId, res?.data?.Data?.TechnologyLevels)
         setLevelDetails(levelDetailsTemp)
       }
     }))
@@ -126,7 +126,7 @@ function ApproveRejectDrawer(props) {
       }
     }, 300);
 
-    if (SimulationType !== null && SimulationType === provisional) {
+    if (SimulationType !== null && SimulationType === PROVISIONAL) {
       setTokenDropdown(false)
     }
 
