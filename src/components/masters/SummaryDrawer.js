@@ -157,10 +157,9 @@ function SummaryDrawer(props) {
                                 {isMachineApproval &&
                                     <MachineRateListing isMasterSummaryDrawer={true} selectionForListingMasterAPI='Master' isDataInMaster={isDataInMaster} />}
 
-
-                                <Row>
+                                {files.length > 0 && <Row>
                                     <Col md="12" className='mt-2'>
-                                        <h5 className="left-border">Attachments</h5>
+                                        <h5 className="left-border">Attachments:</h5>
                                     </Col>
                                     <Col md="12">
                                         <div className={"attachment-wrapper mt-0"}>
@@ -183,7 +182,7 @@ function SummaryDrawer(props) {
                                                 })}
                                         </div>
                                     </Col>
-                                </Row>
+                                </Row>}
                             </Col>
 
 
