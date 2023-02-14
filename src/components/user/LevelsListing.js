@@ -412,10 +412,10 @@ class LevelsListing extends Component {
 														enableBrowserTooltips={true}
 													>
 														{/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
-														<AgGridColumn width="250" field="ApprovalType" headerName="Approval Type"></AgGridColumn>
-														<AgGridColumn width="250" field="Module" headerName="Module"></AgGridColumn>
-														<AgGridColumn width="250" suppressSizeToFit={true} field="Technology" headerName={`Technology/Heads${getConfigurationKey().IsMasterApprovalAppliedConfigure ? '/Masters' : ''}`}></AgGridColumn>
-														<AgGridColumn width="100" field="Level" suppressSizeToFit={true} headerName="Level"></AgGridColumn>
+														<AgGridColumn width="40" field="ApprovalType" headerName="Approval Type"></AgGridColumn>
+														<AgGridColumn width="35" field="Module" headerName="Module"></AgGridColumn>
+														<AgGridColumn width="65" field="Technology" headerName={`Technology/Heads${getConfigurationKey().IsMasterApprovalAppliedConfigure ? '/Masters' : ''}`}></AgGridColumn>
+														<AgGridColumn width="35" field="Level" headerName="Level"></AgGridColumn>
 														<AgGridColumn field="Users" tooltipField="Users" headerName="Users"></AgGridColumn>
 													</AgGridReact>
 													{<PaginationWrapper gridApi={this.gridApi} setPage={this.onPageSizeChanged} pageSize1={5} pageSize2={15} pageSize3={25} />}
