@@ -8,8 +8,8 @@ import ViewDrawer from '../../costing/components/approval/ViewDrawer'
 import { useDispatch, useSelector } from 'react-redux'
 import {
     SIMULATIONAPPROVALSUMMARYDOWNLOADBOP, BOPGridForTokenSummary, InitialGridForTokenSummary,
-    LastGridForTokenSummary, OperationGridForTokenSummary, RMGridForTokenSummary, STGridForTokenSummary, MRGridForTokenSummary,
-    SIMULATIONAPPROVALSUMMARYDOWNLOADST, ASSEMBLY_WISEIMPACT_DOWNLOAD_EXCEl, CPGridForTokenSummary, SIMULATIONAPPROVALSUMMARYDOWNLOADOPERATION, SIMULATIONAPPROVALSUMMARYDOWNLOADMR, IdForMultiTechnology, SIMULATIONAPPROVALSUMMARYDOWNLOADASSEMBLYTECHNOLOGY, SIMULATIONAPPROVALSUMMARYDOWNLOADCP, ASSEMBLY_TECHNOLOGY
+    LastGridForTokenSummary, OperationGridForTokenSummary, RMGridForTokenSummary, STGridForTokenSummary,
+    SIMULATIONAPPROVALSUMMARYDOWNLOADST, ASSEMBLY_WISEIMPACT_DOWNLOAD_EXCEl, CPGridForTokenSummary, SIMULATIONAPPROVALSUMMARYDOWNLOADOPERATION, SIMULATIONAPPROVALSUMMARYDOWNLOADMR, MRGridForTokenSummary, IdForMultiTechnology, SIMULATIONAPPROVALSUMMARYDOWNLOADASSEMBLYTECHNOLOGY, SIMULATIONAPPROVALSUMMARYDOWNLOADCP, ASSEMBLY_TECHNOLOGY, ASSEMBLY_TECHNOLOGY_MASTER
 } from '../../../config/masterData';
 import { getPlantSelectListByType, getTechnologySelectList } from '../../../actions/Common';
 import { getApprovalSimulatedCostingSummary, getComparisionSimulationData, setAttachmentFileData, getImpactedMasterData, getLastSimulationData, getSimulatedAssemblyWiseImpactDate } from '../actions/Simulation'
@@ -108,10 +108,10 @@ function SimulationApprovalSummary(props) {
     const isExchangeRate = String(SimulationTechnologyId) === EXCHNAGERATE;
     const isMachineRate = String(SimulationTechnologyId) === MACHINERATE;
     const isCombinedProcess = String(SimulationTechnologyId) === COMBINED_PROCESS;
+    const isMultiTechnology = (checkForNull(simulationDetail?.SimulationTechnologyId) === ASSEMBLY_TECHNOLOGY_MASTER) ? true : false
 
     const simulationAssemblyListSummary = useSelector((state) => state.simulation.simulationAssemblyListSummary)
     const [isDisabled, setIsDisabled] = useState(false);
-    const isMultiTechnology = (checkForNull(simulationDetail?.SimulationTechnologyId) === ASSEMBLY_TECHNOLOGY) ? true : false
 
     // const partType = IdForMultiTechnology.includes(String(SimulationTechnologyIdState))
 

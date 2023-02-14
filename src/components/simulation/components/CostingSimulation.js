@@ -15,7 +15,7 @@ import { Redirect } from 'react-router';
 import { checkFinalUser, setCostingViewData } from '../../costing/actions/Costing';
 import { toast } from 'react-toastify';
 import {
-    ASSEMBLY_TECHNOLOGY,
+    ASSEMBLY_TECHNOLOGY_MASTER,
     ASSEMBLY_WISEIMPACT_DOWNLOAD_EXCEl,
     BOPGridForToken,
     COMBINEDPROCESSSIMULATION,
@@ -117,7 +117,7 @@ function CostingSimulation(props) {
     const costingSimulationListAllKeys = useSelector(state => state.simulation.costingSimulationListAllKeys)
 
     const selectedMasterForSimulation = useSelector(state => state.simulation.selectedMasterForSimulation)
-    const isMultiTechnology = (checkForNull(selectedMasterForSimulation?.value) === ASSEMBLY_TECHNOLOGY) ? true : false
+    const isMultiTechnology = (checkForNull(selectedMasterForSimulation?.value) === ASSEMBLY_TECHNOLOGY_MASTER) ? true : false
     const userData = userDetails()
 
     const dispatch = useDispatch()

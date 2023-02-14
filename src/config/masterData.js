@@ -3221,7 +3221,7 @@ export const HARDWARE = 18
 export const RIVET = 19
 export const PLATING = 21
 export const DIE_CASTING = 23
-export const ASSEMBLY_TECHNOLOGY = 10
+export const ASSEMBLY_TECHNOLOGY_MASTER = 10
 export const LOGISTICS = 24
 
 export const STRINGMAXLENGTH = 50
@@ -6229,7 +6229,7 @@ export const DATE_STRING = 'Date'
 export const DURATION_STRING = 'Duration'
 
 export const visibilityModeDropdownArray = [
-    { label: 'Date', value:'Date' },
+    { label: 'Date', value: 'Date' },
     { label: 'Duration', value: 'Duration' },
 ]
 
