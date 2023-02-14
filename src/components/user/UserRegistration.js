@@ -2099,7 +2099,7 @@ function UserRegistration(props) {
                                 //selectionChanged={departmentHandler}
                                 optionValue={(option) => option.Value}
                                 optionLabel={(option) => option.Text}
-                                // className="multiselect-with-border"
+                                className="multiselect-with-border"
                                 mendatory={true}
                               />
                             </div> :
@@ -2286,10 +2286,10 @@ function UserRegistration(props) {
                               <Table className="table border" size="sm" >
                                 <thead>
                                   <tr>
-                                    <th className="border-bottom-none">{`Technology`}</th>
-                                    <th className="border-bottom-none">{`Approval Type`}</th>
-                                    <th className="border-bottom-none">{`Level`}</th>
-                                    <th className="text-right border-bottom-none">{`Action`}</th>
+                                    <th>{`Technology`}</th>
+                                    <th>{`Approval Type`}</th>
+                                    <th>{`Level`}</th>
+                                    <th className="text-right ">{`Action`}</th>
                                   </tr>
                                 </thead>
                                 <tbody >
@@ -2429,10 +2429,10 @@ function UserRegistration(props) {
                               <Table className="table border" size="sm" >
                                 <thead>
                                   <tr>
-                                    <th className="border-bottom-none">{`Head`}</th>
-                                    <th className="border-bottom-none">{`Approval Type`}</th>
-                                    <th className="border-bottom-none">{`Level`}</th>
-                                    <th className="text-right border-bottom-none">{`Action`}</th>
+                                    <th>{`Head`}</th>
+                                    <th>{`Approval Type`}</th>
+                                    <th>{`Level`}</th>
+                                    <th className="text-right ">{`Action`}</th>
                                   </tr>
                                 </thead>
                                 <tbody >
@@ -2569,10 +2569,10 @@ function UserRegistration(props) {
                                   <Table className="table border" size="sm" >
                                     <thead>
                                       <tr>
-                                        <th className="border-bottom-none">{`Master`}</th>
-                                        <th className="border-bottom-none">{`Approval Type`}</th>
-                                        <th className="border-bottom-none">{`Level`}</th>
-                                        <th className="text-right border-bottom-none">{`Action`}</th>
+                                        <th>{`Master`}</th>
+                                        <th>{`Approval Type`}</th>
+                                        <th>{`Level`}</th>
+                                        <th className="text-right">{`Action`}</th>
                                       </tr>
                                     </thead>
                                     <tbody>

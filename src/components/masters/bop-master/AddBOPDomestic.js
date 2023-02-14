@@ -1060,7 +1060,7 @@ class AddBOPDomestic extends Component {
                                 valueDescription={this.state.selectedPlants}
                                 mendatory={true}
                                 required={true}
-                                // className="multiselect-with-border"
+                                className="multiselect-with-border"
                                 disabled={isEditFlag ? true : false}
                               />
                             </Col>

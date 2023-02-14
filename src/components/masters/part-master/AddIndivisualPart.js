@@ -548,7 +548,7 @@ class AddIndivisualPart extends Component {
                                 optionValue={(option) => option.Value}
                                 optionLabel={(option) => option.Text}
                                 component={renderMultiSelectField}
-                                //className="multiselect-with-border"
+                                className="multiselect-with-border"
                                 disabled={isViewMode}
                               // disabled={this.state.IsVendor || isEditFlag ? true : false}
                               />
