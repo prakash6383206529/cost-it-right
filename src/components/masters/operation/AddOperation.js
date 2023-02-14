@@ -917,7 +917,7 @@ class AddOperation extends Component {
                           component={renderMultiSelectField}
                           mendatory={true}
                           validate={this.state.selectedTechnology == null || this.state.selectedTechnology.length === 0 ? [required] : []}
-                          //className="multiselect-with-border"
+                          className="multiselect-with-border"
                           disabled={isEditFlag ? true : false}
                         />
                       </Col>
@@ -982,7 +982,7 @@ class AddOperation extends Component {
                             component={renderMultiSelectField}
                             mendatory={true}
                             validate={this.state.selectedPlants == null || this.state.selectedPlants.length === 0 ? [required] : []}
-                            //className="multiselect-with-border"
+                            className="multiselect-with-border"
                             disabled={isEditFlag ? true : false}
                           />
                         </Col>
@@ -1032,7 +1032,7 @@ class AddOperation extends Component {
                             component={searchableSelect}
                             valueDescription={this.state.destinationPlant}
                             mendatory={true}
-                            //className="multiselect-with-border"
+                            className="multiselect-with-border"
                             disabled={isEditFlag ? true : false}
                           />
                         </Col>

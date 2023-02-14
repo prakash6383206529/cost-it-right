@@ -3562,3 +3562,17 @@ input:focus,
 .word-nowrap {
   white-space: nowrap;
 }
+
+.multidropdown-container {
+  div[class$="ValueContainer"] {
+    display: flex;
+    max-height: 60px;
+    overflow-y: auto;
+  }
+}
+
+.master-approval-overlay {
+  .ag-selection-checkbox.ag-invisible {
+    display: none !important;
+  }
+}

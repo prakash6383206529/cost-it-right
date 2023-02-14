@@ -1464,7 +1464,7 @@ class AddMachineRate extends Component {
                             mendatory={true}
                             required
                             validate={(this.state.selectedTechnology == null || this.state.selectedTechnology.length === 0 ? [required] : [])}
-                            //className="multiselect-with-border"
+                            className="multiselect-with-border"
                             valueDescription={this.state.selectedTechnology}
                             disabled={isViewFlag || isEditFlag ? true : false}
                           //disabled={(this.state.IsVendor || isEditFlag) ? true : false}
