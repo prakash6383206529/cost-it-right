@@ -9,7 +9,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import SimulationUploadDrawer from './SimulationUploadDrawer';
 import { BOPDOMESTIC, BOPIMPORT, EXCHNAGERATE, MACHINERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, RM_MASTER_ID, searchCount, COMBINED_PROCESS, EMPTY_GUID } from '../../../config/constants';
 import ReactExport from 'react-export-excel';
-import { CombinedProcessSimulation, getTechnologyForSimulation, OperationSimulation, RMDomesticSimulation, RMImportSimulation, SurfaceTreatmentSimulation, MachineRateSimulation, BOPDomesticSimulation, BOPImportSimulation, IdForMultiTechnology, ASSEMBLY_TECHNOLOGY } from '../../../config/masterData';
+import { CombinedProcessSimulation, getTechnologyForSimulation, OperationSimulation, RMDomesticSimulation, RMImportSimulation, SurfaceTreatmentSimulation, MachineRateSimulation, BOPDomesticSimulation, BOPImportSimulation, IdForMultiTechnology, ASSEMBLY_TECHNOLOGY, ASSEMBLY } from '../../../config/masterData';
 import RMSimulation from './SimulationPages/RMSimulation';
 import { getCostingSpecificTechnology, getCostingTechnologySelectList } from '../../costing/actions/Costing';
 import CostingSimulation from './CostingSimulation';
@@ -163,7 +163,7 @@ function Simulation(props) {
     }
 
     const handleTechnologyChange = (value) => {
-        if (checkForNull(value?.value) === ASSEMBLY_TECHNOLOGY) {
+        if (checkForNull(value?.value) === ASSEMBLY) {
             setTechnology(value)
             setShowMasterList(false)
             dispatch(setTechnologyForSimulation(value))
