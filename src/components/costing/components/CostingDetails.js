@@ -1348,6 +1348,7 @@ function CostingDetails(props) {
    * @description used to Reset form
    */
   const backToFirstStep = () => {
+    setIsLoader(true)
     dispatch(getBriefCostingById('', (res) => { }))
 
     reactLocalStorage.setObject('costingArray', [])
