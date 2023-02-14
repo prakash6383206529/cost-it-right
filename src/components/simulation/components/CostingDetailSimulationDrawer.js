@@ -5,7 +5,7 @@ import { Redirect } from "react-router-dom";
 import { checkForDecimalAndNull, getConfigurationKey } from '../../../helper'
 import CostingSummaryTable from '../../costing/components/CostingSummaryTable';
 import ApproveRejectDrawer from '../../costing/components/approval/ApproveRejectDrawer';
-import { BOPDOMESTIC, BOPIMPORT, EXCHNAGERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, MACHINERATE, COMBINED_PROCESS } from '../../../config/constants';
+import { BOPDOMESTIC, BOPIMPORT, EXCHNAGERATE, MACHINERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, COMBINED_PROCESS } from '../../../config/constants';
 import LoaderCustom from '../../common/LoaderCustom';
 
 
@@ -21,7 +21,7 @@ function CostingDetailSimulationDrawer(props) {
     };
 
     // table code starts here
-    const { simulationDetail, pricesDetail, selectedRowData, costingArr, master, isSummaryDrawer, isReport, isSimulation, isReportLoader, isOldCosting } = props
+    const { simulationDetail, pricesDetail, selectedRowData, costingArr, master, isReport, isSimulation, isReportLoader, isOldCosting } = props
 
     const [isApprovalDrawer, setIsApprovalDrawer] = useState(false)
     const [showApprovalHistory, setShowApprovalHistory] = useState(false)
@@ -60,17 +60,17 @@ function CostingDetailSimulationDrawer(props) {
                                     <Col>
                                         <div className={"header-wrapper left"}>
                                             <h3>
-                                                {(!isSummaryDrawer || isOldCosting) ? "Old " : ''}Costing Details
-                                            </h3 >
-                                        </div >
+                                                {(!isReport || isOldCosting) ? "Old " : ''}Costing Details
+                                            </h3>
+                                        </div>
                                         <div
                                             onClick={(e) => toggleDrawer(e)}
                                             className={"close-button right"}
                                         ></div>
-                                    </Col >
-                                </Row >
+                                    </Col>
+                                </Row>
 
-                                {!isSummaryDrawer &&
+                                {!isReport &&
                                     <Row className="ml-0 pb-3">
                                         <Col md="12">
                                             <h6 class="left-border d-inline-block mr-4">{pricesDetail?.CostingHead}</h6>
@@ -80,8 +80,7 @@ function CostingDetailSimulationDrawer(props) {
                                     </Row>
                                 }
 
-                                {
-                                    !isSummaryDrawer &&
+                                {!isReport &&
                                     <Row className="ml-0 pb-3">
                                         {
                                             Number(master) === Number(EXCHNAGERATE) ?
