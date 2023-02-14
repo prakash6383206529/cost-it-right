@@ -4,7 +4,7 @@ import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col, Label, } from 'reactstrap';
 import { required, getVendorCode, positiveAndDecimalNumber, maxLength15, acceptAllExceptSingleSpecialCharacter, maxLength70, maxLength512, checkForDecimalAndNull, checkForNull, decimalLengthsix, number } from "../../../helper/validation";
 import { renderText, renderTextInputField, searchableSelect, renderMultiSelectField, renderTextAreaField, focusOnError, renderDatePicker, } from '../../layout/FormInputs'
-import { AcceptableRMUOM } from '../../../config/masterData'
+import { AcceptableRMUOM, FORGING, SHEETMETAL } from '../../../config/masterData'
 import {
   getRawMaterialCategory, fetchGradeDataAPI, fetchSpecificationDataAPI, getCityBySupplier, getPlantByCity,
   getPlantByCityAndSupplier, fetchRMGradeAPI, getSupplierList, getPlantBySupplier, getUOMSelectList, fetchSupplierCityDataAPI,
@@ -118,7 +118,9 @@ class AddRMDomestic extends Component {
       showErrorOnFocusDate: false,
       showPopup: false,
       levelDetails: {},
-      noApprovalCycle: false
+      noApprovalCycle: false,
+      showForgingMachiningScrapCost: false,
+      showExtraCost: false,
     }
   }
   /**
@@ -264,12 +266,14 @@ class AddRMDomestic extends Component {
    * @description Use to handle technology change
   */
   handleTechnologyChange = (newValue) => {
-    // this.setState({ isRMDrawerOpen: false })
-    if (newValue && newValue !== '') {
-      this.setState({ Technology: newValue, nameDrawer: true }, () => {
-        this.setState({ RawMaterial: [] })
-      })
+    if (newValue.value === String(FORGING)) {
+      this.setState({ Technology: newValue, showForgingMachiningScrapCost: true, showExtraCost: false, nameDrawer: true })
+    } else if (newValue.value === String(SHEETMETAL)) {
+      this.setState({ Technology: newValue, showExtraCost: true, showForgingMachiningScrapCost: false, nameDrawer: true })
+    } else {
+      this.setState({ Technology: newValue, showForgingMachiningScrapCost: false, showExtraCost: false, nameDrawer: true })
     }
+    this.setState({ RawMaterial: [], nameDrawer: false })
   }
   /**
   * @method handleClient
@@ -403,8 +407,6 @@ class AddRMDomestic extends Component {
     }
   }
 
-
-
   handleBasicRate = (newValue, actionMeta) => {
     const { fieldsObj } = this.props
     if (Number(newValue.target.value) < Number(fieldsObj.ScrapRate)) {
@@ -481,6 +483,10 @@ class AddRMDomestic extends Component {
           this.props.change('ShearingCost', Data.RMShearingCost ? Data.RMShearingCost : '')
           this.props.change('cutOffPrice', Data.CutOffPrice ? Data.CutOffPrice : '')
           this.props.change('Code', Data.RawMaterialCode ? Data.RawMaterialCode : '')
+          this.props.change('MachiningScrap', Data.MachiningScrapRate ? Data.MachiningScrapRate : '')
+          this.props.change('ForgingScrap', Data.ScrapRate ? Data.ScrapRate : '')
+          this.props.change('JaliScrapCost', Data.ScrapRate)            // THIS KEY FOR CIRCLE SCRAP COST
+          this.props.change('CircleScrapCost', Data.JaliScrapCost ? Data.JaliScrapCost : '')  //THIS KEY FOR JALI SCRAP COST AND SCRAP COST
           // this.props.getRMGradeSelectListByRawMaterial(Data.RawMaterial, (res) => {
 
           // this.props.fetchSpecificationDataAPI(Data.RMGrade, (res) => {
@@ -508,7 +514,9 @@ class AddRMDomestic extends Component {
               remarks: Data.Remark,
               files: Data.FileList,
               singlePlantSelected: Data.DestinationPlantName !== undefined ? { label: Data.DestinationPlantName, value: Data.DestinationPlantId } : [],
-              netLandedCost: Data.NetLandedCost ? Data.NetLandedCost : ''
+              netLandedCost: Data.NetLandedCost ? Data.NetLandedCost : '',
+              showForgingMachiningScrapCost: Data.TechnologyId === FORGING ? true : false,
+              showExtraCost: Data.TechnologyId === SHEETMETAL ? true : false,
             }, () => this.setState({ isLoader: false }))
             // ********** ADD ATTACHMENTS FROM API INTO THE DROPZONE'S PERSONAL DATA STORE **********
             let files = Data.FileList && Data.FileList.map((item) => {
@@ -988,7 +996,7 @@ class AddRMDomestic extends Component {
   onSubmit = (values) => {
     const { RawMaterial, RMGrade, RMSpec, Category, client, Technology, selectedPlants, costingTypeId, vendorName,
       VendorCode, HasDifferentSource, sourceLocation,
-      UOM, remarks, RawMaterialID, isEditFlag, files, effectiveDate, netLandedCost, oldDate, singlePlantSelected, DataToChange, DropdownChanged, isDateChange, isSourceChange, IsFinancialDataChanged } = this.state
+      UOM, remarks, RawMaterialID, isEditFlag, files, effectiveDate, netLandedCost, oldDate, singlePlantSelected, showForgingMachiningScrapCost, DataToChange, DropdownChanged, isDateChange, isSourceChange, IsFinancialDataChanged, showExtraCost } = this.state
     const { fieldsObj } = this.props
     const userDetailsRM = JSON.parse(localStorage.getItem('userDetail'))
     if (costingTypeId !== CBCTypeId && vendorName.length <= 0) {
@@ -1037,7 +1045,7 @@ class AddRMDomestic extends Component {
         BasicRatePerUOM: values.BasicRate,
         RMFreightCost: values.FrieghtCharge,
         RMShearingCost: values.ShearingCost,
-        ScrapRate: values.ScrapRate,
+        ScrapRate: showExtraCost ? values.JaliScrapCost : showForgingMachiningScrapCost ? values.ForgingScrap : values.ScrapRate,
         NetLandedCost: netLandedCost,
         LoggedInUserId: loggedInUserId(),
         EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
@@ -1049,6 +1057,8 @@ class AddRMDomestic extends Component {
         RawMaterialCode: values.Code,
         IsFinancialDataChanged: isDateChange ? true : false,
         VendorPlant: [],
+        MachiningScrapRate: values.MachiningScrap,
+        JaliScrapCost: values.CircleScrapCost ? values.CircleScrapCost : '',// THIS KEY FOR CIRCLE SCRAP COST
       }
       if (IsFinancialDataChanged) {
         if ((isDateChange) && (DayTime(oldDate).format("DD/MM/YYYY") !== DayTime(effectiveDate).format("DD/MM/YYYY"))) {
@@ -1071,12 +1081,12 @@ class AddRMDomestic extends Component {
 
       }
       else {
-        if ((JSON.stringify(files) === JSON.stringify(DataToChange.FileList)) && DropdownChanged && Number(DataToChange.BasicRatePerUOM) === Number(values.BasicRate) && Number(DataToChange.ScrapRate) === Number(values.ScrapRate)
+        if ((JSON.stringify(files) === JSON.stringify(DataToChange.FileList)) && DropdownChanged && Number(DataToChange.BasicRatePerUOM) === Number(values.BasicRate) && (Number(DataToChange.ScrapRate) === showExtraCost ? showForgingMachiningScrapCost ? Number(values.ForgingScrap) : Number(values.JaliScrapCost) : Number(values.ScrapRate))
           && Number(DataToChange.NetLandedCost) === Number(values.NetLandedCost) && ((DataToChange.Remark ? DataToChange.Remark : '') === (values.Remark ? values.Remark : ''))
           && ((DataToChange.CutOffPrice ? Number(DataToChange.CutOffPrice) : '') === (values.cutOffPrice ? Number(values.cutOffPrice) : ''))
           && String(DataToChange.RawMaterialCode) === String(values.Code)
           && ((DataToChange.Source ? String(DataToChange.Source) : '-') === (values.Source ? String(values.Source) : '-'))
-          && ((DataToChange.SourceLocation ? String(DataToChange.SourceLocation) : '') === (sourceLocationValue ? String(sourceLocationValue) : ''))) {
+          && ((DataToChange.SourceLocation ? String(DataToChange.SourceLocation) : '') === (sourceLocationValue ? String(sourceLocationValue) : '')) && String(DataToChange.MachiningScrapRate) === String(values.MachiningScrap) && String(DataToChange.JaliScrapCost) === String(values.CircleScrapCost)) {
           this.cancel('submit')
           return false
         }
@@ -1117,7 +1127,7 @@ class AddRMDomestic extends Component {
       formData.BasicRatePerUOM = values.BasicRate
       formData.RMFreightCost = values.FrieghtCharge
       formData.RMShearingCost = values.ShearingCost
-      formData.ScrapRate = values.ScrapRate
+      formData.ScrapRate = showExtraCost ? values.JaliScrapCost : showForgingMachiningScrapCost ? values.ForgingScrap : values.ScrapRate
       formData.NetLandedCost = netLandedCost
       formData.EffectiveDate = DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss')
       formData.Remark = remarks
@@ -1130,6 +1140,8 @@ class AddRMDomestic extends Component {
       formData.IsCutOffApplicable = values.cutOffPrice < values.NetLandedCost ? true : false
       formData.RawMaterialCode = values.Code
       formData.CustomerId = costingTypeId === CBCTypeId ? client.value : ''
+      formData.MachiningScrapRate = values.MachiningScrap
+      formData.JaliScrapCost = values.CircleScrapCost ? values.CircleScrapCost : '' // THIS KEY FOR CIRCLE SCRAP COST
       if (CheckApprovalApplicableMaster(RM_MASTER_ID) === true && !this.state.isFinalApprovar) {
         formData.NetLandedCostConversion = 0
         formData.Currency = "INR"
@@ -1140,12 +1152,12 @@ class AddRMDomestic extends Component {
       // }
       // THIS CONDITION TO CHECK IF IT IS FOR MASTER APPROVAL THEN WE WILL SEND DATA FOR APPROVAL ELSE CREATE API WILL BE CALLED
       if (CheckApprovalApplicableMaster(RM_MASTER_ID) === true && !this.state.isFinalApprovar) {
-        if (((files ? JSON.stringify(files) : []) === (DataToChange.FileList ? JSON.stringify(DataToChange.FileList) : [])) && DropdownChanged && Number(DataToChange.BasicRatePerUOM) === Number(values.BasicRate) && Number(DataToChange.ScrapRate) === Number(values.ScrapRate)
+        if (((files ? JSON.stringify(files) : []) === (DataToChange.FileList ? JSON.stringify(DataToChange.FileList) : [])) && DropdownChanged && Number(DataToChange.BasicRatePerUOM) === Number(values.BasicRate) && (Number(DataToChange.ScrapRate) === showExtraCost ? showForgingMachiningScrapCost ? Number(values.ForgingScrap) : Number(values.JaliScrapCost) : Number(values.ScrapRate))
           && Number(DataToChange.NetLandedCost) === Number(values.NetLandedCost) && ((DataToChange.Remark ? DataToChange.Remark : '') === (values.Remark ? values.Remark : ''))
           && ((DataToChange.CutOffPrice ? Number(DataToChange.CutOffPrice) : '') === (values.cutOffPrice ? Number(values.cutOffPrice) : ''))
           && String(DataToChange.RawMaterialCode) === String(values.Code)
           && ((DataToChange.Source ? String(DataToChange.Source) : '-') === (values.Source ? String(values.Source) : '-'))
-          && ((DataToChange.SourceLocation ? String(DataToChange.SourceLocation) : '') === (sourceLocationValue ? String(sourceLocationValue) : ''))) {
+          && ((DataToChange.SourceLocation ? String(DataToChange.SourceLocation) : '') === (sourceLocationValue ? String(sourceLocationValue) : '')) && String(DataToChange.MachiningScrapRate) === String(values.MachiningScrap) && String(DataToChange.JaliScrapCost) === String(values.CircleScrapCost)) {
           Toaster.warning('Please change data to send RM for approval')
           return false
         }
@@ -1174,7 +1186,7 @@ class AddRMDomestic extends Component {
         } else {
 
           if (isEditFlag) {
-            if ((JSON.stringify(files) === JSON.stringify(DataToChange.FileList)) && DropdownChanged && Number(DataToChange.BasicRatePerUOM) === values.BasicRate && Number(DataToChange.ScrapRate) === values.ScrapRate
+            if ((JSON.stringify(files) === JSON.stringify(DataToChange.FileList)) && DropdownChanged && Number(DataToChange.BasicRatePerUOM) === values.BasicRate && (Number(DataToChange.ScrapRate) === showExtraCost ? showForgingMachiningScrapCost ? Number(values.ForgingScrap) : Number(values.JaliScrapCost) : Number(values.ScrapRate))
               && Number(DataToChange.NetLandedCost) === values.NetLandedCost && (DataToChange.Remark ? DataToChange.Remark : '') === (values.Remark ? values.Remark : '')
               && (Number(DataToChange.CutOffPrice) === values.cutOffPrice || values.cutOffPrice === undefined)
               && DataToChange.RawMaterialCode === values.Code) {
@@ -1660,22 +1672,93 @@ class AddRMDomestic extends Component {
                               maxLength={'15'}
                             />
                           </Col>
-                          <Col md="3">
-                            <Field
-                              label={labelWithUOMAndCurrency("Scrap Rate", this.state.UOM.label)}
-                              name={"ScrapRate"}
-                              type="text"
-                              placeholder={isViewFlag || (isEditFlag && isRMAssociated) ? '-' : "Enter"}
-                              validate={[required, positiveAndDecimalNumber, maxLength15, decimalLengthsix, number]}
-                              component={renderTextInputField}
-                              required={true}
-                              className=""
-                              customClassName=" withBorder"
-                              maxLength="15"
-                              onChange={this.handleScrapRate}
-                              disabled={isViewFlag || (isEditFlag && isRMAssociated)}
-                            />
-                          </Col>
+                          {
+                            (!this.state.showForgingMachiningScrapCost && !this.state.showExtraCost) &&
+                            <Col md="3">
+                              <Field
+                                label={labelWithUOMAndCurrency("Scrap Rate", this.state.UOM.label)}
+                                name={"ScrapRate"}
+                                type="text"
+                                placeholder={isViewFlag || (isEditFlag && isRMAssociated) ? '-' : "Enter"}
+                                validate={[required, positiveAndDecimalNumber, maxLength15, decimalLengthsix, number]}
+                                component={renderTextInputField}
+                                required={true}
+                                className=""
+                                customClassName=" withBorder"
+                                maxLength="15"
+                                onChange={this.handleScrapRate}
+                                disabled={isViewFlag || (isEditFlag && isRMAssociated)}
+                              />
+                            </Col>
+                          }
+                          {
+                            this.state.showForgingMachiningScrapCost &&
+                            <>
+                              <Col md="3">
+                                <Field
+                                  label={'Forging Scrap Cost'}
+                                  name={"ForgingScrap"}
+                                  type="text"
+                                  placeholder={isViewFlag || (isEditFlag && isRMAssociated) ? '-' : "Enter"}
+                                  validate={[required, positiveAndDecimalNumber, maxLength15, decimalLengthsix, number]}
+                                  component={renderTextInputField}
+                                  required={true}
+                                  className=""
+                                  customClassName=" withBorder"
+                                  maxLength="15"
+                                  disabled={isViewFlag || (isEditFlag && isRMAssociated)}
+                                />
+                              </Col>
+                              <Col md="3">
+                                <Field
+                                  label={'Machining Scrap Cost'}
+                                  name={"MachiningScrap"}
+                                  type="text"
+                                  placeholder={isViewFlag || (isEditFlag && isRMAssociated) ? '-' : "Enter"}
+                                  validate={[required, positiveAndDecimalNumber, maxLength15, decimalLengthsix, number]}
+                                  component={renderTextInputField}
+                                  required={false}
+                                  className=""
+                                  customClassName=" withBorder"
+                                  maxLength="15"
+                                  disabled={isViewFlag || (isEditFlag && isRMAssociated)}
+                                />
+                              </Col>
+                            </>
+                          }
+                          {
+                            this.state.showExtraCost &&
+                            <>
+                              <Col md="3">
+                                <Field
+                                  label={`Circle Scrap Cost (INR/${this.state.UOM.label ? this.state.UOM.label : 'UOM'}) `}
+                                  name={"CircleScrapCost"}
+                                  type="text"
+                                  placeholder={""}
+                                  validate={[maxLength15, decimalLengthsix]}
+                                  component={renderText}
+                                  required={false}
+                                  disabled={isViewFlag}
+                                  className=" "
+                                  customClassName=" withBorder"
+                                />
+                              </Col>
+                              <Col md="3">
+                                <Field
+                                  label={`Jali Scrap Cost (INR/${this.state.UOM.label ? this.state.UOM.label : 'UOM'})`}
+                                  name={"JaliScrapCost"}
+                                  type="text"
+                                  placeholder={""}
+                                  validate={[required, maxLength15, decimalLengthsix]}
+                                  component={renderText}
+                                  required={true}
+                                  disabled={isViewFlag}
+                                  className=" "
+                                  customClassName=" withBorder"
+                                />
+                              </Col>
+                            </>
+                          }
                           <Col md="3">
                             <Field
                               label={labelWithUOMAndCurrency("Freight Cost", this.state.UOM.label)}

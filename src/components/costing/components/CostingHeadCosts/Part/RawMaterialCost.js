@@ -160,6 +160,7 @@ function RawMaterialCost(props) {
             RawMaterialCategory: el.Category,
             CutOffPrice: el.CutOffPrice,
             IsCutOffApplicable: el.IsCutOffApplicable,
+            MachiningScrapRate: el.MachiningScrapRate
           }
         })
 
@@ -183,6 +184,7 @@ function RawMaterialCost(props) {
           RawMaterialCategory: rowData.Category,
           CutOffPrice: rowData.CutOffPrice,
           IsCutOffApplicable: rowData.IsCutOffApplicable,
+          MachiningScrapRate: rowData.MachiningScrapRate
         }
         setGridData([...gridData, tempObj])
         tempArray = [...gridData, tempObj]
