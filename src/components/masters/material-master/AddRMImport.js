@@ -1734,7 +1734,7 @@ class AddRMImport extends Component {
                             <>
                               <Col md="3">
                                 <Field
-                                  label={'Forging Scrap Cost'}
+                                  label={labelWithUOMAndCurrency("Forging Scrap Cost", this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label, this.state.currency.label === undefined ? 'Currency' : this.state.currency.label)}
                                   name={"ForgingScrap"}
                                   type="text"
                                   placeholder={isViewFlag || (isEditFlag && isRMAssociated) ? '-' : "Enter"}
@@ -1749,7 +1749,7 @@ class AddRMImport extends Component {
                               </Col>
                               <Col md="3">
                                 <Field
-                                  label={'Machining Scrap Cost'}
+                                  label={labelWithUOMAndCurrency("Machining Scrap Cost", this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label, this.state.currency.label === undefined ? 'Currency' : this.state.currency.label)}
                                   name={"MachiningScrap"}
                                   type="text"
                                   placeholder={isViewFlag || (isEditFlag && isRMAssociated) ? '-' : "Enter"}
@@ -1769,7 +1769,7 @@ class AddRMImport extends Component {
                             <>
                               <Col md="3">
                                 <Field
-                                  label={`Circle Scrap Cost (INR/${this.state.UOM.label ? this.state.UOM.label : 'UOM'}) `}
+                                  label={labelWithUOMAndCurrency("Circle Scrap Cost", this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label, this.state.currency.label === undefined ? 'Currency' : this.state.currency.label)}
                                   name={"CircleScrapCost"}
                                   type="text"
                                   placeholder={""}
@@ -1783,7 +1783,7 @@ class AddRMImport extends Component {
                               </Col>
                               <Col md="3">
                                 <Field
-                                  label={`Jali Scrap Cost (INR/${this.state.UOM.label ? this.state.UOM.label : 'UOM'})`}
+                                  label={labelWithUOMAndCurrency("Jali Scrap Cost", this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label, this.state.currency.label === undefined ? 'Currency' : this.state.currency.label)}
                                   name={"JaliScrapCost"}
                                   type="text"
                                   placeholder={""}
