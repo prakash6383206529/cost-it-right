@@ -1696,7 +1696,7 @@ class AddRMDomestic extends Component {
                             <>
                               <Col md="3">
                                 <Field
-                                  label={'Forging Scrap Cost'}
+                                  label={labelWithUOMAndCurrency("Forging Scrap Cost", this.state.UOM.label)}
                                   name={"ForgingScrap"}
                                   type="text"
                                   placeholder={isViewFlag || (isEditFlag && isRMAssociated) ? '-' : "Enter"}
@@ -1711,7 +1711,7 @@ class AddRMDomestic extends Component {
                               </Col>
                               <Col md="3">
                                 <Field
-                                  label={'Machining Scrap Cost'}
+                                  label={labelWithUOMAndCurrency("Machining Scrap Cost", this.state.UOM.label)}
                                   name={"MachiningScrap"}
                                   type="text"
                                   placeholder={isViewFlag || (isEditFlag && isRMAssociated) ? '-' : "Enter"}
