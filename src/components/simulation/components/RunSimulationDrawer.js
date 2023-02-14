@@ -21,6 +21,7 @@ import WarningMessage from '../../common/WarningMessage';
 import DatePicker from "react-datepicker";
 import { ASSEMBLY_TECHNOLOGY } from '../../../config/masterData';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
+import { MESSAGES } from '../../../config/message';
 
 function RunSimulationDrawer(props) {
     const { objs, masterId, date } = props
@@ -1133,7 +1134,7 @@ function RunSimulationDrawer(props) {
                     </Drawer>
                 </>
                 {
-                    showPopup && <PopupMsgWrapper isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`This tool cost won't be added in Overhead and Profit`} />
+                    showPopup && <PopupMsgWrapper isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={MESSAGES.SIMULATION_TOOLCOST_POPUP_MESSAGE} />
                 }
             </div>
         </>
