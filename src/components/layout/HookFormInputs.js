@@ -338,6 +338,7 @@ export const SearchableSelectHookForm = (field) => {
                   onChange(e)
 
                 }}
+                className="multidropdown-container"
                 menuPlacement="auto"
                 styles={dropDownClass && customStyles}
                 onFocus={onFocusChange}
