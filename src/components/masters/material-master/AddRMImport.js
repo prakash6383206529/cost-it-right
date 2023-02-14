@@ -1466,8 +1466,6 @@ class AddRMImport extends Component {
                                 mendatory={true}
                                 disabled={isEditFlag || isViewFlag}
                                 className="multiselect-with-border"
-
-                              // disabled={this.state.IsVendor || isEditFlag ? true : false}
                               />
                             </Col>)
                           )}
@@ -1485,7 +1483,7 @@ class AddRMImport extends Component {
                                 component={searchableSelect}
                                 valueDescription={this.state.singlePlantSelected}
                                 mendatory={true}
-                                //className="multiselect-with-border"
+                                className="multiselect-with-border"
                                 disabled={isEditFlag || isViewFlag}
                               />
                             </Col>

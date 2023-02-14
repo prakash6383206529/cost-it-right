@@ -900,7 +900,7 @@ class AddVolume extends Component {
                                   component={searchableSelect}
                                   valueDescription={this.state.destinationPlant}
                                   mendatory={true}
-                                  //className="multiselect-with-border"
+                                  className="multiselect-with-border"
                                   disabled={isEditFlag ? true : false}
                                 />
                               </Col>
