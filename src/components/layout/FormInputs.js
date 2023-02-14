@@ -234,7 +234,7 @@ export function renderMultiSelectField(field) {
   //const inputbox = `inputbox ${active ? "active" : ""}`;
   const inputbox = ` ${active ? "active" : ""}`;
   const className = `form-group ${touched && error ? "has-danger" : ""}`;
-  const InputClassName = `basic-multi-select ${field.className ? field.className : ""
+  const InputClassName = `basic-multi-select multidropdown-container ${field.className ? field.className : ""
     }`;
   const optionValue = field.optionValue;
   const optionLabel = field.optionLabel;
@@ -396,7 +396,7 @@ export function renderSelectField(field) {
     meta: { touched, error, active },
   } = field;
   const inputbox = ` ${active ? "active" : ""}`;
-  const className = `form-group inputbox ${touched && error ? "has-danger" : ""
+  const className = `form-group inputbox multidropdown-container ${touched && error ? "has-danger" : ""
     }`;
   const InputClassName = `form-control ${field.className ? field.className : ""
     }`;
@@ -714,7 +714,7 @@ export const searchableSelect = ({
         isDisabled={isDisable}
         placeholder={placeholder}
         menuPlacement={menuPlacement}
-        className={"searchable"}
+        className={"searchable multidropdown-container"}
         onKeyDown={(onKeyDown) => {
           if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
         }}

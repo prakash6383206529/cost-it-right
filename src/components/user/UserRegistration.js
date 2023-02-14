@@ -31,6 +31,7 @@ import { showDataOnHover } from "../../helper";
 import { useDispatch, useSelector } from 'react-redux'
 import { reactLocalStorage } from "reactjs-localstorage";
 import { autoCompleteDropdown } from "../common/CommonFunctions";
+import _ from "lodash";
 
 var CryptoJS = require('crypto-js')
 const selector = formValueSelector('UserRegistration');
@@ -817,6 +818,30 @@ function UserRegistration(props) {
     }
   };
 
+  const checkDuplicacy = (dataList, obj, keyName, technology_master_id, approvalTypeIDValue, messageHead) => {
+    let stop = false
+    let checkExists = false
+    dataList && dataList?.map((element) => {
+      if (_.isEqual(element, obj)) {
+        checkExists = true
+      }
+      return null
+    })
+
+    const isExistTechnology = dataList && dataList.findIndex(el => {
+      return (Number(el[keyName]) === Number(technology_master_id)) && (Number(el.ApprovalTypeId) === Number(approvalTypeIDValue))
+    })
+
+    if (checkExists) {
+      stop = true
+      Toaster.warning('Record already exists.')
+    } else if (isExistTechnology !== -1) {
+      stop = true
+      Toaster.warning(`${messageHead} cannot have multiple level for same Approval Type.`)
+    }
+
+    return stop
+  }
 
   /**
   * @method setTechnologyLevel
@@ -826,28 +851,22 @@ function UserRegistration(props) {
     const tempArray = [];
 
     if (technology.length === 0 || level.length === 0) {
-      Toaster.warning('Please select technology and level')
+      Toaster.warning('Please select Technology, Approval Type and Level')
       return false;
     }
-    const isExistTechnology = TechnologyLevelGrid && TechnologyLevelGrid.findIndex(el => {
-      return Number(el.TechnologyId) === Number(technology.value)
-      // && el.LevelId === level.value
-    })
 
-    // if (isExistTechnology !== -1) {
-    //   // Toaster.warning('Technology and Level already allowed.')
-    //   Toaster.warning('Technology cannot have multiple level.')
-    //   return false;
-    // }
-
-    tempArray.push(...TechnologyLevelGrid, {
+    let obj = {
       Technology: technology.label,
       TechnologyId: technology.value,
       Level: level.label,
       LevelId: level.value,
       ApprovalType: costingApprovalType?.label,
       ApprovalTypeId: costingApprovalType?.value,
-    })
+    }
+
+    if (checkDuplicacy(TechnologyLevelGrid, obj, 'TechnologyId', technology.value, costingApprovalType.value, 'Technology')) return false
+
+    tempArray.push(...TechnologyLevelGrid, obj)
 
     setTechnologyLevelGrid(tempArray)
     setLevel([])
@@ -881,6 +900,8 @@ function UserRegistration(props) {
       ApprovalType: costingApprovalType?.label,
       ApprovalTypeId: costingApprovalType?.value,
     }
+
+    if (checkDuplicacy(TechnologyLevelGrid, tempData, 'TechnologyId', technology.value, costingApprovalType.value, 'Technology')) return false
 
     tempArray = Object.assign([...TechnologyLevelGrid], { [technologyLevelEditIndex]: tempData })
 
@@ -923,31 +944,22 @@ function UserRegistration(props) {
     const tempArray = [];
 
     if (simulationHeads.length === 0 || simualtionLevel.length === 0) {
-      Toaster.warning('Please select technology and level')
+      Toaster.warning('Please select Technology, Approval Type and Level')
       return false;
     }
 
-    const isExistTechnology = HeadLevelGrid && HeadLevelGrid.findIndex(el => {
-      return Number(el.TechnologyId) === Number(simulationHeads.value)
-      // && el.LevelId === level.value
-    })
-
-
-    // if (isExistTechnology !== -1) {      //TODO BEFORE DEPLOYMENT
-    //   // Toaster.warning('Technology and Level already allowed.')
-    //   Toaster.warning('Head cannot have multiple level.')
-    //   return false;
-    // }
-
-    tempArray.push(...HeadLevelGrid, {
+    let obj = {
       Technology: simulationHeads.label,
       TechnologyId: simulationHeads.value,
       Level: simualtionLevel.label,
       LevelId: simualtionLevel.value,
       ApprovalType: simulationApprovalType?.label,
       ApprovalTypeId: simulationApprovalType?.value,
-    })
+    }
 
+    if (checkDuplicacy(HeadLevelGrid, obj, 'TechnologyId', simulationHeads.value, simulationApprovalType.value, 'Technology')) return false
+
+    tempArray.push(...HeadLevelGrid, obj)
 
     setHeadLevelGrid(tempArray)
     setSimualtionLevel([])
@@ -974,6 +986,7 @@ function UserRegistration(props) {
     }
 
     let tempData = HeadLevelGrid[simulationLevelEditIndex];
+
     tempData = {
       Technology: simulationHeads.label,
       TechnologyId: simulationHeads.value,
@@ -982,6 +995,8 @@ function UserRegistration(props) {
       ApprovalType: simulationApprovalType?.label,
       ApprovalTypeId: simulationApprovalType?.value,
     }
+
+    if (checkDuplicacy(HeadLevelGrid, tempData, 'TechnologyId', simulationHeads.value, simulationApprovalType.value, 'Technology')) return false
 
     tempArray = Object.assign([...HeadLevelGrid], { [simulationLevelEditIndex]: tempData })
 
@@ -1096,33 +1111,23 @@ function UserRegistration(props) {
   const setMasterLevel = () => {
     const tempArray = [];
 
-
-
     if (master.length === 0 || masterLevel.length === 0) {
-      Toaster.warning('Please select master and level')
+      Toaster.warning('Please select Master, Approval Type and Level')
       return false;
     }
 
-    const isExistTechnology = masterLevelGrid && masterLevelGrid.findIndex(el => {
-      return Number(el.MasterId) === Number(master.value)
-    })
-
-
-    // if (isExistTechnology !== -1) {
-    //   // Toaster.warning('Technology and Level already allowed.')
-    //   Toaster.warning('A master cannot have multiple level.')
-    //   return false;
-    // }
-
-    tempArray.push(...masterLevelGrid, {
+    let obj = {
       Master: master.label,
       MasterId: master.value,
       Level: masterLevel.label,
       LevelId: masterLevel.value,
       ApprovalType: masterApprovalType?.label,
       ApprovalTypeId: masterApprovalType?.value,
-    })
+    }
 
+    if (checkDuplicacy(masterLevelGrid, obj, 'MasterId', master.value, masterApprovalType.value, 'Master')) return false
+
+    tempArray.push(...masterLevelGrid, obj)
 
     setMasterLevelGrid(tempArray)
     setMasterLevels([])
@@ -1140,7 +1145,7 @@ function UserRegistration(props) {
     let tempArray = [];
 
     if (master.length === 0 || masterLevel.length === 0) {
-      Toaster.warning('Please select master and level')
+      Toaster.warning('Please select Master, Approval Type and Level')
       return false;
     }
 
@@ -1154,6 +1159,8 @@ function UserRegistration(props) {
       ApprovalType: masterApprovalType?.label,
       ApprovalTypeId: masterApprovalType?.value,
     }
+
+    if (checkDuplicacy(masterLevelGrid, tempData, 'MasterId', master.value, masterApprovalType.value, 'Master')) return false
 
     tempArray = Object.assign([...masterLevelGrid], { [masterLevelEditIndex]: tempData })
 
@@ -2244,10 +2251,10 @@ function UserRegistration(props) {
                               <Table className="table border" size="sm" >
                                 <thead>
                                   <tr>
-                                    <th className="border-bottom-none">{`Technology`}</th>
-                                    <th className="border-bottom-none">{`Approval Type`}</th>
-                                    <th className="border-bottom-none">{`Level`}</th>
-                                    <th className="text-right border-bottom-none">{`Action`}</th>
+                                    <th>{`Technology`}</th>
+                                    <th>{`Approval Type`}</th>
+                                    <th>{`Level`}</th>
+                                    <th className="text-right ">{`Action`}</th>
                                   </tr>
                                 </thead>
                                 <tbody >
@@ -2387,10 +2394,10 @@ function UserRegistration(props) {
                               <Table className="table border" size="sm" >
                                 <thead>
                                   <tr>
-                                    <th className="border-bottom-none">{`Head`}</th>
-                                    <th className="border-bottom-none">{`Approval Type`}</th>
-                                    <th className="border-bottom-none">{`Level`}</th>
-                                    <th className="text-right border-bottom-none">{`Action`}</th>
+                                    <th>{`Head`}</th>
+                                    <th>{`Approval Type`}</th>
+                                    <th>{`Level`}</th>
+                                    <th className="text-right ">{`Action`}</th>
                                   </tr>
                                 </thead>
                                 <tbody >
@@ -2527,10 +2534,10 @@ function UserRegistration(props) {
                                   <Table className="table border" size="sm" >
                                     <thead>
                                       <tr>
-                                        <th className="border-bottom-none">{`Master`}</th>
-                                        <th className="border-bottom-none">{`Approval Type`}</th>
-                                        <th className="border-bottom-none">{`Level`}</th>
-                                        <th className="text-right border-bottom-none">{`Action`}</th>
+                                        <th>{`Master`}</th>
+                                        <th>{`Approval Type`}</th>
+                                        <th>{`Level`}</th>
+                                        <th className="text-right">{`Action`}</th>
                                       </tr>
                                     </thead>
                                     <tbody>

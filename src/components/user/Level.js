@@ -16,6 +16,7 @@ import Drawer from '@material-ui/core/Drawer';
 import { Container, Row, Col, Label, } from 'reactstrap';
 import LoaderCustom from "../common/LoaderCustom";
 import { getApprovalTypeSelectList } from '../../actions/Common'
+import { NEW_COMPONENT, PROVISIONAL } from "../../config/constants";
 
 /**************************************THIS FILE IS FOR ADDING LEVEL MAPPING*****************************************/
 class Level extends Component {
@@ -207,6 +208,8 @@ class Level extends Component {
     if (label === 'ApprovalType') {
       approvalTypeSelectList && approvalTypeSelectList.map(item => {
         if (item.Value === '0') return false
+        if (item.Text === PROVISIONAL && this.state.levelType !== 'Simulation') return false
+        if (item.Text === NEW_COMPONENT && this.state.levelType === 'Master') return false
         temp.push({ label: item.Text, value: item.Value })
         return null;
       });

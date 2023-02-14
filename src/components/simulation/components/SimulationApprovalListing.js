@@ -571,6 +571,7 @@ function SimulationApprovalListing(props) {
             Mode: 'simulation',
             approvalTypeId: selectedRowData[0].SimulationHeadId,
         }
+        dispatch(setMasterForSimulation({ label: selectedRowData[0].SimulationTechnologyHead, value: selectedRowData[0].SimulationTechnologyId }))
 
         dispatch(checkFinalUser(obj, res => {
             if (res && res.data && res.data.Result) {
@@ -787,6 +788,7 @@ function SimulationApprovalListing(props) {
                                         isSimulationApprovalListing={true}
                                         simulationDetail={simulationDetail}
                                         IsFinalLevel={showFinalLevelButtons}
+                                        costingTypeId={selectedRowData[0].SimulationHeadId}
                                     />
                                 }
                             </div>
