@@ -1345,6 +1345,7 @@ function CostingDetails(props) {
    * @description used to Reset form
    */
   const backToFirstStep = () => {
+    setIsLoader(true)
     dispatch(getBriefCostingById('', (res) => { }))
 
     reactLocalStorage.setObject('costingArray', [])
@@ -2007,7 +2008,6 @@ function CostingDetails(props) {
                                     </tr>
                                   </thead>
                                   <tbody>
-                                    {isLoader ? <LoaderCustom customClass={'costing-table'} /> : ''}
                                     {zbcPlantGrid &&
                                       zbcPlantGrid.map((item, index) => {
 
@@ -2249,7 +2249,6 @@ function CostingDetails(props) {
                                     </tr>
                                   </thead>
                                   <tbody>
-                                    {isLoader ? <LoaderCustom customClass={'costing-table'} /> : ''}
                                     {vbcVendorGrid && vbcVendorGrid.map((item, index) => {
                                       let displayEditBtn = (item.Status === DRAFT) ? true : false;
                                       let displayCopyBtn = (item.Status !== REJECTED_BY_SYSTEM && item.Status !== '') ? true : false;
@@ -2379,7 +2378,6 @@ function CostingDetails(props) {
                                     </tr>
                                   </thead>
                                   <tbody>
-                                    {isLoader ? <LoaderCustom customClass={'costing-table'} /> : ''}
                                     {cbcGrid && cbcGrid?.map((item, index) => {
                                       let displayEditBtn = (item.Status === DRAFT) ? true : false;
                                       let displayCopyBtn = (item.Status !== REJECTED_BY_SYSTEM) ? true : false;
