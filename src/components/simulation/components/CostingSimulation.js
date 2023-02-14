@@ -286,6 +286,7 @@ function CostingSimulation(props) {
             tempObj.Technology = Data.SimulatedCostingList[0].Technology
             tempObj.Vendor = Data.SimulatedCostingList[0].VendorName
             tempObj.TotalImpactPerQuarter = Data.TotalImpactPerQuarter
+            tempObj.BudgetedPriceImpactPerQuarter = Data?.SimulatedCostingList[0]?.BudgetedPriceImpactPerQuarter
             setAmendmentDetails(tempObj)
 
             //LISTING
@@ -866,51 +867,51 @@ function CostingSimulation(props) {
     const hideColumn = (props) => {
         let data = { ...hideDataColumn }
         costingList && costingList.map((item, i) => {
-            if (costingList[i].NewOverheadCost !== 0 && costingList[i].OldOverheadCost !== costingList[i].NewOverheadCost) {
+            if (costingList[i].NewOverheadCost !== 0 && Number(costingList[i].OldOverheadCost) !== Number(costingList[i].NewOverheadCost)) {
                 data = { ...data, hideOverhead: false }
             }
 
-            if (costingList[i].NewProfitCost !== 0 && costingList[i].OldProfitCost !== costingList[i].NewProfitCost) {
+            if (costingList[i].NewProfitCost !== 0 && Number(costingList[i].OldProfitCost) !== Number(costingList[i].NewProfitCost)) {
                 data = { ...data, hideProfit: false }
             }
 
-            if (costingList[i].NewRejectionCost !== 0 && costingList[i].OldRejectionCost !== costingList[i].NewRejectionCost) {
+            if (costingList[i].NewRejectionCost !== 0 && Number(costingList[i].OldRejectionCost) !== Number(costingList[i].NewRejectionCost)) {
                 data = { ...data, hideRejection: false }
             }
 
-            if (costingList[i].NewICCCost !== 0 && costingList[i].OldICCCost !== costingList[i].NewICCCost) {
+            if (costingList[i].NewICCCost !== 0 && Number(costingList[i].OldICCCost) !== Number(costingList[i].NewICCCost)) {
                 data = { ...data, hideICC: false }
             }
-            if (costingList[i].NewPaymentTermsCost !== 0 && costingList[i].OldPaymentTermsCost !== costingList[i].NewPaymentTermsCost) {
+            if (costingList[i].NewPaymentTermsCost !== 0 && Number(costingList[i].OldPaymentTermsCost) !== Number(costingList[i].NewPaymentTermsCost)) {
                 data = { ...data, hidePayment: false }
             }
 
-            if (costingList[i].NewOtherCost !== 0 && costingList[i].OldOtherCost !== costingList[i].NewOtherCost) {
+            if (costingList[i].NewOtherCost !== 0 && Number(costingList[i].OldOtherCost) !== Number(costingList[i].NewOtherCost)) {
                 data = { ...data, hideOtherCost: false }
             }
 
-            if (costingList[i].NewDiscountCost !== 0 && costingList[i].OldDiscountCost !== costingList[i].NewDiscountCost) {
+            if (costingList[i].NewDiscountCost !== 0 && Number(costingList[i].OldDiscountCost) !== Number(costingList[i].NewDiscountCost)) {
                 data = { ...data, hideDiscount: false }
             }
 
-            if (costingList[i].NewNetOverheadAndProfitCost !== 0 && costingList[i].OldNetOverheadAndProfitCost !== costingList[i].NewNetOverheadAndProfitCost) {
+            if (costingList[i].NewNetOverheadAndProfitCost !== 0 && Number(costingList[i].OldNetOverheadAndProfitCost) !== Number(costingList[i].NewNetOverheadAndProfitCost)) {
                 data = { ...data, hideOveheadAndProfit: false }
             }
 
-            if (costingList[i].NewNetToolCost !== 0 && costingList[i].OldNetToolCost !== costingList[i].NewNetToolCost) {
+            if (costingList[i].NewNetToolCost !== 0 && Number(costingList[i].OldNetToolCost) !== Number(costingList[i].NewNetToolCost)) {
                 data = { ...data, hideToolCost: false }
             }
 
-            if (costingList[i].NewNetFreightCost !== 0 && costingList[i].OldNetFreightCost !== costingList[i].NewNetFreightCost) {
+            if (costingList[i].NewNetFreightCost !== 0 && Number(costingList[i].OldNetFreightCost) !== Number(costingList[i].NewNetFreightCost)) {
 
                 data = { ...data, hideFrieghtCost: false }
             }
 
-            if (costingList[i].NewNetPackagingCost !== 0 && costingList[i].OldNetPackagingCost !== costingList[i].NewNetPackagingCost) {
+            if (costingList[i].NewNetPackagingCost !== 0 && Number(costingList[i].OldNetPackagingCost) !== Number(costingList[i].NewNetPackagingCost)) {
                 data = { ...data, hidePackagingCost: false }
             }
 
-            if (costingList[i].NewNetFreightPackagingCost !== 0 && costingList[i].OldNetFreightPackagingCost !== costingList[i].NewNetFreightPackagingCost) {
+            if (costingList[i].NewNetFreightPackagingCost !== 0 && Number(costingList[i].OldNetFreightPackagingCost) !== Number(costingList[i].NewNetFreightPackagingCost)) {
                 data = { ...data, hideFreightPackagingCost: false }
             }
 
@@ -925,8 +926,8 @@ function CostingSimulation(props) {
             }
 
         })
-        setHideDataColumn(prevState => ({ ...prevState, showBoughtOutPartCost: true }))
 
+        setHideDataColumn({ ...hideDataColumn, ...data })
         setShowBOPColumn(costingSimulationListAllKeys?.IsBoughtOutPartSimulation === true ? true : false)
         setShowSurfaceTreatmentColumn(costingSimulationListAllKeys?.IsSurfaceTreatmentSimulation === true ? true : false)
         setShowOperationColumn(costingSimulationListAllKeys?.IsOperationSimulation === true ? true : false)
@@ -1297,6 +1298,8 @@ function CostingSimulation(props) {
                                                         <AgGridColumn width={130} field="Technology" headerName='Technology'></AgGridColumn>
                                                         <AgGridColumn width={110} field="ECNNumber" headerName='ECN No.' cellRenderer='ecnFormatter'></AgGridColumn>
                                                         <AgGridColumn width={130} field="RevisionNumber" headerName='Revision No.' cellRenderer='revisionFormatter'></AgGridColumn>
+                                                        {((isMachineRate || showMachineRateColumn) && !isMultipleMasterSimulation) && <AgGridColumn width={140} field="ProcessName" headerName='Process Name' cellRenderer='processFormatter'></AgGridColumn>}
+                                                        {((isMachineRate || showMachineRateColumn) && !isMultipleMasterSimulation) && <AgGridColumn width={140} field="ProcessCode" headerName='Process Code' cellRenderer='processFormatter'></AgGridColumn>}
                                                         <AgGridColumn width={140} field="VendorName" headerName='Vendor (Code)'></AgGridColumn>
                                                         <AgGridColumn width={120} field="PlantName" cellRenderer='plantFormatter' headerName='Plant (Code)'></AgGridColumn>
                                                         <AgGridColumn width={140} field="BudgetedPrice" headerName='Budgeted Price' cellRenderer='impactPerQuarterFormatter'></AgGridColumn>
@@ -1348,8 +1351,6 @@ function CostingSimulation(props) {
                                                         {(isBOPDomesticOrImport || showBOPColumn) && <AgGridColumn width={140} field="NetBoughtOutPartCostVariance" headerName='Variance (BOP Cost)' cellRenderer='BOPVarianceFormatter' ></AgGridColumn>}
 
 
-                                                        {((isMachineRate || showMachineRateColumn) && !isMultipleMasterSimulation) && <AgGridColumn width={140} field="ProcessName" headerName='Process Name' cellRenderer='processFormatter'></AgGridColumn>}
-                                                        {((isMachineRate || showMachineRateColumn) && !isMultipleMasterSimulation) && <AgGridColumn width={140} field="ProcessCode" headerName='Process Code' cellRenderer='processFormatter'></AgGridColumn>}
                                                         {(isMachineRate || showMachineRateColumn) && <AgGridColumn width={140} field="OldNetProcessCost" headerName='Existing Net Process Cost' cellRenderer='processCostFormatter' ></AgGridColumn>}
                                                         {(isMachineRate || showMachineRateColumn) && <AgGridColumn width={140} field="NewNetProcessCost" headerName='Revised Net Process Cost' cellRenderer='processCostFormatter'></AgGridColumn>}
                                                         {(isMachineRate || showMachineRateColumn) && <AgGridColumn width={140} field="NetProcessCostVariance" headerName='Variance (Proc. Cost)' cellRenderer={decimalFormatter} ></AgGridColumn>}
@@ -1372,14 +1373,14 @@ function CostingSimulation(props) {
 
                                                         {(isMultiTechnology && hideDataColumn.showChildParts) && <AgGridColumn width={140} field="OldNetChildPartsCostWithQuantity" headerName="Existing Net Child's Part Cost With Quantity" cellRenderer={decimalFormatter}></AgGridColumn>}
                                                         {(isMultiTechnology && hideDataColumn.showChildParts) && <AgGridColumn width={140} field="NewNetChildPartsCostWithQuantity" headerName="Revised Net Child's Part Cost With Quantity" cellRenderer={decimalFormatter}></AgGridColumn>}
-                                                        {(isMultiTechnology && hideDataColumn.showChildParts) && <AgGridColumn width={140} field="Variance" headerName='Variance' cellRenderer={decimalFormatter}></AgGridColumn>}
+                                                        {(isMultiTechnology && hideDataColumn.showChildParts) && <AgGridColumn width={140} field="Variance" headerName='Variance (w.r.t. Existing)' cellRenderer={decimalFormatter}></AgGridColumn>}
                                                         {(isMultiTechnology && hideDataColumn.showBoughtOutPartCost) && <AgGridColumn width={140} field="OldNetBoughtOutPartCost" headerName='Existing Net BOP Cost' cellRenderer='netBOPPartCostFormatter' ></AgGridColumn>}
                                                         {(isMultiTechnology && hideDataColumn.showBoughtOutPartCost) && <AgGridColumn width={140} field="NewNetBoughtOutPartCost" headerName='Revised Net BOP Cost' cellRenderer='netBOPPartCostFormatter'></AgGridColumn>}
                                                         {(isMultiTechnology && hideDataColumn.showBoughtOutPartCost) && <AgGridColumn width={140} field="NetBoughtOutPartCostVariance" headerName='Variance (BOP Cost)' cellRenderer='BOPVarianceFormatter' ></AgGridColumn>}
 
 
                                                         <AgGridColumn width={140} field="ImpactPerQuarter" headerName='Impact/Quarter (w.r.t. Existing)' cellRenderer='impactPerQuarterFormatter'></AgGridColumn>
-                                                        <AgGridColumn width={140} field="BudgetedPriceImpactPerQuarter" headerName='Impact/Quarter (w.r.t. Budgeted)' cellRenderer='impactPerQuarterFormatter'></AgGridColumn>
+                                                        <AgGridColumn width={140} field="BudgetedPriceImpactPerQuarter" headerName='Impact/Quarter (w.r.t. Budgeted Price)' cellRenderer='impactPerQuarterFormatter'></AgGridColumn>
 
                                                         {!(isExchangeRate) && <AgGridColumn width={140} field="OldOverheadCost" hide={hideDataColumn.hideOverhead} cellRenderer='overheadFormatter' headerName='Existing Overhead'></AgGridColumn>}
                                                         {!(isExchangeRate) && <AgGridColumn width={140} field="NewOverheadCost" hide={hideDataColumn.hideOverhead} cellRenderer='overheadFormatter' headerName='Revised Overhead'></AgGridColumn>}

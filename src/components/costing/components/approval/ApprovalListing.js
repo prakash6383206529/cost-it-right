@@ -206,7 +206,6 @@ function ApprovalListing(props) {
     if (isDashboard) {
       dataObj.DisplayStatus = props.status
     }
-    dataObj.IsCustomerDataShow = reactLocalStorage.getObject('cbcCostingPermission')
     let filterData = {
       loggedUser: loggedUser,
       logged_in_user_level_id: userDetails().LoggedInLevelId,
@@ -362,14 +361,12 @@ function ApprovalListing(props) {
     setIsFilterButtonClicked(false)
     gridOptions?.columnApi?.resetColumnState(null);
     gridOptions?.api?.setFilterModel(null);
-
     for (var prop in floatingFilterData) {
 
       if (prop !== "DepartmentCode") {
         floatingFilterData[prop] = ""
       }
     }
-
     setFloatingFilterData(floatingFilterData)
     setWarningMessage(false)
     setPageNo(1)

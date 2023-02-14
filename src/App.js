@@ -15,6 +15,12 @@ class App extends Component {
   }
 
   UNSAFE_componentWillMount() {
+    if (window.performance.getEntriesByType("navigation")[0].type === 'back_forward' || window.performance.getEntriesByType("navigation")[0].type === 'navigate') { //TO CHECK IF DUPLICATE TAB IS OPENED
+      setTimeout(() => {
+        window.location.reload();
+      }, 200);
+    }
+
     this.props.getLoginPageInit(res => {
       if (res && res.data && res.data.Data) {
         let Data = res.data.Data;

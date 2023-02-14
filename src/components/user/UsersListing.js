@@ -315,7 +315,7 @@ class UsersListing extends Component {
 		const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
 		const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
 		const { EditAccessibility } = this.state;
-		if (cellValue === loggedInUserId()) return null;
+		if (rowData?.UserId === loggedInUserId()) return null;
 		return (
 			<div className="">
 				{EditAccessibility && <button title='Edit' className="Edit " type={'button'} onClick={() => this.editItemDetails(rowData?.UserId, false)} />}
@@ -560,7 +560,6 @@ class UsersListing extends Component {
 			departmentFormatter: this.departmentFormatter,
 			linkableFormatter: this.linkableFormatter
 		};
-
 		return (
 			<div className={"ag-grid-react"} id={'userlist-go-to-top'}>
 				<ScrollToTop pointProp={"userlist-go-to-top"} />
@@ -629,7 +628,7 @@ class UsersListing extends Component {
 								<div className="d-flex justify-content-end bd-highlight w100">
 									{AddAccessibility && (
 										<div>
-											<ExcelFile filename={'User Listing'} fileExtension={'.xls'} element={<button title={`Download ${this.state.dataCount === 0 ? "All" : "(" + this.state.dataCount + ")"}`} type="button" className={'user-btn mr5'} ><div className="download mr-1"></div>
+											<ExcelFile filename={`${this.props.RFQUser ? 'RFQ User Listing' : 'User Listing'}`} fileExtension={'.xls'} element={<button title={`Download ${this.state.dataCount === 0 ? "All" : "(" + this.state.dataCount + ")"}`} type="button" className={'user-btn mr5'} ><div className="download mr-1"></div>
 												{`${this.state.dataCount === 0 ? "All" : "(" + this.state.dataCount + ")"}`}</button>}>
 												{this.onBtExport()}
 											</ExcelFile>

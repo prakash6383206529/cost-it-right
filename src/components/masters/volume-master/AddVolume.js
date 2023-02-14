@@ -926,7 +926,7 @@ class AddVolume extends Component {
                               </Col>
                             )}
                             <Col md="3">
-                              <label>{"Part No.(Revision No.)"}<span className="asterisk-required">*</span></label>
+                              <label>{"Part No. (Revision No.)"}<span className="asterisk-required">*</span></label>
                               <div className="d-flex justify-space-between align-items-center async-select">
                                 <div className="fullinput-icon p-relative">
                                   <AsyncSelect

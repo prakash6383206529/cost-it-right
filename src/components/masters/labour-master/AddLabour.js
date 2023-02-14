@@ -2,8 +2,8 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { Field, reduxForm, formValueSelector } from 'redux-form'
 import { Row, Col, Table } from 'reactstrap'
-import { required, checkForNull, positiveAndDecimalNumber, maxLength10, checkForDecimalAndNull, decimalLengthsix } from '../../../helper/validation'
-import { focusOnError, renderNumberInputField, searchableSelect } from '../../layout/FormInputs'
+import { required, checkForNull, positiveAndDecimalNumber, maxLength10, checkForDecimalAndNull, decimalLengthsix, number } from '../../../helper/validation'
+import { focusOnError, renderTextInputField, searchableSelect } from '../../layout/FormInputs'
 import { getPlantListByState } from '../actions/Fuel'
 import { createLabour, getLabourData, updateLabour, labourTypeVendorSelectList, getLabourTypeByMachineTypeSelectList, } from '../actions/Labour'
 import { getMachineTypeSelectList } from '../actions/MachineMaster'
@@ -886,8 +886,8 @@ class AddLabour extends Component {
                             type="text"
                             placeholder={isViewMode ? "-" : "Enter"}
                             disabled={isViewMode}
-                            validate={[positiveAndDecimalNumber, maxLength10, decimalLengthsix]}
-                            component={renderNumberInputField}
+                            validate={[positiveAndDecimalNumber, maxLength10, decimalLengthsix, number]}
+                            component={renderTextInputField}
                             required={true}
                             className=" "
                             customClassName="withBorder"

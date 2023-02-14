@@ -642,8 +642,8 @@ const SendForApproval = (props) => {
             {viewApprovalData &&
               viewApprovalData.map((data, index) => {
 
-                return (
-                  <div className="" key={index}>
+                return (<>
+                  {props.isRfq && data.costingId && <div className="" key={index}>
                     <Row className="px-3">
                       <Col md="12">
                         <h6 className="left-border d-inline-block mr-4">
@@ -762,7 +762,7 @@ const SendForApproval = (props) => {
                           </Col>
                           <Col md="4">
                             <div className="form-group">
-                              <label>Variance</label>
+                              <label>Variance (w.r.t. Existing)</label>
                               <label className={data.oldPrice === 0 ? `form-control bg-grey input-form-control` : `form-control bg-grey input-form-control ${data.variance < 0 ? 'red-value' : 'green-value'}`}>
                                 {data.variance ? checkForDecimalAndNull(data.variance, initialConfiguration.NoOfDecimalForPrice) : 0}
                               </label>
@@ -811,7 +811,8 @@ const SendForApproval = (props) => {
                         </Row>
                       </div>
                     </div>
-                  </div>
+                  </div>}
+                </>
                 );
               })}
             <div className="">

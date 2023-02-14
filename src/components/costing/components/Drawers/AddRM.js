@@ -315,8 +315,8 @@ function AddRM(props) {
                         <AgGridColumn field="RawMaterialId" hide={true}></AgGridColumn>
                         <AgGridColumn cellClass="has-checkbox" field="EntryType" headerName="RM Type"  ></AgGridColumn>
                         <AgGridColumn field="RawMaterial" headerName="RM Name"></AgGridColumn>
-                        <AgGridColumn field="RMGrade" headerName="RM Grade"></AgGridColumn>
-                        <AgGridColumn field="RMSpec" headerName="RM Spec"></AgGridColumn>
+                        <AgGridColumn field="RMGrade" headerName="Grade"></AgGridColumn>
+                        <AgGridColumn field="RMSpec" headerName="Spec"></AgGridColumn>
                         <AgGridColumn field="Category" ></AgGridColumn>
                         {costData && costData.VendorType === ZBC && <AgGridColumn dataAlign="center" field="VendorName" headerName="Vendor" ></AgGridColumn>}
                         {costData && costData.VendorType === ZBC && <AgGridColumn dataAlign="center" field="VendorLocation" headerName="Vendor Location" ></AgGridColumn>}

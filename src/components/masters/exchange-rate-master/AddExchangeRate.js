@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col, } from 'reactstrap';
-import { required, number, positiveAndDecimalNumber, maxLength10, checkPercentageValue, decimalLengthsix, decimalLengthThree, } from "../../../helper/validation";
+import { required, positiveAndDecimalNumber, maxLength10, decimalLengthsix, maxPercentValue, number, checkWhiteSpaces, percentageLimitValidation, } from "../../../helper/validation";
 import { createExchangeRate, getExchangeRateData, updateExchangeRate, getCurrencySelectList, } from '../actions/ExchangeRateMaster';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
@@ -10,7 +10,7 @@ import { loggedInUserId, } from "../../../helper/auth";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import DayTime from '../../common/DayTimeWrapper'
-import { renderNumberInputField, searchableSelect, } from "../../layout/FormInputs";
+import { renderText, renderTextInputField, searchableSelect, } from "../../layout/FormInputs";
 import LoaderCustom from '../../common/LoaderCustom';
 import { debounce } from 'lodash';
 import { onFocus } from '../../../helper';
@@ -49,16 +49,6 @@ class AddExchangeRate extends Component {
       this.props.getCurrencySelectList(() => { })
     }
     this.getDetail()
-  }
-
-
-  componentDidUpdate(prevProps) {
-    if (this.props.filedObj !== prevProps.filedObj) {
-      const { BankCommissionPercentage } = this.props.filedObj
-      if (BankCommissionPercentage) {
-        checkPercentageValue(BankCommissionPercentage, "Bank commission percentage should not be more than 100") ? this.props.change('BankCommissionPercentage', BankCommissionPercentage) : this.props.change('BankCommissionPercentage', 0)
-      }
-    }
   }
 
   /**
@@ -339,8 +329,8 @@ class AddExchangeRate extends Component {
                           name={"CurrencyExchangeRate"}
                           type="text"
                           placeholder={isViewMode ? '-' : 'Enter'}
-                          validate={[required, positiveAndDecimalNumber, maxLength10, decimalLengthsix]}
-                          component={renderNumberInputField}
+                          validate={[required, positiveAndDecimalNumber, maxLength10, decimalLengthsix, number]}
+                          component={renderTextInputField}
                           required={true}
                           onChange={this.onFinancialDataChange}
                           disabled={isViewMode}
@@ -354,8 +344,8 @@ class AddExchangeRate extends Component {
                           name={"BankRate"}
                           type="text"
                           placeholder={isViewMode ? '-' : 'Enter'}
-                          validate={[positiveAndDecimalNumber, maxLength10, decimalLengthsix]}
-                          component={renderNumberInputField}
+                          validate={[positiveAndDecimalNumber, maxLength10, decimalLengthsix, number]}
+                          component={renderTextInputField}
                           disabled={isViewMode}
                           onChange={this.onFinancialDataChange}
                           className=" "
@@ -368,8 +358,8 @@ class AddExchangeRate extends Component {
                           name={"BankCommissionPercentage"}
                           type="text"
                           placeholder={isViewMode ? '-' : 'Enter'}
-                          validate={[positiveAndDecimalNumber, maxLength10, decimalLengthThree]}
-                          component={renderNumberInputField}
+                          validate={[number, maxPercentValue, checkWhiteSpaces, percentageLimitValidation]}
+                          component={renderText}
                           max={100}
                           disabled={isViewMode}
                           onChange={this.onFinancialDataChange}
@@ -384,8 +374,8 @@ class AddExchangeRate extends Component {
                           name={"CustomRate"}
                           type="text"
                           placeholder={isViewMode ? '-' : 'Enter'}
-                          validate={[positiveAndDecimalNumber, maxLength10, decimalLengthsix]}
-                          component={renderNumberInputField}
+                          validate={[positiveAndDecimalNumber, maxLength10, decimalLengthsix, number]}
+                          component={renderTextInputField}
                           disabled={isViewMode}
                           onChange={this.onFinancialDataChange}
                           className=" "

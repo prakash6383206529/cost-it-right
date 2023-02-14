@@ -83,7 +83,7 @@ function ViewBOP(props) {
   const handlingChargeTableData = () => {
     return <>
       <Row>
-        <Col md="12">
+        <Col md="12" className='mb-1'>
           <Row>
             <Col md="12">
               <div className="left-border">{`${IsAssemblyCosting ? 'Assembly\'s Insert Handling Charge:' : 'Insert Handling Charge:'}`}</div>
@@ -121,7 +121,7 @@ function ViewBOP(props) {
       {
         IsAssemblyCosting && !partType &&
         <Row className="mx-0">
-          <Col md="12" className='px-0'>
+          <Col md="12" className='px-0 mb-1'>
             <br />
             <Row>
               <Col md="12">

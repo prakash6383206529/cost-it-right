@@ -2,7 +2,7 @@ import React, { Fragment, useState, useEffect, useContext } from 'react'
 import { Row, Col } from 'reactstrap'
 import { useForm, Controller, useWatch } from 'react-hook-form'
 import { useDispatch } from 'react-redux'
-import { NumberFieldHookForm, } from '../../../../layout/HookFormInputs'
+import { NumberFieldHookForm, TextFieldHookForm, } from '../../../../layout/HookFormInputs'
 import { checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUserId, } from '../../../../../helper'
 import { costingInfoContext } from '../../CostingDetailStepTwo'
 import { saveMachiningProcessCostCalculationData } from '../../../actions/CostWorking'
@@ -10,6 +10,7 @@ import Toaster from '../../../../common/Toaster'
 import { findProcessCost } from '../../../CostingUtil'
 import { debounce } from 'lodash'
 import TooltipCustom from '../../../../common/Tooltip'
+import { number, percentageLimitValidation, checkWhiteSpaces } from "../../../../../helper/validation";
 
 function UomTimeProcessDefaultCalculator(props) {
     const WeightCalculatorRequest = props.calculatorData.WeightCalculatorRequest
@@ -627,7 +628,7 @@ function UomTimeProcessDefaultCalculator(props) {
                                         </Col>
 
                                         <Col md="4">
-                                            <NumberFieldHookForm
+                                            <TextFieldHookForm
                                                 label={`Efficiency (%)`}
                                                 name={'efficiencyPercentage'}
                                                 Controller={Controller}
@@ -635,14 +636,11 @@ function UomTimeProcessDefaultCalculator(props) {
                                                 register={register}
                                                 rules={{
                                                     required: true,
-                                                    pattern: {
-                                                        value: /^\d*\.?\d*$/,
-                                                        message: 'Invalid Number.'
-                                                    },
+                                                    validate: { number, checkWhiteSpaces, percentageLimitValidation },
                                                     max: {
                                                         value: 100,
-                                                        message: "Should not be greater than 100"
-                                                    }
+                                                        message: 'Percentage cannot be greater than 100'
+                                                    },
                                                 }}
                                                 mandatory={true}
                                                 handleChange={() => { }}

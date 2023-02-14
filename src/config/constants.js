@@ -2,6 +2,7 @@
  * Define all the constants required in application inside this file and export them
  */
 
+import _ from "lodash";
 import { reactLocalStorage } from "reactjs-localstorage";
 export const config = () => {
 
@@ -1836,7 +1837,7 @@ export const VIEW_COSTING_DATA = {
   customer: 'Customer (Code)',
   plantExcel: 'Plant (Code)',
   status: 'Status',
-  rm: 'RM Name-Grade',
+  rm: 'RM-Grade',
   rmRate: 'RM Rate',
   scrapRate: 'Scrap Rate',
   gWeight: 'Gross Weight',
@@ -1891,10 +1892,10 @@ export const VIEW_COSTING_DATA = {
   // totalCost: 'Total Cost',
   // otherDiscount: 'Hundi/Other Discount',
   // otherDiscountValue: '',
-  otherDiscountType: 'Other Discount Type',
-  otherDiscountApplicablity: 'Other Discount Applicability',
-  otherDiscountValuePercent: 'Other Discount Value',
-  otherDiscountCost: 'Other Discount Cost',
+  otherDiscountType: 'Hundi/Discount Type',
+  otherDiscountApplicablity: 'Hundi/Discount Applicability',
+  otherDiscountValuePercent: 'Hundi/Discount Value',
+  otherDiscountCost: 'Hundi/Discount Cost',
   anyOtherCostType: 'Any Other Cost Type',
   anyOtherCostApplicablity: 'Any Other Cost Applicability',
   anyOtherCostPercent: 'Any Other Cost Value',
@@ -2008,7 +2009,7 @@ export const MachineRate = "Machine-rate"
 export const ProcessMaster = "Process "
 
 export const VendorMaster = "Vendor"
-export const Clientmaster = "Client"
+export const Clientmaster = "Customer"
 export const PlantZbc = "Plant-zbc"
 export const PlantVbc = "Plant-vbc"
 
@@ -2069,90 +2070,88 @@ export const LEVEL1 = 'L1';
 export const SUB_ASSEMBLY = 'Sub Assembly';
 
 //MASTER NAMES FOR BULK UPLOAD
-export const RMDOMESTICBULKUPLOAD = 'RMDomestic';
-export const RMIMPORTBULKUPLOAD = 'RMImport';
-export const RMSPECIFICATION = 'RMSpecification'
-export const BOPDOMESTICBULKUPLOAD = 'BOPDomestic';
+export const RMDOMESTICBULKUPLOAD = 'RM Domestic';
+export const RMIMPORTBULKUPLOAD = 'RM Import';
+export const RMSPECIFICATION = 'RM Specification'
+export const BOPDOMESTICBULKUPLOAD = 'BOP Domestic';
 export const INSERTDOMESTICBULKUPLOAD = 'InsertDomestic';
 export const BOPIMPORTBULKUPLOAD = 'BOPImport';
 export const INSERTIMPORTBULKUPLOAD = 'InsertImport';
 export const BOMBULKUPLOAD = 'BOM';
-export const PARTCOMPONENTBULKUPLOAD = 'PartComponent';
-export const PRODUCTCOMPONENTBULKUPLOAD = 'ProductComponent';
+export const PARTCOMPONENTBULKUPLOAD = 'Part Component';
+export const PRODUCTCOMPONENTBULKUPLOAD = 'Product Component';
 export const MACHINEBULKUPLOAD = 'Machine';
 export const VENDORBULKUPLOAD = 'Vendor';
 export const LABOURBULKUPLOAD = 'Labour'
 export const OPERAIONBULKUPLOAD = 'Operation';
 export const FUELBULKUPLOAD = 'Fuel';
-export const INTERESTRATEBULKUPLOAD = 'InterestRate'
-export const ACTUALVOLUMEBULKUPLOAD = 'ActualVolume'
-export const BUDGETEDVOLUMEBULKUPLOAD = 'BudgetedVolume'
+export const INTERESTRATEBULKUPLOAD = 'Interest Rate'
+export const ACTUALVOLUMEBULKUPLOAD = 'Actual Volume'
+export const BUDGETEDVOLUMEBULKUPLOAD = 'Budgeted Volume'
 export const ADDRFQ = 'ADD RFQ'
+export const VOLUMEBULKUPLOAD = 'Volume'
 
 
 //STATUS FILTER DROPDOWN OPTIONS
-export const statusOptionsMasters = [
-
-  { label: "Draft", value: "1" },
-  { label: "PendingForApproval", value: "2" },
-  { label: "Approved", value: "3" },
+export const statusOptionsMasters = _.sortBy([
   { label: "Rejected", value: "4" },
-  { label: "History", value: "5" },
-  { label: "AwaitingApproval", value: "6" },
-]
-
-
-export const statusOptionsCosting = [
-
-  { label: "Draft", value: "1" },
-  { label: "PendingForApproval", value: "2" },
   { label: "Approved", value: "3" },
-  { label: "Rejected", value: "4" },
-  { label: "History", value: "5" },
   { label: "AwaitingApproval", value: "6" },
+  { label: "Draft", value: "1" },
+  { label: "History", value: "5" },
+  { label: "PendingForApproval", value: "2" },
+], ({ label }) => label.toLowerCase());
+
+
+export const statusOptionsCosting = _.sortBy([
+  { label: "AwaitingApproval", value: "6" },
+  { label: "Draft", value: "1" },
   { label: "Error", value: "12" },
-  { label: "Pushed", value: "13" },
+  { label: "History", value: "5" },
+  { label: "PendingForApproval", value: "2" },
   { label: "POUpdated", value: "14" },
-
-]
-
-
-export const statusOptionsSimulation = [
-
-  { label: "Draft", value: "1" },
-  { label: "PendingForApproval", value: "2" },
-  { label: "Approved", value: "3" },
-  { label: "Rejected", value: "4" },
-  { label: "History", value: "5" },
-  { label: "AwaitingApproval", value: "6" },
-  { label: "Error", value: "12" },
   { label: "Pushed", value: "13" },
+  { label: "Rejected", value: "4" },
+  { label: "Approved", value: "3" },
+]
+  , ({ label }) => label.toLowerCase());
+
+export const statusOptionsSimulation = _.sortBy([
+  { label: "AwaitingApproval", value: "6" },
+  { label: "Draft", value: "1" },
+  { label: "Error", value: "12" },
+  { label: "History", value: "5" },
+  { label: "Linked", value: "17" },
+  { label: "PendingForApproval", value: "2" },
   { label: "POUpdated", value: "14" },
   { label: "Provisional", value: "15" },
-  { label: "Linked", value: "17" },
-
-]
-
-export const statusOptions = [
-  { label: "Draft", value: "1" },
-  { label: "PendingForApproval", value: "2" },
-  { label: "Approved", value: "3" },
+  { label: "Pushed", value: "13" },
   { label: "Rejected", value: "4" },
-  { label: "History", value: "5" },
-  { label: "AwaitingApproval", value: "6" },
-  // { label: "SendForApproval", value: "7" },
+  { label: "Approved", value: "3" },
+], ({ label }) => label.toLowerCase());
+
+
+export const statusOptions = _.sortBy([
   { label: "ApprovedByAssembly", value: "8" },
   { label: "ApprovedBySimulation", value: "9" },
+  { label: "Approved", value: "3" },
+  { label: "AwaitingApproval", value: "6" },
   { label: "CreatedByAssembly", value: "10" },
   { label: "CreatedBySimulation", value: "11" },
+  { label: "Draft", value: "1" },
   { label: "Error", value: "12" },
-  { label: "Pushed", value: "13" },
+  { label: "History", value: "5" },
+  { label: "Linked", value: "17" },
+  { label: "PendingForApproval", value: "2" },
   { label: "POUpdated", value: "14" },
   { label: "Provisional", value: "15" },
-  { label: "ApprovedByASMSimulation", value: "16" },
-  { label: "Linked", value: "17" },
+  { label: "Pushed", value: "13" },
+  { label: "Rejected", value: "4" },
   { label: "RejectedBySystem", value: "18" },
-]
+  { label: "ApprovedByASMSimulation", value: "16" },
+  // { label: "SendForApproval", value: "7" },
+], ({ label }) => label.toLowerCase());
+
 
 //CONSTANTS FOR COSTING HEAD
 export const ZBCTypeId = Number(reactLocalStorage.getObject('CostingHeadsListShortForm')[ZBC])
@@ -2178,4 +2177,4 @@ export const KEYRFQ = "UAGSqTBCbZ8JqHJl"
 export const IVRFQ = "8vFNmRQEl91nOtrM"
 
 //VERSION 
-export const VERSION = "V2.1.60.1";
+export const VERSION = "V2.1.74";

@@ -426,8 +426,6 @@ function TabDiscountOther(props) {
           ...discountObj,
           HundiOrDiscountPercentage: checkForNull(event.target.value)
         })
-      } else {
-        Toaster.warning('Please enter valid number.')
       }
     }
   }
@@ -837,13 +835,23 @@ function TabDiscountOther(props) {
     counter = 0
     dispatch(setDiscountErrors({}))
   }
-  const resetDataOtherCOst = () => {
-    setValue('OtherCostApplicability', "")
-  }
-  const resetDataDiscount = () => {
-    setValue('DiscountCostApplicability', "")
-  }
 
+  const resetData = (type) => {
+    switch (type) {
+      case 'other':
+        return function resetField() {
+          setValue('OtherCostApplicability', "")
+        }
+
+      case 'discount':
+        return function resetField() {
+          setValue('DiscountCostApplicability', "")
+        }
+
+      default:
+        break;
+    }
+  }
   return (
     <>
       <div className="login-container signup-form">
@@ -906,14 +914,14 @@ function TabDiscountOther(props) {
                           disabled={CostingViewMode ? true : false}
                           handleChange={handleOherCostApplicabilityChange}
                           errors={errors.OtherCostApplicability}
-                          buttonCross={resetDataOtherCOst}
+                          buttonCross={resetData("other")}
                         />
                       </Col>
                     }
                     {
                       <Col className={`${otherCostType.value === 'Percentage' ? 'col-md-2' : 'col-md-4'}`}>
                         <TextFieldHookForm
-                          label="Percentage(%)"
+                          label="Percentage (%)"
                           name={"PercentageOtherCost"}
                           Controller={Controller}
                           control={control}
@@ -1020,7 +1028,7 @@ function TabDiscountOther(props) {
                           disabled={CostingViewMode ? true : false}
                           handleChange={handleDiscountApplicabilityChange}
                           errors={errors.DiscountCostApplicability}
-                          buttonCross={resetDataDiscount}
+                          buttonCross={resetData('discount')}
                         />
                       </Col>
                     }

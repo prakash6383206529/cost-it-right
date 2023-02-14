@@ -2,6 +2,7 @@ import DayTime from '../components/common/DayTimeWrapper';
 import Toaster from '../components/common/Toaster';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import _ from 'lodash'
+import { NUMBERMAXLENGTH } from '../config/masterData';
 
 export const minLength = min => value =>
     value && value.length < min ? `Min length must be ${min}.` : undefined;
@@ -16,12 +17,13 @@ export const minValue = min => value =>
 //THIS IS FOR MAX VALUE
 export const maxValue = max => value =>
     value && value > max ? `Maximum no of days should be ${max}.` : undefined;
-
+export const maxPercentageValue = max => value =>
+    value && value > max ? `Percentage value should be equal to ${max}.` : undefined;
 
 export const minValue1 = minValue(1);
 export const minValueLessThan1 = minValue(0.1);
 export const maxValue366 = maxValue(366)
-
+export const maxPercentValue = maxPercentageValue(100)
 export const minLength1 = minLength(1);
 export const minLength2 = minLength(2);
 export const minLength3 = minLength(3);
@@ -107,7 +109,7 @@ export const website = value =>
         : undefined;
 
 export const required = value =>
-((typeof value !== 'undefined' && value !== null && value !== "")
+((typeof value !== undefined && value !== null && value !== "")
     ? undefined : 'This field is required.');
 
 export const selectRequired = value =>
@@ -430,9 +432,11 @@ export const NoSignMaxLengthRegex = /^\d{0,6}(\.\d{0,6})?$/i;
 
 export const NoSignNoDecimalRegex = /^\d*$/i;
 
-export const NoSignMaxLengthMessage = `Input should be numeric, and should not exceed 6 digit before and after decimal.`
+export const NoSignMaxLengthMessage = `Input should be numeric, and should not exceed ${NUMBERMAXLENGTH} digit before and after decimal.`
 export const NoSignNoDecimalMessage = `Input should be integer.`
 
+
 export const isDateFormatter = value =>
-    value && !/^[0-3]?[0-9].[0-3]?[0-9].(?:[0-9]{2})?[0-9]{2}$/.test(value)
+    value && !/^(0?[1-9]|[12][0-9]|3[01])[\/\-](0?[1-9]|1[012])[\/\-]\d{4}$/.test(value)
         ? false : true;
+

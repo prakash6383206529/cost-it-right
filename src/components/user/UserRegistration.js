@@ -1766,6 +1766,7 @@ function UserRegistration(props) {
                             Controller={Controller}
                             control={control}
                             register={register}
+                            onPaste={(e) => e.preventDefault()}
                             mandatory={true}
                             disableErrorOverflow={true}
                             rules={{
