@@ -312,6 +312,7 @@ function AddBudget(props) {
 
         // setValue('currentPrice', total + currentPrice)
         setTotalSum(total + currentPrice)
+        setValue('totalSum', total + currentPrice)
     }
 
     /**
@@ -357,6 +358,7 @@ function AddBudget(props) {
                     setValue('Plant', { label: `${Data.PlantName}(${Data.PlantCode})`, value: Data?.PlantId })
                     setCostingTypeId(Data.CostingHeadId)
                     setTotalSum(Data.BudgetedPoPrice)
+                    setValue('totalSum', Data.BudgetedPoPrice)
                     setYear({ label: Data.FinancialYear, value: 0 })
                     setPart({ label: Data.PartNumber, value: Data.PartId })
                     setClient({ label: `${Data.CustomerName} (${Data.CustomerCode})`, value: Data.CustomerId })
@@ -511,6 +513,7 @@ function AddBudget(props) {
             setValue('currentPrice', checkForDecimalAndNull(res?.data?.DataList[0].NetPOPrice, getConfigurationKey().NoOfDecimalForInputOutput))
             setCurrentPrice(checkForDecimalAndNull(res?.data?.DataList[0].NetPOPrice, getConfigurationKey().NoOfDecimalForInputOutput))
             setTotalSum(res?.data?.DataList[0].NetPOPrice + totalSum)
+            setValue('totalSum', res?.data?.DataList[0].NetPOPrice + totalSum)
         }))
 
     }
@@ -657,98 +660,147 @@ function AddBudget(props) {
                                                 </Row>
 
                                                 <Row>
-
-                                                    {(costingTypeId === ZBCTypeId && (<>
-
-                                                        < div className="col-md-3">
-                                                            <SearchableSelectHookForm
-                                                                name="Plant"
-                                                                type="text"
-                                                                label={'Plant (Code)'}
-                                                                errors={errors.Plant}
-                                                                Controller={Controller}
-                                                                control={control}
-                                                                register={register}
-                                                                mandatory={true}
-                                                                rules={{
-                                                                    required: true,
-                                                                }}
-                                                                placeholder={'Select'}
-                                                                options={renderListing("plant")}
-                                                                //onKeyUp={(e) => this.changeItemDesc(e)}
-                                                                //validate={(role == null || role.length === 0) ? [required] : []}
-                                                                required={true}
-                                                                disabled={isEditFlag ? true : false}
-                                                                handleChange={handlePlants}
-                                                                valueDescription={selectedPlants}
-                                                            />
-                                                        </div>
-                                                    </>)
-                                                    )}
-                                                    {costingTypeId === VBCTypeId && (<>
-                                                        <Col md="3">
-                                                            <label>{"Vendor (Code)"}<span className="asterisk-required">*</span></label>
-                                                            <div className="d-flex justify-space-between align-items-center p-relative async-select">
-                                                                <div className="fullinput-icon p-relative">
-                                                                    {inputLoader && <LoaderCustom customClass={`input-loader`} />}
-                                                                    <AsyncSelect
-                                                                        name="vendorName"
-                                                                        //ref={this.myRef}
-                                                                        //key={this.state.updateAsyncDropdown}
-                                                                        loadOptions={vendorFilterList}
-                                                                        onChange={(e) => handleVendorName(e)}
-                                                                        value={vendorName}
-                                                                        noOptionsMessage={({ inputValue }) => inputValue.length < 3 ? "Enter 3 characters to show data" : "No results found"}
-                                                                        isDisabled={(isEditFlag) ? true : false}
-                                                                        onKeyDown={(onKeyDown) => {
-                                                                            if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
+                                                    <Col md="11">
+                                                        <Row>
+                                                            {(costingTypeId === ZBCTypeId && (<>
+                                                                <div className="col-md-3">
+                                                                    <SearchableSelectHookForm
+                                                                        name="Plant"
+                                                                        type="text"
+                                                                        label={'Plant (Code)'}
+                                                                        errors={errors.Plant}
+                                                                        Controller={Controller}
+                                                                        control={control}
+                                                                        register={register}
+                                                                        mandatory={true}
+                                                                        rules={{
+                                                                            required: true,
                                                                         }}
-                                                                    //onBlur={() => onFocus(this)}
+                                                                        placeholder={'Select'}
+                                                                        options={renderListing("plant")}
+                                                                        //onKeyUp={(e) => this.changeItemDesc(e)}
+                                                                        //validate={(role == null || role.length === 0) ? [required] : []}
+                                                                        required={true}
+                                                                        disabled={isEditFlag ? true : false}
+                                                                        handleChange={handlePlants}
+                                                                        valueDescription={selectedPlants}
                                                                     />
                                                                 </div>
-                                                            </div>
-                                                            {((showErrorOnFocus && vendorName.length === 0) || isVendorNameNotSelected) && <div className='text-help mt-1'>This field is required.</div>}
-                                                        </Col>
-                                                    </>
-                                                    )}
+                                                            </>)
+                                                            )}
+                                                            {costingTypeId === VBCTypeId && (<>
+                                                                <Col md="3">
+                                                                    <label>{"Vendor (Code)"}<span className="asterisk-required">*</span></label>
+                                                                    <div className="d-flex justify-space-between align-items-center p-relative async-select">
+                                                                        <div className="fullinput-icon p-relative">
+                                                                            {inputLoader && <LoaderCustom customClass={`input-loader`} />}
+                                                                            <AsyncSelect
+                                                                                name="vendorName"
+                                                                                //ref={this.myRef}
+                                                                                //key={this.state.updateAsyncDropdown}
+                                                                                loadOptions={vendorFilterList}
+                                                                                onChange={(e) => handleVendorName(e)}
+                                                                                value={vendorName}
+                                                                                noOptionsMessage={({ inputValue }) => inputValue.length < 3 ? "Enter 3 characters to show data" : "No results found"}
+                                                                                isDisabled={(isEditFlag) ? true : false}
+                                                                                onKeyDown={(onKeyDown) => {
+                                                                                    if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
+                                                                                }}
+                                                                            //onBlur={() => onFocus(this)}
+                                                                            />
+                                                                        </div>
+                                                                    </div>
+                                                                    {((showErrorOnFocus && vendorName.length === 0) || isVendorNameNotSelected) && <div className='text-help mt-1'>This field is required.</div>}
+                                                                </Col>
+                                                            </>
+                                                            )}
 
 
-                                                    {((costingTypeId === VBCTypeId && getConfigurationKey().IsDestinationPlantConfigure) || (costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant)) &&
+                                                            {((costingTypeId === VBCTypeId && getConfigurationKey().IsDestinationPlantConfigure) || (costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant)) &&
 
-                                                        < div className="col-md-3">
-                                                            <SearchableSelectHookForm
-                                                                name="DestinationPlant"
-                                                                type="text"
-                                                                label={costingTypeId === VBCTypeId ? 'Destination Plant (Code)' : 'Plant (Code)'}
-                                                                errors={errors.Plant}
-                                                                Controller={Controller}
-                                                                control={control}
-                                                                register={register}
-                                                                mandatory={true}
-                                                                rules={{
-                                                                    required: true,
-                                                                }}
-                                                                placeholder={'Select'}
-                                                                options={renderListing("plant")}
-                                                                //onKeyUp={(e) => this.changeItemDesc(e)}
-                                                                //validate={(role == null || role.length === 0) ? [required] : []}
-                                                                required={true}
-                                                                disabled={isEditFlag ? true : false}
-                                                                handleChange={handlePlants}
-                                                                valueDescription={selectedPlants}
-                                                            />
-                                                        </div>
-                                                    }
+                                                                < div className="col-md-3">
+                                                                    <SearchableSelectHookForm
+                                                                        name="DestinationPlant"
+                                                                        type="text"
+                                                                        label={costingTypeId === VBCTypeId ? 'Destination Plant (Code)' : 'Plant (Code)'}
+                                                                        errors={errors.Plant}
+                                                                        Controller={Controller}
+                                                                        control={control}
+                                                                        register={register}
+                                                                        mandatory={true}
+                                                                        rules={{
+                                                                            required: true,
+                                                                        }}
+                                                                        placeholder={'Select'}
+                                                                        options={renderListing("plant")}
+                                                                        //onKeyUp={(e) => this.changeItemDesc(e)}
+                                                                        //validate={(role == null || role.length === 0) ? [required] : []}
+                                                                        required={true}
+                                                                        disabled={isEditFlag ? true : false}
+                                                                        handleChange={handlePlants}
+                                                                        valueDescription={selectedPlants}
+                                                                    />
+                                                                </div>
+                                                            }
 
 
-                                                    {costingTypeId === CBCTypeId && (
-                                                        <>
-                                                            < div className="col-md-3">
+                                                            {costingTypeId === CBCTypeId && (
+                                                                <>
+                                                                    < div className="col-md-3">
+                                                                        <SearchableSelectHookForm
+                                                                            name="clientName"
+                                                                            type="text"
+                                                                            label="Customer (Code)"
+                                                                            errors={errors.clientName}
+                                                                            Controller={Controller}
+                                                                            control={control}
+                                                                            register={register}
+                                                                            mandatory={true}
+                                                                            rules={{
+                                                                                required: true,
+                                                                            }}
+                                                                            placeholder={'Select'}
+                                                                            options={renderListing("ClientList")}
+                                                                            //onKeyUp={(e) => this.changeItemDesc(e)}
+                                                                            //validate={(role == null || role.length === 0) ? [required] : []}
+                                                                            disabled={isEditFlag ? true : false}
+                                                                            required={true}
+                                                                            handleChange={handleClient}
+                                                                            valueDescription={client}
+                                                                        />
+                                                                    </div>
+                                                                </>
+                                                            )}
+
+                                                            <Col md="3">
+                                                                <label>{"Part No. (Revision No.)"}<span className="asterisk-required">*</span></label>
+                                                                <div className="d-flex justify-space-between align-items-center async-select">
+                                                                    <div className="fullinput-icon p-relative">
+                                                                        <AsyncSelect
+                                                                            name="PartNumber"
+                                                                            //ref={this.myRef}
+                                                                            //key={updateAsyncDropdown}
+                                                                            loadOptions={partFilterList}
+                                                                            onChange={(e) => handlePartName(e)}
+                                                                            value={part}
+                                                                            noOptionsMessage={({ inputValue }) => inputValue.length < 3 ? "Enter 3 characters to show data" : "No results found"}
+                                                                            onKeyDown={(onKeyDown) => {
+                                                                                if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
+                                                                            }}
+                                                                            isDisabled={isEditFlag ? true : false}
+                                                                            onBlur={() => setShowErrorOnFocus(true)}
+                                                                        />
+                                                                        {((showErrorOnFocusPart && part.length === 0) || isPartNumberNotSelected) && <div className='text-help mt-1'>This field is required.</div>}
+                                                                    </div>
+                                                                </div>
+                                                            </Col>
+
+                                                            <div className="col-md-3 p-relative">
                                                                 <SearchableSelectHookForm
-                                                                    name="clientName"
+                                                                    name="FinancialYear"
                                                                     type="text"
-                                                                    label="Customer (Code)"
-                                                                    errors={errors.clientName}
+                                                                    label="Year"
+                                                                    errors={errors.FinancialYear}
                                                                     Controller={Controller}
                                                                     control={control}
                                                                     register={register}
@@ -756,102 +808,58 @@ function AddBudget(props) {
                                                                     rules={{
                                                                         required: true,
                                                                     }}
+                                                                    //component={searchableSelect}
                                                                     placeholder={'Select'}
-                                                                    options={renderListing("ClientList")}
+                                                                    options={renderListing("yearList")}
                                                                     //onKeyUp={(e) => this.changeItemDesc(e)}
                                                                     //validate={(role == null || role.length === 0) ? [required] : []}
-                                                                    disabled={isEditFlag ? true : false}
                                                                     required={true}
-                                                                    handleChange={handleClient}
-                                                                    valueDescription={client}
+                                                                    handleChange={handleFinancialYear}
+                                                                    disabled={isEditFlag ? true : false}
                                                                 />
+                                                                <button className='user-btn budget-tick-btn' type='button' onClick={getCostingPrice} disabled={isEditFlag ? true : false} >
+                                                                    <div className='save-icon' ></div>
+                                                                </button>
                                                             </div>
-                                                        </>
-                                                    )}
-
-                                                    <Col md="3">
-                                                        <label>{"Part No. (Revision No.)"}<span className="asterisk-required">*</span></label>
-                                                        <div className="d-flex justify-space-between align-items-center async-select">
-                                                            <div className="fullinput-icon p-relative">
-                                                                <AsyncSelect
-                                                                    name="PartNumber"
-                                                                    //ref={this.myRef}
-                                                                    //key={updateAsyncDropdown}
-                                                                    loadOptions={partFilterList}
-                                                                    onChange={(e) => handlePartName(e)}
-                                                                    value={part}
-                                                                    noOptionsMessage={({ inputValue }) => inputValue.length < 3 ? "Enter 3 characters to show data" : "No results found"}
-                                                                    onKeyDown={(onKeyDown) => {
-                                                                        if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
-                                                                    }}
-                                                                    isDisabled={isEditFlag ? true : false}
-                                                                    onBlur={() => setShowErrorOnFocus(true)}
-                                                                />
-                                                                {((showErrorOnFocusPart && part.length === 0) || isPartNumberNotSelected) && <div className='text-help mt-1'>This field is required.</div>}
-                                                            </div>
-                                                        </div>
+                                                        </Row>
                                                     </Col>
 
-                                                    < div className="col-md-3">
-                                                        <SearchableSelectHookForm
-                                                            name="FinancialYear"
-                                                            type="text"
-                                                            label="Year"
-                                                            errors={errors.FinancialYear}
-                                                            Controller={Controller}
-                                                            control={control}
-                                                            register={register}
-                                                            mandatory={true}
-                                                            rules={{
-                                                                required: true,
-                                                            }}
-                                                            //component={searchableSelect}
-                                                            placeholder={'Select'}
-                                                            options={renderListing("yearList")}
-                                                            //onKeyUp={(e) => this.changeItemDesc(e)}
-                                                            //validate={(role == null || role.length === 0) ? [required] : []}
-                                                            required={true}
-                                                            handleChange={handleFinancialYear}
-                                                            disabled={isEditFlag ? true : false}
-                                                        />
-                                                    </div>
-
-                                                    <div className="input-group col-md-3 input-withouticon">
-                                                        <NumberFieldHookForm
-                                                            label="Current Price"
-                                                            name={"currentPrice"}
-                                                            errors={errors.currentPrice}
-                                                            Controller={Controller}
-                                                            control={control}
-                                                            register={register}
-                                                            disableErrorOverflow={true}
-                                                            mandatory={false}
-                                                            rules={{
-                                                                required: false,
-                                                            }}
-                                                            handleChange={() => { }}
-                                                            disabled={true}
-                                                            customClassName={'withBorder'}
-                                                        />
-                                                    </div>
-
-                                                    <button className='user-btn ml-4 mb-4 mt-4' type='button' onClick={getCostingPrice} disabled={isEditFlag ? true : false} >
-                                                        <div className='save-icon' ></div>
-                                                    </button>
 
                                                 </Row>
                                                 <Row>
                                                     <Col md="12">
-                                                        <div className="left-border">{"Quantity:"}</div>
+                                                        <Row className='align-items-center'>
+                                                            <Col md="4">
+                                                                <div className="left-border">{"Budgeting Details:"}</div>
+                                                            </Col>
+                                                            <Col md="8">
+                                                                <div className='budgeting-details'>
+                                                                    <label className='w-fit'>Current Price:</label>
+                                                                    <NumberFieldHookForm
+                                                                        label=""
+                                                                        name={"currentPrice"}
+                                                                        errors={errors.currentPrice}
+                                                                        Controller={Controller}
+                                                                        control={control}
+                                                                        register={register}
+                                                                        disableErrorOverflow={true}
+                                                                        mandatory={false}
+                                                                        rules={{
+                                                                            required: false,
+                                                                        }}
+                                                                        handleChange={() => { }}
+                                                                        disabled={true}
+                                                                        customClassName={'withBorder'}
+                                                                    />
+                                                                </div>
+
+                                                            </Col>
+                                                        </Row>
                                                     </Col>
 
-                                                    <Col>
-                                                        <div className={`ag-grid-wrapper add-volume-table  ${tableData && tableData?.length <= 0 ? "overlay-contain" : ""}`} style={{ width: '100%', height: '100%' }}>
-                                                            {/* <Col md="12"> */}
-                                                            <div
-                                                                className="ag-theme-material"
-
-                                                            >
+                                                    <Col md="12">
+                                                        <div className={`ag-grid-wrapper budgeting-table  ${tableData && tableData?.length <= 0 ? "overlay-contain" : ""}`} style={{ width: '100%', height: '100%' }}>
+                                                            <div className="ag-theme-material" >
                                                                 <AgGridReact
                                                                     style={{ height: '100%', width: '100%' }}
                                                                     defaultColDef={defaultColDef}
@@ -871,29 +879,46 @@ function AddBudget(props) {
                                                                     frameworkComponents={frameworkComponents}
                                                                     stopEditingWhenCellsLoseFocus={true}
                                                                 >
-                                                                    <AgGridColumn field="Text" headerName="" editable='false' pinned='left' cellStyle={{ 'font-size': '15px', 'font-weight': '500', 'color': '#3d4465' }} width={250} ></AgGridColumn>
-                                                                    <AgGridColumn field="April" headerName="April" cellRenderer='budgetedQuantity'></AgGridColumn>
-                                                                    <AgGridColumn field="May" headerName="May" cellRenderer='budgetedQuantity'></AgGridColumn>
-                                                                    <AgGridColumn field="June" headerName="June" cellRenderer='budgetedQuantity'></AgGridColumn>
-                                                                    <AgGridColumn field="July" headerName="July" cellRenderer='budgetedQuantity'></AgGridColumn>
-                                                                    <AgGridColumn field="August" headerName="August" cellRenderer='budgetedQuantity'></AgGridColumn>
-                                                                    <AgGridColumn field="September" headerName="September" cellRenderer='budgetedQuantity'></AgGridColumn>
-                                                                    <AgGridColumn field="October" headerName="October" cellRenderer='budgetedQuantity'></AgGridColumn>
-                                                                    <AgGridColumn field="November" headerName="November" cellRenderer='budgetedQuantity'></AgGridColumn>
-                                                                    <AgGridColumn field="December" headerName="December" cellRenderer='budgetedQuantity'></AgGridColumn>
-                                                                    <AgGridColumn field="January" headerName="January" cellRenderer='budgetedQuantity'></AgGridColumn>
-                                                                    <AgGridColumn field="February" headerName="February" cellRenderer='budgetedQuantity'></AgGridColumn>
-                                                                    <AgGridColumn field="March" headerName="March" cellRenderer='budgetedQuantity'></AgGridColumn>
-                                                                    <AgGridColumn field="Sum" headerName="Sum" cellRenderer='actualQuantity' editable={false} valueGetter='(Number(data.March?data.March:0) + Number(data.January?data.January:0) + Number(data.February?data.February:0)+ Number(data.April?data.April:0)+ Number(data.May?data.May:0)+ Number(data.June?data.June:0)+ Number(data.July?data.July:0)+ Number(data.August?data.August:0)+ Number(data.September?data.September:0)+ Number(data.October?data.October:0)+ Number(data.November?data.November:0)+ Number(data.December?data.December:0))'></AgGridColumn>
+                                                                    <AgGridColumn field="Text" headerName="" editable='false' pinned='left' cellStyle={{ 'font-size': '15px', 'font-weight': '500', 'color': '#3d4465' }} width={310} ></AgGridColumn>
+                                                                    <AgGridColumn width={115} field="April" headerName="April" cellRenderer='budgetedQuantity'></AgGridColumn>
+                                                                    <AgGridColumn width={115} field="May" headerName="May" cellRenderer='budgetedQuantity'></AgGridColumn>
+                                                                    <AgGridColumn width={115} field="June" headerName="June" cellRenderer='budgetedQuantity'></AgGridColumn>
+                                                                    <AgGridColumn width={115} field="July" headerName="July" cellRenderer='budgetedQuantity'></AgGridColumn>
+                                                                    <AgGridColumn width={115} field="August" headerName="August" cellRenderer='budgetedQuantity'></AgGridColumn>
+                                                                    <AgGridColumn width={115} field="September" headerName="September" cellRenderer='budgetedQuantity'></AgGridColumn>
+                                                                    <AgGridColumn width={115} field="October" headerName="October" cellRenderer='budgetedQuantity'></AgGridColumn>
+                                                                    <AgGridColumn width={115} field="November" headerName="November" cellRenderer='budgetedQuantity'></AgGridColumn>
+                                                                    <AgGridColumn width={115} field="December" headerName="December" cellRenderer='budgetedQuantity'></AgGridColumn>
+                                                                    <AgGridColumn width={115} field="January" headerName="January" cellRenderer='budgetedQuantity'></AgGridColumn>
+                                                                    <AgGridColumn width={115} field="February" headerName="February" cellRenderer='budgetedQuantity'></AgGridColumn>
+                                                                    <AgGridColumn width={115} field="March" headerName="March" cellRenderer='budgetedQuantity'></AgGridColumn>
+                                                                    <AgGridColumn width={130} field="Sum" headerName="Sum" cellRenderer='actualQuantity' editable={false} valueGetter='(Number(data.March?data.March:0) + Number(data.January?data.January:0) + Number(data.February?data.February:0)+ Number(data.April?data.April:0)+ Number(data.May?data.May:0)+ Number(data.June?data.June:0)+ Number(data.July?data.July:0)+ Number(data.August?data.August:0)+ Number(data.September?data.September:0)+ Number(data.October?data.October:0)+ Number(data.November?data.November:0)+ Number(data.December?data.December:0))'></AgGridColumn>
                                                                 </AgGridReact>
                                                             </div>
                                                         </div>
                                                     </Col>
+                                                    <Col md="12">
+                                                        <div className='budgeting-details  mt-3'>
+                                                            <label className='w-fit'>Total Sum:</label>
+                                                            <NumberFieldHookForm
+                                                                label=""
+                                                                name={"totalSum"}
+                                                                errors={errors.totalSum}
+                                                                Controller={Controller}
+                                                                control={control}
+                                                                register={register}
+                                                                disableErrorOverflow={true}
+                                                                mandatory={false}
+                                                                rules={{
+                                                                    required: false,
+                                                                }}
+                                                                handleChange={() => { }}
+                                                                disabled={true}
+                                                                customClassName={'withBorder'}
+                                                            />
+                                                        </div>
+                                                    </Col>
                                                 </Row>
-                                                <div className='mr-0'>
-                                                    Total Sum : {totalSum}
-                                                </div>
-
                                             </div>
                                             <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
                                                 <div className="col-sm-12 text-right bluefooter-butn">
