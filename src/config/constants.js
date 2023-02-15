@@ -2063,7 +2063,8 @@ export const MACHINE_MASTER_ID = 4
 
 
 //approve reject drawer
-export const provisional = "Provisional"
+export const PROVISIONAL = "Provisional"
+export const NEW_COMPONENT = "New Component"
 
 //default value for page size
 export const defaultPageSize = 10;
@@ -2189,4 +2190,4 @@ export const KEYRFQ = "UAGSqTBCbZ8JqHJl"
 export const IVRFQ = "8vFNmRQEl91nOtrM"
 
 //VERSION 
-export const VERSION = "V2.1.82";
+export const VERSION = "V2.1.88";

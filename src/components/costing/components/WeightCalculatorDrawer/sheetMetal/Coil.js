@@ -159,7 +159,7 @@ function Coil(props) {
             cavity: getValues('Cavity')
         }
         grossWeight = calculateWeight(data.density, data.stripWidth, data.thickness, data.pitch) / data.cavity
-        setGrossWeights(setValueAccToUOM(grossWeight, UOMDimension.label))
+        setGrossWeights(grossWeight)
         const updatedValue = dataToSend
         updatedValue.GrossWeight = setValueAccToUOM(grossWeight, UOMDimension.label)
         updatedValue.newGrossWeight = setValueAccToUOM(grossWeight, UOMDimension.label)

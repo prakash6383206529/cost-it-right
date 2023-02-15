@@ -17,7 +17,7 @@ import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css';
 import redcrossImg from '../../../../assests/images/red-cross.png'
 import { getSelectListOfSimulationLinkingTokens } from '../../../simulation/actions/Simulation'
-import { provisional } from '../../../../config/constants'
+import { PROVISIONAL } from '../../../../config/constants'
 import LoaderCustom from '../../../common/LoaderCustom';
 import Toaster from '../../../common/Toaster'
 import { getUsersSimulationTechnologyLevelAPI } from '../../../../actions/auth/AuthActions'
@@ -26,7 +26,7 @@ function ApproveRejectDrawer(props) {
   // ********* INITIALIZE REF FOR DROPZONE ********
   const dropzone = useRef(null);
 
-  const { type, approvalData, IsFinalLevel, IsPushDrawer, isSimulation, dataSend, reasonId, simulationDetail, selectedRowData, costingArr, isSaveDone, Attachements, vendorId, SimulationTechnologyId, SimulationType, isSimulationApprovalListing, apiData, SimulationHeadId } = props
+  const { type, approvalData, IsFinalLevel, IsPushDrawer, isSimulation, dataSend, reasonId, simulationDetail, selectedRowData, costingArr, isSaveDone, Attachements, vendorId, SimulationTechnologyId, SimulationType, isSimulationApprovalListing, apiData } = props
 
   const userLoggedIn = loggedInUserId()
   const userData = userDetails()
@@ -55,6 +55,13 @@ function ApproveRejectDrawer(props) {
 
   useEffect(() => {
     dispatch(getReasonSelectList((res) => { }))
+    let levelDetailsTemp = ''
+    dispatch(getUsersSimulationTechnologyLevelAPI(loggedInUserId(), selectedMasterForSimulation?.value, (res) => {
+      if (res?.data?.Data) {
+        levelDetailsTemp = userTechnologyLevelDetails(props?.costingTypeId, res?.data?.Data?.TechnologyLevels)
+        setLevelDetails(levelDetailsTemp)
+      }
+    }))
     setTimeout(() => {
       // dispatch(getAllApprovalDepartment((res) => { }))
       /***********************************REMOVE IT AFTER SETTING FROM SIMULATION*******************************/
@@ -86,13 +93,6 @@ function ApproveRejectDrawer(props) {
           }))
         }))
       } else {
-        let levelDetailsTemp = ''
-        dispatch(getUsersSimulationTechnologyLevelAPI(loggedInUserId(), selectedMasterForSimulation?.value, (res) => {
-          if (res?.data?.Data) {
-            levelDetailsTemp = userTechnologyLevelDetails(SimulationHeadId, res?.data?.Data?.TechnologyLevels)
-            setLevelDetails(levelDetailsTemp)
-          }
-        }))
         dispatch(getSimulationApprovalByDepartment(res => {
           const Data = res.data.SelectList
           const departObj = Data && Data.filter(item => item.Value === (type === 'Sender' ? userData.DepartmentId : simulationDetail.DepartmentId))
@@ -123,7 +123,7 @@ function ApproveRejectDrawer(props) {
       }
     }, 300);
 
-    if (SimulationType !== null && SimulationType === provisional) {
+    if (SimulationType !== null && SimulationType === PROVISIONAL) {
       setTokenDropdown(false)
     }
 
@@ -582,7 +582,7 @@ function ApproveRejectDrawer(props) {
         setApprovalDropDown(tempDropdownList)
       }))
     } else {
-      getApproversList(value.value, value.label)
+      getApproversList(value.value, value.label, levelDetails)
       // dispatch(
       //   getAllSimulationApprovalList(simObj, (res) => {
       //     res.data.DataList &&

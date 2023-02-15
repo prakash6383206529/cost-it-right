@@ -1102,7 +1102,7 @@ class AddBOPDomestic extends Component {
                               optionLabel={(option) => option.Text}
                               component={renderMultiSelectField}
                               //  mendatory={true}
-                              className="multiselect-with-border"
+                            //className="multiselect-with-border"
                             //disabled={(this.state.IsVendor || isEditFlag) ? true : false}
                             />
                           </Col> */}
