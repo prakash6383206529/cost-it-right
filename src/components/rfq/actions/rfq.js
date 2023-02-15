@@ -7,6 +7,7 @@ import {
     config,
     API_REQUEST,
     CHECK_RFQ_BULK_UPLOAD,
+    SELECTED_ROW_ARRAY,
 } from '../../../config/constants';
 import { MESSAGES } from '../../../config/message';
 import { loggedInUserId, userDetails } from '../../../helper';
@@ -277,4 +278,14 @@ export function setRFQBulkUpload(data) {
             payload: data
         })
     };
+}
+
+export function setSelectedRow(data) {
+    console.log('data: ', data);
+    return (dispatch) => {
+        dispatch({
+            type: SELECTED_ROW_ARRAY,
+            payload: data
+        })
+    }
 }

@@ -14,7 +14,7 @@ import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '.././common/PopupMsgWrapper';
 import { PaginationWrapper } from '.././common/commonPagination'
 import SelectRowWrapper from '.././common/SelectRowWrapper';
-import { getQuotationList, cancelRfqQuotation, sendReminderForQuotation, getQuotationDetailsList, getMultipleCostingDetails } from './actions/rfq';
+import { getQuotationList, cancelRfqQuotation, sendReminderForQuotation, getQuotationDetailsList, getMultipleCostingDetails, setSelectedRow } from './actions/rfq';
 import AddRfq from './AddRfq';
 import SendForApproval from '../costing/components/approval/SendForApproval';
 import { getSingleCostingDetails, setCostingApprovalData, setCostingViewData, storePartNumber } from '../costing/actions/Costing';
@@ -56,6 +56,7 @@ function RfqListing(props) {
     const [disableApproveRejectButton, setDisableApproveRejectButton] = useState(true)
     const [remarkRowData, setRemarkRowData] = useState([])
     const viewCostingData = useSelector((state) => state.costing.viewCostingDetailData)
+    const approvalData = useSelector((state) => state.rfq.selectedRowRFQ)
 
     const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
 
@@ -552,6 +553,7 @@ function RfqListing(props) {
 
 
         setSelectedRows(newArray)
+        dispatch(setSelectedRow(newArray))
         setDataCount(selectedRows.length)
         if (selectedRows.length === 0) {
             setAddComparisonButton(true)
@@ -700,7 +702,7 @@ function RfqListing(props) {
                     <ApproveRejectDrawer
                         type={'Reject'}
                         isOpen={rejectDrawer}
-                        approvalData={selectedRows}
+                        approvalData={approvalData}
                         closeDrawer={closeDrawer}
                         //  tokenNo={approvalNumber}
                         anchor={'right'}
