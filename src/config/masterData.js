@@ -4973,13 +4973,13 @@ export const MRGridForTokenSummary = [
     { label: "Variance (Proc. Cost)", value: "NetProcessCostVariance" },
 ]
 
-export const RMImpactedDownloadArray = ["RawMaterial", "RMGrade", "RMSpec", "RawMaterialCode", "Category", "TechnologyName", "VendorName", "UOM", "OldBasicRate", "NewBasicRate", "OldScrapRate", "NewScrapRate", "RMFreightCost", "RMShearingCost", "EffectiveDate"]
+export const RMImpactedDownloadArray = ["RawMaterial", "RMGrade", "RMSpec", "RawMaterialCode", "Category", "TechnologyName", "VendorName", "UOM", "ExistingBasicRate", "RevisedBasicRate", "ExistingScrapRate", "RevisedScrapRate", "RMFreightCost", "RMShearingCost", "EffectiveDate"]
 
-export const OperationImpactDownloadArray = ["OperationName", "OperationCode", "UOM", "OldOperationRate", "NewOperationRate", "EffectiveDate",]
+export const OperationImpactDownloadArray = ["OperationName", "OperationCode", "UOM", "ExistingOperationRate", "RevisedOperationRate", "EffectiveDate",]
 
-export const BOPImpactDownloadArray = ["BoughtOutPartNumber", "BoughtOutPartName", "Category", "Vendor", "PartNumber", "OldBOPRate", "NewBOPRate", "OldPOPrice", "NewPOPrice", "EffectiveDate",]
+export const BOPImpactDownloadArray = ["BoughtOutPartNumber", "BoughtOutPartName", "Category", "Vendor", "PartNumber", "ExistingBOPRate", "RevisedBOPRate", "ExistingPOPrice", "RevisedPOPrice", "EffectiveDate",]
 
-export const ERImpactDownloadArray = ["Currency", "CostingNumber", "PartNumber", "BankRate", "BankCommissionPercentage", "CustomRate", "CurrencyExchangeRate", "NewExchangeRate", "OldExchangeRate", "EffectiveDate",]
+export const ERImpactDownloadArray = ["Currency", "CostingNumber", "PartNumber", "BankRate", "BankCommissionPercentage", "CustomRate", "CurrencyExchangeRate", "ExistingExchangeRate", "RevisedExchangeRate", "EffectiveDate",]
 
 export const RawMaterialDomesticFileHeads = ["CostingHead", "RawMaterial", "RMGrade", "RMSpec", "RawMaterialCode", "Category", "TechnologyName", "Plant (Code)", "Vendor (Code)", "Company (Code)", "VendorLocation", "UOM", "BasicRate", "RevisedBasicRate", "RMFreightCost", "RMShearingCost", "ScrapRate", "RevisedScrapRate", "NetLandedCost", "EffectiveDate", "RawMaterialId", "VendorId", "PlantId", "CostingTypeId"]
 

@@ -5,6 +5,7 @@ import { useDispatch } from 'react-redux';
 import { getAmmendentStatus } from './actions/Simulation'
 import imgRedcross from '../../assests/images/red-cross.png';
 import imgGreencross from '../../assests/images/greenCross.png';
+import DayTime from "../common/DayTimeWrapper";
 
 export const SimulationUtils = (TempData) => {
 
@@ -134,15 +135,13 @@ export const impactmasterDownload = (impactedMasterData) => {
         tempObj.push(item.UOM)
         tempObj.push(item.OldOperationRate)
         tempObj.push(item.NewOperationRate)
-        tempObj.push(item.EffectiveDate)
+        tempObj.push(DayTime(item.EffectiveDate).format('DD/MM/YYYY'))
         operationArraySet.push(tempObj)
         return null
     })
 
     impactedMasterData?.RawMaterialImpactedMasterDataList && impactedMasterData?.RawMaterialImpactedMasterDataList.map((item) => {
-
         let tempObj = []
-
         tempObj.push(item.RawMaterial)
         tempObj.push(item.RMGrade)
         tempObj.push(item.RMSpec)
@@ -157,7 +156,7 @@ export const impactmasterDownload = (impactedMasterData) => {
         tempObj.push(item.NewScrapRate)
         tempObj.push(item.RMFreightCost)
         tempObj.push(item.RMShearingCost)
-        tempObj.push(item.EffectiveDate)
+        tempObj.push(DayTime(item.EffectiveDate).format('DD/MM/YYYY'))
         rmArraySet.push(tempObj)
         return null
     })
@@ -173,7 +172,7 @@ export const impactmasterDownload = (impactedMasterData) => {
         tempObj.push(item.NewBOPRate)
         tempObj.push(item.OldPOPrice)
         tempObj.push(item.NewPOPrice)
-        tempObj.push(item.EffectiveDate)
+        tempObj.push(DayTime(item.EffectiveDate).format('DD/MM/YYYY'))
         bopArraySet.push(tempObj)
         return null
     })
@@ -186,9 +185,9 @@ export const impactmasterDownload = (impactedMasterData) => {
         tempObj.push(item.BankCommissionPercentage)
         tempObj.push(item.CustomRate)
         tempObj.push(item.CurrencyExchangeRate)
-        tempObj.push(item.NewExchangeRate)
         tempObj.push(item.OldExchangeRate)
-        tempObj.push(item.EffectiveDate)
+        tempObj.push(item.NewExchangeRate)
+        tempObj.push(DayTime(item.EffectiveDate).format('DD/MM/YYYY'))
         erArraySet.push(tempObj)
         return null
     })
