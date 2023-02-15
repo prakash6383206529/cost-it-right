@@ -2216,9 +2216,13 @@ export const CLIENT_DOWNLOAD_EXCEl = [
     { label: "Company Code", value: "CompanyCode", },
     { label: "Contact Name", value: "ClientName", },
     { label: "Email Id", value: "ClientEmailId", },
+    { label: "Phone No.", value: "PhoneNumber", },
+    { label: "Ext.", value: "Extension", },
+    { label: "Mobile No.", value: "MobileNumber", },
     { label: "Country", value: "CountryName", },
     { label: "State", value: "StateName", },
     { label: "City", value: "CityName", },
+    { label: "ZipCode", value: "ZipCode", },
 ]
 
 
@@ -4482,9 +4486,16 @@ export const VENDOR_DOWNLOAD_EXCEl = [
     { label: "Vendor Type", value: "VendorType", },
     { label: "Vendor Name", value: "VendorName", },
     { label: "Vendor Code", value: "VendorCode", },
+    { label: "Email Id", value: "Email", },
+    { label: "Phone Number", value: "PhoneNumber", },
+    { label: "Ext.", value: "Extension", },
+    { label: "Mobile Number", value: "MobileNumber", },
     { label: "Country", value: "Country", },
     { label: "State", value: "State", },
     { label: "City", value: "City", },
+    { label: "ZipCode", value: "ZipCode", },
+    { label: "Address 1", value: "AddressLine1", },
+    { label: "Address 2", value: "AddressLine2", },
     { label: "Status", value: "status", }
 ]
 
@@ -4525,9 +4536,14 @@ export const ZBCPLANT_DOWNLOAD_EXCEl = [
     { label: "Plant Name", value: "PlantName", },
     { label: "Plant Code", value: "PlantCode", },
     { label: "Company Name", value: "CompanyName", },
+    { label: "Phone Number", value: "PhoneNumber", },
+    { label: "Ext.", value: "Extension", },
+    { label: "Address 1", value: "AddressLine1", },
+    { label: "Address 2", value: "AddressLine2", },
     { label: "Country", value: "CountryName", },
     { label: "State", value: "StateName", },
     { label: "City", value: "CityName", },
+    { label: "ZipCode", value: "ZipCode", },
     { label: "Status", value: "status", },
 ]
 
