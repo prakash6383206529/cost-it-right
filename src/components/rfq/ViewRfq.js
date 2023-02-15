@@ -14,7 +14,7 @@ import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '.././common/PopupMsgWrapper';
 import { PaginationWrapper } from '.././common/commonPagination'
 import SelectRowWrapper from '.././common/SelectRowWrapper';
-import { getQuotationList, cancelRfqQuotation, sendReminderForQuotation, getQuotationDetailsList, getMultipleCostingDetails } from './actions/rfq';
+import { getQuotationList, cancelRfqQuotation, sendReminderForQuotation, getQuotationDetailsList, getMultipleCostingDetails, setSelectedRow } from './actions/rfq';
 import AddRfq from './AddRfq';
 import SendForApproval from '../costing/components/approval/SendForApproval';
 import { getSingleCostingDetails, setCostingApprovalData, setCostingViewData, storePartNumber } from '../costing/actions/Costing';
@@ -552,6 +552,7 @@ function RfqListing(props) {
 
 
         setSelectedRows(newArray)
+        dispatch(setSelectedRow(newArray))
         setDataCount(selectedRows.length)
         if (selectedRows.length === 0) {
             setAddComparisonButton(true)

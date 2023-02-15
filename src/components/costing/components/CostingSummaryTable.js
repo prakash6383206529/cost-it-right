@@ -36,6 +36,7 @@ import TooltipCustom from '../../common/Tooltip'
 import { Costratiograph } from '../../dashboard/CostRatioGraph'
 import { colorArray } from '../../dashboard/ChartsDashboard'
 import { LOGISTICS } from '../../../config/masterData'
+import { setSelectedRow } from '../../rfq/actions/rfq'
 
 const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
 
@@ -95,6 +96,10 @@ const CostingSummaryTable = (props) => {
   const [pieChartLabel, setPieChartLabel] = useState([])
 
   const viewCostingData = useSelector((state) => state.costing.viewCostingDetailData)
+  const selectedRowRFQ = useSelector((state) => state.rfq.selectedRowRFQ)
+  console.log('selectedRowRFQ: ', selectedRowRFQ);
+
+
 
   const viewApprovalData = useSelector((state) => state.costing.costingApprovalData)
   const partInfo = useSelector((state) => state.costing.partInfo)
@@ -399,6 +404,10 @@ const CostingSummaryTable = (props) => {
   const deleteCostingFromView = (index) => {
     let temp = viewCostingData
     temp.splice(index, 1)
+
+    let temp2 = selectedRowRFQ;
+    temp2.splice(index, 1)
+    dispatch(setSelectedRow(temp2))
     dispatch(setCostingViewData(temp))
   }
 
