@@ -110,7 +110,7 @@ export const website = value =>
         : undefined;
 
 export const required = value =>
-((typeof value !== undefined && value !== null && value !== "")
+((typeof value !== 'undefined' && value !== null && value !== "")
     ? undefined : 'This field is required.');
 
 export const selectRequired = value =>
