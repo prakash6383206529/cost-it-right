@@ -14,7 +14,7 @@ import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '.././common/PopupMsgWrapper';
 import { PaginationWrapper } from '.././common/commonPagination'
 import SelectRowWrapper from '.././common/SelectRowWrapper';
-import { getQuotationList, cancelRfqQuotation, sendReminderForQuotation, getQuotationDetailsList, getMultipleCostingDetails } from './actions/rfq';
+import { getQuotationList, cancelRfqQuotation, sendReminderForQuotation, getQuotationDetailsList, getMultipleCostingDetails, setSelectedRow } from './actions/rfq';
 import AddRfq from './AddRfq';
 import SendForApproval from '../costing/components/approval/SendForApproval';
 import { getSingleCostingDetails, setCostingApprovalData, setCostingViewData, storePartNumber } from '../costing/actions/Costing';
@@ -28,6 +28,7 @@ import RemarkHistoryDrawer from './RemarkHistoryDrawer';
 import DayTime from '../common/DayTimeWrapper';
 import { hyphenFormatter } from '../masters/masterUtil';
 import _ from 'lodash';
+import { reactLocalStorage } from 'reactjs-localstorage';
 const gridOptions = {};
 
 
@@ -55,7 +56,11 @@ function RfqListing(props) {
     const [remarkHistoryDrawer, setRemarkHistoryDrawer] = useState(false)
     const [disableApproveRejectButton, setDisableApproveRejectButton] = useState(true)
     const [remarkRowData, setRemarkRowData] = useState([])
+    const [comparisonToggle, setComparisonToggle] = useState(false)
+    const [gridLoader, setGridLoader] = useState(false)
+    const [rejectDrawerData, setRejectDrawerData] = useState([])
     const viewCostingData = useSelector((state) => state.costing.viewCostingDetailData)
+    const approvalData = useSelector((state) => state.rfq.selectedRowRFQ)
 
     const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
 
@@ -64,6 +69,45 @@ function RfqListing(props) {
         getDataList()
 
     }, [])
+
+
+
+
+    useEffect(() => {
+        if (comparisonToggle) {
+            let temp = []
+
+            if (selectedRows && selectedRows.length == 0) {
+                setGridLoader(true)
+            }
+            Array.isArray(viewCostingData) && viewCostingData.length > 0 && viewCostingData.map((item, index) => {
+                setGridLoader(true)
+                selectedRows?.map((ele, ind) => {
+                    if (ele.CostingNumber == item.CostingNumber) {
+                        temp.push(ele)
+                    }
+                })
+            })
+
+            setSelectedRows(temp)
+            setTimeout(() => {
+
+                setGridLoader(false)
+            }, 50);
+        }
+
+        setaddComparisonToggle(viewCostingData.length > 0)
+        let rejectedDataTemp = [];
+        approvalData && approvalData.map(item => {
+            if (item.ApprovalToken && item.ShowApprovalButton) {
+                rejectedDataTemp.push(item)
+            }
+        })
+        setRejectDrawerData(rejectedDataTemp)
+    }, [viewCostingData])
+
+
+
 
     useEffect(() => {
 
@@ -500,7 +544,7 @@ function RfqListing(props) {
 
 
     const addComparisonDrawerToggle = () => {
-
+        setComparisonToggle(true)
         let temp = []
         let tempObj = {}
 
@@ -520,6 +564,7 @@ function RfqListing(props) {
 
                 dispatch(setCostingViewData(temp))
                 setaddComparisonToggle(true)
+                setComparisonToggle(false)
             }
         },
         ))
@@ -538,10 +583,11 @@ function RfqListing(props) {
     }
 
     const onRowSelect = () => {
-        const selectedRows = gridApi?.getSelectedRows()
+        const selectedRowss = gridApi?.getSelectedRows() ? gridApi?.getSelectedRows() : selectedRows
+        console.log('selectedRows: ', selectedRows);
         let partNumber = []
 
-        selectedRows.map(item => partNumber.push(item.PartNo))                 //STORE ALL PARS NUMBER
+        selectedRowss?.map(item => partNumber.push(item.PartNo))                 //STORE ALL PARS NUMBER
 
         let data = partNumber.map(item => rowData.filter(el => el.PartNumber === item))             // SELECTED ALL COSTING ON THE CLICK ON PART
         let newArray = []
@@ -552,12 +598,12 @@ function RfqListing(props) {
 
 
         setSelectedRows(newArray)
-        setDataCount(selectedRows.length)
-        if (selectedRows.length === 0) {
+        dispatch(setSelectedRow(newArray))
+        if (selectedRowss?.length === 0) {
             setAddComparisonButton(true)
         } else {
             setAddComparisonButton(false)
-            setTechnologyId(selectedRows[0]?.TechnologyId)
+            setTechnologyId(selectedRowss[0]?.TechnologyId)
         }
     }
 
@@ -568,6 +614,25 @@ function RfqListing(props) {
 
     const isRowSelectable = rowNode => rowNode.data ? rowNode?.data?.ShowCheckBox : false;
 
+    // const checkBoxRenderer = (props) => {
+    //     console.log('props: ', props);
+    //     let selectedRowForPagination = selectedRows
+    //     if (!props.value) {
+    //         return false
+    //     }
+    //     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+    //     if (selectedRowForPagination?.length > 0) {
+    //         selectedRowForPagination.map((item) => {
+    //             if (item.CostingNumber === props.node.data.CostingNumber) {
+    //                 props.node.setSelected(true)
+    //             }
+    //             return null
+    //         })
+    //         return cellValue
+    //     } else {
+    //         return cellValue
+    //     }
+    // }
 
     const defaultColDef = {
         resizable: true,
@@ -586,7 +651,8 @@ function RfqListing(props) {
     const frameworkComponents = {
         totalValueRenderer: buttonFormatter,
         linkableFormatter: linkableFormatter,
-        dateFormatter: dateFormatter
+        dateFormatter: dateFormatter,
+        // checkBoxRenderer: checkBoxRenderer
     }
 
     const closeSendForApproval = () => {
@@ -599,7 +665,7 @@ function RfqListing(props) {
     return (
         <>
             <div className={`ag-grid-react rfq-portal ${(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) ? "" : ""} ${true ? "show-table-btn" : ""} ${false ? 'simulation-height' : props?.isMasterSummaryDrawer ? '' : 'min-height100vh'}`}>
-                {(loader && !props.isMasterSummaryDrawer) ? <LoaderCustom customClass="simulation-Loader" /> :
+                {(loader && !props.isMasterSummaryDrawer) || gridLoader ? <LoaderCustom customClass="simulation-Loader" /> :
                     <>
 
                         <Row className={`filter-row-large ${props?.isSimulation ? 'zindex-0 ' : ''}`}>
@@ -615,15 +681,13 @@ function RfqListing(props) {
                                         <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}>
                                             <div className="refresh mr-0"></div>
                                         </button>
-                                        <Link to={"rfq-compare-drawer"} smooth={true} spy={true} offset={-250}>
-                                            <button
-                                                type="button"
-                                                className={'user-btn mb-2 comparison-btn ml-1'}
-                                                disabled={addComparisonButton}
-                                                onClick={addComparisonDrawerToggle}
-                                            >
-                                                <div className="compare-arrows"></div>Compare</button>
-                                        </Link>
+                                        <button
+                                            type="button"
+                                            className={'user-btn mb-2 comparison-btn ml-1'}
+                                            disabled={addComparisonButton}
+                                            onClick={addComparisonDrawerToggle}
+                                        >
+                                            <div className="compare-arrows"></div>Compare</button>
                                         <button type="button" className={"apply ml-1"} onClick={cancel}> <div className={'back-icon'}></div>Back</button>
 
                                     </>
@@ -657,7 +721,7 @@ function RfqListing(props) {
                                             isRowSelectable={isRowSelectable}
                                             suppressRowClickSelection={true}
                                         >
-                                            <AgGridColumn cellClass={cellClass} field="PartNo" headerName='Part No' ></AgGridColumn>
+                                            <AgGridColumn cellClass={cellClass} field="PartNo" headerName='Part No'></AgGridColumn>
                                             <AgGridColumn field="TechnologyName" headerName='Technology'></AgGridColumn>
                                             <AgGridColumn field="VendorName" headerName='Vendor (Code)'></AgGridColumn>
                                             <AgGridColumn field="PlantName" headerName='Plant (Code)'></AgGridColumn>
@@ -700,7 +764,7 @@ function RfqListing(props) {
                     <ApproveRejectDrawer
                         type={'Reject'}
                         isOpen={rejectDrawer}
-                        approvalData={selectedRows}
+                        approvalData={rejectDrawerData}
                         closeDrawer={closeDrawer}
                         //  tokenNo={approvalNumber}
                         anchor={'right'}
