@@ -97,7 +97,6 @@ const CostingSummaryTable = (props) => {
 
   const viewCostingData = useSelector((state) => state.costing.viewCostingDetailData)
   const selectedRowRFQ = useSelector((state) => state.rfq.selectedRowRFQ)
-  console.log('selectedRowRFQ: ', selectedRowRFQ);
 
 
 

@@ -56,6 +56,7 @@ function RfqListing(props) {
     const [disableApproveRejectButton, setDisableApproveRejectButton] = useState(true)
     const [remarkRowData, setRemarkRowData] = useState([])
     const viewCostingData = useSelector((state) => state.costing.viewCostingDetailData)
+    const approvalData = useSelector((state) => state.rfq.selectedRowRFQ)
 
     const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
 
@@ -701,7 +702,7 @@ function RfqListing(props) {
                     <ApproveRejectDrawer
                         type={'Reject'}
                         isOpen={rejectDrawer}
-                        approvalData={selectedRows}
+                        approvalData={approvalData}
                         closeDrawer={closeDrawer}
                         //  tokenNo={approvalNumber}
                         anchor={'right'}
