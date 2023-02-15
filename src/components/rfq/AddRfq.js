@@ -24,7 +24,7 @@ import HeaderTitle from '../common/HeaderTitle';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { autoCompleteDropdown, autoCompleteDropdownPart } from '../common/CommonFunctions';
 import BulkUpload from '../massUpload/BulkUpload';
-import _ from 'lodash';
+import _, { debounce } from 'lodash';
 import { getPartSelectListWtihRevNo } from '../masters/actions/Volume';
 import { LOGISTICS, REMARKMAXLENGTH } from '../../config/masterData';
 
@@ -57,7 +57,7 @@ function AddRfq(props) {
     const [selectedRowVendorTable, setSelectedVendorTable] = useState({})
     const [files, setFiles] = useState([])
     const [IsOpen, setIsOpen] = useState(false);
-    const [data, setData] = useState({});
+    const [apiData, setData] = useState({});
     const [isDisable, setIsDisable] = useState(false)
     const [disableTechnology, setDisableTechnology] = useState(false)
     const [partNoDisable, setPartNoDisable] = useState(true)
@@ -350,7 +350,7 @@ function AddRfq(props) {
         props.closeDrawer('', {})
     }
 
-    const onSubmit = handleSubmit((data, e) => {
+    const onSubmit = debounce((data, e, isSent) => {
         if (vendorList.length === 0) {
             Toaster.warning("Please enter vendor details")
             return false
@@ -363,15 +363,9 @@ function AddRfq(props) {
         } else if (Object.keys(errors).length > 0) {
             return false
         }
-        let isSent = ''
-        if (e.target.value === 'send') {
-            isSent = true
-        } else {
-            isSent = false
-        }
         let obj = {}
-        obj.QuotationId = data.QuotationId ? data.QuotationId : ""
-        obj.QuotationNumber = data.QuotationNumber ? data.QuotationNumber : ""
+        obj.QuotationId = apiData.QuotationId ? apiData.QuotationId : ""
+        obj.QuotationNumber = apiData.QuotationNumber ? apiData.QuotationNumber : ""
 
         obj.Remark = getValues('remark')
         obj.TechnologyId = getValues('technology').value
@@ -408,7 +402,7 @@ function AddRfq(props) {
             }))
 
         }
-    })
+    }, 500)
 
 
     const defaultColDef = {
@@ -1106,14 +1100,14 @@ function AddRfq(props) {
                                             </button>
 
                                             <button type="button" className="submit-button save-btn mr-2" value="save"
-                                                onClick={(data, e) => onSubmit(data, e)}
+                                                onClick={(data, e) => { handleSubmit(onSubmit(data, e, false)) }}
                                                 disabled={isViewFlag}>
                                                 <div className={"save-icon"}></div>
                                                 {"Save"}
                                             </button>
 
                                             <button type="button" className="submit-button save-btn" value="send"
-                                                onClick={(data, e) => onSubmit(data, e)}
+                                                onClick={(data, e) => { handleSubmit(onSubmit(data, e, true)) }}
                                                 disabled={isViewFlag}>
                                                 <div className="send-for-approval mr-1"></div>
                                                 {"Send"}
