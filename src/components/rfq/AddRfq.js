@@ -1376,14 +1376,14 @@ function AddRfq(props) {
                                             </button>
 
                                             <button type="button" className="submit-button save-btn mr-2" value="save"
-                                                onClick={(data, e) => onSubmit(data, e)}
+                                                onClick={(data, e) => { handleSubmit(onSubmit(data, e, false)) }}
                                                 disabled={isViewFlag}>
                                                 <div className={"save-icon"}></div>
                                                 {"Save"}
                                             </button>
 
                                             <button type="button" className="submit-button save-btn" value="send"
-                                                onClick={(data, e) => onSubmit(data, e)}
+                                                onClick={(data, e) => { handleSubmit(onSubmit(data, e, true)) }}
                                                 disabled={isViewFlag}>
                                                 <div className="send-for-approval mr-1"></div>
                                                 {"Send"}
