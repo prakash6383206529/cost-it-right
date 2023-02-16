@@ -111,7 +111,7 @@ function SimulationApprovalSummary(props) {
 
     const simulationAssemblyListSummary = useSelector((state) => state.simulation.simulationAssemblyListSummary)
     const [isDisabled, setIsDisabled] = useState(false);
-    const isMultiTechnology = IdForMultiTechnology.includes(String(simulationDetail?.SimulationTechnologyId))
+    const isMultiTechnology = (checkForNull(simulationDetail?.SimulationTechnologyId) === ASSEMBLY_TECHNOLOGY) ? true : false
 
     // const partType = IdForMultiTechnology.includes(String(SimulationTechnologyIdState))
 
@@ -1555,3 +1555,5 @@ function SimulationApprovalSummary(props) {
 }
 
 export default SimulationApprovalSummary;
+
+// CIR-I4244
