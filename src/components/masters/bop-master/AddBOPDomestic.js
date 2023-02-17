@@ -117,7 +117,7 @@ class AddBOPDomestic extends Component {
     }
     setTimeout(() => {
       this.getDetails()
-      if (!(this.props.data.isEditFlag || this.props.data.isViewFlag)) {
+      if (!(this.props.data.isEditFlag || this.props.data.isViewMode)) {
         this.props.getClientSelectList(() => { })
       }
       if (!this.state.isViewMode) {
