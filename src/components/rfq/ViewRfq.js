@@ -357,7 +357,8 @@ function RfqListing(props) {
 
         let data = {
             quotationId: rowData?.QuotationId,
-            vendorId: rowData?.VendorId
+            vendorId: rowData?.VendorId,
+            PartId: rowData?.PartId
         }
         dispatch(sendReminderForQuotation(data, (res) => {
 
