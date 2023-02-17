@@ -607,7 +607,7 @@ function TabOverheadProfit(props) {
                     className={`custom-checkbox mb-0 w-fit-content`}
                     onChange={onPressIncludeSurfaceTreatmentRejection}
                   >
-                    Include Rejection cost in CC for Overhead and Profit
+                    Include Surface Treatment Cost in CC for Rejection
                     <input
                       type="checkbox"
                       checked={IsIncludeSurfaceTreatmentRejection}
