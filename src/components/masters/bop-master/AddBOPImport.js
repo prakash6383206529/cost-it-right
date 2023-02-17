@@ -112,7 +112,7 @@ class AddBOPImport extends Component {
    * @description Called before render the component
   */
   UNSAFE_componentWillMount() {
-    if (!(this.props.data.isEditFlag || this.props.data.isViewFlag)) {
+    if (!(this.props.data.isEditFlag || this.props.data.isViewMode)) {
       this.props.getUOMSelectList(() => { })
       this.props.getBOPCategorySelectList(() => { })
       this.props.getPlantSelectListByType(ZBC, () => { })
@@ -132,7 +132,7 @@ class AddBOPImport extends Component {
     this.props.getIncoTermSelectList(() => { })
     // this.props.getPaymentTermSelectList(() => { })    // FOR MINDA ONLY
     this.getDetails()
-    if (!(this.props.data.isEditFlag || this.props.data.isViewFlag)) {
+    if (!(this.props.data.isEditFlag || this.props.data.isViewMode)) {
       this.props.getCurrencySelectList(() => { })
       this.props.getClientSelectList(() => { })
 
@@ -173,7 +173,7 @@ class AddBOPImport extends Component {
   }
 
   componentDidUpdate(prevProps, prevState) {
-    if (!this.props.data.isViewFlag) {
+    if (!this.props.data.isViewMode) {
       if (this.props.fieldsObj !== prevProps.fieldsObj) {
         this.handleCalculation()
       }
