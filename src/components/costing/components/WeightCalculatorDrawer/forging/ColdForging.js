@@ -398,6 +398,36 @@ function ColdForging(props) {
       e.preventDefault();
     }
   };
+
+
+  const onForgingScrapRecoveryPercentChange = (e) => {
+
+    let machiningScrapRecoveryPercent = getValues('machiningScrapRecoveryPercent') ? getValues('machiningScrapRecoveryPercent') : 0
+    if (machiningScrapRecoveryPercent) {
+      if ((Number(e.target.value) + Number(machiningScrapRecoveryPercent)) > 100) {
+        Toaster.warning("Scrap recovery percentage cannot be greater than 100")
+        setTimeout(() => {
+          setValue('forgingScrapRecoveryPercent', '')
+        }, 100);
+      }
+    }
+  }
+
+  const onMachiningScrapRecoveryPercentChange = (e) => {
+
+    let forgingScrapRecoveryPercent = getValues('forgingScrapRecoveryPercent') ? getValues('forgingScrapRecoveryPercent') : 0
+    if (forgingScrapRecoveryPercent) {
+      if ((Number(e.target.value) + Number(forgingScrapRecoveryPercent)) > 100) {
+        Toaster.warning("Scrap recovery percentage cannot be greater than 100")
+        setTimeout(() => {
+          setValue('machiningScrapRecoveryPercent', '')
+        }, 100);
+      }
+    }
+  }
+
+
+
   const inputLengthTooltipMessage = <div>Input Length = (Forged Weight + Loss Weight / 0.7857 * Billet Diameter<sup>2</sup>) * Density / 1000000</div>
   const endBitLossTooltipMessage = <div>End Bit Loss = (0.7857 * Billet Diameter<sup>2</sup> * End Bit Length * (Density / 1000000) / No. of Part per Length)</div>
   return (
@@ -681,7 +711,7 @@ function ColdForging(props) {
                     validate: { postiveNumber, maxPercentValue }
                   }}
                   mandatory={false}
-                  handleChange={() => { }}
+                  handleChange={onForgingScrapRecoveryPercentChange}
                   defaultValue={''}
                   className=""
                   customClassName={'withBorder'}
@@ -702,7 +732,7 @@ function ColdForging(props) {
                     validate: { postiveNumber, maxPercentValue }
                   }}
                   mandatory={false}
-                  handleChange={() => { }}
+                  handleChange={onMachiningScrapRecoveryPercentChange}
                   defaultValue={''}
                   className=""
                   customClassName={'withBorder'}
