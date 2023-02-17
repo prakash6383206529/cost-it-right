@@ -2273,9 +2273,13 @@ export const CLIENT_DOWNLOAD_EXCEl = [
     { label: "Company Code", value: "CompanyCode", },
     { label: "Contact Name", value: "ClientName", },
     { label: "Email Id", value: "ClientEmailId", },
+    { label: "Phone No.", value: "PhoneNumber", },
+    { label: "Ext.", value: "Extension", },
+    { label: "Mobile No.", value: "MobileNumber", },
     { label: "Country", value: "CountryName", },
     { label: "State", value: "StateName", },
     { label: "City", value: "CityName", },
+    { label: "ZipCode", value: "ZipCode", },
 ]
 
 
@@ -4530,9 +4534,16 @@ export const VENDOR_DOWNLOAD_EXCEl = [
     { label: "Vendor Type", value: "VendorType", },
     { label: "Vendor Name", value: "VendorName", },
     { label: "Vendor Code", value: "VendorCode", },
+    { label: "Email Id", value: "Email", },
+    { label: "Phone Number", value: "PhoneNumber", },
+    { label: "Ext.", value: "Extension", },
+    { label: "Mobile Number", value: "MobileNumber", },
     { label: "Country", value: "Country", },
     { label: "State", value: "State", },
     { label: "City", value: "City", },
+    { label: "ZipCode", value: "ZipCode", },
+    { label: "Address 1", value: "AddressLine1", },
+    { label: "Address 2", value: "AddressLine2", },
     { label: "Status", value: "status", }
 ]
 
@@ -4588,9 +4599,14 @@ export const ZBCPLANT_DOWNLOAD_EXCEl = [
     { label: "Plant Name", value: "PlantName", },
     { label: "Plant Code", value: "PlantCode", },
     { label: "Company Name", value: "CompanyName", },
+    { label: "Phone Number", value: "PhoneNumber", },
+    { label: "Ext.", value: "Extension", },
+    { label: "Address 1", value: "AddressLine1", },
+    { label: "Address 2", value: "AddressLine2", },
     { label: "Country", value: "CountryName", },
     { label: "State", value: "StateName", },
     { label: "City", value: "CityName", },
+    { label: "ZipCode", value: "ZipCode", },
     { label: "Status", value: "status", },
 ]
 export const REPORT_DOWNLOAD_EXCEl = [
@@ -5018,13 +5034,13 @@ export const MRGridForTokenSummary = [
     { label: "Variance (Proc. Cost)", value: "NetProcessCostVariance" },
 ]
 
-export const RMImpactedDownloadArray = ["RawMaterial", "RMGrade", "RMSpec", "RawMaterialCode", "Category", "TechnologyName", "VendorName", "UOM", "OldBasicRate", "NewBasicRate", "OldScrapRate", "NewScrapRate", "RMFreightCost", "RMShearingCost", "EffectiveDate"]
+export const RMImpactedDownloadArray = ["RawMaterial", "RMGrade", "RMSpec", "RawMaterialCode", "Category", "TechnologyName", "VendorName", "UOM", "ExistingBasicRate", "RevisedBasicRate", "ExistingScrapRate", "RevisedScrapRate", "RMFreightCost", "RMShearingCost", "EffectiveDate"]
 
-export const OperationImpactDownloadArray = ["OperationName", "OperationCode", "UOM", "OldOperationRate", "NewOperationRate", "EffectiveDate",]
+export const OperationImpactDownloadArray = ["OperationName", "OperationCode", "UOM", "ExistingOperationRate", "RevisedOperationRate", "EffectiveDate",]
 
-export const BOPImpactDownloadArray = ["BoughtOutPartNumber", "BoughtOutPartName", "Category", "Vendor", "PartNumber", "OldBOPRate", "NewBOPRate", "OldPOPrice", "NewPOPrice", "EffectiveDate",]
+export const BOPImpactDownloadArray = ["BoughtOutPartNumber", "BoughtOutPartName", "Category", "Vendor", "PartNumber", "ExistingBOPRate", "RevisedBOPRate", "ExistingPOPrice", "RevisedPOPrice", "EffectiveDate",]
 
-export const ERImpactDownloadArray = ["Currency", "CostingNumber", "PartNumber", "BankRate", "BankCommissionPercentage", "CustomRate", "CurrencyExchangeRate", "NewExchangeRate", "OldExchangeRate", "EffectiveDate",]
+export const ERImpactDownloadArray = ["Currency", "CostingNumber", "PartNumber", "BankRate", "BankCommissionPercentage", "CustomRate", "CurrencyExchangeRate", "ExistingExchangeRate", "RevisedExchangeRate", "EffectiveDate",]
 
 export const RawMaterialDomesticFileHeads = ["CostingHead", "RawMaterial", "RMGrade", "RMSpec", "RawMaterialCode", "Category", "TechnologyName", "Plant (Code)", "Vendor (Code)", "VendorLocation", "UOM", "BasicRate", "RevisedBasicRate", "RMFreightCost", "RMShearingCost", "ScrapRate", "RevisedScrapRate", "NetLandedCost", "EffectiveDate", "RawMaterialId", "VendorId", "PlantId", "CostingTypeId"]
 

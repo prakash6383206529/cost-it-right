@@ -125,7 +125,7 @@ function CostMovementGraph(props) {
 
                             if (`${ele.PartNumber}${ele.PlantCode}${ele.VendorCode}` == uniqueItem) {
 
-                                uniquePlantLabel = `${ele.PartNumber}-${ele.PlantCode}-${ele.VendorCode}`
+                                uniquePlantLabel = ` ${ele.PartNumber} | ${ele.VendorCode} | ${ele.PlantCode}`
 
                                 allEffectiveDates.map((date, indexFromDate) => {
 
@@ -334,7 +334,7 @@ function CostMovementGraph(props) {
             subtitle: {
                 display: true,
                 position: 'bottom',
-                text: '  Format: Color | Part No.-Vendor code-Plant code ',
+                text: '  Format: Color | Part No. | Vendor Code | Plant Code ',
                 fontSize: 10,
                 align: 'start',
                 color: '#000',
@@ -428,7 +428,7 @@ function CostMovementGraph(props) {
             subtitle: {
                 display: true,
                 position: 'bottom',
-                text: '  Format: Color | Part No.-Vendor code-Plant code ',
+                text: '  Format: Color | Part No. | Vendor Code | Plant Code ',
                 fontSize: 10,
                 align: 'start',
                 color: '#000',

@@ -441,7 +441,7 @@ function RMSimulation(props) {
                                         <div className='d-flex justify-content-end'>
                                             {
                                                 isbulkUpload &&
-                                                <div className="d-flex justify-content-end bulk-upload-row rm-row">
+                                                <div className="d-flex justify-content-end bulk-upload-row rm-row" style={{ marginRight: 0 }}>
                                                     <div className="d-flex align-items-center">
                                                         <label>Rows with changes:</label>
                                                         <TextFieldHookForm
