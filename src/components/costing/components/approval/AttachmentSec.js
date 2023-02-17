@@ -6,11 +6,12 @@ import 'react-dropzone-uploader/dist/styles.css';
 import { ATTACHMENTS, FILE_URL, IMPACT_SHEET, INVOICE_BACKUP, OTHER, SUPPLIER_CONFRIM } from '../../../../config/constants';
 import redcrossImg from '../../../../assests/images/red-cross.png'
 import { fileDeleteCosting, fileUploadCosting } from '../../actions/Costing'
-import { setAttachmentFileData, uploadSimulationAttachmentByCategory, uploadSimulationAttachmentonFTP } from '../../../simulation/actions/Simulation'
+import { setAttachmentFileData, uploadSimulationAttachmentByCategory, uploadSimulationAttachmentByCategoryAll, uploadSimulationAttachmentonFTP } from '../../../simulation/actions/Simulation'
 
 import { loggedInUserId } from '../../../../helper';
 import Toaster from '../../../common/Toaster';
 import LoaderCustom from '../../../common/LoaderCustom';
+import _ from 'lodash';
 
 
 function AttachmentSec(props) {
@@ -35,6 +36,11 @@ function AttachmentSec(props) {
     const [attachmentFiles, setAttachmentFiles] = useState([]);
 
     const [IsOpen, setIsOpen] = useState(false);
+    const [countImpactSheet, setCountImpactSheet] = useState(0);
+    const [countSupplierConfirm, setCountSupplierConfirm] = useState(0);
+    const [countInvoiceBackup, setCountInvoiceBackup] = useState(0);
+    const [countOthers, setCountOthers] = useState(0);
+    const [countAttachments, setCountAttachments] = useState(0);
 
     const [initialFiles, setInitialFiles] = useState([]);
     const [isDisable, setIsDisable] = useState(false)
@@ -91,27 +97,6 @@ function AttachmentSec(props) {
     * @description setDisableFalseFunctionAttachmentFiles
     */
     const setDisableFalseFunctionAttachmentFiles = (value) => {
-        setTimeout(() => {
-            let loopImpactSheet = 1
-            let loopSupplierConfirm = 1
-            let loopInvoiceBackup = 1
-            let loopOthers = 1
-            let loopAttachments = 1
-            loopImpactSheet = Number(dropzoneImpactSheet.current?.files.length) - Number(files.length)
-            loopSupplierConfirm = Number(dropzoneSupplierConfirm.current?.files.length) - Number(supplierFiles.length)
-            loopInvoiceBackup = Number(dropzoneInvoiceBackup.current?.files.length) - Number(invoiceFiles.length)
-            loopOthers = Number(dropzoneOthers.current?.files.length) - Number(otherFiles.length)
-            loopAttachments = Number(dropzoneAttachments.current?.files.length) - Number(attachmentFiles.length)
-
-            if (((isNaN(loopImpactSheet) && dropzoneImpactSheet.current?.files.length === undefined) || Number(loopImpactSheet) === 0)
-                && ((isNaN(loopSupplierConfirm) && dropzoneSupplierConfirm.current?.files.length === undefined) || Number(loopSupplierConfirm) === 0)
-                && ((isNaN(loopInvoiceBackup) && dropzoneInvoiceBackup.current?.files.length === undefined) || Number(loopInvoiceBackup) === 0)
-                && ((isNaN(loopOthers) && dropzoneOthers.current?.files.length === undefined) || Number(loopOthers) === 0)
-                && ((isNaN(loopAttachments) && dropzoneAttachments.current?.files.length === undefined) || Number(loopAttachments) === 0)) {
-                setIsDisable(false)
-            }
-        }, 500);
-
         switch (value) {
             case IMPACT_SHEET:
                 setAttachmentLoaderObj(prevState => ({ ...prevState, loaderImSheet: false }))
@@ -144,20 +129,26 @@ function AttachmentSec(props) {
             setFiles(tempArr)
             setIsOpen(!IsOpen)
         }
-
+        let temp
         if (status === 'done') {
-            let data = new FormData()
-            data.append('file', file)
-            data.append('Token', token)
-            data.append('Folder', IMPACT_SHEET)
-
-            dispatch(uploadSimulationAttachmentByCategory(data, (res) => {
-                setDisableFalseFunctionAttachmentFiles(IMPACT_SHEET)
-                let Data = res?.data && res?.data[0]
-                files.push(Data)
-                setFiles(files)
-                setIsOpen(!IsOpen)
-            }))
+            temp = countImpactSheet + 1
+            setCountImpactSheet(temp)
+            if (temp === dropzoneImpactSheet.current?.files.length) {
+                let tempArr = []
+                dropzoneImpactSheet?.current?.files && dropzoneImpactSheet?.current?.files?.map((item) => {
+                    let tempObj = new FormData()
+                    tempObj.append('file', item?.file)
+                    tempObj.append('Token', token)
+                    tempObj.append('Folder', IMPACT_SHEET)
+                    tempArr.push(tempObj)
+                })
+                dispatch(uploadSimulationAttachmentByCategoryAll(tempArr, (res) => {
+                    setDisableFalseFunctionAttachmentFiles(IMPACT_SHEET)
+                    setFiles(_.map(res, 'data[0]'))
+                    setIsOpen(!IsOpen)
+                    setIsDisable(false)
+                }))
+            }
         }
 
         if (status === 'rejected_file_type') {
@@ -188,19 +179,26 @@ function AttachmentSec(props) {
             setIsOpen(!IsOpen)
         }
 
+        let temp
         if (status === 'done') {
-            let data = new FormData()
-            data.append('file', file)
-            data.append('Token', token)
-            data.append('Folder', SUPPLIER_CONFRIM)
-
-            dispatch(uploadSimulationAttachmentByCategory(data, (res) => {
-                setDisableFalseFunctionAttachmentFiles(SUPPLIER_CONFRIM)
-                let Data = res?.data[0]
-                supplierFiles.push(Data)
-                setSupplierFiles(supplierFiles)
-                setIsOpen(!IsOpen)
-            }))
+            temp = countSupplierConfirm + 1
+            setCountSupplierConfirm(temp)
+            if (temp === dropzoneSupplierConfirm.current?.files.length) {
+                let tempArr = []
+                dropzoneSupplierConfirm?.current?.files && dropzoneSupplierConfirm?.current?.files?.map((item) => {
+                    let tempObj = new FormData()
+                    tempObj.append('file', item?.file)
+                    tempObj.append('Token', token)
+                    tempObj.append('Folder', SUPPLIER_CONFRIM)
+                    tempArr.push(tempObj)
+                })
+                dispatch(uploadSimulationAttachmentByCategoryAll(tempArr, (res) => {
+                    setDisableFalseFunctionAttachmentFiles(SUPPLIER_CONFRIM)
+                    setSupplierFiles(_.map(res, 'data[0]'))
+                    setIsOpen(!IsOpen)
+                    setIsDisable(false)
+                }))
+            }
         }
 
         if (status === 'rejected_file_type') {
@@ -228,19 +226,26 @@ function AttachmentSec(props) {
             setInvoiceFiles(tempArr)
             setIsOpen(!IsOpen)
         }
-
+        let temp
         if (status === 'done') {
-            let data = new FormData()
-            data.append('file', file)
-            data.append('Token', token)
-            data.append('Folder', INVOICE_BACKUP)
-            dispatch(uploadSimulationAttachmentByCategory(data, (res) => {
-                setDisableFalseFunctionAttachmentFiles(INVOICE_BACKUP)
-                let Data = res?.data[0]
-                invoiceFiles.push(Data)
-                setInvoiceFiles(invoiceFiles)
-                setIsOpen(!IsOpen)
-            }))
+            temp = countInvoiceBackup + 1
+            setCountInvoiceBackup(temp)
+            if (temp === dropzoneInvoiceBackup.current?.files.length) {
+                let tempArr = []
+                dropzoneInvoiceBackup?.current?.files && dropzoneInvoiceBackup?.current?.files?.map((item) => {
+                    let tempObj = new FormData()
+                    tempObj.append('file', item?.file)
+                    tempObj.append('Token', token)
+                    tempObj.append('Folder', INVOICE_BACKUP)
+                    tempArr.push(tempObj)
+                })
+                dispatch(uploadSimulationAttachmentByCategoryAll(tempArr, (res) => {
+                    setDisableFalseFunctionAttachmentFiles(INVOICE_BACKUP)
+                    setInvoiceFiles(_.map(res, 'data[0]'))
+                    setIsOpen(!IsOpen)
+                    setIsDisable(false)
+                }))
+            }
         }
 
         if (status === 'rejected_file_type') {
@@ -269,18 +274,26 @@ function AttachmentSec(props) {
             setIsOpen(!IsOpen)
         }
 
+        let temp
         if (status === 'done') {
-            let data = new FormData()
-            data.append('file', file)
-            data.append('Token', token)
-            data.append('Folder', OTHER)
-            dispatch(uploadSimulationAttachmentByCategory(data, (res) => {
-                setDisableFalseFunctionAttachmentFiles(OTHER)
-                let Data = res?.data[0]
-                otherFiles.push(Data)
-                setOtherFiles(otherFiles)
-                setIsOpen(!IsOpen)
-            }))
+            temp = countOthers + 1
+            setCountOthers(temp)
+            if (temp === dropzoneOthers.current?.files.length) {
+                let tempArr = []
+                dropzoneOthers?.current?.files && dropzoneOthers?.current?.files?.map((item) => {
+                    let tempObj = new FormData()
+                    tempObj.append('file', item?.file)
+                    tempObj.append('Token', token)
+                    tempObj.append('Folder', OTHER)
+                    tempArr.push(tempObj)
+                })
+                dispatch(uploadSimulationAttachmentByCategoryAll(tempArr, (res) => {
+                    setDisableFalseFunctionAttachmentFiles(OTHER)
+                    setOtherFiles(_.map(res, 'data[0]'))
+                    setIsOpen(!IsOpen)
+                    setIsDisable(false)
+                }))
+            }
         }
 
         if (status === 'rejected_file_type') {
@@ -309,18 +322,26 @@ function AttachmentSec(props) {
             setIsOpen(!IsOpen)
         }
 
+        let temp
         if (status === 'done') {
-            let data = new FormData()
-            data.append('file', file)
-            data.append('Token', token)
-            data.append('Folder', ATTACHMENTS)
-            dispatch(uploadSimulationAttachmentByCategory(data, (res) => {
-                setDisableFalseFunctionAttachmentFiles(ATTACHMENTS)
-                let Data = res?.data[0]
-                attachmentFiles.push(Data)
-                setAttachmentFiles(attachmentFiles)
-                setIsOpen(!IsOpen)
-            }))
+            temp = countAttachments + 1
+            setCountAttachments(temp)
+            if (temp === dropzoneAttachments.current?.files.length) {
+                let tempArr = []
+                dropzoneAttachments?.current?.files && dropzoneAttachments?.current?.files?.map((item) => {
+                    let tempObj = new FormData()
+                    tempObj.append('file', item?.file)
+                    tempObj.append('Token', token)
+                    tempObj.append('Folder', ATTACHMENTS)
+                    tempArr.push(tempObj)
+                })
+                dispatch(uploadSimulationAttachmentByCategoryAll(tempArr, (res) => {
+                    setDisableFalseFunctionAttachmentFiles(ATTACHMENTS)
+                    setAttachmentFiles(_.map(res, 'data[0]'))
+                    setIsOpen(!IsOpen)
+                    setIsDisable(false)
+                }))
+            }
         }
 
         if (status === 'rejected_file_type') {

@@ -54,6 +54,7 @@ import {
     SET_SELECTED_VENDOR_SIMULATION,
     GET_ALL_MULTI_TECHNOLOGY_COSTING,
 } from '../../../config/constants';
+import { MESSAGES } from '../../../config/message';
 import { apiErrors } from '../../../helper/util';
 import Toaster from '../../common/Toaster';
 
@@ -1583,4 +1584,29 @@ export function getAllSimulatedMultiTechnologyCosting(simulationId, callback) {
             apiErrors(error);
         });
     };
+}
+
+/**
+ * @method uploadSimulationAttachmentByCategoryAll
+ * @description uploadSimulationAttachmentByCategoryAll
+ */
+export function uploadSimulationAttachmentByCategoryAll(selectedFiles, callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST })
+        let temp = []
+        selectedFiles && selectedFiles.map((item) => {
+            let request = axios.post(`${API.simulationUploadFileByCategory}`, item, config())
+            temp.push(request)
+        })
+        axios.all(temp).then((response) => {
+            if (response) {
+                callback(response)
+            } else {
+                Toaster.error(MESSAGES.SOME_ERROR)
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE })
+            apiErrors(error)
+        })
+    }
 }
