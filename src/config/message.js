@@ -305,6 +305,10 @@ export const MESSAGES = {
   DELETE_VOLUME_SUCCESS: 'Volume deleted successfully',
   VOLUME_UPDATE_SUCCESS: 'Actual/Budget Volume updated successfully',
 
+  //BUDGET MASTER
+  BUDGET_ADD_SUCCESS: 'Budget created successfully',
+  BUDGET_UPDATE_SUCCESS: 'Budget updated successfully',
+
   //CLIENT MASTER
   CLIENT_ADD_SUCCESS: 'Customer added successfully',
   CLIENT_DELETE_ALERT: 'Are you sure you want to delete this Customer?',

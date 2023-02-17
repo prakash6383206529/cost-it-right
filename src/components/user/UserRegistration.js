@@ -94,6 +94,7 @@ function UserRegistration(props) {
   const [costingApprovalType, setCostingApprovalType] = useState([]);
   const [simulationApprovalType, setSimulationApprovalType] = useState([]);
   const [masterApprovalType, setMasterApprovalType] = useState([]);
+  const [primaryContact, setPrimaryContact] = useState(false);
   const dispatch = useDispatch()
 
   const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
@@ -467,7 +468,9 @@ function UserRegistration(props) {
   const handleReporterChange = (value) => {
     setReporter(value)
   }
-
+  const onPrimaryContactCheck = () => {
+    setPrimaryContact(true)
+  }
 
   /**
   * @method getUserDetail
@@ -502,8 +505,7 @@ function UserRegistration(props) {
               DepartmentObj = departmentList && departmentList.find(item => item.DepartmentId === Data.DepartmentId)
             }
             // const DepartmentObj = departmentList && departmentList.find(item => item.DepartmentId === Data.DepartmentId)
-
-
+            setPrimaryContact(Data.IsPrimaryContact)
             setIsEditFlag(true)
             setIsLoader(false)
             setIsShowAdditionalPermission(Data.IsAdditionalAccess)
@@ -1425,6 +1427,7 @@ function UserRegistration(props) {
       if (isRfqUser) {
         updatedData.VendorId = vendor.value
         updatedData.ReporterId = reporter.value
+        updatedData.IsPrimaryContact = primaryContact
       } else {
         updatedData.Modules = Modules
         updatedData.TechnologyLevels = tempTechnologyLevelArray
@@ -1508,6 +1511,7 @@ function UserRegistration(props) {
       if (props?.RFQUser) {
         userData.VendorId = vendor.value
         userData.ReporterId = reporter.value
+        userData.IsPrimaryContact = primaryContact
       } else {
         userData.Modules = Modules
         userData.TechnologyLevels = tempTechnologyLevelArray
@@ -1775,6 +1779,25 @@ function UserRegistration(props) {
                         </Col>
                       </>
                     }
+                    <Col md="3" className="d-flex align-items-center mt-4 pt-2">
+                      <label
+                        className={`custom-checkbox ${isEditFlag ? "disabled" : ""
+                          }`}
+                        onChange={onPrimaryContactCheck}
+                      >
+                        Primary Contact
+                        <input
+                          type="checkbox"
+                          checked={primaryContact}
+                          disabled={isEditFlag ? true : false}
+                        />
+                        <span
+                          className=" before-box"
+                          checked={primaryContact}
+                          onChange={onPrimaryContactCheck}
+                        />
+                      </label>
+                    </Col>
                   </div>
 
                   <HeaderTitle

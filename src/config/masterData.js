@@ -1,3 +1,4 @@
+import { reactLocalStorage } from 'reactjs-localstorage';
 import DayTime from '../components/common/DayTimeWrapper';
 /**
  * master listing used in Mass Upload
@@ -1924,6 +1925,105 @@ export const VOLUME_BUDGETED_CBC_TEMPDATA = [
         'BudgetedQuantity': 25,
     }
 ]
+
+
+//DYNAMIC BUDGET MASTER BULKUPLOAD COSTING HEADS
+let budgetCostingHeads = reactLocalStorage.getObject('budgetCostingHeads')
+
+export const BUDGET_ZBC = [
+    { label: 'PartCostingHead', value: 'PartCostingHead', },
+    { label: 'Year', value: 'Year', }, //*
+    { label: 'PartNumber', value: 'PartNumber', }, //*
+    { label: 'RevisionNumber', value: 'RevisionNumber', }, //*
+    { label: 'PlantCode', value: 'PlantCode', }, //*
+    { label: 'EffectiveDate', value: 'EffectiveDate', }, //
+    { label: 'Delta', value: 'Delta', }, //
+]
+
+let BUDGET_ZBC_DATA = []
+
+Array.isArray(budgetCostingHeads) && budgetCostingHeads.map((item, index) => {
+    BUDGET_ZBC_DATA.push(
+
+        {
+            'PartCostingHead': `${item.Text}`,
+            'Year': `${DayTime().$y}-${DayTime().$y + 1}`,
+            'PartNumber': 'Screw01',
+            'RevisionNumber': '1',
+            'PlantCode': '1032',
+            'EffectiveDate': DayTime().format('DD-MM-YYYY'),
+            'Delta': Number(25) + Number(index),
+        }
+    )
+
+})
+
+export const BUDGET_ZBC_TEMPDATA = BUDGET_ZBC_DATA
+
+export const BUDGET_VBC = [
+
+    { label: 'PartCostingHead', value: 'PartCostingHead', },
+    { label: 'Year', value: 'Year', }, //*
+    { label: 'PartNumber', value: 'PartNumber', }, //*
+    { label: 'RevisionNumber', value: 'RevisionNumber', }, //*
+    { label: 'PlantCode', value: 'PlantCode', }, //*
+    { label: 'VendorCode', value: 'VendorCode', }, //*
+    { label: 'EffectiveDate', value: 'EffectiveDate', }, //
+    { label: 'Delta', value: 'Delta', }, //NOUI
+
+]
+
+let BUDGET_VBC_DATA = []
+
+Array.isArray(budgetCostingHeads) && budgetCostingHeads.map((item, index) => {
+    BUDGET_VBC_DATA.push(
+        {
+            'PartCostingHead': `${item.Text}`,
+            'Year': `${DayTime().$y}-${DayTime().$y + 1}`,
+            'PartNumber': 'Screw01',
+            'RevisionNumber': '1',
+            'VendorCode': "Tata01",
+            'PlantCode': '1032',
+            'EffectiveDate': DayTime().format('DD-MM-YYYY'),
+            'Delta': Number(25) + Number(index),
+        }
+    )
+})
+
+export const BUDGET_VBC_TEMPDATA = BUDGET_VBC_DATA
+
+export const BUDGET_CBC = [
+
+    { label: 'PartCostingHead', value: 'PartCostingHead', },
+    { label: 'Year', value: 'Year', }, //*
+    { label: 'PartNumber', value: 'PartNumber', }, //*
+    { label: 'RevisionNumber', value: 'RevisionNumber', }, //*
+    { label: 'PlantCode', value: 'PlantCode', }, //*
+    { label: 'CustomerCode', value: 'CustomerCode', },//NOUI
+    { label: 'EffectiveDate', value: 'EffectiveDate', }, //
+    { label: 'Delta', value: 'Delta', }, //NOUI
+
+]
+
+export const BUDGET_CBC_DATA = []
+
+Array.isArray(budgetCostingHeads) && budgetCostingHeads.map((item, index) => {
+    BUDGET_CBC_DATA.push(
+        {
+            'PartCostingHead': `${item.Text}`,
+            'Year': `${DayTime().$y}-${DayTime().$y + 1}`,
+            'PartNumber': 'Screw01',
+            'RevisionNumber': '1',
+            'PlantCode': '1032',
+            'CustomerCode': 'C-10008',
+            'EffectiveDate': DayTime().format('DD-MM-YYYY'),
+            'Delta': Number(25) + Number(index),
+        }
+    )
+})
+
+export const BUDGET_CBC_TEMPDATA = BUDGET_CBC_DATA
+
 /** 
 * @desc USED IN EXCEL HEADER FOR BULK UPLOAD
 */
@@ -4306,6 +4406,8 @@ export const RMDOMESTIC_DOWNLOAD_EXCEl = [
     { label: "Basic Rate", value: "BasicRate", },
     { label: "Freight Cost", value: "RMFreightCost", },
     { label: "Shearing Cost", value: "RMShearingCost", },
+    { label: "Machining Scrap Cost", value: "MachiningScrapRate", },
+    { label: "Circle Scrap Cost", value: "JaliScrapCost", },
     { label: "Scrap Rate", value: "ScrapRate", },
     { label: "Net Cost", value: "NetLandedCost", },
     { label: "Cut Off Price", value: "CutOffPrice", },
@@ -4329,6 +4431,8 @@ export const RMIMPORT_DOWNLOAD_EXCEl = [
     { label: "Basic Rate", value: "BasicRate", },
     { label: "Freight Cost", value: "RMFreightCost", },
     { label: "Shearing Cost", value: "RMShearingCost", },
+    { label: "Machining Scrap Cost", value: "MachiningScrapRate", },
+    { label: "Circle Scrap Cost", value: "JaliScrapCost", },
     { label: "Scrap Rate", value: "ScrapRate", },
     { label: "Net Cost(Currency)", value: "NetLandedCost", },
     { label: "Net Cost(INR)", value: "NetLandedCostConversion", },
@@ -4461,6 +4565,21 @@ export const VOLUME_DOWNLOAD_EXCEl = [
     { label: "Budgeted Quantity", value: "BudgetedQuantity", },
     //  { label: 'BudgetedPrice', value: 'BudgetedPrice', }, //ONCE CODE DEPLOY FROM BACKEND THEN UNCOMENT THE LINE 
     { label: "Actual Quantity", value: "ApprovedQuantity", },
+]
+
+export const BUDGET_DOWNLOAD_EXCEl = [
+    { label: "Costing Head", value: "CostingHead", },
+    { label: "Financial Year", value: "FinancialYear", },
+    { label: "Net Po Price", value: "NetPoPrice" },
+    { label: "Budgeted Po Price", value: "BudgetedPoPrice" },
+    { label: "Part Name", value: "PartName" },
+    { label: "Part Number", value: "PartNumber", },
+    { label: "Plant Name", value: "PlantName", },
+    { label: "Plant Code", value: "PlantCode", },
+    { label: "Vendor Name", value: "VendorName", },
+    { label: "Vendor Code", value: "VendorCode", },
+    { label: "Customer Name", value: "CustomerName", },
+    { label: "CustomerCode", value: "CustomerCode", },
 ]
 
 export const PROFIT_DOWNLOAD_EXCEl = [
