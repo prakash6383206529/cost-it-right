@@ -153,7 +153,7 @@ function AttachmentSec(props) {
 
             dispatch(uploadSimulationAttachmentByCategory(data, (res) => {
                 setDisableFalseFunctionAttachmentFiles(IMPACT_SHEET)
-                let Data = res?.data[0]
+                let Data = res?.data && res?.data[0]
                 files.push(Data)
                 setFiles(files)
                 setIsOpen(!IsOpen)
@@ -529,17 +529,17 @@ function AttachmentSec(props) {
                                 {attachmentLoaderObj.loaderImSheet && <LoaderCustom customClass="attachment-sec-loader" />}
                                 {files &&
                                     files.map((f) => {
-                                        const withOutTild = f.FileURL.replace("~", "");
+                                        const withOutTild = f?.FileURL?.replace("~", "");
                                         const fileURL = `${FILE_URL}${withOutTild}`;
                                         return (
                                             <div className={"attachment images"}>
                                                 <a href={fileURL} target="_blank" rel="noreferrer">
-                                                    {f.OriginalFileName}
+                                                    {f?.OriginalFileName}
                                                 </a>
                                                 {(type === 'Sender') && <img
                                                     alt={""}
                                                     className="float-right"
-                                                    onClick={() => deleteFile(f.FileId, f.FileName)}
+                                                    onClick={() => deleteFile(f?.FileId, f?.FileName)}
                                                     src={redcrossImg}
                                                 ></img>
                                                 }
@@ -617,17 +617,17 @@ function AttachmentSec(props) {
                                 {attachmentLoaderObj.loaderSupConfirm && <LoaderCustom customClass="attachment-sec-loader" />}
                                 {supplierFiles &&
                                     supplierFiles.map((f) => {
-                                        const withOutTild = f.FileURL.replace("~", "");
+                                        const withOutTild = f?.FileURL.replace("~", "");
                                         const fileURL = `${FILE_URL}${withOutTild}`;
                                         return (
                                             <div className={"attachment images"}>
                                                 <a href={fileURL} target="_blank" rel="noreferrer">
-                                                    {f.OriginalFileName}
+                                                    {f?.OriginalFileName}
                                                 </a>
                                                 {(type === 'Sender') && <img
                                                     alt={""}
                                                     className="float-right"
-                                                    onClick={() => deleteFileSupplierConfirmation(f.FileId, f.FileName)}
+                                                    onClick={() => deleteFileSupplierConfirmation(f?.FileId, f?.FileName)}
                                                     src={redcrossImg}
                                                 ></img>
                                                 }
@@ -705,17 +705,17 @@ function AttachmentSec(props) {
                                 {attachmentLoaderObj.loaderInBackup && <LoaderCustom customClass="attachment-sec-loader" />}
                                 {invoiceFiles &&
                                     invoiceFiles.map((f) => {
-                                        const withOutTild = f.FileURL.replace("~", "");
+                                        const withOutTild = f?.FileURL.replace("~", "");
                                         const fileURL = `${FILE_URL}${withOutTild}`;
                                         return (
                                             <div className={"attachment images"}>
                                                 <a href={fileURL} target="_blank" rel="noreferrer">
-                                                    {f.OriginalFileName}
+                                                    {f?.OriginalFileName}
                                                 </a>
                                                 {(type === 'Sender') && <img
                                                     alt={""}
                                                     className="float-right"
-                                                    onClick={() => deleteFileInvoiceBackups(f.FileId, f.FileName)}
+                                                    onClick={() => deleteFileInvoiceBackups(f?.FileId, f?.FileName)}
                                                     src={redcrossImg}
                                                 ></img>
                                                 }
@@ -792,17 +792,17 @@ function AttachmentSec(props) {
                                 {attachmentLoaderObj.loaderOther && <LoaderCustom customClass="attachment-sec-loader" />}
                                 {otherFiles &&
                                     otherFiles.map((f) => {
-                                        const withOutTild = f.FileURL.replace("~", "");
+                                        const withOutTild = f?.FileURL.replace("~", "");
                                         const fileURL = `${FILE_URL}${withOutTild}`;
                                         return (
                                             <div className={"attachment images"}>
                                                 <a href={fileURL} target="_blank" rel="noreferrer">
-                                                    {f.OriginalFileName}
+                                                    {f?.OriginalFileName}
                                                 </a>
                                                 {(type === 'Sender') && <img
                                                     alt={""}
                                                     className="float-right"
-                                                    onClick={() => deleteFileOthers(f.FileId, f.FileName)}
+                                                    onClick={() => deleteFileOthers(f?.FileId, f?.FileName)}
                                                     src={redcrossImg}
                                                 ></img>
                                                 }
@@ -879,17 +879,17 @@ function AttachmentSec(props) {
                                 {attachmentLoaderObj.loaderAttch && <LoaderCustom customClass="attachment-sec-loader" />}
                                 {attachmentFiles &&
                                     attachmentFiles.map((f) => {
-                                        const withOutTild = f.FileURL.replace("~", "");
+                                        const withOutTild = f?.FileURL.replace("~", "");
                                         const fileURL = `${FILE_URL}${withOutTild}`;
                                         return (
                                             <div className={"attachment images"}>
                                                 <a href={fileURL} target="_blank" rel="noreferrer">
-                                                    {f.OriginalFileName}
+                                                    {f?.OriginalFileName}
                                                 </a>
                                                 {(type === 'Sender') && <img
                                                     alt={""}
                                                     className="float-right"
-                                                    onClick={() => deleteFileAttachments(f.FileId, f.FileName)}
+                                                    onClick={() => deleteFileAttachments(f?.FileId, f?.FileName)}
                                                     src={redcrossImg}
                                                 ></img>
                                                 }
