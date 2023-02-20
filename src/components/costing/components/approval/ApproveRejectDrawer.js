@@ -17,7 +17,7 @@ import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css';
 import redcrossImg from '../../../../assests/images/red-cross.png'
 import { getSelectListOfSimulationLinkingTokens } from '../../../simulation/actions/Simulation'
-import { provisional } from '../../../../config/constants'
+import { PROVISIONAL } from '../../../../config/constants'
 import LoaderCustom from '../../../common/LoaderCustom';
 import Toaster from '../../../common/Toaster'
 import PushSection from '../../../common/PushSection'
@@ -65,7 +65,7 @@ function ApproveRejectDrawer(props) {
     let levelDetailsTemp = ''
     dispatch(getUsersSimulationTechnologyLevelAPI(loggedInUserId(), selectedMasterForSimulation?.value, (res) => {
       if (res?.data?.Data) {
-        levelDetailsTemp = userTechnologyLevelDetails(SimulationHeadId, res?.data?.Data?.TechnologyLevels)
+        levelDetailsTemp = userTechnologyLevelDetails(props?.costingTypeId, res?.data?.Data?.TechnologyLevels)
         setLevelDetails(levelDetailsTemp)
       }
     }))
@@ -134,7 +134,7 @@ function ApproveRejectDrawer(props) {
       }
     }, 300);
 
-    if (SimulationType !== null && SimulationType === provisional) {
+    if (SimulationType !== null && SimulationType === PROVISIONAL) {
       setTokenDropdown(false)
     }
 

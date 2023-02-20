@@ -40,7 +40,7 @@ const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 function CostingSimulation(props) {
-    const { simulationId, isFromApprovalListing, master, statusForLinkedToken, approvalTypeId } = props
+    const { simulationId, isFromApprovalListing, master, statusForLinkedToken } = props
 
     const getShowSimulationPage = useSelector((state) => state.simulation.getShowSimulationPage)
 
@@ -148,7 +148,7 @@ function CostingSimulation(props) {
                 UserId: loggedInUserId(),
                 TechnologyId: SimulationTechnologyIdState,
                 Mode: 'simulation',
-                approvalTypeId: approvalTypeId
+                approvalTypeId: amendmentDetails.SimulationHeadId
             }
 
             dispatch(checkFinalUser(obj, res => {
@@ -157,7 +157,8 @@ function CostingSimulation(props) {
                 }
             }))
         }
-    }, [SimulationTechnologyIdState])
+        console.log('amendmentDetails.SimulationHeadId: ', amendmentDetails.SimulationHeadId);
+    }, [SimulationTechnologyIdState, amendmentDetails.SimulationHeadId])
 
     useEffect(() => {
         // TO CHECK IF ANY OF THE RECORD HAS ASSEMBLY ROW
@@ -1482,8 +1483,7 @@ function CostingSimulation(props) {
                                     closeDrawer={closeDrawer}
                                     isSimulation={true}
                                     apiData={apiData}
-                                    SimulationHeadId={amendmentDetails.SimulationHeadId}
-                                    costingTypeId={approvalTypeId}
+                                    costingTypeId={amendmentDetails.SimulationHeadId}
                                 // isSaveDone={isSaveDone}
                                 />
                             }

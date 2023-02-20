@@ -815,7 +815,8 @@ function UserRegistration(props) {
     }
   };
 
-  const checkDuplicacy = (dataList, obj) => {
+  const checkDuplicacy = (dataList, obj, keyName, technology_master_id, approvalTypeIDValue, messageHead) => {
+    let stop = false
     let checkExists = false
     dataList && dataList?.map((element) => {
       if (_.isEqual(element, obj)) {
@@ -823,7 +824,20 @@ function UserRegistration(props) {
       }
       return null
     })
-    return checkExists
+
+    const isExistTechnology = dataList && dataList.findIndex(el => {
+      return (Number(el[keyName]) === Number(technology_master_id)) && (Number(el.ApprovalTypeId) === Number(approvalTypeIDValue))
+    })
+
+    if (checkExists) {
+      stop = true
+      Toaster.warning('Record already exists.')
+    } else if (isExistTechnology !== -1) {
+      stop = true
+      Toaster.warning(`${messageHead} cannot have multiple level for same Approval Type.`)
+    }
+
+    return stop
   }
 
   /**
@@ -847,19 +861,7 @@ function UserRegistration(props) {
       ApprovalTypeId: costingApprovalType?.value,
     }
 
-    if (checkDuplicacy(TechnologyLevelGrid, obj)) {
-      Toaster.warning('Record already exists.')
-      return false
-    }
-
-    const isExistTechnology = TechnologyLevelGrid && TechnologyLevelGrid.findIndex(el => {
-      return (Number(el.TechnologyId) === Number(technology.value)) && (Number(el.ApprovalTypeId) === Number(costingApprovalType.value))
-    })
-
-    if (isExistTechnology !== -1) {
-      Toaster.warning('Technology cannot have multiple level for same Approval Type.')
-      return false
-    }
+    if (checkDuplicacy(TechnologyLevelGrid, obj, 'TechnologyId', technology.value, costingApprovalType.value, 'Technology')) return false
 
     tempArray.push(...TechnologyLevelGrid, obj)
 
@@ -896,19 +898,7 @@ function UserRegistration(props) {
       ApprovalTypeId: costingApprovalType?.value,
     }
 
-    if (checkDuplicacy(TechnologyLevelGrid, tempData)) {
-      Toaster.warning('Record already exists.')
-      return false
-    }
-
-    const isExistTechnology = TechnologyLevelGrid && TechnologyLevelGrid.findIndex(el => {
-      return (Number(el.TechnologyId) === Number(technology.value)) && (Number(el.ApprovalTypeId) === Number(costingApprovalType.value))
-    })
-
-    if (isExistTechnology !== -1) {
-      Toaster.warning('Technology cannot have multiple level for same Approval Type.')
-      return false
-    }
+    if (checkDuplicacy(TechnologyLevelGrid, tempData, 'TechnologyId', technology.value, costingApprovalType.value, 'Technology')) return false
 
     tempArray = Object.assign([...TechnologyLevelGrid], { [technologyLevelEditIndex]: tempData })
 
@@ -964,19 +954,7 @@ function UserRegistration(props) {
       ApprovalTypeId: simulationApprovalType?.value,
     }
 
-    if (checkDuplicacy(HeadLevelGrid, obj)) {
-      Toaster.warning('Record already exists.')
-      return false
-    }
-
-    const isExistTechnology = HeadLevelGrid && HeadLevelGrid.findIndex(el => {
-      return (Number(el.TechnologyId) === Number(simulationHeads.value)) && (Number(el.ApprovalTypeId) === Number(simulationApprovalType.value))
-    })
-
-    if (isExistTechnology !== -1) {
-      Toaster.warning('Technology cannot have multiple level for same Approval Type.')
-      return false
-    }
+    if (checkDuplicacy(HeadLevelGrid, obj, 'TechnologyId', simulationHeads.value, simulationApprovalType.value, 'Technology')) return false
 
     tempArray.push(...HeadLevelGrid, obj)
 
@@ -1015,19 +993,7 @@ function UserRegistration(props) {
       ApprovalTypeId: simulationApprovalType?.value,
     }
 
-    if (checkDuplicacy(HeadLevelGrid, tempData)) {
-      Toaster.warning('Record already exists.')
-      return false
-    }
-
-    const isExistTechnology = HeadLevelGrid && HeadLevelGrid.findIndex(el => {
-      return (Number(el.TechnologyId) === Number(simulationHeads.value)) && (Number(el.ApprovalTypeId) === Number(simulationApprovalType.value))
-    })
-
-    if (isExistTechnology !== -1) {
-      Toaster.warning('Technology cannot have multiple level for same Approval Type.')
-      return false
-    }
+    if (checkDuplicacy(HeadLevelGrid, tempData, 'TechnologyId', simulationHeads.value, simulationApprovalType.value, 'Technology')) return false
 
     tempArray = Object.assign([...HeadLevelGrid], { [simulationLevelEditIndex]: tempData })
 
@@ -1156,19 +1122,7 @@ function UserRegistration(props) {
       ApprovalTypeId: masterApprovalType?.value,
     }
 
-    if (checkDuplicacy(masterLevelGrid, obj)) {
-      Toaster.warning('Record already exists.')
-      return false
-    }
-
-    const isExistTechnology = masterLevelGrid && masterLevelGrid.findIndex(el => {
-      return (Number(el.MasterId) === Number(masterLevel.value)) && (Number(el.ApprovalTypeId) === Number(masterApprovalType.value))
-    })
-
-    if (isExistTechnology !== -1) {
-      Toaster.warning('Master cannot have multiple level for same Approval Type.')
-      return false
-    }
+    if (checkDuplicacy(masterLevelGrid, obj, 'MasterId', master.value, masterApprovalType.value, 'Master')) return false
 
     tempArray.push(...masterLevelGrid, obj)
 
@@ -1203,19 +1157,7 @@ function UserRegistration(props) {
       ApprovalTypeId: masterApprovalType?.value,
     }
 
-    if (checkDuplicacy(masterLevelGrid, tempData)) {
-      Toaster.warning('Record already exists.')
-      return false
-    }
-
-    const isExistTechnology = masterLevelGrid && masterLevelGrid.findIndex(el => {
-      return (Number(el.MasterId) === Number(masterLevel.value)) && (Number(el.ApprovalTypeId) === Number(masterApprovalType.value))
-    })
-
-    if (isExistTechnology !== -1) {
-      Toaster.warning('Master cannot have multiple level for same Approval Type.')
-      return false
-    }
+    if (checkDuplicacy(masterLevelGrid, tempData, 'MasterId', master.value, masterApprovalType.value, 'Master')) return false
 
     tempArray = Object.assign([...masterLevelGrid], { [masterLevelEditIndex]: tempData })
 
