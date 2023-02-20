@@ -9,10 +9,10 @@ import { costingInfoContext, netHeadCostContext } from '../../CostingDetailStepT
 import { CBCTypeId, EMPTY_GUID, VBCTypeId, ZBCTypeId } from '../../../../../config/constants';
 import Switch from "react-switch";
 import DayTime from '../../../../common/DayTimeWrapper';
-import { IdForMultiTechnology } from '../../../../../config/masterData';
 import { MESSAGES } from '../../../../../config/message';
 import WarningMessage from '../../../../common/WarningMessage';
 import { number, percentageLimitValidation, checkWhiteSpaces, NoSignNoDecimalMessage, isNumber } from "../../../../../helper/validation";
+import { reactLocalStorage } from 'reactjs-localstorage';
 
 let counter = 0;
 function Icc(props) {
@@ -29,13 +29,14 @@ function Icc(props) {
     const [InventoryObj, setInventoryObj] = useState(ICCApplicabilityDetail)
     const [tempInventoryObj, setTempInventoryObj] = useState(ICCApplicabilityDetail)
 
-
     const [IsInventoryApplicable, setIsInventoryApplicable] = useState(CostingInterestRateDetail && CostingInterestRateDetail.IsInventoryCarringCost ? true : false)
     const [ICCapplicability, setICCapplicability] = useState(ICCApplicabilityDetail !== undefined ? { label: ICCApplicabilityDetail.ICCApplicability, value: ICCApplicabilityDetail.ICCApplicability } : {})
 
     const [ICCInterestRateId, setICCInterestRateId] = useState(ICCApplicabilityDetail !== undefined ? ICCApplicabilityDetail.InterestRateId : '')
     const [InterestRateFixedLimit, setInterestRateFixedLimit] = useState(false)
     const [errorMessage, setErrorMessage] = useState('')
+    const [isNetWeight, setIsNetWeight] = useState((ICCApplicabilityDetail?.IsICCCalculationOnNetWeight) ? (ICCApplicabilityDetail?.IsICCCalculationOnNetWeight) : false)
+    const [IsShowRmcAndNetWeightToggleForIcc, setIsShowRmcAndNetWeightToggleForIcc] = useState(reactLocalStorage.getObject('InitialConfiguration')?.IsShowRmcAndNetWeightToggleForIcc)
 
     const { CostingEffectiveDate } = useSelector(state => state.costing)
 
@@ -62,6 +63,12 @@ function Icc(props) {
         setInterestRateFixedLimit(false)
     }
 
+
+    const onPressRmc = (value) => {
+
+        setIsNetWeight(!isNetWeight)
+
+    }
 
     /**
      * @method callInventoryAPI
@@ -104,41 +111,6 @@ function Icc(props) {
     }
 
 
-
-
-    // useEffect(() => {
-    //     if (IsInventoryApplicable === true && Object.keys(costData).length >0) {
-    //         const reqParams = {
-    //             VendorId: costData.IsVendor ? costData.VendorId : EMPTY_GUID,
-    //             IsVendor: costData.IsVendor
-    //         }
-    //         dispatch(getInventoryDataByHeads(reqParams, res => {
-    //             if (res && res.data && res.data.Result) {
-    //                 let Data = res.data.Data;
-    //                 setValue('InterestRatePercentage', Data.InterestRate)
-    //                 setICCInterestRateId(Data.InterestRateId !== null ? Data.InterestRateId : EMPTY_GUID)
-    //                 setICCapplicability({ label: Data.ICCApplicability, value: Data.ICCApplicability })
-    //                 setInventoryObj(Data)
-    //                 checkInventoryApplicability(Data.ICCApplicability)
-
-    //             } else if (res && res.status === 204) {
-    //                 setValue('InterestRatePercentage', '')
-    //                 setValue('CostApplicability', '')
-    //                 setValue('NetICCTotal', '')
-    //                 checkInventoryApplicability('')
-    //                 setICCapplicability([])
-    //                 setInventoryObj({})
-    //             }
-
-    //         }))
-    //     } else {
-    //         setICCapplicability([])
-    //         if (!CostingViewMode) {
-    //             props.setICCDetail(null, { BOMLevel: data.BOMLevel, PartNumber: data.PartNumber })
-    //         }
-    //     }
-    // }, [IsInventoryApplicable])
-
     /**
     * @description SET VALUE IN NetICCTotal WHEN FIXED AND ENABLED 'InterestRatePercentage'
     */
@@ -154,21 +126,31 @@ function Icc(props) {
       */
     const checkInventoryApplicability = (Text) => {
         if (headerCosts !== undefined && Text !== '' && !CostingViewMode) {
+
+            let NetRawMaterialsCost;
+            if (isNetWeight && !(costData.IsAssemblyPart)) {
+                let rmValue = reactLocalStorage.getObject('costingArray')
+                let newRmCost = (Array.isArray(rmValue) && rmValue[0]?.CostingPartDetails?.CostingRawMaterialsCost[0]?.RMRate) * (Array.isArray(rmValue) && rmValue[0]?.CostingPartDetails?.CostingRawMaterialsCost[0]?.FinishWeight)
+                NetRawMaterialsCost = newRmCost
+            } else {
+                NetRawMaterialsCost = headerCosts.NetRawMaterialsCost
+            }
+
             const ConversionCostForCalculation = costData.IsAssemblyPart ? checkForNull(headerCosts.NetConversionCost) - checkForNull(headerCosts.TotalOtherOperationCostPerAssembly) : headerCosts.ProcessCostTotal + headerCosts.OperationCostTotal
-            const RMBOPCC = headerCosts.NetRawMaterialsCost + headerCosts.NetBoughtOutPartCost + ConversionCostForCalculation
-            const RMBOP = headerCosts.NetRawMaterialsCost + headerCosts.NetBoughtOutPartCost;
-            const RMCC = headerCosts.NetRawMaterialsCost + ConversionCostForCalculation;
+            const RMBOPCC = NetRawMaterialsCost + headerCosts.NetBoughtOutPartCost + ConversionCostForCalculation
+            const RMBOP = NetRawMaterialsCost + headerCosts.NetBoughtOutPartCost;
+            const RMCC = NetRawMaterialsCost + ConversionCostForCalculation;
             const BOPCC = headerCosts.NetBoughtOutPartCost + ConversionCostForCalculation;
             const InterestRatePercentage = getValues('InterestRatePercentage')
 
             switch (Text) {
                 case 'RM':
                 case 'Part Cost':
-                    setValue('CostApplicability', checkForDecimalAndNull(headerCosts.NetRawMaterialsCost, initialConfiguration.NoOfDecimalForPrice))
-                    setValue('NetICCTotal', checkForDecimalAndNull((headerCosts.NetRawMaterialsCost * calculatePercentage(InterestRatePercentage)), initialConfiguration.NoOfDecimalForPrice))
+                    setValue('CostApplicability', checkForDecimalAndNull(NetRawMaterialsCost, initialConfiguration.NoOfDecimalForPrice))
+                    setValue('NetICCTotal', checkForDecimalAndNull((NetRawMaterialsCost * calculatePercentage(InterestRatePercentage)), initialConfiguration.NoOfDecimalForPrice))
                     setTempInventoryObj({
                         ...tempInventoryObj,
-                        CostApplicability: checkForNull(headerCosts.NetRawMaterialsCost),
+                        CostApplicability: checkForNull(NetRawMaterialsCost),
                         NetICCTotal: checkForNull(headerCosts?.NetRawMaterialsCost) * calculatePercentage(InterestRatePercentage)
                     })
                     break;
@@ -276,8 +258,7 @@ function Icc(props) {
     useEffect(() => {
         checkInventoryApplicability(ICCapplicability?.label)
 
-
-    }, [interestRateValues, IsIncludedSurfaceInOverheadProfit, ICCapplicability]);
+    }, [interestRateValues, IsIncludedSurfaceInOverheadProfit, ICCapplicability, isNetWeight]);
 
     useEffect(() => {
         setTimeout(() => {
@@ -290,6 +271,7 @@ function Icc(props) {
                 "InterestRate": IsInventoryApplicable ? getValues('InterestRatePercentage') : '',
                 "NetCost": IsInventoryApplicable ? tempInventoryObj.NetICCTotal : '',
                 "EffectiveDate": "",
+                "IsICCCalculationOnNetWeight": isNetWeight
             }
             setValue('CostApplicability', IsInventoryApplicable ? checkForDecimalAndNull(tempInventoryObj.CostApplicability, initialConfiguration.NoOfDecimalForPrice) : '')
             if (!CostingViewMode) {
@@ -346,7 +328,7 @@ function Icc(props) {
             {IsInventoryApplicable &&
                 <Row className="costing-border costing-border-with-labels px-2 py-3 m-0 overhead-profit-tab-costing">
                     <>
-                        <Col md="3">
+                        <Col md="1">
                             <label className="col-label">
                                 {ICCapplicability.label}
                             </label>
@@ -393,6 +375,28 @@ function Icc(props) {
                                     {ICCapplicability.label === 'Fixed' && InterestRateFixedLimit && <WarningMessage dClass={"error-message fixed-error"} message={errorMessage} />}           {/* //MANUAL CSS FOR ERROR VALIDATION MESSAGE */}
                                 </div>}
                         </Col>
+
+                        {ICCapplicability?.label?.includes('RM') && !(costData.IsAssemblyPart) && IsShowRmcAndNetWeightToggleForIcc && < Col md="2" className="switch mt-4">
+                            <label className="switch-level">
+                                <div className={'right-title mr-2'}>RMC</div>
+                                <Switch
+                                    onChange={onPressRmc}
+                                    checked={isNetWeight}
+                                    id="normal-switch"
+                                    disabled={CostingViewMode ? true : false}
+                                    background="#4DC771"
+                                    onColor="#4DC771"
+                                    onHandleColor="#ffffff"
+                                    offColor="#CCC"
+                                    uncheckedIcon={false}
+                                    checkedIcon={false}
+                                    height={20}
+                                    width={46}
+                                />
+                                <div className={'right-title'}>Net Weight</div>
+                            </label>
+                        </Col>}
+
                         {ICCapplicability.label !== 'Fixed' &&
                             <Col md="3">
                                 <TextFieldHookForm
