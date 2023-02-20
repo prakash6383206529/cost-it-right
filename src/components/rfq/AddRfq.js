@@ -24,7 +24,7 @@ import HeaderTitle from '../common/HeaderTitle';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { autoCompleteDropdown, autoCompleteDropdownPart } from '../common/CommonFunctions';
 import BulkUpload from '../massUpload/BulkUpload';
-import _ from 'lodash';
+import _, { debounce } from 'lodash';
 import { getPartSelectListWtihRevNo } from '../masters/actions/Volume';
 import { DATE_STRING, DURATION_STRING, LOGISTICS, REMARKMAXLENGTH, visibilityModeDropdownArray } from '../../config/masterData';
 import DayTime from '../common/DayTimeWrapper';
@@ -399,7 +399,7 @@ function AddRfq(props) {
         props.closeDrawer('', {})
     }
 
-    const onSubmit = handleSubmit((data, e) => {
+    const onSubmit = debounce((data, e, isSent) => {
         if (vendorList.length === 0) {
             Toaster.warning("Please enter vendor details")
             return false
@@ -414,12 +414,6 @@ function AddRfq(props) {
             return false
         } else if (Object.keys(errors).length > 0) {
             return false
-        }
-        let isSent = ''
-        if (e.target.value === 'send') {
-            isSent = true
-        } else {
-            isSent = false
         }
         let obj = {}
         obj.QuotationId = apiData.QuotationId ? apiData.QuotationId : ""
@@ -489,7 +483,7 @@ function AddRfq(props) {
             }))
 
         }
-    })
+    }, 500)
 
 
     const defaultColDef = {
@@ -1383,14 +1377,14 @@ function AddRfq(props) {
                                             </button>
 
                                             <button type="button" className="submit-button save-btn mr-2" value="save"
-                                                onClick={(data, e) => onSubmit(data, e)}
+                                                onClick={(data, e) => { handleSubmit(onSubmit(data, e, false)) }}
                                                 disabled={isViewFlag}>
                                                 <div className={"save-icon"}></div>
                                                 {"Save"}
                                             </button>
 
                                             <button type="button" className="submit-button save-btn" value="send"
-                                                onClick={(data, e) => onSubmit(data, e)}
+                                                onClick={(data, e) => { handleSubmit(onSubmit(data, e, true)) }}
                                                 disabled={isViewFlag}>
                                                 <div className="send-for-approval mr-1"></div>
                                                 {"Send"}
