@@ -301,6 +301,16 @@ function Rejection(props) {
         setPercentageLimit(false)
         dispatch(isOverheadProfitDataChange(true))
     }
+    const resetData = () => {
+        dispatch(isOverheadProfitDataChange(true))
+        setValue('RejectionPercentage', '')
+        setValue('RejectionCost', '')
+        setValue('Applicability', '')
+        setValue('RejectionTotalCost', '')
+        setRejectionObj({})
+        setApplicability([])
+    }
+
 
     return (
         <>
@@ -327,6 +337,7 @@ function Rejection(props) {
                         disabled={CostingViewMode ? true : false}
                         handleChange={handleApplicabilityChange}
                         errors={errors.Applicability}
+                        buttonCross={resetData}
                     />
                 </Col>
                 <Col md="3">
