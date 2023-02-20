@@ -18,7 +18,7 @@ function TabOverheadProfit(props) {
   const [IsIncludeSurfaceTreatmentRejection, setIsIncludeSurfaceTreatmentRejection] = useState(false);
   const [IsIncludeToolCost, setIsIncludeToolCost] = useState(false);
   const [isPressedST, setIsPressST] = useState(false)
-  const [isPressedSTRejection, setIsPressSTRejection] = useState(true)
+  const [isPressedSTRejection, setIsPressSTRejection] = useState(false)
   const [isPressedToolCost, setIsPressToolCost] = useState(false)
   const dispatch = useDispatch()
   const costData = useContext(costingInfoContext);

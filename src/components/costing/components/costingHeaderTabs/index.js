@@ -35,7 +35,7 @@ function CostingHeaderTabs(props) {
 
   const { ComponentItemData, ComponentItemOverheadData, ComponentItemPackageFreightData, ComponentItemToolData,
     ComponentItemDiscountData, IsIncludedSurfaceInOverheadProfit, costingData, CostingEffectiveDate,
-    IsCostingDateDisabled, CostingDataList, RMCCTabData, getAssemBOPCharge, SurfaceTabData, OverheadProfitTabData, PackageAndFreightTabData, ToolTabData, DiscountCostData, checkIsDataChange, checkIsOverheadProfitChange, checkIsFreightPackageChange, checkIsToolTabChange, messageForAssembly, ActualCostingDataList, IsIncludedSurfaceInRejection, checkIsDiscountChange } = useSelector(state => state.costing)
+    IsCostingDateDisabled, CostingDataList, RMCCTabData, getAssemBOPCharge, SurfaceTabData, OverheadProfitTabData, PackageAndFreightTabData, ToolTabData, DiscountCostData, checkIsDataChange, checkIsOverheadProfitChange, checkIsFreightPackageChange, checkIsToolTabChange, messageForAssembly, ActualCostingDataList, IsIncludedSurfaceInRejection, checkIsDiscountChange, IsIncludedToolCost } = useSelector(state => state.costing)
   const { ErrorObjRMCC, ErrorObjOverheadProfit, ErrorObjTools, ErrorObjDiscount } = useSelector(state => state.costing)
 
   const [activeTab, setActiveTab] = useState('1');
@@ -130,6 +130,7 @@ function CostingHeaderTabs(props) {
         "CostingId": ComponentItemOverheadData.CostingId,
         "IsIncludeSurfaceTreatmentWithOverheadAndProfit": IsIncludedSurfaceInOverheadProfit,
         "IsIncludeSurfaceTreatmentWithRejection": IsIncludedSurfaceInRejection,
+        "IsIncludeToolCostWithOverheadAndProfit": IsIncludedToolCost,
         "LoggedInUserId": loggedInUserId(),
         "IsSurfaceTreatmentApplicable": true,
         "IsApplicableForChildParts": false,
