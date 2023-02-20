@@ -832,12 +832,37 @@ function TabDiscountOther(props) {
     switch (type) {
       case 'other':
         return function resetField() {
-          setValue('OtherCostApplicability', "")
+          setValue('OtherCostApplicability', '')
+          setValue('PercentageOtherCost', '')
+          setValue('OtherCostDescription', '')
+          setValue('AnyOtherCost', '')
+          setOtherCostApplicability([])
+          dispatch(isDiscountDataChange(true))
+          setDiscountObj({
+            ...discountObj,
+            AnyOtherCost: 0,
+            OtherCostPercentage: 0,
+            OtherCostType: '',
+            OtherCostApplicability: '',
+          })
         }
 
       case 'discount':
         return function resetField() {
-          setValue('DiscountCostApplicability', "")
+          setValue('DiscountCostApplicability', '')
+          setValue('HundiOrDiscountPercentage', '')
+          setValue('HundiOrDiscountValue', '')
+          setDiscountCostApplicability([])
+          dispatch(isDiscountDataChange(true))
+          setDiscountObj({
+            ...discountObj,
+            HundiOrDiscountPercentage: 0,
+            HundiOrDiscountValue: 0,
+            DiscountApplicability: '',
+            DiscountCostType: ''
+          })
+
+
         }
 
       default:
