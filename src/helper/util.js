@@ -719,7 +719,7 @@ export function formViewData(costingSummary, header = '') {
   obj.costingHeadCheck = dataFromAPI.CostingHead && dataFromAPI.CostingHead !== null ? dataFromAPI.CostingHead : '';
   obj.NCCPartQuantity = dataFromAPI.NCCPartQuantity && dataFromAPI.NCCPartQuantity !== null ? dataFromAPI.NCCPartQuantity : '';
   obj.IsRegularized = dataFromAPI.IsRegularized && dataFromAPI.IsRegularized !== null ? dataFromAPI.IsRegularized : '';
-
+  obj.MachiningScrapRate = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingRawMaterialsCost.length > 0 ? dataFromAPI?.CostingPartDetails?.CostingRawMaterialsCost[0].MachiningScrapRate : '-'
   // GETTING WARNING MESSAGE WITH APPROVER NAME AND LEVEL WHEN COSTING IS UNDER APPROVAL 
   obj.getApprovalLockedMessage = dataFromAPI.ApprovalLockedMessage && dataFromAPI.ApprovalLockedMessage !== null ? dataFromAPI.ApprovalLockedMessage : '';
 

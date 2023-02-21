@@ -16,6 +16,7 @@ import { operationZBCBulkUpload, operationVBCBulkUpload, operationCBCBulkUpload 
 import { partComponentBulkUpload, productComponentBulkUpload } from '../masters/actions/Part';
 import { bulkUploadBOPDomesticZBC, bulkUploadBOPDomesticCBC, bulkUploadBOPDomesticVBC, bulkUploadBOPImportZBC, bulkUploadBOPImportCBC, bulkUploadBOPImportVBC, } from '../masters/actions/BoughtOutParts';
 import { bulkUploadVolumeActualZBC, bulkUploadVolumeActualVBC, bulkUploadVolumeBudgetedZBC, bulkUploadVolumeBudgetedCBC, bulkUploadVolumeActualCBC, bulkUploadVolumeBudgetedVBC, } from '../masters/actions/Volume';
+import { bulkUploadBudgetMaster } from '../masters/actions/Budget'
 import { bulkUploadInterestRateZBC, bulkUploadInterestRateVBC, bulkUploadInterestRateCBC } from '../masters/actions/InterestRateMaster';
 import Toaster from '../common/Toaster';
 import { loggedInUserId } from "../../helper/auth";
@@ -24,8 +25,8 @@ import Drawer from '@material-ui/core/Drawer';
 import Downloadxls, { checkLabourRateConfigure, checkRM_Process_OperationConfigurable, checkVendorPlantConfig } from './Downloadxls';
 import DayTime from '../common/DayTimeWrapper'
 import cloudImg from '../../assests/images/uploadcloud.png';
-import { ACTUALVOLUMEBULKUPLOAD, ADDRFQ, BOPDOMESTICBULKUPLOAD, BOPIMPORTBULKUPLOAD, BUDGETEDVOLUMEBULKUPLOAD, CBCTypeId, FUELBULKUPLOAD, INSERTDOMESTICBULKUPLOAD, INTERESTRATEBULKUPLOAD, LABOURBULKUPLOAD, MACHINEBULKUPLOAD, OPERAIONBULKUPLOAD, PARTCOMPONENTBULKUPLOAD, PRODUCTCOMPONENTBULKUPLOAD, RMDOMESTICBULKUPLOAD, RMIMPORTBULKUPLOAD, RMSPECIFICATION, VBCTypeId, VENDORBULKUPLOAD, ZBCADDMORE, ZBCTypeId } from '../../config/constants';
-import { AddRFQUpload, BOP_CBC_DOMESTIC, BOP_CBC_IMPORT, BOP_VBC_DOMESTIC, BOP_VBC_IMPORT, BOP_ZBC_DOMESTIC, BOP_ZBC_IMPORT, CBCInterestRate, CBCOperation, Fuel, Labour, MachineCBC, MachineVBC, MachineZBC, MHRMoreZBC, PartComponent, ProductComponent, RMDomesticCBC, RMDomesticVBC, RMDomesticZBC, RMImportCBC, RMImportVBC, RMImportZBC, RMSpecification, VBCInterestRate, VBCOperation, Vendor, VOLUME_ACTUAL_CBC, VOLUME_ACTUAL_VBC, VOLUME_ACTUAL_ZBC, VOLUME_BUDGETED_CBC, VOLUME_BUDGETED_VBC, VOLUME_BUDGETED_ZBC, ZBCOperation } from '../../config/masterData';
+import { ACTUALVOLUMEBULKUPLOAD, ADDRFQ, BOPIMPORTBULKUPLOAD, BUDGETBULKUPLOAD, BUDGETEDVOLUMEBULKUPLOAD, CBCTypeId, FUELBULKUPLOAD, INSERTDOMESTICBULKUPLOAD, INTERESTRATEBULKUPLOAD, LABOURBULKUPLOAD, MACHINEBULKUPLOAD, OPERAIONBULKUPLOAD, PARTCOMPONENTBULKUPLOAD, PRODUCTCOMPONENTBULKUPLOAD, RMDOMESTICBULKUPLOAD, RMIMPORTBULKUPLOAD, RMSPECIFICATION, VBCTypeId, VENDORBULKUPLOAD, ZBCADDMORE, ZBCTypeId } from '../../config/constants';
+import { AddRFQUpload, BOP_CBC_DOMESTIC, BOP_CBC_IMPORT, BOP_VBC_DOMESTIC, BOP_VBC_IMPORT, BOP_ZBC_DOMESTIC, BOP_ZBC_IMPORT, BUDGET_CBC, BUDGET_VBC, BUDGET_ZBC, CBCInterestRate, CBCOperation, Fuel, Labour, MachineCBC, MachineVBC, MachineZBC, MHRMoreZBC, PartComponent, ProductComponent, RMDomesticCBC, RMDomesticVBC, RMDomesticZBC, RMImportCBC, RMImportVBC, RMImportZBC, RMSpecification, VBCInterestRate, VBCOperation, Vendor, VOLUME_ACTUAL_CBC, VOLUME_ACTUAL_VBC, VOLUME_ACTUAL_ZBC, VOLUME_BUDGETED_CBC, VOLUME_BUDGETED_VBC, VOLUME_BUDGETED_ZBC, ZBCOperation } from '../../config/masterData';
 import { checkForSameFileUpload } from '../../helper';
 import LoaderCustom from '../common/LoaderCustom';
 import PopupMsgWrapper from '../common/PopupMsgWrapper';
@@ -257,6 +258,17 @@ class BulkUpload extends Component {
                             }
                             else if (this.state.costingTypeId === CBCTypeId) {
                                 checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(VOLUME_BUDGETED_CBC, CBCTypeId), fileHeads)
+                            }
+                            break;
+                        case String(BUDGETBULKUPLOAD):
+                            if (this.state.costingTypeId === ZBCTypeId) {
+                                checkForFileHead = checkForSameFileUpload(BUDGET_ZBC, fileHeads)
+                            }
+                            else if (this.state.costingTypeId === VBCTypeId) {
+                                checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(BUDGET_VBC, VBCTypeId), fileHeads)
+                            }
+                            else if (this.state.costingTypeId === CBCTypeId) {
+                                checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(BUDGET_CBC, CBCTypeId), fileHeads)
                             }
                             break;
                         case String(ADDRFQ):
@@ -568,6 +580,14 @@ class BulkUpload extends Component {
 
         } else if (fileName === 'Budgeted Volume' && costingTypeId === CBCTypeId) {
             this.props.bulkUploadVolumeBudgetedCBC(uploadData, (res) => {
+                this.setState({ setDisable: false })
+                this.responseHandler(res)
+            });
+
+        } else if (fileName === 'Budget') {
+            uploadData.CostingTypeId = costingTypeId
+            uploadData.IsFinalApprover = true
+            this.props.bulkUploadBudgetMaster(uploadData, (res) => {
                 this.setState({ setDisable: false })
                 this.responseHandler(res)
             });
@@ -900,6 +920,7 @@ export default connect(mapStateToProps, {
     bulkUploadBOPImportCBC,
     bulkUploadVolumeActualCBC,
     bulkUploadVolumeBudgetedCBC,
+    bulkUploadBudgetMaster,
     checkRFQBulkUpload
 
 })(reduxForm({

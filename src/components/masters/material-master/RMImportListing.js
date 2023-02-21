@@ -925,15 +925,11 @@ function RMImportListing(props) {
                     <AgGridColumn field="UOM"></AgGridColumn>
 
                     <AgGridColumn field="Currency" cellRenderer={"currencyFormatter"}></AgGridColumn>
-
-                    <AgGridColumn field="BasicRate" headerName="Basic Rate(INR)" cellRenderer='commonCostFormatter'></AgGridColumn>
-
-                    <AgGridColumn field="ScrapRate" headerName="Scrap Rate(INR)" cellRenderer='commonCostFormatter' ></AgGridColumn>
-
-                    <AgGridColumn field="RMFreightCost" headerName="Freight Cost(INR)" cellRenderer='commonCostFormatter'></AgGridColumn>
-
-                    <AgGridColumn field="RMShearingCost" headerName="Shearing Cost(INR)" cellRenderer='commonCostFormatter'></AgGridColumn>
-
+                    <AgGridColumn field="BasicRate" cellRenderer='commonCostFormatter'></AgGridColumn>
+                    <AgGridColumn field="ScrapRate" cellRenderer='commonCostFormatter'></AgGridColumn>
+                    {props.isMasterSummaryDrawer && <AgGridColumn width="140" field="MachiningScrapRate" headerName='Machining Scrap Cost'></AgGridColumn>}
+                    <AgGridColumn field="RMFreightCost" headerName="Freight Cost" cellRenderer='commonCostFormatter'></AgGridColumn>
+                    <AgGridColumn field="RMShearingCost" headerName="Shearing Cost" cellRenderer='shearingCostFormatter'></AgGridColumn>
                     <AgGridColumn field="NetLandedCost" headerName="Net Cost (Currency)" cellRenderer='costFormatter'></AgGridColumn>
 
                     <AgGridColumn field="NetLandedCostConversion" headerName="Net Cost (INR)" cellRenderer='costFormatter'></AgGridColumn>
