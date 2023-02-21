@@ -25,7 +25,7 @@ import AddVendorDrawer from '../supplier-master/AddVendorDrawer';
 import 'react-dropzone-uploader/dist/styles.css'
 import Dropzone from 'react-dropzone-uploader';
 import "react-datepicker/dist/react-datepicker.css"
-import { FILE_URL, INR, ZBC, RM_MASTER_ID, EMPTY_GUID, SPACEBAR, ZBCTypeId, VBCTypeId, CBCTypeId, searchCount } from '../../../config/constants';
+import { FILE_URL, INR, ZBC, RM_MASTER_ID, EMPTY_GUID, SPACEBAR, ZBCTypeId, VBCTypeId, CBCTypeId, searchCount, SHEET_METAL } from '../../../config/constants';
 import { AcceptableRMUOM, FORGING, SHEETMETAL } from '../../../config/masterData'
 import { getExchangeRateByCurrency, getCostingSpecificTechnology } from "../../costing/actions/Costing"
 import DayTime from '../../common/DayTimeWrapper'
@@ -1062,8 +1062,7 @@ class AddRMImport extends Component {
         IsFinancialDataChanged: isDateChange ? true : false,
         VendorPlant: [],
         CustomerId: client.value,
-        MachiningScrapRate: values.MachiningScrap,
-        MachiningScrapRateInINR: currency === INR ? values.MachiningScrap : values.MachiningScrap * currencyValue
+        MachiningScrapRate: values.MachiningScrap
       }
       //DONT DELETE COMMENTED CODE BELOW
 
@@ -1151,8 +1150,7 @@ class AddRMImport extends Component {
         IsSendForApproval: false,
         VendorPlant: [],
         CustomerId: client.value,
-        MachiningScrapRate: values.MachiningScrap,
-        MachiningScrapRateInINR: currency === INR ? values.MachiningScrap : values.MachiningScrap * currencyValue
+        MachiningScrapRate: values.MachiningScrap
       }
       // let obj
       // if(CheckApprovalApplicableMaster(RM_MASTER_ID) === true){
@@ -1744,7 +1742,7 @@ class AddRMImport extends Component {
                             <>
                               <Col md="3">
                                 <Field
-                                  label={labelWithUOMAndCurrency("Forging Scrap Cost", this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label, this.state.currency.label === undefined ? 'Currency' : this.state.currency.label)}
+                                  label={'Forging Scrap Cost'}
                                   name={"ForgingScrap"}
                                   type="text"
                                   placeholder={isViewFlag || (isEditFlag && isRMAssociated) ? '-' : "Enter"}
@@ -1759,7 +1757,7 @@ class AddRMImport extends Component {
                               </Col>
                               <Col md="3">
                                 <Field
-                                  label={labelWithUOMAndCurrency("Machining Scrap Cost", this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label, this.state.currency.label === undefined ? 'Currency' : this.state.currency.label)}
+                                  label={'Machining Scrap Cost'}
                                   name={"MachiningScrap"}
                                   type="text"
                                   placeholder={isViewFlag || (isEditFlag && isRMAssociated) ? '-' : "Enter"}
@@ -1779,7 +1777,7 @@ class AddRMImport extends Component {
                             <>
                               <Col md="3">
                                 <Field
-                                  label={labelWithUOMAndCurrency("Circle Scrap Cost", this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label, this.state.currency.label === undefined ? 'Currency' : this.state.currency.label)}
+                                  label={`Circle Scrap Cost (INR/${this.state.UOM.label ? this.state.UOM.label : 'UOM'}) `}
                                   name={"CircleScrapCost"}
                                   type="text"
                                   placeholder={""}
@@ -1793,7 +1791,7 @@ class AddRMImport extends Component {
                               </Col>
                               <Col md="3">
                                 <Field
-                                  label={labelWithUOMAndCurrency("Jali Scrap Cost", this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label, this.state.currency.label === undefined ? 'Currency' : this.state.currency.label)}
+                                  label={`Jali Scrap Cost (INR/${this.state.UOM.label ? this.state.UOM.label : 'UOM'})`}
                                   name={"JaliScrapCost"}
                                   type="text"
                                   placeholder={""}
