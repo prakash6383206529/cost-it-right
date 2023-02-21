@@ -3564,7 +3564,7 @@ input:focus,
 }
 
 .multidropdown-container {
-  div[class$="ValueContainer"] {
+  .multi-select-container__value-container {
     display: flex;
     max-height: 60px;
     overflow-y: auto;
