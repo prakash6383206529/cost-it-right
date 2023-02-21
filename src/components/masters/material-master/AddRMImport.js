@@ -1837,41 +1837,6 @@ class AddRMImport extends Component {
                               disabled={isViewFlag || (isEditFlag && isRMAssociated)}
                             />
                           </Col>
-                          {
-                            this.state.showExtraCost &&
-                            <>
-                              <Col md="3">
-                                <Field
-                                  label={`Circle Scrap Cost  (${this.state.currency.label === undefined ? 'Currency' : this.state.currency.label}/${this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label}) `}
-                                  name={"CircleScrapCost"}
-                                  type="text"
-                                  placeholder={""}
-                                  validate={[decimalLengthsix]}
-                                  component={renderText}
-                                  required={false}
-                                  disabled={isViewFlag}
-                                  className=" "
-                                  maxLength="15"
-                                  customClassName=" withBorder"
-                                />
-                              </Col>
-                              <Col md="3">
-                                <Field
-                                  label={`Jali Scrap Cost (${this.state.currency.label === undefined ? 'Currency' : this.state.currency.label}/${this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label})`}
-                                  name={"JaliScrapCost"}
-                                  type="text"
-                                  placeholder={""}
-                                  validate={[required, decimalLengthsix]}
-                                  component={renderText}
-                                  required={true}
-                                  disabled={isViewFlag}
-                                  className=" "
-                                  maxLength="15"
-                                  customClassName=" withBorder"
-                                />
-                              </Col>
-                            </>
-                          }
                           <Col md="3"><TooltipCustom id={'net-cost'} tooltipText={"Net Cost = Basic Rate + Freight Cost + Shearing Cost"} />
                             <Field
                               label={labelWithUOMAndCurrency("Net Cost", this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label, this.state.currency.label === undefined ? 'Currency' : this.state.currency.label)}
