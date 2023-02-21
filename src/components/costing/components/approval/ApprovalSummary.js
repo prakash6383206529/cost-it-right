@@ -652,6 +652,7 @@ function ApprovalSummary(props) {
           dataSend={[approvalDetails, partDetail]}
           showFinalLevelButtons={showFinalLevelButtons}
           costingTypeId={costingTypeId}
+          TechnologyId={approvalData?.TechnologyId}
         />
       )}
       {rejectDrawer && (

@@ -22,13 +22,13 @@ import LoaderCustom from '../../../common/LoaderCustom';
 import Toaster from '../../../common/Toaster'
 import PushSection from '../../../common/PushSection'
 import { Redirect } from 'react-router';
-import { getUsersSimulationTechnologyLevelAPI } from '../../../../actions/auth/AuthActions'
+import { getUsersSimulationTechnologyLevelAPI, getUsersTechnologyLevelAPI } from '../../../../actions/auth/AuthActions'
 
 function ApproveRejectDrawer(props) {
   // ********* INITIALIZE REF FOR DROPZONE ********
   const dropzone = useRef(null);
 
-  const { type, approvalData, IsFinalLevel, isSimulation, dataSend, reasonId, simulationDetail, selectedRowData, costingArr, isSaveDone, costingList, showFinalLevelButtons, Attachements, vendorId, SimulationTechnologyId, SimulationType, isSimulationApprovalListing, apiData, SimulationHeadId } = props
+  const { type, approvalData, IsFinalLevel, isSimulation, dataSend, reasonId, simulationDetail, selectedRowData, costingArr, isSaveDone, costingList, showFinalLevelButtons, Attachements, vendorId, SimulationTechnologyId, SimulationType, isSimulationApprovalListing, apiData, TechnologyId } = props
 
   const userLoggedIn = loggedInUserId()
   const userData = userDetails()
@@ -63,16 +63,16 @@ function ApproveRejectDrawer(props) {
   useEffect(() => {
     dispatch(getReasonSelectList((res) => { }))
     let levelDetailsTemp = ''
-    dispatch(getUsersSimulationTechnologyLevelAPI(loggedInUserId(), selectedMasterForSimulation?.value, (res) => {
-      if (res?.data?.Data) {
-        levelDetailsTemp = userTechnologyLevelDetails(props?.costingTypeId, res?.data?.Data?.TechnologyLevels)
-        setLevelDetails(levelDetailsTemp)
-      }
-    }))
     setTimeout(() => {
       // dispatch(getAllApprovalDepartment((res) => { }))
       /***********************************REMOVE IT AFTER SETTING FROM SIMULATION*******************************/
       if (!isSimulation) {
+        dispatch(getUsersTechnologyLevelAPI(loggedInUserId(), TechnologyId, (res) => {
+          levelDetailsTemp = userTechnologyLevelDetails(props?.costingTypeId, res?.data?.Data?.TechnologyLevels)
+          setLevelDetails(levelDetailsTemp)
+
+        }))
+
         dispatch(getAllApprovalDepartment((res) => {
 
           const Data = res?.data?.SelectList
@@ -100,6 +100,13 @@ function ApproveRejectDrawer(props) {
           }))
         }))
       } else {
+        dispatch(getUsersSimulationTechnologyLevelAPI(loggedInUserId(), selectedMasterForSimulation?.value, (res) => {
+          if (res?.data?.Data) {
+            levelDetailsTemp = userTechnologyLevelDetails(props?.costingTypeId, res?.data?.Data?.TechnologyLevels)
+            setLevelDetails(levelDetailsTemp)
+          }
+        }))
+
         dispatch(getSimulationApprovalByDepartment(res => {
           const Data = res.data.SelectList
           const departObj = Data && Data.filter(item => item.Value === (type === 'Sender' ? userData.DepartmentId : simulationDetail.DepartmentId))
