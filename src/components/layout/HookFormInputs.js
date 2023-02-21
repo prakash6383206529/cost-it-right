@@ -338,6 +338,7 @@ export const SearchableSelectHookForm = (field) => {
                   onChange(e)
 
                 }}
+                classNamePrefix="multi-select-container"
                 className="multidropdown-container"
                 menuPlacement="auto"
                 styles={dropDownClass && customStyles}
