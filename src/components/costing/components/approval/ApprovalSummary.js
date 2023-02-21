@@ -594,6 +594,7 @@ function ApprovalSummary(props) {
           IsPushDrawer={showPushDrawer}
           dataSend={[approvalDetails, partDetail]}
           costingTypeId={costingTypeId}
+          TechnologyId={approvalData?.TechnologyId}
         />
       )}
       {rejectDrawer && (
