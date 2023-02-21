@@ -17,6 +17,7 @@ import DayTime from '../common/DayTimeWrapper'
 import DatePicker from "react-datepicker";
 import { EMPTY_GUID } from '../../config/constants';
 import { getUsersMasterLevelAPI } from '../../actions/auth/AuthActions';
+import { REMARKMAXLENGTH } from '../../config/masterData';
 
 function MasterSendForApproval(props) {
     const { type, IsFinalLevel, IsPushDrawer, reasonId, masterId, approvalObj, isBulkUpload, IsImportEntery, approvalDetails, IsFinalLevelButtonShow, approvalData, levelDetails } = props
@@ -734,10 +735,7 @@ function MasterSendForApproval(props) {
                                         mandatory={type === 'Approve' ? false : true}
                                         rules={{
                                             required: type === 'Approve' ? false : true,
-                                            maxLength: {
-                                                value: 255,
-                                                message: "Remark should be less than 255 word"
-                                            },
+                                            maxLength: REMARKMAXLENGTH
                                         }}
                                         handleChange={() => { }}
                                         className=""
