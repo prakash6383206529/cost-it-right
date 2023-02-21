@@ -1517,7 +1517,6 @@ export const BOP_ZBC_IMPORT = [
     { label: 'Currency', value: 'Currency', }, //*
     { label: 'MinimumOrderQuantity', value: 'MinimumOrderQuantity', },
     // { label: 'MinimumOrderQuantity', value: 'MinimumOrderQuantity', },
-    { label: 'IncoTermDescription', value: 'IncoTermDescription', },
     { label: 'IncoTerm', value: 'IncoTerm', },
     // { label: 'PaymentTerm', value: 'PaymentTerm', }, // FOR MINDA ONLY
     { label: 'BasicRate', value: 'BasicRate', }, //*
@@ -1537,7 +1536,6 @@ export const BOP_ZBC_IMPORT_TempData = [
         'VendorCode': 'VC1',
         'Currency': 'INR or USD',
         'MinimumOrderQuantity': '1',
-        'IncoTermDescription': "Costs and freight",
         'IncoTerm': 'CFR',
         // 'PaymentTerm': 'A000',
         // 'MinimumOrderQuantity': '1',
@@ -1555,7 +1553,6 @@ export const BOP_ZBC_IMPORT_TempData = [
         'VendorCode': 'VC1',
         'Currency': 'INR or USD',
         'MinimumOrderQuantity': '1',
-        'IncoTermDescription': "Costs and freight",
         'IncoTerm': 'CFR',
         // 'PaymentTerm': 'A000',
         // 'MinimumOrderQuantity': '1',
@@ -1573,7 +1570,6 @@ export const BOP_ZBC_IMPORT_TempData = [
         'VendorCode': 'VC1',
         'Currency': 'INR or USD',
         'MinimumOrderQuantity': '1',
-        'IncoTermDescription': "Costs and freight",
         'IncoTerm': 'CFR',
         // 'PaymentTerm': 'A000',
         // 'MinimumOrderQuantity': '1',
