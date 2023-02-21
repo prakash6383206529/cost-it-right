@@ -6,7 +6,6 @@ import { getAmmendentStatus, } from './actions/Simulation'
 import imgRedcross from '../../assests/images/red-cross.png';
 import imgGreencross from '../../assests/images/greenCross.png';
 import DayTime from "../common/DayTimeWrapper";
-
 export const SimulationUtils = (TempData) => {
 
     TempData && TempData.map(item => {
@@ -199,7 +198,7 @@ export const impactmasterDownload = (impactedMasterData) => {
         tempObj.push(item.NewPOPrice)
         tempObj.push(item.OldNetCC)
         tempObj.push(item.NewPOPrice)
-        tempObj.push(item.EffectiveDate)
+        tempObj.push(DayTime(item.EffectiveDate).format('DD/MM/YYYY'))
         combinedProcessArraySet.push(tempObj)
     })
 
