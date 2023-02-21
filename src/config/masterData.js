@@ -1516,9 +1516,8 @@ export const BOP_ZBC_IMPORT = [
     { label: 'VendorCode', value: 'VendorCode', }, //*
     { label: 'Currency', value: 'Currency', }, //*
     { label: 'MinimumOrderQuantity', value: 'MinimumOrderQuantity', },
-    // { label: 'MinimumOrderQuantity', value: 'MinimumOrderQuantity', },
     { label: 'IncoTerm', value: 'IncoTerm', },
-    // { label: 'PaymentTerm', value: 'PaymentTerm', }, // FOR MINDA ONLY
+    { label: 'PaymentTerm', value: 'PaymentTerm', }, // FOR MINDA ONLY
     { label: 'BasicRate', value: 'BasicRate', }, //*
     { label: 'EffectiveDate', value: 'EffectiveDate', },
     { label: 'Remark', value: 'Remark' },
@@ -1537,8 +1536,7 @@ export const BOP_ZBC_IMPORT_TempData = [
         'Currency': 'INR or USD',
         'MinimumOrderQuantity': '1',
         'IncoTerm': 'CFR',
-        // 'PaymentTerm': 'A000',
-        // 'MinimumOrderQuantity': '1',
+        'PaymentTerm': 'A000',
         'BasicRate': '100',
         'EffectiveDate': DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text'
@@ -1554,8 +1552,7 @@ export const BOP_ZBC_IMPORT_TempData = [
         'Currency': 'INR or USD',
         'MinimumOrderQuantity': '1',
         'IncoTerm': 'CFR',
-        // 'PaymentTerm': 'A000',
-        // 'MinimumOrderQuantity': '1',
+        'PaymentTerm': 'A000',
         'BasicRate': '100',
         'EffectiveDate': DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text'
@@ -1571,8 +1568,7 @@ export const BOP_ZBC_IMPORT_TempData = [
         'Currency': 'INR or USD',
         'MinimumOrderQuantity': '1',
         'IncoTerm': 'CFR',
-        // 'PaymentTerm': 'A000',
-        // 'MinimumOrderQuantity': '1',
+        'PaymentTerm': 'A000',
         'BasicRate': '100',
         'EffectiveDate': DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text'
@@ -1588,6 +1584,7 @@ export const BOP_CBC_DOMESTIC = [
     { label: 'DestinationPlantCode', value: 'DestinationPlantCode', }, //*
     { label: 'CustomerName', value: 'CustomerName', },
     { label: 'CustomerCode', value: 'CustomerCode', }, //NOUI
+    { label: 'MinimumOrderQuantity', value: 'MinimumOrderQuantity', },
     { label: 'BasicRate', value: 'BasicRate', }, //*
     { label: 'EffectiveDate', value: 'EffectiveDate', },
     { label: 'Remark', value: 'Remark' }
@@ -1659,8 +1656,7 @@ export const BOP_VBC_IMPORT = [
     { label: 'Currency', value: 'Currency', }, //*
     { label: 'MinimumOrderQuantity', value: 'MinimumOrderQuantity', }, //*
     { label: 'IncoTerm', value: 'IncoTerm', },
-    // { label: 'PaymentTerm', value: 'PaymentTerm', },    // FOR MINDA ONLY 
-    // { label: 'MinimumOrderQuantity', value: 'MinimumOrderQuantity', }, //*
+    { label: 'PaymentTerm', value: 'PaymentTerm', },    // FOR MINDA ONLY 
     { label: 'BasicRate', value: 'BasicRate', }, //*
     { label: 'EffectiveDate', value: 'EffectiveDate', },
     { label: 'Remark', value: 'Remark' }
@@ -1682,7 +1678,7 @@ export const BOP_VBC_IMPORT_TempData = [
         'Currency': 'INR or USD',
         'MinimumOrderQuantity': '1',
         'IncoTerm': 'CFR',
-        // 'PaymentTerm': 'A000',
+        'PaymentTerm': 'A000',
         'BasicRate': '100',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text'
@@ -1701,7 +1697,7 @@ export const BOP_VBC_IMPORT_TempData = [
         'Currency': 'INR or USD',
         'MinimumOrderQuantity': '1',
         'IncoTerm': 'CFR',
-        // 'PaymentTerm': 'A000',
+        'PaymentTerm': 'A000',
         'BasicRate': '100',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text'
@@ -1720,7 +1716,7 @@ export const BOP_VBC_IMPORT_TempData = [
         'Currency': 'INR or USD',
         'MinimumOrderQuantity': '1',
         'IncoTerm': 'CFR',
-        // 'PaymentTerm': 'A000',
+        'PaymentTerm': 'A000',
         'BasicRate': '100',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text'
@@ -1739,7 +1735,7 @@ export const BOP_CBC_IMPORT = [
     { label: 'MinimumOrderQuantity', value: 'MinimumOrderQuantity', }, //*
     { label: 'Currency', value: 'Currency', }, //*
     { label: 'IncoTerm', value: 'IncoTerm', },
-    // { label: 'PaymentTerm', value: 'PaymentTerm', },  // FOR MINDA ONLY 
+    { label: 'PaymentTerm', value: 'PaymentTerm', },  // FOR MINDA ONLY 
     { label: 'BasicRate', value: 'BasicRate', }, //*
     { label: 'EffectiveDate', value: 'EffectiveDate', },
     { label: 'Remark', value: 'Remark' }
@@ -1759,7 +1755,7 @@ export const BOP_CBC_IMPORT_TempData = [
         'Currency': 'INR or USD',
         'MinimumOrderQuantity': '1',
         'IncoTerm': 'CFR',
-        // 'PaymentTerm': 'A000',
+        'PaymentTerm': 'A000',
         'BasicRate': '100',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text'
@@ -1793,7 +1789,7 @@ export const BOP_CBC_IMPORT_TempData = [
         'Currency': 'INR or USD',
         'MinimumOrderQuantity': '1',
         'IncoTerm': 'CFR',
-        // 'PaymentTerm': 'A000',
+        'PaymentTerm': 'A000',
         'BasicRate': '100',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text'
