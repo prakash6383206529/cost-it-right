@@ -181,7 +181,7 @@ function AddRfq(props) {
 
 
     const deleteFile = (FileId, OriginalFileName) => {
-        if (dataProps?.isViewFlag || !isEditAll) {
+        if (dataProps?.isAddFlag ? false : dataProps?.isViewFlag || !isEditAll) {
             return false
         }
         if (FileId != null) {
