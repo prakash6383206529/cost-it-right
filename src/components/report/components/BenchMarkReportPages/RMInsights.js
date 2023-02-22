@@ -679,7 +679,6 @@ function Insights(props) {
 
         setTableHeaderColumnDefs([...arr, ...array55])
 
-
         setTimeout(() => {
 
             setShowListing(true)
@@ -769,9 +768,6 @@ function Insights(props) {
 
         let labelArr = []
 
-
-
-
         tableHeaderColumnDefs?.map((item, index) => {
 
             if (index > 6) {
@@ -795,13 +791,10 @@ function Insights(props) {
         var minGraphData = rowCount[0].minimumData;
         var maxGraphData = rowCount[0].maximumData;
 
+
         var array = []
         var plantLabel = []
         var obj = rowCount[0]
-
-
-
-
 
         for (var prop in obj) {
             if (prop.includes('plantBar')) {
@@ -812,31 +805,30 @@ function Insights(props) {
         }
 
 
-
-
-
         let newArr = []
         labelArr.map((item, index) => {
-
             plantLabel.map((element, ind) => {
                 let ele = element.slice(8, -1)
-                var newStr = item.replace('-', '')
 
+                var newStr = item.replaceAll('-', '')
+                ele = ele.replaceAll('-', '')
 
                 if (newStr.includes(ele)) {
                     newArr[index] = array[ind]
                 }
             })
-
-
         })
 
         graphDataNew = newArr
         setDynamicGrpahData(graphDataNew);
-        setAverageGrpahData(avgGraphData);
         setMinimumGrpahData(minGraphData);
         setMaximumGrpahData(maxGraphData);
 
+        let avgArray = []
+        labelArr && labelArr.map((item, ind) => {
+            avgArray.push(avgGraphData)
+        })
+        setAverageGrpahData(avgArray)
 
         // var rowCount = event.api.getSelectedRows();
 
@@ -854,7 +846,6 @@ function Insights(props) {
         //     }
 
         // }
-
 
         // graphDataNew = array
 
@@ -937,7 +928,7 @@ function Insights(props) {
                 tension: 0.1,
                 borderDash: [5, 5],
                 // data: [averageGrpahData, averageGrpahData, averageGrpahData, averageGrpahData, averageGrpahData]
-                data: [25, 25, 30, 35, 45, 55, 65, 75]
+                data: averageGrpahData
             },
             {
                 type: 'line',

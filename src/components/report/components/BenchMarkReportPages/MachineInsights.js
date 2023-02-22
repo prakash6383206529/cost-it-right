@@ -324,9 +324,9 @@ function MachineInsights(props) {
 
             plantLabel.map((element, ind) => {
                 let ele = element.slice(5)
-                ele = ele.replace('-', '')
-                var newStr = item.replace('-', '')
-                newStr = newStr.replace('-', '')
+
+                var newStr = item.replaceAll('-', '')
+                ele = ele.replaceAll('-', '')
 
                 if (newStr.includes(ele)) {
                     newArr[index] = array[ind]
@@ -337,9 +337,15 @@ function MachineInsights(props) {
 
         graphDataNew = newArr
         setDynamicGrpahData(graphDataNew);
-        setAverageGrpahData(avgGraphData);
+        //setAverageGrpahData(avgGraphData);
         setMinimumGrpahData(minGraphData);
         setMaximumGrpahData(maxGraphData);
+
+        let avgArray = []
+        labelArr && labelArr.map((item, ind) => {
+            avgArray.push(avgGraphData)
+        })
+        setAverageGrpahData(avgArray)
 
 
     }
@@ -380,7 +386,7 @@ function MachineInsights(props) {
                 tension: 0.1,
                 borderDash: [5, 5],
                 // data: [averageGrpahData, averageGrpahData, averageGrpahData, averageGrpahData, averageGrpahData]
-                data: [25, 25, 30, 35, 45, 55, 65, 75]
+                data: averageGrpahData
             },
             {
                 type: 'line',
