@@ -1046,7 +1046,7 @@ function SimulationApprovalSummary(props) {
                                             <th>Department Code:</th>
                                             {String(SimulationTechnologyId) !== EXCHNAGERATE && <th>Costing Head:</th>}
                                             <th>Vendor (Code):</th>
-                                            <th>No. of Costing:</th>
+                                            <th>Impacted Parts:</th>
                                             <th>Reason:</th>
                                             <th>Master:</th>
                                             <th>Effective Date:</th>
