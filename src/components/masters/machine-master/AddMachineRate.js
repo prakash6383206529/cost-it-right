@@ -153,11 +153,13 @@ class AddMachineRate extends Component {
     if (!editDetails.isViewMode) {
       this.props.getUOMSelectList(() => { })
       this.props.getProcessesSelectList(() => { })
-      this.props.getUsersMasterLevelAPI(loggedInUserId(), MACHINE_MASTER_ID, (res) => {
-        setTimeout(() => {
-          this.commonFunction()
-        }, 100);
-      })
+      if (initialConfiguration.IsMasterApprovalAppliedConfigure) {
+        this.props.getUsersMasterLevelAPI(loggedInUserId(), MACHINE_MASTER_ID, (res) => {
+          setTimeout(() => {
+            this.commonFunction()
+          }, 100);
+        })
+      }
 
     }
 
@@ -227,8 +229,9 @@ class AddMachineRate extends Component {
   }
 
   componentDidUpdate(prevProps, prevState) {
+    const { initialConfiguration } = this.props
     if (!this.props.data.isViewFlag) {
-      if (prevState?.costingTypeId !== this.state.costingTypeId) {
+      if ((prevState?.costingTypeId !== this.state.costingTypeId) && initialConfiguration.IsMasterApprovalAppliedConfigure) {
         this.commonFunction()
       }
     }
@@ -1912,7 +1915,7 @@ class AddMachineRate extends Component {
                                 <div className={"cancel-icon"}></div> {'Cancel'}
                               </button>
 
-                              {!isViewMode && (CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true && !this.state.isFinalApprovar) ?
+                              {!isViewMode && (CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true && !this.state.isFinalApprovar) && initialConfiguration.IsMasterApprovalAppliedConfigure ?
                                 <button type="submit"
                                   class="user-btn approval-btn save-btn mr5"
 

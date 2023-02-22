@@ -147,6 +147,7 @@ class AddMoreDetails extends Component {
    * @description Called after rendering the component
    */
   componentDidMount() {
+    const { initialConfiguration } = this.props
     this.props.getPlantSelectListByType(ZBC, () => { })
     this.props.getMachineTypeSelectList(() => { })
     this.props.getUOMSelectList(() => { })
@@ -160,11 +161,13 @@ class AddMoreDetails extends Component {
     if (!this.props?.editDetails?.isEditFlag) {
       this.props.change('EquityPercentage', 100)
     }
-    this.props.getUsersMasterLevelAPI(loggedInUserId(), MACHINE_MASTER_ID, (res) => {
-      setTimeout(() => {
-        this.commonFunction()
-      }, 100);
-    })
+    if (initialConfiguration.IsMasterApprovalAppliedConfigure) {
+      this.props.getUsersMasterLevelAPI(loggedInUserId(), MACHINE_MASTER_ID, (res) => {
+        setTimeout(() => {
+          this.commonFunction()
+        }, 100);
+      })
+    }
     this.getDetails()
   }
 
@@ -985,7 +988,8 @@ class AddMoreDetails extends Component {
   };
 
   componentDidUpdate(prevProps, prevState) {
-    if (this.props.fieldsObj !== prevProps.fieldsObj) {
+    const { initialConfiguration } = this.props
+    if ((prevState?.costingTypeId !== this.state.costingTypeId) && initialConfiguration.IsMasterApprovalAppliedConfigure) {
       this.totalCost()
       this.calculateLoanInterest()
       this.calculateWorkingHrsPerAnnum()
@@ -3946,7 +3950,7 @@ class AddMoreDetails extends Component {
 
 
 
-                        {!isViewMode && (CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true && !this.state.isFinalApprovar) ?
+                        {!isViewMode && (CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true && !this.state.isFinalApprovar) && initialConfiguration.IsMasterApprovalAppliedConfigure ?
                           <button type="submit"
                             class="user-btn approval-btn save-btn mr5"
 
