@@ -1399,9 +1399,7 @@ function TabRMCC(props) {
   }), 500)
 
   const InjectDiscountAPICall = () => {
-    dispatch(saveDiscountOtherCostTab({ ...ComponentItemDiscountData, EffectiveDate: CostingEffectiveDate, CallingFrom: 2 }, res => {
-      dispatch(setComponentDiscountOtherItemData({}, () => { }))
-    }))
+    dispatch(saveDiscountOtherCostTab({ ...ComponentItemDiscountData, EffectiveDate: CostingEffectiveDate, CallingFrom: 2 }, res => { }))
   }
 
 

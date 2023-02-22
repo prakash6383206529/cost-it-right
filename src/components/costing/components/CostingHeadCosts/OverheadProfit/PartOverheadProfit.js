@@ -93,9 +93,7 @@ function PartOverheadProfit(props) {
   }
 
   const InjectDiscountAPICall = () => {
-    dispatch(saveDiscountOtherCostTab(ComponentItemDiscountData, res => {
-      dispatch(setComponentDiscountOtherItemData({}, () => { }))
-    }))
+    dispatch(saveDiscountOtherCostTab(ComponentItemDiscountData, res => { }))
   }
 
   useEffect(() => {
