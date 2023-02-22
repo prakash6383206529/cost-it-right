@@ -49,9 +49,9 @@ class FreightListing extends Component {
   * @description Called after rendering the component
   */
   componentDidMount() {
+    !this.props.stopApiCallOnCancel && this.setState({ isLoader: true })
     setTimeout(() => {
       if (!this.props.stopApiCallOnCancel) {
-        this.setState({ isLoader: true })
         setTimeout(() => {
           this.getDataList()
         }, 500);
@@ -346,7 +346,7 @@ class FreightListing extends Component {
               <div className="ag-grid-header">
                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={'off'} onChange={(e) => this.onFilterTextBoxChanged(e)} />
               </div>
-              <div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
+              <div className={`ag-theme-material`}>
                 {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
                 <AgGridReact
                   defaultColDef={defaultColDef}

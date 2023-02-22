@@ -578,7 +578,7 @@ function SimulationApprovalListing(props) {
                 if (selectedRowData[0].Status === DRAFT) {
                     setApproveDrawer(res.data.Data.IsFinalApprover ? false : true)
                     if (res.data.Data.IsFinalApprover) {
-                        Toaster.warning("Final level aprrover can not send draft token for aprroval")
+                        Toaster.warning("Final level approver can not send draft token for approval")
                         gridApi.deselectAll()
                     }
                 }

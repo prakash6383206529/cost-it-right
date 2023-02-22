@@ -369,7 +369,7 @@ function ProcessCost(props) {
 
     tempData = {
       ...tempData,
-      Remark: getValues(`${SingleProcessGridField}.${index}.${parentIndex}.remarkPopUp`),
+      Remark: getValues(`${SingleProcessGridField}.${index}${parentIndex}.remarkPopUp`),
     }
     let gridTempArr = Object.assign([...list], { [index]: tempData })
 
@@ -1227,10 +1227,6 @@ function ProcessCost(props) {
                                         rules={{
                                           required: true,
                                           validate: item.UOM === "Number" ? { number, checkWhiteSpaces, noDecimal, numberLimit6 } : { number, checkWhiteSpaces, decimalNumberLimit6 },
-                                          max: {
-                                            value: 100,
-                                            message: 'Percentage cannot be greater than 100'
-                                          },
                                         }}
                                         errors={errors && errors.ProcessGridFields && errors.ProcessGridFields[index] !== undefined ? errors.ProcessGridFields[index].Quantity : ''}
                                         defaultValue={item.Quantity ? checkForDecimalAndNull(item.Quantity, getConfigurationKey().NoOfDecimalForInputOutput) : '1'}

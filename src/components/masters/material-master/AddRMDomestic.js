@@ -140,7 +140,7 @@ class AddRMDomestic extends Component {
    * @description Called after rendering the component
    */
   componentDidMount() {
-    const { data } = this.props
+    const { data, initialConfiguration } = this.props
     this.getDetails(data)
     if (!this.state.isViewFlag) {
       this.props.getRawMaterialNameChild('', () => { })
@@ -155,7 +155,7 @@ class AddRMDomestic extends Component {
       this.props.getPlantSelectListByType(ZBC, () => { })
       this.props.getClientSelectList(() => { })
     }
-    if (!this.state.isViewFlag) {
+    if (!this.state.isViewFlag && initialConfiguration.IsMasterApprovalAppliedConfigure) {
       this.props.getUsersMasterLevelAPI(loggedInUserId(), RM_MASTER_ID, (res) => {
         setTimeout(() => {
           this.commonFunction()
@@ -165,10 +165,11 @@ class AddRMDomestic extends Component {
   }
 
   componentDidUpdate(prevProps, prevState) {
+    const { initialConfiguration } = this.props
     if (this.props.fieldsObj !== prevProps.fieldsObj) {
       this.calculateNetCost()
     }
-    if (prevState?.costingTypeId !== this.state.costingTypeId) {
+    if ((prevState?.costingTypeId !== this.state.costingTypeId) && initialConfiguration.IsMasterApprovalAppliedConfigure) {
       this.commonFunction()
     }
   }
@@ -1944,7 +1945,7 @@ class AddRMDomestic extends Component {
                             <div className={"cancel-icon"}></div>
                             {"Cancel"}
                           </button>
-                          {!isViewFlag && (CheckApprovalApplicableMaster(RM_MASTER_ID) === true && !this.state.isFinalApprovar) ?
+                          {!isViewFlag && (CheckApprovalApplicableMaster(RM_MASTER_ID) === true && !this.state.isFinalApprovar) && initialConfiguration.IsMasterApprovalAppliedConfigure ?
                             <button type="submit"
                               class="user-btn approval-btn save-btn mr5"
                               onClick={() => scroll.scrollToTop()}
