@@ -199,9 +199,7 @@ function PartCompoment(props) {
   }, [IsOpen])
 
   const InjectDiscountAPICall = () => {
-    dispatch(saveDiscountOtherCostTab(ComponentItemDiscountData, res => {
-      dispatch(setComponentDiscountOtherItemData({}, () => { }))
-    }))
+    dispatch(saveDiscountOtherCostTab(ComponentItemDiscountData, res => { }))
   }
 
   /**
