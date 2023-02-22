@@ -1842,7 +1842,7 @@ export const EMPTY_GUID_0 = "0"
 export const PART_COST = 'Part Cost'
 
 export const VIEW_COSTING_DATA = {
-  costingHeadCheck: 'ZBC v/s VBC v/s NCC v/s CBC',
+  costingHeadCheck: 'VBC/ZBC/NCC/CBC',
   // costingName: '',
   costingVersion: 'Costing Version',
   PoPriceWithDate: 'PO Price (Effective from)',

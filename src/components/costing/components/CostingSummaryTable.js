@@ -36,6 +36,7 @@ import { Costratiograph } from '../../dashboard/CostRatioGraph'
 import { colorArray } from '../../dashboard/ChartsDashboard'
 import { LOGISTICS } from '../../../config/masterData'
 import { setSelectedRow } from '../../rfq/actions/rfq'
+import { reactLocalStorage } from 'reactjs-localstorage'
 
 const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
 
@@ -915,7 +916,9 @@ const CostingSummaryTable = (props) => {
     if (props?.isRfqCosting) {
       templateObj.costingHeadCheck = 'VBC'
     }
-
+    if (!(reactLocalStorage.getObject('cbcCostingPermission'))) {
+      templateObj.costingHeadCheck = 'VBC/ZBC/NCC'
+    }
 
     for (var prop in templateObj) {
       if (partType) {// IF TECHNOLOGY WILL BE ASSEMBLY THIS BLOCK WILL BE EXCECUTED
@@ -1185,9 +1188,7 @@ const CostingSummaryTable = (props) => {
                   <table className={`table table-bordered costing-summary-table ${approvalMode ? 'costing-approval-summary' : ''}`}>
                     <thead>
                       <tr className="main-row">
-                        {
-                          isApproval ? <th scope="col" className='approval-summary-headers'>{props.id}</th> : <th scope="col" className={`header-name-left ${isLockedState && !drawerDetailPDF && !pdfHead && costingSummaryMainPage ? 'pt-30' : ''}`}>{props?.isRfqCosting ? 'VBC' : 'VBC/ZBC/NCC/CBC'}</th>
-                        }
+                        {isApproval ? <th scope="col" className='approval-summary-headers'>{props.id}</th> : <th scope="col" className={`header-name-left ${isLockedState && !drawerDetailPDF && !pdfHead && costingSummaryMainPage ? 'pt-30' : ''}`}>{props?.isRfqCosting ? 'VBC' : (reactLocalStorage.getObject('cbcCostingPermission')) ? 'VBC/ZBC/NCC/CBC' : 'VBC/ZBC/NCC'}</th>}
                         { }
                         {viewCostingData &&
                           viewCostingData?.map((data, index) => {
