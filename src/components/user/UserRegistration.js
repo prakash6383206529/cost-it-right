@@ -8,7 +8,7 @@ import { connect } from "react-redux";
 import { Loader } from "../common/Loader";
 import {
   minLength3, minLength6, minLength10, maxLength11, maxLength12, required, email, minLength7, maxLength18,
-  maxLength6, checkWhiteSpaces, maxLength15, postiveNumber, maxLength80, maxLength5, acceptAllExceptSingleSpecialCharacter, strongPassword, maxLength25,
+  maxLength6, checkWhiteSpaces, maxLength15, postiveNumber, maxLength80, maxLength5, acceptAllExceptSingleSpecialCharacter, strongPassword, maxLength25, hashValidation, number
 } from "../../helper/validation";
 import { renderPasswordInputField, focusOnError, renderEmailInputField, renderText, searchableSelect, renderMultiSelectField, renderNumberInputField, } from "../layout/FormInputs";
 import {
@@ -1622,9 +1622,10 @@ function UserRegistration(props) {
                         rules={{
                           required: true,
                           validate: {
+                            hashValidation,
                             minLength3,
                             maxLength25,
-                            checkWhiteSpaces
+                            checkWhiteSpaces,
                           }
                         }}
                         handleChange={() => { }}
@@ -1645,14 +1646,14 @@ function UserRegistration(props) {
                         disableErrorOverflow={true}
                         rules={{
                           required: false,
-                          validate: { minLength3, maxLength25 }
+                          validate: { hashValidation, minLength3, maxLength25 }
                         }}
                         handleChange={() => { }}
                         customClassName={'withBorder'}
                       />
                     </div>
                     <div className="input-group col-md-3">
-                      <NumberFieldHookForm
+                      <TextFieldHookForm
                         name="Mobile"
                         label="Mobile"
                         errors={errors.Mobile}
@@ -1663,7 +1664,7 @@ function UserRegistration(props) {
                         disableErrorOverflow={true}
                         rules={{
                           required: false,
-                          validate: { postiveNumber, minLength10, maxLength12, checkWhiteSpaces }
+                          validate: { number, postiveNumber, minLength10, maxLength12, checkWhiteSpaces }
                         }}
                         handleChange={() => { }}
                         placeholder={'Enter'}
@@ -1674,7 +1675,7 @@ function UserRegistration(props) {
                     {!props?.RFQUser ? <div className="col-md-3">
                       <div className="row form-group">
                         <div className="Phone phoneNumber col-md-8">
-                          <NumberFieldHookForm
+                          <TextFieldHookForm
                             label="Phone Number"
                             name={"PhoneNumber"}
                             errors={errors.PhoneNumber}
@@ -1685,7 +1686,7 @@ function UserRegistration(props) {
                             disableErrorOverflow={true}
                             rules={{
                               required: false,
-                              validate: { postiveNumber, minLength10, maxLength12 }
+                              validate: { number, postiveNumber, minLength10, maxLength12 }
                             }}
                             handleChange={() => { }}
                             placeholder={'Enter'}
@@ -1693,7 +1694,7 @@ function UserRegistration(props) {
                           />
                         </div>
                         <div className="ext phoneNumber col-md-4 pl-0">
-                          <NumberFieldHookForm
+                          <TextFieldHookForm
                             label="Extension"
                             name={"Extension"}
                             errors={errors.Extension}
@@ -1704,7 +1705,7 @@ function UserRegistration(props) {
                             disableErrorOverflow={true}
                             rules={{
                               required: false,
-                              validate: { postiveNumber, maxLength5 }
+                              validate: { number, postiveNumber, maxLength5 }
                             }}
                             handleChange={() => { }}
                             placeholder={'Ext'}
@@ -1816,7 +1817,7 @@ function UserRegistration(props) {
                           mandatory={true}
                           rules={{
                             required: true,
-                            validate: { required, minLength3, maxLength15 }
+                            validate: { hashValidation, required, minLength3, maxLength15 }
                           }}
                           handleChange={() => { }}
                           placeholder={'Enter'}
