@@ -803,6 +803,7 @@ function TabDiscountOther(props) {
         dispatch(updateMultiTechnologyTopAndWorkingRowCalculation(request, res => { }))
         dispatch(gridDataAdded(true))
         dispatch(isDiscountDataChange(false))
+        dispatch(setComponentDiscountOtherItemData({}, () => { }))
 
       }
     }, 500);
