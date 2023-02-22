@@ -1097,6 +1097,7 @@ const CostingSummaryTable = (props) => {
     plugins: {
       legend: {
         position: 'bottom',
+        align: 'start',
         labels: {
           boxWidth: 15,
           borderWidth: 1,
