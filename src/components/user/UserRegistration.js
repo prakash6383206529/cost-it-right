@@ -16,7 +16,7 @@ import {
   getPermissionByUser, getUsersTechnologyLevelAPI, setUserAdditionalPermission, setUserTechnologyLevelForCosting, updateUserTechnologyLevelForCosting,
   getLevelByTechnology, getSimulationTechnologySelectList, getSimualationLevelByTechnology, getUsersSimulationTechnologyLevelAPI, getMastersSelectList, getUsersMasterLevelAPI, getMasterLevelDataList, getMasterLevelByMasterId, registerRfqUser, updateRfqUser
 } from "../../actions/auth/AuthActions";
-import { getAllCities, getCityByCountry, getAllCity, getVendorWithVendorCodeSelectList, getReporterList } from "../../actions/Common";
+import { getAllCities, getCityByCountry, getAllCity, getVendorWithVendorCodeSelectList, getReporterList, getApprovalTypeSelectList } from "../../actions/Common";
 import { MESSAGES } from "../../config/message";
 import { getConfigurationKey, loggedInUserId } from "../../helper/auth";
 import { Table, Button, Row, Col } from 'reactstrap';
@@ -31,6 +31,8 @@ import { showDataOnHover } from "../../helper";
 import { useDispatch, useSelector } from 'react-redux'
 import { reactLocalStorage } from "reactjs-localstorage";
 import { autoCompleteDropdown } from "../common/CommonFunctions";
+import _ from "lodash";
+
 var CryptoJS = require('crypto-js')
 const selector = formValueSelector('UserRegistration');
 
@@ -89,6 +91,9 @@ function UserRegistration(props) {
   const [vendor, setVendor] = useState("");
   const [reporter, setReporter] = useState("");
   const [isRfqUser, setIsRfqUser] = useState(false);
+  const [costingApprovalType, setCostingApprovalType] = useState([]);
+  const [simulationApprovalType, setSimulationApprovalType] = useState([]);
+  const [masterApprovalType, setMasterApprovalType] = useState([]);
   const dispatch = useDispatch()
 
   const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
@@ -103,21 +108,22 @@ function UserRegistration(props) {
   const masterLevelSelectList = useSelector(state => state.auth.masterLevelSelectList)
   const registerUserData = useSelector(state => state.auth.registerUserData)
   const getReporterListDropDown = useSelector(state => state.comman.getReporterListDropDown)
+  const approvalTypeSelectList = useSelector(state => state.comman.approvalTypeSelectList)
 
   const defaultValues = {
-    FirstName: registerUserData && registerUserData.FirstName !== undefined ? registerUserData.FirstName : '',
-    MiddleName: registerUserData && registerUserData.MiddleName !== undefined ? registerUserData.MiddleName : '',
-    LastName: registerUserData && registerUserData.LastName !== undefined ? registerUserData.LastName : '',
-    EmailAddress: registerUserData && registerUserData.EmailAddress !== undefined ? registerUserData.EmailAddress : '',
-    UserName: registerUserData && registerUserData.UserName !== undefined ? registerUserData.UserName : '',
-    Mobile: registerUserData && registerUserData.Mobile !== undefined ? registerUserData.Mobile : '',
-    Password: registerUserData && registerUserData.Password !== undefined ? '' : '',
-    passwordConfirm: registerUserData && registerUserData.Password !== undefined ? '' : '',
-    AddressLine1: registerUserData && registerUserData.AddressLine1 !== undefined ? registerUserData.AddressLine1 : '',
-    AddressLine2: registerUserData && registerUserData.AddressLine2 !== undefined ? registerUserData.AddressLine2 : '',
-    ZipCode: registerUserData && registerUserData.ZipCode !== undefined ? registerUserData.ZipCode : '',
-    PhoneNumber: registerUserData && registerUserData.PhoneNumber !== undefined ? registerUserData.PhoneNumber : '',
-    Extension: registerUserData && registerUserData.Extension !== undefined ? registerUserData.Extension : '',
+    FirstName: props?.data?.isEditFlag && registerUserData && registerUserData.FirstName !== undefined ? registerUserData.FirstName : '',
+    MiddleName: props?.data?.isEditFlag && registerUserData && registerUserData.MiddleName !== undefined ? registerUserData.MiddleName : '',
+    LastName: props?.data?.isEditFlag && registerUserData && registerUserData.LastName !== undefined ? registerUserData.LastName : '',
+    EmailAddress: props?.data?.isEditFlag && registerUserData && registerUserData.EmailAddress !== undefined ? registerUserData.EmailAddress : '',
+    UserName: props?.data?.isEditFlag && registerUserData && registerUserData.UserName !== undefined ? registerUserData.UserName : '',
+    Mobile: props?.data?.isEditFlag && registerUserData && registerUserData.Mobile !== undefined ? registerUserData.Mobile : '',
+    Password: props?.data?.isEditFlag && registerUserData && registerUserData.Password !== undefined ? '' : '',
+    passwordConfirm: props?.data?.isEditFlag && registerUserData && registerUserData.Password !== undefined ? '' : '',
+    AddressLine1: props?.data?.isEditFlag && registerUserData && registerUserData.AddressLine1 !== undefined ? registerUserData.AddressLine1 : '',
+    AddressLine2: props?.data?.isEditFlag && registerUserData && registerUserData.AddressLine2 !== undefined ? registerUserData.AddressLine2 : '',
+    ZipCode: props?.data?.isEditFlag && registerUserData && registerUserData.ZipCode !== undefined ? registerUserData.ZipCode : '',
+    PhoneNumber: props?.data?.isEditFlag && registerUserData && registerUserData.PhoneNumber !== undefined ? registerUserData.PhoneNumber : '',
+    Extension: props?.data?.isEditFlag && registerUserData && registerUserData.Extension !== undefined ? registerUserData.Extension : '',
   }
 
 
@@ -129,9 +135,7 @@ function UserRegistration(props) {
 
 
   useEffect(() => {
-
     if (registerUserData && props?.data?.isEditFlag) {
-
       setValue('FirstName', registerUserData && registerUserData.FirstName !== undefined ? registerUserData.FirstName : '',)
       setValue('MiddleName', registerUserData && registerUserData.MiddleName !== undefined ? registerUserData.MiddleName : '')
       setValue('LastName', registerUserData && registerUserData.LastName !== undefined ? registerUserData.LastName : '',)
@@ -186,7 +190,7 @@ function UserRegistration(props) {
     dispatch(getAllDepartmentAPI(() => { }))
     // this.props.getAllCities(() => { })
     dispatch(getAllTechnologyAPI(() => { }))
-    dispatch(getLevelByTechnology('', () => { }))
+    dispatch(getLevelByTechnology('', '', () => { }))
     getUserDetail(data);
     dispatch(getAllCity(cityId => {
       dispatch(getCityByCountry(cityId, 0, () => { }))
@@ -194,6 +198,7 @@ function UserRegistration(props) {
     dispatch(getSimulationTechnologySelectList(() => { }))
     dispatch(getMastersSelectList(() => { }))
     dispatch(getReporterList(() => { }))
+    dispatch(getApprovalTypeSelectList(() => { }))
     return () => {
       reactLocalStorage?.setObject('vendorData', [])
     }
@@ -396,6 +401,15 @@ function UserRegistration(props) {
       })
       return temp;
     }
+    if (label === 'approvalType') {
+
+      approvalTypeSelectList && approvalTypeSelectList.map(item => {
+        if (item.Value === '0') return false
+        temp.push({ label: item.Text, value: item.Value })
+        return null
+      })
+      return temp;
+    }
   }
 
 
@@ -537,18 +551,16 @@ function UserRegistration(props) {
     }))
   }
 
-
   /**
   * @method getUsersTechnologyLevelData
   * @description used to get users technology level listing
   */
   const getUsersTechnologyLevelData = (UserId) => {
-    dispatch(getUsersTechnologyLevelAPI(UserId, (res) => {
+    dispatch(getUsersTechnologyLevelAPI(UserId, 0, (res) => {
       if (res && res.data && res.data.Data) {
 
         let Data = res.data.Data;
         let TechnologyLevels = Data.TechnologyLevels;
-
         setTechnologyLevelGrid(TechnologyLevels)
         setOldTechnologyLevelGrid(TechnologyLevels)
       }
@@ -560,7 +572,7 @@ function UserRegistration(props) {
  * @description used to get users technology level listing
  */
   const getUsersSimulationTechnologyLevelData = (UserId) => {
-    dispatch(getUsersSimulationTechnologyLevelAPI(UserId, (res) => {
+    dispatch(getUsersSimulationTechnologyLevelAPI(UserId, 0, (res) => {
       if (res && res.data && res.data.Data) {
         let Data = res.data.Data;
         let TechnologySimulationLevels = Data.TechnologyLevels;
@@ -576,10 +588,11 @@ function UserRegistration(props) {
  * @description used to get users MASTER level listing
  */
   const getUsersMasterLevelData = (UserId) => {
-    dispatch(getUsersMasterLevelAPI(UserId, (res) => {
+    dispatch(getUsersMasterLevelAPI(UserId, 0, (res) => {
       if (res && res.data && res.data.Data) {
         let Data = res.data.Data;
         let masterSimulationLevel = Data.MasterLevels;
+        setMasterLevelGrid(masterSimulationLevel)
 
         setMasterLevelGrid(masterSimulationLevel)
         setOldMasterLevelGrid(masterSimulationLevel)
@@ -683,13 +696,54 @@ function UserRegistration(props) {
    */
   const technologyHandler = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
-
       setTechnology(newValue)
-      setLevel([])
-      setValue('LevelId', '')
-      dispatch(getLevelByTechnology(newValue.value, res => { }))
     } else {
       setTechnology([])
+    }
+  };
+
+  /**
+   * @method costingApprovalTypeHandler
+   * @description Used to handle 
+   */
+  const costingApprovalTypeHandler = (newValue, actionMeta) => {
+    if (newValue && newValue !== '') {
+      setCostingApprovalType(newValue)
+      setLevel([])
+      setValue('LevelId', '')
+      dispatch(getLevelByTechnology(technology.value, newValue.value, res => { }))
+    } else {
+      setCostingApprovalType([])
+    }
+  };
+
+  /**
+   * @method simulationApprovalTypeHandler
+   * @description Used to handle 
+   */
+  const simulationApprovalTypeHandler = (newValue, actionMeta) => {
+    if (newValue && newValue !== '') {
+      setSimulationApprovalType(newValue)
+      setSimualtionLevel([])
+      setValue('simualtionLevel', '')
+      dispatch(getSimualationLevelByTechnology(simulationHeads.value, newValue.value, res => { }))
+    } else {
+      setSimulationApprovalType([])
+    }
+  };
+
+  /**
+   * @method masterApprovalTypeHandler
+   * @description Used to handle 
+   */
+  const masterApprovalTypeHandler = (newValue, actionMeta) => {
+    if (newValue && newValue !== '') {
+      setMasterApprovalType(newValue)
+      setMasterLevels([])
+      setValue('masterLevel', '')
+      dispatch(getMasterLevelByMasterId(master.value, newValue.value, res => { }))
+    } else {
+      setMasterApprovalType([])
     }
   };
 
@@ -705,7 +759,6 @@ function UserRegistration(props) {
       setSimulationHeads(newValue)
       setSimualtionLevel([])
       setValue('simualtionLevel', '')
-      dispatch(getSimualationLevelByTechnology(newValue.value, res => { }))
     } else {
       setSimulationHeads([])
     }
@@ -720,7 +773,6 @@ function UserRegistration(props) {
       setMaster(newValue)
       setMasterLevels([])
       setValue('masterLevel', '')
-      dispatch(getMasterLevelByMasterId(newValue.value, res => { }))
     } else {
       setSimulationHeads([])
     }
@@ -764,6 +816,30 @@ function UserRegistration(props) {
     }
   };
 
+  const checkDuplicacy = (dataList, obj, keyName, technology_master_id, approvalTypeIDValue, messageHead) => {
+    let stop = false
+    let checkExists = false
+    dataList && dataList?.map((element) => {
+      if (_.isEqual(element, obj)) {
+        checkExists = true
+      }
+      return null
+    })
+
+    const isExistTechnology = dataList && dataList.findIndex(el => {
+      return (Number(el[keyName]) === Number(technology_master_id)) && (Number(el.ApprovalTypeId) === Number(approvalTypeIDValue))
+    })
+
+    if (checkExists) {
+      stop = true
+      Toaster.warning('Record already exists.')
+    } else if (isExistTechnology !== -1) {
+      stop = true
+      Toaster.warning(`${messageHead} cannot have multiple level for same Approval Type.`)
+    }
+
+    return stop
+  }
 
   /**
   * @method setTechnologyLevel
@@ -773,32 +849,31 @@ function UserRegistration(props) {
     const tempArray = [];
 
     if (technology.length === 0 || level.length === 0) {
-      Toaster.warning('Please select technology and level')
-      return false;
-    }
-    const isExistTechnology = TechnologyLevelGrid && TechnologyLevelGrid.findIndex(el => {
-      return Number(el.TechnologyId) === Number(technology.value)
-      // && el.LevelId === level.value
-    })
-
-    if (isExistTechnology !== -1) {
-      // Toaster.warning('Technology and Level already allowed.')
-      Toaster.warning('Technology cannot have multiple level.')
+      Toaster.warning('Please select Technology, Approval Type and Level')
       return false;
     }
 
-    tempArray.push(...TechnologyLevelGrid, {
+    let obj = {
       Technology: technology.label,
       TechnologyId: technology.value,
       Level: level.label,
       LevelId: level.value,
-    })
+      ApprovalType: costingApprovalType?.label,
+      ApprovalTypeId: costingApprovalType?.value,
+    }
+
+    if (checkDuplicacy(TechnologyLevelGrid, obj, 'TechnologyId', technology.value, costingApprovalType.value, 'Technology')) return false
+
+    tempArray.push(...TechnologyLevelGrid, obj)
 
     setTechnologyLevelGrid(tempArray)
     setLevel([])
     setTechnology([])
     setValue('TechnologyId', "")
     setValue('LevelId', "")
+    setValue('LevelId', "")
+    setCostingApprovalType([])
+    setValue('CostingApprovalType', "")
 
   };
 
@@ -820,7 +895,11 @@ function UserRegistration(props) {
       TechnologyId: technology.value,
       Level: level.label,
       LevelId: level.value,
+      ApprovalType: costingApprovalType?.label,
+      ApprovalTypeId: costingApprovalType?.value,
     }
+
+    if (checkDuplicacy(TechnologyLevelGrid, tempData, 'TechnologyId', technology.value, costingApprovalType.value, 'Technology')) return false
 
     tempArray = Object.assign([...TechnologyLevelGrid], { [technologyLevelEditIndex]: tempData })
 
@@ -829,8 +908,10 @@ function UserRegistration(props) {
     setTechnology([])
     setTechnologyLevelEditIndex('')
     setIsEditIndex(false)
+    setCostingApprovalType([])
     setValue('TechnologyId', "")
     setValue('LevelId', "")
+    setValue('CostingApprovalType', "")
 
   };
 
@@ -847,6 +928,9 @@ function UserRegistration(props) {
     setTechnology([])
     setTechnologyLevelEditIndex('')
     setIsEditIndex(false)
+    setCostingApprovalType([])
+    setValue('CostingApprovalType', "")
+
   };
 
 
@@ -858,35 +942,29 @@ function UserRegistration(props) {
     const tempArray = [];
 
     if (simulationHeads.length === 0 || simualtionLevel.length === 0) {
-      Toaster.warning('Please select technology and level')
+      Toaster.warning('Please select Technology, Approval Type and Level')
       return false;
     }
 
-    const isExistTechnology = HeadLevelGrid && HeadLevelGrid.findIndex(el => {
-      return Number(el.TechnologyId) === Number(simulationHeads.value)
-      // && el.LevelId === level.value
-    })
-
-
-    if (isExistTechnology !== -1) {
-      // Toaster.warning('Technology and Level already allowed.')
-      Toaster.warning('Head cannot have multiple level.')
-      return false;
-    }
-
-    tempArray.push(...HeadLevelGrid, {
+    let obj = {
       Technology: simulationHeads.label,
       TechnologyId: simulationHeads.value,
       Level: simualtionLevel.label,
       LevelId: simualtionLevel.value,
-    })
+      ApprovalType: simulationApprovalType?.label,
+      ApprovalTypeId: simulationApprovalType?.value,
+    }
 
+    if (checkDuplicacy(HeadLevelGrid, obj, 'TechnologyId', simulationHeads.value, simulationApprovalType.value, 'Technology')) return false
+
+    tempArray.push(...HeadLevelGrid, obj)
 
     setHeadLevelGrid(tempArray)
     setSimualtionLevel([])
     setSimulationHeads([])
     setValue('Head', '')
     setValue('simualtionLevel', '')
+    setValue('SimulationApprovalType', "")
 
   };
 
@@ -906,12 +984,17 @@ function UserRegistration(props) {
     }
 
     let tempData = HeadLevelGrid[simulationLevelEditIndex];
+
     tempData = {
       Technology: simulationHeads.label,
       TechnologyId: simulationHeads.value,
       Level: simualtionLevel.label,
       LevelId: simualtionLevel.value,
+      ApprovalType: simulationApprovalType?.label,
+      ApprovalTypeId: simulationApprovalType?.value,
     }
+
+    if (checkDuplicacy(HeadLevelGrid, tempData, 'TechnologyId', simulationHeads.value, simulationApprovalType.value, 'Technology')) return false
 
     tempArray = Object.assign([...HeadLevelGrid], { [simulationLevelEditIndex]: tempData })
 
@@ -920,8 +1003,10 @@ function UserRegistration(props) {
     setSimulationHeads([])
     setSimulationLevelEditIndex('')
     setIsSimulationEditIndex(false)
+    setSimulationApprovalType([])
     setValue('Head', '')
     setValue('simualtionLevel', '')
+    setValue('SimulationApprovalType', '')
   };
 
 
@@ -948,14 +1033,16 @@ function UserRegistration(props) {
   const editItemDetails = (index) => {
 
     const tempData = TechnologyLevelGrid[index];
-    dispatch(getLevelByTechnology(tempData.TechnologyId, res => { }))
+    dispatch(getLevelByTechnology(tempData.TechnologyId, tempData.ApprovalTypeId, res => { }))
 
     setTechnologyLevelEditIndex(index)
     setIsEditIndex(true)
     setValue('TechnologyId', { label: tempData.Technology, value: tempData.TechnologyId })
     setValue('LevelId', { label: tempData.Level, value: tempData.LevelId })
+    setValue('CostingApprovalType', { label: tempData.ApprovalType, value: tempData.ApprovalTypeId })
     setTechnology({ label: tempData.Technology, value: tempData.TechnologyId })
     setLevel({ label: tempData.Level, value: tempData.LevelId })
+    setCostingApprovalType({ label: tempData.ApprovalType, value: tempData.ApprovalTypeId })
   }
 
   /**
@@ -977,20 +1064,22 @@ function UserRegistration(props) {
   }
 
   /**
- * @method editItemDetails
+ * @method editSimulationItemDetails
  * @description used to edit simulation head and level
  */
   const editSimulationItemDetails = (index) => {
 
     const tempData = HeadLevelGrid[index];
-    dispatch(getSimualationLevelByTechnology(tempData.TechnologyId, res => { }))
+    dispatch(getSimualationLevelByTechnology(tempData.TechnologyId, tempData.ApprovalTypeId, res => { }))
 
     setSimulationLevelEditIndex(index)
     setIsSimulationEditIndex(true)
+    setSimulationApprovalType({ label: tempData.ApprovalType, value: tempData.ApprovalTypeId })
     setSimulationHeads({ label: tempData.Technology, value: tempData.TechnologyId })
     setSimualtionLevel({ label: tempData.Level, value: tempData.LevelId })
     setValue('Head', { label: tempData.Technology, value: tempData.TechnologyId })
     setValue('simualtionLevel', { label: tempData.Level, value: tempData.LevelId })
+    setValue('SimulationApprovalType', { label: tempData.ApprovalType, value: tempData.ApprovalTypeId })
   }
 
   /**
@@ -1020,37 +1109,30 @@ function UserRegistration(props) {
   const setMasterLevel = () => {
     const tempArray = [];
 
-
-
     if (master.length === 0 || masterLevel.length === 0) {
-      Toaster.warning('Please select master and level')
+      Toaster.warning('Please select Master, Approval Type and Level')
       return false;
     }
 
-    const isExistTechnology = masterLevelGrid && masterLevelGrid.findIndex(el => {
-      return Number(el.MasterId) === Number(master.value)
-    })
-
-
-    if (isExistTechnology !== -1) {
-      // Toaster.warning('Technology and Level already allowed.')
-      Toaster.warning('A master cannot have multiple level.')
-      return false;
-    }
-
-    tempArray.push(...masterLevelGrid, {
+    let obj = {
       Master: master.label,
       MasterId: master.value,
       Level: masterLevel.label,
       LevelId: masterLevel.value,
-    })
+      ApprovalType: masterApprovalType?.label,
+      ApprovalTypeId: masterApprovalType?.value,
+    }
 
+    if (checkDuplicacy(masterLevelGrid, obj, 'MasterId', master.value, masterApprovalType.value, 'Master')) return false
+
+    tempArray.push(...masterLevelGrid, obj)
 
     setMasterLevelGrid(tempArray)
     setMasterLevels([])
     setMaster([])
     setValue('Master', '')
     setValue('masterLevel', '')
+    setValue('MasterApprovalType', "")
   };
 
   /**
@@ -1061,7 +1143,7 @@ function UserRegistration(props) {
     let tempArray = [];
 
     if (master.length === 0 || masterLevel.length === 0) {
-      Toaster.warning('Please select master and level')
+      Toaster.warning('Please select Master, Approval Type and Level')
       return false;
     }
 
@@ -1072,7 +1154,11 @@ function UserRegistration(props) {
       MasterId: master.value,
       Level: masterLevel.label,
       LevelId: masterLevel.value,
+      ApprovalType: masterApprovalType?.label,
+      ApprovalTypeId: masterApprovalType?.value,
     }
+
+    if (checkDuplicacy(masterLevelGrid, tempData, 'MasterId', master.value, masterApprovalType.value, 'Master')) return false
 
     tempArray = Object.assign([...masterLevelGrid], { [masterLevelEditIndex]: tempData })
 
@@ -1081,8 +1167,10 @@ function UserRegistration(props) {
     setMaster([])
     setMasterLevelEditIndex('')
     setIsMasterEditIndex(false)
+    setMasterApprovalType([])
     setValue('Master', '')
     setValue('masterLevel', '')
+    setValue('MasterApprovalType', '')
   };
 
 
@@ -1110,14 +1198,16 @@ function UserRegistration(props) {
   const editMasterItem = (index) => {
 
     const tempData = masterLevelGrid[index];
-    dispatch(getMasterLevelByMasterId(tempData.MasterId, res => { }))
+    dispatch(getMasterLevelByMasterId(tempData.MasterId, tempData.ApprovalTypeId, res => { }))
 
     setMasterLevelEditIndex(index)
     setIsMasterEditIndex(true)
+    setMasterApprovalType({ label: tempData.ApprovalType, value: tempData.ApprovalTypeId })
     setMaster({ label: tempData.Master, value: tempData.MasterId })
     setMasterLevels({ label: tempData.Level, value: tempData.LevelId })
     setValue('Master', { label: tempData.Master, value: tempData.MasterId })
     setValue('masterLevel', { label: tempData.Level, value: tempData.LevelId })
+    setValue('MasterApprovalType', { label: tempData.ApprovalType, value: tempData.ApprovalTypeId })
   }
 
 
@@ -1247,7 +1337,10 @@ function UserRegistration(props) {
         Technology: item.Technology,
         Level: item.Level,
         TechnologyId: item.TechnologyId,
-        LevelId: item.LevelId
+        LevelId: item.LevelId,
+        ApprovalTypeId: item.ApprovalTypeId,
+        ApprovalType: item.ApprovalType,
+
       })
       return null;
     })
@@ -1260,6 +1353,8 @@ function UserRegistration(props) {
         LevelId: item.LevelId,
         Technology: item.Technology,
         Level: item.Level,
+        ApprovalTypeId: item.ApprovalTypeId,
+        ApprovalType: item.ApprovalType,
 
       })
       return null
@@ -1272,6 +1367,8 @@ function UserRegistration(props) {
         LevelId: item.LevelId,
         Master: item.Master,
         Level: item.Level,
+        ApprovalTypeId: item.ApprovalTypeId,
+        ApprovalType: item.ApprovalType,
       })
       return null
     })
@@ -2069,6 +2166,21 @@ function UserRegistration(props) {
                             </div>
                             <div className="col-md-3">
                               <SearchableSelectHookForm
+                                name="CostingApprovalType"
+                                type="text"
+                                label="Approval Type"
+                                Controller={Controller}
+                                control={control}
+                                register={register}
+                                mandatory={true}
+                                options={searchableSelectType('approvalType')}
+                                handleChange={costingApprovalTypeHandler}
+                                defaultValue={costingApprovalType}
+                                errors={errors.ApprovalType}
+                              />
+                            </div>
+                            <div className="col-md-3">
+                              <SearchableSelectHookForm
                                 name="LevelId"
                                 type="text"
                                 label="Level"
@@ -2116,9 +2228,10 @@ function UserRegistration(props) {
                               <Table className="table border" size="sm" >
                                 <thead>
                                   <tr>
-                                    <th className="border-bottom-none">{`Technology`}</th>
-                                    <th className="border-bottom-none">{`Level`}</th>
-                                    <th className="text-right border-bottom-none">{`Action`}</th>
+                                    <th>{`Technology`}</th>
+                                    <th>{`Approval Type`}</th>
+                                    <th>{`Level`}</th>
+                                    <th className="text-right ">{`Action`}</th>
                                   </tr>
                                 </thead>
                                 <tbody >
@@ -2127,8 +2240,9 @@ function UserRegistration(props) {
                                     TechnologyLevelGrid.map((item, index) => {
                                       return (
                                         <tr key={index}>
-                                          <td>{item.Technology}</td>
-                                          <td>{item.Level}</td>
+                                          <td>{item?.Technology}</td>
+                                          <td>{item?.ApprovalType}</td>
+                                          <td>{item?.Level}</td>
                                           <td className="text-right">
                                             <button title='Edit' className="Edit mr-2" type={'button'} onClick={() => editItemDetails(index)} />
                                             <button title='Delete' className="Delete" type={'button'} onClick={() => deleteItem(index)} />
@@ -2194,6 +2308,21 @@ function UserRegistration(props) {
                             </div>
                             <div className="col-md-3">
                               <SearchableSelectHookForm
+                                name="SimulationApprovalType"
+                                type="text"
+                                label="Approval Type"
+                                Controller={Controller}
+                                control={control}
+                                register={register}
+                                mandatory={true}
+                                options={searchableSelectType('approvalType')}
+                                handleChange={simulationApprovalTypeHandler}
+                                defaultValue={simulationApprovalType}
+                                errors={errors.ApprovalType}
+                              />
+                            </div>
+                            <div className="col-md-3">
+                              <SearchableSelectHookForm
                                 name="simualtionLevel"
                                 type="text"
                                 label="Level"
@@ -2242,9 +2371,10 @@ function UserRegistration(props) {
                               <Table className="table border" size="sm" >
                                 <thead>
                                   <tr>
-                                    <th className="border-bottom-none">{`Head`}</th>
-                                    <th className="border-bottom-none">{`Level`}</th>
-                                    <th className="text-right border-bottom-none">{`Action`}</th>
+                                    <th>{`Head`}</th>
+                                    <th>{`Approval Type`}</th>
+                                    <th>{`Level`}</th>
+                                    <th className="text-right ">{`Action`}</th>
                                   </tr>
                                 </thead>
                                 <tbody >
@@ -2254,6 +2384,7 @@ function UserRegistration(props) {
                                       return (
                                         <tr key={index}>
                                           <td>{item.Technology}</td>
+                                          <td>{item.ApprovalType}</td>
                                           <td>{item.Level}</td>
                                           <td className="text-right">
                                             <button title='Edit' className="Edit mr-2" type={'button'} onClick={() => editSimulationItemDetails(index)} />
@@ -2317,6 +2448,21 @@ function UserRegistration(props) {
                                 </div>
                                 <div className="col-md-3">
                                   <SearchableSelectHookForm
+                                    name="MasterApprovalType"
+                                    type="text"
+                                    label="Approval Type"
+                                    Controller={Controller}
+                                    control={control}
+                                    register={register}
+                                    mandatory={true}
+                                    options={searchableSelectType('approvalType')}
+                                    handleChange={masterApprovalTypeHandler}
+                                    defaultValue={masterApprovalType}
+                                    errors={errors.ApprovalType}
+                                  />
+                                </div>
+                                <div className="col-md-3">
+                                  <SearchableSelectHookForm
                                     name="masterLevel"
                                     type="text"
                                     label="Level"
@@ -2365,9 +2511,10 @@ function UserRegistration(props) {
                                   <Table className="table border" size="sm" >
                                     <thead>
                                       <tr>
-                                        <th className="border-bottom-none">{`Master`}</th>
-                                        <th className="border-bottom-none">{`Level`}</th>
-                                        <th className="text-right border-bottom-none">{`Action`}</th>
+                                        <th>{`Master`}</th>
+                                        <th>{`Approval Type`}</th>
+                                        <th>{`Level`}</th>
+                                        <th className="text-right">{`Action`}</th>
                                       </tr>
                                     </thead>
                                     <tbody>
@@ -2377,6 +2524,7 @@ function UserRegistration(props) {
                                           return (
                                             <tr key={index}>
                                               <td>{item.Master}</td>
+                                              <td>{item.ApprovalType}</td>
                                               <td>{item.Level}</td>
                                               <td className="text-right">
                                                 <button title='Edit' className="Edit mr-2" type={'button'} onClick={() => editMasterItem(index)} />

@@ -444,3 +444,26 @@
 .float-unset {
   float: unset;
 }
+
+.overhead-profit-tab {
+  border-left: 1px solid $borderColor;
+  border-right: 1px solid $borderColor;
+}
+
+.costing-main-container {
+  table.costing-table-next {
+
+    .cr-select-height,
+    .form-group-searchable-select {
+      max-width: 320px;
+
+      @media screen and (max-width: $middleDesktop) {
+        max-width: 230px;
+      }
+    }
+  }
+}
+
+.overflow-y-hidden {
+  overflow-y: hidden !important;
+}

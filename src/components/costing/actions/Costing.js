@@ -44,6 +44,7 @@ import {
   SET_OVERHEAD_PROFIT_ERRORS,
   SET_TOOLS_ERRORS,
   SET_DISCOUNT_ERRORS,
+  SET_TOOL_COST_FOR_OVERHEAD_PROFIT,
 } from '../../../config/constants'
 import { apiErrors } from '../../../helper/util'
 import { MESSAGES } from '../../../config/message'
@@ -1183,10 +1184,10 @@ export function getDiscountOtherCostTabData(data, callback) {
  * @method getExchangeRateByCurrency
  * @description GET EXCHANGE RATE BY CURRENCY
  */
-export function getExchangeRateByCurrency(Currency, EffectiveDate, callback) {
+export function getExchangeRateByCurrency(currency, costingHeadId, effectiveDate, VendorId, customerId, callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
-    const request = axios.get(`${API.getExchangeRateByCurrency}/${Currency}/${EffectiveDate}`, config());
+    const request = axios.get(`${API.getExchangeRateByCurrency}?currency=${currency}&costingHeadId=${costingHeadId}&effectiveDate=${effectiveDate}&VendorId=${!VendorId ? EMPTY_GUID : VendorId}&customerId=${!customerId ? EMPTY_GUID : customerId}`, config());
     request.then((response) => {
       if (response.data.Result) {
         dispatch({
@@ -1866,7 +1867,11 @@ export function getPartCostingVendorSelectList(partNumber, callback) {
 }
 
 export function getPartSelectListByTechnology(technologyId, partNumber, callback) {
-  return axios.get(`${API.getPartByTechnologyId}?technologyId=${technologyId}&partNumber=${partNumber}`, config())
+  return axios.get(`${API.getPartByTechnologyId}?technologyId=${technologyId}&partNumber=${partNumber}`, config()).catch(error => {
+    apiErrors(error);
+    callback(error);
+    return Promise.reject(error)
+  });
 }
 
 /**
@@ -2386,7 +2391,7 @@ export function saveBOMLevel(data) {
  */
 export function checkFinalUser(data, callback) {
   return (dispatch) => {
-    const queryParams = `DepartmentId=${data.DepartmentId}&TechnologyId=${data.TechnologyId}&UserId=${data.UserId}&Mode=${data.Mode}`
+    const queryParams = `DepartmentId=${data.DepartmentId}&UserId=${data.UserId}&TechnologyId=${data.TechnologyId}&Mode=${data.Mode}&approvalTypeId=${data?.approvalTypeId}`
     const request = axios.get(`${API.checkFinalUser}?${queryParams}`, config())
     request.then((response) => {
       if (response.data.Result) {
@@ -2421,6 +2426,20 @@ export function setSurfaceCostInOverheadProfitRejection(IsIncluded, callback) {
   return (dispatch) => {
     dispatch({
       type: SET_SURFACE_COST_FOR_REJECTION_DATA,
+      payload: IsIncluded,
+    });
+    callback();
+  }
+};
+
+/**
+ * @method setToolCostInOverheadProfit
+ * @description ADD TOOL COST IN OVERHEAD & PROFIT
+ */
+export function setToolCostInOverheadProfit(IsIncluded, callback) {
+  return (dispatch) => {
+    dispatch({
+      type: SET_TOOL_COST_FOR_OVERHEAD_PROFIT,
       payload: IsIncluded,
     });
     callback();

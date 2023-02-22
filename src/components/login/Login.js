@@ -75,6 +75,7 @@ class Login extends Component {
       if (res && res.status === 200) {
         reactLocalStorage.setObject("loginTime", new Date());
         this.setState({ isLoader: false, isSubmitted: false });
+
         let userDetail = formatLoginResult(res.data.Data);
         let departmentList = ''
         const dept = userDetail && userDetail.Department.map((item) => {

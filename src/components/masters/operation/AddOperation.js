@@ -22,13 +22,14 @@ import MasterSendForApproval from '../MasterSendForApproval'
 import { debounce } from 'lodash';
 import AsyncSelect from 'react-select/async';
 import LoaderCustom from '../../common/LoaderCustom';
-import { CheckApprovalApplicableMaster, onFocus, showDataOnHover } from '../../../helper';
-import { masterFinalLevelUser } from '../actions/Material'
+import { CheckApprovalApplicableMaster, onFocus, showDataOnHover, userTechnologyDetailByMasterId } from '../../../helper';
 import { getCostingSpecificTechnology } from '../../costing/actions/Costing'
 import { getClientSelectList, } from '../actions/Client';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { autoCompleteDropdown } from '../../common/CommonFunctions';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
+import { checkFinalUser } from '../../../components/costing/actions/Costing'
+import { getUsersMasterLevelAPI } from '../../../actions/auth/AuthActions';
 
 const selector = formValueSelector('AddOperation');
 
@@ -82,7 +83,9 @@ class AddOperation extends Component {
       operationName: '',
       operationCode: '',
       finalApprovalLoader: false,
-      showPopup: false
+      showPopup: false,
+      levelDetails: {},
+      noApprovalCycle: false
     }
   }
 
@@ -101,34 +104,56 @@ class AddOperation extends Component {
    * @description called after render the component
    */
   componentDidMount() {
+    const { initialConfiguration } = this.props
     if (!(this.props.data.isEditFlag || this.props.data.isViewFlag)) {
       this.props.getCostingSpecificTechnology(loggedInUserId(), () => { })
       this.props.getPlantSelectListByType(ZBC, () => { })
       this.props.getClientSelectList(() => { })
     }
-    if (!this.state.isViewMode) {
-      let obj = {
-        MasterId: OPERATIONS_ID,
-        DepartmentId: userDetails()?.DepartmentId,
-        LoggedInUserLevelId: userDetails()?.LoggedInMasterLevelId,
-        LoggedInUserId: loggedInUserId()
-      }
-      this.setState({ finalApprovalLoader: true })
-      this.props.masterFinalLevelUser(obj, (res) => {
-        if (res.data.Result) {
-          this.setState({ isFinalApprovar: res.data.Data.IsFinalApprovar })
-          this.setState({ finalApprovalLoader: false })
-        }
+    if (!this.state.isViewMode && initialConfiguration.IsMasterApprovalAppliedConfigure) {
+      this.props.getUsersMasterLevelAPI(loggedInUserId(), OPERATIONS_ID, (res) => {
+        setTimeout(() => {
+          this.commonFunction()
+        }, 100);
       })
     }
     this.getDetail()
   }
 
-  componentDidUpdate(prevProps) {
+  commonFunction() {
+    let levelDetailsTemp = []
+    levelDetailsTemp = userTechnologyDetailByMasterId(this.state.costingTypeId, OPERATIONS_ID, this.props.userMasterLevelAPI)
+    this.setState({ levelDetails: levelDetailsTemp })
+    if (levelDetailsTemp?.length !== 0) {
+      let obj = {
+        TechnologyId: OPERATIONS_ID,
+        DepartmentId: userDetails().DepartmentId,
+        UserId: loggedInUserId(),
+        Mode: 'master',
+        approvalTypeId: this.state.costingTypeId
+      }
+      this.setState({ finalApprovalLoader: true })
+      this.props.checkFinalUser(obj, (res) => {
+        if (res?.data?.Result) {
+          this.setState({ isFinalApprovar: res?.data?.Data?.IsFinalApprover })
+          this.setState({ finalApprovalLoader: false })
+        }
+      })
+      this.setState({ noApprovalCycle: false })
+    } else {
+      this.setState({ noApprovalCycle: true })
+    }
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    const { initialConfiguration } = this.props
     if (prevProps.filedObj !== this.props.filedObj) {
       const { filedObj } = this.props;
       if (filedObj && filedObj !== undefined && filedObj.length > 4) {
       }
+    }
+    if ((prevState?.costingTypeId !== this.state.costingTypeId) && initialConfiguration.IsMasterApprovalAppliedConfigure) {
+      this.commonFunction()
     }
   }
   componentWillUnmount() {
@@ -777,7 +802,7 @@ class AddOperation extends Component {
   */
   render() {
     const { handleSubmit, initialConfiguration, isOperationAssociated } = this.props;
-    const { isEditFlag, isOpenVendor, isOpenUOM, costingTypeId, isDisableCode, isViewMode, setDisable } = this.state;
+    const { isEditFlag, isOpenVendor, isOpenUOM, costingTypeId, isDisableCode, isViewMode, setDisable, noApprovalCycle } = this.state;
     const filterList = async (inputValue) => {
       const { vendorName } = this.state
       const resultInput = inputValue.slice(0, searchCount)
@@ -956,7 +981,6 @@ class AddOperation extends Component {
                             optionLabel={(option) => option.Text}
                             component={renderMultiSelectField}
                             validate={this.state.selectedPlants == null || this.state.selectedPlants.length === 0 ? [required] : []}
-                            mendatory={true}
                             className="multiselect-with-border"
                             disabled={isEditFlag ? true : false}
                           />
@@ -1222,10 +1246,10 @@ class AddOperation extends Component {
                         <div className={"cancel-icon"}></div>
                         {"Cancel"}
                       </button>
-                      {!isViewMode && (CheckApprovalApplicableMaster(OPERATIONS_ID) === true && !this.state.isFinalApprovar) ?
+                      {!isViewMode && (CheckApprovalApplicableMaster(OPERATIONS_ID) === true && !this.state.isFinalApprovar) && initialConfiguration.IsMasterApprovalAppliedConfigure ?
                         <button type="submit"
                           class="user-btn approval-btn save-btn mr5"
-                          disabled={isViewMode || setDisable}
+                          disabled={isViewMode || setDisable || noApprovalCycle}
                         >
                           <div className="send-for-approval"></div>
                           {'Send For Approval'}
@@ -1234,7 +1258,7 @@ class AddOperation extends Component {
                         <button
                           type="submit"
                           className="user-btn mr5 save-btn"
-                          disabled={isViewMode || setDisable}
+                          disabled={isViewMode || setDisable || noApprovalCycle}
                         >
                           <div className={"save-icon"}></div>
                           {isEditFlag ? "Update" : "Save"}
@@ -1284,6 +1308,8 @@ class AddOperation extends Component {
               approvalObj={this.state.approvalObj}
               isBulkUpload={false}
               IsImportEntery={false}
+              costingTypeId={this.state.costingTypeId}
+              levelDetails={this.state.levelDetails}
             />
           )
         }
@@ -1302,8 +1328,8 @@ function mapStateToProps(state) {
   const filedObj = selector(state, 'OperationCode', 'text');
   const { plantSelectList, filterPlantList, UOMSelectList, } = comman;
   const { operationData } = otherOperation;
-  const { vendorWithVendorCodeSelectList } = supplier
-  const { initialConfiguration } = auth;
+  const { vendorWithVendorCodeSelectList } = supplier;
+  const { initialConfiguration, userMasterLevelAPI } = auth;
   const { costingSpecifiTechnology } = costing
   const { clientSelectList } = client;
 
@@ -1322,7 +1348,7 @@ function mapStateToProps(state) {
   return {
     plantSelectList, UOMSelectList,
     operationData, filterPlantList, vendorWithVendorCodeSelectList, filedObj,
-    initialValues, initialConfiguration, costingSpecifiTechnology, clientSelectList
+    initialValues, initialConfiguration, costingSpecifiTechnology, clientSelectList, userMasterLevelAPI
   }
 }
 
@@ -1342,10 +1368,11 @@ export default connect(mapStateToProps, {
   getOperationDataAPI,
   fileUploadOperation,
   fileDeleteOperation,
-  masterFinalLevelUser,
+  checkFinalUser,
   checkAndGetOperationCode,
   getCostingSpecificTechnology,
-  getClientSelectList
+  getClientSelectList,
+  getUsersMasterLevelAPI
 })(reduxForm({
   form: 'AddOperation',
   touchOnChange: true,

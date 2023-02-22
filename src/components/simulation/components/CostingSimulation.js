@@ -7,15 +7,15 @@ import { BOPDOMESTIC, BOPIMPORT, COSTINGSIMULATIONROUND, TOFIXEDVALUE, EMPTY_DAT
 import { getComparisionSimulationData, getCostingBoughtOutPartSimulationList, getCostingSimulationList, getCostingSurfaceTreatmentSimulationList, setShowSimulationPage, getSimulatedAssemblyWiseImpactDate, getImpactedMasterData, getExchangeCostingSimulationList, getMachineRateCostingSimulationList, getCombinedProcessCostingSimulationList, getAllMultiTechnologyCostings, getAllSimulatedMultiTechnologyCosting } from '../actions/Simulation';
 import ApproveRejectDrawer from '../../costing/components/approval/ApproveRejectDrawer'
 import CostingDetailSimulationDrawer from './CostingDetailSimulationDrawer'
-import { checkForDecimalAndNull, checkForNull, formViewData, getConfigurationKey, searchNocontentFilter, userDetails } from '../../../helper';
+import { checkForDecimalAndNull, checkForNull, formViewData, getConfigurationKey, loggedInUserId, searchNocontentFilter, userDetails } from '../../../helper';
 import VerifyImpactDrawer from './VerifyImpactDrawer';
 import { EMPTY_GUID, AssemblyWiseImpactt } from '../../../config/constants';
 import Toaster from '../../common/Toaster';
 import { Redirect } from 'react-router';
-import { setCostingViewData } from '../../costing/actions/Costing';
+import { checkFinalUser, setCostingViewData } from '../../costing/actions/Costing';
 import { toast } from 'react-toastify';
 import {
-    ASSEMBLY_TECHNOLOGY,
+    ASSEMBLY_TECHNOLOGY_MASTER,
     ASSEMBLY_WISEIMPACT_DOWNLOAD_EXCEl,
     BOPGridForToken,
     COMBINEDPROCESSSIMULATION,
@@ -98,6 +98,7 @@ function CostingSimulation(props) {
     const [rejectedList, setRejectedList] = useState([]);
     const [sendInAPIState, setSendInAPIState] = useState([]);
     const [isMultipleMasterSimulation, setIsMultipleMasterSimulation] = useState(false);
+    const [isFinalLevelApprover, setIsFinalLevelApprover] = useState(false);
 
     const isSurfaceTreatment = (Number(master) === Number(SURFACETREATMENT));
     const isOperation = (Number(master) === Number(OPERATIONS));
@@ -116,7 +117,8 @@ function CostingSimulation(props) {
     const costingSimulationListAllKeys = useSelector(state => state.simulation.costingSimulationListAllKeys)
 
     const selectedMasterForSimulation = useSelector(state => state.simulation.selectedMasterForSimulation)
-    const isMultiTechnology = (checkForNull(selectedMasterForSimulation?.value) === ASSEMBLY_TECHNOLOGY) ? true : false
+    const isMultiTechnology = (checkForNull(selectedMasterForSimulation?.value) === ASSEMBLY_TECHNOLOGY_MASTER) ? true : false
+    const userData = userDetails()
 
     const dispatch = useDispatch()
 
@@ -142,6 +144,25 @@ function CostingSimulation(props) {
             })
         }
     }, [])
+
+    useEffect(() => {
+        if (SimulationTechnologyIdState) {
+            let obj = {
+                DepartmentId: userData.DepartmentId,
+                UserId: loggedInUserId(),
+                TechnologyId: SimulationTechnologyIdState,
+                Mode: 'simulation',
+                approvalTypeId: amendmentDetails.SimulationHeadId
+            }
+
+            dispatch(checkFinalUser(obj, res => {
+                if (res && res.data && res.data.Result) {
+                    setIsFinalLevelApprover(res.data.Data?.IsFinalApprover)
+                }
+            }))
+        }
+        console.log('amendmentDetails.SimulationHeadId: ', amendmentDetails.SimulationHeadId);
+    }, [SimulationTechnologyIdState, amendmentDetails.SimulationHeadId])
 
     useEffect(() => {
         // TO CHECK IF ANY OF THE RECORD HAS ASSEMBLY ROW
@@ -1473,7 +1494,7 @@ function CostingSimulation(props) {
                                         <button
                                             class="user-btn approval-btn mr5"
                                             onClick={() => { setIsApprovalDrawer(true) }}
-                                            disabled={selectedRowData && selectedRowData.length === 0 ? true : disableApproveButton ? true : false}
+                                            disabled={((selectedRowData && selectedRowData.length === 0) || isFinalLevelApprover) ? true : disableApproveButton ? true : false}
                                             title="Send For Approval"
                                         >
                                             <div className="send-for-approval"></div>
@@ -1515,6 +1536,7 @@ function CostingSimulation(props) {
                                     closeDrawer={closeDrawer}
                                     isSimulation={true}
                                     apiData={apiData}
+                                    costingTypeId={amendmentDetails.SimulationHeadId}
                                 // isSaveDone={isSaveDone}
                                 />
                             }

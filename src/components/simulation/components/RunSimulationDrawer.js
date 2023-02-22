@@ -7,7 +7,7 @@ import { useDispatch, useSelector } from 'react-redux';
 //import CostingSimulation from './CostingSimulation';
 import { runSimulationOnSelectedCosting, getSelectListOfSimulationApplicability, runSimulationOnSelectedExchangeCosting, runSimulationOnSelectedCombinedProcessCosting, runSimulationOnSelectedSurfaceTreatmentCosting, runSimulationOnSelectedMachineRateCosting, runSimulationOnSelectedBoughtOutPartCosting, runSimulationOnSelectedAssemblyTechnologyCosting } from '../actions/Simulation';
 import DayTime from '../../common/DayTimeWrapper'
-import { EXCHNAGERATE, COMBINED_PROCESS, RMDOMESTIC, RMIMPORT, OPERATIONS, SURFACETREATMENT, MACHINERATE, BOPDOMESTIC, BOPIMPORT } from '../../../config/constants';
+import { EXCHNAGERATE, COMBINED_PROCESS, RMDOMESTIC, RMIMPORT, OPERATIONS, SURFACETREATMENT, MACHINERATE, BOPDOMESTIC, BOPIMPORT, SIMULATION } from '../../../config/constants';
 import { NumberFieldHookForm, SearchableSelectHookForm } from '../../layout/HookFormInputs';
 import { TextFieldHookForm, } from '../../layout/HookFormInputs';
 import { checkForNull, getConfigurationKey, setValueAccToUOM } from '../../../helper';
@@ -17,18 +17,20 @@ import { Fragment } from 'react';
 import { debounce } from 'lodash';
 import WarningMessage from '../../common/WarningMessage';
 import DatePicker from "react-datepicker";
-import { ASSEMBLY_TECHNOLOGY, IdForMultiTechnology } from '../../../config/masterData';
+import { ASSEMBLY_TECHNOLOGY_MASTER } from '../../../config/masterData';
+import PopupMsgWrapper from '../../common/PopupMsgWrapper';
+import { MESSAGES } from '../../../config/message';
 
 function RunSimulationDrawer(props) {
     const { objs, masterId, date } = props
 
+    const { topAndLeftMenuData } = useSelector(state => state.auth);
     const { register, control, formState: { errors }, handleSubmit, getValues, setValue } = useForm({
         mode: 'onChange',
         reValidateMode: 'onChange',
     })
 
     const dispatch = useDispatch()
-
     const [multipleHeads, setMultipleHeads] = useState([])
     const [opposite, setIsOpposite] = useState(false)
     const [selectedData, setSelectedData] = useState([])
@@ -44,7 +46,6 @@ function RunSimulationDrawer(props) {
     const [disableDiscountAndOtherCostSecond, setDisableDiscountAndOtherCostSecond] = useState(false)
     const [otherCostApplicability, setOtherCostApplicability] = useState([])
     const [discountCostApplicability, setDiscountCostApplicability] = useState([])
-
     const [toolCostApplicability, setToolCostApplicablity] = useState([])
     const [packagingCostApplicability, setPackagingCostApplicablity] = useState([])
     const [freightCostApplicability, setFreightCostApplicablity] = useState([])
@@ -60,7 +61,8 @@ function RunSimulationDrawer(props) {
     const [disableAdditionalFreight, setDisableAdditionalFreight] = useState(false)
     const [disablePackaging, setDisablePackaging] = useState(false)
     const [disableAdditionalPackaging, setDisableAdditionalPackaging] = useState(false)
-
+    const [showPopup, setShowPopup] = useState(false)
+    const [isProvisionalAccessibility, setIsProvisionalAccessibility] = useState(false)
     const selectedMasterForSimulation = useSelector(state => state.simulation.selectedMasterForSimulation)
     const selectedTechnologyForSimulation = useSelector(state => state.simulation.selectedTechnologyForSimulation)
 
@@ -69,6 +71,57 @@ function RunSimulationDrawer(props) {
         // dispatch(getSelectListOfSimulationLinkingTokens(vendorId, simulationTechnologyId, () => { }))
 
     }, [])
+
+
+    useEffect(() => {
+        if (topAndLeftMenuData) {
+            const simulationData = topAndLeftMenuData && topAndLeftMenuData.find(el => el.ModuleName === SIMULATION)
+            let master;
+            switch (masterId) {
+                case '1':
+                    master = 'RM Domestic'
+                    break;
+                case '2':
+                    master = 'RM Import'
+                    break;
+                case '3':
+                    master = 'Combined'
+                    break;
+                case '4':
+                    master = 'BOP Domestic'
+                    break;
+                case '5':
+                    master = 'BOP Import'
+                    break;
+                case '6':
+                    master = 'Operations'
+                    break;
+                case '7':
+                    master = 'Surface'
+                    break;
+                case '8':
+                    master = 'Exchange'
+                    break;
+                case '9':
+                    master = 'Machine'
+                    break;
+                default:
+                    master = 'RM'
+                    break;
+            }
+
+            simulationData?.Pages?.map((item) => {
+                if (item.PageName.includes(master)) {
+                    item.Actions.map((ele) => {
+                        if (ele.ActionName === 'Provisional') {
+                            setIsProvisionalAccessibility(ele?.IsChecked)
+                        }
+                    })
+                }
+            })
+        }
+    }, [topAndLeftMenuData])
+
     const costingHead = useSelector(state => state.comman.costingHead)
     const { applicabilityHeadListSimulation } = useSelector(state => state.simulation)
     const toggleDrawer = (event, mode = false) => {
@@ -144,11 +197,13 @@ function RunSimulationDrawer(props) {
 
     const handleAdditional = (value) => {
         if (value === 'Tool') {
-            if (additionalTool) {
-                setValue('ToolCostApplicability', "")
+            setShowPopup(true)
+            if (showPopup) {
+                if (additionalTool) {
+                    setValue('ToolCostApplicability', "")
+                }
             }
-            setAdditionalTool(!additionalTool)
-            setDisableTool(!disableTool)
+
 
         } else if (value === 'Packaging') {
             if (additionalPackaging) {
@@ -193,6 +248,7 @@ function RunSimulationDrawer(props) {
         const Packaging = selectedData.includes("Packaging")
         const Freight = selectedData.includes("Freight")
         const BOPHandlingCharge = selectedData.includes("BOP Handling Charge")
+        const LatestExchangeRate = selectedData.includes("Latest Exchange Rate")
 
         let temp = []
         obj.IsOverhead = Overhead
@@ -225,11 +281,12 @@ function RunSimulationDrawer(props) {
         obj.AdditionalFreightApplicability = freightCostApplicability.label
         obj.IsAdditionalFreight = additionalFreight
         obj.AdditionalFreightValue = toggleSwitchAdditionalFreight ? getValues("FreightPercent") : getValues("Freight")
+        obj.IsApplyLatestExchangeRate = LatestExchangeRate
 
         // obj.IsProvisional = provisionalCheck
         // obj.LinkingTokenNumber = linkingTokenNumber != '' ? linkingTokenNumber : tokenNo
         temp.push(obj)
-        if (checkForNull(selectedMasterForSimulation.value) === ASSEMBLY_TECHNOLOGY) {
+        if (checkForNull(selectedMasterForSimulation.value) === ASSEMBLY_TECHNOLOGY_MASTER) {
             dispatch(runSimulationOnSelectedAssemblyTechnologyCosting({ ...objs, EffectiveDate: DayTime(date !== null ? date : "").format('YYYY/MM/DD HH:mm'), IsProvisional: provisionalCheck, SimulationApplicability: temp, SimulationId: props?.token }, (res) => {
                 checkForResponse(res)
             }))
@@ -373,6 +430,15 @@ function RunSimulationDrawer(props) {
     const handleFreightCostApplicabilityChange = (value) => {
         setFreightCostApplicablity(value)
     }
+    const onPopupConfirm = () => {
+        setAdditionalTool(!additionalTool)
+        setDisableTool(!disableTool)
+        setShowPopup(false)
+    }
+
+    const closePopUp = () => {
+        setShowPopup(false)
+    }
 
     return (
         <>
@@ -422,7 +488,6 @@ function RunSimulationDrawer(props) {
                                                                         onChange={() => handleApplicabilityChange(el)}
                                                                     >
                                                                         {el.Text}
-
                                                                         <input
                                                                             type="checkbox"
                                                                             value={"All"}
@@ -875,7 +940,7 @@ function RunSimulationDrawer(props) {
                                                     </div>
                                                 </Col>
 
-                                                <Col md="12" className={`mb-3 p-0 ${!getConfigurationKey().IsProvisionalSimulation ? 'mb-4 pb-2' : ''}`}>
+                                                <Col md="12" className={`p-0 pb-3 ${!getConfigurationKey().IsProvisionalSimulation ? 'mb-4 pb-2' : ''}`}>
                                                     <div class={`custom-check1 d-inline-block drawer-side-input-other `}>
                                                         {(
                                                             <div className="input-group col-md-12 mb-3 px-0 m-height-auto">
@@ -889,11 +954,11 @@ function RunSimulationDrawer(props) {
                                                                         type="checkbox"
                                                                         //value={"All"}
                                                                         disabled={disableAdditionalTool}
-                                                                    //checked={IsAvailable(el.Value)}
+                                                                        checked={additionalTool}
                                                                     />
                                                                     <span
                                                                         className=" before-box"
-                                                                        // checked={IsAvailable(el.Value)}
+                                                                        checked={additionalTool}
                                                                         onChange={() => handleAdditional('Tool')}
                                                                     />
                                                                 </label>
@@ -905,7 +970,7 @@ function RunSimulationDrawer(props) {
 
                                                             <Fragment>
                                                                 <div className="toggle-button-per-and-fix">
-                                                                    <label className="normal-switch d-flex align-items-center pb-4 pt-3 w-fit"> <span className="mr-2">Fixed</span>
+                                                                    <label className="normal-switch d-flex align-items-center pb-5 pt-3 w-fit"> <span className="mr-2">Fixed</span>
                                                                         <Switch
                                                                             onChange={onChangeAdditionalTool}
                                                                             checked={toggleSwitchAdditionalTool}
@@ -999,7 +1064,7 @@ function RunSimulationDrawer(props) {
                                             </Row>
 
 
-                                            {getConfigurationKey().IsProvisionalSimulation && (
+                                            {getConfigurationKey().IsProvisionalSimulation && isProvisionalAccessibility && (
                                                 <Row>
                                                     <div className="input-group col-md-12 mb-3 px-0 m-height-auto">
                                                         <label
@@ -1070,7 +1135,9 @@ function RunSimulationDrawer(props) {
                         </Container>
                     </Drawer>
                 </>
-
+                {
+                    showPopup && <PopupMsgWrapper isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={MESSAGES.SIMULATION_TOOLCOST_POPUP_MESSAGE} />
+                }
             </div>
         </>
     );

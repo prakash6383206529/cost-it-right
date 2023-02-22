@@ -10,8 +10,8 @@ import {
 } from '../config/constants'
 import { getConfigurationKey } from './auth'
 import _ from 'lodash';
-
-
+import { useDispatch } from 'react-redux';
+import { getUsersSimulationTechnologyLevelAPI } from '../actions/auth/AuthActions'
 
 /**
  * @method  apiErrors
@@ -584,6 +584,9 @@ export function formViewData(costingSummary, header = '') {
   obj.RawMaterialCalculatorId = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.RawMaterialCalculatorId ? dataFromAPI?.CostingPartDetails?.RawMaterialCalculatorId : 0
   obj.modelType = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.ModelType ? dataFromAPI?.CostingPartDetails?.ModelType : '-'
   obj.aValue = { applicability: 'Applicability', value: 'Value', }
+  obj.ForgingScrapWeight = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingRawMaterialsCost.length > 0 ? dataFromAPI?.CostingPartDetails?.CostingRawMaterialsCost[0].ForgingScrapWeight : '-'
+  obj.MachiningScrapWeight = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingRawMaterialsCost.length > 0 ? dataFromAPI?.CostingPartDetails?.CostingRawMaterialsCost[0].MachiningScrapWeight : '-'
+
   obj.overheadOn = {
     overheadTitle: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingOverheadDetail !== null && dataFromAPI?.CostingPartDetails?.CostingOverheadDetail.OverheadApplicability !== null ? dataFromAPI?.CostingPartDetails?.CostingOverheadDetail.OverheadApplicability : '-',
     overheadValue: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetOverheadCost !== null ? dataFromAPI?.CostingPartDetails?.NetOverheadCost : '-'
@@ -720,7 +723,7 @@ export function formViewData(costingSummary, header = '') {
   obj.costingHeadCheck = dataFromAPI.CostingHead && dataFromAPI.CostingHead !== null ? dataFromAPI.CostingHead : '';
   obj.NCCPartQuantity = dataFromAPI.NCCPartQuantity && dataFromAPI.NCCPartQuantity !== null ? dataFromAPI.NCCPartQuantity : '';
   obj.IsRegularized = dataFromAPI.IsRegularized && dataFromAPI.IsRegularized !== null ? dataFromAPI.IsRegularized : '';
-
+  obj.MachiningScrapRate = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingRawMaterialsCost.length > 0 ? dataFromAPI?.CostingPartDetails?.CostingRawMaterialsCost[0].MachiningScrapRate : '-'
   // GETTING WARNING MESSAGE WITH APPROVER NAME AND LEVEL WHEN COSTING IS UNDER APPROVAL 
   obj.getApprovalLockedMessage = dataFromAPI.ApprovalLockedMessage && dataFromAPI.ApprovalLockedMessage !== null ? dataFromAPI.ApprovalLockedMessage : '';
 
@@ -750,7 +753,7 @@ export function formViewData(costingSummary, header = '') {
   obj.otherDiscountCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.OtherCostDetails.HundiOrDiscountValue !== null ? dataFromAPI?.CostingPartDetails?.OtherCostDetails.HundiOrDiscountValue : 0
   obj.currencyTitle = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.OtherCostDetails.Currency !== null ? dataFromAPI?.CostingPartDetails?.OtherCostDetails.Currency : '-'
   obj.costingHead = dataFromAPI.TypeOfCosting && dataFromAPI.TypeOfCosting === 0 ? 'ZBC' : 'VBC'
-  obj.costingVersion = `${DayTime(obj?.costingDate).format('DD-MM-YYYY')}-${obj?.CostingNumber}-${obj?.status}`
+  obj.costingVersion = `${DayTime(obj?.costingDate).format('DD-MM-YYYY')}-${obj?.CostingNumber}${header === 'CostingSummaryMainPage' ? '-' : ''}${header === 'CostingSummaryMainPage' ? obj?.status : ''}`
   obj.PoPriceWithDate = `${obj?.poPrice} (${(obj?.effectiveDate && obj?.effectiveDate !== '') ? DayTime(obj?.effectiveDate).format('DD-MM-YYYY') : "-"})`
   obj.rmRate = obj?.netRMCostView && (obj?.netRMCostView.length > 1 || obj?.IsAssemblyCosting === true) ? 'Multiple RM' : (obj?.netRMCostView && obj?.netRMCostView[0] && obj?.netRMCostView[0].RMRate)
   obj.scrapRate = obj?.netRMCostView && (obj?.netRMCostView.length > 1 || obj?.IsAssemblyCosting === true) ? 'Multiple RM' : (obj?.netRMCostView && obj?.netRMCostView[0] && obj?.netRMCostView[0].ScrapRate)
@@ -1102,4 +1105,36 @@ export const highlightCostingSummaryValue = (oldValue, newValue) => {
   let className = getOldValue === getNewValue ? '' : getOldValue > getNewValue ? 'green-text' : 'red-text';
 
   return className;
+}
+
+export function addDays(theDate, days) {
+  return new Date(theDate.getTime() + days * 24 * 60 * 60 * 1000);
+}
+
+export function ceilByMultiple(number, multiple = 0.25) {
+  var inv = 1.0 / multiple;
+  return (Math.ceil(number * inv) / inv).toFixed(getConfigurationKey().NoOfDecimalForInputOutput);
+}
+
+export function userTechnologyLevelDetails(approvalTypeId, data = []) {
+  let dataList = [...data]
+  let filteredData = dataList?.filter(element => element.ApprovalTypeId === approvalTypeId)
+  let obj = {
+    Level: filteredData[0]?.Level,
+    LevelId: filteredData[0]?.LevelId,
+    ApprovalTypeId: filteredData[0]?.ApprovalTypeId
+  }
+  return obj
+}
+
+export function userTechnologyDetailByMasterId(costingTypeId, masterId, data = []) {
+  let dataList = [...data]
+  let filteredData = dataList?.filter(element => (element.MasterId === masterId && element.ApprovalTypeId === costingTypeId))
+  let obj = {
+    Level: filteredData[0]?.Level,
+    LevelId: filteredData[0]?.LevelId,
+    ApprovalTypeId: filteredData[0]?.ApprovalTypeId,
+    length: filteredData?.length
+  }
+  return obj
 }

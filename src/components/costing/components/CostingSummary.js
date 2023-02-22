@@ -59,7 +59,7 @@ function CostingSummary(props) {
       dispatch(getSingleCostingDetails(costingData.CostingId, (res) => {
         if (res.data.Data) {
           let dataFromAPI = res.data.Data
-          const tempObj = formViewData(dataFromAPI)
+          const tempObj = formViewData(dataFromAPI, 'CostingSummaryMainPage')
           dispatch(setCostingViewData(tempObj))
         }
         // history.push("/costing-summary");
@@ -112,7 +112,7 @@ function CostingSummary(props) {
           dispatch(getSingleCostingDetails(costingData.CostingId, (res) => {
             if (res.data.Data) {
               let dataFromAPI = res.data.Data
-              const tempObj = formViewData(dataFromAPI)
+              const tempObj = formViewData(dataFromAPI, 'CostingSummaryMainPage')
               dispatch(setCostingViewData(tempObj))
             }
           },
@@ -243,7 +243,7 @@ function CostingSummary(props) {
                               // dispatch(getSingleCostingDetails('5cdcad92-277f-48e2-8eb2-7a7c838104e1', res => {
                               if (res.data.Data) {
                                 let dataFromAPI = res.data.Data
-                                const tempObj = formViewData(dataFromAPI)
+                                const tempObj = formViewData(dataFromAPI, 'CostingSummaryMainPage')
                                 dispatch(setCostingViewData(tempObj))
                                 setIsLoader(false)
                               }

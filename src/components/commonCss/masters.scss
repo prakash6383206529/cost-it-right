@@ -134,3 +134,41 @@
     }
   }
 }
+
+.budgeting-details {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  margin-bottom: 15px;
+
+  .withBorder {
+    min-height: auto !important;
+    margin-bottom: 0 !important;
+
+    input {
+      max-width: 130px;
+    }
+
+    label {
+      display: none;
+    }
+  }
+
+  label {
+    margin-right: 5px;
+    margin-bottom: 0 !important;
+  }
+
+}
+
+.budgeting-table {
+  .ag-paging-panel {
+    display: none;
+  }
+}
+
+.budget-tick-btn {
+  position: absolute !important;
+  top: 32px;
+  right: -50px;
+}

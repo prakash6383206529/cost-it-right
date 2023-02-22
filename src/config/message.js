@@ -306,6 +306,10 @@ export const MESSAGES = {
   DELETE_VOLUME_SUCCESS: 'Volume deleted successfully',
   VOLUME_UPDATE_SUCCESS: 'Actual/Budget Volume updated successfully',
 
+  //BUDGET MASTER
+  BUDGET_ADD_SUCCESS: 'Budget created successfully',
+  BUDGET_UPDATE_SUCCESS: 'Budget updated successfully',
+
   //CLIENT MASTER
   CLIENT_ADD_SUCCESS: 'Customer added successfully',
   CLIENT_DELETE_ALERT: 'Are you sure you want to delete this Customer?',
@@ -333,7 +337,7 @@ export const MESSAGES = {
   TOOL_TAB_COSTING_SAVE_SUCCESS: 'Tool Cost saved successfully.',
   RMCC_TAB_COSTING_SAVE_SUCCESS: 'RM CC BOP Cost saved successfully.',
   COSTING_DELETE_ALERT: 'Are you sure you want to delete costing?',
-
+  SIMULATION_TOOLCOST_POPUP_MESSAGE: 'Overhead and Profit will not get change if tool cost is included in overhead and profit in a costing. Do you wish to continue?',
 
   //RFQ
   RFQ_ADD_SUCCESS: 'RFQ details added successfully',

@@ -58,7 +58,8 @@ import {
   IS_RESET,
   GET_GRID_HEIGHT,
   GET_STATE_WHILE_DOWNLOADING,
-  GET_REPORTER_LIST
+  GET_REPORTER_LIST,
+  GET_APPROVAL_TYPE_SELECT_LIST
 } from '../config/constants';
 
 const initialState = {
@@ -475,6 +476,11 @@ export default function commanReducer(state = initialState, action) {
       return {
         ...state,
         disabledClass: action.payload
+      }
+    case GET_APPROVAL_TYPE_SELECT_LIST:
+      return {
+        ...state,
+        approvalTypeSelectList: action.payload
       }
     default:
       return state;

@@ -8,8 +8,8 @@ import ViewDrawer from '../../costing/components/approval/ViewDrawer'
 import { useDispatch, useSelector } from 'react-redux'
 import {
     SIMULATIONAPPROVALSUMMARYDOWNLOADBOP, BOPGridForTokenSummary, InitialGridForTokenSummary,
-    LastGridForTokenSummary, OperationGridForTokenSummary, RMGridForTokenSummary, STGridForTokenSummary, MRGridForTokenSummary,
-    SIMULATIONAPPROVALSUMMARYDOWNLOADST, ASSEMBLY_WISEIMPACT_DOWNLOAD_EXCEl, CPGridForTokenSummary, SIMULATIONAPPROVALSUMMARYDOWNLOADOPERATION, SIMULATIONAPPROVALSUMMARYDOWNLOADMR, IdForMultiTechnology, SIMULATIONAPPROVALSUMMARYDOWNLOADASSEMBLYTECHNOLOGY, SIMULATIONAPPROVALSUMMARYDOWNLOADCP, ASSEMBLY_TECHNOLOGY
+    LastGridForTokenSummary, OperationGridForTokenSummary, RMGridForTokenSummary, STGridForTokenSummary,
+    SIMULATIONAPPROVALSUMMARYDOWNLOADST, ASSEMBLY_WISEIMPACT_DOWNLOAD_EXCEl, CPGridForTokenSummary, SIMULATIONAPPROVALSUMMARYDOWNLOADOPERATION, SIMULATIONAPPROVALSUMMARYDOWNLOADMR, MRGridForTokenSummary, IdForMultiTechnology, SIMULATIONAPPROVALSUMMARYDOWNLOADASSEMBLYTECHNOLOGY, SIMULATIONAPPROVALSUMMARYDOWNLOADCP, ASSEMBLY_TECHNOLOGY, ASSEMBLY_TECHNOLOGY_MASTER
 } from '../../../config/masterData';
 import { getPlantSelectListByType, getTechnologySelectList } from '../../../actions/Common';
 import { getApprovalSimulatedCostingSummary, getComparisionSimulationData, setAttachmentFileData, getImpactedMasterData, getLastSimulationData, getSimulatedAssemblyWiseImpactDate } from '../actions/Simulation'
@@ -57,7 +57,7 @@ const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 function SimulationApprovalSummary(props) {
     // const { isDomestic, list, isbulkUpload, rowCount, technology, master } = props
     const { isbulkUpload, type } = props;
-    const { approvalNumber, approvalId, SimulationTechnologyId } = props.location.state
+    const { approvalNumber, approvalId, SimulationTechnologyId } = props?.location?.state
     const [showImpactedData, setshowImpactedData] = useState(false)
     const [fgWiseDataAcc, setFgWiseDataAcc] = useState(true)
     const [assemblyWiseAcc, setAssemblyWiseAcc] = useState(true)
@@ -108,10 +108,10 @@ function SimulationApprovalSummary(props) {
     const isExchangeRate = String(SimulationTechnologyId) === EXCHNAGERATE;
     const isMachineRate = String(SimulationTechnologyId) === MACHINERATE;
     const isCombinedProcess = String(SimulationTechnologyId) === COMBINED_PROCESS;
+    const isMultiTechnology = (checkForNull(simulationDetail?.SimulationTechnologyId) === ASSEMBLY_TECHNOLOGY_MASTER) ? true : false
 
     const simulationAssemblyListSummary = useSelector((state) => state.simulation.simulationAssemblyListSummary)
     const [isDisabled, setIsDisabled] = useState(false);
-    const isMultiTechnology = IdForMultiTechnology.includes(String(simulationDetail?.SimulationTechnologyId))
 
     // const partType = IdForMultiTechnology.includes(String(SimulationTechnologyIdState))
 
@@ -204,7 +204,8 @@ function SimulationApprovalSummary(props) {
                 DepartmentId: DepartmentId,
                 UserId: loggedInUserId(),
                 TechnologyId: SimulationTechnologyId,
-                Mode: 'simulation'
+                Mode: 'simulation',
+                approvalTypeId: SimulationHeadId,
             }
             dispatch(checkFinalUser(obj, res => {
                 if (res && res.data && res.data.Result) {
@@ -591,7 +592,7 @@ function SimulationApprovalSummary(props) {
     const POVarianceFormatter = (props) => {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         let variance = checkForDecimalAndNull(row.POVariance, getConfigurationKey().NoOfDecimalForPrice)
-        variance = variance > 0 ? `-${Math.abs(variance)}` : `+${Math.abs(variance)}`;
+        variance = variance > 0 ? `+${Math.abs(variance)}` : `-${Math.abs(variance)}`;
         return variance;
     }
 
@@ -921,7 +922,6 @@ function SimulationApprovalSummary(props) {
         ERvarianceFormatter: ERvarianceFormatter,
         impactPerQuarterFormatter: impactPerQuarterFormatter,
         bopNumberFormatter: bopNumberFormatter,
-        impactPerQuarterFormatter: impactPerQuarterFormatter,
         processCodeFormatter: processCodeFormatter,
         processNameFormatter: processNameFormatter,
         decimalFormatter: decimalFormatter
@@ -1015,7 +1015,7 @@ function SimulationApprovalSummary(props) {
                                             <th>Purchase Group:</th>
                                             {String(SimulationTechnologyId) !== EXCHNAGERATE && <th>Costing Head:</th>}
                                             <th>Vendor (Code):</th>
-                                            <th>No. of Costing:</th>
+                                            <th>Impacted Parts:</th>
                                             <th>Reason:</th>
                                             <th>Master:</th>
                                             <th>Effective Date:</th>
@@ -1206,7 +1206,7 @@ function SimulationApprovalSummary(props) {
                                                                 {String(SimulationTechnologyId) !== EXCHNAGERATE && <AgGridColumn width={140} field="BudgetedPriceVariance" headerName='Variance (w.r.t. Budgeted)' cellRenderer='impactPerQuarterFormatter'></AgGridColumn>}
                                                                 {(isRMDomesticOrRMImport || keysForDownloadSummary.IsRawMaterialSimulation) && <AgGridColumn width={140} field="OldNetRawMaterialsCost" cellRenderer='oldRMFormatter' headerName="Existing RM Cost/pc" ></AgGridColumn>}
                                                                 {(isRMDomesticOrRMImport || keysForDownloadSummary.IsRawMaterialSimulation) && <AgGridColumn width={140} field="NewNetRawMaterialsCost" cellRenderer='newRMFormatter' headerName="Revised RM Cost/pc" ></AgGridColumn>}
-                                                                {(isRMDomesticOrRMImport || keysForDownloadSummary.IsRawMaterialSimulation) && <AgGridColumn width={140} field="RMVariance" headerName="Variance (RM Cost)" cellRenderer='varianceFormatter' ></AgGridColumn>}
+                                                                {(isRMDomesticOrRMImport || keysForDownloadSummary.IsRawMaterialSimulation) && <AgGridColumn width={140} field="RMVariance" headerName="Variance (RM Cost)" cellRenderer='RMVarianceFormatter' ></AgGridColumn>}
 
                                                                 {(isExchangeRate || keysForDownloadSummary.IsExchangeRateSimulation) && <AgGridColumn width={140} field="OldNetPOPriceOtherCurrency" cellRenderer='oldPOCurrencyFormatter' headerName="Existing PO Price (in Currency)"></AgGridColumn>}
                                                                 {(isExchangeRate || keysForDownloadSummary.IsExchangeRateSimulation) && <AgGridColumn width={140} field="NewNetPOPriceOtherCurrency" cellRenderer='newPOCurrencyFormatter' headerName="Revised PO Price (in Currency)"></AgGridColumn>}
@@ -1214,7 +1214,7 @@ function SimulationApprovalSummary(props) {
                                                                 {(isExchangeRate || keysForDownloadSummary.IsExchangeRateSimulation) && <AgGridColumn width={140} field="BudgetedPriceVariance" headerName='Variance (w.r.t. Budgeted)' cellRenderer='impactPerQuarterFormatter'></AgGridColumn>}
                                                                 {(isExchangeRate || keysForDownloadSummary.IsExchangeRateSimulation) && <AgGridColumn width={140} field="OldExchangeRate" cellRenderer='oldERFormatter' headerName="Existing Exchange Rate" ></AgGridColumn>}
                                                                 {(isExchangeRate || keysForDownloadSummary.IsExchangeRateSimulation) && <AgGridColumn width={140} field="NewExchangeRate" cellRenderer='newERFormatter' headerName="Revised Exchange Rate" ></AgGridColumn>}
-                                                                {(isExchangeRate || keysForDownloadSummary.IsExchangeRateSimulation) && <AgGridColumn width={140} field="Variance" headerName="Variance (ER Cost)" cellRenderer='varianceFormatter' ></AgGridColumn>}
+                                                                {(isExchangeRate || keysForDownloadSummary.IsExchangeRateSimulation) && <AgGridColumn width={140} field="Variance" headerName="Variance (ER Cost)" cellRenderer='ERvarianceFormatter' ></AgGridColumn>}
 
                                                                 {(isBOPDomesticOrImport || keysForDownloadSummary.IsBoughtOutPartSimulation) && <AgGridColumn width={140} field="BoughtOutPartName" headerName="Bought Out Part Name" cellRenderer='bopNameFormatter'></AgGridColumn>}
                                                                 {(isBOPDomesticOrImport || keysForDownloadSummary.IsBoughtOutPartSimulation) && <AgGridColumn width={140} field="BoughtOutPartNumber" headerName="Bought Out Part Number" cellRenderer='bopNumberFormatter'></AgGridColumn>}
@@ -1500,6 +1500,8 @@ function SimulationApprovalSummary(props) {
                     IsFinalLevel={finalLeveluser}
                     costingList={costingList}
                     attachments={simulationDetail.Attachements}
+                    Attachements={simulationDetail.Attachements}
+                    costingTypeId={simulationDetail?.SimulationHeadId}
                 // IsPushDrawer={showPushDrawer}
                 // dataSend={[approvalDetails, partDetail]}
                 />
@@ -1515,9 +1517,11 @@ function SimulationApprovalSummary(props) {
                     //  tokenNo={approvalNumber}
                     anchor={'right'}
                     IsFinalLevel={!showFinalLevelButtons}
-                // reasonId={approvalDetails.ReasonId}
-                // IsPushDrawer={showPushDrawer}
-                // dataSend={[approvalDetails, partDetail]}
+                    // reasonId={approvalDetails.ReasonId}
+                    // IsPushDrawer={showPushDrawer}
+                    // dataSend={[approvalDetails, partDetail]}
+                    Attachements={simulationDetail.Attachements}
+                    costingTypeId={simulationDetail?.SimulationHeadId}
                 />
             }
 
@@ -1556,3 +1560,5 @@ function SimulationApprovalSummary(props) {
 }
 
 export default SimulationApprovalSummary;
+
+// CIR-I4244

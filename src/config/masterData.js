@@ -1,3 +1,4 @@
+import { reactLocalStorage } from 'reactjs-localstorage';
 import DayTime from '../components/common/DayTimeWrapper';
 /**
  * master listing used in Mass Upload
@@ -1502,7 +1503,7 @@ export const BOP_ZBC_IMPORT = [
     { label: 'Currency', value: 'Currency', }, //*
     // { label: 'MinimumOrderQuantity', value: 'MinimumOrderQuantity', }, 
     { label: 'IncoTerm', value: 'IncoTerm', },
-    { label: 'PaymentTerm', value: 'PaymentTerm', },
+    // { label: 'PaymentTerm', value: 'PaymentTerm', }, // FOR MINDA ONLY
     { label: 'BasicRate', value: 'BasicRate', }, //*
     { label: 'EffectiveDate', value: 'EffectiveDate', },
     { label: 'Remark', value: 'Remark' },
@@ -1520,7 +1521,7 @@ export const BOP_ZBC_IMPORT_TempData = [
         'VendorCode': 'VC1',
         'Currency': 'INR or USD',
         'IncoTerm': 'CFR',
-        'PaymentTerm': 'A000',
+        // 'PaymentTerm': 'A000',
         // 'MinimumOrderQuantity': '1',
         'BasicRate': '100',
         'EffectiveDate': DayTime().format('DD-MM-YYYY'),
@@ -1536,7 +1537,7 @@ export const BOP_ZBC_IMPORT_TempData = [
         'VendorCode': 'VC1',
         'Currency': 'INR or USD',
         'IncoTerm': 'CFR',
-        'PaymentTerm': 'A000',
+        // 'PaymentTerm': 'A000',
         // 'MinimumOrderQuantity': '1',
         'BasicRate': '100',
         'EffectiveDate': DayTime().format('DD-MM-YYYY'),
@@ -1552,7 +1553,7 @@ export const BOP_ZBC_IMPORT_TempData = [
         'VendorCode': 'VC1',
         'Currency': 'INR or USD',
         'IncoTerm': 'CFR',
-        'PaymentTerm': 'A000',
+        // 'PaymentTerm': 'A000',
         // 'MinimumOrderQuantity': '1',
         'BasicRate': '100',
         'EffectiveDate': DayTime().format('DD-MM-YYYY'),
@@ -1639,7 +1640,7 @@ export const BOP_VBC_IMPORT = [
     { label: 'SourceVendorLocation', value: 'SourceVendorLocation', },
     { label: 'Currency', value: 'Currency', }, //*
     { label: 'IncoTerm', value: 'IncoTerm', },
-    { label: 'PaymentTerm', value: 'PaymentTerm', },
+    // { label: 'PaymentTerm', value: 'PaymentTerm', },    // FOR MINDA ONLY 
     // { label: 'MinimumOrderQuantity', value: 'MinimumOrderQuantity', }, //*
     { label: 'BasicRate', value: 'BasicRate', }, //*
     { label: 'EffectiveDate', value: 'EffectiveDate', },
@@ -1661,7 +1662,7 @@ export const BOP_VBC_IMPORT_TempData = [
         'SourceVendorLocation': 'Jamshedpur',
         'Currency': 'INR or USD',
         'IncoTerm': 'CFR',
-        'PaymentTerm': 'A000',
+        // 'PaymentTerm': 'A000',
         'BasicRate': '100',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text'
@@ -1679,7 +1680,7 @@ export const BOP_VBC_IMPORT_TempData = [
         'SourceVendorLocation': 'Jamshedpur',
         'Currency': 'INR or USD',
         'IncoTerm': 'CFR',
-        'PaymentTerm': 'A000',
+        // 'PaymentTerm': 'A000',
         'BasicRate': '100',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text'
@@ -1697,7 +1698,7 @@ export const BOP_VBC_IMPORT_TempData = [
         'SourceVendorLocation': 'Jamshedpur',
         'Currency': 'INR or USD',
         'IncoTerm': 'CFR',
-        'PaymentTerm': 'A000',
+        // 'PaymentTerm': 'A000',
         'BasicRate': '100',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text'
@@ -1715,7 +1716,7 @@ export const BOP_CBC_IMPORT = [
     { label: 'CustomerCode', value: 'CustomerCode', }, //NOUI
     { label: 'Currency', value: 'Currency', }, //*
     { label: 'IncoTerm', value: 'IncoTerm', },
-    { label: 'PaymentTerm', value: 'PaymentTerm', },
+    // { label: 'PaymentTerm', value: 'PaymentTerm', },  // FOR MINDA ONLY 
     { label: 'BasicRate', value: 'BasicRate', }, //*
     { label: 'EffectiveDate', value: 'EffectiveDate', },
     { label: 'Remark', value: 'Remark' }
@@ -1734,7 +1735,7 @@ export const BOP_CBC_IMPORT_TempData = [
         "CustomerCode": "C-10008",
         'Currency': 'INR or USD',
         'IncoTerm': 'CFR',
-        'PaymentTerm': 'A000',
+        // 'PaymentTerm': 'A000',
         'BasicRate': '100',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text'
@@ -1750,7 +1751,7 @@ export const BOP_CBC_IMPORT_TempData = [
         "CustomerCode": "C-10008",
         'Currency': 'INR or USD',
         'IncoTerm': 'CFR',
-        'PaymentTerm': 'A000',
+        // 'PaymentTerm': 'A000',
         'BasicRate': '100',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text'
@@ -1766,7 +1767,7 @@ export const BOP_CBC_IMPORT_TempData = [
         "CustomerCode": "C-10008",
         'Currency': 'INR or USD',
         'IncoTerm': 'CFR',
-        'PaymentTerm': 'A000',
+        // 'PaymentTerm': 'A000',
         'BasicRate': '100',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text'
@@ -1936,6 +1937,105 @@ export const VOLUME_BUDGETED_CBC_TEMPDATA = [
         'BudgetedQuantity': 25,
     }
 ]
+
+
+//DYNAMIC BUDGET MASTER BULKUPLOAD COSTING HEADS
+let budgetCostingHeads = reactLocalStorage.getObject('budgetCostingHeads')
+
+export const BUDGET_ZBC = [
+    { label: 'PartCostingHead', value: 'PartCostingHead', },
+    { label: 'Year', value: 'Year', }, //*
+    { label: 'PartNumber', value: 'PartNumber', }, //*
+    { label: 'RevisionNumber', value: 'RevisionNumber', }, //*
+    { label: 'PlantCode', value: 'PlantCode', }, //*
+    { label: 'EffectiveDate', value: 'EffectiveDate', }, //
+    { label: 'Delta', value: 'Delta', }, //
+]
+
+let BUDGET_ZBC_DATA = []
+
+Array.isArray(budgetCostingHeads) && budgetCostingHeads.map((item, index) => {
+    BUDGET_ZBC_DATA.push(
+
+        {
+            'PartCostingHead': `${item.Text}`,
+            'Year': `${DayTime().$y}-${DayTime().$y + 1}`,
+            'PartNumber': 'Screw01',
+            'RevisionNumber': '1',
+            'PlantCode': '1032',
+            'EffectiveDate': DayTime().format('DD-MM-YYYY'),
+            'Delta': Number(25) + Number(index),
+        }
+    )
+
+})
+
+export const BUDGET_ZBC_TEMPDATA = BUDGET_ZBC_DATA
+
+export const BUDGET_VBC = [
+
+    { label: 'PartCostingHead', value: 'PartCostingHead', },
+    { label: 'Year', value: 'Year', }, //*
+    { label: 'PartNumber', value: 'PartNumber', }, //*
+    { label: 'RevisionNumber', value: 'RevisionNumber', }, //*
+    { label: 'PlantCode', value: 'PlantCode', }, //*
+    { label: 'VendorCode', value: 'VendorCode', }, //*
+    { label: 'EffectiveDate', value: 'EffectiveDate', }, //
+    { label: 'Delta', value: 'Delta', }, //NOUI
+
+]
+
+let BUDGET_VBC_DATA = []
+
+Array.isArray(budgetCostingHeads) && budgetCostingHeads.map((item, index) => {
+    BUDGET_VBC_DATA.push(
+        {
+            'PartCostingHead': `${item.Text}`,
+            'Year': `${DayTime().$y}-${DayTime().$y + 1}`,
+            'PartNumber': 'Screw01',
+            'RevisionNumber': '1',
+            'VendorCode': "Tata01",
+            'PlantCode': '1032',
+            'EffectiveDate': DayTime().format('DD-MM-YYYY'),
+            'Delta': Number(25) + Number(index),
+        }
+    )
+})
+
+export const BUDGET_VBC_TEMPDATA = BUDGET_VBC_DATA
+
+export const BUDGET_CBC = [
+
+    { label: 'PartCostingHead', value: 'PartCostingHead', },
+    { label: 'Year', value: 'Year', }, //*
+    { label: 'PartNumber', value: 'PartNumber', }, //*
+    { label: 'RevisionNumber', value: 'RevisionNumber', }, //*
+    { label: 'PlantCode', value: 'PlantCode', }, //*
+    { label: 'CustomerCode', value: 'CustomerCode', },//NOUI
+    { label: 'EffectiveDate', value: 'EffectiveDate', }, //
+    { label: 'Delta', value: 'Delta', }, //NOUI
+
+]
+
+export const BUDGET_CBC_DATA = []
+
+Array.isArray(budgetCostingHeads) && budgetCostingHeads.map((item, index) => {
+    BUDGET_CBC_DATA.push(
+        {
+            'PartCostingHead': `${item.Text}`,
+            'Year': `${DayTime().$y}-${DayTime().$y + 1}`,
+            'PartNumber': 'Screw01',
+            'RevisionNumber': '1',
+            'PlantCode': '1032',
+            'CustomerCode': 'C-10008',
+            'EffectiveDate': DayTime().format('DD-MM-YYYY'),
+            'Delta': Number(25) + Number(index),
+        }
+    )
+})
+
+export const BUDGET_CBC_TEMPDATA = BUDGET_CBC_DATA
+
 /** 
 * @desc USED IN EXCEL HEADER FOR BULK UPLOAD
 */
@@ -2185,9 +2285,13 @@ export const CLIENT_DOWNLOAD_EXCEl = [
     { label: "Company Code", value: "CompanyCode", },
     { label: "Contact Name", value: "ClientName", },
     { label: "Email Id", value: "ClientEmailId", },
+    { label: "Phone No.", value: "PhoneNumber", },
+    { label: "Ext.", value: "Extension", },
+    { label: "Mobile No.", value: "MobileNumber", },
     { label: "Country", value: "CountryName", },
     { label: "State", value: "StateName", },
     { label: "City", value: "CityName", },
+    { label: "ZipCode", value: "ZipCode", },
 ]
 
 
@@ -3221,7 +3325,7 @@ export const HARDWARE = 18
 export const RIVET = 19
 export const PLATING = 21
 export const DIE_CASTING = 23
-export const ASSEMBLY_TECHNOLOGY = 10
+export const ASSEMBLY_TECHNOLOGY_MASTER = 10
 export const LOGISTICS = 24
 
 export const STRINGMAXLENGTH = 50
@@ -4250,7 +4354,7 @@ export const BOP_IMPORT_DOWNLOAD_EXCEl = [
     { label: "Vendor (Code)", value: "Vendor" },
     { label: "Customer (Code)", value: "CustomerName", },
     { label: "Inco Terms", value: "IncoTermDescriptionAndInfoTerm" },
-    { label: "Payment Terms", value: "PaymentTermDescriptionAndPaymentTerm" },
+    // { label: "Payment Terms", value: "PaymentTermDescriptionAndPaymentTerm" }, // FOR MINDA ONLY
     { label: "Basic Rate", value: "BasicRate" },
     { label: "Net Cost (Currency)", value: "NetLandedCost" },
     { label: "Net Cost (INR)", value: "NetLandedCostConversion" },
@@ -4270,6 +4374,9 @@ export const BOP_SOBLISTING_DOWNLOAD_EXCEl = [
 ]
 
 export const EXCHANGERATE_DOWNLOAD_EXCEl = [
+    { label: "Costing Head", value: "CostingHead", },
+    { label: "Vendor (Code)", value: "vendorWithCode", },
+    { label: "Customer (Code)", value: "customerWithCode", },
     { label: "Currency", value: "Currency", },
     { label: "Exchange Rate (INR)", value: "CurrencyExchangeRate", },
     { label: "Bank Rate (INR)", value: "BankRate", },
@@ -4370,6 +4477,8 @@ export const RMDOMESTIC_DOWNLOAD_EXCEl = [
     { label: "Basic Rate", value: "BasicRate", },
     // { label: "Freight Cost", value: "RMFreightCost", },
     // { label: "Shearing Cost", value: "RMShearingCost", },
+    { label: "Machining Scrap Cost", value: "MachiningScrapRate", },
+    { label: "Circle Scrap Cost", value: "JaliScrapCost", },
     { label: "Scrap Rate", value: "ScrapRate", },
     { label: "Net Cost", value: "NetLandedCost", },
     // KEEP COMMENTED ON RE
@@ -4394,6 +4503,8 @@ export const RMIMPORT_DOWNLOAD_EXCEl = [
     { label: "Basic Rate", value: "BasicRate", },
     // { label: "Freight Cost", value: "RMFreightCost", },
     // { label: "Shearing Cost", value: "RMShearingCost", },
+    { label: "Machining Scrap Cost", value: "MachiningScrapRate", },
+    { label: "Circle Scrap Cost", value: "JaliScrapCost", },
     { label: "Scrap Rate", value: "ScrapRate", },
     { label: "Net Cost(Currency)", value: "NetLandedCost", },
     { label: "Net Cost(INR)", value: "NetLandedCostConversion", },
@@ -4495,9 +4606,16 @@ export const VENDOR_DOWNLOAD_EXCEl = [
     { label: "Vendor Type", value: "VendorType", },
     { label: "Vendor Name", value: "VendorName", },
     { label: "Vendor Code", value: "VendorCode", },
+    { label: "Email Id", value: "Email", },
+    { label: "Phone Number", value: "PhoneNumber", },
+    { label: "Ext.", value: "Extension", },
+    { label: "Mobile Number", value: "MobileNumber", },
     { label: "Country", value: "Country", },
     { label: "State", value: "State", },
     { label: "City", value: "City", },
+    { label: "ZipCode", value: "ZipCode", },
+    { label: "Address 1", value: "AddressLine1", },
+    { label: "Address 2", value: "AddressLine2", },
     { label: "Status", value: "status", }
 ]
 
@@ -4521,6 +4639,21 @@ export const VOLUME_DOWNLOAD_EXCEl = [
     { label: "Actual Quantity", value: "ApprovedQuantity", },
 ]
 
+export const BUDGET_DOWNLOAD_EXCEl = [
+    { label: "Costing Head", value: "CostingHead", },
+    { label: "Financial Year", value: "FinancialYear", },
+    { label: "Net Po Price", value: "NetPoPrice" },
+    { label: "Budgeted Po Price", value: "BudgetedPoPrice" },
+    { label: "Part Name", value: "PartName" },
+    { label: "Part Number", value: "PartNumber", },
+    { label: "Plant Name", value: "PlantName", },
+    { label: "Plant Code", value: "PlantCode", },
+    { label: "Vendor Name", value: "VendorName", },
+    { label: "Vendor Code", value: "VendorCode", },
+    { label: "Customer Name", value: "CustomerName", },
+    { label: "CustomerCode", value: "CustomerCode", },
+]
+
 export const PROFIT_DOWNLOAD_EXCEl = [
     { label: "Costing Head", value: "CostingHead", },
     { label: "Plant (Code)", value: "PlantName", },
@@ -4538,9 +4671,14 @@ export const ZBCPLANT_DOWNLOAD_EXCEl = [
     { label: "Plant Name", value: "PlantName", },
     { label: "Plant Code", value: "PlantCode", },
     { label: "Company Name", value: "CompanyName", },
+    { label: "Phone Number", value: "PhoneNumber", },
+    { label: "Ext.", value: "Extension", },
+    { label: "Address 1", value: "AddressLine1", },
+    { label: "Address 2", value: "AddressLine2", },
     { label: "Country", value: "CountryName", },
     { label: "State", value: "StateName", },
     { label: "City", value: "CityName", },
+    { label: "ZipCode", value: "ZipCode", },
     { label: "Status", value: "status", },
 ]
 export const REPORT_DOWNLOAD_EXCEl = [
@@ -5020,17 +5158,17 @@ export const MRGridForTokenSummary = [
     { label: "Variance (Proc. Cost)", value: "NetProcessCostVariance" },
 ]
 
-export const RMImpactedDownloadArray = ["RawMaterial", "RMGrade", "RMSpec", "RawMaterialCode", "Category", "TechnologyName", "VendorName", "UOM", "OldBasicRate", "NewBasicRate", "OldScrapRate", "NewScrapRate", "RMFreightCost", "RMShearingCost", "EffectiveDate"]
+export const RMImpactedDownloadArray = ["RawMaterial", "RMGrade", "RMSpec", "RawMaterialCode", "Category", "TechnologyName", "VendorName", "UOM", "ExistingBasicRate", "RevisedBasicRate", "ExistingScrapRate", "RevisedScrapRate", "RMFreightCost", "RMShearingCost", "EffectiveDate"]
 
-export const OperationImpactDownloadArray = ["OperationName", "OperationCode", "UOM", "OldOperationRate", "NewOperationRate", "EffectiveDate",]
+export const OperationImpactDownloadArray = ["OperationName", "OperationCode", "UOM", "ExistingOperationRate", "RevisedOperationRate", "EffectiveDate",]
 
-export const BOPImpactDownloadArray = ["BoughtOutPartNumber", "BoughtOutPartName", "Category", "Vendor", "PartNumber", "OldBOPRate", "NewBOPRate", "OldPOPrice", "NewPOPrice", "EffectiveDate",]
+export const BOPImpactDownloadArray = ["BoughtOutPartNumber", "BoughtOutPartName", "Category", "Vendor", "PartNumber", "ExistingBOPRate", "RevisedBOPRate", "ExistingPOPrice", "RevisedPOPrice", "EffectiveDate",]
 
-export const ERImpactDownloadArray = ["Currency", "CostingNumber", "PartNumber", "BankRate", "BankCommissionPercentage", "CustomRate", "CurrencyExchangeRate", "NewExchangeRate", "OldExchangeRate", "EffectiveDate",]
+export const ERImpactDownloadArray = ["Currency", "CostingNumber", "PartNumber", "BankRate", "BankCommissionPercentage", "CustomRate", "CurrencyExchangeRate", "ExistingExchangeRate", "RevisedExchangeRate", "EffectiveDate",]
 
-export const CPImpactDownloadArray = ["CostingNumber", "PartNumber", "OldNetCC", "NewNetCC", "OldPOPrice", "NewPOPrice", "EffectiveDate"]
+export const CPImpactDownloadArray = ["CostingNumber", "PartNumber", "ExistingNetCC", "RevisedNetCC", "ExistingPOPrice", "RevisedPOPrice", "EffectiveDate"]
 
-export const RawMaterialDomesticFileHeads = ["CostingHead", "RawMaterial", "RMGrade", "RMSpec", "RawMaterialCode", "Category", "TechnologyName", "Plant (Code)", "Vendor (Code)", "Company (Code)", "VendorLocation", "UOM", "BasicRate", "NewBasicRate", "ScrapRate", "NewScrapRate", "NetLandedCost", "EffectiveDate", "RawMaterialId", "VendorId", "PlantId", "CostingTypeId"]
+export const RawMaterialDomesticFileHeads = ["CostingHead", "RawMaterial", "RMGrade", "RMSpec", "RawMaterialCode", "Category", "TechnologyName", "Plant (Code)", "Vendor (Code)", "VendorLocation", "UOM", "BasicRate", "RevisedBasicRate", "RMFreightCost", "RMShearingCost", "ScrapRate", "RevisedScrapRate", "NetLandedCost", "EffectiveDate", "RawMaterialId", "VendorId", "PlantId", "CostingTypeId"]
 
 export const RawMaterialImportFileHeads = ["CostingHead", "RawMaterial", "RMGrade", "RMSpec", "RawMaterialCode", "Category", "TechnologyName", "VendorName", "VendorLocation", "UOM", "BasicRate", "NewBasicRate", "ScrapRate", "NewScrapRate", "NetLandedCost", "EffectiveDate", "RawMaterialId", "VendorId", "PlantId", "RMCode"]
 
@@ -6219,6 +6357,15 @@ export const AddRFQTempData = [
         RevisionNumber: 'B',
         Quantity: 5
     }
+]
+
+// VISIBILITY MODE ADD RFQ
+export const DATE_STRING = 'Date'
+export const DURATION_STRING = 'Duration'
+
+export const visibilityModeDropdownArray = [
+    { label: 'Date', value: 'Date' },
+    { label: 'Duration', value: 'Duration' },
 ]
 
 

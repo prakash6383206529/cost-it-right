@@ -506,7 +506,7 @@ function ApprovalListing(props) {
   }
   const reasonFormatter = (props) => {
     const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-    return cell != null ? cell : '-';
+    return !cell ? '-' : cell;
   }
   const lastApprovalFormatter = (props) => {
     const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
@@ -760,14 +760,15 @@ function ApprovalListing(props) {
       DepartmentId: selectedRowData[0].Status === DRAFT ? EMPTY_GUID : selectedRowData[0]?.DepartmentId,
       UserId: loggedInUserId(),
       TechnologyId: selectedRowData[0].TechnologyId,
-      Mode: 'costing'
+      Mode: 'costing',
+      approvalTypeId: selectedRowData[0]?.CostingTypeId
     }
     dispatch(checkFinalUser(obj, res => {
       if (res && res.data && res.data.Result) {
         if (selectedRowData[0].Status === DRAFT) {
           setOpenDraftDrawer(res.data.Data.IsFinalApprover ? false : true)
           if (res.data.Data.IsFinalApprover) {
-            Toaster.warning("Final level aprrover can not send draft costing for aprroval")
+            Toaster.warning("Final level approver can not send draft costing for approval")
             gridApi.deselectAll()
           }
         }
@@ -979,8 +980,8 @@ function ApprovalListing(props) {
                           <AgGridColumn field="PlantName" cellRenderer='renderPlant' headerName="Plant (Code)"></AgGridColumn>
                           {reactLocalStorage.getObject('cbcCostingPermission') && <AgGridColumn field="Customer" cellRenderer='renderCustomer' headerName="Customer (Code)"></AgGridColumn>}
                           <AgGridColumn field='TechnologyName' headerName="Technology"></AgGridColumn>
-                          <AgGridColumn field="NetPOPriceNew" cellRenderer='priceFormatter' headerName="New Price"></AgGridColumn>
                           <AgGridColumn field="OldPOPriceNew" cellRenderer='oldpriceFormatter' headerName="Existing PO Price"></AgGridColumn>
+                          <AgGridColumn field="NetPOPriceNew" cellRenderer='priceFormatter' headerName="Revised PO Price"></AgGridColumn>
                           <AgGridColumn field="NCCPartQuantity" headerName="Quantity" cellRenderer={"reasonFormatter"} ></AgGridColumn>
                           <AgGridColumn field="IsRegularized" headerName="Is Regularized" cellRenderer={"reasonFormatter"} ></AgGridColumn>
                           <AgGridColumn field='Reason' headerName="Reason" cellRenderer={"reasonFormatter"}></AgGridColumn>
@@ -1036,6 +1037,7 @@ function ApprovalListing(props) {
           approvalData={selectedRowData}
           anchor={'right'}
           IsFinalLevel={!showFinalLevelButtons}
+          costingTypeId={selectedRowData[0]?.CostingTypeId}
         />
       )}
       {
