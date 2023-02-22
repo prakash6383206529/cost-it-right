@@ -369,7 +369,7 @@ function ProcessCost(props) {
 
     tempData = {
       ...tempData,
-      Remark: getValues(`${SingleProcessGridField}.${index}.${parentIndex}.remarkPopUp`),
+      Remark: getValues(`${SingleProcessGridField}.${index}${parentIndex}.remarkPopUp`),
     }
     let gridTempArr = Object.assign([...list], { [index]: tempData })
 
