@@ -118,8 +118,7 @@ function ApprovalSummary(props) {
       const { PartDetails, ApprovalDetails, ApprovalLevelStep, DepartmentId, Technology, ApprovalProcessId,
         ApprovalProcessSummaryId, ApprovalNumber, IsSent, IsFinalLevelButtonShow, IsPushedButtonShow,
         CostingId, PartId, LastCostingId, PurchasingGroup, MaterialGroup, DecimalOption, VendorId, IsRegularizationLimitCrossed, CostingHead, NCCPartQuantity, IsRegularized, CostingTypeId } = res?.data?.Data?.Costings[0];
-
-
+      setCostingTypeId(CostingTypeId)
       setNccPartQuantity(NCCPartQuantity)
       setIsRegularized(IsRegularized)
       setCostingHead(CostingHead)
