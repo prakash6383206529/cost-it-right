@@ -392,11 +392,13 @@ class BulkUpload extends Component {
         let uploadData = {
             Records: fileData,
             LoggedInUserId: loggedInUserId(),
+            CostingTypeId: costingTypeId
         }
         let masterUploadData = {
             Records: fileData,
             LoggedInUserId: loggedInUserId(),
-            IsFinalApprover: isFinalApprovar
+            IsFinalApprover: isFinalApprovar,
+            CostingTypeId: costingTypeId
         }
         this.setState({ setDisable: true })
 
