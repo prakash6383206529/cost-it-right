@@ -142,7 +142,7 @@ class AddRMImport extends Component {
    * @description Called after rendering the component
    */
   componentDidMount() {
-    const { data } = this.props;
+    const { data, initialConfiguration } = this.props
     this.getDetails(data);
     this.props.change('NetLandedCost', 0)
     if (!this.state.isViewFlag) {
@@ -158,7 +158,7 @@ class AddRMImport extends Component {
       this.props.getPlantSelectListByType(ZBC, () => { })
       this.props.getClientSelectList(() => { })
     }
-    if (!this.state.isViewFlag) {
+    if (!this.state.isViewFlag && initialConfiguration.IsMasterApprovalAppliedConfigure) {
       // let obj = {
       //   TechnologyId: RM_MASTER_ID,
       //   DepartmentId: userDetails().DepartmentId,
@@ -209,11 +209,12 @@ class AddRMImport extends Component {
   }
 
   componentDidUpdate(prevProps, prevState) {
+    const { initialConfiguration } = this.props
     if (!this.state.isViewFlag) {
       if (this.props.fieldsObj !== prevProps.fieldsObj) {
         this.handleNetCost()
       }
-      if (prevState?.costingTypeId !== this.state.costingTypeId) {
+      if ((prevState?.costingTypeId !== this.state.costingTypeId) && initialConfiguration.IsMasterApprovalAppliedConfigure) {
         this.commonFunction()
       }
 
@@ -1996,7 +1997,7 @@ class AddRMImport extends Component {
                             <div className={"cancel-icon"}></div>
                             {"Cancel"}
                           </button>
-                          {!isViewFlag && (CheckApprovalApplicableMaster(RM_MASTER_ID) === true && !this.state.isFinalApprovar) ?
+                          {!isViewFlag && (CheckApprovalApplicableMaster(RM_MASTER_ID) === true && !this.state.isFinalApprovar) && initialConfiguration.IsMasterApprovalAppliedConfigure ?
                             <button type="submit"
                               class="user-btn approval-btn save-btn mr5"
                               onClick={() => scroll.scrollToTop()}

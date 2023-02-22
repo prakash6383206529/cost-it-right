@@ -104,11 +104,12 @@ class AddOperation extends Component {
    * @description called after render the component
    */
   componentDidMount() {
+    const { initialConfiguration } = this.props
     if (!(this.props.data.isEditFlag || this.props.data.isViewFlag)) {
       this.props.getCostingSpecificTechnology(loggedInUserId(), () => { })
       this.props.getPlantSelectListByType(ZBC, () => { })
     }
-    if (!this.state.isViewMode) {
+    if (!this.state.isViewMode && initialConfiguration.IsMasterApprovalAppliedConfigure) {
       this.props.getUsersMasterLevelAPI(loggedInUserId(), OPERATIONS_ID, (res) => {
         setTimeout(() => {
           this.commonFunction()
@@ -144,12 +145,13 @@ class AddOperation extends Component {
   }
 
   componentDidUpdate(prevProps, prevState) {
+    const { initialConfiguration } = this.props
     if (prevProps.filedObj !== this.props.filedObj) {
       const { filedObj } = this.props;
       if (filedObj && filedObj !== undefined && filedObj.length > 4) {
       }
     }
-    if (prevState?.costingTypeId !== this.state.costingTypeId) {
+    if ((prevState?.costingTypeId !== this.state.costingTypeId) && initialConfiguration.IsMasterApprovalAppliedConfigure) {
       this.commonFunction()
     }
   }
@@ -1271,7 +1273,7 @@ class AddOperation extends Component {
                         <div className={"cancel-icon"}></div>
                         {"Cancel"}
                       </button>
-                      {!isViewMode && (CheckApprovalApplicableMaster(OPERATIONS_ID) === true && !this.state.isFinalApprovar) ?
+                      {!isViewMode && (CheckApprovalApplicableMaster(OPERATIONS_ID) === true && !this.state.isFinalApprovar) && initialConfiguration.IsMasterApprovalAppliedConfigure ?
                         <button type="submit"
                           class="user-btn approval-btn save-btn mr5"
                           disabled={isViewMode || setDisable || noApprovalCycle}
