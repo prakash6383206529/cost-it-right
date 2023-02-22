@@ -222,7 +222,7 @@ function MasterSendForApproval(props) {
                     dispatch(masterApprovalRequestBySenderBop(senderObj, res => {
                         setIsDisable(false)
                         if (res?.data?.Result) {
-                            Toaster.success('BOP has been sent for approval.')
+                            Toaster.success('Insert has been sent for approval.')
                             props.closeDrawer('', 'submit')
                         }
                     }))
@@ -331,7 +331,7 @@ function MasterSendForApproval(props) {
             case 1:
                 return "Raw Material"
             case 2:
-                return "Bought Out Part"
+                return "Insert"
             case 3:
                 return "Operation"
             case 4:
