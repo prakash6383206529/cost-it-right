@@ -308,9 +308,7 @@ function TabToolCost(props) {
   }), 500);
 
   const InjectDiscountAPICall = () => {
-    dispatch(saveDiscountOtherCostTab({ ...ComponentItemDiscountData, CallingFrom: 5 }, res => {
-      dispatch(setComponentDiscountOtherItemData({}, () => { }))
-    }))
+    dispatch(saveDiscountOtherCostTab({ ...ComponentItemDiscountData, CallingFrom: 5 }, res => { }))
   }
 
 
