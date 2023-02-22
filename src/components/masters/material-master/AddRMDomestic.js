@@ -1797,39 +1797,6 @@ class AddRMDomestic extends Component {
 
                             />
                           </Col>
-                          {
-                            this.state.showExtraCost &&
-                            <>
-                              <Col md="3">
-                                <Field
-                                  label={`Circle Scrap Cost (INR/${this.state.UOM.label ? this.state.UOM.label : 'UOM'}) `}
-                                  name={"CircleScrapCost"}
-                                  type="text"
-                                  placeholder={""}
-                                  validate={[maxLength15, decimalLengthsix]}
-                                  component={renderText}
-                                  required={false}
-                                  disabled={isViewFlag}
-                                  className=" "
-                                  customClassName=" withBorder"
-                                />
-                              </Col>
-                              <Col md="3">
-                                <Field
-                                  label={`Jali Scrap Cost (INR/${this.state.UOM.label ? this.state.UOM.label : 'UOM'})`}
-                                  name={"JaliScrapCost"}
-                                  type="text"
-                                  placeholder={""}
-                                  validate={[required, maxLength15, decimalLengthsix]}
-                                  component={renderText}
-                                  required={true}
-                                  disabled={isViewFlag}
-                                  className=" "
-                                  customClassName=" withBorder"
-                                />
-                              </Col>
-                            </>
-                          }
                           <Col md="3">
                             <TooltipCustom id={'net-cost'} tooltipText={"Net Cost = (Basic Rate + Freight Cost + Shearing Cost)"} />
                             <Field

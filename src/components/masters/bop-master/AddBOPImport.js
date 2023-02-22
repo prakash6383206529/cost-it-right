@@ -130,7 +130,7 @@ class AddBOPImport extends Component {
       })
     }
     this.props.getIncoTermSelectList(() => { })
-    // this.props.getPaymentTermSelectList(() => { })    // FOR MINDA ONLY
+    this.props.getPaymentTermSelectList(() => { })    // FOR MINDA ONLY
     this.getDetails()
     if (!(this.props.data.isEditFlag || this.props.data.isViewMode)) {
       this.props.getCurrencySelectList(() => { })
@@ -1333,7 +1333,7 @@ class AddBOPImport extends Component {
                             />
                           </Col>
                           {/* FOR MINDA ONLY*/}
-                          {/* <Col md="3">
+                          <Col md="3">
                             <Field
                               name="paymentTerms"
                               type="text"
@@ -1347,7 +1347,7 @@ class AddBOPImport extends Component {
                               valueDescription={this.state.paymentTerm}
                               disabled={isViewMode || (isEditFlag && isBOPAssociated)}
                             />
-                          </Col> */}
+                          </Col>
                           <Col md="3">
                             <Field
                               name="Currency"
