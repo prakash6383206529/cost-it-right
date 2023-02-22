@@ -1181,7 +1181,7 @@ const CostingSummaryTable = (props) => {
                 </>}
 
               <Col md="12">
-                <div className="table-responsive">
+                <div className={`${viewCostingData[0]?.technologyId !== LOGISTICS ? '' : 'overflow-y-hidden'} table-responsive`}>
                   <table className={`table table-bordered costing-summary-table ${approvalMode ? 'costing-approval-summary' : ''}`}>
                     <thead>
                       <tr className="main-row">
@@ -1977,7 +1977,7 @@ const CostingSummaryTable = (props) => {
                         </tr>
                       }
 
-                      <tr>
+                      {viewCostingData[0]?.technologyId !== LOGISTICS && <tr>
                         <td>
                           <span className="d-block small-grey-text">Currency</span>
                         </td>
@@ -1992,10 +1992,10 @@ const CostingSummaryTable = (props) => {
                               </td>
                             )
                           })}
-                      </tr>
+                      </tr>}
 
 
-                      {
+                      {viewCostingData[0]?.technologyId !== LOGISTICS &&
                         <tr className={`background-light-blue  ${getCurrencyVarianceFormatter()}`}>
                           <th>Net PO Price (In Currency){simulationDrawer && '(Old)'}</th>
                           {/* {viewCostingData &&
@@ -2047,7 +2047,7 @@ const CostingSummaryTable = (props) => {
                         </tr>
                       </>}
 
-                      <tr>
+                      {viewCostingData[0]?.technologyId !== LOGISTICS && <tr>
                         <td>Attachments</td>
                         {viewCostingData &&
                           viewCostingData?.map((data, index) => {
@@ -2092,16 +2092,16 @@ const CostingSummaryTable = (props) => {
                               </td>
                             )
                           })}
-                      </tr>
+                      </tr>}
 
 
-                      <tr>
+                      {viewCostingData[0]?.technologyId !== LOGISTICS && <tr>
                         <th>Remarks</th>
                         {viewCostingData &&
                           viewCostingData?.map((data, index) => {
                             return <td><span className="d-block small-grey-text">{data?.CostingHeading !== VARIANCE ? data?.remark : ''}</span></td>
                           })}
-                      </tr>
+                      </tr>}
 
                       {(!viewMode) && (
                         <tr className={`${pdfHead || drawerDetailPDF ? 'd-none' : 'background-light-blue'}`}>
