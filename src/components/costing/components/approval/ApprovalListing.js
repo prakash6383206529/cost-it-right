@@ -768,7 +768,7 @@ function ApprovalListing(props) {
         if (selectedRowData[0].Status === DRAFT) {
           setOpenDraftDrawer(res.data.Data.IsFinalApprover ? false : true)
           if (res.data.Data.IsFinalApprover) {
-            Toaster.warning("Final level aprrover can not send draft costing for aprroval")
+            Toaster.warning("Final level approver can not send draft costing for approval")
             gridApi.deselectAll()
           }
         }
