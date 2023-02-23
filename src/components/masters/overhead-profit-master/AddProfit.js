@@ -291,10 +291,10 @@ class AddProfit extends Component {
   componentDidUpdate(prevProps) {
     if (prevProps.filedObj !== this.props.filedObj) {
       const { filedObj } = this.props;
-      const ProfitPercentage = filedObj && filedObj.ProfitPercentage !== undefined && filedObj.ProfitPercentage !== '' ? true : false;
-      const ProfitRMPercentage = filedObj && filedObj.ProfitRMPercentage !== undefined && filedObj.ProfitRMPercentage !== '' ? true : false;
-      const ProfitMachiningCCPercentage = filedObj && filedObj.ProfitMachiningCCPercentage !== undefined && filedObj.ProfitMachiningCCPercentage !== '' ? true : false;
-      const ProfitBOPPercentage = filedObj && filedObj.ProfitBOPPercentage !== undefined && filedObj.ProfitBOPPercentage !== '' ? true : false;
+      const ProfitPercentage = filedObj && filedObj.ProfitPercentage !== undefined && filedObj.ProfitPercentage !== '' && filedObj.ProfitPercentage !== null ? true : false;
+      const ProfitRMPercentage = filedObj && filedObj.ProfitRMPercentage !== undefined && filedObj.ProfitRMPercentage !== '' && filedObj.ProfitRMPercentage !== null ? true : false;
+      const ProfitMachiningCCPercentage = filedObj && filedObj.ProfitMachiningCCPercentage !== undefined && filedObj.ProfitMachiningCCPercentage !== '' && filedObj.ProfitMachiningCCPercentage !== null ? true : false;
+      const ProfitBOPPercentage = filedObj && filedObj.ProfitBOPPercentage !== undefined && filedObj.ProfitBOPPercentage !== '' && filedObj.ProfitBOPPercentage !== null ? true : false;
       if (ProfitPercentage) {
         this.setState({ isRM: true, isCC: true, isBOP: true, })
       } else if (ProfitRMPercentage || ProfitMachiningCCPercentage || ProfitBOPPercentage) {
