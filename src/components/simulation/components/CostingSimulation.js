@@ -7,7 +7,7 @@ import { BOPDOMESTIC, BOPIMPORT, TOFIXEDVALUE, EMPTY_DATA, MACHINERATE, OPERATIO
 import { getComparisionSimulationData, getCostingBoughtOutPartSimulationList, getCostingSimulationList, getCostingSurfaceTreatmentSimulationList, setShowSimulationPage, getSimulatedAssemblyWiseImpactDate, getImpactedMasterData, getExchangeCostingSimulationList, getMachineRateCostingSimulationList, getAllMultiTechnologyCostings, getAllSimulatedMultiTechnologyCosting } from '../actions/Simulation';
 import ApproveRejectDrawer from '../../costing/components/approval/ApproveRejectDrawer'
 import CostingDetailSimulationDrawer from './CostingDetailSimulationDrawer'
-import { checkForDecimalAndNull, checkForNull, formViewData, getConfigurationKey, loggedInUserId, searchNocontentFilter, userDetails } from '../../../helper';
+import { checkForDecimalAndNull, checkForNull, formViewData, getConfigurationKey, loggedInUserId, searchNocontentFilter, userDetails, userTechnologyLevelDetails } from '../../../helper';
 import VerifyImpactDrawer from './VerifyImpactDrawer';
 import { EMPTY_GUID, AssemblyWiseImpactt } from '../../../config/constants';
 import Toaster from '../../common/Toaster';
@@ -32,6 +32,7 @@ import { impactmasterDownload, SimulationUtils } from '../SimulationUtils'
 import ViewAssembly from './ViewAssembly';
 import _ from 'lodash';
 import { PaginationWrapper } from '../../common/commonPagination';
+import { getUsersSimulationTechnologyLevelAPI } from '../../../actions/auth/AuthActions';
 
 const gridOptions = {};
 
@@ -96,6 +97,7 @@ function CostingSimulation(props) {
     const [sendInAPIState, setSendInAPIState] = useState([]);
     const [isMultipleMasterSimulation, setIsMultipleMasterSimulation] = useState(false);
     const [isFinalLevelApprover, setIsFinalLevelApprover] = useState(false);
+    const [count, setCount] = useState(0);
 
     const isSurfaceTreatment = (Number(master) === Number(SURFACETREATMENT));
     const isOperation = (Number(master) === Number(OPERATIONS));
@@ -142,22 +144,32 @@ function CostingSimulation(props) {
     }, [])
 
     useEffect(() => {
-        if (SimulationTechnologyIdState) {
-            let obj = {
-                DepartmentId: userData.DepartmentId,
-                UserId: loggedInUserId(),
-                TechnologyId: SimulationTechnologyIdState,
-                Mode: 'simulation',
-                approvalTypeId: amendmentDetails.SimulationHeadId
-            }
-
-            dispatch(checkFinalUser(obj, res => {
-                if (res && res.data && res.data.Result) {
-                    setIsFinalLevelApprover(res.data.Data?.IsFinalApprover)
+        if (SimulationTechnologyIdState && count === 0 && amendmentDetails.SimulationHeadId) {
+            let levelDetailsTemp
+            dispatch(getUsersSimulationTechnologyLevelAPI(loggedInUserId(), selectedMasterForSimulation?.value, (res) => {
+                if (res?.data?.Data) {
+                    levelDetailsTemp = userTechnologyLevelDetails(amendmentDetails.SimulationHeadId, res?.data?.Data?.TechnologyLevels)
+                    console.log('levelDetailsTemp: ', levelDetailsTemp);
+                    // setLevelDetails(levelDetailsTemp)
+                    if (levelDetailsTemp?.length !== 0) {
+                        let obj = {
+                            DepartmentId: userData.DepartmentId,
+                            UserId: loggedInUserId(),
+                            TechnologyId: SimulationTechnologyIdState,
+                            Mode: 'simulation',
+                            approvalTypeId: amendmentDetails.SimulationHeadId
+                        }
+                        dispatch(checkFinalUser(obj, res => {
+                            if (res && res.data && res.data.Result) {
+                                setIsFinalLevelApprover(res.data.Data?.IsFinalApprover)
+                                let countTemp = count + 1
+                                setCount(countTemp)
+                            }
+                        }))
+                    }
                 }
             }))
         }
-        console.log('amendmentDetails.SimulationHeadId: ', amendmentDetails.SimulationHeadId);
     }, [SimulationTechnologyIdState, amendmentDetails.SimulationHeadId])
 
     useEffect(() => {

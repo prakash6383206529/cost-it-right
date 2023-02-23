@@ -3,7 +3,6 @@ import { Row, Col, } from 'reactstrap';
 import {
   deleteRawMaterialAPI, getRMImportDataList, masterFinalLevelUser
 } from '../actions/Material';
-import { checkForDecimalAndNull } from "../../../helper/validation";
 import { APPROVED_STATUS, defaultPageSize, EMPTY_DATA, RMIMPORT } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
@@ -29,7 +28,6 @@ import WarningMessage from '../../common/WarningMessage';
 import { PaginationWrapper } from '../../common/commonPagination';
 import _ from 'lodash';
 import { disabledClass } from '../../../actions/Common';
-import SelectRowWrapper from '../../common/SelectRowWrapper';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import AnalyticsDrawer from './AnalyticsDrawer';
 const ExcelFile = ReactExport.ExcelFile;
@@ -952,6 +950,7 @@ function RMImportListing(props) {
             messageLabel={"RM Import"}
             anchor={"right"}
             isFinalApprovar={isFinalLevelUser}
+            masterId={RM_MASTER_ID}
           />
         )
       }

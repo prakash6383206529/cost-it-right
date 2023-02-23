@@ -1286,6 +1286,7 @@ function CostingDetails(props) {
         return true;
       })
       setZBCPlantGrid(tempArr)
+      setValue(`${zbcPlantGridFields}.${index}.ShareOfBusinessPercent`, 0)
     }
 
     if (type === VBCTypeId) {
@@ -1294,6 +1295,7 @@ function CostingDetails(props) {
         return true;
       })
       setVBCVendorGrid(tempArr)
+      setValue(`${vbcGridFields}.${index}.ShareOfBusinessPercent`, 0)
     }
 
     if (type === NCCTypeId) {
