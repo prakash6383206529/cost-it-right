@@ -511,6 +511,7 @@ class UsersListing extends Component {
 	resetState = () => {
 		gridOptions.columnApi.resetColumnState();
 		gridOptions.api.setFilterModel(null);
+		window.screen.width >= 1920 && this.state.gridApi.sizeColumnsToFit()
 	}
 
 	onGridReady = (params) => {
