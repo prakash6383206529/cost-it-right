@@ -1425,11 +1425,9 @@ function OverheadProfit(props) {
                                                         customClassName={'withBorder'}
                                                         errors={errors.OverheadCombinedCost}
                                                         disabled={true}
-                                                    /> {(overheadObj && overheadObj?.OverheadApplicability.includes('RM') && CostingDataList[0]?.IsRMCutOffApplicable === true) &&
-                                                        <span className={'fa fa-info-circle mt9 tooltip-n tooltip_custom_right mb-n3'}>
-                                                            <span class="tooltiptext">{`RM cut-off price ${checkForDecimalAndNull(CostingDataList && CostingDataList[0]?.RawMaterialCostWithCutOff, initialConfiguration.NoOfDecimalForPrice)} applied`}</span>
-                                                        </span>
-                                                    }
+                                                    />
+                                                    {(overheadObj && overheadObj?.OverheadApplicability.includes('RM') && CostingDataList[0]?.IsRMCutOffApplicable === true) && <TooltipCustom id="OverheadCombinedCost" customClass="mt-2" tooltipText={`RM cut-off price ${checkForDecimalAndNull(CostingDataList && CostingDataList[0]?.RawMaterialCostWithCutOff, initialConfiguration.NoOfDecimalForPrice)} applied`} />}
+
                                                 </div>
                                             </Col>
                                             <Col md="3">
@@ -1495,9 +1493,7 @@ function OverheadProfit(props) {
                                                         disabled={true}
                                                     />
                                                     {(CostingDataList && CostingDataList[0]?.IsRMCutOffApplicable === true) &&
-                                                        <span className={'fa fa-info-circle mt9 tooltip-n tooltip_custom_right mb-n3 costing-tooltip'}>
-                                                            <span class="tooltiptext">{`RM cut-off price ${checkForDecimalAndNull(CostingDataList && CostingDataList[0]?.RawMaterialCostWithCutOff, initialConfiguration.NoOfDecimalForPrice)} applied`}</span>
-                                                        </span>}
+                                                        <TooltipCustom id="OverheadRMCost" customClass="mt-2" tooltipText={`RM cut-off price ${checkForDecimalAndNull(CostingDataList && CostingDataList[0]?.RawMaterialCostWithCutOff, initialConfiguration.NoOfDecimalForPrice)} applied`} />}
                                                 </div>
                                             </Col>
                                             <Col md="3">
@@ -1775,10 +1771,8 @@ function OverheadProfit(props) {
                                                         disabled={true}
                                                     />
                                                     {(profitObj && profitObj?.ProfitApplicability.includes('RM') && CostingDataList[0]?.IsRMCutOffApplicable === true) &&
-                                                        <span className={'fa fa-info-circle mt9 tooltip-n tooltip_custom_right costing-tooltip mb-n3'}>
-                                                            <span class="tooltiptext">{`RM cut-off price ${checkForDecimalAndNull(CostingDataList && CostingDataList[0]?.RawMaterialCostWithCutOff, initialConfiguration.NoOfDecimalForPrice)} applied`}</span>
-                                                        </span>
-                                                    }</div>
+                                                        <TooltipCustom id="ProfitCombinedCost" customClass="mt-2" tooltipText={`RM cut-off price ${checkForDecimalAndNull(CostingDataList && CostingDataList[0]?.RawMaterialCostWithCutOff, initialConfiguration.NoOfDecimalForPrice)} applied`} />}
+                                                </div>
                                             </Col>
                                             <Col md="3">
                                                 <TextFieldHookForm
@@ -1841,10 +1835,8 @@ function OverheadProfit(props) {
                                                         disabled={true}
                                                     />
                                                     {(CostingDataList && CostingDataList[0]?.IsRMCutOffApplicable === true) &&
-                                                        <span className={'fa fa-info-circle mt9 tooltip-n tooltip_custom_right costing-tooltip mb-n3'}>
-                                                            <span class="tooltiptext">{`RM cut-off price ${checkForDecimalAndNull(CostingDataList && CostingDataList[0]?.RawMaterialCostWithCutOff, initialConfiguration.NoOfDecimalForPrice)} applied`}</span>
-                                                        </span>
-                                                    }</div>
+                                                        <TooltipCustom id="ProfitRMCost" customClass="mt-2" tooltipText={`RM cut-off price ${checkForDecimalAndNull(CostingDataList && CostingDataList[0]?.RawMaterialCostWithCutOff, initialConfiguration.NoOfDecimalForPrice)} applied`} />}
+                                                </div>
                                             </Col>
                                             <Col md="3">
                                                 <TextFieldHookForm

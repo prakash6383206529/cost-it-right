@@ -298,10 +298,10 @@ class AddOverhead extends Component {
     if (prevProps.filedObj !== this.props.filedObj) {
 
       const { filedObj } = this.props;
-      const OverheadPercentage = filedObj && filedObj.OverheadPercentage !== undefined && filedObj.OverheadPercentage !== '' ? true : false;
-      const OverheadRMPercentage = filedObj && filedObj.OverheadRMPercentage !== undefined && filedObj.OverheadRMPercentage !== '' ? true : false;
-      const OverheadMachiningCCPercentage = filedObj && filedObj.OverheadMachiningCCPercentage !== undefined && filedObj.OverheadMachiningCCPercentage !== '' ? true : false;
-      const OverheadBOPPercentage = filedObj && filedObj.OverheadBOPPercentage !== undefined && filedObj.OverheadBOPPercentage !== '' ? true : false;
+      const OverheadPercentage = filedObj && filedObj.OverheadPercentage !== undefined && filedObj.OverheadPercentage !== '' && filedObj.OverheadPercentage !== null ? true : false;
+      const OverheadRMPercentage = filedObj && filedObj.OverheadRMPercentage !== undefined && filedObj.OverheadRMPercentage !== '' && filedObj.OverheadRMPercentage !== null ? true : false;
+      const OverheadMachiningCCPercentage = filedObj && filedObj.OverheadMachiningCCPercentage !== undefined && filedObj.OverheadMachiningCCPercentage !== '' && filedObj.OverheadMachiningCCPercentage !== null ? true : false;
+      const OverheadBOPPercentage = filedObj && filedObj.OverheadBOPPercentage !== undefined && filedObj.OverheadBOPPercentage !== '' && filedObj.OverheadBOPPercentage !== null ? true : false;
 
       if (OverheadPercentage) {
         this.setState({ isRM: true, isCC: true, isBOP: true, })
@@ -879,7 +879,6 @@ class AddOverhead extends Component {
         }
       }
     };
-
     return (
       <>
         {this.state.isLoader && <LoaderCustom />}

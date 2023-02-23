@@ -1716,7 +1716,7 @@ class AddRMDomestic extends Component {
                                   name={"MachiningScrap"}
                                   type="text"
                                   placeholder={isViewFlag || (isEditFlag && isRMAssociated) ? '-' : "Enter"}
-                                  validate={[required, positiveAndDecimalNumber, maxLength15, decimalLengthsix, number]}
+                                  validate={[positiveAndDecimalNumber, maxLength15, decimalLengthsix, number]}
                                   component={renderTextInputField}
                                   required={false}
                                   className=""
