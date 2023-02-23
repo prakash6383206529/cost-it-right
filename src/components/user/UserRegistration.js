@@ -94,6 +94,7 @@ function UserRegistration(props) {
   const [costingApprovalType, setCostingApprovalType] = useState([]);
   const [simulationApprovalType, setSimulationApprovalType] = useState([]);
   const [masterApprovalType, setMasterApprovalType] = useState([]);
+  const [primaryContact, setPrimaryContact] = useState(false);
   const dispatch = useDispatch()
 
   const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
@@ -468,6 +469,10 @@ function UserRegistration(props) {
     setReporter(value)
   }
 
+  const onPrimaryContactCheck = () => {
+    setPrimaryContact(true)
+  }
+
 
   /**
   * @method getUserDetail
@@ -503,7 +508,7 @@ function UserRegistration(props) {
             }
             // const DepartmentObj = departmentList && departmentList.find(item => item.DepartmentId === Data.DepartmentId)
 
-
+            setPrimaryContact(Data.IsPrimaryContact)
             setIsEditFlag(true)
             setIsLoader(false)
             setIsShowAdditionalPermission(Data.IsAdditionalAccess)
@@ -1776,6 +1781,23 @@ function UserRegistration(props) {
                         </Col>
                       </>
                     }
+                    <Col md="3" className="d-flex align-items-center mt-4 pt-2">
+                      <label
+                        className={`custom-checkbox`}
+                        onChange={onPrimaryContactCheck}
+                      >
+                        Primary Contact
+                        <input
+                          type="checkbox"
+                          checked={primaryContact}
+                        />
+                        <span
+                          className=" before-box"
+                          checked={primaryContact}
+                          onChange={onPrimaryContactCheck}
+                        />
+                      </label>
+                    </Col>
                   </div>
 
                   <HeaderTitle
