@@ -79,7 +79,8 @@ class AddAssemblyPart extends Component {
       showErrorOnFocusDate: false,
       IsTechnologyUpdateRequired: false,
       partName: '',
-      showPopup: false
+      showPopup: false,
+      partAssembly: ''
     }
   }
 
@@ -182,6 +183,7 @@ class AddAssemblyPart extends Component {
     this.props.change("Remark", "")
     this.setState({ ProductGroup: [], BOMViewerData: [] })
     this.setState({ minEffectiveDate: "", warningMessage: false, warningMessageTechnology: false, TechnologySelected: [] })
+    this.setState({ partAssembly: { ...this.state.partAssembly, convertPartToAssembly: false } })
   }
 
   isRequired = () => {
@@ -212,8 +214,9 @@ class AddAssemblyPart extends Component {
 
 
   handlePartNo = (newValue, actionMeta) => {
-    this.setState({ partAssembly: newValue })
+
     if (newValue && newValue !== '') {
+      this.setState({ partAssembly: { ...newValue, convertPartToAssembly: true } })
 
       this.props.getPartData(newValue.value, res => {
         if (res && res.data && res.data.Result) {

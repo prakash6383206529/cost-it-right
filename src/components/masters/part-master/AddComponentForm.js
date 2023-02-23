@@ -36,7 +36,7 @@ class AddComponentForm extends Component {
  * @description called after render the component
  */
   componentDidMount() {
-    const { BOMViewerData } = this.props;
+    const { BOMViewerData, partAssembly } = this.props;
 
     let tempArr = [];
     BOMViewerData && BOMViewerData.map(el => {
@@ -174,7 +174,7 @@ class AddComponentForm extends Component {
   * @description Renders the component
   */
   render() {
-    const { handleSubmit, isEditFlag } = this.props;
+    const { handleSubmit, isEditFlag, partAssembly } = this.props;
 
     const filterList = async (inputValue) => {
       const { partName, selectedParts } = this.state
@@ -190,6 +190,17 @@ class AddComponentForm extends Component {
         this.setState({ isLoader: false })
         this.setState({ partName: resultInput })
         let partDataAPI = res?.data?.SelectList
+
+        if (partAssembly && partAssembly.convertPartToAssembly) {
+          let filteredPartDataAPI = []
+          partDataAPI && partDataAPI.map((item) => {
+            if (item.Value !== partAssembly.value) {
+              filteredPartDataAPI.push(item)
+            }
+          })
+          partDataAPI = filteredPartDataAPI
+        }
+
         if (inputValue) {
           return autoCompleteDropdown(inputValue, partDataAPI, true, selectedParts, true)
         } else {
