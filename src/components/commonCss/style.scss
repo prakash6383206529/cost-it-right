@@ -1279,6 +1279,10 @@ table.table {
       .Close {
         left: 5px;
       }
+
+      &.no-border {
+        border: none !important;
+      }
     }
   }
 }
