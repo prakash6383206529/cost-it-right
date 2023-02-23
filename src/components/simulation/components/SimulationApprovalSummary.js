@@ -1062,7 +1062,7 @@ function SimulationApprovalSummary(props) {
                                             <td>{simulationDetail && simulationDetail.DepartmentCode ? simulationDetail.DepartmentCode : '-'}</td>
                                             {String(SimulationTechnologyId) !== EXCHNAGERATE && <td>{simulationDetail && simulationDetail.AmendmentDetails?.CostingHead}</td>}
                                             <td>{simulationDetail && simulationDetail.AmendmentDetails?.VendorName}</td>
-                                            <td>{simulationDetail && simulationDetail.AmendmentDetails?.NumberOfImpactedCosting}</td>
+                                            <td>{simulationDetail && simulationDetail.AmendmentDetails?.ImpactParts}</td>
                                             <td>{simulationDetail && simulationDetail.AmendmentDetails?.Reason}</td>
                                             <td>{simulationDetail && simulationDetail.AmendmentDetails?.SimulationTechnology}</td>
                                             <td>{simulationDetail && DayTime(simulationDetail.AmendmentDetails?.EffectiveDate).format('DD/MM/YYYY')}</td>
