@@ -2061,13 +2061,11 @@ const CostingSummaryTable = (props) => {
                                             : ''
                                           const fileURL = `${FILE_URL}${withOutTild}`
                                           return (
-                                            <td>
-                                              <div className={"single-attachment images"}>
-                                                <a href={fileURL} target="_blank" rel="noreferrer">
-                                                  {f.OriginalFileName}
-                                                </a>
-                                              </div>
-                                            </td>
+                                            <div className={"single-attachment images"}>
+                                              <a href={fileURL} target="_blank" rel="noreferrer">
+                                                {f.OriginalFileName}
+                                              </a>
+                                            </div>
                                           )
                                         })}
                                     </>
