@@ -19,7 +19,7 @@ import {
     AssemblyWiseImpactt, ImpactMaster, defaultPageSize, VBC, FILE_URL, MACHINERATE, VBCTypeId
 } from '../../../config/constants';
 import CostingSummaryTable from '../../costing/components/CostingSummaryTable';
-import { checkForDecimalAndNull, formViewData, checkForNull, getConfigurationKey, loggedInUserId, searchNocontentFilter } from '../../../helper';
+import { checkForDecimalAndNull, formViewData, checkForNull, getConfigurationKey, loggedInUserId, searchNocontentFilter, userTechnologyLevelDetails } from '../../../helper';
 import ApproveRejectDrawer from '../../costing/components/approval/ApproveRejectDrawer';
 import LoaderCustom from '../../common/LoaderCustom';
 import VerifyImpactDrawer from './VerifyImpactDrawer';
@@ -48,6 +48,7 @@ import CalculatorWrapper from '../../common/Calculator/CalculatorWrapper';
 import { debounce } from 'lodash';
 import { ErrorMessage } from '../SimulationUtils';
 import { PaginationWrapper } from '../../common/commonPagination';
+import { getUsersTechnologyLevelAPI } from '../../../actions/auth/AuthActions';
 
 const gridOptions = {};
 const ExcelFile = ReactExport.ExcelFile;
@@ -199,7 +200,6 @@ function SimulationApprovalSummary(props) {
             //     quantity: 1
             // }
             setdataForAssemblyImpactForFg(SimulatedCostingList)
-
             let obj = {
                 DepartmentId: DepartmentId,
                 UserId: loggedInUserId(),
