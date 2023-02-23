@@ -14,7 +14,7 @@ import DayTime from '../../common/DayTimeWrapper'
 import BulkUpload from '../../massUpload/BulkUpload';
 import { BOP_DOMESTIC_DOWNLOAD_EXCEl, } from '../../../config/masterData';
 import LoaderCustom from '../../common/LoaderCustom';
-import { checkForDecimalAndNull, getConfigurationKey, loggedInUserId, searchNocontentFilter, userDepartmetList, userDetails } from '../../../helper';
+import { getConfigurationKey, searchNocontentFilter, userDepartmetList } from '../../../helper';
 import { BopDomestic, } from '../../../config/constants';
 import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
@@ -26,10 +26,8 @@ import WarningMessage from '../../common/WarningMessage';
 import { hyphenFormatter } from '../masterUtil';
 import { disabledClass } from '../../../actions/Common';
 import _ from 'lodash';
-import SelectRowWrapper from '../../common/SelectRowWrapper';
 import AnalyticsDrawer from '../material-master/AnalyticsDrawer';
 import { reactLocalStorage } from 'reactjs-localstorage';
-import { checkFinalUser } from '../../../components/costing/actions/Costing'
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -58,7 +56,6 @@ class BOPDomesticListing extends Component {
             showPopup: false,
             deletedId: '',
             isLoader: true,
-            isFinalApprovar: false,
             disableFilter: true,
             disableDownload: false,
             inRangeDate: [],
@@ -88,17 +85,6 @@ class BOPDomesticListing extends Component {
         setTimeout(() => {
             if (!this.props.stopApiCallOnCancel) {
                 this.getDataList("", 0, "", "", 0, defaultPageSize, true, this.state.floatingFilterData)
-                let obj = {
-                    MasterId: BOP_MASTER_ID,
-                    DepartmentId: userDetails().DepartmentId,
-                    LoggedInUserLevelId: userDetails().LoggedInMasterLevelId,
-                    LoggedInUserId: loggedInUserId()
-                }
-                this.props.checkFinalUser(obj, (res) => {
-                    if (res?.data?.Result) {
-                        this.setState({ isFinalApprovar: res.data.Data.IsFinalApprover })
-                    }
-                })
             }
         }, 300);
     }
@@ -807,7 +793,7 @@ class BOPDomesticListing extends Component {
                         isZBCVBCTemplate={true}
                         messageLabel={'BOP Domestic'}
                         anchor={'right'}
-                        isFinalApprovar={this.state.isFinalApprovar}
+                        masterId={BOP_MASTER_ID}
                     />
                 }
 
@@ -862,7 +848,6 @@ export default connect(mapStateToProps, {
     getAllVendorSelectList,
     getPlantSelectListByVendor,
     getListingForSimulationCombined,
-    checkFinalUser,
     setSelectedRowForPagination,
     disabledClass
 })(reduxForm({
