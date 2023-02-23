@@ -287,7 +287,7 @@ function ViewConversionCost(props) {
                     <>
                       <tr key={index}>
                         {IsAssemblyCosting && partNumberList.length === 0 && <td>{item.PartNumber !== null || item.PartNumber !== "" ? item.PartNumber : ""}</td>}
-                        <td className={`${isPDFShow ? '' : 'text-overflow process-name'}`}>
+                        <td className={`${isPDFShow ? '' : `text-overflow  ${(item?.GroupName === '' || item?.GroupName === null) ? '' : 'process-name no-border'} `}`}>
                           {
                             (item?.GroupName === '' || item?.GroupName === null) ? '' :
                               <div onClick={() =>
