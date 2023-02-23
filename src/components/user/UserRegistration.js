@@ -1775,6 +1775,23 @@ function UserRegistration(props) {
                         </Col>
                       </>
                     }
+                    <Col md="3" className="d-flex align-items-center mt-4 pt-2">
+                      <label
+                        className={`custom-checkbox`}
+                        onChange={onPrimaryContactCheck}
+                      >
+                        Primary Contact
+                        <input
+                          type="checkbox"
+                          checked={primaryContact}
+                        />
+                        <span
+                          className=" before-box"
+                          checked={primaryContact}
+                          onChange={onPrimaryContactCheck}
+                        />
+                      </label>
+                    </Col>
                   </div>
 
                   <HeaderTitle
