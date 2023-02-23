@@ -391,7 +391,9 @@ export default function materialReducer(state = initialState, action) {
                 array = action.payload && action.payload.filter((item) => {
                     return (
                         item.NetLandedCost = checkForDecimalAndNull(item.NetLandedCost, getConfigurationKey()?.NoOfDecimalForPrice),
-                        item.BasicRate = checkForDecimalAndNull(item.BasicRate, getConfigurationKey()?.NoOfDecimalForPrice)
+                        item.BasicRate = checkForDecimalAndNull(item.BasicRate, getConfigurationKey()?.NoOfDecimalForPrice),
+                        item.IncoTermDescriptionAndInfoTerm = `${item.IncoTermDescription ? `${item.IncoTermDescription}` : ''} ${item.IncoTerm ? `(${item.IncoTerm})` : '-'}`,
+                        item.PaymentTermDescriptionAndPaymentTerm = `${item.PaymentTermDescription ? `${item.PaymentTermDescription}` : ''} ${item.PaymentTerm ? `(${item.PaymentTerm})` : '-'}`
                     )
                 })
             }

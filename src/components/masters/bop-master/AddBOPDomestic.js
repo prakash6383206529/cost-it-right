@@ -439,9 +439,9 @@ class AddBOPDomestic extends Component {
     const { fieldsObj, initialConfiguration } = this.props
     const BasicRate = fieldsObj && fieldsObj.BasicRate !== undefined ? fieldsObj.BasicRate : 0;
     const NoOfPieces = fieldsObj && fieldsObj.NumberOfPieces !== undefined ? fieldsObj.NumberOfPieces : 1;
-    console.log('NoOfPieces: ', NoOfPieces);
+
     const NetLandedCost = checkForNull((BasicRate / NoOfPieces)) // THIS CALCULATION IS FOR BASE
-    console.log('NetLandedCost: ', NetLandedCost);
+
 
 
     if (this.state.isEditFlag && Number(NetLandedCost) === Number(this.state.DataToCheck?.NetLandedCost)) {

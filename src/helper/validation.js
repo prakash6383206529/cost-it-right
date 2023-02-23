@@ -380,3 +380,7 @@ export const decimalAndNumberValidation = (value) => {
 export const decimalAndNumberValidationBoolean = (value) => {
     return value && !/^\d{0,6}(\.\d{0,6})?$/i.test(value) ? true : false;
 }
+
+export const isDateFormatter = value =>
+    value && !/^[0-3]?[0-9].[0-3]?[0-9].(?:[0-9]{2})?[0-9]{2}$/.test(value)
+        ? false : true;

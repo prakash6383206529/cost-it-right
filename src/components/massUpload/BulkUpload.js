@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { reduxForm } from "redux-form";
 import { Container, Row, Col, Label } from 'reactstrap';
-import { checkForNull, getJsDateFromExcel } from "../../helper/validation";
+import { checkForNull, getJsDateFromExcel, isDateFormatter } from "../../helper/validation";
 import {
     bulkUploadRMDomesticZBC, bulkUploadRMDomesticVBC, bulkUploadRMImportZBC, bulkUploadRMImportVBC,
     bulkfileUploadRM, bulkUploadRMSpecification,
@@ -238,7 +238,9 @@ class BulkUpload extends Component {
                             let obj = {}
                             val.map((el, i) => {
                                 if ((fileHeads[i] === 'EffectiveDate' || fileHeads[i] === 'DateOfPurchase') && typeof el === 'string') {
-                                    el = (DayTime(Date(el))).format('YYYY-MM-DD 00:00:00')
+                                    if (isDateFormatter(el)) {
+                                        el = (DayTime((el))).format('YYYY-MM-DD 00:00:00')
+                                    }
                                 }
                                 if (fileHeads[i] === 'EffectiveDate' && typeof el === 'number') {
                                     el = getJsDateFromExcel(el)
