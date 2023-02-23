@@ -3,9 +3,9 @@ import { useState, useEffect, } from 'react';
 import { useDispatch, useSelector } from 'react-redux'
 import { Row, Col, } from 'reactstrap';
 import {
-    deleteRawMaterialAPI, getRMDomesticDataList, masterFinalLevelUser,
+    deleteRawMaterialAPI, getRMDomesticDataList,
 } from '../actions/Material';
-import { checkForDecimalAndNull } from "../../../helper/validation";
+import { userDepartmetList } from "../../../helper/auth"
 import { APPROVED_STATUS, defaultPageSize, EMPTY_DATA, RMDOMESTIC } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
@@ -15,23 +15,20 @@ import DayTime from '../../common/DayTimeWrapper'
 import BulkUpload from '../../massUpload/BulkUpload';
 import LoaderCustom from '../../common/LoaderCustom';
 import { RMDOMESTIC_DOWNLOAD_EXCEl } from '../../../config/masterData';
-import { RM_MASTER_ID, APPROVAL_ID, RmDomestic } from '../../../config/constants'
+import { RM_MASTER_ID, APPROVAL_ID } from '../../../config/constants'
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import ReactExport from 'react-export-excel';
-import { CheckApprovalApplicableMaster, getConfigurationKey, userDepartmetList, loggedInUserId, searchNocontentFilter, userDetails } from '../../../helper';
+import { CheckApprovalApplicableMaster, getConfigurationKey, searchNocontentFilter } from '../../../helper';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { getListingForSimulationCombined, setSelectedRowForPagination } from '../../simulation/actions/Simulation';
 import { disabledClass } from '../../../actions/Common';
 import WarningMessage from '../../common/WarningMessage';
 import { PaginationWrapper } from '../../common/commonPagination';
-import SelectRowWrapper from '../../common/SelectRowWrapper';
 import AnalyticsDrawer from './AnalyticsDrawer'
 import _ from 'lodash';
-import { useRef } from 'react';
 import { reactLocalStorage } from 'reactjs-localstorage';
-import { checkFinalUser } from '../../../components/costing/actions/Costing'
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -54,7 +51,6 @@ function RMDomesticListing(props) {
     const [showPopup, setShowPopup] = useState(false)
     const [deletedId, setDeletedId] = useState('')
     const [showPopupBulk, setShowPopupBulk] = useState(false)
-    const [isFinalLevelUser, setIsFinalLevelUser] = useState(false)
     const [disableFilter, setDisableFilter] = useState(true) // STATE MADE FOR CHECKBOX IN SIMULATION
     const [disableDownload, setDisableDownload] = useState(false)
     const [dateArray, setDateArray] = useState([])
@@ -950,7 +946,7 @@ function RMDomesticListing(props) {
                         isZBCVBCTemplate={true}
                         messageLabel={"RM Domestic"}
                         anchor={"right"}
-                        isFinalApprovar={isFinalLevelUser}
+                        masterId={RM_MASTER_ID}
                     />
                 )
             }

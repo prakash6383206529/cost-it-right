@@ -14,7 +14,7 @@ import ViewPackagingAndFreight from './Drawers/ViewPackagingAndFreight'
 import ViewToolCost from './Drawers/viewToolCost'
 import SendForApproval from './approval/SendForApproval'
 import Toaster from '../../common/Toaster'
-import { checkForDecimalAndNull, checkForNull, checkPermission, formViewData, getTechnologyPermission, loggedInUserId, userDetails, allEqual, getConfigurationKey, getCurrencySymbol, highlightCostingSummaryValue, checkVendorPlantConfigurable } from '../../../helper'
+import { checkForDecimalAndNull, checkForNull, checkPermission, formViewData, getTechnologyPermission, loggedInUserId, userDetails, allEqual, getConfigurationKey, getCurrencySymbol, highlightCostingSummaryValue, checkVendorPlantConfigurable, userTechnologyLevelDetails } from '../../../helper'
 import Attachament from './Drawers/Attachament'
 import { BOPDOMESTIC, BOPIMPORT, COSTING, DRAFT, FILE_URL, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, VARIANCE, VBC, ZBC, VIEW_COSTING_DATA, NCC, VIEW_COSTING_DATA_LOGISTICS, EMPTY_GUID, CBC, ZBCTypeId, VBCTypeId, NCCTypeId, CBCTypeId, FORGING } from '../../../config/constants'
 import { useHistory } from "react-router-dom";
@@ -37,6 +37,7 @@ import { colorArray } from '../../dashboard/ChartsDashboard'
 import { LOGISTICS } from '../../../config/masterData'
 import { setSelectedRow } from '../../rfq/actions/rfq'
 import { reactLocalStorage } from 'reactjs-localstorage'
+import { getUsersTechnologyLevelAPI } from '../../../actions/auth/AuthActions'
 
 const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
 
@@ -135,18 +136,25 @@ const CostingSummaryTable = (props) => {
   useEffect(() => {
 
     if (!viewMode && viewCostingData?.length !== 0 && partInfo && count === 0) {
-      let obj = {}
-      obj.DepartmentId = userDetails().DepartmentId
-      obj.UserId = loggedInUserId()
-      obj.TechnologyId = partInfo.TechnologyId
-      obj.Mode = 'costing'
-      obj.approvalTypeId = viewCostingData[0]?.costingTypeId
+      let levelDetailsTemp = ''
       setCount(1)
-      dispatch(checkFinalUser(obj, res => {
-        if (res.data?.Result) {
-          setIsFinalApproverShow(res.data?.Data?.IsFinalApprover) // UNCOMMENT IT AFTER DEPLOTED FROM KAMAL SIR END
+      dispatch(getUsersTechnologyLevelAPI(loggedInUserId(), technologyId, (res) => {
+        levelDetailsTemp = userTechnologyLevelDetails(viewCostingData[0]?.costingTypeId, res?.data?.Data?.TechnologyLevels)
+        if (levelDetailsTemp?.length !== 0) {
+          let obj = {}
+          obj.DepartmentId = userDetails().DepartmentId
+          obj.UserId = loggedInUserId()
+          obj.TechnologyId = partInfo.TechnologyId
+          obj.Mode = 'costing'
+          obj.approvalTypeId = viewCostingData[0]?.costingTypeId
+          dispatch(checkFinalUser(obj, res => {
+            if (res.data?.Result) {
+              setIsFinalApproverShow(res.data?.Data?.IsFinalApprover) // UNCOMMENT IT AFTER DEPLOTED FROM KAMAL SIR END
+            }
+          }))
         }
       }))
+
     }
 
   }, [viewCostingData])
