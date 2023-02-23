@@ -239,7 +239,7 @@ class BulkUpload extends Component {
                             val.map((el, i) => {
                                 if ((fileHeads[i] === 'EffectiveDate' || fileHeads[i] === 'DateOfPurchase') && typeof el === 'string') {
                                     if (isDateFormatter(el)) {
-                                        el = (DayTime((el))).format('YYYY-MM-DD 00:00:00')
+                                        el = (DayTime(Date(el))).format('YYYY-MM-DD 00:00:00')
                                     }
                                 }
                                 if (fileHeads[i] === 'EffectiveDate' && typeof el === 'number') {
