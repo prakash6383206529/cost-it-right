@@ -1782,15 +1782,13 @@ function UserRegistration(props) {
                     }
                     <Col md="3" className="d-flex align-items-center mt-4 pt-2">
                       <label
-                        className={`custom-checkbox ${isEditFlag ? "disabled" : ""
-                          }`}
+                        className={`custom-checkbox`}
                         onChange={onPrimaryContactCheck}
                       >
                         Primary Contact
                         <input
                           type="checkbox"
                           checked={primaryContact}
-                          disabled={isEditFlag ? true : false}
                         />
                         <span
                           className=" before-box"
