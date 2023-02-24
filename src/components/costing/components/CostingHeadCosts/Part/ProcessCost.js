@@ -369,7 +369,7 @@ function ProcessCost(props) {
 
     tempData = {
       ...tempData,
-      Remark: getValues(`${SingleProcessGridField}.${index}.${parentIndex}.remarkPopUp`),
+      Remark: getValues(`${SingleProcessGridField}.${index}${parentIndex}.remarkPopUp`),
     }
     let gridTempArr = Object.assign([...list], { [index]: tempData })
 
@@ -1191,7 +1191,7 @@ function ProcessCost(props) {
                       return (
                         <>
                           <tr key={index}>
-                            <td className={`text-overflow ${(item?.GroupName === '' || item?.GroupName === null) ? '' : 'process-name'}`}>
+                            <td className={`text-overflow ${(item?.GroupName === '' || item?.GroupName === null) ? '' : 'process-name no-border'}`}>
                               {
                                 (item?.GroupName === '' || item?.GroupName === null) ? '' :
                                   <div onClick={() => {

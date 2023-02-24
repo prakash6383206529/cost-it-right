@@ -1719,7 +1719,7 @@ class AddRMDomestic extends Component {
                                   name={"MachiningScrap"}
                                   type="text"
                                   placeholder={isViewFlag || (isEditFlag && isRMAssociated) ? '-' : "Enter"}
-                                  validate={[required, positiveAndDecimalNumber, maxLength15, decimalLengthsix, number]}
+                                  validate={[positiveAndDecimalNumber, maxLength15, decimalLengthsix, number]}
                                   component={renderTextInputField}
                                   required={false}
                                   className=""
@@ -1797,7 +1797,7 @@ class AddRMDomestic extends Component {
                             />
                           </Col> */}
                           <Col md="3">
-                            <TooltipCustom id={'net-cost'} tooltipText={"Net Cost = (Basic Rate + Freight Cost + Shearing Cost)"} />
+                            <TooltipCustom id={'net-cost'} tooltipText={"Net Cost = Basic Rate"} />
                             <Field
                               label={labelWithUOMAndCurrency("Net Cost", this.state.UOM.label)}
                               name={`${this.state.netLandedCost === 0 ? '-' : "NetLandedCost"}`}

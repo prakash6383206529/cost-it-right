@@ -1122,7 +1122,8 @@ export function userTechnologyLevelDetails(approvalTypeId, data = []) {
   let obj = {
     Level: filteredData[0]?.Level,
     LevelId: filteredData[0]?.LevelId,
-    ApprovalTypeId: filteredData[0]?.ApprovalTypeId
+    ApprovalTypeId: filteredData[0]?.ApprovalTypeId,
+    length: filteredData?.length
   }
   return obj
 }

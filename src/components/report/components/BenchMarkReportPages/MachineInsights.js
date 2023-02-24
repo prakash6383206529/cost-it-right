@@ -27,6 +27,7 @@ function MachineInsights(props) {
     const [tableHeaderColumnDefs, setTableHeaderColumnDefs] = useState([])
     const [rowDataNew, setRowDataNew] = useState([])
     const [vendor, setVendor] = useState([])
+    const [isLoader, setIsLoader] = useState(true)
     const [labelArray, setLabelArray] = useState([])
     const gridOptions = {};
     const dispatch = useDispatch()
@@ -49,7 +50,11 @@ function MachineInsights(props) {
             ProcessBenchMarkingReports: arr
         }
 
-        dispatch(getCostingBenchMarkMachineReport(data, () => { }))
+        dispatch(getCostingBenchMarkMachineReport(data, (res) => {
+            if (res) {
+                setIsLoader(false)
+            }
+        }))
 
     }, [])
 
@@ -422,58 +427,58 @@ function MachineInsights(props) {
     return (
         <>
             <div className="container-fluid rminsights_page">
-                <form noValidate >
+                {isLoader ? <LoaderCustom customClass="loader-center" /> :
+                    <form noValidate >
+                        {showListing && <>
+                            <Row>
+                                <Col md="12">
+                                    <div className={`ag-grid-react`}>
+                                        <div className={`ag-grid-wrapper rminsights_table  ${rowDataNew && rowDataNew?.length <= 0 ? "overlay-contain" : ""}`}>
+                                            <div className="ag-theme-material">
+                                                <AgGridReact
+                                                    style={{ height: '100%', width: '100%' }}
+                                                    defaultColDef={defaultColDef}
+                                                    columnDefs={tableHeaderColumnDefs}
+                                                    domLayout='autoHeight'
+                                                    rowData={rowDataNew}
+                                                    rowSelection={'single'}
+                                                    onSelectionChanged={onSelectionChanged}
+                                                    pagination={true}
+                                                    paginationPageSize={defaultPageSize}
+                                                    onGridReady={onGridReady}
+                                                    gridOptions={gridOptions}
+                                                    // enableCellTextSelection={true}
+                                                    loadingOverlayComponent={'customLoadingOverlay'}
+                                                    noRowsOverlayComponent={'customNoRowsOverlay'}
+                                                    noRowsOverlayComponentParams={{
+                                                        title: EMPTY_DATA,
+                                                    }}
+                                                    frameworkComponents={frameworkComponents}
+                                                >
+                                                    <AgGridColumn pinned="left" field="Specification" />
+                                                    <AgGridColumn pinned="left" width="120" field="Minimum" />
+                                                    <AgGridColumn pinned="left" width="120" field="Maximum" />
+                                                    <AgGridColumn pinned="left" width="120" field="Average" />
 
-                    {showListing && <>
-                        <Row>
-                            <Col md="12">
-                                <div className={`ag-grid-react`}>
-                                    <div className={`ag-grid-wrapper rminsights_table  ${rowDataNew && rowDataNew?.length <= 0 ? "overlay-contain" : ""}`}>
-                                        <div className="ag-theme-material">
-                                            <AgGridReact
-                                                style={{ height: '100%', width: '100%' }}
-                                                defaultColDef={defaultColDef}
-                                                columnDefs={tableHeaderColumnDefs}
-                                                domLayout='autoHeight'
-                                                rowData={rowDataNew}
-                                                rowSelection={'single'}
-                                                onSelectionChanged={onSelectionChanged}
-                                                pagination={true}
-                                                paginationPageSize={defaultPageSize}
-                                                onGridReady={onGridReady}
-                                                gridOptions={gridOptions}
-                                                // enableCellTextSelection={true}
-                                                loadingOverlayComponent={'customLoadingOverlay'}
-                                                noRowsOverlayComponent={'customNoRowsOverlay'}
-                                                noRowsOverlayComponentParams={{
-                                                    title: EMPTY_DATA,
-                                                }}
-                                                frameworkComponents={frameworkComponents}
-                                            >
-                                                <AgGridColumn pinned="left" field="Specification" />
-                                                <AgGridColumn pinned="left" width="120" field="Minimum" />
-                                                <AgGridColumn pinned="left" width="120" field="Maximum" />
-                                                <AgGridColumn pinned="left" width="120" field="Average" />
-
-                                                <AgGridColumn headerName="Vendor1" headerClass="justify-content-center" marryChildren={true}>
-                                                    <AgGridColumn width="150" field="Plant1" headerName="Plant 1" />
-                                                    <AgGridColumn width="150" field="Plant2" headerName="Plant 2" />
-                                                </AgGridColumn>
-                                            </AgGridReact>
-                                            {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />}
+                                                    <AgGridColumn headerName="Vendor1" headerClass="justify-content-center" marryChildren={true}>
+                                                        <AgGridColumn width="150" field="Plant1" headerName="Plant 1" />
+                                                        <AgGridColumn width="150" field="Plant2" headerName="Plant 2" />
+                                                    </AgGridColumn>
+                                                </AgGridReact>
+                                                {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />}
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                            </Col>
-                        </Row>
-                        <Row className="mt-4">
-                            <Col md="12">
-                                <Costmovementgraph graphData={data1} graphHeight={60} />
-                            </Col>
-                        </Row>
+                                </Col>
+                            </Row>
+                            <Row className="mt-4">
+                                <Col md="12">
+                                    <Costmovementgraph graphData={data1} graphHeight={60} />
+                                </Col>
+                            </Row>
 
-                    </>}
-                </form>
+                        </>}
+                    </form>}
             </div>
             {/* container-fluid */}
         </>
