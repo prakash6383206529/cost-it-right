@@ -229,17 +229,14 @@ function RawMaterialCost(props) {
   const toggleWeightCalculator = debounce((index) => {
     setEditIndex(index)
     let tempData = gridData[index]
-    if (technologyForDensity.includes(costData?.TechnologyId)) {
+    if (technologyForDensity.includes(costData?.TechnologyId) && ((Number(costData?.TechnologyId)) !== CORRUGATEDBOX)) {
       if ((tempData.Density === undefined && tempData.Density === null && tempData.Density === "") || Number(tempData.Density) === 0) {
-
         Toaster.warning("This Material's density is not available for weight calculation. Please add density for this material in RM Master > Manage Material.")
         return false
       }
     }
 
-
     switch ((Number(costData?.TechnologyId))) {
-
       case SHEETMETAL:
         dispatch(getRawMaterialCalculationForSheetMetal(item.CostingId, tempData.RawMaterialId, tempData.RawMaterialCalculatorId, res => {
           setCalculatorData(res, index)
