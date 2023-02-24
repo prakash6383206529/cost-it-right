@@ -35,6 +35,7 @@ import AssemblySimulationListing from './AssemblySimulationListing';
 import VerifySimulation from './VerifySimulation';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { autoCompleteDropdown } from '../../common/CommonFunctions';
+import { MESSAGES } from '../../../config/message';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -1054,7 +1055,7 @@ function Simulation(props) {
                                                 mandatory={false}
                                                 handleChange={handleVendorChange}
                                                 errors={errors.Masters}
-                                                NoOptionMessage={"Enter 3 characters to show data"}
+                                                NoOptionMessage={MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN}
                                             />
                                         </div>
                                     </div>

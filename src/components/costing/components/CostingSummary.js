@@ -19,6 +19,7 @@ import LoaderCustom from '../../common/LoaderCustom';
 import { MACHINING } from '../../../config/masterData'
 import { searchCount } from '../../../config/constants'
 import { autoCompleteDropdown } from '../../common/CommonFunctions'
+import { MESSAGES } from '../../../config/message'
 
 function CostingSummary(props) {
 
@@ -436,7 +437,7 @@ function CostingSummary(props) {
                           handleChange={handlePartChange}
                           errors={errors.Part}
                           disabled={(technology.length === 0) ? true : false}
-                          NoOptionMessage={"Enter 3 characters to show data"}
+                          NoOptionMessage={MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN}
                         />
 
                         {/* <SearchableSelectHookForm
