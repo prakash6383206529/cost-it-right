@@ -932,7 +932,7 @@ function AddRfq(props) {
                                                 disabled={dataProps?.isAddFlag ? partNoDisable : (dataProps?.isViewFlag || !isEditAll)}
                                                 isLoading={plantLoaderObj}
                                                 asyncOptions={partFilterList}
-                                                NoOptionMessage={"Enter 3 characters to show data"}
+                                                NoOptionMessage={MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN}
                                             />
                                         </Col>
                                         {/* <Col md="3">
@@ -1064,7 +1064,7 @@ function AddRfq(props) {
                                                 isLoading={VendorLoaderObj}
                                                 asyncOptions={vendorFilterList}
                                                 disabled={dataProps?.isAddFlag ? false : (isViewFlag || !isEditAll)}
-                                                NoOptionMessage={"Enter 3 characters to show data"}
+                                                NoOptionMessage={MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN}
                                             />
                                         </Col>
 

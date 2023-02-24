@@ -1746,7 +1746,7 @@ function UserRegistration(props) {
                               required={true}
                               handleChange={vendorHandler}
                               asyncOptions={vendorFilterList}
-                              NoOptionMessage={"Enter 3 characters to show data"}
+                              NoOptionMessage={MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN}
                             />
                           </div>
                         </Col>
