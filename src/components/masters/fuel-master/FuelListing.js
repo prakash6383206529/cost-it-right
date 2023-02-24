@@ -197,8 +197,11 @@ class FuelListing extends Component {
     * @description Renders buttons
     */
     effectiveDateFormatter = (props) => {
-        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
+        let cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        if (cellValue?.includes('T')) {
+            cellValue = DayTime(cellValue).format('DD/MM/YYYY')
+        }
+        return (!cellValue ? '-' : cellValue)
     }
 
 
@@ -241,6 +244,9 @@ class FuelListing extends Component {
                 item.Plants = ' '
             } if (item.Vendor === '-') {
                 item.Vendor = ' '
+            } else if (item?.EffectiveDate?.includes('T') || item?.ModifiedDate?.includes('T')) {
+                item.EffectiveDate = DayTime(item.EffectiveDate).format('DD/MM/YYYY')
+                item.ModifiedDate = DayTime(item.ModifiedDate).format('DD/MM/YYYY')
             }
             return item
         })
