@@ -914,6 +914,7 @@ function ReportListing(props) {
                     closeDrawer={closeUserDetails}
                     anchor={"right"}
                     isSummaryDrawer={isOpen}
+                    isReport={isOpen}
                     selectedRowData={selectedRowData}
                     isSimulation={false}
                     simulationMode={false}
