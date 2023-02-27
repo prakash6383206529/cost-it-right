@@ -1054,6 +1054,7 @@ function ApprovalListing(props) {
         isOpen &&
         <CostingDetailSimulationDrawer
           isOpen={isOpen}
+          isReport={isOpen}
           closeDrawer={closeUserDetails}
           anchor={"right"}
           isSummaryDrawer={isOpen}

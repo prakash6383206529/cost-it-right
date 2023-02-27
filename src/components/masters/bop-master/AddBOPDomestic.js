@@ -850,7 +850,7 @@ class AddBOPDomestic extends Component {
   */
   render() {
     const { handleSubmit, isBOPAssociated, initialConfiguration } = this.props;
-    const { isCategoryDrawerOpen, isOpenVendor, isOpenUOM, isEditFlag, isViewMode, setDisable, costingTypeId, noApprovalCycle } = this.state;
+    const { isCategoryDrawerOpen, isOpenVendor, costingTypeId, isOpenUOM, isEditFlag, isViewMode, setDisable, noApprovalCycle } = this.state;
     const filterList = async (inputValue) => {
       const { vendorName } = this.state
       const resultInput = inputValue.slice(0, searchCount)

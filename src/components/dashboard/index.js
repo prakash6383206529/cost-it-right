@@ -153,7 +153,7 @@ function Dashboard(props) {
                       </button>
                     </Col>
                   </Row>
-                  {acc2 && <Row>
+                  {acc1 && <Row>
                     <Col md="12" className="mt-3">{acc1 && <Tabs isPageNoChange={isPageNoChange} closeDashboard={closeDashboard} costing={true} module={'costing'} accordion={true} />}</Col>
                   </Row>}
                 </div>

@@ -835,6 +835,7 @@ class MachineRateListing extends Component {
                         messageLabel={'Machine'}
                         anchor={'right'}
                         isFinalApprovar={this.state.isFinalApprovar}
+                        masterId={MACHINE_MASTER_ID}
                     />
                 }
 

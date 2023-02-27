@@ -57,7 +57,6 @@ class BOPImportListing extends Component {
             isLoader: true,
             showPopup: false,
             deletedId: '',
-            isFinalApprovar: false,
             disableFilter: true,
             disableDownload: false,
             inRangeDate: [],
@@ -107,17 +106,6 @@ class BOPImportListing extends Component {
                 else {
                     this.getDataList("", 0, "", "", 0, defaultPageSize, true, this.state.floatingFilterData)
                 }
-                let obj = {
-                    MasterId: BOP_MASTER_ID,
-                    DepartmentId: userDetails().DepartmentId,
-                    LoggedInUserLevelId: userDetails().LoggedInMasterLevelId,
-                    LoggedInUserId: loggedInUserId()
-                }
-                this.props.masterFinalLevelUser(obj, (res) => {
-                    if (res?.data?.Result) {
-                        this.setState({ isFinalApprovar: res.data.Data.IsFinalApprovar })
-                    }
-                })
             }
         }, 300);
 
@@ -783,7 +771,7 @@ class BOPImportListing extends Component {
                         isZBCVBCTemplate={true}
                         messageLabel={'BOP Import'}
                         anchor={'right'}
-                        isFinalApprovar={this.state.isFinalApprovar}
+                        masterId={BOP_MASTER_ID}
                     />
                 }
 

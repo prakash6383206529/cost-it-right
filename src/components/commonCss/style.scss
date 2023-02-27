@@ -1279,6 +1279,10 @@ table.table {
       .Close {
         left: 5px;
       }
+
+      &.no-border {
+        border: none !important;
+      }
     }
   }
 }
@@ -4463,12 +4467,6 @@ body {
         margin-bottom: 0;
       }
     }
-  }
-
-  .simulation-Loader {
-    bottom: -5px;
-    right: -30px;
-    left: -30px;
   }
 }
 
