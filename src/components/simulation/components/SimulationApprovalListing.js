@@ -138,12 +138,13 @@ function SimulationApprovalListing(props) {
     }, [props.activeTab])
 
     useEffect(() => {
-
-        if (statusColumnData && statusColumnData.data) {
-            setDisableFilter(false)
-            setWarningMessage(true)
-            setFloatingFilterData(prevState => ({ ...prevState, DisplayStatus: statusColumnData.data }))
-        }
+        setTimeout(() => {
+            if (statusColumnData && statusColumnData.data) {
+                setDisableFilter(false)
+                setWarningMessage(true)
+                setFloatingFilterData(prevState => ({ ...prevState, DisplayStatus: statusColumnData.data }))
+            }
+        }, 200);
     }, [statusColumnData])
 
 
