@@ -434,6 +434,7 @@ class AddVolume extends Component {
             const { financialYearSelectList } = this.props
 
             const yearObj = financialYearSelectList && financialYearSelectList.find((item) => item.Text === Data.Year)
+            let partNumber = `${Data.PartNumber}${Data.RevisionNumber ? ` (${Data.RevisionNumber})` : ''}`
 
             this.setState({
               isEditFlag: true,
@@ -442,7 +443,7 @@ class AddVolume extends Component {
               selectedPlants: plantArray,
               vendorName: Data.VendorName && Data.VendorName !== undefined ? { label: `${Data.VendorName}`, value: Data.VendorId } : [],
               year: yearObj && yearObj !== undefined ? { label: yearObj.Text, value: yearObj.Value } : [],
-              part: Data?.PartId ? { label: Data?.PartNumber, value: Data?.PartId, RevisionNumber: Data?.RevisionNumber } : [],
+              part: Data?.PartId ? { label: partNumber, value: Data?.PartId, RevisionNumber: Data?.RevisionNumber } : [],
               destinationPlant: Data.DestinationPlant !== undefined ? { label: Data.DestinationPlant, value: Data.DestinationPlantId } : [],
               tableData: tableArray.sort((a, b) => a.Sequence - b.Sequence),
               client: Data.CustomerName !== undefined ? { label: Data.CustomerName, value: Data.CustomerId } : [],
@@ -612,7 +613,7 @@ class AddVolume extends Component {
         CostingTypeId: costingTypeId,
         VendorId: costingTypeId === VBCTypeId ? vendorName.value : userDetail.ZBCSupplierInfo.VendorId,
         PartId: part.value,
-        PartNumber: part.label,
+        PartNumber: part?.label.split(' (')[0],
         RevisionNumber: part.RevisionNumber,
         OldPartNumber: '',
         Year: year.label,
