@@ -68,7 +68,7 @@ class BulkUpload extends Component {
                 }, 100);
             })
         } else if (!this.props.initialConfiguration.IsMasterApprovalAppliedConfigure) {
-            this.setState({ noApprovalCycle: true })
+            this.setState({ noApprovalCycle: false })
         }
     }
 
