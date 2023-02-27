@@ -594,7 +594,7 @@ function SimulationApprovalSummary(props) {
     const POVarianceFormatter = (props) => {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         let variance = checkForDecimalAndNull(row.POVariance, getConfigurationKey().NoOfDecimalForPrice)
-        variance = variance > 0 ? `+${Math.abs(variance)}` : `-${Math.abs(variance)}`;
+        variance = (row.OldPOPrice < row.NewPOPrice) ? `+${Math.abs(variance)}` : `-${Math.abs(variance)}`;
         return variance;
     }
 
