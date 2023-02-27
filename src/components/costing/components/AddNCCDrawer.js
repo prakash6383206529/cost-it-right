@@ -11,6 +11,7 @@ import { getVendorCode } from '../../../helper/validation';
 import { getVendorWithVendorCodeSelectList } from '../../../actions/Common';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { autoCompleteDropdown } from '../../common/CommonFunctions';
+import { MESSAGES } from '../../../config/message';
 
 function AddNCCDrawer(props) {
 
@@ -214,7 +215,7 @@ function AddNCCDrawer(props) {
                     handleChange={handleVendorChange}
                     asyncOptions={filterList}
                     errors={errors.Vendor}
-                    NoOptionMessage={"Enter 3 characters to show data"}
+                    NoOptionMessage={MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN}
                   />
                 </Col>
               </Row>
