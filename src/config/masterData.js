@@ -4343,7 +4343,6 @@ export const POWERLISTING_DOWNLOAD_EXCEl = [
 export const POWERLISTING_VENDOR_DOWNLOAD_EXCEL = [
     { label: "Vendor (Code)", value: "VendorName" },
     { label: "Net Power Cost Per Unit", value: "NetPowerCostPerUnit" },
-    { label: "Effective Date", value: "EffectiveDate" }
 ]
 
 export const INTERESTRATE_DOWNLOAD_EXCEl = [
