@@ -55,7 +55,7 @@ function RawMaterialCost(props) {
   const [editCalculation, setEditCalculation] = useState(true)
   const [confirmPopup, setConfirmPopup] = useState(false)
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
-  const { CostingEffectiveDate } = useSelector(state => state.costing)
+  const { CostingEffectiveDate, ErrorObjRMCC } = useSelector(state => state.costing)
   const [showPopup, setShowPopup] = useState(false)
   const [masterBatch, setMasterBatch] = useState(false)
   const [remarkError, setRemarkError] = useState(true)
@@ -1003,11 +1003,14 @@ function RawMaterialCost(props) {
    * @method setRMCCErrors
    * @description CALLING TO SET RAWMATERIAL COST FORM'S ERROR THAT WILL USE WHEN HITTING SAVE RMCC TAB API.
    */
+  let temp = ErrorObjRMCC
   if (Object.keys(errors).length > 0 && counter < 2) {
-    dispatch(setRMCCErrors(errors))
+    temp.rmGridFields = errors.rmGridFields;
+    dispatch(setRMCCErrors(temp))
     counter++;
   } else if (Object.keys(errors).length === 0 && counter > 0) {
-    dispatch(setRMCCErrors({}))
+    temp.rmGridFields = {};
+    dispatch(setRMCCErrors(temp))
     counter = 0
   }
 
