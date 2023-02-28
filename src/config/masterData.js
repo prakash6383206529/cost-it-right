@@ -3436,8 +3436,6 @@ export const OperationSimulation = [
     { label: "Vendor (Code)", value: "VendorName", },
     { label: "Company (Code)", value: "DepartmentName", },
     { label: "UnitOfMeasurement", value: "UOM" },
-    { label: "Rate", value: "Rate" },
-    { label: "RevisedRate", value: "NewRate" },
     { label: "EffectiveDate", value: "EffectiveDate" },
     { label: "OperationId", value: "OperationId" },
 
@@ -4417,8 +4415,8 @@ export const MACHINERATE_DOWNLOAD_EXCEl = [
     { label: "Costing Head", value: "CostingHead", },
     { label: "Technology", value: "Technologies", },
     { label: "Vendor (Code)", value: "VendorName", },
-    { label: "Customer (Code)", value: "CustomerName", },
     { label: "Plant (Code)", value: "Plants", },
+    { label: "Customer (Code)", value: "CustomerName", },
     { label: "Machine Name", value: "MachineName" },
     { label: "Machine Number", value: "MachineNumber", },
     { label: "Machine Type", value: "MachineTypeName", },
@@ -5110,7 +5108,7 @@ export const RawMaterialDomesticFileHeads = ["CostingHead", "RawMaterial", "RMGr
 
 export const RawMaterialImportFileHeads = ["CostingHead", "RawMaterial", "RMGrade", "RMSpec", "RawMaterialCode", "Category", "TechnologyName", "VendorName", "VendorLocation", "UOM", "BasicRate", "NewBasicRate", "ScrapRate", "NewScrapRate", "NetLandedCost", "EffectiveDate", "RawMaterialId", "VendorId", "PlantId", "RMCode"]
 
-export const OperationFileHeads = ['Technology', 'CostingHead', 'OperationName', 'OperationCode', 'DestinationPlant', 'VendorName', 'UnitOfMeasurement', 'Rate', 'NewRate', 'EffectiveDate', 'OperationId']
+export const OperationFileHeads = ['Technology', 'CostingHead', 'OperationName', 'OperationCode', 'DestinationPlant (Code)', 'Vendor (Code)', 'UnitOfMeasurement', 'Rate', 'RevisedRate', 'EffectiveDate', 'OperationId']
 
 export const BoughtOutPartDomesticFileHeads = ['CostingHead', 'BoughtOutPartNumber', 'BoughtOutPartName', 'BoughtOutPartCategory', "Plant (Code)", "Vendor (Code)", 'BasicRate', 'RevisedBasicRate', 'NetLandedCost', 'EffectiveDate', 'BoughtOutPartId']
 
