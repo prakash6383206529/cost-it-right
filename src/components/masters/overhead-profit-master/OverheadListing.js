@@ -240,7 +240,7 @@ function OverheadListing(props) {
 
 
     const onSearch = () => {
-
+        setNoData(false)
         setWarningMessage(false)
         setIsFilterButtonClicked(true)
         setPageNo(1)

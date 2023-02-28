@@ -248,7 +248,7 @@ function ProfitListing(props) {
 
 
     const onSearch = () => {
-
+        setNoData(false)
         setWarningMessage(false)
         setIsFilterButtonClicked(true)
         setPageNo(1)
