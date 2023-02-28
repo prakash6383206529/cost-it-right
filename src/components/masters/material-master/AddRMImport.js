@@ -522,6 +522,7 @@ class AddRMImport extends Component {
             this.props.change('ForgingScrap', Data.ScrapRate ? Data.ScrapRate : '')
             this.props.change('JaliScrapCost', Data.ScrapRate)            // THIS KEY FOR CIRCLE SCRAP COST
             this.props.change('CircleScrapCost', Data.JaliScrapCost ? Data.JaliScrapCost : '')  //THIS KEY FOR JALI SCRAP COST AND SCRAP COST
+            this.props.change('NetLandedCostCurrency', Data.NetLandedCostConversion ? Data.NetLandedCostConversion : '')
             this.setState({
               IsFinancialDataChanged: false,
               isEditFlag: true,
@@ -548,6 +549,7 @@ class AddRMImport extends Component {
               netCurrencyCost: Data.NetLandedCostConversion ? Data.NetLandedCostConversion : '',
               showForgingMachiningScrapCost: Data.TechnologyId === FORGING ? true : false,
               showExtraCost: Data.TechnologyId === SHEETMETAL ? true : false,
+              showCurrency: true
             }, () => this.setState({ isLoader: false }))
             // ********** ADD ATTACHMENTS FROM API INTO THE DROPZONE'S PERSONAL DATA STORE **********
             let files = Data.FileList && Data.FileList.map((item) => {
@@ -1756,7 +1758,7 @@ class AddRMImport extends Component {
                                   name={"MachiningScrap"}
                                   type="text"
                                   placeholder={isViewFlag || (isEditFlag && isRMAssociated) ? '-' : "Enter"}
-                                  validate={[required, positiveAndDecimalNumber, maxLength15, decimalLengthsix, number]}
+                                  validate={[positiveAndDecimalNumber, maxLength15, decimalLengthsix, number]}
                                   component={renderTextInputField}
                                   required={false}
                                   className=""

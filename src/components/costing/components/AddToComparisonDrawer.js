@@ -787,7 +787,7 @@ function AddToComparisonDrawer(props) {
                 {isZbcSelected && (
                   <Col md="12">
                     <SearchableSelectHookForm
-                      label={"Plant"}
+                      label={"Plant (Code)"}
                       name={"plant"}
                       placeholder={"Select"}
                       Controller={Controller}
@@ -806,7 +806,7 @@ function AddToComparisonDrawer(props) {
                   <>
                     <Col md="12">
                       <SearchableSelectHookForm
-                        label={"Vendor"}
+                        label={"Vendor (Code)"}
                         name={"vendor"}
                         placeholder={"Select"}
                         Controller={Controller}

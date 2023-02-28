@@ -762,6 +762,7 @@ export function getLastSimulationData(vendorId, effectiveDate, callback) {
             OperationImpactedMasterDataList: [],
             RawMaterialImpactedMasterDataList: [],
             BoughtOutPartImpactedMasterDataList: [],
+            SurfaceTreatmenImpactedMasterDataList: [],
             MachineProcessImpactedMasterDataList: [],
             CombinedProcessImpactedMasterDataList: []
         }
@@ -830,6 +831,7 @@ export function getImpactedMasterData(simulationId, callback) {
             OperationImpactedMasterDataList: [],
             RawMaterialImpactedMasterDataList: [],
             BoughtOutPartImpactedMasterDataList: [],
+            SurfaceTreatmenImpactedMasterDataList: [],
             MachineProcessImpactedMasterDataList: [],
             CombinedProcessImpactedMasterDataList: []
         }

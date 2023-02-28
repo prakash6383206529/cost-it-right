@@ -14,7 +14,7 @@ import ViewPackagingAndFreight from './Drawers/ViewPackagingAndFreight'
 import ViewToolCost from './Drawers/viewToolCost'
 import SendForApproval from './approval/SendForApproval'
 import Toaster from '../../common/Toaster'
-import { checkForDecimalAndNull, checkForNull, checkPermission, formViewData, getTechnologyPermission, loggedInUserId, userDetails, allEqual, getConfigurationKey, getCurrencySymbol, highlightCostingSummaryValue, checkVendorPlantConfigurable } from '../../../helper'
+import { checkForDecimalAndNull, checkForNull, checkPermission, formViewData, getTechnologyPermission, loggedInUserId, userDetails, allEqual, getConfigurationKey, getCurrencySymbol, highlightCostingSummaryValue, checkVendorPlantConfigurable, userTechnologyLevelDetails } from '../../../helper'
 import Attachament from './Drawers/Attachament'
 import { BOPDOMESTIC, BOPIMPORT, COMBINED_PROCESS, COSTING, DRAFT, EMPTY_GUID_0, FILE_URL, OPERATIONS, REJECTED, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, VARIANCE, VBC, ZBC, VIEW_COSTING_DATA, VIEW_COSTING_DATA_LOGISTICS, NCC, EMPTY_GUID, CBC, ZBCTypeId, VBCTypeId, NCCTypeId, CBCTypeId, FORGING } from '../../../config/constants'
 import { useHistory } from "react-router-dom";
@@ -36,6 +36,8 @@ import TooltipCustom from '../../common/Tooltip'
 import { Costratiograph } from '../../dashboard/CostRatioGraph'
 import { colorArray } from '../../dashboard/ChartsDashboard'
 import { LOGISTICS } from '../../../config/masterData'
+import { reactLocalStorage } from 'reactjs-localstorage'
+import { getUsersTechnologyLevelAPI } from '../../../actions/auth/AuthActions'
 
 const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
 
@@ -132,18 +134,25 @@ const CostingSummaryTable = (props) => {
   useEffect(() => {
 
     if (!viewMode && viewCostingData?.length !== 0 && partInfo && count === 0) {
-      let obj = {}
-      obj.DepartmentId = userDetails().DepartmentId
-      obj.UserId = loggedInUserId()
-      obj.TechnologyId = partInfo.TechnologyId
-      obj.Mode = 'costing'
-      obj.approvalTypeId = viewCostingData[0]?.costingTypeId
+      let levelDetailsTemp = ''
       setCount(1)
-      dispatch(checkFinalUser(obj, res => {
-        if (res.data?.Result) {
-          setIsFinalApproverShow(res.data?.Data?.IsFinalApprover) // UNCOMMENT IT AFTER DEPLOTED FROM KAMAL SIR END
+      dispatch(getUsersTechnologyLevelAPI(loggedInUserId(), technologyId, (res) => {
+        levelDetailsTemp = userTechnologyLevelDetails(viewCostingData[0]?.costingTypeId, res?.data?.Data?.TechnologyLevels)
+        if (levelDetailsTemp?.length !== 0) {
+          let obj = {}
+          obj.DepartmentId = userDetails().DepartmentId
+          obj.UserId = loggedInUserId()
+          obj.TechnologyId = partInfo.TechnologyId
+          obj.Mode = 'costing'
+          obj.approvalTypeId = viewCostingData[0]?.costingTypeId
+          dispatch(checkFinalUser(obj, res => {
+            if (res.data?.Result) {
+              setIsFinalApproverShow(res.data?.Data?.IsFinalApprover) // UNCOMMENT IT AFTER DEPLOTED FROM KAMAL SIR END
+            }
+          }))
         }
       }))
+
     }
 
   }, [viewCostingData])
@@ -921,7 +930,9 @@ const CostingSummaryTable = (props) => {
     if (props?.isRfqCosting) {
       templateObj.costingHeadCheck = 'VBC'
     }
-
+    if (!(reactLocalStorage.getObject('cbcCostingPermission'))) {
+      templateObj.costingHeadCheck = 'VBC/ZBC/NCC'
+    }
     for (var prop in templateObj) {
 
       if (partType) {  // IF TECHNOLOGY WILL BE ASSEMBLY THIS BLOCK WILL BE EXCECUTED
@@ -1192,9 +1203,7 @@ const CostingSummaryTable = (props) => {
                   <table className={`table table-bordered costing-summary-table ${approvalMode ? 'costing-approval-summary' : ''}`}>
                     <thead>
                       <tr className="main-row">
-                        {
-                          isApproval ? <th scope="col" className='approval-summary-headers'>{props.id}</th> : <th scope="col" className={`header-name-left ${isLockedState && !drawerDetailPDF && !pdfHead && costingSummaryMainPage ? 'pt-30' : ''}`}>{props?.isRfqCosting ? 'VBC' : 'VBC/ZBC/NCC/CBC'}</th>
-                        }
+                        {isApproval ? <th scope="col" className='approval-summary-headers'>{props.id}</th> : <th scope="col" className={`header-name-left ${isLockedState && !drawerDetailPDF && !pdfHead && costingSummaryMainPage ? 'pt-30' : ''}`}>{props?.isRfqCosting ? 'VBC' : (reactLocalStorage.getObject('cbcCostingPermission')) ? 'VBC/ZBC/NCC/CBC' : 'VBC/ZBC/NCC'}</th>}
                         { }
                         {viewCostingData &&
                           viewCostingData?.map((data, index) => {
@@ -1230,7 +1239,7 @@ const CostingSummaryTable = (props) => {
                                     {
                                       (isApproval && data?.CostingHeading !== '-') ? <span>{data?.CostingHeading}</span> : <span className={`checkbox-text`} title={title}><div><span>{heading(data).mainHeading}<span> {data.costingTypeId !== CBCTypeId && `(SOB: ${data?.shareOfBusinessPercent}%)`}</span></span><span className='sub-heading'>{heading(data).subHeading}-{data.costingHeadCheck}</span></div></span>
                                     }
-                                    {data?.CostingHeading === VARIANCE && <TooltipCustom customClass="mb-0 ml-1" id="variance" tooltipText="Variance = (Old Costing - New Costing)" />}
+                                    {data?.CostingHeading === VARIANCE && ((!pdfHead)) && <TooltipCustom customClass="mb-0 ml-1" id="variance" tooltipText="Variance = (Old Costing - New Costing)" />}
                                   </div>
                                   <div className="action  text-right">
                                     {((!pdfHead && !drawerDetailPDF)) && (data?.IsAssemblyCosting === true) && < button title='View BOM' className="hirarchy-btn mr-1 mb-0 align-middle" type={'button'} onClick={() => viewBomCostingDetail(index)} />}
@@ -1470,8 +1479,8 @@ const CostingSummaryTable = (props) => {
                                 viewCostingData?.map((data, index) => {
                                   return (
                                     <td>
-                                      {data?.CostingHeading === VARIANCE && (isApproval ? viewCostingData?.length > 0 && viewCostingData[0]?.netRM > viewCostingData[1]?.netRM ? <span className='positive-sign'>+</span> : '' : '')}
-                                      <span title={data?.netRM}>{checkForDecimalAndNull(data?.netRM, initialConfiguration.NoOfDecimalForPrice)}</span>
+                                      {data?.CostingHeading === VARIANCE && (isApproval && Number(data?.netRM) !== 0 ? viewCostingData?.length > 0 && viewCostingData[0]?.netRM > viewCostingData[1]?.netRM ? <span className='positive-sign'>-</span> : <span className='positive-sign'>+</span> : '')}
+                                      <span title={Math.abs(data?.netRM)}>{checkForDecimalAndNull(Math.abs(data?.netRM), initialConfiguration.NoOfDecimalForPrice)}</span>
                                       {
                                         (data?.CostingHeading !== VARIANCE) && (!pdfHead && !drawerDetailPDF) &&
                                         <button
@@ -1500,8 +1509,8 @@ const CostingSummaryTable = (props) => {
                                 viewCostingData?.map((data, index) => {
                                   return (
                                     <td>
-                                      {data?.CostingHeading === VARIANCE && (isApproval ? viewCostingData?.length > 0 && viewCostingData[0]?.netBOP > viewCostingData[1]?.netBOP ? <span className='positive-sign'>+</span> : '' : '')}
-                                      <span title={data?.netBOP}>{checkForDecimalAndNull(data?.netBOP, initialConfiguration.NoOfDecimalForPrice)}</span>
+                                      {data?.CostingHeading === VARIANCE && (isApproval && Number(data?.netBOP) !== 0 ? viewCostingData?.length > 0 && viewCostingData[0]?.netBOP > viewCostingData[1]?.netBOP ? <span className='positive-sign'>-</span> : <span className='positive-sign'>+</span> : '')}
+                                      <span title={Math.abs(data?.netBOP)}>{checkForDecimalAndNull(Math.abs(data?.netBOP), initialConfiguration.NoOfDecimalForPrice)}</span>
                                       {
                                         (data?.CostingHeading !== VARIANCE) && (!pdfHead && !drawerDetailPDF) &&
                                         <button
@@ -1558,8 +1567,8 @@ const CostingSummaryTable = (props) => {
                                 viewCostingData?.map((data, index) => {
                                   return (
                                     <td>
-                                      {data?.CostingHeading === VARIANCE && (isApproval ? viewCostingData?.length > 0 && viewCostingData[0]?.nConvCost > viewCostingData[1]?.nConvCost ? <span className='positive-sign'>+</span> : '' : '')}
-                                      <span title={data?.nConvCost}>{data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.nConvCost, initialConfiguration.NoOfDecimalForPrice) : checkForDecimalAndNull(data?.nConvCost, initialConfiguration.NoOfDecimalForPrice)}</span>
+                                      {data?.CostingHeading === VARIANCE && (isApproval && Number(data?.nConvCost) !== 0 ? viewCostingData?.length > 0 && viewCostingData[0]?.nConvCost > viewCostingData[1]?.nConvCost ? <span className='positive-sign'>-</span> : <span className='positive-sign'>+</span> : '')}
+                                      <span title={Math.abs(data?.nConvCost)}>{data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.nConvCost, initialConfiguration.NoOfDecimalForPrice) : checkForDecimalAndNull(Math.abs(data?.nConvCost), initialConfiguration.NoOfDecimalForPrice)}</span>
                                       {
                                         (data?.CostingHeading !== VARIANCE) && (!pdfHead && !drawerDetailPDF) &&
                                         <button
@@ -1620,8 +1629,8 @@ const CostingSummaryTable = (props) => {
                             viewCostingData?.map((data, index) => {
                               return (
                                 <td>
-                                  {data?.CostingHeading === VARIANCE && (isApproval ? viewCostingData?.length > 0 && viewCostingData[0]?.nsTreamnt > viewCostingData[1]?.nsTreamnt ? <span className='positive-sign'>+</span> : '' : '')}
-                                  <span title={data?.netSurfaceTreatmentCost}>{data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.netSurfaceTreatmentCost, initialConfiguration.NoOfDecimalForPrice) : checkForDecimalAndNull(data?.netSurfaceTreatmentCost, initialConfiguration.NoOfDecimalForPrice)}</span>
+                                  {data?.CostingHeading === VARIANCE && (isApproval && Number(data?.netSurfaceTreatmentCost) !== 0 ? viewCostingData?.length > 0 && viewCostingData[0]?.nsTreamnt > viewCostingData[1]?.nsTreamnt ? <span className='positive-sign'>-</span> : <span className='positive-sign'>+</span> : '')}
+                                  <span title={Math.abs(data?.netSurfaceTreatmentCost)}>{data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.netSurfaceTreatmentCost, initialConfiguration.NoOfDecimalForPrice) : checkForDecimalAndNull(Math.abs(data?.netSurfaceTreatmentCost), initialConfiguration.NoOfDecimalForPrice)}</span>
                                   {
                                     (data?.CostingHeading !== VARIANCE) && (!pdfHead && !drawerDetailPDF) &&
                                     <button
@@ -1731,8 +1740,8 @@ const CostingSummaryTable = (props) => {
                             viewCostingData?.map((data, index) => {
                               return (
                                 <td>
-                                  {data?.CostingHeading === VARIANCE && (isApproval ? viewCostingData?.length > 0 && viewCostingData[0]?.nOverheadProfit > viewCostingData[1]?.nOverheadProfit ? <span className='positive-sign'>+</span> : '' : '')}
-                                  <span title={data?.nOverheadProfit}>{checkForDecimalAndNull(data?.nOverheadProfit, initialConfiguration.NoOfDecimalForPrice)}</span>
+                                  {data?.CostingHeading === VARIANCE && (isApproval && Number(data?.nOverheadProfit) !== 0 ? viewCostingData?.length > 0 && viewCostingData[0]?.nOverheadProfit > viewCostingData[1]?.nOverheadProfit ? <span className='positive-sign'>-</span> : <span className='positive-sign'>+</span> : '')}
+                                  <span title={Math.abs(data?.nOverheadProfit)}>{checkForDecimalAndNull(Math.abs(data?.nOverheadProfit), initialConfiguration.NoOfDecimalForPrice)}</span>
                                   {
                                     (data?.CostingHeading !== VARIANCE) && (!pdfHead && !drawerDetailPDF) &&
                                     <button
@@ -1779,8 +1788,8 @@ const CostingSummaryTable = (props) => {
                             viewCostingData?.map((data, index) => {
                               return (
                                 <td>
-                                  {data?.CostingHeading === VARIANCE && (isApproval ? viewCostingData?.length > 0 && viewCostingData[0]?.nPackagingAndFreight > viewCostingData[1]?.nPackagingAndFreight ? <span className='positive-sign'>+</span> : '' : '')}
-                                  <span title={data?.nPackagingAndFreight}>{data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.nPackagingAndFreight, initialConfiguration.NoOfDecimalForPrice) : checkForDecimalAndNull(data?.nPackagingAndFreight, initialConfiguration.NoOfDecimalForPrice)}</span>
+                                  {data?.CostingHeading === VARIANCE && (isApproval ? viewCostingData?.length > 0 && viewCostingData[0]?.nPackagingAndFreight > viewCostingData[1]?.nPackagingAndFreight ? <span className='positive-sign'>-</span> : <span className='positive-sign'>+</span> : '')}
+                                  <span title={Math.abs(data?.nPackagingAndFreight)}>{data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(Math.abs(data?.nPackagingAndFreight), initialConfiguration.NoOfDecimalForPrice) : checkForDecimalAndNull(Math.abs(data?.nPackagingAndFreight), initialConfiguration.NoOfDecimalForPrice)}</span>
                                   {/* <span>{data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.nPackagingAndFreight, initialConfiguration.NoOfDecimalForPrice) : ''}</span> */}
                                   {
                                     (data?.CostingHeading !== VARIANCE) && (!pdfHead && !drawerDetailPDF) &&
@@ -1850,8 +1859,8 @@ const CostingSummaryTable = (props) => {
                             viewCostingData?.map((data, index) => {
                               return (
                                 <td>
-                                  {data?.CostingHeading === VARIANCE && (isApproval ? viewCostingData?.length > 0 && viewCostingData[0]?.totalToolCost > viewCostingData[1]?.totalToolCost ? <span className='positive-sign'>+</span> : '' : '')}
-                                  <span title={data?.totalToolCost}>{data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.totalToolCost, initialConfiguration.NoOfDecimalForPrice) : checkForDecimalAndNull(data?.totalToolCost, initialConfiguration.NoOfDecimalForPrice)}</span>
+                                  {data?.CostingHeading === VARIANCE && (isApproval ? viewCostingData?.length > 0 && viewCostingData[0]?.totalToolCost > viewCostingData[1]?.totalToolCost ? <span className='positive-sign'>-</span> : <span className='positive-sign'>+</span> : '')}
+                                  <span title={Math.abs(data?.totalToolCost)}>{data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(Math.abs(data?.totalToolCost), initialConfiguration.NoOfDecimalForPrice) : checkForDecimalAndNull(Math.abs(data?.totalToolCost), initialConfiguration.NoOfDecimalForPrice)}</span>
                                   {
                                     (data?.CostingHeading !== VARIANCE) && (!pdfHead && !drawerDetailPDF) &&
                                     <button
@@ -2075,13 +2084,11 @@ const CostingSummaryTable = (props) => {
                                             : ''
                                           const fileURL = `${FILE_URL}${withOutTild}`
                                           return (
-                                            <td>
-                                              <div className={"single-attachment images"}>
-                                                <a href={fileURL} target="_blank" rel="noreferrer">
-                                                  {f.OriginalFileName}
-                                                </a>
-                                              </div>
-                                            </td>
+                                            <div className={"single-attachment images"}>
+                                              <a href={fileURL} target="_blank" rel="noreferrer">
+                                                {f.OriginalFileName}
+                                              </a>
+                                            </div>
                                           )
                                         })}
                                     </>

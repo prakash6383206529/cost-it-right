@@ -125,7 +125,7 @@ export const checkForChangeInOverheadProfit3Values = (item) => {
 
 export const impactmasterDownload = (impactedMasterData) => {
     let rmArraySet = [], bopArraySet = []
-    let operationArraySet = [], erArraySet = [], combinedProcessArraySet = []
+    let operationArraySet = [], erArraySet = [], combinedProcessArraySet = [], surfaceTreatmentArraySet = []
 
     impactedMasterData?.OperationImpactedMasterDataList && impactedMasterData?.OperationImpactedMasterDataList.map((item) => {
         let tempObj = []
@@ -136,6 +136,18 @@ export const impactmasterDownload = (impactedMasterData) => {
         tempObj.push(item.NewOperationRate)
         tempObj.push(DayTime(item.EffectiveDate).format('DD/MM/YYYY'))
         operationArraySet.push(tempObj)
+        return null
+    })
+
+    impactedMasterData?.SurfaceTreatmenImpactedMasterDataList && impactedMasterData?.SurfaceTreatmenImpactedMasterDataList.map((item) => {
+        let tempObj = []
+        tempObj.push(item.OperationName)
+        tempObj.push(item.OperationCode)
+        tempObj.push(item.UOM)
+        tempObj.push(item.OldOperationRate)
+        tempObj.push(item.NewOperationRate)
+        tempObj.push(DayTime(item.EffectiveDate).format('DD/MM/YYYY'))
+        surfaceTreatmentArraySet.push(tempObj)
         return null
     })
 
@@ -210,6 +222,10 @@ export const impactmasterDownload = (impactedMasterData) => {
             ySteps: 5, //will put space of 5 rows,
             columns: OperationImpactDownloadArray,
             data: operationArraySet
+        }, {
+            ySteps: 5,
+            columns: OperationImpactDownloadArray,
+            data: surfaceTreatmentArraySet
         }, {
             ySteps: 5,
             columns: BOPImpactDownloadArray,

@@ -19,7 +19,7 @@ import {
     AssemblyWiseImpactt, ImpactMaster, defaultPageSize, VBC, FILE_URL, MACHINERATE, VBCTypeId
 } from '../../../config/constants';
 import CostingSummaryTable from '../../costing/components/CostingSummaryTable';
-import { checkForDecimalAndNull, formViewData, checkForNull, getConfigurationKey, loggedInUserId, searchNocontentFilter } from '../../../helper';
+import { checkForDecimalAndNull, formViewData, checkForNull, getConfigurationKey, loggedInUserId, searchNocontentFilter, userTechnologyLevelDetails } from '../../../helper';
 import ApproveRejectDrawer from '../../costing/components/approval/ApproveRejectDrawer';
 import LoaderCustom from '../../common/LoaderCustom';
 import VerifyImpactDrawer from './VerifyImpactDrawer';
@@ -48,6 +48,7 @@ import CalculatorWrapper from '../../common/Calculator/CalculatorWrapper';
 import { debounce } from 'lodash';
 import { ErrorMessage } from '../SimulationUtils';
 import { PaginationWrapper } from '../../common/commonPagination';
+import { getUsersTechnologyLevelAPI } from '../../../actions/auth/AuthActions';
 
 const gridOptions = {};
 const ExcelFile = ReactExport.ExcelFile;
@@ -199,7 +200,6 @@ function SimulationApprovalSummary(props) {
             //     quantity: 1
             // }
             setdataForAssemblyImpactForFg(SimulatedCostingList)
-
             let obj = {
                 DepartmentId: DepartmentId,
                 UserId: loggedInUserId(),
@@ -221,6 +221,7 @@ function SimulationApprovalSummary(props) {
             impactedMasterDataListForLastRevisionData?.OperationImpactedMasterDataList?.length <= 0 &&
             impactedMasterDataListForLastRevisionData?.ExchangeRateImpactedMasterDataList?.length <= 0 &&
             impactedMasterDataListForLastRevisionData?.BoughtOutPartImpactedMasterDataList?.length <= 0 &&
+            impactedMasterDataListForLastRevisionData?.SurfaceTreatmenImpactedMasterDataList?.length <= 0 &&
             impactedMasterDataListForLastRevisionData?.MachineProcessImpactedMasterDataList <= 0 &&
             impactedMasterDataListForLastRevisionData?.CombinedProcessImpactedMasterDataList?.length <= 0
         if (lastRevisionDataAccordian && check) {
@@ -263,6 +264,7 @@ function SimulationApprovalSummary(props) {
                         OperationImpactedMasterDataList: [],
                         RawMaterialImpactedMasterDataList: [],
                         BoughtOutPartImpactedMasterDataList: [],
+                        SurfaceTreatmenImpactedMasterDataList: [],
                         MachineProcessImpactedMasterDataList: [],
                         CombinedProcessImpactedMasterDataList: []
                     }
@@ -592,7 +594,7 @@ function SimulationApprovalSummary(props) {
     const POVarianceFormatter = (props) => {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         let variance = checkForDecimalAndNull(row.POVariance, getConfigurationKey().NoOfDecimalForPrice)
-        variance = variance > 0 ? `+${Math.abs(variance)}` : `-${Math.abs(variance)}`;
+        variance = (row.OldPOPrice < row.NewPOPrice) ? `+${Math.abs(variance)}` : `-${Math.abs(variance)}`;
         return variance;
     }
 
@@ -1031,7 +1033,7 @@ function SimulationApprovalSummary(props) {
                                             <td>{simulationDetail && simulationDetail.DepartmentCode ? simulationDetail.DepartmentCode : '-'}</td>
                                             {String(SimulationTechnologyId) !== EXCHNAGERATE && <td>{simulationDetail && simulationDetail.AmendmentDetails?.CostingHead}</td>}
                                             <td>{simulationDetail && simulationDetail.AmendmentDetails?.VendorName}</td>
-                                            <td>{simulationDetail && simulationDetail.AmendmentDetails?.NumberOfImpactedCosting}</td>
+                                            <td>{simulationDetail && simulationDetail.AmendmentDetails?.ImpactParts}</td>
                                             <td>{simulationDetail && simulationDetail.AmendmentDetails?.Reason}</td>
                                             <td>{simulationDetail && simulationDetail.AmendmentDetails?.SimulationTechnology}</td>
                                             <td>{simulationDetail && DayTime(simulationDetail.AmendmentDetails?.EffectiveDate).format('DD/MM/YYYY')}</td>
