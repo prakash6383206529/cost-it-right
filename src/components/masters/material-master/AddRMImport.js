@@ -1568,8 +1568,8 @@ class AddRMImport extends Component {
                                       onChange={(e) => this.handleVendorName(e)}
                                       value={this.state.vendorName}
                                       placeholder={(isEditFlag || isViewFlag || this.state.inputLoader) ? '-' : "Select"}
-                                      noOptionsMessage={({ inputValue }) => inputValue.length < 3 ? "Enter 3 characters to show data" : "No results found"}
-                                      isDisabled={(isEditFlag) ? true : false}
+                                      noOptionsMessage={({ inputValue }) => inputValue.length < 3 ? MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN : "No results found"}
+                                      isDisabled={isEditFlag || isViewFlag}
                                       onFocus={() => onFocus(this)}
                                       onKeyDown={(onKeyDown) => {
                                         if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();

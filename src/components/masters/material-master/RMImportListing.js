@@ -330,7 +330,7 @@ function RMImportListing(props) {
 
 
   const onSearch = () => {
-
+    setNoData(false)
     setWarningMessage(false)
     setIsFilterButtonClicked(true)
     setPageNo(1)
@@ -674,6 +674,7 @@ function RMImportListing(props) {
 
 
   const resetState = () => {
+    setNoData(false)
     setFilterModel({})
     setinRangeDate([])
     setIsFilterButtonClicked(false)

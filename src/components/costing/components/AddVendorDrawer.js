@@ -11,6 +11,7 @@ import WarningMessage from '../../common/WarningMessage';
 import { EMPTY_GUID_0, searchCount, ZBC } from '../../../config/constants';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { autoCompleteDropdown } from '../../common/CommonFunctions';
+import { MESSAGES } from '../../../config/message';
 
 function AddVendorDrawer(props) {
 
@@ -209,7 +210,7 @@ function AddVendorDrawer(props) {
                     errors={errors.Vendor}
                     isLoading={VendorLoaderObj}
                     asyncOptions={filterList}
-                    NoOptionMessage={"Enter 3 characters to show data"}
+                    NoOptionMessage={MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN}
                   />
                 </Col>
 

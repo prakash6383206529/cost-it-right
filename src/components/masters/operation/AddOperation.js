@@ -365,7 +365,11 @@ class AddOperation extends Component {
           this.setState({ DataToChange: Data })
           this.props.change('EffectiveDate', DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
           this.setState({ minEffectiveDate: Data.EffectiveDate })
-
+          this.props.change('OperationName', Data.OperationName ? Data.OperationName : '')
+          this.props.change('OperationCode', Data.OperationCode ? Data.OperationCode : '')
+          this.props.change('Description', Data.Description ? Data.Description : '')
+          this.props.change('Rate', Data.Rate ? Data.Rate : '')
+          this.props.change('Remark', Data.Remark ? Data.Remark : '')
           let technologyArray = [];
           Data && Data.Technology.map((item) => {
             technologyArray.push({ Text: item.Technology, Value: item.TechnologyId })
@@ -998,7 +1002,7 @@ class AddOperation extends Component {
                                 loadOptions={filterList}
                                 onChange={(e) => this.handleVendorName(e)}
                                 value={this.state.vendorName}
-                                noOptionsMessage={({ inputValue }) => inputValue.length < 3 ? "Enter 3 characters to show data" : "No results found"}
+                                noOptionsMessage={({ inputValue }) => inputValue.length < 3 ? MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN : "No results found"}
                                 isDisabled={(isEditFlag) ? true : false}
                                 onKeyDown={(onKeyDown) => {
                                   if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
@@ -1336,12 +1340,7 @@ function mapStateToProps(state) {
   let initialValues = {};
   if (operationData && operationData !== undefined) {
     initialValues = {
-      OperationName: operationData.OperationName,
-      OperationCode: operationData.OperationCode,
-      Description: operationData.Description,
-      Rate: operationData.Rate,
       LabourRatePerUOM: operationData.LabourRatePerUOM,
-      Remark: operationData.Remark,
     }
   }
 

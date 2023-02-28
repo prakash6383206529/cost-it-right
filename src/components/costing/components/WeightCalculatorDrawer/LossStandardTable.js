@@ -344,6 +344,20 @@ function LossStandardTable(props) {
       FlashLoss: '',
     })
   }
+  const rateTableReset = () => {
+    reset({
+      LossPercentage: '',
+      FlashLength: '',
+      FlashThickness: '',
+      FlashWidth: '',
+      BarDiameter: '',
+      BladeThickness: '',
+      LossOfType: '',
+      LossWeight: '',
+      FlashLoss: '',
+    })
+  }
+
   /**
    * @method editRow
    * @description for filling the row above table for editing
@@ -709,14 +723,24 @@ function LossStandardTable(props) {
                 </button>
               </>
             ) : (
-              <button
-                type="button"
-                className={'user-btn mt30 pull-left'}
-                onClick={addRow}
-                disabled={props.CostingViewMode || disableAll}
-              >
-                <div className={'plus'}></div>ADD
-              </button>
+              <>
+                <button
+                  type="button"
+                  className={'user-btn mt30 pull-left'}
+                  onClick={addRow}
+                  disabled={props.CostingViewMode || disableAll}
+                >
+                  <div className={'plus'}></div>ADD
+                </button>
+                <button
+                  type="button"
+                  className={"mr15 ml-1 mt30 reset-btn"}
+                  disabled={props.CostingViewMode || disableAll}
+                  onClick={rateTableReset}
+                >
+                  Reset
+                </button>
+              </>
             )}
           </div>
         </Col>

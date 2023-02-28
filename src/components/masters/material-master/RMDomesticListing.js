@@ -312,7 +312,7 @@ function RMDomesticListing(props) {
 
 
     const onSearch = () => {
-
+        setNoData(false)
         setWarningMessage(false)
         setIsFilterButtonClicked(true)
         setPageNo(1)
@@ -327,6 +327,7 @@ function RMDomesticListing(props) {
     const resetState = () => {
         setinRangeDate([])
         setIsFilterButtonClicked(false)
+        setNoData(false)
         gridOptions?.columnApi?.resetColumnState(null);
         gridOptions?.api?.setFilterModel(null);
 

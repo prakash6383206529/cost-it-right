@@ -17,7 +17,7 @@ import SelectRowWrapper from '.././common/SelectRowWrapper';
 import { getQuotationList, cancelRfqQuotation, sendReminderForQuotation } from './actions/rfq';
 import ViewRfq from './ViewRfq';
 import AddRfq from './AddRfq';
-import { checkPermission, userDetails } from '../../helper';
+import { checkPermission, searchNocontentFilter, userDetails } from '../../helper';
 import TooltipCustom from '../common/Tooltip';
 import Attachament from '../costing/components/Drawers/Attachament';
 import DayTime from '../common/DayTimeWrapper';
@@ -250,6 +250,9 @@ function RfqListing(props) {
     const closeAttachmentDrawer = (e = '') => {
         setAttachment(false)
     }
+    const onFloatingFilterChanged = (value) => {
+        rowData.length !== 0 && setNoData(searchNocontentFilter(value, noData))
+    }
 
     const dateFormater = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
@@ -377,6 +380,7 @@ function RfqListing(props) {
                                                 frameworkComponents={frameworkComponents}
                                                 rowSelection={'multiple'}
                                                 suppressRowClickSelection={true}
+                                                onFilterModified={onFloatingFilterChanged}
                                                 enableBrowserTooltips={true}
                                             >
                                                 <AgGridColumn cellClass="has-checkbox" field="QuotationNumber" headerName='RFQ No.' cellRenderer={'linkableFormatter'} ></AgGridColumn>
@@ -391,7 +395,7 @@ function RfqListing(props) {
                                                 <AgGridColumn field="LastSubmissionDate" headerName='Last Submission Date' cellRenderer='dateFormater'></AgGridColumn>
                                                 <AgGridColumn field="QuotationNumber" headerName='Attachments' cellRenderer='attachmentFormatter'></AgGridColumn>
                                                 <AgGridColumn field="Status" headerName="Status" cellClass="text-center" minWidth={150} cellRenderer="statusFormatter"></AgGridColumn>
-                                                {<AgGridColumn field="QuotationId" width={160} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
+                                                {<AgGridColumn field="QuotationId" width={180} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
 
                                             </AgGridReact>
                                             <PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} globalTake={10} />

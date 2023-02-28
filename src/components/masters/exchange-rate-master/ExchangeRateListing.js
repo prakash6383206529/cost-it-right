@@ -24,6 +24,7 @@ import { filterParams } from '../../common/DateFilter'
 import ScrollToTop from '../../common/ScrollToTop';
 import { getListingForSimulationCombined } from '../../simulation/actions/Simulation';
 import { PaginationWrapper } from '../../common/commonPagination';
+import { reactLocalStorage } from 'reactjs-localstorage';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -449,7 +450,7 @@ class ExchangeRateListing extends Component {
                                 >
                                     <AgGridColumn field="CostingHead" headerName="Costing Head" ></AgGridColumn>
                                     <AgGridColumn field="vendorWithCode" headerName="Vendor (Code)" ></AgGridColumn>
-                                    <AgGridColumn field="customerWithCode" headerName="Customer (Code)" ></AgGridColumn>
+                                    {reactLocalStorage.getObject('cbcCostingPermission') && <AgGridColumn field="customerWithCode" headerName="Customer (Code)" ></AgGridColumn>}
                                     <AgGridColumn field="Currency" headerName="Currency" minWidth={135}></AgGridColumn>
                                     <AgGridColumn suppressSizeToFit="true" field="CurrencyExchangeRate" headerName="Exchange Rate (INR)" minWidth={160} cellRenderer={'commonCostFormatter'}></AgGridColumn>
                                     <AgGridColumn field="BankRate" headerName="Bank Rate (INR)" minWidth={150} cellRenderer={'commonCostFormatter'}></AgGridColumn>

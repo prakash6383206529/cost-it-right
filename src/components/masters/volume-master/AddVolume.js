@@ -864,7 +864,7 @@ class AddVolume extends Component {
                                       loadOptions={vendorFilterList}
                                       onChange={(e) => this.handleVendorName(e)}
                                       value={this.state.vendorName}
-                                      noOptionsMessage={({ inputValue }) => inputValue.length < 3 ? "Enter 3 characters to show data" : "No results found"}
+                                      noOptionsMessage={({ inputValue }) => inputValue.length < 3 ? MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN : "No results found"}
                                       isDisabled={(isEditFlag) ? true : false}
                                       onKeyDown={(onKeyDown) => {
                                         if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
@@ -940,7 +940,7 @@ class AddVolume extends Component {
                                     loadOptions={partFilterList}
                                     onChange={(e) => this.handlePartName(e)}
                                     value={this.state.part}
-                                    noOptionsMessage={({ inputValue }) => inputValue.length < 3 ? "Enter 3 characters to show data" : "No results found"}
+                                    noOptionsMessage={({ inputValue }) => inputValue.length < 3 ? MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN : "No results found"}
                                     onKeyDown={(onKeyDown) => {
                                       if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
                                     }}
