@@ -674,6 +674,7 @@ function RMImportListing(props) {
 
 
   const resetState = () => {
+    setNoData(false)
     setFilterModel({})
     setinRangeDate([])
     setIsFilterButtonClicked(false)
