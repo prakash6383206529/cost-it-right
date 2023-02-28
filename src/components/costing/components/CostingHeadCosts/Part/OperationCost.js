@@ -41,7 +41,7 @@ function OperationCost(props) {
   const [headerPinned, setHeaderPinned] = useState(true)
   const CostingViewMode = useContext(ViewCostingContext);
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
-  const { CostingEffectiveDate } = useSelector(state => state.costing)
+  const { CostingEffectiveDate, ErrorObjRMCC } = useSelector(state => state.costing)
   const costData = useContext(costingInfoContext);
 
   useEffect(() => {
@@ -286,12 +286,15 @@ function OperationCost(props) {
   /**
    * @method setRMCCErrors
    * @description CALLING TO SET BOP COST FORM'S ERROR THAT WILL USE WHEN HITTING SAVE RMCC TAB API.
-   */
+  */
+  let temp = ErrorObjRMCC
   if (Object.keys(errors).length > 0 && counter < 2) {
-    dispatch(setRMCCErrors(errors))
+    temp.OperationGridFields = errors.OperationGridFields;
+    dispatch(setRMCCErrors(temp))
     counter++;
   } else if (Object.keys(errors).length === 0 && counter > 0) {
-    dispatch(setRMCCErrors({}))
+    temp.OperationGridFields = {};
+    dispatch(setRMCCErrors(temp))
     counter = 0
   }
 
