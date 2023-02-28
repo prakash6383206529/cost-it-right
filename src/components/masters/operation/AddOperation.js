@@ -365,7 +365,11 @@ class AddOperation extends Component {
           this.setState({ DataToChange: Data })
           this.props.change('EffectiveDate', DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
           this.setState({ minEffectiveDate: Data.EffectiveDate })
-
+          this.props.change('OperationName', Data.OperationName ? Data.OperationName : '')
+          this.props.change('OperationCode', Data.OperationCode ? Data.OperationCode : '')
+          this.props.change('Description', Data.Description ? Data.Description : '')
+          this.props.change('Rate', Data.Rate ? Data.Rate : '')
+          this.props.change('Remark', Data.Remark ? Data.Remark : '')
           let technologyArray = [];
           Data && Data.Technology.map((item) => {
             technologyArray.push({ Text: item.Technology, Value: item.TechnologyId })
@@ -1336,12 +1340,7 @@ function mapStateToProps(state) {
   let initialValues = {};
   if (operationData && operationData !== undefined) {
     initialValues = {
-      OperationName: operationData.OperationName,
-      OperationCode: operationData.OperationCode,
-      Description: operationData.Description,
-      Rate: operationData.Rate,
       LabourRatePerUOM: operationData.LabourRatePerUOM,
-      Remark: operationData.Remark,
     }
   }
 
