@@ -59,7 +59,7 @@ function RawMaterialCost(props) {
   const [showPopup, setShowPopup] = useState(false)
   const [masterBatch, setMasterBatch] = useState(false)
   const [remarkError, setRemarkError] = useState(true)
-  const [forgingInfoIcon, setForgingInfoIcon] = useState(false)
+  const [forgingInfoIcon, setForgingInfoIcon] = useState({})
 
   const { ferrousCalculatorReset } = useSelector(state => state.costWorking)
   const RMDivisor = (item?.CostingPartDetails?.RMDivisor !== null) ? item?.CostingPartDetails?.RMDivisor : 0;
@@ -286,7 +286,8 @@ function RawMaterialCost(props) {
     setInputDiameter(weightData.Diameter)
     setWeight(weightData, originalWeight)
     setWeightDrawerOpen(false)
-    setForgingInfoIcon(false)
+    if (Object.keys(weightData).length > 0) setForgingInfoIcon({ ...forgingInfoIcon, [editIndex]: false })
+
   }
 
   const checkCutOffNegative = (value, index) => {
@@ -326,7 +327,7 @@ function RawMaterialCost(props) {
    * @description HANDLE GROSS WEIGHT CHANGE
    */
   const handleGrossWeightChange = (event, index) => {
-    setForgingInfoIcon(true)
+    setForgingInfoIcon({ ...forgingInfoIcon, [index]: true })
     let tempArr = []
     let tempData = gridData[index]
     setEditCalculation(false)
@@ -455,7 +456,7 @@ function RawMaterialCost(props) {
     let tempArr = []
     let tempData = gridData[index]
     setEditCalculation(false)
-    setForgingInfoIcon(true)
+    setForgingInfoIcon({ ...forgingInfoIcon, [index]: true })
     let finishValue = event
 
     if (checkForNull(finishValue) <= 0) {
@@ -635,7 +636,7 @@ function RawMaterialCost(props) {
     let tempArr = []
     let tempData = gridData[index]
     setEditCalculation(false)
-    setForgingInfoIcon(true)
+    setForgingInfoIcon({ ...forgingInfoIcon, [index]: true })
     if (checkForNull(event.target.value) > 0) {
       const ScrapRecoveryPercentage = checkForNull(event.target.value);
 
@@ -1234,11 +1235,10 @@ function RawMaterialCost(props) {
                             <td>
                               <div className='d-flex'>
                                 <div className='w-fit' id={`net-rm-cost${index}`}><TooltipCustom disabledIcon={true} tooltipClass="net-rm-cost" id={`net-rm-cost${index}`} tooltipText="Net RM Cost = (RM Rate * Gross Weight) - (Scrap Weight * Scrap Rate)" />{item?.NetLandedCost !== undefined ? checkForDecimalAndNull(item.NetLandedCost, initialConfiguration.NoOfDecimalForPrice) : ''}
-                                </div> {forgingInfoIcon && costData?.TechnologyId === FORGING && <TooltipCustom id={"forging-tooltip"} customClass={"mt-1 ml-2"} tooltipText={`RMC is calculated on the basis of Forging Scrap Rate.`} />}
+                                </div> {forgingInfoIcon[index] && costData?.TechnologyId === FORGING && <TooltipCustom id={`forging-tooltip${index}`} customClass={"mt-1 ml-2"} tooltipText={`RMC is calculated on the basis of Forging Scrap Rate.`} />}
                               </div>
                             </td>
                             <td>
-
                               <div className='action-btn-wrapper'>
                                 {!CostingViewMode && !IsLocked && !(initialConfiguration?.IsCopyCostingFinishAndGrossWeightEditable && item?.IsRMCopied) && < button
                                   className="Delete "
