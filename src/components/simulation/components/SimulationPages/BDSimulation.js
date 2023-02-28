@@ -188,6 +188,28 @@ function BDSimulation(props) {
         )
     }
 
+    const vendorFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        return (
+            <>
+                {isbulkUpload ? row['Vendor (Code)'] : cell}
+
+            </>
+        )
+    }
+
+    const plantFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        return (
+            <>
+                {isbulkUpload ? row['Plant (Code)'] : cell}
+
+            </>
+        )
+    }
+
     const costFormatter = (props) => {
 
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
@@ -313,7 +335,9 @@ function BDSimulation(props) {
         customNoRowsOverlay: NoContentFound,
         newBasicRateFormatter: newBasicRateFormatter,
         cellChange: cellChange,
-        oldBasicRateFormatter: oldBasicRateFormatter
+        oldBasicRateFormatter: oldBasicRateFormatter,
+        vendorFormatter: vendorFormatter,
+        plantFormatter: plantFormatter
     };
 
     return (
@@ -408,8 +432,8 @@ function BDSimulation(props) {
                                             <AgGridColumn field="BoughtOutPartNumber" editable='false' headerName="BOP Part No" minWidth={140}></AgGridColumn>
                                             <AgGridColumn field="BoughtOutPartName" editable='false' headerName="BOP Part Name" minWidth={140}></AgGridColumn>
                                             {!isImpactedMaster && <AgGridColumn field="BoughtOutPartCategory" editable='false' headerName="BOP Category" minWidth={140}></AgGridColumn>}
-                                            {!isImpactedMaster && <AgGridColumn field="Vendor" editable='false' headerName="Vendor (Code)" minWidth={140}></AgGridColumn>}
-                                            {!isImpactedMaster && <AgGridColumn field="Plants" editable='false' headerName="Plant (Code)" minWidth={140}></AgGridColumn>}
+                                            {!isImpactedMaster && <AgGridColumn field="Vendor" editable='false' headerName="Vendor (Code)" minWidth={140} cellRenderer='vendorFormatter'></AgGridColumn>}
+                                            {!isImpactedMaster && <AgGridColumn field="Plants" editable='false' headerName="Plant (Code)" minWidth={140} cellRenderer='plantFormatter'></AgGridColumn>}
 
                                             <AgGridColumn headerClass="justify-content-center" cellClass="text-center" headerName={Number(selectedMasterForSimulation?.value) === 5 ? "Basic Rate (Currency)" : "Basic Rate (INR)"} marryChildren={true} width={240}>
                                                 <AgGridColumn width={120} field="BasicRate" editable='false' cellRenderer='oldBasicRateFormatter' headerName="Old" colId="BasicRate"></AgGridColumn>

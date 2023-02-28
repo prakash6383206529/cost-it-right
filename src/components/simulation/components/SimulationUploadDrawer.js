@@ -196,7 +196,11 @@ class SimulationUploadDrawer extends Component {
                                             if (fileHeads[i] === 'EffectiveDate' && typeof el === 'number') {
                                                 el = getJsDateFromExcel(el)
                                             }
-                                            obj[fileHeads[i]] = el;
+                                            if (fileHeads[i] === 'RevisedBasicRate') {
+                                                obj["NewBasicRate"] = el;
+                                            } else {
+                                                obj[fileHeads[i]] = el;
+                                            }
                                             return null;
                                         })
                                         fileData.push(obj)
@@ -259,7 +263,11 @@ class SimulationUploadDrawer extends Component {
                                             if (fileHeads[i] === 'EffectiveDate' && typeof el === 'number') {
                                                 el = getJsDateFromExcel(el)
                                             }
-                                            obj[fileHeads[i]] = el;
+                                            if (fileHeads[i] === 'RevisedRate') {
+                                                obj["NewRate"] = el;
+                                            } else {
+                                                obj[fileHeads[i]] = el;
+                                            }
                                             return null;
                                         })
                                         fileData.push(obj)
@@ -288,7 +296,11 @@ class SimulationUploadDrawer extends Component {
                                             if (fileHeads[i] === 'EffectiveDate' && typeof el === 'number') {
                                                 el = getJsDateFromExcel(el)
                                             }
-                                            obj[fileHeads[i]] = el;
+                                            if (fileHeads[i] === 'RevisedRate') {
+                                                obj["NewRate"] = el;
+                                            } else {
+                                                obj[fileHeads[i]] = el;
+                                            }
                                             return null;
                                         })
                                         fileData.push(obj)
@@ -316,7 +328,11 @@ class SimulationUploadDrawer extends Component {
                                             if (fileHeads[i] === 'EffectiveDate' && typeof el === 'number') {
                                                 el = getJsDateFromExcel(el)
                                             }
-                                            obj[fileHeads[i]] = el;
+                                            if (fileHeads[i] === 'RevisedMachineRate') {
+                                                obj["NewMachineRate"] = el;
+                                            } else {
+                                                obj[fileHeads[i]] = el;
+                                            }
                                             return null;
                                         })
                                         fileData.push(obj)
@@ -344,7 +360,11 @@ class SimulationUploadDrawer extends Component {
                                             if (fileHeads[i] === 'EffectiveDate' && typeof el === 'number') {
                                                 el = getJsDateFromExcel(el)
                                             }
-                                            obj[fileHeads[i]] = el;
+                                            if (fileHeads[i] === 'RevisedBasicRate') {
+                                                obj["NewBasicRate"] = el;
+                                            } else {
+                                                obj[fileHeads[i]] = el;
+                                            }
                                             return null;
                                         })
                                         fileData.push(obj)
