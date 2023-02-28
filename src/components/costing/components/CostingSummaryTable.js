@@ -135,7 +135,7 @@ const CostingSummaryTable = (props) => {
 
   useEffect(() => {
 
-    if (!viewMode && viewCostingData?.length !== 0 && partInfo && count === 0) {
+    if (!viewMode && viewCostingData?.length !== 0 && partInfo && count === 0 && technologyId) {
       let levelDetailsTemp = ''
       setCount(1)
       dispatch(getUsersTechnologyLevelAPI(loggedInUserId(), technologyId, (res) => {
