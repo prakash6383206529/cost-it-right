@@ -3435,11 +3435,11 @@ body {
 
 .costing-border-inner-section {
   border-bottom: 1px solid $borderColor;
-  ;
   border-left: 1px solid $borderColor;
   border-right: 1px solid $borderColor;
 
-  .col-md-3 {
+  .col-md-3,
+  .col-md-6 {
     border-top: 1px solid $borderColor;
     padding: 12px 15px;
 
