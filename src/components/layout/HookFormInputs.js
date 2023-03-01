@@ -65,7 +65,7 @@ export const TextFieldHookForm = (field) => {
       <div className={className}>
         {
           !hidden &&
-          <label>
+          <label className={label === false ? 'd-none' : ''}>
             {label}
             {mandatory && mandatory === true ? (<span className="asterisk-required">*</span>) : ("")}{" "}
           </label>
@@ -314,7 +314,7 @@ export const SearchableSelectHookForm = (field) => {
   };
   return (
     <div className={`w-100 mb-15 form-group-searchable-select ${customClassName}`}>
-      <label>
+      <label className={label === false ? 'd-none' : ''}>
         {label}
         {mandatory && mandatory === true ? <span className="asterisk-required">*</span> : ''}
       </label>

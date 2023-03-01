@@ -81,7 +81,7 @@ function ApprovalSummary(props) {
           OperationImpactedMasterDataList: [],
           RawMaterialImpactedMasterDataList: [],
           BoughtOutPartImpactedMasterDataList: [],
-          SurfaceTreatmenImpactedMasterDataList: [],
+          SurfaceTreatmentImpactedMasterDataList: [],
           MachineProcessImpactedMasterDataList: [],
           CombinedProcessImpactedMasterDataList: []
         }
@@ -109,7 +109,7 @@ function ApprovalSummary(props) {
       impactedMasterDataListForLastRevisionData?.OperationImpactedMasterDataList?.length <= 0 &&
       impactedMasterDataListForLastRevisionData?.ExchangeRateImpactedMasterDataList?.length <= 0 &&
       impactedMasterDataListForLastRevisionData?.BoughtOutPartImpactedMasterDataList?.length <= 0 &&
-      impactedMasterDataListForLastRevisionData?.SurfaceTreatmenImpactedMasterDataList?.length <= 0 &&
+      impactedMasterDataListForLastRevisionData?.SurfaceTreatmentImpactedMasterDataList?.length <= 0 &&
       impactedMasterDataListForLastRevisionData?.MachineProcessImpactedMasterDataList <= 0 &&
       impactedMasterDataListForLastRevisionData?.CombinedProcessImpactedMasterDataList?.length <= 0
     if (lastRevisionDataAcc && check) {

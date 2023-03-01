@@ -314,10 +314,32 @@ function Rejection(props) {
                     </div>
                 </Col>
             </Row>
-            <Row className="costing-border costing-border-with-labels px-2 py-3 m-0 overhead-profit-tab-costing">
+            <Row className="costing-border-inner-section border-bottom-none m-0">
+                <Col md="3">
+                    <span className="head-text">
+                        Applicability
+                    </span>
+                </Col>
+                <Col md="3">
+                    <span className="head-text">
+                        {applicability.label !== 'Fixed' ? 'Rejection (%)' : 'Rejection'}
+                    </span>
+                </Col>
+                {applicability.label !== 'Fixed' && <Col md="3">
+                    <span className="head-text">
+                        Cost (Applicability)
+                    </span>
+                </Col>}
+                <Col md={applicability.label === 'Fixed' ? '6' : '3'}>
+                    <span className="head-text">
+                        Net Rejection
+                    </span>
+                </Col>
+            </Row>
+            <Row className="costing-border costing-border-with-labels pt-3 m-0 overhead-profit-tab-costing">
                 <Col md="3">
                     <SearchableSelectHookForm
-                        label={'Applicability'}
+                        label={false}
                         name={'Applicability'}
                         placeholder={'Select'}
                         Controller={Controller}
@@ -336,7 +358,7 @@ function Rejection(props) {
                 <Col md="3">
                     {applicability.label !== 'Fixed' ?
                         <TextFieldHookForm
-                            label={`Rejection (%)`}
+                            label={false}
                             name={'RejectionPercentage'}
                             Controller={Controller}
                             control={control}
@@ -361,7 +383,7 @@ function Rejection(props) {
                         //THIS FIELD WILL RENDER WHEN REJECTION TYPE FIXED
                         <div className='p-relative error-wrapper'>
                             <TextFieldHookForm
-                                label={`Rejection`}
+                                label={false}
                                 name={'RejectionPercentage'}
                                 Controller={Controller}
                                 control={control}
@@ -379,7 +401,7 @@ function Rejection(props) {
                 {applicability.label !== 'Fixed' &&
                     <Col md="3">
                         <TextFieldHookForm
-                            label="Cost (Applicability)"
+                            label={false}
                             name={'RejectionCost'}
                             Controller={Controller}
                             control={control}
@@ -393,9 +415,9 @@ function Rejection(props) {
                             disabled={true}
                         />
                     </Col>}
-                <Col md="3">
+                <Col md={applicability.label === 'Fixed' ? '6' : '3'}>
                     <TextFieldHookForm
-                        label="Net Rejection"
+                        label={false}
                         name={'RejectionTotalCost'}
                         Controller={Controller}
                         control={control}

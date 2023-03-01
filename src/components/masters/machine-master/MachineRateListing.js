@@ -31,6 +31,7 @@ import { disabledClass } from '../../../actions/Common';
 import SelectRowWrapper from '../../common/SelectRowWrapper';
 import AnalyticsDrawer from '../material-master/AnalyticsDrawer';
 import { reactLocalStorage } from 'reactjs-localstorage';
+import { hideCustomerFromExcel } from '../../common/CommonFunctions';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -482,6 +483,7 @@ class MachineRateListing extends Component {
     */
     onSubmit = (values) => { }
     returnExcelColumn = (data = [], TempData) => {
+        let excelData = hideCustomerFromExcel(data, "CustomerName")
         let temp = []
         temp = TempData && TempData.map((item) => {
             if (item.MachineTonnage === null) {
@@ -504,7 +506,7 @@ class MachineRateListing extends Component {
         })
 
         return (<ExcelSheet data={temp} name={`${MachineRate}`}>
-            {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)
+            {excelData && excelData.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)
             }
         </ExcelSheet>);
     }
