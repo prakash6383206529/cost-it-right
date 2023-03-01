@@ -27,6 +27,7 @@ import { PaginationWrapper } from '../../common/commonPagination';
 import AnalyticsDrawer from './AnalyticsDrawer'
 import _ from 'lodash';
 import { reactLocalStorage } from 'reactjs-localstorage';
+import { hideCustomerFromExcel } from '../../common/CommonFunctions';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -594,8 +595,8 @@ function RMDomesticListing(props) {
     };
 
     const returnExcelColumn = (data = [], TempData) => {
+        let excelData = hideCustomerFromExcel(data, "CustomerName")
         let temp = []
-
         temp = TempData && TempData.map((item) => {
             if (item.CostingHead === true) {
                 item.CostingHead = 'Vendor Based'
@@ -615,7 +616,7 @@ function RMDomesticListing(props) {
         return (
 
             <ExcelSheet data={temp} name={RmDomestic}>
-                {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
+                {excelData && excelData.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
             </ExcelSheet>);
     }
 

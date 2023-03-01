@@ -28,6 +28,7 @@ import { reactLocalStorage } from 'reactjs-localstorage'
 import VolumeBulkUploadDrawer from '../../massUpload/VolumeBulkUploadDrawer'
 import { Drawer } from '@material-ui/core'
 import classnames from 'classnames';
+import { hideCustomerFromExcel } from '../../common/CommonFunctions'
 
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -337,9 +338,10 @@ function VolumeListing(props) {
   }
 
   const returnExcelColumn = (data = [], TempData) => {
+    let excelData = hideCustomerFromExcel(data, "CustomerName")
     return (
       <ExcelSheet data={TempData} name={VolumeMaster}>
-        {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
+        {excelData && excelData.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
       </ExcelSheet>);
   }
 

@@ -75,3 +75,20 @@ export const autoCompleteDropdownPart = (inputValue, dropdownArray, tempBoolean 
         }
     }
 }
+//FUNCTION FOR HIDING CUSTOMER COLUMN FROM LISTING 
+export const hideCustomerFromExcel = (data, value) => {
+    let excelData
+    if (!reactLocalStorage.getObject('cbcCostingPermission')) {
+        excelData = data && data.map((item) => {
+            if (item.value === value) {
+                return false
+            } else {
+                return item
+            }
+        })
+    }
+    else {
+        excelData = [...data]
+    }
+    return excelData
+}
