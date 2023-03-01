@@ -198,7 +198,7 @@ const CostRatioListing = (props) => {
                     <button type="button" className={"apply"} onClick={cancelReport}> <div className={'back-icon'}></div>Back</button>
                 </div>
                 <div className='row overflow-auto report-height'>
-                    {tableData?.length === 0 ? <div className='d-flex w-100 align-items-center'><NoContentFound title={EMPTY_DATA} /></div> : <Table className='border px-0 mb-0'>
+                    {tableData?.length === 0 ? <div className='d-flex w-100 align-items-center'><NoContentFound title={'Cost card is not available for this date range'} /></div> : <Table className='border px-0 mb-0'>
                         <thead>
                             <tr>
                                 <th>
