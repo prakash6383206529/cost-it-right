@@ -579,7 +579,7 @@ export function getLastSimulationData(vendorId, effectiveDate, callback) {
             OperationImpactedMasterDataList: [],
             RawMaterialImpactedMasterDataList: [],
             BoughtOutPartImpactedMasterDataList: [],
-            SurfaceTreatmenImpactedMasterDataList: [],
+            SurfaceTreatmentImpactedMasterDataList: [],
             MachineProcessImpactedMasterDataList: []
         }
         const queryParams = `vendorId=${vendorId}&effectiveDate=${effectiveDate}`
@@ -609,7 +609,7 @@ export function getImpactedMasterData(simulationId, callback) {
             OperationImpactedMasterDataList: [],
             RawMaterialImpactedMasterDataList: [],
             BoughtOutPartImpactedMasterDataList: [],
-            SurfaceTreatmenImpactedMasterDataList: [],
+            SurfaceTreatmentImpactedMasterDataList: [],
             MachineProcessImpactedMasterDataList: []
         }
         const queryParams = `simulationId=${simulationId}`
