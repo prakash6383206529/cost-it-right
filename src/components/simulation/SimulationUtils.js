@@ -139,7 +139,7 @@ export const impactmasterDownload = (impactedMasterData) => {
         return null
     })
 
-    impactedMasterData?.SurfaceTreatmenImpactedMasterDataList && impactedMasterData?.SurfaceTreatmenImpactedMasterDataList.map((item) => {
+    impactedMasterData?.SurfaceTreatmentImpactedMasterDataList && impactedMasterData?.SurfaceTreatmentImpactedMasterDataList.map((item) => {
         let tempObj = []
         tempObj.push(item.OperationName)
         tempObj.push(item.OperationCode)
