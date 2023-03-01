@@ -4997,8 +4997,8 @@ export const ImpactedRMDownload = [
     { label: "RevisedBasicRate", value: "NewBasicRate" },
     { label: "ExistingScrapRate", value: "OldScrapRate" },
     { label: "RevisedScrapRate", value: "NewScrapRate" },
-    { label: "RMFreightCost", value: "RMFreightCost" },
-    { label: "RMShearingCost", value: "RMShearingCost" },
+    // { label: "RMFreightCost", value: "RMFreightCost" },
+    // { label: "RMShearingCost", value: "RMShearingCost" },
     { label: "EffectiveDate", value: "EffectiveDate" },
 ]
 
@@ -5157,7 +5157,7 @@ export const MRGridForTokenSummary = [
     { label: "Variance (Proc. Cost)", value: "NetProcessCostVariance" },
 ]
 
-export const RMImpactedDownloadArray = ["RawMaterial", "RMGrade", "RMSpec", "RawMaterialCode", "Category", "TechnologyName", "VendorName", "UOM", "ExistingBasicRate", "RevisedBasicRate", "ExistingScrapRate", "RevisedScrapRate", "RMFreightCost", "RMShearingCost", "EffectiveDate"]
+export const RMImpactedDownloadArray = ["RawMaterial", "RMGrade", "RMSpec", "RawMaterialCode", "Category", "TechnologyName", "VendorName", "UOM", "ExistingBasicRate", "RevisedBasicRate", "ExistingScrapRate", "RevisedScrapRate", "EffectiveDate"]
 
 export const OperationImpactDownloadArray = ["OperationName", "OperationCode", "UOM", "ExistingOperationRate", "RevisedOperationRate", "EffectiveDate",]
 
@@ -5167,7 +5167,7 @@ export const ERImpactDownloadArray = ["Currency", "CostingNumber", "PartNumber",
 
 export const CPImpactDownloadArray = ["CostingNumber", "PartNumber", "ExistingNetCC", "RevisedNetCC", "ExistingPOPrice", "RevisedPOPrice", "EffectiveDate"]
 
-export const RawMaterialDomesticFileHeads = ["CostingHead", "RawMaterial", "RMGrade", "RMSpec", "RawMaterialCode", "Category", "TechnologyName", "Plant (Code)", "Vendor (Code)", "VendorLocation", "UOM", "BasicRate", "RevisedBasicRate", "RMFreightCost", "RMShearingCost", "ScrapRate", "RevisedScrapRate", "NetLandedCost", "EffectiveDate", "RawMaterialId", "VendorId", "PlantId", "CostingTypeId"]
+export const RawMaterialDomesticFileHeads = ["CostingHead", "RawMaterial", "RMGrade", "RMSpec", "RawMaterialCode", "Category", "TechnologyName", "Plant (Code)", "Vendor (Code)", "VendorLocation", "UOM", "BasicRate", "RevisedBasicRate", "ScrapRate", "RevisedScrapRate", "NetLandedCost", "EffectiveDate", "RawMaterialId", "VendorId", "PlantId", "CostingTypeId"]
 
 export const RawMaterialImportFileHeads = ["CostingHead", "RawMaterial", "RMGrade", "RMSpec", "RawMaterialCode", "Category", "TechnologyName", "VendorName", "VendorLocation", "UOM", "BasicRate", "NewBasicRate", "ScrapRate", "NewScrapRate", "NetLandedCost", "EffectiveDate", "RawMaterialId", "VendorId", "PlantId", "RMCode"]
 
