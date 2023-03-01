@@ -27,6 +27,8 @@ import { PaginationWrapper } from '../../common/commonPagination';
 import { getConfigurationKey } from '../../../helper';
 import SelectRowWrapper from '../../common/SelectRowWrapper';
 import { reactLocalStorage } from 'reactjs-localstorage';
+import SingleDropdownFloationFilter from '../material-master/SingleDropdownFloationFilter';
+import { hideCustomerFromExcel } from '../../common/CommonFunctions';
 
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -64,7 +66,11 @@ class InterestRateListing extends Component {
       dataCount: 0
     }
   }
-
+  floatingFilterIcc = {
+    maxValue: 3,
+    suppressFilterButton: true,
+    component: "InterestRate"
+  }
   componentDidMount() {
 
     this.applyPermission(this.props.topAndLeftMenuData)
@@ -239,6 +245,15 @@ class InterestRateListing extends Component {
   onFloatingFilterChanged = (value) => {
     this.props.interestRateDataList.length !== 0 && this.setState({ noData: searchNocontentFilter(value, this.state.noData) })
   }
+  jsFunction(filterVal) {
+    console.log('filterVal: ', filterVal);
+    this.filterVal = filterVal;
+    gridOptions.api.onFilterChanged(); //this invokes your custom logic by forcing grid filtering
+  }
+  doesExternalFilterPass = (value) => {
+    console.log('value: ', value);
+
+  }
   /**
   * @method hyphenFormatter
   */
@@ -323,6 +338,7 @@ class InterestRateListing extends Component {
   };
 
   returnExcelColumn = (data = [], TempData) => {
+    let excelData = hideCustomerFromExcel(data, "CustomerName")
     let temp = []
     temp = TempData && TempData.map((item) => {
       if (item.ICCPercent === null) {
@@ -338,7 +354,7 @@ class InterestRateListing extends Component {
     return (
 
       <ExcelSheet data={temp} name={InterestMaster}>
-        {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
+        {excelData && excelData.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
       </ExcelSheet>);
   }
 
@@ -389,14 +405,15 @@ class InterestRateListing extends Component {
       customLoadingOverlay: LoaderCustom,
       customNoRowsOverlay: NoContentFound,
       costingHeadFormatter: this.costingHeadFormatter,
-      hyphenFormatter: this.hyphenFormatter
+      hyphenFormatter: this.hyphenFormatter,
+      valuesFloatingFilter: SingleDropdownFloationFilter,
     };
 
 
     return (
       <>
 
-        <div className={`ag-grid-react p-relative ${DownloadAccessibility ? "show-table-btn" : ""}`} id='go-to-top'>
+        <div className={`ag-grid-react report-grid p-relative ${DownloadAccessibility ? "show-table-btn" : ""}`} id='go-to-top'>
           <div className="container-fluid">
             <ScrollToTop pointProp='go-to-top' />
             <form
@@ -494,12 +511,14 @@ class InterestRateListing extends Component {
                   onSelectionChanged={this.onRowSelect}
                   frameworkComponents={frameworkComponents}
                   suppressRowClickSelection={true}
+                  isExternalFilterPresent={true}
+                  doesExternalFilterPass={this.doesExternalFilterPass}
                 >
                   <AgGridColumn width={180} field="CostingHead" headerName="Costing Head" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
                   {(getConfigurationKey().IsPlantRequiredForOverheadProfitInterestRate || getConfigurationKey().IsDestinationPlantConfigure) && <AgGridColumn field="PlantName" headerName="Plant (Code)"></AgGridColumn>}
                   <AgGridColumn field="VendorName" headerName="Vendor (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                   {reactLocalStorage.getObject('cbcCostingPermission') && <AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
-                  <AgGridColumn field="ICCApplicability" headerName="ICC Applicability"></AgGridColumn>
+                  <AgGridColumn field="ICCApplicability" headerName="ICC Applicability" floatingFilterComponent="valuesFloatingFilter" floatingFilterComponentParams={this.floatingFilterIcc}></AgGridColumn>
                   <AgGridColumn width={140} field="ICCPercent" headerName="Annual ICC (%)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                   <AgGridColumn width={220} field="PaymentTermApplicability" headerName="Payment Term Applicability" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                   <AgGridColumn width={210} field="RepaymentPeriod" headerName="Repayment Period (Days)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
