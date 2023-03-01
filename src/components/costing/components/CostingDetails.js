@@ -1286,6 +1286,7 @@ function CostingDetails(props) {
         return true;
       })
       setZBCPlantGrid(tempArr)
+      setValue(`${zbcPlantGridFields}.${index}.ShareOfBusinessPercent`, 0)
     }
 
     if (type === VBCTypeId) {
@@ -1294,6 +1295,7 @@ function CostingDetails(props) {
         return true;
       })
       setVBCVendorGrid(tempArr)
+      setValue(`${vbcGridFields}.${index}.ShareOfBusinessPercent`, 0)
     }
 
     if (type === NCCTypeId) {
@@ -1816,7 +1818,7 @@ function CostingDetails(props) {
                           handleChange={handlePartChange}
                           errors={errors.Part}
                           disabled={(technology.length === 0) ? true : false}
-                          NoOptionMessage={"Enter 3 characters to show data"}
+                          NoOptionMessage={MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN}
                         />
 
                       </Col>

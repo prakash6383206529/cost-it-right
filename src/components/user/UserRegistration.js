@@ -1600,7 +1600,7 @@ function UserRegistration(props) {
               <div className="row">
                 <div className="col-md-6">
                   <div className="form-heading mb-0">
-                    <h2>{isEditFlag ? 'Update User' : 'Add User'}</h2>
+                    <h2>{isEditFlag ? 'Update' : 'Add'} {props?.RFQUser ? 'RFQ' : ' User'}</h2>
                   </div>
                 </div>
                 {isEditFlag && !isShowPwdField && <div className="col-md-6">
@@ -1748,7 +1748,7 @@ function UserRegistration(props) {
                               required={true}
                               handleChange={vendorHandler}
                               asyncOptions={vendorFilterList}
-                              NoOptionMessage={"Enter 3 characters to show data"}
+                              NoOptionMessage={MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN}
                             />
                           </div>
                         </Col>
@@ -1782,15 +1782,13 @@ function UserRegistration(props) {
                     }
                     <Col md="3" className="d-flex align-items-center mt-4 pt-2">
                       <label
-                        className={`custom-checkbox ${isEditFlag ? "disabled" : ""
-                          }`}
+                        className={`custom-checkbox`}
                         onChange={onPrimaryContactCheck}
                       >
                         Primary Contact
                         <input
                           type="checkbox"
                           checked={primaryContact}
-                          disabled={isEditFlag ? true : false}
                         />
                         <span
                           className=" before-box"

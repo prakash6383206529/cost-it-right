@@ -194,10 +194,10 @@ const CostRatioListing = (props) => {
         <>
             <div className='container-fluid costing-ratio-report'>
                 {isLoader && <LoaderCustom />}
+                <div className='w-100 mb-2 d-flex justify-content-end'>
+                    <button type="button" className={"apply"} onClick={cancelReport}> <div className={'back-icon'}></div>Back</button>
+                </div>
                 <div className='row overflow-auto report-height'>
-                    <div className='w-100 mb-2 d-flex justify-content-end'>
-                        <button type="button" className={"apply"} onClick={cancelReport}> <div className={'back-icon'}></div>Back</button>
-                    </div>
                     {tableData?.length === 0 ? <div className='d-flex w-100 align-items-center'><NoContentFound title={EMPTY_DATA} /></div> : <Table className='border px-0 mb-0'>
                         <thead>
                             <tr>
@@ -205,6 +205,7 @@ const CostRatioListing = (props) => {
                                     <div className='column-data'> Costing Head</div>
                                     <div className='column-data'>Costing Number</div>
                                     <div className='column-data'>Technology</div>
+                                    <div className='column-data'>Effective Date</div>
                                     <div className='column-data'>Part No.</div>
                                     <div className='column-data'>Revision No.</div>
                                     <div className='column-data'> Vendor (Code)</div>
@@ -219,6 +220,7 @@ const CostRatioListing = (props) => {
                                             <div className='column-data'>{item.CostingHead ? item.CostingHead : '-'}</div>
                                             <div className='column-data'>{item.CostingNumber ? item.CostingNumber : '-'}</div>
                                             <div className='column-data'>{item.Technology ? item.Technology : '-'} </div>
+                                            <div className='column-data'>{item.EffectiveDate ? DayTime(item.EffectiveDate).format('DD/MM/YYYY') : '-'} </div>
                                             <div className='column-data'>{item.PartNumber ? item.PartNumber : '-'} </div>
                                             <div className='column-data'>{item.RevisionNumber ? item.RevisionNumber : '-'} </div>
                                             <div className={`column-data code-container`} ref={divRef} >{(item.VendorName || item.VendorCode) ? <div className={`code-specific ${tableData?.length >= 3 ? 'max-height-reduce' : ''}`} style={{ maxWidth: divRef?.current?.clientWidth }}><span className='name'>{item.VendorName}</span> <span>({item.VendorCode})</span></div> : '-'}</div>

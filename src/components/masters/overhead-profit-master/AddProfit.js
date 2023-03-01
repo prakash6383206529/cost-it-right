@@ -293,10 +293,10 @@ class AddProfit extends Component {
   componentDidUpdate(prevProps) {
     if (prevProps.filedObj !== this.props.filedObj) {
       const { filedObj } = this.props;
-      const ProfitPercentage = filedObj && filedObj.ProfitPercentage !== undefined && filedObj.ProfitPercentage !== '' ? true : false;
-      const ProfitRMPercentage = filedObj && filedObj.ProfitRMPercentage !== undefined && filedObj.ProfitRMPercentage !== '' ? true : false;
-      const ProfitMachiningCCPercentage = filedObj && filedObj.ProfitMachiningCCPercentage !== undefined && filedObj.ProfitMachiningCCPercentage !== '' ? true : false;
-      const ProfitBOPPercentage = filedObj && filedObj.ProfitBOPPercentage !== undefined && filedObj.ProfitBOPPercentage !== '' ? true : false;
+      const ProfitPercentage = filedObj && filedObj.ProfitPercentage !== undefined && filedObj.ProfitPercentage !== '' && filedObj.ProfitPercentage !== null ? true : false;
+      const ProfitRMPercentage = filedObj && filedObj.ProfitRMPercentage !== undefined && filedObj.ProfitRMPercentage !== '' && filedObj.ProfitRMPercentage !== null ? true : false;
+      const ProfitMachiningCCPercentage = filedObj && filedObj.ProfitMachiningCCPercentage !== undefined && filedObj.ProfitMachiningCCPercentage !== '' && filedObj.ProfitMachiningCCPercentage !== null ? true : false;
+      const ProfitBOPPercentage = filedObj && filedObj.ProfitBOPPercentage !== undefined && filedObj.ProfitBOPPercentage !== '' && filedObj.ProfitBOPPercentage !== null ? true : false;
       if (ProfitPercentage) {
         this.setState({ isRM: true, isCC: true, isBOP: true, })
       } else if (ProfitRMPercentage || ProfitMachiningCCPercentage || ProfitBOPPercentage) {
@@ -957,7 +957,7 @@ class AddProfit extends Component {
                                 loadOptions={filterList}
                                 onChange={(e) => this.handleVendorName(e)}
                                 value={this.state.vendorName}
-                                noOptionsMessage={({ inputValue }) => inputValue.length < 3 ? "Enter 3 characters to show data" : "No results found"}
+                                noOptionsMessage={({ inputValue }) => inputValue.length < 3 ? MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN : "No results found"}
                                 isDisabled={(isEditFlag) ? true : false}
                                 onKeyDown={(onKeyDown) => {
                                   if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();

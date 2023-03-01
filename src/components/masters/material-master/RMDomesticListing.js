@@ -2,10 +2,7 @@ import React from 'react';
 import { useState, useEffect, } from 'react';
 import { useDispatch, useSelector } from 'react-redux'
 import { Row, Col, } from 'reactstrap';
-import {
-    deleteRawMaterialAPI, getRMDomesticDataList, masterFinalLevelUser,
-} from '../actions/Material';
-import { checkForDecimalAndNull } from "../../../helper/validation";
+import { deleteRawMaterialAPI, getRMDomesticDataList, } from '../actions/Material';
 import { userDepartmetList } from "../../../helper/auth"
 import { APPROVED_STATUS, defaultPageSize, EMPTY_DATA, RMDOMESTIC } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
@@ -21,18 +18,15 @@ import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import ReactExport from 'react-export-excel';
-import { CheckApprovalApplicableMaster, getConfigurationKey, loggedInUserId, searchNocontentFilter, userDetails } from '../../../helper';
+import { CheckApprovalApplicableMaster, getConfigurationKey, searchNocontentFilter } from '../../../helper';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { getListingForSimulationCombined, setSelectedRowForPagination } from '../../simulation/actions/Simulation';
 import { disabledClass } from '../../../actions/Common';
 import WarningMessage from '../../common/WarningMessage';
 import { PaginationWrapper } from '../../common/commonPagination';
-import SelectRowWrapper from '../../common/SelectRowWrapper';
 import AnalyticsDrawer from './AnalyticsDrawer'
 import _ from 'lodash';
-import { useRef } from 'react';
 import { reactLocalStorage } from 'reactjs-localstorage';
-import { checkFinalUser } from '../../../components/costing/actions/Costing'
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -55,7 +49,6 @@ function RMDomesticListing(props) {
     const [showPopup, setShowPopup] = useState(false)
     const [deletedId, setDeletedId] = useState('')
     const [showPopupBulk, setShowPopupBulk] = useState(false)
-    const [isFinalLevelUser, setIsFinalLevelUser] = useState(false)
     const [disableFilter, setDisableFilter] = useState(true) // STATE MADE FOR CHECKBOX IN SIMULATION
     const [disableDownload, setDisableDownload] = useState(false)
     const [dateArray, setDateArray] = useState([])
@@ -319,7 +312,7 @@ function RMDomesticListing(props) {
 
 
     const onSearch = () => {
-
+        setNoData(false)
         setWarningMessage(false)
         setIsFilterButtonClicked(true)
         setPageNo(1)
@@ -934,7 +927,7 @@ function RMDomesticListing(props) {
                         isZBCVBCTemplate={true}
                         messageLabel={"RM Domestic"}
                         anchor={"right"}
-                        isFinalApprovar={isFinalLevelUser}
+                        masterId={RM_MASTER_ID}
                     />
                 )
             }
