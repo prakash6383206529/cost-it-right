@@ -25,6 +25,7 @@ import ScrollToTop from '../../common/ScrollToTop';
 import { getListingForSimulationCombined } from '../../simulation/actions/Simulation';
 import { PaginationWrapper } from '../../common/commonPagination';
 import { reactLocalStorage } from 'reactjs-localstorage';
+import { hideCustomerFromExcel } from '../../common/CommonFunctions';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -301,6 +302,7 @@ class ExchangeRateListing extends Component {
 
 
     returnExcelColumn = (data = [], TempData) => {
+        let excelData = hideCustomerFromExcel(data, "customerWithCode")
         let temp = []
         temp = TempData && TempData.map((item) => {
             if (item.BankRate === null) {
@@ -318,7 +320,7 @@ class ExchangeRateListing extends Component {
         return (
 
             <ExcelSheet data={temp} name={ExchangeMaster}>
-                {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
+                {excelData && excelData.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
             </ExcelSheet>);
     }
 

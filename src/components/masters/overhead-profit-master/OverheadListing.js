@@ -26,6 +26,7 @@ import SingleDropdownFloationFilter from '../material-master/SingleDropdownFloat
 import { agGridStatus, getGridHeight, isResetClick } from '../../../actions/Common';
 import SelectRowWrapper from '../../common/SelectRowWrapper';
 import { reactLocalStorage } from 'reactjs-localstorage';
+import { hideCustomerFromExcel } from '../../common/CommonFunctions';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -553,6 +554,7 @@ function OverheadListing(props) {
     };
 
     const returnExcelColumn = (data = [], TempData) => {
+        let excelData = hideCustomerFromExcel(data, "CustomerName")
         let temp = []
         temp = TempData && TempData.map((item) => {
             if (item.ClientName === null) {
@@ -580,7 +582,7 @@ function OverheadListing(props) {
         return (
 
             <ExcelSheet data={temp} name={OverheadMaster}>
-                {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
+                {excelData && excelData.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
             </ExcelSheet>);
     }
 

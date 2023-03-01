@@ -29,6 +29,7 @@ import _ from 'lodash';
 import SelectRowWrapper from '../../common/SelectRowWrapper';
 import AnalyticsDrawer from '../material-master/AnalyticsDrawer';
 import { reactLocalStorage } from 'reactjs-localstorage';
+import { hideCustomerFromExcel } from '../../common/CommonFunctions';
 
 const ExcelFile = ReactExport.ExcelFile
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -463,6 +464,7 @@ class BOPImportListing extends Component {
     };
 
     returnExcelColumn = (data = [], TempData) => {
+        let excelData = hideCustomerFromExcel(data, "CustomerName")
         let temp = []
         temp = TempData && TempData.map((item) => {
             if (item.Plants === '-') {
@@ -479,7 +481,7 @@ class BOPImportListing extends Component {
         return (
 
             <ExcelSheet data={temp} name={BopImport}>
-                {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
+                {excelData && excelData.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
             </ExcelSheet>);
     }
 

@@ -30,6 +30,7 @@ import _ from 'lodash';
 import { disabledClass } from '../../../actions/Common';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import AnalyticsDrawer from './AnalyticsDrawer';
+import { hideCustomerFromExcel } from '../../common/CommonFunctions';
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -626,6 +627,7 @@ function RMImportListing(props) {
   };
 
   const returnExcelColumn = (data = [], TempData) => {
+    let excelData = hideCustomerFromExcel(data, "CustomerName")
     let temp = []
     temp = TempData && TempData.map((item) => {
       if (item.CostingHead === true) {
@@ -642,7 +644,7 @@ function RMImportListing(props) {
     return (
 
       <ExcelSheet data={temp} name={'RM Import'}>
-        {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
+        {excelData && excelData.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
       </ExcelSheet>);
   }
 

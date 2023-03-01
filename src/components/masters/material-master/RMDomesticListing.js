@@ -6,7 +6,7 @@ import {
     deleteRawMaterialAPI, getRMDomesticDataList,
 } from '../actions/Material';
 import { userDepartmetList } from "../../../helper/auth"
-import { APPROVED_STATUS, defaultPageSize, EMPTY_DATA, RMDOMESTIC } from '../../../config/constants';
+import { APPROVED_STATUS, defaultPageSize, EMPTY_DATA, RMDOMESTIC, RmDomestic } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
 import Toaster from '../../common/Toaster';
@@ -29,6 +29,7 @@ import { PaginationWrapper } from '../../common/commonPagination';
 import AnalyticsDrawer from './AnalyticsDrawer'
 import _ from 'lodash';
 import { reactLocalStorage } from 'reactjs-localstorage';
+import { hideCustomerFromExcel } from '../../common/CommonFunctions';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -607,8 +608,8 @@ function RMDomesticListing(props) {
     };
 
     const returnExcelColumn = (data = [], TempData) => {
+        let excelData = hideCustomerFromExcel(data, "CustomerName")
         let temp = []
-
         temp = TempData && TempData.map((item) => {
             if (item.CostingHead === true) {
                 item.CostingHead = 'Vendor Based'
@@ -627,8 +628,8 @@ function RMDomesticListing(props) {
 
         return (
 
-            <ExcelSheet data={temp} name={'RmDomestic'}>
-                {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
+            <ExcelSheet data={temp} name={RmDomestic}>
+                {excelData && excelData.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
             </ExcelSheet>);
     }
 
