@@ -3462,7 +3462,7 @@ export const BOPImportSimulation = [
     { label: "NetLandedCost", value: "NetLandedCost" },
     { label: "EffectiveDate", value: "EffectiveDate" },
     { label: "BoughtOutPartId", value: "BoughtOutPartId" },
-    { label: "CostingTypeId", value: "CostingTypeId" }
+    { label: "CostingTypeId", value: "CostingTypeId" },
 ]
 
 export const OverheadProfitSimulation = [
