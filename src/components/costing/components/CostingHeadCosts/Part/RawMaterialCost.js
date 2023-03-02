@@ -452,7 +452,7 @@ function RawMaterialCost(props) {
       }
     }
     for (let i = 0; i < gridData.length; i++) {
-      if (forgingInfoIcon[i] == undefined) {
+      if (forgingInfoIcon[i] === undefined) {
         forgingInfoIcon[i] = false
       }
     }
@@ -639,7 +639,7 @@ function RawMaterialCost(props) {
       }
     }
     for (let i = 0; i < gridData.length; i++) {
-      if (forgingInfoIcon[i] == undefined) {
+      if (forgingInfoIcon[i] === undefined) {
         forgingInfoIcon[i] = false
       }
     }
@@ -970,9 +970,6 @@ function RawMaterialCost(props) {
 
       }
     }
-    // console.log(forgingInfoIcon, "infoicon")
-    const propertyNames = Object.values(forgingInfoIcon);
-    // console.log('propertyNames: ', propertyNames);
   }, [gridData])
 
   /**

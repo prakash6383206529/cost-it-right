@@ -9,11 +9,10 @@ import ApproveRejectDrawer from '../../costing/components/approval/ApproveReject
 import CostingDetailSimulationDrawer from './CostingDetailSimulationDrawer'
 import { checkForDecimalAndNull, checkForNull, formViewData, getConfigurationKey, loggedInUserId, searchNocontentFilter, userDetails, userTechnologyLevelDetails } from '../../../helper';
 import VerifyImpactDrawer from './VerifyImpactDrawer';
-import { EMPTY_GUID, AssemblyWiseImpactt } from '../../../config/constants';
+import { AssemblyWiseImpactt } from '../../../config/constants';
 import Toaster from '../../common/Toaster';
 import { Redirect } from 'react-router';
 import { checkFinalUser, setCostingViewData } from '../../costing/actions/Costing';
-import { toast } from 'react-toastify';
 import {
     ASSEMBLY_TECHNOLOGY_MASTER,
     ASSEMBLY_WISEIMPACT_DOWNLOAD_EXCEl,
@@ -83,8 +82,6 @@ function CostingSimulation(props) {
         showChildParts: false,
         showBoughtOutPartCost: false
     })
-    const [showChildParts, setShowChildParts] = useState(false)
-    const [showBoughtOutPartCost, setShowBoughtOutPartCost] = useState(false)
     const [amendmentDetails, setAmendmentDetails] = useState({})
     const [showViewAssemblyDrawer, setShowViewAssemblyDrawer] = useState(false)
     const [dataForAssemblyImpact, setDataForAssemblyImpact] = useState({})
@@ -946,15 +943,13 @@ function CostingSimulation(props) {
             }
 
             if (costingList[i].NewNetChildPartsCostWithQuantity !== 0 && costingList[i].OldNetChildPartsCostWithQuantity !== 0) {
-                setShowChildParts(true)
                 data = { ...data, showChildParts: false }
             }
 
             if (costingList[i].NewNetBoughtOutPartCost !== 0 && costingList[i].OldNetBoughtOutPartCost !== 0) {
-                setShowBoughtOutPartCost(true)
                 data = { ...data, showBoughtOutPartCost: false }
             }
-
+            return null
         })
 
         setHideDataColumn({ ...hideDataColumn, ...data })
