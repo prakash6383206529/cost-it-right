@@ -3383,6 +3383,7 @@ export const RMImportSimulation = [
     { label: "RawMaterialId", value: "RawMaterialId" },
     { label: "VendorId", value: "VendorId" },
     { label: "PlantId", value: "PlantId" },
+    { label: "CostingTypeId", value: "CostingTypeId" }
 
 ]
 
@@ -3398,6 +3399,7 @@ export const SurfaceTreatmentSimulation = [
     { label: "RevisedRate", value: "NewRate" },
     { label: "EffectiveDate", value: "EffectiveDate" },
     { label: "OperationId", value: "OperationId" },
+    { label: "CostingTypeId", value: "CostingTypeId" }
 ]
 
 export const OperationSimulation = [
@@ -3429,7 +3431,8 @@ export const MachineRateSimulation = [
     { label: "RevisedMachineRate", value: "NewMachineRate" },
     { label: "EffectiveDate", value: "EffectiveDate" },
     { label: "MachineId", value: "MachineId" },
-    { label: "MachineProcessRateId", value: "MachineProcessRateId" }
+    { label: "MachineProcessRateId", value: "MachineProcessRateId" },
+    { label: "CostingTypeId", value: "CostingTypeId" }
 ]
 
 export const BOPDomesticSimulation = [
@@ -3443,7 +3446,8 @@ export const BOPDomesticSimulation = [
     { label: "RevisedBasicRate", value: "NewBasicRate" },
     { label: "NetLandedCost", value: "NetLandedCost" },
     { label: "EffectiveDate", value: "EffectiveDate" },
-    { label: "BoughtOutPartId", value: "BoughtOutPartId" }
+    { label: "BoughtOutPartId", value: "BoughtOutPartId" },
+    { label: "CostingTypeId", value: "CostingTypeId" }
 ]
 
 export const BOPImportSimulation = [
@@ -3457,7 +3461,8 @@ export const BOPImportSimulation = [
     { label: "RevisedBasicRate", value: "NewBasicRate" },
     { label: "NetLandedCost", value: "NetLandedCost" },
     { label: "EffectiveDate", value: "EffectiveDate" },
-    { label: "BoughtOutPartId", value: "BoughtOutPartId" }
+    { label: "BoughtOutPartId", value: "BoughtOutPartId" },
+    { label: "CostingTypeId", value: "CostingTypeId" },
 ]
 
 export const OverheadProfitSimulation = [
@@ -4771,6 +4776,7 @@ export const CombinedProcessSimulation = [
     { label: "EffectiveDate", value: "EffectiveDate" },
     { label: "CostingId", value: "CostingId" },
     // { label: "DisplayStatus", value: "DisplayStatus" }
+    { label: "CostingTypeId", value: "CostingTypeId" }
 ]
 
 export const CombinedProcessSimulationFinal = [
@@ -5177,7 +5183,7 @@ export const BoughtOutPartDomesticFileHeads = ['CostingHead', 'BoughtOutPartNumb
 
 export const BoughtOutPartImportFileHeads = ['CostingHead', 'BoughtOutPartNumber', 'BoughtOutPartName', 'BoughtOutPartCategory', 'Plants', 'Vendor', 'BasicRate', 'NewBasicRate', 'NetLandedCost', 'EffectiveDate', 'BoughtOutPartId']
 
-export const MachineRateFileHeads = ['CostingHead', 'Technologies', 'Vendor (Code)', 'Plant (Code)', 'MachineName', 'MachineNumber', 'MachineTypeName', 'MachineTonnage', 'ProcessName', 'MachineRate', 'RevisedMachineRate', 'EffectiveDate', 'MachineId', 'MachineProcessRateId']
+export const MachineRateFileHeads = ['CostingHead', 'Technologies', 'Vendor (Code)', 'Plant (Code)', 'MachineName', 'MachineNumber', 'MachineTypeName', 'MachineTonnage', 'ProcessName', 'MachineRate', 'RevisedMachineRate', 'EffectiveDate', 'MachineId', 'MachineProcessRateId', 'CostingTypeId']
 
 
 export const CombinedProcessFileHeads = ['TechnologyName', 'PartName', 'PartNumber', 'PlantName', 'ConversionCost', 'NewCC', 'RemainingTotal', 'TotalCost', 'EffectiveDate', 'CostingId']

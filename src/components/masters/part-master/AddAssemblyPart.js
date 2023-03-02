@@ -14,7 +14,7 @@ import { MESSAGES } from '../../../config/message';
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css';
 import "react-datepicker/dist/react-datepicker.css";
-import { ASSEMBLY, BOUGHTOUTPART, COMPONENT_PART, FILE_URL, SPACEBAR, ASSEMBLYNAME, searchCount } from '../../../config/constants';
+import { BOUGHTOUTPART, COMPONENT_PART, FILE_URL, SPACEBAR, ASSEMBLYNAME, searchCount } from '../../../config/constants';
 import AddChildDrawer from './AddChildDrawer';
 import DayTime from '../../common/DayTimeWrapper'
 import BOMViewer from './BOMViewer';
@@ -1002,7 +1002,7 @@ class AddAssemblyPart extends Component {
                             name={"AssemblyPartName"}
                             type="text"
                             placeholder={isViewMode || (!isEditFlag && this.state.disablePartName) || convertPartToAssembly ? '-' : "Enter"}
-                            validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength75, checkSpacesInString]}
+                            validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength75]}
                             component={renderText}
                             required={true}
                             className=""
