@@ -91,6 +91,7 @@ function RfqListing(props) {
                         break;
                 }
                 temp.push(item)
+                return null
             })
             setRowData(temp)
             setloader(false)
