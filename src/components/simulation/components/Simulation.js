@@ -34,7 +34,7 @@ import _ from 'lodash'
 import AssemblySimulationListing from './AssemblySimulationListing';
 import VerifySimulation from './VerifySimulation';
 import { reactLocalStorage } from 'reactjs-localstorage';
-import { autoCompleteDropdown } from '../../common/CommonFunctions';
+import { autoCompleteDropdown, hideColumnFromExcel } from '../../common/CommonFunctions';
 import { MESSAGES } from '../../../config/message';
 
 const ExcelFile = ReactExport.ExcelFile;
@@ -232,6 +232,12 @@ function Simulation(props) {
     }
 
     const returnExcelColumn = (data = [], TempData) => {
+        let templateArray
+        if (!reactLocalStorage.getObject('cbcCostingPermission')) {
+            templateArray = hideColumnFromExcel(data, 'CustomerName')
+        } else {
+            templateArray = data
+        }
         let temp = []
         temp = TempData && TempData.map((item) => {
             if (item.CostingHead === true) {
@@ -289,7 +295,7 @@ function Simulation(props) {
         }
 
         return (<ExcelSheet data={temp} name={master.label}>
-            {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
+            {templateArray && templateArray.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
         </ExcelSheet>);
     }
 

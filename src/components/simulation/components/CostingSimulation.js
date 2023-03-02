@@ -3,7 +3,7 @@ import { Row, Col, } from 'reactstrap';
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import NoContentFound from '../../common/NoContentFound';
-import { BOPDOMESTIC, BOPIMPORT, COSTINGSIMULATIONROUND, TOFIXEDVALUE, EMPTY_DATA, MACHINERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, ImpactMaster, EXCHNAGERATE, COMBINED_PROCESS, defaultPageSize, FORGING } from '../../../config/constants';
+import { BOPDOMESTIC, BOPIMPORT, COSTINGSIMULATIONROUND, TOFIXEDVALUE, EMPTY_DATA, MACHINERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, ImpactMaster, EXCHNAGERATE, COMBINED_PROCESS, defaultPageSize, FORGING, CBCTypeId } from '../../../config/constants';
 import { getComparisionSimulationData, getCostingBoughtOutPartSimulationList, getCostingSimulationList, getCostingSurfaceTreatmentSimulationList, setShowSimulationPage, getSimulatedAssemblyWiseImpactDate, getImpactedMasterData, getExchangeCostingSimulationList, getMachineRateCostingSimulationList, getCombinedProcessCostingSimulationList, getAllMultiTechnologyCostings, getAllSimulatedMultiTechnologyCosting } from '../actions/Simulation';
 import ApproveRejectDrawer from '../../costing/components/approval/ApproveRejectDrawer'
 import CostingDetailSimulationDrawer from './CostingDetailSimulationDrawer'
@@ -35,7 +35,8 @@ import { PaginationWrapper } from '../../common/commonPagination';
 import { getUsersSimulationTechnologyLevelAPI } from '../../../actions/auth/AuthActions';
 import WarningMessage from '../../common/WarningMessage';
 import { costingTypeIdToApprovalTypeIdFunction } from '../../common/CommonFunctions';
-
+import { hideColumnFromExcel } from '../../common/CommonFunctions';
+import { reactLocalStorage } from 'reactjs-localstorage';
 
 const gridOptions = {};
 
@@ -327,6 +328,7 @@ function CostingSimulation(props) {
             tempObj.Technology = Data.SimulatedCostingList[0].Technology
             tempObj.Vendor = Data.SimulatedCostingList[0].VendorName
             tempObj.TotalImpactPerQuarter = Data.TotalImpactPerQuarter
+            tempObj.CustomerName = Data.SimulatedCostingList[0].CustomerName
             tempObj.BudgetedPriceImpactPerQuarter = Data?.SimulatedCostingList[0]?.BudgetedPriceImpactPerQuarter
             setAmendmentDetails(tempObj)
 
@@ -1060,11 +1062,21 @@ function CostingSimulation(props) {
     }
 
     const returnExcelColumn = (data = [], TempData) => {
+        let tempData = [...data]
+        if (!reactLocalStorage.getObject('cbcCostingPermission')) {
+            tempData = hideColumnFromExcel(tempData, 'CustomerName')
+        } else {
+            if (amendmentDetails.SimulationHeadId === CBCTypeId) {
+                tempData = hideColumnFromExcel(tempData, 'VendorName')
+            } else {
+                tempData = hideColumnFromExcel(tempData, 'CustomerName')
+            }
+        }
         let temp = []
         temp = SimulationUtils(TempData)    // common function 
         return (
             <ExcelSheet data={temp} name={'Costing'}>
-                {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
+                {tempData && tempData.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
             </ExcelSheet>
         );
     }
@@ -1285,7 +1297,7 @@ function CostingSimulation(props) {
         hyphenFormatter: hyphenFormatter,
         processCostFormatter: processCostFormatter,
         processFormatter: processFormatter,
-        processVarianceFormatter:processVarianceFormatter
+        processVarianceFormatter: processVarianceFormatter
     };
 
     const isRowSelectable = rowNode => statusForLinkedToken === true ? false : true;
@@ -1347,7 +1359,7 @@ function CostingSimulation(props) {
                                                 </div>
                                                 <div className="ag-theme-material p-relative" >
                                                     {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found simulation-lisitng" />}
-                                                    <AgGridReact
+                                                    {amendmentDetails.SimulationHeadId && <AgGridReact
                                                         defaultColDef={defaultColDef}
                                                         floatingFilter={true}
                                                         ref={gridRef}
@@ -1388,7 +1400,8 @@ function CostingSimulation(props) {
                                                         <AgGridColumn width={130} field="RevisionNumber" headerName='Revision No.' cellRenderer='revisionFormatter'></AgGridColumn>
                                                         {((isMachineRate || showMachineRateColumn) && !isMultipleMasterSimulation) && <AgGridColumn width={140} field="ProcessName" headerName='Process Name' cellRenderer='processFormatter'></AgGridColumn>}
                                                         {((isMachineRate || showMachineRateColumn) && !isMultipleMasterSimulation) && <AgGridColumn width={140} field="ProcessCode" headerName='Process Code' cellRenderer='processFormatter'></AgGridColumn>}
-                                                        <AgGridColumn width={140} field="VendorName" headerName='Vendor (Code)'></AgGridColumn>
+                                                        {amendmentDetails.SimulationHeadId !== CBCTypeId && <AgGridColumn width={140} field="VendorName" headerName='Vendor (Code)'></AgGridColumn>}
+                                                        {amendmentDetails.SimulationHeadId === CBCTypeId && <AgGridColumn width={140} field="CustomerName" headerName='Customer (Code)'></AgGridColumn>}
                                                         <AgGridColumn width={120} field="PlantName" cellRenderer='plantFormatter' headerName='Plant (Code)'></AgGridColumn>
                                                         <AgGridColumn width={140} field="BudgetedPrice" headerName='Budgeted Price' cellRenderer='impactPerQuarterFormatter'></AgGridColumn>
 
@@ -1497,14 +1510,14 @@ function CostingSimulation(props) {
                                                         {!(isExchangeRate) && <AgGridColumn width={140} field="OldNetFreightPackagingCost" hide={hideDataColumn.hideFreightPackagingCost} cellRenderer='freightPackagingCostFormatter' headerName='Existing Freight & Packaging Cost'></AgGridColumn>}
 
                                                         <AgGridColumn width={120} field="CostingId" headerName='Actions' type="rightAligned" floatingFilter={false} cellRenderer='buttonFormatter' pinned="right"></AgGridColumn>
-                                                    </AgGridReact>
+                                                    </AgGridReact>}
                                                     {storeTechnology === FORGING && <WarningMessage dClass="float-right" textClass="mt2" message="If RMC is calculated through RM weight calculator then change in scrap rate won't affect the RMC." />}
                                                     {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />}
-                                                </div>
-                                            </div>
-                                        </Col>
-                                    </Row>
-                                </div>
+                                                </div >
+                                            </div >
+                                        </Col >
+                                    </Row >
+                                </div >
                                 <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer sticky-btn-footer">
                                     <div className="col-sm-12 text-right bluefooter-butn">
 
@@ -1534,7 +1547,7 @@ function CostingSimulation(props) {
 
                                     </div>
                                 </Row>
-                            </div>
+                            </div >
                             {
                                 isApprovalDrawer &&
                                 <ApproveRejectDrawer
