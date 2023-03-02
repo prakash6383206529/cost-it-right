@@ -1158,10 +1158,11 @@ function ProcessCost(props) {
       dragEnd = parts[0]
 
       processGroupGrid.map((item, index) => {
-        if (item.GroupName == groupName) {
+        if (String(item.GroupName) === String(groupName)) {
           groupIndex = index
           groupProcessList = item.ProcessList
         }
+        return null
       })
 
       ////////////////////////////////////////////////////////
@@ -1184,9 +1185,10 @@ function ProcessCost(props) {
         if (item.ProcessName === dragEnd) {
           addingIndex = index
         }
+        return null
       })
 
-      if (groupProcessList[dragStartIndex + 1]?.ProcessName == dragEnd) {
+      if (String(groupProcessList[dragStartIndex + 1]?.ProcessName) === String(dragEnd)) {
         return false
       }
 
@@ -1196,16 +1198,18 @@ function ProcessCost(props) {
           finalTemp.push(groupProcessList[dragStartIndex])
         }
         finalTemp.push(item)
+        return null
       })
 
 
       if (finalTemp.length !== groupProcessList.length) {
         finalTemp = []
         temp.map((item, index) => {
-          if (index == temp.length - 1) {
+          if (index === temp.length - 1) {
             finalTemp.push(groupProcessList[dragStartIndex])
           }
           finalTemp.push(item)
+          return null
         })
       }
 
@@ -1264,9 +1268,10 @@ function ProcessCost(props) {
         if (item.ProcessName === dragEnd) {
           addingIndex = index
         }
+        return null
       })
 
-      if (processGroupGrid[dragStartIndex + 1]?.ProcessName == dragEnd) {
+      if (String(processGroupGrid[dragStartIndex + 1]?.ProcessName) === String(dragEnd)) {
         return false
       }
 
@@ -1276,15 +1281,17 @@ function ProcessCost(props) {
           finalTemp.push(processGroupGrid[dragStartIndex])
         }
         finalTemp.push(item)
+        return null
       })
 
       if (finalTemp.length !== processGroupGrid.length) {
         finalTemp = []
         temp.map((item, index) => {
-          if (index == temp.length - 1) {
+          if (index === temp.length - 1) {
             finalTemp.push(processGroupGrid[dragStartIndex])
           }
           finalTemp.push(item)
+          return null
         })
       }
 
