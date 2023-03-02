@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Row, Col, } from 'reactstrap';
 import DayTime from '../../../common/DayTimeWrapper'
-import { defaultPageSize, EMPTY_DATA } from '../../../../config/constants';
+import { CBCTypeId, defaultPageSize, EMPTY_DATA } from '../../../../config/constants';
 import NoContentFound from '../../../common/NoContentFound';
 import { checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUserId, searchNocontentFilter } from '../../../../helper';
 import Toaster from '../../../common/Toaster';
@@ -227,12 +227,17 @@ function RMSimulation(props) {
 
     const costingHeadFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-
-        return (cell === true || cell === 'Vendor Based') ? 'Vendor Based' : 'Zero Based';
+        return cell ? cell : '-';
     }
     const vendorFormatter = (props) => {
         return (isbulkUpload ? props?.value : props?.data.VendorName);
     }
+
+    const customerFormatter = (props) => {
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        return (isbulkUpload ? row['Customer (Code)'] : row.CustomerName);
+    }
+
     const plantFormatter = (props) => {
         return (isbulkUpload ? props?.value : props?.data.Plant);
     }
@@ -407,6 +412,7 @@ function RMSimulation(props) {
         oldBasicRateFormatter: oldBasicRateFormatter,
         oldScrapRateFormatter: oldScrapRateFormatter,
         vendorFormatter: vendorFormatter,
+        customerFormatter: customerFormatter,
         plantFormatter: plantFormatter
     };
 
@@ -487,11 +493,11 @@ function RMSimulation(props) {
                                                     <label>Technology: </label>
                                                     <p className='technology ml-1' title={list[0].TechnologyName}>{list[0].TechnologyName}</p>
                                                 </div>
-                                                <div className='d-flex pl-3'>
+                                                {list[0].CostingTypeId !== CBCTypeId && <div className='d-flex pl-3'>
                                                     <label className='mr-1'>Vendor (Code):</label>
                                                     <p title={list[0].VendorName}>{list[0].VendorName ? list[0].VendorName : list[0]['Vendor (Code)']}</p>
 
-                                                </div>
+                                                </div>}
                                                 <button type="button" className={"apply ml-2"} onClick={cancel} disabled={isDisable}> <div className={'back-icon'}></div>Back</button>
                                             </div>}
                                         </div>
@@ -499,7 +505,7 @@ function RMSimulation(props) {
                                     </div>
                                     <div className="ag-theme-material p-relative" style={{ width: '100%' }}>
                                         {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found simulation-lisitng" />}
-                                        <AgGridReact
+                                        {list && <AgGridReact
                                             ref={gridRef}
                                             floatingFilter={true}
                                             style={{ height: '100%', width: '100%' }}
@@ -531,7 +537,8 @@ function RMSimulation(props) {
                                             <AgGridColumn width={115} field="RawMaterialCode" editable='false' headerName='Code' cellRenderer='hyphenFormatter'></AgGridColumn>
                                             {!isImpactedMaster && <AgGridColumn width={110} field="Category" editable='false' headerName="Category"></AgGridColumn>}
                                             {!isImpactedMaster && <AgGridColumn width={125} field="TechnologyName" editable='false' headerName="Technology" ></AgGridColumn>}
-                                            {!isImpactedMaster && <AgGridColumn width={100} field="Vendor (Code)" editable='false' headerName="Vendor (Code)" cellRenderer='vendorFormatter'></AgGridColumn>}
+                                            {!isImpactedMaster && list[0].CostingTypeId !== CBCTypeId && <AgGridColumn width={100} field="Vendor (Code)" editable='false' headerName="Vendor (Code)" cellRenderer='vendorFormatter'></AgGridColumn>}
+                                            {!isImpactedMaster && list[0].CostingTypeId === CBCTypeId && <AgGridColumn width={100} field="CustomerName" editable='false' headerName="Customer (Code)" cellRenderer='customerFormatter'></AgGridColumn>}
                                             {!isImpactedMaster && <AgGridColumn width={100} field="Plant (Code)" editable='false' headerName="Plant (Code)" cellRenderer='plantFormatter' ></AgGridColumn>}
                                             <AgGridColumn width={100} field="UOM" editable='false' headerName="UOM"></AgGridColumn>
                                             {costingAndPartNo && <AgGridColumn field="CostingNumber" editable='false' headerName="Costing No" minWidth={190}></AgGridColumn>}
@@ -557,7 +564,7 @@ function RMSimulation(props) {
                                             <AgGridColumn width={140} field="EffectiveDate" editable='false' cellRenderer={'effectiveDateFormatter'} headerName="Effective Date" ></AgGridColumn>
                                             <AgGridColumn field="RawMaterialId" hide></AgGridColumn>
 
-                                        </AgGridReact>
+                                        </AgGridReact>}
 
                                         {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />}
                                     </div>
