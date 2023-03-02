@@ -330,13 +330,7 @@ function Simulation(props) {
     const renderModule = (value) => {
         let tempValue = [{ SimulationId: tokenForSimulation?.value }]
 
-        let temp = userDetails().Department
-        temp && temp.map((item) => {
-            item = item.DepartmentCode
-            return item
-        })
         let obj = {
-
             MasterId: master.value,
             TechnologyId: technology.value,
             // DepartmentCode: temp.join(),
@@ -915,7 +909,7 @@ function Simulation(props) {
             case OPERATIONS:
                 return <OperationSTSimulation isOperation={true} cancelEditPage={cancelEditPage} list={tableData} isbulkUpload={isbulkUpload} technology={technology.label} master={master.value} rowCount={rowCount} tokenForMultiSimulation={tempObject} changeTokenCheckBox={changeTokenCheckBox} />
             case MACHINERATE:
-                return <MRSimulation isOperation={true} cancelEditPage={cancelEditPage} list={tableData} isbulkUpload={isbulkUpload} technology={technology.label} master={master.value} rowCount={rowCount} tokenForMultiSimulation={tempObject} />
+                return <MRSimulation isOperation={true} cancelEditPage={cancelEditPage} list={tableData} isbulkUpload={isbulkUpload} technology={technology.label} master={master.value} rowCount={rowCount} tokenForMultiSimulation={tempObject} technologyId={technology.value} />
             case BOPDOMESTIC:
                 return <BDSimulation isOperation={true} cancelEditPage={cancelEditPage} list={tableData} isbulkUpload={isbulkUpload} technology={technology.label} master={master.value} rowCount={rowCount} tokenForMultiSimulation={tempObject} />
             case BOPIMPORT:
