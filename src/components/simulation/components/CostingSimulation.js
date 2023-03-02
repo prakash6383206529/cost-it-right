@@ -3,7 +3,7 @@ import { Row, Col, } from 'reactstrap';
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import NoContentFound from '../../common/NoContentFound';
-import { BOPDOMESTIC, BOPIMPORT, TOFIXEDVALUE, EMPTY_DATA, MACHINERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, ImpactMaster, EXCHNAGERATE, defaultPageSize } from '../../../config/constants';
+import { BOPDOMESTIC, BOPIMPORT, TOFIXEDVALUE, EMPTY_DATA, MACHINERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, ImpactMaster, EXCHNAGERATE, defaultPageSize, FORGING } from '../../../config/constants';
 import { getComparisionSimulationData, getCostingBoughtOutPartSimulationList, getCostingSimulationList, getCostingSurfaceTreatmentSimulationList, setShowSimulationPage, getSimulatedAssemblyWiseImpactDate, getImpactedMasterData, getExchangeCostingSimulationList, getMachineRateCostingSimulationList, getAllMultiTechnologyCostings, getAllSimulatedMultiTechnologyCosting } from '../actions/Simulation';
 import ApproveRejectDrawer from '../../costing/components/approval/ApproveRejectDrawer'
 import CostingDetailSimulationDrawer from './CostingDetailSimulationDrawer'
@@ -33,6 +33,7 @@ import ViewAssembly from './ViewAssembly';
 import _ from 'lodash';
 import { PaginationWrapper } from '../../common/commonPagination';
 import { getUsersSimulationTechnologyLevelAPI } from '../../../actions/auth/AuthActions';
+import WarningMessage from '../../common/WarningMessage';
 
 const gridOptions = {};
 
@@ -98,6 +99,7 @@ function CostingSimulation(props) {
     const [isMultipleMasterSimulation, setIsMultipleMasterSimulation] = useState(false);
     const [isFinalLevelApprover, setIsFinalLevelApprover] = useState(false);
     const [count, setCount] = useState(0);
+    const [storeTechnology, setStoreTechnology] = useState(0)
 
     const isSurfaceTreatment = (Number(master) === Number(SURFACETREATMENT));
     const isOperation = (Number(master) === Number(OPERATIONS));
@@ -149,7 +151,6 @@ function CostingSimulation(props) {
             dispatch(getUsersSimulationTechnologyLevelAPI(loggedInUserId(), selectedMasterForSimulation?.value, (res) => {
                 if (res?.data?.Data) {
                     levelDetailsTemp = userTechnologyLevelDetails(amendmentDetails.SimulationHeadId, res?.data?.Data?.TechnologyLevels)
-                    console.log('levelDetailsTemp: ', levelDetailsTemp);
                     // setLevelDetails(levelDetailsTemp)
                     if (levelDetailsTemp?.length !== 0) {
                         let obj = {
@@ -176,6 +177,7 @@ function CostingSimulation(props) {
         // TO CHECK IF ANY OF THE RECORD HAS ASSEMBLY ROW
         let count = 0
         tableData && tableData.map((item) => {
+            setStoreTechnology(item.Technology)
             if (item.IsAssemblyExist === true) {
                 count++
             }
@@ -1390,7 +1392,7 @@ function CostingSimulation(props) {
 
                                                         <AgGridColumn width={120} field="CostingId" headerName='Actions' type="rightAligned" floatingFilter={false} cellRenderer='buttonFormatter' pinned="right"></AgGridColumn>
                                                     </AgGridReact>
-
+                                                    {storeTechnology === FORGING && <WarningMessage dClass="float-right" textClass="mt2" message="If RMC is calculated through RM weight calculator then change in scrap rate won't affect the RMC." />}
                                                     {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />}
                                                 </div>
                                             </div>
