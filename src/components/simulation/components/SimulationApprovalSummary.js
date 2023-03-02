@@ -212,7 +212,7 @@ function SimulationApprovalSummary(props) {
             impactedMasterDataListForLastRevisionData?.OperationImpactedMasterDataList?.length <= 0 &&
             impactedMasterDataListForLastRevisionData?.ExchangeRateImpactedMasterDataList?.length <= 0 &&
             impactedMasterDataListForLastRevisionData?.BoughtOutPartImpactedMasterDataList?.length <= 0 &&
-            impactedMasterDataListForLastRevisionData?.SurfaceTreatmenImpactedMasterDataList?.length <= 0 &&
+            impactedMasterDataListForLastRevisionData?.SurfaceTreatmentImpactedMasterDataList?.length <= 0 &&
             impactedMasterDataListForLastRevisionData?.MachineProcessImpactedMasterDataList <= 0
         if (lastRevisionDataAccordian && check) {
             Toaster.warning('There is no data for the Last Revision.')
@@ -253,7 +253,7 @@ function SimulationApprovalSummary(props) {
                         OperationImpactedMasterDataList: [],
                         RawMaterialImpactedMasterDataList: [],
                         BoughtOutPartImpactedMasterDataList: [],
-                        SurfaceTreatmenImpactedMasterDataList: [],
+                        SurfaceTreatmentImpactedMasterDataList: [],
                         MachineProcessImpactedMasterDataList: []
                     }
 
