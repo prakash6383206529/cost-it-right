@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Row, Col, Tooltip, } from 'reactstrap';
 import moment from 'moment';
-import { defaultPageSize, EMPTY_DATA } from '../../../../config/constants';
+import { defaultPageSize, EMPTY_DATA, CBCTypeId } from '../../../../config/constants';
 import NoContentFound from '../../../common/NoContentFound';
 import { checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUserId, searchNocontentFilter } from '../../../../helper';
 // import { runVerifyCombinedProcessSimulation } from '../../actions/Simulation';
@@ -241,6 +241,11 @@ function MRSimulation(props) {
         return row.ConversionCost != null ? checkForDecimalAndNull(ConversionCost, getConfigurationKey().NoOfDecimalForPrice) : ''
     }
 
+    const customerFormatter = (props) => {
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        return (isbulkUpload ? row['Customer (Code)'] : row.CustomerName);
+    }
+
     // TRIGGER ON EVERY CHNAGE IN CELL
     const onCellValueChanged = (props) => {
         if (typeof (checkForNull(props?.value)) === 'number') {
@@ -296,7 +301,8 @@ function MRSimulation(props) {
         onCellValueChanged: onCellValueChanged,
         vendorFormatter: vendorFormatter,
         plantFormatter: plantFormatter,
-        revisedBasicRateHeader: revisedBasicRateHeader
+        revisedBasicRateHeader: revisedBasicRateHeader,
+        customerFormatter: customerFormatter
     };
     const verifySimulation = debounce(() => {
         /**********CONDITION FOR: IS ANY FIELD EDITED****************/
@@ -377,7 +383,18 @@ function MRSimulation(props) {
                                                     <div className="refresh mr-0"></div>
                                                 </button>
                                             </div>
-                                            {!isImpactedMaster && <button type="button" className={"apply"} onClick={cancel}> <div className={'back-icon'}></div>Back</button>}
+                                            {!isImpactedMaster && <div className={`d-flex align-items-center simulation-label-container`}>
+                                                <div className='d-flex pl-3'>
+                                                    <label>Technology: </label>
+                                                    <p className='technology ml-1' title={list[0].Technologies}>{list[0].Technologies}</p>
+                                                </div>
+                                                {list[0].CostingTypeId !== CBCTypeId && <div className='d-flex pl-3'>
+                                                    <label className='mr-1'>Vendor (Code):</label>
+                                                    <p title={list[0].VendorName}>{list[0].VendorName ? list[0].VendorName : list[0]['Vendor (Code)']}</p>
+
+                                                </div>}
+                                                <button type="button" className={"apply"} onClick={cancel}> <div className={'back-icon'}></div>Back</button>
+                                            </div>}
                                         </div>
                                         {
                                             isbulkUpload &&
@@ -421,7 +438,7 @@ function MRSimulation(props) {
                                             </div>
                                         }
                                         <div className="ag-theme-material p-relative" style={{ width: '100%' }}>
-                                            <AgGridReact
+                                            {list && <AgGridReact
                                                 ref={gridRef}
                                                 floatingFilter={true}
                                                 style={{ height: '100%', width: '100%' }}
@@ -450,7 +467,8 @@ function MRSimulation(props) {
                                                 <AgGridColumn field="MachineName" editable='false' headerName="Machine Name" minWidth={140}></AgGridColumn>
                                                 <AgGridColumn field="MachineNumber" editable='false' headerName="Machine Number" minWidth={140}></AgGridColumn>
                                                 <AgGridColumn field="ProcessName" editable='false' headerName="Process Name" minWidth={140}></AgGridColumn>
-                                                {!isImpactedMaster && <AgGridColumn field="VendorName" editable='false' headerName="Vendor (Code)" minWidth={190} cellRenderer='vendorFormatter'></AgGridColumn>}
+                                                {!isImpactedMaster && list[0].CostingTypeId !== CBCTypeId && <AgGridColumn field="VendorName" editable='false' headerName="Vendor (Code)" minWidth={190}></AgGridColumn>}
+                                                {!isImpactedMaster && list[0].CostingTypeId === CBCTypeId && <AgGridColumn width={100} field="CustomerName" editable='false' headerName="Customer (Code)" cellRenderer='customerFormatter'></AgGridColumn>}
                                                 {
                                                     !isImpactedMaster &&
                                                     <>
@@ -465,7 +483,7 @@ function MRSimulation(props) {
                                                 <AgGridColumn field="EffectiveDate" headerName="Effective Date" editable='false' minWidth={190} cellRenderer='effectiveDateRenderer'></AgGridColumn>
                                                 <AgGridColumn field="CostingId" hide={true}></AgGridColumn>
 
-                                            </AgGridReact>
+                                            </AgGridReact >}
                                             {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />}
                                         </div>
                                     </div>

@@ -121,3 +121,14 @@ export const costingTypeIdToApprovalTypeIdFunction = (value) => {
     }
     return approvalTypeId;
 };
+export const hideColumnFromExcel = (data, value) => {
+    let excelData
+    excelData = data && data.map((item) => {
+        if (item.value === value) {
+            return false
+        } else {
+            return item
+        }
+    })
+    return excelData
+}

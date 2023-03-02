@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Row, Col, Tooltip, } from 'reactstrap';
 import DayTime from '../../../common/DayTimeWrapper'
-import { defaultPageSize, EMPTY_DATA } from '../../../../config/constants';
+import { CBCTypeId, defaultPageSize, EMPTY_DATA, OPERATIONS, SURFACETREATMENT } from '../../../../config/constants';
 import NoContentFound from '../../../common/NoContentFound';
 import { checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUserId, searchNocontentFilter } from '../../../../helper';
 import Toaster from '../../../common/Toaster';
@@ -261,6 +261,15 @@ function OperationSTSimulation(props) {
         setIsWarningMessageShow(false)
     }
 
+    const costingHeadFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        return cell ? cell : '-';
+    }
+
+    const customerFormatter = (props) => {
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        return (isbulkUpload ? row['Customer (Code)'] : row.CustomerName);
+    }
 
     const frameworkComponents = {
         effectiveDateRenderer: effectiveDateFormatter,
@@ -273,7 +282,9 @@ function OperationSTSimulation(props) {
         oldRateFormatter: oldRateFormatter,
         vendorFormatter: vendorFormatter,
         plantFormatter: plantFormatter,
-        revisedBasicRateHeader: revisedBasicRateHeader
+        revisedBasicRateHeader: revisedBasicRateHeader,
+        costingHeadFormatter: costingHeadFormatter,
+        customerFormatter: customerFormatter
     };
 
 
@@ -362,7 +373,18 @@ function OperationSTSimulation(props) {
                                                     <div className="refresh mr-0"></div>
                                                 </button>
                                             </div>
-                                            {!isImpactedMaster && <button type="button" className={"apply"} onClick={cancel} disabled={isDisable}> <div className={'back-icon'}></div>Back</button>}
+                                            {!isImpactedMaster && <div className={`d-flex align-items-center simulation-label-container`}>
+                                                <div className='d-flex pl-3'>
+                                                    <label>Technology: </label>
+                                                    <p className='technology ml-1' title={list[0].Technology}>{list[0].Technology}</p>
+                                                </div>
+                                                {list[0].CostingTypeId !== CBCTypeId && <div className='d-flex pl-3'>
+                                                    <label className='mr-1'>Vendor (Code):</label>
+                                                    <p title={list[0].VendorName}>{list[0].VendorName ? list[0].VendorName : list[0]['Vendor (Code)']}</p>
+
+                                                </div>}
+                                                <button type="button" className={"apply"} onClick={cancel} disabled={isDisable}> <div className={'back-icon'}></div>Back</button>
+                                            </div>}
                                         </div>
                                         {
                                             isbulkUpload &&
@@ -409,7 +431,7 @@ function OperationSTSimulation(props) {
                                         }
                                         <div className="ag-theme-material p-relative" style={{ width: '100%' }}>
                                             {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found simulation-lisitng" />}
-                                            <AgGridReact
+                                            {list && <AgGridReact
                                                 ref={gridRef}
                                                 floatingFilter={true}
                                                 style={{ height: '100%', width: '100%' }}
@@ -432,15 +454,13 @@ function OperationSTSimulation(props) {
                                                 onFilterModified={onFloatingFilterChanged}
                                             // frameworkComponents={frameworkComponents}
                                             >
+                                                {!isImpactedMaster && <AgGridColumn width={140} field="CostingHead" headerName="Costing Head" editable='false' cellRenderer={'costingHeadFormatter'}></AgGridColumn>}
                                                 <AgGridColumn field="OperationName" editable='false' headerName="Operation Name" minWidth={190}></AgGridColumn>
                                                 <AgGridColumn field="OperationCode" editable='false' headerName="Operation Code" minWidth={190}></AgGridColumn>
-                                                {!isImpactedMaster && <>
-                                                    <AgGridColumn field="Technology" editable='false' headerName="Technology" minWidth={190}></AgGridColumn>
-                                                    <AgGridColumn field="VendorName" editable='false' headerName="Vendor (Code)" minWidth={190} cellRenderer='vendorFormatter'></AgGridColumn>
-                                                </>}
-                                                {!isImpactedMaster && <>
-                                                    <AgGridColumn field={`${isbulkUpload ? 'DestinationPlant' : 'Plants'}`} editable='false' headerName="Plant (Code)" minWidth={190} cellRenderer='plantFormatter'></AgGridColumn>
-                                                </>}
+                                                {!isImpactedMaster && <><AgGridColumn field="Technology" editable='false' headerName="Technology" minWidth={190}></AgGridColumn></>}
+                                                {!isImpactedMaster && list[0].CostingTypeId !== CBCTypeId && <><AgGridColumn field="VendorName" editable='false' headerName="Vendor (Code)" minWidth={190} cellRenderer='vendorFormatter'></AgGridColumn></>}
+                                                {!isImpactedMaster && <><AgGridColumn field={`${isbulkUpload ? 'DestinationPlant' : 'Plants'}`} editable='false' headerName="Plant (Code)" minWidth={190} cellRenderer='plantFormatter'></AgGridColumn></>}
+                                                {!isImpactedMaster && list[0].CostingTypeId === CBCTypeId && <AgGridColumn width={100} field="CustomerName" editable='false' headerName="Customer (Code)" cellRenderer='customerFormatter'></AgGridColumn>}
                                                 <AgGridColumn headerClass="justify-content-center" cellClass="text-center" minWidth={240} headerName="Net Rate" marryChildren={true} >
                                                     <AgGridColumn minWidth={120} field="Rate" editable='false' headerName="Existing" colId="Rate" cellRenderer="oldRateFormatter"></AgGridColumn>
                                                     <AgGridColumn minWidth={120} cellRenderer='newRateFormatter' editable={!isImpactedMaster} field="NewRate" headerName="Revised" colId='NewRate' headerComponent={'revisedBasicRateHeader'}></AgGridColumn>
@@ -448,7 +468,7 @@ function OperationSTSimulation(props) {
                                                 <AgGridColumn field="EffectiveDate" headerName="Effective Date" editable='false' minWidth={190} cellRenderer='effectiveDateRenderer'></AgGridColumn>
                                                 <AgGridColumn field="CostingId" hide={true}></AgGridColumn>
 
-                                            </AgGridReact>
+                                            </AgGridReact>}
                                             {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />}
                                         </div>
                                     </div>
