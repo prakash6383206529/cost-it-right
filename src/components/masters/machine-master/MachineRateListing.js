@@ -28,7 +28,6 @@ import WarningMessage from '../../common/WarningMessage';
 import _ from 'lodash';
 import { setSelectedRowForPagination } from '../../simulation/actions/Simulation';
 import { disabledClass } from '../../../actions/Common';
-import SelectRowWrapper from '../../common/SelectRowWrapper';
 import AnalyticsDrawer from '../material-master/AnalyticsDrawer';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { hideCustomerFromExcel } from '../../common/CommonFunctions';
@@ -143,7 +142,7 @@ class MachineRateListing extends Component {
 
         const filterData = {
             costing_head: costing_head,
-            technology_id: this.props.isSimulation ? this.props.technology : technology_id,
+            technology_id: this.props.isSimulation ? this.props.technology.value : technology_id,
             vendor_id: vendor_id,
             machine_type_id: machine_type_id,
             process_id: process_id,
@@ -151,6 +150,10 @@ class MachineRateListing extends Component {
             StatusId: statusString
         }
         dataObj.IsCustomerDataShow = reactLocalStorage.getObject('cbcCostingPermission')
+        if (this.props.isSimulation) {
+            dataObj.TechnologyId = this.props.technology.value
+            dataObj.Technologies = this.props.technology.label
+        }
 
         if (this.props.isMasterSummaryDrawer !== undefined && !this.props.isMasterSummaryDrawer) {
             if (this.props.isSimulation) {
@@ -575,7 +578,7 @@ class MachineRateListing extends Component {
 
                 let date = document.getElementsByClassName('ag-input-field-input')
                 for (let i = 0; i < date.length; i++) {
-                    if (date[i].type == 'radio') {
+                    if (date[i].type === 'radio') {
                         date[i].click()
                     }
                 }
