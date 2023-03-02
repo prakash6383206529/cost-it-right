@@ -69,7 +69,12 @@ function RawMaterialCost(props) {
 
   useEffect(() => {
 
-
+    console.log(gridData, "gridData");
+    gridData && gridData.map((item, index) => {
+      if (item.RawMaterialCalculatorId === null) {
+        setForgingInfoIcon({ ...forgingInfoIcon, [index]: true })
+      }
+    })
 
     switch (costData.TechnologyName) {
       case 'Sheet Metal':
@@ -446,6 +451,13 @@ function RawMaterialCost(props) {
         Toaster.warning('Gross Weight should not be less than Finish Weight')
       }
     }
+    for (let i = 0; i < gridData.length; i++) {
+      if (forgingInfoIcon[i] == undefined) {
+        forgingInfoIcon[i] = false
+      }
+    }
+    forgingInfoIcon[index] = true
+    setForgingInfoIcon(forgingInfoIcon)
   }
 
   /**
@@ -626,6 +638,13 @@ function RawMaterialCost(props) {
 
       }
     }
+    for (let i = 0; i < gridData.length; i++) {
+      if (forgingInfoIcon[i] == undefined) {
+        forgingInfoIcon[i] = false
+      }
+    }
+    forgingInfoIcon[index] = true
+    setForgingInfoIcon(forgingInfoIcon)
   }
 
   /**
@@ -821,6 +840,15 @@ function RawMaterialCost(props) {
       return true;
     })
 
+    delete forgingInfoIcon[index]
+    let count = 0
+    let obj = {}
+    for (let prop in forgingInfoIcon) {
+      obj[count] = forgingInfoIcon[prop]
+      count++
+    }
+    setForgingInfoIcon(obj)
+
     tempArr && tempArr.map((item, index) => {
       setValue(`${rmGridFields}.${index}.GrossWeight`, checkForDecimalAndNull(item.GrossWeight, getConfigurationKey().NoOfDecimalForInputOutput))     //COMMENT
       setValue(`${rmGridFields}.${index}.FinishWeight`, checkForDecimalAndNull(item.FinishWeight, getConfigurationKey().NoOfDecimalForInputOutput))
@@ -946,6 +974,9 @@ function RawMaterialCost(props) {
 
       }
     }
+    // console.log(forgingInfoIcon, "infoicon")
+    const propertyNames = Object.values(forgingInfoIcon);
+    // console.log('propertyNames: ', propertyNames);
   }, [gridData])
 
   /**
