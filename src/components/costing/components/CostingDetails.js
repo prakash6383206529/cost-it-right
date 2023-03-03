@@ -528,27 +528,6 @@ function CostingDetails(props) {
    */
   const handleCostingChange = (newValue, type, index) => {
 
-    let tempObject = []
-    if (type === ZBCTypeId) {
-      tempObject = zbcPlantGrid && zbcPlantGrid[index]?.CostingOptions
-    } else if (type === VBCTypeId) {
-      tempObject = vbcVendorGrid && vbcVendorGrid[index]?.CostingOptions
-    } else if (type === NCCTypeId) {
-      // NCC GRID AT PLACE OF vbcVendorGrid
-      tempObject = nccGrid && nccGrid[index]?.CostingOptions
-    } else if (type === CBCTypeId) {
-      tempObject = cbcGrid && cbcGrid[index]?.CostingOptions
-    }
-
-    const indexOfCostingOptions = tempObject.findIndex((el) => el.CostingId === newValue.value)
-
-    let costingOptionsSelectedObjectTemp = {
-      SubAssemblyCostingId: tempObject[indexOfCostingOptions].SubAssemblyCostingId,
-      AssemblyCostingId: tempObject[indexOfCostingOptions].AssemblyCostingId
-    }
-    setApprovalStatus(tempObject[indexOfCostingOptions].Status)
-    setCostingOptionsSelectedObject(costingOptionsSelectedObjectTemp)
-
     let tempArray = []
 
     if (type === ZBCTypeId && newValue !== '') {
@@ -1070,6 +1049,36 @@ function CostingDetails(props) {
    * @description MOVE TO COSTING DETAIL
    */
   const moveToCostingDetail = (index, type) => {
+    console.log('index: ', index);
+
+    let tempObject = []
+    let tempCostingId
+    if (type === ZBCTypeId) {
+      tempCostingId = getValues(`${zbcPlantGridFields}.${index}.CostingVersion`)
+      tempObject = zbcPlantGrid && zbcPlantGrid[index]?.CostingOptions
+    } else if (type === VBCTypeId) {
+      tempCostingId = getValues(`${vbcGridFields}.${index}.CostingVersion`)
+      tempObject = vbcVendorGrid && vbcVendorGrid[index]?.CostingOptions
+      console.log('tempObject: ', tempObject);
+    } else if (type === NCCTypeId) {
+      // NCC GRID AT PLACE OF vbcVendorGrid
+      tempCostingId = getValues(`${nccGridFields}.${index}.CostingVersion`)
+      tempObject = nccGrid && nccGrid[index]?.CostingOptions
+    } else if (type === CBCTypeId) {
+      tempCostingId = getValues(`${cbcGridFields}.${index}.CostingVersion`)
+      tempObject = cbcGrid && cbcGrid[index]?.CostingOptions
+    }
+    console.log('tempCostingId: ', tempCostingId);
+    const indexOfCostingOptions = tempObject.findIndex((el) => el.CostingId === tempCostingId?.value)
+    console.log('indexOfCostingOptions: ', indexOfCostingOptions);
+
+    let costingOptionsSelectedObjectTemp = {
+      SubAssemblyCostingId: tempObject[indexOfCostingOptions].SubAssemblyCostingId,
+      AssemblyCostingId: tempObject[indexOfCostingOptions].AssemblyCostingId
+    }
+    setApprovalStatus(tempObject[indexOfCostingOptions].Status)
+    setCostingOptionsSelectedObject(costingOptionsSelectedObjectTemp)
+
     dispatch(getBriefCostingById('', (res) => { }))
 
     if (type === ZBCTypeId) {
