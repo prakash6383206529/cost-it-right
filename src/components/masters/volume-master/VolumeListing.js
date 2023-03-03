@@ -607,7 +607,7 @@ function VolumeListing(props) {
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
     if (selectedRowForPagination?.length > 0) {
       selectedRowForPagination.map((item) => {
-        if (item.VolumeId === props.node.data.VolumeId) {
+        if (item.VolumeApprovedId === props.node.data.VolumeApprovedId && item.VolumeBudgetedId === props.node.data.VolumeBudgetedId) {
           props.node.setSelected(true)
         }
         return null
