@@ -22,7 +22,6 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { getListingForSimulationCombined, setSelectedRowForPagination } from '../../simulation/actions/Simulation';
-import { masterFinalLevelUser } from '../../masters/actions/Material'
 import WarningMessage from '../../common/WarningMessage';
 import { disabledClass } from '../../../actions/Common';
 import _ from 'lodash';
@@ -829,7 +828,6 @@ export default connect(mapStateToProps, {
     deleteBOP,
     getAllVendorSelectList,
     getListingForSimulationCombined,
-    masterFinalLevelUser,
     setSelectedRowForPagination,
     disabledClass
 })(reduxForm({
