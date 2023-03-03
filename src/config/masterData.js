@@ -3333,6 +3333,7 @@ export const RMDomesticSimulation = [
     { label: "Plant (Code)", value: "Plant" },
     { label: "Vendor (Code)", value: "VendorName" },
     { label: "VendorLocation", value: "VendorLocation" },
+    { label: "Customer (Code)", value: "CustomerName" },
     { label: "UOM", value: "UOM" },
     { label: "BasicRate", value: "BasicRate" },
     { label: 'RevisedBasicRate', value: 'NewBasicRate' },
@@ -3362,6 +3363,7 @@ export const RMImportSimulation = [
     //{ label: "Plant", value: "Plant" },
     { label: "Vendor (Code)", value: "VendorName" },
     { label: "VendorLocation", value: "VendorLocation" },
+    { label: "Customer (Code)", value: "CustomerName" },
     { label: "UOM", value: "UOM" },
     { label: "BasicRate", value: "BasicRate" },
     { label: 'RevisedBasicRate', value: 'NewBasicRate' },
@@ -3373,6 +3375,7 @@ export const RMImportSimulation = [
     { label: "VendorId", value: "VendorId" },
     { label: "PlantId", value: "PlantId" },
     { label: "RMCode", value: "RawMaterialCode", },
+    { label: "CostingTypeId", value: "CostingTypeId" }
 
 ]
 
@@ -3383,11 +3386,13 @@ export const SurfaceTreatmentSimulation = [
     { label: "OperationCode", value: "OperationCode" },
     { label: "DestinationPlant (Code)", value: "Plants" },
     { label: "Vendor (Code)", value: "VendorName", },
+    { label: "Customer (Code)", value: "CustomerName" },
     { label: "UnitOfMeasurement", value: "UOM" },
     { label: "Rate", value: "Rate" },
     { label: "RevisedRate", value: "NewRate" },
     { label: "EffectiveDate", value: "EffectiveDate" },
     { label: "OperationId", value: "OperationId" },
+    { label: "CostingTypeId", value: "CostingTypeId" }
 ]
 
 export const OperationSimulation = [
@@ -3397,11 +3402,13 @@ export const OperationSimulation = [
     { label: "OperationCode", value: "OperationCode" },
     { label: "DestinationPlant (Code)", value: "Plants" },
     { label: "Vendor (Code)", value: "VendorName", },
+    { label: "Customer (Code)", value: "CustomerName" },
     { label: "UnitOfMeasurement", value: "UOM" },
     { label: "Rate", value: "Rate" },
     { label: "RevisedRate", value: "NewRate" },
     { label: "EffectiveDate", value: "EffectiveDate" },
     { label: "OperationId", value: "OperationId" },
+    { label: "CostingTypeId", value: "CostingTypeId" }
 
 ]
 
@@ -3410,6 +3417,7 @@ export const MachineRateSimulation = [
     { label: "Technologies", value: "Technologies" },
     { label: "Vendor (Code)", value: "VendorName" },
     { label: "Plant (Code)", value: "Plants" },
+    { label: "Customer (Code)", value: "CustomerName" },
     { label: "MachineName", value: "MachineName", },
     { label: "MachineNumber", value: "MachineNumber", },
     { label: "MachineTypeName", value: "MachineTypeName" },
@@ -3419,7 +3427,8 @@ export const MachineRateSimulation = [
     { label: "RevisedMachineRate", value: "NewMachineRate" },
     { label: "EffectiveDate", value: "EffectiveDate" },
     { label: "MachineId", value: "MachineId" },
-    { label: "MachineProcessRateId", value: "MachineProcessRateId" }
+    { label: "MachineProcessRateId", value: "MachineProcessRateId" },
+    { label: "CostingTypeId", value: "CostingTypeId" }
 ]
 
 export const BOPDomesticSimulation = [
@@ -3429,11 +3438,13 @@ export const BOPDomesticSimulation = [
     { label: "BoughtOutPartCategory", value: "BoughtOutPartCategory" },
     { label: "Plant (Code)", value: "Plants", },
     { label: "Vendor (Code)", value: "Vendor" },
+    { label: "Customer (Code)", value: "CustomerName" },
     { label: "BasicRate", value: "BasicRate" },
     { label: "RevisedBasicRate", value: "NewBasicRate" },
     { label: "NetLandedCost", value: "NetLandedCost" },
     { label: "EffectiveDate", value: "EffectiveDate" },
-    { label: "BoughtOutPartId", value: "BoughtOutPartId" }
+    { label: "BoughtOutPartId", value: "BoughtOutPartId" },
+    { label: "CostingTypeId", value: "CostingTypeId" }
 ]
 
 export const BOPImportSimulation = [
@@ -3443,11 +3454,13 @@ export const BOPImportSimulation = [
     { label: "BoughtOutPartCategory", value: "BoughtOutPartCategory" },
     { label: "Plant (Code)", value: "Plants", },
     { label: "Vendor (Code)", value: "Vendor" },
+    { label: "Customer (Code)", value: "CustomerName" },
     { label: "BasicRate", value: "BasicRate" },
     { label: "RevisedBasicRate", value: "NewBasicRate" },
     { label: "NetLandedCost", value: "NetLandedCost" },
     { label: "EffectiveDate", value: "EffectiveDate" },
-    { label: "BoughtOutPartId", value: "BoughtOutPartId" }
+    { label: "BoughtOutPartId", value: "BoughtOutPartId" },
+    { label: "CostingTypeId", value: "CostingTypeId" }
 ]
 
 export const OverheadProfitSimulation = [
@@ -3961,6 +3974,7 @@ export const CostingSimulationDownloadRM = [
     { label: "Vendor (Code)", value: "VendorName" },
     { label: "Plant (Code)", value: "PlantName" },
     { label: "PlantCode", value: "PlantCode" },
+    { label: "Customer (Code)", value: "CustomerName" },
     { label: "Budgeted Price", value: "BudgetedPrice" },
     { label: "Existing PO Price", value: "OldPOPrice" },
     { label: "Revised PO Price", value: "NewPOPrice" },
@@ -4014,6 +4028,7 @@ export const CostingSimulationDownloadST = [
     { label: "Vendor (Code)", value: "VendorName" },
     { label: "Plant (Code)", value: "PlantName" },
     { label: "PlantCode", value: "PlantCode" },
+    { label: "Customer (Code)", value: "CustomerName" },
     { label: "Budgeted Price", value: "BudgetedPrice" },
     { label: "Existing PO Price", value: "OldPOPrice" },
     { label: "Revised PO Price", value: "NewPOPrice" },
@@ -4070,6 +4085,7 @@ export const CostingSimulationDownloadOperation = [
     { label: "Vendor (Code)", value: "VendorName" },
     { label: "Plant (Code)", value: "PlantName" },
     { label: "PlantCode", value: "PlantCode" },
+    { label: "Customer (Code)", value: "CustomerName" },
     { label: "Budgeted Price", value: "BudgetedPrice" },
     { label: "Existing PO Price", value: "OldPOPrice" },
     { label: "Revised PO Price", value: "NewPOPrice" },
@@ -4128,6 +4144,7 @@ export const CostingSimulationDownloadBOP = [
     { label: "Vendor (Code)", value: "VendorName" },
     { label: "Plant (Code)", value: "PlantName" },
     { label: "PlantCode", value: "PlantCode" },
+    { label: "Customer (Code)", value: "CustomerName" },
     { label: "Budgeted Price", value: "BudgetedPrice" },
     { label: "Existing PO Price", value: "OldPOPrice" },
     { label: "Revised PO Price", value: "NewPOPrice" },
@@ -4180,6 +4197,7 @@ export const SIMULATIONAPPROVALSUMMARYDOWNLOADRM = [
     { label: "ECN Number", value: "ECNNumber" },
     { label: "Revision Number", value: "RevisionNumber" },
     { label: "Vendor (Code)", value: "VendorName" },
+    { label: "Customer (Code)", value: "CustomerName" },
     { label: "Plant (Code)", value: "PlantName" },
     { label: "Existing PO Price", value: "OldPOPrice" },
     { label: "Revised PO Price", value: "NewPOPrice" },
@@ -4201,6 +4219,7 @@ export const SIMULATIONAPPROVALSUMMARYDOWNLOADST = [
     { label: "Operation Code", value: "OperationCode" },
     { label: "Vendor (Code)", value: "VendorName" },
     { label: "Plant (Code)", value: "PlantName" },
+    { label: "Customer (Code)", value: "CustomerName" },
     { label: "Existing PO Price", value: "OldPOPrice" },
     { label: "Revised PO Price", value: "NewPOPrice" },
     { label: "Variance (w.r.t. Existing)", value: "POVariance" },
@@ -4220,6 +4239,7 @@ export const SIMULATIONAPPROVALSUMMARYDOWNLOADOPERATION = [
     { label: "OperationName", value: "OperationName" },
     { label: "OperationCode", value: "OperationCode" },
     { label: "Vendor (Code)", value: "VendorName" },
+    { label: "Customer (Code)", value: "CustomerName" },
     { label: "Plant (Code)", value: "PlantName" },
     { label: "Budgeted Price", value: "BudgetedPrice" },
     { label: "Existing PO Price", value: "OldPOPrice" },
@@ -4244,6 +4264,7 @@ export const SIMULATIONAPPROVALSUMMARYDOWNLOADBOP = [
     { label: "BOP Number", value: "BoughtOutPartNumber" },
     { label: "Vendor (Code)", value: "VendorName" },
     { label: "Plant (Code)", value: "PlantName" },
+    { label: "Customer (Code)", value: "CustomerName" },
     { label: "Budgeted Price", value: "BudgetedPrice" },
     { label: "Existing PO Price", value: "OldPOPrice" },
     { label: "Revised PO Price", value: "NewPOPrice" },
@@ -4771,6 +4792,7 @@ export const InitialGridForToken = [
     { label: "Vendor (Code)", value: "VendorName" },
     { label: "Plant", value: "PlantName" },
     { label: "PlantCode", value: "PlantCode" },
+    { label: "Customer (Code)", value: "CustomerName" },
     { label: "Existing PO Price", value: "OldPOPrice" },
     { label: "Revised PO Price", value: "NewPOPrice" },
     { label: "Variance (w.r.t. Existing)", value: "Variance" },
@@ -4812,6 +4834,7 @@ export const InitialGridForTokenSummary = [
     { label: "ECN Number", value: "ECNNumber" },
     { label: "Revision Number", value: "RevisionNumber" },
     { label: "Vendor (Code)", value: "VendorName" },
+    { label: "Customer (Code)", value: "CustomerName" },
     { label: "Plant", value: "PlantName" },
     { label: "Plant Code", value: "PlantCode" },
 ]
@@ -4931,6 +4954,7 @@ export const EXCHANGESIMULATIONDOWNLOAD = [
     { label: "ECN Number", value: "ECNNumber" },
     { label: "Revision Number", value: "RevisionNumber" },
     { label: "Vendor (Code)", value: "VendorName" },
+    { label: "Customer (Code)", value: "CustomerName" },
     { label: "Budgeted Price", value: "BudgetedPrice" },
     { label: "Currency", value: "Currency" },
     { label: "Existing Exchange Rate", value: "OldExchangeRate" },
@@ -4960,6 +4984,7 @@ export const CostingSimulationDownloadMR = [
     { label: "Vendor (Code)", value: "VendorName" },
     { label: "Plant (Code)", value: "PlantName" },
     { label: "PlantCode", value: "PlantCode" },
+    { label: "Customer (Code)", value: "CustomerName" },
     { label: "Budgeted Price", value: "BudgetedPrice" },
     { label: "Existing PO Price", value: "OldPOPrice" },
     { label: "Revised PO Price", value: "NewPOPrice" },
@@ -5014,6 +5039,7 @@ export const SIMULATIONAPPROVALSUMMARYDOWNLOADMR = [
     { label: "Revision Number", value: "RevisionNumber" },
     { label: "Vendor (Code)", value: "VendorName" },
     { label: "Plant (Code)", value: "PlantName" },
+    { label: "Customer (Code)", value: "CustomerName" },
     { label: "Budgeted Price", value: "BudgetedPrice" },
     { label: "Existing PO Price", value: "OldPOPrice" },
     { label: "Revised PO Price", value: "NewPOPrice" },
@@ -6203,6 +6229,7 @@ export const SIMULATIONAPPROVALSUMMARYDOWNLOADASSEMBLYTECHNOLOGY = [
     { label: "Vendor (Code)", value: "VendorName" },
     { label: "Plant", value: "PlantName" },
     { label: "Plant Code", value: "PlantCode" },
+    { label: "Customer (Code)", value: "CustomerName" },
     { label: "Existing PO Price", value: "OldPOPrice" },
     { label: "Revised PO Price", value: "NewPOPrice" },
     { label: "Variance (w.r.t. Existing)", value: "POVariance" },
