@@ -494,6 +494,7 @@ function RawMaterialCost(props) {
         WeightCalculatorRequest: {},
         WeightCalculationId: "00000000-0000-0000-0000-000000000000",
         IsCalculatedEntry: false,
+        RawMaterialCalculatorId: null,
         CutOffRMC: CutOffRMC,
         ScrapWeight: scrapWeight,
         ScrapRecoveryPercentage: 0,
