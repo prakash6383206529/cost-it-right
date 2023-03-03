@@ -54,6 +54,7 @@ function UserRegistration(props) {
   const [isShowHidePassword, setIsShowHidePassword] = useState(false);
   const [isRedirect, setIsRedirect] = useState(false);
   const [isSignup, setIsSignup] = useState(false);
+  const [primaryContact, setPrimaryContact] = useState(false);
   const [department, setDepartment] = useState([]);
   const [role, setRole] = useState([]);
   const [city, setCity] = useState([]);
@@ -467,7 +468,9 @@ function UserRegistration(props) {
   const handleReporterChange = (value) => {
     setReporter(value)
   }
-
+  const onPrimaryContactCheck = () => {
+    setPrimaryContact(true)
+  }
 
   /**
   * @method getUserDetail
