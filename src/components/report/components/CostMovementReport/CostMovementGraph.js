@@ -319,7 +319,7 @@ function CostMovementGraph(props) {
                 callbacks: {
                     label: function (context) {
 
-                        let label = '';
+                        let label = context.dataset.label;
 
                         if (label) {
                             label += ': ';
@@ -413,7 +413,7 @@ function CostMovementGraph(props) {
                 callbacks: {
                     label: function (context) {
 
-                        let label = '';
+                        let label = context.dataset.label;
 
                         if (label) {
                             label += ': ';
