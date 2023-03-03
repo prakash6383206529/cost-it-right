@@ -47,7 +47,6 @@ function RMImportListing(props) {
   const [gridApi, setgridApi] = useState(null);   // DONT DELETE THIS STATE , IT IS USED BY AG GRID
   const [gridColumnApi, setgridColumnApi] = useState(null);   // DONT DELETE THIS STATE , IT IS USED BY AG GRID
   const [loader, setloader] = useState(true);
-  const [isFinalLevelUser, setIsFinalLevelUser] = useState(false)
   const dispatch = useDispatch();
   const rmImportDataList = useSelector((state) => state.material.rmImportDataList);
   const filteredRMData = useSelector((state) => state.material.filteredRMData);
@@ -131,17 +130,6 @@ function RMImportListing(props) {
     setTimeout(() => {
       reactLocalStorage.setObject('selectedRow', {})
       if (!props.stopApiCallOnCancel) {
-        let obj = {
-          MasterId: RM_MASTER_ID,
-          DepartmentId: userDetails().DepartmentId,
-          LoggedInUserLevelId: userDetails().LoggedInMasterLevelId,
-          LoggedInUserId: loggedInUserId()
-        }
-        dispatch(masterFinalLevelUser(obj, (res) => {
-          if (res?.data?.Result) {
-            setIsFinalLevelUser(res.data.Data.IsFinalApprovar)
-          }
-        }))
 
         return () => {
           dispatch(setSelectedRowForPagination([]))
@@ -951,7 +939,6 @@ function RMImportListing(props) {
             isZBCVBCTemplate={true}
             messageLabel={"RM Import"}
             anchor={"right"}
-            isFinalApprovar={isFinalLevelUser}
             masterId={RM_MASTER_ID}
           />
         )
