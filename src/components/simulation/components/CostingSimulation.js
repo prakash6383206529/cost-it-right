@@ -1464,7 +1464,7 @@ function CostingSimulation(props) {
                                     amendmentDetails={amendmentDetails}
                                     dataForAssemblyImpactInVerifyImpact={tableData}
                                     assemblyImpactButtonTrue={assemblyImpactButtonTrue}
-                                    TypeOfCosting={amendmentDetails.SimulationHeadId}
+                                    CostingTypeId={amendmentDetails.SimulationHeadId}
 
                                 />
                             }

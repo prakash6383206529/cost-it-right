@@ -1540,6 +1540,7 @@ function SimulationApprovalSummary(props) {
                     type={'Approve'}
                     closeDrawer={verifyImpactDrawer}
                     isSimulation={true}
+                    CostingTypeId={simulationDetail?.SimulationHeadId}
                 />
             }
         </>
