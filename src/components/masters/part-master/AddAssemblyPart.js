@@ -978,7 +978,7 @@ class AddAssemblyPart extends Component {
                             required={true}
                             className=""
                             customClassName={"withBorder"}
-                            disabled={(isEditFlag && this.state.isDisableBomNo === false) ? true : false}
+                            disabled={(isEditFlag && this.state.isDisableBomNo === false) || (isEditFlag && this.state.isBomEditable) ? true : false}
                           />
                         </Col>
                         <Col md="3">
