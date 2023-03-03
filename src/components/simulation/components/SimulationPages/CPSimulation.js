@@ -292,53 +292,59 @@ function CPSimulation(props) {
                     (!showverifyPage && !showMainSimulation) &&
                     <Fragment>
                         <form>
-                            {
-                                isbulkUpload &&
-                                <div className="d-flex justify-content-end mt-0 mb-n4 bulk-upload-row">
-                                    <div className="d-flex align-items-center">
-                                        <label>Rows with changes:</label>
-                                        <TextFieldHookForm
-                                            label=""
-                                            name={'NoOfCorrectRow'}
-                                            Controller={Controller}
-                                            control={control}
-                                            register={register}
-                                            rules={{ required: false }}
-                                            mandatory={false}
-                                            handleChange={() => { }}
-                                            defaultValue={''}
-                                            className=""
-                                            customClassName={'withBorder mn-height-auto hide-label mb-0'}
-                                            errors={errors.NoOfCorrectRow}
-                                            disabled={true}
-                                        />
-                                    </div>
-                                    <div className="d-flex align-items-center">
-                                        <label>Rows without changes:</label>
-                                        <TextFieldHookForm
-                                            label=""
-                                            name={'NoOfRowsWithoutChange'}
-                                            Controller={Controller}
-                                            control={control}
-                                            register={register}
-                                            rules={{ required: false }}
-                                            mandatory={false}
-                                            handleChange={() => { }}
-                                            defaultValue={''}
-                                            className=""
-                                            customClassName={'withBorder mn-height-auto hide-label mb-0'}
-                                            errors={errors.NoOfRowsWithoutChange}
-                                            disabled={true}
-                                        />
-                                    </div>
-                                </div>
-                            }
+
                             <Row className={`filter-row-large blue-before zindex-0`}>
-                                <Col md="6" lg="6" className='d-flex mb-2'>
-                                    <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => onFilterTextBoxChanged(e)} />
-                                    <button type="button" className="user-btn mr5" title="Reset Grid" onClick={() => resetState()}>
-                                        <div className="refresh mr-0"></div>
-                                    </button>
+                                <Col md="12" lg="12" className=' mb-2 d-flex align-items-center justify-content-between'>
+                                    <div className='d-flex align-items-center'>
+                                        <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => onFilterTextBoxChanged(e)} />
+                                        <button type="button" className="user-btn mr5" title="Reset Grid" onClick={() => resetState()}>
+                                            <div className="refresh mr-0"></div>
+                                        </button>
+                                    </div>
+                                    <div className='d-flex'>
+                                        {
+                                            isbulkUpload &&
+                                            <div className="d-flex justify-content-end mt-0 mr-0 bulk-upload-row">
+                                                <div className="d-flex align-items-center">
+                                                    <label>Rows with changes:</label>
+                                                    <TextFieldHookForm
+                                                        label=""
+                                                        name={'NoOfCorrectRow'}
+                                                        Controller={Controller}
+                                                        control={control}
+                                                        register={register}
+                                                        rules={{ required: false }}
+                                                        mandatory={false}
+                                                        handleChange={() => { }}
+                                                        defaultValue={''}
+                                                        className=""
+                                                        customClassName={'withBorder mn-height-auto hide-label mb-0'}
+                                                        errors={errors.NoOfCorrectRow}
+                                                        disabled={true}
+                                                    />
+                                                </div>
+                                                <div className="d-flex align-items-center">
+                                                    <label>Rows without changes:</label>
+                                                    <TextFieldHookForm
+                                                        label=""
+                                                        name={'NoOfRowsWithoutChange'}
+                                                        Controller={Controller}
+                                                        control={control}
+                                                        register={register}
+                                                        rules={{ required: false }}
+                                                        mandatory={false}
+                                                        handleChange={() => { }}
+                                                        defaultValue={''}
+                                                        className=""
+                                                        customClassName={'withBorder mn-height-auto hide-label mb-0'}
+                                                        errors={errors.NoOfRowsWithoutChange}
+                                                        disabled={true}
+                                                    />
+                                                </div>
+                                            </div>
+                                        }
+                                        {!isImpactedMaster && <button type="button" className={"apply ml-2"} onClick={cancel}> <div className={'back-icon'}></div>Back</button>}
+                                    </div>
                                 </Col>
                             </Row>
                             <Row>
@@ -433,10 +439,6 @@ function CPSimulation(props) {
                                             />
                                             {isWarningMessageShow && <WarningMessage dClass={"error-message"} textClass={"pt-1"} message={"Please select effective date"} />}
                                         </div>
-                                        <button type={"button"} className="mr15 cancel-btn" onClick={cancel}>
-                                            <div className={"cancel-icon"}></div>
-                                            {"CANCEL"}
-                                        </button>
                                         <button onClick={verifySimulation} type="button" className="user-btn mr5 save-btn">
                                             <div className={"Run-icon"}>
                                             </div>{" "}
