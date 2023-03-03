@@ -1062,7 +1062,8 @@ class AddRMImport extends Component {
         VendorPlant: [],
         CustomerId: client.value,
         MachiningScrapRate: values.MachiningScrap,
-        MachiningScrapRateInINR: currency === INR ? values.MachiningScrap : values.MachiningScrap * currencyValue
+        MachiningScrapRateInINR: currency === INR ? values.MachiningScrap : values.MachiningScrap * currencyValue,
+        JaliScrapCost: values.CircleScrapCost ? values.CircleScrapCost : '',// THIS KEY FOR CIRCLE SCRAP COST
       }
       //DONT DELETE COMMENTED CODE BELOW
 
@@ -1149,7 +1150,8 @@ class AddRMImport extends Component {
         VendorPlant: [],
         CustomerId: client.value,
         MachiningScrapRate: values.MachiningScrap,
-        MachiningScrapRateInINR: currency === INR ? values.MachiningScrap : values.MachiningScrap * currencyValue
+        MachiningScrapRateInINR: currency === INR ? values.MachiningScrap : values.MachiningScrap * currencyValue,
+        JaliScrapCost: values.CircleScrapCost ? values.CircleScrapCost : '',// THIS KEY FOR CIRCLE SCRAP COST
       }
       // let obj
       // if(CheckApprovalApplicableMaster(RM_MASTER_ID) === true){
