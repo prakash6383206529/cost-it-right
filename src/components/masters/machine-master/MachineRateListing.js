@@ -22,7 +22,6 @@ import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { onFloatingFilterChanged, onSearch, resetState, onBtPrevious, onBtNext, onPageSizeChanged, PaginationWrapper } from '../../common/commonPagination'
 import { userDetails, loggedInUserId, getConfigurationKey, userDepartmetList, searchNocontentFilter } from '../../../helper'
 import { getListingForSimulationCombined } from '../../simulation/actions/Simulation';
-import { masterFinalLevelUser } from '../../masters/actions/Material'
 import ProcessGroupDrawer from './ProcessGroupDrawer'
 import WarningMessage from '../../common/WarningMessage';
 import _ from 'lodash';
@@ -58,7 +57,6 @@ class MachineRateListing extends Component {
             showCopyPopup: false,
             deletedId: '',
             copyId: '',
-            isFinalApprovar: false,
             isProcessGroup: getConfigurationKey().IsMachineProcessGroup, // UNCOMMENT IT AFTER DONE FROM BACKEND AND REMOVE BELOW CODE
             // isProcessGroup: false,
             isOpenProcessGroupDrawer: false,
@@ -104,17 +102,6 @@ class MachineRateListing extends Component {
                 if (this.props.selectionForListingMasterAPI === 'Master') {
                     this.getDataList("", 0, "", 0, "", "", 0, defaultPageSize, true, this.state.floatingFilterData)
                 }
-                let obj = {
-                    MasterId: MACHINE_MASTER_ID,
-                    DepartmentId: userDetails().DepartmentId,
-                    LoggedInUserLevelId: userDetails().LoggedInMasterLevelId,
-                    LoggedInUserId: loggedInUserId()
-                }
-                this.props.masterFinalLevelUser(obj, (res) => {
-                    if (res?.data?.Result) {
-                        this.setState({ isFinalApprovar: res.data.Data.IsFinalApprovar })
-                    }
-                })
             }
         }, 300);
     }
@@ -839,7 +826,6 @@ class MachineRateListing extends Component {
                         isMachineMoreTemplate={true}
                         messageLabel={'Machine'}
                         anchor={'right'}
-                        isFinalApprovar={this.state.isFinalApprovar}
                         masterId={MACHINE_MASTER_ID}
                     />
                 }
@@ -907,7 +893,6 @@ export default connect(mapStateToProps, {
     deleteMachine,
     copyMachine,
     getListingForSimulationCombined,
-    masterFinalLevelUser,
     getProcessGroupByMachineId,
     setSelectedRowForPagination,
     disabledClass

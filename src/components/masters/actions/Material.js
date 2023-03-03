@@ -1779,28 +1779,3 @@ export function getMasterApprovalSummary(tokenNo, approvalProcessId, masterId, c
             })
     }
 }
-
-/**
- * @method masterFinalLevelUser
- * @description IS USER IS FINAL LEVEL USER OR NOT FOR MASTER
- */
-export function masterFinalLevelUser(data, callback) {
-    return (dispatch) => {
-        const request = axios.post(API.masterFinalLeveluser, data, config())
-        request
-            .then((response) => {
-                if (response.data.Result) {
-                    callback(response)
-                } else {
-                    dispatch({ type: API_FAILURE })
-                    if (response.data.Message) {
-                        Toaster.error(response.data.Message)
-                    }
-                }
-            })
-            .catch((error) => {
-                dispatch({ type: API_FAILURE })
-                apiErrors(error)
-            })
-    }
-}
