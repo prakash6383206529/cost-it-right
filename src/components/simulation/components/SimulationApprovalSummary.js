@@ -1240,8 +1240,8 @@ function SimulationApprovalSummary(props) {
                                                                 }
 
 
-                                                                {(isCombinedProcess || keysForDownloadSummary.IsCombinedProcessSimulation) && <AgGridColumn width={140} field="OldNetCC" cellRenderer='oldCCFormatter' headerName="Old CC" ></AgGridColumn>}
-                                                                {(isCombinedProcess || keysForDownloadSummary.IsCombinedProcessSimulation) && <AgGridColumn width={140} field="NewNetCC" cellRenderer='newCCFormatter' headerName="New CC" ></AgGridColumn>}
+                                                                {(isCombinedProcess || keysForDownloadSummary.IsCombinedProcessSimulation) && <AgGridColumn width={140} field="OldNetCC" cellRenderer='oldCCFormatter' headerName="Existing CC" ></AgGridColumn>}
+                                                                {(isCombinedProcess || keysForDownloadSummary.IsCombinedProcessSimulation) && <AgGridColumn width={140} field="NewNetCC" cellRenderer='newCCFormatter' headerName="Revised CC" ></AgGridColumn>}
                                                                 {(isCombinedProcess || keysForDownloadSummary.IsCombinedProcessSimulation) && <AgGridColumn width={140} field="Variance" headerName="Variance" cellRenderer='CCVarianceFormatter'></AgGridColumn>}
 
                                                                 < AgGridColumn width={140} field="ImpactPerQuarter" headerName="Impact/Quarter (w.r.t. Existing)" cellRenderer='impactPerQuarterFormatter'></AgGridColumn>
