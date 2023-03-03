@@ -1049,7 +1049,6 @@ function CostingDetails(props) {
    * @description MOVE TO COSTING DETAIL
    */
   const moveToCostingDetail = (index, type) => {
-    console.log('index: ', index);
 
     let tempObject = []
     let tempCostingId
@@ -1059,7 +1058,6 @@ function CostingDetails(props) {
     } else if (type === VBCTypeId) {
       tempCostingId = getValues(`${vbcGridFields}.${index}.CostingVersion`)
       tempObject = vbcVendorGrid && vbcVendorGrid[index]?.CostingOptions
-      console.log('tempObject: ', tempObject);
     } else if (type === NCCTypeId) {
       // NCC GRID AT PLACE OF vbcVendorGrid
       tempCostingId = getValues(`${nccGridFields}.${index}.CostingVersion`)
@@ -1068,9 +1066,7 @@ function CostingDetails(props) {
       tempCostingId = getValues(`${cbcGridFields}.${index}.CostingVersion`)
       tempObject = cbcGrid && cbcGrid[index]?.CostingOptions
     }
-    console.log('tempCostingId: ', tempCostingId);
     const indexOfCostingOptions = tempObject.findIndex((el) => el.CostingId === tempCostingId?.value)
-    console.log('indexOfCostingOptions: ', indexOfCostingOptions);
 
     let costingOptionsSelectedObjectTemp = {
       SubAssemblyCostingId: tempObject[indexOfCostingOptions].SubAssemblyCostingId,
