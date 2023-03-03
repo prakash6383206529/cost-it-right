@@ -4034,31 +4034,31 @@ export const COMBINEDPROCESSSIMULATION = [
     { label: "ECN Number", value: "ECNNumber" },
     { label: "Revision Number", value: "RevisionNumber" },
 
-    { label: "PO Price Old", value: "OldPOPrice" },
-    { label: "PO Price New", value: "NewPOPrice" },
+    { label: "Existing PO Price", value: "OldPOPrice" },
+    { label: "Revised PO Price", value: "NewPOPrice" },
     { label: "PO Variance", value: "POVariance" },
-    { label: 'Old Net CC', value: 'OldNetCC' },
-    { label: "New Net CC", value: "NewNetCC" },
+    { label: 'Existing Net CC', value: 'OldNetCC' },
+    { label: "Revised Net CC", value: "NewNetCC" },
     { label: "Variance", value: "CPVariance" },
 
     { label: "Impact for Quarter(INR)", value: "ImpactPerQuarter" },
 
-    { label: "OldOverheadCost", value: "OldOverheadCost" },
-    { label: "NewOverheadCost", value: "NewOverheadCost" },
-    { label: "OldProfitCost", value: "OldProfitCost" },
-    { label: "NewProfitCost", value: "NewProfitCost" },
-    { label: "OldRejectionCost", value: "OldRejectionCost" },
-    { label: "NewRejectionCost", value: "NewRejectionCost" },
-    { label: "OldICCCost", value: "OldICCCost" },
-    { label: "NewICCCost", value: "NewICCCost" },
-    { label: "OldPaymentTermsCost", value: "OldPaymentTermsCost" },
-    { label: "NewPaymentTermsCost", value: "NewPaymentTermsCost" },
-    { label: "OldOtherCost", value: "OldOtherCost" },
-    { label: "NewOtherCost", value: "NewOtherCost" },
-    { label: "OldDiscountCost", value: "OldDiscountCost" },
-    { label: "NewDiscountCost", value: "NewDiscountCost" },
-    { label: "OldNetOverheadAndProfitCost", value: "OldNetOverheadAndProfitCost" },
-    { label: "NewNetOverheadAndProfitCost", value: "NewNetOverheadAndProfitCost" },
+    { label: "ExistingOverheadCost", value: "OldOverheadCost" },
+    { label: "RevisedOverheadCost", value: "NewOverheadCost" },
+    { label: "ExistingProfitCost", value: "OldProfitCost" },
+    { label: "RevisedProfitCost", value: "NewProfitCost" },
+    { label: "ExistingRejectionCost", value: "OldRejectionCost" },
+    { label: "RevisedRejectionCost", value: "NewRejectionCost" },
+    { label: "ExistingICCCost", value: "OldICCCost" },
+    { label: "RevisedICCCost", value: "NewICCCost" },
+    { label: "ExistingPaymentTermsCost", value: "OldPaymentTermsCost" },
+    { label: "RevisedPaymentTermsCost", value: "NewPaymentTermsCost" },
+    { label: "ExistingOtherCost", value: "OldOtherCost" },
+    { label: "RevisedOtherCost", value: "NewOtherCost" },
+    { label: "ExistingDiscountCost", value: "OldDiscountCost" },
+    { label: "RevisedDiscountCost", value: "NewDiscountCost" },
+    { label: "ExistingNetOverheadAndProfitCost", value: "OldNetOverheadAndProfitCost" },
+    { label: "RevisedNetOverheadAndProfitCost", value: "NewNetOverheadAndProfitCost" },
 
     // { label: "EffectiveDate", value: "EffectiveDate" },
 ]
@@ -4278,11 +4278,11 @@ export const SIMULATIONAPPROVALSUMMARYDOWNLOADCP = [
     { label: "Revision Number", value: "RevisionNumber" },
     { label: "Vendor Name", value: "VendorName" },
     { label: "Plant", value: "PlantName" },
-    { label: "Old PO Price", value: "OldPOPrice" },
-    { label: "New PO Price", value: "NewPOPrice" },
+    { label: "Existing PO Price", value: "OldPOPrice" },
+    { label: "Revised PO Price", value: "NewPOPrice" },
     { label: "PO Variance", value: "POVariance" },
-    { label: "Old CC", value: "OldNetCC" },
-    { label: "New CC", value: "NewNetCC" },
+    { label: "Existing CC", value: "OldNetCC" },
+    { label: "Revised CC", value: "NewNetCC" },
     { label: "CC Variance", value: "Variance" },
     { label: "Impact for Quarter(INR)", value: "ImpactPerQuarter" },
 
@@ -4772,7 +4772,7 @@ export const CombinedProcessSimulation = [
     { label: "PartNumber", value: "PartNumber" },
     { label: "PlantName", value: "PlantName" },
     { label: "ConversionCost", value: "ConversionCost" },
-    { label: "NewCC", value: "NewCC" },
+    { label: "RevisedCC", value: "NewCC" },
     { label: "RemainingTotal", value: "RemainingTotal" },
     { label: "TotalCost", value: "TotalCost" },
     { label: "EffectiveDate", value: "EffectiveDate" },
@@ -4788,8 +4788,8 @@ export const CombinedProcessSimulationFinal = [
     { label: "ECNNumber", value: "ECNNumber" },
     { label: "RevisionNumber", value: "RevisionNumber" },
     { label: "VendorName", value: "VendorName" },
-    { label: "OldCC", value: "OldCC" },
-    { label: "NewCC", value: "NewCC" },
+    { label: "ExistingCC", value: "OldCC" },
+    { label: "RevisedCC", value: "NewCC" },
     { label: "Variance", value: "Variance" },
     { label: "Actions", value: "Actions" },
     { label: "CostingId", value: "CostingId" },
@@ -4981,14 +4981,14 @@ export const BOPGridForTokenSummary = [
 ]
 
 export const CPGridForToken = [
-    { label: 'Old Net CC', value: 'OldNetCC' },
-    { label: "New Net CC", value: "NewNetCC" },
+    { label: 'Existing Net CC', value: 'OldNetCC' },
+    { label: "Revised Net CC", value: "NewNetCC" },
     { label: "Variance", value: "CPVariance" },
 ]
 
 export const CPGridForTokenSummary = [
-    { label: 'Old Net CC', value: 'OldNetCC' },
-    { label: "New Net CC", value: "NewNetCC" },
+    { label: 'Existing Net CC', value: 'OldNetCC' },
+    { label: "Revised Net CC", value: "NewNetCC" },
     { label: "Variance", value: "Variance" },
 ]
 
@@ -5187,8 +5187,7 @@ export const BoughtOutPartImportFileHeads = ['CostingHead', 'BoughtOutPartNumber
 
 export const MachineRateFileHeads = ['CostingHead', 'Technologies', 'MachineName', 'MachineNumber']
 
-
-export const CombinedProcessFileHeads = ['TechnologyName', 'PartName', 'PartNumber', 'PlantName', 'ConversionCost', 'NewCC', 'RemainingTotal', 'TotalCost', 'EffectiveDate', 'CostingId']
+export const CombinedProcessFileHeads = ['TechnologyName', 'PartName', 'PartNumber', 'PlantName', 'ConversionCost']
 
 export const TechnologyDropdownBulkUpload = [
     { label: 'Mechanical Proprietary, Sheet Metal, Hardware, Spring, Rivet', value: '1' },

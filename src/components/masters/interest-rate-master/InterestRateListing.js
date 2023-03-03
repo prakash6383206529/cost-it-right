@@ -13,7 +13,6 @@ import AddInterestRate from './AddInterestRate';
 import BulkUpload from '../../massUpload/BulkUpload';
 import { ADDITIONAL_MASTERS, InterestMaster, INTEREST_RATE } from '../../../config/constants';
 import { checkPermission, searchNocontentFilter } from '../../../helper/util';
-import { getLeftMenu } from '../../../actions/auth/AuthActions';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import LoaderCustom from '../../common/LoaderCustom';
 import ReactExport from 'react-export-excel';
@@ -26,9 +25,7 @@ import { filterParams } from '../../common/DateFilter'
 import ScrollToTop from '../../common/ScrollToTop';
 import { PaginationWrapper } from '../../common/commonPagination';
 import { getConfigurationKey } from '../../../helper';
-import SelectRowWrapper from '../../common/SelectRowWrapper';
 import { reactLocalStorage } from 'reactjs-localstorage';
-import SingleDropdownFloationFilter from '../material-master/SingleDropdownFloationFilter';
 import { hideCustomerFromExcel } from '../../common/CommonFunctions';
 
 const ExcelFile = ReactExport.ExcelFile;
@@ -67,11 +64,6 @@ class InterestRateListing extends Component {
       noData: false,
       dataCount: 0
     }
-  }
-  floatingFilterIcc = {
-    maxValue: 3,
-    suppressFilterButton: true,
-    component: "InterestRate"
   }
   componentDidMount() {
 
@@ -247,15 +239,6 @@ class InterestRateListing extends Component {
   onFloatingFilterChanged = (value) => {
     this.props.interestRateDataList.length !== 0 && this.setState({ noData: searchNocontentFilter(value, this.state.noData) })
   }
-  jsFunction(filterVal) {
-    console.log('filterVal: ', filterVal);
-    this.filterVal = filterVal;
-    gridOptions.api.onFilterChanged(); //this invokes your custom logic by forcing grid filtering
-  }
-  doesExternalFilterPass = (value) => {
-    console.log('value: ', value);
-
-  }
   /**
   * @method hyphenFormatter
   */
@@ -408,7 +391,6 @@ class InterestRateListing extends Component {
       customNoRowsOverlay: NoContentFound,
       costingHeadFormatter: this.costingHeadFormatter,
       hyphenFormatter: this.hyphenFormatter,
-      valuesFloatingFilter: SingleDropdownFloationFilter,
     };
 
 
@@ -513,14 +495,12 @@ class InterestRateListing extends Component {
                   onSelectionChanged={this.onRowSelect}
                   frameworkComponents={frameworkComponents}
                   suppressRowClickSelection={true}
-                  isExternalFilterPresent={true}
-                  doesExternalFilterPass={this.doesExternalFilterPass}
                 >
                   <AgGridColumn width={180} field="CostingHead" headerName="Costing Head" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
                   {(getConfigurationKey().IsPlantRequiredForOverheadProfitInterestRate || getConfigurationKey().IsDestinationPlantConfigure) && <AgGridColumn field="PlantName" headerName="Plant (Code)"></AgGridColumn>}
                   <AgGridColumn field="VendorName" headerName="Vendor (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                   {reactLocalStorage.getObject('cbcCostingPermission') && <AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
-                  <AgGridColumn field="ICCApplicability" headerName="ICC Applicability" floatingFilterComponent="valuesFloatingFilter" floatingFilterComponentParams={this.floatingFilterIcc}></AgGridColumn>
+                  <AgGridColumn field="ICCApplicability" headerName="ICC Applicability" ></AgGridColumn>
                   <AgGridColumn width={140} field="ICCPercent" headerName="Annual ICC (%)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                   <AgGridColumn width={220} field="PaymentTermApplicability" headerName="Payment Term Applicability" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                   <AgGridColumn width={210} field="RepaymentPeriod" headerName="Repayment Period (Days)" cellRenderer={'hyphenFormatter'}></AgGridColumn>

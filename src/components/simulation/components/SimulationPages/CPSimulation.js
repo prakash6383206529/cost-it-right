@@ -234,7 +234,7 @@ function CPSimulation(props) {
         obj.CostingHead = list[0].CostingHead === 'Vendor Based' ? VBC : ZBC
         obj.TechnologyId = list[0].TechnologyId
         obj.TechnologyName = list[0].TechnologyName
-
+        obj.SimulationHeadId = list[0].CostingTypeId
         let tempArr = []
         arr && arr.map(item => {
             let tempObj = {}

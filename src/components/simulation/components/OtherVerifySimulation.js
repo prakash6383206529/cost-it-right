@@ -333,10 +333,10 @@ function OtherVerifySimulation(props) {
                                                 {isExchangeRate && <AgGridColumn width={145} field="OldExchangeRate" headerName="Existing Exchange Rate"></AgGridColumn>}
                                                 {isExchangeRate && <AgGridColumn width={150} field="NewExchangeRate" cellRenderer='newExchangeRateFormatter' headerName="Revised Exchange Rate"></AgGridColumn>}
 
-                                                {isCombinedProcess && <AgGridColumn width={130} field="OldPOPrice" headerName="PO Price Old" cellRenderer='decimalFormatter'></AgGridColumn>}
-                                                {isCombinedProcess && <AgGridColumn width={130} field="NewPOPrice" headerName="PO Price New" cellRenderer='decimalFormatter'></AgGridColumn>}
-                                                {isCombinedProcess && <AgGridColumn width={145} field="OldNetCC" headerName="Old CC" cellRenderer='decimalFormatter'></AgGridColumn>}
-                                                {isCombinedProcess && <AgGridColumn width={150} field="NewNetCC" cellRenderer='newExchangeRateFormatter' headerName="New CC"></AgGridColumn>}
+                                                {/* {isCombinedProcess && <AgGridColumn width={130} field="OldPOPrice" headerName="PO Price Old" cellRenderer='decimalFormatter'></AgGridColumn>} */}
+                                                {isCombinedProcess && <AgGridColumn width={130} field="NewPOPrice" headerName="Revised PO Price" cellRenderer='decimalFormatter'></AgGridColumn>}
+                                                {isCombinedProcess && <AgGridColumn width={145} field="OldNetCC" headerName="Existing CC" cellRenderer='decimalFormatter'></AgGridColumn>}
+                                                {isCombinedProcess && <AgGridColumn width={150} field="NewNetCC" cellRenderer='newExchangeRateFormatter' headerName="Revised CC"></AgGridColumn>}
 
 
                                             </AgGridReact>
