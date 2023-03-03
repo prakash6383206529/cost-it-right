@@ -12,7 +12,7 @@ import {
 import {
   createRMImport, getRMImportDataById, updateRMImportAPI, getRawMaterialNameChild,
   getRMGradeSelectListByRawMaterial, getVendorListByVendorType, fileUploadRMDomestic, getVendorWithVendorCodeSelectList, checkAndGetRawMaterialCode,
-  masterFinalLevelUser, fileDeleteRMDomestic
+   fileDeleteRMDomestic
 } from '../actions/Material';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
@@ -2179,7 +2179,6 @@ export default connect(mapStateToProps, {
   getExchangeRateByCurrency,
   getVendorWithVendorCodeSelectList,
   checkAndGetRawMaterialCode,
-  masterFinalLevelUser,
   fileDeleteRMDomestic,
   checkFinalUser,
   getCityByCountry,
