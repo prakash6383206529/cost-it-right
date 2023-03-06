@@ -13,7 +13,7 @@ const commonFilterFunction = (inputValue, dropdownArray, filterByName) => {
 const commonDropdownFunction = (array, tempBoolean = false, selectedParts = [], finalArray, partWithRev = false) => {
     array && array.map(item => {
         if (item.Value === '0' || item.PartId === '0') return array
-        if ((tempBoolean && selectedParts.includes(item.PartId)) || (tempBoolean && selectedParts.includes(item.Value))) return false        //FOR REMOVING DUPLICATE PART ENTRY         
+        if ((tempBoolean && (item?.PartId) && selectedParts.includes(item.PartId)) || (tempBoolean && (item?.Value) && selectedParts.includes(item.Value))) return false        //FOR REMOVING DUPLICATE PART ENTRY         
         if (partWithRev) {
             finalArray.push({ label: `${item.PartNumber}${item.RevisionNumber ? ` (${item.RevisionNumber})` : ''}`, value: item.PartId, RevisionNumber: item.RevisionNumber })
         } else {
