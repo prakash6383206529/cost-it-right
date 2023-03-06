@@ -10,7 +10,7 @@ import { createOverhead, updateOverhead, getOverheadData, fileUploadOverHead, fi
 import { getClientSelectList, } from '../actions/Client';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
-import { getConfigurationKey, loggedInUserId, userDetails } from "../../../helper/auth";
+import { getConfigurationKey, loggedInUserId } from "../../../helper/auth";
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css'
 import { CBCTypeId, FILE_URL, SPACEBAR, VBCTypeId, ZBC, ZBCTypeId, searchCount } from '../../../config/constants';
@@ -71,7 +71,8 @@ class AddOverhead extends Component {
       showErrorOnFocus: false,
       showErrorOnFocusDate: false,
       showPopup: false,
-      showPartCost: false
+      showPartCost: false,
+      vendorFilterList: []
     }
   }
 
@@ -847,14 +848,14 @@ class AddOverhead extends Component {
     const { handleSubmit, } = this.props;
     const { isRM, isCC, isBOP, isOverheadPercent, isEditFlag, isHideOverhead, isHideBOP, isHideRM, isHideCC, isViewMode, setDisable, isDataChanged, costingTypeId } = this.state;
     const filterList = async (inputValue) => {
-      const { vendorName } = this.state
+      const { vendorFilterList } = this.state
       const resultInput = inputValue.slice(0, searchCount)
-      if (inputValue?.length >= searchCount && vendorName !== resultInput) {
+      if (inputValue?.length >= searchCount && vendorFilterList !== resultInput) {
         this.setState({ inputLoader: true })
         let res
         res = await getVendorWithVendorCodeSelectList(resultInput)
         this.setState({ inputLoader: false })
-        this.setState({ vendorName: resultInput })
+        this.setState({ vendorFilterList: resultInput })
         let vendorDataAPI = res?.data?.SelectList
         if (inputValue) {
           return autoCompleteDropdown(inputValue, vendorDataAPI, false, [], true)
