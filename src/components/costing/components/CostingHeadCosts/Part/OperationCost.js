@@ -41,7 +41,7 @@ function OperationCost(props) {
   const [headerPinned, setHeaderPinned] = useState(true)
   const CostingViewMode = useContext(ViewCostingContext);
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
-  const { CostingEffectiveDate } = useSelector(state => state.costing)
+  const { CostingEffectiveDate, ErrorObjRMCC } = useSelector(state => state.costing)
   const costData = useContext(costingInfoContext);
 
   useEffect(() => {
@@ -293,12 +293,15 @@ function OperationCost(props) {
   /**
    * @method setRMCCErrors
    * @description CALLING TO SET BOP COST FORM'S ERROR THAT WILL USE WHEN HITTING SAVE RMCC TAB API.
-   */
+  */
+  let temp = ErrorObjRMCC
   if (Object.keys(errors).length > 0 && counter < 2) {
-    dispatch(setRMCCErrors(errors))
+    temp.OperationGridFields = errors.OperationGridFields;
+    dispatch(setRMCCErrors(temp))
     counter++;
   } else if (Object.keys(errors).length === 0 && counter > 0) {
-    dispatch(setRMCCErrors({}))
+    temp.OperationGridFields = {};
+    dispatch(setRMCCErrors(temp))
     counter = 0
   }
 
@@ -362,7 +365,7 @@ function OperationCost(props) {
                             <td style={{ width: 130 }}>
                               {
                                 <TextFieldHookForm
-                                  label=""
+                                  label={false}
                                   name={`${OperationGridFields}.${index}.Quantity`}
                                   Controller={Controller}
                                   control={control}
@@ -373,7 +376,7 @@ function OperationCost(props) {
                                   }}
                                   defaultValue={checkForDecimalAndNull(item.Quantity, initialConfiguration.NoOfDecimalForInputOutput)}
                                   className=""
-                                  customClassName={'withBorder hide-label-inside mb-0'}
+                                  customClassName={'withBorder error-label mb-0'}
                                   handleChange={(e) => {
                                     e.preventDefault()
                                     handleQuantityChange(e, index)
@@ -392,7 +395,7 @@ function OperationCost(props) {
                                 {
                                   item.IsLabourRateExist ?
                                     <TextFieldHookForm
-                                      label=""
+                                      label={false}
                                       name={`${OperationGridFields}.${index}.LabourQuantity`}
                                       Controller={Controller}
                                       control={control}
@@ -403,7 +406,7 @@ function OperationCost(props) {
                                       }}
                                       defaultValue={item.LabourQuantity}
                                       className=""
-                                      customClassName={'withBorder hide-label-inside mb-0'}
+                                      customClassName={'withBorder error-label mb-0'}
                                       handleChange={(e) => {
                                         e.preventDefault()
                                         handleLabourQuantityChange(e, index)

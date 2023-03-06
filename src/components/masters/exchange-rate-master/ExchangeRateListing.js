@@ -24,6 +24,8 @@ import { filterParams } from '../../common/DateFilter'
 import ScrollToTop from '../../common/ScrollToTop';
 import { getListingForSimulationCombined } from '../../simulation/actions/Simulation';
 import { PaginationWrapper } from '../../common/commonPagination';
+import { reactLocalStorage } from 'reactjs-localstorage';
+import { hideCustomerFromExcel } from '../../common/CommonFunctions';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -300,6 +302,7 @@ class ExchangeRateListing extends Component {
 
 
     returnExcelColumn = (data = [], TempData) => {
+        let excelData = hideCustomerFromExcel(data, "customerWithCode")
         let temp = []
         temp = TempData && TempData.map((item) => {
             if (item.BankRate === null) {
@@ -317,7 +320,7 @@ class ExchangeRateListing extends Component {
         return (
 
             <ExcelSheet data={temp} name={ExchangeMaster}>
-                {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
+                {excelData && excelData.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
             </ExcelSheet>);
     }
 
@@ -450,7 +453,7 @@ class ExchangeRateListing extends Component {
                                 >
                                     <AgGridColumn field="CostingHead" headerName="Costing Head" ></AgGridColumn>
                                     <AgGridColumn field="vendorWithCode" headerName="Vendor (Code)" ></AgGridColumn>
-                                    <AgGridColumn field="customerWithCode" headerName="Customer (Code)" ></AgGridColumn>
+                                    {reactLocalStorage.getObject('cbcCostingPermission') && <AgGridColumn field="customerWithCode" headerName="Customer (Code)" ></AgGridColumn>}
                                     <AgGridColumn field="Currency" headerName="Currency" minWidth={135}></AgGridColumn>
                                     <AgGridColumn suppressSizeToFit="true" field="CurrencyExchangeRate" headerName="Exchange Rate (INR)" minWidth={160} cellRenderer={'commonCostFormatter'}></AgGridColumn>
                                     <AgGridColumn field="BankRate" headerName="Bank Rate (INR)" minWidth={150} cellRenderer={'commonCostFormatter'}></AgGridColumn>

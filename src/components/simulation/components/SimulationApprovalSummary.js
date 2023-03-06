@@ -18,7 +18,7 @@ import 'react-dropzone-uploader/dist/styles.css';
 import Toaster from '../../common/Toaster';
 import { EXCHNAGERATE, RMDOMESTIC, RMIMPORT, FILE_URL, ZBC, SURFACETREATMENT, OPERATIONS, BOPDOMESTIC, BOPIMPORT, AssemblyWiseImpactt, ImpactMaster, defaultPageSize, MACHINERATE, VBCTypeId, } from '../../../config/constants';
 import CostingSummaryTable from '../../costing/components/CostingSummaryTable';
-import { checkForDecimalAndNull, formViewData, checkForNull, getConfigurationKey, loggedInUserId, searchNocontentFilter } from '../../../helper';
+import { checkForDecimalAndNull, formViewData, checkForNull, getConfigurationKey, loggedInUserId, searchNocontentFilter, userTechnologyLevelDetails } from '../../../helper';
 import ApproveRejectDrawer from '../../costing/components/approval/ApproveRejectDrawer';
 import LoaderCustom from '../../common/LoaderCustom';
 import VerifyImpactDrawer from './VerifyImpactDrawer';
@@ -42,6 +42,7 @@ import AssemblyWiseImpactSummary from './AssemblyWiseImpactSummary';
 import _ from 'lodash'
 import CalculatorWrapper from '../../common/Calculator/CalculatorWrapper';
 import { PaginationWrapper } from '../../common/commonPagination';
+import { getUsersTechnologyLevelAPI } from '../../../actions/auth/AuthActions';
 
 const gridOptions = {};
 const ExcelFile = ReactExport.ExcelFile;
@@ -190,7 +191,6 @@ function SimulationApprovalSummary(props) {
             //     quantity: 1
             // }
             setdataForAssemblyImpactForFg(SimulatedCostingList)
-
             let obj = {
                 DepartmentId: DepartmentId,
                 UserId: loggedInUserId(),
@@ -212,6 +212,7 @@ function SimulationApprovalSummary(props) {
             impactedMasterDataListForLastRevisionData?.OperationImpactedMasterDataList?.length <= 0 &&
             impactedMasterDataListForLastRevisionData?.ExchangeRateImpactedMasterDataList?.length <= 0 &&
             impactedMasterDataListForLastRevisionData?.BoughtOutPartImpactedMasterDataList?.length <= 0 &&
+            impactedMasterDataListForLastRevisionData?.SurfaceTreatmentImpactedMasterDataList?.length <= 0 &&
             impactedMasterDataListForLastRevisionData?.MachineProcessImpactedMasterDataList <= 0
         if (lastRevisionDataAccordian && check) {
             Toaster.warning('There is no data for the Last Revision.')
@@ -252,6 +253,7 @@ function SimulationApprovalSummary(props) {
                         OperationImpactedMasterDataList: [],
                         RawMaterialImpactedMasterDataList: [],
                         BoughtOutPartImpactedMasterDataList: [],
+                        SurfaceTreatmentImpactedMasterDataList: [],
                         MachineProcessImpactedMasterDataList: []
                     }
 
@@ -979,7 +981,7 @@ function SimulationApprovalSummary(props) {
                                             <td>{simulationDetail && simulationDetail.DepartmentCode ? simulationDetail.DepartmentCode : '-'}</td>
                                             {String(SimulationTechnologyId) !== EXCHNAGERATE && <td>{simulationDetail && simulationDetail.AmendmentDetails?.CostingHead}</td>}
                                             <td>{simulationDetail && simulationDetail.AmendmentDetails?.VendorName}</td>
-                                            <td>{simulationDetail && simulationDetail.AmendmentDetails?.NumberOfImpactedCosting}</td>
+                                            <td>{simulationDetail && simulationDetail.AmendmentDetails?.ImpactParts}</td>
                                             <td>{simulationDetail && simulationDetail.AmendmentDetails?.Reason}</td>
                                             <td>{simulationDetail && simulationDetail.AmendmentDetails?.SimulationTechnology}</td>
                                             <td>{simulationDetail && DayTime(simulationDetail.AmendmentDetails?.EffectiveDate).format('DD/MM/YYYY')}</td>
@@ -1538,6 +1540,7 @@ function SimulationApprovalSummary(props) {
                     type={'Approve'}
                     closeDrawer={verifyImpactDrawer}
                     isSimulation={true}
+                    CostingTypeId={simulationDetail?.SimulationHeadId}
                 />
             }
         </>

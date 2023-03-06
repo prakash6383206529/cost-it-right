@@ -14,7 +14,7 @@ import { MESSAGES } from '../../../config/message';
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css';
 import "react-datepicker/dist/react-datepicker.css";
-import { ASSEMBLY, BOUGHTOUTPART, COMPONENT_PART, FILE_URL, SPACEBAR, ASSEMBLYNAME, searchCount } from '../../../config/constants';
+import { BOUGHTOUTPART, COMPONENT_PART, FILE_URL, SPACEBAR, ASSEMBLYNAME, searchCount } from '../../../config/constants';
 import AddChildDrawer from './AddChildDrawer';
 import DayTime from '../../common/DayTimeWrapper'
 import BOMViewer from './BOMViewer';
@@ -78,7 +78,8 @@ class AddAssemblyPart extends Component {
       showErrorOnFocusDate: false,
       IsTechnologyUpdateRequired: false,
       partName: '',
-      showPopup: false
+      showPopup: false,
+      partAssembly: ''
     }
   }
 
@@ -181,6 +182,7 @@ class AddAssemblyPart extends Component {
     this.props.change("Remark", "")
     this.setState({ ProductGroup: [], BOMViewerData: [] })
     this.setState({ minEffectiveDate: "", warningMessage: false, warningMessageTechnology: false, TechnologySelected: [] })
+    this.setState({ partAssembly: { ...this.state.partAssembly, convertPartToAssembly: false } })
   }
 
   isRequired = () => {
@@ -211,8 +213,9 @@ class AddAssemblyPart extends Component {
 
 
   handlePartNo = (newValue, actionMeta) => {
-    this.setState({ partAssembly: newValue })
+
     if (newValue && newValue !== '') {
+      this.setState({ partAssembly: { ...newValue, convertPartToAssembly: true } })
 
       this.props.getPartData(newValue.value, res => {
         if (res && res.data && res.data.Result) {
@@ -975,7 +978,7 @@ class AddAssemblyPart extends Component {
                             required={true}
                             className=""
                             customClassName={"withBorder"}
-                            disabled={(isEditFlag && this.state.isDisableBomNo === false) ? true : false}
+                            disabled={(isEditFlag && this.state.isDisableBomNo === false) || (isEditFlag && this.state.isBomEditable) ? true : false}
                           />
                         </Col>
                         <Col md="3">
@@ -999,7 +1002,7 @@ class AddAssemblyPart extends Component {
                             name={"AssemblyPartName"}
                             type="text"
                             placeholder={isViewMode || (!isEditFlag && this.state.disablePartName) || convertPartToAssembly ? '-' : "Enter"}
-                            validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength75, checkSpacesInString]}
+                            validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength75]}
                             component={renderText}
                             required={true}
                             className=""

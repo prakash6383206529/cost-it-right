@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col, Label, } from 'reactstrap';
-import { required, positiveAndDecimalNumber, maxLength10, decimalLengthsix, decimalLengthThree, maxPercentValue, number, checkWhiteSpaces, percentageLimitValidation, checkPercentageValue, } from "../../../helper/validation";
+import { required, positiveAndDecimalNumber, maxLength10, decimalLengthsix, maxPercentValue, number, checkWhiteSpaces, percentageLimitValidation, checkPercentageValue, } from "../../../helper/validation";
 import { createExchangeRate, getExchangeRateData, updateExchangeRate, getCurrencySelectList, } from '../actions/ExchangeRateMaster';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
@@ -44,7 +44,8 @@ class AddExchangeRate extends Component {
       showPopup: false,
       costingTypeId: ZBCTypeId,
       customer: [],
-      vendorName: []
+      vendorName: [],
+      vendorFilterList: []
     }
   }
 
@@ -349,15 +350,15 @@ class AddExchangeRate extends Component {
     const { handleSubmit, } = this.props;
     const { isEditFlag, isViewMode, setDisable, costingTypeId } = this.state;
     const filterList = async (inputValue) => {
-      const { vendorName } = this.state
+      const { vendorFilterList } = this.state
       const resultInput = inputValue.slice(0, searchCount)
-      if (inputValue?.length >= searchCount && vendorName !== resultInput) {
+      if (inputValue?.length >= searchCount && vendorFilterList !== resultInput) {
         this.setState({ inputLoader: true })
         let res
         res = await getVendorWithVendorCodeSelectList(resultInput)
 
         this.setState({ inputLoader: false })
-        this.setState({ vendorName: resultInput })
+        this.setState({ vendorFilterList: resultInput })
         let vendorDataAPI = res?.data?.SelectList
         if (inputValue) {
           return autoCompleteDropdown(inputValue, vendorDataAPI, false, [], true)
@@ -461,7 +462,7 @@ class AddExchangeRate extends Component {
                                   loadOptions={filterList}
                                   onChange={(e) => this.handleVendorName(e)}
                                   value={this.state.vendorName}
-                                  noOptionsMessage={({ inputValue }) => inputValue.length < 3 ? "Enter 3 characters to show data" : "No results found"}
+                                  noOptionsMessage={({ inputValue }) => inputValue.length < 3 ? MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN : "No results found"}
                                   isDisabled={(isEditFlag) ? true : false}
                                   onFocus={() => onFocus(this)}
                                   onKeyDown={(onKeyDown) => {

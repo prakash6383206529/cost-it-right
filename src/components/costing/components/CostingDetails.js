@@ -524,27 +524,6 @@ function CostingDetails(props) {
    */
   const handleCostingChange = (newValue, type, index) => {
 
-    let tempObject = []
-    if (type === ZBCTypeId) {
-      tempObject = zbcPlantGrid && zbcPlantGrid[index]?.CostingOptions
-    } else if (type === VBCTypeId) {
-      tempObject = vbcVendorGrid && vbcVendorGrid[index]?.CostingOptions
-    } else if (type === NCCTypeId) {
-      // NCC GRID AT PLACE OF vbcVendorGrid
-      tempObject = nccGrid && nccGrid[index]?.CostingOptions
-    } else if (type === CBCTypeId) {
-      tempObject = cbcGrid && cbcGrid[index]?.CostingOptions
-    }
-
-    const indexOfCostingOptions = tempObject.findIndex((el) => el.CostingId === newValue.value)
-
-    let costingOptionsSelectedObjectTemp = {
-      SubAssemblyCostingId: tempObject[indexOfCostingOptions].SubAssemblyCostingId,
-      AssemblyCostingId: tempObject[indexOfCostingOptions].AssemblyCostingId
-    }
-    setApprovalStatus(tempObject[indexOfCostingOptions].Status)
-    setCostingOptionsSelectedObject(costingOptionsSelectedObjectTemp)
-
     let tempArray = []
 
     if (type === ZBCTypeId && newValue !== '') {
@@ -1066,6 +1045,32 @@ function CostingDetails(props) {
    * @description MOVE TO COSTING DETAIL
    */
   const moveToCostingDetail = (index, type) => {
+
+    let tempObject = []
+    let tempCostingId
+    if (type === ZBCTypeId) {
+      tempCostingId = getValues(`${zbcPlantGridFields}.${index}.CostingVersion`)
+      tempObject = zbcPlantGrid && zbcPlantGrid[index]?.CostingOptions
+    } else if (type === VBCTypeId) {
+      tempCostingId = getValues(`${vbcGridFields}.${index}.CostingVersion`)
+      tempObject = vbcVendorGrid && vbcVendorGrid[index]?.CostingOptions
+    } else if (type === NCCTypeId) {
+      // NCC GRID AT PLACE OF vbcVendorGrid
+      tempCostingId = getValues(`${nccGridFields}.${index}.CostingVersion`)
+      tempObject = nccGrid && nccGrid[index]?.CostingOptions
+    } else if (type === CBCTypeId) {
+      tempCostingId = getValues(`${cbcGridFields}.${index}.CostingVersion`)
+      tempObject = cbcGrid && cbcGrid[index]?.CostingOptions
+    }
+    const indexOfCostingOptions = tempObject.findIndex((el) => el.CostingId === tempCostingId?.value)
+
+    let costingOptionsSelectedObjectTemp = {
+      SubAssemblyCostingId: tempObject[indexOfCostingOptions].SubAssemblyCostingId,
+      AssemblyCostingId: tempObject[indexOfCostingOptions].AssemblyCostingId
+    }
+    setApprovalStatus(tempObject[indexOfCostingOptions].Status)
+    setCostingOptionsSelectedObject(costingOptionsSelectedObjectTemp)
+
     dispatch(getBriefCostingById('', (res) => { }))
 
     if (type === ZBCTypeId) {
@@ -1286,6 +1291,7 @@ function CostingDetails(props) {
         return true;
       })
       setZBCPlantGrid(tempArr)
+      setValue(`${zbcPlantGridFields}.${index}.ShareOfBusinessPercent`, 0)
     }
 
     if (type === VBCTypeId) {
@@ -1294,6 +1300,7 @@ function CostingDetails(props) {
         return true;
       })
       setVBCVendorGrid(tempArr)
+      setValue(`${vbcGridFields}.${index}.ShareOfBusinessPercent`, 0)
     }
 
     if (type === NCCTypeId) {
@@ -1816,7 +1823,7 @@ function CostingDetails(props) {
                           handleChange={handlePartChange}
                           errors={errors.Part}
                           disabled={(technology.length === 0) ? true : false}
-                          NoOptionMessage={"Enter 3 characters to show data"}
+                          NoOptionMessage={MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN}
                         />
 
                       </Col>

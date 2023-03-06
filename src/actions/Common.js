@@ -1512,8 +1512,8 @@ export function getAllCity(callback) {
   }
 }
 
-export function getPartSelectList(callback) {
-  return axios.get(`${API.getPartSelectLists}`, config()).catch(error => {
+export function getPartSelectList(partNumber, callback) {
+  return axios.get(`${API.getPartSelectLists}?partNumber=${partNumber}`, config()).catch(error => {
     apiErrors(error);
     callback(error);
     return Promise.reject(error)

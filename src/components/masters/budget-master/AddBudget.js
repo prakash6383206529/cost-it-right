@@ -60,6 +60,7 @@ function AddBudget(props) {
     const [totalSum, setTotalSum] = useState(0);
     const [count, setCount] = useState(0);
     const [isVendorNameNotSelected, setIsVendorNameNotSelected] = useState(false);
+    const [vendorFilter, setVendorFilter] = useState([]);
     const dispatch = useDispatch();
     const plantSelectList = useSelector(state => state.comman.plantSelectList);
     const financialYearSelectList = useSelector(state => state.volume.financialYearSelectList);
@@ -521,13 +522,13 @@ function AddBudget(props) {
 
     const vendorFilterList = async (inputValue) => {
         const resultInput = inputValue.slice(0, searchCount)
-        if (inputValue?.length >= searchCount && vendorName !== resultInput) {
+        if (inputValue?.length >= searchCount && vendorFilter !== resultInput) {
             setInputLoader(true)
             let res
             res = await getVendorWithVendorCodeSelectList(resultInput)
 
             setInputLoader(false)
-            setVendorName(resultInput)
+            setVendorFilter(resultInput)
 
             let vendorDataAPI = res?.data?.SelectList
             if (inputValue) {
@@ -701,7 +702,7 @@ function AddBudget(props) {
                                                                                 loadOptions={vendorFilterList}
                                                                                 onChange={(e) => handleVendorName(e)}
                                                                                 value={vendorName}
-                                                                                noOptionsMessage={({ inputValue }) => inputValue.length < 3 ? "Enter 3 characters to show data" : "No results found"}
+                                                                                noOptionsMessage={({ inputValue }) => inputValue.length < 3 ? MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN : "No results found"}
                                                                                 isDisabled={(isEditFlag) ? true : false}
                                                                                 onKeyDown={(onKeyDown) => {
                                                                                     if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
@@ -783,7 +784,7 @@ function AddBudget(props) {
                                                                             loadOptions={partFilterList}
                                                                             onChange={(e) => handlePartName(e)}
                                                                             value={part}
-                                                                            noOptionsMessage={({ inputValue }) => inputValue.length < 3 ? "Enter 3 characters to show data" : "No results found"}
+                                                                            noOptionsMessage={({ inputValue }) => inputValue.length < 3 ? MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN : "No results found"}
                                                                             onKeyDown={(onKeyDown) => {
                                                                                 if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
                                                                             }}

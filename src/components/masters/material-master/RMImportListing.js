@@ -3,7 +3,6 @@ import { Row, Col, } from 'reactstrap';
 import {
   deleteRawMaterialAPI, getRMImportDataList, masterFinalLevelUser
 } from '../actions/Material';
-import { checkForDecimalAndNull } from "../../../helper/validation";
 import { APPROVED_STATUS, defaultPageSize, EMPTY_DATA, RMIMPORT } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
@@ -29,9 +28,9 @@ import WarningMessage from '../../common/WarningMessage';
 import { PaginationWrapper } from '../../common/commonPagination';
 import _ from 'lodash';
 import { disabledClass } from '../../../actions/Common';
-import SelectRowWrapper from '../../common/SelectRowWrapper';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import AnalyticsDrawer from './AnalyticsDrawer';
+import { hideCustomerFromExcel } from '../../common/CommonFunctions';
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -48,7 +47,6 @@ function RMImportListing(props) {
   const [gridApi, setgridApi] = useState(null);   // DONT DELETE THIS STATE , IT IS USED BY AG GRID
   const [gridColumnApi, setgridColumnApi] = useState(null);   // DONT DELETE THIS STATE , IT IS USED BY AG GRID
   const [loader, setloader] = useState(true);
-  const [isFinalLevelUser, setIsFinalLevelUser] = useState(false)
   const dispatch = useDispatch();
   const rmImportDataList = useSelector((state) => state.material.rmImportDataList);
   const filteredRMData = useSelector((state) => state.material.filteredRMData);
@@ -132,17 +130,6 @@ function RMImportListing(props) {
     setTimeout(() => {
       reactLocalStorage.setObject('selectedRow', {})
       if (!props.stopApiCallOnCancel) {
-        let obj = {
-          MasterId: RM_MASTER_ID,
-          DepartmentId: userDetails().DepartmentId,
-          LoggedInUserLevelId: userDetails().LoggedInMasterLevelId,
-          LoggedInUserId: loggedInUserId()
-        }
-        dispatch(masterFinalLevelUser(obj, (res) => {
-          if (res?.data?.Result) {
-            setIsFinalLevelUser(res.data.Data.IsFinalApprovar)
-          }
-        }))
 
         return () => {
           dispatch(setSelectedRowForPagination([]))
@@ -332,7 +319,7 @@ function RMImportListing(props) {
 
 
   const onSearch = () => {
-
+    setNoData(false)
     setWarningMessage(false)
     setIsFilterButtonClicked(true)
     setPageNo(1)
@@ -618,6 +605,7 @@ function RMImportListing(props) {
   };
 
   const returnExcelColumn = (data = [], TempData) => {
+    let excelData = hideCustomerFromExcel(data, "CustomerName")
     let temp = []
     temp = TempData && TempData.map((item) => {
       if (item.CostingHead === true) {
@@ -634,7 +622,7 @@ function RMImportListing(props) {
     return (
 
       <ExcelSheet data={temp} name={'RM Import'}>
-        {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
+        {excelData && excelData.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
       </ExcelSheet>);
   }
 
@@ -753,7 +741,7 @@ function RMImportListing(props) {
     }
 
     if (props?.benchMark) {
-      let uniqueArrayNew = _.uniqBy(uniqueArray, "TechnologyId")
+      let uniqueArrayNew = _.uniqBy(selectedRows, v => [v.TechnologyId, v.RawMaterial].join())
       if (uniqueArrayNew.length > 1) {
         dispatch(setSelectedRowForPagination([]))
         gridApi.deselectAll()
@@ -951,7 +939,7 @@ function RMImportListing(props) {
             isZBCVBCTemplate={true}
             messageLabel={"RM Import"}
             anchor={"right"}
-            isFinalApprovar={isFinalLevelUser}
+            masterId={RM_MASTER_ID}
           />
         )
       }

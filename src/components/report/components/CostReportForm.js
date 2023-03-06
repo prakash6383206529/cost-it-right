@@ -19,6 +19,7 @@ import Toaster from "../../common/Toaster"
 import { checkPartWithTechnology, getCostingSpecificTechnology, getPartCostingVendorSelectList, getPartInfo, getPartSelectListByTechnology } from "../../costing/actions/Costing"
 import { AsyncSearchableSelectHookForm, DatePickerHookForm, SearchableSelectHookForm } from "../../layout/HookFormInputs"
 import { getFormGridData, getRevisionNoFromPartId } from "../actions/ReportListing"
+import { PaginationWrapper } from '../../common/commonPagination';
 
 
 
@@ -36,6 +37,7 @@ function CostReportForm(props) {
     const [toDate, setToDate] = useState('')
     const [minDate, setMinDate] = useState('')
     const [maxDate, setMaxDate] = useState('')
+    const [gridApi, setGridApi] = useState(null);
 
     const dispatch = useDispatch()
 
@@ -184,6 +186,7 @@ function CostReportForm(props) {
         headerCheckboxSelectionFilteredOnly: true,
     };
     const onGridReady = (params) => {
+        setGridApi(params.api)
         params.api.sizeColumnsToFit();
         params.api.paginationGoToPage(0);
     }
@@ -322,6 +325,9 @@ function CostReportForm(props) {
         resetRevisionVendorPlant()
     }
 
+    const onPageSizeChanged = (newPageSize) => {
+        gridApi.paginationSetPageSize(Number(newPageSize));
+    };
 
 
     return (
@@ -425,7 +431,7 @@ function CostReportForm(props) {
                                 handleChange={handlePartChange}
                                 errors={errors.Part}
                                 disabled={(technology.length === 0) ? true : false}
-                                NoOptionMessage={"Enter 3 characters to show data"}
+                                NoOptionMessage={MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN}
                             />
 
                         </Col>
@@ -528,7 +534,7 @@ function CostReportForm(props) {
                             <AgGridColumn field="Plant" headerName="Plant (Code)"></AgGridColumn>
                             <AgGridColumn field="action" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'buttonFormatter'}></AgGridColumn>
                         </AgGridReact>
-                        {/* {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />} */}
+                        {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />}
                     </div>
                 </div>
             </div>

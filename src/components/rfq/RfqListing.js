@@ -2,7 +2,7 @@ import React from 'react';
 import { useState, useEffect, } from 'react';
 import { useDispatch, useSelector } from 'react-redux'
 import { Row, Col, } from 'reactstrap';
-import { APPROVED, CANCELLED, DRAFT, EMPTY_DATA, FILE_URL, RECEIVED, RFQ, SUBMITTED, UNDER_APPROVAL, UNDER_REVISION, } from '../.././config/constants'
+import { APPROVED, CANCELLED, EMPTY_DATA, FILE_URL, RECEIVED, RFQ, SUBMITTED, UNDER_APPROVAL, UNDER_REVISION, } from '../.././config/constants'
 import NoContentFound from '.././common/NoContentFound';
 import { MESSAGES } from '../.././config/message';
 import Toaster from '.././common/Toaster';
@@ -13,12 +13,10 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '.././common/PopupMsgWrapper';
 import { PaginationWrapper } from '.././common/commonPagination'
-import SelectRowWrapper from '.././common/SelectRowWrapper';
-import { getQuotationList, cancelRfqQuotation, sendReminderForQuotation } from './actions/rfq';
+import { getQuotationList, cancelRfqQuotation } from './actions/rfq';
 import ViewRfq from './ViewRfq';
 import AddRfq from './AddRfq';
-import { checkPermission, userDetails } from '../../helper';
-import TooltipCustom from '../common/Tooltip';
+import { checkPermission, searchNocontentFilter, userDetails } from '../../helper';
 import DayTime from '../common/DayTimeWrapper';
 import Attachament from '../costing/components/Drawers/Attachament';
 const gridOptions = {};
@@ -34,7 +32,6 @@ function RfqListing(props) {
     const [isEdit, setIsEdit] = useState(false);
     const [rowData, setRowData] = useState([])
     const [noData, setNoData] = useState(false)
-    const [dataCount, setDataCount] = useState(0)
     const [viewRfq, setViewRfq] = useState(false)
     const [viewRfqData, setViewRfqData] = useState("")
     const [addAccessibility, setAddAccessibility] = useState(false);
@@ -79,7 +76,22 @@ function RfqListing(props) {
                 if (item.IsActive === false) {
                     item.Status = "Cancelled"
                 }
+                item.tooltipText = ''
+                switch (item.Status) {
+                    case APPROVED:
+                        item.tooltipText = 'Total no. of parts for which costing has been approved from that quotation / Total no. of parts exist in that quotation'
+                        break;
+                    case RECEIVED:
+                        item.tooltipText = 'Total no. of costing received / Total no. of expected costing in that quotation'
+                        break;
+                    case UNDER_REVISION:
+                        item.tooltipText = 'Total no. of costing under revision / Total no. of expected costing in that quotation'
+                        break;
+                    default:
+                        break;
+                }
                 temp.push(item)
+                return null
             })
             setRowData(temp)
             setloader(false)
@@ -197,19 +209,6 @@ function RfqListing(props) {
     }
 
 
-    const isFirstColumn = (params) => {
-
-        var displayedColumns = params.columnApi.getAllDisplayedColumns();
-        var thisIsFirstColumn = displayedColumns[0] === params.column;
-
-        if (props?.isMasterSummaryDrawer) {
-            return false
-        } else {
-            return thisIsFirstColumn;
-        }
-
-    }
-
     const linkableFormatter = (props) => {
 
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
@@ -234,12 +233,12 @@ function RfqListing(props) {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         let tempStatus = '-'
-        if (row?.Status === APPROVED || row?.Status === UNDER_REVISION || row?.Status === RECEIVED || row?.Status === SUBMITTED) {
-            tempStatus = row?.Status + ' (' + row?.CostingReceived + '/' + row?.TotalCostingCount + ')'
+        if (row?.Status === APPROVED || row?.Status === UNDER_REVISION || row?.Status === RECEIVED || row?.Status === SUBMITTED || row?.Status === UNDER_APPROVAL) {
+            tempStatus = row?.DisplayStatus + ' (' + row?.CostingReceived + '/' + row?.TotalCostingCount + ')'
         } else {
-            tempStatus = row?.Status
+            tempStatus = row?.DisplayStatus
         }
-        return <div id={"status"} className={cell}>{tempStatus}</div>
+        return <div className={cell}>{tempStatus}</div>
     }
 
     const dateFormater = (props) => {
@@ -254,6 +253,9 @@ function RfqListing(props) {
 
     const closeAttachmentDrawer = (e = '') => {
         setAttachment(false)
+    }
+    const onFloatingFilterChanged = (value) => {
+        rowData.length !== 0 && setNoData(searchNocontentFilter(value, noData))
     }
 
     const attachmentFormatter = (props) => {
@@ -320,7 +322,7 @@ function RfqListing(props) {
                 <div className={`ag-grid-react ${(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) ? "" : ""} ${true ? "show-table-btn" : ""} ${false ? 'simulation-height' : props?.isMasterSummaryDrawer ? '' : 'min-height100vh'}`}>
                     {(loader ? <LoaderCustom customClass="simulation-Loader" /> : !viewRfq && (
                         <>
-                            <h1 className='mb-0'>RFQ</h1>
+                            <h1 className='mb-0'>Manage RFQ</h1>
                             <Row className={`filter-row-large pt-2 ${props?.isSimulation ? 'zindex-0 ' : ''}`}>
 
                                 <Col md="3" lg="3" className='mb-2'>
@@ -377,6 +379,7 @@ function RfqListing(props) {
                                                 frameworkComponents={frameworkComponents}
                                                 rowSelection={'multiple'}
                                                 suppressRowClickSelection={true}
+                                                onFilterModified={onFloatingFilterChanged}
                                                 enableBrowserTooltips={true}
                                             >
                                                 <AgGridColumn cellClass="has-checkbox" field="QuotationNumber" headerName='RFQ No.' cellRenderer={'linkableFormatter'} ></AgGridColumn>
@@ -390,8 +393,8 @@ function RfqListing(props) {
                                                 <AgGridColumn field="RaisedOn" headerName='Raised On' cellRenderer='dateFormater'></AgGridColumn>
                                                 <AgGridColumn field="LastSubmissionDate" headerName='Last Submission Date' cellRenderer='dateFormater'></AgGridColumn>
                                                 <AgGridColumn field="QuotationNumber" headerName='Attachments' cellRenderer='attachmentFormatter'></AgGridColumn>
-                                                <AgGridColumn field="Status" headerName="Status" cellClass="text-center" minWidth={150} cellRenderer="statusFormatter"></AgGridColumn>
-                                                {<AgGridColumn field="QuotationId" width={160} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
+                                                <AgGridColumn field="Status" headerName="Status" tooltipField="tooltipText" cellClass="text-center" minWidth={170} cellRenderer="statusFormatter"></AgGridColumn>
+                                                {<AgGridColumn field="QuotationId" width={180} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
 
                                             </AgGridReact>
                                             <PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} globalTake={10} />
