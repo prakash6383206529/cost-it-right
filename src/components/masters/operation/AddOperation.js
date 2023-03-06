@@ -85,7 +85,8 @@ class AddOperation extends Component {
       finalApprovalLoader: false,
       showPopup: false,
       levelDetails: {},
-      noApprovalCycle: false
+      noApprovalCycle: false,
+      vendorFilterList: []
     }
   }
 
@@ -809,14 +810,14 @@ class AddOperation extends Component {
     const { handleSubmit, initialConfiguration, isOperationAssociated } = this.props;
     const { isEditFlag, isOpenVendor, isOpenUOM, isDisableCode, isViewMode, setDisable, costingTypeId, noApprovalCycle } = this.state;
     const filterList = async (inputValue) => {
-      const { vendorName } = this.state
+      const { vendorFilterList } = this.state
       const resultInput = inputValue.slice(0, searchCount)
-      if (inputValue?.length >= searchCount && vendorName !== resultInput) {
+      if (inputValue?.length >= searchCount && vendorFilterList !== resultInput) {
         this.setState({ inputLoader: true })
         let res
         res = await getVendorWithVendorCodeSelectList(resultInput)
         this.setState({ inputLoader: false })
-        this.setState({ vendorName: resultInput })
+        this.setState({ vendorFilterList: resultInput })
         let vendorDataAPI = res?.data?.SelectList
         if (inputValue) {
           return autoCompleteDropdown(inputValue, vendorDataAPI, false, [], true)

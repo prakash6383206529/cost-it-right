@@ -1269,7 +1269,7 @@ table.table {
     .Close {
       right: 8px;
       top: 46%;
-      left: unset;
+      left: 88%;
     }
 
     &.text-overflow {
@@ -4892,7 +4892,7 @@ body {
 
       td,
       th {
-        padding: 0.71rem 10px !important;
+        padding: 0.81rem 10px !important;
         font-size: 14px;
       }
     }
@@ -6207,7 +6207,9 @@ body {
       .Cancelled,
       .Under.Approval,
       .UnderApproval,
+      .UnderRevision,
       .Under.Revision,
+      .Received,
       .Open,
       [class^="Pending"],
       [class^="Awaiting"],
