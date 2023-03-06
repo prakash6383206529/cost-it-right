@@ -161,11 +161,11 @@ function CostingDetailSimulationDrawer(props) {
                                             Number(master) === Number(COMBINED_PROCESS) &&
                                             <>
                                                 <Col md="3">
-                                                    <label>Old CC</label>
+                                                    <label>Existing CC</label>
                                                     <label className={`${pricesDetail.OldNetCC > pricesDetail.NewNetCC ? 'form-control input-form-control green-value' : 'form-control input-form-control red-value'}`}>{checkForDecimalAndNull(pricesDetail.OldNetCC, getConfigurationKey().NoOfDecimalForPrice)}</label>
                                                 </Col>
                                                 <Col md="3">
-                                                    <label>New CC</label>
+                                                    <label>Revised CC</label>
                                                     <label className={`${pricesDetail.OldNetCC > pricesDetail.NewNetCC ? 'form-control input-form-control green-value' : 'form-control input-form-control red-value'}`}>{checkForDecimalAndNull(pricesDetail.NewNetCC, getConfigurationKey().NoOfDecimalForPrice)}</label>
                                                 </Col>
                                             </>

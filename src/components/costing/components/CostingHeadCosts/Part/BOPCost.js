@@ -14,15 +14,14 @@ import { INR } from '../../../../../config/constants';
 import WarningMessage from '../../../../common/WarningMessage';
 import { MESSAGES } from '../../../../../config/message';
 import TooltipCustom from '../../../../common/Tooltip';
-import { AcceptableBOPUOM, NUMBERMAXLENGTH, STRINGMAXLENGTH, TEMPOBJECTBOP } from '../../../../../config/masterData';
-import { number, decimalNumberLimit6, percentageLimitValidation, checkWhiteSpaces, hashValidation, numberLimit6, noDecimal, isNumber, NoSignMaxLengthRegex, NoSignMaxLengthMessage } from "../../../../../helper/validation";
+import { number, decimalNumberLimit6, percentageLimitValidation, checkWhiteSpaces, numberLimit6, noDecimal, isNumber } from "../../../../../helper/validation";
 
 let counter = 0;
 function BOPCost(props) {
   const { item, data } = props;
   const IsLocked = (item.IsLocked ? item.IsLocked : false) || (item.IsPartLocked ? item.IsPartLocked : false)
 
-  const { register, handleSubmit, control, formState: { errors }, setValue, getValues, clearErrors } = useForm({
+  const { register, handleSubmit, control, formState: { errors }, setValue, clearErrors } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
     defaultValues: {
@@ -514,7 +513,7 @@ function BOPCost(props) {
                                   item.BoughtOutPartUOM === 'Number' ?
                                     <>
                                       <TextFieldHookForm
-                                        label=""
+                                        label={false}
                                         name={`${bopGridFields}.${index}.Quantity`}
                                         Controller={Controller}
                                         control={control}
@@ -525,7 +524,7 @@ function BOPCost(props) {
                                         }}
                                         defaultValue={item.Quantity}
                                         className=""
-                                        customClassName={'withBorder'}
+                                        customClassName={'withBorder error-label'}
                                         handleChange={(e) => {
                                           e.preventDefault()
                                           handleQuantityChange(e, index)
@@ -536,7 +535,7 @@ function BOPCost(props) {
                                     </>
                                     :
                                     <TextFieldHookForm
-                                      label=""
+                                      label={false}
                                       name={`${bopGridFields}.${index}.Quantity`}
                                       Controller={Controller}
                                       control={control}
@@ -547,7 +546,7 @@ function BOPCost(props) {
                                       }}
                                       defaultValue={item.Quantity}
                                       className=""
-                                      customClassName={'withBorder'}
+                                      customClassName={'withBorder error-label'}
                                       handleChange={(e) => {
                                         e.preventDefault()
                                         handleQuantityChange(e, index)

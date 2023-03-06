@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import { Link, } from "react-router-dom";
-import { NavbarToggler, Nav, Dropdown, DropdownToggle } from "reactstrap";
+import { NavbarToggler, Nav } from "reactstrap";
 import { getConfigurationKey, isUserLoggedIn, loggedInUserId } from '../../helper/auth';
 import {
   logoutUserAPI, getMenuByUser, getModuleSelectList, getPermissionByUser, getMenu,
@@ -861,7 +861,17 @@ class SideBar extends Component {
                   <li className="nav-item d-xl-inline-block">
                     <div className="nav-link-user">
                       <Nav className="ml-auto top-menu logout d-inline-flex">
-                        <div className="user-name">{userData.Name}</div>
+                        <div className="user-container"><div className="dropdown"><div className="user-name">{userData.Name}</div>
+                          <ul className="dropdown_menu">
+                            <li className="dropdown_item-1">User Id: <span>{userData.UserName}</span></li>
+                            <li className="dropdown_item-2">Email Id:<span>{userData.Email}</span></li>
+                            <li className="dropdown_item-3">Role:<span>{ }</span></li>
+                            <li className="dropdown_item-4">Department:{userData.Department && userData.Department.map((item, index) => {
+                              return <span>{index + 1}. {item.DepartmentName}{userData.Department > 1 ? ',' : ''}</span>
+                            })}</li>
+                          </ul>
+                        </div>
+                        </div>
                       </Nav>
                     </div>
                   </li>
@@ -882,7 +892,7 @@ class SideBar extends Component {
                 </ul>
               </div>
             </nav>
-          </div>
+          </div >
 
           {isLoggedIn && (
             <div className="nav-scroller bg-white shadow-sm header-secondry w100 p-relative">
@@ -897,14 +907,15 @@ class SideBar extends Component {
                 </ul>
               </nav>
             </div>
-          )}
+          )
+          }
         </div>
 
         {
           this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`Are you sure do you want to logout?`} />
         }
 
-      </nav>
+      </nav >
     )
   }
 }

@@ -109,8 +109,6 @@ class SimulationUploadDrawer extends Component {
         let fileHeads = [];
         let uploadfileName = fileObj?.name;
         let fileType = uploadfileName?.substr(uploadfileName.indexOf('.'));
-        let checkForRM = []
-        let checkForBopOperMachine = []
 
         //pass the fileObj as parameter
         if (fileType !== '.xls' && fileType !== '.xlsx') {
@@ -125,8 +123,9 @@ class SimulationUploadDrawer extends Component {
 
                 } else {
                     fileHeads = resp.rows[0];
-                    checkForRM = fileHeads.slice(0, 7)
-                    checkForBopOperMachine = fileHeads.slice(0, 4)
+                    let checkForRM = fileHeads.slice(0, 7)
+                    let checkForBopOperMachine = fileHeads.slice(0, 4)
+                    let checkForCc = fileHeads.slice(0, 5)
                     let checkForFileHead
                     switch (String(this.props.master.value)) {
 
@@ -156,7 +155,7 @@ class SimulationUploadDrawer extends Component {
                             break;
 
                         case String(COMBINED_PROCESS):
-                            checkForFileHead = _.isEqual(fileHeads, CombinedProcessFileHeads) ? true : false
+                            checkForFileHead = _.isEqual(checkForCc, CombinedProcessFileHeads) ? true : false
                             break;
 
                         default:
@@ -174,16 +173,16 @@ class SimulationUploadDrawer extends Component {
                     switch (Number(this.props.master.value)) {
                         case Number(RMDOMESTIC):
                             resp.rows.map((val, index) => {
-                                const scrapTemp = (val[13] !== val[12]) && val[13] ? val[13] : val[12]
-                                const basicTemp = (val[11] !== val[10]) && val[11] ? val[11] : val[10]
+                                const scrapTemp = (val[14] !== val[13]) && val[14] ? val[14] : val[13]
+                                const basicTemp = (val[12] !== val[11]) && val[12] ? val[12] : val[11]
                                 if (val.length !== 0) {
                                     if (index > 0) {
-                                        if ((val[11] !== '' && val[11] !== undefined && val[11] !== null && val[10] !== val[11]) ||
-                                            (val[13] !== '' && val[13] !== undefined && val[13] !== null && val[13] !== null && val[12] !== val[13])) {
+                                        if ((val[12] !== '' && val[12] !== undefined && val[12] !== null && val[11] !== val[12]) ||
+                                            (val[14] !== '' && val[14] !== undefined && val[14] !== null && val[14] !== null && val[13] !== val[14])) {
                                             basicRateCount = 1
                                         }
-                                        if ((val[11] === '' || val[11] === undefined || val[11] === null || val[10] === val[11]) && (val[13] === '' ||
-                                            val[13] === undefined || val[13] === null || val[12] === val[13])) {
+                                        if ((val[12] === '' || val[12] === undefined || val[12] === null || val[11] === val[12]) && (val[13] === '' ||
+                                            val[14] === undefined || val[14] === null || val[13] === val[14])) {
                                             NoOfRowsWithoutChange = NoOfRowsWithoutChange + 1
                                             return false
                                         }
@@ -380,6 +379,10 @@ class SimulationUploadDrawer extends Component {
                                         val.map((el, i) => {
                                             if (fileHeads[i] === 'EffectiveDate' && typeof el === 'number') {
                                                 el = getJsDateFromExcel(el)
+                                            } if (fileHeads[i] === "RevisedCC") {
+                                                obj["NewCC"] = el;
+                                            } else {
+                                                obj[fileHeads[i]] = el;
                                             }
                                             obj[fileHeads[i]] = el;
                                             return null;

@@ -1174,7 +1174,6 @@ const SendForApproval = (props) => {
                 costingIdArray={costingIdArray}
                 vendorIdState={viewApprovalData[0].vendorId}
                 EffectiveDate={DayTime(viewApprovalData[0].effectiveDate).format('YYYY-MM-DD HH:mm:ss')}
-                TypeOfCosting={viewApprovalData[0].typeOfCosting}
                 CostingTypeId={viewApprovalData[0]?.costingTypeId}
               />
             }
