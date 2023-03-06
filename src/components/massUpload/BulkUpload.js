@@ -336,11 +336,24 @@ class BulkUpload extends Component {
                             val.map((el, i) => {
                                 if ((fileHeads[i] === 'EffectiveDate' || fileHeads[i] === 'DateOfPurchase') && typeof el === 'string' && el !== '') {
                                     if (isDateFormatter(el)) {
-                                        el = (DayTime(Date(el))).format('YYYY-MM-DD 00:00:00')
+                                        el = el.replaceAll('/', '-')
+                                        let str = el.substring(el.indexOf("-") + 1);
+                                        let month = str.substring(0, str.indexOf('-'));
+                                        let year = str.substring(str.indexOf("-") + 1);
+                                        const day = el.substring(0, str.indexOf('-'));
+                                        let dateTemp = `${year}-${month}-${day} 00:00:00`
+                                        el = dateTemp
                                     }
                                 }
                                 if (fileHeads[i] === 'EffectiveDate' && typeof el === 'number') {
                                     el = getJsDateFromExcel(el)
+                                    const date = new Date();
+                                    const shortDateFormat = date.toLocaleDateString(undefined, {
+                                        dateStyle: 'short'
+                                    });
+                                    if (Number(shortDateFormat.charAt(0)) === Number(date.getMonth() + 1)) {
+                                        el = DayTime(el).format('YYYY-DD-MM 00:00:00')
+                                    }
                                 }
                                 if (fileHeads[i] === 'NoOfPcs' && typeof el == 'number') {
                                     el = parseInt(checkForNull(el))
