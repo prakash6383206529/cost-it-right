@@ -253,7 +253,7 @@ function SurfaceTreatmentCost(props) {
                             <td style={{ width: 200 }}>
                               {
                                 <TextFieldHookForm
-                                  label=""
+                                  label={false}
                                   name={`${OperationGridFields}.${index}.SurfaceArea`}
                                   Controller={Controller}
                                   control={control}
@@ -264,7 +264,7 @@ function SurfaceTreatmentCost(props) {
                                   }}
                                   defaultValue={item.SurfaceArea}
                                   className=""
-                                  customClassName={'withBorder mn-height-auto mb-0 hide-label'}
+                                  customClassName={'withBorder mn-height-auto mb-0 error-label surface-treament'}
                                   handleChange={(e) => {
                                     e.preventDefault()
                                     handleSurfaceAreaChange(e, index)
@@ -283,7 +283,7 @@ function SurfaceTreatmentCost(props) {
                                 {
                                   item.IsLabourRateExist ?
                                     <TextFieldHookForm
-                                      label=""
+                                      label={false}
                                       name={`${OperationGridFields}.${index}.LabourQuantity`}
                                       Controller={Controller}
                                       control={control}
@@ -294,7 +294,7 @@ function SurfaceTreatmentCost(props) {
                                       }}
                                       defaultValue={item.LabourQuantity}
                                       className=""
-                                      customClassName={'withBorder'}
+                                      customClassName={'withBorder error-label surface-treament'}
                                       handleChange={(e) => {
                                         e.preventDefault()
                                         handleLabourQuantityChange(e, index)
