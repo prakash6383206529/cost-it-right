@@ -3417,12 +3417,9 @@ export const OperationSimulation = [
 export const MachineRateSimulation = [
     { label: "CostingHead", value: "CostingHead" },
     { label: "Technologies", value: "Technologies" },
-<<<<<<< HEAD
-=======
     { label: "Vendor (Code)", value: "VendorName" },
     { label: "Plant (Code)", value: "Plants" },
     { label: "Customer (Code)", value: "CustomerName" },
->>>>>>> 8bab018e5e5decae5632917ba0119629c349ab40
     { label: "MachineName", value: "MachineName", },
     { label: "MachineNumber", value: "MachineNumber", },
     { label: "MachineTypeName", value: "MachineTypeName" },
