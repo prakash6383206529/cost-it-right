@@ -742,7 +742,7 @@ function RMImportListing(props) {
     }
 
     if (props?.benchMark) {
-      let uniqueArrayNew = _.uniqBy(uniqueArray, "TechnologyId")
+      let uniqueArrayNew = _.uniqBy(selectedRows, v => [v.TechnologyId, v.RawMaterial].join())
       if (uniqueArrayNew.length > 1) {
         dispatch(setSelectedRowForPagination([]))
         gridApi.deselectAll()

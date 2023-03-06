@@ -188,7 +188,7 @@ export function ProcessListingSimulation(props) {
 
     const onRowSelect = () => {
         var selectedRowsList = gridApi.getSelectedRows();
-        props.apply(selectedRowsList)
+        props?.apply(selectedRowsList)
         setSelectedRows(selectedRowsList)
     }
 

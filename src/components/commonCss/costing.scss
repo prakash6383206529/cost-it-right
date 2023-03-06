@@ -467,3 +467,11 @@
 .overflow-y-hidden {
   overflow-y: hidden !important;
 }
+
+.error-label {
+  .text-error-title {
+    .text-help {
+      bottom: -24px !important;
+    }
+  }
+}

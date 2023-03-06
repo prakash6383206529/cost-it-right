@@ -358,7 +358,7 @@ function OperationCost(props) {
                             <td style={{ width: 130 }}>
                               {
                                 <TextFieldHookForm
-                                  label=""
+                                  label={false}
                                   name={`${OperationGridFields}.${index}.Quantity`}
                                   Controller={Controller}
                                   control={control}
@@ -369,7 +369,7 @@ function OperationCost(props) {
                                   }}
                                   defaultValue={checkForDecimalAndNull(item.Quantity, initialConfiguration.NoOfDecimalForInputOutput)}
                                   className=""
-                                  customClassName={'withBorder hide-label-inside mb-0'}
+                                  customClassName={'withBorder error-label mb-0'}
                                   handleChange={(e) => {
                                     e.preventDefault()
                                     handleQuantityChange(e, index)
@@ -388,7 +388,7 @@ function OperationCost(props) {
                                 {
                                   item.IsLabourRateExist ?
                                     <TextFieldHookForm
-                                      label=""
+                                      label={false}
                                       name={`${OperationGridFields}.${index}.LabourQuantity`}
                                       Controller={Controller}
                                       control={control}
@@ -399,7 +399,7 @@ function OperationCost(props) {
                                       }}
                                       defaultValue={item.LabourQuantity}
                                       className=""
-                                      customClassName={'withBorder hide-label-inside mb-0'}
+                                      customClassName={'withBorder error-label mb-0'}
                                       handleChange={(e) => {
                                         e.preventDefault()
                                         handleLabourQuantityChange(e, index)
