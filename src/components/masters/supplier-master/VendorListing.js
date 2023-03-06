@@ -226,14 +226,20 @@ class VendorListing extends Component {
                 }
                 let isReset = true
                 setTimeout(() => {
-
                     for (var prop in object) {
                         if (prop !== "DepartmentCode" && object[prop] !== "") {
                             isReset = false
                         }
                     }
+
                     // Sets the filter model via the grid API
-                    isReset ? (gridOptions?.api?.setFilterModel({})) : (gridOptions?.api?.setFilterModel(constantFilterData))
+                    if (isReset) {
+                        (gridOptions?.api?.setFilterModel({}))
+                        this.setState({ filterModel: {} })
+                    } else {
+                        (gridOptions?.api?.setFilterModel(constantFilterData))
+                    }
+
                     setTimeout(() => {
                         this.setState({ warningMessage: false })
                     }, 23);
