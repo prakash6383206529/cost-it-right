@@ -60,6 +60,7 @@ function AddBudget(props) {
     const [totalSum, setTotalSum] = useState(0);
     const [count, setCount] = useState(0);
     const [isVendorNameNotSelected, setIsVendorNameNotSelected] = useState(false);
+    const [vendorFilter, setVendorFilter] = useState([]);
     const dispatch = useDispatch();
     const plantSelectList = useSelector(state => state.comman.plantSelectList);
     const financialYearSelectList = useSelector(state => state.volume.financialYearSelectList);
@@ -521,13 +522,13 @@ function AddBudget(props) {
 
     const vendorFilterList = async (inputValue) => {
         const resultInput = inputValue.slice(0, searchCount)
-        if (inputValue?.length >= searchCount && vendorName !== resultInput) {
+        if (inputValue?.length >= searchCount && vendorFilter !== resultInput) {
             setInputLoader(true)
             let res
             res = await getVendorWithVendorCodeSelectList(resultInput)
 
             setInputLoader(false)
-            setVendorName(resultInput)
+            setVendorFilter(resultInput)
 
             let vendorDataAPI = res?.data?.SelectList
             if (inputValue) {
