@@ -120,7 +120,8 @@ class AddRMImport extends Component {
       levelDetails: {},
       noApprovalCycle: false,
       showForgingMachiningScrapCost: false,
-      showExtraCost: false
+      showExtraCost: false,
+      vendorFilterList: []
     }
   }
 
@@ -1062,7 +1063,8 @@ class AddRMImport extends Component {
         VendorPlant: [],
         CustomerId: client.value,
         MachiningScrapRate: values.MachiningScrap,
-        MachiningScrapRateInINR: currency === INR ? values.MachiningScrap : values.MachiningScrap * currencyValue
+        MachiningScrapRateInINR: currency === INR ? values.MachiningScrap : values.MachiningScrap * currencyValue,
+        JaliScrapCost: values.CircleScrapCost ? values.CircleScrapCost : '',// THIS KEY FOR CIRCLE SCRAP COST
       }
       //DONT DELETE COMMENTED CODE BELOW
 
@@ -1149,7 +1151,8 @@ class AddRMImport extends Component {
         VendorPlant: [],
         CustomerId: client.value,
         MachiningScrapRate: values.MachiningScrap,
-        MachiningScrapRateInINR: currency === INR ? values.MachiningScrap : values.MachiningScrap * currencyValue
+        MachiningScrapRateInINR: currency === INR ? values.MachiningScrap : values.MachiningScrap * currencyValue,
+        JaliScrapCost: values.CircleScrapCost ? values.CircleScrapCost : '',// THIS KEY FOR CIRCLE SCRAP COST
       }
       // let obj
       // if(CheckApprovalApplicableMaster(RM_MASTER_ID) === true){
@@ -1238,9 +1241,9 @@ class AddRMImport extends Component {
       isOpenCategory, isOpenVendor, isOpenUOM, isEditFlag, isViewFlag, setDisable, costingTypeId, noApprovalCycle } = this.state;
 
     const filterList = async (inputValue) => {
-      const { vendorName } = this.state
+      const { vendorFilterList } = this.state
       const resultInput = inputValue.slice(0, searchCount)
-      if (inputValue?.length >= searchCount && vendorName !== resultInput) {
+      if (inputValue?.length >= searchCount && vendorFilterList !== resultInput) {
         this.setState({ inputLoader: true })
         let res
         if (costingTypeId === VBCTypeId && resultInput) {
@@ -1250,7 +1253,7 @@ class AddRMImport extends Component {
           res = await getVendorListByVendorType(costingTypeId, resultInput)
         }
         this.setState({ inputLoader: false })
-        this.setState({ vendorName: resultInput })
+        this.setState({ vendorFilterList: resultInput })
         let vendorDataAPI = res?.data?.SelectList
         if (inputValue) {
           return autoCompleteDropdown(inputValue, vendorDataAPI, false, [], true)

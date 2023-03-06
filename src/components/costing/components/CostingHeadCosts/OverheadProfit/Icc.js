@@ -356,6 +356,7 @@ function Icc(props) {
                                     {ICCapplicability.label}
                                 </label>
                             </Col>
+
                             <Col md="3">
                                 {ICCapplicability.label !== 'Fixed' ?
                                     <TextFieldHookForm
@@ -398,6 +399,26 @@ function Icc(props) {
                                         {ICCapplicability.label === 'Fixed' && InterestRateFixedLimit && <WarningMessage dClass={"error-message fixed-error"} message={errorMessage} />}           {/* //MANUAL CSS FOR ERROR VALIDATION MESSAGE */}
                                     </div>}
                             </Col>
+                            {ICCapplicability?.label?.includes('RM') && !(costData.IsAssemblyPart) && IsShowRmcAndNetWeightToggleForIcc && < Col md="2" className="switch mt-4">
+                                <label className="switch-level">
+                                    <div className={'right-title mr-2'}>RMC</div>
+                                    <Switch
+                                        onChange={onPressRmc}
+                                        checked={isNetWeight}
+                                        id="normal-switch"
+                                        disabled={CostingViewMode ? true : false}
+                                        background="#4DC771"
+                                        onColor="#4DC771"
+                                        onHandleColor="#ffffff"
+                                        offColor="#CCC"
+                                        uncheckedIcon={false}
+                                        checkedIcon={false}
+                                        height={20}
+                                        width={46}
+                                    />
+                                    <div className={'right-title'}>Net Weight</div>
+                                </label>
+                            </Col>}
                             {ICCapplicability.label !== 'Fixed' &&
                                 <Col md="3">
                                     <TextFieldHookForm

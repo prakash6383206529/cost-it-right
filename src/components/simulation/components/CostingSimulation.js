@@ -3,17 +3,16 @@ import { Row, Col, } from 'reactstrap';
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import NoContentFound from '../../common/NoContentFound';
-import { BOPDOMESTIC, BOPIMPORT, TOFIXEDVALUE, EMPTY_DATA, MACHINERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, ImpactMaster, EXCHNAGERATE, defaultPageSize, CBCTypeId } from '../../../config/constants';
+import { BOPDOMESTIC, BOPIMPORT, TOFIXEDVALUE, EMPTY_DATA, MACHINERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, ImpactMaster, EXCHNAGERATE, defaultPageSize, CBCTypeId, FORGING } from '../../../config/constants';
 import { getComparisionSimulationData, getCostingBoughtOutPartSimulationList, getCostingSimulationList, getCostingSurfaceTreatmentSimulationList, setShowSimulationPage, getSimulatedAssemblyWiseImpactDate, getImpactedMasterData, getExchangeCostingSimulationList, getMachineRateCostingSimulationList, getAllMultiTechnologyCostings, getAllSimulatedMultiTechnologyCosting } from '../actions/Simulation';
 import ApproveRejectDrawer from '../../costing/components/approval/ApproveRejectDrawer'
 import CostingDetailSimulationDrawer from './CostingDetailSimulationDrawer'
 import { checkForDecimalAndNull, checkForNull, formViewData, getConfigurationKey, loggedInUserId, searchNocontentFilter, userDetails, userTechnologyLevelDetails } from '../../../helper';
 import VerifyImpactDrawer from './VerifyImpactDrawer';
-import { EMPTY_GUID, AssemblyWiseImpactt } from '../../../config/constants';
+import { AssemblyWiseImpactt } from '../../../config/constants';
 import Toaster from '../../common/Toaster';
 import { Redirect } from 'react-router';
 import { checkFinalUser, setCostingViewData } from '../../costing/actions/Costing';
-import { toast } from 'react-toastify';
 import {
     ASSEMBLY_TECHNOLOGY_MASTER,
     ASSEMBLY_WISEIMPACT_DOWNLOAD_EXCEl,
@@ -33,6 +32,7 @@ import ViewAssembly from './ViewAssembly';
 import _ from 'lodash';
 import { PaginationWrapper } from '../../common/commonPagination';
 import { getUsersSimulationTechnologyLevelAPI } from '../../../actions/auth/AuthActions';
+import WarningMessage from '../../common/WarningMessage';
 import { hideColumnFromExcel } from '../../common/CommonFunctions';
 import { reactLocalStorage } from 'reactjs-localstorage';
 
@@ -82,8 +82,6 @@ function CostingSimulation(props) {
         showChildParts: false,
         showBoughtOutPartCost: false
     })
-    const [showChildParts, setShowChildParts] = useState(false)
-    const [showBoughtOutPartCost, setShowBoughtOutPartCost] = useState(false)
     const [amendmentDetails, setAmendmentDetails] = useState({})
     const [showViewAssemblyDrawer, setShowViewAssemblyDrawer] = useState(false)
     const [dataForAssemblyImpact, setDataForAssemblyImpact] = useState({})
@@ -100,6 +98,7 @@ function CostingSimulation(props) {
     const [isMultipleMasterSimulation, setIsMultipleMasterSimulation] = useState(false);
     const [isFinalLevelApprover, setIsFinalLevelApprover] = useState(false);
     const [count, setCount] = useState(0);
+    const [storeTechnology, setStoreTechnology] = useState(0)
 
     const isSurfaceTreatment = (Number(master) === Number(SURFACETREATMENT));
     const isOperation = (Number(master) === Number(OPERATIONS));
@@ -151,7 +150,6 @@ function CostingSimulation(props) {
             dispatch(getUsersSimulationTechnologyLevelAPI(loggedInUserId(), selectedMasterForSimulation?.value, (res) => {
                 if (res?.data?.Data) {
                     levelDetailsTemp = userTechnologyLevelDetails(amendmentDetails.SimulationHeadId, res?.data?.Data?.TechnologyLevels)
-                    console.log('levelDetailsTemp: ', levelDetailsTemp);
                     // setLevelDetails(levelDetailsTemp)
                     if (levelDetailsTemp?.length !== 0) {
                         let obj = {
@@ -178,6 +176,7 @@ function CostingSimulation(props) {
         // TO CHECK IF ANY OF THE RECORD HAS ASSEMBLY ROW
         let count = 0
         tableData && tableData.map((item) => {
+            setStoreTechnology(item.Technology)
             if (item.IsAssemblyExist === true) {
                 count++
             }
@@ -902,15 +901,13 @@ function CostingSimulation(props) {
             }
 
             if (costingList[i].NewNetChildPartsCostWithQuantity !== 0 && costingList[i].OldNetChildPartsCostWithQuantity !== 0) {
-                setShowChildParts(true)
                 data = { ...data, showChildParts: false }
             }
 
             if (costingList[i].NewNetBoughtOutPartCost !== 0 && costingList[i].OldNetBoughtOutPartCost !== 0) {
-                setShowBoughtOutPartCost(true)
                 data = { ...data, showBoughtOutPartCost: false }
             }
-
+            return null
         })
 
         setHideDataColumn({ ...hideDataColumn, ...data })
@@ -1404,7 +1401,7 @@ function CostingSimulation(props) {
 
                                                         <AgGridColumn width={120} field="CostingId" headerName='Actions' type="rightAligned" floatingFilter={false} cellRenderer='buttonFormatter' pinned="right"></AgGridColumn>
                                                     </AgGridReact>}
-
+                                                    {storeTechnology === FORGING && <WarningMessage dClass="float-right" textClass="mt2" message="If RMC is calculated through RM weight calculator then change in scrap rate won't affect the RMC." />}
                                                     {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />}
                                                 </div>
                                             </div>
@@ -1481,7 +1478,7 @@ function CostingSimulation(props) {
                                     amendmentDetails={amendmentDetails}
                                     dataForAssemblyImpactInVerifyImpact={tableData}
                                     assemblyImpactButtonTrue={assemblyImpactButtonTrue}
-                                    TypeOfCosting={amendmentDetails.SimulationHeadId}
+                                    CostingTypeId={amendmentDetails.SimulationHeadId}
 
                                 />
                             }

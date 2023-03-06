@@ -111,7 +111,8 @@ class AddMachineRate extends Component {
       finalApprovalLoader: false,
       costingTypeId: ZBCTypeId,
       levelDetails: {},
-      noApprovalCycle: false
+      noApprovalCycle: false,
+      vendorFilterList: []
     }
   }
 
@@ -1349,14 +1350,14 @@ class AddMachineRate extends Component {
     const { handleSubmit, AddAccessibility, EditAccessibility, initialConfiguration, isMachineAssociated } = this.props;
     const { isEditFlag, isOpenMachineType, isOpenProcessDrawer, disableMachineType, IsCopied, isViewFlag, isViewMode, setDisable, lockUOMAndRate, UniqueProcessId, costingTypeId, noApprovalCycle } = this.state;
     const filterList = async (inputValue) => {
-      const { vendorName } = this.state
+      const { vendorFilterList } = this.state
       const resultInput = inputValue.slice(0, searchCount)
-      if (inputValue?.length >= searchCount && vendorName !== resultInput) {
+      if (inputValue?.length >= searchCount && vendorFilterList !== resultInput) {
         // this.setState({ inputLoader: true })
         let res
         res = await getVendorWithVendorCodeSelectList(resultInput)
         // this.setState({ inputLoader: false })
-        this.setState({ vendorName: resultInput })
+        this.setState({ vendorFilterList: resultInput })
         let vendorDataAPI = res?.data?.SelectList
         if (inputValue) {
           // this.setState({ inputLoader: false })

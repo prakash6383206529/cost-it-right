@@ -69,7 +69,14 @@ function RawMaterialCost(props) {
 
   useEffect(() => {
 
-
+    let temp = {}
+    gridData && gridData.map((item, index) => {
+      if (item.RawMaterialCalculatorId === null && item.GrossWeight !== null) {
+        temp[index] = true
+      }
+      return null
+    })
+    setForgingInfoIcon(temp)
 
     switch (costData.TechnologyName) {
       case 'Sheet Metal':
@@ -363,6 +370,7 @@ function RawMaterialCost(props) {
           WeightCalculatorRequest: {},
           WeightCalculationId: "00000000-0000-0000-0000-000000000000",
           IsCalculatedEntry: false,
+          RawMaterialCalculatorId: null,
           CutOffRMC: CutOffRMC,
           ScrapWeight: scrapWeight
         }
@@ -446,6 +454,13 @@ function RawMaterialCost(props) {
         Toaster.warning('Gross Weight should not be less than Finish Weight')
       }
     }
+    for (let i = 0; i < gridData.length; i++) {
+      if (forgingInfoIcon[i] === undefined) {
+        forgingInfoIcon[i] = false
+      }
+    }
+    forgingInfoIcon[index] = true
+    setForgingInfoIcon(forgingInfoIcon)
   }
 
   /**
@@ -479,6 +494,7 @@ function RawMaterialCost(props) {
         WeightCalculatorRequest: {},
         WeightCalculationId: "00000000-0000-0000-0000-000000000000",
         IsCalculatedEntry: false,
+        RawMaterialCalculatorId: null,
         CutOffRMC: CutOffRMC,
         ScrapWeight: scrapWeight,
         ScrapRecoveryPercentage: 0,
@@ -626,6 +642,13 @@ function RawMaterialCost(props) {
 
       }
     }
+    for (let i = 0; i < gridData.length; i++) {
+      if (forgingInfoIcon[i] === undefined) {
+        forgingInfoIcon[i] = false
+      }
+    }
+    forgingInfoIcon[index] = true
+    setForgingInfoIcon(forgingInfoIcon)
   }
 
   /**
@@ -820,6 +843,15 @@ function RawMaterialCost(props) {
       if (i === index) return false;
       return true;
     })
+
+    delete forgingInfoIcon[index]
+    let count = 0
+    let obj = {}
+    for (let prop in forgingInfoIcon) {
+      obj[count] = forgingInfoIcon[prop]
+      count++
+    }
+    setForgingInfoIcon(obj)
 
     tempArr && tempArr.map((item, index) => {
       setValue(`${rmGridFields}.${index}.GrossWeight`, checkForDecimalAndNull(item.GrossWeight, getConfigurationKey().NoOfDecimalForInputOutput))     //COMMENT

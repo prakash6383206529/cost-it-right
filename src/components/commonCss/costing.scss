@@ -467,3 +467,27 @@
 .overflow-y-hidden {
   overflow-y: hidden !important;
 }
+
+.error-label {
+  .text-error-title {
+    .text-help {
+      bottom: -21px !important;
+      margin: 0 !important;
+
+      @media screen and (min-width: $middleDesktop) {
+        bottom: -23px !important;
+      }
+    }
+  }
+
+  &.surface-treament {
+    .text-help {
+      bottom: -21px !important;
+      margin: 0 !important;
+
+      @media screen and (min-width: $middleDesktop) {
+        bottom: -21px !important;
+      }
+    }
+  }
+}
