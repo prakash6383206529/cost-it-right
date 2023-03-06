@@ -192,8 +192,7 @@ li.nav-item .logo {
         }
       }
 
-      img,
-      span {
+      img {
         display: inline-block;
         vertical-align: middle;
       }
@@ -361,14 +360,6 @@ li.nav-item .logo {
   }
 
   .nav-link-user {
-    span {
-      text-align: left;
-      letter-spacing: 0px;
-      color: #8a91ac;
-      opacity: 1;
-      font-size: 14px;
-      font-weight: 300;
-    }
 
     button {
       text-align: left;
@@ -673,12 +664,6 @@ ul.ml-auto.top-menu.logout.nav {
   }
 }
 
-.user-name {
-  text-transform: uppercase;
-  color: $colorPrimary;
-  margin-left: 12px;
-  font-size: 15px;
-}
 
 /* media query */
 @media (max-width: 767px) {
@@ -926,4 +911,97 @@ label.btn.btn-link.align-middle.checkbox-label {
   &:active {
     color: #256bd1 !important;
   }
+}
+
+
+.user-container {
+  .dropdown {
+    color: $colorPrimary;
+    cursor: pointer;
+    margin-left: 12px;
+    font-size: 15px;
+    z-index: 100;
+    perspective: 1000px;
+    position: relative;
+
+    &:hover {
+      .dropdown_menu li {
+        // display: block; //  WILL UNCOMMENT WHEN USER ROLE IS COMING
+      }
+    }
+
+    .user-name {
+      text-transform: uppercase;
+    }
+  }
+
+
+  .dropdown_menu {
+    position: absolute;
+    top: 100%;
+    right: -43px;
+    width: 100%;
+    right: -35px;
+    // z-index: 100;
+    z-index: -1;
+    min-width: 180px;
+    box-shadow: 0 19px 38px rgba(0, 0, 0, 0.20), 0 15px 12px rgba(0, 0, 0, 0.15);
+    border-radius: 5px;
+    perspective: 1000px;
+
+
+    @for $i from 0 through 4 {
+      .dropdown_item-#{$i} {
+        transform-origin: top center;
+        animation: rotateX 300ms ($i * 30ms) ease-in-out forwards
+      }
+    }
+
+    li {
+      display: none;
+      color: $primaryhoverColor;
+      background-color: $hightlightRowBackground;
+      padding: 4px 8px;
+      font-size: 14px;
+      font-weight: bold;
+      word-wrap: break-word;
+      border-bottom: 1px solid $borderColor;
+
+      span {
+        display: block;
+        font-weight: 400;
+        color: $grid-font;
+      }
+
+      &:hover {
+        background-color: $tabsBackgroundColor;
+        color: $primaryhoverColor;
+
+        span {
+          color: $primaryhoverColor;
+        }
+      }
+
+      &:last-child {
+        border-radius: 5px;
+      }
+    }
+  }
+
+  @keyframes rotateX {
+    0% {
+      opacity: 0;
+      transform: rotateX(-90deg);
+    }
+
+    50% {
+      transform: rotateX(-20deg);
+    }
+
+    100% {
+      opacity: 1;
+      transform: rotateX(0deg);
+    }
+  }
+
 }
