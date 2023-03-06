@@ -197,6 +197,7 @@ function SupplierContributionReport(props) {
                     let xLine = x >= halfwidth ? x + 35 : x - 35;
                     let yLine = y >= halfheight ? y + 35 : y - 35;
                     let extraLine = x >= halfwidth ? 35 : -35
+                    let extraY = 0
 
                     if (index % 2 == 0) {
                         xLine = x >= halfwidth ? x + 25 : x - 25;
@@ -210,26 +211,84 @@ function SupplierContributionReport(props) {
 
                     }
 
+                    if (chart?.data?.datasets[0]?.data?.length > 5) {
+                        if (index === 0) {
+                            xLine = x >= halfwidth ? x + 55 : x - 55;
+                            yLine = y >= halfheight ? y + 55 : y - 55;
+                            extraLine = x >= halfwidth ? 55 : -55
+                            extraY = -6
+                        }
+
+                        switch (index) {
+                            case 1:
+                                extraLine = x >= halfwidth ? 300 : -300
+                                break;
+                            case 3:
+                                extraLine = x >= halfwidth ? 280 : -280
+                                extraY = 8
+                                break;
+                            case 5:
+                                extraLine = x >= halfwidth ? 250 : -250
+                                extraY = 18
+                                break;
+                            case 7:
+                                extraLine = x >= halfwidth ? 220 : -220
+                                extraY = 26
+                                break;
+                            case 12:
+                                extraLine = x >= halfwidth ? 350 : -350
+                                extraY = 24
+                                break;
+                            case 14:
+                                extraLine = x >= halfwidth ? 350 : -350
+                                extraY = 24
+                                break;
+                            case 2:
+                                extraLine = x >= halfwidth ? 280 : -280
+                                extraY = 35
+                                break;
+                            case 4:
+                                extraLine = x >= halfwidth ? 220 : -220
+                                extraY = 40
+                                break;
+                            case 6:
+                                extraLine = x >= halfwidth ? 220 : -220
+                                extraY = 50
+                                break;
+                            case 8:
+                                extraLine = x >= halfwidth ? 220 : -220
+                                extraY = 60
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+
                     //line
                     ctx.beginPath();
                     ctx.moveTo(x, y);
                     ctx.lineTo(xLine, yLine);
-                    ctx.lineTo(xLine + extraLine, yLine);
-                    // ctx.strokeStyle = dataset.backgroundColor[index]
+                    ctx.lineTo(xLine + extraLine, yLine + extraY);
+                    //ctx.strokeStyle = dataset.backgroundColor[index]
                     ctx.strokeStyle = 'Black'
                     ctx.stroke();
 
                     //text
                     const textWidth = ctx.measureText(chart.data.labels[index]).width;
-                    ctx.font = '15px Arial';
+                    ctx.font = '12px Arial';
 
                     let percentage = checkForDecimalAndNull((chart.data.datasets[0].data[index] / totalCost) * 100, 2)
                     const textXposition = x >= halfwidth ? 'left' : 'right';
-                    const plusFivePx = x >= halfwidth ? 5 : -5;
+                    const plusFivePx = x >= halfwidth ? 14 : -14;
                     ctx.textAlign = textXposition;
                     ctx.textBaseline = 'middle';
                     ctx.fillStyle = dataset.backgroundColor[index]
-                    ctx.fillText(`${chart.data.labels[index]} - ${percentage}%`, xLine + extraLine + plusFivePx, yLine);
+                    ctx.fillStyle = 'Black'
+                    ctx.fillText(`${chart.data.labels[index]} - ${percentage}%`, xLine + extraLine + plusFivePx, yLine + extraY);
+
+                    const plusFivePxNew = x >= halfwidth ? 5 : -5;
+                    ctx.fillStyle = dataset.backgroundColor[index]
+                    ctx.fillRect(xLine + extraLine + plusFivePxNew, yLine + extraY - 2, 6, 6)
                     // ctx.fillStyle = '#fff'
                     // ctx.font = '10px Arial'
                     // if (index % 2 == 0) {
@@ -237,7 +296,6 @@ function SupplierContributionReport(props) {
                     // } else {
                     //     ctx.fillText(`${percentage}%`, x, y)
                     // }
-
                 })
             })
         }
@@ -368,7 +426,7 @@ function SupplierContributionReport(props) {
             {graphListing &&
                 <div className="doughnut-graph-container">
                     <div className="doughnut-graph">
-                        <Doughnut type="outlabeledDoughnut" data={data3} options={options3} plugins={[doughnutLabelsLine]} height="600" width={600} />
+                        <Doughnut type="outlabeledDoughnut" data={data3} options={options3} plugins={[doughnutLabelsLine]} height="650" width={600} />
                     </div>
                 </div>
 
