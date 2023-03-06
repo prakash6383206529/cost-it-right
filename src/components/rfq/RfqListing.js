@@ -78,13 +78,13 @@ function RfqListing(props) {
                 }
                 item.tooltipText = ''
                 switch (item.Status) {
-                    case 'Approved':
+                    case APPROVED:
                         item.tooltipText = 'Total no. of parts for which costing has been approved from that quotation / Total no. of parts exist in that quotation'
                         break;
-                    case 'Received':
+                    case RECEIVED:
                         item.tooltipText = 'Total no. of costing received / Total no. of expected costing in that quotation'
                         break;
-                    case 'Under Revision':
+                    case UNDER_REVISION:
                         item.tooltipText = 'Total no. of costing under revision / Total no. of expected costing in that quotation'
                         break;
                     default:
@@ -232,9 +232,9 @@ function RfqListing(props) {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         let tempStatus = '-'
         if (row?.Status === APPROVED || row?.Status === UNDER_REVISION || row?.Status === RECEIVED || row?.Status === SUBMITTED || row?.Status === UNDER_APPROVAL) {
-            tempStatus = row?.Status + ' (' + row?.CostingReceived + '/' + row?.TotalCostingCount + ')'
+            tempStatus = row?.DisplayStatus + ' (' + row?.CostingReceived + '/' + row?.TotalCostingCount + ')'
         } else {
-            tempStatus = row?.Status
+            tempStatus = row?.DisplayStatus
         }
         return <div className={cell}>{tempStatus}</div>
     }
