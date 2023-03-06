@@ -1,6 +1,6 @@
 import { reactLocalStorage } from "reactjs-localstorage";
 import _ from 'lodash';
-import { dropdownLimit } from "../../config/constants";
+import { CBCTypeId, dropdownLimit } from "../../config/constants";
 
 // COMMON FILTER FUNCTION FOR AUTOCOMPLETE DROPDOWN
 const commonFilterFunction = (inputValue, dropdownArray, filterByName) => {
@@ -90,5 +90,17 @@ export const hideCustomerFromExcel = (data, value) => {
     else {
         excelData = [...data]
     }
+    return excelData
+}
+
+export const hideColumnFromExcel = (data, value) => {
+    let excelData
+    excelData = data && data.map((item) => {
+        if (item.value === value) {
+            return false
+        } else {
+            return item
+        }
+    })
     return excelData
 }

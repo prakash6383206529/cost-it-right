@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Row, Col, } from 'reactstrap';
 import DayTime from '../../../common/DayTimeWrapper'
-import { defaultPageSize, EMPTY_DATA } from '../../../../config/constants';
+import { defaultPageSize, EMPTY_DATA, CBCTypeId } from '../../../../config/constants';
 import NoContentFound from '../../../common/NoContentFound';
 import { checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUserId, searchNocontentFilter } from '../../../../helper';
 import Toaster from '../../../common/Toaster';
@@ -153,7 +153,12 @@ function BDSimulation(props) {
 
     const costingHeadFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        return (cell === true || cell === 'Vendor Based') ? 'Vendor Based' : 'Zero Based';
+        return cell ? cell : '-';
+    }
+
+    const customerFormatter = (props) => {
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        return (isbulkUpload ? row['Customer (Code)'] : row.CustomerName);
     }
 
     const newBasicRateFormatter = (props) => {
@@ -337,7 +342,8 @@ function BDSimulation(props) {
         cellChange: cellChange,
         oldBasicRateFormatter: oldBasicRateFormatter,
         vendorFormatter: vendorFormatter,
-        plantFormatter: plantFormatter
+        plantFormatter: plantFormatter,
+        customerFormatter: customerFormatter,
     };
 
     return (
@@ -358,7 +364,13 @@ function BDSimulation(props) {
                                                 <div className="refresh mr-0"></div>
                                             </button>
                                         </div>
-                                        {!isImpactedMaster && <button type="button" className={"apply"} onClick={cancel}> <div className={'back-icon'}></div>Back</button>}
+                                        {!isImpactedMaster && <div className={`d-flex align-items-center simulation-label-container`}>
+                                            {list[0].CostingTypeId !== CBCTypeId && <div className='d-flex pl-3'>
+                                                <label className='mr-1'>Vendor (Code):</label>
+                                                <p title={list[0].Vendor}>{list[0].Vendor ? list[0].Vendor : list[0]['Vendor (Code)']}</p>
+                                            </div>}
+                                            <button type="button" className={"apply"} onClick={cancel}> <div className={'back-icon'}></div>Back</button>
+                                        </div>}
 
                                     </div>
                                     {
@@ -407,7 +419,7 @@ function BDSimulation(props) {
                                     }
                                     <div className="ag-theme-material p-relative" style={{ width: '100%' }}>
                                         {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found simulation-lisitng" />}
-                                        <AgGridReact
+                                        {list && <AgGridReact
                                             ref={gridRef}
                                             floatingFilter={true}
                                             style={{ height: '100%', width: '100%' }}
@@ -432,7 +444,8 @@ function BDSimulation(props) {
                                             <AgGridColumn field="BoughtOutPartNumber" editable='false' headerName="BOP Part No" minWidth={140}></AgGridColumn>
                                             <AgGridColumn field="BoughtOutPartName" editable='false' headerName="BOP Part Name" minWidth={140}></AgGridColumn>
                                             {!isImpactedMaster && <AgGridColumn field="BoughtOutPartCategory" editable='false' headerName="BOP Category" minWidth={140}></AgGridColumn>}
-                                            {!isImpactedMaster && <AgGridColumn field="Vendor" editable='false' headerName="Vendor (Code)" minWidth={140} cellRenderer='vendorFormatter'></AgGridColumn>}
+                                            {!isImpactedMaster && list[0].CostingTypeId !== CBCTypeId && <AgGridColumn field="Vendor" editable='false' headerName="Vendor (Code)" minWidth={140} cellRenderer='vendorFormatter'></AgGridColumn>}
+                                            {!isImpactedMaster && list[0].CostingTypeId === CBCTypeId && <AgGridColumn field="CustomerName" editable='false' headerName="Customer (Code)" minWidth={140} cellRenderer='customerFormatter'></AgGridColumn>}
                                             {!isImpactedMaster && <AgGridColumn field="Plants" editable='false' headerName="Plant (Code)" minWidth={140} cellRenderer='plantFormatter'></AgGridColumn>}
 
                                             <AgGridColumn headerClass="justify-content-center" cellClass="text-center" headerName={Number(selectedMasterForSimulation?.value) === 5 ? "Basic Rate (Currency)" : "Basic Rate (INR)"} marryChildren={true} width={240}>
@@ -450,7 +463,7 @@ function BDSimulation(props) {
                                             <AgGridColumn field="CostingId" hide={true}></AgGridColumn>
 
 
-                                        </AgGridReact>
+                                        </AgGridReact>}
 
                                         {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />}
                                     </div>
