@@ -2,8 +2,6 @@ import React, { useEffect, useState } from "react";
 import { connect, useSelector, useDispatch } from "react-redux";
 import { getMenuByUser } from "../../actions/auth/AuthActions";
 import { Col, Nav, NavItem, Row, NavLink, TabPane, TabContent } from "reactstrap";
-import ApprovalListing from '../costing/components/approval/ApprovalListing';
-import SimulationApprovalListing from '../simulation/components/SimulationApprovalListing';
 import { reduxForm } from "redux-form";
 import dashboardImg from '../../assests/images/dashboard-img.png';
 import classnames from 'classnames';
@@ -11,7 +9,6 @@ import { CheckApprovalApplicableMaster, getConfigurationKey } from "../../helper
 import { checkPermission } from "../../helper/util";
 import { ADDITIONAL_MASTERS, BOP, BOP_MASTER_ID, COSTING, MACHINE, MACHINE_MASTER_ID, MASTERS, OPERATION, OPERATIONS_ID, RAW_MATERIAL, RM_MASTER_ID, SIMULATION } from "../../config/constants";
 import CalculatorWrapper from "../common/Calculator/CalculatorWrapper";
-import CommonApproval from "../masters/material-master/CommonApproval";
 import { setSelectedRowForPagination } from "../simulation/actions/Simulation";
 import Tabs from "./Tabs";
 import './dashboard.scss';
@@ -38,6 +35,7 @@ function Dashboard(props) {
     machine: false
   })
   const topAndLeftMenuData = useSelector((state) => state.auth.topAndLeftMenuData)
+  const disabledClass = useSelector(state => state.comman.disabledClass)
 
   const dispatch = useDispatch()
 
@@ -175,7 +173,8 @@ function Dashboard(props) {
                       </Col>
                     </Row>
                     {acc3 && <Row className="master-tabs-row mt-3">
-                      <Col md="1" className="master-tabs px-0"> <Nav tabs className="subtabs">
+                      <Col md="1" className="master-tabs px-0 p-relative"> <Nav tabs className="subtabs">
+                        {disabledClass && <div className="disabled-overflow min-width"></div>}
                         {(CheckApprovalApplicableMaster(RM_MASTER_ID) && viewMastersObj.RM) && <NavItem>
                           <NavLink className={classnames({ active: activeTab === '1' })} onClick={() => { toggle('1'); }}>
                             RM
