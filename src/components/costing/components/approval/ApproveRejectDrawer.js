@@ -924,7 +924,7 @@ function ApproveRejectDrawer(props) {
                       required: type === 'Approve' ? false : true,
                       maxLength: {
                         value: 255,
-                        message: "Remark should be less than 255 word"
+                        message: "Remark should be less than 255 words"
                       },
                     }}
                     handleChange={handleRemark}
