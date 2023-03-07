@@ -10,7 +10,6 @@ import { ExcelRenderer } from 'react-excel-renderer';
 import { getJsDateFromExcel } from "../../../helper/validation";
 import imgCloud from '../../../assests/images/uploadcloud.png';
 import _ from 'lodash'
-
 import { BOPDOMESTIC, BOPIMPORT, MACHINERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT } from '../../../config/constants';
 import { BoughtOutPartDomesticFileHeads, BoughtOutPartImportFileHeads, MachineRateFileHeads, OperationFileHeads, RawMaterialDomesticFileHeads, RawMaterialImportFileHeads } from '../../../config/masterData';
 import TooltipCustom from '../../common/Tooltip';
@@ -44,10 +43,7 @@ class SimulationUploadDrawer extends Component {
         }
 
         if (status === 'done') {
-
             this.setState({ fileName: file.name, fileData: file })
-
-
         }
 
         if (status === 'rejected_file_type') {
@@ -112,6 +108,8 @@ class SimulationUploadDrawer extends Component {
         let fileHeads = [];
         let uploadfileName = fileObj?.name;
         let fileType = uploadfileName?.substr(uploadfileName.indexOf('.'));
+        let checkForRM = []
+        let checkForBopOperMachine = []
 
         //pass the fileObj as parameter
         if (fileType !== '.xls' && fileType !== '.xlsx') {
@@ -126,32 +124,34 @@ class SimulationUploadDrawer extends Component {
 
                 } else {
                     fileHeads = resp.rows[0];
+                    checkForRM = fileHeads.slice(0, 7)
+                    checkForBopOperMachine = fileHeads.slice(0, 4)
                     let checkForFileHead
                     switch (String(this.props.master.value)) {
 
                         case String(RMDOMESTIC):
-                            checkForFileHead = _.isEqual(fileHeads, RawMaterialDomesticFileHeads) ? true : false
+                            checkForFileHead = _.isEqual(checkForRM, RawMaterialDomesticFileHeads) ? true : false
                             break;
 
                         case String(RMIMPORT):
-                            checkForFileHead = _.isEqual(fileHeads, RawMaterialImportFileHeads) ? true : false
+                            checkForFileHead = _.isEqual(checkForRM, RawMaterialImportFileHeads) ? true : false
                             break;
 
                         case String(BOPDOMESTIC):
-                            checkForFileHead = _.isEqual(fileHeads, BoughtOutPartDomesticFileHeads) ? true : false
+                            checkForFileHead = _.isEqual(checkForBopOperMachine, BoughtOutPartDomesticFileHeads) ? true : false
                             break;
 
                         case String(BOPIMPORT):
-                            checkForFileHead = _.isEqual(fileHeads, BoughtOutPartImportFileHeads) ? true : false
+                            checkForFileHead = _.isEqual(checkForBopOperMachine, BoughtOutPartImportFileHeads) ? true : false
                             break;
 
                         case String(OPERATIONS):
                         case String(SURFACETREATMENT):
-                            checkForFileHead = _.isEqual(fileHeads, OperationFileHeads) ? true : false
+                            checkForFileHead = _.isEqual(checkForBopOperMachine, OperationFileHeads) ? true : false
                             break;
 
                         case String(MACHINERATE):
-                            checkForFileHead = _.isEqual(fileHeads, MachineRateFileHeads) ? true : false
+                            checkForFileHead = _.isEqual(checkForBopOperMachine, MachineRateFileHeads) ? true : false
                             break;
 
                         // CONDITION FOR COMBINED PROCESS;
@@ -171,16 +171,16 @@ class SimulationUploadDrawer extends Component {
                     switch (Number(this.props.master.value)) {
                         case Number(RMDOMESTIC):
                             resp.rows.map((val, index) => {
-                                const scrapTemp = (val[15] !== val[14]) && val[15] ? val[15] : val[14]
-                                const basicTemp = (val[11] !== val[10]) && val[11] ? val[11] : val[10]
+                                const scrapTemp = (val[16] !== val[15]) && val[16] ? val[16] : val[15]
+                                const basicTemp = (val[12] !== val[11]) && val[12] ? val[12] : val[11]
                                 if (val.length !== 0) {
                                     if (index > 0) {
-                                        if ((val[11] !== '' && val[11] !== undefined && val[11] !== null && val[10] !== val[11]) ||
-                                            (val[15] !== '' && val[15] !== undefined && val[15] !== null && val[15] !== null && val[14] !== val[15])) {
+                                        if ((val[12] !== '' && val[12] !== undefined && val[12] !== null && val[11] !== val[12]) ||
+                                            (val[16] !== '' && val[16] !== undefined && val[16] !== null && val[16] !== null && val[15] !== val[16])) {
                                             basicRateCount = 1
                                         }
-                                        if ((val[11] === '' || val[11] === undefined || val[11] === null || val[10] === val[11]) && (val[15] === '' ||
-                                            val[15] === undefined || val[15] === null || val[14] === val[15])) {
+                                        if ((val[12] === '' || val[12] === undefined || val[12] === null || val[11] === val[12]) && (val[16] === '' ||
+                                            val[16] === undefined || val[16] === null || val[15] === val[16])) {
                                             NoOfRowsWithoutChange = NoOfRowsWithoutChange + 1
                                             return false
                                         }
@@ -194,7 +194,19 @@ class SimulationUploadDrawer extends Component {
                                             if (fileHeads[i] === 'EffectiveDate' && typeof el === 'number') {
                                                 el = getJsDateFromExcel(el)
                                             }
-                                            obj[fileHeads[i]] = el;
+                                            if (fileHeads[i] === 'RevisedBasicRate') {
+                                                obj["NewBasicRate"] = el;
+                                            } else if (fileHeads[i] === 'RevisedScrapRate') {
+                                                obj["NewScrapRate"] = el;
+                                            } else if (fileHeads[i] === "Grade") {
+                                                obj["RMGrade"] = el;
+                                            } else if (fileHeads[i] === "Spec") {
+                                                obj["RMSpec"] = el;
+                                            } else if (fileHeads[i] === "Code") {
+                                                obj["RawMaterialCode"] = el;
+                                            } else {
+                                                obj[fileHeads[i]] = el;
+                                            }
                                             return null;
                                         })
                                         fileData.push(obj)
@@ -208,14 +220,14 @@ class SimulationUploadDrawer extends Component {
 
                         case Number(RMIMPORT):
                             resp.rows.map((val, index) => {
-                                const scrapTemp = (val[13] !== val[12]) && val[13] ? val[13] : val[12]
-                                const basicTemp = (val[11] !== val[10]) && val[11] ? val[11] : val[10]
+                                const scrapTemp = (val[14] !== val[13]) && val[14] ? val[14] : val[13]
+                                const basicTemp = (val[12] !== val[11]) && val[12] ? val[12] : val[11]
                                 if (val.length !== 0) {
                                     if (index > 0) {
-                                        if ((val[11] !== '' && val[11] !== undefined && val[11] !== null && val[10] !== val[11]) || (val[13] !== '' && val[13] !== undefined && val[13] !== null && val[12] !== val[13])) {
+                                        if ((val[12] !== '' && val[12] !== undefined && val[12] !== null && val[11] !== val[12]) || (val[14] !== '' && val[14] !== undefined && val[14] !== null && val[13] !== val[14])) {
                                             basicRateCount = 1
                                         }
-                                        if ((val[11] === '' || val[11] === undefined || val[11] === null || val[10] === val[11]) && (val[13] === '' || val[13] === undefined || val[13] === null || val[12] === val[13])) {
+                                        if ((val[12] === '' || val[12] === undefined || val[12] === null || val[11] === val[12]) && (val[14] === '' || val[14] === undefined || val[14] === null || val[13] === val[14])) {
                                             NoOfRowsWithoutChange = NoOfRowsWithoutChange + 1
                                             return false
                                         }
@@ -227,8 +239,19 @@ class SimulationUploadDrawer extends Component {
                                         val.map((el, i) => {
                                             if (fileHeads[i] === 'EffectiveDate' && typeof el === 'number') {
                                                 el = getJsDateFromExcel(el)
+                                            } if (fileHeads[i] === 'RevisedBasicRate') {
+                                                obj["NewBasicRate"] = el;
+                                            } else if (fileHeads[i] === 'RevisedScrapRate') {
+                                                obj["NewScrapRate"] = el;
+                                            } else if (fileHeads[i] === "Grade") {
+                                                obj["RMGrade"] = el;
+                                            } else if (fileHeads[i] === "Spec") {
+                                                obj["RMSpec"] = el;
+                                            } else if (fileHeads[i] === "Code") {
+                                                obj["RawMaterialCode"] = el;
+                                            } else {
+                                                obj[fileHeads[i]] = el;
                                             }
-                                            obj[fileHeads[i]] = el;
                                             return null;
                                         })
                                         fileData.push(obj)
@@ -240,6 +263,7 @@ class SimulationUploadDrawer extends Component {
                             })
                             break;
 
+                        case Number(OPERATIONS):
                         case Number(SURFACETREATMENT):
                             resp.rows.map((val, index) => {
                                 if (val.length !== 0) {
@@ -257,36 +281,11 @@ class SimulationUploadDrawer extends Component {
                                             if (fileHeads[i] === 'EffectiveDate' && typeof el === 'number') {
                                                 el = getJsDateFromExcel(el)
                                             }
-                                            obj[fileHeads[i]] = el;
-                                            return null;
-                                        })
-                                        fileData.push(obj)
-                                        obj = {}
-
-                                    }
-                                }
-                                return null;
-                            })
-                            break;
-
-                        case Number(OPERATIONS):
-                            resp.rows.map((val, index) => {
-                                if (val.length !== 0) {
-                                    if (index > 0) {
-                                        if (val[8] !== '' && val[8] !== undefined && val[8] !== null && val[7] !== val[8]) {
-                                            basicRateCount = 1
-                                        }
-                                        if (val[8] === '' || val[8] === undefined || val[8] === null || val[7] === val[8]) {
-                                            NoOfRowsWithoutChange = NoOfRowsWithoutChange + 1
-                                            return false
-                                        }
-                                        correctRowCount = correctRowCount + 1
-                                        let obj = {}
-                                        val.map((el, i) => {
-                                            if (fileHeads[i] === 'EffectiveDate' && typeof el === 'number') {
-                                                el = getJsDateFromExcel(el)
+                                            if (fileHeads[i] === 'RevisedRate') {
+                                                obj["NewRate"] = el;
+                                            } else {
+                                                obj[fileHeads[i]] = el;
                                             }
-                                            obj[fileHeads[i]] = el;
                                             return null;
                                         })
                                         fileData.push(obj)
@@ -314,7 +313,11 @@ class SimulationUploadDrawer extends Component {
                                             if (fileHeads[i] === 'EffectiveDate' && typeof el === 'number') {
                                                 el = getJsDateFromExcel(el)
                                             }
-                                            obj[fileHeads[i]] = el;
+                                            if (fileHeads[i] === 'RevisedMachineRate') {
+                                                obj["NewMachineRate"] = el;
+                                            } else {
+                                                obj[fileHeads[i]] = el;
+                                            }
                                             return null;
                                         })
                                         fileData.push(obj)
@@ -326,33 +329,6 @@ class SimulationUploadDrawer extends Component {
                             })
                             break;
                         case Number(BOPDOMESTIC):
-                            resp.rows.map((val, index) => {
-                                if (val.length !== 0) {
-                                    if (index > 0) {
-                                        if (val[7] !== '' && val[7] !== undefined && val[7] !== null && val[6] !== val[7]) {
-                                            basicRateCount = 1
-                                        }
-                                        if (val[7] === '' || val[7] === undefined || val[7] === null || val[6] === val[7]) {
-                                            NoOfRowsWithoutChange = NoOfRowsWithoutChange + 1
-                                            return false
-                                        }
-                                        correctRowCount = correctRowCount + 1
-                                        let obj = {}
-                                        val.map((el, i) => {
-                                            if (fileHeads[i] === 'EffectiveDate' && typeof el === 'number') {
-                                                el = getJsDateFromExcel(el)
-                                            }
-                                            obj[fileHeads[i]] = el;
-                                            return null;
-                                        })
-                                        fileData.push(obj)
-                                        obj = {}
-
-                                    }
-                                }
-                                return null;
-                            })
-                            break;
                         case Number(BOPIMPORT):
                             resp.rows.map((val, index) => {
                                 if (val.length !== 0) {
@@ -370,7 +346,11 @@ class SimulationUploadDrawer extends Component {
                                             if (fileHeads[i] === 'EffectiveDate' && typeof el === 'number') {
                                                 el = getJsDateFromExcel(el)
                                             }
-                                            obj[fileHeads[i]] = el;
+                                            if (fileHeads[i] === 'RevisedBasicRate') {
+                                                obj["NewBasicRate"] = el;
+                                            } else {
+                                                obj[fileHeads[i]] = el;
+                                            }
                                             return null;
                                         })
                                         fileData.push(obj)
@@ -388,6 +368,7 @@ class SimulationUploadDrawer extends Component {
 
                     switch (Number(this.props.master.value)) {
                         case Number(RMDOMESTIC):
+                        case Number(RMIMPORT):
                             if (basicRateCount === 0) {
                                 Toaster.warning('Please change at least one basic rate or scrap rate.')
                                 return false
@@ -398,23 +379,8 @@ class SimulationUploadDrawer extends Component {
                             }
 
                             break;
-                        case Number(RMIMPORT):
-                            if (basicRateCount === 0) {
-                                Toaster.warning('Please change at least one basic rate.')
-                                return false
-                            }
-                            if (scrapRateLessBasicRate === 1) {
-                                Toaster.warning('Scrap Rate should be less than Basic Rate.')
-                                return false
-                            }
-                            break;
-                        case Number(SURFACETREATMENT):
-                            if (basicRateCount === 0) {
-                                Toaster.warning('Please change at least one rate.')
-                                return false
-                            }
-                            break;
                         case Number(OPERATIONS):
+                        case Number(SURFACETREATMENT):
                             if (basicRateCount === 0) {
                                 Toaster.warning('Please change at least one rate.')
                                 return false
@@ -427,29 +393,16 @@ class SimulationUploadDrawer extends Component {
                             }
                             break;
                         case Number(BOPDOMESTIC):
-                            if (basicRateCount === 0) {
-                                Toaster.warning('Please change at least one basic rate.')
-                                return false
-                            }
-                            break;
                         case Number(BOPIMPORT):
                             if (basicRateCount === 0) {
                                 Toaster.warning('Please change at least one basic rate.')
                                 return false
                             }
                             break;
+
                         default:
                             break;
                     }
-
-
-
-
-
-
-
-
-
                     // resp.rows.map((val, index) => {
                     //     if (index > 0) {
                     //         if (val[10] !== '' && val[10] !== undefined && val[9] !== val[10]) {

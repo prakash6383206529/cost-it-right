@@ -10,25 +10,32 @@ const commonFilterFunction = (inputValue, dropdownArray, filterByName) => {
     });
     return tempArr
 }
-
+const commonDropdownFunction = (array, tempBoolean = false, selectedParts = [], finalArray, partWithRev = false) => {
+    array && array.map(item => {
+        if (item.Value === '0' || item.PartId === '0') return array
+        if ((tempBoolean && selectedParts.includes(item.PartId)) || (tempBoolean && selectedParts.includes(item.Value))) return false        //FOR REMOVING DUPLICATE PART ENTRY         
+        if (partWithRev) {
+            finalArray.push({ label: `${item.PartNumber}${item.RevisionNumber ? ` (${item.RevisionNumber})` : ''}`, value: item.PartId, RevisionNumber: item.RevisionNumber })
+        } else {
+            finalArray.push({ label: item.Text, value: item.Value })
+        }
+        return null
+    })
+}
 // FOR AUTOCOMPLLETE IN PART AND VENDOR 
 export const autoCompleteDropdown = (inputValue, dropdownArray, tempBoolean = false, selectedParts = [], isApiCall) => {
     let tempArr = []
     let finalArr = []
-
+    let finalArr1 = []
     if (isApiCall) {
         tempArr = commonFilterFunction(inputValue, dropdownArray, 'Text')
-        tempArr && tempArr.map(item => {
-            if (item.Value === '0') return tempArr
-            if (tempBoolean && selectedParts.includes(item.Value)) return false
-            finalArr.push({ label: item.Text, value: item.Value })
-            return null
-        })
+        commonDropdownFunction(tempArr, tempBoolean, selectedParts, finalArr1, false)         //TO SHOW THE FILTERED VENDOR OR PART
+        commonDropdownFunction(dropdownArray, tempBoolean, selectedParts, finalArr, false)   // TO STORE ALL VENDOR OR PART DATA IN LOCAL STORAGE
         reactLocalStorage?.setObject('Data', finalArr)
-        if (tempArr?.length <= 100) {
-            return finalArr
+        if (finalArr1?.length <= 100) {
+            return finalArr1
         } else {
-            return _.slice(finalArr, 0, dropdownLimit)
+            return _.slice(finalArr1, 0, dropdownLimit)
         }
     }
     else {
@@ -44,22 +51,20 @@ export const autoCompleteDropdown = (inputValue, dropdownArray, tempBoolean = fa
 // VOLUME MASTER AUTOCOMPLETE PART 
 export const autoCompleteDropdownPart = (inputValue, dropdownArray, tempBoolean = false, selectedParts = [], isApiCall) => {
     let tempArr = []
+    let finalArr1 = []
     let finalArr = []
 
     if (isApiCall) {
         tempArr = commonFilterFunction(inputValue, dropdownArray, "PartNumber")
-        tempArr && tempArr.map(item => {
-            if (item.PartId === '0') return tempArr
-            if (tempBoolean && selectedParts.includes(item.PartId)) return false
-            finalArr.push({ label: `${item.PartNumber}${item.RevisionNumber ? `(${item.RevisionNumber})` : ''}`, value: item.PartId, RevisionNumber: item.RevisionNumber })
-            return null
-        })
+        commonDropdownFunction(tempArr, tempBoolean, selectedParts, finalArr1, true)              //TO SHOW THE FILTERED PART
+        commonDropdownFunction(dropdownArray, tempBoolean, selectedParts, finalArr, true)        // TO STORE ALL PART DATA IN LOCAL STORAGE
         reactLocalStorage?.setObject('PartData', finalArr)
-        if (tempArr?.length <= 100) {
-            return finalArr
+        if (finalArr1?.length <= 100) {
+            return finalArr1
         } else {
-            return _.slice(finalArr, 0, dropdownLimit)
+            return _.slice(finalArr1, 0, dropdownLimit)
         }
+
     }
     else {
         tempArr = commonFilterFunction(inputValue, dropdownArray, "label")
@@ -69,4 +74,21 @@ export const autoCompleteDropdownPart = (inputValue, dropdownArray, tempBoolean 
             return _.slice(tempArr, 0, dropdownLimit)
         }
     }
+}
+//FUNCTION FOR HIDING CUSTOMER COLUMN FROM LISTING 
+export const hideCustomerFromExcel = (data, value) => {
+    let excelData
+    if (!reactLocalStorage.getObject('cbcCostingPermission')) {
+        excelData = data && data.map((item) => {
+            if (item.value === value) {
+                return false
+            } else {
+                return item
+            }
+        })
+    }
+    else {
+        excelData = [...data]
+    }
+    return excelData
 }

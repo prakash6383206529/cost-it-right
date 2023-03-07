@@ -58,6 +58,7 @@ export const API = {
   getLabourComboAPI: `${BASE_URL}/configuration-master/get-labour-combo-select-list`,
   getWeightCalculationLayoutType: `${BASE_URL}/configuration/radio-button-list-get-weight-calculate-layout-type`,
   getLabourTypeSelectList: `${BASE_URL}/configuration/select-list-get-labour-type`,
+  getApprovalTypeSelectList: `${BASE_URL}/configuration/select-list-get-approval-type`,
 
   //LOCATION API
   getAllCities: `${BASE_URL}/configuration-location/select-list-get-vendor-city`,
@@ -888,6 +889,15 @@ export const API = {
   getPartSelectListWtihRevNo: `${BASE_URL}/configuration/get-part-number-and-revision-number`,
   bulkUploadVolume: `${BASE_URL}/masters-volume/save-actual-volume-details`,
 
+  //BUDGET MASTER
+  getBudgetDataList: `${BASE_URL}/master-budgeting/get-all`,
+  getApprovedPartCostingPrice: `${BASE_URL}/configuration/get-approved-part-costing-price`,
+  createBudget: `${BASE_URL}/master-budgeting/create`,
+  getPartCostingHead: `${BASE_URL}/configuration/select-list-get-part-costing-head`,
+  getMasterBudget: `${BASE_URL}/master-budgeting/get-by-id`,
+  updateBudget: `${BASE_URL}/master-budgeting/update`,
+  bulkUploadBudgetMaster: `${BASE_URL}/master-budgeting/bulk-upload-for-budgeting`,
+
   //CLIENT MASTER
   createClient: `${BASE_URL}/client/create-client`,
   updateClient: `${BASE_URL}/client/update-client`,
@@ -1040,6 +1050,7 @@ export const GET_TECHNOLOGY_SELECTLIST_SUCCESS = 'GET_TECHNOLOGY_SELECTLIST_SUCC
 export const GET_PLANT_SELECTLIST_SUCCESS = 'GET_PLANT_SELECTLIST_SUCCESS'
 export const GET_PLANT_SELECTLIST_BY_TYPE = 'GET_PLANT_SELECTLIST_BY_TYPE'
 export const GET_UNASSOCIATED_VENDOR_PLANT_SELECTLIST = 'GET_UNASSOCIATED_VENDOR_PLANT_SELECTLIST'
+export const GET_USERS_MASTER_LEVEL_API = 'GET_USERS_MASTER_LEVEL_API'
 
 //CATEGORY MASTER
 export const GET_CATEGORY_SUCCESS = 'GET_CATEGORY_SUCCESS'
@@ -1053,6 +1064,7 @@ export const GET_LABOUR_TYPE_SUCCESS = 'GET_LABOUR_TYPE_SUCCESS'
 export const GET_COSTING_HEAD_SUCCESS = 'GET_COSTING_HEAD_SUCCESS'
 export const GET_MODEL_TYPE_SUCCESS = 'GET_MODEL_TYPE_SUCCESS'
 export const GET_LABOUR_TYPE_SELECTLIST_SUCCESS = 'GET_LABOUR_TYPE_SELECTLIST_SUCCESS'
+export const GET_APPROVAL_TYPE_SELECT_LIST = 'GET_APPROVAL_TYPE_SELECT_LIST'
 
 //UOM MASTER
 export const GET_UOM_DATA_SUCCESS = 'GET_UOM_DATA_SUCCESS'
@@ -1465,6 +1477,7 @@ export const SET_SURFACE_COST_FOR_REJECTION_DATA = 'SET_SURFACE_COST_FOR_REJECTI
 export const SET_OVERHEAD_PROFIT_ERRORS = 'SET_OVERHEAD_PROFIT_ERRORS'
 export const SET_TOOLS_ERRORS = 'SET_TOOLS_ERRORS'
 export const SET_DISCOUNT_ERRORS = 'SET_DISCOUNT_ERRORS'
+export const SET_TOOL_COST_FOR_OVERHEAD_PROFIT = 'SET_TOOL_COST_FOR_OVERHEAD_PROFIT'
 
 //WEIGHT CALCULATION COSTING RM DRAWER
 export const GET_RAW_MATERIAL_CALCI_INFO = 'GET_RAW_MATERIAL_CALCI_INFO'
@@ -1756,6 +1769,7 @@ export const SIMULATION_APPROVAL_SUM = ' Simulation Approval Summary'
 export const SIMULATION_INSIGNTS = 'Simulation Insignts'
 export const COSTING_DETAIL = 'Costing Details'
 export const COST_RATIO_REPORT = 'Cost Ratio'
+export const BUDGETING = 'Budgeting'
 //export const SIMULATION_HISTORY = 'Simulation History'
 
 export const SHEET_METAL = 'Sheet Metal';
@@ -1827,7 +1841,7 @@ export const EMPTY_GUID_0 = "0"
 export const PART_COST = 'Part Cost'
 
 export const VIEW_COSTING_DATA = {
-  costingHeadCheck: 'ZBC v/s VBC v/s NCC v/s CBC',
+  costingHeadCheck: 'VBC/ZBC/NCC/CBC',
   // costingName: '',
   costingVersion: 'Costing Version',
   PoPriceWithDate: 'PO Price (Effective from)',
@@ -2050,7 +2064,8 @@ export const MACHINE_MASTER_ID = 4
 
 
 //approve reject drawer
-export const provisional = "Provisional"
+export const PROVISIONAL = "Provisional"
+export const NEW_COMPONENT = "New Component"
 
 //default value for page size
 export const defaultPageSize = 10;
@@ -2091,6 +2106,7 @@ export const ACTUALVOLUMEBULKUPLOAD = 'Actual Volume'
 export const BUDGETEDVOLUMEBULKUPLOAD = 'Budgeted Volume'
 export const ADDRFQ = 'ADD RFQ'
 export const VOLUMEBULKUPLOAD = 'Volume'
+export const BUDGETBULKUPLOAD = 'Budget'
 
 
 //STATUS FILTER DROPDOWN OPTIONS
@@ -2178,4 +2194,4 @@ export const KEYRFQ = "UAGSqTBCbZ8JqHJl"
 export const IVRFQ = "8vFNmRQEl91nOtrM"
 
 //VERSION 
-export const VERSION = "V2.1.74.2";
+export const VERSION = "V2.1.106";

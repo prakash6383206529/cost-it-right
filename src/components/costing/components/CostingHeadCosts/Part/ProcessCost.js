@@ -54,7 +54,7 @@ function ProcessCost(props) {
   const dispatch = useDispatch()
   const CostingViewMode = useContext(ViewCostingContext);
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
-  const { CostingEffectiveDate, selectedProcessId, selectedProcessGroupId, processGroupGrid } = useSelector(state => state.costing)
+  const { CostingEffectiveDate, selectedProcessId, selectedProcessGroupId, processGroupGrid, ErrorObjRMCC } = useSelector(state => state.costing)
   const { rmFinishWeight } = props
 
   useEffect(() => {
@@ -378,7 +378,7 @@ function ProcessCost(props) {
   }
 
   const onRemarkPopUpClickGroup = (index, parentIndex, list) => {
-    if (errors.ProcessGridFields && errors.ProcessGridFields[index]?.remarkPopUp !== undefined) {
+    if (errors.SingleProcessGridField && errors.SingleProcessGridField[`${index}${parentIndex}`].remarkPopUp !== undefined) {
       return false
     }
     let tempArr = []
@@ -387,7 +387,7 @@ function ProcessCost(props) {
 
     tempData = {
       ...tempData,
-      Remark: getValues(`${SingleProcessGridField}.${index}.${parentIndex}.remarkPopUp`),
+      Remark: getValues(`${SingleProcessGridField}.${index}${parentIndex}.remarkPopUp`),
     }
     let gridTempArr = Object.assign([...list], { [index]: tempData })
 
@@ -418,12 +418,11 @@ function ProcessCost(props) {
 
   const onRemarkPopUpCloseGroup = (index, parentIndex) => {
     let button = document.getElementById(`popUpTriggers${index}.${parentIndex}`)
-    if (errors && errors.ProcessGridFields && errors.ProcessGridFields[index].remarkPopUp) {
-      delete errors.ProcessGridFields[index].remarkPopUp;
+    if (errors && errors.SingleProcessGridField && errors.SingleProcessGridField[`${index}${parentIndex}`].remarkPopUp) {
+      delete errors.SingleProcessGridField[`${index}${parentIndex}`].remarkPopUp
       setGroupProcessRemark(false)
     }
     button.click()
-
   }
 
   useEffect(() => {
@@ -1007,12 +1006,15 @@ function ProcessCost(props) {
   /**
    * @method setRMCCErrors
    * @description CALLING TO SET BOP COST FORM'S ERROR THAT WILL USE WHEN HITTING SAVE RMCC TAB API.
-   */
+  */
+  let temp = ErrorObjRMCC
   if (Object.keys(errors).length > 0 && counter < 2) {
-    dispatch(setRMCCErrors(errors))
+    temp.ProcessGridFields = errors.ProcessGridFields;
+    dispatch(setRMCCErrors(temp))
     counter++;
   } else if (Object.keys(errors).length === 0 && counter > 0) {
-    dispatch(setRMCCErrors({}))
+    temp.ProcessGridFields = {};
+    dispatch(setRMCCErrors(temp))
     counter = 0
   }
   const ProcessGridFields = 'ProcessGridFields'
@@ -1122,7 +1124,7 @@ function ProcessCost(props) {
                   position="top right">
                   <TextAreaHookForm
                     label="Remark:"
-                    name={`${SingleProcessGridField}.${index}.${parentIndex}.remarkPopUp`}
+                    name={`${SingleProcessGridField}.${index}${parentIndex}.remarkPopUp`}
                     Controller={Controller}
                     control={control}
                     register={register}
@@ -1136,7 +1138,7 @@ function ProcessCost(props) {
                     defaultValue={item.Remark ?? item.Remark}
                     className=""
                     customClassName={"withBorder"}
-                    errors={errors && errors.ProcessGridFields && errors.ProcessGridFields[index] !== undefined ? errors.ProcessGridFields[index].remarkPopUp : ''}
+                    errors={errors && errors.SingleProcessGridField && errors.SingleProcessGridField[`${index}${parentIndex}`] !== undefined ? errors.SingleProcessGridField[`${index}${parentIndex}`].remarkPopUp : ''}
                     //errors={errors && errors.remarkPopUp && errors.remarkPopUp[index] !== undefined ? errors.remarkPopUp[index] : ''}                        
                     disabled={(CostingViewMode || IsLocked) ? true : false}
                     hidden={false}
@@ -1219,7 +1221,7 @@ function ProcessCost(props) {
                       return (
                         <>
                           <tr key={index}>
-                            <td className={`text-overflow ${(item?.GroupName === '' || item?.GroupName === null) ? '' : 'process-name'}`}>
+                            <td className={`text-overflow ${(item?.GroupName === '' || item?.GroupName === null) ? '' : 'process-name no-border'}`}>
                               {
                                 (item?.GroupName === '' || item?.GroupName === null) ? '' :
                                   <div onClick={() => {
@@ -1252,10 +1254,6 @@ function ProcessCost(props) {
                                         rules={{
                                           required: true,
                                           validate: item.UOM === "Number" ? { number, checkWhiteSpaces, noDecimal, numberLimit6 } : { number, checkWhiteSpaces, decimalNumberLimit6 },
-                                          max: {
-                                            value: 100,
-                                            message: 'Percentage cannot be greater than 100'
-                                          },
                                         }}
                                         errors={errors && errors.ProcessGridFields && errors.ProcessGridFields[index] !== undefined ? errors.ProcessGridFields[index].Quantity : ''}
                                         defaultValue={item.Quantity ? checkForDecimalAndNull(item.Quantity, getConfigurationKey().NoOfDecimalForInputOutput) : '1'}

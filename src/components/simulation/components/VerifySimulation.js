@@ -15,7 +15,7 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import { debounce } from 'lodash'
 import { PaginationWrapper } from '../../common/commonPagination';
-import { ASSEMBLY_TECHNOLOGY } from '../../../config/masterData';
+import { ASSEMBLY_TECHNOLOGY_MASTER } from '../../../config/masterData';
 // import AssemblySimulation from './AssemblySimulation';
 
 const gridOptions = {};
@@ -45,7 +45,7 @@ function VerifySimulation(props) {
     const isBOPDomesticOrImport = ((Number(selectedMasterForSimulation.value) === Number(BOPDOMESTIC)) || (Number(selectedMasterForSimulation.value) === Number(BOPIMPORT)))
     const isMachineRate = Number(selectedMasterForSimulation.value) === (Number(MACHINERATE));
     const isOverHeadProfit = Number(selectedMasterForSimulation.value) === (Number(OVERHEAD));
-    const isMultiTechnology = (checkForNull(selectedMasterForSimulation.value) === ASSEMBLY_TECHNOLOGY) ? true : false;
+    const isMultiTechnology = (checkForNull(selectedMasterForSimulation.value) === ASSEMBLY_TECHNOLOGY_MASTER) ? true : false;
     const runSimulationPermission = !((JSON.parse(localStorage.getItem('simulationRunPermission'))).includes(selectedMasterForSimulation?.label))
     const { selectedTechnologyForSimulation } = useSelector(state => state.simulation)
     const { selectedVendorForSimulation } = useSelector(state => state.simulation)
@@ -66,7 +66,7 @@ function VerifySimulation(props) {
 
     const verifyCostingList = (plantId = '', rawMatrialId = '') => {
         const plant = filteredRMData.plantId && filteredRMData.plantId.value ? filteredRMData.plantId.value : null
-        if (checkForNull(selectedMasterForSimulation?.value) === ASSEMBLY_TECHNOLOGY) {
+        if (checkForNull(selectedMasterForSimulation?.value) === ASSEMBLY_TECHNOLOGY_MASTER) {
             dispatch(getAllMultiTechnologyImpactedSimulationCostings(props?.token, (res) => {
                 if (res?.data?.Result) {
                     const data = res?.data?.Data
@@ -186,6 +186,7 @@ function VerifySimulation(props) {
                             }
                             setTokenNo(data.TokenNumber)
                             setSimualtionId(data.SimulationId)
+                            setSimulationTechnologyId(data.SimulationtechnologyId)
                             setHideRunButton(false)
                             setEffectiveDate(data.EffectiveDate)
                         }
@@ -203,6 +204,7 @@ function VerifySimulation(props) {
                             }
                             setTokenNo(data.TokenNumber)
                             setSimualtionId(data.SimulationId)
+                            setSimulationTechnologyId(data.SimulationtechnologyId)
                             setHideRunButton(false)
                             setEffectiveDate(data.EffectiveDate)
                         }
@@ -220,6 +222,7 @@ function VerifySimulation(props) {
                             }
                             setTokenNo(data.TokenNumber)
                             setSimualtionId(data.SimulationId)
+                            setSimulationTechnologyId(data.SimulationtechnologyId)
                             setHideRunButton(false)
                             setEffectiveDate(data.EffectiveDate)
                         }

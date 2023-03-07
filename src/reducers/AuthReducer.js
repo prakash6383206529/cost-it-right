@@ -38,6 +38,7 @@ import {
     GET_MASTER_LEVEL_BY_MASTERID,
     COSTINGS_APPROVAL_DASHBOARD,
     AMENDMENTS_APPROVAL_DASHBOARD,
+    GET_USERS_MASTER_LEVEL_API,
 } from '../../src/config/constants'
 
 // /** Always define initialState in reducer so that we don't get undefined values */
@@ -346,6 +347,13 @@ export default function authReducer(state = initialState, action) {
                 error: true,
                 AmendmentsApprovalDashboard: action.payload
             };
+        case GET_USERS_MASTER_LEVEL_API:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                userMasterLevelAPI: action.payload
+            }
         default:
             return state;
     }

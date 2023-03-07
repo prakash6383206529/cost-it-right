@@ -47,7 +47,7 @@ function Sheet(props) {
         SheetLength: WeightCalculatorRequest && WeightCalculatorRequest.LengthOfSheet !== null ? WeightCalculatorRequest.LengthOfSheet : '',
         SheetWeight: WeightCalculatorRequest && WeightCalculatorRequest.WeightOfSheetInUOM !== null ? WeightCalculatorRequest.WeightOfSheetInUOM : '',
         StripWidth: WeightCalculatorRequest && WeightCalculatorRequest.StripWidth !== null ? WeightCalculatorRequest.StripWidth : '',
-        StripsNumber: WeightCalculatorRequest && WeightCalculatorRequest.NoOfStrips !== null ? WeightCalculatorRequest.NoOfStrips : '',
+        StripsNumber: WeightCalculatorRequest && WeightCalculatorRequest.NumberOfStrips !== null ? WeightCalculatorRequest.NumberOfStrips : '',
         BlankSize: WeightCalculatorRequest && WeightCalculatorRequest.BlankSize !== null ? WeightCalculatorRequest.BlankSize : '',
         ComponentPerStrip: WeightCalculatorRequest && WeightCalculatorRequest.ComponentsPerStrip !== null ? WeightCalculatorRequest.ComponentsPerStrip : '',
         NoOfComponent: WeightCalculatorRequest && WeightCalculatorRequest.NumberOfPartsPerSheet !== null ? WeightCalculatorRequest.NumberOfPartsPerSheet : '', // TOTAL COMPONENT PER SHEET
@@ -216,7 +216,7 @@ function Sheet(props) {
         updatedValue.newGrossWeight = setValueAccToUOM(grossWeight, UOMDimension.label)
         setTimeout(() => {
             setDataToSend(updatedValue)
-            setGrossWeights(setValueAccToUOM(grossWeight, UOMDimension.label))
+            setGrossWeights(grossWeight)
             setValue('GrossWeight', checkForDecimalAndNull(setValueAccToUOM(grossWeight, UOMDimension.label), localStorage.NoOfDecimalForInputOutput))
         }, 200);
     }
@@ -291,7 +291,7 @@ function Sheet(props) {
             WeightOfSheetInUOM: dataToSend.WeightOfSheet,
             Width: values.SheetWidth,
             StripWidth: values.StripWidth,
-            NoOfStrips: values.StripsNumber,
+            NumberOfStrips: values.StripsNumber,
             BlankSize: values.BlankSize,
             ComponentsPerStrip: values.ComponentPerStrip,
             NumberOfPartsPerSheet: values.NoOfComponent, //TOTAL COMPONENT PER SHEET

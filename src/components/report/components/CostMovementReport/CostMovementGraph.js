@@ -125,7 +125,7 @@ function CostMovementGraph(props) {
 
                             if (`${ele.PartNumber}${ele.PlantCode}${ele.VendorCode}` == uniqueItem) {
 
-                                uniquePlantLabel = `${ele.PartNumber}-${ele.PlantCode}-${ele.VendorCode}`
+                                uniquePlantLabel = ` ${ele.PartNumber} | ${ele.VendorCode} | ${ele.PlantCode}`
 
                                 allEffectiveDates.map((date, indexFromDate) => {
 
@@ -319,7 +319,7 @@ function CostMovementGraph(props) {
                 callbacks: {
                     label: function (context) {
 
-                        let label = '';
+                        let label = context.dataset.label;
 
                         if (label) {
                             label += ': ';
@@ -334,7 +334,7 @@ function CostMovementGraph(props) {
             subtitle: {
                 display: true,
                 position: 'bottom',
-                text: '  Format: Color | Part No.-Vendor code-Plant code ',
+                text: '  Format: Color | Part No. | Vendor Code | Plant Code ',
                 fontSize: 10,
                 align: 'start',
                 color: '#000',
@@ -413,7 +413,7 @@ function CostMovementGraph(props) {
                 callbacks: {
                     label: function (context) {
 
-                        let label = '';
+                        let label = context.dataset.label;
 
                         if (label) {
                             label += ': ';
@@ -428,7 +428,7 @@ function CostMovementGraph(props) {
             subtitle: {
                 display: true,
                 position: 'bottom',
-                text: '  Format: Color | Part No.-Vendor code-Plant code ',
+                text: '  Format: Color | Part No. | Vendor Code | Plant Code ',
                 fontSize: 10,
                 align: 'start',
                 color: '#000',
@@ -541,7 +541,7 @@ function CostMovementGraph(props) {
                     }
                 </form>
                 {!noRecordFound && <div className='h-298 d-flex align-items-center mt-3'>
-                    <NoContentFound title={EMPTY_DATA} />
+                    <NoContentFound title={'Cost card is not available for this date range'} />
                 </div>}
                 {isLoader && <LoaderCustom customClass="center-loader" />}
             </div >

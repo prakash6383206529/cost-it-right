@@ -55,7 +55,8 @@ import {
   config,
   GET_GRID_HEIGHT,
   GET_STATE_WHILE_DOWNLOADING,
-  GET_REPORTER_LIST
+  GET_REPORTER_LIST,
+  GET_APPROVAL_TYPE_SELECT_LIST
 } from '../config/constants';
 import { apiErrors } from '../helper/util';
 import { MESSAGES } from '../config/message';
@@ -1367,12 +1368,12 @@ export function getPlantSelectListByType(TYPE, callback) {
   };
 }
 
-/**
- * @method getVendorWithVendorCodeSelectList
- * @description GET VBC VENDOR WITH VENDOR CODE SELECTLIST
- */
 export function getVendorWithVendorCodeSelectList(vendorName, callback) {
-  return axios.get(`${API.getVendorWithVendorCodeSelectList}?vendorName=${vendorName}`, config());
+  return axios.get(`${API.getVendorWithVendorCodeSelectList}?vendorName=${vendorName}`, config()).catch(error => {
+    apiErrors(error);
+    callback(error);
+    return Promise.reject(error)
+  });
 }
 
 
@@ -1511,8 +1512,12 @@ export function getAllCity(callback) {
   }
 }
 
-export function getPartSelectList(callback) {
-  return axios.get(`${API.getPartSelectLists}`, config());
+export function getPartSelectList(partNumber, callback) {
+  return axios.get(`${API.getPartSelectLists}?partNumber=${partNumber}`, config()).catch(error => {
+    apiErrors(error);
+    callback(error);
+    return Promise.reject(error)
+  });
 }
 
 
@@ -1591,4 +1596,27 @@ export function getCostMovementReport(data, callback) {
         apiErrors(error)
       })
   }
+}
+
+/**
+ * @method getApprovalTypeSelectList
+ * @description Used to fetch Labour type selectlist
+ */
+export function getApprovalTypeSelectList(callback) {
+  return (dispatch) => {
+    //dispatch({ type: API_REQUEST });
+    const request = axios.get(`${API.getApprovalTypeSelectList}`, config());
+    request.then((response) => {
+      if (response.data.Result) {
+        dispatch({
+          type: GET_APPROVAL_TYPE_SELECT_LIST,
+          payload: response.data.SelectList,
+        });
+        callback(response);
+      }
+    }).catch((error) => {
+      callback(error);
+      apiErrors(error);
+    });
+  };
 }

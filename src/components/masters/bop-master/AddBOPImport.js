@@ -13,7 +13,6 @@ import {
   fileUploadBOPDomestic, fileDeleteBOPDomestic, getIncoTermSelectList, getPaymentTermSelectList
 } from '../actions/BoughtOutParts';
 import { getVendorWithVendorCodeSelectList, getVendorTypeBOPSelectList, } from '../actions/Supplier';
-import { masterFinalLevelUser } from '../actions/Material'
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import { getConfigurationKey, loggedInUserId, userDetails } from "../../../helper/auth";
@@ -32,7 +31,7 @@ import LoaderCustom from '../../common/LoaderCustom';
 import WarningMessage from '../../common/WarningMessage'
 import imgRedcross from '../../../assests/images/red-cross.png';
 import MasterSendForApproval from '../MasterSendForApproval'
-import { CheckApprovalApplicableMaster, onFocus } from '../../../helper';
+import { CheckApprovalApplicableMaster, onFocus, userTechnologyDetailByMasterId } from '../../../helper';
 import { debounce } from 'lodash';
 import AsyncSelect from 'react-select/async';
 import { getClientSelectList, } from '../actions/Client';
@@ -40,6 +39,8 @@ import { getClientSelectList, } from '../actions/Client';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { autoCompleteDropdown } from '../../common/CommonFunctions';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
+import { checkFinalUser } from '../../../components/costing/actions/Costing'
+import { getUsersMasterLevelAPI } from '../../../actions/auth/AuthActions';
 
 const selector = formValueSelector('AddBOPImport');
 
@@ -101,7 +102,9 @@ class AddBOPImport extends Component {
       finalApprovalLoader: false,
       showPopup: false,
       incoTerm: [],
-      paymentTerm: []
+      paymentTerm: [],
+      levelDetails: {},
+      noApprovalCycle: false
     }
   }
   /**
@@ -109,7 +112,7 @@ class AddBOPImport extends Component {
    * @description Called before render the component
   */
   UNSAFE_componentWillMount() {
-    if (!(this.props.data.isEditFlag || this.props.data.isViewFlag)) {
+    if (!(this.props.data.isEditFlag || this.props.data.isViewMode)) {
       this.props.getUOMSelectList(() => { })
       this.props.getBOPCategorySelectList(() => { })
       this.props.getPlantSelectListByType(ZBC, () => { })
@@ -121,40 +124,63 @@ class AddBOPImport extends Component {
    * @description Called after rendering the component
    */
   componentDidMount() {
+    const { initialConfiguration } = this.props
     if (!this.state.isViewMode) {
       this.props.getAllCity(cityId => {
         this.props.getCityByCountry(cityId, 0, () => { })
       })
     }
     this.props.getIncoTermSelectList(() => { })
-    this.props.getPaymentTermSelectList(() => { })
+    this.props.getPaymentTermSelectList(() => { })    // FOR MINDA ONLY
     this.getDetails()
-    if (!(this.props.data.isEditFlag || this.props.data.isViewFlag)) {
+    if (!(this.props.data.isEditFlag || this.props.data.isViewMode)) {
       this.props.getCurrencySelectList(() => { })
       this.props.getClientSelectList(() => { })
 
     }
-    if (!this.state.isViewMode) {
-      let obj = {
-        MasterId: BOP_MASTER_ID,
-        DepartmentId: userDetails().DepartmentId,
-        LoggedInUserLevelId: userDetails().LoggedInMasterLevelId,
-        LoggedInUserId: loggedInUserId()
-      }
-      this.setState({ finalApprovalLoader: true })
-      this.props.masterFinalLevelUser(obj, (res) => {
-        if (res.data.Result) {
-          this.setState({ isFinalApprovar: res.data.Data.IsFinalApprovar })
-          this.setState({ finalApprovalLoader: false })
-        }
+    if (!this.state.isViewMode && initialConfiguration.IsMasterApprovalAppliedConfigure) {
+      this.props.getUsersMasterLevelAPI(loggedInUserId(), BOP_MASTER_ID, (res) => {
+        setTimeout(() => {
+          this.commonFunction()
+        }, 100);
       })
     }
   }
 
-  componentDidUpdate(prevProps) {
-    if (!this.props.data.isViewFlag) {
+  commonFunction() {
+    let levelDetailsTemp = []
+    levelDetailsTemp = userTechnologyDetailByMasterId(this.state.costingTypeId, BOP_MASTER_ID, this.props.userMasterLevelAPI)
+    this.setState({ levelDetails: levelDetailsTemp })
+    if (levelDetailsTemp?.length !== 0) {
+      let obj = {
+        TechnologyId: BOP_MASTER_ID,
+        DepartmentId: userDetails().DepartmentId,
+        UserId: loggedInUserId(),
+        Mode: 'master',
+        approvalTypeId: this.state.costingTypeId,
+      }
+
+      this.setState({ finalApprovalLoader: true })
+      this.props.checkFinalUser(obj, (res) => {
+        if (res?.data?.Result) {
+          this.setState({ isFinalApprovar: res?.data?.Data?.IsFinalApprover })
+          this.setState({ finalApprovalLoader: false })
+        }
+      })
+      this.setState({ noApprovalCycle: false })
+    } else {
+      this.setState({ noApprovalCycle: true })
+    }
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    const { initialConfiguration } = this.props
+    if (!this.props.data.isViewMode) {
       if (this.props.fieldsObj !== prevProps.fieldsObj) {
         this.handleCalculation()
+      }
+      if ((prevState?.costingTypeId !== this.state.costingTypeId) && initialConfiguration.IsMasterApprovalAppliedConfigure) {
+        this.commonFunction()
       }
     }
   }
@@ -271,8 +297,9 @@ class AddBOPImport extends Component {
             } else {
               plantObj = Data && Data.Plant.length > 0 ? { label: Data.Plant[0].PlantName, value: Data.Plant[0].PlantId } : []
             }
+            const { costingTypeId, vendorName, client } = this.state
             if (!this.state.isViewMode) {
-              this.props.getExchangeRateByCurrency(Data.Currency, DayTime(Data.EffectiveDate).format('YYYY-MM-DD'), res => {
+              this.props.getExchangeRateByCurrency(Data.Currency, costingTypeId, DayTime(Data.EffectiveDate).format('YYYY-MM-DD'), vendorName.value, client.value, res => {
                 if (Object.keys(res.data.Data).length === 0) {
                   this.setState({ showWarning: true })
                 }
@@ -547,7 +574,8 @@ class AddBOPImport extends Component {
       } else {
         this.setState({ showCurrency: true }, () => {
           if (this.state.effectiveDate) {
-            this.props.getExchangeRateByCurrency(newValue.label, DayTime(this.state.effectiveDate).format('YYYY-MM-DD'), res => {
+            const { costingTypeId, vendorName, client } = this.state
+            this.props.getExchangeRateByCurrency(newValue.label, costingTypeId, DayTime(this.state.effectiveDate).format('YYYY-MM-DD'), vendorName.value, client.value, res => {
               //this.props.change('NetLandedCost', (fieldsObj.BasicRate * res.data.Data.CurrencyExchangeRate))
 
               if (Object.keys(res.data.Data).length === 0) {
@@ -621,7 +649,8 @@ class AddBOPImport extends Component {
 
     } else {
       if (currency.length !== 0) {
-        this.props.getExchangeRateByCurrency(currency.label, DayTime(date).format('YYYY-MM-DD'), res => {
+        const { costingTypeId, vendorName, client } = this.state
+        this.props.getExchangeRateByCurrency(currency.label, costingTypeId, DayTime(date).format('YYYY-MM-DD'), vendorName.value, client.value, res => {
           if (Object.keys(res.data.Data).length === 0) {
 
             this.setState({ showWarning: true })
@@ -967,8 +996,8 @@ class AddBOPImport extends Component {
   * @description Renders the component
   */
   render() {
-    const { handleSubmit, isBOPAssociated } = this.props;
-    const { isCategoryDrawerOpen, isOpenVendor, isOpenUOM, isEditFlag, isViewMode, setDisable, costingTypeId } = this.state;
+    const { handleSubmit, isBOPAssociated, initialConfiguration } = this.props;
+    const { isCategoryDrawerOpen, isOpenVendor, isOpenUOM, isEditFlag, isViewMode, setDisable, costingTypeId, noApprovalCycle } = this.state;
     const filterList = async (inputValue) => {
       const { vendorName } = this.state
       const resultInput = inputValue.slice(0, searchCount)
@@ -1233,7 +1262,7 @@ class AddBOPImport extends Component {
                                       loadOptions={filterList}
                                       onChange={(e) => this.handleVendorName(e)}
                                       value={this.state.vendorName}
-                                      noOptionsMessage={({ inputValue }) => inputValue.length < 3 ? "Enter 3 characters to show data" : "No results found"}
+                                      noOptionsMessage={({ inputValue }) => inputValue.length < 3 ? MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN : "No results found"}
                                       isDisabled={(isEditFlag) ? true : false}
                                       onFocus={() => onFocus(this)}
                                       onKeyDown={(onKeyDown) => {
@@ -1298,13 +1327,14 @@ class AddBOPImport extends Component {
                               component={searchableSelect}
                               placeholder={isEditFlag ? '-' : "Select"}
                               options={this.renderListing("IncoTerms")}
-                              validate={(this.state.incoTerm == null || this.state.incoTerm?.length === 0) && getConfigurationKey().IsPaymentTermsAndIncoTermsRequiredForBoughtOutPart ? [required] : []}
+                              validate={((this.state.incoTerm == null || this.state.incoTerm?.length === 0) && getConfigurationKey().IsPaymentTermsAndIncoTermsRequiredForBoughtOutPart) ? [required] : []}
                               required={getConfigurationKey().IsPaymentTermsAndIncoTermsRequiredForBoughtOutPart ? true : false}
                               handleChangeDescription={this.handleIncoTerm}
                               valueDescription={this.state.incoTerm}
                               disabled={isViewMode || (isEditFlag && isBOPAssociated)}
                             />
                           </Col>
+                          {/* FOR MINDA ONLY*/}
                           <Col md="3">
                             <Field
                               name="paymentTerms"
@@ -1313,7 +1343,7 @@ class AddBOPImport extends Component {
                               component={searchableSelect}
                               placeholder={isEditFlag ? '-' : "Select"}
                               options={this.renderListing("PaymentTerms")}
-                              validate={(this.state.paymentTerm == null || this.state.paymentTerm?.length === 0) && getConfigurationKey().IsPaymentTermsAndIncoTermsRequiredForBoughtOutPart ? [required] : []}
+                              validate={((this.state.paymentTerm == null || this.state.paymentTerm?.length === 0) && getConfigurationKey().IsPaymentTermsAndIncoTermsRequiredForBoughtOutPart) ? [required] : []}
                               required={getConfigurationKey().IsPaymentTermsAndIncoTermsRequiredForBoughtOutPart ? true : false}
                               handleChangeDescription={this.handlePaymentTerm}
                               valueDescription={this.state.paymentTerm}
@@ -1546,10 +1576,10 @@ class AddBOPImport extends Component {
                           </button>
 
 
-                          {!isViewMode && (CheckApprovalApplicableMaster(BOP_MASTER_ID) === true && !this.state.isFinalApprovar) ?
+                          {!isViewMode && (CheckApprovalApplicableMaster(BOP_MASTER_ID) === true && !this.state.isFinalApprovar) && initialConfiguration.IsMasterApprovalAppliedConfigure ?
                             <button type="submit"
                               class="user-btn approval-btn save-btn mr5"
-                              disabled={isViewMode || setDisable}
+                              disabled={isViewMode || setDisable || noApprovalCycle}
                             >
                               <div className="send-for-approval"></div>
                               {'Send For Approval'}
@@ -1558,7 +1588,7 @@ class AddBOPImport extends Component {
                             <button
                               type="submit"
                               className="user-btn mr5 save-btn"
-                              disabled={isViewMode || setDisable}
+                              disabled={isViewMode || setDisable || noApprovalCycle}
                             >
                               <div className={"save-icon"}></div>
                               {isEditFlag ? "Update" : "Save"}
@@ -1614,6 +1644,8 @@ class AddBOPImport extends Component {
                 isBulkUpload={false}
                 IsImportEntery={true}
                 currency={this.state.currency}
+                costingTypeId={this.state.costingTypeId}
+                levelDetails={this.state.levelDetails}
               />
             )
           }
@@ -1637,7 +1669,7 @@ function mapStateToProps(state) {
     UOMSelectList, currencySelectList, plantSelectList } = comman;
   const { vendorWithVendorCodeSelectList } = supplier;
   const { partSelectList } = part;
-  const { initialConfiguration } = auth;
+  const { initialConfiguration, userMasterLevelAPI } = auth;
   const { clientSelectList } = client;
 
   let initialValues = {};
@@ -1656,7 +1688,7 @@ function mapStateToProps(state) {
 
   return {
     vendorWithVendorCodeSelectList, bopCategorySelectList, plantList, filterPlantList, filterCityListBySupplier,
-    plantSelectList, cityList, partSelectList, clientSelectList, UOMSelectList, currencySelectList, fieldsObj, initialValues, initialConfiguration, IncoTermsSelectList, PaymentTermsSelectList
+    plantSelectList, cityList, partSelectList, clientSelectList, UOMSelectList, currencySelectList, fieldsObj, initialValues, initialConfiguration, IncoTermsSelectList, PaymentTermsSelectList, userMasterLevelAPI
   }
 
 }
@@ -1681,12 +1713,13 @@ export default connect(mapStateToProps, {
   fileDeleteBOPDomestic,
   getPlantSelectListByType,
   getExchangeRateByCurrency,
-  masterFinalLevelUser,
+  checkFinalUser,
   getCityByCountry,
   getAllCity,
   getClientSelectList,
   getIncoTermSelectList,
-  getPaymentTermSelectList
+  getPaymentTermSelectList,
+  getUsersMasterLevelAPI
 })(reduxForm({
   form: 'AddBOPImport',
   touchOnChange: true,

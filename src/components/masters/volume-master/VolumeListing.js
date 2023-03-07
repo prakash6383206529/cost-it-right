@@ -28,6 +28,7 @@ import { reactLocalStorage } from 'reactjs-localstorage'
 import VolumeBulkUploadDrawer from '../../massUpload/VolumeBulkUploadDrawer'
 import { Drawer } from '@material-ui/core'
 import classnames from 'classnames';
+import { hideCustomerFromExcel } from '../../common/CommonFunctions'
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -338,9 +339,10 @@ function VolumeListing(props) {
   }
 
   const returnExcelColumn = (data = [], TempData) => {
+    let excelData = hideCustomerFromExcel(data, "CustomerName")
     return (
       <ExcelSheet data={TempData} name={VolumeMaster}>
-        {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
+        {excelData && excelData.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
       </ExcelSheet>);
   }
 
@@ -362,8 +364,8 @@ function VolumeListing(props) {
       }
       selectedRows = [...selectedRows, ...finalData]
     }
-    let uniqeArrayVolumeApprovedId = _.uniqBy(selectedRows, "VolumeApprovedId")          //UNIQBY FUNCTION IS USED TO FIND THE UNIQUE ELEMENTS & DELETE DUPLICATE ENTRY
-    let uniqeArrayVolumeBudgetedId = _.uniqBy(uniqeArrayVolumeApprovedId, "VolumeBudgetedId")          //UNIQBY FUNCTION IS USED TO FIND THE UNIQUE ELEMENTS & DELETE DUPLICATE ENTRY
+
+    let uniqeArrayVolumeBudgetedId = _.uniqBy(selectedRows, v => [v.VolumeApprovedId, v.VolumeBudgetedId].join())          //UNIQBY FUNCTION IS USED TO FIND THE UNIQUE ELEMENTS & DELETE DUPLICATE ENTRY
     dispatch(setSelectedRowForPagination(uniqeArrayVolumeBudgetedId))              //SETTING CHECKBOX STATE DATA IN REDUCER
     setDataCount(uniqeArrayVolumeBudgetedId.length)
   }
@@ -605,7 +607,7 @@ function VolumeListing(props) {
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
     if (selectedRowForPagination?.length > 0) {
       selectedRowForPagination.map((item) => {
-        if (item.VolumeId === props.node.data.VolumeId) {
+        if (item.VolumeApprovedId === props.node.data.VolumeApprovedId && item.VolumeBudgetedId === props.node.data.VolumeBudgetedId) {
           props.node.setSelected(true)
         }
         return null

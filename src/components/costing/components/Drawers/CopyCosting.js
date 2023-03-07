@@ -25,14 +25,14 @@ function CopyCosting(props) {
     mode: 'onChange',
     reValidateMode: 'onChange',
     defaultValues: {
-      fromPlant: type === ZBCTypeId ? { label: `${copyCostingData.PlantName}(${copyCostingData.PlantCode})`, value: copyCostingData.PlantId, } : '',
-      fromVendorName: type === VBCTypeId || type === NCCTypeId ? { label: `${copyCostingData.VendorName}(${copyCostingData.VendorCode})`, value: copyCostingData.VendorId, } : '',
+      fromPlant: type === ZBCTypeId ? { label: `${copyCostingData.PlantName}`, value: copyCostingData.PlantId, } : '',
+      fromVendorName: type === VBCTypeId || type === NCCTypeId ? { label: `${copyCostingData.VendorName}`, value: copyCostingData.VendorId, } : '',
       // fromVendorPlant: type === VBC ? {label:`${copyCostingData.VendorPlantName}(${copyCostingData.VendorPlantCode})`,value: copyCostingData.VendorPlantId} : ''
-      fromDestinationPlant: type === VBCTypeId || type === NCCTypeId ? { label: `${copyCostingData.DestinationPlantName}(${copyCostingData.DestinationPlantCode})`, value: copyCostingData.DestinationPlantId } : '',
+      fromDestinationPlant: type === VBCTypeId || type === NCCTypeId ? { label: `${copyCostingData.DestinationPlantName}`, value: copyCostingData.DestinationPlantId } : '',
       fromcostingId: selectedCostingId.zbcCosting,
       fromVbccostingId: selectedCostingId.vbcCosting,
       fromNcccostingId: selectedCostingId.nccCosting,
-      toVendorName: type === VBCTypeId || type === NCCTypeId ? { label: `${copyCostingData.VendorName}(${copyCostingData.VendorCode})`, value: copyCostingData.VendorId } : '',
+      toVendorName: type === VBCTypeId || type === NCCTypeId ? { label: `${copyCostingData.VendorName}`, value: copyCostingData.VendorId } : '',
     },
   })
 
@@ -73,7 +73,7 @@ function CopyCosting(props) {
     zbcPlantGrid &&
       zbcPlantGrid.map((item) => (
         ZbcTemp.push({
-          label: `${item.PlantName}(${item.PlantCode})`,
+          label: item.PlantName,
           value: item.PlantId,
         })
       ))
@@ -83,7 +83,7 @@ function CopyCosting(props) {
       vbcVendorGrid &&
         vbcVendorGrid.map((item) => (
           VbcTemp.push({
-            label: `${item.VendorName}(${item.VendorCode})`,
+            label: item.VendorName,
             value: item.VendorId
           })
         ))
@@ -91,7 +91,7 @@ function CopyCosting(props) {
       vbcVendorGrid &&
         vbcVendorGrid.map((item) => (
           VbcTemp.push({
-            label: `${item.VendorName}(${item.VendorCode})`,
+            label: item.VendorName,
             value: item.VendorId
             // destPlant: item.DestinationPlantId ? item.DestinationPlantId : ''
           })
@@ -108,11 +108,12 @@ function CopyCosting(props) {
       let tempPlant = []
       let tempVendor = []
       nccGrid && nccGrid.map((item) => {
-        tempPlant.push({ label: `${item.DestinationPlantName}(${item.DestinationPlantCode})`, value: item.DestinationPlantId, destinationPlantCode: item.DestinationPlantCode })
+        tempPlant.push({ label: item.DestinationPlantName, value: item.DestinationPlantId })
         tempVendor.push({
-          label: `${item.VendorName}(${item.VendorCode})`,
+          label: item.VendorName,
           value: item.VendorId
         })
+        return null
       })
       setDestinationPlant(tempPlant)
       setVendorName(tempVendor)
@@ -294,7 +295,7 @@ function CopyCosting(props) {
 
     vbcVendorGrid && vbcVendorGrid.filter(item => {
 
-      temp.push({ label: `${item.DestinationPlantName}(${item.DestinationPlantCode})`, value: item.DestinationPlantId, destinationPlantCode: item.DestinationPlantCode })     // ALL PLANTS LIST SHOULD BE VISIBLE IN THE DROPDOWN IN COPY COSTING DRAWER
+      temp.push({ label: item.DestinationPlantName, value: item.DestinationPlantId })     // ALL PLANTS LIST SHOULD BE VISIBLE IN THE DROPDOWN IN COPY COSTING DRAWER
       return temp
 
     })
@@ -349,7 +350,6 @@ function CopyCosting(props) {
     }
     //COPY FROM VBC
     if (isFromVbc || isFromNcc) {
-      const costNo = value.fromVbccostingId.label?.split(' ')
       const plantCode = value.fromVendorPlant && value.fromVendorPlant.label?.split('(')
       const vendorCode = value.fromVendorName && value.fromVendorName.label?.split('(')
       obj.CostingId = type === VBCTypeId ? value.fromVbccostingId.value : value.fromNcccostingId.value

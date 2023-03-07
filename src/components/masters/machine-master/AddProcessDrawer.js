@@ -339,7 +339,7 @@ class AddProcessDrawer extends Component {
                       validate={(this.state.selectedPlants == null || this.state.selectedPlants.length === 0) ? [required] : []}
                       component={renderMultiSelectField}
                       mendatory={true}
-                      className="multiselect-with-border"
+                    //className="multiselect-with-border"
                       disabled={false}
                     />
                   </Col> */}
@@ -358,7 +358,7 @@ class AddProcessDrawer extends Component {
                         validate={(this.state.selectedMachine == null || this.state.selectedMachine.length === 0) ? [required] : []}
                         component={renderMultiSelectField}
                         mendatory={true}
-                        className="multiselect-with-border"
+                      //className="multiselect-with-border"
                         disabled={false}
                       />
                     </Col>

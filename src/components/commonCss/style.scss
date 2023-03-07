@@ -1283,6 +1283,10 @@ table.table {
       .Close {
         left: 5px;
       }
+
+      &.no-border {
+        border: none !important;
+      }
     }
   }
 }
@@ -3435,11 +3439,11 @@ body {
 
 .costing-border-inner-section {
   border-bottom: 1px solid $borderColor;
-  ;
   border-left: 1px solid $borderColor;
   border-right: 1px solid $borderColor;
 
-  .col-md-3 {
+  .col-md-3,
+  .col-md-6 {
     border-top: 1px solid $borderColor;
     padding: 12px 15px;
 
@@ -4485,8 +4489,11 @@ body {
     min-width: 50px;
   }
 
-  margin-top: -40px;
-  margin-bottom: 10px;
+  margin: -43px 110px 10px 0;
+
+  @media screen and (max-width: $max1367) {
+    margin: -43px 80px 10px 0;
+  }
 
   &.rm-row {
     margin-top: 0;
@@ -5642,7 +5649,7 @@ body {
       height: calc(32px * 80 /100) !important;
     }
 
-    .css-g1d714-ValueContainer {
+    div[class$="ValueContainer"] {
       padding: calc(2px * 80 / 100) calc(8px * 80 /100)
     }
 
@@ -8256,12 +8263,6 @@ body {
   max-height: 80px;
   min-height: auto !important;
 
-  .css-g1d714-ValueContainer {
-    display: flex;
-    max-height: 60px;
-    overflow-y: auto;
-  }
-
   .css-4ljt47-MenuList {
     z-index: 50 !important;
   }
@@ -8901,5 +8902,49 @@ table.group-process-table {
   .custom-checkbox {
     white-space: nowrap;
     margin-top: 15px;
+  }
+}
+
+.conditional-date {
+  align-items: center;
+
+  .custom-check1 {
+    min-height: 72px;
+    display: flex;
+    align-items: center;
+
+    label {
+      margin-top: 17px;
+    }
+  }
+
+  .date-section {
+    height: unset !important;
+
+    .form-group {
+      min-height: unset !important;
+      margin-bottom: unset !important;
+    }
+  }
+
+  .form-group-searchable-select {
+    min-height: unset !important;
+    margin-bottom: unset !important;
+  }
+
+
+}
+
+.colorWhite {
+  background-color: #fff;
+}
+
+@for $i from 1 through 1000 {
+  [row-id~="#{($i * 5) - 1}"] {
+
+    [col-id="PartNumber"],
+    [aria-colindex="5"] {
+      border-bottom: 1px solid $agGridBorder !important;
+    }
   }
 }

@@ -519,7 +519,7 @@ function TabDiscountOther(props) {
       dispatch(isDiscountDataChange(true))
       setCurrency(newValue)
       setIsInputLader(true)
-      dispatch(getExchangeRateByCurrency(newValue.label, DayTime(CostingEffectiveDate).format('YYYY-MM-DD'), res => {
+      dispatch(getExchangeRateByCurrency(newValue.label, costData.CostingTypeId, DayTime(CostingEffectiveDate).format('YYYY-MM-DD'), costData.VendorId, costData.CustomerId, res => {
         setIsInputLader(false)
         if (Object.keys(res.data.Data).length === 0) {
           setShowWarning(true)
@@ -803,6 +803,7 @@ function TabDiscountOther(props) {
         dispatch(updateMultiTechnologyTopAndWorkingRowCalculation(request, res => { }))
         dispatch(gridDataAdded(true))
         dispatch(isDiscountDataChange(false))
+        dispatch(setComponentDiscountOtherItemData({}, () => { }))
 
       }
     }, 500);
@@ -840,12 +841,37 @@ function TabDiscountOther(props) {
     switch (type) {
       case 'other':
         return function resetField() {
-          setValue('OtherCostApplicability', "")
+          setValue('OtherCostApplicability', '')
+          setValue('PercentageOtherCost', '')
+          setValue('OtherCostDescription', '')
+          setValue('AnyOtherCost', '')
+          setOtherCostApplicability([])
+          dispatch(isDiscountDataChange(true))
+          setDiscountObj({
+            ...discountObj,
+            AnyOtherCost: 0,
+            OtherCostPercentage: 0,
+            OtherCostType: '',
+            OtherCostApplicability: '',
+          })
         }
 
       case 'discount':
         return function resetField() {
-          setValue('DiscountCostApplicability', "")
+          setValue('DiscountCostApplicability', '')
+          setValue('HundiOrDiscountPercentage', '')
+          setValue('HundiOrDiscountValue', '')
+          setDiscountCostApplicability([])
+          dispatch(isDiscountDataChange(true))
+          setDiscountObj({
+            ...discountObj,
+            HundiOrDiscountPercentage: 0,
+            HundiOrDiscountValue: 0,
+            DiscountApplicability: '',
+            DiscountCostType: ''
+          })
+
+
         }
 
       default:
