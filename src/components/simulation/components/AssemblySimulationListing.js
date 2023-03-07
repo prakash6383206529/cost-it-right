@@ -177,6 +177,7 @@ function AssemblySimulationListing(props) {
         setGridApi(params.api)
         setGridColumnApi(params.columnApi)
         params.api.paginationGoToPage(0);
+        gridRef.current.api.sizeColumnsToFit();
     };
 
     const onPageSizeChanged = (newPageSize) => {
