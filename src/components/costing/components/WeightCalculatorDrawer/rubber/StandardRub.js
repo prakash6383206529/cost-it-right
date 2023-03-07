@@ -612,7 +612,7 @@ function StandardRub(props) {
 
 
                                         <Col md="3">
-                                            <TooltipCustom disabledIcon={true} id={'rubber-total-length'} tooltipText={"Total Length = Length  + Cutting allowance "} />
+                                            <TooltipCustom disabledIcon={true} id={'rubber-total-length'} tooltipText={"Total Length = Length + Cutting allowance "} />
                                             <TextFieldHookForm
                                                 label={`Total Length(mm)`}
                                                 id={'rubber-total-length'}
@@ -668,7 +668,7 @@ function StandardRub(props) {
                                         </Col>
 
                                         <Col md="3">
-                                            <TooltipCustom disabledIcon={true} id={'rubber-gross-weight'} tooltipText={"Gross Weight =Volume * Density / 1000000"} />
+                                            <TooltipCustom disabledIcon={true} id={'rubber-gross-weight'} tooltipText={"Gross Weight = Volume * Density / 1000000"} />
                                             <TextFieldHookForm
                                                 label={`Gross Weight(Kg)`}
                                                 name={'GrossWeight'}
@@ -750,10 +750,11 @@ function StandardRub(props) {
                                         </Col>
 
                                         <Col md="3">
-                                            <TooltipCustom disabledIcon={true} id={'rubber-scrap-weight'} tooltipClass={'weight-of-sheet'} tooltipText={"Net RM Cost/Component = Gross Weight*RMRate - Scrap Rate * Scrap Weight"} />
+                                            <TooltipCustom disabledIcon={true} id={'rubber-cost-component'} tooltipClass={'weight-of-sheet'} tooltipText={"Net RM Cost/Component = Gross Weight * RMRate - Scrap Rate * Scrap Weight"} />
                                             <TextFieldHookForm
                                                 label={`Net RM Cost/Component`}
                                                 name={'NetRmCost'}
+                                                id={'rubber-cost-component'}
                                                 Controller={Controller}
                                                 control={control}
                                                 register={register}
