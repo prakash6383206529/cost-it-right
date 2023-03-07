@@ -128,9 +128,10 @@ function GroupProcess(props) {
                                     </td>
                                     <td>{item.Technology}</td>
                                     <td>{item.MachineName}</td>
-                                    <td className='process-name'>{item.Tonnage} <div onClick={() => {
-                                        processAccObj[index] === true ? setProcessAccObj(prevState => ({ ...prevState, [index]: false })) : setProcessAccObj(prevState => ({ ...prevState, [index]: true }))
-                                    }} className={`${processAccObj[index] ? 'Open' : 'Close'}`}></div></td>
+                                    <td ><div className='process-name'>{item.Tonnage}
+                                        <div onClick={() => {
+                                            processAccObj[index] === true ? setProcessAccObj(prevState => ({ ...prevState, [index]: false })) : setProcessAccObj(prevState => ({ ...prevState, [index]: true }))
+                                        }} className={`${processAccObj[index] ? 'Open' : 'Close'}`}></div> </div></td>
                                 </tr>
                                 {processAccObj[index] && <tr>
                                     <td colSpan={4}>

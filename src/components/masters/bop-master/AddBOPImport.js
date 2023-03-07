@@ -16,7 +16,6 @@ import { getVendorWithVendorCodeSelectList, getVendorTypeBOPSelectList, } from '
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import { getConfigurationKey, loggedInUserId, userDetails } from "../../../helper/auth";
-import Switch from "react-switch";
 import "react-datepicker/dist/react-datepicker.css";
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css';
@@ -103,7 +102,8 @@ class AddBOPImport extends Component {
       incoTerm: [],
       paymentTerm: [],
       levelDetails: {},
-      noApprovalCycle: false
+      noApprovalCycle: false,
+      vendorFilterList: []
     }
   }
   /**
@@ -272,7 +272,6 @@ class AddBOPImport extends Component {
         isLoader: true,
         BOPID: data.Id,
       })
-
       this.props.getBOPImportById(data.Id, res => {
         if (res && res.data && res.data.Result) {
 
@@ -996,9 +995,9 @@ class AddBOPImport extends Component {
     const { handleSubmit, isBOPAssociated, initialConfiguration } = this.props;
     const { isCategoryDrawerOpen, isOpenVendor, isOpenUOM, isEditFlag, isViewMode, setDisable, costingTypeId, noApprovalCycle } = this.state;
     const filterList = async (inputValue) => {
-      const { vendorName } = this.state
+      const { vendorFilterList } = this.state
       const resultInput = inputValue.slice(0, searchCount)
-      if (inputValue?.length >= searchCount && vendorName !== resultInput) {
+      if (inputValue?.length >= searchCount && vendorFilterList !== resultInput) {
         this.setState({ inputLoader: true })
         let res
         if (costingTypeId === VBCTypeId) {
@@ -1008,7 +1007,7 @@ class AddBOPImport extends Component {
           res = await getVendorTypeBOPSelectList(resultInput)
         }
         this.setState({ inputLoader: false })
-        this.setState({ vendorName: resultInput })
+        this.setState({ vendorFilterList: resultInput })
         let vendorDataAPI = res?.data?.SelectList
         if (inputValue) {
           return autoCompleteDropdown(inputValue, vendorDataAPI, false, [], true)

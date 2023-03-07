@@ -2775,6 +2775,7 @@ td,
   .Under.Approval,
   .UnderApproval,
   .Under.Revision,
+  .UnderRevision,
   .Open,
   [class^="Pending"],
   [class^="Awaiting"],
@@ -2787,6 +2788,7 @@ td,
   .RejectedBySystem,
   .Cancelled,
   .CreatedByAssembly,
+  .Received,
   .Sent {
     background-color: #da94a1;
     min-width: 90px;
@@ -2802,13 +2804,15 @@ td,
   }
 
   [class^="Pending"],
-  .Under.Revision {
+  .Under.Revision,
+  .UnderRevision {
     background-color: #f8a000;
   }
 
   [class^="Awaiting"],
   .UnderApproval,
-  .Under.Approval {
+  .Under.Approval,
+  .Received {
     background-color: #eac607;
   }
 

@@ -126,7 +126,8 @@ class AddVolume extends Component {
       costingTypeId: ZBCTypeId,
       client: [],
       partName: '',
-      showPopup: false
+      showPopup: false,
+      vendorFilter: []
     }
   }
 
@@ -684,14 +685,14 @@ class AddVolume extends Component {
     const { isEditFlag, isOpenVendor, setDisable, costingTypeId } = this.state;
 
     const vendorFilterList = async (inputValue) => {
-      const { vendorName } = this.state
+      const { vendorFilter } = this.state
       const resultInput = inputValue.slice(0, searchCount)
-      if (inputValue?.length >= searchCount && vendorName !== resultInput) {
+      if (inputValue?.length >= searchCount && vendorFilter !== resultInput) {
         this.setState({ inputLoader: true })
         let res
         res = await getVendorWithVendorCodeSelectList(resultInput)
         this.setState({ inputLoader: false })
-        this.setState({ vendorName: resultInput })
+        this.setState({ vendorFilter: resultInput })
         let vendorDataAPI = res?.data?.SelectList
         if (inputValue) {
           return autoCompleteDropdown(inputValue, vendorDataAPI, false, [], true)
