@@ -13,6 +13,7 @@ import ExcelFile from 'react-export-excel/dist/ExcelPlugin/components/ExcelFile'
 import { Volume, VolumeTempData } from '../../config/masterData';
 import PopupMsgWrapper from '../common/PopupMsgWrapper';
 import { MESSAGES } from '../../config/message';
+import WarningMessage from '../common/WarningMessage';
 
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -142,7 +143,7 @@ class VolumeBulkUploadDrawer extends Component {
             <>
                 <form
                     noValidate
-                    className="form"
+                    className="form bulkupload-drawer"
                     onSubmit={handleSubmit(this.onSubmit.bind(this))}>
                     <Col md="12" className='px-3'>
                         <div>
@@ -196,6 +197,7 @@ class VolumeBulkUploadDrawer extends Component {
                         {this.state.attachmentLoader && <LoaderCustom customClass="attachment-loader" />}
                     </Col>
                     <Row className="sf-btn-footer no-gutters justify-content-between">
+                        <WarningMessage dClass="ml-5 mb-2" message={'In order to upload, Part must have an approved costing version'} />
                         <div className="col-md-12 pl-3 pr-3">
                             <div className="text-right ">
                                 <button
