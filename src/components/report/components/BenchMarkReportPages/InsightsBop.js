@@ -768,12 +768,11 @@ function InsightsBop(props) {
 
                         {showListing && <>
                             <Row>
-                                <Col md='12'>
+                                <div className='report-btn-reset-container'>
                                     {<button type="button" className="user-btn float-right mb-2" title="Reset Grid" onClick={() => resetState()}>
                                         <div className="refresh mr-0"></div>
                                     </button>}
-
-                                </Col>
+                                </div>
 
                                 <Col md="12">
                                     <div className={`ag-grid-react`}>

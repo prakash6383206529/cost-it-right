@@ -4,10 +4,12 @@ import classnames from 'classnames';
 import SimulationApprovalListing from "../simulation/components/SimulationApprovalListing";
 import { APPROVED, PENDING, REJECTED, WAITING_FOR_APPROVAL } from "../../config/constants";
 import ApprovalListing from "../costing/components/approval/ApprovalListing";
+import { useSelector } from "react-redux";
 
 const Tabs = (props) => {
 
     const [activeTab, setActiveTab] = useState('1')
+    const disabledClass = useSelector(state => state.comman.disabledClass)
 
     /**
 * @method toggle
@@ -22,6 +24,7 @@ const Tabs = (props) => {
     return (
         <>
             <Nav tabs className="subtabs mt-0 p-relative">
+                {disabledClass && <div className="disabled-overflow min-width"></div>}
                 <NavItem>
                     <NavLink className={classnames({ active: activeTab === '1' })} onClick={() => { toggle('1'); }}>
                         Pending For Approval
