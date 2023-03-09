@@ -23,7 +23,7 @@ import ScrollToTop from '../../common/ScrollToTop'
 import { PaginationWrapper } from '../../common/commonPagination'
 import { checkFinalUser } from '../../costing/actions/Costing'
 import SingleDropdownFloationFilter from '../../masters/material-master/SingleDropdownFloationFilter'
-import { agGridStatus, isResetClick, getGridHeight } from '../../../actions/Common'
+import { agGridStatus, isResetClick, getGridHeight, disabledClass } from '../../../actions/Common'
 import { reactLocalStorage } from 'reactjs-localstorage'
 
 
@@ -183,6 +183,7 @@ function SimulationApprovalListing(props) {
             isDashboard: isDashboard ?? false
         }
         setIsLoader(true)
+        isDashboard && dispatch(disabledClass(true))
         let obj = { ...dataObj }
         dispatch(getSimulationApprovalList(filterData, skip, take, isPagination, dataObj, IsCustomerDataShow, (res) => {
             if (res?.data?.DataList?.length === 0) {
@@ -191,6 +192,7 @@ function SimulationApprovalListing(props) {
             }
             if (res?.data?.Result) {
                 setIsLoader(false)
+                dispatch(disabledClass(false))
                 let isReset = true
                 if (res) {
                     if (res && res.status === 204) {

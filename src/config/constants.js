@@ -1809,7 +1809,7 @@ export const ELECTRONICS = 'Electronics';
 export const RIVET = 'Rivet';
 export const NON_FERROUS_HPDC = 'Non Ferrous HPDC';
 export const RUBBER = 'Rubber';
-export const FORGING = 'Forging';
+export const FORGING = 'Forging & Machining';
 export const FASTNERS = 'Fastners';
 export const RIVETS = 'Rivet';
 export const MECHANICAL_PROPRIETARY = 'Mechanical Proprietary';
@@ -2221,4 +2221,4 @@ export const KEYRFQ = "UAGSqTBCbZ8JqHJl"
 export const IVRFQ = "8vFNmRQEl91nOtrM"
 
 //VERSION 
-export const VERSION = "V2.1.108";
+export const VERSION = "V2.1.109";

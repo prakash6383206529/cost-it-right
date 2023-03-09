@@ -98,6 +98,7 @@ const CostingSummaryTable = (props) => {
   const [pieChartLabel, setPieChartLabel] = useState([])
 
   const viewCostingData = useSelector((state) => state.costing.viewCostingDetailData)
+  console.log('viewCostingData: ', viewCostingData);
 
   const viewApprovalData = useSelector((state) => state.costing.costingApprovalData)
   const partInfo = useSelector((state) => state.costing.partInfo)
@@ -1985,8 +1986,8 @@ const CostingSummaryTable = (props) => {
                           {viewCostingData &&
                             viewCostingData?.map((data, index) => {
                               return <td>
-                                {data?.CostingHeading === VARIANCE && (isApproval ? viewCostingData?.length > 0 && viewCostingData[0]?.nPOPrice > viewCostingData[1]?.nPOPrice ? <span className='positive-sign'>+</span> : '' : '')}
-                                <span title={data?.nPOPrice}><span className='currency-symbol'>{getCurrencySymbol(getConfigurationKey().BaseCurrency)}</span>{checkForDecimalAndNull(data?.nPOPrice, initialConfiguration.NoOfDecimalForPrice)}</span>
+                                <span className='positive-sign'>{data?.CostingHeading === VARIANCE && (isApproval ? viewCostingData?.length > 0 && viewCostingData[0]?.nPOPrice < viewCostingData[1]?.nPOPrice ? '+' : '-' : '')}</span>
+                                <span title={data?.nPOPrice}><span className='currency-symbol'>{getCurrencySymbol(getConfigurationKey().BaseCurrency)}</span>{Math.abs(checkForDecimalAndNull(data?.nPOPrice, initialConfiguration.NoOfDecimalForPrice))}</span>
                               </td >
                             })}
 
@@ -2022,8 +2023,8 @@ const CostingSummaryTable = (props) => {
 
                           {viewCostingData &&
                             viewCostingData?.map((data, index) => {
-                              return <td> {data?.CostingHeading === VARIANCE && (isApproval ? viewCostingData?.length > 0 && viewCostingData[0]?.nPOPriceWithCurrency > viewCostingData[1]?.nPOPriceWithCurrency ? <span className='positive-sign'>+</span> : '' : '')}
-                                <span title={(data?.currency?.currencyTitle) !== "-" ? (data?.nPOPriceWithCurrency) : data?.nPOPrice}><span className='currency-symbol'>{getCurrencySymbol(data?.currency.currencyTitle !== '-' ? data?.currency.currencyTitle : getConfigurationKey().BaseCurrency)}</span>{data?.nPOPriceWithCurrency !== null ? checkForDecimalAndNull((data?.currency?.currencyTitle) !== "-" ? (data?.nPOPriceWithCurrency) : data?.nPOPrice, initialConfiguration.NoOfDecimalForPrice) : '-'}</span> </td>
+                              return <td> <span className='positive-sign'>{data?.CostingHeading === VARIANCE && (isApproval ? viewCostingData?.length > 0 && (viewCostingData[0]?.nPOPriceWithCurrency === 0 ? viewCostingData[0]?.nPOPrice : viewCostingData[0]?.nPOPriceWithCurrency) < (viewCostingData[1]?.nPOPriceWithCurrency === 0 ? viewCostingData[1]?.nPOPrice : viewCostingData[1]?.nPOPriceWithCurrency) ? '+' : '-' : '')}</span>
+                                <span title={(data?.currency?.currencyTitle) !== "-" ? (data?.nPOPriceWithCurrency) : data?.nPOPrice}><span className='currency-symbol'>{getCurrencySymbol(data?.currency.currencyTitle !== '-' ? data?.currency.currencyTitle : getConfigurationKey().BaseCurrency)}</span>{Math.abs(data?.nPOPriceWithCurrency !== null ? checkForDecimalAndNull((data?.currency?.currencyTitle) !== "-" ? (data?.nPOPriceWithCurrency) : data?.nPOPrice, initialConfiguration.NoOfDecimalForPrice) : '-')}</span> </td>
                             })}
                         </tr>
                       }
