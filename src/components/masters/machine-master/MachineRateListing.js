@@ -688,7 +688,7 @@ class MachineRateListing extends Component {
                 <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
                     {(this.state.isLoader && !this.props.isMasterSummaryDrawer) && <LoaderCustom customClass="simulation-Loader" />}
                     {this.state.disableDownload && <LoaderCustom message={MESSAGES.DOWNLOADING_MESSAGE} />}
-                    <Row className={`${this.props?.isMasterSummaryDrawer ? '' : 'pt-4'} filter-row-large ${this.props.isSimulation ? 'simulation-filter zindex-0' : ''}`}>
+                    <Row className={`${this.props?.isMasterSummaryDrawer ? '' : 'pt-4'} filter-row-large ${(this.props.isSimulation || this.props.benchMark) ? 'simulation-filter zindex-0' : ''}`}>
                         <Col md="3" lg="3">
                             <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={'off'} onChange={(e) => this.onFilterTextBoxChanged(e)} />
                         </Col>
