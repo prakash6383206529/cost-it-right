@@ -328,16 +328,18 @@ function Icc(props) {
             {IsInventoryApplicable &&
                 <>
                     <Row className="costing-border-inner-section border-bottom-none m-0">
-                        <Col md="3">
+                        <Col md={ICCapplicability?.label?.includes('RM') && !(costData.IsAssemblyPart) && IsShowRmcAndNetWeightToggleForIcc ? '2' : '3'}>
                             <span className="head-text">
                                 Applicability
                             </span>
                         </Col>
-                        <Col md="3">
+                        <Col md={ICCapplicability?.label?.includes('RM') && !(costData.IsAssemblyPart) && IsShowRmcAndNetWeightToggleForIcc ? '2' : '3'}>
                             <span className="head-text">
                                 {ICCapplicability.label !== 'Fixed' ? 'Interest Rate (%)' : '`Interest Rate'}
                             </span>
                         </Col>
+
+                        {ICCapplicability?.label?.includes('RM') && !(costData.IsAssemblyPart) && IsShowRmcAndNetWeightToggleForIcc && <Col md="2"></Col>}
                         {ICCapplicability.label !== 'Fixed' && <Col md="3">
                             <span className="head-text">
                                 Cost (Applicability)
@@ -351,13 +353,13 @@ function Icc(props) {
                     </Row>
                     <Row className="costing-border costing-border-with-labels  pt-3 m-0 overhead-profit-tab-costing">
                         <>
-                            <Col md="3">
+                            <Col md={ICCapplicability?.label?.includes('RM') && !(costData.IsAssemblyPart) && IsShowRmcAndNetWeightToggleForIcc ? '2' : '3'}>
                                 <label className="col-label">
                                     {ICCapplicability.label}
                                 </label>
                             </Col>
 
-                            <Col md="3">
+                            <Col md={ICCapplicability?.label?.includes('RM') && !(costData.IsAssemblyPart) && IsShowRmcAndNetWeightToggleForIcc ? '2' : '3'}>
                                 {ICCapplicability.label !== 'Fixed' ?
                                     <TextFieldHookForm
                                         label={false}
@@ -399,7 +401,7 @@ function Icc(props) {
                                         {ICCapplicability.label === 'Fixed' && InterestRateFixedLimit && <WarningMessage dClass={"error-message fixed-error"} message={errorMessage} />}           {/* //MANUAL CSS FOR ERROR VALIDATION MESSAGE */}
                                     </div>}
                             </Col>
-                            {ICCapplicability?.label?.includes('RM') && !(costData.IsAssemblyPart) && IsShowRmcAndNetWeightToggleForIcc && < Col md="2" className="switch mt-4">
+                            {ICCapplicability?.label?.includes('RM') && !(costData.IsAssemblyPart) && IsShowRmcAndNetWeightToggleForIcc && < Col md="2" className="switch mt-2">
                                 <label className="switch-level">
                                     <div className={'right-title mr-2'}>RMC</div>
                                     <Switch
