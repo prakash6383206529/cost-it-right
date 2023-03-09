@@ -28,7 +28,7 @@ import WarningMessage from '../../../common/WarningMessage';
 
 import { updateMultiTechnologyTopAndWorkingRowCalculation } from '../../actions/SubAssembly';
 import TooltipCustom from '../../../common/Tooltip';
-import { number, percentageLimitValidation, checkWhiteSpaces, decimalNumberLimit6, hashValidation } from "../../../../helper/validation";
+import { number, percentageLimitValidation, checkWhiteSpaces, decimalNumberLimit6, hashValidation, maxLength20 } from "../../../../helper/validation";
 
 let counter = 0;
 function TabDiscountOther(props) {
@@ -1123,7 +1123,7 @@ function TabDiscountOther(props) {
                         defaultValue={""}
                         className=""
                         customClassName={'withBorder'}
-                        errors={errors.SANumber}
+                        errors={errors.NetPOPriceINR}
                         disabled={true}
                       />
                     </Col>
@@ -1135,7 +1135,9 @@ function TabDiscountOther(props) {
                         control={control}
                         register={register}
                         mandatory={false}
-                        rules={{}}
+                        rules={{
+                          validate: { maxLength20 }
+                        }}
                         handleChange={() => { }}
                         defaultValue={""}
                         className=""
@@ -1152,7 +1154,7 @@ function TabDiscountOther(props) {
                         control={control}
                         register={register}
                         mandatory={false}
-                        rules={{}}
+                        rules={{ validate: { maxLength20 } }}
                         handleChange={() => { }}
                         defaultValue={""}
                         className=""
