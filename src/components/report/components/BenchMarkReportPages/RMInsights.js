@@ -39,8 +39,6 @@ function Insights(props) {
     const [rowDataNew, setRowDataNew] = useState([])
     const [isLoader, setIsLoader] = useState(true)
     const [vendor, setVendor] = useState([])
-    const [plantName, setPlantName] = useState([])
-    const [uniqueVendors, setUniqueVendors] = useState([])
 
     const [labelArray, setLabelArray] = useState([])
 
@@ -742,7 +740,6 @@ function Insights(props) {
 
 
 
-    let rowData2 = []
 
 
     const rowData = [
@@ -1048,12 +1045,11 @@ function Insights(props) {
 
                         {showListing && <>
                             <Row>
-                                <Col md='12'>
+                                <div className='report-btn-reset-container'>
                                     {<button type="button" className="user-btn float-right mb-2" title="Reset Grid" onClick={() => resetState()}>
                                         <div className="refresh mr-0"></div>
                                     </button>}
-
-                                </Col>
+                                </div>
                                 <Col md="12">
                                     <div className={`ag-grid-react`}>
                                         <div className={`ag-grid-wrapper rminsights_table  ${rowDataNew && rowDataNew?.length <= 0 ? "overlay-contain" : ""}`}>
