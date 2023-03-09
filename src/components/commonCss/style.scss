@@ -3442,13 +3442,14 @@ body {
   border-left: 1px solid $borderColor;
   border-right: 1px solid $borderColor;
 
-  .col-md-3,
-  .col-md-6 {
-    border-top: 1px solid $borderColor;
-    padding: 12px 15px;
+  @for $i from 1 through 12 {
+    .col-md-#{$i} {
+      border-top: 1px solid $borderColor;
+      padding: 12px 15px;
 
-    .form-group.inputbox.withBorder {
-      margin-bottom: 0px;
+      .form-group.inputbox.withBorder {
+        margin-bottom: 0px;
+      }
     }
   }
 }
