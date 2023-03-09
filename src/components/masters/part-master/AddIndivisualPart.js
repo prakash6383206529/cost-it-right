@@ -21,6 +21,7 @@ import _, { debounce } from 'lodash';
 import { onFocus, showDataOnHover } from '../../../helper';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { getCostingSpecificTechnology } from '../../costing/actions/Costing'
+import { ASSEMBLY } from '../../../config/masterData';
 
 class AddIndivisualPart extends Component {
   constructor(props) {
@@ -193,7 +194,7 @@ class AddIndivisualPart extends Component {
       costingSpecifiTechnology &&
         costingSpecifiTechnology.map((item) => {
 
-          if (item.Value === '0') return false
+          if (item.Value === '0' || Number(item.Value) === Number(ASSEMBLY)) return false
           temp.push({ label: item.Text, value: item.Value })
           return null
         })
