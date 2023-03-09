@@ -13,11 +13,10 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '.././common/PopupMsgWrapper';
 import { PaginationWrapper } from '.././common/commonPagination'
-import SelectRowWrapper from '.././common/SelectRowWrapper';
-import { getQuotationList, cancelRfqQuotation, sendReminderForQuotation, getQuotationDetailsList, getMultipleCostingDetails } from './actions/rfq';
+import { sendReminderForQuotation, getQuotationDetailsList, getMultipleCostingDetails } from './actions/rfq';
 import AddRfq from './AddRfq';
 import SendForApproval from '../costing/components/approval/SendForApproval';
-import { getSingleCostingDetails, setCostingApprovalData, setCostingViewData, storePartNumber } from '../costing/actions/Costing';
+import { setCostingApprovalData, setCostingViewData, storePartNumber } from '../costing/actions/Costing';
 import { getVolumeDataByPartAndYear } from '../masters/actions/Volume';
 import { checkForNull, formViewData } from '../../helper';
 import ApproveRejectDrawer from '../costing/components/approval/ApproveRejectDrawer';
@@ -45,7 +44,6 @@ function RfqListing(props) {
     const [isEdit, setIsEdit] = useState(false);
     const [rowData, setRowData] = useState([])
     const [noData, setNoData] = useState(false)
-    const [dataCount, setDataCount] = useState(0)
     const [sendForApproval, setSendForApproval] = useState(false)
     const [rejectDrawer, setRejectDrawer] = useState(false)
     const [selectedRows, setSelectedRows] = useState([])
@@ -56,6 +54,7 @@ function RfqListing(props) {
     const [disableApproveRejectButton, setDisableApproveRejectButton] = useState(true)
     const [remarkRowData, setRemarkRowData] = useState([])
     const viewCostingData = useSelector((state) => state.costing.viewCostingDetailData)
+    const { data } = props
 
     const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
 
@@ -91,7 +90,7 @@ function RfqListing(props) {
     * @description HIDE DOMESTIC, IMPORT FORMS
     */
     const getDataList = () => {
-        dispatch(getQuotationDetailsList(props.data, (res) => {
+        dispatch(getQuotationDetailsList(data.QuotationId, (res) => {
 
             let grouped_data = _.groupBy(res?.data?.DataList, 'PartNumber')                           // GROUPING OF THE ROWS FOR SEPERATE PARTS
             let data = []
@@ -142,6 +141,7 @@ function RfqListing(props) {
             if (el.CostingId === item) {
                 arr.push(el)
             }
+            return null
         }))
 
         // let data = {
@@ -182,7 +182,6 @@ function RfqListing(props) {
     const sendForApprovalData = (rowData) => {
 
         let temp = []
-        let index = 0
 
         let quotationGrid;
         if (Array.isArray(rowData)) {
@@ -193,8 +192,6 @@ function RfqListing(props) {
 
         quotationGrid &&
             quotationGrid.map((id, index) => {
-
-
 
                 if (index !== -1) {
                     let obj = {}
@@ -335,6 +332,7 @@ function RfqListing(props) {
                     temp.push(obj)
                     return null
                 }
+                return null
             }
             )
 
@@ -342,15 +340,6 @@ function RfqListing(props) {
     }
 
 
-
-    const cancelItem = (id) => {
-        dispatch(cancelRfqQuotation(id, (res) => {
-            if (res.status === 200) {
-                Toaster.success('Quotation has been cancelled successfully.')
-            }
-        }))
-        getDataList()
-    }
 
 
     const sendReminder = (id, rowData) => {
@@ -470,11 +459,6 @@ function RfqListing(props) {
     };
 
 
-    const onFilterTextBoxChanged = (e) => {
-        gridApi.setQuickFilter(e.target.value);
-    }
-
-
     const isFirstColumn = (params) => {
 
         var displayedColumns = params.columnApi.getAllDisplayedColumns();
@@ -521,7 +505,7 @@ function RfqListing(props) {
                     tempObj = formViewData(item?.data?.Data)
 
                     temp.push(tempObj[0])
-
+                    return null
                 })
 
                 dispatch(setCostingViewData(temp))
@@ -554,11 +538,11 @@ function RfqListing(props) {
 
         data.map((item) => {
             newArray = [...newArray, ...item]
+            return null
         })
 
 
         setSelectedRows(newArray)
-        setDataCount(selectedRows.length)
         if (selectedRows.length === 0) {
             setAddComparisonButton(true)
         } else {
@@ -608,11 +592,14 @@ function RfqListing(props) {
                 {(loader && !props.isMasterSummaryDrawer) ? <LoaderCustom customClass="simulation-Loader" /> :
                     <>
 
-                        <Row className={`filter-row-large ${props?.isSimulation ? 'zindex-0 ' : ''}`}>
-                            <Col md="3" lg="3" className='mb-2'>
-                                <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
+                        <Row className={`filter-row-large`}>
+                            <Col md="6" lg="6" className='mb-2'>
+                                <div className='header-title heading-container'>
+                                    <div>Raised On: <span>{DayTime(data.RaisedOn).format('DD/MM/YYYY')}</span></div>
+                                    <div>Raised By: <span>{data.RaisedBy}</span></div>
+                                </div>
                             </Col>
-                            <Col md="9" lg="9" className="mb-3 d-flex justify-content-end">
+                            <Col md="6" lg="6" className="mb-1 d-flex justify-content-end align-items-center">
                                 {
                                     // SHOW FILTER BUTTON ONLY FOR RM MASTER NOT FOR SIMULATION AMD MASTER APPROVAL SUMMARY
                                     (!props.isMasterSummaryDrawer) &&
@@ -624,7 +611,7 @@ function RfqListing(props) {
                                         <Link to={"rfq-compare-drawer"} smooth={true} spy={true} offset={-250}>
                                             <button
                                                 type="button"
-                                                className={'user-btn mb-2 comparison-btn ml-1'}
+                                                className={'user-btn comparison-btn ml-1'}
                                                 disabled={addComparisonButton}
                                                 onClick={addComparisonDrawerToggle}
                                             >
