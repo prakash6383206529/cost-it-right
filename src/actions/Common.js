@@ -56,7 +56,8 @@ import {
   GET_GRID_HEIGHT,
   GET_STATE_WHILE_DOWNLOADING,
   GET_REPORTER_LIST,
-  GET_APPROVAL_TYPE_SELECT_LIST
+  GET_APPROVAL_TYPE_SELECT_LIST,
+  GET_DATA_WHILE_LOADING
 } from '../config/constants';
 import { apiErrors } from '../helper/util';
 import { MESSAGES } from '../config/message';
@@ -1619,4 +1620,13 @@ export function getApprovalTypeSelectList(callback) {
       apiErrors(error);
     });
   };
+}
+
+export function dashboardTabLock(data) {
+  return (dispatch) => {
+    dispatch({
+      type: GET_DATA_WHILE_LOADING,
+      payload: data
+    })
+  }
 }
