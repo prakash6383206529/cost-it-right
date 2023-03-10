@@ -27,7 +27,7 @@ import { PaginationWrapper } from '../../../common/commonPagination'
 import _ from 'lodash';
 import { setSelectedRowForPagination } from '../../../simulation/actions/Simulation'
 import SingleDropdownFloationFilter from '../../../masters/material-master/SingleDropdownFloationFilter'
-import { agGridStatus, isResetClick, getGridHeight, disabledClass } from '../../../../actions/Common'
+import { agGridStatus, isResetClick, getGridHeight, dashboardTabLock } from '../../../../actions/Common'
 import PopupMsgWrapper from '../../../common/PopupMsgWrapper'
 import ScrollToTop from '../../../common/ScrollToTop'
 import { reactLocalStorage } from 'reactjs-localstorage'
@@ -217,12 +217,12 @@ function ApprovalListing(props) {
       isDashboard: isDashboard ?? false
     }
     setloader(true)
-    isDashboard && dispatch(disabledClass(true))
+    isDashboard && dispatch(dashboardTabLock(true))
     dispatch(
       getApprovalList(filterData, skip, take, isPagination, dataObj, (res) => {
         if (res.status === 204 && res.data === '') {
           setloader(false)
-          dispatch(disabledClass(false))
+          dispatch(dashboardTabLock(false))
           setTotalRecordCount(0)
           setPageNo(0)
           let isReset = true

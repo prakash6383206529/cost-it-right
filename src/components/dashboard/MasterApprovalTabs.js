@@ -8,7 +8,7 @@ import { useSelector } from "react-redux";
 const MasterApprovalTabs = (props) => {
 
     const [activeTab, setActiveTab] = useState('1')
-    const disabledClass = useSelector(state => state.comman.disabledClass)
+    const dashboardTabLock = useSelector(state => state.comman.dashboardTabLock)
     /**
 * @method toggle
 * @description toggling the tabs
@@ -22,7 +22,7 @@ const MasterApprovalTabs = (props) => {
     return (
         <>
             <Nav tabs className="subtabs mt-0 p-relative">
-                {disabledClass && <div className="disabled-overflow min-width"></div>}
+                {dashboardTabLock && <div className="disabled-overflow min-width"></div>}
                 <NavItem>
                     <NavLink className={classnames({ active: activeTab === '1' })} onClick={() => { toggle('1'); }}>
                         Pending For Approval
