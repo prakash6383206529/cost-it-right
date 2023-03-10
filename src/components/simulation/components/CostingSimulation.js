@@ -1043,6 +1043,12 @@ function CostingSimulation(props) {
             {cell != null ? (Math.abs(value)).toFixed(COSTINGSIMULATIONROUND) : '-'}
         </div >)
     }
+    const processVarianceFormatter = (props) => {
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        let variance = checkForDecimalAndNull(row.NetProcessCostVariance, getConfigurationKey().NoOfDecimalForPrice)
+        variance = (row.OldNetProcessCost < row.NewNetProcessCost) ? `+${Math.abs(variance)}` : `-${Math.abs(variance)}`;
+        return variance;
+    }
 
     /**
      * @method hyphenFormatter
@@ -1277,7 +1283,8 @@ function CostingSimulation(props) {
         impactPerQuarterFormatter: impactPerQuarterFormatter,
         hyphenFormatter: hyphenFormatter,
         processCostFormatter: processCostFormatter,
-        processFormatter: processFormatter
+        processFormatter: processFormatter,
+        processVarianceFormatter:processVarianceFormatter
     };
 
     const isRowSelectable = rowNode => statusForLinkedToken === true ? false : true;
@@ -1436,7 +1443,7 @@ function CostingSimulation(props) {
 
                                                         {(isMachineRate || showMachineRateColumn) && <AgGridColumn width={140} field="OldNetProcessCost" headerName='Existing Net Process Cost' cellRenderer='processCostFormatter' ></AgGridColumn>}
                                                         {(isMachineRate || showMachineRateColumn) && <AgGridColumn width={140} field="NewNetProcessCost" headerName='Revised Net Process Cost' cellRenderer='processCostFormatter'></AgGridColumn>}
-                                                        {(isMachineRate || showMachineRateColumn) && <AgGridColumn width={140} field="NetProcessCostVariance" headerName='Variance (Proc. Cost)' cellRenderer={decimalFormatter} ></AgGridColumn>}
+                                                        {(isMachineRate || showMachineRateColumn) && <AgGridColumn width={140} field="NetProcessCostVariance" headerName='Variance (Proc. Cost)' cellRenderer={'processVarianceFormatter'} ></AgGridColumn>}
 
 
                                                         {(isExchangeRate || showExchangeRateColumn) && <AgGridColumn width={130} field="Currency" headerName='Currency' cellRenderer='revisionFormatter'></AgGridColumn>}
