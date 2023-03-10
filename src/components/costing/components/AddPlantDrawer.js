@@ -6,7 +6,7 @@ import Drawer from '@material-ui/core/Drawer';
 import { SearchableSelectHookForm, } from '../../layout/HookFormInputs';
 import { getPlantSelectListByType } from '../../../actions/Common';
 import { getZBCDetailByPlantId, } from '../actions/Costing';
-import { ZBC } from '../../../config/constants';
+import { EMPTY_GUID, ZBC } from '../../../config/constants';
 
 function AddPlantDrawer(props) {
 
@@ -37,8 +37,13 @@ function AddPlantDrawer(props) {
       return;
     }
     props.closeDrawer('', {
-      ...data,
-      PlantName: `${data.PlantName} (${data.PlantCode})`
+      PlantName: `${plant.label}`,
+      PlantId: `${plant.value}`,
+      PlantCode: `${plant.PlantCode}`,
+      Status: 'Draft',
+      IsNewCosting: true,
+      CostingId: EMPTY_GUID,
+      CostingOptions: []
     })
   };
 
@@ -52,7 +57,7 @@ function AddPlantDrawer(props) {
     if (label === 'Plant') {
       plantSelectList && plantSelectList.map(item => {
         if (item.PlantId === '0' || selectedPlants.includes(item.PlantId)) return false;
-        temp.push({ label: item.PlantNameCode, value: item.PlantId })
+        temp.push({ label: item.PlantNameCode, value: item.PlantId, PlantCode: item.PlantCode })
         return null;
       });
       return temp;
@@ -67,11 +72,6 @@ function AddPlantDrawer(props) {
   const handlePlantChange = (newValue) => {
     if (newValue && newValue !== '') {
       setPlant(newValue)
-      dispatch(getZBCDetailByPlantId(newValue.value, (res) => {
-        if (res && res.data && res.data.Data) {
-          setPlantData(res.data.Data)
-        }
-      }))
     } else {
       setPlant([])
     }
