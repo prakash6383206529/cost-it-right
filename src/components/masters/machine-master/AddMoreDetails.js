@@ -989,7 +989,7 @@ class AddMoreDetails extends Component {
 
   componentDidUpdate(prevProps, prevState) {
     const { initialConfiguration } = this.props
-    if ((prevState?.costingTypeId !== this.state.costingTypeId) && initialConfiguration.IsMasterApprovalAppliedConfigure) {
+    if (this.props.fieldsObj !== prevProps.fieldsObj) {
       this.totalCost()
       this.calculateLoanInterest()
       this.calculateWorkingHrsPerAnnum()
@@ -998,6 +998,9 @@ class AddMoreDetails extends Component {
       this.totalMachineCost()
       this.powerCost()
       this.handleLabourCalculation()
+    }
+    if ((prevState?.costingTypeId !== this.state.costingTypeId) && initialConfiguration.IsMasterApprovalAppliedConfigure) {
+      this.commonFunction()
     }
   }
 
