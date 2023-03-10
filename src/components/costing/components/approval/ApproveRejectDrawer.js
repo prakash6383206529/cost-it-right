@@ -97,16 +97,16 @@ function ApproveRejectDrawer(props) {
           if (res?.data?.Data) {
             levelDetailsTemp = userTechnologyLevelDetails(props?.costingTypeId, res?.data?.Data?.TechnologyLevels)
             setLevelDetails(levelDetailsTemp)
+            dispatch(getSimulationApprovalByDepartment(res => {
+              const Data = res.data.SelectList
+              const departObj = Data && Data.filter(item => item.Value === (type === 'Sender' ? userData.DepartmentId : simulationDetail.DepartmentId))
+              setValue('dept', { label: departObj[0].Text, value: departObj[0].Value })
+              getApproversList(departObj[0].Value, departObj[0].Text, levelDetailsTemp)
+
+            }))
           }
         }))
 
-        dispatch(getSimulationApprovalByDepartment(res => {
-          const Data = res.data.SelectList
-          const departObj = Data && Data.filter(item => item.Value === (type === 'Sender' ? userData.DepartmentId : simulationDetail.DepartmentId))
-          setValue('dept', { label: departObj[0].Text, value: departObj[0].Value })
-          getApproversList(departObj[0].Value, departObj[0].Text, levelDetailsTemp)
-
-        }))
         Attachements && Attachements.map(item => {
           files.push(item)
           setFiles(files)
