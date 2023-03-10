@@ -18,7 +18,7 @@ import Toaster from '../../common/Toaster'
 import { PaginationWrapper } from '../../common/commonPagination';
 import { setSelectedRowForPagination } from '../../simulation/actions/Simulation';
 import { hyphenFormatter } from '../masterUtil';
-import { agGridStatus, disabledClass, getGridHeight, isResetClick } from '../../../actions/Common'
+import { agGridStatus, dashboardTabLock, getGridHeight, isResetClick } from '../../../actions/Common'
 import _ from 'lodash';
 import SingleDropdownFloationFilter from './SingleDropdownFloationFilter';
 import { reactLocalStorage } from 'reactjs-localstorage';
@@ -138,10 +138,10 @@ function CommonApproval(props) {
         dataObj.IsCustomerDataShow = reactLocalStorage.getObject('cbcCostingPermission')
 
         setLoader(true)
-        props?.isDashboard && dispatch(disabledClass(true))
+        props?.isDashboard && dispatch(dashboardTabLock(true))
         dispatch(getRMApprovalList(props?.MasterId, skip, take, isPagination, dataObj, (res) => {
             setLoader(false)
-            dispatch(disabledClass(false))
+            dispatch(dashboardTabLock(false))
             let obj = { ...floatingFilterData }
 
             if (res) {
