@@ -569,7 +569,6 @@ function SimulationApprovalSummary(props) {
     const processFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        console.log('row: ', row);
         const classGreen = (row.NewNetProcessCost > row.OldNetProcessCost) ? 'red-value form-control' : (row.NewNetProcessCost < row.OldNetProcessCost) ? 'green-value form-control' : 'form-class'
         return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
     }
@@ -600,7 +599,7 @@ function SimulationApprovalSummary(props) {
     const processVarianceFormatter = (props) => {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         let variance = checkForDecimalAndNull(row.NetProcessCostVariance, getConfigurationKey().NoOfDecimalForPrice)
-        variance = variance > 0 ? `+${variance}` : variance;
+        variance = (row.OldNetProcessCost < row.NewNetProcessCost) ? `+${Math.abs(variance)}` : `-${Math.abs(variance)}`;
         return variance;
     }
 
