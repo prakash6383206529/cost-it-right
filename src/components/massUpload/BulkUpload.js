@@ -25,7 +25,7 @@ import Drawer from '@material-ui/core/Drawer';
 import Downloadxls, { checkLabourRateConfigure, checkRM_Process_OperationConfigurable, checkVendorPlantConfig } from './Downloadxls';
 import DayTime from '../common/DayTimeWrapper'
 import cloudImg from '../../assests/images/uploadcloud.png';
-import { ACTUALVOLUMEBULKUPLOAD, ADDRFQ, BOPIMPORTBULKUPLOAD, BUDGETBULKUPLOAD, BUDGETEDVOLUMEBULKUPLOAD, CBCTypeId, FUELBULKUPLOAD, INSERTDOMESTICBULKUPLOAD, INTERESTRATEBULKUPLOAD, LABOURBULKUPLOAD, MACHINEBULKUPLOAD, OPERAIONBULKUPLOAD, PARTCOMPONENTBULKUPLOAD, PRODUCTCOMPONENTBULKUPLOAD, RMDOMESTICBULKUPLOAD, RMIMPORTBULKUPLOAD, RMSPECIFICATION, VBCTypeId, VENDORBULKUPLOAD, ZBCADDMORE, ZBCTypeId } from '../../config/constants';
+import { ACTUALVOLUMEBULKUPLOAD, ADDRFQ, BUDGETBULKUPLOAD, BUDGETEDVOLUMEBULKUPLOAD, CBCTypeId, FUELBULKUPLOAD, INSERTDOMESTICBULKUPLOAD, INSERTIMPORTBULKUPLOAD, INTERESTRATEBULKUPLOAD, LABOURBULKUPLOAD, MACHINEBULKUPLOAD, OPERAIONBULKUPLOAD, PARTCOMPONENTBULKUPLOAD, PRODUCTCOMPONENTBULKUPLOAD, RMDOMESTICBULKUPLOAD, RMIMPORTBULKUPLOAD, RMSPECIFICATION, VBCTypeId, VENDORBULKUPLOAD, ZBCADDMORE, ZBCTypeId } from '../../config/constants';
 import { AddRFQUpload, BOP_CBC_DOMESTIC, BOP_CBC_IMPORT, BOP_VBC_DOMESTIC, BOP_VBC_IMPORT, BOP_ZBC_DOMESTIC, BOP_ZBC_IMPORT, BUDGET_CBC, BUDGET_VBC, BUDGET_ZBC, CBCInterestRate, CBCOperation, Fuel, Labour, MachineCBC, MachineVBC, MachineZBC, MHRMoreZBC, PartComponent, ProductComponent, RMDomesticCBC, RMDomesticVBC, RMDomesticZBC, RMImportCBC, RMImportVBC, RMImportZBC, RMSpecification, VBCInterestRate, VBCOperation, Vendor, VOLUME_ACTUAL_CBC, VOLUME_ACTUAL_VBC, VOLUME_ACTUAL_ZBC, VOLUME_BUDGETED_CBC, VOLUME_BUDGETED_VBC, VOLUME_BUDGETED_ZBC, ZBCOperation } from '../../config/masterData';
 import { checkForSameFileUpload, userTechnologyDetailByMasterId } from '../../helper';
 import LoaderCustom from '../common/LoaderCustom';
@@ -221,8 +221,7 @@ class BulkUpload extends Component {
                                 checkForFileHead = checkForSameFileUpload(BOP_CBC_DOMESTIC, fileHeads)
                             }
                             break;
-                        case String(BOPIMPORTBULKUPLOAD):
-
+                        case String(INSERTIMPORTBULKUPLOAD):
                             if (this.state.costingTypeId === ZBCTypeId) {
                                 checkForFileHead = checkForSameFileUpload(BOP_ZBC_IMPORT, fileHeads)
                             }
@@ -560,35 +559,35 @@ class BulkUpload extends Component {
                 this.responseHandler(res)
             });
 
-        } else if ((fileName === 'BOP Domestic' || fileName === 'InsertDomestic') && costingTypeId === ZBCTypeId) {
+        } else if ((fileName === 'BOP Domestic' || fileName === 'Insert Domestic') && costingTypeId === ZBCTypeId) {
             this.props.bulkUploadBOPDomesticZBC(masterUploadData, (res) => {
                 this.setState({ setDisable: false })
                 this.responseHandler(res)
             });
 
-        } else if ((fileName === 'BOP Domestic' || fileName === 'InsertDomestic') && costingTypeId === VBCTypeId) {
+        } else if ((fileName === 'BOP Domestic' || fileName === 'Insert Domestic') && costingTypeId === VBCTypeId) {
             this.props.bulkUploadBOPDomesticVBC(masterUploadData, (res) => {
                 this.setState({ setDisable: false })
                 this.responseHandler(res)
             });
-        } else if (fileName === 'BOP Domestic' && costingTypeId === CBCTypeId) {
+        } else if ((fileName === 'BOP Domestic' || fileName === 'Insert Domestic') && costingTypeId === CBCTypeId) {
             this.props.bulkUploadBOPDomesticCBC(masterUploadData, (res) => {
                 this.setState({ setDisable: false })
                 this.responseHandler(res)
             });
 
-        } else if ((fileName === 'BOP Import' || fileName === 'InsertImport') && costingTypeId === ZBCTypeId) {
+        } else if ((fileName === 'BOP Import' || fileName === 'Insert Import') && costingTypeId === ZBCTypeId) {
             this.props.bulkUploadBOPImportZBC(masterUploadData, (res) => {
                 this.setState({ setDisable: false })
                 this.responseHandler(res)
             });
 
-        } else if ((fileName === 'BOPImport' || fileName === 'InsertImport') && costingTypeId === VBCTypeId) {
+        } else if ((fileName === 'BOP Import' || fileName === 'Insert Import') && costingTypeId === VBCTypeId) {
             this.props.bulkUploadBOPImportVBC(masterUploadData, (res) => {
                 this.setState({ setDisable: false })
                 this.responseHandler(res)
             });
-        } else if ((fileName === 'BOPImport' || fileName === 'InsertImport') && costingTypeId === CBCTypeId) {
+        } else if ((fileName === 'BOP Import' || fileName === 'Insert Import') && costingTypeId === CBCTypeId) {
             this.props.bulkUploadBOPImportCBC(masterUploadData, (res) => {
                 this.setState({ setDisable: false })
                 this.responseHandler(res)

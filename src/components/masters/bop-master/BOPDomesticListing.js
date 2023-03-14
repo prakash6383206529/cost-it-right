@@ -853,7 +853,7 @@ class BOPDomesticListing extends Component {
                         isOpen={isBulkUpload}
                         closeDrawer={this.closeBulkUploadDrawer}
                         isEditFlag={false}
-                        fileName={'InsertDomestic'}
+                        fileName={'Insert Domestic'}
                         isZBCVBCTemplate={true}
                         messageLabel={'Insert Domestic'}
                         anchor={'right'}
