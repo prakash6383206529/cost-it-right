@@ -2098,6 +2098,7 @@ export const MACHINE_MASTER_ID = 4
 export const PROVISIONAL = "Provisional"
 export const APPROVER = 'Approver'
 export const NEW_COMPONENT = "New Component"
+export const CUSTOMER_BASED = "Customer Based"
 
 //default value for page size
 export const defaultPageSize = 10;
