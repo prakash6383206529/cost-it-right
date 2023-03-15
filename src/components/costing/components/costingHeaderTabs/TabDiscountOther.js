@@ -1222,8 +1222,7 @@ function TabDiscountOther(props) {
                       </>
                     )}
                   </Row>
-
-
+                  {/* <NpvCost /> */}
                   <Row className="mx-0">
                     <Col md="10">
                       <div className="left-border mt-3">
