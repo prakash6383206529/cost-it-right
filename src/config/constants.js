@@ -909,6 +909,7 @@ export const API = {
   deleteClient: `${BASE_URL}/client/delete`,
   getClientSelectList: `${BASE_URL}/client/select-list-client`,
   checkAndGetCustomerCode: `${BASE_URL}/client/generate-customer-company-code`,
+  getStatusSelectList: `${BASE_URL}/configuration/select-list-get-poam-status`,
 
   //EXCHANGE RATE MASTER
   createExchangeRate: `${BASE_URL}/masters-exchange-rate/create`,
@@ -1633,6 +1634,7 @@ export const CHECK_REGULARIZATION_LIMIT = 'CHECK_REGULARIZATION_LIMIT'
 export const GET_CLIENT_DATA_SUCCESS = 'GET_CLIENT_DATA_SUCCESS';
 export const GET_CLIENT_SELECTLIST_SUCCESS = 'GET_CLIENT_SELECTLIST_SUCCESS';
 export const GET_CLIENT_DATALIST_SUCCESS = 'GET_CLIENT_DATALIST_SUCCESS';
+export const GET_STATUS_SELECTLIST = 'GET_STATUS_SELECTLIST'
 
 //EXCHANGE RATE MASTER
 export const EXCHANGE_RATE_DATALIST = 'EXCHANGE_RATE_DATALIST'
@@ -1860,7 +1862,7 @@ export const SIMULATION_PATH = '/simulation'
 export const SIMULATION_HISTORY_PATH = '/simulation-history'
 export const USER_PATH = '/users'
 export const RFQ_LISTING = '/rfq-listing'
-export const NFR_LISTING= '/nfr-listing'
+export const NFR_LISTING = '/nfr-listing'
 
 
 export const EMPTY_GUID = "00000000-0000-0000-0000-000000000000"
