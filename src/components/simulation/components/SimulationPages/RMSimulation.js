@@ -23,6 +23,7 @@ import { PaginationWrapper } from '../../../common/commonPagination';
 import WarningMessage from '../../../common/WarningMessage';
 import { getMaxDate } from '../../SimulationUtils';
 import PopupMsgWrapper from '../../../common/PopupMsgWrapper';
+import { FORGING } from '../../../../config/masterData';
 
 const gridOptions = {
 
@@ -31,6 +32,7 @@ const gridOptions = {
 
 function RMSimulation(props) {
     const { list, isbulkUpload, rowCount, technology, master, isImpactedMaster, costingAndPartNo, tokenForMultiSimulation, technologyId } = props
+    console.log('technologyId: ', technologyId);
     const [showRunSimulationDrawer, setShowRunSimulationDrawer] = useState(false)
     const [showverifyPage, setShowVerifyPage] = useState(false)
     const [token, setToken] = useState('')
@@ -548,7 +550,7 @@ function RMSimulation(props) {
                                             </AgGridColumn>
                                             <AgGridColumn width={150} field="RMFreightCost" editable='false' cellRenderer={'CostFormatter'} headerName="Freight Cost"></AgGridColumn>
                                             <AgGridColumn width={170} field="RMShearingCost" editable='false' cellRenderer={'CostFormatter'} headerName="Shearing Cost" ></AgGridColumn>
-                                            <AgGridColumn width={170} field="MachiningScrapRate" editable='false' headerName="Machining Scrap Cost" cellRenderer={'CostFormatter'}></AgGridColumn>
+                                            {technologyId === String(FORGING) && <AgGridColumn width={170} field="MachiningScrapRate" editable='false' headerName="Machining Scrap Cost" cellRenderer={'CostFormatter'}></AgGridColumn>}
                                             {!isImpactedMaster && <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName={Number(selectedMasterForSimulation?.value) === 2 ? "Net Cost (Currency)" : "Net Cost (INR)"}>
                                                 <AgGridColumn width={120} field="NetLandedCost" editable='false' cellRenderer={'costFormatter'} headerName="Existing" colId='NetLandedCost'></AgGridColumn>
                                                 <AgGridColumn width={120} field="NewNetLandedCost" editable='false' valueGetter='data.NewBasicRate + data.RMFreightCost+data.RMShearingCost' cellRenderer={'NewcostFormatter'} headerName="Revised" colId='NewNetLandedCost'></AgGridColumn>
