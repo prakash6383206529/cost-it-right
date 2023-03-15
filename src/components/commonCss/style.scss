@@ -8941,3 +8941,7 @@ table.group-process-table {
     margin-top: 15px;
   }
 }
+
+.border-bottomRowMerge {
+  border-bottom: 1px solid $agGridBorder !important;
+}
