@@ -6430,6 +6430,11 @@ export const visibilityModeDropdownArray = [
     { label: 'Duration', value: 'Duration' },
 ]
 
+export const typeofNpvDropdown = [
+    { label: 'Tool Investment', value: 'Tool Investment' },
+    { label: 'Additional Investment', value: 'Additional Investment' },
+    { label: 'One Time Investment', value: 'One Time Investment' }
+]
 
 export const tokenStatus = {
     PendingForApproval: 'The token is pending for approval from your side.',

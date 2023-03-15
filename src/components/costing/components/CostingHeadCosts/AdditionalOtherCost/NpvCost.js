@@ -3,18 +3,44 @@ import { Row, Col, Table } from 'reactstrap'
 import NoContentFound from '../../../../common/NoContentFound'
 import { EMPTY_DATA } from '../../../../../config/constants'
 import { checkForDecimalAndNull, getConfigurationKey } from '../../../../../helper'
+import AddNpvCost from './AddNpvCost'
 
 
 function NpvCost(props) {
     const [tableData, setTableData] = useState([])
+    const [isOpenandClose, setisOpenandClose] = useState(false)
+
+    const openAndCloseAddNpvDrawer = (type) => {
+        if (type === 'Open') {
+            setisOpenandClose(true)
+        } else {
+            setisOpenandClose(false)
+        }
+    }
     return (
         <Fragment>
             <Row className="mx-0">
-                <Col md="10">
-                    <div className="left-border mt-3">
-                        {'NPV Cost:'}
-                    </div>
-                </Col>
+                {
+                    props.showNpvSection &&
+                    <Col md="6">
+                        <div className="left-border mt-3">
+                            {'NPV Cost:'}
+                        </div>
+                    </Col>
+                }
+                {
+                    props.showAddButton &&
+                    <button
+                        type="button"
+                        className={"user-btn"}
+                        onClick={() => openAndCloseAddNpvDrawer('Open')}
+                        title="Add"
+                    // disabled={isDisable}
+                    >
+                        <div className={"plus mr-0"}></div>
+                    </button>
+                }
+
                 <Col md="6">
                     <Table className="table mb-0 forging-cal-table" size="sm">
                         <thead>
@@ -24,7 +50,6 @@ function NpvCost(props) {
                                 {<th>{`Quantity`}</th>}
                                 {<th>{`Total`}</th>}
 
-
                             </tr>
                         </thead>
                         <tbody>
@@ -33,11 +58,10 @@ function NpvCost(props) {
                                     return (
                                         <Fragment>
                                             <tr key={index}>
-                                                <td>{1} </td>
-                                                {<td>{ }</td>}
-                                                {<td>{checkForDecimalAndNull(item.FlashThickness, getConfigurationKey().NoOfDecimalForInputOutput) !== null ? checkForDecimalAndNull(item.FlashThickness, getConfigurationKey().NoOfDecimalForInputOutput) : '-'}</td>}
-                                                {<td>{checkForDecimalAndNull(item.FlashWidth, getConfigurationKey().NoOfDecimalForInputOutput) !== null ? checkForDecimalAndNull(item.FlashWidth, getConfigurationKey().NoOfDecimalForInputOutput) : '-'}</td>}
-
+                                                <td>{item.NpvType} </td>
+                                                {<td>{item.NpvPercentage}</td>}
+                                                {<td>{checkForDecimalAndNull(item?.Quantity)}</td>}
+                                                {<td>{checkForDecimalAndNull(item?.Cost)}</td>}
                                             </tr>
                                         </Fragment>
                                     )
@@ -55,6 +79,11 @@ function NpvCost(props) {
 
                 </Col>
             </Row>
+            {isOpenandClose && <AddNpvCost
+                isOpen={isOpenandClose}
+                closeDrawer={openAndCloseAddNpvDrawer}
+                anchor={'right'}
+            />}
         </Fragment>
     )
 }
