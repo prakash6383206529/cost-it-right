@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from "react-redux"
 import { Col, Row } from "reactstrap"
 import { getFormGridData } from "../../actions/ReportListing"
 import CostReportForm from "../CostReportForm"
-import PurchaseProvisionListing from "./PurchaseProvisionListing"
+import SalePurchaseProvisionListing from "./SalePurchaseProvisionListing"
 
 function PurchaseProvisionReport(props) {
     const [purchaseProvisionListing, setShowProvisionListing] = useState(false)
@@ -46,7 +46,7 @@ function PurchaseProvisionReport(props) {
                     </Col>
                 </Row>
             </div>}
-            {purchaseProvisionListing && <PurchaseProvisionListing hideListing={purchaseProvisionListing} closeDrawer={closeDrawer} />}
+            {purchaseProvisionListing && <SalePurchaseProvisionListing hideListing={purchaseProvisionListing} closeDrawer={closeDrawer} isSaleProvision={false} />}
         </>
     )
 }
