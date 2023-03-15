@@ -252,6 +252,7 @@ export function getCostMovementReportByPart(data, callback) {
     };
 
 }
+
 export function getSupplierContributionData(data, callback) {
 
     return (dispatch) => {
@@ -276,4 +277,21 @@ export function getFormGridData(data) {
             payload: data
         })
     }
+}
+
+
+export function getSalePurchaseProvisionReport(data, callback) {
+
+    return (dispatch) => {
+        const request = axios.post(`${API.getSalePurchaseProvisionReport}`, data, config());
+        request.then((response) => {
+            callback(response);
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE, });
+            callback(error);
+            //apiErrors(error);
+        });
+
+    };
+
 }
