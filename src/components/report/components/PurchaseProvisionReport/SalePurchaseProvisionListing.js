@@ -7,11 +7,10 @@ import DayTime from '../../../common/DayTimeWrapper';
 import { PaginationWrapper } from '../../../common/commonPagination';
 import { getSalePurchaseProvisionReport } from '../../actions/ReportListing';
 import { getConfigurationKey, getCurrencySymbol } from '../../../../helper';
-import _ from 'lodash';
 import NoContentFound from '../../../common/NoContentFound';
 import LoaderCustom from '../../../common/LoaderCustom';
 
-function PurchaseProvisionListing(props) {
+function SalePurchaseProvisionListing(props) {
 
     const dispatch = useDispatch()
     const [showList, setShowList] = useState(false)
@@ -34,7 +33,7 @@ function PurchaseProvisionListing(props) {
 
         let sampleArray = []
         tableData && tableData.map((item) => {
-            sampleArray.push({ PartId: item.PartId, PlantId: item.PlantId, VendorId: item.VendorId, TechnologyId: item.TechnologyId, CustomerId: null })
+            sampleArray.push({ PartId: item.PartId, PlantId: item.PlantId, VendorId: (props.isSaleProvision ? null : item.VendorId), TechnologyId: item.TechnologyId, CustomerId: (props.isSaleProvision ? item.CustomerId : null) })
         })
         obj.salesPurchaseProvisionReportInfoList = sampleArray
 
@@ -82,8 +81,10 @@ function PurchaseProvisionListing(props) {
                         var row3 = document.querySelector(`.ag-row[row-index="${item}"] .ag-cell[col-id="PartDescription"]`);
                         row3.classList.add("border-bottomRowMerge");
 
-                        var row4 = document.querySelector(`.ag-row[row-index="${item}"] .ag-cell[col-id="VendorName"]`);
-                        row4.classList.add("border-bottomRowMerge");
+                        if (!(props.isSaleProvision)) {
+                            var row4 = document.querySelector(`.ag-row[row-index="${item}"] .ag-cell[col-id="VendorName"]`);
+                            row4.classList.add("border-bottomRowMerge");
+                        }
                     })
                 }, 400);
             }
@@ -120,8 +121,10 @@ function PurchaseProvisionListing(props) {
                     var row3 = document.querySelector(`.ag-row[row-index="${item}"] .ag-cell[col-id="PartDescription"]`);
                     row3?.classList.add("border-bottomRowMerge");
 
-                    var row4 = document.querySelector(`.ag-row[row-index="${item}"] .ag-cell[col-id="VendorName"]`);
-                    row4?.classList.add("border-bottomRowMerge");
+                    if (!(props.isSaleProvision)) {
+                        var row4 = document.querySelector(`.ag-row[row-index="${item}"] .ag-cell[col-id="VendorName"]`);
+                        row4?.classList.add("border-bottomRowMerge");
+                    }
                 })
             }, 400);
         }
@@ -197,9 +200,8 @@ function PurchaseProvisionListing(props) {
                                                 frameworkComponents={frameworkComponents}
                                                 rowSelection={'multiple'}
                                             >
-
                                                 {<AgGridColumn field="PlantName" width="150" headerName="Plant (Code)" cellClass={"colorWhite"} floatingFilter={true}></AgGridColumn>}
-                                                {<AgGridColumn field="VendorName" headerName="Vendor (Code)" cellClass={"colorWhite"} floatingFilter={true}></AgGridColumn>}
+                                                {!(props.isSaleProvision) && <AgGridColumn field="VendorName" headerName="Vendor (Code)" cellClass={"colorWhite"} floatingFilter={true}></AgGridColumn>}
                                                 {<AgGridColumn field="PartNumber" headerName="Part Number" width="120" cellClass={"colorWhite"} floatingFilter={true}></AgGridColumn>}
                                                 {<AgGridColumn field="PartDescription" width="120" headerName="Part Description" cellClass={"colorWhite"} floatingFilter={true}></AgGridColumn>}
 
@@ -208,7 +210,6 @@ function PurchaseProvisionListing(props) {
                                                     <AgGridColumn width="150" field="FromDate" headerName="From" />
                                                     <AgGridColumn width="150" field="ToDate" headerName="To" />
                                                 </AgGridColumn>
-
                                                 {<AgGridColumn field="UnitOfMeasurement" headerName="UOM" floatingFilter={true}></AgGridColumn>}
                                                 {<AgGridColumn field="OldRate" headerName="Existing Po Price" cellRenderer={POPriceCurrencyFormatter} floatingFilter={true}></AgGridColumn>}
                                                 {<AgGridColumn field="NewRate" headerName="Revised Po Price" cellRenderer={POPriceCurrencyFormatter} floatingFilter={true}></AgGridColumn>}
@@ -233,4 +234,4 @@ function PurchaseProvisionListing(props) {
     );
 }
 
-export default PurchaseProvisionListing;
+export default SalePurchaseProvisionListing;
