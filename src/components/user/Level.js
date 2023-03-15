@@ -16,7 +16,8 @@ import Drawer from '@material-ui/core/Drawer';
 import { Container, Row, Col, Label, } from 'reactstrap';
 import LoaderCustom from "../common/LoaderCustom";
 import { getApprovalTypeSelectList } from '../../actions/Common'
-import { NEW_COMPONENT, PROVISIONAL } from "../../config/constants";
+import { CUSTOMER_BASED, NEW_COMPONENT, PROVISIONAL } from "../../config/constants";
+import { reactLocalStorage } from "reactjs-localstorage";
 
 /**************************************THIS FILE IS FOR ADDING LEVEL MAPPING*****************************************/
 class Level extends Component {
@@ -210,6 +211,7 @@ class Level extends Component {
         if (item.Value === '0') return false
         if (item.Text === PROVISIONAL && this.state.levelType !== 'Simulation') return false
         if (item.Text === NEW_COMPONENT && this.state.levelType === 'Master') return false
+        if (item.Text === CUSTOMER_BASED && !(reactLocalStorage.getObject('cbcCostingPermission'))) return false
         temp.push({ label: item.Text, value: item.Value })
         return null;
       });
@@ -349,7 +351,6 @@ class Level extends Component {
           CreatedDate: '',
           LevelName: values.LevelName,
           Description: values.Description,
-          Sequence: values.Sequence,
           Sequence: values.Sequence,
         }
 
