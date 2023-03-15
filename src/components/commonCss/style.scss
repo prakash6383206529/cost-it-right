@@ -8951,3 +8951,27 @@ table.group-process-table {
     }
   }
 }
+
+.right-tooltip {
+  .tooltip {
+    margin-right: 15px;
+    margin-top: 8px;
+  }
+}
+
+.attachment.images {
+  a {
+    color: $colorPrimary;
+  }
+}
+
+.apply-mb {
+  .custom-checkbox {
+    white-space: nowrap;
+    margin-top: 15px;
+  }
+}
+
+.border-bottomRowMerge {
+  border-bottom: 1px solid $agGridBorder !important;
+}
