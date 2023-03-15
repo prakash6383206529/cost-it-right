@@ -1003,7 +1003,7 @@ export const API = {
   getCostingBenchMarkOperationReport: `${BASE_URL}/reports/get-operation-cost-benchmarking-report`,
   getSupplierContributionData: `${BASE_URL}/reports/get-supplier-contribution-report`,
   getCostingBenchMarkMachineReport: `${BASE_URL}/reports/get-process-cost-benchmarking-report`,
-  getSalePurchaseProvisionReport:`${BASE_URL}/reports/get-sale-purchase-provision-report`,
+  getSalePurchaseProvisionReport: `${BASE_URL}/reports/get-sale-purchase-provision-report`,
 
   //SUB ASSEMBLY
   getSubAssemblyAPI: `${BASE_URL}/sub-assembly/get-sub-assembly`,
@@ -1834,7 +1834,7 @@ export const SIMULATION_PATH = '/simulation'
 export const SIMULATION_HISTORY_PATH = '/simulation-history'
 export const USER_PATH = '/users'
 export const RFQ_LISTING = '/rfq-listing'
-export const NFR_LISTING= '/nfr-listing'
+export const NFR_LISTING = '/nfr-listing'
 
 
 export const EMPTY_GUID = "00000000-0000-0000-0000-000000000000"
@@ -2192,4 +2192,4 @@ export const KEYRFQ = "UAGSqTBCbZ8JqHJl"
 export const IVRFQ = "8vFNmRQEl91nOtrM"
 
 //VERSION 
-export const VERSION = "V2.1.109";
+export const VERSION = "V2.1.110";
