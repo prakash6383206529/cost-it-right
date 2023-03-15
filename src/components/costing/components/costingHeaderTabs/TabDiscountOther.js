@@ -28,6 +28,7 @@ import WarningMessage from '../../../common/WarningMessage';
 import { updateMultiTechnologyTopAndWorkingRowCalculation } from '../../actions/SubAssembly';
 import TooltipCustom from '../../../common/Tooltip';
 import { number, percentageLimitValidation, checkWhiteSpaces, decimalNumberLimit6, hashValidation } from "../../../../helper/validation";
+import NpvCost from '../CostingHeadCosts/AdditionalOtherCost/NpvCost';
 
 let counter = 0;
 function TabDiscountOther(props) {
@@ -1182,7 +1183,7 @@ function TabDiscountOther(props) {
                       </>
                     )}
                   </Row>
-
+                  {/* <NpvCost /> */}
                   <Row className="mx-0">
                     <Col md="10">
                       <div className="left-border mt-3">
