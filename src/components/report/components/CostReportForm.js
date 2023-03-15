@@ -20,12 +20,13 @@ import { checkPartWithTechnology, getCostingSpecificTechnology, getPartCostingVe
 import { AsyncSearchableSelectHookForm, DatePickerHookForm, SearchableSelectHookForm } from "../../layout/HookFormInputs"
 import { getFormGridData, getRevisionNoFromPartId } from "../actions/ReportListing"
 import { PaginationWrapper } from '../../common/commonPagination';
+import { getClientSelectList } from "../../masters/actions/Client"
 
 
 
 const gridOptions = {}
 function CostReportForm(props) {
-    const { isDateMandatory } = props
+    const { isDateMandatory, showVendor } = props
     const [technology, setTechnology] = useState([])
     const [partName, setpartName] = useState('')
     const [part, setPart] = useState([]);
@@ -44,6 +45,7 @@ function CostReportForm(props) {
     const technologySelectList = useSelector((state) => state.costing.costingSpecifiTechnology)
     const vendorSelectList = useSelector((state) => state.costing.costingVendorList)
     const DestinationplantSelectList = useSelector(state => state.comman.plantSelectList);
+    const clientSelectList = useSelector((state) => state.client.clientSelectList)
 
     const costReportFormData = useSelector(state => state.report.costReportFormGridData)
 
@@ -67,6 +69,8 @@ function CostReportForm(props) {
     useEffect(() => {
         dispatch(getCostingSpecificTechnology(loggedInUserId(), () => { }))
         dispatch(getPartInfo('', () => { }))
+        dispatch(getClientSelectList((res) => {
+        }))
         if (props.isDataClear) {
             setValue('fromDate', startDate ? startDate : '')
             setValue('toDate', endDate ? endDate : '')
@@ -90,6 +94,7 @@ function CostReportForm(props) {
         obj.ShowRevisionNumber = getValues('Revision')?.label ? getValues('Revision')?.label : '-'
         obj.Vendor = getValues('Vendor')?.label ? getValues('Vendor')?.label : '-'
         obj.Plant = getValues('Plant')?.label ? getValues('Plant')?.label : '-'
+        obj.CustomerId = getValues('Customer')?.value ? getValues('Customer')?.value : '-'
 
         gridData && gridData.map((item) => {
             if (item.TechnologyId === obj.TechnologyId && item.PartId === obj.PartId && item.RevisionNumber === obj.RevisionNumber && item.VendorId === obj.VendorId && item.PlantId === obj.PlantId) {
@@ -177,6 +182,15 @@ function CostReportForm(props) {
                 return null
             })
             return temp
+        }
+
+        if (label === 'Customer') {
+            clientSelectList && clientSelectList.map(item => {
+                if (item.Value === '0') return false;
+                temp.push({ label: item.Text, value: item.Value })
+                return null;
+            });
+            return temp;
         }
     }
     const defaultColDef = {
@@ -452,22 +466,26 @@ function CostReportForm(props) {
                                 disabled={part.length === 0 ? true : false}
                             />
                         </Col>
-                        <Col md="3">
-                            <SearchableSelectHookForm
-                                label={"Vendor"}
-                                name={"Vendor"}
-                                placeholder={"Select"}
-                                Controller={Controller}
-                                control={control}
-                                register={register}
-                                defaultValue={vendor.length !== 0 ? vendor : ''}
-                                options={renderListing('Vendor')}
-                                mandatory={false}
-                                handleChange={handleVendorChange}
-                                errors={errors.vendor}
-                                disabled={part.length === 0 ? true : false}
-                            />
-                        </Col>
+
+                        {showVendor &&
+                            <Col md="3">
+                                <SearchableSelectHookForm
+                                    label={"Vendor"}
+                                    name={"Vendor"}
+                                    placeholder={"Select"}
+                                    Controller={Controller}
+                                    control={control}
+                                    register={register}
+                                    defaultValue={vendor.length !== 0 ? vendor : ''}
+                                    options={renderListing('Vendor')}
+                                    mandatory={false}
+                                    handleChange={handleVendorChange}
+                                    errors={errors.vendor}
+                                    disabled={part.length === 0 ? true : false}
+                                />
+                            </Col>
+                        }
+
                         <Col md="3">
                             <SearchableSelectHookForm
                                 label={"Plant (Code)"}
@@ -475,16 +493,36 @@ function CostReportForm(props) {
                                 placeholder={"Select"}
                                 Controller={Controller}
                                 control={control}
-                                rules={{ required: false }}
+                                rules={{ required: props.isPlantRequired ? true : false }}
                                 register={register}
                                 defaultValue={plant.length !== 0 ? plant : ""}
                                 options={renderListing("Plant")}
-                                mandatory={false}
+                                mandatory={props.isPlantRequired ? true : false}
                                 handleChange={plantHandleChange}
-                                errors={errors.plant}
+                                errors={errors.Plant}
                                 disabled={part.length === 0 ? true : false}
                             />
                         </Col>
+
+
+                        {!showVendor && <Col md="3">
+                            <SearchableSelectHookForm
+                                label={"Customer (Code)"}
+                                name={"Customer"}
+                                placeholder={"Select"}
+                                Controller={Controller}
+                                control={control}
+                                rules={{ required: false }}
+                                register={register}
+                                // defaultValue={customer.length !== 0 ? customer : ""}
+                                options={renderListing("Customer")}
+                                mandatory={false}
+                                handleChange={() => { }}
+                                errors={errors.Customer}
+                                disabled={part.length === 0 ? true : false}
+                            />
+                        </Col>}
+
                         <Col md="3" className="mt-4 pt-1">
                             <button
                                 type="submit"
