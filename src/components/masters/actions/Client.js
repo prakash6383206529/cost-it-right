@@ -7,6 +7,7 @@ import {
     GET_CLIENT_SELECTLIST_SUCCESS,
     GET_CLIENT_DATALIST_SUCCESS,
     config,
+    GET_STATUS_SELECTLIST
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
 // const config() = config
@@ -167,6 +168,28 @@ export function checkAndGetCustomerCode(code, name, callback) {
             }
         }).catch((error) => {
             dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    };
+}
+/**
+ * @method getStatusSelectList
+ * @description Used to Status selectlist
+ */
+export function getStatusSelectList(callback) {
+    return (dispatch) => {
+        const request = axios.get(`${API.getStatusSelectList}`, config());
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_STATUS_SELECTLIST,
+                    payload: response.data.SelectList,
+                });
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE, });
+            callback(error);
             apiErrors(error);
         });
     };
