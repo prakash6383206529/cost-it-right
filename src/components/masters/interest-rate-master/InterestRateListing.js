@@ -66,11 +66,6 @@ class InterestRateListing extends Component {
       dataCount: 0
     }
   }
-  floatingFilterIcc = {
-    maxValue: 3,
-    suppressFilterButton: true,
-    component: "InterestRate"
-  }
   componentDidMount() {
 
     this.applyPermission(this.props.topAndLeftMenuData)
@@ -526,7 +521,7 @@ class InterestRateListing extends Component {
                   {(getConfigurationKey().IsPlantRequiredForOverheadProfitInterestRate || getConfigurationKey().IsDestinationPlantConfigure) && <AgGridColumn field="PlantName" headerName="Plant (Code)"></AgGridColumn>}
                   <AgGridColumn field="VendorName" headerName="Vendor (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                   {reactLocalStorage.getObject('cbcCostingPermission') && <AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
-                  <AgGridColumn field="ICCApplicability" headerName="ICC Applicability" floatingFilterComponent="valuesFloatingFilter" floatingFilterComponentParams={this.floatingFilterIcc}></AgGridColumn>
+                  <AgGridColumn field="ICCApplicability" headerName="ICC Applicability" ></AgGridColumn>
                   <AgGridColumn width={140} field="ICCPercent" headerName="Annual ICC (%)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                   <AgGridColumn width={220} field="PaymentTermApplicability" headerName="Payment Term Applicability" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                   <AgGridColumn width={210} field="RepaymentPeriod" headerName="Repayment Period (Days)" cellRenderer={'hyphenFormatter'}></AgGridColumn>

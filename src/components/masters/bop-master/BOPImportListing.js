@@ -781,9 +781,9 @@ class BOPImportListing extends Component {
                         isOpen={isBulkUpload}
                         closeDrawer={this.closeBulkUploadDrawer}
                         isEditFlag={false}
-                        fileName={'BOP Import'}
+                        fileName={'Insert Import'}
                         isZBCVBCTemplate={true}
-                        messageLabel={'BOP Import'}
+                        messageLabel={'Insert Import'}
                         anchor={'right'}
                         masterId={BOP_MASTER_ID}
                     />
