@@ -115,6 +115,9 @@ export const required = value =>
 ((typeof value !== 'undefined' && value !== null && value !== "")
     ? undefined : 'This field is required.');
 
+export const requiredDropDown = value =>
+    ('This field is required.');
+
 export const selectRequired = value =>
 ((typeof value !== 'undefined' && value !== null && value !== "")
     ? undefined : 'This field is required.');

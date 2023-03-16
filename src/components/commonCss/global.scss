@@ -2787,6 +2787,7 @@ td,
   .RejectedBySystem,
   .Cancelled,
   .CreatedByAssembly,
+  .Received,
   .Sent {
     background-color: #da94a1;
     min-width: 90px;
@@ -2809,7 +2810,8 @@ td,
 
   [class^="Awaiting"],
   .UnderApproval,
-  .Under.Approval {
+  .Under.Approval,
+  .Received {
     background-color: #eac607;
   }
 

@@ -612,6 +612,7 @@ function AddRfq(props) {
                 setValue('vendor', "")
                 setValue('contactPerson', "")
                 setUpdateButtonVendorTable(false)
+                setGetReporterListDropDown([])
             }
 
         }))

@@ -11,7 +11,7 @@ import { defaultPageSize, EMPTY_DATA } from '../../../../config/constants'
 import { Costmovementgraph } from '../../../dashboard/CostMovementGraph'
 import { graphColor1, graphColor3, graphColor4, graphColor6 } from '../../../dashboard/ChartsDashboard'
 import { PaginationWrapper } from '../../../common/commonPagination';
-import { getCostingBenchMarkMachineReport, getCostingBenchMarkOperationReport } from '../../actions/ReportListing';
+import { getCostingBenchMarkMachineReport } from '../../actions/ReportListing';
 import DayTime from '../../../common/DayTimeWrapper';
 import { checkForDecimalAndNull } from '../../../../helper';
 
@@ -98,9 +98,9 @@ function MachineInsights(props) {
 
                     let Val3 = `value${data.VendorName}${ele.PlantName}`                           // SETTING PLANTS FOR EACH VENDOR IN OBJ
                     obj[Val3] = ele.TotalValue
-
+                    return null
                 })
-
+                return null
             })
 
 
@@ -117,18 +117,18 @@ function MachineInsights(props) {
 
                 ele.PlantDetails.map((el) => {
                     plantTemp.push(el.PlantName)
-
+                    return null
                 })
                 obj2.plants = plantTemp
                 plantTemp = []
 
                 arrSample.push(obj2)
                 uniqueVendors.push(ele.VendorName)
-
+                return null
             })
 
             vendorTemp.push(arrSample)
-
+            return null
         })
 
 
@@ -150,13 +150,14 @@ function MachineInsights(props) {
 
                         plants = [...plants, ...e.plants]
                     }
-
+                    return null
                 })
-
+                return null
             })
             let uniqueP = plants.filter((item, i, ar) => ar.indexOf(item) === i);
             obj.plants = uniqueP
             finalArray.push(obj)
+            return null
         })
 
 
@@ -260,7 +261,7 @@ function MachineInsights(props) {
 
                 }
                 childPlants.push(plantObj)
-
+                return null
             })
 
 
@@ -274,7 +275,7 @@ function MachineInsights(props) {
             }
 
             array55.push(obj)
-
+            return null
         })
 
 
@@ -297,8 +298,10 @@ function MachineInsights(props) {
 
                 item.children.map((ele) => {
                     labelArr.push(`${item.headerName}-${ele.headerName}`)
+                    return null
                 })
             }
+            return null
         })
 
 
@@ -337,8 +340,9 @@ function MachineInsights(props) {
                 if (newStr.includes(ele)) {
                     newArr[index] = array[ind]
                 }
+                return null
             })
-
+            return null
         })
 
         graphDataNew = newArr
@@ -350,6 +354,7 @@ function MachineInsights(props) {
         let avgArray = []
         labelArr && labelArr.map((item, ind) => {
             avgArray.push(avgGraphData)
+            return null
         })
         setAverageGrpahData(avgArray)
 
@@ -437,11 +442,11 @@ function MachineInsights(props) {
                     <form noValidate >
                         {showListing && <>
                             <Row>
-                                <Col md='12'>
+                                <div className='report-btn-reset-container'>
                                     {<button type="button" className="user-btn float-right mb-2" title="Reset Grid" onClick={() => resetState()}>
                                         <div className="refresh mr-0"></div>
                                     </button>}
-                                </Col>
+                                </div>
                                 <Col md="12">
                                     <div className={`ag-grid-react`}>
                                         <div className={`ag-grid-wrapper rminsights_table  ${rowDataNew && rowDataNew?.length <= 0 ? "overlay-contain" : ""}`}>

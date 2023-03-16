@@ -2,8 +2,6 @@ import React, { useEffect, useState } from "react";
 import { connect, useSelector, useDispatch } from "react-redux";
 import { getMenuByUser } from "../../actions/auth/AuthActions";
 import { Col, Nav, NavItem, Row, NavLink, TabPane, TabContent } from "reactstrap";
-import ApprovalListing from '../costing/components/approval/ApprovalListing';
-import SimulationApprovalListing from '../simulation/components/SimulationApprovalListing';
 import { reduxForm } from "redux-form";
 import dashboardImg from '../../assests/images/dashboard-img.png';
 import classnames from 'classnames';
@@ -11,12 +9,12 @@ import { CheckApprovalApplicableMaster, getConfigurationKey } from "../../helper
 import { checkPermission } from "../../helper/util";
 import { ADDITIONAL_MASTERS, BOP, BOP_MASTER_ID, COSTING, MACHINE, MACHINE_MASTER_ID, MASTERS, OPERATION, OPERATIONS_ID, RAW_MATERIAL, RM_MASTER_ID, SIMULATION } from "../../config/constants";
 import CalculatorWrapper from "../common/Calculator/CalculatorWrapper";
-import CommonApproval from "../masters/material-master/CommonApproval";
 import { setSelectedRowForPagination } from "../simulation/actions/Simulation";
 import Tabs from "./Tabs";
 import './dashboard.scss';
 import MasterApprovalTabs from "./MasterApprovalTabs";
 import ScrollToTop from "../common/ScrollToTop";
+import { MESSAGES } from "../../config/message";
 
 
 function Dashboard(props) {
@@ -38,6 +36,7 @@ function Dashboard(props) {
     machine: false
   })
   const topAndLeftMenuData = useSelector((state) => state.auth.topAndLeftMenuData)
+  const dashboardTabLock = useSelector(state => state.comman.dashboardTabLock)
 
   const dispatch = useDispatch()
 
@@ -123,7 +122,7 @@ function Dashboard(props) {
                   <Row>
                     <Col md="8"><h3 className="mb-0">Amendments Approval Status</h3></Col>
                     <Col md="4" className="text-right">
-                      <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setAcc2(!acc2) }}>
+                      <button className="btn btn-small-primary-circle ml-1" type="button" disabled={dashboardTabLock} onClick={() => { setAcc2(!acc2) }}>
                         {acc2 ? (
                           <i className="fa fa-minus" ></i>
                         ) : (
@@ -144,12 +143,13 @@ function Dashboard(props) {
                   <Row>
                     <Col md="8"><h3 className="mb-0">Costings Approval Status</h3></Col>
                     <Col md="4" className="text-right">
-                      <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setAcc1(!acc1) }}>
+                      <button className="btn btn-small-primary-circle ml-1 " disabled={dashboardTabLock} type="button" onClick={() => { setAcc1(!acc1) }}>
                         {acc1 ? (
                           <i className="fa fa-minus" ></i>
                         ) : (
                           <i className="fa fa-plus"></i>
                         )}
+                        
                       </button>
                     </Col>
                   </Row>
@@ -165,7 +165,7 @@ function Dashboard(props) {
                     <Row>
                       <Col md="8"><h3 className="mb-0">Masters Approval Status</h3></Col>
                       <Col md="4" className="text-right">
-                        <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setAcc3(!acc3) }}>
+                        <button className="btn btn-small-primary-circle ml-1" type="button" disabled={dashboardTabLock} onClick={() => { setAcc3(!acc3) }}>
                           {acc3 ? (
                             <i className="fa fa-minus" ></i>
                           ) : (
@@ -175,7 +175,8 @@ function Dashboard(props) {
                       </Col>
                     </Row>
                     {acc3 && <Row className="master-tabs-row mt-3">
-                      <Col md="1" className="master-tabs px-0"> <Nav tabs className="subtabs">
+                      <Col md="1" className="master-tabs px-0 p-relative"> <Nav tabs className="subtabs">
+                        {dashboardTabLock && <div title={MESSAGES.LOADING_MESSAGE} className="disabled-overflow min-width"></div>}
                         {(CheckApprovalApplicableMaster(RM_MASTER_ID) && viewMastersObj.RM) && <NavItem>
                           <NavLink className={classnames({ active: activeTab === '1' })} onClick={() => { toggle('1'); }}>
                             RM

@@ -348,8 +348,9 @@ export const MESSAGES = {
 
   // COMMON MESSAGES 
   DOWNLOADING_MESSAGE: 'Please wait while data is downloading',
+  LOADING_MESSAGE: 'Please wait while loading',
   CANCEL_MASTER_ALERT: 'Are you sure, you want to cancel?',
-  ASYNC_MESSAGE_FOR_DROPDOWN: 'Enter first 3 characters to show data',
+  ASYNC_MESSAGE_FOR_DROPDOWN: 'Enter first 3 characters to search data',
 
   //ERROR MESSAGES
   PRICE_VALIDATION_MESSAGE: `Maximum length for integer is ${Number(getConfigurationKey().NoOfDecimalForPrice)} and for decimal is ${Number(getConfigurationKey().NoOfDecimalForPrice)}.`,

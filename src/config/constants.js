@@ -1295,6 +1295,7 @@ export const GET_SOURCE_PLANTS_BY_SOURCE_CITY = 'GET_SOURCE_PLANTS_BY_SOURCE_CIT
 export const GET_DESTINATION_PLANTS_BY_DESTINATION_CITY = 'GET_DESTINATION_PLANTS_BY_DESTINATION_CITY'
 export const GET_GRID_HEIGHT = 'GET_GRID_HEIGHT'
 export const GET_STATE_WHILE_DOWNLOADING = 'GET_STATE_WHILE_DOWNLOADING';
+export const GET_DATA_WHILE_LOADING = 'GET_DATA_WHILE_LOADING';
 
 //OPERATION
 export const GET_OPERATION_SUCCESS = 'GET_OPERATION_SUCCESS'
@@ -2066,6 +2067,7 @@ export const MACHINE_MASTER_ID = 4
 //approve reject drawer
 export const PROVISIONAL = "Provisional"
 export const NEW_COMPONENT = "New Component"
+export const CUSTOMER_BASED = "Customer Based"
 
 //default value for page size
 export const defaultPageSize = 10;
@@ -2194,4 +2196,4 @@ export const KEYRFQ = "UAGSqTBCbZ8JqHJl"
 export const IVRFQ = "8vFNmRQEl91nOtrM"
 
 //VERSION 
-export const VERSION = "V2.1.106";
+export const VERSION = "V2.1.110";

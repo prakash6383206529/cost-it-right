@@ -271,7 +271,7 @@ class AssemblyPartListing extends Component {
             if (item.Technology === '-') {
                 item.Technology = ' '
             }
-            if (item.EffectiveDate.includes('T')) {
+            if (item.EffectiveDate?.includes('T')) {
                 item.EffectiveDate = DayTime(item.EffectiveDate).format('DD/MM/YYYY')
             }
             return item

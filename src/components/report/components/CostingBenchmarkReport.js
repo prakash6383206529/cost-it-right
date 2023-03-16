@@ -193,11 +193,14 @@ function CostingBenchmarkReport(props) {
         <div className="container-fluid simulation-page">
             {
                 !showEditTable &&
-                <div className="simulation-main">
+                <div className="simulation-main p-relative">
                     <Row>
-                        <Col sm="12">
+                        <Col sm="6">
                             <h1>{`Report`}</h1>
                         </Col>
+                        {cancelButton && <Col md="6">
+                            <button type="button" className={`apply float-right report-btn-back`} onClick={cancelReport}> <div className={'back-icon'}></div>Back</button>
+                        </Col>}
                     </Row>
 
                     <Row>
@@ -231,18 +234,12 @@ function CostingBenchmarkReport(props) {
                     {showMasterList && renderModule(master)}
                     {showInsight && renderInsights(master)}
 
-                    {blueDivison &&
-                        <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
-
-
+                    {blueDivison && runReportButton &&
+                        <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer sticky-btn-footer">
                             <div className="col-sm-12 text-right bluefooter-butn mt-3">
-                                <div className="d-flex justify-content-end bd-highlight w100 my-2 align-items-center">
-
-                                    {cancelButton && <button type="button" className={"mr15 cancel-btn"} onClick={cancelReport}> <div className={"cancel-icon"}></div>CANCEL</button>}
-                                    {runReportButton && <button type="button" className={"user-btn mr5 save-btn"} onClick={runReport} disabled={disableRunReport}> <div className={"Run-icon"}></div>RUN REPORT</button>}
-
+                                <div className="d-flex justify-content-end bd-highlight w100 align-items-center">
+                                    <button type="button" className={"user-btn mr5 save-btn"} onClick={runReport} disabled={disableRunReport}> <div className={"Run-icon"}></div>RUN REPORT</button>
                                 </div>
-
                             </div>
                         </Row>
                     }

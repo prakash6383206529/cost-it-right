@@ -78,13 +78,13 @@ function RfqListing(props) {
                 }
                 item.tooltipText = ''
                 switch (item.Status) {
-                    case 'Approved':
+                    case APPROVED:
                         item.tooltipText = 'Total no. of parts for which costing has been approved from that quotation / Total no. of parts exist in that quotation'
                         break;
-                    case 'Received':
+                    case RECEIVED:
                         item.tooltipText = 'Total no. of costing received / Total no. of expected costing in that quotation'
                         break;
-                    case 'Under Revision':
+                    case UNDER_REVISION:
                         item.tooltipText = 'Total no. of costing under revision / Total no. of expected costing in that quotation'
                         break;
                     default:
@@ -216,9 +216,29 @@ function RfqListing(props) {
             return (
                 <>
                     <div
-                        onClick={() => viewDetails(row.QuotationId)}
+                        onClick={() => viewDetails(row)}
                         className={'link'}
                     >{cell}</div>
+                </>
+            )
+        } else {
+
+            return cell ? cell : "-"
+
+        }
+    }
+    const quotationReceiveFormatter = (props) => {
+
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+
+        if (row?.IsActive) {
+            return (
+                <>
+                    {cell >= 1 ? <div
+                        onClick={() => viewDetails(row)}
+                        className={'link'}
+                    >{cell}</div> : <div>{cell}</div>}
                 </>
             )
         } else {
@@ -232,9 +252,9 @@ function RfqListing(props) {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         let tempStatus = '-'
         if (row?.Status === APPROVED || row?.Status === UNDER_REVISION || row?.Status === RECEIVED || row?.Status === SUBMITTED || row?.Status === UNDER_APPROVAL) {
-            tempStatus = row?.Status + ' (' + row?.CostingReceived + '/' + row?.TotalCostingCount + ')'
+            tempStatus = row?.DisplayStatus + ' (' + row?.CostingReceived + '/' + row?.TotalCostingCount + ')'
         } else {
-            tempStatus = row?.Status
+            tempStatus = row?.DisplayStatus
         }
         return <div className={cell}>{tempStatus}</div>
     }
@@ -288,9 +308,10 @@ function RfqListing(props) {
         return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '-'
     }
 
-    const viewDetails = (UserId) => {
+    const viewDetails = (rowData) => {
 
-        setViewRfqData(UserId)
+        setViewRfqData(rowData)
+
         setViewRfq(true)
         // this.setState({
         //     UserId: UserId,
@@ -310,6 +331,7 @@ function RfqListing(props) {
     const frameworkComponents = {
         totalValueRenderer: buttonFormatter,
         linkableFormatter: linkableFormatter,
+        quotationReceiveFormatter: quotationReceiveFormatter,
         attachmentFormatter: attachmentFormatter,
         statusFormatter: statusFormatter,
         raisedOnFormatter: raisedOnFormatter,
@@ -385,7 +407,7 @@ function RfqListing(props) {
                                             >
                                                 <AgGridColumn cellClass="has-checkbox" field="QuotationNumber" headerName='RFQ No.' cellRenderer={'linkableFormatter'} ></AgGridColumn>
                                                 <AgGridColumn field="PartNumber" tooltipField="PartNumber" headerName="Part No." width={150}></AgGridColumn>
-                                                <AgGridColumn field="CostingReceived" headerName='No. of Quotation Received' maxWidth={150}></AgGridColumn>
+                                                <AgGridColumn field="CostingReceived" headerName='No. of Quotation Received' maxWidth={150} cellRenderer={'quotationReceiveFormatter'}></AgGridColumn>
                                                 <AgGridColumn field="VendorName" tooltipField="VendorName" headerName='Vendor (Code)'></AgGridColumn>
                                                 <AgGridColumn field="PlantName" headerName='Plant (Code)'></AgGridColumn>
                                                 <AgGridColumn field="TechnologyName" headerName='Technology'></AgGridColumn>
