@@ -258,7 +258,7 @@ export function getSupplierContributionData(data, callback) {
     return (dispatch) => {
         const request = axios.get(`${API.getSupplierContributionData}?fromDate=${data.fromDate}&toDate=${data.toDate}&plantId=${data.plantId}`, config(),)
         request.then((response) => {
-            if (response.data) {
+            if (response) {
                 callback(response)
             }
         }).catch((error) => {

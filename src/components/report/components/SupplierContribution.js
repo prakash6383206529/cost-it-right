@@ -2,7 +2,7 @@ import React from "react"
 import { useEffect } from "react"
 import { useState } from "react"
 import { Controller, useForm } from "react-hook-form"
-import { useDispatch } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
 import { Col, Row } from "reactstrap"
 import { EMPTY_DATA, ZBC } from "../../../config/constants"
 import { checkForDecimalAndNull, getConfigurationKey, getCurrencySymbol, loggedInUserId } from "../../../helper"
@@ -11,10 +11,11 @@ import Toaster from "../../common/Toaster"
 import { getCostingSpecificTechnology, getPartInfo } from "../../costing/actions/Costing"
 import { DatePickerHookForm, SearchableSelectHookForm } from "../../layout/HookFormInputs"
 import { getSupplierContributionData } from "../actions/ReportListing"
-import { getPlantSelectListByType } from "../../../actions/Common"
+import { getPlantSelectListByType, sidebarAndNavbarHide } from "../../../actions/Common"
 import { Doughnut } from 'react-chartjs-2';
 import { colorArray } from "../../dashboard/ChartsDashboard"
 import NoContentFound from "../../common/NoContentFound"
+import LoaderCustom from "../../common/LoaderCustom"
 
 const gridOptions = {}
 function SupplierContributionReport(props) {
@@ -34,6 +35,9 @@ function SupplierContributionReport(props) {
     const [vendorPartCount, setVendorPartCount] = useState([])
     const [noContent, setNoContent] = useState(false)
     const [doughnutColor, setDoughnutColor] = useState([])
+    const [isLoader, setIsLoader] = useState(false)
+    const hideSideBarNavbar = useSelector(state => state.comman.sidebarAndNavbarHide)
+
 
     const dispatch = useDispatch()
     const { control, register, getValues, reset, formState: { errors } } = useForm({
@@ -47,6 +51,9 @@ function SupplierContributionReport(props) {
         dispatch(getPlantSelectListByType(ZBC, (res) => {
             setPlants(res?.data?.DataList)
         }))
+        return () => {
+            dispatch(sidebarAndNavbarHide(false))
+        }
 
     }, [])
 
@@ -87,25 +94,35 @@ function SupplierContributionReport(props) {
             data.fromDate = startDate
             data.toDate = endDate
             data.plantId = plant.value ? plant.value : ''
+            dispatch(sidebarAndNavbarHide(false))
+            setIsLoader(true)
             dispatch(getSupplierContributionData(data, (res) => {
                 let vendors = []
                 let vendorPrice = []
                 let vendorPartCount = []
                 setTimeout(() => {
-                    setGraphListing(true)
+                    setIsLoader(false)
                 }, 500);
-                let Data = res.data.Data
-                setTotalCost(Data.TotalBuying)
-                Data.VendorWiseData.map((item) => {
-                    vendors.push(item.Vendor)
-                    vendorPrice.push(item.VendorBuying)
-                    vendorPartCount.push(item.VendorPartCount)
-                })
-                setVendorArray(vendors)
-                setVendorData(vendorPrice)
-                setVendorPartCount(vendorPartCount)
-                setNoContent(false)
-                setDoughnutColor(colorArray);
+                if (res && res.status === 200) {
+                    setTimeout(() => {
+                        setGraphListing(true)
+                        dispatch(sidebarAndNavbarHide(true))
+                    }, 500);
+                    if (res.data && res.data.Data) {
+                        let Data = res.data.Data
+                        setTotalCost(Data.TotalBuying)
+                        Data.VendorWiseData.map((item) => {
+                            vendors.push(item.Vendor)
+                            vendorPrice.push(item.VendorBuying)
+                            vendorPartCount.push(item.VendorPartCount)
+                        })
+                        setVendorArray(vendors)
+                        setVendorData(vendorPrice)
+                        setVendorPartCount(vendorPartCount)
+                        setNoContent(false)
+                        setDoughnutColor(colorArray);
+                    }
+                }
             }))
         } else {
             Toaster.warning("Please enter from date, to date")
@@ -115,6 +132,7 @@ function SupplierContributionReport(props) {
 
     const resetReport = () => {
         setGraphListing(false)
+        dispatch(sidebarAndNavbarHide(false))
         reset({
             fromDate: '',
             toDate: '',
@@ -160,12 +178,11 @@ function SupplierContributionReport(props) {
         }
     };
 
-
     const doughnutLabelsLine = {
 
         id: 'doughnutLabelsLine',
         beforeDraw(chart, args, options) {
-            chart.ctx.canvas.style.width = '1000px'
+            chart.ctx.canvas.style.width = String(window.screen.width - 250) + 'px'
             // chart.ctx.canvas.style.height = '800px'
         },
 
@@ -266,7 +283,7 @@ function SupplierContributionReport(props) {
                         }
                     }
 
-                     //line
+                    //line
                     ctx.beginPath();
                     ctx.moveTo(x, y);
                     ctx.lineTo(xLine, yLine);
@@ -320,14 +337,16 @@ function SupplierContributionReport(props) {
             },
         ],
     };
-
+    const exitReport = () => {
+        dispatch(sidebarAndNavbarHide(false))
+        setGraphListing(false)
+    }
     return (
 
-        <>{reportListing &&
+        <div className="p-relative">{reportListing &&
             < div className="container-fluid custom-pagination report-listing-page ag-grid-react" >
                 <form noValidate >
-                    <h1 className="mb-0">Supplier Contribution Report</h1>
-                    <Row className="pt-3 mb-5">
+                    {!hideSideBarNavbar && <Row className=" mb-2">
                         <Col md="3" className="form-group mb-0">
                             <div className="inputbox date-section">
                                 <DatePickerHookForm
@@ -420,11 +439,12 @@ function SupplierContributionReport(props) {
                                 {"RESET"}
                             </button>
                         </Col>
-                    </Row>
+                    </Row>}
                 </form>
 
             </div >}
-
+            {isLoader && <LoaderCustom />}
+            {hideSideBarNavbar && <div className="supplier-back-btn"><button type="button" className={"apply ml-1"} onClick={exitReport}> <div className={'back-icon'}></div>Back</button></div>}
             {graphListing &&
                 <div className="doughnut-graph-container">
                     <div className="doughnut-graph">
@@ -435,10 +455,10 @@ function SupplierContributionReport(props) {
             }
             {noContent &&
                 <NoContentFound
-                    title={EMPTY_DATA}
+                    title={'There are no supplier contribution for this plant'}
                 />
             }
-        </>
+        </div>
 
     )
 }
