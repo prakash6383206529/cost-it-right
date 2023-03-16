@@ -655,7 +655,7 @@ class AddClientDrawer extends Component {
                                     </Col>
                                 </Row>
 
-                                <Row>
+                                <Row className='pl-3'>
                                     {getConfigurationKey().IsShowPOSeriesInCustomerMaster && (
                                         <>
                                             <Col md="12">
@@ -680,7 +680,7 @@ class AddClientDrawer extends Component {
                                                     </div>
                                                 </div>
                                             </Col>
-                                            <Col md="3" className='UOM-label-container'>
+                                            <Col md="3">
                                                 <Field
                                                     label={'From PO Series'}
                                                     name={"FromPOSeries"}
@@ -691,11 +691,11 @@ class AddClientDrawer extends Component {
                                                     required={true}
                                                     disabled={isViewMode}
                                                     className=" "
-                                                    customClassName=" withBorder"
+                                                    customClassName="po-series withBorder"
                                                 />
                                                 {this.state.errorObj.fromPOSeries && (this.props.fieldsObj.FromPOSeries === undefined || Number(this.props.fieldsObj.FromPOSeries) === 0) && <div className='text-help p-absolute'>This field is required.</div>}
                                             </Col>
-                                            <Col md="3" className='UOM-label-container'>
+                                            <Col md="3">
                                                 <Field
                                                     label={'To PO Series'}
                                                     name={"ToPOSeries"}
@@ -706,12 +706,12 @@ class AddClientDrawer extends Component {
                                                     required={true}
                                                     disabled={isViewMode}
                                                     className=" "
-                                                    customClassName=" withBorder"
+                                                    customClassName="po-series withBorder"
                                                 />
                                                 {this.state.errorObj.toPOSeries && (this.props.fieldsObj.ToPOSeries === undefined || Number(this.props.fieldsObj.ToPOSeries) === 0) && <div className='text-help p-absolute'>This field is required.</div>}
                                             </Col>
-                                            <Col md="3" className='mb-2 d-flex align-items-center'>
-                                                <div>
+                                            <Col md="3" className='pl-0 mb-2 d-flex align-items-center'>
+                                                <div className='d-flex mb-1'>
                                                     <button
                                                         type="button"
                                                         className={`${isViewMode ? 'disabled-button user-btn' : 'user-btn'} pull-left mr5`}
