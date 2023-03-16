@@ -469,7 +469,7 @@ function UserRegistration(props) {
     setReporter(value)
   }
   const onPrimaryContactCheck = () => {
-    setPrimaryContact(true)
+    setPrimaryContact(!primaryContact)
   }
 
   /**
@@ -1252,6 +1252,7 @@ function UserRegistration(props) {
     setOldModules([])
     setIsShowAdditionalPermission(false)
     setTechnologyLevelGrid([])
+    setPrimaryContact(false)
 
     let data = {
       logged_in_user: loggedInUserId(),
@@ -1780,7 +1781,7 @@ function UserRegistration(props) {
                         </Col>
                       </>
                     }
-                    <Col md="3" className="d-flex align-items-center mt-4 pt-2">
+                   {props?.RFQUser && <Col md="3" className="d-flex align-items-center mt-4 pt-2">
                       <label
                         className={`custom-checkbox`}
                         onChange={onPrimaryContactCheck}
@@ -1796,7 +1797,7 @@ function UserRegistration(props) {
                           onChange={onPrimaryContactCheck}
                         />
                       </label>
-                    </Col>
+                    </Col>}
                   </div>
 
                   <HeaderTitle
