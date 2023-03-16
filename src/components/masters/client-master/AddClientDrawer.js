@@ -409,6 +409,7 @@ class AddClientDrawer extends Component {
                 this.setState({
                     statusGrid: tempArray,
                     status: [],
+                    errorObj: []
                 }, () => this.props.change('ToPOSeries', ''));
                 this.props.change('FromPOSeries', '')
             }, 200);
@@ -420,6 +421,7 @@ class AddClientDrawer extends Component {
     statusTableReset = () => {
         this.setState({
             status: [],
+            errorObj: []
         }, () => this.props.change('ToPOSeries', ''));
         this.props.change('FromPOSeries', '')
     }
