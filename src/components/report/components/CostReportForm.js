@@ -342,7 +342,11 @@ function CostReportForm(props) {
     const onPageSizeChanged = (newPageSize) => {
         gridApi.paginationSetPageSize(Number(newPageSize));
     };
+    const resetState = () => {
+        gridOptions?.columnApi?.resetColumnState(null);
+        gridOptions?.api?.setFilterModel(null);
 
+    }
 
     return (
         <>
@@ -537,6 +541,11 @@ function CostReportForm(props) {
                                 onClick={resetData}
                             >
                                 Reset
+                            </button>
+                        </Col>
+                        <Col md="6" className="mt-4 pt-2 text-right">
+                            <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}>
+                                <div className="refresh mr-0"></div>
                             </button>
                         </Col>
 
