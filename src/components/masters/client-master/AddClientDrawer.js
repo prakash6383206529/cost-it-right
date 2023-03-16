@@ -368,7 +368,7 @@ class AddClientDrawer extends Component {
             setTimeout(() => {
 
                 if (status.length === 0) {
-                    this.setState({ errorObj: { ...this.state.errorObj, processName: true } })
+                    this.setState({ errorObj: { ...this.state.errorObj, status: true } })
                     count++;
                 }
                 if (fieldsObj.FromPOSeries === undefined || Number(fieldsObj.FromPOSeries) === 0) {
