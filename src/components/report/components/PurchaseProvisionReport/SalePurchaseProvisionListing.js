@@ -162,6 +162,10 @@ function SalePurchaseProvisionListing(props) {
         const currencySymbol = getCurrencySymbol(rowData?.Currency ? rowData?.Currency : getConfigurationKey().BaseCurrency)
         return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined && cellValue !== 0) ? currencySymbol + " " + cellValue : '-';
     }
+    const dashFormatter = (props) => {
+        const cellValue = props?.value;
+        return  cellValue ? cellValue : '-';
+    }
 
 
     return (
@@ -169,7 +173,7 @@ function SalePurchaseProvisionListing(props) {
             <div className={"container-fluid"}>
                 <form noValidate className="form">
                     <div className='analytics-drawer justify-content-end'>
-                        <button type="button" className={"apply mr-2"} onClick={cancelReport}> <div className={'back-icon'}></div>Back</button>
+                        <button type="button" className={"apply"} onClick={cancelReport}> <div className={'back-icon'}></div>Back</button>
 
                     </div>
                     {showList &&
@@ -205,15 +209,15 @@ function SalePurchaseProvisionListing(props) {
                                                 {<AgGridColumn field="PartNumber" headerName="Part Number" width="120" cellClass={"colorWhite"} floatingFilter={true}></AgGridColumn>}
                                                 {<AgGridColumn field="PartDescription" width="120" headerName="Part Description" cellClass={"colorWhite"} floatingFilter={true}></AgGridColumn>}
 
-                                                {<AgGridColumn field="PurchaseOrderNumber" headerName="Purch.Doc." cellRenderer={hyphenFormatter} floatingFilter={true}></AgGridColumn>}
+                                                {<AgGridColumn field="PurchaseOrderNumber" headerName="Purch. Doc." cellRenderer={hyphenFormatter} floatingFilter={true}></AgGridColumn>}
                                                 <AgGridColumn headerName="Period" headerClass="justify-content-center" marryChildren={true}>
                                                     <AgGridColumn width="150" field="FromDate" headerName="From" />
                                                     <AgGridColumn width="150" field="ToDate" headerName="To" />
                                                 </AgGridColumn>
                                                 {<AgGridColumn field="UnitOfMeasurement" headerName="UOM" floatingFilter={true}></AgGridColumn>}
-                                                {<AgGridColumn field="OldRate" headerName="Existing Po Price" cellRenderer={POPriceCurrencyFormatter} floatingFilter={true}></AgGridColumn>}
-                                                {<AgGridColumn field="NewRate" headerName="Revised Po Price" cellRenderer={POPriceCurrencyFormatter} floatingFilter={true}></AgGridColumn>}
-                                                {<AgGridColumn field="Difference" headerName="Variance (w.r.t. Existing)" floatingFilter={true}></AgGridColumn>}
+                                                {<AgGridColumn field="OldRate"  width="120" headerName="Existing Po Price" cellRenderer={POPriceCurrencyFormatter} floatingFilter={true}></AgGridColumn>}
+                                                {<AgGridColumn field="NewRate" width="120" headerName="Revised Po Price" cellRenderer={POPriceCurrencyFormatter} floatingFilter={true}></AgGridColumn>}
+                                                {<AgGridColumn field="Difference" headerName="Variance (w.r.t. Existing)" cellRenderer={dashFormatter} floatingFilter={true}></AgGridColumn>}
                                                 {<AgGridColumn field="SupplyQuantity" headerName="Supply Quantity" floatingFilter={true}></AgGridColumn>}
                                                 {<AgGridColumn field="Impact" headerName="Impact" floatingFilter={true}></AgGridColumn>}
                                             </AgGridReact>
