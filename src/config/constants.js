@@ -909,7 +909,7 @@ export const API = {
   deleteClient: `${BASE_URL}/client/delete`,
   getClientSelectList: `${BASE_URL}/client/select-list-client`,
   checkAndGetCustomerCode: `${BASE_URL}/client/generate-customer-company-code`,
-  getStatusSelectList: `${BASE_URL}/configuration/select-list-get-poam-status`,
+  getPoamStatusSelectList: `${BASE_URL}/configuration/select-list-get-poam-status`,
 
   //EXCHANGE RATE MASTER
   createExchangeRate: `${BASE_URL}/masters-exchange-rate/create`,
@@ -1614,7 +1614,7 @@ export const CHECK_REGULARIZATION_LIMIT = 'CHECK_REGULARIZATION_LIMIT'
 export const GET_CLIENT_DATA_SUCCESS = 'GET_CLIENT_DATA_SUCCESS';
 export const GET_CLIENT_SELECTLIST_SUCCESS = 'GET_CLIENT_SELECTLIST_SUCCESS';
 export const GET_CLIENT_DATALIST_SUCCESS = 'GET_CLIENT_DATALIST_SUCCESS';
-export const GET_STATUS_SELECTLIST = 'GET_STATUS_SELECTLIST'
+export const GET_POAM_STATUS_SELECTLIST = 'GET_POAM_STATUS_SELECTLIST'
 
 //EXCHANGE RATE MASTER
 export const EXCHANGE_RATE_DATALIST = 'EXCHANGE_RATE_DATALIST'

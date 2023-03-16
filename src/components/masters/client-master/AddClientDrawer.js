@@ -4,7 +4,7 @@ import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Container, Row, Col, Table, } from 'reactstrap';
 import { required, email, minLength7, maxLength70, acceptAllExceptSingleSpecialCharacter, maxLength12, minLength10, maxLength80, checkWhiteSpaces, maxLength20, postiveNumber, maxLength5, maxLength6, number, checkForNull, positiveAndDecimalNumber, maxLength10 } from "../../../helper/validation";
 import { renderText, renderEmailInputField, searchableSelect, renderTextInputField } from "../../layout/FormInputs";
-import { createClient, updateClient, getClientData, checkAndGetCustomerCode, getStatusSelectList } from '../actions/Client';
+import { createClient, updateClient, getClientData, checkAndGetCustomerCode, getPoamStatusSelectList } from '../actions/Client';
 import { fetchCountryDataAPI, fetchStateDataAPI, fetchCityDataAPI, getCityByCountry, } from '../../../actions/Common';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
@@ -56,7 +56,7 @@ class AddClientDrawer extends Component {
             this.props.fetchCountryDataAPI(() => { })
         }
         this.getDetail()
-        this.props.getStatusSelectList(() => { })
+        this.props.getPoamStatusSelectList(() => { })
     }
 
     getAllCityData = () => {
@@ -129,7 +129,7 @@ class AddClientDrawer extends Component {
     * @description Used show listing of unit of measurement
     */
     renderListing = (label) => {
-        const { countryList, stateList, cityList, statusSelectList } = this.props;
+        const { countryList, stateList, cityList, poamStatusSelectList } = this.props;
         const temp = [];
 
         if (label === 'country') {
@@ -157,7 +157,7 @@ class AddClientDrawer extends Component {
             return temp;
         }
         if (label === 'status') {
-            statusSelectList && statusSelectList.map(item => {
+            poamStatusSelectList && poamStatusSelectList.map(item => {
                 if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
                 return null
@@ -807,7 +807,7 @@ function mapStateToProps(state) {
     const { comman, client } = state;
     const fieldsObj = selector(state, 'FromPOSeries', 'ToPOSeries');
     const { countryList, stateList, cityList } = comman;
-    const { clientData, statusSelectList } = client;
+    const { clientData, poamStatusSelectList } = client;
     let initialValues = {};
     if (clientData && clientData !== undefined) {
         initialValues = {
@@ -821,7 +821,7 @@ function mapStateToProps(state) {
         }
     }
 
-    return { countryList, stateList, cityList, initialValues, clientData, statusSelectList, fieldsObj }
+    return { countryList, stateList, cityList, initialValues, clientData, poamStatusSelectList, fieldsObj }
 }
 
 /**
@@ -839,7 +839,7 @@ export default connect(mapStateToProps, {
     getClientData,
     getCityByCountry,
     checkAndGetCustomerCode,
-    getStatusSelectList
+    getPoamStatusSelectList
 })(reduxForm({
     form: 'AddClientDrawer',
     enableReinitialize: true,
