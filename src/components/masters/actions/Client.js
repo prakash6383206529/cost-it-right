@@ -7,7 +7,7 @@ import {
     GET_CLIENT_SELECTLIST_SUCCESS,
     GET_CLIENT_DATALIST_SUCCESS,
     config,
-    GET_STATUS_SELECTLIST
+    GET_POAM_STATUS_SELECTLIST
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
 // const config() = config
@@ -173,16 +173,16 @@ export function checkAndGetCustomerCode(code, name, callback) {
     };
 }
 /**
- * @method getStatusSelectList
- * @description Used to Status selectlist
+ * @method getPoamStatusSelectList
+ * @description Used to Get Poam Status selectlist
  */
-export function getStatusSelectList(callback) {
+export function getPoamStatusSelectList(callback) {
     return (dispatch) => {
-        const request = axios.get(`${API.getStatusSelectList}`, config());
+        const request = axios.get(`${API.getPoamStatusSelectList}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
-                    type: GET_STATUS_SELECTLIST,
+                    type: GET_POAM_STATUS_SELECTLIST,
                     payload: response.data.SelectList,
                 });
                 callback(response);
