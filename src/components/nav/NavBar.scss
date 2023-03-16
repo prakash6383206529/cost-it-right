@@ -1005,3 +1005,9 @@ label.btn.btn-link.align-middle.checkbox-label {
   }
 
 }
+
+.hide-navbar {
+  @media screen and (max-width: $middleDesktop) {
+    display: none;
+  }
+}
