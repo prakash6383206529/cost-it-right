@@ -1,30 +1,226 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import { Row, Col, Container } from 'reactstrap'
-import { checkForDecimalAndNull, getConfigurationKey } from '../../../../../helper'
+import { checkForDecimalAndNull } from '../../../../../helper'
 import { Drawer } from '@material-ui/core'
 import { NumberFieldHookForm, SearchableSelectHookForm } from '../../../../layout/HookFormInputs'
 
-import { useForm, Controller, useWatch } from 'react-hook-form'
-import { useDispatch, } from 'react-redux'
+import { useForm, Controller } from 'react-hook-form'
+import { useDispatch, useSelector, } from 'react-redux'
 import { typeofNpvDropdown } from '../../../../../config/masterData'
-import { number, checkWhiteSpaces, percentageLimitValidation, decimalNumberLimit6 } from "../../../../../helper/validation";
+import { number, checkWhiteSpaces, percentageLimitValidation, decimalNumberLimit6, checkForNull } from "../../../../../helper/validation";
 import NpvCost from './NpvCost'
+import { setNPVData } from '../../../actions/Costing'
+import Toaster from '../../../../common/Toaster'
 
 function AddNpvCost(props) {
-    const [tableData, setTableData] = useState([])
+    const [tableData, setTableData] = useState(props.tableData)
+    const [disableNpvPercentage, setDisableNpvPercentage] = useState(false)
+    const [disableTotalCost, setDisableTotalCost] = useState(false)
+    const [disableAllFields, setDisableAllFields] = useState(true)
+    const [disableQuantity, setDisableQuantity] = useState(false)
+    const [editIndex, setEditIndex] = useState('')
+    const [isEditMode, setIsEditMode] = useState(false)
+    let IsEnterToolCostManually = false
+    const { ToolTabData } = useSelector(state => state.costing)
 
-    const { register, control, setValue, getValues, reset, formState: { errors }, } = useForm({
+    const { register, control, setValue, getValues, formState: { errors }, } = useForm({
         mode: 'onChange',
         reValidateMode: 'onChange',
     })
+
+    const dispatch = useDispatch();
 
     const cancel = () => {
         props.closeDrawer('Close')
     }
 
-    const handleNpvChange = () => {
+    const handleNpvChange = (value) => {
+        setDisableAllFields(false)
 
+        if (value.label === 'Tool Investment') {
+            if (!IsEnterToolCostManually) {
+                setDisableQuantity(true)
+                setValue('Quantity', checkForNull(ToolTabData[0]?.CostingPartDetails?.CostingToolCostResponse[0]?.Life))
+            }
+        } else {
+            setDisableQuantity(false)
+        }
     }
+
+
+    // This function is used to handle quantity changes in an input field.
+    const handleQuantityChange = (e) => {
+
+        // Check if there is a value in the input field
+        if (e?.target?.value) {
+
+            // If total cost is disabled, calculate the total cost based on the net PO price and quantity input
+            if (disableTotalCost) {
+
+                // Get the NPV percentage and quantity input
+                let NpvPercentage = getValues('NpvPercentage')
+                let quantity = e.target.value
+
+                // Calculate the total cost based on the NPV percentage, net PO price, and quantity input
+                let total = (NpvPercentage / 100) * checkForNull(props.netPOPrice) * quantity
+
+                // Set the value of the 'Total' input field to the calculated total cost
+                setValue('Total', checkForDecimalAndNull(total, 6))
+
+                // If NPV percentage is disabled, calculate the NPV percentage based on the total cost and quantity input
+            } else if (disableNpvPercentage) {
+
+                // Get the total cost and quantity input
+                let total = getValues('Total')
+                let quantity = e.target.value
+
+                // Calculate the NPV percentage based on the total cost, net PO price, and quantity input
+                let npvPercent = (total * 100) / (props.netPOPrice * quantity)
+
+                // Set the value of the 'NpvPercentage' input field to the calculated NPV percentage
+                setValue('NpvPercentage', checkForDecimalAndNull(npvPercent, 6))
+
+            }
+        }
+    }
+
+    const handleNpvPercentageChange = (e) => {
+
+        // If a value is entered in the NpvPercentage field, disable the Total Cost field.
+        if (e?.target?.value) {
+            setDisableTotalCost(true)
+
+            // If the Quantity field is also filled out, calculate the Total Cost based on the new NpvPercentage value.
+            if (getValues('Quantity')) {
+                let NpvPercentage = e.target.value
+                let quantity = getValues('Quantity')
+                let total = (NpvPercentage / 100) * checkForNull(props.netPOPrice) * quantity
+                setValue('Total', checkForDecimalAndNull(total, 6))
+                errors.Total = []
+            }
+
+        } else {
+
+            // If the NpvPercentage field is empty, enable the Total Cost field and clear the Total Cost value.
+            setDisableTotalCost(false)
+            setValue('', '')
+        }
+    }
+
+
+    // This function is called when the "Total Cost" input field changes.
+    const handleTotalCostChange = (e) => {
+        // Check if there is a value entered in the "Total Cost" field.
+        if (e?.target?.value) {
+
+            // Disable the "NPV Percentage" field since it will be calculated automatically.
+            setDisableNpvPercentage(true)
+
+            // If there is also a value in the "Quantity" field, calculate the NPV Percentage based on the new total cost.
+            if (getValues('Quantity')) {
+                let total = e.target.value
+                let quantity = getValues('Quantity')
+                let npvPercent = (total * 100) / (props.netPOPrice * quantity)
+                setValue('NpvPercentage', checkForDecimalAndNull(npvPercent, 6))
+            }
+        } else {
+
+            // If there is no value in the "Total Cost" field, enable the "NPV Percentage" field and clear its value.
+            setDisableNpvPercentage(false)
+            setValue('NpvPercentage', '')
+        }
+    }
+
+
+    // This function is called when the user clicks a button to add data to a table.
+    const addData = () => {
+
+        // Get the current data in the table and set some initial variables.
+        let table = tableData
+        let indexOfNpvType
+        let type = getValues('TypeOfNpv') ? getValues('TypeOfNpv').label : ''
+        let alreadyDataExist = false
+
+        // Check if the new data to be added is a duplicate of existing data.
+        table && table.map((item, index) => {
+            if (item.NpvType === type) {
+                alreadyDataExist = true
+                indexOfNpvType = index
+            }
+        })
+
+        // If the new data is a duplicate and we're not in edit mode, show an error message and return false.
+        if ((alreadyDataExist && !isEditMode) || (isEditMode && indexOfNpvType !== editIndex && indexOfNpvType)) {
+            Toaster.warning('Duplicate entry is not allowed.')
+            return false
+        }
+
+        // If all mandatory fields are filled out, create a new object with the data and add it to the table.
+        if (getValues('TypeOfNpv') && getValues('NpvPercentage') && getValues('Quantity')) {
+            let obj = {}
+            obj.NpvType = getValues('TypeOfNpv') ? getValues('TypeOfNpv').label : ''
+            obj.NpvPercentage = getValues('NpvPercentage') ? getValues('NpvPercentage') : ''
+            obj.Quantity = getValues('Quantity') ? getValues('Quantity') : ''
+            obj.Cost = getValues('Total') ? getValues('Total') : ''
+
+            // If we're in edit mode, update the existing row with the new data.
+            // Otherwise, add the new row to the end of the table.
+            if (isEditMode) {
+                table = Object.assign([...table], { [editIndex]: obj })
+            } else {
+                table.push(obj)
+            }
+
+            // Update the table data in the Redux store and reset the form fields.
+            dispatch(setNPVData(table))
+            setTableData(table)
+            resetData()
+            setIsEditMode(false)
+            setEditIndex('')
+        } else {
+            // If not all mandatory fields are filled out, show an error message.
+            Toaster.warning('Please enter data in all mandatory fields.')
+        }
+    }
+
+    const resetData = () => {
+        setValue('TypeOfNpv', '')
+        setValue('NpvPercentage', '')
+        setValue('Quantity', '')
+        setValue('Total', '')
+        setDisableAllFields(true)
+    }
+
+    // This function takes in two parameters - the index of the data being edited or deleted, and the operation to perform (either 'delete' or 'edit').
+    const editData = (indexValue, operation) => {
+
+        // If the operation is 'delete', remove the data at the specified index from the tableData array.
+        if (operation === 'delete') {
+            let temp = [] // Create an empty array to hold the updated data
+            tableData && tableData.map((item, index) => {
+                if (index !== indexValue) { // If the index being iterated over is not the same as the index to delete, add the item to the temp array
+                    temp.push(item)
+                }
+            })
+            setTableData(temp) // Update the tableData state with the updated array
+        }
+
+        // If the operation is 'edit', set the editIndex state to the index of the data being edited, and set the isEditMode state to true.
+        if (operation === 'edit') {
+            setEditIndex(indexValue)
+            setIsEditMode(true)
+
+            // Retrieve the data at the specified index from the tableData array, and set the values of various form fields based on the data.
+            let Data = tableData[indexValue]
+            setDisableAllFields(false)
+            setValue('TypeOfNpv', { label: Data.NpvType, value: Data.NpvType })
+            setValue('NpvPercentage', Data.NpvPercentage)
+            setValue('Quantity', Data.Quantity)
+            setValue('Total', Data.Cost)
+            setDisableTotalCost(true)
+        }
+    }
+
     return (
 
         < div>
@@ -84,12 +280,12 @@ function AddNpvCost(props) {
 
                                         }}
 
-                                        handleChange={() => { }}
+                                        handleChange={handleNpvPercentageChange}
                                         defaultValue={''}
                                         className=""
                                         customClassName={'withBorder'}
                                         errors={errors.NpvPercentage}
-                                        disabled={props.CostingViewMode}
+                                        disabled={props.CostingViewMode || disableNpvPercentage || disableAllFields}
                                     />
                                 </Col>
                                 <Col md="2" className='px-1'>
@@ -104,12 +300,12 @@ function AddNpvCost(props) {
                                             required: true,
                                             validate: { number, checkWhiteSpaces, decimalNumberLimit6 },
                                         }}
-                                        handleChange={() => { }}
+                                        handleChange={handleQuantityChange}
                                         defaultValue={''}
                                         className=""
                                         customClassName={'withBorder'}
                                         errors={errors.Quantity}
-                                        disabled={props.CostingViewMode}
+                                        disabled={props.CostingViewMode || disableAllFields || disableQuantity}
                                     />
                                 </Col>
                                 <Col md="2" className='px-1'>
@@ -124,17 +320,34 @@ function AddNpvCost(props) {
                                             required: true,
                                             validate: { number, checkWhiteSpaces, decimalNumberLimit6 },
                                         }}
-                                        handleChange={() => { }}
+                                        handleChange={handleTotalCostChange}
                                         defaultValue={''}
                                         className=""
                                         customClassName={'withBorder'}
                                         errors={errors.Total}
-                                        disabled={props.CostingViewMode}
+                                        disabled={props.CostingViewMode || disableTotalCost || disableAllFields}
                                     />
+                                </Col>
+                                <Col md="3" className="mt-4 pt-1">
+
+                                    <button
+                                        type="button"
+                                        className={"user-btn  pull-left mt-1"}
+                                        onClick={addData}
+                                    >
+                                        <div className={"plus"}></div>{isEditMode ? "UPDATE" : 'ADD'}
+                                    </button>
+                                    <button
+                                        type="button"
+                                        className={"reset-btn pull-left mt-1 ml5"}
+                                        onClick={resetData}
+                                    >
+                                        Reset
+                                    </button>
                                 </Col>
                             </Row>
 
-                            <NpvCost showAddButton={false} />
+                            <NpvCost showAddButton={false} tableData={tableData} hideAction={false} editData={editData} />
                             <Row className="sf-btn-footer no-gutters drawer-sticky-btn justify-content-between mx-0">
                                 <div className="col-sm-12 text-left bluefooter-butn d-flex justify-content-end">
                                     <button
@@ -146,7 +359,7 @@ function AddNpvCost(props) {
                                     <button
                                         type={'button'}
                                         className="submit-button save-btn"
-                                        onClick={() => { }} >
+                                        onClick={() => { props.closeDrawer('Close', tableData) }} >
                                         <div className={"save-icon"}></div>
                                         {'Save'}
                                     </button>
@@ -158,9 +371,6 @@ function AddNpvCost(props) {
                 </div>
             </Drawer>
         </div >
-
-
-
 
     )
 }

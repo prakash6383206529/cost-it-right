@@ -1,46 +1,17 @@
-import React, { Fragment, useState, useEffect } from 'react'
+import React, { Fragment } from 'react'
 import { Row, Col, Table } from 'reactstrap'
 import NoContentFound from '../../../../common/NoContentFound'
 import { EMPTY_DATA } from '../../../../../config/constants'
 import { checkForDecimalAndNull, getConfigurationKey } from '../../../../../helper'
-import AddNpvCost from './AddNpvCost'
-
 
 function NpvCost(props) {
-    const [tableData, setTableData] = useState([])
-    const [isOpenandClose, setisOpenandClose] = useState(false)
-
-    const openAndCloseAddNpvDrawer = (type) => {
-        if (type === 'Open') {
-            setisOpenandClose(true)
-        } else {
-            setisOpenandClose(false)
-        }
+    const editDeleteData = (indexValue, operation) => {
+        props.editData(indexValue, operation)
     }
+
     return (
         <Fragment>
-            <Row className="mx-0">
-                {
-                    props.showNpvSection &&
-                    <Col md="6">
-                        <div className="left-border mt-3">
-                            {'NPV Cost:'}
-                        </div>
-                    </Col>
-                }
-                {
-                    props.showAddButton &&
-                    <button
-                        type="button"
-                        className={"user-btn"}
-                        onClick={() => openAndCloseAddNpvDrawer('Open')}
-                        title="Add"
-                    // disabled={isDisable}
-                    >
-                        <div className={"plus mr-0"}></div>
-                    </button>
-                }
-
+            < Row className="mx-0">
                 <Col md="6">
                     <Table className="table mb-0 forging-cal-table" size="sm">
                         <thead>
@@ -49,24 +20,29 @@ function NpvCost(props) {
                                 {<th>{`%`}</th>}
                                 {<th>{`Quantity`}</th>}
                                 {<th>{`Total`}</th>}
+                                {!props.hideAction && <th>{`Action`}</th>}
 
                             </tr>
                         </thead>
                         <tbody>
-                            {tableData &&
-                                tableData.map((item, index) => {
+                            {props?.tableData &&
+                                props?.tableData.map((item, index) => {
                                     return (
                                         <Fragment>
                                             <tr key={index}>
                                                 <td>{item.NpvType} </td>
-                                                {<td>{item.NpvPercentage}</td>}
+                                                {<td>{checkForDecimalAndNull(item.NpvPercentage, getConfigurationKey().NoOfDecimalForInputOutput)}</td>}
                                                 {<td>{checkForDecimalAndNull(item?.Quantity)}</td>}
-                                                {<td>{checkForDecimalAndNull(item?.Cost)}</td>}
+                                                {<td>{checkForDecimalAndNull(item?.Cost, getConfigurationKey().NoOfDecimalForInputOutput)}</td>}
+                                                {!props.hideAction && <td><div><button title='Edit' className="Edit mr-1" type={'button'} onClick={() => editDeleteData(index, 'edit')} />
+                                                    <button title='Delete' className="Delete mr-1" type={'button'} onClick={() => editDeleteData(index, 'delete')} />
+                                                </div>
+                                                </td>}
                                             </tr>
                                         </Fragment>
                                     )
                                 })}
-                            {tableData && tableData.length === 0 && (
+                            {props?.tableData && props?.tableData.length === 0 && (
                                 <tr>
                                     <td colspan="15">
                                         <NoContentFound title={EMPTY_DATA} />
@@ -74,17 +50,10 @@ function NpvCost(props) {
                                 </tr>
                             )}
                         </tbody>
-
                     </Table>
-
                 </Col>
             </Row>
-            {isOpenandClose && <AddNpvCost
-                isOpen={isOpenandClose}
-                closeDrawer={openAndCloseAddNpvDrawer}
-                anchor={'right'}
-            />}
-        </Fragment>
+        </Fragment >
     )
 }
 export default React.memo(NpvCost)
