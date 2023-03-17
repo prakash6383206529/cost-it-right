@@ -11,16 +11,16 @@ function NpvCost(props) {
 
     return (
         <Fragment>
-            < Row className="mx-0">
-                <Col md="6">
+            <Row className={props.hideAction ? 'mx-0' : ''}>
+                <Col md={props.hideAction ? 12 : 12}>
                     <Table className="table mb-0 forging-cal-table" size="sm">
                         <thead>
                             <tr>
                                 <th>{`Type of NPV`}</th>
-                                {<th>{`%`}</th>}
+                                {<th>{`Percentage (%)`}</th>}
                                 {<th>{`Quantity`}</th>}
                                 {<th>{`Total`}</th>}
-                                {!props.hideAction && <th>{`Action`}</th>}
+                                {!props.hideAction && <th className='text-right'>{`Action`}</th>}
 
                             </tr>
                         </thead>
@@ -34,7 +34,7 @@ function NpvCost(props) {
                                                 {<td>{checkForDecimalAndNull(item.NpvPercentage, getConfigurationKey().NoOfDecimalForInputOutput)}</td>}
                                                 {<td>{checkForDecimalAndNull(item?.Quantity)}</td>}
                                                 {<td>{checkForDecimalAndNull(item?.Cost, getConfigurationKey().NoOfDecimalForInputOutput)}</td>}
-                                                {!props.hideAction && <td><div><button title='Edit' className="Edit mr-1" type={'button'} onClick={() => editDeleteData(index, 'edit')} />
+                                                {!props.hideAction && <td><div className='text-right'><button title='Edit' className="Edit mr-1" type={'button'} onClick={() => editDeleteData(index, 'edit')} />
                                                     <button title='Delete' className="Delete mr-1" type={'button'} onClick={() => editDeleteData(index, 'delete')} />
                                                 </div>
                                                 </td>}
