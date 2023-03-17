@@ -49,6 +49,7 @@ function TabDiscountOther(props) {
   const [otherCostType, setOtherCostType] = useState([]);
   const [hundiscountType, setHundiDiscountType] = useState([])
   const [isDisable, setIsDisable] = useState(false)
+  const [viewAcc, setViewAcc] = useState(false)
   const dispatch = useDispatch()
   let history = useHistory();
   const costData = useContext(costingInfoContext);
@@ -901,22 +902,7 @@ function TabDiscountOther(props) {
           <Row>
             <Col md="12">
               <div className="shadow-lgg login-formg">
-
-                <Row className="mx-0">
-                  <Col md="12" className="pt-2">
-                    <Table className="table cr-brdr-main cr-bg-tbl mt-1" size="sm" >
-                      <thead>
-                        <tr>
-                          <th className="fs1 font-weight-500 py-3 width33">{``}</th>
-                          <th className="fs1 font-weight-500 py-3 width33">{``}</th>
-                          {/* <th className="fs1 font-weight-500 py-3" >{`Total Cost: ${DiscountCostData && DiscountCostData.NetPOPriceINR !== undefined ? checkForDecimalAndNull(DiscountCostData.NetPOPriceINR, initialConfiguration.NoOfDecimalForPrice) : 0}`}</th> */}
-                          <th className="fs1 font-weight-500 py-3" >{`Total Cost: ${totalCost && totalCost !== undefined ? checkForDecimalAndNull(totalCost, initialConfiguration.NoOfDecimalForPrice) : 0}`}</th>
-                        </tr>
-                      </thead>
-                    </Table>
-                  </Col>
-                </Row>
-
+                <div className='tab-disount-total-cost'><span>Total Cost:</span> <p className='disabled-input-data'>{`${totalCost && totalCost !== undefined ? checkForDecimalAndNull(totalCost, initialConfiguration.NoOfDecimalForPrice) : 0}`}</p></div>
                 <form
                   noValidate
                   className="form"
@@ -1144,9 +1130,52 @@ function TabDiscountOther(props) {
                       />
                     </Col>
                   </Row>
+                  <Row className='mx-0'>
 
-                  <Row className="mx-0">
-                    <Col md="2">
+                    <Col md="8"><div className="left-border mt-1">Additional Cost</div></Col>
+                    <Col md="4" className="text-right">
+                      <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setViewAcc(!viewAcc) }}>
+                        {viewAcc ? (
+                          <i className="fa fa-minus" ></i>
+                        ) : (
+                          <i className="fa fa-plus"></i>
+                        )}
+                      </button>
+                    </Col>
+                  </Row>
+                  {viewAcc && <>
+                    <Row className='mx-0'>
+                      <Col md="12">
+                        <div className='d-flex justify-content-between'>
+                          <div className="left-border mt-1">
+                            {'NPV Cost:'}
+                          </div>
+                          <button
+                            type="button"
+                            className={"user-btn mt-2"}
+                            onClick={() => openAndCloseAddNpvDrawer('Open')}
+                            title="Add"
+                          // disabled={isDisable}
+                          >
+                            <div className={"plus mr-0"}></div>
+                          </button>
+                        </div>
+                      </Col>
+                    </Row>
+
+                    {!isOpenandClose && true && <NpvCost netPOPrice={netPOPrice} tableData={npvTableData} hideAction={true} />}
+                  </>}
+                  {
+                    isOpenandClose && <AddNpvCost
+                      isOpen={isOpenandClose}
+                      tableData={npvTableData}
+                      closeDrawer={openAndCloseAddNpvDrawer}
+                      anchor={'right'}
+                      netPOPrice={netPOPrice}
+                    />
+                  }
+                  <Row className="mx-0 mt-2">
+                    <Col md="2" className='mt-4'>
                       <label
                         className={`custom-checkbox`}
                         onChange={onPressChangeCurrency}
@@ -1164,10 +1193,9 @@ function TabDiscountOther(props) {
                         />
                       </label>
                     </Col>
-                    <Col md="2">{''}</Col>
                     {IsCurrencyChange && (
                       <>
-                        <Col md="4">
+                        <Col md="2">
                           <SearchableSelectHookForm
                             label={"Select Currency"}
                             name={"Currency"}
@@ -1179,13 +1207,14 @@ function TabDiscountOther(props) {
                             defaultValue={currency.length !== 0 ? currency : ""}
                             options={renderListing("Currency")}
                             mandatory={true}
+                            customClassName="mb-0"
                             handleChange={handleCurrencyChange}
                             errors={errors.Currency}
                             disabled={CostingViewMode || CostingEffectiveDate === '' ? true : false}
                           />
                           {showWarning && <WarningMessage dClass="mt-n3" message={`${currency.label} rate is not present in the Exchange Master`} />}
                         </Col>
-                        <Col md="4">
+                        <Col md="2">
                           <TextFieldHookForm
                             label={`Net PO Price${Object.keys(currency).length > 0 ? '(' + currency.label + ')' : ''}`}
                             name={'NetPOPriceOtherCurrency'}
@@ -1197,7 +1226,7 @@ function TabDiscountOther(props) {
                             handleChange={() => { }}
                             defaultValue={""}
                             className=""
-                            customClassName={'withBorder'}
+                            customClassName={'withBorder mb-0'}
                             errors={errors.NetPOPriceOtherCurrency}
                             disabled={true}
                             isLoading={isLoaderObj}
@@ -1206,38 +1235,6 @@ function TabDiscountOther(props) {
                       </>
                     )}
                   </Row>
-
-                  {false && <Row>
-                    <Col md="6">
-                      <div className='d-flex justify-content-between'>
-                        <div className="left-border mt-3">
-                          {'NPV Cost:'}
-                        </div>
-                        <button
-                          type="button"
-                          className={"user-btn mt-3"}
-                          onClick={() => openAndCloseAddNpvDrawer('Open')}
-                          title="Add"
-                        // disabled={isDisable}
-                        >
-                          <div className={"plus mr-0"}></div>
-                        </button>
-                      </div>
-                    </Col>
-                  </Row>}
-
-                  {!isOpenandClose && false && <NpvCost netPOPrice={netPOPrice} tableData={npvTableData} hideAction={true} />}
-
-                  {
-                    isOpenandClose && <AddNpvCost
-                      isOpen={isOpenandClose}
-                      tableData={npvTableData}
-                      closeDrawer={openAndCloseAddNpvDrawer}
-                      anchor={'right'}
-                      netPOPrice={netPOPrice}
-                    />
-                  }
-
                   <Row className="mx-0">
                     <Col md="10">
                       <div className="left-border mt-3">
