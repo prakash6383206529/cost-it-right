@@ -1,6 +1,6 @@
 import React from "react";
 import Select, { createFilter } from "react-select";
-import "./formInputs.css";
+import "./formInputs.scss";
 import ReactDatePicker from 'react-datepicker'
 import AsyncSelect from 'react-select/async';
 import LoaderCustom from "../common/LoaderCustom";
