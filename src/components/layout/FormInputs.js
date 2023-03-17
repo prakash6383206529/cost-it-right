@@ -2,7 +2,7 @@ import React from "react";
 import Select, { createFilter } from "react-select";
 import DatePicker from "react-datepicker";
 import PropTypes from "prop-types";
-import "./formInputs.css";
+import "./formInputs.scss";
 import { SPACEBAR } from "../../config/constants";
 
 /*
