@@ -346,7 +346,7 @@ function CostingDetailStepTwo(props) {
           ...tempData,
           NetDiscountsCost: checkForNull(discountedCost),
           NetOtherCost: checkForNull(data.AnyOtherCost),
-          TotalCost: OverAllCost + checkForNull(data.AnyOtherCost),
+          TotalCost: OverAllCost + checkForNull(data.AnyOtherCost) + (data.totalNpvCost ? data.totalNpvCost : 0),
           NetPackagingAndFreight: tempData.NetPackagingAndFreight,
         }
 
