@@ -1005,6 +1005,8 @@ export const API = {
   getSupplierContributionData: `${BASE_URL}/reports/get-supplier-contribution-report`,
   getCostingBenchMarkMachineReport: `${BASE_URL}/reports/get-process-cost-benchmarking-report`,
   getSalePurchaseProvisionReport: `${BASE_URL}/reports/get-sale-purchase-provision-report`,
+  getPoamSummaryReport: `${BASE_URL}/reports/get-poam-summary-report`,
+  getPoamImpactReport: `${BASE_URL}/reports/get-poam-impact-report`,
 
   //SUB ASSEMBLY
   getSubAssemblyAPI: `${BASE_URL}/sub-assembly/get-sub-assembly`,
