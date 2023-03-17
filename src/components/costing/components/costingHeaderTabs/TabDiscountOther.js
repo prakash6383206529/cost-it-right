@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, Table, } from 'reactstrap';
 import {
   getDiscountOtherCostTabData, saveDiscountOtherCostTab, fileUploadCosting, fileDeleteCosting,
-  getExchangeRateByCurrency, setDiscountCost, setComponentDiscountOtherItemData, saveAssemblyPartRowCostingCalculation, saveAssemblyBOPHandlingCharge, setDiscountErrors, gridDataAdded, isDiscountDataChange,
+  getExchangeRateByCurrency, setDiscountCost, setComponentDiscountOtherItemData, saveAssemblyPartRowCostingCalculation, saveAssemblyBOPHandlingCharge, setDiscountErrors, gridDataAdded, isDiscountDataChange, setNPVData,
 } from '../../actions/Costing';
 import { getCurrencySelectList, } from '../../../../actions/Common';
 import { costingInfoContext, netHeadCostContext, NetPOPriceContext } from '../CostingDetailStepTwo';
@@ -29,6 +29,7 @@ import { updateMultiTechnologyTopAndWorkingRowCalculation } from '../../actions/
 import TooltipCustom from '../../../common/Tooltip';
 import { number, percentageLimitValidation, checkWhiteSpaces, decimalNumberLimit6, hashValidation } from "../../../../helper/validation";
 import NpvCost from '../CostingHeadCosts/AdditionalOtherCost/NpvCost';
+import AddNpvCost from '../CostingHeadCosts/AdditionalOtherCost/AddNpvCost';
 
 let counter = 0;
 function TabDiscountOther(props) {
@@ -64,10 +65,13 @@ function TabDiscountOther(props) {
   const [discountCostApplicability, setDiscountCostApplicability] = useState([])
   const [netPoPriceCurrencyState, setNetPoPriceCurrencyState] = useState('')
   const [attachmentLoader, setAttachmentLoader] = useState(false)
+  const [isOpenandClose, setisOpenandClose] = useState(false)
   const costingHead = useSelector(state => state.comman.costingHead)
   const partType = IdForMultiTechnology.includes(String(costData?.TechnologyId))
   const [showWarning, setShowWarning] = useState(false)
   const [isInputLoader, setIsInputLader] = useState(false)
+  const [npvTableData, setNpvTableData] = useState([])
+  const [totalNpvCost, setTotalNpvCost] = useState('')
   const { subAssemblyTechnologyArray } = useSelector(state => state.subAssembly)
 
   const fieldValues = useWatch({
@@ -320,7 +324,8 @@ function TabDiscountOther(props) {
       PercentageOtherCost: checkForNull(discountObj?.OtherCostPercentage),
       DiscountCostType: hundiscountType.value,
       OtherCostApplicability: discountObj.OtherCostApplicability,
-      DiscountApplicability: discountObj.DiscountApplicability
+      DiscountApplicability: discountObj.DiscountApplicability,
+      totalNpvCost: discountObj.totalNpvCost
     }
 
     props.setHeaderCost(topHeaderData, headerCosts, costData)
@@ -844,6 +849,24 @@ function TabDiscountOther(props) {
         break;
     }
   }
+
+  const openAndCloseAddNpvDrawer = (type, data = npvTableData) => {
+    if (type === 'Open') {
+      setisOpenandClose(true)
+    } else {
+      setisOpenandClose(false)
+      setNpvTableData(data)
+      dispatch(setNPVData([]))
+      const sum = data.reduce((acc, obj) => acc + obj.Cost, 0);
+      setTotalNpvCost(sum)
+      dispatch(isDiscountDataChange(true))
+      setDiscountObj({
+        ...discountObj,
+        totalNpvCost: sum
+      })
+    }
+  }
+
   return (
     <>
       <div className="login-container signup-form">
@@ -1156,7 +1179,38 @@ function TabDiscountOther(props) {
                       </>
                     )}
                   </Row>
-                  <NpvCost showAddButton={true} showNpvSection={true} />
+
+                  {false && <Row>
+                    <Col md="6">
+                      <div className='d-flex justify-content-between'>
+                        <div className="left-border mt-3">
+                          {'NPV Cost:'}
+                        </div>
+                        <button
+                          type="button"
+                          className={"user-btn mt-3"}
+                          onClick={() => openAndCloseAddNpvDrawer('Open')}
+                          title="Add"
+                        // disabled={isDisable}
+                        >
+                          <div className={"plus mr-0"}></div>
+                        </button>
+                      </div>
+                    </Col>
+                  </Row>}
+
+                  {!isOpenandClose && false && <NpvCost netPOPrice={netPOPrice} tableData={npvTableData} hideAction={true} />}
+
+                  {
+                    isOpenandClose && <AddNpvCost
+                      isOpen={isOpenandClose}
+                      tableData={npvTableData}
+                      closeDrawer={openAndCloseAddNpvDrawer}
+                      anchor={'right'}
+                      netPOPrice={netPOPrice}
+                    />
+                  }
+
                   <Row className="mx-0">
                     <Col md="10">
                       <div className="left-border mt-3">

@@ -42,6 +42,7 @@ import {
   SET_DISCOUNT_ERRORS,
   SET_SURFACE_COST_FOR_REJECTION_DATA,
   SET_TOOL_COST_FOR_OVERHEAD_PROFIT,
+  SET_NPV_DATA,
 } from '../../../config/constants'
 import { apiErrors } from '../../../helper/util'
 import { MESSAGES } from '../../../config/message'
@@ -2458,6 +2459,15 @@ export function setDiscountErrors(errObj) {
     dispatch({
       type: SET_DISCOUNT_ERRORS,
       payload: errObj,
+    });
+  }
+};
+
+export function setNPVData(data) {
+  return (dispatch) => {
+    dispatch({
+      type: SET_NPV_DATA,
+      payload: data,
     });
   }
 };
