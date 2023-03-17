@@ -818,7 +818,7 @@ function UserRegistration(props) {
     }
   };
 
-  const checkDuplicacy = (dataList, obj, keyName, technology_master_id, approvalTypeIDValue, messageHead) => {
+  const checkDuplicacy = (dataList, obj, keyName, technology_master_id, approvalTypeIDValue, messageHead, levelId) => {
     let stop = false
     let checkExists = false
     dataList && dataList?.map((element) => {
@@ -829,7 +829,7 @@ function UserRegistration(props) {
     })
 
     const isExistTechnology = dataList && dataList.findIndex(el => {
-      return (Number(el[keyName]) === Number(technology_master_id)) && (Number(el.ApprovalTypeId) === Number(approvalTypeIDValue))
+      return (Number(el[keyName]) === Number(technology_master_id)) && (Number(el.ApprovalTypeId) === Number(approvalTypeIDValue) && Number(el.LevelId) === Number(levelId))
     })
 
     if (checkExists) {
@@ -901,7 +901,7 @@ function UserRegistration(props) {
       ApprovalTypeId: costingApprovalType?.value,
     }
 
-    if (checkDuplicacy(TechnologyLevelGrid, tempData, 'TechnologyId', technology.value, costingApprovalType.value, 'Technology')) return false
+    if (checkDuplicacy(TechnologyLevelGrid, tempData, 'TechnologyId', technology.value, costingApprovalType.value, 'Technology', level.value)) return false
 
     tempArray = Object.assign([...TechnologyLevelGrid], { [technologyLevelEditIndex]: tempData })
 
@@ -932,7 +932,6 @@ function UserRegistration(props) {
     setIsEditIndex(false)
     setCostingApprovalType([])
     setValue('CostingApprovalType', "")
-
   };
 
 
@@ -996,7 +995,7 @@ function UserRegistration(props) {
       ApprovalTypeId: simulationApprovalType?.value,
     }
 
-    if (checkDuplicacy(HeadLevelGrid, tempData, 'TechnologyId', simulationHeads.value, simulationApprovalType.value, 'Technology')) return false
+    if (checkDuplicacy(HeadLevelGrid, tempData, 'TechnologyId', simulationHeads.value, simulationApprovalType.value, 'Technology', simualtionLevel.value)) return false
 
     tempArray = Object.assign([...HeadLevelGrid], { [simulationLevelEditIndex]: tempData })
 
@@ -1023,8 +1022,10 @@ function UserRegistration(props) {
     setSimulationHeads([])
     setSimulationLevelEditIndex('')
     setIsSimulationEditIndex(false)
+    setSimulationApprovalType([])
     setValue('Head', '')
     setValue('simualtionLevel', '')
+    setValue('SimulationApprovalType', '')
   };
 
 
@@ -1160,7 +1161,7 @@ function UserRegistration(props) {
       ApprovalTypeId: masterApprovalType?.value,
     }
 
-    if (checkDuplicacy(masterLevelGrid, tempData, 'MasterId', master.value, masterApprovalType.value, 'Master')) return false
+    if (checkDuplicacy(masterLevelGrid, tempData, 'MasterId', master.value, masterApprovalType.value, 'Master', masterLevel.label)) return false
 
     tempArray = Object.assign([...masterLevelGrid], { [masterLevelEditIndex]: tempData })
 
@@ -1186,9 +1187,10 @@ function UserRegistration(props) {
     setMaster([])
     setMasterLevelEditIndex('')
     setIsMasterEditIndex(false)
+    setMasterApprovalType('')
     setValue('Master', '')
     setValue('masterLevel', '')
-
+    setValue('MasterApprovalType', '')
   };
 
 
@@ -1781,7 +1783,7 @@ function UserRegistration(props) {
                         </Col>
                       </>
                     }
-                   {props?.RFQUser && <Col md="3" className="d-flex align-items-center mt-4 pt-2">
+                    {props?.RFQUser && <Col md="3" className="d-flex align-items-center mt-4 pt-2">
                       <label
                         className={`custom-checkbox`}
                         onChange={onPrimaryContactCheck}
