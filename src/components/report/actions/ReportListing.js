@@ -295,3 +295,35 @@ export function getSalePurchaseProvisionReport(data, callback) {
     };
 
 }
+
+export function getPoamSummaryReport(data, callback) {
+
+    return (dispatch) => {
+        const request = axios.post(`${API.getPoamSummaryReport}`, data, config());
+        request.then((response) => {
+            callback(response);
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE, });
+            callback(error);
+            //apiErrors(error);
+        });
+
+    };
+
+}
+
+export function getPoamImpactReport(data, callback) {
+
+    return (dispatch) => {
+        const request = axios.post(`${API.getPoamImpactReport}`, data, config());
+        request.then((response) => {
+            callback(response);
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE, });
+            callback(error);
+            //apiErrors(error);
+        });
+
+    };
+
+}
