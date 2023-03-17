@@ -105,7 +105,8 @@ class AddBOPImport extends Component {
       paymentTerm: [],
       levelDetails: {},
       noApprovalCycle: false,
-      vendorFilterList: []
+      vendorFilterList: [],
+      isCallCalculation: false
     }
   }
   /**
@@ -176,12 +177,14 @@ class AddBOPImport extends Component {
 
   componentDidUpdate(prevProps, prevState) {
     const { initialConfiguration } = this.props
-    if (!this.props.data.isViewMode) {
+    if (!this.props.data.isViewMode && !this.state.isCallCalculation) {
       if (this.props.fieldsObj !== prevProps.fieldsObj) {
         this.handleCalculation()
       }
       if ((prevState?.costingTypeId !== this.state.costingTypeId) && initialConfiguration.IsMasterApprovalAppliedConfigure) {
-        this.commonFunction()
+        if (!(this.props.data.isEditFlag || this.props.data.isViewMode)) {
+          this.commonFunction()
+        }
       }
     }
   }
@@ -274,12 +277,13 @@ class AddBOPImport extends Component {
         isEditFlag: false,
         isLoader: true,
         BOPID: data.Id,
+        isCallCalculation: true
       })
       this.props.getBOPImportById(data.Id, res => {
         if (res && res.data && res.data.Result) {
 
           const Data = res.data.Data;
-          this.setState({ DataToChange: Data })
+          this.setState({ DataToChange: Data, })
 
           this.props.change('EffectiveDate', DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
           this.setState({ minEffectiveDate: Data.EffectiveDate })
@@ -298,19 +302,7 @@ class AddBOPImport extends Component {
               plantObj = Data && Data.Plant.length > 0 ? { label: Data.Plant[0].PlantName, value: Data.Plant[0].PlantId } : []
             }
             const { costingTypeId, vendorName, client } = this.state
-            if (!this.state.isViewMode) {
-              this.props.getExchangeRateByCurrency(Data.Currency, costingTypeId, DayTime(Data.EffectiveDate).format('YYYY-MM-DD'), vendorName.value, client.value, res => {
-                if (Object.keys(res.data.Data).length === 0) {
-                  this.setState({ showWarning: true })
-                }
-                else {
-                  this.setState({ showWarning: false })
-                }
-                this.setState({ currencyValue: checkForNull(res.data.Data.CurrencyExchangeRate) }, () => {
-                  this.handleCalculation()
-                })
-              })
-            }
+
             this.setState({
               isEditFlag: true,
               IsFinancialDataChanged: false,
@@ -329,7 +321,23 @@ class AddBOPImport extends Component {
               incoTerm: Data.IncoTerm !== undefined ? { label: `${Data.IncoTermDescription ? Data.IncoTermDescription : ''} ${Data.IncoTerm ? `(${Data.IncoTerm})` : '-'}`, value: Data.BoughtOutPartIncoTermId } : [],
               paymentTerm: Data.PaymentTerm !== undefined ? { label: `${Data.PaymentTermDescription ? Data.PaymentTermDescription : ''} ${Data.PaymentTerm ? `(${Data.PaymentTerm})` : '-'}`, value: Data.BoughtOutPartPaymentTermId } : [],
               showCurrency: true
-            }, () => this.setState({ isLoader: false }))
+            }, () => {
+              setTimeout(() => {
+                this.setState({ isLoader: false, isCallCalculation: false })
+                this.commonFunction()
+              }, 500)
+            })
+            if (!this.state.isViewMode && Data.NetLandedCostConversion === 0) {
+              this.props.getExchangeRateByCurrency(Data.Currency, costingTypeId, DayTime(Data.EffectiveDate).format('YYYY-MM-DD'), costingTypeId === ZBCTypeId ? EMPTY_GUID : vendorName.value, client.value, res => {
+                if (Object.keys(res.data.Data).length === 0) {
+                  this.setState({ showWarning: true })
+                }
+                else {
+                  this.setState({ showWarning: false })
+                }
+                this.setState({ currencyValue: checkForNull(res.data.Data.CurrencyExchangeRate) })
+              })
+            }
             // ********** ADD ATTACHMENTS FROM API INTO THE DROPZONE'S PERSONAL DATA STORE **********
             let files = Data.Attachements && Data.Attachements.map((item) => {
               item.meta = {}
@@ -345,14 +353,10 @@ class AddBOPImport extends Component {
       })
     }
     else {
-      this.setState({
-        isLoader: false,
-      })
+      this.setState({ isLoader: false })
       this.props.getBOPImportById('', res => { })
     }
-
   }
-
 
   /**
   * @method renderListing
@@ -560,40 +564,21 @@ class AddBOPImport extends Component {
       remarks: e.target.value,
       isSourceChange: true
     })
-  }  /**
-  * @method handleCurrency
-  * @description called
-  */
-  handleCurrency = (newValue, actionMeta) => {
+  }
+  /**
+* @method handleCurrency
+* @description called
+*/
+  handleCurrency = (newValue) => {
     if (newValue && newValue !== '') {
       if (newValue.label === INR) {
-        this.setState({ showCurrency: false }, () => {
-          this.handleCalculation()
-        })
-
+        this.setState({ currencyValue: 1, showCurrency: false, })
       } else {
-        this.setState({ showCurrency: true }, () => {
-          if (this.state.effectiveDate) {
-            const { costingTypeId, vendorName, client } = this.state
-            this.props.getExchangeRateByCurrency(newValue.label, costingTypeId, DayTime(this.state.effectiveDate).format('YYYY-MM-DD'), vendorName.value, client.value, res => {
-              //this.props.change('NetLandedCost', (fieldsObj.BasicRate * res.data.Data.CurrencyExchangeRate))
-
-              if (Object.keys(res.data.Data).length === 0) {
-
-                this.setState({ showWarning: true })
-              }
-              else {
-                this.setState({ showWarning: false })
-              }
-              this.setState({ currencyValue: checkForNull(res.data.Data.CurrencyExchangeRate), showCurrency: true }, () => {
-                this.handleCalculation()
-              })
-            })
-          }
-          // this.handleCalculation()
-        })
+        this.setState({ showCurrency: true })
       }
-      this.setState({ currency: newValue, })
+      this.setState({ currency: newValue, }, () => {
+        this.handleCalculation()
+      })
     } else {
       this.setState({ currency: [] })
     }
@@ -602,21 +587,48 @@ class AddBOPImport extends Component {
 
   handleCalculation = () => {
     const { fieldsObj, initialConfiguration } = this.props
+    const { currency, effectiveDate } = this.state;
     const NoOfPieces = fieldsObj && fieldsObj.NumberOfPieces !== undefined ? fieldsObj.NumberOfPieces : 1; // MAY BE USED LATER IF USED IN CALCULATION
-    const BasicRate = fieldsObj && fieldsObj.BasicRate !== undefined ? fieldsObj.BasicRate : 0;
-    const NetLandedCost = checkForNull((BasicRate / NoOfPieces) * this.state.currencyValue)
+    const basicRate = fieldsObj && fieldsObj.BasicRate !== undefined ? fieldsObj.BasicRate : 0;
+    const netLandedCost = checkForNull((basicRate / NoOfPieces))
 
 
-    if (this.state.isEditFlag && Number(checkForDecimalAndNull(NetLandedCost, initialConfiguration.NoOfDecimalForPrice)) === Number(checkForDecimalAndNull(this.state.DataToChange?.NetLandedCostConversion, initialConfiguration.NoOfDecimalForPrice)) && (this.state.DataToChange.BoughtOutPartIncoTermId === this.state.incoTerm.value) && (this.state.DataToChange.BoughtOutPartPaymentTermId === this.state.paymentTerm.value)) {
-      this.setState({ IsFinancialDataChanged: false })
+    // handleCalculation = () => {
+    // const { fieldsObj, initialConfiguration } = this.props;
+    // const { currency, effectiveDate } = this.state;
+    // const basicRate = fieldsObj && fieldsObj.BasicRate !== undefined ? fieldsObj.BasicRate : 0;
+    // const netLandedCost = checkForNull((basicRate) * this.state.currencyValue);
+
+    if (
+      this.state.isEditFlag &&
+      Number(checkForDecimalAndNull(netLandedCost, initialConfiguration.NoOfDecimalForPrice)) === Number(checkForDecimalAndNull(this.state.DataToChange?.NetLandedCostConversion, initialConfiguration.NoOfDecimalForPrice)) &&
+      this.state.DataToChange.BoughtOutPartIncoTermId === this.state.incoTerm.value &&
+      this.state.DataToChange.BoughtOutPartPaymentTermId === this.state.paymentTerm.value
+    ) {
+      this.setState({ IsFinancialDataChanged: false });
     } else if (this.state.isEditFlag) {
-      this.setState({ IsFinancialDataChanged: true })
-
+      this.setState({ IsFinancialDataChanged: true });
     }
-    this.setState({ netLandedcost: (BasicRate), netLandedConverionCost: NetLandedCost })
-    this.props.change('NetLandedCost', checkForDecimalAndNull((BasicRate), initialConfiguration.NoOfDecimalForPrice))
-    this.props.change('NetLandedCostCurrency', checkForDecimalAndNull(NetLandedCost, initialConfiguration.NoOfDecimalForPrice))
 
+    if (currency === INR) {
+      this.setState({ currencyValue: 1, netLandedcost: checkForNull(netLandedCost) }, () => {
+        this.props.change('NetLandedCost', checkForDecimalAndNull(netLandedCost * this.state.currencyValue, this.props.initialConfiguration.NoOfDecimalForPrice));
+      });
+    } else {
+      if (currency && currency.length !== 0 && effectiveDate) {
+        const { costingTypeId, vendorName, client } = this.state;
+        this.props.getExchangeRateByCurrency(currency.label, costingTypeId, DayTime(effectiveDate).format('YYYY-MM-DD'), costingTypeId === ZBCTypeId ? EMPTY_GUID : vendorName.value, client.value, res => {
+          if (Object.keys(res.data.Data).length === 0) {
+            this.setState({ showWarning: true });
+          } else {
+            this.setState({ showWarning: false });
+          }
+          this.setState({ currencyValue: checkForNull(res.data.Data.CurrencyExchangeRate), netLandedcost: netLandedCost, netLandedConverionCost: checkForNull(netLandedCost * res.data.Data.CurrencyExchangeRate) });
+          this.props.change('NetLandedCost', checkForDecimalAndNull((netLandedCost), initialConfiguration.NoOfDecimalForPrice));
+          this.props.change('NetLandedCostCurrency', checkForDecimalAndNull((netLandedCost * res.data.Data.CurrencyExchangeRate), initialConfiguration.NoOfDecimalForPrice));
+        });
+      }
+    }
     // THIS CALCULATION IS FOR MINDA
     // const BasicRate = fieldsObj && fieldsObj.BasicRate !== undefined ? fieldsObj.BasicRate : 0;
     // const NetLandedCost = checkForNull((BasicRate) * this.state.currencyValue)
@@ -628,44 +640,13 @@ class AddBOPImport extends Component {
   * @description Handle Effective Date
   */
   handleEffectiveDateChange = (date) => {
-    const { data } = this.props;
-    if (data && data.isEditFlag) {
-      if (this.state.dateCount >= 1) {
-        this.setState({ isDateChange: true })       // IF USER DOES NOT EDIT EFFECTIVE DATE IN EDIT MODE THEN ISDATECHANGE WILL NOT BE TRUE
-      }
+    if (date !== this.state.effectiveDate) {
+      this.setState({ isDateChange: true }, () => { this.handleCalculation() })
     } else {
-      this.setState({ isDateChange: true })
+      this.setState({ isDateChange: false }, () => { this.handleCalculation() })
     }
-
-    this.setState({
-      effectiveDate: date,
-      dateCount: this.state.dateCount + 1,
-    });
-    const { currency } = this.state
-    if (currency.label === INR) {
-      this.setState({ currencyValue: 1, showCurrency: false }, () => {
-        this.handleCalculation()
-      })
-
-    } else {
-      if (currency.length !== 0) {
-        const { costingTypeId, vendorName, client } = this.state
-        this.props.getExchangeRateByCurrency(currency.label, costingTypeId, DayTime(date).format('YYYY-MM-DD'), vendorName.value, client.value, res => {
-          if (Object.keys(res.data.Data).length === 0) {
-
-            this.setState({ showWarning: true })
-          }
-          else {
-            this.setState({ showWarning: false })
-          }
-          this.setState({ currencyValue: checkForNull(res.data.Data.CurrencyExchangeRate), showCurrency: true }, () => {
-            this.handleCalculation()
-          })
-        })
-      }
-    }
+    this.setState({ effectiveDate: date, dateCount: this.state.dateCount + 1 });
   };
-
   /**
   * @method setDisableFalseFunction
   * @description setDisableFalseFunction
