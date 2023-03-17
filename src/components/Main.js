@@ -63,6 +63,7 @@ import BudgetListing from './masters/budget-master/BudgetListing'
 import NfrListing from './masters/nfr/NfrListing'
 import SaleProvisionReport from './report/components/SaleProvisionReport/SaleProvisionReport'
 import PurchaseProvisionReport from './report/components/PurchaseProvisionReport/PurchaseProvisionReport'
+import CustomerPoamSummaryReport from './report/components/CustomerPoamSummaryReport/CustomerPoamSummaryReport'
 const CustomHeader = {
   'Content-Type': 'application/x-www-form-urlencoded',
   'Access-Control-Allow-Origin': '*',
@@ -215,8 +216,8 @@ class Main extends Component {
         location.pathname === SIMULATION_PATH ||
         location.pathname === SIMULATION_HISTORY_PATH ||
         location.pathname === USER_PATH ||
-        location.pathname === RFQ_LISTING ? 'w-100' : ''||
-        location.pathname === NFR_LISTING ? 'w-100' : ''
+        location.pathname === RFQ_LISTING ? 'w-100' : '' ||
+          location.pathname === NFR_LISTING ? 'w-100' : ''
 
     //  ADD DASHBPOARD CLASS FOR DASHBOARD PAGE ONLY
     const DashboardPage = location.pathname === DASHBOARDWITHGRAPH_PATH ? 'Dashboard-page' : '';
@@ -367,6 +368,7 @@ class Main extends Component {
                     <Route path="/supplier-contribution-report" component={SupplierContributionReport} />
                     <Route path="/sale-provision-report" component={SaleProvisionReport} />
                     <Route path="/purchase-provision-report" component={PurchaseProvisionReport} />
+                    <Route path="/customer-poam-summary-report" component={CustomerPoamSummaryReport} />
                     {/*  NEED TO ADD PATH FROM BACKEND */}
                     {/* <Route path="/simulation-insights" component={SimulationInsights} />                   MAY BE USE IN FUTURE*/}
                     <Route path="/rfq-listing" component={AuthMiddleware(RfqListing, RFQ)} />
