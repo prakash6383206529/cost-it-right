@@ -1163,10 +1163,7 @@ function TabDiscountOther(props) {
                         disabled={CostingViewMode ? true : false}
                       />
                     </Col>
-                  </Row>
-
-                  <Row className="mx-0">
-                    <Col md="2">
+                    <Col md="2" className='d-flex align-items-center mt-3'>
                       <label
                         className={`custom-checkbox`}
                         onChange={onPressChangeCurrency}
@@ -1184,10 +1181,9 @@ function TabDiscountOther(props) {
                         />
                       </label>
                     </Col>
-                    <Col md="2">{''}</Col>
                     {IsCurrencyChange && (
                       <>
-                        <Col md="4">
+                        <Col md="3">
                           <SearchableSelectHookForm
                             label={"Select Currency"}
                             name={"Currency"}
@@ -1205,7 +1201,7 @@ function TabDiscountOther(props) {
                           />
                           {showWarning && <WarningMessage dClass="mt-n3" message={`${currency.label} rate is not present in the Exchange Master`} />}
                         </Col>
-                        <Col md="4">
+                        <Col md="3">
                           <TextFieldHookForm
                             label={`Net PO Price${Object.keys(currency).length > 0 ? '(' + currency.label + ')' : ''}`}
                             name={'NetPOPriceOtherCurrency'}
@@ -1226,6 +1222,7 @@ function TabDiscountOther(props) {
                       </>
                     )}
                   </Row>
+
 
                   <Row className="mx-0">
                     <Col md="10">
