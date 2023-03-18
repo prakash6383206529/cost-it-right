@@ -829,7 +829,7 @@ class SideBar extends Component {
     const { isLoader, } = this.state;
     const isLoggedIn = isUserLoggedIn();
     return (
-      <nav>
+      <nav className={`${this.props.sidebarAndNavbarHide ? 'hide-navbar' : ''}`}>
         {isLoader && <Loader />}
         <div>
           <div className="flex-conatiner sign-social ">
@@ -926,8 +926,8 @@ class SideBar extends Component {
  */
 function mapStateToProps({ auth, comman }) {
   const { loading, userData, leftMenuData, menusData, moduleSelectList, menuData, topAndLeftMenuData } = auth
-  const { disabledClass } = comman;
-  return { loading, userData, leftMenuData, menusData, moduleSelectList, menuData, topAndLeftMenuData, disabledClass }
+  const { disabledClass, sidebarAndNavbarHide } = comman;
+  return { loading, userData, leftMenuData, menusData, moduleSelectList, menuData, topAndLeftMenuData, disabledClass, sidebarAndNavbarHide }
 }
 
 /**

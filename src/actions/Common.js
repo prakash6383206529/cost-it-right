@@ -57,7 +57,8 @@ import {
   GET_STATE_WHILE_DOWNLOADING,
   GET_REPORTER_LIST,
   GET_APPROVAL_TYPE_SELECT_LIST,
-  GET_DATA_WHILE_LOADING
+  GET_DATA_WHILE_LOADING,
+  GET_DATA_FROM_REPORT
 } from '../config/constants';
 import { apiErrors } from '../helper/util';
 import { MESSAGES } from '../config/message';
@@ -1626,6 +1627,14 @@ export function dashboardTabLock(data) {
   return (dispatch) => {
     dispatch({
       type: GET_DATA_WHILE_LOADING,
+      payload: data
+    })
+  }
+}
+export function sidebarAndNavbarHide(data) {
+  return (dispatch) => {
+    dispatch({
+      type: GET_DATA_FROM_REPORT,
       payload: data
     })
   }
