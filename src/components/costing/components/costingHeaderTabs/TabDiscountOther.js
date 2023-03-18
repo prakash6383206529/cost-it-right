@@ -25,7 +25,8 @@ import { IdForMultiTechnology, STRINGMAXLENGTH } from '../../../../config/master
 
 import LoaderCustom from '../../../common/LoaderCustom';
 import WarningMessage from '../../../common/WarningMessage';
-import AddNpvCost from './CostingHeadCosts/AdditionalOtherCost/AddNpvCost'
+import NpvCost from '../CostingHeadCosts/AdditionalOtherCost/NpvCost';
+import AddNpvCost from '../CostingHeadCosts/AdditionalOtherCost/AddNpvCost';
 import { updateMultiTechnologyTopAndWorkingRowCalculation } from '../../actions/SubAssembly';
 import TooltipCustom from '../../../common/Tooltip';
 import { number, percentageLimitValidation, checkWhiteSpaces, decimalNumberLimit6, hashValidation, maxLength20 } from "../../../../helper/validation";
