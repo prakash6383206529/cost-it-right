@@ -1,16 +1,16 @@
 import React, { useState, useEffect } from 'react'
 import { Row, Col, } from 'reactstrap';
-import { useDispatch, useSelector } from 'react-redux'
+import { useDispatch } from 'react-redux'
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import { EMPTY_DATA } from '../../../../config/constants'
 import DayTime from '../../../common/DayTimeWrapper';
 import { PaginationWrapper } from '../../../common/commonPagination';
-import { getSalePurchaseProvisionReport } from '../../actions/ReportListing';
-import { getConfigurationKey, getCurrencySymbol } from '../../../../helper';
+import { getPoamImpactReport } from '../../actions/ReportListing';
 import NoContentFound from '../../../common/NoContentFound';
 import LoaderCustom from '../../../common/LoaderCustom';
 
-function SalePurchaseProvisionListing(props) {
+function CustomerPoamImpact(props) {
+    const { apiObject } = props
 
     const dispatch = useDispatch()
     const [showList, setShowList] = useState(false)
@@ -19,27 +19,16 @@ function SalePurchaseProvisionListing(props) {
     const [noRecordFound, setNoRecordFound] = useState(false);
     const [isLoader, setIsLoader] = useState(false);
     const [endIndexArray, setEndIndexArray] = useState([]);
-    const costReportFormData = useSelector(state => state.report.costReportFormGridData)
-    let tableData = costReportFormData && costReportFormData.gridData ? costReportFormData.gridData : [];
-    let startDate = costReportFormData && costReportFormData.fromDate
-    let endDate = costReportFormData && costReportFormData.toDate
-
 
     useEffect(() => {
 
-        let obj = {}
-        obj.FromDate = startDate ? DayTime(startDate).format('MM/DD/YYYY') : ''
-        obj.ToDate = endDate ? DayTime(endDate).format('MM/DD/YYYY') : ''
-
-        let sampleArray = []
-        tableData && tableData.map((item) => {
-            sampleArray.push({ PartId: item.PartId, PlantId: item.PlantId, VendorId: (props.isSaleProvision ? null : item.VendorId), TechnologyId: item.TechnologyId, CustomerId: (props.isSaleProvision ? item.CustomerId : null) })
-        })
-        obj.salesPurchaseProvisionReportInfoList = sampleArray
-
         setIsLoader(true)
-        dispatch(getSalePurchaseProvisionReport(obj, (res) => {
+        dispatch(getPoamImpactReport(apiObject, (res) => {
+            // Set show list to true to display the results
+            setShowList(true)
+            // Set no record found to false if response status is 204 (no content), otherwise true
             setNoRecordFound(res?.status === 204 ? false : true)
+            // Set is loader to false to hide the loader
             setIsLoader(false)
 
             if (res?.data?.Result) {
@@ -47,18 +36,24 @@ function SalePurchaseProvisionListing(props) {
                 let endIndex = []
                 let Data = res?.data?.DataList
 
+                // Loop through the data and extract the required information
                 Data.map((item, index) => {
-                    item.costingInfo.map((ele, ind) => {
+                    item.POAMImpactResponseDetails?.map((ele, ind) => {
                         let obj = { ...ele }
                         if (ind === 0) {
-                            obj.PlantName = `${item.PlantName} (${item.PlantCode})`
-                            obj.PartNumber = item.PartNumber
-                            obj.PartDescription = item.PartDescription
-                            obj.VendorName = item.VendorName ? `${item.VendorName} (${item.VendorCode})` : '-'
+                            obj.CustomerName = item.CustomerName ? `${item.CustomerName} (${item.CustomerCode})` : '-'
+                            obj.PartNumber = item.PartNumber ? item.PartNumber : '-'
+                            obj.PartDescription = item.PartDescription ? item.PartDescription : '-'
+                            obj.TotalDispatchQuantity = item.TotalDispatchQuantity ? item.TotalDispatchQuantity : '-'
+                            obj.TotalImpact = item.TotalImpact ? item.TotalImpact : '-'
                         }
-                        obj.PlantCode = item.PlantCode
-                        obj.UnitOfMeasurement = item.UnitOfMeasurement
-                        obj.PurchaseOrderNumber = item.PurchaseOrderNumber
+
+                        obj.PurchaseDocumentNumber = ele.PurchaseDocumentNumber
+                        obj.POAMStatus = ele.POAMStatus
+                        obj.DispatchQuantity = ele.DispatchQuantity
+                        obj.NewRate = ele.NewRate
+                        obj.OldRate = ele.OldRate
+                        obj.Impact = ele.Impact
                         obj.FromDate = ele.FromDate ? DayTime(ele?.FromDate).format('DD/MM/YYYY') : "-"
                         obj.ToDate = ele.ToDate ? DayTime(ele?.ToDate).format('DD/MM/YYYY') : "-"
                         temp.push(obj)
@@ -66,29 +61,35 @@ function SalePurchaseProvisionListing(props) {
                     endIndex.push(temp.length - 1)
                 })
 
+                // Set the extracted data to the grid data and show the list
                 setGridData(temp)
                 setShowList(true)
 
+                // Set the end index array for merging rows in the grid
                 setEndIndexArray(endIndex)
+
+                // Wait for 400ms and then merge rows in the grid
                 setTimeout(() => {
                     endIndex.map((item) => {
-                        var row = document.querySelector(`.ag-row[row-index="${item}"] .ag-cell[col-id="PlantName"]`);
-                        row.classList.add("border-bottomRowMerge");
+                        var row = document.querySelector(`.ag-row[row-index="${item}"] .ag-cell[col-id="CustomerName"]`);
+                        row?.classList.add("border-bottomRowMerge");
 
                         var row2 = document.querySelector(`.ag-row[row-index="${item}"] .ag-cell[col-id="PartNumber"]`);
-                        row2.classList.add("border-bottomRowMerge");
+                        row2?.classList.add("border-bottomRowMerge");
 
                         var row3 = document.querySelector(`.ag-row[row-index="${item}"] .ag-cell[col-id="PartDescription"]`);
-                        row3.classList.add("border-bottomRowMerge");
+                        row3?.classList.add("border-bottomRowMerge");
 
-                        if (!(props.isSaleProvision)) {
-                            var row4 = document.querySelector(`.ag-row[row-index="${item}"] .ag-cell[col-id="VendorName"]`);
-                            row4.classList.add("border-bottomRowMerge");
-                        }
+                        var row4 = document.querySelector(`.ag-row[row-index="${item}"] .ag-cell[col-id="TotalDispatchQuantity"]`);
+                        row4?.classList.add("border-bottomRowMerge");
+
+                        var row5 = document.querySelector(`.ag-row[row-index="${item}"] .ag-cell[col-id="TotalImpact"]`);
+                        row5?.classList.add("border-bottomRowMerge");
                     })
                 }, 400);
             }
         }))
+
 
     }, [])
 
@@ -104,7 +105,6 @@ function SalePurchaseProvisionListing(props) {
         resizable: true,
         filter: true,
         sortable: false,
-
     };
 
     const handleBodyScroll = (event) => {
@@ -112,7 +112,7 @@ function SalePurchaseProvisionListing(props) {
         if (endIndexArray && endIndexArray.length > 0) {
             setTimeout(() => {
                 endIndexArray.map((item) => {
-                    var row = document.querySelector(`.ag-row[row-index="${item}"] .ag-cell[col-id="PlantName"]`);
+                    var row = document.querySelector(`.ag-row[row-index="${item}"] .ag-cell[col-id="CustomerName"]`);
                     row?.classList.add("border-bottomRowMerge");
 
                     var row2 = document.querySelector(`.ag-row[row-index="${item}"] .ag-cell[col-id="PartNumber"]`);
@@ -121,15 +121,17 @@ function SalePurchaseProvisionListing(props) {
                     var row3 = document.querySelector(`.ag-row[row-index="${item}"] .ag-cell[col-id="PartDescription"]`);
                     row3?.classList.add("border-bottomRowMerge");
 
-                    if (!(props.isSaleProvision)) {
-                        var row4 = document.querySelector(`.ag-row[row-index="${item}"] .ag-cell[col-id="VendorName"]`);
-                        row4?.classList.add("border-bottomRowMerge");
-                    }
+                    var row4 = document.querySelector(`.ag-row[row-index="${item}"] .ag-cell[col-id="TotalDispatchQuantity"]`);
+                    row4?.classList.add("border-bottomRowMerge");
+
+                    var row5 = document.querySelector(`.ag-row[row-index="${item}"] .ag-cell[col-id="TotalImpact"]`);
+                    row5?.classList.add("border-bottomRowMerge");
+
                 })
             }, 400);
+
         }
     };
-
 
     const effectiveDateFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
@@ -140,9 +142,15 @@ function SalePurchaseProvisionListing(props) {
         gridApi.paginationSetPageSize(Number(newPageSize));
     };
 
-    const frameworkComponents = {
 
-        effectiveDateRenderer: effectiveDateFormatter
+    const hyphenFormatter = (props) => {
+        const cellValue = props?.value;
+        return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? cellValue : '-';
+    }
+
+    const frameworkComponents = {
+        effectiveDateRenderer: effectiveDateFormatter,
+        hyphenFormatter: hyphenFormatter
     };
 
     const onGridReady = (params) => {
@@ -151,29 +159,12 @@ function SalePurchaseProvisionListing(props) {
         params.api.sizeColumnsToFit();
     };
 
-    const hyphenFormatter = (props) => {
-        const cellValue = props?.value;
-        return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined && cellValue !== 0) ? cellValue : '-';
-    }
-
-    const POPriceCurrencyFormatter = (props) => {
-        const cellValue = props?.value;
-        const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
-        const currencySymbol = getCurrencySymbol(rowData?.Currency ? rowData?.Currency : getConfigurationKey().BaseCurrency)
-        return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined && cellValue !== 0) ? currencySymbol + " " + cellValue : '-';
-    }
-    const dashFormatter = (props) => {
-        const cellValue = props?.value;
-        return cellValue ? cellValue : '-';
-    }
-
-
     return (
         <>
             <div className={"container-fluid"}>
                 <form noValidate className="form">
                     <div className='analytics-drawer justify-content-end'>
-                        <button type="button" className={"apply"} onClick={cancelReport}> <div className={'back-icon'}></div>Back</button>
+                        <button type="button" className={"apply mr-2"} onClick={cancelReport}> <div className={'back-icon'}></div>Back</button>
 
                     </div>
                     {showList &&
@@ -204,22 +195,21 @@ function SalePurchaseProvisionListing(props) {
                                                 frameworkComponents={frameworkComponents}
                                                 rowSelection={'multiple'}
                                             >
-                                                {<AgGridColumn field="PlantName" width="150" headerName="Plant (Code)" cellClass={"colorWhite"} floatingFilter={true}></AgGridColumn>}
-                                                {!(props.isSaleProvision) && <AgGridColumn field="VendorName" headerName="Vendor (Code)" cellClass={"colorWhite"} floatingFilter={true}></AgGridColumn>}
-                                                {<AgGridColumn field="PartNumber" headerName="Part Number" width="120" cellClass={"colorWhite"} floatingFilter={true}></AgGridColumn>}
-                                                {<AgGridColumn field="PartDescription" width="120" headerName="Part Description" cellClass={"colorWhite"} floatingFilter={true}></AgGridColumn>}
+                                                {<AgGridColumn field='CustomerName' width="130" headerName="Customer (Code)" cellClass={"colorWhite"} floatingFilter={true}></AgGridColumn>}
+                                                {<AgGridColumn field="PartNumber" headerName="Part no." floatingFilter={true} cellClass={"colorWhite"} width="130"></AgGridColumn>}
+                                                {<AgGridColumn field="PartDescription" width="130" headerName="Part Description" cellClass={"colorWhite"} floatingFilter={true}></AgGridColumn>}
+                                                {<AgGridColumn field="TotalDispatchQuantity" headerName="Dispatch Quantity" floatingFilter={true} cellClass={"colorWhite"} width="130"></AgGridColumn>}
+                                                {<AgGridColumn field="TotalImpact" headerName="Total Impact" width="130" floatingFilter={true} cellClass={"colorWhite"}></AgGridColumn>}
 
-                                                {<AgGridColumn field="PurchaseOrderNumber" headerName="Purch. Doc." cellRenderer={hyphenFormatter} floatingFilter={true}></AgGridColumn>}
-                                                <AgGridColumn headerName="Period" headerClass="justify-content-center" marryChildren={true}>
-                                                    <AgGridColumn width="150" field="FromDate" headerName="From" />
-                                                    <AgGridColumn width="150" field="ToDate" headerName="To" />
-                                                </AgGridColumn>
-                                                {<AgGridColumn field="UnitOfMeasurement" headerName="UOM" floatingFilter={true}></AgGridColumn>}
-                                                {<AgGridColumn field="OldRate" width="120" headerName="Existing Po Price" cellRenderer={POPriceCurrencyFormatter} floatingFilter={true}></AgGridColumn>}
-                                                {<AgGridColumn field="NewRate" width="120" headerName="Revised Po Price" cellRenderer={POPriceCurrencyFormatter} floatingFilter={true}></AgGridColumn>}
-                                                {<AgGridColumn field="Variance" headerName="Variance (w.r.t. Existing)" cellRenderer={dashFormatter} floatingFilter={true}></AgGridColumn>}
-                                                {<AgGridColumn field="SupplyQuantity" headerName="Supply Quantity" floatingFilter={true}></AgGridColumn>}
-                                                {<AgGridColumn field="Impact" headerName="Impact" floatingFilter={true}></AgGridColumn>}
+                                                {<AgGridColumn field="PurchaseDocumentNumber" headerName="Purchase Doc" width="130" floatingFilter={true} cellRenderer={hyphenFormatter} ></AgGridColumn>}
+                                                {<AgGridColumn field="POAMStatus" headerName="Poam status" width="130" floatingFilter={true} cellRenderer={hyphenFormatter}></AgGridColumn>}
+                                                {<AgGridColumn field="DispatchQuantity" headerName="Dispatch Quantity" width="130" floatingFilter={true} cellRenderer={hyphenFormatter}></AgGridColumn>}
+                                                {<AgGridColumn field="FromDate" headerName="Old Effective Date" width="130" floatingFilter={true} cellRenderer={hyphenFormatter}></AgGridColumn>}
+                                                {<AgGridColumn field="ToDate" headerName="New Effective Date" width="130" floatingFilter={true} cellRenderer={hyphenFormatter}></AgGridColumn>}
+                                                {<AgGridColumn field="OldRate" headerName="Old Rate" width="130" floatingFilter={true} cellRenderer={hyphenFormatter}></AgGridColumn>}
+                                                {<AgGridColumn field="NewRate" headerName="New Rate" width="130" floatingFilter={true} cellRenderer={hyphenFormatter}></AgGridColumn>}
+                                                {<AgGridColumn field="Variance" headerName="Variance" width="130" floatingFilter={true} cellRenderer={hyphenFormatter}></AgGridColumn>}
+                                                {<AgGridColumn field="Impact" headerName="Impact" width="130" floatingFilter={true} cellRenderer={hyphenFormatter}></AgGridColumn>}
                                             </AgGridReact>
                                             <PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />
                                         </div>
@@ -238,4 +228,4 @@ function SalePurchaseProvisionListing(props) {
     );
 }
 
-export default SalePurchaseProvisionListing;
+export default CustomerPoamImpact;
