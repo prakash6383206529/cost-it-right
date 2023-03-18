@@ -64,6 +64,7 @@ import NfrListing from './masters/nfr/NfrListing'
 import SaleProvisionReport from './report/components/SaleProvisionReport/SaleProvisionReport'
 import PurchaseProvisionReport from './report/components/PurchaseProvisionReport/PurchaseProvisionReport'
 import CustomerPoamSummaryReport from './report/components/CustomerPoamSummaryReport/CustomerPoamSummaryReport'
+import HeadWiseCostingGotGiven from './report/components/HeadwiseCostingGotGiven/HeadWiseCostingGotGiven'
 const CustomHeader = {
   'Content-Type': 'application/x-www-form-urlencoded',
   'Access-Control-Allow-Origin': '*',
@@ -369,6 +370,7 @@ class Main extends Component {
                     <Route path="/sale-provision-report" component={SaleProvisionReport} />
                     <Route path="/purchase-provision-report" component={PurchaseProvisionReport} />
                     <Route path="/customer-poam-summary-report" component={CustomerPoamSummaryReport} />
+                    <Route path="/headwise-costing-got-given" component={HeadWiseCostingGotGiven} />
                     {/*  NEED TO ADD PATH FROM BACKEND */}
                     {/* <Route path="/simulation-insights" component={SimulationInsights} />                   MAY BE USE IN FUTURE*/}
                     <Route path="/rfq-listing" component={AuthMiddleware(RfqListing, RFQ)} />
