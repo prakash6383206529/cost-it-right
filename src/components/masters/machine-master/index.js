@@ -150,6 +150,7 @@ class MachineMaster extends Component {
     */
     hideMoreDetailsForm = (data = {}, editDetails = {}) => {
 
+
         this.setState({
             isAddMoreDetails: false,
             isMachineRateForm: true,

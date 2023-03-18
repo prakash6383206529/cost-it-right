@@ -17,7 +17,7 @@ import { getLabourTypeByMachineTypeSelectList } from '../actions/Labour';
 import { getFuelByPlant, } from '../actions/Fuel';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
-import { EMPTY_DATA, EMPTY_GUID, TIME, ZBCTypeId } from '../../../config/constants'
+import { EMPTY_DATA, EMPTY_GUID, TIME, ZBCTypeId, VBCTypeId, CBCTypeId } from '../../../config/constants'
 import { loggedInUserId, userDetails, getConfigurationKey } from "../../../helper/auth";
 import Switch from "react-switch";
 import Dropzone from 'react-dropzone-uploader';
@@ -136,7 +136,9 @@ class AddMoreDetails extends Component {
       finalApprovalLoader: false,
       showPopup: false,
       levelDetails: {},
-      noApprovalCycle: false
+      noApprovalCycle: false,
+      selectedCustomer: [],
+      selectedVedor: []
     }
     this.dropzone = React.createRef();
   }
@@ -190,7 +192,7 @@ class AddMoreDetails extends Component {
 
   commonFunction() {
     let levelDetailsTemp = []
-    levelDetailsTemp = userTechnologyDetailByMasterId(ZBCTypeId, MACHINE_MASTER_ID, this.props.userMasterLevelAPI)
+    levelDetailsTemp = userTechnologyDetailByMasterId(this.state.CostingTypeId, MACHINE_MASTER_ID, this.props.userMasterLevelAPI)
     this.setState({ levelDetails: levelDetailsTemp })
     if (levelDetailsTemp?.length !== 0) {
       let obj = {
@@ -214,8 +216,9 @@ class AddMoreDetails extends Component {
   }
 
   UNSAFE_componentWillReceiveProps(nextProps) {
+
     if (nextProps.data !== this.props.data) {
-      const { fieldsObj, machineType, selectedPlants, selectedTechnology } = nextProps.data;
+      const { fieldsObj, machineType, selectedPlants, selectedTechnology, selectedCustomer, selectedVedor, costingTypeId } = nextProps.data;
       if (Object.keys(selectedPlants)?.length > 0) {
         this.handlePlants(selectedPlants)
         if (machineType.value) {
@@ -233,6 +236,7 @@ class AddMoreDetails extends Component {
       this.props.change('Description', fieldsObj.Description)
       this.props.change('Specification', fieldsObj.Specification)
       fieldsObj.EffectiveDate && this.props.change('EffectiveDate', fieldsObj.EffectiveDate)
+
 
       setTimeout(() => {
         this.setState({ selectedPlants: selectedPlants, })
@@ -253,7 +257,10 @@ class AddMoreDetails extends Component {
         selectedTechnology: selectedTechnology,
         machineType: machineType,
         effectiveDate: fieldsObj.EffectiveDate ? fieldsObj.EffectiveDate : '',
-        minDate: fieldsObj.EffectiveDate ? fieldsObj.EffectiveDate : ''
+        minDate: fieldsObj.EffectiveDate ? fieldsObj.EffectiveDate : '',
+        selectedCustomer: selectedCustomer,
+        selectedVedor: selectedVedor,
+        CostingTypeId: costingTypeId
       }, () => {
         // if (machineType && machineType.value) {
         //   this.props.getLabourTypeByMachineTypeSelectList(machineType.value ? machineType.value : 0, () => { })
@@ -1933,7 +1940,7 @@ class AddMoreDetails extends Component {
     let updatedFiles = files.map((file) => ({ ...file, ContextId: MachineID }))
 
     let requestData = {
-      CostingTypeId: ZBCTypeId,
+      CostingTypeId: this.state.CostingTypeId,
       MachineId: MachineID,
       Manufacture: values.Manufacture,
       YearOfManufacturing: values.YearOfManufacturing,
@@ -1991,7 +1998,8 @@ class AddMoreDetails extends Component {
       TotalLabourCostPerYear: values.TotalLabourCostPerYear, // Need to look for this
       IsVendor: false,
       IsDetailedEntry: true,
-      VendorId: userDetail.ZBCSupplierInfo.VendorId,
+      VendorId: this.state.CostingTypeId !== VBCTypeId ? userDetail.ZBCSupplierInfo.VendorId : this.state.selectedVedor.value,
+      VendorName: this.state.CostingTypeId !== VBCTypeId ? '' : this.state.selectedVedor.label,
       MachineNumber: values.MachineNumber,
       MachineName: values.MachineName,
       MachineTypeId: machineType ? machineType.value : '',
@@ -2012,6 +2020,10 @@ class AddMoreDetails extends Component {
       IsIncludeMachineCost: IsIncludeMachineRateDepreciation,
       PowerEntryId: powerIdFromAPI,
       selectedPlants: selectedPlants,
+      CustomerId: this.state.CostingTypeId === CBCTypeId ? this.state.selectedCustomer.value : "00000000-0000-0000-0000-000000000000",
+      CustomerName: this.state.CostingTypeId === CBCTypeId ? this.state.selectedCustomer.label : "",
+      selectedCustomer: this.state.selectedCustomer,
+      selectedVedor: this.state.selectedVedor
       // LabourDetailId: labourType.value
     }
 
@@ -2070,7 +2082,7 @@ class AddMoreDetails extends Component {
       // EXECUTED WHEN:- ADD MORE MACHINE DETAIL CALLED FROM ADDMACHINERATE.JS FILE
 
       const formData = {
-        CostingTypeId: ZBCTypeId,
+        CostingTypeId: this.state.CostingTypeId,
         MachineId: MachineID,
         Manufacture: values.Manufacture,
         YearOfManufacturing: values.YearOfManufacturing,
@@ -2127,7 +2139,8 @@ class AddMoreDetails extends Component {
         TotalLabourCostPerYear: values.TotalLabourCostPerYear, //need to ask from where it come
         IsVendor: false,
         IsDetailedEntry: true,
-        VendorId: userDetail.ZBCSupplierInfo.VendorId,
+        VendorId: this.state.CostingTypeId !== VBCTypeId ? userDetail.ZBCSupplierInfo.VendorId : this.state.selectedVedor.value,
+        VendorName: this.state.CostingTypeId !== VBCTypeId ? '' : this.state.selectedVedor.label,
         MachineNumber: values.MachineNumber,
         MachineName: values.MachineName,
         MachineTypeId: machineType ? machineType.value : '',
@@ -2148,7 +2161,9 @@ class AddMoreDetails extends Component {
         IsFinancialDataChanged: this.state.isDateChange ? true : false,
         FuelEntryId: this.state.FuelEntryId,
         IsIncludeMachineCost: IsIncludeMachineRateDepreciation,
-        PowerEntryId: powerIdFromAPI
+        PowerEntryId: powerIdFromAPI,
+        CustomerId: this.state.CostingTypeId === CBCTypeId ? this.state.selectedCustomer.value : "00000000-0000-0000-0000-000000000000",
+        CustomerName: this.state.CostingTypeId === CBCTypeId ? this.state.selectedCustomer.label : "",
       }
 
       let obj = {}
@@ -4025,7 +4040,7 @@ class AddMoreDetails extends Component {
               approvalObj={this.state.approvalObj}
               isBulkUpload={false}
               IsImportEntery={false}
-              costingTypeId={ZBCTypeId}
+              costingTypeId={this.state.CostingTypeId}
             />
           )
         }
