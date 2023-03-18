@@ -238,13 +238,16 @@ class AddMachineRate extends Component {
   }
 
   componentWillUnmount() {
-    const { selectedPlants, effectiveDate, machineType, selectedTechnology, isFormHide } = this.state;
+    const { selectedPlants, effectiveDate, machineType, selectedTechnology, isFormHide, client, vendorName, costingTypeId } = this.state;
     const { fieldsObj } = this.props;
     let data = {
       fieldsObj: fieldsObj,
       selectedTechnology: selectedTechnology,
       selectedPlants: selectedPlants,
       machineType: machineType,
+      selectedCustomer: client,
+      selectedVedor: vendorName,
+      costingTypeId: costingTypeId
     }
     setTimeout(() => {
       this.setState({ selectedPlants: selectedPlants, effectiveDate: effectiveDate })
@@ -266,7 +269,10 @@ class AddMachineRate extends Component {
     this.setState({
       selectedTechnology: data.selectedTechnology,
       machineType: data.machineType,
-      effectiveDate: data.EffectiveDate
+      effectiveDate: data.EffectiveDate,
+      remarks: data.Remark,
+      client: data.selectedCustomer,
+      vendorName: data.selectedVedor
     })
     this.props.change('MachineName', data && data.fieldsObj && data.fieldsObj.MachineName)
     this.props.change('MachineNumber', data && data.fieldsObj && data.fieldsObj.MachineNumber)
@@ -1646,7 +1652,7 @@ class AddMachineRate extends Component {
                           </div>
                         </Col>
 
-                        {costingTypeId === ZBCTypeId &&
+                        {(costingTypeId === ZBCTypeId || getConfigurationKey().IsShowDetailMachineForAll) &&
                           <Col md="12">
                             <div>
                               {
