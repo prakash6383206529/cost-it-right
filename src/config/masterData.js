@@ -3440,6 +3440,8 @@ export const OperationSimulation = [
     { label: "Vendor (Code)", value: "VendorName", },
     { label: "Company (Code)", value: "DepartmentName", },
     { label: "UnitOfMeasurement", value: "UOM" },
+    { label: "Rate", value: "Rate" },
+    { label: "RevisedRate", value: "NewRate" },
     { label: "EffectiveDate", value: "EffectiveDate" },
     { label: "OperationId", value: "OperationId" },
 
@@ -5117,9 +5119,9 @@ export const RawMaterialImportFileHeads = ["CostingHead", "RawMaterial", "Grade"
 
 export const OperationFileHeads = ['Technology', 'CostingHead', 'OperationName', 'OperationCode']
 
-export const BoughtOutPartDomesticFileHeads = ['CostingHead', 'BoughtOutPartNumber', 'BoughtOutPartName', 'BoughtOutPartCategory']
+export const BoughtOutPartDomesticFileHeads = ['CostingHead', 'InsertPartNumber', 'InsertPartName', 'InsertPartCategory']
 
-export const BoughtOutPartImportFileHeads = ['CostingHead', 'BoughtOutPartNumber', 'BoughtOutPartName', 'BoughtOutPartCategory']
+export const BoughtOutPartImportFileHeads = ['CostingHead', 'InsertPartNumber', 'InsertPartName', 'InsertPartCategory']
 
 export const MachineRateFileHeads = ['CostingHead', 'Technologies', 'MachineName', 'MachineNumber']
 
