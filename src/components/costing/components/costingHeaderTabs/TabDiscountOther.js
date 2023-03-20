@@ -6,7 +6,7 @@ import {
   getDiscountOtherCostTabData, saveDiscountOtherCostTab, fileUploadCosting, fileDeleteCosting,
   getExchangeRateByCurrency, setDiscountCost, setComponentDiscountOtherItemData, saveAssemblyPartRowCostingCalculation, saveAssemblyBOPHandlingCharge, setDiscountErrors, gridDataAdded, isDiscountDataChange, setNPVData,
 } from '../../actions/Costing';
-import { getCurrencySelectList, } from '../../../../actions/Common';
+import { getCurrencySelectList, getNpvDetails, saveCostingDetailNpv, } from '../../../../actions/Common';
 import { costingInfoContext, netHeadCostContext, NetPOPriceContext } from '../CostingDetailStepTwo';
 import { calculatePercentage, checkForDecimalAndNull, checkForNull, loggedInUserId, } from '../../../../helper';
 import { SearchableSelectHookForm, TextAreaHookForm, TextFieldHookForm } from '../../../layout/HookFormInputs';
@@ -101,6 +101,7 @@ function TabDiscountOther(props) {
           OtherCostType: otherCostType.label,
           PercentageOtherCost: discountObj.OtherCostPercentage,
           OtherCostApplicability: discountObj.OtherCostApplicability,
+          totalNpvCost: discountObj.totalNpvCost
         }
         props.setHeaderCost(topHeaderData, headerCosts, costData)
       }
@@ -109,9 +110,28 @@ function TabDiscountOther(props) {
 
   useEffect(() => {
     dispatch(getCurrencySelectList(() => { }))
-
   }, [])
 
+
+  useEffect(() => {
+    if (RMCCTabData && RMCCTabData[0]?.CostingId) {
+      dispatch(getNpvDetails(RMCCTabData && RMCCTabData[0]?.CostingId, (res) => {
+        if (res?.data?.DataList) {
+          let Data = res?.data?.DataList
+          setNpvTableData(Data)
+          const sum = Data.reduce((acc, obj) => acc + obj.NpvCost, 0);
+          setTotalNpvCost(sum)
+          setTimeout(() => {
+            dispatch(isDiscountDataChange(true))
+            setDiscountObj({
+              ...discountObj,
+              totalNpvCost: sum
+            })
+          }, 2500);
+        }
+      }))
+    }
+  }, [RMCCTabData])
 
   useEffect(() => {
     if (CostingDataList && CostingDataList.length > 0) {
@@ -246,7 +266,8 @@ function TabDiscountOther(props) {
               HundiOrDiscountValue: checkForNull(OtherCostDetails.HundiOrDiscountValue !== null ? OtherCostDetails.HundiOrDiscountValue : ''),
               DiscountCostType: OtherCostDetails.DiscountCostType !== null ? OtherCostDetails.DiscountCostType : '',
               OtherCostApplicability: OtherCostDetails.OtherCostApplicability,
-              DiscountApplicability: OtherCostDetails.DiscountApplicability
+              DiscountApplicability: OtherCostDetails.DiscountApplicability,
+              totalNpvCost: discountObj.totalNpvCost
             }
 
             props.setHeaderCost(topHeaderData, headerCosts, costData)
@@ -291,7 +312,8 @@ function TabDiscountOther(props) {
         HundiOrDiscountValue: checkForNull(discountObj.HundiOrDiscountValue !== null ? discountObj.HundiOrDiscountValue : ''),
         DiscountCostType: discountObj.DiscountCostType !== null ? discountObj.DiscountCostType : '',
         OtherCostApplicability: discountObj.OtherCostApplicability,
-        DiscountApplicability: discountObj.DiscountApplicability
+        DiscountApplicability: discountObj.DiscountApplicability,
+        totalNpvCost: discountObj.totalNpvCost
       }
       props.setHeaderCost(topHeaderData, headerCosts, costData)
     })
@@ -313,6 +335,7 @@ function TabDiscountOther(props) {
         setNetPoPriceCurrencyState(DiscountCostData && netPOPrice / ExchangeRateData.CurrencyExchangeRate)
       }
     }
+
   }, [props]);
 
   /**
@@ -343,7 +366,6 @@ function TabDiscountOther(props) {
   }
 
   const setValueForTopHeader = () => {
-
     let topHeaderData = {
       DiscountsAndOtherCost: checkForNull(discountObj?.HundiOrDiscountValue),
       HundiOrDiscountPercentage: checkForNull(discountObj?.HundiOrDiscountPercentage),
@@ -885,13 +907,21 @@ function TabDiscountOther(props) {
       setisOpenandClose(false)
       setNpvTableData(data)
       dispatch(setNPVData([]))
-      const sum = data.reduce((acc, obj) => acc + obj.Cost, 0);
+      const sum = data.reduce((acc, obj) => acc + obj.NpvCost, 0);
       setTotalNpvCost(sum)
       dispatch(isDiscountDataChange(true))
       setDiscountObj({
         ...discountObj,
         totalNpvCost: sum
       })
+
+      if (data) {
+        let obj = {}
+        obj.CostingId = RMCCTabData && RMCCTabData[0]?.CostingId
+        obj.LoggedInUserId = loggedInUserId()
+        obj.NpvDetails = data
+        dispatch(saveCostingDetailNpv(obj, () => { }))
+      }
     }
   }
 

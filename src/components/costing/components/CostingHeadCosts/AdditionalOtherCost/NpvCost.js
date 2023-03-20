@@ -32,8 +32,8 @@ function NpvCost(props) {
                                             <tr key={index}>
                                                 <td>{item.NpvType} </td>
                                                 {<td>{checkForDecimalAndNull(item.NpvPercentage, getConfigurationKey().NoOfDecimalForInputOutput)}</td>}
-                                                {<td>{checkForDecimalAndNull(item?.Quantity)}</td>}
-                                                {<td>{checkForDecimalAndNull(item?.Cost, getConfigurationKey().NoOfDecimalForInputOutput)}</td>}
+                                                {<td>{checkForDecimalAndNull(item?.NpvQuantity)}</td>}
+                                                {<td>{checkForDecimalAndNull(item?.NpvCost, getConfigurationKey().NoOfDecimalForInputOutput)}</td>}
                                                 {!props.hideAction && <td><div className='text-right'><button title='Edit' className="Edit mr-1" type={'button'} onClick={() => editDeleteData(index, 'edit')} />
                                                     <button title='Delete' className="Delete mr-1" type={'button'} onClick={() => editDeleteData(index, 'delete')} />
                                                 </div>

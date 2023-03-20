@@ -1639,3 +1639,39 @@ export function sidebarAndNavbarHide(data) {
     })
   }
 }
+
+export function saveCostingDetailNpv(data, callback) {
+  return (dispatch) => {
+    const request = axios.post(API.saveCostingDetailNpv, data, config())
+    request
+      .then((response) => {
+        if (response.data.Result) {
+          callback(response)
+        } else {
+          dispatch({ type: API_FAILURE })
+          if (response.data.Message) {
+            Toaster.error(response.data.Message)
+          }
+        }
+      })
+      .catch((error) => {
+        dispatch({ type: API_FAILURE })
+        apiErrors(error)
+      })
+  }
+}
+
+export function getNpvDetails(costingId, callback) {
+  return (dispatch) => {
+    dispatch({ type: API_REQUEST });
+    const request = axios.get(`${API.getNpvDetails}/${costingId}`, config());
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response);
+      }
+    }).catch((error) => {
+      dispatch({ type: FETCH_MATER_DATA_FAILURE, });
+      apiErrors(error);
+    });
+  };
+}
