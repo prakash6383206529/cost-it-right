@@ -59,7 +59,7 @@ function ProcessCost(props) {
 
   useEffect(() => {
     setTimeout(() => {
-      data.CostingProcessCostResponse && data.CostingProcessCostResponse.map((item, index) => {
+      data?.CostingProcessCostResponse && data?.CostingProcessCostResponse.map((item, index) => {
         setValue(`${ProcessGridFields}.${index}.Quantity`, item.Quantity)
         setValue(`${ProcessGridFields}.${index}.ProcessCost`, item.ProcessCost)
       })
