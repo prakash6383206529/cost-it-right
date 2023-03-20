@@ -39,6 +39,7 @@ import { LOGISTICS, FORGING } from '../../../config/masterData'
 import { reactLocalStorage } from 'reactjs-localstorage'
 import { getUsersTechnologyLevelAPI } from '../../../actions/auth/AuthActions'
 import { costingTypeIdToApprovalTypeIdFunction } from '../../common/CommonFunctions'
+import AddNpvCost from './CostingHeadCosts/AdditionalOtherCost/AddNpvCost'
 
 const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
 
@@ -112,6 +113,7 @@ const CostingSummaryTable = (props) => {
   const [DownloadAccessibility, setDownloadAccessibility] = useState(false);
   const [IsNccCosting, setIsNccCosting] = useState(false);
   const [isLogisticsTechnology, setIsLogisticsTechnology] = useState(false);
+  const [openNpvDrawer, setNpvDrawer] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState({
     BOP: false,
     process: false,
@@ -266,6 +268,11 @@ const CostingSummaryTable = (props) => {
     setIsOpenViewHirarchy(false)
   }
 
+
+  const closeNpvDrawer = () => {
+    setNpvDrawer(false)
+  }
+
   /**
   * @method applyPermission
   * @description ACCORDING TO PERMISSION HIDE AND SHOW, ACTION'S
@@ -406,6 +413,9 @@ const CostingSummaryTable = (props) => {
     setViewToolCost(data)
   }
 
+  const viewNpvData = (index) => {
+    setNpvDrawer(true)
+  }
 
   const viewAttachmentData = (index) => {
     setAttachment(true)
@@ -1987,33 +1997,46 @@ const CostingSummaryTable = (props) => {
                           {viewCostingData &&
                             viewCostingData?.map((data, index) => {
                               return <td>
-                                <span className='positive-sign'>{data?.CostingHeading === VARIANCE && (isApproval ? viewCostingData?.length > 0 && viewCostingData[0]?.nPOPrice < viewCostingData[1]?.nPOPrice ? '+' : '-' : '')}</span>
-                                <span title={data?.nPOPrice}><span className='currency-symbol'>{getCurrencySymbol(getConfigurationKey().BaseCurrency)}</span>{Math.abs(checkForDecimalAndNull(data?.nPOPrice, initialConfiguration.NoOfDecimalForPrice))}</span>
+                                {data?.CostingHeading === VARIANCE && (isApproval ? viewCostingData?.length > 0 && viewCostingData[0]?.nPOPrice > viewCostingData[1]?.nPOPrice ? <span className='positive-sign'>+</span> : '' : '')}
+                                <span title={data?.nPOPrice}><span className='currency-symbol'>{getCurrencySymbol(getConfigurationKey().BaseCurrency)}</span>{checkForDecimalAndNull(data?.nPOPrice, initialConfiguration.NoOfDecimalForPrice)}</span>
+                                {
+                                  (data?.CostingHeading !== VARIANCE) && (!pdfHead && !drawerDetailPDF) &&
+                                  <button
+                                    type="button"
+                                    title='View'
+                                    className="float-right mb-0 View "
+                                    onClick={() => viewNpvData(index)}
+                                  >
+                                  </button>
+                                }
                               </td >
                             })}
 
+                        </tr >
+                      }
+
+                      {
+                        viewCostingData[0]?.technologyId !== LOGISTICS && <tr>
+                          <td>
+                            <span className="d-block small-grey-text">Currency</span>
+                          </td>
+                          {viewCostingData &&
+                            viewCostingData?.map((data) => {
+                              return (
+                                <td>
+                                  <div>
+                                    <span className={`small-grey-text mr-1 ${data?.CostingHeading !== VARIANCE ? data?.currency.currencyValue === '-' ? 'd-none' : '' : ''}  `}>{data?.CostingHeading !== VARIANCE ? `${data?.currency.currencyTitle}/${getConfigurationKey().BaseCurrency}` : ''}</span> {' '}
+                                    <span className="">{data?.CostingHeading !== VARIANCE ? data?.currency.currencyValue === '-' ? '-' : checkForDecimalAndNull(data?.currency.currencyValue, initialConfiguration.NoOfDecimalForPrice) : ''}</span>
+                                  </div>
+                                </td>
+                              )
+                            })}
                         </tr>
                       }
 
-                      {viewCostingData[0]?.technologyId !== LOGISTICS && <tr>
-                        <td>
-                          <span className="d-block small-grey-text">Currency</span>
-                        </td>
-                        {viewCostingData &&
-                          viewCostingData?.map((data) => {
-                            return (
-                              <td>
-                                <div>
-                                  <span className={`small-grey-text mr-1 ${data?.CostingHeading !== VARIANCE ? data?.currency.currencyValue === '-' ? 'd-none' : '' : ''}  `}>{data?.CostingHeading !== VARIANCE ? `${data?.currency.currencyTitle}/${getConfigurationKey().BaseCurrency}` : ''}</span> {' '}
-                                  <span className="">{data?.CostingHeading !== VARIANCE ? data?.currency.currencyValue === '-' ? '-' : checkForDecimalAndNull(data?.currency.currencyValue, initialConfiguration.NoOfDecimalForPrice) : ''}</span>
-                                </div>
-                              </td>
-                            )
-                          })}
-                      </tr>}
 
-
-                      {viewCostingData[0]?.technologyId !== LOGISTICS &&
+                      {
+                        viewCostingData[0]?.technologyId !== LOGISTICS &&
                         <tr className={`background-light-blue  ${getCurrencyVarianceFormatter()}`}>
                           <th>Net PO Price (In Currency){simulationDrawer && '(Old)'}</th>
                           {/* {viewCostingData &&
@@ -2031,127 +2054,135 @@ const CostingSummaryTable = (props) => {
                       }
 
                       { }
-                      {IsNccCosting && <>
-                        <tr>
-                          <td>
-                            <span className="d-block small-grey-text">Quantity</span>
-                          </td>
+                      {
+                        IsNccCosting && <>
+                          <tr>
+                            <td>
+                              <span className="d-block small-grey-text">Quantity</span>
+                            </td>
+                            {viewCostingData &&
+                              viewCostingData?.map((data) => {
+                                return (
+                                  <td>
+                                    <div>
+                                      <span className="">{data?.CostingHeading !== VARIANCE ? data?.NCCPartQuantity === '-' ? '-' : checkForDecimalAndNull(data?.NCCPartQuantity, initialConfiguration.NoOfDecimalForPrice) : ''}</span>
+                                    </div>
+                                  </td>
+                                )
+                              })}
+                          </tr>
+
+                          <tr>
+                            <td>
+                              <span className="d-block small-grey-text">Is Regularized</span>
+                            </td>
+                            {viewCostingData &&
+                              viewCostingData?.map((data) => {
+                                return (
+                                  <td>
+                                    <div>
+                                      <span className="">{data?.CostingHeading !== VARIANCE ? (data.IsRegularized ? 'Yes' : 'No') : ""}</span>
+                                    </div>
+                                  </td>
+                                )
+                              })}
+                          </tr>
+                        </>
+                      }
+
+                      {
+                        viewCostingData[0]?.technologyId !== LOGISTICS && <tr>
+                          <td>Attachments</td>
                           {viewCostingData &&
-                            viewCostingData?.map((data) => {
+                            viewCostingData?.map((data, index) => {
                               return (
+
                                 <td>
-                                  <div>
-                                    <span className="">{data?.CostingHeading !== VARIANCE ? data?.NCCPartQuantity === '-' ? '-' : checkForDecimalAndNull(data?.NCCPartQuantity, initialConfiguration.NoOfDecimalForPrice) : ''}</span>
-                                  </div>
-                                </td>
-                              )
-                            })}
-                        </tr>
+                                  {
+                                    data?.CostingHeading !== VARIANCE &&
+                                      data?.attachment && data?.attachment.length === 0 ? (
+                                      'No attachment found'
+                                    ) : data?.attachment.length === 1 ? (
 
-                        <tr>
-                          <td>
-                            <span className="d-block small-grey-text">Is Regularized</span>
-                          </td>
-                          {viewCostingData &&
-                            viewCostingData?.map((data) => {
-                              return (
-                                <td>
-                                  <div>
-                                    <span className="">{data?.CostingHeading !== VARIANCE ? (data.IsRegularized ? 'Yes' : 'No') : ""}</span>
-                                  </div>
-                                </td>
-                              )
-                            })}
-                        </tr>
-                      </>}
-
-                      {viewCostingData[0]?.technologyId !== LOGISTICS && <tr>
-                        <td>Attachments</td>
-                        {viewCostingData &&
-                          viewCostingData?.map((data, index) => {
-                            return (
-
-                              <td>
-                                {
-                                  data?.CostingHeading !== VARIANCE &&
-                                    data?.attachment && data?.attachment.length === 0 ? (
-                                    'No attachment found'
-                                  ) : data?.attachment.length === 1 ? (
-
-                                    <>
-                                      {data?.attachment && data?.CostingHeading !== VARIANCE &&
-                                        data?.attachment.map((f) => {
-                                          const withOutTild = f.FileURL
-                                            ? f.FileURL.replace('~', '')
-                                            : ''
-                                          const fileURL = `${FILE_URL}${withOutTild}`
-                                          return (
-                                            <div className={"single-attachment images"}>
-                                              <a href={fileURL} target="_blank" rel="noreferrer">
-                                                {f.OriginalFileName}
-                                              </a>
-                                            </div>
-                                          )
-                                        })}
-                                    </>
-                                  )
-                                    : (
-
-                                      <button
-                                        type='button'
-                                        title='View'
-                                        className='btn-a'
-                                        onClick={() => viewAttachmentData(index)}
-                                      > {data?.CostingHeading !== VARIANCE ? 'View Attachment' : ''}</button>
+                                      <>
+                                        {data?.attachment && data?.CostingHeading !== VARIANCE &&
+                                          data?.attachment.map((f) => {
+                                            const withOutTild = f.FileURL
+                                              ? f.FileURL.replace('~', '')
+                                              : ''
+                                            const fileURL = `${FILE_URL}${withOutTild}`
+                                            return (
+                                              <div className={"single-attachment images"}>
+                                                <a href={fileURL} target="_blank" rel="noreferrer">
+                                                  {f.OriginalFileName}
+                                                </a>
+                                              </div>
+                                            )
+                                          })}
+                                      </>
                                     )
-                                }
-                              </td>
-                            )
-                          })}
-                      </tr>}
+                                      : (
 
-
-                      {viewCostingData[0]?.technologyId !== LOGISTICS && <tr>
-                        <th>Remarks</th>
-                        {viewCostingData &&
-                          viewCostingData?.map((data, index) => {
-                            return <td><span className="d-block small-grey-text">{data?.CostingHeading !== VARIANCE ? data?.remark : ''}</span></td>
-                          })}
-                      </tr>}
-
-                      {(!viewMode) && (
-                        <tr className={`${pdfHead || drawerDetailPDF ? 'd-none' : 'background-light-blue'}`}>
-                          <td className="text-center"></td>
-
-                          {viewCostingData?.map((data, index) => {
-
-                            return (
-
-                              <td className="text-center costing-summary">
-                                {(!viewMode && !isFinalApproverShow) &&
-                                  (data?.status === DRAFT) && (!pdfHead && !drawerDetailPDF) &&
-                                  <button
-                                    className="user-btn"
-                                    disabled={viewCostingData[index].IsApprovalLocked}
-                                    onClick={() => {
-                                      sendForApprovalDown(data)
-                                    }}
-                                  ><div className="send-for-approval"></div>
-                                    Send For Approval
-                                  </button>
-                                }
-                              </td>
-
-                            )
-                          })}
+                                        <button
+                                          type='button'
+                                          title='View'
+                                          className='btn-a'
+                                          onClick={() => viewAttachmentData(index)}
+                                        > {data?.CostingHeading !== VARIANCE ? 'View Attachment' : ''}</button>
+                                      )
+                                  }
+                                </td>
+                              )
+                            })}
                         </tr>
-                      )}
-                    </tbody>
-                  </table>
-                </div>
-              </Col>
-            </Row>
-          </div>
+                      }
+
+
+                      {
+                        viewCostingData[0]?.technologyId !== LOGISTICS && <tr>
+                          <th>Remarks</th>
+                          {viewCostingData &&
+                            viewCostingData?.map((data, index) => {
+                              return <td><span className="d-block small-grey-text">{data?.CostingHeading !== VARIANCE ? data?.remark : ''}</span></td>
+                            })}
+                        </tr>
+                      }
+
+                      {
+                        (!viewMode) && (
+                          <tr className={`${pdfHead || drawerDetailPDF ? 'd-none' : 'background-light-blue'}`}>
+                            <td className="text-center"></td>
+
+                            {viewCostingData?.map((data, index) => {
+
+                              return (
+
+                                <td className="text-center costing-summary">
+                                  {(!viewMode && !isFinalApproverShow) &&
+                                    (data?.status === DRAFT) && (!pdfHead && !drawerDetailPDF) &&
+                                    <button
+                                      className="user-btn"
+                                      disabled={viewCostingData[index].IsApprovalLocked}
+                                      onClick={() => {
+                                        sendForApprovalDown(data)
+                                      }}
+                                    ><div className="send-for-approval"></div>
+                                      Send For Approval
+                                    </button>
+                                  }
+                                </td>
+
+                              )
+                            })}
+                          </tr>
+                        )
+                      }
+                    </tbody >
+                  </table >
+                </div >
+              </Col >
+            </Row >
+          </div >
         </Fragment >
       }
       {
@@ -2318,6 +2349,16 @@ const CostingSummaryTable = (props) => {
           anchor={'right'}
           isFromVishualAd={true}
           NewAddedLevelOneChilds={[]}
+        />
+      }
+
+      {
+        openNpvDrawer && <AddNpvCost
+          isOpen={openNpvDrawer}
+          costingSummary={true}
+          tableData={[]}
+          closeDrawer={closeNpvDrawer}
+          anchor={'right'}
         />
       }
     </Fragment >
