@@ -19,6 +19,7 @@ const CostRatioListing = (props) => {
     const [pieChartDataArray, setPieChartDataArray] = useState([])
     const [pieChartLabelArray, setPieChartLabelArray] = useState([])
     const [isLoader, setIsLoader] = useState(false)
+    const [noContentData, setNoContentData] = useState(false)
     const [gridDataState, setGridDataState] = useState()
     const dispatch = useDispatch()
 
@@ -46,6 +47,7 @@ const CostRatioListing = (props) => {
 
         setIsLoader(true)
         dispatch(getCostRatioReport(obj, (res) => {
+            setNoContentData(true)
             setIsLoader(false)
             let Data = res.data && res.data.DataList
             if (res.status === 200) {
@@ -198,7 +200,7 @@ const CostRatioListing = (props) => {
                     <button type="button" className={"apply"} onClick={cancelReport}> <div className={'back-icon'}></div>Back</button>
                 </div>
                 <div className='row overflow-auto report-height'>
-                    {tableData?.length === 0 ? <div className='d-flex w-100 align-items-center'><NoContentFound title={'Cost card is not available for this date range'} /></div> : <Table className='border px-0 mb-0'>
+                    {tableData?.length === 0 ? <div className='d-flex w-100 align-items-center'>{noContentData && <NoContentFound title={'Cost card is not available for this date range'} />}</div> : <Table className='border px-0 mb-0'>
                         <thead>
                             <tr>
                                 <th>
