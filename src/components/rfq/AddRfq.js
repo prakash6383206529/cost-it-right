@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useForm, Controller } from "react-hook-form";
 import { useDispatch, useSelector } from 'react-redux';
-import { Row, Col, } from 'reactstrap';
-import { AsyncSearchableSelectHookForm, SearchableSelectHookForm, TextAreaHookForm, TextFieldHookForm, } from '.././layout/HookFormInputs'
+import { Row, Col, Tooltip, } from 'reactstrap';
+import { AsyncSearchableSelectHookForm, SearchableSelectHookForm, TextAreaHookForm, TextFieldHookForm, NumberFieldHookForm } from '.././layout/HookFormInputs'
 import { getVendorWithVendorCodeSelectList, getReporterList, fetchPlantDataAPI } from '../.././actions/Common';
 import { getCostingSpecificTechnology, } from '../costing/actions/Costing'
 import { addDays, checkForDecimalAndNull, getConfigurationKey, loggedInUserId } from '../.././helper';
@@ -31,6 +31,7 @@ import DayTime from '../common/DayTimeWrapper';
 import DatePicker from 'react-datepicker'
 import { label } from 'react-dom-factories';
 import WarningMessage from '../common/WarningMessage';
+import TooltipCustom from '../common/Tooltip';
 
 const gridOptions = {};
 
@@ -90,7 +91,9 @@ function AddRfq(props) {
     const checkRFQPartBulkUpload = useSelector((state) => state.rfq.checkRFQPartBulkUpload)
     // const getReporterListDropDown = useSelector(state => state.comman.getReporterListDropDown)
     const plantList = useSelector(state => state.comman.plantList)
-    const [isBulkUpload, setisBulkUpload] = useState(false);
+    const [isBulkUpload, setisBulkUpload] = useState(false)
+    const [showTooltip, setShowTooltip] = useState(false)
+    const [viewTooltip, setViewTooltip] = useState(false)
 
     useEffect(() => {
         const { vbcVendorGrid } = props;
@@ -100,6 +103,7 @@ function AddRfq(props) {
             tempArr.push(el.VendorId)
             return null;
         })
+
         initialConfiguration?.IsDestinationPlantConfigure === false && setSelectedVendors(tempArr)
         return () => {
             reactLocalStorage?.setObject('Data', [])
@@ -498,6 +502,9 @@ function AddRfq(props) {
         setGridColumnApi(params.columnApi)
         setGridApi(params.api)
         params.api.paginationGoToPage(0);
+        setTimeout(() => {
+            setShowTooltip(true)
+        }, 100);
     };
 
 
@@ -742,6 +749,13 @@ function AddRfq(props) {
         }
 
     }
+    const contactHeader = (props) => {
+        return (
+            <div>
+                <span>Annual Forecast Quantity<i className={`fa fa-info-circle tooltip_custom_right tooltip-icon mb-n3 ml-4 mt2 `} id={"quantity-tooltip"}></i> </span>
+            </div>
+        );
+    };
 
     /**
     * @method beforeSaveCell
@@ -801,6 +815,11 @@ function AddRfq(props) {
         setTime(value)
     }
 
+    const tooltipToggle = () => {
+        console.log(viewTooltip)
+        setViewTooltip(!viewTooltip)
+    }
+
     const checkBoxHandler = () => {
         setIsConditionalVisible(!isConditionalVisible)
         setVisibilityMode('')
@@ -822,7 +841,8 @@ function AddRfq(props) {
         partNumberFormatter: partNumberFormatter,
         sopFormatter: sopFormatter,
         EditableCallback: EditableCallback,
-        afcFormatter: afcFormatter
+        afcFormatter: afcFormatter,
+        contactHeader: contactHeader
     };
 
     const VendorLoaderObj = { isLoader: VendorInputLoader }
@@ -1004,7 +1024,7 @@ function AddRfq(props) {
                                         </Col>
                                     </Row>
                                     <div>
-                                        { }
+                                        {showTooltip && <Tooltip className="rfq-tooltip-left" placement={"top"} isOpen={viewTooltip} toggle={tooltipToggle} target={"quantity-tooltip"} >{"To add the qauntity please double click on the field."}</Tooltip>}
                                         {!loader ? <div className={`ag-grid-react`}>
                                             <Row>
                                                 <Col>
@@ -1031,7 +1051,7 @@ function AddRfq(props) {
                                                                 <AgGridColumn width={"230px"} field="PartNumber" headerName="Part No" cellClass={"colorWhite"} cellRenderer={'partNumberFormatter'}></AgGridColumn>
 
                                                                 <AgGridColumn width={"230px"} field="YearName" headerName="Production Year" cellRenderer={'sopFormatter'}></AgGridColumn>
-                                                                <AgGridColumn width={"230px"} field="Quantity" headerName="Annual Forecast Quantity" cellRenderer={'afcFormatter'} editable={EditableCallback} colId="Quantity"></AgGridColumn>
+                                                                <AgGridColumn width={"230px"} field="Quantity" headerName="Annual Forecast Quantity" headerComponent={'contactHeader'} cellRenderer={'afcFormatter'} editable={EditableCallback} colId="Quantity"></AgGridColumn>
                                                                 <AgGridColumn width={"0px"} field="PartId" headerName="Part Id" hide={true} cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                                                 <AgGridColumn width={"190px"} field="PartId" headerName="Action" cellClass={"colorWhite text-right"} floatingFilter={false} type="rightAligned" cellRenderer={'buttonFormatterFirst'}></AgGridColumn>
                                                             </AgGridReact>
