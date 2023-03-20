@@ -55,6 +55,7 @@ function SalePurchaseProvisionListing(props) {
                             obj.PartNumber = item.PartNumber
                             obj.PartDescription = item.PartDescription
                             obj.VendorName = item.VendorName ? `${item.VendorName} (${item.VendorCode})` : '-'
+                            obj.CustomerName = item.CustomerName ? `${item.CustomerName} (${item.CustomerCode})` : '-'
                         }
                         obj.PlantCode = item.PlantCode
                         obj.UnitOfMeasurement = item.UnitOfMeasurement
@@ -83,7 +84,11 @@ function SalePurchaseProvisionListing(props) {
 
                         if (!(props.isSaleProvision)) {
                             var row4 = document.querySelector(`.ag-row[row-index="${item}"] .ag-cell[col-id="VendorName"]`);
-                            row4.classList.add("border-bottomRowMerge");
+                            row4?.classList.add("border-bottomRowMerge");
+                        }
+                        if ((props.isSaleProvision)) {
+                            var row5 = document.querySelector(`.ag-row[row-index="${item}"] .ag-cell[col-id="CustomerName"]`);
+                            row5?.classList.add("border-bottomRowMerge");
                         }
                     })
                 }, 400);
@@ -124,6 +129,11 @@ function SalePurchaseProvisionListing(props) {
                     if (!(props.isSaleProvision)) {
                         var row4 = document.querySelector(`.ag-row[row-index="${item}"] .ag-cell[col-id="VendorName"]`);
                         row4?.classList.add("border-bottomRowMerge");
+                    }
+
+                    if ((props.isSaleProvision)) {
+                        var row5 = document.querySelector(`.ag-row[row-index="${item}"] .ag-cell[col-id="CustomerName"]`);
+                        row5?.classList.add("border-bottomRowMerge");
                     }
                 })
             }, 400);
@@ -172,9 +182,12 @@ function SalePurchaseProvisionListing(props) {
         <>
             <div className={"container-fluid"}>
                 <form noValidate className="form">
-                    <div className='analytics-drawer justify-content-end'>
+                    <div className='analytics-drawer justify-content-between'>
+                        <div className='d-flex'>
+                            <div>From: <span className=''> {DayTime(startDate).format('DD/MM/YYYY')}</span>  </div>
+                            <div className='ml-2'> To: <span className=''> {DayTime(endDate).format('DD/MM/YYYY')}</span>  </div>
+                        </div>
                         <button type="button" className={"apply"} onClick={cancelReport}> <div className={'back-icon'}></div>Back</button>
-
                     </div>
                     {showList &&
                         <Row>
@@ -206,6 +219,7 @@ function SalePurchaseProvisionListing(props) {
                                             >
                                                 {<AgGridColumn field="PlantName" width="150" headerName="Plant (Code)" cellClass={"colorWhite"} floatingFilter={true}></AgGridColumn>}
                                                 {!(props.isSaleProvision) && <AgGridColumn field="VendorName" headerName="Vendor (Code)" cellClass={"colorWhite"} floatingFilter={true}></AgGridColumn>}
+                                                {(props.isSaleProvision) && <AgGridColumn field="CustomerName" headerName="Customer (Code)" cellClass={"colorWhite"} floatingFilter={true}></AgGridColumn>}
                                                 {<AgGridColumn field="PartNumber" headerName="Part Number" width="120" cellClass={"colorWhite"} floatingFilter={true}></AgGridColumn>}
                                                 {<AgGridColumn field="PartDescription" width="120" headerName="Part Description" cellClass={"colorWhite"} floatingFilter={true}></AgGridColumn>}
 
@@ -215,10 +229,10 @@ function SalePurchaseProvisionListing(props) {
                                                     <AgGridColumn width="150" field="ToDate" headerName="To" />
                                                 </AgGridColumn>
                                                 {<AgGridColumn field="UnitOfMeasurement" headerName="UOM" floatingFilter={true}></AgGridColumn>}
-                                                {<AgGridColumn field="OldRate" width="120" headerName="Existing Po Price" cellRenderer={POPriceCurrencyFormatter} floatingFilter={true}></AgGridColumn>}
-                                                {<AgGridColumn field="NewRate" width="120" headerName="Revised Po Price" cellRenderer={POPriceCurrencyFormatter} floatingFilter={true}></AgGridColumn>}
-                                                {<AgGridColumn field="Variance" headerName="Variance (w.r.t. Existing)" cellRenderer={dashFormatter} floatingFilter={true}></AgGridColumn>}
-                                                {<AgGridColumn field="SupplyQuantity" headerName="Supply Quantity" floatingFilter={true}></AgGridColumn>}
+                                                {<AgGridColumn field="OldRate" width="120" headerName="Existing Po Price (INR)" cellRenderer={POPriceCurrencyFormatter} floatingFilter={true}></AgGridColumn>}
+                                                {<AgGridColumn field="NewRate" width="120" headerName="Revised Po Price (INR)" cellRenderer={POPriceCurrencyFormatter} floatingFilter={true}></AgGridColumn>}
+                                                {<AgGridColumn field="Difference" headerName="Variance (w.r.t. Existing)" cellRenderer={dashFormatter} floatingFilter={true}></AgGridColumn>}
+                                                {<AgGridColumn field="SupplyQuantity" headerName="Supply Quantity (No.)" floatingFilter={true}></AgGridColumn>}
                                                 {<AgGridColumn field="Impact" headerName="Impact" floatingFilter={true}></AgGridColumn>}
                                             </AgGridReact>
                                             <PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />
