@@ -164,7 +164,7 @@ function SalePurchaseProvisionListing(props) {
     }
     const dashFormatter = (props) => {
         const cellValue = props?.value;
-        return  cellValue ? cellValue : '-';
+        return cellValue ? cellValue : '-';
     }
 
 
@@ -215,9 +215,9 @@ function SalePurchaseProvisionListing(props) {
                                                     <AgGridColumn width="150" field="ToDate" headerName="To" />
                                                 </AgGridColumn>
                                                 {<AgGridColumn field="UnitOfMeasurement" headerName="UOM" floatingFilter={true}></AgGridColumn>}
-                                                {<AgGridColumn field="OldRate"  width="120" headerName="Existing Po Price" cellRenderer={POPriceCurrencyFormatter} floatingFilter={true}></AgGridColumn>}
+                                                {<AgGridColumn field="OldRate" width="120" headerName="Existing Po Price" cellRenderer={POPriceCurrencyFormatter} floatingFilter={true}></AgGridColumn>}
                                                 {<AgGridColumn field="NewRate" width="120" headerName="Revised Po Price" cellRenderer={POPriceCurrencyFormatter} floatingFilter={true}></AgGridColumn>}
-                                                {<AgGridColumn field="Difference" headerName="Variance (w.r.t. Existing)" cellRenderer={dashFormatter} floatingFilter={true}></AgGridColumn>}
+                                                {<AgGridColumn field="Variance" headerName="Variance (w.r.t. Existing)" cellRenderer={dashFormatter} floatingFilter={true}></AgGridColumn>}
                                                 {<AgGridColumn field="SupplyQuantity" headerName="Supply Quantity" floatingFilter={true}></AgGridColumn>}
                                                 {<AgGridColumn field="Impact" headerName="Impact" floatingFilter={true}></AgGridColumn>}
                                             </AgGridReact>
