@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Row, Col, Container } from 'reactstrap'
 import { checkForDecimalAndNull } from '../../../../../helper'
 import { Drawer } from '@material-ui/core'
@@ -11,9 +11,11 @@ import { number, checkWhiteSpaces, percentageLimitValidation, decimalNumberLimit
 import NpvCost from './NpvCost'
 import { setNPVData } from '../../../actions/Costing'
 import Toaster from '../../../../common/Toaster'
+import { getNpvDetails } from '../../../../../actions/Common'
 
 function AddNpvCost(props) {
     const [tableData, setTableData] = useState(props.tableData)
+    const [costingSummary, setCostingSummary] = useState(props.costingSummary ? props.costingSummary : false)
     const [disableNpvPercentage, setDisableNpvPercentage] = useState(false)
     const [disableTotalCost, setDisableTotalCost] = useState(false)
     const [disableAllFields, setDisableAllFields] = useState(true)
@@ -22,6 +24,7 @@ function AddNpvCost(props) {
     const [isEditMode, setIsEditMode] = useState(false)
     let IsEnterToolCostManually = false
     const { ToolTabData } = useSelector(state => state.costing)
+    const viewCostingData = useSelector((state) => state.costing.viewCostingDetailData)
 
     const { register, control, setValue, getValues, formState: { errors }, } = useForm({
         mode: 'onChange',
@@ -29,6 +32,19 @@ function AddNpvCost(props) {
     })
 
     const dispatch = useDispatch();
+
+    useEffect(() => {
+        if (props.costingSummary) {
+            if (viewCostingData && viewCostingData[0]?.costingId) {
+                dispatch(getNpvDetails(viewCostingData && viewCostingData[0]?.costingId, (res) => {
+                    if (res?.data?.DataList) {
+                        let Data = res?.data?.DataList
+                        setTableData(Data)
+                    }
+                }))
+            }
+        }
+    }, [])
 
     const cancel = () => {
         props.closeDrawer('Close')
@@ -234,7 +250,7 @@ function AddNpvCost(props) {
                             <Row className="drawer-heading">
                                 <Col>
                                     <div className={'header-wrapper left'}>
-                                        <h3>{'ADD NPV:'}</h3>
+                                        <h3>{costingSummary ? 'NPV Data' : 'ADD NPV:'}</h3>
                                     </div>
                                     <div
                                         onClick={cancel}
@@ -243,7 +259,7 @@ function AddNpvCost(props) {
                                 </Col>
                             </Row>
                             <div className='hidepage-size'>
-                                <Row>
+                                {!costingSummary && <Row>
 
                                     <Col md="3" className='pr-1'>
                                         <SearchableSelectHookForm
@@ -346,10 +362,10 @@ function AddNpvCost(props) {
                                             Reset
                                         </button>
                                     </Col>
-                                </Row>
-                                <NpvCost showAddButton={false} tableData={tableData} hideAction={false} editData={editData} />
+                                </Row>}
+                                <NpvCost showAddButton={false} tableData={tableData} hideAction={costingSummary} editData={editData} />
                             </div>
-                            <Row className="sf-btn-footer no-gutters drawer-sticky-btn justify-content-between mx-0">
+                            {!costingSummary && <Row className="sf-btn-footer no-gutters drawer-sticky-btn justify-content-between mx-0">
                                 <div className="col-sm-12 text-left bluefooter-butn d-flex justify-content-end">
                                     <button
                                         type={'button'}
@@ -365,8 +381,7 @@ function AddNpvCost(props) {
                                         {'Save'}
                                     </button>
                                 </div>
-                            </Row>
-
+                            </Row>}
                         </div>
                     </Container>
                 </div>
