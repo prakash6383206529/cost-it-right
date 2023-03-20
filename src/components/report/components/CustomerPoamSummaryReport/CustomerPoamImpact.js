@@ -203,11 +203,11 @@ function CustomerPoamImpact(props) {
 
                                                 {<AgGridColumn field="PurchaseDocumentNumber" headerName="Purchase Doc" width="130" floatingFilter={true} cellRenderer={hyphenFormatter} ></AgGridColumn>}
                                                 {<AgGridColumn field="POAMStatus" headerName="Poam status" width="130" floatingFilter={true} cellRenderer={hyphenFormatter}></AgGridColumn>}
-                                                {<AgGridColumn field="DispatchQuantity" headerName="Dispatch Quantity" width="130" floatingFilter={true} cellRenderer={hyphenFormatter}></AgGridColumn>}
+                                                {<AgGridColumn field="DispatchQuantity" headerName="Dispatch Quantity (No.)" width="130" floatingFilter={true} cellRenderer={hyphenFormatter}></AgGridColumn>}
                                                 {<AgGridColumn field="FromDate" headerName="Old Effective Date" width="130" floatingFilter={true} cellRenderer={hyphenFormatter}></AgGridColumn>}
                                                 {<AgGridColumn field="ToDate" headerName="New Effective Date" width="130" floatingFilter={true} cellRenderer={hyphenFormatter}></AgGridColumn>}
-                                                {<AgGridColumn field="OldRate" headerName="Old Rate" width="130" floatingFilter={true} cellRenderer={hyphenFormatter}></AgGridColumn>}
-                                                {<AgGridColumn field="NewRate" headerName="New Rate" width="130" floatingFilter={true} cellRenderer={hyphenFormatter}></AgGridColumn>}
+                                                {<AgGridColumn field="OldRate" headerName="Old Rate (INR)" width="130" floatingFilter={true} cellRenderer={hyphenFormatter}></AgGridColumn>}
+                                                {<AgGridColumn field="NewRate" headerName="New Rate (INR)" width="130" floatingFilter={true} cellRenderer={hyphenFormatter}></AgGridColumn>}
                                                 {<AgGridColumn field="Variance" headerName="Variance" width="130" floatingFilter={true} cellRenderer={hyphenFormatter}></AgGridColumn>}
                                                 {<AgGridColumn field="Impact" headerName="Impact" width="130" floatingFilter={true} cellRenderer={hyphenFormatter}></AgGridColumn>}
                                             </AgGridReact>
