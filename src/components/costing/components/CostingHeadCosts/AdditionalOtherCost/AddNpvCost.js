@@ -160,8 +160,8 @@ function AddNpvCost(props) {
             let obj = {}
             obj.NpvType = getValues('TypeOfNpv') ? getValues('TypeOfNpv').label : ''
             obj.NpvPercentage = getValues('NpvPercentage') ? getValues('NpvPercentage') : ''
-            obj.Quantity = getValues('Quantity') ? getValues('Quantity') : ''
-            obj.Cost = getValues('Total') ? getValues('Total') : ''
+            obj.NpvQuantity = getValues('Quantity') ? getValues('Quantity') : ''
+            obj.NpvCost = getValues('Total') ? getValues('Total') : ''
 
             // If we're in edit mode, update the existing row with the new data.
             // Otherwise, add the new row to the end of the table.
@@ -215,8 +215,8 @@ function AddNpvCost(props) {
             setDisableAllFields(false)
             setValue('TypeOfNpv', { label: Data.NpvType, value: Data.NpvType })
             setValue('NpvPercentage', Data.NpvPercentage)
-            setValue('Quantity', Data.Quantity)
-            setValue('Total', Data.Cost)
+            setValue('Quantity', Data.NpvQuantity)
+            setValue('Total', Data.NpvCost)
             setDisableTotalCost(true)
         }
     }
