@@ -37,6 +37,7 @@ import { autoCompleteDropdown } from '../../common/CommonFunctions';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { checkFinalUser } from '../../../components/costing/actions/Costing'
 import { getUsersMasterLevelAPI } from '../../../actions/auth/AuthActions';
+import TooltipCustom from '../../common/Tooltip';
 
 
 const selector = formValueSelector('AddBOPDomestic');
@@ -495,9 +496,8 @@ class AddBOPDomestic extends Component {
     const { fieldsObj, initialConfiguration } = this.props
     const BasicRate = fieldsObj && fieldsObj.BasicRate !== undefined ? fieldsObj.BasicRate : 0;
     const NoOfPieces = fieldsObj && fieldsObj.NumberOfPieces !== undefined ? fieldsObj.NumberOfPieces : 1;
-    console.log('NoOfPieces: ', NoOfPieces);
     const NetLandedCost = checkForNull((BasicRate / NoOfPieces)) // THIS CALCULATION IS FOR BASE
-    console.log('NetLandedCost: ', NetLandedCost);
+
 
 
     if (this.state.isEditFlag && Number(NetLandedCost) === Number(this.state.DataToCheck?.NetLandedCost)) {
@@ -1264,6 +1264,7 @@ class AddBOPDomestic extends Component {
                             />
                           </Col>
                           <Col md="3">
+                            <TooltipCustom id="bop-net-cost" tooltipText={'Net Cost = Basic Rate / Minimum Order Quantity'} />
                             <Field
                               label={`Net Cost (INR)`}
                               name={`${this.state.NetLandedCost === 0 ? '' : "NetLandedCost"}`}
