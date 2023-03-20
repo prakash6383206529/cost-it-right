@@ -30,8 +30,8 @@ function CustomerPoamListing(props) {
     useEffect(() => {
 
         let obj = {}
-        obj.FromDate = startDate ? DayTime(startDate).format('MM/DD/YYYY') : ''
-        obj.ToDate = endDate ? DayTime(endDate).format('MM/DD/YYYY') : ''
+        obj.FromDate = startDate ? DayTime(startDate).format('DD/MM/YYYY') : ''
+        obj.ToDate = endDate ? DayTime(endDate).format('DD/MM/YYYY') : ''
         obj.ShowLastQuarterData = costReportFormData?.includeQuarterData
 
         let sampleArray = []
@@ -212,9 +212,12 @@ function CustomerPoamListing(props) {
         <>
             {!customerPoamImpact && <div className={"container-fluid"}>
                 <form noValidate className="form">
-                    <div className='analytics-drawer justify-content-end'>
+                    <div className='analytics-drawer justify-content-between'>
+                        <div className='d-flex'>
+                            <div>From: <span className=''> {DayTime(startDate).format('DD/MM/YYYY')}</span>  </div>
+                            <div className='ml-2'> To: <span className=''> {DayTime(endDate).format('DD/MM/YYYY')}</span>  </div>
+                        </div>
                         <button type="button" className={"apply mr-2"} onClick={cancelReport}> <div className={'back-icon'}></div>Back</button>
-
                     </div>
                     {showList &&
                         <Row>
@@ -248,17 +251,17 @@ function CustomerPoamListing(props) {
                                                 {<AgGridColumn field="CustomerName" headerName="Customer Name" floatingFilter={true} width="130" cellRenderer={hyphenFormatter}></AgGridColumn>}
                                                 {<AgGridColumn field="GroupCode" headerName="Product Category" width="130" floatingFilter={true} cellRenderer={hyphenFormatter}></AgGridColumn>}
                                                 {<AgGridColumn field="LastQuarterQuantity" width="130" headerName="Status of last Quarter II" floatingFilter={true} cellRenderer={hyphenFormatter}></AgGridColumn>}
-                                                {<AgGridColumn field="TotalDispatchQuantity" headerName="Sale Parts Quantity" floatingFilter={true} width="130" cellRenderer={hyphenFormatter}></AgGridColumn>}
-                                                {<AgGridColumn field="TotalPOAMReceivedQuantity" headerName="Poam Received Quantity" width="130" floatingFilter={true} cellRenderer={hyphenFormatter}></AgGridColumn>}
-                                                {<AgGridColumn field="TotalPOAMReceivedCost" headerName="Poam Received Cost" width="130" floatingFilter={true} cellRenderer={hyphenFormatter}></AgGridColumn>}
-                                                {<AgGridColumn field="TotalTentitivePOQuantity" headerName="Tentative Po Quantity" width="130" floatingFilter={true} cellRenderer={hyphenFormatter}></AgGridColumn>}
-                                                {<AgGridColumn field="TotalTentitivePOCost" headerName="Tentative Po Cost" width="130" floatingFilter={true} cellRenderer={hyphenFormatter}></AgGridColumn>}
-                                                {<AgGridColumn field="TotalNoDispatchQuantity" headerName="No Dispatch Quantity" width="130" floatingFilter={true} cellRenderer={hyphenFormatter}></AgGridColumn>}
-                                                {<AgGridColumn field="TotalNoDispatchCost" headerName="No Dispatch Cost" width="130" floatingFilter={true} cellRenderer={hyphenFormatter}></AgGridColumn>}
-                                                {<AgGridColumn field="TotalOneTimeQuantity" headerName="One Time Quantity" width="130" floatingFilter={true} cellRenderer={hyphenFormatter}></AgGridColumn>}
-                                                {<AgGridColumn field="TotalOneTimeCost" headerName="One Time Cost" width="130" floatingFilter={true} cellRenderer={hyphenFormatter}></AgGridColumn>}
-                                                {<AgGridColumn field="TotalAmendmentAwaitedQuantity" headerName="Amendmend Awaited Quantity" width="130" floatingFilter={true} cellRenderer={hyphenFormatter}></AgGridColumn>}
-                                                {<AgGridColumn field="TotalImpact" headerName="Impact Cost" width="130" floatingFilter={true} cellRenderer={hyphenFormatter}></AgGridColumn>}
+                                                {<AgGridColumn field="TotalDispatchQuantity" headerName="Sale Parts Quantity (No.)" floatingFilter={true} width="130" cellRenderer={hyphenFormatter}></AgGridColumn>}
+                                                {<AgGridColumn field="TotalPOAMReceivedQuantity" headerName="Poam Received Quantity (No.)" width="130" floatingFilter={true} cellRenderer={hyphenFormatter}></AgGridColumn>}
+                                                {<AgGridColumn field="TotalPOAMReceivedCost" headerName="Poam Received Cost (INR)" width="130" floatingFilter={true} cellRenderer={hyphenFormatter}></AgGridColumn>}
+                                                {<AgGridColumn field="TotalTentitivePOQuantity" headerName="Tentative Po Quantity (No.)" width="130" floatingFilter={true} cellRenderer={hyphenFormatter}></AgGridColumn>}
+                                                {<AgGridColumn field="TotalTentitivePOCost" headerName="Tentative Po Cost (INR)" width="130" floatingFilter={true} cellRenderer={hyphenFormatter}></AgGridColumn>}
+                                                {<AgGridColumn field="TotalNoDispatchQuantity" headerName="No Dispatch Quantity (No.)" width="130" floatingFilter={true} cellRenderer={hyphenFormatter}></AgGridColumn>}
+                                                {<AgGridColumn field="TotalNoDispatchCost" headerName="No Dispatch Cost (INR)" width="130" floatingFilter={true} cellRenderer={hyphenFormatter}></AgGridColumn>}
+                                                {<AgGridColumn field="TotalOneTimeQuantity" headerName="One Time Quantity (No.)" width="130" floatingFilter={true} cellRenderer={hyphenFormatter}></AgGridColumn>}
+                                                {<AgGridColumn field="TotalOneTimeCost" headerName="One Time Cost (INR)" width="130" floatingFilter={true} cellRenderer={hyphenFormatter}></AgGridColumn>}
+                                                {<AgGridColumn field="TotalAmendmentAwaitedQuantity" headerName="Amendmend Awaited Quantity (No.)" width="130" floatingFilter={true} cellRenderer={hyphenFormatter}></AgGridColumn>}
+                                                {<AgGridColumn field="TotalImpact" headerName="Impact Cost (INR)" width="130" floatingFilter={true} cellRenderer={hyphenFormatter}></AgGridColumn>}
                                                 {<AgGridColumn field="Remark" headerName="Remark" width="130" floatingFilter={true}></AgGridColumn>}
                                                 <AgGridColumn width={160} field="TotalImpact" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                                             </AgGridReact>
