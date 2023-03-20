@@ -570,6 +570,8 @@ export const API = {
   getCostingSpecificTechnology: `${BASE_URL}/costing/get-technology-select-list-for-costing`,
   checkDataForCopyCosting: `${BASE_URL}/costing/check-data-for-copy-costing`,
   saveAssemblyPartRowCostingCalculation: `${BASE_URL}/costing/save-assembly-part-row-costing-calculation`,
+  saveCostingDetailNpv: `${BASE_URL}/costing/save-costing-detail-for-npv`,
+  getNpvDetails: `${BASE_URL}/costing/get-costing-detail-for-npv`,
 
   //WEIGHT CALCULATION
   getWeightCalculationInfo: `${BASE_URL}/costing-sheet-metal/get-weight-calculation-info-by-costing`,
