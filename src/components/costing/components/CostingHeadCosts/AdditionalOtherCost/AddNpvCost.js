@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Row, Col, Container } from 'reactstrap'
 import { checkForDecimalAndNull } from '../../../../../helper'
 import { Drawer } from '@material-ui/core'
@@ -11,17 +11,22 @@ import { number, checkWhiteSpaces, percentageLimitValidation, decimalNumberLimit
 import NpvCost from './NpvCost'
 import { setNPVData } from '../../../actions/Costing'
 import Toaster from '../../../../common/Toaster'
+import { getNpvDetails } from '../../../../../actions/Common'
 
 function AddNpvCost(props) {
     const [tableData, setTableData] = useState(props.tableData)
+    const [costingSummary, setCostingSummary] = useState(props.costingSummary ? props.costingSummary : false)
     const [disableNpvPercentage, setDisableNpvPercentage] = useState(false)
     const [disableTotalCost, setDisableTotalCost] = useState(false)
     const [disableAllFields, setDisableAllFields] = useState(true)
     const [disableQuantity, setDisableQuantity] = useState(false)
     const [editIndex, setEditIndex] = useState('')
     const [isEditMode, setIsEditMode] = useState(false)
+    const [totalCost, setTotalCost] = useState('')
     let IsEnterToolCostManually = false
     const { ToolTabData } = useSelector(state => state.costing)
+    const viewCostingData = useSelector((state) => state.costing.viewCostingDetailData)
+    const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
 
     const { register, control, setValue, getValues, formState: { errors }, } = useForm({
         mode: 'onChange',
@@ -29,6 +34,19 @@ function AddNpvCost(props) {
     })
 
     const dispatch = useDispatch();
+
+    useEffect(() => {
+        if (props.costingSummary) {
+            if (viewCostingData && viewCostingData[0]?.costingId) {
+                dispatch(getNpvDetails(viewCostingData && viewCostingData[0]?.costingId, (res) => {
+                    if (res?.data?.DataList) {
+                        let Data = res?.data?.DataList
+                        setTableData(Data)
+                    }
+                }))
+            }
+        }
+    }, [])
 
     const cancel = () => {
         props.closeDrawer('Close')
@@ -65,7 +83,8 @@ function AddNpvCost(props) {
                 let total = (NpvPercentage / 100) * checkForNull(props.netPOPrice) * quantity
 
                 // Set the value of the 'Total' input field to the calculated total cost
-                setValue('Total', checkForDecimalAndNull(total, 6))
+                setValue('Total', checkForDecimalAndNull(total, initialConfiguration.NoOfDecimalForPrice))
+                setTotalCost(total)
 
                 // If NPV percentage is disabled, calculate the NPV percentage based on the total cost and quantity input
             } else if (disableNpvPercentage) {
@@ -78,7 +97,7 @@ function AddNpvCost(props) {
                 let npvPercent = (total * 100) / (props.netPOPrice * quantity)
 
                 // Set the value of the 'NpvPercentage' input field to the calculated NPV percentage
-                setValue('NpvPercentage', checkForDecimalAndNull(npvPercent, 6))
+                setValue('NpvPercentage', checkForDecimalAndNull(npvPercent, initialConfiguration.NoOfDecimalForPrice))
 
             }
         }
@@ -95,7 +114,8 @@ function AddNpvCost(props) {
                 let NpvPercentage = e.target.value
                 let quantity = getValues('Quantity')
                 let total = (NpvPercentage / 100) * checkForNull(props.netPOPrice) * quantity
-                setValue('Total', checkForDecimalAndNull(total, 6))
+                setValue('Total', checkForDecimalAndNull(total, initialConfiguration.NoOfDecimalForPrice))
+                setTotalCost(total)
                 errors.Total = []
             }
 
@@ -121,7 +141,7 @@ function AddNpvCost(props) {
                 let total = e.target.value
                 let quantity = getValues('Quantity')
                 let npvPercent = (total * 100) / (props.netPOPrice * quantity)
-                setValue('NpvPercentage', checkForDecimalAndNull(npvPercent, 6))
+                setValue('NpvPercentage', checkForDecimalAndNull(npvPercent, initialConfiguration.NoOfDecimalForPrice))
             }
         } else {
 
@@ -160,8 +180,8 @@ function AddNpvCost(props) {
             let obj = {}
             obj.NpvType = getValues('TypeOfNpv') ? getValues('TypeOfNpv').label : ''
             obj.NpvPercentage = getValues('NpvPercentage') ? getValues('NpvPercentage') : ''
-            obj.Quantity = getValues('Quantity') ? getValues('Quantity') : ''
-            obj.Cost = getValues('Total') ? getValues('Total') : ''
+            obj.NpvQuantity = getValues('Quantity') ? getValues('Quantity') : ''
+            obj.NpvCost = totalCost ? totalCost : ''
 
             // If we're in edit mode, update the existing row with the new data.
             // Otherwise, add the new row to the end of the table.
@@ -188,6 +208,7 @@ function AddNpvCost(props) {
         setValue('NpvPercentage', '')
         setValue('Quantity', '')
         setValue('Total', '')
+        setTotalCost('')
         setDisableAllFields(true)
     }
 
@@ -215,8 +236,9 @@ function AddNpvCost(props) {
             setDisableAllFields(false)
             setValue('TypeOfNpv', { label: Data.NpvType, value: Data.NpvType })
             setValue('NpvPercentage', Data.NpvPercentage)
-            setValue('Quantity', Data.Quantity)
-            setValue('Total', Data.Cost)
+            setValue('Quantity', Data.NpvQuantity)
+            setValue('Total', checkForDecimalAndNull(Data.NpvCost, initialConfiguration.NoOfDecimalForPrice))
+            setTotalCost(Data.NpvCost)
             setDisableTotalCost(true)
         }
     }
@@ -234,7 +256,7 @@ function AddNpvCost(props) {
                             <Row className="drawer-heading">
                                 <Col>
                                     <div className={'header-wrapper left'}>
-                                        <h3>{'ADD NPV:'}</h3>
+                                        <h3>{costingSummary ? 'NPV Data' : 'ADD NPV:'}</h3>
                                     </div>
                                     <div
                                         onClick={cancel}
@@ -243,7 +265,7 @@ function AddNpvCost(props) {
                                 </Col>
                             </Row>
                             <div className='hidepage-size'>
-                                <Row>
+                                {!costingSummary && <Row>
 
                                     <Col md="3" className='pr-1'>
                                         <SearchableSelectHookForm
@@ -346,10 +368,10 @@ function AddNpvCost(props) {
                                             Reset
                                         </button>
                                     </Col>
-                                </Row>
-                                <NpvCost showAddButton={false} tableData={tableData} hideAction={false} editData={editData} />
+                                </Row>}
+                                <NpvCost showAddButton={false} tableData={tableData} hideAction={costingSummary} editData={editData} />
                             </div>
-                            <Row className="sf-btn-footer no-gutters drawer-sticky-btn justify-content-between mx-0">
+                            {!costingSummary && <Row className="sf-btn-footer no-gutters drawer-sticky-btn justify-content-between mx-0">
                                 <div className="col-sm-12 text-left bluefooter-butn d-flex justify-content-end">
                                     <button
                                         type={'button'}
@@ -365,8 +387,7 @@ function AddNpvCost(props) {
                                         {'Save'}
                                     </button>
                                 </div>
-                            </Row>
-
+                            </Row>}
                         </div>
                     </Container>
                 </div>
