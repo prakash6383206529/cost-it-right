@@ -2171,7 +2171,6 @@ function CostingDetails(props) {
                                 </thead>
                                 <tbody>
                                   {nccGrid && nccGrid.map((item, index) => {
-                                    let displayAddButton = userDetails().Role === 'SuperAdmin' ? true : false
                                     let displayEditBtn = (item.Status === DRAFT) ? true : false;
                                     let displayCopyBtn = (item.Status !== REJECTED_BY_SYSTEM && item.Status !== '') ? true : false;
                                     let displayDeleteBtn = (item.Status === DRAFT) ? true : false;
@@ -2205,7 +2204,7 @@ function CostingDetails(props) {
                                         <td>{item.Price ? checkForDecimalAndNull(item.Price, getConfigurationKey().NoOfDecimalForPrice) : 0}</td>
                                         <td>
                                           <div className='action-btn-wrapper pr-2'>
-                                            {AddAccessibility && actionPermission.addNCC && displayAddButton && <button className="Add-file" type={"button"} title={"Add Costing"} onClick={() => addDetails(index, NCCTypeId)} />}
+                                            {AddAccessibility && actionPermission.addNCC && <button className="Add-file" type={"button"} title={"Add Costing"} onClick={() => addDetails(index, NCCTypeId)} />}
                                             {ViewAccessibility && actionPermission.viewNCC && !item.IsNewCosting && item.Status !== '' && (<button className="View" type={"button"} title={"View Costing"} onClick={() => viewDetails(index, NCCTypeId)} />)}
                                             {EditAccessibility && actionPermission.editNCC && !item.IsNewCosting && displayEditBtn && (<button className="Edit" type={"button"} title={"Edit Costing"} onClick={() => editCosting(index, NCCTypeId)} />)}
                                             {CopyAccessibility && actionPermission.copyNCC && !item.IsNewCosting && displayCopyBtn && (<button className="Copy All" title={"Copy Costing"} type={"button"} onClick={() => copyCosting(index, NCCTypeId)} />)}
