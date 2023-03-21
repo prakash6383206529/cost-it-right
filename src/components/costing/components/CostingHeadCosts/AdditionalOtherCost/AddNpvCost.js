@@ -287,7 +287,7 @@ function AddNpvCost(props) {
                                     </Col>
                                     <Col md="2" className='px-1'>
                                         <NumberFieldHookForm
-                                            label={`NPV Percenatge(%)`}
+                                            label={`Percenatge(%)`}
                                             name={'NpvPercentage'}
                                             Controller={Controller}
                                             control={control}
