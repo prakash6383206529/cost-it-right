@@ -6572,3 +6572,7 @@ export const tokenStatusName = {
     LINKED: 'Linked',
     PROVISIONAL: 'Provisional'
 }
+export const typePercentageAndFixed = [
+    { label: 'Fixed', value: 'Fixed' },
+    { label: 'Percentage', value: 'Percentage' },
+];
