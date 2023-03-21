@@ -30,6 +30,8 @@ import TooltipCustom from '../../../common/Tooltip';
 import { number, percentageLimitValidation, checkWhiteSpaces, decimalNumberLimit6, hashValidation } from "../../../../helper/validation";
 import NpvCost from '../CostingHeadCosts/AdditionalOtherCost/NpvCost';
 import AddNpvCost from '../CostingHeadCosts/AdditionalOtherCost/AddNpvCost';
+import ConditionCosting from '../CostingHeadCosts/AdditionalOtherCost/ConditionCosting';
+import AddConditionCosting from '../CostingHeadCosts/AdditionalOtherCost/AddConditionCosting';
 
 let counter = 0;
 function TabDiscountOther(props) {
@@ -49,7 +51,8 @@ function TabDiscountOther(props) {
   const [otherCostType, setOtherCostType] = useState([]);
   const [hundiscountType, setHundiDiscountType] = useState([])
   const [isDisable, setIsDisable] = useState(false)
-  const [viewAcc, setViewAcc] = useState(false)
+  const [npvAcc, setNpvAcc] = useState(false)
+  const [conditionAcc, setConditionAcc] = useState(false)
   const dispatch = useDispatch()
   let history = useHistory();
   const costData = useContext(costingInfoContext);
@@ -67,11 +70,13 @@ function TabDiscountOther(props) {
   const [netPoPriceCurrencyState, setNetPoPriceCurrencyState] = useState('')
   const [attachmentLoader, setAttachmentLoader] = useState(false)
   const [isOpenandClose, setisOpenandClose] = useState(false)
+  const [isConditionCostingOpen, setIsConditionCostingOpen] = useState(false)
   const costingHead = useSelector(state => state.comman.costingHead)
   const partType = IdForMultiTechnology.includes(String(costData?.TechnologyId))
   const [showWarning, setShowWarning] = useState(false)
   const [isInputLoader, setIsInputLader] = useState(false)
   const [npvTableData, setNpvTableData] = useState([])
+  const [conditionTableData, seConditionTableData] = useState([])
   const [totalNpvCost, setTotalNpvCost] = useState('')
   const { subAssemblyTechnologyArray } = useSelector(state => state.subAssembly)
 
@@ -924,6 +929,13 @@ function TabDiscountOther(props) {
       }
     }
   }
+  const openAndCloseAddConditionCosting = (type, data = conditionTableData) => {
+    if (type === 'Open') {
+      setIsConditionCostingOpen(true)
+    } else {
+      setIsConditionCostingOpen(false)
+    }
+  }
 
   return (
     <>
@@ -937,7 +949,7 @@ function TabDiscountOther(props) {
                   noValidate
                   className="form"
                 >
-                  <Row className="mx-0">
+                  <Row>
                     <Col md="2">
                       <SearchableSelectHookForm
                         label={"Other Cost Type"}
@@ -1051,7 +1063,7 @@ function TabDiscountOther(props) {
                       />
                     </Col>
                   </Row>
-                  <Row className="mx-0">
+                  <Row>
                     <Col md="2">
                       <SearchableSelectHookForm
                         label={"Discount Type"}
@@ -1144,7 +1156,7 @@ function TabDiscountOther(props) {
                     </Col>
                     <Col md="2">
                       <TextFieldHookForm
-                        label="Net PO Price (INR)"
+                        label="Basic Price (INR)"
                         name={'NetPOPriceINR'}
                         Controller={Controller}
                         control={control}
@@ -1160,12 +1172,11 @@ function TabDiscountOther(props) {
                       />
                     </Col>
                   </Row>
-                  <Row className='mx-0'>
-
-                    <Col md="8"><div className="left-border mt-1">Additional Cost</div></Col>
+                  <Row>
+                    <Col md="8"><div className="left-border mt-1">Costing Condition:</div></Col>
                     <Col md="4" className="text-right">
-                      <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setViewAcc(!viewAcc) }}>
-                        {viewAcc ? (
+                      <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setConditionAcc(!conditionAcc) }}>
+                        {conditionAcc ? (
                           <i className="fa fa-minus" ></i>
                         ) : (
                           <i className="fa fa-plus"></i>
@@ -1173,21 +1184,54 @@ function TabDiscountOther(props) {
                       </button>
                     </Col>
                   </Row>
-                  {viewAcc && <>
-                    <Row className='mx-0'>
+                  {conditionAcc && <div className='mb-2'><Row>
+                    <Col md="12">
+                      <div className='d-flex justify-content-end mb-2'>
+                        <button
+                          type="button"
+                          className={"user-btn"}
+                          onClick={() => openAndCloseAddConditionCosting('Open')}
+                          title="Add"
+                        >
+                          <div className={"plus mr-1"}></div> Add
+                        </button>
+                      </div>
+                    </Col>
+                  </Row>
+                    <ConditionCosting hideAction={true} tableData={conditionTableData} /></div>}
+                  {
+                    isConditionCostingOpen && <AddConditionCosting
+                      isOpen={isConditionCostingOpen}
+                      tableData={conditionTableData}
+                      closeDrawer={openAndCloseAddConditionCosting}
+                      anchor={'right'}
+                      netPOPrice={netPOPrice}
+                    />
+                  }
+                  <Row>
+                    <Col md="8"><div className="left-border mt-1">NPV Cost:</div></Col>
+                    <Col md="4" className="text-right">
+                      <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setNpvAcc(!npvAcc) }}>
+                        {npvAcc ? (
+                          <i className="fa fa-minus" ></i>
+                        ) : (
+                          <i className="fa fa-plus"></i>
+                        )}
+                      </button>
+                    </Col>
+                  </Row>
+                  {npvAcc && <>
+                    <Row className=''>
                       <Col md="12">
-                        <div className='d-flex justify-content-between'>
-                          <div className="left-border mt-1">
-                            {'NPV Cost:'}
-                          </div>
+                        <div className='d-flex justify-content-end mb-2'>
                           <button
                             type="button"
-                            className={"user-btn mt-2"}
+                            className={"user-btn"}
                             onClick={() => openAndCloseAddNpvDrawer('Open')}
                             title="Add"
                           // disabled={isDisable}
                           >
-                            <div className={"plus mr-0"}></div>
+                            <div className={"plus mr-1"}></div> Add
                           </button>
                         </div>
                       </Col>
@@ -1204,8 +1248,25 @@ function TabDiscountOther(props) {
                       netPOPrice={netPOPrice}
                     />
                   }
-                  <Row className="mx-0 mt-2">
-                    <Col md="2" className='mt-4'>
+                  <Row className="mt-2">
+                    <Col md="3">
+                      <TextFieldHookForm
+                        label="Net PO Price (INR)"
+                        name={'NetPOPriceINR'}
+                        Controller={Controller}
+                        control={control}
+                        register={register}
+                        mandatory={false}
+                        rules={{}}
+                        handleChange={() => { }}
+                        defaultValue={""}
+                        className=""
+                        customClassName={'withBorder'}
+                        errors={errors.NetPOPriceINR}
+                        disabled={true}
+                      />
+                    </Col>
+                    <Col md="2" className={`mt20 pt-3`}>
                       <label
                         className={`custom-checkbox`}
                         onChange={onPressChangeCurrency}
@@ -1225,7 +1286,7 @@ function TabDiscountOther(props) {
                     </Col>
                     {IsCurrencyChange && (
                       <>
-                        <Col md="2">
+                        <Col md="3">
                           <SearchableSelectHookForm
                             label={"Select Currency"}
                             name={"Currency"}
@@ -1244,7 +1305,7 @@ function TabDiscountOther(props) {
                           />
                           {showWarning && <WarningMessage dClass="mt-n3" message={`${currency.label} rate is not present in the Exchange Master`} />}
                         </Col>
-                        <Col md="2">
+                        <Col md="3">
                           <TextFieldHookForm
                             label={`Net PO Price${Object.keys(currency).length > 0 ? '(' + currency.label + ')' : ''}`}
                             name={'NetPOPriceOtherCurrency'}
@@ -1265,7 +1326,7 @@ function TabDiscountOther(props) {
                       </>
                     )}
                   </Row>
-                  <Row className="mx-0">
+                  <Row>
                     <Col md="10">
                       <div className="left-border mt-3">
                         {'Remarks & Attachments:'}
