@@ -22,9 +22,11 @@ function AddNpvCost(props) {
     const [disableQuantity, setDisableQuantity] = useState(false)
     const [editIndex, setEditIndex] = useState('')
     const [isEditMode, setIsEditMode] = useState(false)
+    const [totalCost, setTotalCost] = useState('')
     let IsEnterToolCostManually = false
     const { ToolTabData } = useSelector(state => state.costing)
     const viewCostingData = useSelector((state) => state.costing.viewCostingDetailData)
+    const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
 
     const { register, control, setValue, getValues, formState: { errors }, } = useForm({
         mode: 'onChange',
@@ -81,7 +83,8 @@ function AddNpvCost(props) {
                 let total = (NpvPercentage / 100) * checkForNull(props.netPOPrice) * quantity
 
                 // Set the value of the 'Total' input field to the calculated total cost
-                setValue('Total', checkForDecimalAndNull(total, 6))
+                setValue('Total', checkForDecimalAndNull(total, initialConfiguration.NoOfDecimalForPrice))
+                setTotalCost(total)
 
                 // If NPV percentage is disabled, calculate the NPV percentage based on the total cost and quantity input
             } else if (disableNpvPercentage) {
@@ -94,7 +97,7 @@ function AddNpvCost(props) {
                 let npvPercent = (total * 100) / (props.netPOPrice * quantity)
 
                 // Set the value of the 'NpvPercentage' input field to the calculated NPV percentage
-                setValue('NpvPercentage', checkForDecimalAndNull(npvPercent, 6))
+                setValue('NpvPercentage', checkForDecimalAndNull(npvPercent, initialConfiguration.NoOfDecimalForPrice))
 
             }
         }
@@ -111,7 +114,8 @@ function AddNpvCost(props) {
                 let NpvPercentage = e.target.value
                 let quantity = getValues('Quantity')
                 let total = (NpvPercentage / 100) * checkForNull(props.netPOPrice) * quantity
-                setValue('Total', checkForDecimalAndNull(total, 6))
+                setValue('Total', checkForDecimalAndNull(total, initialConfiguration.NoOfDecimalForPrice))
+                setTotalCost(total)
                 errors.Total = []
             }
 
@@ -137,7 +141,7 @@ function AddNpvCost(props) {
                 let total = e.target.value
                 let quantity = getValues('Quantity')
                 let npvPercent = (total * 100) / (props.netPOPrice * quantity)
-                setValue('NpvPercentage', checkForDecimalAndNull(npvPercent, 6))
+                setValue('NpvPercentage', checkForDecimalAndNull(npvPercent, initialConfiguration.NoOfDecimalForPrice))
             }
         } else {
 
@@ -177,7 +181,7 @@ function AddNpvCost(props) {
             obj.NpvType = getValues('TypeOfNpv') ? getValues('TypeOfNpv').label : ''
             obj.NpvPercentage = getValues('NpvPercentage') ? getValues('NpvPercentage') : ''
             obj.NpvQuantity = getValues('Quantity') ? getValues('Quantity') : ''
-            obj.NpvCost = getValues('Total') ? getValues('Total') : ''
+            obj.NpvCost = totalCost ? totalCost : ''
 
             // If we're in edit mode, update the existing row with the new data.
             // Otherwise, add the new row to the end of the table.
@@ -204,6 +208,7 @@ function AddNpvCost(props) {
         setValue('NpvPercentage', '')
         setValue('Quantity', '')
         setValue('Total', '')
+        setTotalCost('')
         setDisableAllFields(true)
     }
 
@@ -232,7 +237,8 @@ function AddNpvCost(props) {
             setValue('TypeOfNpv', { label: Data.NpvType, value: Data.NpvType })
             setValue('NpvPercentage', Data.NpvPercentage)
             setValue('Quantity', Data.NpvQuantity)
-            setValue('Total', Data.NpvCost)
+            setValue('Total', checkForDecimalAndNull(Data.NpvCost, initialConfiguration.NoOfDecimalForPrice))
+            setTotalCost(Data.NpvCost)
             setDisableTotalCost(true)
         }
     }
