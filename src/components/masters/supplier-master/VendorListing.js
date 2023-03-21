@@ -676,8 +676,8 @@ class VendorListing extends Component {
         return (
             <div className={`ag-grid-react container-fluid blue-before-inside report-grid custom-pagination ${DownloadAccessibility ? "show-table-btn no-tab-page" : ""}`} id='go-to-top'>
                 <ScrollToTop pointProp="go-to-top" />
+                {this.state.disableDownload && <LoaderCustom message={MESSAGES.DOWNLOADING_MESSAGE} customClass="mt-5" />}
                 {this.state.isLoader && <LoaderCustom customClass={"loader-center"} />}
-                {this.state.disableDownload && <LoaderCustom message={MESSAGES.DOWNLOADING_MESSAGE} />}
                 <Row>
                     <Col md="12" className="d-flex justify-content-between">
                         <h1 className="mb-0">Vendor Master</h1>
