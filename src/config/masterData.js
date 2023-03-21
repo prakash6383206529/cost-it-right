@@ -6277,4 +6277,7 @@ export const typeofNpvDropdown = [
     { label: 'One Time Investment', value: 'One Time Investment' }
 ]
 
-
+export const typePercentageAndFixed = [
+    { label: 'Fixed', value: 'Fixed' },
+    { label: 'Percentage', value: 'Percentage' },
+];
