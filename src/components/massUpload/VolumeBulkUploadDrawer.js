@@ -148,7 +148,7 @@ class VolumeBulkUploadDrawer extends Component {
                     <Col md="12" className='px-3'>
                         <div>
                             <ExcelFile filename={'Volume'} fileExtension={'.xls'} element={
-                                <button type="button" className={'btn btn-primary w-100 mb-3'}><div className="download mr-1" ></div>
+                                <button type="button" className={'btn btn-primary pull-right w-100 mb-3'}><div className="download mr-1" ></div>
                                     {"Download Volume"}
                                 </button>}>
                                 {this.onBtExport()}
