@@ -1706,7 +1706,7 @@ class AddMachineRate extends Component {
                             </div>
                           </div>
                         </Col>
-                        <Col md="3">
+                        <Col md="3" className='p-relative'>
                           <Field
                             name="UOM"
                             type="text"
@@ -1722,7 +1722,7 @@ class AddMachineRate extends Component {
                           />
                           {this.state.errorObj.processUOM && (this.state.UOM === undefined) && <div className='text-help p-absolute'>This field is required.</div>}
                         </Col>
-                        <Col md="3" className='UOM-label-container'>
+                        <Col md="3" className='UOM-label-container p-relative'>
                           <Field
                             label={this.DisplayMachineRateLabel()}
                             name={"MachineRate"}

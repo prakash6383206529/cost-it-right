@@ -3686,7 +3686,7 @@ class AddMoreDetails extends Component {
                                 </div>}
                               </div>
                             </Col>
-                            <Col md="2">
+                            <Col md="2" className='p-relative'>
                               <Field
                                 name="UOM"
                                 type="text"
@@ -3741,7 +3741,7 @@ class AddMoreDetails extends Component {
 
                             } */}
 
-                            <Col className="d-flex col-auto UOM-label-container">
+                            <Col className="d-flex col-auto UOM-label-container p-relative">
                               <div className="machine-rate-filed pr-3">
                                 <Field
                                   label={this.DisplayMachineRateLabel()}
