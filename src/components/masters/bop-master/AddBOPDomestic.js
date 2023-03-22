@@ -1227,10 +1227,8 @@ class AddBOPDomestic extends Component {
                                 className="form-control"
                                 disabled={isViewMode || !this.state.IsFinancialDataChanged}
                                 placeholder={isViewMode || !this.state.IsFinancialDataChanged ? '-' : 'Select Date'}
-                                onFocus={() => onFocus(this, true)}
                               />
                             </div>
-                            {this.state.showErrorOnFocusDate && this.state.effectiveDate === '' && <div className='text-help mt-1 p-absolute bottom-22'>This field is required.</div>}
                           </Col>
 
 

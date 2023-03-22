@@ -19,7 +19,7 @@ import { BOUGHTOUTPART, COMPONENT_PART, FILE_URL, SPACEBAR, ASSEMBLYNAME, search
 import AddChildDrawer from './AddChildDrawer';
 import DayTime from '../../common/DayTimeWrapper'
 import BOMViewer from './BOMViewer';
-import { getRandomSixDigit, onFocus, showDataOnHover } from '../../../helper/util';
+import { getRandomSixDigit, showDataOnHover } from '../../../helper/util';
 import LoaderCustom from '../../common/LoaderCustom';
 import imgRedcross from "../../../assests/images/red-cross.png";
 import _, { debounce } from 'lodash';
@@ -76,7 +76,6 @@ class AddAssemblyPart extends Component {
       inputLoader: false,
       convertPartToAssemblyPartId: "",
       uploadAttachements: true,
-      showErrorOnFocusDate: false,
       IsTechnologyUpdateRequired: false,
       partName: '',
       showPopup: false,
@@ -1142,9 +1141,7 @@ class AddAssemblyPart extends Component {
                                 component={renderDatePicker}
                                 className="form-control"
                                 disabled={isEditFlag && !isViewMode ? getConfigurationKey().IsBOMEditable ? false : true : (isViewMode)}
-                                onFocus={() => onFocus(this, true)}
                               />
-                              {this.state.showErrorOnFocusDate && (this.state.effectiveDate === '' || this.state.effectiveDate === undefined) && <div className='text-help mt-1 p-absolute bottom-7'>This field is required.</div>}
                             </div>
                           </div>
                           {this.state.warningMessage && !isViewMode && <WarningMessage dClass="assembly-view-bom-wrapper date mt-2" message={`Revised date is ${DayTime(this.state?.minEffectiveDate).format('DD/MM/YYYY')} please reset the BOM to select the previous date`} />}

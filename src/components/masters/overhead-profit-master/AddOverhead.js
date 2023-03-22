@@ -69,7 +69,6 @@ class AddOverhead extends Component {
       isDataChanged: this.props.data.isEditFlag,
       attachmentLoader: false,
       showErrorOnFocus: false,
-      showErrorOnFocusDate: false,
       showPopup: false,
       showPartCost: false,
       vendorFilterList: []
@@ -1169,10 +1168,8 @@ class AddOverhead extends Component {
                               className="form-control"
                               disabled={isViewMode || isDataChanged}
                               placeholder={isViewMode || isDataChanged ? '-' : "Select Date"}
-                              onFocus={() => onFocus(this, true)}
                             />
                           </div>
-                          {this.state.showErrorOnFocusDate && this.state.effectiveDate === '' && <div className='text-help mt-1 p-absolute bottom-22'>This field is required.</div>}
                         </Col>
                       </Row >
 

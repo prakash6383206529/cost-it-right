@@ -10,7 +10,7 @@ import { loggedInUserId, } from "../../../helper/auth";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import DayTime from '../../common/DayTimeWrapper'
-import { renderText, renderTextInputField, searchableSelect, } from "../../layout/FormInputs";
+import { renderDatePicker, renderText, renderTextInputField, searchableSelect, } from "../../layout/FormInputs";
 import LoaderCustom from '../../common/LoaderCustom';
 import { debounce } from 'lodash';
 import { onFocus } from '../../../helper';
@@ -579,35 +579,23 @@ class AddExchangeRate extends Component {
                         />
                       </Col>
                       <Col md="3">
-                        <div className="form-group">
-                          <label>
-                            Effective Date
-                            <span className="asterisk-required">*</span>
-                          </label>
-                          { }
-
-                          <div className="inputbox date-section">
-                            <DatePicker
-                              name="EffectiveDate"
-                              selected={DayTime(this.state.effectiveDate).isValid() ? new Date(this.state.effectiveDate) : null}
-                              onChange={this.handleEffectiveDateChange}
-                              showMonthDropdown
-                              showYearDropdown
-                              dateFormat="dd/MM/yyyy"
-                              //maxDate={new Date()}
-                              dropdownMode="select"
-                              placeholderText={isViewMode || (!this.state.isFinancialDataChange && isEditFlag) ? '-' : "Select Date"}
-                              className="withBorder"
-                              autoComplete={"off"}
-                              disabledKeyboardNavigation
-                              validate={[required]}
-                              onChangeRaw={(e) => e.preventDefault()}
-                              required
-                              disabled={isViewMode || (!this.state.isFinancialDataChange && isEditFlag)}
-                              onFocus={() => onFocus(this, true)}
-                            />
-                            {this.state.showErrorOnFocusDate && this.state.effectiveDate === '' && <div className='text-help mt-1 p-absolute bottom-7'>This field is required.</div>}
-                          </div>
+                        <div className="inputbox date-section form-group">
+                          <Field
+                            label="Effective Date"
+                            name="EffectiveDate"
+                            selected={DayTime(this.state.effectiveDate).isValid() ? new Date(this.state.effectiveDate) : null}
+                            onChange={this.handleEffectiveDateChange}
+                            type="text"
+                            validate={[required]}
+                            autoComplete={"off"}
+                            required={true}
+                            changeHandler={(e) => {
+                            }}
+                            component={renderDatePicker}
+                            dropdownMode="select"
+                            disabled={isViewMode || (!this.state.isFinancialDataChange && isEditFlag)}
+                            placeholderText={isViewMode || (!this.state.isFinancialDataChange && isEditFlag) ? '-' : "Select Date"}
+                          />
                         </div>
                       </Col>
                     </Row>
