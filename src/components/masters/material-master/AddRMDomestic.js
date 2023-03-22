@@ -115,7 +115,6 @@ class AddRMDomestic extends Component {
       inputLoader: false,
       attachmentLoader: false,
       showErrorOnFocus: false,
-      showErrorOnFocusDate: false,
       showPopup: false,
       levelDetails: {},
       noApprovalCycle: false,
@@ -1830,10 +1829,8 @@ class AddRMDomestic extends Component {
                                 className="form-control"
                                 disabled={isViewFlag || !this.state.IsFinancialDataChanged || (isEditFlag && isRMAssociated)}
                                 placeholder={isViewFlag || !this.state.IsFinancialDataChanged || (isEditFlag && isRMAssociated) ? '-' : "Select Date"}
-                                onFocus={() => onFocus(this, true)}
                               />
                             </div>
-                            {this.state.showErrorOnFocusDate && this.state.effectiveDate === '' && <div className='text-help mt-1 p-absolute bottom-22'>This field is required.</div>}
                           </Col>
                         </Row>
 

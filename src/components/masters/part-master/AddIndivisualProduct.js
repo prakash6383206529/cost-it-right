@@ -16,7 +16,6 @@ import { FILE_URL } from '../../../config/constants';
 import LoaderCustom from '../../common/LoaderCustom';
 import imgRedcross from "../../../assests/images/red-cross.png";
 import { debounce } from 'lodash';
-import { onFocus } from '../../../helper';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 
 class AddIndivisualProduct extends Component {
@@ -41,7 +40,6 @@ class AddIndivisualProduct extends Component {
             isImpactCalculation: false,
             setDisable: false,
             attachmentLoader: false,
-            showErrorOnFocusDate: false,
             showPopup: false
         }
     }
@@ -512,9 +510,7 @@ class AddIndivisualProduct extends Component {
                                                                     component={renderDatePicker}
                                                                     className="form-control"
                                                                     disabled={isViewMode}
-                                                                    onFocus={() => onFocus(this, true)}
                                                                 />
-                                                                {this.state.showErrorOnFocusDate && this.state.effectiveDate === '' && <div className='text-help mt-1 p-absolute bottom-7'>This field is required.</div>}
                                                             </div>
                                                         </div>
                                                     </Col>

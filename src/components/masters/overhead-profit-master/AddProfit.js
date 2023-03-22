@@ -71,7 +71,6 @@ class AddProfit extends Component {
       attachmentLoader: false,
       vendorCode: "",
       showErrorOnFocus: false,
-      showErrorOnFocusDate: false,
       showPopup: false,
       showPartCost: false,
       vendorFilterList: []
@@ -1151,9 +1150,7 @@ class AddProfit extends Component {
                               className="form-control"
                               disabled={isViewMode || isDataChanged}
                               placeholder={isViewMode || isDataChanged ? '-' : 'Enter'}
-                              onFocus={() => onFocus(this, true)}
                             />
-                            {this.state.showErrorOnFocusDate && this.state.effectiveDate === '' && <div className='text-help mt-1 p-absolute bottom-7'>This field is required.</div>}
                           </div>
                         </Col>
                       </Row>
