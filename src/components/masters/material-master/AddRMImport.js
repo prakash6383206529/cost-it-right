@@ -1687,11 +1687,9 @@ class AddRMImport extends Component {
                                   className="form-control"
                                   disabled={isViewFlag || !this.state.IsFinancialDataChanged}
                                   placeholder="Select Date"
-                                  onFocus={() => onFocus(this, true)}
                                 />
                               </div>
                             </div>
-                            {this.state.showErrorOnFocusDate && this.state.effectiveDate === '' && <div className='text-help mt-1 p-absolute bottom-22'>This field is required.</div>}
                           </Col>
                           <Col md="3">
                             <Field
