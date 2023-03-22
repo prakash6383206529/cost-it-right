@@ -30,7 +30,7 @@ import DayTime from '../../common/DayTimeWrapper'
 import attachClose from '../../../assests/images/red-cross.png'
 import MasterSendForApproval from '../MasterSendForApproval'
 import { debounce } from 'lodash';
-import { CheckApprovalApplicableMaster, displayUOM, onFocus, userTechnologyDetailByMasterId } from '../../../helper'
+import { CheckApprovalApplicableMaster, displayUOM, userTechnologyDetailByMasterId } from '../../../helper'
 import AsyncSelect from 'react-select/async';
 import { ProcessGroup } from '../masterUtil';
 import _ from 'lodash'
@@ -107,7 +107,6 @@ class AddMachineRate extends Component {
         processUOM: false,
         machineRate: false
       },
-      showErrorOnFocusDate: false,
       finalApprovalLoader: false,
       costingTypeId: ZBCTypeId,
       levelDetails: {},
@@ -1640,9 +1639,7 @@ class AddMachineRate extends Component {
                                 placeholder={isViewMode || !this.state.IsFinancialDataChanged ? '-' : "Enter"}
                                 className="form-control"
                                 disabled={isViewMode || !this.state.IsFinancialDataChanged}
-                                onFocus={() => onFocus(this, true)}
                               />
-                              {this.state.showErrorOnFocusDate && this.state.effectiveDate === '' && <div className='text-help mt-1 p-absolute bottom-7'>This field is required.</div>}
                             </div>
                           </div>
                         </Col>

@@ -162,7 +162,7 @@ function SheetMetalBaicDrawer(props) {
       setIsDisable(false)
       if (res.data.Result) {
         obj.ProcessCalculationId = res.data.Identity
-        Toaster.success('Calculation saved sucessfully.')
+        Toaster.success('Calculation saved successfully.')
         calculateMachineTime('0.00', obj)
       }
     }))
