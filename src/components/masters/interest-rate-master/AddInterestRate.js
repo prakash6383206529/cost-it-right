@@ -45,7 +45,6 @@ class AddInterestRate extends Component {
       isDataChanged: this.props.data.isEditFlag,
       minEffectiveDate: '',
       showErrorOnFocus: false,
-      showErrorOnFocusDate: false,
       costingTypeId: ZBCTypeId,
       client: [],
       showPopup: false,
@@ -795,10 +794,8 @@ class AddInterestRate extends Component {
                               component={renderDatePicker}
                               disabled={isViewMode || isDataChanged}
                               className="form-control"
-                              onFocus={() => onFocus(this, true)}
                             />
                           </div>
-                          {this.state.showErrorOnFocusDate && this.state.effectiveDate === '' && <div className='text-help mt-1 p-absolute bottom-7'>This field is required.</div>}
                         </div>
                       </Col>
                     </Row>
