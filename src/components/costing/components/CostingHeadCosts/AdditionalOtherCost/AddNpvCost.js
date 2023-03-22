@@ -254,9 +254,9 @@ function AddNpvCost(props) {
                         <div className={'drawer-wrapper layout-min-width-820px'}>
 
                             <Row className="drawer-heading">
-                                <Col>
+                                <Col className='pl-0'>
                                     <div className={'header-wrapper left'}>
-                                        <h3>{costingSummary ? 'NPV Data' : 'ADD NPV:'}</h3>
+                                        <h3>{costingSummary ? 'NPV Data' : 'Add NPV:'}</h3>
                                     </div>
                                     <div
                                         onClick={cancel}
@@ -269,13 +269,13 @@ function AddNpvCost(props) {
 
                                     <Col md="3" className='pr-1'>
                                         <SearchableSelectHookForm
-                                            label={`Type of NPV`}
+                                            label={`Type of Investment`}
                                             name={'TypeOfNpv'}
                                             placeholder={'Select'}
                                             Controller={Controller}
                                             control={control}
                                             register={register}
-                                            mandatory={false}
+                                            mandatory={true}
                                             options={typeofNpvDropdown}
                                             handleChange={handleNpvChange}
                                             defaultValue={''}
@@ -287,12 +287,12 @@ function AddNpvCost(props) {
                                     </Col>
                                     <Col md="2" className='px-1'>
                                         <NumberFieldHookForm
-                                            label={`NPV Percenatge(%)`}
+                                            label={`Percenatge(%)`}
                                             name={'NpvPercentage'}
                                             Controller={Controller}
                                             control={control}
                                             register={register}
-                                            mandatory={false}
+                                            mandatory={true}
                                             rules={{
                                                 required: false,
                                                 validate: { number, checkWhiteSpaces, percentageLimitValidation },
@@ -318,7 +318,7 @@ function AddNpvCost(props) {
                                             Controller={Controller}
                                             control={control}
                                             register={register}
-                                            mandatory={false}
+                                            mandatory={true}
                                             rules={{
                                                 required: true,
                                                 validate: { number, checkWhiteSpaces, decimalNumberLimit6 },
@@ -338,7 +338,7 @@ function AddNpvCost(props) {
                                             Controller={Controller}
                                             control={control}
                                             register={register}
-                                            mandatory={false}
+                                            mandatory={true}
                                             rules={{
                                                 required: true,
                                                 validate: { number, checkWhiteSpaces, decimalNumberLimit6 },
