@@ -1779,3 +1779,11 @@ export function getMasterApprovalSummary(tokenNo, approvalProcessId, masterId, c
             })
     }
 }
+export function clearGradeSelectList(data) {
+    return (dispatch) => {
+        dispatch({
+            type: GET_GRADE_SELECTLIST_SUCCESS,
+            payload: data
+        })
+    }
+}
