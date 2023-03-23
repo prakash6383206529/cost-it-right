@@ -1,14 +1,21 @@
-import React, { Fragment, useState } from 'react'
+import React, { Fragment, useEffect, useState } from 'react'
 import { Row, Col, Table } from 'reactstrap'
 import NoContentFound from '../../../../common/NoContentFound'
 import { EMPTY_DATA } from '../../../../../config/constants'
 import { checkForDecimalAndNull, getConfigurationKey } from '../../../../../helper'
+import { useSelector } from 'react-redux'
 
 function ConditionCosting(props) {
     const [totalCost, setTotalCost] = useState(0)
     const editDeleteData = (indexValue, operation) => {
         props.editData(indexValue, operation)
     }
+    const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
+
+    useEffect(() => {
+        const sum = props?.tableData.reduce((acc, obj) => Number(acc) + Number(obj.ConditionCost), 0);
+        setTotalCost(checkForDecimalAndNull(sum, initialConfiguration.NoOfDecimalForPrice))
+    }, [props?.tableData])
 
     return (
         <Fragment>
@@ -32,11 +39,11 @@ function ConditionCosting(props) {
                                     return (
                                         <Fragment>
                                             <tr key={index}>
-                                                <td>{item.NpvType} </td>
-                                                {<td>{checkForDecimalAndNull(item.NpvPercentage, getConfigurationKey().NoOfDecimalForInputOutput)}</td>}
-                                                {<td>{checkForDecimalAndNull(item?.Quantity)}</td>}
-                                                {<td>{checkForDecimalAndNull(item?.Cost, getConfigurationKey().NoOfDecimalForInputOutput)}</td>}
-                                                {<td>{checkForDecimalAndNull(item?.Cost, getConfigurationKey().NoOfDecimalForInputOutput)}</td>}
+                                                <td>{item.CostingConditionNumber} </td>
+                                                {<td>{item.ConditionType}</td>}
+                                                {<td>{item.Percentage ? checkForDecimalAndNull(item?.Percentage) : '-'}</td>}
+                                                {<td>{item.Percentage ? '-' : checkForDecimalAndNull(item?.ConditionCost, getConfigurationKey().NoOfDecimalForInputOutput)}</td>}
+                                                {<td>{checkForDecimalAndNull(item?.ConditionCost, getConfigurationKey().NoOfDecimalForInputOutput)}</td>}
                                                 {!props.hideAction && <td><div className='text-right'><button title='Edit' className="Edit mr-1" type={'button'} onClick={() => editDeleteData(index, 'edit')} />
                                                     <button title='Delete' className="Delete mr-1" type={'button'} onClick={() => editDeleteData(index, 'delete')} />
                                                 </div>

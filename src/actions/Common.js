@@ -1643,10 +1643,61 @@ export function saveCostingDetailNpv(data, callback) {
   }
 }
 
+export function saveCostingDetailCondition(data, callback) {
+  return (dispatch) => {
+    const request = axios.post(API.saveCostingDetailCondition, data, config())
+    request
+      .then((response) => {
+        if (response.data.Result) {
+          callback(response)
+        } else {
+          dispatch({ type: API_FAILURE })
+          if (response.data.Message) {
+            Toaster.error(response.data.Message)
+          }
+        }
+      })
+      .catch((error) => {
+        dispatch({ type: API_FAILURE })
+        apiErrors(error)
+      })
+  }
+}
+
 export function getNpvDetails(costingId, callback) {
   return (dispatch) => {
     dispatch({ type: API_REQUEST });
     const request = axios.get(`${API.getNpvDetails}/${costingId}`, config());
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response);
+      }
+    }).catch((error) => {
+      dispatch({ type: FETCH_MATER_DATA_FAILURE, });
+      apiErrors(error);
+    });
+  };
+}
+
+export function getConditionDetails(costingId, callback) {
+  return (dispatch) => {
+    dispatch({ type: API_REQUEST });
+    const request = axios.get(`${API.getConditionDetails}?costingId=${costingId}`, config());
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response);
+      }
+    }).catch((error) => {
+      dispatch({ type: FETCH_MATER_DATA_FAILURE, });
+      apiErrors(error);
+    });
+  };
+}
+
+export function getCostingCondition(callback) {
+  return (dispatch) => {
+    dispatch({ type: API_REQUEST });
+    const request = axios.get(`${API.getCostingCondition}`, config());
     request.then((response) => {
       if (response.data.Result) {
         callback(response);

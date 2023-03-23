@@ -11,10 +11,14 @@ import { number, checkWhiteSpaces, percentageLimitValidation, decimalNumberLimit
 import NpvCost from './NpvCost'
 import { setNPVData } from '../../../actions/Costing'
 import Toaster from '../../../../common/Toaster'
-import { getNpvDetails } from '../../../../../actions/Common'
+import { getConditionDetails, getNpvDetails } from '../../../../../actions/Common'
+import ConditionCosting from './ConditionCosting'
+import HeaderTitle from '../../../../common/HeaderTitle'
+import LoaderCustom from '../../../../common/LoaderCustom'
 
 function AddNpvCost(props) {
     const [tableData, setTableData] = useState(props.tableData)
+    const [conditionTableData, seConditionTableData] = useState([])
     const [costingSummary, setCostingSummary] = useState(props.costingSummary ? props.costingSummary : false)
     const [disableNpvPercentage, setDisableNpvPercentage] = useState(false)
     const [disableTotalCost, setDisableTotalCost] = useState(false)
@@ -23,6 +27,7 @@ function AddNpvCost(props) {
     const [editIndex, setEditIndex] = useState('')
     const [isEditMode, setIsEditMode] = useState(false)
     const [totalCost, setTotalCost] = useState('')
+    const [isLoader, setIsLoader] = useState(false)
     let IsEnterToolCostManually = false
     const { ToolTabData } = useSelector(state => state.costing)
     const viewCostingData = useSelector((state) => state.costing.viewCostingDetailData)
@@ -37,11 +42,21 @@ function AddNpvCost(props) {
 
     useEffect(() => {
         if (props.costingSummary) {
+            setIsLoader(true)
             if (viewCostingData && viewCostingData[0]?.costingId) {
                 dispatch(getNpvDetails(viewCostingData && viewCostingData[0]?.costingId, (res) => {
                     if (res?.data?.DataList) {
                         let Data = res?.data?.DataList
                         setTableData(Data)
+                        setIsLoader(false)
+                    }
+                }))
+
+                dispatch(getConditionDetails(viewCostingData && viewCostingData[0]?.costingId, (res) => {
+                    if (res?.data?.Data) {
+                        let Data = res?.data?.Data.ConditionsData
+                        seConditionTableData(Data)
+                        setIsLoader(false)
                     }
                 }))
             }
@@ -249,15 +264,16 @@ function AddNpvCost(props) {
             <Drawer anchor={props.anchor} open={props.isOpen}
             // onClose={(e) => toggleDrawer(e)}
             >
+                {isLoader && <LoaderCustom />}
                 <div className={`ag-grid-react hidepage-size`}>
                     <Container className="add-bop-drawer">
                         <div className={'drawer-wrapper layout-min-width-820px'}>
 
                             <Row className="drawer-heading">
                                 <Col className='pl-0'>
-                                    <div className={'header-wrapper left'}>
-                                        <h3>{costingSummary ? 'NPV Data' : 'Add NPV:'}</h3>
-                                    </div>
+                                    {!costingSummary && <div className={'header-wrapper left'}>
+                                        <h3>{'Add NPV:'}</h3>
+                                    </div>}
                                     <div
                                         onClick={cancel}
                                         className={'close-button right'}>
@@ -369,7 +385,29 @@ function AddNpvCost(props) {
                                         </button>
                                     </Col>
                                 </Row>}
+
+                                {costingSummary &&
+                                    <>
+                                        <Col md="12">
+                                            <HeaderTitle className="border-bottom"
+                                                title={'NPV Data'}
+                                                customClass={'underLine-title'}
+                                            />
+                                        </Col>
+                                    </>
+                                }
                                 <NpvCost showAddButton={false} tableData={tableData} hideAction={costingSummary} editData={editData} />
+                                {costingSummary &&
+                                    <>
+                                        <Col md="12" className={'mt25'}>
+                                            <HeaderTitle className="border-bottom"
+                                                title={'Costing Condition'}
+                                                customClass={'underLine-title'}
+                                            />
+                                        </Col>
+                                        <ConditionCosting hideAction={true} tableData={conditionTableData} />
+
+                                    </>}
                             </div>
                             {!costingSummary && <Row className="sf-btn-footer no-gutters drawer-sticky-btn justify-content-between mx-0">
                                 <div className="col-sm-12 text-left bluefooter-butn d-flex justify-content-end">
