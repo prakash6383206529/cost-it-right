@@ -6375,4 +6375,27 @@ export const visibilityModeDropdownArray = [
 ]
 
 
-
+export const tokenStatus = {
+    PendingForApproval: 'The token is pending for approval from your side.',
+    AwaitingForApproval: 'The token is pending for approval from your higher authority.',
+    Draft: 'The token is pending to send for approval from your side.',
+    Approved: 'The token is approved.',
+    Rejected: 'The token is rejected.',
+    Pushed: 'The token is pushed to SAP.',
+    Error: 'The token is approved but getting an error when pushed to SAP.',
+    History: 'The token is now old, it has new updated costing.',
+    Linked: 'The token is linked to another token.',
+    Provisional: 'The token is provisional, will not go for approval.'
+};
+export const tokenStatusName = {
+    PENDING_FOR_APPROVAL: 'PendingForApproval',
+    AWAITING_FOR_APPROVAL: 'AwaitingApproval',
+    DRAFT: 'Draft',
+    APPROVED: 'Approved',
+    REJECTED: 'Rejected',
+    PUSHED: 'Pushed',
+    ERROR: 'Error',
+    HISTORY: 'History',
+    LINKED: 'Linked',
+    PROVISIONAL: 'Provisional'
+}
