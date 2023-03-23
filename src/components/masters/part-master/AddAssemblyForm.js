@@ -235,7 +235,7 @@ class AddAssemblyForm extends Component {
                                     loadOptions={filterList}
                                     onChange={(e) => this.handleAssemblyPartChange(e)}
                                     noOptionsMessage={({ inputValue }) => inputValue.length < 3 ? 'Enter 3 characters to show data' : "No results found"}
-                                    onFocus={() => onFocus(this)}
+                                    onBlur={() => this.setState({ showErrorOnFocus: true })}
                                     onKeyDown={(onKeyDown) => {
                                         if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
                                     }}
