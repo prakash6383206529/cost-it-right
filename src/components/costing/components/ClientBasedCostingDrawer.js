@@ -114,7 +114,7 @@ export function Clientbasedcostingdrawer(props) {
                                         <span>123456</span>
                                     </span>
                                     <span class="d-inline-block mr-4 mb-4 pl-3">
-                                        <span class="cr-tbl-label d-block">Costing ID:</span>
+                                        <span class="cr-tbl-label d-block">Costing Id:</span>
                                         <span>CS7654 - 12/01/2020 10:00AM</span>
                                     </span>
                                 </Col>
