@@ -231,7 +231,7 @@ class AddMoreDetails extends Component {
       this.props.change('TonnageCapacity', fieldsObj?.TonnageCapacity)
       this.props.change('Description', fieldsObj?.Description)
       this.props.change('Specification', fieldsObj?.Specification)
-      this.props.change('EffectiveDate', fieldsObj?.EffectiveDate ? fieldsObj?.EffectiveDate : '')
+      fieldsObj.EffectiveDate && this.props.change('EffectiveDate', fieldsObj.EffectiveDate)
 
       setTimeout(() => {
         this.setState({ selectedPlants: selectedPlants, })
