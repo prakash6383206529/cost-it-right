@@ -177,22 +177,21 @@ class SimulationUploadDrawer extends Component {
                                 const basicTemp = (val[12] !== val[11]) && val[12] ? val[12] : val[11]
                                 if (val.length !== 0) {
                                     if (index > 0) {
-                                        if ((val[12] !== '' && val[12] !== undefined && val[12] !== null && val[11] !== val[12]) ||
-                                            (val[14] !== '' && val[14] !== undefined && val[14] !== null && val[14] !== null && val[13] !== val[14])) {
+                                        if ((val[12] !== '' && val[12] !== undefined && val[12] !== null && val[11] !== val[12])) {
                                             basicRateCount = 1
                                         }
-                                        if ((val[12] === '' || val[12] === undefined || val[12] === null || val[11] === val[12]) && (val[13] === '' ||
-                                            val[14] === undefined || val[14] === null || val[13] === val[14])) {
+                                        if ((val[12] === '' || val[12] === undefined || val[12] === null || val[11] === val[12])) {
                                             NoOfRowsWithoutChange = NoOfRowsWithoutChange + 1
                                             return false
                                         }
-
                                         if (basicTemp < scrapTemp) {
                                             scrapRateLessBasicRate = 1
                                         }
                                         correctRowCount = correctRowCount + 1
                                         let obj = {}
                                         val.map((el, i) => {
+                                            console.log('el: ', el);
+                                            console.log('fileHeads[i]: ', fileHeads[i]);
                                             if (fileHeads[i] === 'EffectiveDate' && typeof el === 'number') {
                                                 el = getJsDateFromExcel(el)
                                             }
@@ -212,6 +211,7 @@ class SimulationUploadDrawer extends Component {
                                             return null;
                                         })
                                         fileData.push(obj)
+                                        console.log('fileData: ', fileData);
                                         obj = {}
 
                                     }
@@ -226,7 +226,7 @@ class SimulationUploadDrawer extends Component {
                                 const basicTemp = (val[12] !== val[11]) && val[12] ? val[12] : val[11]
                                 if (val.length !== 0) {
                                     if (index > 0) {
-                                        if ((val[12] !== '' && val[12] !== undefined && val[12] !== null && val[11] !== val[12]) || (val[14] !== '' && val[14] !== undefined && val[14] !== null && val[13] !== val[14])) {
+                                        if ((val[12] !== '' && val[12] !== undefined && val[12] !== null && val[11] !== val[12])) {
                                             basicRateCount = 1
                                         }
                                         if ((val[12] === '' || val[12] === undefined || val[12] === null || val[11] === val[12]) && (val[14] === '' || val[14] === undefined || val[14] === null || val[13] === val[14])) {
@@ -413,7 +413,7 @@ class SimulationUploadDrawer extends Component {
                         case Number(RMDOMESTIC):
                         case Number(RMIMPORT):
                             if (basicRateCount === 0) {
-                                Toaster.warning('Please change at least one basic rate or scrap rate.')
+                                Toaster.warning('Please change at least one basic rate.')
                                 return false
                             }
                             if (scrapRateLessBasicRate === 1) {

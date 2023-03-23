@@ -159,7 +159,7 @@ function RMSimulation(props) {
                 scrapRateChangeArr.push(li)
 
             }
-            if ((li?.NewBasicRate === undefined ? Number(li?.BasicRate) : Number(li?.NewBasicRate)) < (li?.NewScrapRate === undefined ? Number(li?.ScrapRate) : Number(li?.NewScrapRate))) {
+            if ((li?.NewBasicRate === undefined || li?.NewBasicRate === '' ? Number(li?.BasicRate) : Number(li?.NewBasicRate)) < (li?.NewScrapRate === undefined || li?.NewScrapRate === '' ? Number(li?.ScrapRate) : Number(li?.NewScrapRate))) {
                 isScrapRateGreaterThanBasiRate = true
             }
             if (isScrapRateGreaterThanBasiRate) {
@@ -314,11 +314,10 @@ function RMSimulation(props) {
     const beforeSaveCell = (cell, props) => {
         const cellValue = cell
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        if ((row?.NewBasicRate === undefined ? Number(row?.BasicRate) : Number(row?.NewBasicRate)) <
-            (row?.NewScrapRate === undefined ? Number(row?.ScrapRate) : Number(row?.NewScrapRate))) {
+        if ((row?.NewBasicRate === undefined || row?.NewBasicRate === '' ? Number(row?.BasicRate) : Number(row?.NewBasicRate)) <
+            (row?.NewScrapRate === undefined || row?.NewScrapRate === '' ? Number(row?.ScrapRate) : Number(row?.NewScrapRate))) {
             row.NewBasicRate = row?.BasicRate
             row.NewScrapRate = row?.ScrapRate
-
             Toaster.warning('Scrap Rate should be less than Basic Rate')
             return false
         }
