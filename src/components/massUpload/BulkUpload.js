@@ -179,6 +179,7 @@ class BulkUpload extends Component {
                 } else {
                     fileHeads = resp.rows[0];
                     let checkForFileHead
+                    const { fileName } = this.props;
                     switch (String(this.props.fileName)) {
                         case String(RMDOMESTICBULKUPLOAD):
                             if (this.state.costingTypeId === ZBCTypeId) {
@@ -364,6 +365,8 @@ class BulkUpload extends Component {
                                 }
                                 else if (fileHeads[i] === 'Spec') {
                                     fileHeads[i] = 'RMSpec'
+                                } else if ((fileName === 'RM Domestic' || fileName === 'RM Import') && fileHeads[i] === 'CircleSrapCost') {
+                                    fileHeads[i] = 'JaliScrapCost'
                                 }
                                 obj[fileHeads[i]] = el;
                                 return null;

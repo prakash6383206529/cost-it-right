@@ -78,11 +78,12 @@ export const RMDomesticZBC = [
     { label: "Source", value: "Source" }, //NOUI
     { label: "SourceLocation", value: "SourceLocation" }, //NOUI
     { label: "UOM", value: "UOM" }, //*
-    { label: "BasicRate", value: "BasicRate" }, //*
+    { label: "ScrapRate/JaliScrapCost", value: "ScrapRate" }, //*
     { label: "ScrapRate", value: "ScrapRate" }, //*
     { label: "CutOffPrice", value: "CutOffPrice" }, //*
     { label: "FreightCost", value: "FreightCost" }, //*
     { label: "ShearingCost", value: "ShearingCost" }, //*
+    { label: "CircleSrapCost", value: "CircleSrapCost" }, //*
     { label: "EffectiveDate", value: "EffectiveDate" }, //*
     { label: "Remark", value: "Remark" },
 ]
@@ -109,6 +110,7 @@ export const RMDomesticZBCTempData = [
         "CutOffPrice": "10",
         "FreightCost": "10",
         "ShearingCost": "10",
+        "CircleSrapCost": "20",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         "Remark": "Remark Content",
     },
@@ -132,6 +134,7 @@ export const RMDomesticZBCTempData = [
         "CutOffPrice": "10",
         "FreightCost": "10",
         "ShearingCost": "10",
+        "CircleSrapCost": "20",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         "Remark": "Remark Content",
     },
@@ -155,6 +158,7 @@ export const RMDomesticZBCTempData = [
         "CutOffPrice": "10",
         "FreightCost": "10",
         "ShearingCost": "10",
+        "CircleSrapCost": "20",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         "Remark": "Remark Content",
     },
@@ -178,6 +182,7 @@ export const RMDomesticZBCTempData = [
         "CutOffPrice": "10",
         "FreightCost": "10",
         "ShearingCost": "10",
+        "CircleSrapCost": "20",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         "Remark": "Remark Content",
     }
@@ -201,10 +206,11 @@ export const RMDomesticVBC = [
     { label: "SourceLocation", value: "SourceLocation" },
     { label: "UOM", value: "UOM" }, //*
     { label: "BasicRate", value: "BasicRate" }, //*
-    { label: "ScrapRate", value: "ScrapRate" }, //*
+    { label: "ScrapRate/JaliScrapCost", value: "ScrapRate" }, //*
     { label: "CutOffPrice", value: "CutOffPrice" }, //*
     { label: "FreightCost", value: "FreightCost" }, //*
     { label: "ShearingCost", value: "ShearingCost" }, //*
+    { label: "CircleSrapCost", value: "CircleSrapCost" }, //*
     { label: 'DestinationPlantName', value: 'DestinationPlantName', }, //*
     { label: 'DestinationPlantCode', value: 'DestinationPlantCode', }, //*
     { label: "EffectiveDate", value: "EffectiveDate" }, //*
@@ -231,6 +237,7 @@ export const RMDomesticVBCTempData = [
         "CutOffPrice": "10",
         "FreightCost": "10",
         "ShearingCost": "10",
+        "CircleSrapCost": "20",
         "DestinationPlantName": "Manesar",
         "DestinationPlantCode": "1032",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
@@ -255,6 +262,7 @@ export const RMDomesticVBCTempData = [
         "CutOffPrice": "10",
         "FreightCost": "10",
         "ShearingCost": "10",
+        "CircleSrapCost": "20",
         "DestinationPlantName": "Manesar",
         "DestinationPlantCode": "EC1",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
@@ -279,6 +287,7 @@ export const RMDomesticVBCTempData = [
         "CutOffPrice": "10",
         "FreightCost": "10",
         "ShearingCost": "10",
+        "CircleSrapCost": "20",
         "DestinationPlantName": "Manesar",
         "DestinationPlantCode": "EC1",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
@@ -303,6 +312,7 @@ export const RMDomesticVBCTempData = [
         "CutOffPrice": "10",
         "FreightCost": "10",
         "ShearingCost": "10",
+        "CircleSrapCost": "20",
         "DestinationPlantName": "Manesar",
         "DestinationPlantCode": "EC1",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
@@ -355,6 +365,7 @@ export const RMDomesticCBCTempData = [
         "CutOffPrice": "10",
         "FreightCost": "10",
         "ShearingCost": "10",
+        "CircleSrapCost": "20",
         "DestinationPlantName": "Manesar",
         "DestinationPlantCode": "1032",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
@@ -375,6 +386,7 @@ export const RMDomesticCBCTempData = [
         "CutOffPrice": "10",
         "FreightCost": "10",
         "ShearingCost": "10",
+        "CircleSrapCost": "20",
         "DestinationPlantName": "Manesar",
         "DestinationPlantCode": "EC1",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
@@ -395,6 +407,7 @@ export const RMDomesticCBCTempData = [
         "CutOffPrice": "10",
         "FreightCost": "10",
         "ShearingCost": "10",
+        "CircleSrapCost": "20",
         "DestinationPlantName": "Manesar",
         "DestinationPlantCode": "EC1",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
@@ -415,6 +428,7 @@ export const RMDomesticCBCTempData = [
         "CutOffPrice": "10",
         "FreightCost": "10",
         "ShearingCost": "10",
+        "CircleSrapCost": "20",
         "DestinationPlantName": "Manesar",
         "DestinationPlantCode": "EC1",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
@@ -444,6 +458,7 @@ export const RMImportZBCTempData = [
         "CutOffPrice": "10",
         "FreightCost": "10",
         "ShearingCost": "10",
+        "CircleSrapCost": "20",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         "Remark": "Remark Text",
     },
@@ -468,6 +483,7 @@ export const RMImportZBCTempData = [
         "CutOffPrice": "10",
         "FreightCost": "10",
         "ShearingCost": "10",
+        "CircleSrapCost": "20",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         "Remark": "Remark Text",
     },
@@ -492,6 +508,7 @@ export const RMImportZBCTempData = [
         "CutOffPrice": "10",
         "FreightCost": "10",
         "ShearingCost": "10",
+        "CircleSrapCost": "20",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         "Remark": "Remark Text",
     },
@@ -516,6 +533,7 @@ export const RMImportZBCTempData = [
         "CutOffPrice": "10",
         "FreightCost": "10",
         "ShearingCost": "10",
+        "CircleSrapCost": "20",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         "Remark": "Remark Text",
     }
@@ -531,10 +549,11 @@ export const RMDomesticCBC = [
     { label: "CustomerCode", value: "CustomerCode" }, //NOUI,*
     { label: "UOM", value: "UOM" }, //*
     { label: "BasicRate", value: "BasicRate" }, //*
-    { label: "ScrapRate", value: "ScrapRate" }, //*
+    { label: "ScrapRate/JaliScrapCost", value: "ScrapRate" }, //*
     { label: "CutOffPrice", value: "CutOffPrice" }, //*
     { label: "FreightCost", value: "FreightCost" }, //*
     { label: "ShearingCost", value: "ShearingCost" }, //*
+    { label: "CircleSrapCost", value: "CircleSrapCost" }, //*
     { label: 'DestinationPlantName', value: 'DestinationPlantName', }, //*
     { label: 'DestinationPlantCode', value: 'DestinationPlantCode', }, //*
     { label: "EffectiveDate", value: "EffectiveDate" }, //*
@@ -560,10 +579,11 @@ export const RMImportVBC = [
     { label: "UOM", value: "UOM" }, //*
     { label: "Currency", value: "Currency" }, //*
     { label: "BasicRate", value: "BasicRate" }, //*
-    { label: "ScrapRate", value: "ScrapRate" }, //*
+    { label: "ScrapRate/JaliScrapCost", value: "ScrapRate" }, //*
     { label: "CutOffPrice", value: "CutOffPrice" }, //*
     { label: "FreightCost", value: "FreightCost" }, //*
     { label: "ShearingCost", value: "ShearingCost" }, //*
+    { label: "CircleSrapCost", value: "CircleSrapCost" }, //*
     { label: 'DestinationPlantName', value: 'DestinationPlantName', }, //*
     { label: 'DestinationPlantCode', value: 'DestinationPlantCode', }, //*
     { label: "EffectiveDate", value: "EffectiveDate" }, //*
@@ -591,6 +611,7 @@ export const RMImportVBCTempData = [
         "CutOffPrice": "10",
         "FreightCost": "10",
         "ShearingCost": "10",
+        "CircleSrapCost": "20",
         "DestinationPlantName": "Manesar",
         "DestinationPlantCode": "EC1",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
@@ -616,6 +637,7 @@ export const RMImportVBCTempData = [
         "CutOffPrice": "10",
         "FreightCost": "10",
         "ShearingCost": "10",
+        "CircleSrapCost": "20",
         "DestinationPlantName": "Manesar",
         "DestinationPlantCode": "EC1",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
@@ -641,6 +663,7 @@ export const RMImportVBCTempData = [
         "CutOffPrice": "10",
         "FreightCost": "10",
         "ShearingCost": "10",
+        "CircleSrapCost": "20",
         "DestinationPlantName": "Manesar",
         "DestinationPlantCode": "EC1",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
@@ -666,6 +689,7 @@ export const RMImportVBCTempData = [
         "CutOffPrice": "10",
         "FreightCost": "10",
         "ShearingCost": "10",
+        "CircleSrapCost": "20",
         "DestinationPlantName": "Manesar",
         "DestinationPlantCode": "EC1",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
@@ -685,10 +709,11 @@ export const RMImportCBC = [
     { label: "UOM", value: "UOM" }, //*
     { label: "Currency", value: "Currency" }, //*
     { label: "BasicRate", value: "BasicRate" }, //*
-    { label: "ScrapRate", value: "ScrapRate" }, //*
+    { label: "ScrapRate/JaliScrapCost", value: "ScrapRate" }, //*
     { label: "CutOffPrice", value: "CutOffPrice" }, //*
     { label: "FreightCost", value: "FreightCost" }, //*
     { label: "ShearingCost", value: "ShearingCost" }, //*
+    { label: "CircleSrapCost", value: "CircleSrapCost" }, //*
     { label: 'DestinationPlantName', value: 'DestinationPlantName', }, //*
     { label: 'DestinationPlantCode', value: 'DestinationPlantCode', }, //*
     { label: "EffectiveDate", value: "EffectiveDate" }, //*
@@ -712,6 +737,7 @@ export const RMImportCBCTempData = [
         "CutOffPrice": "10",
         "FreightCost": "10",
         "ShearingCost": "10",
+        "CircleSrapCost": "20",
         "DestinationPlantName": "Manesar",
         "DestinationPlantCode": "EC1",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
@@ -733,6 +759,7 @@ export const RMImportCBCTempData = [
         "CutOffPrice": "10",
         "FreightCost": "10",
         "ShearingCost": "10",
+        "CircleSrapCost": "20",
         "DestinationPlantName": "Manesar",
         "DestinationPlantCode": "EC1",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
@@ -754,6 +781,7 @@ export const RMImportCBCTempData = [
         "CutOffPrice": "10",
         "FreightCost": "10",
         "ShearingCost": "10",
+        "CircleSrapCost": "20",
         "DestinationPlantName": "Manesar",
         "DestinationPlantCode": "EC1",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
@@ -775,6 +803,7 @@ export const RMImportCBCTempData = [
         "CutOffPrice": "10",
         "FreightCost": "10",
         "ShearingCost": "10",
+        "CircleSrapCost": "20",
         "DestinationPlantName": "Manesar",
         "DestinationPlantCode": "EC1",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
