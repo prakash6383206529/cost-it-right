@@ -38,9 +38,6 @@ class Association extends Component {
 
     renderListing(label) {
         const { MaterialSelectList, gradeSelectList, unassociatedMaterialList } = this.props;
-
-        console.log('gradeSelectList: ', gradeSelectList);
-
         const temp = [];
         if (label === 'RawMaterialName') {
             unassociatedMaterialList && unassociatedMaterialList.map(item => {
