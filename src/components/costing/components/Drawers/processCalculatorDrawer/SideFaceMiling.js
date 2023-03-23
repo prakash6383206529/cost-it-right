@@ -169,7 +169,7 @@ function SideFaceMiling(props) {
       setIsDisable(false)
       if (res.data.Result) {
         obj.ProcessCalculationId = res.data.Identity
-        Toaster.success('Calculation saved sucessfully.')
+        Toaster.success('Calculation saved successfully.')
         calculateMachineTime(totalMachiningTime, obj)
       }
     }))
