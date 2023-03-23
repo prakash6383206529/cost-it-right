@@ -255,7 +255,7 @@ function RawMaterialCost(props) {
         }))
         break;
       case Ferrous_Casting:
-        dispatch(getRawMaterialCalculationForFerrous(item.CostingId, tempData.RawMaterialId, item?.CostingPartDetails?.RawMaterialCalculatorId, res => {
+        dispatch(getRawMaterialCalculationForFerrous(item.CostingId, tempData.RawMaterialId, gridData[0].WeightCalculationId, res => {
           setCalculatorData(res, index)
         }))
         break;
@@ -289,7 +289,6 @@ function RawMaterialCost(props) {
    * @description HIDE WEIGHT CALCULATOR DRAWER
    */
   const closeWeightDrawer = (e = '', weightData = {}, originalWeight = {}) => {
-
     setInputDiameter(weightData.Diameter)
     setWeight(weightData, originalWeight)
     setWeightDrawerOpen(false)
@@ -1222,7 +1221,7 @@ function RawMaterialCost(props) {
                                 />
                               </div>
                             </td>
-
+                            {costData?.TechnologyId === 6 && <td>{checkForDecimalAndNull(item.Percentage, initialConfiguration.NoOfDecimalForPrice)}</td>}
                             {
                               costData?.TechnologyId === PLASTIC && <td>{checkForDecimalAndNull(item.BurningLossWeight, initialConfiguration.NoOfDecimalForInputOutput)}</td>
                             }
@@ -1259,7 +1258,6 @@ function RawMaterialCost(props) {
                               </td>
                             }
                             <td><div className='w-fit' id={`scrap-weight${index}`}>{checkForDecimalAndNull(item.ScrapWeight, initialConfiguration.NoOfDecimalForPrice)} <TooltipCustom disabledIcon={true} tooltipClass={isScrapRecoveryPercentageApplied && "net-rm-cost"} id={`scrap-weight${index}`} tooltipText={isScrapRecoveryPercentageApplied ? "Scrap weight = ((Gross Weight - Finish Weight) * Recovery Percentage / 100)" : "Scrap weight = (Gross Weight - Finish Weight)"} /></div></td>
-                            {costData?.TechnologyId === 6 && <td>{checkForDecimalAndNull(item.Percentage, initialConfiguration.NoOfDecimalForPrice)}</td>}
                             <td>
                               <div className='d-flex'>
                                 <div className='w-fit' id={`net-rm-cost${index}`}><TooltipCustom disabledIcon={true} tooltipClass="net-rm-cost" id={`net-rm-cost${index}`} tooltipText="Net RM Cost = (RM Rate * Gross Weight) - (Scrap Weight * Scrap Rate)" />{item?.NetLandedCost !== undefined ? checkForDecimalAndNull(item.NetLandedCost, initialConfiguration.NoOfDecimalForPrice) : ''}
