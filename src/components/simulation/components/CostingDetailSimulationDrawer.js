@@ -75,7 +75,7 @@ function CostingDetailSimulationDrawer(props) {
                                         <Col md="12">
                                             <h6 class="left-border d-inline-block mr-4">{pricesDetail?.CostingHead}</h6>
                                             <div class=" d-inline-block mr-4"><span class="grey-textpr-2">Plant Code:</span> <span>{pricesDetail?.PlantCode}</span></div>
-                                            <div class=" d-inline-block mr-4"><span class="grey-textpr-2">Costing ID:</span> <span>{pricesDetail?.CostingNumber}</span></div>
+                                            <div class=" d-inline-block mr-4"><span class="grey-textpr-2">Costing Id:</span> <span>{pricesDetail?.CostingNumber}</span></div>
                                         </Col>
                                     </Row>
                                 }
