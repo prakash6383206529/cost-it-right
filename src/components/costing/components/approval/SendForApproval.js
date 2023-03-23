@@ -559,7 +559,7 @@ const SendForApproval = (props) => {
       // props.closeDrawer()
       dispatch(sendForApprovalBySender(obj, (res) => {
         setIsDisable(false)
-        Toaster.success(viewApprovalData.length === 1 ? `Costing ID ${viewApprovalData[0].costingName} has been sent for approval to ${approver.split('(')[0]}.` : `Costings has been sent for approval to ${approver.split('(')[0]}.`)
+        Toaster.success(viewApprovalData.length === 1 ? `Costing Id ${viewApprovalData[0].costingName} has been sent for approval to ${approver.split('(')[0]}.` : `Costings has been sent for approval to ${approver.split('(')[0]}.`)
         props.closeDrawer('', 'Submit')
         dispatch(setCostingApprovalData([]))
         dispatch(setCostingViewData([]))
