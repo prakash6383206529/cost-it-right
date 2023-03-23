@@ -1801,3 +1801,11 @@ export function masterFinalLevelUser(data, callback) {
             })
     }
 }
+export function clearGradeSelectList(data) {
+    return (dispatch) => {
+        dispatch({
+            type: GET_GRADE_SELECTLIST_SUCCESS,
+            payload: data
+        })
+    }
+}
