@@ -176,7 +176,7 @@ function OpenWeightCalculator(props) {
             <Row className="drawer-heading">
               <Col>
                 <div className={'header-wrapper left'}>
-                  <h3>{'Weight Calculator'}</h3>
+                  <h3>{Number(technology) !== Number(Ferrous_Casting) ? 'Weight Calculator' : 'Alloy Composition '}</h3>
                 </div>
                 <div
                   onClick={(e) => toggleDrawer(e)}
