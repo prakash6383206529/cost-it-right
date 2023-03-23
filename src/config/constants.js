@@ -571,7 +571,10 @@ export const API = {
   checkDataForCopyCosting: `${BASE_URL}/costing/check-data-for-copy-costing`,
   saveAssemblyPartRowCostingCalculation: `${BASE_URL}/costing/save-assembly-part-row-costing-calculation`,
   saveCostingDetailNpv: `${BASE_URL}/costing/save-costing-detail-for-npv`,
+  saveCostingDetailCondition: `${BASE_URL}/costing/save-costing-condition-details`,
   getNpvDetails: `${BASE_URL}/costing/get-costing-detail-for-npv`,
+  getConditionDetails: `${BASE_URL}/costing/get-costing-condition-details`,
+  getCostingCondition: `${BASE_URL}/costing/get-costing-condition-master-data`,
 
   //WEIGHT CALCULATION
   getWeightCalculationInfo: `${BASE_URL}/costing-sheet-metal/get-weight-calculation-info-by-costing`,
