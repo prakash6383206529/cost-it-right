@@ -79,13 +79,7 @@ export const autoCompleteDropdownPart = (inputValue, dropdownArray, tempBoolean 
 export const hideCustomerFromExcel = (data, value) => {
     let excelData
     if (!reactLocalStorage.getObject('cbcCostingPermission')) {
-        excelData = data && data.map((item) => {
-            if (item.value === value) {
-                return false
-            } else {
-                return item
-            }
-        })
+        excelData = data && data.filter((item) => item.value !== value)
     }
     else {
         excelData = [...data]
