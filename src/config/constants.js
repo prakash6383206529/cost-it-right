@@ -1930,6 +1930,7 @@ export const VIEW_COSTING_DATA = {
   anyOtherCostApplicablity: 'Any Other Cost Applicability',
   anyOtherCostPercent: 'Any Other Cost Value',
   anyOtherCost: 'Any Other Cost',
+  BasicRate: 'Basic Rate',
   nPOPrice: 'Net PO Price (INR)',
   currencyTitle: 'Currency',
   currencyRate: 'Currency Rate',
