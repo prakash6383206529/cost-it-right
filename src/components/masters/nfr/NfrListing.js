@@ -107,7 +107,7 @@ function NfrListing(props) {
             rowData: rowData,
             Id: Id
         }
-        console.log(rowData, "rowData")
+
         setSelectedPartData(rowData)
         setNfrId(rowData?.NfrNumber)
         setIsEdit(true)
