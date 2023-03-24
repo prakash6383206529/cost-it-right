@@ -39,6 +39,7 @@ import { reactLocalStorage } from 'reactjs-localstorage';
 import { autoCompleteDropdown } from '../../common/CommonFunctions';
 import { checkFinalUser } from '../../../components/costing/actions/Costing'
 import { getUsersMasterLevelAPI } from '../../../actions/auth/AuthActions';
+import TooltipCustom from '../../common/Tooltip';
 
 const selector = formValueSelector('AddBOPImport');
 
@@ -1378,6 +1379,7 @@ class AddBOPImport extends Component {
                             />
                           </Col>
                           <Col md="3">
+                            <TooltipCustom id="bop-net-cost" tooltipText={'Net Cost = Basic Rate'} />
                             <Field
                               label={`Net Cost (${this.state.currency.label === undefined ? 'Currency' : this.state.currency.label})`}
                               name={this.state.netLandedcost === 0 ? '' : "NetLandedCost"}
@@ -1394,6 +1396,7 @@ class AddBOPImport extends Component {
                           {
                             this.state.showCurrency &&
                             <Col md="3">
+                              <TooltipCustom id="bop-net-cost-currency" tooltipText={'Net Cost (INR) = Basic Rate * Currency Rate'} />
                               <Field
                                 label={`Net Cost (INR)`}
                                 name={this.state.netLandedConverionCost === 0 ? '' : "NetLandedCostCurrency"}
