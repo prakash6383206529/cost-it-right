@@ -188,8 +188,6 @@ class SimulationUploadDrawer extends Component {
                                         correctRowCount = correctRowCount + 1
                                         let obj = {}
                                         val.map((el, i) => {
-                                            console.log('el: ', el);
-                                            console.log('fileHeads[i]: ', fileHeads[i]);
                                             if (fileHeads[i] === 'EffectiveDate' && typeof el === 'number') {
                                                 el = getJsDateFromExcel(el)
                                             }
@@ -209,7 +207,6 @@ class SimulationUploadDrawer extends Component {
                                             return null;
                                         })
                                         fileData.push(obj)
-                                        console.log('fileData: ', fileData);
                                         obj = {}
 
                                     }
