@@ -17,6 +17,7 @@ import DayTime from '../../common/DayTimeWrapper';
 import Attachament from '../../costing/components/Drawers/Attachament';
 import { getNfrPartDetails } from './actions/nfr';
 import { hyphenFormatter } from '../masterUtil';
+import AddNfr from './AddNfr';
 const gridOptions = {};
 
 
@@ -29,12 +30,14 @@ function NfrPartsListing(props) {
     const [addRfqData, setAddRfqData] = useState({});
     const [isEdit, setIsEdit] = useState(false);
     const [rowData, setRowData] = useState([])
+    const [estimationData, setEstimationData] = useState([])
     const [noData, setNoData] = useState(false)
     const [viewRfq, setViewRfq] = useState(false)
     const [viewRfqData, setViewRfqData] = useState("")
     const [addAccessibility, setAddAccessibility] = useState(false);
     const [editAccessibility, setEditAccessibility] = useState(false);
     const [viewAccessibility, setViewAccessibility] = useState(false);
+    const [editPart, setEditPart] = useState(false)
     const [confirmPopup, setConfirmPopup] = useState(false);
     const [attachment, setAttachment] = useState(false);
     const [viewAttachment, setViewAttachment] = useState([])
@@ -85,7 +88,10 @@ function NfrPartsListing(props) {
     const onPopupConfirm = () => {
 
     }
-
+    const editPartHandler = (value, rowData) => {
+        setEstimationData(rowData)
+        setEditPart(true)
+    }
     const closePopUp = () => {
         setConfirmPopup(false)
     }
@@ -101,7 +107,7 @@ function NfrPartsListing(props) {
 
         return (
             <>
-                {<button title='View' className="View mr-1" type={'button'} onClick={() => { }} />}
+                {<button title='View' className="View mr-1" type={'button'} onClick={() => editPartHandler(cellValue, rowData)} />}
                 <button title='Edit' className="Edit mr-1" type={'button'} onClick={() => { }} />
 
             </>
@@ -210,7 +216,9 @@ function NfrPartsListing(props) {
         setViewRfq(true)
 
     }
-
+    const close = () => {
+        setEditPart(false)
+    }
     const defaultColDef = {
         resizable: true,
         filter: true,
@@ -229,7 +237,7 @@ function NfrPartsListing(props) {
 
     return (
         <>
-            {!addRfq &&
+            {!addRfq && !editPart &&
                 <div className={`ag-grid-react ${(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) ? "" : ""} ${true ? "show-table-btn" : ""} ${false ? 'simulation-height' : props?.isMasterSummaryDrawer ? '' : 'min-height100vh'}`}>
                     {(loader ? <LoaderCustom customClass="simulation-Loader" /> : !viewRfq && (
                         <>
@@ -324,7 +332,7 @@ function NfrPartsListing(props) {
                     />
                 )
             }
-
+            {editPart && <AddNfr showAddNfr={editPart} nfrData={estimationData} close={close} />}
 
         </>
     );

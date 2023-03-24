@@ -603,7 +603,7 @@ export const RadioHookForm = (field) => {
 
 export const AsyncSearchableSelectHookForm = (field) => {
   const { name, label, Controller, mandatory, disabled, handleChange, rules, placeholder, defaultValue,
-    control, errors, register, isLoading, customClassName, asyncOptions, NoOptionMessage } = field;
+    control, errors, register, isLoading, customClassName, asyncOptions, NoOptionMessage, isMulti } = field;
 
   let isLoader = (isLoading && isLoading?.isLoader === true) ? true : false;
   let isLoaderClass = isLoading && isLoading?.isLoader ? isLoading?.isLoaderClass !== undefined ? isLoading?.isLoaderClass : '' : '';
@@ -635,6 +635,9 @@ export const AsyncSearchableSelectHookForm = (field) => {
                   onChange(e)
                 }}
                 menuPlacement="auto"
+                classNamePrefix="multi-select-container"
+                className="multidropdown-container"
+                isMulti={isMulti}
                 loadOptions={asyncOptions}
                 onBlur={onBlur}
                 selected={value}

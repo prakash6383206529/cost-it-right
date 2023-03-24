@@ -1,0 +1,57 @@
+@import './cssVariable.scss';
+
+/* Form input styles */
+.nfr-inputs {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0 !important;
+
+    label {
+        width: fit-content;
+        min-width: fit-content;
+        margin-right: 5px;
+    }
+}
+
+/* Table record styles */
+.table-record {
+    border: 1px solid $borderColor;
+
+    .form-group,
+    .form-group-searchable-select {
+        margin-bottom: 0 !important;
+
+        label {
+            display: none;
+        }
+
+        /* Costing version form group */
+        &.costing-version {
+            margin-top: -1px;
+        }
+
+        /* Sob form group */
+        &.sob {
+            max-width: 65px;
+        }
+    }
+}
+
+.parent-container {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+
+    .child-container {
+        margin-left: 1rem;
+
+        &:first-child,
+        &:last-child {
+            margin-left: 0;
+        }
+    }
+
+    .apply {
+        margin-left: 1rem;
+    }
+}
