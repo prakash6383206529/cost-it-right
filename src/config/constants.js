@@ -1029,6 +1029,8 @@ export const API = {
   getSalePurchaseProvisionReport: `${BASE_URL}/reports/get-sale-purchase-provision-report`,
   getPoamSummaryReport: `${BASE_URL}/reports/get-poam-summary-report`,
   getPoamImpactReport: `${BASE_URL}/reports/get-poam-impact-report`,
+  getAllNfrList: `${BASE_URL}/reports/get-all-nfr-list`,
+  getNfrPartDetails: `${BASE_URL}/reports/get-nfr-part-details`,
 
   //SUB ASSEMBLY
   getSubAssemblyAPI: `${BASE_URL}/sub-assembly/get-sub-assembly`,
@@ -1048,7 +1050,8 @@ export const API = {
   sendReminderForQuotation: `${BASE_URL}/rfq-quotation/send-reminder-for-quotation`,
   getQuotationDetailsList: `${BASE_URL}/rfq-quotation/get-quotation-details-list`,
   getCommunicationHistory: `${BASE_URL}/rfq-quotation/get-communication-history`,
-  checkExistCosting: `${BASE_URL}/rfq-quotation/rfq-check-exist-costing`
+  checkExistCosting: `${BASE_URL}/rfq-quotation/rfq-check-exist-costing`,
+
 }
 
 //Api constants
