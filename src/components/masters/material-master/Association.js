@@ -5,7 +5,7 @@ import { Container, Row, Col, } from 'reactstrap';
 import { searchableSelect } from '../../layout/FormInputs';
 import Drawer from '@material-ui/core/Drawer';
 import { required } from '../../../helper';
-import { getRawMaterialNameChild, getMaterialTypeDataAPI, createAssociation, getRMGradeSelectListByRawMaterial, getMaterialTypeSelectList, getUnassociatedRawMaterail } from '../actions/Material';
+import { getRawMaterialNameChild, getMaterialTypeDataAPI, createAssociation, getRMGradeSelectListByRawMaterial, getMaterialTypeSelectList, getUnassociatedRawMaterail, clearGradeSelectList } from '../actions/Material';
 import { MESSAGES } from '../../../config/message';
 import Toaster from '../../common/Toaster';
 import { debounce } from 'lodash';
@@ -31,15 +31,13 @@ class Association extends Component {
     }
 
     componentDidMount() {
-        // this.props.getRawMaterialNameChild(() => { })
+        this.props.clearGradeSelectList([])
         // this.props.getMaterialTypeSelectList(() => { })
     }
 
 
     renderListing(label) {
         const { MaterialSelectList, gradeSelectList, unassociatedMaterialList } = this.props;
-
-
         const temp = [];
         if (label === 'RawMaterialName') {
             unassociatedMaterialList && unassociatedMaterialList.map(item => {
@@ -294,7 +292,8 @@ export default connect(mapStateToProps, {
     getMaterialTypeDataAPI,
     getRMGradeSelectListByRawMaterial,
     getUnassociatedRawMaterail,
-    createAssociation
+    createAssociation,
+    clearGradeSelectList
 })(reduxForm({
     form: 'Association',
     enableReinitialize: true,
