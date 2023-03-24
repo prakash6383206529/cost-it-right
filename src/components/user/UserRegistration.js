@@ -191,7 +191,7 @@ function UserRegistration(props) {
     dispatch(getAllDepartmentAPI(() => { }))
     // this.props.getAllCities(() => { })
     dispatch(getAllTechnologyAPI(() => { }))
-    dispatch(getLevelByTechnology('', '', () => { }))
+    dispatch(getLevelByTechnology(false, '', '', () => { }))
     getUserDetail(data);
     dispatch(getAllCity(cityId => {
       dispatch(getCityByCountry(cityId, 0, () => { }))
@@ -213,8 +213,15 @@ function UserRegistration(props) {
   const Capitalize = (str) => {
     return str.charAt(0).toUpperCase() + str.slice(1);
   }
-
-
+  /**
+    * @name emptyLevelDropdown
+    * @desc To empty level dropdown reducer
+    */
+  const emptyLevelDropdown = () => {
+    dispatch(getLevelByTechnology(false, '', '', () => { }))
+    dispatch(getSimualationLevelByTechnology(false, '', '', () => { }))
+    dispatch(getMasterLevelByMasterId(false, '', '', () => { }))
+  }
   /**
   * @name hanldePhoneNumber
   * @param e
@@ -702,6 +709,10 @@ function UserRegistration(props) {
   const technologyHandler = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
       setTechnology(newValue)
+      setLevel([])
+      setValue('LevelId', '')
+      setValue('CostingApprovalType', "")
+      emptyLevelDropdown()
     } else {
       setTechnology([])
     }
@@ -716,7 +727,7 @@ function UserRegistration(props) {
       setCostingApprovalType(newValue)
       setLevel([])
       setValue('LevelId', '')
-      dispatch(getLevelByTechnology(technology.value, newValue.value, res => { }))
+      dispatch(getLevelByTechnology(true, technology.value, newValue.value, res => { }))
     } else {
       setCostingApprovalType([])
     }
@@ -731,7 +742,7 @@ function UserRegistration(props) {
       setSimulationApprovalType(newValue)
       setSimualtionLevel([])
       setValue('simualtionLevel', '')
-      dispatch(getSimualationLevelByTechnology(simulationHeads.value, newValue.value, res => { }))
+      dispatch(getSimualationLevelByTechnology(true, simulationHeads.value, newValue.value, res => { }))
     } else {
       setSimulationApprovalType([])
     }
@@ -746,7 +757,7 @@ function UserRegistration(props) {
       setMasterApprovalType(newValue)
       setMasterLevels([])
       setValue('masterLevel', '')
-      dispatch(getMasterLevelByMasterId(master.value, newValue.value, res => { }))
+      dispatch(getMasterLevelByMasterId(true, master.value, newValue.value, res => { }))
     } else {
       setMasterApprovalType([])
     }
@@ -760,10 +771,12 @@ function UserRegistration(props) {
 
   const headHandler = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
-
       setSimulationHeads(newValue)
+      setValue('SimulationApprovalType', "")
+      setSimulationApprovalType([])
       setSimualtionLevel([])
       setValue('simualtionLevel', '')
+      emptyLevelDropdown()
     } else {
       setSimulationHeads([])
     }
@@ -778,6 +791,9 @@ function UserRegistration(props) {
       setMaster(newValue)
       setMasterLevels([])
       setValue('masterLevel', '')
+      setMasterApprovalType([])
+      setValue('MasterApprovalType', "")
+      emptyLevelDropdown()
     } else {
       setSimulationHeads([])
     }
@@ -821,18 +837,19 @@ function UserRegistration(props) {
     }
   };
 
-  const checkDuplicacy = (dataList, obj, keyName, technology_master_id, approvalTypeIDValue, messageHead, levelId) => {
-    let stop = false
-    let checkExists = false
-    dataList && dataList?.map((element) => {
-      if (_.isEqual(element, obj)) {
-        checkExists = true
-      }
-      return null
-    })
+  const checkDuplicacy = (dataList, currentIndex, keyName, technology_master_id, approvalTypeIDValue, messageHead, levelId) => {
 
-    const isExistTechnology = dataList && dataList.findIndex(el => {
-      return (Number(el[keyName]) === Number(technology_master_id)) && (Number(el.ApprovalTypeId) === Number(approvalTypeIDValue) && Number(el.LevelId) === Number(levelId))
+    let stop = false
+    const checkExists = dataList.some((el, index) => {
+      return (
+        (Number(el?.TechnologyId) === Number(technology_master_id) || Number(el?.MasterId) === Number(technology_master_id)) &&
+        (el.LevelId) === (levelId) &&
+        Number(el.ApprovalTypeId) === Number(approvalTypeIDValue) &&
+        index !== currentIndex
+      )
+    })
+    const isExistTechnology = dataList && dataList.findIndex((el, index) => {
+      return (Number(el[keyName]) === Number(technology_master_id)) && (Number(el.ApprovalTypeId) === Number(approvalTypeIDValue)) && index !== currentIndex
     })
 
     if (checkExists) {
@@ -842,7 +859,6 @@ function UserRegistration(props) {
       stop = true
       Toaster.warning(`${messageHead} cannot have multiple level for same Approval Type.`)
     }
-
     return stop
   }
 
@@ -853,7 +869,7 @@ function UserRegistration(props) {
   const setTechnologyLevel = () => {
     const tempArray = [];
 
-    if (technology.length === 0 || level.length === 0) {
+    if (technology.length === 0 || level.length === 0 || Object.keys(costingApprovalType).length === 0) {
       Toaster.warning('Please select Technology, Approval Type and Level')
       return false;
     }
@@ -864,10 +880,10 @@ function UserRegistration(props) {
       Level: level.label,
       LevelId: level.value,
       ApprovalType: costingApprovalType?.label,
-      ApprovalTypeId: costingApprovalType?.value,
+      ApprovalTypeId: Number(costingApprovalType?.value),
     }
 
-    if (checkDuplicacy(TechnologyLevelGrid, obj, 'TechnologyId', technology.value, costingApprovalType.value, 'Technology')) return false
+    if (checkDuplicacy(TechnologyLevelGrid, obj, 'TechnologyId', technology.value, costingApprovalType.value, 'Technology', level.value)) return false
 
     tempArray.push(...TechnologyLevelGrid, obj)
 
@@ -875,7 +891,6 @@ function UserRegistration(props) {
     setLevel([])
     setTechnology([])
     setValue('TechnologyId', "")
-    setValue('LevelId', "")
     setValue('LevelId', "")
     setCostingApprovalType([])
     setValue('CostingApprovalType', "")
@@ -904,7 +919,7 @@ function UserRegistration(props) {
       ApprovalTypeId: costingApprovalType?.value,
     }
 
-    if (checkDuplicacy(TechnologyLevelGrid, tempData, 'TechnologyId', technology.value, costingApprovalType.value, 'Technology', level.value)) return false
+    if (checkDuplicacy(TechnologyLevelGrid, technologyLevelEditIndex, 'TechnologyId', technology.value, costingApprovalType.value, 'Technology', level.value)) return false
 
     tempArray = Object.assign([...TechnologyLevelGrid], { [technologyLevelEditIndex]: tempData })
 
@@ -926,7 +941,6 @@ function UserRegistration(props) {
   * @description Used to handle setTechnologyLevel
   */
   const resetTechnologyLevel = () => {
-
     setValue('TechnologyId', "")
     setValue('LevelId', "")
     setLevel([])
@@ -935,6 +949,7 @@ function UserRegistration(props) {
     setIsEditIndex(false)
     setCostingApprovalType([])
     setValue('CostingApprovalType', "")
+    emptyLevelDropdown()
   };
 
 
@@ -956,10 +971,10 @@ function UserRegistration(props) {
       Level: simualtionLevel.label,
       LevelId: simualtionLevel.value,
       ApprovalType: simulationApprovalType?.label,
-      ApprovalTypeId: simulationApprovalType?.value,
+      ApprovalTypeId: Number(simulationApprovalType?.value),
     }
 
-    if (checkDuplicacy(HeadLevelGrid, obj, 'TechnologyId', simulationHeads.value, simulationApprovalType.value, 'Technology')) return false
+    if (checkDuplicacy(HeadLevelGrid, obj, 'TechnologyId', simulationHeads.value, simulationApprovalType.value, 'Simulation Head', simualtionLevel.value)) return false
 
     tempArray.push(...HeadLevelGrid, obj)
 
@@ -975,8 +990,8 @@ function UserRegistration(props) {
 
 
   /**
-  * @method updateSimualtionHeadLevel
-  * @description Used to handle updateTechnologyLevel
+   * @method updateSimualtionHeadLevel
+   * @description Used to handle updateTechnologyLevel
   */
   const updateSimualtionHeadLevel = () => {
 
@@ -998,7 +1013,7 @@ function UserRegistration(props) {
       ApprovalTypeId: simulationApprovalType?.value,
     }
 
-    if (checkDuplicacy(HeadLevelGrid, tempData, 'TechnologyId', simulationHeads.value, simulationApprovalType.value, 'Technology', simualtionLevel.value)) return false
+    if (checkDuplicacy(HeadLevelGrid, simulationLevelEditIndex, 'TechnologyId', simulationHeads.value, simulationApprovalType.value, 'Simulation Head', simualtionLevel.value)) return false
 
     tempArray = Object.assign([...HeadLevelGrid], { [simulationLevelEditIndex]: tempData })
 
@@ -1029,6 +1044,7 @@ function UserRegistration(props) {
     setValue('Head', '')
     setValue('simualtionLevel', '')
     setValue('SimulationApprovalType', '')
+    emptyLevelDropdown()
   };
 
 
@@ -1039,7 +1055,7 @@ function UserRegistration(props) {
   const editItemDetails = (index) => {
 
     const tempData = TechnologyLevelGrid[index];
-    dispatch(getLevelByTechnology(tempData.TechnologyId, tempData.ApprovalTypeId, res => { }))
+    dispatch(getLevelByTechnology(true, tempData.TechnologyId, tempData.ApprovalTypeId, res => { }))
 
     setTechnologyLevelEditIndex(index)
     setIsEditIndex(true)
@@ -1065,8 +1081,11 @@ function UserRegistration(props) {
     });
 
     setTechnologyLevelGrid(tempData)
+    setLevel([])
     setValue('TechnologyId', "")
     setValue('LevelId', "")
+    setValue('CostingApprovalType', "")
+    emptyLevelDropdown()
   }
 
   /**
@@ -1076,7 +1095,7 @@ function UserRegistration(props) {
   const editSimulationItemDetails = (index) => {
 
     const tempData = HeadLevelGrid[index];
-    dispatch(getSimualationLevelByTechnology(tempData.TechnologyId, tempData.ApprovalTypeId, res => { }))
+    dispatch(getSimualationLevelByTechnology(true, tempData.TechnologyId, tempData.ApprovalTypeId, res => { }))
 
     setSimulationLevelEditIndex(index)
     setIsSimulationEditIndex(true)
@@ -1100,11 +1119,12 @@ function UserRegistration(props) {
       }
       return true;
     });
-
-
     setHeadLevelGrid(tempData)
+    setSimualtionLevel([])
     setValue('Head', '')
     setValue('simualtionLevel', '')
+    setValue('SimulationApprovalType', "")
+    emptyLevelDropdown()
   }
 
   /***********MASTER LEVEL STARTS HERE**************/
@@ -1126,10 +1146,10 @@ function UserRegistration(props) {
       Level: masterLevel.label,
       LevelId: masterLevel.value,
       ApprovalType: masterApprovalType?.label,
-      ApprovalTypeId: masterApprovalType?.value,
+      ApprovalTypeId: Number(masterApprovalType?.value),
     }
 
-    if (checkDuplicacy(masterLevelGrid, obj, 'MasterId', master.value, masterApprovalType.value, 'Master')) return false
+    if (checkDuplicacy(masterLevelGrid, obj, 'MasterId', master.value, masterApprovalType.value, 'Master', masterLevel.value)) return false
 
     tempArray.push(...masterLevelGrid, obj)
 
@@ -1164,7 +1184,7 @@ function UserRegistration(props) {
       ApprovalTypeId: masterApprovalType?.value,
     }
 
-    if (checkDuplicacy(masterLevelGrid, tempData, 'MasterId', master.value, masterApprovalType.value, 'Master', masterLevel.label)) return false
+    if (checkDuplicacy(masterLevelGrid, masterLevelEditIndex, 'MasterId', master.value, masterApprovalType.value, 'Master', masterLevel.value)) return false
 
     tempArray = Object.assign([...masterLevelGrid], { [masterLevelEditIndex]: tempData })
 
@@ -1194,6 +1214,7 @@ function UserRegistration(props) {
     setValue('Master', '')
     setValue('masterLevel', '')
     setValue('MasterApprovalType', '')
+    emptyLevelDropdown()
   };
 
 
@@ -1205,7 +1226,7 @@ function UserRegistration(props) {
   const editMasterItem = (index) => {
 
     const tempData = masterLevelGrid[index];
-    dispatch(getMasterLevelByMasterId(tempData.MasterId, tempData.ApprovalTypeId, res => { }))
+    dispatch(getMasterLevelByMasterId(true, tempData.MasterId, tempData.ApprovalTypeId, res => { }))
 
     setMasterLevelEditIndex(index)
     setIsMasterEditIndex(true)
@@ -1233,8 +1254,11 @@ function UserRegistration(props) {
     });
 
     setMasterLevelGrid(tempData)
+    setMasterLevels([])
     setValue('Master', '')
     setValue('masterLevel', '')
+    setValue('MasterApprovalType', "")
+    emptyLevelDropdown()
   }
 
 
