@@ -78,6 +78,7 @@ export const RMDomesticZBC = [
     { label: "Source", value: "Source" }, //NOUI
     { label: "SourceLocation", value: "SourceLocation" }, //NOUI
     { label: "UOM", value: "UOM" }, //*
+    { label: "BasicRate", value: "BasicRate" }, //*
     { label: "ScrapRate/JaliScrapCost", value: "ScrapRate" }, //*
     { label: "ScrapRate", value: "ScrapRate" }, //*
     // KEEP COMMENTED ON RE
