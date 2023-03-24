@@ -55,7 +55,12 @@ function AddNpvCost(props) {
                 dispatch(getConditionDetails(viewCostingData && viewCostingData[0]?.costingId, (res) => {
                     if (res?.data?.Data) {
                         let Data = res?.data?.Data.ConditionsData
-                        seConditionTableData(Data)
+                        let temp = []
+                        Data && Data.map((item) => {
+                            item.condition = `${item.Description} (${item.CostingConditionNumber})`
+                            temp.push(item)
+                        })
+                        seConditionTableData(temp)
                         setIsLoader(false)
                     }
                 }))

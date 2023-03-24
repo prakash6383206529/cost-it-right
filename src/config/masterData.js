@@ -4706,6 +4706,7 @@ export const REPORT_DOWNLOAD_EXCEl = [
     { label: "Costing Head", value: "CostingHead", },
     { label: "Quantity", value: "NCCPartQuantity", },
     { label: "Is Regularized", value: "IsRegularized", },
+    { label: "Basic Price", value: "BasicRate", },
     { label: "Net PO Price Other Currency", value: "NetPOPriceOtherCurrency", },
     { label: "Net PO Price (INR)", value: "NetPOPriceINR", },
     { label: "Remark", value: "Remark", },
