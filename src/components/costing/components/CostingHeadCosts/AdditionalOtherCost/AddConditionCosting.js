@@ -37,12 +37,10 @@ function AddConditionCosting(props) {
                 dispatch(getCostingCondition((res) => {
                     if (res?.data?.DataList) {
                         let Data = res?.data?.DataList
-
                         let temp = []
                         Data && Data.map((item) => {
-                            let obj = {}
-                            item.label = item.CostingConditionNumber
-                            item.value = item.CostingConditionNumber
+                            item.label = ` ${item.Description} (${item.CostingConditionNumber})`
+                            item.value = item.CostingConditionMasterId
                             temp.push(item)
                         })
                         setConditionDropdown(temp)
@@ -95,9 +93,10 @@ function AddConditionCosting(props) {
     const addData = () => {
 
         // Get the current data in the table and set some initial variables.
+        console.log(getValues('Condition'), "getValues('Condition')")
         let table = [...tableData]
         let indexOfNpvType
-        let condition = getValues('Condition') ? getValues('Condition').label : ''
+        let condition = getValues('Condition') ? getValues('Condition').CostingConditionNumber : ''
         let alreadyDataExist = false
 
         // Check if the new data to be added is a duplicate of existing data.
@@ -177,7 +176,7 @@ function AddConditionCosting(props) {
             // Retrieve the data at the specified index from the tableData array, and set the values of various form fields based on the data.
             let Data = tableData[indexValue]
             setDisableAllFields(false)
-            setValue('Condition', { label: Data.condition, value: Data.condition })
+            setValue('Condition', { label: Data.condition, value: Data.CostingConditionNumber })
             setValue('Type', { label: Data.ConditionType, value: Data.ConditionType })
             setValue('Percentage', Data.Percentage)
             setValue('Cost', checkForDecimalAndNull(Data.ConditionCost, initialConfiguration.NoOfDecimalForPrice))
