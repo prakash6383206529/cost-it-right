@@ -410,7 +410,7 @@ function RfqListing(props) {
                                                 <AgGridColumn field="VendorName" tooltipField="VendorName" headerName='Vendor (Code)'></AgGridColumn>
                                                 <AgGridColumn field="PlantName" headerName='Plant (Code)'></AgGridColumn>
                                                 <AgGridColumn field="TechnologyName" headerName='Technology'></AgGridColumn>
-                                                <AgGridColumn field="Remark" headerName='Remark'></AgGridColumn>
+                                                <AgGridColumn field="Remark" headerName='Notes'></AgGridColumn>
                                                 <AgGridColumn field="RaisedBy" headerName='Raised By'></AgGridColumn>
                                                 <AgGridColumn field="RaisedOn" headerName='Raised On' cellRenderer='dateFormater'></AgGridColumn>
                                                 <AgGridColumn field="LastSubmissionDate" headerName='Last Submission Date' cellRenderer='dateFormater'></AgGridColumn>
