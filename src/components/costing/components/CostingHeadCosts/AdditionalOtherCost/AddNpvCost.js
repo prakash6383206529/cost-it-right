@@ -45,7 +45,9 @@ function AddNpvCost(props) {
             setIsLoader(true)
             if (viewCostingData && viewCostingData[0]?.costingId) {
                 dispatch(getNpvDetails(viewCostingData && viewCostingData[0]?.costingId, (res) => {
-                    if (res?.data?.DataList) {
+                    if (res === 204) {
+                        setIsLoader(false)
+                    } else if (res?.data?.DataList) {
                         let Data = res?.data?.DataList
                         setTableData(Data)
                         setIsLoader(false)
@@ -53,7 +55,9 @@ function AddNpvCost(props) {
                 }))
 
                 dispatch(getConditionDetails(viewCostingData && viewCostingData[0]?.costingId, (res) => {
-                    if (res?.data?.Data) {
+                    if (res === 204) {
+                        setIsLoader(false)
+                    } else if (res?.data?.Data) {
                         let Data = res?.data?.Data.ConditionsData
                         let temp = []
                         Data && Data.map((item) => {
@@ -266,7 +270,8 @@ function AddNpvCost(props) {
     return (
 
         <div>
-            <Drawer anchor={props.anchor} open={props.isOpen}
+
+            {!props.isPDFShow ? <Drawer anchor={props.anchor} open={props.isOpen}
             // onClose={(e) => toggleDrawer(e)}
             >
                 {isLoader && <LoaderCustom />}
@@ -434,7 +439,25 @@ function AddNpvCost(props) {
                         </div>
                     </Container>
                 </div>
-            </Drawer>
+            </Drawer> : <>
+                {tableData.length !== 0 && <>
+                    <Col md="12">
+                        <HeaderTitle className="border-bottom"
+                            title={'NPV Data'}
+                            customClass={'underLine-title'}
+                        />
+                    </Col>
+                    <NpvCost showAddButton={false} tableData={tableData} hideAction={costingSummary} editData={editData} />
+                </>}
+                {conditionTableData.length !== 0 && <> <Col md="12" className={'mt25'}>
+                    <HeaderTitle className="border-bottom"
+                        title={'Costing Condition'}
+                        customClass={'underLine-title'}
+                    />
+                </Col>
+                    <ConditionCosting hideAction={true} tableData={conditionTableData} />
+                </>}
+            </>}
         </div >
 
     )

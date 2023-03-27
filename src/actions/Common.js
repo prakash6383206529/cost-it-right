@@ -1671,6 +1671,8 @@ export function getNpvDetails(costingId, callback) {
     request.then((response) => {
       if (response.data.Result) {
         callback(response);
+      } else {
+        callback(response.status);
       }
     }).catch((error) => {
       dispatch({ type: FETCH_MATER_DATA_FAILURE, });
@@ -1686,6 +1688,9 @@ export function getConditionDetails(costingId, callback) {
     request.then((response) => {
       if (response.data.Result) {
         callback(response);
+      }
+      else {
+        callback(response.status);
       }
     }).catch((error) => {
       dispatch({ type: FETCH_MATER_DATA_FAILURE, });

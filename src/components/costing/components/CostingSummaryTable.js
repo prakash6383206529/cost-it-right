@@ -1957,7 +1957,16 @@ const CostingSummaryTable = (props) => {
                               )
                             })}
                         </tr>
-
+                        {drawerDetailPDF && <tr><th colSpan={2}>
+                          <AddNpvCost
+                            isOpen={openNpvDrawer}
+                            costingSummary={true}
+                            tableData={[]}
+                            closeDrawer={closeNpvDrawer}
+                            anchor={'right'}
+                            isPDFShow={true}
+                          />
+                        </th></tr>}
                       </> : <>
                         {drawerDetailPDF && <tr><th colSpan={2}><ViewPackagingAndFreight
                           isOpen={isViewPackagingFreight}
