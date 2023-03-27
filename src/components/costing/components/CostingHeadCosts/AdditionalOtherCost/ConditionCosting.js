@@ -61,7 +61,7 @@ function ConditionCosting(props) {
                             )}
                         </tbody>
                         <tfoot>
-                            <tr style={{ backgroundColor: '#E0E9F5' }}>
+                            <tr className='table-footer'>
                                 <td colSpan={"4"} className="text-right">{'Total Cost:'}</td>
                                 <td colSpan={"2"}>{totalCost}</td>
                             </tr>

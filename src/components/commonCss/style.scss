@@ -3275,7 +3275,7 @@ button:disabled,
   thead {
     th {
       color: #3D4465;
-      font-weight: normal;
+      font-weight: 500;
     }
   }
 }
@@ -8173,6 +8173,16 @@ body {
       }
     }
   }
+
+  .forging-cal-table {
+    td {
+      font-weight: normal;
+    }
+
+    .table-footer td {
+      background-color: #E0E9F5 !important;
+    }
+  }
 }
 
 .remove-space-border {
@@ -8947,4 +8957,8 @@ table.group-process-table {
 
 .border-bottomRowMerge {
   border-bottom: 1px solid $agGridBorder !important;
+}
+
+.table-footer {
+  background-color: $tableFooterBackground;
 }
