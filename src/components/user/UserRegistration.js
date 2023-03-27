@@ -8,7 +8,7 @@ import { connect } from "react-redux";
 import { Loader } from "../common/Loader";
 import {
   minLength3, minLength6, minLength10, maxLength11, maxLength12, required, email, minLength7, maxLength18,
-  maxLength6, checkWhiteSpaces, maxLength15, postiveNumber, maxLength80, maxLength5, acceptAllExceptSingleSpecialCharacter, strongPassword, maxLength25, hashValidation, number
+  maxLength6, checkWhiteSpaces, maxLength15, postiveNumber, maxLength80, maxLength5, acceptAllExceptSingleSpecialCharacter, strongPassword, maxLength25, hashValidation, number, maxLength50
 } from "../../helper/validation";
 import { renderPasswordInputField, focusOnError, renderEmailInputField, renderText, searchableSelect, renderMultiSelectField, renderNumberInputField, } from "../layout/FormInputs";
 import {
@@ -1864,7 +1864,7 @@ function UserRegistration(props) {
                           mandatory={true}
                           rules={{
                             required: true,
-                            validate: { hashValidation, required, minLength3, maxLength15 }
+                            validate: { hashValidation, required, minLength3, maxLength50 }
                           }}
                           handleChange={() => { }}
                           placeholder={'Enter'}
