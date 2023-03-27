@@ -134,8 +134,12 @@ function RfqListing(props) {
     * @description HIDE DOMESTIC, IMPORT FORMS
     */
     const getDataList = () => {
+        setloader(true)
         dispatch(getQuotationDetailsList(data.QuotationId, (res) => {
-
+            if (res === 204) {
+                setloader(false)
+                return false;
+            }
             let grouped_data = _.groupBy(res?.data?.DataList, 'PartNumber')                           // GROUPING OF THE ROWS FOR SEPERATE PARTS
             let data = []
             for (let x in grouped_data) {
@@ -159,6 +163,7 @@ function RfqListing(props) {
             setRowData(newArray)
 
             setTechnologyId(res?.data?.DataList[0].TechnologyId)
+            setloader(false);
         }))
     }
 
@@ -659,7 +664,7 @@ function RfqListing(props) {
     return (
         <>
             <div className={`ag-grid-react rfq-portal ${(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) ? "" : ""} ${true ? "show-table-btn" : ""} ${false ? 'simulation-height' : props?.isMasterSummaryDrawer ? '' : 'min-height100vh'}`}>
-                {(loader && !props.isMasterSummaryDrawer) || gridLoader ? <LoaderCustom customClass="simulation-Loader" /> :
+                {loader ? <LoaderCustom customClass="simulation-Loader" /> :
                     <>
 
                         <Row className={`filter-row-large`}>
