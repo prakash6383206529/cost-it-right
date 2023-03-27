@@ -3323,7 +3323,7 @@ export const AcceptableSheetMetalUOM = ['Kilogram', 'Gram', 'Milligram']
 export const MULTIPLERMTECHNOLOGY = [4, 5, 7, 8, 14, 16, 17, 6, 9, 10, 2, 15, 23]
 
 export function isMultipleRMAllow(technology) {
-    const allowedMultipleRM = [1, 4, 5, 7, 8, 14, 16, 17, 6, 9, 10, 2, 15, 23, 20]
+    const allowedMultipleRM = [1, 4, 5, 7, 8, 14, 16, 17, 6, 9, 10, 2, 15, 23]
     return allowedMultipleRM.includes(technology);
 }
 
@@ -3473,6 +3473,7 @@ export const BOPDomesticSimulation = [
     { label: "Plant (Code)", value: "Plants", },
     { label: "Vendor (Code)", value: "Vendor" },
     { label: "Company (Code)", value: "DepartmentName", },
+    { label: "NumberOfPieces", value: "NumberOfPieces" },
     { label: "BasicRate", value: "BasicRate" },
     { label: "RevisedBasicRate", value: "NewBasicRate" },
     { label: "NetLandedCost", value: "NetLandedCost" },
@@ -3489,6 +3490,7 @@ export const BOPImportSimulation = [
     { label: "Plant (Code)", value: "Plants", },
     { label: "Vendor (Code)", value: "Vendor" },
     { label: "Company (Code)", value: "DepartmentName", },
+    { label: "NumberOfPieces", value: "NumberOfPieces" },
     { label: "BasicRate", value: "BasicRate" },
     { label: "RevisedBasicRate", value: "NewBasicRate" },
     { label: "NetLandedCost", value: "NetLandedCost" },
