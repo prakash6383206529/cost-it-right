@@ -1290,7 +1290,7 @@ function AddRfq(props) {
                                     <Row className='part-detail-wrapper'>
                                         <Col md="4">
                                             <TextAreaHookForm
-                                                label={"Remark"}
+                                                label={"Notes"}
                                                 name={"remark"}
                                                 // placeholder={"Select"}
                                                 placeholder={isViewFlag ? '-' : "Type here..."}
