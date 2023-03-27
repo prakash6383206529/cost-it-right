@@ -48,7 +48,6 @@ const SendForApproval = (props) => {
   const [financialYear, setFinancialYear] = useState('')
   const [approvalDropDown, setApprovalDropDown] = useState([])
   const [showValidation, setShowValidation] = useState(false)
-  const [isFinalApproverShow, setIsFinalApproverShow] = useState(false)
   const [approver, setApprover] = useState('')
   const [isDisable, setIsDisable] = useState('')
   const [isRegularize, setIsRegularize] = useState(false);
@@ -1141,7 +1140,7 @@ const SendForApproval = (props) => {
                       <div className={'cancel-icon'}></div>
                       {"Cancel"}
                     </button>
-                    {viewApprovalData && viewApprovalData[0]?.costingTypeId !== NCCTypeId && <button type="button" className="user-btn mr5 save-btn" onClick={viewImpactDrawer}>
+                    {viewApprovalData && viewApprovalData[0]?.costingTypeId === VBCTypeId && <button type="button" className="user-btn mr5 save-btn" onClick={viewImpactDrawer}>
                       <div className={"save-icon"}></div>
                       {"Verify Impact"}
                     </button>
