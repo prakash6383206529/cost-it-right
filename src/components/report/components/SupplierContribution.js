@@ -195,8 +195,23 @@ function SupplierContributionReport(props) {
 
     const plugins = [
         {
+            id: 'doughnutLabelsLine',
+            beforeDraw(chart, args, options) {
+                chart.ctx.canvas.style.width = '1200px'
+            },
+
             afterDraw: (chart) => {
-                const ctx = chart.ctx;
+                const { ctx, chartArea: { width, height } } = chart;
+                ctx.restore();
+                var fontSize = (width + 6) / width;
+                ctx.font = 1.5 + "em sans-serif";
+                ctx.textBaseline = "top";
+                var text = `${getCurrencySymbol(getConfigurationKey().BaseCurrency)} ${totalCost.toLocaleString()}`,
+                    textX = width / 2.1,
+                    textY = height / 2;
+                ctx.fillText(text, textX, textY);
+                ctx.save();
+
                 ctx.save();
                 ctx.font = "14px 'sans - serif'";
                 const leftLabelCoordinates = [];
@@ -271,10 +286,40 @@ function SupplierContributionReport(props) {
                     ctx.moveTo(centerPoint.x, centerPoint.y);
                     ctx.lineTo(point2X, point2Y);
                     ctx.stroke();
+
                     // second line: connect between outside point and chart's edge
                     ctx.beginPath();
                     ctx.moveTo(point2X, point2Y);
-                    ctx.lineTo(edgePointX, point2Y);
+
+                    let line
+                    let labelSecond
+                    let forLeftLine = edgePointX + 300
+                    let forLeftLabel = edgePointX + 100
+
+                    let forRightLine = edgePointX - 300
+                    let forRightLabel = edgePointX - 130
+                    if (edgePointX < chartCenterPoint.x) {
+                        line = forLeftLine
+                        labelSecond = forLeftLabel
+
+                        if (chart.data.labels[i].length < 13) {
+                            labelSecond = labelSecond + 30
+                        }
+                    } else {
+                        line = forRightLine
+                        labelSecond = forRightLabel
+
+                        if (chart.data.labels[i].length < 13) {
+                            labelSecond = labelSecond - 30
+                        }
+
+                        if (i === 9 && edgePointX > chartCenterPoint.x) {
+                            labelSecond = labelSecond + 60
+                            line = line + 30
+                        }
+                    }
+
+                    ctx.lineTo(line, point2Y);
                     ctx.stroke();
                     //fill custom label
                     const labelAlignStyle =
@@ -282,16 +327,17 @@ function SupplierContributionReport(props) {
                     const labelX = edgePointX;
                     const labelY = point2Y;
                     ctx.textAlign = labelAlignStyle;
-                    ctx.textBaseline = "bottom";
-
+                    ctx.textBaseline = "middle";
                     // ctx.fillStyle = labelColor;
                     ctx.fillStyle = '#000000db'
-                    ctx.fillText(`${chart.data.labels[i]} - ${percentage}%`, labelX, labelY);
+                    ctx.fillText(`${chart.data.labels[i]} - ${percentage}%`, labelSecond, labelY);
+
                 });
                 ctx.restore();
             }
         }
     ];
+
 
     const data3 = {
         labels: vendorArray,
