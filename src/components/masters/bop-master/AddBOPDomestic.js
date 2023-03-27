@@ -93,7 +93,8 @@ class AddBOPDomestic extends Component {
       showPopup: false,
       levelDetails: {},
       noApprovalCycle: false,
-      vendorFilterList: []
+      vendorFilterList: [],
+      uomIsNo: false
     }
   }
 
@@ -476,9 +477,13 @@ class AddBOPDomestic extends Component {
   * @description called
   */
   handleUOM = (newValue, actionMeta) => {
-    if (newValue && newValue !== '') {
-      this.setState({ UOM: newValue, })
-    } else {
+    if (newValue && newValue !== '' && newValue.label === "No") {
+      this.setState({ UOM: newValue, uomIsNo: true })
+    }
+    else if (newValue.label !== "No") {
+      this.setState({ UOM: newValue, uomIsNo: false })
+    }
+    else {
       this.setState({ UOM: [] })
     }
   };
@@ -1230,15 +1235,13 @@ class AddBOPDomestic extends Component {
                               />
                             </div>
                           </Col>
-
-
                           <Col md="3">
                             <Field
                               label={`Minimum Order Quantity`}
                               name={"NumberOfPieces"}
                               type="text"
                               placeholder={"Enter"}
-                              validate={[postiveNumber, maxLength10]}
+                              validate={this.state.uomIsNo ? [postiveNumber, maxLength10] : [positiveAndDecimalNumber, maxLength10, decimalLengthsix, number]}
                               component={renderText}
                               required={false}
                               className=""
