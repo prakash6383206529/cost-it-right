@@ -94,6 +94,7 @@ class VendorListing extends Component {
 
     componentWillUnmount() {
         this.props.setSelectedRowForPagination([])
+        this.props.isResetClick(true, "vendorType")
     }
 
     componentDidMount() {
@@ -133,6 +134,9 @@ class VendorListing extends Component {
 
     onSearch = () => {
         onSearch(gridOptions, this, "Vendor", this.state.globalTake)  // COMMON PAGINATION FUNCTION
+        setTimeout(() => {
+            this.setState({ warningMessage: false })
+        }, 1700);
     }
 
 
