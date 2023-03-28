@@ -423,12 +423,11 @@ function Simulation(props) {
                     return null
                 })
                 return temp
-
             } else {
                 technologySelectList && technologySelectList.map((item) => {
-                    if (item.Value === '0') return false
-                    temp.push({ label: item.Text, value: item.Value })
-                    return null
+                    if (item.Value === '0' || IdForMultiTechnology.includes(String(item.Value))) return false;
+                    temp.push({ label: item.Text, value: item.Value });
+                    return null;
                 })
                 return temp
             }
