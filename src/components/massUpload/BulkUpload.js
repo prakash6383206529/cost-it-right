@@ -370,6 +370,8 @@ class BulkUpload extends Component {
                                     fileHeads[i] = 'RMSpec'
                                 } else if ((fileName === 'RM Domestic' || fileName === 'RM Import') && fileHeads[i] === 'CircleSrapCost') {
                                     fileHeads[i] = 'JaliScrapCost'
+                                } else if ((fileName === 'RM Domestic' || fileName === 'RM Import') && fileHeads[i] === 'ScrapRate/JaliScrapCost') {
+                                    fileHeads[i] = 'ScrapRate'
                                 }
                                 obj[fileHeads[i]] = el;
                                 return null;
