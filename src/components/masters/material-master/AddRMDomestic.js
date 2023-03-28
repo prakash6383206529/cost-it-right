@@ -1003,7 +1003,8 @@ class AddRMDomestic extends Component {
       this.setState({ isVendorNameNotSelected: true, setDisable: false })      // IF VENDOR NAME IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY AND SAVE BUTTON WILL NOT BE DISABLED
       return false
     }
-    if (Number(fieldsObj.BasicRate) < Number(fieldsObj.ScrapRate)) {
+
+    if ((Number(fieldsObj.BasicRate) < Number(fieldsObj.ScrapRate)) || (fieldsObj.JaliScrapCost ? ((Number(fieldsObj.JaliScrapCost) + Number(checkForNull(fieldsObj.CircleScrapCost))) > Number(fieldsObj.BasicRate)) : false)) {
       this.setState({ setDisable: false })
       Toaster.warning("Scrap rate should not be greater than basic rate")
       return false
@@ -2095,7 +2096,7 @@ class AddRMDomestic extends Component {
  */
 function mapStateToProps(state) {
   const { comman, material, auth, costing, client } = state
-  const fieldsObj = selector(state, 'BasicRate', 'FrieghtCharge', 'ShearingCost', 'ScrapRate')
+  const fieldsObj = selector(state, 'BasicRate', 'FrieghtCharge', 'ShearingCost', 'ScrapRate', 'CircleScrapCost', 'JaliScrapCost')
 
   const { rowMaterialList, rmGradeList, rmSpecification, plantList, supplierSelectList, filterPlantList, filterCityListBySupplier,
     cityList, technologyList, costingHead, categoryList, filterPlantListByCity, filterPlantListByCityAndSupplier, UOMSelectList,
