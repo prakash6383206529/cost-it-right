@@ -177,7 +177,6 @@ class User extends Component {
       <Container fluid className="user-page">
         {/* {this.props.loading && <Loader/>} */}
         <div>
-          {ViewRoleAccessibility && <h1>User Management</h1>}
           <Nav tabs className="subtabs">
             {ViewUserAccessibility && <NavItem>
               <NavLink className={classnames({ active: this.state.activeTab === '1' })} onClick={() => { this.toggle('1'); }}>

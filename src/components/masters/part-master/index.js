@@ -189,17 +189,8 @@ class PartMaster extends Component {
                         {/* {this.props.loading && <Loader/>} */}
                         <div>
                             <div className="d-flex justify-content-between">
-                                <h1>Part Master</h1>
                                 <div className='p-relative'>
-                                    <button
-                                        type="button"
-                                        className={'secondary-btn mr5 mt-1'}
-                                        title="Fetch"
-                                        onClick={this.openFetchDrawer}
-                                        onMouseOver={this.handleMouse}
-                                        onMouseOut={this.handleMouseOut}>
-                                        <div className={`${this.state.isHover ? "swap-hover" : "swap"} mr-0`}></div>
-                                    </button>
+
                                     {this.props.disabledClass && <div title={MESSAGES.DOWNLOADING_MESSAGE} className="disabled-overflow"></div>}
                                 </div>
 
@@ -225,6 +216,15 @@ class PartMaster extends Component {
                                         </NavLink>
                                     </NavItem>
                                 }
+                                <button
+                                    type="button"
+                                    className={'secondary-btn mr5 mt-1 fetch-btn'}
+                                    title="Fetch"
+                                    onClick={this.openFetchDrawer}
+                                    onMouseOver={this.handleMouse}
+                                    onMouseOut={this.handleMouseOut}>
+                                    <div className={`${this.state.isHover ? "swap-hover" : "swap"} mr-0`}></div>
+                                </button>
                             </Nav>
                             <TabContent activeTab={this.state.activeTab}>
                                 {this.state.activeTab === '1' &&
