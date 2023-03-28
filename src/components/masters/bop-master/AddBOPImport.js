@@ -106,7 +106,8 @@ class AddBOPImport extends Component {
       levelDetails: {},
       noApprovalCycle: false,
       vendorFilterList: [],
-      isCallCalculation: false
+      isCallCalculation: false,
+      uomIsNo: false
     }
   }
   /**
@@ -479,10 +480,14 @@ class AddBOPImport extends Component {
  * @description called
  */
   handleUOM = (newValue, actionMeta) => {
-    if (newValue && newValue !== '') {
-      this.setState({ UOM: newValue, })
-    } else {
-      this.setState({ UOM: {} })
+    if (newValue && newValue !== '' && newValue.label === "No") {
+      this.setState({ UOM: newValue, uomIsNo: true })
+    }
+    else if (newValue.label !== "No") {
+      this.setState({ UOM: newValue, uomIsNo: false })
+    }
+    else {
+      this.setState({ UOM: [] })
     }
   };
 
@@ -599,12 +604,8 @@ class AddBOPImport extends Component {
     // const basicRate = fieldsObj && fieldsObj.BasicRate !== undefined ? fieldsObj.BasicRate : 0;
     // const netLandedCost = checkForNull((basicRate) * this.state.currencyValue);
 
-    if (
-      this.state.isEditFlag &&
-      Number(checkForDecimalAndNull(netLandedCost, initialConfiguration.NoOfDecimalForPrice)) === Number(checkForDecimalAndNull(this.state.DataToChange?.NetLandedCostConversion, initialConfiguration.NoOfDecimalForPrice)) &&
-      this.state.DataToChange.BoughtOutPartIncoTermId === this.state.incoTerm.value &&
-      this.state.DataToChange.BoughtOutPartPaymentTermId === this.state.paymentTerm.value
-    ) {
+    if (this.state.isEditFlag && Number(checkForDecimalAndNull(netLandedCost, initialConfiguration.NoOfDecimalForPrice)) === Number(checkForDecimalAndNull(this.state.DataToChange?.NetLandedCostConversion, initialConfiguration.NoOfDecimalForPrice)) &&
+      this.state.DataToChange.BoughtOutPartIncoTermId === this.state.incoTerm.value && this.state.DataToChange.BoughtOutPartPaymentTermId === this.state.paymentTerm.value) {
       this.setState({ IsFinancialDataChanged: false });
     } else if (this.state.isEditFlag) {
       this.setState({ IsFinancialDataChanged: true });
@@ -1380,7 +1381,7 @@ class AddBOPImport extends Component {
                               name={"NumberOfPieces"}
                               type="text"
                               placeholder={"Enter"}
-                              validate={[postiveNumber, maxLength10]}
+                              validate={this.state.uomIsNo ? [postiveNumber, maxLength10] : [positiveAndDecimalNumber, maxLength10, decimalLengthsix, number]}
                               component={renderText}
                               required={false}
                               className=""

@@ -585,20 +585,20 @@ function Simulation(props) {
                 Data && Data.forEach((element, index) => {
 
                     if (index !== 0) {
-                        if (element.CostingHead !== Data[index - 1].CostingHead) {
+                        if (element?.CostingHead !== Data[index - 1]?.CostingHead) {
                             (Data.length !== 0) && setFilterStatus('Please filter out the Costing Head')
                             setEditWarning(true);
                             flag = false
                         }
                     }
                     if (userDetails().Role !== 'Group Category Head') {
-                        if (element.VendorName !== Data[index - 1].VendorName) {
+                        if (element?.VendorName !== Data[index - 1]?.VendorName) {
                             (Data.length !== 0) && setFilterStatus('Please filter out the Vendor')
                             setEditWarning(true);
                             vendorFlag = false
                         }
 
-                        if (element.PlantId !== Data[index - 1].PlantId) {
+                        if (element?.PlantId !== Data[index - 1]?.PlantId) {
                             (Data.length !== 0) && setFilterStatus('Please filter out the Plant')
                             setEditWarning(true);
                             plantFlag = false

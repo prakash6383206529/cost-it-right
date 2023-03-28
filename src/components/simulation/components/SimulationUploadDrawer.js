@@ -171,8 +171,8 @@ class SimulationUploadDrawer extends Component {
                     switch (Number(this.props.master.value)) {
                         case Number(RMDOMESTIC):
                             resp.rows.map((val, index) => {
-                                const scrapTemp = (val[16] !== val[15]) && val[16] ? val[16] : val[15]
-                                const basicTemp = (val[12] !== val[11]) && val[12] ? val[12] : val[11]
+                                const scrapTemp = (val[17] !== val[16]) && val[17] ? val[17] : val[16]
+                                const basicTemp = (val[13] !== val[12]) && val[13] ? val[13] : val[12]
                                 if (val.length !== 0) {
                                     if (index > 0) {
                                         if ((val[12] !== '' && val[12] !== undefined && val[12] !== null && val[11] !== val[12])) {
@@ -333,10 +333,10 @@ class SimulationUploadDrawer extends Component {
                             resp.rows.map((val, index) => {
                                 if (val.length !== 0) {
                                     if (index > 0) {
-                                        if (val[8] !== '' && val[8] !== undefined && val[8] !== null && val[7] !== val[8]) {
+                                        if (val[9] !== '' && val[9] !== undefined && val[9] !== null && val[8] !== val[9]) {
                                             basicRateCount = 1
                                         }
-                                        if (val[8] === '' || val[8] === undefined || val[8] === null || val[7] === val[8]) {
+                                        if (val[9] === '' || val[9] === undefined || val[9] === null || val[8] === val[9]) {
                                             NoOfRowsWithoutChange = NoOfRowsWithoutChange + 1
                                             return false
                                         }
@@ -348,6 +348,12 @@ class SimulationUploadDrawer extends Component {
                                             }
                                             if (fileHeads[i] === 'RevisedBasicRate') {
                                                 obj["NewBasicRate"] = el;
+                                            } else if (fileHeads[i] === 'InsertPartNumber') {
+                                                obj["BoughtOutPartNumber"] = el;
+                                            } else if (fileHeads[i] === 'InsertPartName') {
+                                                obj["BoughtOutPartName"] = el;
+                                            } else if (fileHeads[i] === 'InsertPartCategory') {
+                                                obj["BoughtOutPartCategory"] = el;
                                             } else {
                                                 obj[fileHeads[i]] = el;
                                             }
