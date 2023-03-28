@@ -1009,7 +1009,7 @@ class AddRMImport extends Component {
     }
 
 
-    if ((Number(fieldsObj.BasicRate) < Number(fieldsObj.ScrapRate)) || (fieldsObj.JaliScrapCost ? ((Number(fieldsObj.JaliScrapCost) + Number(checkForNull(fieldsObj.CircleScrapCost))) > Number(fieldsObj.BasicRate)) : false)) {
+    if ((Number(fieldsObj.BasicRate) < Number(fieldsObj.ScrapRate)) || (fieldsObj.JaliScrapCost ? ((Number(fieldsObj.JaliScrapCost) + Number(checkForNull(fieldsObj.CircleScrapCost))) > Number(fieldsObj.BasicRate)) : false) || (fieldsObj.ForgingScrap ? ((Number(fieldsObj.ForgingScrap) + Number(checkForNull(fieldsObj.MachiningScrap))) > Number(fieldsObj.BasicRate)) : false)) {
       this.setState({ setDisable: false })
       Toaster.warning("Scrap rate should not be greater than basic rate")
       return false
@@ -2134,7 +2134,7 @@ class AddRMImport extends Component {
 */
 function mapStateToProps(state) {
   const { comman, material, auth, costing, client } = state;
-  const fieldsObj = selector(state, 'BasicRate', 'FreightCharge', 'ShearingCost', 'ScrapRate', 'CircleScrapCost', 'JaliScrapCost');
+  const fieldsObj = selector(state, 'BasicRate', 'FreightCharge', 'ShearingCost', 'ScrapRate', 'CircleScrapCost', 'JaliScrapCost', 'ForgingScrap', 'MachiningScrap');
 
   const { uniOfMeasurementList, rowMaterialList, rmGradeList, rmSpecification, plantList,
     supplierSelectList, filterPlantList, filterCityListBySupplier, cityList, technologyList,
