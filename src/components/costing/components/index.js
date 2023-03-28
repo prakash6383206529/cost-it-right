@@ -90,7 +90,6 @@ function Costing(props) {
       <div className="user-page container-fluid costing-main-container">
         {/* {this.props.loading && <Loader/>} */}
         <div>
-          <h1>Costing</h1>
           <Nav tabs className="subtabs mt-0">
             <NavItem>
               <NavLink
