@@ -1227,7 +1227,7 @@ function RawMaterialCost(props) {
                                     handleFinishWeightChange(e?.target?.value, index)
                                   }}
                                   errors={errors && errors.rmGridFields && errors.rmGridFields[index] !== undefined ? errors.rmGridFields[index].FinishWeight : ''}
-                                  disabled={(CostingViewMode || IsLocked || (!initialConfiguration?.IsCopyCostingFinishAndGrossWeightEditable && costData?.IsCopied)) ? true : false}
+                                  disabled={(CostingViewMode || IsLocked || (!initialConfiguration?.IsCopyCostingFinishAndGrossWeightEditable && item.IsRMCopied)) ? true : false}
                                 />
                               </div>
                             </td>
@@ -1276,7 +1276,7 @@ function RawMaterialCost(props) {
                             </td>
                             <td>
                               <div className='action-btn-wrapper'>
-                                {!CostingViewMode && !IsLocked && (costData?.IsCopied ? (initialConfiguration.IsCopyCostingFinishAndGrossWeightEditable ? true : false) : true) && < button
+                                {!CostingViewMode && !IsLocked && (item.IsRMCopied ? (initialConfiguration.IsCopyCostingFinishAndGrossWeightEditable ? true : false) : true) && < button
                                   className="Delete "
                                   title='Delete'
                                   type={'button'}
