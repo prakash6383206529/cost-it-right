@@ -65,6 +65,7 @@ import SaleProvisionReport from './report/components/SaleProvisionReport/SalePro
 import PurchaseProvisionReport from './report/components/PurchaseProvisionReport/PurchaseProvisionReport'
 import CustomerPoamSummaryReport from './report/components/CustomerPoamSummaryReport/CustomerPoamSummaryReport'
 import HeadWiseCostingGotGiven from './report/components/HeadwiseCostingGotGiven/HeadWiseCostingGotGiven'
+import MasterCostMovement from './report/components/CostMovementByMaster/MasterCostMovement'
 const CustomHeader = {
   'Content-Type': 'application/x-www-form-urlencoded',
   'Access-Control-Allow-Origin': '*',
@@ -359,6 +360,7 @@ class Main extends Component {
                     <Route path="/purchase-provision-report" component={PurchaseProvisionReport} />
                     <Route path="/customer-poam-summary-report" component={CustomerPoamSummaryReport} />
                     <Route path="/headwise-costing-got-given" component={HeadWiseCostingGotGiven} />
+                    <Route path="/cost-movement-by-masters" component={MasterCostMovement} />
                     {/*  NEED TO ADD PATH FROM BACKEND */}
                     <Route path="/simulation-insights" component={SimulationInsights} />
                     <Route path="/rfq-listing" component={AuthMiddleware(RfqListing, RFQ)} />

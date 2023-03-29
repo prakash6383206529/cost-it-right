@@ -1,6 +1,6 @@
 import React from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { Row, Col, Label } from 'reactstrap'
+import { Row, Col, Label, Button } from 'reactstrap'
 import { checkForDecimalAndNull, checkForNull } from '../../../helper/validation'
 import { getFinancialYearSelectList, getPartSelectListWtihRevNo, } from '../actions/Volume'
 import { getCurrencySelectList, getPlantSelectListByType, getVendorWithVendorCodeSelectList } from '../../../actions/Common'
@@ -25,6 +25,7 @@ import { Controller, useForm } from 'react-hook-form'
 import { createBudget, getApprovedPartCostingPrice, getMasterBudget, getPartCostingHead, updateBudget } from '../actions/Budget'
 import { getExchangeRateByCurrency } from '../../costing/actions/Costing'
 import AddConditionCosting from '../../costing/components/CostingHeadCosts/AdditionalOtherCost/AddConditionCosting'
+import ConditionCosting from '../../costing/components/CostingHeadCosts/AdditionalOtherCost/ConditionCosting'
 
 const gridOptions = {};
 
@@ -55,6 +56,7 @@ function AddBudget(props) {
     const [client, setClient] = useState([]);
     const [isPartNumberNotSelected, setIsPartNumberNotSelected] = useState(false);
     const [showErrorOnFocusPart, setShowErrorOnFocusPart] = useState(false);
+    const [conditionAcc, setConditionAcc] = useState(false);
     const [partName, setPartName] = useState('');
     const [IsVendor, setIsVendor] = useState(false);
     const [isLoader, setIsLoader] = useState(true);
@@ -986,8 +988,26 @@ function AddBudget(props) {
                                                             </div>
                                                         </div>
                                                     </Col>
+                                                    <Col md="8" className='mt-3'><div className="left-border mt-1">Costing Condition:</div></Col>
+                                                    <Col md="4" className="text-right mt-3">
+                                                        <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setConditionAcc(!conditionAcc) }}>
+                                                            {conditionAcc ? (
+                                                                <i className="fa fa-minus" ></i>
+                                                            ) : (
+                                                                <i className="fa fa-plus"></i>
+                                                            )}
+                                                        </button>
+                                                    </Col>
+                                                    {conditionAcc && <div className='mb-2'><Row>
+                                                        <Col md="12">
+                                                            <div className='d-flex justify-content-end mb-2'>
+                                                                <Button type='button' onClick={() => { setIsConditionCostingOpen(true) }}> <div className={`${conditionTableData.length === 0 ? 'plus' : 'fa fa-eye pr-1'}`}></div>{conditionTableData.length === 0 ? "Add" : "View"}</Button>
+                                                            </div>
+                                                        </Col>
+                                                    </Row>
+                                                        <ConditionCosting hideAction={true} tableData={conditionTableData} /></div>}
                                                     <Col md="9">
-                                                        <div className='budgeting-details  mt-3'>
+                                                        <div className='budgeting-details  mt-2'>
                                                             <label className='w-fit'>{`Total Sum ${currency?.label ? `(${currency.label})` : '(Currency)'}:`}</label>
                                                             <NumberFieldHookForm
                                                                 label=""
@@ -1008,7 +1028,7 @@ function AddBudget(props) {
                                                         </div>
                                                     </Col>
                                                     <Col md="3">
-                                                        <div className='budgeting-details  mt-3'>
+                                                        <div className='budgeting-details  mt-2'>
                                                             <label className='w-fit'>Total Sum:</label>
                                                             <NumberFieldHookForm
                                                                 label=""
@@ -1041,8 +1061,6 @@ function AddBudget(props) {
                                                         basicRate={totalSum}
                                                     />
                                                 }
-
-                                                <button type='button' onClick={() => { setIsConditionCostingOpen(true) }}>Condition costing</button>
 
                                             </div>
                                             <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
