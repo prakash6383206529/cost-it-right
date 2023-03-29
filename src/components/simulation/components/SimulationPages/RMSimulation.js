@@ -23,6 +23,7 @@ import { PaginationWrapper } from '../../../common/commonPagination';
 import WarningMessage from '../../../common/WarningMessage';
 import { getMaxDate } from '../../SimulationUtils';
 import PopupMsgWrapper from '../../../common/PopupMsgWrapper';
+import { FORGING } from '../../../../config/masterData';
 
 const gridOptions = {
 
@@ -158,7 +159,7 @@ function RMSimulation(props) {
                 scrapRateChangeArr.push(li)
 
             }
-            if ((li?.NewBasicRate === undefined ? Number(li?.BasicRate) : Number(li?.NewBasicRate)) < (li?.NewScrapRate === undefined ? Number(li?.ScrapRate) : Number(li?.NewScrapRate))) {
+            if ((li?.NewBasicRate === undefined || li?.NewBasicRate === '' ? Number(li?.BasicRate) : Number(li?.NewBasicRate)) < (li?.NewScrapRate === undefined || li?.NewScrapRate === '' ? Number(li?.ScrapRate) : Number(li?.NewScrapRate))) {
                 isScrapRateGreaterThanBasiRate = true
             }
             if (isScrapRateGreaterThanBasiRate) {
@@ -318,11 +319,10 @@ function RMSimulation(props) {
     const beforeSaveCell = (cell, props) => {
         const cellValue = cell
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        if ((row?.NewBasicRate === undefined ? Number(row?.BasicRate) : Number(row?.NewBasicRate)) <
-            (row?.NewScrapRate === undefined ? Number(row?.ScrapRate) : Number(row?.NewScrapRate))) {
+        if ((row?.NewBasicRate === undefined || row?.NewBasicRate === '' ? Number(row?.BasicRate) : Number(row?.NewBasicRate)) <
+            (row?.NewScrapRate === undefined || row?.NewScrapRate === '' ? Number(row?.ScrapRate) : Number(row?.NewScrapRate))) {
             row.NewBasicRate = row?.BasicRate
             row.NewScrapRate = row?.ScrapRate
-
             Toaster.warning('Scrap Rate should be less than Basic Rate')
             return false
         }
@@ -555,7 +555,7 @@ function RMSimulation(props) {
                                             </AgGridColumn>
                                             <AgGridColumn width={150} field="RMFreightCost" editable='false' cellRenderer={'CostFormatter'} headerName="Freight Cost"></AgGridColumn>
                                             <AgGridColumn width={170} field="RMShearingCost" editable='false' cellRenderer={'CostFormatter'} headerName="Shearing Cost" ></AgGridColumn>
-                                            <AgGridColumn width={170} field="MachiningScrapRate" editable='false' headerName="Machining Scrap Cost" cellRenderer={'CostFormatter'}></AgGridColumn>
+                                            {technologyId === String(FORGING) && <AgGridColumn width={170} field="MachiningScrapRate" editable='false' headerName="Machining Scrap Cost" cellRenderer={'CostFormatter'}></AgGridColumn>}
                                             {!isImpactedMaster && <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName={Number(selectedMasterForSimulation?.value) === 2 ? "Net Cost (Currency)" : "Net Cost (INR)"}>
                                                 <AgGridColumn width={120} field="NetLandedCost" editable='false' cellRenderer={'costFormatter'} headerName="Existing" colId='NetLandedCost'></AgGridColumn>
                                                 <AgGridColumn width={120} field="NewNetLandedCost" editable='false' valueGetter='data.NewBasicRate + data.RMFreightCost+data.RMShearingCost' cellRenderer={'NewcostFormatter'} headerName="Revised" colId='NewNetLandedCost'></AgGridColumn>

@@ -117,3 +117,36 @@
         }
     }
 }
+
+.report-btn-back {
+    margin-right: 50px;
+}
+
+.report-btn-reset-container {
+    width: fit-content;
+    padding-left: 0;
+    position: absolute;
+    top: -45px;
+    right: 0;
+}
+
+.doughnut-graph {
+    canvas {
+        transform: scale(0.9);
+    }
+
+    @media screen and (max-width: $middleDesktop) {
+        margin-top: -25px;
+    }
+}
+
+.supplier-back-btn {
+    position: relative;
+    text-align: right;
+    z-index: 2;
+
+    button {
+        position: absolute;
+        right: 0;
+    }
+}

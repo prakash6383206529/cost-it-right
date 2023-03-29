@@ -11,11 +11,13 @@ import { IdForMultiTechnology } from '../../../../config/masterData';
 import { createToprowObjAndSave, findSurfaceTreatmentData, formatMultiTechnologyUpdate } from '../../CostingUtil';
 import { setSubAssemblyTechnologyArray, updateMultiTechnologyTopAndWorkingRowCalculation } from '../../actions/SubAssembly';
 import { useEffect } from 'react';
+import { useRef } from 'react';
 
 function AddAssemblyOperation(props) {
   const { item, CostingViewMode, isAssemblyTechnology } = props;
   const [IsOpenTool, setIsOpenTool] = useState(false);
   const IsLocked = (item.IsLocked ? item.IsLocked : false) || (item.IsPartLocked ? item.IsPartLocked : false)
+  const drawerRef = useRef();
 
   const dispatch = useDispatch()
   const { subAssemblyTechnologyArray } = useSelector(state => state.subAssembly)
@@ -201,7 +203,14 @@ function AddAssemblyOperation(props) {
     }
 
   }
+  const handleRendered = () => {
+    setTimeout(() => {
+      const drawerEl = drawerRef.current;
+      const divEl = drawerEl.querySelector('.MuiDrawer-paperAnchorBottom');
+      divEl.removeAttribute('tabindex');
+    }, 500);
 
+  };
   /**
   * @method render
   * @description Renders the component
@@ -209,6 +218,8 @@ function AddAssemblyOperation(props) {
   return (
     <div>
       <Drawer className="bottom-drawer" anchor='bottom' open={props.isOpen}
+        ref={drawerRef}
+        onRendered={handleRendered}
       >
         <div className="container-fluid add-operation-drawer">
           <div className={'drawer-wrapper drawer-1500px'}>

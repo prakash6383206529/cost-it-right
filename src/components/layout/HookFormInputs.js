@@ -1,6 +1,6 @@
 import React from "react";
 import Select, { createFilter } from "react-select";
-import "./formInputs.css";
+import "./formInputs.scss";
 import ReactDatePicker from 'react-datepicker'
 import AsyncSelect from 'react-select/async';
 import LoaderCustom from "../common/LoaderCustom";
@@ -40,7 +40,7 @@ export const TextFieldHooks = (input) => {
 const errorFunc = (errors, field) => {
   switch (errors?.type) {
     case "maxLength":
-      return <div className="text-help">Maximum length is {field?.rules?.maxLength}</div>
+      return <div className="text-help">{field?.rules?.maxLength?.message}</div>
 
     case "required":
       return <div className="text-help">This field is required</div>
@@ -376,7 +376,7 @@ export const SearchableSelectHookForm = (field) => {
 const errorAreaFunc = (errors, field) => {
   switch (errors?.type) {
     case "maxLength":
-      return <div className="text-help">Maximum length is {field?.rules?.maxLength}</div>
+      return <div className="text-help">{field?.rules?.maxLength?.message}</div>
 
     case "required":
       return <div className="text-help">This field is required</div>

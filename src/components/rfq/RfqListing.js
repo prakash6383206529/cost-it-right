@@ -218,9 +218,29 @@ function RfqListing(props) {
             return (
                 <>
                     <div
-                        onClick={() => viewDetails(row.QuotationId)}
+                        onClick={() => viewDetails(row)}
                         className={'link'}
                     >{cell}</div>
+                </>
+            )
+        } else {
+
+            return cell ? cell : "-"
+
+        }
+    }
+    const quotationReceiveFormatter = (props) => {
+
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+
+        if (row?.IsActive) {
+            return (
+                <>
+                    {cell >= 1 ? <div
+                        onClick={() => viewDetails(row)}
+                        className={'link'}
+                    >{cell}</div> : <div>{cell}</div>}
                 </>
             )
         } else {
@@ -288,9 +308,10 @@ function RfqListing(props) {
     }
 
 
-    const viewDetails = (UserId) => {
+    const viewDetails = (rowData) => {
 
-        setViewRfqData(UserId)
+        setViewRfqData(rowData)
+
         setViewRfq(true)
         // this.setState({
         //     UserId: UserId,
@@ -310,6 +331,7 @@ function RfqListing(props) {
     const frameworkComponents = {
         totalValueRenderer: buttonFormatter,
         linkableFormatter: linkableFormatter,
+        quotationReceiveFormatter: quotationReceiveFormatter,
         attachmentFormatter: attachmentFormatter,
         statusFormatter: statusFormatter,
         dateFormater: dateFormater
@@ -322,7 +344,6 @@ function RfqListing(props) {
                 <div className={`ag-grid-react ${(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) ? "" : ""} ${true ? "show-table-btn" : ""} ${false ? 'simulation-height' : props?.isMasterSummaryDrawer ? '' : 'min-height100vh'}`}>
                     {(loader ? <LoaderCustom customClass="simulation-Loader" /> : !viewRfq && (
                         <>
-                            <h1 className='mb-0'>Manage RFQ</h1>
                             <Row className={`filter-row-large pt-2 ${props?.isSimulation ? 'zindex-0 ' : ''}`}>
 
                                 <Col md="3" lg="3" className='mb-2'>
@@ -384,11 +405,11 @@ function RfqListing(props) {
                                             >
                                                 <AgGridColumn cellClass="has-checkbox" field="QuotationNumber" headerName='RFQ No.' cellRenderer={'linkableFormatter'} ></AgGridColumn>
                                                 <AgGridColumn field="PartNumber" tooltipField="PartNumber" headerName="Part No." width={150}></AgGridColumn>
-                                                <AgGridColumn field="CostingReceived" headerName='No. of Quotation Received' maxWidth={150}></AgGridColumn>
+                                                <AgGridColumn field="CostingReceived" headerName='No. of Quotation Received' maxWidth={150} cellRenderer={'quotationReceiveFormatter'}></AgGridColumn>
                                                 <AgGridColumn field="VendorName" tooltipField="VendorName" headerName='Vendor (Code)'></AgGridColumn>
                                                 <AgGridColumn field="PlantName" headerName='Plant (Code)'></AgGridColumn>
                                                 <AgGridColumn field="TechnologyName" headerName='Technology'></AgGridColumn>
-                                                <AgGridColumn field="Remark" headerName='Remark'></AgGridColumn>
+                                                <AgGridColumn field="Remark" headerName='Notes'></AgGridColumn>
                                                 <AgGridColumn field="RaisedBy" headerName='Raised By'></AgGridColumn>
                                                 <AgGridColumn field="RaisedOn" headerName='Raised On' cellRenderer='dateFormater'></AgGridColumn>
                                                 <AgGridColumn field="LastSubmissionDate" headerName='Last Submission Date' cellRenderer='dateFormater'></AgGridColumn>
