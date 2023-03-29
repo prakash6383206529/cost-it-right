@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { Row, Col, Label } from 'reactstrap'
 import { checkForDecimalAndNull, checkForNull } from '../../../helper/validation'
 import { getFinancialYearSelectList, getPartSelectListWtihRevNo, } from '../actions/Volume'
-import { getPlantSelectListByType, getVendorWithVendorCodeSelectList } from '../../../actions/Common'
+import { getCurrencySelectList, getPlantSelectListByType, getVendorWithVendorCodeSelectList } from '../../../actions/Common'
 import Toaster from '../../common/Toaster'
 import { MESSAGES } from '../../../config/message'
 import { getConfigurationKey, loggedInUserId } from '../../../helper/auth'
@@ -23,6 +23,8 @@ import { useState } from 'react'
 import { NumberFieldHookForm, SearchableSelectHookForm } from '../../layout/HookFormInputs'
 import { Controller, useForm } from 'react-hook-form'
 import { createBudget, getApprovedPartCostingPrice, getMasterBudget, getPartCostingHead, updateBudget } from '../actions/Budget'
+import { getExchangeRateByCurrency } from '../../costing/actions/Costing'
+import AddConditionCosting from '../../costing/components/CostingHeadCosts/AdditionalOtherCost/AddConditionCosting'
 
 const gridOptions = {};
 
@@ -61,15 +63,22 @@ function AddBudget(props) {
     const [count, setCount] = useState(0);
     const [isVendorNameNotSelected, setIsVendorNameNotSelected] = useState(false);
     const [vendorFilter, setVendorFilter] = useState([]);
+    const [currency, setCurrency] = useState(0);
+    const [currencyExchangeRate, setCurrencyExchangeRate] = useState(1);
+    const [isConditionCostingOpen, setIsConditionCostingOpen] = useState(false)
+    const [conditionTableData, seConditionTableData] = useState([])
+    const [totalConditionCost, setTotalConditionCost] = useState(0)
     const dispatch = useDispatch();
     const plantSelectList = useSelector(state => state.comman.plantSelectList);
     const financialYearSelectList = useSelector(state => state.volume.financialYearSelectList);
     const clientSelectList = useSelector((state) => state.client.clientSelectList)
+    const currencySelectList = useSelector((state) => state.comman.currencySelectList)
 
 
     useEffect(() => {
 
         dispatch(getPlantSelectListByType(ZBC, () => { }))
+        dispatch(getCurrencySelectList(() => { }))
         dispatch(getFinancialYearSelectList(() => { }))
         dispatch(getClientSelectList((res) => { }))
         dispatch(getPartCostingHead((res) => {
@@ -117,6 +126,15 @@ function AddBudget(props) {
         }
         if (label === 'ClientList') {
             clientSelectList && clientSelectList.map(item => {
+                if (item.Value === '0') return false;
+                temp.push({ label: item.Text, value: item.Value })
+                return null;
+            });
+            return temp;
+        }
+
+        if (label === 'currency') {
+            currencySelectList && currencySelectList.map(item => {
                 if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
                 return null;
@@ -281,7 +299,7 @@ function AddBudget(props) {
      */
     const beforeSaveCell = (props) => {
 
-        console.log(props, "props")
+
         const cellValue = props
         if (Number.isInteger(Number(cellValue)) && /^\+?(0|[1-9]\d*)$/.test(cellValue) && cellValue.toString().replace(/\s/g, '').length) {
             if (cellValue.length > 8) {
@@ -312,8 +330,12 @@ function AddBudget(props) {
         })
 
         // setValue('currentPrice', total + currentPrice)
-        setTotalSum(total + currentPrice)
-        setValue('totalSum', total + currentPrice)
+
+        setTotalSum((total + currentPrice))
+        setValue('totalSum', (total + currentPrice))
+        if (currencyExchangeRate > 1) {
+            setValue('totalSumCurrency', (total + currentPrice) / currencyExchangeRate)
+        }
     }
 
     /**
@@ -367,6 +389,8 @@ function AddBudget(props) {
                     setVendorName({ label: `${Data.VendorName} (${Data.VendorCode})`, value: Data.VendorId })
                     setValue('currentPrice', Data.NetPoPrice)
                     setValue('FinancialYear', { label: Data.FinancialYear, value: 0 })
+                    setValue('currency', { label: Data.Currency, value: Data.CurrencyId })
+
                     setTimeout(() => {
                         setTableData(temp)
                         setIsLoader(false)
@@ -408,6 +432,27 @@ function AddBudget(props) {
     const cancelHandler = () => {
         cancel('cancel')
     }
+
+
+    const handleCurrencyChange = (newValue) => {
+        if (newValue && newValue !== '') {
+            setCurrency(newValue)
+
+            const finalYear = year?.label && year?.label?.slice(0, 4);
+            let date = (`${finalYear}-04-01`);
+
+            dispatch(getExchangeRateByCurrency(newValue.label, '', date, '', '', res => {
+                if (res && res.data && res.data.Result) {
+                    let Data = res.data.Data;
+                    setCurrencyExchangeRate(Data.CurrencyExchangeRate)
+                    if (getValues('totalSum')) {
+                        setValue('totalSumCurrency', checkForDecimalAndNull((getValues('totalSum') / Data.CurrencyExchangeRate), getConfigurationKey().NoOfDecimalForPrice))
+                    }
+                }
+            }))
+        }
+    }
+
 
     /**
      * @method onSubmit
@@ -482,7 +527,9 @@ function AddBudget(props) {
                 PlantId: selectedPlants.value,
                 VendorId: vendorName.value,
                 CustomerId: client.value,
-                BudgetingPartCostingDetails: temp
+                BudgetingPartCostingDetails: temp,
+                CurrencyId: currency.value,
+                Currency: currency.label,
             }
 
             dispatch(createBudget(formData, (res) => {
@@ -510,13 +557,15 @@ function AddBudget(props) {
         obj.vendorId = vendorName.value
         obj.customerId = client.value
 
-        dispatch(getApprovedPartCostingPrice(obj, (res) => {
-            setValue('currentPrice', checkForDecimalAndNull(res?.data?.DataList[0].NetPOPrice, getConfigurationKey().NoOfDecimalForInputOutput))
-            setCurrentPrice(checkForDecimalAndNull(res?.data?.DataList[0].NetPOPrice, getConfigurationKey().NoOfDecimalForInputOutput))
-            setTotalSum(res?.data?.DataList[0].NetPOPrice + totalSum)
-            setValue('totalSum', res?.data?.DataList[0].NetPOPrice + totalSum)
-        }))
-
+        if (currency && currency.label) {
+            dispatch(getApprovedPartCostingPrice(obj, (res) => {
+                setValue('currentPrice', checkForDecimalAndNull(res?.data?.DataList[0].NetPOPrice, getConfigurationKey().NoOfDecimalForInputOutput))
+                setCurrentPrice(checkForDecimalAndNull(res?.data?.DataList[0].NetPOPrice, getConfigurationKey().NoOfDecimalForInputOutput))
+                setTotalSum((res?.data?.DataList[0].NetPOPrice + totalSum) * (currencyExchangeRate))
+                setValue('totalSum', (res?.data?.DataList[0].NetPOPrice + totalSum))
+                setValue('totalSumCurrency', (res?.data?.DataList[0].NetPOPrice + totalSum) / (currencyExchangeRate))
+            }))
+        }
     }
 
 
@@ -576,6 +625,21 @@ function AddBudget(props) {
             }
         }
     };
+
+    const openAndCloseAddConditionCosting = (type, data = conditionTableData) => {
+        setIsConditionCostingOpen(false)
+        seConditionTableData(data)
+        const sum = data.reduce((acc, obj) => Number(acc) + Number(obj.ConditionCost), 0);
+        let finalNewSum = Number(sum) + Number(totalSum) - totalConditionCost
+
+        setTotalSum(finalNewSum)
+        setValue('totalSum', finalNewSum)
+        setValue('totalSumCurrency', (finalNewSum) / currencyExchangeRate)
+
+        setTimeout(() => {
+            setTotalConditionCost(sum)
+        }, 1000)
+    }
 
     const defaultColDef = {
         resizable: true,
@@ -818,6 +882,30 @@ function AddBudget(props) {
                                                                     handleChange={handleFinancialYear}
                                                                     disabled={isEditFlag ? true : false}
                                                                 />
+
+                                                            </div>
+                                                            <div className="col-md-3 p-relative">
+                                                                <SearchableSelectHookForm
+                                                                    name="currency"
+                                                                    type="text"
+                                                                    label="Currency"
+                                                                    errors={errors.currency}
+                                                                    Controller={Controller}
+                                                                    control={control}
+                                                                    register={register}
+                                                                    mandatory={true}
+                                                                    rules={{
+                                                                        required: true,
+                                                                    }}
+                                                                    //component={searchableSelect}
+                                                                    placeholder={'Select'}
+                                                                    options={renderListing("currency")}
+                                                                    //onKeyUp={(e) => this.changeItemDesc(e)}
+                                                                    //validate={(role == null || role.length === 0) ? [required] : []}
+                                                                    required={true}
+                                                                    handleChange={handleCurrencyChange}
+                                                                    disabled={isEditFlag ? true : false}
+                                                                />
                                                                 <button className='user-btn budget-tick-btn' type='button' onClick={getCostingPrice} disabled={isEditFlag ? true : false} >
                                                                     <div className='save-icon' ></div>
                                                                 </button>
@@ -898,7 +986,28 @@ function AddBudget(props) {
                                                             </div>
                                                         </div>
                                                     </Col>
-                                                    <Col md="12">
+                                                    <Col md="9">
+                                                        <div className='budgeting-details  mt-3'>
+                                                            <label className='w-fit'>{`Total Sum ${currency?.label ? `(${currency.label})` : '(Currency)'}:`}</label>
+                                                            <NumberFieldHookForm
+                                                                label=""
+                                                                name={"totalSumCurrency"}
+                                                                errors={errors.totalSumCurrency}
+                                                                Controller={Controller}
+                                                                control={control}
+                                                                register={register}
+                                                                disableErrorOverflow={true}
+                                                                mandatory={false}
+                                                                rules={{
+                                                                    required: false,
+                                                                }}
+                                                                handleChange={() => { }}
+                                                                disabled={true}
+                                                                customClassName={'withBorder'}
+                                                            />
+                                                        </div>
+                                                    </Col>
+                                                    <Col md="3">
                                                         <div className='budgeting-details  mt-3'>
                                                             <label className='w-fit'>Total Sum:</label>
                                                             <NumberFieldHookForm
@@ -919,7 +1028,22 @@ function AddBudget(props) {
                                                             />
                                                         </div>
                                                     </Col>
+
                                                 </Row>
+
+                                                {
+                                                    isConditionCostingOpen && <AddConditionCosting
+                                                        isOpen={isConditionCostingOpen}
+                                                        tableData={conditionTableData}
+                                                        closeDrawer={openAndCloseAddConditionCosting}
+                                                        anchor={'right'}
+                                                        //netPOPrice={netPOPrice}
+                                                        basicRate={totalSum}
+                                                    />
+                                                }
+
+                                                <button type='button' onClick={() => { setIsConditionCostingOpen(true) }}>Condition costing</button>
+
                                             </div>
                                             <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
                                                 <div className="col-sm-12 text-right bluefooter-butn">
