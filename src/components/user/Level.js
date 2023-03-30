@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Field, reduxForm } from "redux-form";
+import { Field, reduxForm, clearFields } from "redux-form";
 import Toaster from "../common/Toaster";
 import { connect } from "react-redux";
 import { required, checkWhiteSpaces, acceptAllExceptSingleSpecialCharacter, maxLength80, postiveNumber, maxLength2 } from "../../helper/validation";
@@ -261,6 +261,12 @@ class Level extends Component {
   * @description LEVEL TYPE HANDLING
   */
   onPressRadioLevel = (label) => {
+
+    const fieldsToClear = ['ApprovalType', 'TechnologyId', 'LevelId'];
+    fieldsToClear.forEach(fieldName => {
+      this.props.dispatch(clearFields('Level', false, false, fieldName));
+    });
+
     if (label === 'Costing') {
       this.props.getAllTechnologyAPI(() => { })
     } else if (label === 'Simulation') {
