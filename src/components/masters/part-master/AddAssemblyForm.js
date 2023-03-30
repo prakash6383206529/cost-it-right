@@ -51,6 +51,21 @@ class AddAssemblyForm extends Component {
         this.setState({ selectedParts: tempArr })
     }
 
+    componentDidUpdate(prevProps, prevState) {
+        if (this.props.BOMViewerData !== prevProps.BOMViewerData) {
+            const { BOMViewerData } = this.props;
+
+            let tempArr = [];
+            BOMViewerData && BOMViewerData.map(el => {
+                if (el.PartType === ASSEMBLYNAME) {
+                    tempArr.push(el.PartId)
+                }
+                return null;
+            })
+            this.setState({ selectedParts: tempArr })
+        }
+    }
+
     componentWillUnmount() {
         reactLocalStorage?.setObject('PartData', [])
     }
