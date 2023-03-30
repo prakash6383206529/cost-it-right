@@ -99,6 +99,7 @@ function CostMovementByMasterReportListing(props) {
     const [gridApi, setGridApi] = useState(null);
     const [gridColumnApi, setGridColumnApi] = useState(null);;
     const [rowData, setRowData] = useState([]);
+    const [columnDefs, setColumnDefs] = useState([])
 
     useEffect(() => {
 
@@ -119,7 +120,7 @@ function CostMovementByMasterReportListing(props) {
             seprateData[seprateData.length - 1].LastRow = true;
 
             // Adds a new property to mark the margin of the middle row if necessary
-            seprateData[Math.round(seprateData.length / 2) - 1].RowMargin = seprateData.length >= 2 && seprateData.length % 2 === 0 && 'margin-top';
+            seprateData[Math.round(seprateData.length / 2) - 1].RowMargin = seprateData.length >= 2 && seprateData.length % 2 === 0 && 'padding-top';
 
             // Adds the modified data to the data array
             data.push(seprateData)
@@ -134,6 +135,7 @@ function CostMovementByMasterReportListing(props) {
 
         // Sets the row data in state
         setRowData(newArray)
+        setColumnDefs(dummyColumns)
     }, [])
 
     // Defines a function that returns a string of class names for the table cell based on the row data properties
@@ -141,21 +143,17 @@ function CostMovementByMasterReportListing(props) {
         return `${props?.data?.LastRow ? `border-color` : ''} ${props?.data?.RowMargin} colorWhite`
     }
 
-
-    const columnDefs = [
+    const dummyColumns = [
         { field: 'RMName', headerName: 'RM Name' },
         { field: 'RMGrade', headerName: 'RM Grade' },
         { field: 'RMSpec', headerName: 'RM Spec' },
         { field: 'CategoryShow', headerName: 'Category', cellClass: cellClass },
         { field: 'effectiveDate1', headerName: '03/02/2023' },
-        { field: 'effectiveDate1', headerName: '03/06/2023' },
-        { field: 'effectiveDate1', headerName: '11/09/2023' },
-        { field: 'effectiveDate1', headerName: '09/02/2023' },
+        { field: 'effectiveDate2', headerName: '03/06/2023' },
+        { field: 'effectiveDate3', headerName: '11/09/2023' },
+        { field: 'effectiveDate4', headerName: '09/02/2023' },
     ];
-    const gridOptions = {
-    };
-
-
+    const gridOptions = {};
 
     const defaultColDef = {
 
@@ -168,6 +166,7 @@ function CostMovementByMasterReportListing(props) {
         setGridApi(params.api)
         setGridColumnApi(params.columnApi)
         params.api.paginationGoToPage(0);
+        window.screen.width >= 1440 && gridApi.sizeColumnsToFit();
 
     };
     const cancelReport = () => {
