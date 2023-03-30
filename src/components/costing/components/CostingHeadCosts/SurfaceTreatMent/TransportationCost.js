@@ -30,7 +30,7 @@ function TransportationCost(props) {
   const [Rate, setRate] = useState('')
   const [TransportationType, setTransportationType] = useState()
   const [transportCost, setTransportCost] = useState(checkForNull(data?.TransportationCost))
-  const [toggleState, setToggleState] = useState(false)
+  const [reRenderComponent, setReRenderComponent] = useState(false)
   const [count, setCount] = useState(0)
 
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
@@ -87,7 +87,7 @@ function TransportationCost(props) {
       }
     }
 
-  }, [uom, Rate, Quantity, transportCost, toggleState]);
+  }, [uom, Rate, Quantity, transportCost, reRenderComponent]);
 
   useEffect(() => {
     dispatch(getUOMSelectList(() => { }))
@@ -163,15 +163,18 @@ function TransportationCost(props) {
   }
 
 
+  // This function is responsible for recalculating transportation cost based on the user's inputs
   const reCalculation = () => {
     let cost = 0;
     let newTransportCost = 0;
 
+    // If surfaceCost is not provided or is 0, and the UOM is set to Percentage, reset the UOM, Rate and Quantity fields
     if ((props.surfaceCost === 0 || props.surfaceCost === null) && data.UOM === 'Percentage') {
       setValue('UOM', {})
       setValue('Rate', '')
       setValue('Quantity', '')
     } else {
+      // If this is the first time the function is being called, set UOM, Rate and Quantity fields with the initial data
       if (count === 0) {
         setValue('UOM', { label: data.UOM, value: data.UOMId })
         setValue('Rate', checkForNull(data.Rate))
@@ -179,35 +182,44 @@ function TransportationCost(props) {
       }
     }
 
+    // Calculate transportation cost based on UOM
     switch (data.UOM) {
+      // If UOM is Rate, calculate the cost as Rate * Quantity and set newTransportCost accordingly
       case 'Rate':
         cost = checkForNull(data.Rate) * checkForNull(data.Quantity);
         newTransportCost = checkForDecimalAndNull(cost, initialConfiguration.NoOfDecimalForPrice);
         break;
 
+      // If UOM is Fixed, set newTransportCost to the value provided in the data
       case 'Fixed':
         newTransportCost = checkForDecimalAndNull(data.TransportationCost, initialConfiguration.NoOfDecimalForPrice);
         break;
 
+      // If UOM is Percentage, calculate the cost as surfaceCost * Rate * (percentage/100) and set newTransportCost accordingly.
+      // Also, set Rate value and check if surfaceCost is provided, if not, set cost to 0
       case 'Percentage':
         cost = (props.surfaceCost === 0 || props.surfaceCost === null) ? 0 : checkForNull(props.surfaceCost * calculatePercentage(checkForNull(data.Rate)));
         newTransportCost = checkForDecimalAndNull(cost, initialConfiguration.NoOfDecimalForPrice);
         setRate((props.surfaceCost === 0 || props.surfaceCost === null) ? 0 : data.Rate);
         break;
 
+      // If UOM is not Rate, Fixed or Percentage, set newTransportCost to the value provided in the data
       default:
         newTransportCost = checkForDecimalAndNull(data.TransportationCost, initialConfiguration.NoOfDecimalForPrice);
         break;
     }
 
+    // If the UOM label is present or newTransportCost is 0, update the transportation cost and set the value of TransportationCost field
     if (getValues('UOM').label || newTransportCost === 0) {
       setTransportCost(newTransportCost);
       setValue('TransportationCost', newTransportCost);
     }
 
-    setToggleState(!toggleState);
+    // Re-render the component and update the count by 1
+    setReRenderComponent(!reRenderComponent);
     setCount(count + 1);
   }
+
 
   /**
   * @method renderListing
