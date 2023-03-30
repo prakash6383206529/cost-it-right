@@ -97,6 +97,7 @@ const CostingSummaryTable = (props) => {
   const [viewMultipleTechnologyDrawer, setViewMultipleTechnologyDrawer] = useState(false)
   const [multipleTechnologyData, setMultipleTechnologyData] = useState([])
   const [pieChartLabel, setPieChartLabel] = useState([])
+  const [npvIndex, setNpvIndex] = useState(0)
 
   const viewCostingData = useSelector((state) => state.costing.viewCostingDetailData)
   const selectedRowRFQ = useSelector((state) => state.rfq.selectedRowRFQ)
@@ -416,6 +417,7 @@ const CostingSummaryTable = (props) => {
 
   const viewNpvData = (index) => {
     setNpvDrawer(true)
+    setNpvIndex(index)
   }
 
   const viewAttachmentData = (index) => {
@@ -1965,7 +1967,17 @@ const CostingSummaryTable = (props) => {
                               )
                             })}
                         </tr>
-
+                        {drawerDetailPDF && <tr><th colSpan={2}>
+                          <AddNpvCost
+                            isOpen={openNpvDrawer}
+                            costingSummary={true}
+                            viewCostingData={viewCostingData}
+                            tableData={[]}
+                            closeDrawer={closeNpvDrawer}
+                            anchor={'right'}
+                            isPDFShow={true}
+                          />
+                        </th></tr>}
                       </> : <>
                         {drawerDetailPDF && <tr><th colSpan={2}><ViewPackagingAndFreight
                           isOpen={isViewPackagingFreight}
@@ -2348,8 +2360,10 @@ const CostingSummaryTable = (props) => {
       {
         openNpvDrawer && <AddNpvCost
           isOpen={openNpvDrawer}
+          viewCostingData={viewCostingData}
           costingSummary={true}
           tableData={[]}
+          npvIndex={npvIndex}
           closeDrawer={closeNpvDrawer}
           anchor={'right'}
         />
