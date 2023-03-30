@@ -49,6 +49,21 @@ class AddComponentForm extends Component {
     this.setState({ selectedParts: tempArr })
   }
 
+  componentDidUpdate(prevProps, prevState) {
+    if (this.props.BOMViewerData !== prevProps.BOMViewerData) {
+      const { BOMViewerData } = this.props;
+
+      let tempArr = [];
+      BOMViewerData && BOMViewerData.map(el => {
+        if (el.PartType === COMPONENT_PART && el.Level === LEVEL1) {
+          tempArr.push(el.PartId)
+        }
+        return null;
+      })
+      this.setState({ selectedParts: tempArr })
+    }
+  }
+
   componentWillUnmount() {
     reactLocalStorage?.setObject('PartData', [])
   }
@@ -142,8 +157,8 @@ class AddComponentForm extends Component {
     }
     this.props.getDrawerComponentPartData('', res => { })
     this.setState({
-      part: []
-
+      part: [],
+      showErrorOnFocus: false
     })
 
     this.props.change('PartNumber', [{ label: '', value: '' }])
@@ -241,7 +256,7 @@ class AddComponentForm extends Component {
                   loadOptions={filterList}
                   onChange={(e) => this.handlePartChange(e)}
                   noOptionsMessage={({ inputValue }) => inputValue.length < 3 ? 'Enter 3 characters to show data' : "No results found"}
-                  onFocus={() => onFocus(this)}
+                  onBlur={() => this.setState({ showErrorOnFocus: true })}
                   onKeyDown={(onKeyDown) => {
                     if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
                   }}

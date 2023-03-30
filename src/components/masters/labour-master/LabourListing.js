@@ -444,12 +444,7 @@ class LabourListing extends Component {
             onSubmit={handleSubmit(this.onSubmit.bind(this))}
             noValidate
           >
-            <Row>
-              <Col md="12">
-                <h1 className="mb-0">Labour Master</h1>
-              </Col>
-            </Row>
-            <Row className="pt-4 filter-row-large blue-before">
+            <Row className=" filter-row-large blue-before">
 
               <Col md="6" className="search-user-block mb-3">
                 <div className="d-flex justify-content-end bd-highlight w100">

@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, } from 'reactstrap';
-import { alphaNumeric, checkWhiteSpaces, required, } from "../../../helper/validation";
+import { alphaNumeric, checkWhiteSpaces, required, requiredDropDown } from "../../../helper/validation";
 import { renderText, searchableSelect, } from "../../layout/FormInputs";
 import { createFuel } from '../actions/Fuel';
 import Toaster from '../../common/Toaster';
@@ -174,7 +174,7 @@ class AddFuelNameDrawer extends Component {
                     validate={
                       this.state.UOM == null ||
                         this.state.UOM.length === 0
-                        ? [required]
+                        ? [requiredDropDown]
                         : []
                     }
                     required={true}

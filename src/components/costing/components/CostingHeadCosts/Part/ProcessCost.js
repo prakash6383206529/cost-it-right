@@ -419,9 +419,6 @@ function ProcessCost(props) {
    */
   const DrawerToggle = () => {
     if (CheckIsCostingDateSelected(CostingEffectiveDate)) return false;
-    setTimeout(() => {
-      document.getElementsByClassName('MuiPaper-elevation16')[0].removeAttribute('tabIndex');
-    }, 500);
     setDrawerOpen(true)
   }
 

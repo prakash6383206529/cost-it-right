@@ -7,7 +7,7 @@ import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import LoaderCustom from '../../common/LoaderCustom'
 import NoContentFound from '../../common/NoContentFound';
 import DayTime from '../../common/DayTimeWrapper'
-import { checkForDecimalAndNull, getConfigurationKey, loggedInUserId, searchNocontentFilter, userDetails, userTechnologyDetailByMasterId } from '../../../helper'
+import { checkForDecimalAndNull, loggedInUserId, searchNocontentFilter, userTechnologyDetailByMasterId } from '../../../helper'
 import { BOP_MASTER_ID, defaultPageSize, EMPTY_DATA, MACHINE_MASTER_ID, OPERATIONS_ID } from '../../../config/constants';
 import { getRMApprovalList } from '../actions/Material';
 import SummaryDrawer from '../SummaryDrawer';
@@ -18,11 +18,10 @@ import Toaster from '../../common/Toaster'
 import { PaginationWrapper } from '../../common/commonPagination';
 import { setSelectedRowForPagination } from '../../simulation/actions/Simulation';
 import { hyphenFormatter } from '../masterUtil';
-import { agGridStatus, getGridHeight, isResetClick } from '../../../actions/Common'
+import { agGridStatus, dashboardTabLock, getGridHeight, isResetClick } from '../../../actions/Common'
 import _ from 'lodash';
 import SingleDropdownFloationFilter from './SingleDropdownFloationFilter';
 import { reactLocalStorage } from 'reactjs-localstorage';
-import { checkFinalUser } from '../../costing/actions/Costing';
 import { getUsersMasterLevelAPI } from '../../../actions/auth/AuthActions';
 
 const gridOptions = {};
@@ -58,7 +57,6 @@ function CommonApproval(props) {
     const { selectedCostingListSimulation } = useSelector((state => state.simulation))
     let master = props?.MasterId
     const statusColumnData = useSelector((state) => state.comman.statusColumnData);
-    const userMasterLevelAPI = useSelector((state) => state.auth.userMasterLevelAPI);
 
     useEffect(() => {
         dispatch(agGridStatus("", ""))
@@ -140,8 +138,10 @@ function CommonApproval(props) {
         dataObj.IsCustomerDataShow = reactLocalStorage.getObject('cbcCostingPermission')
 
         setLoader(true)
+        props?.isDashboard && dispatch(dashboardTabLock(true))
         dispatch(getRMApprovalList(props?.MasterId, skip, take, isPagination, dataObj, (res) => {
             setLoader(false)
+            dispatch(dashboardTabLock(false))
             let obj = { ...floatingFilterData }
 
             if (res) {
@@ -756,7 +756,7 @@ function CommonApproval(props) {
                                     {props?.MasterId === RM_MASTER_ID && <AgGridColumn width="165" field="RMShearingCost" headerName='ShearingCost' cellRenderer='shearingCostFormatter'></AgGridColumn>}
                                     {props?.MasterId === RM_MASTER_ID && <AgGridColumn width="165" field="NetLandedCost" cellRenderer='costFormatter'></AgGridColumn>}
 
-                                    {!props?.isApproval && <AgGridColumn headerClass="justify-content-center" pinned="right" cellClass="text-center" field="DisplayStatus" cellRenderer='statusFormatter' headerName="Status" floatingFilterComponent="statusFilter" floatingFilterComponentParams={floatingFilterStatus} ></AgGridColumn>}
+                                    {!props?.isApproval && <AgGridColumn headerClass="justify-content-center" pinned="right" tooltipField="TooltipText" cellClass="text-center" field="DisplayStatus" cellRenderer='statusFormatter' headerName="Status" floatingFilterComponent="statusFilter" floatingFilterComponentParams={floatingFilterStatus} ></AgGridColumn>}
 
 
 

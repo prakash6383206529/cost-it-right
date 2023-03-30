@@ -699,7 +699,7 @@ function OtherCostingSimulation(props) {
                                                     isRowSelectable={isRowSelectable}
                                                     onFilterModified={onFloatingFilterChanged}
                                                 >
-                                                    <AgGridColumn width={150} field="CostingNumber" headerName='Costing ID'></AgGridColumn>
+                                                    <AgGridColumn width={150} field="CostingNumber" headerName='Costing Id'></AgGridColumn>
                                                     <AgGridColumn width={110} field="PartNo" headerName='Part No.'></AgGridColumn>
                                                     <AgGridColumn width={120} field="PartName" headerName='Part Name' cellRenderer='descriptionFormatter'></AgGridColumn>
                                                     <AgGridColumn width={110} field="ECNNumber" headerName='ECN No.' cellRenderer='ecnFormatter'></AgGridColumn>

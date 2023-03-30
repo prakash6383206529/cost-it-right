@@ -213,14 +213,17 @@ class LevelTechnologyListing extends Component {
 	}
 
 	levelMappingPagination = (newPageSize) => {
+		this.agGrid1?.current.api.paginationSetPageSize(Number(newPageSize+1))
 		this.agGrid1?.current.api.paginationSetPageSize(Number(newPageSize))
 	};
 
 	simulationPagination = (newPageSize) => {
+		this.agGrid2?.current.api.paginationSetPageSize(Number(newPageSize+1))
 		this.agGrid2?.current.api.paginationSetPageSize(Number(newPageSize))
 	};
 
 	masterPagination = (newPageSize) => {
+		this.agGrid3?.current.api.paginationSetPageSize(Number(newPageSize+1))
 		this.agGrid3?.current.api.paginationSetPageSize(Number(newPageSize))
 	};
 

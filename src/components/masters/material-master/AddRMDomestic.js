@@ -114,7 +114,6 @@ class AddRMDomestic extends Component {
       inputLoader: false,
       attachmentLoader: false,
       showErrorOnFocus: false,
-      showErrorOnFocusDate: false,
       showPopup: false,
       levelDetails: {},
       noApprovalCycle: false,
@@ -1004,7 +1003,8 @@ class AddRMDomestic extends Component {
       this.setState({ isVendorNameNotSelected: true, setDisable: false })      // IF VENDOR NAME IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY AND SAVE BUTTON WILL NOT BE DISABLED
       return false
     }
-    if (Number(fieldsObj.BasicRate) < Number(fieldsObj.ScrapRate)) {
+
+    if ((Number(fieldsObj.BasicRate) < Number(fieldsObj.ScrapRate)) || (fieldsObj.JaliScrapCost ? ((Number(fieldsObj.JaliScrapCost) + Number(checkForNull(fieldsObj.CircleScrapCost))) > Number(fieldsObj.BasicRate)) : false) || (fieldsObj.ForgingScrap ? ((Number(fieldsObj.ForgingScrap) + Number(checkForNull(fieldsObj.MachiningScrap))) > Number(fieldsObj.BasicRate)) : false)) {
       this.setState({ setDisable: false })
       Toaster.warning("Scrap rate should not be greater than basic rate")
       return false
@@ -1827,10 +1827,8 @@ class AddRMDomestic extends Component {
                                 className="form-control"
                                 disabled={isViewFlag || !this.state.IsFinancialDataChanged || (isEditFlag && isRMAssociated)}
                                 placeholder={isViewFlag || !this.state.IsFinancialDataChanged || (isEditFlag && isRMAssociated) ? '-' : "Select Date"}
-                                onFocus={() => onFocus(this, true)}
                               />
                             </div>
-                            {this.state.showErrorOnFocusDate && this.state.effectiveDate === '' && <div className='text-help mt-1 p-absolute bottom-22'>This field is required.</div>}
                           </Col>
                         </Row>
 
@@ -2098,7 +2096,7 @@ class AddRMDomestic extends Component {
  */
 function mapStateToProps(state) {
   const { comman, material, auth, costing, client } = state
-  const fieldsObj = selector(state, 'BasicRate', 'FrieghtCharge', 'ShearingCost', 'ScrapRate')
+  const fieldsObj = selector(state, 'BasicRate', 'FrieghtCharge', 'ShearingCost', 'ScrapRate', 'CircleScrapCost', 'JaliScrapCost', 'ForgingScrap', 'MachiningScrap')
 
   const { rowMaterialList, rmGradeList, rmSpecification, plantList, supplierSelectList, filterPlantList, filterCityListBySupplier,
     cityList, technologyList, costingHead, categoryList, filterPlantListByCity, filterPlantListByCityAndSupplier, UOMSelectList,

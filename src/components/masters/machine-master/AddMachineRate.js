@@ -30,7 +30,7 @@ import DayTime from '../../common/DayTimeWrapper'
 import attachClose from '../../../assests/images/red-cross.png'
 import MasterSendForApproval from '../MasterSendForApproval'
 import { debounce } from 'lodash';
-import { CheckApprovalApplicableMaster, displayUOM, onFocus, userTechnologyDetailByMasterId } from '../../../helper'
+import { CheckApprovalApplicableMaster, displayUOM, userTechnologyDetailByMasterId } from '../../../helper'
 import AsyncSelect from 'react-select/async';
 import { ProcessGroup } from '../masterUtil';
 import _ from 'lodash'
@@ -107,7 +107,6 @@ class AddMachineRate extends Component {
         processUOM: false,
         machineRate: false
       },
-      showErrorOnFocusDate: false,
       finalApprovalLoader: false,
       costingTypeId: ZBCTypeId,
       levelDetails: {},
@@ -861,7 +860,7 @@ class AddMachineRate extends Component {
   * @description DELETE ROW ENTRY FROM TABLE 
   */
   deleteItem = (index) => {
-    const { processGrid, UOM } = this.state;
+    const { processGrid, UOM, isProcessGroup } = this.state;
 
     let tempData = processGrid.filter((item, i) => {
       if (i === index) {
@@ -869,10 +868,13 @@ class AddMachineRate extends Component {
       }
       return true;
     });
-
+    if (isProcessGroup) {
+      this.setState({ lockUOMAndRate: tempData.length === 0 ? false : true })
+    } else {
+      this.setState({ lockUOMAndRate: isProcessGroup })
+    }
     this.setState({
       processGrid: tempData,
-      lockUOMAndRate: tempData.length === 0 ? false : true,
       UOM: tempData.length === 0 ? [] : !this.state.lockUOMAndRate ? [] : UOM,
       isEditIndex: false,
       processName: [],
@@ -1642,9 +1644,7 @@ class AddMachineRate extends Component {
                                 placeholder={isViewMode || !this.state.IsFinancialDataChanged ? '-' : "Enter"}
                                 className="form-control"
                                 disabled={isViewMode || !this.state.IsFinancialDataChanged}
-                                onFocus={() => onFocus(this, true)}
                               />
-                              {this.state.showErrorOnFocusDate && this.state.effectiveDate === '' && <div className='text-help mt-1 p-absolute bottom-7'>This field is required.</div>}
                             </div>
                           </div>
                         </Col>
@@ -1708,7 +1708,7 @@ class AddMachineRate extends Component {
                             </div>
                           </div>
                         </Col>
-                        <Col md="3">
+                        <Col md="3" className='p-relative'>
                           <Field
                             name="UOM"
                             type="text"
@@ -1724,7 +1724,7 @@ class AddMachineRate extends Component {
                           />
                           {this.state.errorObj.processUOM && (this.state.UOM === undefined) && <div className='text-help p-absolute'>This field is required.</div>}
                         </Col>
-                        <Col md="3" className='UOM-label-container'>
+                        <Col md="3" className='UOM-label-container p-relative'>
                           <Field
                             label={this.DisplayMachineRateLabel()}
                             name={"MachineRate"}
