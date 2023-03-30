@@ -2,7 +2,7 @@ import React from "react";
 import Select, { createFilter } from "react-select";
 import DatePicker from "react-datepicker";
 import PropTypes from "prop-types";
-import "./formInputs.css";
+import "./formInputs.scss";
 import { SPACEBAR } from "../../config/constants";
 
 /*
@@ -622,7 +622,7 @@ export function renderDatePicker(field) {
         showMonthDropdown
         showYearDropdown
         readonly="readonly"
-        onBlur={() => null}
+        onBlur={input.onBlur}
         selected={input.value ? new Date(input.value) : null}
         className={field.className}
         onSelect={field.changeHandler ? (date) => field.changeHandler(date) : null}
@@ -631,7 +631,7 @@ export function renderDatePicker(field) {
         onChangeRaw={(e) => e.preventDefault()}
         disabled={disabled}
       />
-      {touched ? <div className="text-help mb-2 mb-2">{error}</div> : ""}
+      {(touched) ? <div className="text-help mb-2 mb-2">{error}</div> : ""}
     </div>
   );
 }

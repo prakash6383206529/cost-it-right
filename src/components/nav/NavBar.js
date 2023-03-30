@@ -830,7 +830,7 @@ class SideBar extends Component {
     const { isLoader, isLeftMenuRendered } = this.state;
     const isLoggedIn = isUserLoggedIn();
     return (
-      <nav>
+      <nav className={`${this.props.sidebarAndNavbarHide ? 'hide-navbar' : ''}`}>
         {isLoader && <Loader />}
         {/* {isLeftMenuRendered && leftMenuData[0] !== undefined && (
           <Redirect
@@ -934,8 +934,8 @@ class SideBar extends Component {
  */
 function mapStateToProps({ auth, comman }) {
   const { loading, userData, leftMenuData, menusData, moduleSelectList, menuData, topAndLeftMenuData } = auth
-  const { disabledClass } = comman;
-  return { loading, userData, leftMenuData, menusData, moduleSelectList, menuData, topAndLeftMenuData, disabledClass }
+  const { disabledClass, sidebarAndNavbarHide } = comman;
+  return { loading, userData, leftMenuData, menusData, moduleSelectList, menuData, topAndLeftMenuData, disabledClass, sidebarAndNavbarHide }
 }
 
 /**

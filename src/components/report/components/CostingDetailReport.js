@@ -900,7 +900,6 @@ function ReportListing(props) {
 
             <form onSubmit={handleSubmit(onSubmit)} noValidate>
 
-                <h1 className="mb-0">Costing Breakup Details</h1>
                 {disableDownload && <LoaderCustom message={MESSAGES.DOWNLOADING_MESSAGE} customClass="loader-center mt-n2" />}
                 <Row className="pt-4 mt-1 blue-before">
                     {/* <Col md="3">

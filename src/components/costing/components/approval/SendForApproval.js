@@ -51,7 +51,6 @@ const SendForApproval = (props) => {
   const [financialYear, setFinancialYear] = useState('')
   const [approvalDropDown, setApprovalDropDown] = useState([])
   const [showValidation, setShowValidation] = useState(false)
-  const [isFinalApproverShow, setIsFinalApproverShow] = useState(false)
   const [approver, setApprover] = useState('')
   const [dataToPush, setDataToPush] = useState({})
   const [isDisable, setIsDisable] = useState('')
@@ -488,7 +487,7 @@ const SendForApproval = (props) => {
       // props.closeDrawer()
       dispatch(sendForApprovalBySender(obj, (res) => {
         setIsDisable(false)
-        Toaster.success(viewApprovalData.length === 1 ? `Costing ID ${viewApprovalData[0].costingName} has been sent for approval to ${approver.split('(')[0]}.` : `Costings has been sent for approval to ${approver.split('(')[0]}.`)
+        Toaster.success(viewApprovalData.length === 1 ? `Costing Id ${viewApprovalData[0].costingName} has been sent for approval to ${approver.split('(')[0]}.` : `Costings has been sent for approval to ${approver.split('(')[0]}.`)
         props.closeDrawer('', 'Submit')
         dispatch(setCostingApprovalData([]))
         dispatch(setCostingViewData([]))
@@ -679,7 +678,7 @@ const SendForApproval = (props) => {
                         <span className="grey-text">{`${isApprovalisting ? data.partNo : partNo.partNumber}`}</span>
                       </div>
                       <div className=" d-inline-block mr-4">
-                        {(data.costingTypeId === ZBCTypeId) ? `Plant Code:` : (data.costingTypeId === VBCTypeId || data.costingTypeId === NCCTypeId) ? `Vendor Code:` : `Customer Code:`}
+                        {(data.costingTypeId === ZBCTypeId) ? `Plant Code: ` : (data.costingTypeId === VBCTypeId || data.costingTypeId === NCCTypeId) ? `Vendor Code: ` : `Customer Code: `}
                         <span className="grey-text">{(data.costingTypeId === ZBCTypeId) ? `${data.plantCode}` : (data.costingTypeId === VBCTypeId || data.costingTypeId === NCCTypeId) ? `${data.vendorCode}` : `${data.customerCode}`}</span>
                       </div>
                       <div className=" d-inline-block">
@@ -1068,7 +1067,7 @@ const SendForApproval = (props) => {
                       <div className={'cancel-icon'}></div>
                       {"Cancel"}
                     </button>
-                    {viewApprovalData && viewApprovalData[0]?.costingTypeId !== NCCTypeId && <button type="button" className="user-btn mr5 save-btn" onClick={viewImpactDrawer}>
+                    {viewApprovalData && viewApprovalData[0]?.costingTypeId === VBCTypeId && <button type="button" className="user-btn mr5 save-btn" onClick={viewImpactDrawer}>
                       <div className={"save-icon"}></div>
                       {"Verify Impact"}
                     </button>

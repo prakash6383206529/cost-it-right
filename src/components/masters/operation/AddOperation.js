@@ -79,7 +79,6 @@ class AddOperation extends Component {
       inputLoader: false,
       attachmentLoader: false,
       showErrorOnFocus: false,
-      showErrorOnFocusDate: false,
       operationName: '',
       operationCode: '',
       finalApprovalLoader: false,
@@ -1132,9 +1131,7 @@ class AddOperation extends Component {
                             disabled={isViewMode || !this.state.IsFinancialDataChanged}
                             customClassName=" withBorder"
                             placeholder={isViewMode || !this.state.IsFinancialDataChanged ? '-' : "Select Date"}
-                            onFocus={() => onFocus(this, true)}
                           />
-                          {this.state.showErrorOnFocusDate && this.state.effectiveDate === '' && <div className='text-help mt-1 p-absolute bottom-7'>This field is required.</div>}
                         </div>
                       </Col>
                     </Row>

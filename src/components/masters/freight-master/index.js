@@ -146,13 +146,6 @@ class FreightMaster extends Component {
                     {/* {this.props.loading && <Loader/>} */}
                     <ScrollToTop pointProp="go-to-top" />
                     <Row>
-                        <Col sm="4">
-                            {/* <h1>{`Freight & Packaging Master`}</h1> */}
-                            <h1>{`Freight Master`}</h1>
-                        </Col>
-                    </Row>
-
-                    <Row>
                         <Col>
                             <Nav tabs className="subtabs mt-0">
                                 <NavItem>

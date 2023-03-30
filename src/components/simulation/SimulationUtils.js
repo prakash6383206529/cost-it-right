@@ -294,6 +294,9 @@ export const ErrorMessage = (props) => {
         else if (ammendmentStatus.startsWith('S')) {
             temp = 'success';
         }
+        else if (!ammendmentStatus) {
+            temp = 'd-none';
+        }
         else {
             temp = 'error'
         }

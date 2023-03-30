@@ -1459,27 +1459,29 @@ export function getUsersByTechnologyAndLevel(callback) {
  * @description GET LEVEL DROPDOWN BY TECHNOLOGY
  * @param technologyId
  */
-export function getLevelByTechnology(technologyId, approvalTypeId, callback) {
+export function getLevelByTechnology(isAPICall, technologyId, approvalTypeId, callback) {
     return (dispatch) => {
-        if (technologyId !== '') {
+        if (isAPICall) {
+            if (technologyId !== '') {
 
-            //dispatch({ type: API_REQUEST });
-            const request = axios.get(`${API.getLevelByTechnology}/${technologyId}/${approvalTypeId}`, config());
-            request.then((response) => {
-                if (response.data.Result) {
-                    dispatch({
-                        type: GET_LEVEL_BY_TECHNOLOGY,
-                        payload: response.data.SelectList,
-                    });
-                    callback(response);
-                } else {
-                    Toaster.error(MESSAGES.SOME_ERROR);
-                }
-            }).catch((error) => {
-                dispatch({ type: API_FAILURE });
-                callback(error);
-                apiErrors(error);
-            });
+                //dispatch({ type: API_REQUEST });
+                const request = axios.get(`${API.getLevelByTechnology}/${technologyId}/${approvalTypeId}`, config());
+                request.then((response) => {
+                    if (response.data.Result) {
+                        dispatch({
+                            type: GET_LEVEL_BY_TECHNOLOGY,
+                            payload: response.data.SelectList,
+                        });
+                        callback(response);
+                    } else {
+                        Toaster.error(MESSAGES.SOME_ERROR);
+                    }
+                }).catch((error) => {
+                    dispatch({ type: API_FAILURE });
+                    callback(error);
+                    apiErrors(error);
+                });
+            }
         } else {
             dispatch({
                 type: GET_LEVEL_BY_TECHNOLOGY,
@@ -1553,26 +1555,28 @@ export function updateCompanyAPI(requestData, callback) {
     };
 }
 
-export function getSimualationLevelByTechnology(technologyId, approvalTypeId, callback) {
+export function getSimualationLevelByTechnology(isAPICall, technologyId, approvalTypeId, callback) {
     return (dispatch) => {
-        if (technologyId !== '') {
-            //dispatch({ type: API_REQUEST });
-            const request = axios.get(`${API.getSimulationLevelByTechnology}/${technologyId}/${approvalTypeId}`, config());
-            request.then((response) => {
-                if (response.data.Result) {
-                    dispatch({
-                        type: GET_SIMULATION_LEVEL_BY_TECHNOLOGY,
-                        payload: response.data.SelectList,
-                    });
-                    callback(response);
-                } else {
-                    Toaster.error(MESSAGES.SOME_ERROR);
-                }
-            }).catch((error) => {
-                dispatch({ type: API_FAILURE });
-                callback(error);
-                apiErrors(error);
-            });
+        if (isAPICall) {
+            if (technologyId !== '') {
+                //dispatch({ type: API_REQUEST });
+                const request = axios.get(`${API.getSimulationLevelByTechnology}/${technologyId}/${approvalTypeId}`, config());
+                request.then((response) => {
+                    if (response.data.Result) {
+                        dispatch({
+                            type: GET_SIMULATION_LEVEL_BY_TECHNOLOGY,
+                            payload: response.data.SelectList,
+                        });
+                        callback(response);
+                    } else {
+                        Toaster.error(MESSAGES.SOME_ERROR);
+                    }
+                }).catch((error) => {
+                    dispatch({ type: API_FAILURE });
+                    callback(error);
+                    apiErrors(error);
+                });
+            }
         } else {
             dispatch({
                 type: GET_SIMULATION_LEVEL_BY_TECHNOLOGY,
@@ -1735,26 +1739,28 @@ export function getMasterLevelDataList(callback) {
 }
 
 
-export function getMasterLevelByMasterId(masterId, approvalId, callback) {
+export function getMasterLevelByMasterId(isAPICall, masterId, approvalId, callback) {
     return (dispatch) => {
-        if (masterId !== '') {
-            //dispatch({ type: API_REQUEST });
-            const request = axios.get(`${API.getMasterLevelByMasterId}/${masterId}/${approvalId}`, config());
-            request.then((response) => {
-                if (response.data.Result) {
-                    dispatch({
-                        type: GET_MASTER_LEVEL_BY_MASTERID,
-                        payload: response.data.SelectList,
-                    });
-                    callback(response);
-                } else {
-                    Toaster.error(MESSAGES.SOME_ERROR);
-                }
-            }).catch((error) => {
-                dispatch({ type: API_FAILURE });
-                callback(error);
-                apiErrors(error);
-            });
+        if (isAPICall) {
+            if (masterId !== '') {
+                //dispatch({ type: API_REQUEST });
+                const request = axios.get(`${API.getMasterLevelByMasterId}/${masterId}/${approvalId}`, config());
+                request.then((response) => {
+                    if (response.data.Result) {
+                        dispatch({
+                            type: GET_MASTER_LEVEL_BY_MASTERID,
+                            payload: response.data.SelectList,
+                        });
+                        callback(response);
+                    } else {
+                        Toaster.error(MESSAGES.SOME_ERROR);
+                    }
+                }).catch((error) => {
+                    dispatch({ type: API_FAILURE });
+                    callback(error);
+                    apiErrors(error);
+                });
+            }
         } else {
             dispatch({
                 type: GET_MASTER_LEVEL_BY_MASTERID,

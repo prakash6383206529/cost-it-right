@@ -669,10 +669,12 @@ function MeshCalculation(props) {
                                 </Col>
 
                                 <Col md="3">
+                                    <TooltipCustom disabledIcon={true} id={'quarter-length-calculator'} tooltipClass={'weight-of-sheet'} tooltipText={'Quarter Round Off (Length + Cutting Allowance) = 0.25 * Sheet Length + Cutting Allowance'} />
                                     <NumberFieldHookForm
                                         label={`Quarter Round Off (Length + Cutting Allowance)`}
                                         name={'length_RoundOff'}
                                         Controller={Controller}
+                                        id={'quarter-length-calculator'}
                                         control={control}
                                         register={register}
                                         mandatory={false}

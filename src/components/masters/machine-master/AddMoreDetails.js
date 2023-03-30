@@ -29,7 +29,7 @@ import HeaderTitle from '../../common/HeaderTitle';
 import AddMachineTypeDrawer from './AddMachineTypeDrawer';
 import AddProcessDrawer from './AddProcessDrawer';
 import NoContentFound from '../../common/NoContentFound';
-import { calculatePercentage, CheckApprovalApplicableMaster, displayUOM, onFocus, userTechnologyDetailByMasterId } from '../../../helper';
+import { calculatePercentage, CheckApprovalApplicableMaster, displayUOM, userTechnologyDetailByMasterId } from '../../../helper';
 import EfficiencyDrawer from './EfficiencyDrawer';
 import DayTime from '../../common/DayTimeWrapper'
 import { AcceptableMachineUOM } from '../../../config/masterData'
@@ -129,7 +129,6 @@ class AddMoreDetails extends Component {
       UOMName: 'UOM',
       FuelEntryId: '',
       DataToChange: [],
-      showErrorOnFocusDate: false,
       labourDetailId: '',
       IsIncludeMachineRateDepreciation: false,
       powerIdFromAPI: EMPTY_GUID,
@@ -232,7 +231,7 @@ class AddMoreDetails extends Component {
       this.props.change('TonnageCapacity', fieldsObj?.TonnageCapacity)
       this.props.change('Description', fieldsObj?.Description)
       this.props.change('Specification', fieldsObj?.Specification)
-      this.props.change('EffectiveDate', fieldsObj?.EffectiveDate ? fieldsObj?.EffectiveDate : '')
+      fieldsObj.EffectiveDate && this.props.change('EffectiveDate', fieldsObj.EffectiveDate)
 
       setTimeout(() => {
         this.setState({ selectedPlants: selectedPlants, })
@@ -2690,8 +2689,8 @@ class AddMoreDetails extends Component {
                               <Field
                                 label="Effective Date"
                                 name="EffectiveDate"
-                                minDate={this.state.minDate}
-                                selected={this.state.effectiveDate}
+                                minDate={this.state.minDate || null}
+                                selected={this.state.effectiveDate || null}
                                 placeholder={this.state.isViewFlag || !this.state.IsFinancialDataChanged ? '-' : "Select Date"}
                                 onChange={this.handleEffectiveDateChange}
                                 type="text"
@@ -2703,9 +2702,7 @@ class AddMoreDetails extends Component {
                                 component={renderDatePicker}
                                 className="form-control"
                                 disabled={this.state.isViewFlag || !this.state.IsFinancialDataChanged}
-                                onFocus={() => onFocus(this, true)}
                               />
-                              {this.state.showErrorOnFocusDate && (this.state.effectiveDate === '' || this.state.effectiveDate === undefined) && <div className='text-help mt-1 p-absolute bottom-7'>This field is required.</div>}
                             </div>
                           </div>
                         </Col>
@@ -3688,7 +3685,7 @@ class AddMoreDetails extends Component {
                                 </div>}
                               </div>
                             </Col>
-                            <Col md="2">
+                            <Col md="2" className='p-relative'>
                               <Field
                                 name="UOM"
                                 type="text"
@@ -3743,7 +3740,7 @@ class AddMoreDetails extends Component {
 
                             } */}
 
-                            <Col className="d-flex col-auto UOM-label-container">
+                            <Col className="d-flex col-auto UOM-label-container p-relative">
                               <div className="machine-rate-filed pr-3">
                                 <Field
                                   label={this.DisplayMachineRateLabel()}

@@ -498,12 +498,9 @@ function BudgetListing(props) {
                 <ScrollToTop pointProp="go-to-top" />
                 {isLoader ? <LoaderCustom customClass={"loader-center"} /> :
                     <>
-                        {disableDownload && <LoaderCustom message={MESSAGES.DOWNLOADING_MESSAGE} />}
+                        {disableDownload && <LoaderCustom message={MESSAGES.DOWNLOADING_MESSAGE} customClass="mt-5" />}
                         <form noValidate>
-                            <Row>
-                                <Col md="12"><h1 className="mb-0">Budget Master</h1></Col>
-                            </Row>
-                            <Row className="pt-4 blue-before">
+                            <Row className="blue-before">
                                 <Col md="9" className="search-user-block mb-3">
                                     <div className="d-flex justify-content-end bd-highlight">
                                         <div className="warning-message d-flex align-items-center">

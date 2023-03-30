@@ -536,7 +536,7 @@ function CopyCosting(props) {
                   </div>
                   <div className="input-group form-group col-md-12 input-withouticon">
                     <SearchableSelectHookForm
-                      label={"Costing ID"}
+                      label={"Costing Id"}
                       name={"fromcostingId"}
                       placeholder={"Select"}
                       Controller={Controller}
@@ -614,7 +614,7 @@ function CopyCosting(props) {
 
                   <div className="input-group form-group col-md-12 input-withouticon">
                     <SearchableSelectHookForm
-                      label={"Costing ID"}
+                      label={"Costing Id"}
                       name={"fromVbccostingId"}
                       placeholder={"Select"}
                       Controller={Controller}
@@ -676,7 +676,7 @@ function CopyCosting(props) {
 
                   <div className="input-group form-group col-md-12 input-withouticon">
                     <SearchableSelectHookForm
-                      label={"Costing ID"}
+                      label={"Costing Id"}
                       name={"fromNcccostingId"}
                       placeholder={"Select"}
                       Controller={Controller}

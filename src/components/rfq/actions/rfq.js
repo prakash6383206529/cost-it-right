@@ -180,6 +180,8 @@ export function getQuotationDetailsList(id, callback) {
         request.then((response) => {
             if (response.data.Result) {
                 callback(response);
+            } else {
+                callback(response.status)
             }
         }).catch((error) => {
             dispatch({ type: API_FAILURE });

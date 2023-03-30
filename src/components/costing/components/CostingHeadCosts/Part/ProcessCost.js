@@ -59,7 +59,7 @@ function ProcessCost(props) {
 
   useEffect(() => {
     setTimeout(() => {
-      data.CostingProcessCostResponse && data.CostingProcessCostResponse.map((item, index) => {
+      data?.CostingProcessCostResponse && data?.CostingProcessCostResponse.map((item, index) => {
         setValue(`${ProcessGridFields}.${index}.Quantity`, item.Quantity)
         setValue(`${ProcessGridFields}.${index}.ProcessCost`, item.ProcessCost)
       })
@@ -435,9 +435,6 @@ function ProcessCost(props) {
    */
   const DrawerToggle = () => {
     if (CheckIsCostingDateSelected(CostingEffectiveDate)) return false;
-    setTimeout(() => {
-      document.getElementsByClassName('MuiPaper-elevation16')[0].removeAttribute('tabIndex');
-    }, 500);
     setDrawerOpen(true)
   }
 

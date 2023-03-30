@@ -37,6 +37,7 @@ import { autoCompleteDropdown } from '../../common/CommonFunctions';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { checkFinalUser } from '../../../components/costing/actions/Costing'
 import { getUsersMasterLevelAPI } from '../../../actions/auth/AuthActions';
+import TooltipCustom from '../../common/Tooltip';
 
 
 const selector = formValueSelector('AddBOPDomestic');
@@ -92,7 +93,8 @@ class AddBOPDomestic extends Component {
       showPopup: false,
       levelDetails: {},
       noApprovalCycle: false,
-      vendorFilterList: []
+      vendorFilterList: [],
+      uomIsNo: false
     }
   }
 
@@ -475,9 +477,13 @@ class AddBOPDomestic extends Component {
   * @description called
   */
   handleUOM = (newValue, actionMeta) => {
-    if (newValue && newValue !== '') {
-      this.setState({ UOM: newValue, })
-    } else {
+    if (newValue && newValue !== '' && newValue.label === "No") {
+      this.setState({ UOM: newValue, uomIsNo: true })
+    }
+    else if (newValue.label !== "No") {
+      this.setState({ UOM: newValue, uomIsNo: false })
+    }
+    else {
       this.setState({ UOM: [] })
     }
   };
@@ -495,9 +501,8 @@ class AddBOPDomestic extends Component {
     const { fieldsObj, initialConfiguration } = this.props
     const BasicRate = fieldsObj && fieldsObj.BasicRate !== undefined ? fieldsObj.BasicRate : 0;
     const NoOfPieces = fieldsObj && fieldsObj.NumberOfPieces !== undefined ? fieldsObj.NumberOfPieces : 1;
-    console.log('NoOfPieces: ', NoOfPieces);
     const NetLandedCost = checkForNull((BasicRate / NoOfPieces)) // THIS CALCULATION IS FOR BASE
-    console.log('NetLandedCost: ', NetLandedCost);
+
 
 
     if (this.state.isEditFlag && Number(NetLandedCost) === Number(this.state.DataToCheck?.NetLandedCost)) {
@@ -1227,20 +1232,16 @@ class AddBOPDomestic extends Component {
                                 className="form-control"
                                 disabled={isViewMode || !this.state.IsFinancialDataChanged}
                                 placeholder={isViewMode || !this.state.IsFinancialDataChanged ? '-' : 'Select Date'}
-                                onFocus={() => onFocus(this, true)}
                               />
                             </div>
-                            {this.state.showErrorOnFocusDate && this.state.effectiveDate === '' && <div className='text-help mt-1 p-absolute bottom-22'>This field is required.</div>}
                           </Col>
-
-
                           <Col md="3">
                             <Field
                               label={`Minimum Order Quantity`}
                               name={"NumberOfPieces"}
                               type="text"
                               placeholder={"Enter"}
-                              validate={[postiveNumber, maxLength10]}
+                              validate={this.state.uomIsNo ? [postiveNumber, maxLength10] : [positiveAndDecimalNumber, maxLength10, decimalLengthsix, number]}
                               component={renderText}
                               required={false}
                               className=""
@@ -1264,6 +1265,7 @@ class AddBOPDomestic extends Component {
                             />
                           </Col>
                           <Col md="3">
+                            <TooltipCustom id="bop-net-cost" tooltipText={'Net Cost = Basic Rate / Minimum Order Quantity'} />
                             <Field
                               label={`Net Cost (INR)`}
                               name={`${this.state.NetLandedCost === 0 ? '' : "NetLandedCost"}`}
