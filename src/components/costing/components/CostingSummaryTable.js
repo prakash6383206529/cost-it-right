@@ -95,6 +95,7 @@ const CostingSummaryTable = (props) => {
   const [viewMultipleTechnologyDrawer, setViewMultipleTechnologyDrawer] = useState(false)
   const [multipleTechnologyData, setMultipleTechnologyData] = useState([])
   const [pieChartLabel, setPieChartLabel] = useState([])
+  const [npvIndex, setNpvIndex] = useState(0)
 
   const viewCostingData = useSelector((state) => state.costing.viewCostingDetailData)
 
@@ -411,6 +412,7 @@ const CostingSummaryTable = (props) => {
 
   const viewNpvData = (index) => {
     setNpvDrawer(true)
+    setNpvIndex(index)
   }
 
   const viewAttachmentData = (index) => {
@@ -1968,6 +1970,7 @@ const CostingSummaryTable = (props) => {
                           <AddNpvCost
                             isOpen={openNpvDrawer}
                             costingSummary={true}
+                            viewCostingData={viewCostingData}
                             tableData={[]}
                             closeDrawer={closeNpvDrawer}
                             anchor={'right'}
@@ -2359,8 +2362,10 @@ const CostingSummaryTable = (props) => {
       {
         openNpvDrawer && <AddNpvCost
           isOpen={openNpvDrawer}
+          viewCostingData={viewCostingData}
           costingSummary={true}
           tableData={[]}
+          npvIndex={npvIndex}
           closeDrawer={closeNpvDrawer}
           anchor={'right'}
         />
