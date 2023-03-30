@@ -10,10 +10,13 @@ import { searchCount, ZBC } from '../../../../config/constants';
 import { MESSAGES } from '../../../../config/message';
 import { loggedInUserId } from '../../../../helper';
 import { autoCompleteDropdown } from '../../../common/CommonFunctions';
+import DayTime from '../../../common/DayTimeWrapper';
 import { getCostingSpecificTechnology } from '../../../costing/actions/Costing';
 import { AsyncSearchableSelectHookForm, DatePickerHookForm, SearchableSelectHookForm } from '../../../layout/HookFormInputs';
+import { getBOPCategorySelectList } from '../../../masters/actions/BoughtOutParts';
 import { getClientSelectList } from '../../../masters/actions/Client';
 import { getRawMaterialNameChild, getRMGradeSelectListByRawMaterial } from '../../../masters/actions/Material';
+import { getBoughtOutPartSelectList } from '../../../masters/actions/Part';
 import { getSelectListOfMasters } from '../../../simulation/actions/Simulation';
 import CostMovementByMasterReportListing from './CostMovementByMasterReportListing';
 
@@ -22,7 +25,7 @@ function MasterCostMovement() {
     const [maxDate, setMaxDate] = useState('')
     const [toDate, setToDate] = useState('')
     const [minDate, setMinDate] = useState('')
-    const [master, setMaster] = useState('')
+    const [master, setMaster] = useState(0)
     const [technology, setTechnology] = useState('')
     const [costingHeadType, setCostingHeadType] = useState('')
     const [showCustomer, setShowCustomer] = useState(false)
@@ -39,9 +42,10 @@ function MasterCostMovement() {
     const categoryList = useSelector(state => state.comman.categoryList);
     const plantSelectList = useSelector(state => state.comman.plantSelectList)
     const clientSelectList = useSelector((state) => state.client.clientSelectList)
-
+    const boughtOutPartSelectList = useSelector(state => state.part.boughtOutPartSelectList)
+    const bopCategorySelectList = useSelector(state => state.boughtOutparts.bopCategorySelectList)
     const approvalTypeSelectList = useSelector(state => state.comman.approvalTypeSelectList)
-    const costingSpecifiTechnology = useSelector(state => state.costing.costingSpecifiTechnology,)
+    const costingSpecifiTechnology = useSelector(state => state.costing.costingSpecifiTechnology)
 
 
 
@@ -51,12 +55,8 @@ function MasterCostMovement() {
         dispatch(getSelectListOfMasters(() => { }))
         dispatch(getApprovalTypeSelectList(() => { }))
         dispatch(getCostingSpecificTechnology(loggedInUserId(), () => { }))
-        dispatch(getRMGradeSelectListByRawMaterial('', () => { }))
-        dispatch(getRawMaterialNameChild('', () => { }))
-        dispatch(getRawMaterialCategory(() => { }))
         dispatch(fetchPlantDataAPI(() => { }))
         dispatch(getPlantSelectListByType(ZBC, () => { }))
-        dispatch(getClientSelectList((res) => { }))
     }, [])
     const { handleSubmit, control, register, getValues, setValue, formState: { errors } } = useForm({
         mode: 'onChange',
@@ -64,129 +64,273 @@ function MasterCostMovement() {
     })
     const handleFromDate = (date) => {
         setFromDate(date);
-        setMaxDate(date);
+        setMinDate(date);
     };
     const handleToDate = (date) => {
         setToDate(date);
-        setMinDate(date);
-    };
-    const handleMasterChange = (e) => {
-
-        setMaster(e);
-
-    };
-    const handleSpecChange = (e) => {
-
-        setRMSpec(e);
+        setMaxDate(date);
     };
 
-    const renderListing = (label) => {
-        let temp = []
-
-        if (label === 'masters') {
-            masterList && masterList.map((item) => {
-                if (item.Value === '0') return false
-
-                if (item.Text !== 'Assembly' && item.Text !== 'Exchange Rates' && item.Text !== 'Combined Process') {
-                    temp.push({ label: item.Text, value: item.Value })
-                }
-                return null
-            })
-            return temp
-        }
-        if (label === 'costingHeadType') {
-
-            approvalTypeSelectList && approvalTypeSelectList.map(item => {
-                if (item.Value === '0') return false
-                temp.push({ label: item.Text, value: item.Value })
-                return null
-            })
-            return temp;
-        }
-
-        if (label === 'material') {
-            rawMaterialNameSelectList && rawMaterialNameSelectList.map((item) => {
-                if (item.Value === '0') return false
-                temp.push({ label: item.Text, value: item.Value })
-                return null
-            })
-            return temp
-        }
-
-        if (label === 'grade') {
-            gradeSelectList && gradeSelectList.map((item) => {
-                if (item.Value === '0') return false
-                temp.push({ label: item.Text, value: item.Value })
-                return null
-            })
-            return temp
+    const resetFields = () => {
+        setValue('Technology', '')
+        setValue('CostingHeadType', '')
+        setValue('Customer', '')
+        setValue('RawMaterialId', '')
+        setValue('RawMaterialGradeId', '')
+        setValue('RawMaterialSpecificationId', '')
+        setValue('Category', '')
+        setValue('BOPCategory', '')
+        setValue('Vendor', '')
+        setValue('BOPId', '')
+        setValue('OperationId', '')
+        setValue('MachineId', '')
+        setValue('MachineTypeId', '')
+    }
+    const handleMasterChange = (event) => {
+        console.log('event: ', event.value);
+        setMaster(event.value);
+        resetFields()
+        switch (Number(event.value)) {
+            case 2:
+            case 1:
+                dispatch(getRMGradeSelectListByRawMaterial('', () => { }))
+                dispatch(getRawMaterialNameChild('', () => { }))
+                dispatch(getRawMaterialCategory(() => { }))
+                break;
+            case 4:
+            case 5:
+                dispatch(getBoughtOutPartSelectList(DayTime(fromDate).format('DD-MM-YYYY'), () => { }))
+                dispatch(getBOPCategorySelectList(() => { }))
+                break;
+            case 6:
+                break;
+            case 9:
+                break;
+            default:
+                break;
         }
 
-        if (label === 'specification') {
-            rmSpecification && rmSpecification.map((item) => {
-                if (item.Value === '0') return false
-                temp.push({ label: item.Text, value: item.Value, RawMaterialCode: item.RawMaterialCode })
-                return null
-            })
-            return temp
-        }
+    };
 
-        if (label === 'category') {
-            categoryList && categoryList.map((item) => {
-                if (item.Value === '0') return false
-                temp.push({ label: item.Text, value: item.Value })
-                return null
-            })
-            return temp
-        }
 
-        if (label === 'technology') {
-            costingSpecifiTechnology &&
-                costingSpecifiTechnology.map((item) => {
+    const inputFieldsRenderer = () => {
+        switch (Number(master)) {
+            case 1:
+            case 2:
+                return (<>
 
-                    if (item.Value === '0') return false
-                    temp.push({ label: item.Text, value: item.Value })
-                    return null
-                })
-            return temp
-        }
-        if (label === 'plant') {
-            plantSelectList && plantSelectList.map((item) => {
-                console.log('item: ', item);
-                if (item.PlantId === '0') return false
-                temp.push({ label: item.PlantNameCode, value: item.PlantId })
-                return null
-            })
-            return temp
-        }
+                    <Col md="3">
+                        <SearchableSelectHookForm
+                            label={'Name'}
+                            name={'RawMaterialId'}
+                            placeholder={'Select'}
+                            Controller={Controller}
+                            control={control}
+                            rules={{ required: true }}
+                            register={register}
+                            defaultValue={rawMaterial}
+                            options={renderListing('material')}
+                            mandatory={true}
+                            handleChange={handleRMChange}
+                            errors={errors.RawMaterialId}
+                        />
+                    </Col>
+                    <Col md="3">
+                        <SearchableSelectHookForm
+                            label={'Grade'}
+                            name={'RawMaterialGradeId'}
+                            placeholder={'Select'}
+                            Controller={Controller}
+                            control={control}
+                            rules={{ required: true }}
+                            register={register}
+                            defaultValue={RMGrade}
+                            options={renderListing('grade')}
+                            mandatory={true}
+                            handleChange={handleGradeChange}
+                            errors={errors.RawMaterialGradeId}
+                        />
+                    </Col>
+                    <Col md="3">
+                        <SearchableSelectHookForm
+                            label={'Spec'}
+                            name={'RawMaterialSpecificationId'}
+                            placeholder={'Select'}
+                            Controller={Controller}
+                            control={control}
+                            rules={{ required: true }}
+                            register={register}
+                            defaultValue={RMSpec}
+                            options={renderListing('specification')}
+                            mandatory={true}
+                            handleChange={() => { }}
+                            errors={errors.RawMaterialSpecificationId}
+                        />
+                    </Col>
+                    <Col md="3">
+                        <SearchableSelectHookForm
+                            label={'Category'}
+                            name={'CategoryId'}
+                            placeholder={'Select'}
+                            Controller={Controller}
+                            control={control}
+                            rules={{ required: true }}
+                            register={register}
+                            defaultValue={category}
+                            options={renderListing('category')}
+                            mandatory={true}
+                            handleChange={handleCategoryChange}
+                            errors={errors.RawMaterialSpecificationId}
+                        />
+                    </Col>
+                </>
+                )
+            case 4:
+            case 5:
+                return (<> <Col md="3">
+                    <SearchableSelectHookForm
+                        label={'BOP Name'}
+                        name={'BOPId'}
+                        placeholder={'Select'}
+                        Controller={Controller}
+                        control={control}
+                        rules={{ required: true }}
+                        register={register}
+                        defaultValue={""}
+                        options={renderListing('BOPName')}
+                        mandatory={true}
+                        handleChange={() => { }}
+                        errors={errors.BOPId}
+                    />
+                </Col>
+                    <Col md="3">
+                        <SearchableSelectHookForm
+                            label={'Category'}
+                            name={'CategoryId'}
+                            placeholder={'Select'}
+                            Controller={Controller}
+                            control={control}
+                            rules={{ required: true }}
+                            register={register}
+                            defaultValue={""}
+                            options={renderListing('BOPCategory')}
+                            mandatory={true}
+                            handleChange={() => { }}
+                            errors={errors.BOPId}
+                        />
+                    </Col>
+                </>)
+            case 6:
+                return (<>
+                    <Col md="3">
+                        <SearchableSelectHookForm
+                            label={'Operation Name'}
+                            name={'OperationId'}
+                            placeholder={'Select'}
+                            Controller={Controller}
+                            control={control}
+                            rules={{ required: true }}
+                            register={register}
+                            defaultValue={""}
+                            options={renderListing('OperationName')}
+                            mandatory={true}
+                            handleChange={() => { }}
+                            errors={errors.OperationId}
+                        />
+                    </Col>
+                </>)
+            case 9:
+                return (<>
+                    <Col md="3">
+                        <SearchableSelectHookForm
+                            label={'Machine Name'}
+                            name={'MachineId'}
+                            placeholder={'Select'}
+                            Controller={Controller}
+                            control={control}
+                            rules={{ required: true }}
+                            register={register}
+                            defaultValue={""}
+                            options={renderListing('MachineName')}
+                            mandatory={true}
+                            handleChange={() => { }}
+                            errors={errors.MachineId}
+                        />
+                    </Col>
+                    <Col md="3">
+                        <SearchableSelectHookForm
+                            label={'Machine Type'}
+                            name={'MachineTypeId'}
+                            placeholder={'Select'}
+                            Controller={Controller}
+                            control={control}
+                            rules={{ required: true }}
+                            register={register}
+                            defaultValue={""}
+                            options={renderListing('MachineType')}
+                            mandatory={true}
+                            handleChange={() => { }}
+                            errors={errors.MachineTypeId}
+                        />
+                    </Col>
+                </>)
 
-        if (label === 'Customer') {
-            clientSelectList && clientSelectList.map(item => {
-                if (item.Value === '0') return false;
-                temp.push({ label: item.Text, value: item.Value })
-                return null;
-            });
-            return temp;
+            default:
+                break;
         }
+    }
+
+
+    const listMapping = {
+        'masters': masterList,
+        'costingHeadType': approvalTypeSelectList,
+        'material': rawMaterialNameSelectList,
+        'grade': gradeSelectList,
+        'specification': rmSpecification,
+        'category': categoryList,
+        'technology': costingSpecifiTechnology,
+        'plant': plantSelectList,
+        'Customer': clientSelectList,
+        'BOPName': boughtOutPartSelectList,
+        'BOPCategory': bopCategorySelectList,
 
     }
+
+    const renderListing = (label) => {
+        let temp = [];
+
+        const list = listMapping[label];
+
+        if (list) {
+            list.forEach((item) => {
+                if (item.Value !== '0') {
+                    if (label === 'specification') {
+                        temp.push({ label: item.Text, value: item.Value, RawMaterialCode: item.RawMaterialCode });
+                    } else if (label === 'plant') {
+                        if (item.PlantId !== '0') {
+                            temp.push({ label: item.PlantNameCode, value: item.PlantId });
+                        }
+                    } else {
+                        temp.push({ label: item.Text, value: item.Value });
+                    }
+                }
+            });
+        }
+        return temp;
+    }
+
     const handleCostingHeadTypeChange = (newValue) => {
 
         if (newValue.value === '3') {
             setShowCustomer(true)
+            dispatch(getClientSelectList((res) => { }))
         }
         else {
             setShowCustomer(false)
         }
     };
 
-    const handleTechnologyChange = (e) => {
-
-        setTechnology(e);
-    };
     const handleRMChange = (newValue) => {
-
-
         if (newValue && newValue !== '') {
             setRawMaterial(newValue);
             setRMGrade([])
@@ -282,239 +426,188 @@ function MasterCostMovement() {
         setReportListing(value)
     }
     return <Fragment>
-        {!reportListing && <Row>
-            <Col md="3">
-                <div className="inputbox date-section">
-                    <DatePickerHookForm
-                        name={`fromDate`}
-                        label={'From Date'}
-                        selected={new Date(fromDate)}
-                        handleChange={(date) => {
-                            handleFromDate(date);
-                        }}
-                        rules={{ required: true }}
-                        maxDate={maxDate}
-                        Controller={Controller}
-                        control={control}
-                        register={register}
-                        showMonthDropdown
-                        showYearDropdown
-                        dateFormat="DD/MM/YYYY"
-                        dropdownMode="select"
-                        placeholder="Select date"
-                        customClassName="withBorder"
-                        className="withBorder"
-                        autoComplete={"off"}
-                        disabledKeyboardNavigation
-                        onChangeRaw={(e) => e.preventDefault()}
-                        // disabled={rowData.length !== 0}
-                        mandatory={true}
-                        errors={errors && errors.fromDate}
-                    />
-                </div>
-            </Col>
-            <Col md="3">
-                <div className="inputbox date-section">
-                    <DatePickerHookForm
-                        name={`toDate`}
-                        label={'To Date'}
-                        selected={new Date(toDate)}
-                        handleChange={handleToDate}
-                        minDate={minDate}
-                        rules={{ required: true }}
-                        Controller={Controller}
-                        control={control}
-                        register={register}
-                        showMonthDropdown
-                        showYearDropdown
-                        dateFormat="DD/MM/YYYY"
-                        dropdownMode="select"
-                        placeholder="Select date"
-                        customClassName="withBorder"
-                        className="withBorder"
-                        autoComplete={"off"}
-                        disabledKeyboardNavigation
-                        onChangeRaw={(e) => e.preventDefault()}
-                        // disabled={rowData.length !== 0}
-                        mandatory={true}
-                        errors={errors && errors.toDate}
-                    />
-                </div>
-            </Col>
-            <Col md="3">
-                <SearchableSelectHookForm
-                    label={"Masters"}
-                    name={'Masters'}
-                    placeholder={'Masters'}
-                    Controller={Controller}
-                    control={control}
-                    rules={{ required: true }}
-                    register={register}
-                    defaultValue={master.length !== 0 ? master : ''}
-                    options={renderListing('masters')}
-                    mandatory={true}
-                    handleChange={handleMasterChange}
-                    errors={errors.Masters}
-                />
-            </Col>
-            <Col md="3">
-                <SearchableSelectHookForm
-                    label={"Costing Head Type"}
-                    name={"costingHeadTypeId"}
-                    placeholder={"Costing Head Type"}
-                    Controller={Controller}
-                    control={control}
-                    rules={{ required: true }}
-                    register={register}
-                    defaultValue={costingHeadType}
-                    options={renderListing("costingHeadType")}
-                    mandatory={true}
-                    handleChange={handleCostingHeadTypeChange}
-                    errors={errors.costingHeadTypeId}
-                // isDisabled={isEditFlag || isViewFlag}
-                />
-            </Col>
-            <Col md="3">
-                <SearchableSelectHookForm
-                    label={'Technology'}
-                    name={'TechnologyId'}
-                    placeholder={'Technology'}
-                    Controller={Controller}
-                    control={control}
-                    rules={{ required: true }}
-                    register={register}
-                    defaultValue={technology}
-                    options={renderListing('technology')}
-                    mandatory={true}
-                    handleChange={handleTechnologyChange}
-                    errors={errors.TechnologyId}
-                />
-            </Col>
-            <Col md="3">
-                <SearchableSelectHookForm
-                    label={'Name'}
-                    name={'RawMaterialId'}
-                    placeholder={'Select'}
-                    Controller={Controller}
-                    control={control}
-                    rules={{ required: true }}
-                    register={register}
-                    defaultValue={rawMaterial}
-                    options={renderListing('material')}
-                    mandatory={true}
-                    handleChange={handleRMChange}
-                    errors={errors.RawMaterialId}
-                />
-            </Col>
-            <Col md="3">
-                <SearchableSelectHookForm
-                    label={'Grade'}
-                    name={'RawMaterialGradeId'}
-                    placeholder={'Select'}
-                    Controller={Controller}
-                    control={control}
-                    rules={{ required: true }}
-                    register={register}
-                    defaultValue={RMGrade}
-                    options={renderListing('grade')}
-                    mandatory={true}
-                    handleChange={handleGradeChange}
-                    errors={errors.RawMaterialGradeId}
-                />
-            </Col>
-            <Col md="3">
-                <SearchableSelectHookForm
-                    label={'Spec'}
-                    name={'RawMaterialSpecificationId'}
-                    placeholder={'Select'}
-                    Controller={Controller}
-                    control={control}
-                    rules={{ required: true }}
-                    register={register}
-                    defaultValue={RMSpec}
-                    options={renderListing('specification')}
-                    mandatory={true}
-                    handleChange={handleSpecChange}
-                    errors={errors.RawMaterialSpecificationId}
-                />
-            </Col>
-            <Col md="3">
-                <SearchableSelectHookForm
-                    label={'Category'}
-                    name={'CategoryId'}
-                    placeholder={'Select'}
-                    Controller={Controller}
-                    control={control}
-                    rules={{ required: true }}
-                    register={register}
-                    defaultValue={category}
-                    options={renderListing('category')}
-                    mandatory={true}
-                    handleChange={handleCategoryChange}
-                    errors={errors.RawMaterialSpecificationId}
-                />
-            </Col>
-            <Col md="3">
-                {showCustomer ? <SearchableSelectHookForm
-                    label={"Customer (Code)"}
-                    name={"Customer"}
-                    placeholder={"Select"}
-                    Controller={Controller}
-                    control={control}
-                    rules={{ required: false }}
-                    register={register}
-                    // defaultValue={customer.length !== 0 ? customer : ""}
-                    options={renderListing("Customer")}
-                    mandatory={false}
-                    handleChange={() => { }}
-                    errors={errors.Customer}
-                /> :
-                    <AsyncSearchableSelectHookForm
-                        label={"Vendor (Code)"}
-                        name={"vendor"}
-                        placeholder={"Select"}
-                        Controller={Controller}
-                        control={control}
-                        rules={{ required: false }}
-                        register={register}
-                        defaultValue={vendor.length !== 0 ? vendor : ""}
-                        options={renderListing("vendor")}
-                        mandatory={true}
-                        handleChange={handleVendorChange}
-                        // handleChange={() => { }}
-                        errors={errors.vendor}
-                        // isLoading={VendorLoaderObj}
-                        asyncOptions={vendorFilterList}
-                        disabled={false}
-                        NoOptionMessage={MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN}
-                    />
-                }
+        {!reportListing &&
+            <form onSubmit={handleSubmit(runReport)}>
+                <div className='master-movement-report'>
+                    <Row>
+                        <Col md="3">
+                            <div className="inputbox date-section">
+                                <DatePickerHookForm
+                                    name={`fromDate`}
+                                    label={'From Date'}
+                                    selected={new Date(fromDate)}
+                                    handleChange={(date) => {
+                                        handleFromDate(date);
+                                    }}
+                                    rules={{ required: true }}
+                                    maxDate={maxDate}
+                                    Controller={Controller}
+                                    control={control}
+                                    register={register}
+                                    showMonthDropdown
+                                    showYearDropdown
+                                    dateFormat="DD/MM/YYYY"
+                                    dropdownMode="select"
+                                    placeholder="Select date"
+                                    customClassName="withBorder"
+                                    className="withBorder"
+                                    autoComplete={"off"}
+                                    disabledKeyboardNavigation
+                                    onChangeRaw={(e) => e.preventDefault()}
+                                    // disabled={rowData.length !== 0}
+                                    mandatory={true}
+                                    errors={errors && errors.fromDate}
+                                />
+                            </div>
+                        </Col>
+                        <Col md="3">
+                            <div className="inputbox date-section">
+                                <DatePickerHookForm
+                                    name={`toDate`}
+                                    label={'To Date'}
+                                    selected={new Date(toDate)}
+                                    handleChange={handleToDate}
+                                    minDate={minDate}
+                                    rules={{ required: true }}
+                                    Controller={Controller}
+                                    control={control}
+                                    register={register}
+                                    showMonthDropdown
+                                    showYearDropdown
+                                    dateFormat="DD/MM/YYYY"
+                                    dropdownMode="select"
+                                    placeholder="Select date"
+                                    customClassName="withBorder"
+                                    className="withBorder"
+                                    autoComplete={"off"}
+                                    disabledKeyboardNavigation
+                                    onChangeRaw={(e) => e.preventDefault()}
+                                    // disabled={rowData.length !== 0}
+                                    mandatory={true}
+                                    errors={errors && errors.toDate}
+                                />
+                            </div>
+                        </Col>
+                        <Col md="3">
+                            <SearchableSelectHookForm
+                                label={"Masters"}
+                                name={'Masters'}
+                                placeholder={'Masters'}
+                                Controller={Controller}
+                                control={control}
+                                rules={{ required: true }}
+                                register={register}
+                                defaultValue={master.length !== 0 ? master : ''}
+                                options={renderListing('masters')}
+                                mandatory={true}
+                                handleChange={handleMasterChange}
+                                errors={errors.Masters}
+                                disabled={fromDate === '' ? true : false}
+                            />
 
-            </Col>
-            <Col md="3" className='align-items-center mt2'>
-                <SearchableSelectHookForm
-                    label={"Plant (Code)"}
-                    name={"plant"}
-                    placeholder={"Select"}
-                    Controller={Controller}
-                    control={control}
-                    rules={{ required: true }}
-                    register={register}
-                    // defaultValue={vendor.length !== 0 ? vendor : ""}
-                    options={renderListing("plant")}
-                    mandatory={true}
-                    // handleChange={handleVendorChange}
-                    handleChange={() => { }}
-                    errors={errors.plant}
-                // isLoading={VendorLoaderObj}
-                // disabled={dataProps?.isAddFlag ? false : (dataProps?.isViewFlag || !isEditAll)}
-                />
-            </Col>
-            <Col md="auto" className='d-flex align-items-center mt-2'>
-                <button type="button" className={"user-btn save-btn"} disabled={false} onClick={runReport}> <div className={"Run-icon"}></div>RUN REPORT</button>
-            </Col>
-        </Row>}
-        {reportListing && <CostMovementByMasterReportListing viewList={viewListingHandler} />}
+                        </Col>
+                        <Col md="3">
+                            <SearchableSelectHookForm
+                                label={"Costing Head Type"}
+                                name={"costingHeadTypeId"}
+                                placeholder={"Costing Head Type"}
+                                Controller={Controller}
+                                control={control}
+                                rules={{ required: true }}
+                                register={register}
+                                defaultValue={costingHeadType}
+                                options={renderListing("costingHeadType")}
+                                mandatory={true}
+                                handleChange={handleCostingHeadTypeChange}
+                                errors={errors.costingHeadTypeId}
+                            // isDisabled={isEditFlag || isViewFlag}
+                            />
+                        </Col>
+                        <Col md="3">
+                            <SearchableSelectHookForm
+                                label={'Technology'}
+                                name={'TechnologyId'}
+                                placeholder={'Technology'}
+                                Controller={Controller}
+                                control={control}
+                                rules={{ required: true }}
+                                register={register}
+                                defaultValue={technology}
+                                options={renderListing('technology')}
+                                mandatory={true}
+                                handleChange={() => { }}
+                                errors={errors.TechnologyId}
+                            />
+                        </Col>
+                        {inputFieldsRenderer()}
+
+                        <Col md="3">
+                            {showCustomer ? <SearchableSelectHookForm
+                                label={"Customer (Code)"}
+                                name={"Customer"}
+                                placeholder={"Select"}
+                                Controller={Controller}
+                                control={control}
+                                rules={{ required: false }}
+                                register={register}
+                                // defaultValue={customer.length !== 0 ? customer : ""}
+                                options={renderListing("Customer")}
+                                mandatory={false}
+                                handleChange={() => { }}
+                                errors={errors.Customer}
+                            /> :
+                                <AsyncSearchableSelectHookForm
+                                    label={"Vendor (Code)"}
+                                    name={"vendor"}
+                                    placeholder={"Select"}
+                                    Controller={Controller}
+                                    control={control}
+                                    rules={{ required: false }}
+                                    register={register}
+                                    defaultValue={vendor.length !== 0 ? vendor : ""}
+                                    options={renderListing("vendor")}
+                                    mandatory={true}
+                                    handleChange={handleVendorChange}
+                                    // handleChange={() => { }}
+                                    errors={errors.vendor}
+                                    // isLoading={VendorLoaderObj}
+                                    asyncOptions={vendorFilterList}
+                                    disabled={false}
+                                    NoOptionMessage={MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN}
+                                />
+                            }
+
+                        </Col>
+                        <Col md="3" className='align-items-center mt2'>
+                            <SearchableSelectHookForm
+                                label={"Plant (Code)"}
+                                name={"plant"}
+                                placeholder={"Select"}
+                                Controller={Controller}
+                                control={control}
+                                rules={{ required: true }}
+                                register={register}
+                                // defaultValue={vendor.length !== 0 ? vendor : ""}
+                                options={renderListing("plant")}
+                                mandatory={true}
+                                // handleChange={handleVendorChange}
+                                handleChange={() => { }}
+                                errors={errors.plant}
+                            // isLoading={VendorLoaderObj}
+                            // disabled={dataProps?.isAddFlag ? false : (dataProps?.isViewFlag || !isEditAll)}
+                            />
+                        </Col>
+                    </Row>
+                </div>
+                <Row className="sf-btn-footer no-gutters justify-content-between">
+                    <div className="col-sm-12 text-right bluefooter-butn mt-3">
+                        <div className="d-flex justify-content-end bd-highlight w100 align-items-center">
+                            <button type="button" className={"user-btn mr5 save-btn"} onClick={runReport}> <div className={"Run-icon"}></div>RUN REPORT</button>
+                        </div>
+                    </div>
+                </Row>
+            </form>}
+        {reportListing && <CostMovementByMasterReportListing viewList={viewListingHandler} masterData={master} />}
     </Fragment>;
 }
 export default MasterCostMovement;
