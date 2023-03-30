@@ -121,7 +121,7 @@ function SurfaceTreatment(props) {
     if (partType) {
       // WILL GET EXECUTE WHEN TECHNOLOGY OF COSTING WILL BE ASSEMBLY
 
-      props.setSurfaceTreatmentCostAssemblyTechnology(surfaceTreatmentData?.gridData, transportationObject?.tempObj, surfaceTreatmentData.Params)
+      props.setSurfaceTreatmentCostAssemblyTechnology(surfaceTreatmentData?.gridData, transportObj, surfaceTreatmentData.Params)
       setTimeout(() => {
         callApi()
       }, (500));
