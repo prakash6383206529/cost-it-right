@@ -30,6 +30,8 @@ function TransportationCost(props) {
   const [Rate, setRate] = useState('')
   const [TransportationType, setTransportationType] = useState()
   const [transportCost, setTransportCost] = useState(checkForNull(data?.TransportationCost))
+  const [toggleState, setToggleState] = useState(false)
+  const [count, setCount] = useState(0)
 
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
 
@@ -85,7 +87,7 @@ function TransportationCost(props) {
       }
     }
 
-  }, [uom, Rate, Quantity, transportCost]);
+  }, [uom, Rate, Quantity, transportCost, toggleState]);
 
   useEffect(() => {
     dispatch(getUOMSelectList(() => { }))
@@ -160,34 +162,51 @@ function TransportationCost(props) {
     }
   }
 
-  const reCalculation = () => {
 
-    if ((props.surfaceCost === 0 || props.surfaceCost === null) && data.UOM !== 'Fixed') {
+  const reCalculation = () => {
+    let cost = 0;
+    let newTransportCost = 0;
+
+    if ((props.surfaceCost === 0 || props.surfaceCost === null) && data.UOM === 'Percentage') {
       setValue('UOM', {})
       setValue('Rate', '')
       setValue('Quantity', '')
     } else {
-      setValue('UOM', { label: data.UOM, value: data.UOMId })
-      setValue('Rate', checkForNull(data.Rate))
-      setValue('Quantity', checkForNull(data.Quantity))
+      if (count === 0) {
+        setValue('UOM', { label: data.UOM, value: data.UOMId })
+        setValue('Rate', checkForNull(data.Rate))
+        setValue('Quantity', checkForNull(data.Quantity))
+      }
     }
-    if (data.UOM === 'Rate') {
-      const cost = (props.surfaceCost === 0 || props.surfaceCost === null) ? 0 : checkForNull(data.Rate) * checkForNull(data.Quantity);
-      setTransportCost(cost)
-      setValue('TransportationCost', checkForDecimalAndNull(cost, initialConfiguration.NoOfDecimalForPrice));
-    } else if (data.UOM === 'Fixed') {
-      setTransportCost(data.TransportationCost)
-      setValue('TransportationCost', checkForDecimalAndNull(data.TransportationCost, initialConfiguration.NoOfDecimalForPrice));
-    } else if (data.UOM === 'Percentage') {
-      const cost = (props.surfaceCost === 0 || props.surfaceCost === null) ? 0 : checkForNull(props.surfaceCost * calculatePercentage(checkForNull(data.Rate)));
-      setTransportCost(cost)
-      setValue('TransportationCost', checkForDecimalAndNull(cost, initialConfiguration.NoOfDecimalForPrice))
-      setRate((props.surfaceCost === 0 || props.surfaceCost === null) ? 0 : data.Rate)
-    } else {
-      setTransportCost(0)
-      setRate(0)
-      setValue('TransportationCost', checkForDecimalAndNull(data.TransportationCost, initialConfiguration.NoOfDecimalForPrice));
+
+    switch (data.UOM) {
+      case 'Rate':
+        cost = checkForNull(data.Rate) * checkForNull(data.Quantity);
+        newTransportCost = checkForDecimalAndNull(cost, initialConfiguration.NoOfDecimalForPrice);
+        break;
+
+      case 'Fixed':
+        newTransportCost = checkForDecimalAndNull(data.TransportationCost, initialConfiguration.NoOfDecimalForPrice);
+        break;
+
+      case 'Percentage':
+        cost = (props.surfaceCost === 0 || props.surfaceCost === null) ? 0 : checkForNull(props.surfaceCost * calculatePercentage(checkForNull(data.Rate)));
+        newTransportCost = checkForDecimalAndNull(cost, initialConfiguration.NoOfDecimalForPrice);
+        setRate((props.surfaceCost === 0 || props.surfaceCost === null) ? 0 : data.Rate);
+        break;
+
+      default:
+        newTransportCost = checkForDecimalAndNull(data.TransportationCost, initialConfiguration.NoOfDecimalForPrice);
+        break;
     }
+
+    if (getValues('UOM').label || newTransportCost === 0) {
+      setTransportCost(newTransportCost);
+      setValue('TransportationCost', newTransportCost);
+    }
+
+    setToggleState(!toggleState);
+    setCount(count + 1);
   }
 
   /**
