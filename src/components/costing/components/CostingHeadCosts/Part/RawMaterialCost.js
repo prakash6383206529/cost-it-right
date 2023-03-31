@@ -1070,23 +1070,20 @@ function RawMaterialCost(props) {
   }
   const onPopupConfirm = () => {
     dispatch(setFerrousCalculatorReset(true))
-    setConfirmPopup(true)
-    gridData.map((item, index) => {
+    let tempList = [...gridData]
+    tempList && tempList.map((item, index) => {
       item.NetLandedCost = ''
       item.ScrapWeight = ''
       setValue(`${rmGridFields}.${index}.GrossWeight`, '')     //COMMENT
       setValue(`${rmGridFields}.${index}.FinishWeight`, '')
       return item
     })
-    setGridData(gridData)
-    gridData && gridData.map((index) => {
-      setValue(`${rmGridFields}.${index}.FinishWeight`, '')
-      setValue(`${rmGridFields}.${index}.GrossWeight`, '')     //COMMENT
-      return null
-    })
-    // setGridData(gridData)
-    setDrawerOpen(true)
-    setShowPopup(false)
+    setGridData(tempList)
+    setTimeout(() => {
+      setConfirmPopup(true)
+      setDrawerOpen(true)
+      setShowPopup(false)
+    }, 200);
 
   }
   const closePopUp = () => {
