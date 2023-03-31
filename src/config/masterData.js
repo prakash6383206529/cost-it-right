@@ -353,6 +353,7 @@ export const RMImportZBC = [
     // { label: "CutOffPrice", value: "CutOffPrice" }, //*
     // { label: "FreightCost", value: "FreightCost" }, //*
     // { label: "ShearingCost", value: "ShearingCost" }, //*
+    // { label: "CircleSrapCost", value: "CircleSrapCost" }, //*
     { label: "EffectiveDate", value: "EffectiveDate" }, //*
     { label: "Remark", value: "Remark" },
 ]
