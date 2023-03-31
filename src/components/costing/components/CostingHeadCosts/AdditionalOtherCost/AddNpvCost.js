@@ -11,7 +11,6 @@ import { number, checkWhiteSpaces, percentageLimitValidation, decimalNumberLimit
 import NpvCost from './NpvCost'
 import { setNPVData } from '../../../actions/Costing'
 import Toaster from '../../../../common/Toaster'
-import { getConditionDetails, getNpvDetails } from '../../../../../actions/Common'
 import ConditionCosting from './ConditionCosting'
 import HeaderTitle from '../../../../common/HeaderTitle'
 import LoaderCustom from '../../../../common/LoaderCustom'
@@ -43,32 +42,15 @@ function AddNpvCost(props) {
     useEffect(() => {
         if (props.costingSummary) {
             setIsLoader(true)
-            if (viewCostingData && viewCostingData[0]?.costingId) {
-                dispatch(getNpvDetails(viewCostingData && viewCostingData[0]?.costingId, (res) => {
-                    if (res === 204) {
-                        setIsLoader(false)
-                    } else if (res?.data?.DataList) {
-                        let Data = res?.data?.DataList
-                        setTableData(Data)
-                        setIsLoader(false)
-                    }
-                }))
-
-                dispatch(getConditionDetails(viewCostingData && viewCostingData[0]?.costingId, (res) => {
-                    if (res === 204) {
-                        setIsLoader(false)
-                    } else if (res?.data?.Data) {
-                        let Data = res?.data?.Data.ConditionsData
-                        let temp = []
-                        Data && Data.map((item) => {
-                            item.condition = `${item.Description} (${item.CostingConditionNumber})`
-                            temp.push(item)
-                        })
-                        seConditionTableData(temp)
-                        setIsLoader(false)
-                    }
-                }))
-            }
+            setTableData(viewCostingData[props.npvIndex]?.CostingPartDetails?.CostingNpvResponse)
+            let Data = viewCostingData[props.npvIndex]?.CostingPartDetails?.CostingConditionResponse
+            let temp = []
+            Data && Data.map((item) => {
+                item.condition = `${item.Description} (${item.CostingConditionNumber})`
+                temp.push(item)
+            })
+            seConditionTableData(temp)
+            setIsLoader(false)
         }
     }, [])
 
