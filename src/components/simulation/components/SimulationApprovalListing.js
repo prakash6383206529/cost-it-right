@@ -25,6 +25,7 @@ import { checkFinalUser } from '../../costing/actions/Costing'
 import SingleDropdownFloationFilter from '../../masters/material-master/SingleDropdownFloationFilter'
 import { agGridStatus, isResetClick, getGridHeight, dashboardTabLock } from '../../../actions/Common'
 import { reactLocalStorage } from 'reactjs-localstorage'
+import { costingTypeIdToApprovalTypeIdFunction } from '../../common/CommonFunctions'
 
 
 const gridOptions = {};
@@ -573,7 +574,7 @@ function SimulationApprovalListing(props) {
             UserId: loggedInUserId(),
             TechnologyId: selectedRowData[0].SimulationTechnologyId,
             Mode: 'simulation',
-            approvalTypeId: selectedRowData[0].SimulationHeadId,
+            approvalTypeId: costingTypeIdToApprovalTypeIdFunction(selectedRowData[0].SimulationHeadId),
         }
         dispatch(setMasterForSimulation({ label: selectedRowData[0].SimulationTechnologyHead, value: selectedRowData[0].SimulationTechnologyId }))
 
@@ -613,7 +614,7 @@ function SimulationApprovalListing(props) {
                     approvalProcessId: approvalData.approvalProcessId,
                     master: approvalData.SimulationTechnologyId,
                     statusForLinkedToken: statusForLinkedToken,
-                    approvalTypeId: approvalData.SimulationHeadId,
+                    approvalTypeId: costingTypeIdToApprovalTypeIdFunction(approvalData.SimulationHeadId),
                     DepartmentId: approvalData.DepartmentId
                 }
 

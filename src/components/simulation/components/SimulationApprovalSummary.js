@@ -43,6 +43,7 @@ import _ from 'lodash'
 import CalculatorWrapper from '../../common/Calculator/CalculatorWrapper';
 import { PaginationWrapper } from '../../common/commonPagination';
 import { getUsersTechnologyLevelAPI } from '../../../actions/auth/AuthActions';
+import { costingTypeIdToApprovalTypeIdFunction } from '../../common/CommonFunctions';
 
 const gridOptions = {};
 const ExcelFile = ReactExport.ExcelFile;
@@ -196,7 +197,7 @@ function SimulationApprovalSummary(props) {
                 UserId: loggedInUserId(),
                 TechnologyId: SimulationTechnologyId,
                 Mode: 'simulation',
-                approvalTypeId: SimulationHeadId,
+                approvalTypeId: costingTypeIdToApprovalTypeIdFunction(SimulationHeadId),
             }
             dispatch(checkFinalUser(obj, res => {
                 if (res && res.data && res.data.Result) {
@@ -567,7 +568,6 @@ function SimulationApprovalSummary(props) {
     const processFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        console.log('row: ', row);
         const classGreen = (row.NewNetProcessCost > row.OldNetProcessCost) ? 'red-value form-control' : (row.NewNetProcessCost < row.OldNetProcessCost) ? 'green-value form-control' : 'form-class'
         return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
     }

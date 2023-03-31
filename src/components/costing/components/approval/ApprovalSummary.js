@@ -22,6 +22,7 @@ import { getLastSimulationData } from '../../../simulation/actions/Simulation'
 import Toaster from '../../../common/Toaster'
 import PopupMsgWrapper from '../../../common/PopupMsgWrapper'
 import { reactLocalStorage } from 'reactjs-localstorage'
+import { costingTypeIdToApprovalTypeIdFunction } from '../../../common/CommonFunctions'
 
 function ApprovalSummary(props) {
   const { approvalNumber, approvalProcessId } = props.location.state
@@ -151,7 +152,7 @@ function ApprovalSummary(props) {
         UserId: loggedInUserId(),
         TechnologyId: technologyId,
         Mode: 'costing',
-        approvalTypeId: CostingTypeId
+        approvalTypeId: costingTypeIdToApprovalTypeIdFunction(CostingTypeId)
       }
       dispatch(checkFinalUser(obj, res => {
         if (res && res.data && res.data.Result) {

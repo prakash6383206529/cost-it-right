@@ -31,6 +31,7 @@ import { agGridStatus, isResetClick, getGridHeight, dashboardTabLock } from '../
 import PopupMsgWrapper from '../../../common/PopupMsgWrapper'
 import ScrollToTop from '../../../common/ScrollToTop'
 import { reactLocalStorage } from 'reactjs-localstorage'
+import { costingTypeIdToApprovalTypeIdFunction } from '../../../common/CommonFunctions'
 
 const gridOptions = {};
 const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
@@ -759,7 +760,7 @@ function ApprovalListing(props) {
       UserId: loggedInUserId(),
       TechnologyId: selectedRowData[0].TechnologyId,
       Mode: 'costing',
-      approvalTypeId: selectedRowData[0]?.CostingTypeId
+      approvalTypeId: costingTypeIdToApprovalTypeIdFunction(selectedRowData[0]?.CostingTypeId)
     }
     dispatch(checkFinalUser(obj, res => {
       if (res && res.data && res.data.Result) {

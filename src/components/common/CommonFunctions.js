@@ -1,6 +1,6 @@
 import { reactLocalStorage } from "reactjs-localstorage";
 import _ from 'lodash';
-import { dropdownLimit } from "../../config/constants";
+import { CBCAPPROVALTYPEID, CBCTypeId, dropdownLimit, NCCAPPROVALTYPEID, NCCTypeId, VBCAPPROVALTYPEID, VBCTypeId, ZBCAPPROVALTYPEID, ZBCTypeId } from "../../config/constants";
 
 // COMMON FILTER FUNCTION FOR AUTOCOMPLETE DROPDOWN
 const commonFilterFunction = (inputValue, dropdownArray, filterByName, selectedParts = false) => {
@@ -96,3 +96,28 @@ export const hideCustomerFromExcel = (data, value) => {
     }
     return excelData
 }
+
+export const costingTypeIdToApprovalTypeIdFunction = (value) => {
+    let approvalTypeId;
+    switch (value) {
+        case ZBCTypeId:
+            approvalTypeId = ZBCAPPROVALTYPEID;
+            break;
+        case VBCTypeId:
+            approvalTypeId = VBCAPPROVALTYPEID;
+            break;
+        case CBCTypeId:
+            approvalTypeId = CBCAPPROVALTYPEID;
+            break;
+        case NCCTypeId:
+            approvalTypeId = NCCAPPROVALTYPEID;
+            break;
+        //   case PROVTypeId:
+        //     approvalTypeId = PROVAPPROVALTYPEID;
+        // break;
+        default:
+            approvalTypeId = null; // or any default value you prefer
+            break;
+    }
+    return approvalTypeId;
+};
