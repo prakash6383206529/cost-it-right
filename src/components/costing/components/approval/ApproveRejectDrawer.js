@@ -21,6 +21,7 @@ import { PROVISIONAL } from '../../../../config/constants'
 import LoaderCustom from '../../../common/LoaderCustom';
 import Toaster from '../../../common/Toaster'
 import { getUsersSimulationTechnologyLevelAPI, getUsersTechnologyLevelAPI } from '../../../../actions/auth/AuthActions'
+import { costingTypeIdToApprovalTypeIdFunction } from '../../../common/CommonFunctions'
 
 function ApproveRejectDrawer(props) {
   // ********* INITIALIZE REF FOR DROPZONE ********
@@ -60,6 +61,7 @@ function ApproveRejectDrawer(props) {
       // dispatch(getAllApprovalDepartment((res) => { }))
       /***********************************REMOVE IT AFTER SETTING FROM SIMULATION*******************************/
       if (!isSimulation) {
+        console.log('isSimulation: ', isSimulation);
         dispatch(getUsersTechnologyLevelAPI(loggedInUserId(), TechnologyId, (res) => {
           levelDetailsTemp = userTechnologyLevelDetails(props?.costingTypeId, res?.data?.Data?.TechnologyLevels)
           setLevelDetails(levelDetailsTemp)
@@ -78,9 +80,9 @@ function ApproveRejectDrawer(props) {
             DepartmentId: departObj && departObj[0]?.Value,
             TechnologyId: approvalData && approvalData[0]?.TechnologyId,
             ReasonId: reasonId,
-            ApprovalTypeId: props?.costingTypeId
+            ApprovalTypeId: costingTypeIdToApprovalTypeIdFunction(props?.costingTypeId)
           }
-
+          console.log('aaaaa');
           dispatch(getAllApprovalUserFilterByDepartment(obj, (res) => {
             const Data = res.data.DataList[1] ? res.data.DataList[1] : []
             setValue('dept', { label: Data.DepartmentName, value: Data.DepartmentId })
@@ -160,7 +162,7 @@ function ApproveRejectDrawer(props) {
             // TechnologyId: isSimulationApprovalListing ? selectedRowData[0].SimulationTechnologyId : simulationDetail.SimulationTechnologyId ? simulationDetail.SimulationTechnologyId : selectedMasterForSimulation.value,
             TechnologyId: item,
             ReasonId: 0,
-            ApprovalTypeId: levelDetailsTemp?.ApprovalTypeId
+            ApprovalTypeId: costingTypeIdToApprovalTypeIdFunction(levelDetailsTemp?.ApprovalTypeId)
           }
 
           dispatch(getAllSimulationApprovalList(obj, (res) => {
@@ -229,7 +231,7 @@ function ApproveRejectDrawer(props) {
           //NEED TO MAKE THIS 2   
           TechnologyId: isSimulationApprovalListing ? selectedRowData[0].SimulationTechnologyId : simulationDetail.SimulationTechnologyId ? simulationDetail.SimulationTechnologyId : selectedMasterForSimulation.value,
           ReasonId: 0,
-          ApprovalTypeId: levelDetailsTemp?.ApprovalTypeId
+          ApprovalTypeId: costingTypeIdToApprovalTypeIdFunction(levelDetailsTemp?.ApprovalTypeId)
         }
 
         dispatch(getAllSimulationApprovalList(obj, (res) => {
@@ -470,7 +472,7 @@ function ApproveRejectDrawer(props) {
         senderObj.SenderRemark = remark
         senderObj.EffectiveDate = DayTime(simulationDetail?.EffectiveDate).format('YYYY/MM/DD HH:mm')
         senderObj.LoggedInUserId = userLoggedIn
-        senderObj.ApprovalTypeId = levelDetails?.ApprovalTypeId
+        senderObj.ApprovalTypeId = costingTypeIdToApprovalTypeIdFunction(levelDetails?.ApprovalTypeId)
         let temp = []
         if (isSimulationApprovalListing === true) {
           selectedRowData && selectedRowData.map(item => {
@@ -567,7 +569,7 @@ function ApproveRejectDrawer(props) {
         LoggedInUserId: loggedInUserId(), // user id
         DepartmentId: value.value,
         TechnologyId: approvalData[0] && approvalData[0].TechnologyId ? approvalData[0].TechnologyId : '00000000-0000-0000-0000-000000000000',
-        ApprovalTypeId: props?.costingTypeId,
+        ApprovalTypeId: costingTypeIdToApprovalTypeIdFunction(props?.costingTypeId),
       }
     } else {
       // simObj = {
@@ -580,6 +582,7 @@ function ApproveRejectDrawer(props) {
 
 
     if (!isSimulation) {
+      console.log('bbbbbb');
       dispatch(getAllApprovalUserFilterByDepartment(obj, (res) => {
         res.data.DataList && res.data.DataList.map((item) => {
           if (item.Value === '0') return false;
