@@ -61,7 +61,6 @@ class AddInterestRate extends Component {
   UNSAFE_componentWillMount() {
     if (!(this.props.data.isEditFlag || this.state.isViewMode)) {
       // this.props.getVendorListByVendorType(true, this.state.vendorName, (res) => {
-      //   console.log(res, 'res');
       // })
     }
   }

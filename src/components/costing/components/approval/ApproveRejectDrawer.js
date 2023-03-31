@@ -68,7 +68,6 @@ function ApproveRejectDrawer(props) {
       // dispatch(getAllApprovalDepartment((res) => { }))
       /***********************************REMOVE IT AFTER SETTING FROM SIMULATION*******************************/
       if (!isSimulation) {
-        console.log('isSimulation: ', isSimulation);
         dispatch(getUsersTechnologyLevelAPI(loggedInUserId(), TechnologyId, (res) => {
           levelDetailsTemp = userTechnologyLevelDetails(props?.costingTypeId, res?.data?.Data?.TechnologyLevels)
           setLevelDetails(levelDetailsTemp)
@@ -89,7 +88,6 @@ function ApproveRejectDrawer(props) {
             ReasonId: reasonId,
             ApprovalTypeId: costingTypeIdToApprovalTypeIdFunction(props?.costingTypeId)
           }
-          console.log('aaaaa');
           dispatch(getAllApprovalUserFilterByDepartment(obj, (res) => {
             const Data = res.data.DataList[1] ? res.data.DataList[1] : []
             setValue('dept', { label: Data.DepartmentName, value: Data.DepartmentId })
@@ -665,7 +663,6 @@ function ApproveRejectDrawer(props) {
 
 
     if (!isSimulation) {
-      console.log('bbbbbb');
       dispatch(getAllApprovalUserFilterByDepartment(obj, (res) => {
         res.data.DataList && res.data.DataList.map((item) => {
           if (item.Value === '0') return false;

@@ -243,12 +243,10 @@ class InterestRateListing extends Component {
     this.props.interestRateDataList.length !== 0 && this.setState({ noData: searchNocontentFilter(value, this.state.noData) })
   }
   jsFunction(filterVal) {
-    console.log('filterVal: ', filterVal);
     this.filterVal = filterVal;
     gridOptions.api.onFilterChanged(); //this invokes your custom logic by forcing grid filtering
   }
   doesExternalFilterPass = (value) => {
-    console.log('value: ', value);
 
   }
   /**

@@ -814,7 +814,6 @@ function AddRfq(props) {
     }
 
     const tooltipToggle = () => {
-        console.log(viewTooltip)
         setViewTooltip(!viewTooltip)
     }
 
