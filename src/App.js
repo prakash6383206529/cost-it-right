@@ -25,8 +25,12 @@ class App extends Component {
       if (res && res.data && res.data.Data) {
         let Data = res.data.Data;
         reactLocalStorage.setObject('InitialConfiguration', Data)
-        let CostingHeadsList = Data.CostingHeadsList
-        let costingHeadsListArray = CostingHeadsList.split(",")
+        let costingHeadsList = Data.CostingHeadsList
+        let costingHeadsListArray = costingHeadsList.split(",")
+
+        let approvalTypeList = Data.ApprovalTypeList
+        let approvalTypeListArray = approvalTypeList.split(",")
+
         let objShort = {};
         costingHeadsListArray && costingHeadsListArray.map(item => {
           let shortFormList = objShort[item.split("=")[0]] = item.match(/\d+/g)[0]
@@ -37,8 +41,28 @@ class App extends Component {
           let fullFormList = objFull[item.split("=")[1]] = item.match(/\d+/g)[0]
           return fullFormList
         })
+
+
+
+        let objShortApp = {};
+        approvalTypeListArray && approvalTypeListArray.map(item => {
+          let shortFormList = objShortApp[item.split("=")[0]] = item.match(/\d+/g)[0]
+          return shortFormList
+        })
+        let objFullApp = {}
+        approvalTypeListArray && approvalTypeListArray.map(item => {
+          let fullFormList = objFullApp[item.split("=")[1]] = item.match(/\d+/g)[0]
+          return fullFormList
+        })
+
+
         reactLocalStorage.setObject('CostingHeadsListShortForm', objShort)
         reactLocalStorage.setObject('CostingHeadsListFullForm', objFull)
+
+
+
+        reactLocalStorage.setObject('ApprovalTypeListShortForm', objShortApp)
+        reactLocalStorage.setObject('ApprovalTypeListFullForm', objFullApp)
       }
     })
   }

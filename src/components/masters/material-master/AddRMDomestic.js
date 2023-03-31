@@ -37,7 +37,7 @@ import AsyncSelect from 'react-select/async';
 import { getCostingSpecificTechnology } from '../../costing/actions/Costing';
 import { labelWithUOMAndCurrency } from '../../../helper';
 import { getClientSelectList, } from '../actions/Client';
-import { autoCompleteDropdown } from '../../common/CommonFunctions';
+import { autoCompleteDropdown, costingTypeIdToApprovalTypeIdFunction } from '../../common/CommonFunctions';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { checkFinalUser } from '../../../components/costing/actions/Costing'
@@ -187,7 +187,7 @@ class AddRMDomestic extends Component {
         UserId: loggedInUserId(),
         TechnologyId: RM_MASTER_ID,
         Mode: 'master',
-        approvalTypeId: this.state.costingTypeId,
+        approvalTypeId: costingTypeIdToApprovalTypeIdFunction(this.state.costingTypeId),
       }
 
       this.props.checkFinalUser(obj, (res) => {

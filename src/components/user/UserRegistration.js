@@ -30,7 +30,7 @@ import PopupMsgWrapper from "../common/PopupMsgWrapper";
 import { showDataOnHover } from "../../helper";
 import { useDispatch, useSelector } from 'react-redux'
 import { reactLocalStorage } from "reactjs-localstorage";
-import { autoCompleteDropdown } from "../common/CommonFunctions";
+import { autoCompleteDropdown, costingTypeIdToApprovalTypeIdFunction } from "../common/CommonFunctions";
 import _ from "lodash";
 
 var CryptoJS = require('crypto-js')
@@ -877,7 +877,7 @@ function UserRegistration(props) {
       Level: level.label,
       LevelId: level.value,
       ApprovalType: costingApprovalType?.label,
-      ApprovalTypeId: Number(costingApprovalType?.value),
+      ApprovalTypeId: costingTypeIdToApprovalTypeIdFunction(Number(costingApprovalType?.value)),
     }
 
     if (checkDuplicacy(TechnologyLevelGrid, obj, 'TechnologyId', technology.value, costingApprovalType.value, 'Technology', level.value)) return false
@@ -913,7 +913,7 @@ function UserRegistration(props) {
       Level: level.label,
       LevelId: level.value,
       ApprovalType: costingApprovalType?.label,
-      ApprovalTypeId: costingApprovalType?.value,
+      ApprovalTypeId: costingTypeIdToApprovalTypeIdFunction(costingApprovalType?.value),
     }
 
     if (checkDuplicacy(TechnologyLevelGrid, technologyLevelEditIndex, 'TechnologyId', technology.value, costingApprovalType.value, 'Technology', level.value)) return false
@@ -968,7 +968,7 @@ function UserRegistration(props) {
       Level: simualtionLevel.label,
       LevelId: simualtionLevel.value,
       ApprovalType: simulationApprovalType?.label,
-      ApprovalTypeId: Number(simulationApprovalType?.value),
+      ApprovalTypeId: costingTypeIdToApprovalTypeIdFunction(Number(simulationApprovalType?.value)),
     }
 
     if (checkDuplicacy(HeadLevelGrid, obj, 'TechnologyId', simulationHeads.value, simulationApprovalType.value, 'Simulation Head', simualtionLevel.value)) return false
@@ -1007,7 +1007,7 @@ function UserRegistration(props) {
       Level: simualtionLevel.label,
       LevelId: simualtionLevel.value,
       ApprovalType: simulationApprovalType?.label,
-      ApprovalTypeId: simulationApprovalType?.value,
+      ApprovalTypeId: costingTypeIdToApprovalTypeIdFunction(simulationApprovalType?.value),
     }
 
     if (checkDuplicacy(HeadLevelGrid, simulationLevelEditIndex, 'TechnologyId', simulationHeads.value, simulationApprovalType.value, 'Simulation Head', simualtionLevel.value)) return false
@@ -1143,7 +1143,7 @@ function UserRegistration(props) {
       Level: masterLevel.label,
       LevelId: masterLevel.value,
       ApprovalType: masterApprovalType?.label,
-      ApprovalTypeId: Number(masterApprovalType?.value),
+      ApprovalTypeId: costingTypeIdToApprovalTypeIdFunction(Number(masterApprovalType?.value)),
     }
 
     if (checkDuplicacy(masterLevelGrid, obj, 'MasterId', master.value, masterApprovalType.value, 'Master', masterLevel.value)) return false
@@ -1178,7 +1178,7 @@ function UserRegistration(props) {
       Level: masterLevel.label,
       LevelId: masterLevel.value,
       ApprovalType: masterApprovalType?.label,
-      ApprovalTypeId: masterApprovalType?.value,
+      ApprovalTypeId: costingTypeIdToApprovalTypeIdFunction(masterApprovalType?.value),
     }
 
     if (checkDuplicacy(masterLevelGrid, masterLevelEditIndex, 'MasterId', master.value, masterApprovalType.value, 'Master', masterLevel.value)) return false

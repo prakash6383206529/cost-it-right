@@ -12,6 +12,7 @@ import { getConfigurationKey } from './auth'
 import _ from 'lodash';
 import { useDispatch } from 'react-redux';
 import { getUsersSimulationTechnologyLevelAPI } from '../actions/auth/AuthActions'
+import { costingTypeIdToApprovalTypeIdFunction } from '../components/common/CommonFunctions';
 
 /**
  * @method  apiErrors
@@ -1132,7 +1133,7 @@ export function ceilByMultiple(number, multiple = 0.25) {
 
 export function userTechnologyLevelDetails(approvalTypeId, data = []) {
   let dataList = [...data]
-  let filteredData = dataList?.filter(element => element.ApprovalTypeId === approvalTypeId)
+  let filteredData = dataList?.filter(element => element.ApprovalTypeId === costingTypeIdToApprovalTypeIdFunction(approvalTypeId))
   let obj = {
     Level: filteredData[0]?.Level,
     LevelId: filteredData[0]?.LevelId,

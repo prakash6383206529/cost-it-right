@@ -44,6 +44,7 @@ import CalculatorWrapper from '../../common/Calculator/CalculatorWrapper';
 import { approvalPushedOnSap } from '../../costing/actions/Approval';
 import { PaginationWrapper } from '../../common/commonPagination';
 import { getUsersTechnologyLevelAPI } from '../../../actions/auth/AuthActions';
+import { costingTypeIdToApprovalTypeIdFunction } from '../../common/CommonFunctions';
 
 const gridOptions = {};
 const ExcelFile = ReactExport.ExcelFile;
@@ -213,7 +214,7 @@ function SimulationApprovalSummary(props) {
                 UserId: loggedInUserId(),
                 TechnologyId: SimulationTechnologyId,
                 Mode: 'simulation',
-                approvalTypeId: SimulationHeadId,
+                approvalTypeId: costingTypeIdToApprovalTypeIdFunction(SimulationHeadId),
             }
             dispatch(checkFinalUser(finalUserObj, res => {
                 if (res && res.data && res.data.Result) {

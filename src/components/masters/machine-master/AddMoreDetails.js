@@ -43,6 +43,7 @@ import TooltipCustom from '../../common/Tooltip';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { checkFinalUser } from '../../../components/costing/actions/Costing'
 import { getUsersMasterLevelAPI } from '../../../actions/auth/AuthActions';
+import { costingTypeIdToApprovalTypeIdFunction } from '../../common/CommonFunctions';
 
 const selector = formValueSelector('AddMoreDetails');
 
@@ -197,7 +198,7 @@ class AddMoreDetails extends Component {
         DepartmentId: userDetails().DepartmentId,
         UserId: loggedInUserId(),
         Mode: 'master',
-        approvalTypeId: ZBCTypeId
+        approvalTypeId: costingTypeIdToApprovalTypeIdFunction(ZBCTypeId)
       }
       this.setState({ finalApprovalLoader: true })
       this.props.checkFinalUser(obj, (res) => {
