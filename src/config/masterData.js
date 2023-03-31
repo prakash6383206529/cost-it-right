@@ -342,11 +342,11 @@ export const RMImportZBC = [
     { label: "UOM", value: "UOM" }, //*
     { label: "Currency", value: "Currency" }, //*
     { label: "BasicRate", value: "BasicRate" }, //*
-    { label: "ScrapRate", value: "ScrapRate" }, //*
+    { label: "ScrapRate/JaliScrapCost", value: "ScrapRate" }, //*
     { label: "CutOffPrice", value: "CutOffPrice" }, //*
     { label: "FreightCost", value: "FreightCost" }, //*
     { label: "ShearingCost", value: "ShearingCost" }, //*
-    { label: "JaliScrapCost", value: "JaliScrapCost" }, //*
+    { label: "CircleSrapCost", value: "CircleSrapCost" }, //*
     { label: "EffectiveDate", value: "EffectiveDate" }, //*
     { label: "Remark", value: "Remark" },
 ]
