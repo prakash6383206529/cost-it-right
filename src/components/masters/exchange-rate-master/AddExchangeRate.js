@@ -1,13 +1,12 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Field, reduxForm, formValueSelector } from "redux-form";
+import { Field, reduxForm, formValueSelector, clearFields } from "redux-form";
 import { Row, Col, Label, } from 'reactstrap';
 import { required, positiveAndDecimalNumber, maxLength10, decimalLengthsix, maxPercentValue, number, checkWhiteSpaces, percentageLimitValidation, checkPercentageValue, } from "../../../helper/validation";
 import { createExchangeRate, getExchangeRateData, updateExchangeRate, getCurrencySelectList, } from '../actions/ExchangeRateMaster';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import { loggedInUserId, } from "../../../helper/auth";
-import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import DayTime from '../../common/DayTimeWrapper'
 import { renderDatePicker, renderText, renderTextInputField, searchableSelect, } from "../../layout/FormInputs";
@@ -74,6 +73,16 @@ class AddExchangeRate extends Component {
    * @description Used for Vendor checked
    */
   onPressVendor = (costingHeadFlag) => {
+    const fieldsToClear = [
+      'Currency',
+      'EffectiveDate',
+      'vendorName',
+      'clientName',
+      'CurrencyExchangeRate'
+    ];
+    fieldsToClear.forEach(fieldName => {
+      this.props.dispatch(clearFields('AddExchangeRate', false, false, fieldName));
+    });
     this.setState({
       vendorName: [],
       costingTypeId: costingHeadFlag,

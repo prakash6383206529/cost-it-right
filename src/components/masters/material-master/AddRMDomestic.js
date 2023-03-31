@@ -1,6 +1,6 @@
 import React, { Component, } from 'react';
 import { connect } from 'react-redux';
-import { Field, reduxForm, formValueSelector } from "redux-form";
+import { Field, reduxForm, formValueSelector, clearFields } from "redux-form";
 import { Row, Col, Label, } from 'reactstrap';
 import { required, getVendorCode, positiveAndDecimalNumber, maxLength15, acceptAllExceptSingleSpecialCharacter, maxLength70, maxLength512, checkForDecimalAndNull, checkForNull, decimalLengthsix, number } from "../../../helper/validation";
 import { renderText, renderTextInputField, searchableSelect, renderMultiSelectField, renderTextAreaField, focusOnError, renderDatePicker, } from '../../layout/FormInputs'
@@ -546,6 +546,28 @@ class AddRMDomestic extends Component {
    * @description Used for Vendor checked
    */
   onPressVendor = (costingHeadFlag) => {
+    const fieldsToClear = ['TechnologyId',
+      'RawMaterialId',
+      'RawMaterialGradeId',
+      'RawMaterialSpecificationId',
+      'CategoryId',
+      'Code',
+      'SourceSupplierPlantId',
+      'DestinationPlant',
+      "UnitOfMeasurementId",
+      "cutOffPrice",
+      "BasicRate",
+      "ScrapRate",
+      "ForgingScrap",
+      "MachiningScrap",
+      "CircleScrapCost",
+      "JaliScrapCost",
+      "FrieghtCharge",
+      "EffectiveDate",
+      "clientName"];
+    fieldsToClear.forEach(fieldName => {
+      this.props.dispatch(clearFields('AddRMDomestic', false, false, fieldName));
+    });
     this.setState({
       vendorName: [],
       costingTypeId: costingHeadFlag

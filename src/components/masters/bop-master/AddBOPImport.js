@@ -1,6 +1,6 @@
 import React, { Component, } from 'react';
 import { connect } from 'react-redux';
-import { Field, reduxForm, formValueSelector } from "redux-form";
+import { Field, reduxForm, formValueSelector, clearFields } from "redux-form";
 import { Row, Col, Label, } from 'reactstrap';
 import {
   required, checkForNull, checkForDecimalAndNull, acceptAllExceptSingleSpecialCharacter, maxLength20,
@@ -197,6 +197,21 @@ class AddBOPImport extends Component {
    * @description Used for Vendor checked
    */
   onPressVendor = (costingHeadFlag) => {
+    const fieldsToClear = [
+      'BoughtOutPartNumber',
+      'BoughtOutPartName',
+      'BOPCategory',
+      'Specification',
+      'Plant',
+      "UOM",
+      "cutOffPrice",
+      "BasicRate",
+      "Currency",
+      "EffectiveDate",
+      "clientName"];
+    fieldsToClear.forEach(fieldName => {
+      this.props.dispatch(clearFields('AddBOPImport', false, false, fieldName));
+    });
     this.setState({
       vendorName: [],
       costingTypeId: costingHeadFlag,

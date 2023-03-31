@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Field, reduxForm, formValueSelector, propTypes } from "redux-form";
+import { Field, reduxForm, formValueSelector, propTypes, clearFields } from "redux-form";
 import { Row, Col, Label, } from 'reactstrap';
 import { required, postiveNumber, maxLength10, nonZero, number, positiveAndDecimalNumber, checkPercentageValue, decimalLengthThree } from "../../../helper/validation";
 import { renderDatePicker, renderMultiSelectField, renderTextInputField, searchableSelect, renderNumberInputField } from "../../layout/FormInputs";
@@ -149,6 +149,20 @@ class AddInterestRate extends Component {
   * @description Used for Vendor checked
   */
   onPressVendor = (costingHeadFlag) => {
+    const fieldsToClear = [
+      'Mode',
+      'vendorName',
+      'Plant',
+      'DestinationPlant',
+      'clientName',
+      'ICCPercent',
+      'ICCApplicability',
+      'PaymentTermsApplicability',
+      'EffectiveDate',
+    ];
+    fieldsToClear.forEach(fieldName => {
+      this.props.dispatch(clearFields('AddInterestRate', false, false, fieldName));
+    });
     this.setState({
       vendorName: [],
       costingTypeId: costingHeadFlag

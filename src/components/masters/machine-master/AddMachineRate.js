@@ -1,6 +1,6 @@
 import React, { Component, } from 'react';
 import { connect } from 'react-redux';
-import { Field, reduxForm, formValueSelector, isDirty } from "redux-form";
+import { Field, reduxForm, formValueSelector, isDirty, clearFields } from "redux-form";
 import { Row, Col, Table, Label } from 'reactstrap';
 import {
   required, checkForNull, postiveNumber, checkForDecimalAndNull, acceptAllExceptSingleSpecialCharacter,
@@ -422,6 +422,17 @@ class AddMachineRate extends Component {
     * @description Used for Vendor checked
     */
   onPressVendor = (costingHeadFlag) => {
+    const fieldsToClear = [
+      'technology',
+      'vendorName',
+      'Plant',
+      'DestinationPlant',
+      'clientName',
+      'EffectiveDate',
+    ];
+    fieldsToClear.forEach(fieldName => {
+      this.props.dispatch(clearFields('AddMachineRate', false, false, fieldName));
+    });
     this.setState({
       costingTypeId: costingHeadFlag,
       vendorName: [],

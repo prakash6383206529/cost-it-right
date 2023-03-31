@@ -30,7 +30,7 @@ function AddToComparisonDrawer(props) {
     clientName: customerId !== '-' ? { label: customerName, value: customerId } : '',
   }
 
-  const { register, handleSubmit, control, setValue, formState: { errors } } = useForm({
+  const { register, handleSubmit, control, setValue, formState: { errors }, reset } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
     defaultValues: defaultValue
@@ -199,6 +199,7 @@ function AddToComparisonDrawer(props) {
    * @description for handling rendering for different checkbox
    */
   const handleComparison = (value) => {
+    reset()
     setValue('comparisonValue', value)
     if ((value) === ZBCTypeId) {
       setIsZbcSelected(true)
