@@ -281,7 +281,6 @@ function AddBudget(props) {
      */
     const beforeSaveCell = (props) => {
 
-        console.log(props, "props")
         const cellValue = props
         if (Number.isInteger(Number(cellValue)) && /^\+?(0|[1-9]\d*)$/.test(cellValue) && cellValue.toString().replace(/\s/g, '').length) {
             if (cellValue.length > 8) {
