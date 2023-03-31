@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { Row, Col, } from 'reactstrap';
+import { Row, Col, Tooltip, } from 'reactstrap';
 import DayTime from '../../../common/DayTimeWrapper'
 import { defaultPageSize, EMPTY_DATA } from '../../../../config/constants';
 import NoContentFound from '../../../common/NoContentFound';
@@ -17,7 +17,6 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import Simulation from '../Simulation';
 import { debounce } from 'lodash'
-import { VBC, ZBC } from '../../../../config/constants';
 import { PaginationWrapper } from '../../../common/commonPagination';
 import DatePicker from "react-datepicker";
 import WarningMessage from '../../../common/WarningMessage';
@@ -44,7 +43,8 @@ function BDSimulation(props) {
     const [maxDate, setMaxDate] = useState('');
     const [titleObj, setTitleObj] = useState({})
     const [noData, setNoData] = useState(false);
-
+    const [showTooltip, setShowTooltip] = useState(false)
+    const [basicRateviewTooltip, setBasicRateViewTooltip] = useState(false)
 
     const { register, control, setValue, formState: { errors }, } = useForm({
         mode: 'onChange',
@@ -263,7 +263,13 @@ function BDSimulation(props) {
 
         }
     }
-
+    const revisedBasicRateHeader = (props) => {
+        return (
+            <div className='ag-header-cell-label'>
+                <span className='ag-header-cell-text'>Revised<i className={`fa fa-info-circle tooltip_custom_right tooltip-icon mb-n3 ml-4 mt2 `} id={"basicRate-tooltip"}></i> </span>
+            </div>
+        );
+    };
     const cancel = () => {
         list && list.map((item) => {
             item.NewBasicRate = undefined
@@ -290,6 +296,9 @@ function BDSimulation(props) {
         setGridApi(params.api)
         setGridColumnApi(params.columnApi)
         params.api.paginationGoToPage(0);
+        setTimeout(() => {
+            setShowTooltip(true)
+        }, 100);
     };
     const onFloatingFilterChanged = (value) => {
         if (list.length !== 0) {
@@ -336,8 +345,13 @@ function BDSimulation(props) {
         cellChange: cellChange,
         oldBasicRateFormatter: oldBasicRateFormatter,
         vendorFormatter: vendorFormatter,
-        plantFormatter: plantFormatter
+        plantFormatter: plantFormatter,
+        revisedBasicRateHeader: revisedBasicRateHeader
     };
+
+    const basicRatetooltipToggle = () => {
+        setBasicRateViewTooltip(!basicRateviewTooltip)
+    }
 
     return (
 
@@ -346,7 +360,7 @@ function BDSimulation(props) {
                 {
                     (!showverifyPage && !showMainSimulation) &&
                     <Fragment>
-
+                        {showTooltip && <Tooltip className="rfq-tooltip-left" placement={"top"} isOpen={basicRateviewTooltip} toggle={basicRatetooltipToggle} target={"basicRate-tooltip"} >{"To add revised basic rate please double click on the field."}</Tooltip>}
                         <Row>
                             <Col className={`add-min-height mb-3 sm-edit-page  ${(list && list?.length <= 0) || noData ? "overlay-contain" : ""}`}>
                                 <div className="ag-grid-wrapper height-width-wrapper">
@@ -436,7 +450,7 @@ function BDSimulation(props) {
 
                                             <AgGridColumn headerClass="justify-content-center" cellClass="text-center" headerName={Number(selectedMasterForSimulation?.value) === 5 ? "Basic Rate (Currency)" : "Basic Rate (INR)"} marryChildren={true} width={240}>
                                                 <AgGridColumn width={120} field="BasicRate" editable='false' cellRenderer='oldBasicRateFormatter' headerName="Existing" colId="BasicRate"></AgGridColumn>
-                                                <AgGridColumn width={120} cellRenderer='newBasicRateFormatter' editable={!isImpactedMaster} onCellValueChanged='cellChange' field="NewBasicRate" headerName="Revised" colId='NewBasicRate'></AgGridColumn>
+                                                <AgGridColumn width={120} cellRenderer='newBasicRateFormatter' editable={!isImpactedMaster} onCellValueChanged='cellChange' field="NewBasicRate" headerName="Revised" colId='NewBasicRate' headerComponent={'revisedBasicRateHeader'}></AgGridColumn>
                                             </AgGridColumn>
 
                                             <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName={Number(selectedMasterForSimulation?.value) === 5 ? "Net Cost (Currency)" : "Net Cost (INR)"} marryChildren={true}>
