@@ -491,3 +491,16 @@
     }
   }
 }
+
+.tab-disount-total-cost {
+  display: flex;
+  align-items: center;
+  justify-content: end;
+  margin-bottom: 8px;
+
+  span {
+    font-weight: 700;
+    color: $headinlightgblack;
+    margin-right: 4px;
+  }
+}

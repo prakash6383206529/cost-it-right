@@ -3275,7 +3275,7 @@ button:disabled,
   thead {
     th {
       color: #3D4465;
-      font-weight: normal;
+      font-weight: 500;
     }
   }
 }
@@ -3438,13 +3438,14 @@ body {
   border-left: 1px solid $borderColor;
   border-right: 1px solid $borderColor;
 
-  .col-md-3,
-  .col-md-6 {
-    border-top: 1px solid $borderColor;
-    padding: 12px 15px;
+  @for $i from 1 through 12 {
+    .col-md-#{$i} {
+      border-top: 1px solid $borderColor;
+      padding: 12px 15px;
 
-    .form-group.inputbox.withBorder {
-      margin-bottom: 0px;
+      .form-group.inputbox.withBorder {
+        margin-bottom: 0px;
+      }
     }
   }
 }
@@ -7943,6 +7944,19 @@ body {
 // <-------------END Hover text overflow and show on hover  css----------->
 
 // <-------START simulation-label-container css-------->
+.disabled-input-data {
+  white-space: nowrap;
+  padding: 6px 10px 5px 10px;
+  background: #e6e6e6;
+  border-radius: 4px;
+  color: #616366;
+  font-size: 15px;
+  max-width: 300px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-height: 36px;
+}
+
 .simulation-label-container {
   div {
     align-items: center;
@@ -7953,17 +7967,7 @@ body {
     }
 
     p {
-      white-space: nowrap;
-      padding: 6px 10px 5px 10px;
-      background: #e6e6e6;
-      border-radius: 4px;
-      color: #616366;
-      font-size: 15px;
-      max-width: 300px;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      min-height: 36px;
-
+      @extend .disabled-input-data;
     }
   }
 }
@@ -8167,6 +8171,16 @@ body {
           background-color: #FEDCE2 !important;
         }
       }
+    }
+  }
+
+  .forging-cal-table {
+    td {
+      font-weight: normal;
+    }
+
+    .table-footer td {
+      background-color: #E0E9F5 !important;
     }
   }
 }
@@ -8939,4 +8953,12 @@ table.group-process-table {
     white-space: nowrap;
     margin-top: 15px;
   }
+}
+
+.border-bottomRowMerge {
+  border-bottom: 1px solid $agGridBorder !important;
+}
+
+.table-footer {
+  background-color: $tableFooterBackground;
 }

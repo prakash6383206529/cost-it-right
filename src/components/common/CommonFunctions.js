@@ -97,6 +97,17 @@ export const hideCustomerFromExcel = (data, value) => {
     return excelData
 }
 
+export const hideColumnFromExcel = (data, value) => {
+    let excelData
+    excelData = data && data.map((item) => {
+        if (item.value === value) {
+            return false
+        } else {
+            return item
+        }
+    })
+    return excelData
+}
 export const costingTypeIdToApprovalTypeIdFunction = (value) => {
     let approvalTypeId;
     switch (value) {

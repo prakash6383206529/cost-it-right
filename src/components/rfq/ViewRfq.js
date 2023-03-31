@@ -26,7 +26,7 @@ import { Link } from 'react-scroll';
 import RemarkHistoryDrawer from './RemarkHistoryDrawer';
 import DayTime from '../common/DayTimeWrapper';
 import { hyphenFormatter } from '../masters/masterUtil';
-import _ from 'lodash';
+import _, { isNumber } from 'lodash';
 const gridOptions = {};
 
 
@@ -495,8 +495,61 @@ function RfqListing(props) {
         )
     }
 
+    // Function that takes an array of objects as an input and returns the same array with an additional object representing the "best cost"
+    const bestCostObjectFunction = (arrayList) => {
+        // Create a copy of the input array to prevent mutation
+        let finalArrayList = [...arrayList];
 
+        // Check if the input array is empty or null
+        if (!finalArrayList || finalArrayList.length === 0) {
+            // If so, return an empty array
+            return [];
+        } else {
+            // Define an array of keys to check when finding the "best cost"
+            const keysToCheck = ["netRM", "netBOP", "pCost", "oCost", "sTreatment", "nPackagingAndFreight", "totalToolCost", "nsTreamnt", "tCost", "nConvCost", "nTotalRMBOPCC", "netSurfaceTreatmentCost", "nOverheadProfit", "nPoPriceCurrency", "nPOPrice", "nPOPriceWithCurrency"];
+            // const keysToCheck = ["nPOPriceWithCurrency"];
 
+            // Create a new object to represent the "best cost" and set it to the first object in the input array
+            let minObject = { ...finalArrayList[0] };
+
+            // Loop through each object in the input array
+            for (let i = 0; i < finalArrayList?.length; i++) {
+                // Get the current object
+                let currentObject = finalArrayList[i];
+
+                // Loop through each key in the current object
+                for (let key in currentObject) {
+                    // Check if the key is in the keysToCheck array
+                    if (keysToCheck?.includes(key)) {
+                        // Check if the current value and the minimum value for this key are both numbers
+                        if (isNumber(currentObject[key]) && isNumber(minObject[key])) {
+                            // If so, check if the current value is smaller than the minimum value
+                            if (checkForNull(currentObject[key]) < checkForNull(minObject[key])) {
+                                // If so, set the current value as the minimum value
+                                minObject[key] = currentObject[key];
+                            }
+                            // If the current value is an array
+                        } else if (Array.isArray(currentObject[key])) {
+                            // Set the minimum value for this key to an empty array
+                            minObject[key] = [];
+                        }
+                    } else {
+                        // If the key is not in the keysToCheck array, set the minimum value for this key to a dash
+                        minObject[key] = "-";
+                        // delete minObject[key];
+                    }
+                }
+                // Set the attachment and bestCost properties of the minimum object
+                minObject.attachment = []
+                minObject.bestCost = true
+            }
+            // Add the minimum object to the end of the array
+            finalArrayList.push(minObject);
+        }
+
+        // Return the modified array
+        return finalArrayList;
+    }
 
     const addComparisonDrawerToggle = () => {
 
@@ -517,7 +570,8 @@ function RfqListing(props) {
                     return null
                 })
 
-                dispatch(setCostingViewData(temp))
+                let arr = bestCostObjectFunction(temp)
+                dispatch(setCostingViewData(arr))
                 setaddComparisonToggle(true)
             }
         },
@@ -540,7 +594,7 @@ function RfqListing(props) {
         const selectedRows = gridApi?.getSelectedRows()
         let partNumber = []
 
-        selectedRows.map(item => partNumber.push(item.PartNo))                 //STORE ALL PARS NUMBER
+        selectedRows?.map(item => partNumber.push(item.PartNo))                 //STORE ALL PARS NUMBER
 
         let data = partNumber.map(item => rowData.filter(el => el.PartNumber === item))             // SELECTED ALL COSTING ON THE CLICK ON PART
         let newArray = []
@@ -562,7 +616,7 @@ function RfqListing(props) {
 
     const dateFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        return (cellValue != null && cellValue !== '' && cellValue !== undefined) ? DayTime(cellValue).format('DD/MM/YYYY') : '';
+        return (cellValue != null && cellValue !== '' && cellValue !== undefined) ? DayTime(cellValue).format('DD/MM/YYYY') : '-';
     }
 
     const isRowSelectable = rowNode => rowNode.data ? rowNode?.data?.ShowCheckBox : false;
@@ -617,7 +671,7 @@ function RfqListing(props) {
                                         <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}>
                                             <div className="refresh mr-0"></div>
                                         </button>
-                                        <Link to={"rfq-compare-drawer"} smooth={true} spy={true} offset={-250}>
+                                        {rowData[0]?.IsVisibiltyConditionMet === true && <Link to={"rfq-compare-drawer"} smooth={true} spy={true} offset={-250}>
                                             <button
                                                 type="button"
                                                 className={'user-btn comparison-btn ml-1'}
@@ -625,7 +679,7 @@ function RfqListing(props) {
                                                 onClick={addComparisonDrawerToggle}
                                             >
                                                 <div className="compare-arrows"></div>Compare</button>
-                                        </Link>
+                                        </Link>}
                                         <button type="button" className={"apply ml-1"} onClick={cancel}> <div className={'back-icon'}></div>Back</button>
 
                                     </>
@@ -664,13 +718,13 @@ function RfqListing(props) {
                                             <AgGridColumn field="VendorName" headerName='Vendor (Code)'></AgGridColumn>
                                             <AgGridColumn field="PlantName" headerName='Plant (Code)'></AgGridColumn>
                                             {/* <AgGridColumn field="PartNumber" headerName="Attachment "></AgGridColumn> */}
-                                            <AgGridColumn field="Remark" headerName='Remark' cellRenderer='hyphenFormatter'></AgGridColumn>
-                                            <AgGridColumn field="CostingNumber" headerName=' Costing Number'></AgGridColumn>
+                                            <AgGridColumn field="Remark" headerName='Remark' cellRenderer={hyphenFormatter}></AgGridColumn>
+                                            <AgGridColumn field="CostingNumber" headerName=' Costing Number' cellRenderer={hyphenFormatter}></AgGridColumn>
                                             <AgGridColumn field="CostingId" headerName='Costing Id ' hide={true}></AgGridColumn>
-                                            <AgGridColumn field="NetPOPrice" headerName=" Net PO Price"></AgGridColumn>
-                                            <AgGridColumn field="SubmissionDate" headerName='Submission Date' cellRenderer='dateFormatter'></AgGridColumn>
-                                            <AgGridColumn field="EffectiveDate" headerName='Effective Date' cellRenderer='dateFormatter'></AgGridColumn>
-                                            {<AgGridColumn width={200} field="QuotationId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
+                                            <AgGridColumn field="NetPOPrice" headerName=" Net PO Price" cellRenderer={hyphenFormatter}></AgGridColumn>
+                                            <AgGridColumn field="SubmissionDate" headerName='Submission Date' cellRenderer={dateFormatter}></AgGridColumn>
+                                            <AgGridColumn field="EffectiveDate" headerName='Effective Date' cellRenderer={dateFormatter}></AgGridColumn>
+                                            {rowData[0]?.IsVisibiltyConditionMet === true && <AgGridColumn width={200} field="QuotationId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
 
                                         </AgGridReact>
                                         {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} globalTake={10} />}
@@ -743,7 +797,9 @@ function RfqListing(props) {
                                 approvalMode={true}
                                 // isApproval={approvalData.LastCostingId !== EMPTY_GUID ? true : false}
                                 simulationMode={false}
-                                costingIdExist={true} />
+                                costingIdExist={true}
+                                bestCostObjectFunction={bestCostObjectFunction}
+                            />
                         )}
                     </div>
                 }

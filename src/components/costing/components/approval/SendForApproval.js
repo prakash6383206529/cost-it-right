@@ -39,8 +39,6 @@ const SendForApproval = (props) => {
   const reasonsList = useSelector((state) => state.approval.reasonsList)
   const deptList = useSelector((state) => state.approval.approvalDepartmentList)
   const viewApprovalData = useSelector((state) => state.costing.costingApprovalData)
-
-
   const partNo = useSelector((state) => state.costing.partNo)
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
 
@@ -357,7 +355,7 @@ const SendForApproval = (props) => {
         tempObj.ImpactOfTheYear = data.yearImpact
         tempObj.Remark = getValues("remarks")
         tempObj.IsApproved = true
-
+        tempObj.BasicRate = data.BasicRate
         temp.push(tempObj)
         return null
       })
@@ -476,6 +474,7 @@ const SendForApproval = (props) => {
         tempObj.CustomerId = data.customerId
         tempObj.CustomerName = data.customerName
         tempObj.CustomerCode = data.customerCode
+        tempObj.BasicRate = data.BasicRate
         temp.push(tempObj)
         return null
       })
@@ -491,11 +490,6 @@ const SendForApproval = (props) => {
         dispatch(setCostingViewData([]))
       }))
     }
-
-
-
-
-
 
   }), 500)
 
@@ -769,7 +763,14 @@ const SendForApproval = (props) => {
                           </div>
                           {/* </div> */}
                         </Col>
-
+                        <Col md="4">
+                          <div className="form-group">
+                            <label>Basic Price</label>
+                            <label className="form-control bg-grey input-form-control">
+                              {data.BasicRate && data.BasicRate !== '-' ? checkForDecimalAndNull(data.BasicRate, initialConfiguration.NoOfDecimalForPrice) : 0}
+                            </label>
+                          </div>
+                        </Col>
                         <Col md="4">
                           <div className="form-group">
                             <label>Existing Price</label>

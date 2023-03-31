@@ -16,7 +16,7 @@ import { getApprovalSimulatedCostingSummary, getComparisionSimulationData, getIm
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css';
 import Toaster from '../../common/Toaster';
-import { EXCHNAGERATE, RMDOMESTIC, RMIMPORT, FILE_URL, ZBC, SURFACETREATMENT, OPERATIONS, BOPDOMESTIC, BOPIMPORT, AssemblyWiseImpactt, ImpactMaster, defaultPageSize, MACHINERATE, VBCTypeId, } from '../../../config/constants';
+import { EXCHNAGERATE, RMDOMESTIC, RMIMPORT, FILE_URL, ZBC, SURFACETREATMENT, OPERATIONS, BOPDOMESTIC, BOPIMPORT, AssemblyWiseImpactt, ImpactMaster, defaultPageSize, MACHINERATE, VBCTypeId, CBCTypeId, } from '../../../config/constants';
 import CostingSummaryTable from '../../costing/components/CostingSummaryTable';
 import { checkForDecimalAndNull, formViewData, checkForNull, getConfigurationKey, loggedInUserId, searchNocontentFilter, userTechnologyLevelDetails } from '../../../helper';
 import ApproveRejectDrawer from '../../costing/components/approval/ApproveRejectDrawer';
@@ -43,6 +43,8 @@ import _ from 'lodash'
 import CalculatorWrapper from '../../common/Calculator/CalculatorWrapper';
 import { PaginationWrapper } from '../../common/commonPagination';
 import { getUsersTechnologyLevelAPI } from '../../../actions/auth/AuthActions';
+import { hideColumnFromExcel } from '../../common/CommonFunctions';
+import { reactLocalStorage } from 'reactjs-localstorage';
 import { costingTypeIdToApprovalTypeIdFunction } from '../../common/CommonFunctions';
 
 const gridOptions = {};
@@ -470,14 +472,22 @@ function SimulationApprovalSummary(props) {
     }
 
     const returnExcelColumn = (data = [], TempData) => {
-
-
+        let tempData = [...data]
+        if (!reactLocalStorage.getObject('cbcCostingPermission')) {
+            tempData = hideColumnFromExcel(tempData, 'CustomerName')
+        } else {
+            if (simulationDetail?.SimulationHeadId === CBCTypeId) {
+                tempData = hideColumnFromExcel(tempData, 'VendorName')
+            } else {
+                tempData = hideColumnFromExcel(tempData, 'CustomerName')
+            }
+        }
         let temp = []
         temp = SimulationUtils(TempData)    // common function 
 
 
         return (<ExcelSheet data={temp} name={'Costing Summary'}>
-            {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
+            {tempData && tempData.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
         </ExcelSheet>);
     }
 
@@ -979,7 +989,8 @@ function SimulationApprovalSummary(props) {
                                             <th>Parts Supplied:</th>
                                             <th>Department Code:</th>
                                             {String(SimulationTechnologyId) !== EXCHNAGERATE && <th>Costing Head:</th>}
-                                            <th>Vendor (Code):</th>
+                                            {simulationDetail?.SimulationHeadId !== CBCTypeId && <th>Vendor (Code):</th>}
+                                            {simulationDetail?.SimulationHeadId === CBCTypeId && <th>Customer (Code):</th>}
                                             <th>Impacted Parts:</th>
                                             <th>Reason:</th>
                                             <th>Master:</th>
@@ -995,7 +1006,8 @@ function SimulationApprovalSummary(props) {
                                             <td>{simulationDetail && simulationDetail.AmendmentDetails?.PartsSupplied}</td>
                                             <td>{simulationDetail && simulationDetail.DepartmentCode ? simulationDetail.DepartmentCode : '-'}</td>
                                             {String(SimulationTechnologyId) !== EXCHNAGERATE && <td>{simulationDetail && simulationDetail.AmendmentDetails?.CostingHead}</td>}
-                                            <td>{simulationDetail && simulationDetail.AmendmentDetails?.VendorName}</td>
+                                            {simulationDetail?.SimulationHeadId !== CBCTypeId && <td>{simulationDetail && simulationDetail.AmendmentDetails?.VendorName}</td>}
+                                            {simulationDetail?.SimulationHeadId === CBCTypeId && <td>{simulationDetail && simulationDetail.AmendmentDetails?.CustomerName}</td>}
                                             <td>{simulationDetail && simulationDetail.AmendmentDetails?.ImpactParts}</td>
                                             <td>{simulationDetail && simulationDetail.AmendmentDetails?.Reason}</td>
                                             <td>{simulationDetail && simulationDetail.AmendmentDetails?.SimulationTechnology}</td>
@@ -1148,7 +1160,8 @@ function SimulationApprovalSummary(props) {
                                                                 <AgGridColumn width={160} field="PartName" headerName='Part Name'></AgGridColumn>
                                                                 <AgGridColumn width={150} field="ECNNumber" headerName='ECN No.' cellRenderer='ecnFormatter'></AgGridColumn>
                                                                 <AgGridColumn width={150} field="RevisionNumber" headerName='Revision No.' cellRenderer='revisionFormatter'></AgGridColumn>
-                                                                <AgGridColumn width={150} field="VendorName" headerName="Vendor (Code)"></AgGridColumn>
+                                                                {costingList[0]?.CostingHeadId !== CBCTypeId && <AgGridColumn width={150} field="VendorName" headerName="Vendor (Code)"></AgGridColumn>}
+                                                                {costingList[0]?.CostingHeadId === CBCTypeId && <AgGridColumn width={150} field="CustomerName" headerName="Customer (Code)"></AgGridColumn>}
                                                                 {String(SimulationTechnologyId) !== EXCHNAGERATE && <AgGridColumn width={150} field="PlantName" headerName='Plant (Code)' cellRenderer={'plantFormatter'} ></AgGridColumn>}
                                                                 <AgGridColumn width={140} field="BudgetedPrice" headerName='Budgeted Price' cellRenderer='impactPerQuarterFormatter'></AgGridColumn>
 

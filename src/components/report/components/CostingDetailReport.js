@@ -886,6 +886,7 @@ function ReportListing(props) {
                             <AgGridColumn field='Currency' headerName='Currency' cellRenderer='hyphenFormatter'></AgGridColumn>
                             <AgGridColumn field='NCCPartQuantity' headerName='Quantity' cellRenderer='hyphenFormatter'></AgGridColumn>
                             <AgGridColumn field='IsRegularized' headerName='Is Regularized' cellRenderer='hyphenFormatter'></AgGridColumn>
+                            <AgGridColumn field='BasicRate' headerName='Basic Price' cellRenderer='decimalPriceFormatter'></AgGridColumn>
                             <AgGridColumn field='NetPOPriceOtherCurrency' headerName='Net PO Price Other Currency' cellRenderer='decimalPriceFormatter'></AgGridColumn>
                             <AgGridColumn field='NetPOPriceINR' headerName='Net PO Price (INR)' cellRenderer='decimalPriceFormatter'></AgGridColumn>
                             <AgGridColumn field='Remark' headerName='Remark' cellRenderer='hyphenFormatter'></AgGridColumn>

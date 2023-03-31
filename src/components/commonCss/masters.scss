@@ -173,6 +173,15 @@
   right: -50px;
 }
 
+.form-group.inputbox.po-series {
+  margin-bottom: 0;
+  min-height: auto !important;
+
+  .text-help.mb-2 {
+    position: absolute;
+  }
+}
+
 .bulkupload-drawer {
   .dzu-dropzone {
     min-height: 120px;

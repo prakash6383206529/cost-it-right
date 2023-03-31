@@ -5,6 +5,7 @@
 @import "./costing.scss";
 @import "./rfq.scss";
 @import "./report.scss";
+@import "./nfr.scss";
 
 @import url("https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700&display=swap");
 @import "../../../node_modules/ag-grid-community/src/styles/ag-grid.scss";
@@ -46,6 +47,39 @@
 
   .mr#{$i} {
     margin-right: #{$i}px;
+  }
+}
+
+//GENERATE THE WIDTH FOR LAYOUT AND CUSTOM ELEMENTS
+$base: 20px;
+$max: 100;
+
+@for $i from 0 through $max {
+  $width: $i * $base;
+  $customWidth: $i * 2px;
+
+  .layout-width-#{$width} {
+    width: $width;
+  }
+
+  .layout-max-width-#{$width} {
+    max-width: $width;
+  }
+
+  .layout-min-width-#{$width} {
+    min-width: $width;
+  }
+
+  .custom-width-#{$customWidth} {
+    width: $customWidth;
+  }
+
+  .custom-max-width-#{$customWidth} {
+    max-width: $customWidth;
+  }
+
+  .custom-min-width-#{$customWidth} {
+    min-width: $customWidth;
   }
 }
 
