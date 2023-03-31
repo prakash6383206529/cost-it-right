@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { Row, Col, } from 'reactstrap';
+import { Row, Col, Tooltip, } from 'reactstrap';
 import DayTime from '../../../common/DayTimeWrapper'
-import { defaultPageSize, EMPTY_DATA, OPERATIONS, SURFACETREATMENT } from '../../../../config/constants';
+import { defaultPageSize, EMPTY_DATA } from '../../../../config/constants';
 import NoContentFound from '../../../common/NoContentFound';
 import { checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUserId, searchNocontentFilter } from '../../../../helper';
 import Toaster from '../../../common/Toaster';
@@ -15,7 +15,6 @@ import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import Simulation from '../Simulation';
 import debounce from 'lodash.debounce';
 import { TextFieldHookForm } from '../../../layout/HookFormInputs';
-import { VBC, ZBC } from '../../../../config/constants';
 import { runVerifySurfaceTreatmentSimulation } from '../../actions/Simulation';
 import VerifySimulation from '../VerifySimulation';
 import { PaginationWrapper } from '../../../common/commonPagination';
@@ -27,7 +26,7 @@ const gridOptions = {
 
 };
 function OperationSTSimulation(props) {
-    const { list, isbulkUpload, rowCount, isImpactedMaster, masterId, lastRevision, tokenForMultiSimulation } = props
+    const { list, isbulkUpload, rowCount, isImpactedMaster, lastRevision, tokenForMultiSimulation } = props
     const [showRunSimulationDrawer, setShowRunSimulationDrawer] = useState(false)
     const [showverifyPage, setShowVerifyPage] = useState(false)
     const [token, setToken] = useState('')
@@ -41,7 +40,8 @@ function OperationSTSimulation(props) {
     const [maxDate, setMaxDate] = useState('');
     const [titleObj, setTitleObj] = useState({})
     const [noData, setNoData] = useState(false);
-
+    const [showTooltip, setShowTooltip] = useState(false)
+    const [basicRateviewTooltip, setBasicRateViewTooltip] = useState(false)
     const gridRef = useRef();
 
     const { register, control, setValue, formState: { errors }, } = useForm({
@@ -173,7 +173,13 @@ function OperationSTSimulation(props) {
         return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
     }
 
-
+    const revisedBasicRateHeader = (props) => {
+        return (
+            <div className='ag-header-cell-label'>
+                <span className='ag-header-cell-text'>Revised<i className={`fa fa-info-circle tooltip_custom_right tooltip-icon mb-n3 ml-4 mt2 `} id={"basicRate-tooltip"}></i> </span>
+            </div>
+        );
+    };
     /**
   * @method beforeSaveCell
   * @description CHECK FOR ENTER NUMBER IN CELL
@@ -218,6 +224,9 @@ function OperationSTSimulation(props) {
         setGridColumnApi(params.columnApi)
         params.api.sizeColumnsToFit()
         params.api.paginationGoToPage(0);
+        setTimeout(() => {
+            setShowTooltip(true)
+        }, 100);
 
     };
 
@@ -262,7 +271,8 @@ function OperationSTSimulation(props) {
         OldcostFormatter: OldcostFormatter,
         oldRateFormatter: oldRateFormatter,
         vendorFormatter: vendorFormatter,
-        plantFormatter: plantFormatter
+        plantFormatter: plantFormatter,
+        revisedBasicRateHeader: revisedBasicRateHeader
     };
 
 
@@ -329,14 +339,16 @@ function OperationSTSimulation(props) {
         gridOptions?.api?.setFilterModel(null);
         gridRef.current.api.sizeColumnsToFit();
     }
-
+    const basicRatetooltipToggle = () => {
+        setBasicRateViewTooltip(!basicRateviewTooltip)
+    }
     return (
         <div>
             <div className={`ag-grid-react`}>
                 {
                     (!showverifyPage && !showMainSimulation) &&
                     <Fragment>
-
+                        {showTooltip && <Tooltip className="rfq-tooltip-left" placement={"top"} isOpen={basicRateviewTooltip} toggle={basicRatetooltipToggle} target={"basicRate-tooltip"} >{"To add revised net rate please double click on the field."}</Tooltip>}
                         <form>
 
                             <Row>
@@ -430,7 +442,7 @@ function OperationSTSimulation(props) {
                                                 </>}
                                                 <AgGridColumn headerClass="justify-content-center" cellClass="text-center" minWidth={240} headerName="Net Rate" marryChildren={true} >
                                                     <AgGridColumn minWidth={120} field="Rate" editable='false' headerName="Existing" colId="Rate" cellRenderer="oldRateFormatter"></AgGridColumn>
-                                                    <AgGridColumn minWidth={120} cellRenderer='newRateFormatter' editable={!isImpactedMaster} field="NewRate" headerName="Revised" colId='NewRate'></AgGridColumn>
+                                                    <AgGridColumn minWidth={120} cellRenderer='newRateFormatter' editable={!isImpactedMaster} field="NewRate" headerName="Revised" colId='NewRate' headerComponent={'revisedBasicRateHeader'}></AgGridColumn>
                                                 </AgGridColumn>
                                                 <AgGridColumn field="EffectiveDate" headerName="Effective Date" editable='false' minWidth={190} cellRenderer='effectiveDateRenderer'></AgGridColumn>
                                                 <AgGridColumn field="CostingId" hide={true}></AgGridColumn>
