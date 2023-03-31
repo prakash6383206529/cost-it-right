@@ -175,10 +175,10 @@ class SimulationUploadDrawer extends Component {
                                 const basicTemp = (val[13] !== val[12]) && val[13] ? val[13] : val[12]
                                 if (val.length !== 0) {
                                     if (index > 0) {
-                                        if ((val[12] !== '' && val[12] !== undefined && val[12] !== null && val[11] !== val[12])) {
+                                        if ((val[13] !== '' && val[13] !== undefined && val[13] !== null && val[12] !== val[13])) {
                                             basicRateCount = 1
                                         }
-                                        if ((val[12] === '' || val[12] === undefined || val[12] === null || val[11] === val[12])) {
+                                        if ((val[13] === '' || val[13] === undefined || val[13] === null || val[12] === val[13])) {
                                             NoOfRowsWithoutChange = NoOfRowsWithoutChange + 1
                                             return false
                                         }
