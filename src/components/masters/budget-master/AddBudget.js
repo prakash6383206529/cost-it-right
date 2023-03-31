@@ -1,6 +1,6 @@
 import React from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { Row, Col, Label, Button } from 'reactstrap'
+import { Row, Col, Label, Button, Tooltip } from 'reactstrap'
 import { checkForDecimalAndNull, checkForNull } from '../../../helper/validation'
 import { getFinancialYearSelectList, getPartSelectListWtihRevNo, } from '../actions/Volume'
 import { getCurrencySelectList, getPlantSelectListByType, getVendorWithVendorCodeSelectList } from '../../../actions/Common'
@@ -76,6 +76,8 @@ function AddBudget(props) {
     const clientSelectList = useSelector((state) => state.client.clientSelectList)
     const currencySelectList = useSelector((state) => state.comman.currencySelectList)
 
+    const [showTooltip, setShowTooltip] = useState(false)
+    const [viewTooltip, setViewTooltip] = useState(false)
 
     useEffect(() => {
 
@@ -257,7 +259,13 @@ function AddBudget(props) {
         )
     }
 
-
+    const costHeader = (props) => {
+        return (
+            <div className='ag-header-cell-label'>
+                <span className='ag-header-cell-text'>Net Cost<i className={`fa fa-info-circle tooltip_custom_right tooltip-icon mb-n3 ml-4 mt2 `} id={"cost-tooltip"}></i> </span>
+            </div>
+        );
+    };
 
     const beforeSave = (props) => {
 
@@ -300,7 +308,6 @@ function AddBudget(props) {
      * @description CHECK FOR ENTER NUMBER IN CELL
      */
     const beforeSaveCell = (props) => {
-
 
         const cellValue = props
         if (Number.isInteger(Number(cellValue)) && /^\+?(0|[1-9]\d*)$/.test(cellValue) && cellValue.toString().replace(/\s/g, '').length) {
@@ -409,6 +416,9 @@ function AddBudget(props) {
         setGridColumnApi(params.columnApi)
         gridApi?.sizeColumnsToFit();
         params.api.paginationGoToPage(0);
+        setTimeout(() => {
+            setShowTooltip(true)
+        }, 100);
     };
 
     /**
@@ -654,8 +664,12 @@ function AddBudget(props) {
         buttonFormatter: buttonFormatter,
         customLoadingOverlay: LoaderCustom,
         budgetedQuantity: budgetedQuantity,
-        actualQuantity: actualQuantity
+        actualQuantity: actualQuantity,
+        costHeader: costHeader
     };
+    const tooltipToggle = () => {
+        setViewTooltip(!viewTooltip)
+    }
 
     return (
         <>
@@ -950,6 +964,7 @@ function AddBudget(props) {
 
                                                     <Col md="12">
                                                         <div className={`ag-grid-wrapper budgeting-table  ${tableData && tableData?.length <= 0 ? "overlay-contain" : ""}`} style={{ width: '100%', height: '100%' }}>
+                                                            {showTooltip && <Tooltip className="rfq-tooltip-left" placement={"top"} isOpen={viewTooltip} toggle={tooltipToggle} target={"cost-tooltip"} >{"Net cost's rows are editable. Double-click to fill data"}</Tooltip>}
                                                             <div className="ag-theme-material" >
                                                                 <AgGridReact
                                                                     style={{ height: '100%', width: '100%' }}
@@ -970,7 +985,7 @@ function AddBudget(props) {
                                                                     frameworkComponents={frameworkComponents}
                                                                     stopEditingWhenCellsLoseFocus={true}
                                                                 >
-                                                                    <AgGridColumn field="Text" headerName="" editable='false' pinned='left' cellStyle={{ 'font-size': '15px', 'font-weight': '500', 'color': '#3d4465' }} width={310} ></AgGridColumn>
+                                                                    <AgGridColumn field="Text" headerName="Net Cost" editable='false' pinned='left' cellStyle={{ 'font-size': '15px', 'font-weight': '500', 'color': '#3d4465' }} width={310} headerComponent={'costHeader'} ></AgGridColumn>
                                                                     <AgGridColumn width={115} field="April" headerName="April" cellRenderer='budgetedQuantity'></AgGridColumn>
                                                                     <AgGridColumn width={115} field="May" headerName="May" cellRenderer='budgetedQuantity'></AgGridColumn>
                                                                     <AgGridColumn width={115} field="June" headerName="June" cellRenderer='budgetedQuantity'></AgGridColumn>

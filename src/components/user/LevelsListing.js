@@ -24,6 +24,7 @@ import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '../common/PopupMsgWrapper';
 import { PaginationWrapper } from '../common/commonPagination';
 import ScrollToTop from '../common/ScrollToTop';
+import { costingTypeIdToApprovalTypeIdFunction } from '../common/CommonFunctions';
 
 const gridOptions = {};
 
@@ -141,7 +142,7 @@ class LevelsListing extends Component {
 	 */
 	getLevelMappingDetail = (Id, levelType, approvalTypeId) => {
 		let obj = {}
-		obj[levelType] = approvalTypeId
+		obj[levelType] = costingTypeIdToApprovalTypeIdFunction(approvalTypeId)
 		this.setState({
 			isEditFlag: true,
 			TechnologyId: Id,

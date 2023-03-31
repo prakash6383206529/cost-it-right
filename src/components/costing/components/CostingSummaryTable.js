@@ -38,6 +38,7 @@ import { LOGISTICS, FORGING } from '../../../config/masterData'
 import { reactLocalStorage } from 'reactjs-localstorage'
 import { getUsersTechnologyLevelAPI } from '../../../actions/auth/AuthActions'
 import AddNpvCost from './CostingHeadCosts/AdditionalOtherCost/AddNpvCost'
+import { costingTypeIdToApprovalTypeIdFunction } from '../../common/CommonFunctions'
 
 const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
 
@@ -145,7 +146,7 @@ const CostingSummaryTable = (props) => {
           obj.UserId = loggedInUserId()
           obj.TechnologyId = partInfo.TechnologyId
           obj.Mode = 'costing'
-          obj.approvalTypeId = viewCostingData[0]?.costingTypeId
+          obj.approvalTypeId = costingTypeIdToApprovalTypeIdFunction(viewCostingData[0]?.costingTypeId)
           dispatch(checkFinalUser(obj, res => {
             if (res.data?.Result) {
               setIsFinalApproverShow(res.data?.Data?.IsFinalApprover) // UNCOMMENT IT AFTER DEPLOTED FROM KAMAL SIR END

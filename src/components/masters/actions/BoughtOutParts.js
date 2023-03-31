@@ -72,7 +72,6 @@ export function createBOPImport(data, callback) {
  */
 export function getBOPDomesticDataList(data, skip, take, isPagination, obj, callback) {
     return (dispatch) => {
-        console.log(obj, "objobj")
         // dispatch({ type: API_REQUEST});
         if (isPagination === true) {
             dispatch({

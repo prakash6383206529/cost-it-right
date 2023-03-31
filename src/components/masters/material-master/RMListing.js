@@ -172,7 +172,6 @@ class RMListing extends Component {
     // }
 
     // indexFormatter = (props) => {
-    //     console.log(props, 'propssssssssssssss')
     //     const { table } = this.refs;
     //     let currentPage = table && table.state && table.state.currPage ? table.state.currPage : '';
     //     let sizePerPage = table && table.state && table.state.sizePerPage ? table.state.sizePerPage : '';

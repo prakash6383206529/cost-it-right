@@ -1,6 +1,6 @@
 import React, { Component, } from 'react';
 import { connect } from 'react-redux';
-import { Field, reduxForm, formValueSelector } from "redux-form";
+import { Field, reduxForm, formValueSelector, clearFields } from "redux-form";
 import { Row, Col, Label, } from 'reactstrap';
 import { required, getVendorCode, positiveAndDecimalNumber, acceptAllExceptSingleSpecialCharacter, maxLength512, checkForNull, checkForDecimalAndNull, decimalLengthsix, maxLength70, maxLength15, number } from "../../../helper/validation";
 import { renderText, searchableSelect, renderMultiSelectField, renderTextAreaField, renderDatePicker, renderTextInputField } from "../../layout/FormInputs";
@@ -40,7 +40,7 @@ import TooltipCustom from '../../common/Tooltip';
 import { labelWithUOMAndCurrency } from '../../../helper';
 import { getClientSelectList, } from '../actions/Client';
 import { reactLocalStorage } from 'reactjs-localstorage';
-import { autoCompleteDropdown } from '../../common/CommonFunctions';
+import { autoCompleteDropdown, costingTypeIdToApprovalTypeIdFunction } from '../../common/CommonFunctions';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { checkFinalUser } from '../../../components/costing/actions/Costing'
 import { getUsersMasterLevelAPI } from '../../../actions/auth/AuthActions';
@@ -194,7 +194,7 @@ class AddRMImport extends Component {
         UserId: loggedInUserId(),
         TechnologyId: RM_MASTER_ID,
         Mode: 'master',
-        approvalTypeId: this.state.costingTypeId,
+        approvalTypeId: costingTypeIdToApprovalTypeIdFunction(this.state.costingTypeId),
       }
 
       this.setState({ finalApprovalLoader: true })
@@ -580,6 +580,28 @@ class AddRMImport extends Component {
      * @description Used for Vendor checked
      */
   onPressVendor = (costingHeadFlag) => {
+    const fieldsToClear = ['TechnologyId',
+      'RawMaterialId',
+      'RawMaterialGradeId',
+      'RawMaterialSpecificationId',
+      'CategoryId',
+      'Code',
+      'Currency',
+      'SourceSupplierPlantId',
+      'DestinationPlant',
+      "UnitOfMeasurementId",
+      "cutOffPrice",
+      "BasicRate",
+      "ScrapRate",
+      "ForgingScrap",
+      "MachiningScrap",
+      "CircleScrapCost",
+      "JaliScrapCost",
+      "EffectiveDate",
+      "clientName"];
+    fieldsToClear.forEach(fieldName => {
+      this.props.dispatch(clearFields('AddRMImport', false, false, fieldName));
+    });
     this.setState({
       costingTypeId: costingHeadFlag,
       vendorName: [],

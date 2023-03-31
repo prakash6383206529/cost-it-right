@@ -24,6 +24,7 @@ import VerifyImpactDrawer from '../../../simulation/components/VerifyImpactDrawe
 import LoaderCustom from '../../../common/LoaderCustom'
 import TooltipCustom from '../../../common/Tooltip'
 import { getUsersTechnologyLevelAPI } from '../../../../actions/auth/AuthActions'
+import { costingTypeIdToApprovalTypeIdFunction } from '../../../common/CommonFunctions'
 
 
 const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
@@ -70,7 +71,7 @@ const SendForApproval = (props) => {
     obj.DepartmentId = '00000000-0000-0000-0000-000000000000'
     obj.LoggedInUserLevelId = userDetails().LoggedInLevelId
     obj.LoggedInUserId = userDetails().LoggedInUserId
-    obj.approvalTypeId = viewApprovalData[0]?.costingTypeId
+    obj.approvalTypeId = costingTypeIdToApprovalTypeIdFunction(viewApprovalData[0]?.costingTypeId)
 
     let drawerDataObj = {}
     drawerDataObj.EffectiveDate = viewApprovalData[0]?.effectiveDate
@@ -114,7 +115,7 @@ const SendForApproval = (props) => {
         DepartmentId: departObj[0]?.Value,
         TechnologyId: props.technologyId,
         ReasonId: 0, // key only for minda
-        ApprovalTypeId: viewApprovalData[0]?.costingTypeId,
+        ApprovalTypeId: costingTypeIdToApprovalTypeIdFunction(viewApprovalData[0]?.costingTypeId),
       }
       dispatch(getAllApprovalUserFilterByDepartment(requestObject, (res) => {
         let tempDropdownList = []
@@ -192,7 +193,7 @@ const SendForApproval = (props) => {
         LoggedInUserId: userData.LoggedInUserId,
         DepartmentId: newValue.value,
         TechnologyId: props.technologyId,
-        ApprovalTypeId: viewApprovalData[0]?.costingTypeId,
+        ApprovalTypeId: costingTypeIdToApprovalTypeIdFunction(viewApprovalData[0]?.costingTypeId),
       }
       dispatch(getAllApprovalUserFilterByDepartment(requestObject, (res) => {
         res.data.DataList && res.data.DataList.map((item) => {
@@ -403,7 +404,7 @@ const SendForApproval = (props) => {
         SenderId: userData.LoggedInUserId,
         SenderRemark: data.remarks,
         LoggedInUserId: userData.LoggedInUserId,
-        ApprovalTypeId: viewApprovalData[0].costingTypeId,
+        ApprovalTypeId: costingTypeIdToApprovalTypeIdFunction(viewApprovalData[0].costingTypeId),
         // Quantity: getValues('Quantity'),
         // Attachment: files,
         // IsLimitCrossed: IsLimitCrossed

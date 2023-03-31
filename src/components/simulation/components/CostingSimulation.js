@@ -35,6 +35,7 @@ import { getUsersSimulationTechnologyLevelAPI } from '../../../actions/auth/Auth
 import WarningMessage from '../../common/WarningMessage';
 import { hideColumnFromExcel } from '../../common/CommonFunctions';
 import { reactLocalStorage } from 'reactjs-localstorage';
+import { costingTypeIdToApprovalTypeIdFunction } from '../../common/CommonFunctions';
 
 const gridOptions = {};
 
@@ -157,7 +158,7 @@ function CostingSimulation(props) {
                             UserId: loggedInUserId(),
                             TechnologyId: SimulationTechnologyIdState,
                             Mode: 'simulation',
-                            approvalTypeId: amendmentDetails.SimulationHeadId
+                            approvalTypeId: costingTypeIdToApprovalTypeIdFunction(amendmentDetails.SimulationHeadId)
                         }
                         dispatch(checkFinalUser(obj, res => {
                             if (res && res.data && res.data.Result) {
