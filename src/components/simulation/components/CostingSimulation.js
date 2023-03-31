@@ -34,6 +34,7 @@ import _ from 'lodash';
 import { PaginationWrapper } from '../../common/commonPagination';
 import { getUsersSimulationTechnologyLevelAPI } from '../../../actions/auth/AuthActions';
 import WarningMessage from '../../common/WarningMessage';
+import { costingTypeIdToApprovalTypeIdFunction } from '../../common/CommonFunctions';
 
 
 const gridOptions = {};
@@ -159,7 +160,7 @@ function CostingSimulation(props) {
                             UserId: loggedInUserId(),
                             TechnologyId: SimulationTechnologyIdState,
                             Mode: 'simulation',
-                            approvalTypeId: amendmentDetails.SimulationHeadId
+                            approvalTypeId: costingTypeIdToApprovalTypeIdFunction(amendmentDetails.SimulationHeadId)
                         }
                         dispatch(checkFinalUser(obj, res => {
                             if (res && res.data && res.data.Result) {

@@ -36,7 +36,7 @@ import { debounce } from 'lodash';
 import AsyncSelect from 'react-select/async';
 import { getClientSelectList, } from '../actions/Client';
 import { reactLocalStorage } from 'reactjs-localstorage';
-import { autoCompleteDropdown } from '../../common/CommonFunctions';
+import { autoCompleteDropdown, costingTypeIdToApprovalTypeIdFunction } from '../../common/CommonFunctions';
 import { checkFinalUser } from '../../../components/costing/actions/Costing'
 import { getUsersMasterLevelAPI } from '../../../actions/auth/AuthActions';
 import TooltipCustom from '../../common/Tooltip';
@@ -158,7 +158,7 @@ class AddBOPImport extends Component {
         DepartmentId: userDetails().DepartmentId,
         UserId: loggedInUserId(),
         Mode: 'master',
-        approvalTypeId: this.state.costingTypeId,
+        approvalTypeId: costingTypeIdToApprovalTypeIdFunction(this.state.costingTypeId),
       }
 
       this.setState({ finalApprovalLoader: true })

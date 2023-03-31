@@ -15,6 +15,7 @@ import MachineRateListing from './machine-master/MachineRateListing';
 import { loggedInUserId, userDetails, userTechnologyDetailByMasterId } from '../../helper';
 import { checkFinalUser } from '../costing/actions/Costing';
 import { getUsersMasterLevelAPI } from '../../actions/auth/AuthActions';
+import { costingTypeIdToApprovalTypeIdFunction } from '../common/CommonFunctions';
 
 function SummaryDrawer(props) {
     const { approvalData } = props
@@ -83,7 +84,7 @@ function SummaryDrawer(props) {
                 UserId: loggedInUserId(),
                 TechnologyId: props.masterId,
                 Mode: 'master',
-                approvalTypeId: CostingTypeId
+                approvalTypeId: costingTypeIdToApprovalTypeIdFunction(CostingTypeId)
             }
             dispatch(checkFinalUser(obj, res => {
                 if (res && res.data && res.data.Result) {

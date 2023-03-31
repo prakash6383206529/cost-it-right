@@ -35,6 +35,7 @@ import { checkRFQBulkUpload } from '../rfq/actions/rfq';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { getUsersMasterLevelAPI } from '../../actions/auth/AuthActions';
 import { checkFinalUser } from '../../components/costing/actions/Costing';
+import { costingTypeIdToApprovalTypeIdFunction } from '../common/CommonFunctions';
 
 class BulkUpload extends Component {
     constructor(props) {
@@ -82,7 +83,7 @@ class BulkUpload extends Component {
                 DepartmentId: userDetails().DepartmentId,
                 UserId: loggedInUserId(),
                 Mode: 'master',
-                approvalTypeId: this.state.costingTypeId === Number(ZBCADDMORE) ? ZBCTypeId : this.state.costingTypeId
+                approvalTypeId: costingTypeIdToApprovalTypeIdFunction(this.state.costingTypeId === Number(ZBCADDMORE) ? ZBCTypeId : this.state.costingTypeId)
             }
 
             this.props.checkFinalUser(obj, (res) => {
