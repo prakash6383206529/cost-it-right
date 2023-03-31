@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Row, Col, } from 'reactstrap';
+import { Row, Col, Tooltip, } from 'reactstrap';
 import moment from 'moment';
 import { defaultPageSize, EMPTY_DATA } from '../../../../config/constants';
 import NoContentFound from '../../../common/NoContentFound';
@@ -15,7 +15,6 @@ import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import Simulation from '../Simulation';
 import debounce from 'lodash.debounce';
 import { TextFieldHookForm } from '../../../layout/HookFormInputs';
-import { VBC, ZBC } from '../../../../config/constants';
 import { runVerifyMachineRateSimulation } from '../../actions/Simulation';
 import VerifySimulation from '../VerifySimulation';
 import Toaster from '../../../common/Toaster';
@@ -43,6 +42,8 @@ function MRSimulation(props) {
     const [maxDate, setMaxDate] = useState('');
     const [isDisable, setIsDisable] = useState(false)
     const [noData, setNoData] = useState(false);
+    const [showTooltip, setShowTooltip] = useState(false)
+    const [basicRateviewTooltip, setBasicRateViewTooltip] = useState(false)
     const gridRef = useRef();
 
 
@@ -128,7 +129,13 @@ function MRSimulation(props) {
         const classGreen = (tempA > row.NetLandedCost) ? 'red-value form-control' : (tempA < row.NetLandedCost) ? 'green-value form-control' : 'form-class'
         return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
     }
-
+    const revisedBasicRateHeader = (props) => {
+        return (
+            <div className='ag-header-cell-label'>
+                <span className='ag-header-cell-text'>Revised<i className={`fa fa-info-circle tooltip_custom_right tooltip-icon mb-n3 ml-4 mt2 `} id={"basicRate-tooltip"}></i> </span>
+            </div>
+        );
+    };
     const onFloatingFilterChanged = (value) => {
         if (list.length !== 0) {
             setNoData(searchNocontentFilter(value, noData))
@@ -194,6 +201,9 @@ function MRSimulation(props) {
                 gridOptions?.api?.stopEditing()
             }, 200);
         }
+        setTimeout(() => {
+            setShowTooltip(true)
+        }, 100);
     };
 
     const onPageSizeChanged = (newPageSize) => {
@@ -285,7 +295,8 @@ function MRSimulation(props) {
         OldcostFormatter: OldcostFormatter,
         onCellValueChanged: onCellValueChanged,
         vendorFormatter: vendorFormatter,
-        plantFormatter: plantFormatter
+        plantFormatter: plantFormatter,
+        revisedBasicRateHeader: revisedBasicRateHeader
     };
     const verifySimulation = debounce(() => {
         /**********CONDITION FOR: IS ANY FIELD EDITED****************/
@@ -344,14 +355,16 @@ function MRSimulation(props) {
             }
         }))
     }, 500);
-
+    const basicRatetooltipToggle = () => {
+        setBasicRateViewTooltip(!basicRateviewTooltip)
+    }
     return (
         <div>
             <div className={`ag-grid-react`}>
                 {
                     (!showverifyPage && !showMainSimulation) &&
                     <Fragment>
-
+                        {showTooltip && <Tooltip className="rfq-tooltip-left" placement={"top"} isOpen={basicRateviewTooltip} toggle={basicRatetooltipToggle} target={"basicRate-tooltip"} >{"To add revised net machine rate please double click on the field."}</Tooltip>}
                         <div>
 
                             <Row>
@@ -447,7 +460,7 @@ function MRSimulation(props) {
                                                 }
                                                 <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName="Net Machine Rate" marryChildren={true} >
                                                     <AgGridColumn width={120} field="MachineRate" editable='false' headerName="Existing" cellRenderer='oldRateFormatter' colId="MachineRate"></AgGridColumn>
-                                                    <AgGridColumn width={120} cellRenderer='newRateFormatter' editable={!isImpactedMaster} field="NewMachineRate" headerName="Revised" colId='NewMachineRate'></AgGridColumn>
+                                                    <AgGridColumn width={120} cellRenderer='newRateFormatter' editable={!isImpactedMaster} field="NewMachineRate" headerName="Revised" colId='NewMachineRate' headerComponent={'revisedBasicRateHeader'}></AgGridColumn>
                                                 </AgGridColumn>
                                                 <AgGridColumn field="EffectiveDate" headerName="Effective Date" editable='false' minWidth={190} cellRenderer='effectiveDateRenderer'></AgGridColumn>
                                                 <AgGridColumn field="CostingId" hide={true}></AgGridColumn>
