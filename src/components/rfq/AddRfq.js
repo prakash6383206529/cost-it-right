@@ -1044,6 +1044,7 @@ function AddRfq(props) {
                                                                 }}
                                                                 frameworkComponents={frameworkComponents}
                                                                 stopEditingWhenCellsLoseFocus={true}
+                                                                suppressColumnVirtualisation={true}
                                                             >
                                                                 <AgGridColumn width={"230px"} field="PartNumber" headerName="Part No" cellClass={"colorWhite"} cellRenderer={'partNumberFormatter'}></AgGridColumn>
 

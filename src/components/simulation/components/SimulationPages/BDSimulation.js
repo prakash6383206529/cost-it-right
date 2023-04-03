@@ -450,6 +450,7 @@ function BDSimulation(props) {
                                                 title: EMPTY_DATA,
                                             }}
                                             frameworkComponents={frameworkComponents}
+                                            suppressColumnVirtualisation={true}
                                             stopEditingWhenCellsLoseFocus={true}
                                             onFilterModified={onFloatingFilterChanged}
                                         >
