@@ -1048,6 +1048,7 @@ class AddVolume extends Component {
                                       title: EMPTY_DATA,
                                     }}
                                     frameworkComponents={frameworkComponents}
+                                    suppressColumnVirtualisation={true}
                                     stopEditingWhenCellsLoseFocus={true}
                                   >
                                     <AgGridColumn field="Month" headerName="Month" editable='false'></AgGridColumn>

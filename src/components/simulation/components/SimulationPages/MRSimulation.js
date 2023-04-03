@@ -458,6 +458,7 @@ function MRSimulation(props) {
                                                 }}
                                                 frameworkComponents={frameworkComponents}
                                                 stopEditingWhenCellsLoseFocus={true}
+                                                suppressColumnVirtualisation={true}
                                                 rowSelection={'multiple'}
                                                 onCellValueChanged={onCellValueChanged}
                                             >
