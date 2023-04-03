@@ -450,6 +450,7 @@ function OperationSTSimulation(props) {
                                                 }}
                                                 frameworkComponents={frameworkComponents}
                                                 stopEditingWhenCellsLoseFocus={true}
+                                                suppressColumnVirtualisation={true}
                                                 rowSelection={'multiple'}
                                                 onFilterModified={onFloatingFilterChanged}
                                             // frameworkComponents={frameworkComponents}
