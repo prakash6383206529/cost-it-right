@@ -44,7 +44,8 @@ class AddExchangeRate extends Component {
       costingTypeId: ZBCTypeId,
       customer: [],
       vendorName: [],
-      vendorFilterList: []
+      vendorFilterList: [],
+      budgeting: false
     }
   }
 
@@ -166,7 +167,7 @@ class AddExchangeRate extends Component {
               costingTypeId: Data.CostingHeadId,
               customer: Data.CustomerName !== undefined ? { label: `${Data.CustomerName} (${Data.CustomerCode})`, value: Data.CustomerId } : [],
               vendorName: Data.VendorName !== undefined ? { label: `${Data.VendorName} (${Data.VendorCode})`, value: Data.VendorIdRef } : [],
-
+              budgeting: Data.IsBudgeting ? Data.IsBudgeting : false
             }, () => this.setState({ isLoader: false }))
           }, 500)
 
@@ -244,7 +245,7 @@ class AddExchangeRate extends Component {
   * @description Used to Submit the form
   */
   onSubmit = debounce((values) => {
-    const { isEditFlag, currency, effectiveDate, ExchangeRateId, DataToChange, DropdownChanged, customer, costingTypeId, vendorName } = this.state;
+    const { isEditFlag, currency, effectiveDate, ExchangeRateId, DataToChange, DropdownChanged, customer, costingTypeId, vendorName, budgeting } = this.state;
 
     /** Update existing detail of exchange master **/
     if (isEditFlag) {
@@ -279,7 +280,8 @@ class AddExchangeRate extends Component {
         IsForcefulUpdated: true,
         CustomerId: customer.value,
         CostingHeadId: costingTypeId,
-        VendorId: vendorName.value
+        VendorId: vendorName.value,
+        IsBudgeting: budgeting
       }
       if (isEditFlag) {
         // if(){
@@ -307,7 +309,8 @@ class AddExchangeRate extends Component {
         LoggedInUserId: loggedInUserId(),
         CustomerId: customer.value,
         CostingHeadId: costingTypeId,
-        VendorId: vendorName.value
+        VendorId: vendorName.value,
+        IsBudgeting: budgeting
       }
 
       this.props.createExchangeRate(formData, (res) => {
@@ -338,6 +341,12 @@ class AddExchangeRate extends Component {
       this.setState({ customer: [] })
     }
   };
+
+
+  onBudgetingChange = () => {
+    this.setState({ budgeting: !this.state.budgeting })
+  }
+
   /**
 * @method handleVendorName
 * @description called
@@ -607,6 +616,25 @@ class AddExchangeRate extends Component {
                           />
                         </div>
                       </Col>
+
+                      <label
+                        className={`custom-checkbox w-auto mt-4 ml-4 ${costingTypeId === VBCTypeId ? "" : ""
+                          }`}
+                        onChange={this.onBudgetingChange}
+                      >
+                        Budgeting
+                        <input
+                          type="checkbox"
+                          checked={this.state.budgeting}
+                          disabled={isViewMode}
+                        />
+                        <span
+                          className=" before-box p-0"
+                          checked={this.state.budgeting}
+                          onChange={this.onBudgetingChange}
+                        />
+                      </label>
+
                     </Row>
                   </div>
                   <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
