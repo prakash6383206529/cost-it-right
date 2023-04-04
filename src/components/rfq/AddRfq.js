@@ -1287,7 +1287,7 @@ function AddRfq(props) {
                                     </Row>
 
 
-                                    <HeaderTitle title={'Remark and Attachments:'} customClass="mt-3" />
+                                    <HeaderTitle title={'Notes and Attachments:'} customClass="mt-3" />
                                     <Row className='part-detail-wrapper'>
                                         <Col md="4">
                                             <TextAreaHookForm
