@@ -71,7 +71,6 @@ function AddRfq(props) {
     const [IsOpen, setIsOpen] = useState(false);
     const [apiData, setData] = useState({});
     const [isDisable, setIsDisable] = useState(false)
-    const [disableTechnology, setDisableTechnology] = useState(false)
     const [partNoDisable, setPartNoDisable] = useState(true)
     const [attachmentLoader, setAttachmentLoader] = useState(false)
     const [partName, setPartName] = useState(false)
@@ -79,7 +78,6 @@ function AddRfq(props) {
     const [submissionDate, setSubmissionDate] = useState('')
     const [visibilityMode, setVisibilityMode] = useState({})
     const [dateAndTime, setDateAndTime] = useState('')
-    const [time, setTime] = useState(new Date())
     const [isConditionalVisible, setIsConditionalVisible] = useState(false)
     const [isWarningMessageShow, setIsWarningMessageShow] = useState(false)
     const [loader, setLoader] = useState(false)
@@ -128,8 +126,10 @@ function AddRfq(props) {
                     ele.PartNo = ele.PartNumber
                     ele.PartId = item.PartId
                 }
+                return null
             })
             tempArr = [...tempArr, ...item?.SOPQuantity]
+            return null
         })
 
         return tempArr
@@ -165,7 +165,6 @@ function AddRfq(props) {
                     setValue('VisibilityMode', { value: data?.VisibilityMode, label: data?.VisibilityMode })
                     setVisibilityMode({ value: data?.VisibilityMode, label: data?.VisibilityMode })
                     setDateAndTime(data?.VisibilityDate)
-                    setTime(data?.VisibilityDuration)
                     setValue('Time', data?.VisibilityDuration)
                     setFiles(data?.Attachments)
                     setPartList(convertToPartList(data.PartList))
@@ -289,9 +288,6 @@ function AddRfq(props) {
 
     const deleteItemPartTable = (rowData, final) => {
         let arr = final && final.filter(item => item.PartNo !== rowData?.PartNo)
-        if (arr.length === 0) {
-            setDisableTechnology(false)
-        }
         setPartList(arr)
         onResetPartNoTable()
     }
@@ -324,16 +320,6 @@ function AddRfq(props) {
         })
 
     }
-
-    const editItemPartTable = (gridData, props) => {
-
-        setSelectedRowPartNoTable(props.node.data)
-        setUpdateButtonPartNoTable(true)
-        setValue('partNumber', { label: props?.node?.data?.PartNumber, value: props?.node?.data?.PartId })
-        setValue('annualForecastQuantity', props?.node?.data?.Quantity)
-        setValue('technology', props?.node?.data?.technology)
-    }
-
 
     /**
     * @method renderListing
@@ -449,9 +435,11 @@ function AddRfq(props) {
                     partListObj.Quantity = item1?.Quantity
                     partListArr.push(partListObj)
                 }
+                return null
             })
             temppartObj.SOPQuantityDetails = partListArr
             temppartArr.push(temppartObj)
+            return null
         })
 
         obj.PartList = temppartArr
@@ -641,6 +629,7 @@ function AddRfq(props) {
             objTemp.Quantity = 0
 
             arrTemp.push(objTemp)
+            return null
         })
 
         let arr = [...partList, ...arrTemp]
@@ -650,7 +639,6 @@ function AddRfq(props) {
         setValue('annualForecastQuantity', "")
         // setValue('technology', "")
         setUpdateButtonPartNoTable(false)
-        setDisableTechnology(true)
     }
 
     const onResetPartNoTable = () => {
@@ -785,6 +773,9 @@ function AddRfq(props) {
     }
 
     const handleVisibilityMode = (value) => {
+        if (value?.label === "Duration") {
+            setDateAndTime('')
+        }
         setVisibilityMode(value)
         setValue('startPlanDate', '')
         setValue('Time', '')
@@ -806,11 +797,7 @@ function AddRfq(props) {
     }
 
     const handleChangeDateAndTime = (value) => {
-        setDateAndTime(value)
-    }
-
-    const handleChangeTime = (value) => {
-        setTime(value)
+        setDateAndTime(DayTime(value).format('YYYY-MM-DD HH:mm:ss'))
     }
 
     const tooltipToggle = () => {
