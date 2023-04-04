@@ -1625,7 +1625,7 @@ function UserRegistration(props) {
               <div className="row">
                 <div className="col-md-6">
                   <div className="form-heading mb-0">
-                    <h2>{isEditFlag ? 'Update' : 'Add'} {props?.RFQUser ? 'RFQ' : ' User'}</h2>
+                    <h2>{isEditFlag ? 'Update' : 'Add'} {props?.RFQUser ? 'RFQ ' : ''}User</h2>
                   </div>
                 </div>
                 {isEditFlag && !isShowPwdField && <div className="col-md-6">

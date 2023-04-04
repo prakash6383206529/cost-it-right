@@ -670,7 +670,7 @@ function RfqListing(props) {
                         <Row className={`filter-row-large`}>
                             <Col md="6" lg="6" className='mb-2'>
                                 <div className='header-title heading-container'>
-                                    <div>Raised On: <span>{DayTime(data.RaisedOn).format('DD/MM/YYYY')}</span></div>
+                                    <div>Raised On: <span>{data.RaisedOn ? DayTime(data.RaisedOn).format('DD/MM/YYYY') : '-'}</span></div>
                                     <div>Raised By: <span>{data.RaisedBy}</span></div>
                                 </div>
                             </Col>
@@ -730,7 +730,7 @@ function RfqListing(props) {
                                             <AgGridColumn field="VendorName" headerName='Vendor (Code)'></AgGridColumn>
                                             <AgGridColumn field="PlantName" headerName='Plant (Code)'></AgGridColumn>
                                             {/* <AgGridColumn field="PartNumber" headerName="Attachment "></AgGridColumn> */}
-                                            <AgGridColumn field="Remark" headerName='Remark' cellRenderer={hyphenFormatter}></AgGridColumn>
+                                            <AgGridColumn field="Remark" headerName='Notes' cellRenderer={hyphenFormatter}></AgGridColumn>
                                             <AgGridColumn field="CostingNumber" headerName=' Costing Number' cellRenderer={hyphenFormatter}></AgGridColumn>
                                             <AgGridColumn field="CostingId" headerName='Costing Id ' hide={true}></AgGridColumn>
                                             <AgGridColumn field="NetPOPrice" headerName=" Net PO Price" cellRenderer={hyphenFormatter}></AgGridColumn>
