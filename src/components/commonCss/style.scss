@@ -8962,3 +8962,11 @@ table.group-process-table {
 .table-footer {
   background-color: $tableFooterBackground;
 }
+
+div[col-id="ApprovalNumber"] {
+  .ag-cell-wrapper {
+    .ag-selection-checkbox.ag-invisible {
+      display: block !important;
+    }
+  }
+}
