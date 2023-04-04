@@ -983,6 +983,7 @@ function AddBudget(props) {
                                                                         title: EMPTY_DATA,
                                                                     }}
                                                                     frameworkComponents={frameworkComponents}
+                                                                    suppressColumnVirtualisation={true}
                                                                     stopEditingWhenCellsLoseFocus={true}
                                                                 >
                                                                     <AgGridColumn field="Text" headerName="Net Cost" editable='false' pinned='left' cellStyle={{ 'font-size': '15px', 'font-weight': '500', 'color': '#3d4465' }} width={310} headerComponent={'costHeader'} ></AgGridColumn>

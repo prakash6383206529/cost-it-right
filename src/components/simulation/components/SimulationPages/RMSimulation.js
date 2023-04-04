@@ -550,6 +550,7 @@ function RMSimulation(props) {
                                                 title: EMPTY_DATA,
                                             }}
                                             frameworkComponents={frameworkComponents}
+                                            suppressColumnVirtualisation={true}
                                             stopEditingWhenCellsLoseFocus={true}
                                             onCellValueChanged={onCellValueChanged}
                                             onFilterModified={onFloatingFilterChanged}
