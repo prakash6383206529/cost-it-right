@@ -119,6 +119,7 @@ const CostingSummaryTable = (props) => {
     process: false,
     operation: false
   })
+  const [npvIndex, setNpvIndex] = useState(0)
   const partType = IdForMultiTechnology.includes(String(viewCostingData[0]?.technologyId))       //CHECK IF MULTIPLE TECHNOLOGY DATA IN SUMMARY
 
   const componentRef = useRef();
@@ -415,6 +416,7 @@ const CostingSummaryTable = (props) => {
 
   const viewNpvData = (index) => {
     setNpvDrawer(true)
+    setNpvIndex(index)
   }
 
   const viewAttachmentData = (index) => {
@@ -1973,7 +1975,18 @@ const CostingSummaryTable = (props) => {
                               )
                             })}
                         </tr>
-
+                        {drawerDetailPDF && <tr><th colSpan={2}>
+                          <AddNpvCost
+                            isOpen={openNpvDrawer}
+                            costingSummary={true}
+                            viewCostingData={viewCostingData}
+                            tableData={[]}
+                            npvIndex={npvIndex}
+                            closeDrawer={closeNpvDrawer}
+                            anchor={'right'}
+                            isPDFShow={true}
+                          />
+                        </th></tr>}
                       </> : <>
                         {drawerDetailPDF && <tr><th colSpan={2}><ViewPackagingAndFreight
                           isOpen={isViewPackagingFreight}
@@ -2373,8 +2386,10 @@ const CostingSummaryTable = (props) => {
       {
         openNpvDrawer && <AddNpvCost
           isOpen={openNpvDrawer}
+          viewCostingData={viewCostingData}
           costingSummary={true}
           tableData={[]}
+          npvIndex={npvIndex}
           closeDrawer={closeNpvDrawer}
           anchor={'right'}
         />
