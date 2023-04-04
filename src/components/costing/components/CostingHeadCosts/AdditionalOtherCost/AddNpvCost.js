@@ -252,7 +252,7 @@ function AddNpvCost(props) {
     return (
 
         <div>
-            <Drawer anchor={props.anchor} open={props.isOpen}
+            {!props.isPDFShow ? <Drawer anchor={props.anchor} open={props.isOpen}
             // onClose={(e) => toggleDrawer(e)}
             >
                 {isLoader && <LoaderCustom />}
@@ -420,7 +420,25 @@ function AddNpvCost(props) {
                         </div>
                     </Container>
                 </div>
-            </Drawer>
+            </Drawer> : <>
+                {tableData && tableData.length !== 0 && <>
+                    <Col md="12">
+                        <HeaderTitle className="border-bottom"
+                            title={'NPV Data'}
+                            customClass={'underLine-title'}
+                        />
+                    </Col>
+                    <NpvCost showAddButton={false} tableData={tableData} hideAction={costingSummary} editData={editData} />
+                </>}
+                {conditionTableData && conditionTableData.length !== 0 && <> <Col md="12" className={'mt25'}>
+                    <HeaderTitle className="border-bottom"
+                        title={'Costing Condition'}
+                        customClass={'underLine-title'}
+                    />
+                </Col>
+                    <ConditionCosting hideAction={true} tableData={conditionTableData} />
+                </>}
+            </>}
         </div >
 
     )
