@@ -2,11 +2,11 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useForm, Controller } from "react-hook-form";
 import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, Tooltip, } from 'reactstrap';
-import { AsyncSearchableSelectHookForm, SearchableSelectHookForm, TextAreaHookForm, TextFieldHookForm, NumberFieldHookForm } from '.././layout/HookFormInputs'
+import { AsyncSearchableSelectHookForm, SearchableSelectHookForm, TextAreaHookForm, TextFieldHookForm } from '.././layout/HookFormInputs'
 import { getVendorWithVendorCodeSelectList, getReporterList, fetchPlantDataAPI } from '../.././actions/Common';
 import { getCostingSpecificTechnology, } from '../costing/actions/Costing'
 import { addDays, checkForDecimalAndNull, getConfigurationKey, loggedInUserId } from '../.././helper';
-import { postiveNumber, maxLength10, nonZero, checkForNull } from '../.././helper/validation'
+import { checkForNull } from '../.././helper/validation'
 import { EMPTY_DATA, FILE_URL, searchCount } from '../.././config/constants';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
@@ -31,7 +31,6 @@ import DayTime from '../common/DayTimeWrapper';
 import DatePicker from 'react-datepicker'
 import { label } from 'react-dom-factories';
 import WarningMessage from '../common/WarningMessage';
-import TooltipCustom from '../common/Tooltip';
 
 const gridOptions = {};
 
@@ -53,7 +52,6 @@ function AddRfq(props) {
 
     const [getReporterListDropDown, setGetReporterListDropDown] = useState([]);
     const [vendor, setVendor] = useState([]);
-    const [initialFiles, setInitialFiles] = useState([]);
     const [isEditAll, setIsEditAll] = useState(false);
     const [isEditSubmissionDate, setIsEditSubmissionDate] = useState(false);
     const [isViewFlag, setIsViewFlag] = useState(false);
@@ -73,7 +71,6 @@ function AddRfq(props) {
     const [IsOpen, setIsOpen] = useState(false);
     const [apiData, setData] = useState({});
     const [isDisable, setIsDisable] = useState(false)
-    const [disableTechnology, setDisableTechnology] = useState(false)
     const [partNoDisable, setPartNoDisable] = useState(true)
     const [attachmentLoader, setAttachmentLoader] = useState(false)
     const [partName, setPartName] = useState(false)
@@ -81,7 +78,6 @@ function AddRfq(props) {
     const [submissionDate, setSubmissionDate] = useState('')
     const [visibilityMode, setVisibilityMode] = useState({})
     const [dateAndTime, setDateAndTime] = useState('')
-    const [time, setTime] = useState(new Date())
     const [isConditionalVisible, setIsConditionalVisible] = useState(false)
     const [isWarningMessageShow, setIsWarningMessageShow] = useState(false)
     const [loader, setLoader] = useState(false)
@@ -130,8 +126,10 @@ function AddRfq(props) {
                     ele.PartNo = ele.PartNumber
                     ele.PartId = item.PartId
                 }
+                return null
             })
             tempArr = [...tempArr, ...item?.SOPQuantity]
+            return null
         })
 
         return tempArr
@@ -167,7 +165,6 @@ function AddRfq(props) {
                     setValue('VisibilityMode', { value: data?.VisibilityMode, label: data?.VisibilityMode })
                     setVisibilityMode({ value: data?.VisibilityMode, label: data?.VisibilityMode })
                     setDateAndTime(data?.VisibilityDate)
-                    setTime(data?.VisibilityDuration)
                     setValue('Time', data?.VisibilityDuration)
                     setFiles(data?.Attachments)
                     setPartList(convertToPartList(data.PartList))
@@ -292,9 +289,6 @@ function AddRfq(props) {
     const deleteItemPartTable = (rowData, final) => {
 
         let arr = final && final.filter(item => item.PartNo !== rowData?.PartNo)
-        if (arr.length === 0) {
-            setDisableTechnology(false)
-        }
         setPartList(arr)
         onResetPartNoTable()
     }
@@ -327,16 +321,6 @@ function AddRfq(props) {
         })
 
     }
-
-    const editItemPartTable = (gridData, props) => {
-
-        setSelectedRowPartNoTable(props.node.data)
-        setUpdateButtonPartNoTable(true)
-        setValue('partNumber', { label: props?.node?.data?.PartNumber, value: props?.node?.data?.PartId })
-        setValue('annualForecastQuantity', props?.node?.data?.Quantity)
-        setValue('technology', props?.node?.data?.technology)
-    }
-
 
     /**
     * @method renderListing
@@ -452,9 +436,11 @@ function AddRfq(props) {
                     partListObj.Quantity = item1?.Quantity
                     partListArr.push(partListObj)
                 }
+                return null
             })
             temppartObj.SOPQuantityDetails = partListArr
             temppartArr.push(temppartObj)
+            return null
         })
 
         obj.PartList = temppartArr
@@ -644,6 +630,7 @@ function AddRfq(props) {
             objTemp.Quantity = 0
 
             arrTemp.push(objTemp)
+            return null
         })
 
         let arr = [...partList, ...arrTemp]
@@ -653,7 +640,6 @@ function AddRfq(props) {
         setValue('annualForecastQuantity', "")
         // setValue('technology', "")
         setUpdateButtonPartNoTable(false)
-        setDisableTechnology(true)
     }
 
     const onResetPartNoTable = () => {
@@ -788,6 +774,9 @@ function AddRfq(props) {
     }
 
     const handleVisibilityMode = (value) => {
+        if (value?.label === "Duration") {
+            setDateAndTime('')
+        }
         setVisibilityMode(value)
         setValue('startPlanDate', '')
         setValue('Time', '')
@@ -809,11 +798,7 @@ function AddRfq(props) {
     }
 
     const handleChangeDateAndTime = (value) => {
-        setDateAndTime(value)
-    }
-
-    const handleChangeTime = (value) => {
-        setTime(value)
+        setDateAndTime(DayTime(value).format('YYYY-MM-DD HH:mm:ss'))
     }
 
     const tooltipToggle = () => {
