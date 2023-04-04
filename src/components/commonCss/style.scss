@@ -8970,3 +8970,15 @@ table.group-process-table {
 .border-bottomRowMerge {
   border-bottom: 1px solid $agGridBorder !important;
 }
+
+.table-footer {
+  background-color: $tableFooterBackground;
+}
+
+div[col-id="ApprovalNumber"] {
+  .ag-cell-wrapper {
+    .ag-selection-checkbox.ag-invisible {
+      display: block !important;
+    }
+  }
+}
