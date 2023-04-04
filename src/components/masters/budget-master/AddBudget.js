@@ -26,6 +26,7 @@ import { createBudget, getApprovedPartCostingPrice, getMasterBudget, getPartCost
 import { getExchangeRateByCurrency } from '../../costing/actions/Costing'
 import AddConditionCosting from '../../costing/components/CostingHeadCosts/AdditionalOtherCost/AddConditionCosting'
 import ConditionCosting from '../../costing/components/CostingHeadCosts/AdditionalOtherCost/ConditionCosting'
+import PopupMsgWrapper from '../../common/PopupMsgWrapper'
 
 const gridOptions = {};
 
@@ -66,6 +67,7 @@ function AddBudget(props) {
     const [isVendorNameNotSelected, setIsVendorNameNotSelected] = useState(false);
     const [vendorFilter, setVendorFilter] = useState([]);
     const [currency, setCurrency] = useState(0);
+    const [showPopup, setShowPopup] = useState(false);
     const [currencyExchangeRate, setCurrencyExchangeRate] = useState(1);
     const [isConditionCostingOpen, setIsConditionCostingOpen] = useState(false)
     const [conditionTableData, seConditionTableData] = useState([])
@@ -441,10 +443,35 @@ function AddBudget(props) {
 
         props.hideForm(type)
     }
-    const cancelHandler = () => {
-        cancel('cancel')
-    }
 
+    const allInputFieldsName = [
+        'Plant',
+        'FinancialYear',
+        'totalSumCurrency',
+        'currency',
+        'totalSum',
+        'clientName',
+    ]
+    const cancelHandler = () => {
+        let count = 0;
+        allInputFieldsName.forEach((item) => {
+            if (getValues(item)) {
+                count++
+            }
+        })
+        if (count || vendorName.length !== 0 || part.length !== 0) {
+            setShowPopup(true)
+        } else {
+            cancel('cancel')
+        }
+    }
+    const onPopupConfirm = () => {
+        cancel('cancel')
+        setShowPopup(false)
+    }
+    const closePopUp = () => {
+        setShowPopup(false)
+    }
 
     const handleCurrencyChange = (newValue) => {
         if (newValue && newValue !== '') {
@@ -1105,6 +1132,7 @@ function AddBudget(props) {
                             </div>
                         </div>}
                 </div>
+                {showPopup && <PopupMsgWrapper isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${MESSAGES.CANCEL_MASTER_ALERT}`} />}
             </div >
 
         </>

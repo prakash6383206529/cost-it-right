@@ -50,7 +50,12 @@ class AddMaterialType extends Component {
   }
 
   cancelHandler = () => {
-    this.setState({ showPopup: true })
+    const { dirty } = this.props;
+    if (dirty) {
+      this.setState({ showPopup: true })
+    } else {
+      this.cancel('cancel')
+    }
   }
   onPopupConfirm = () => {
     this.cancel('cancel')
