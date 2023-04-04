@@ -23,6 +23,10 @@ import { useState } from 'react'
 import { NumberFieldHookForm, SearchableSelectHookForm } from '../../layout/HookFormInputs'
 import { Controller, useForm } from 'react-hook-form'
 import { createBudget, getApprovedPartCostingPrice, getMasterBudget, getPartCostingHead, updateBudget } from '../actions/Budget'
+import { getExchangeRateByCurrency } from '../../costing/actions/Costing'
+import AddConditionCosting from '../../costing/components/CostingHeadCosts/AdditionalOtherCost/AddConditionCosting'
+import ConditionCosting from '../../costing/components/CostingHeadCosts/AdditionalOtherCost/ConditionCosting'
+import PopupMsgWrapper from '../../common/PopupMsgWrapper'
 
 const gridOptions = {};
 
@@ -61,6 +65,12 @@ function AddBudget(props) {
     const [count, setCount] = useState(0);
     const [isVendorNameNotSelected, setIsVendorNameNotSelected] = useState(false);
     const [vendorFilter, setVendorFilter] = useState([]);
+    const [currency, setCurrency] = useState(0);
+    const [showPopup, setShowPopup] = useState(false);
+    const [currencyExchangeRate, setCurrencyExchangeRate] = useState(1);
+    const [isConditionCostingOpen, setIsConditionCostingOpen] = useState(false)
+    const [conditionTableData, seConditionTableData] = useState([])
+    const [totalConditionCost, setTotalConditionCost] = useState(0)
     const dispatch = useDispatch();
     const plantSelectList = useSelector(state => state.comman.plantSelectList);
     const financialYearSelectList = useSelector(state => state.volume.financialYearSelectList);
@@ -414,9 +424,55 @@ function AddBudget(props) {
 
         props.hideForm(type)
     }
+
+    const allInputFieldsName = [
+        'Plant',
+        'FinancialYear',
+        'totalSumCurrency',
+        'currency',
+        'totalSum',
+        'clientName',
+    ]
     const cancelHandler = () => {
-        cancel('cancel')
+        let count = 0;
+        allInputFieldsName.forEach((item) => {
+            if (getValues(item)) {
+                count++
+            }
+        })
+        if (count || vendorName.length !== 0 || part.length !== 0) {
+            setShowPopup(true)
+        } else {
+            cancel('cancel')
+        }
     }
+    const onPopupConfirm = () => {
+        cancel('cancel')
+        setShowPopup(false)
+    }
+    const closePopUp = () => {
+        setShowPopup(false)
+    }
+
+    const handleCurrencyChange = (newValue) => {
+        if (newValue && newValue !== '') {
+            setCurrency(newValue)
+
+            const finalYear = year?.label && year?.label?.slice(0, 4);
+            let date = (`${finalYear}-04-01`);
+
+            dispatch(getExchangeRateByCurrency(newValue.label, '', date, '', '', res => {
+                if (res && res.data && res.data.Result) {
+                    let Data = res.data.Data;
+                    setCurrencyExchangeRate(Data.CurrencyExchangeRate)
+                    if (getValues('totalSum')) {
+                        setValue('totalSumCurrency', checkForDecimalAndNull((getValues('totalSum') / Data.CurrencyExchangeRate), getConfigurationKey().NoOfDecimalForPrice))
+                    }
+                }
+            }))
+        }
+    }
+
 
     /**
      * @method onSubmit
@@ -957,11 +1013,12 @@ function AddBudget(props) {
                                                     </button>
                                                 </div>
                                             </Row>
-                                        </form ></div >
-                                </div >
-                            </div >
-                        </div >}
-                </div >
+                                        </form></div>
+                                </div>
+                            </div>
+                        </div>}
+                </div>
+                {showPopup && <PopupMsgWrapper isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${MESSAGES.CANCEL_MASTER_ALERT}`} />}
             </div >
 
         </>
