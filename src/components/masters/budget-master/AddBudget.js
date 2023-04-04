@@ -23,6 +23,7 @@ import { useState } from 'react'
 import { NumberFieldHookForm, SearchableSelectHookForm } from '../../layout/HookFormInputs'
 import { Controller, useForm } from 'react-hook-form'
 import { createBudget, getApprovedPartCostingPrice, getMasterBudget, getPartCostingHead, updateBudget } from '../actions/Budget'
+import PopupMsgWrapper from '../../common/PopupMsgWrapper'
 
 const gridOptions = {};
 
@@ -61,6 +62,7 @@ function AddBudget(props) {
     const [count, setCount] = useState(0);
     const [isVendorNameNotSelected, setIsVendorNameNotSelected] = useState(false);
     const [vendorFilter, setVendorFilter] = useState([]);
+    const [showPopup, setShowPopup] = useState(false);
     const dispatch = useDispatch();
     const plantSelectList = useSelector(state => state.comman.plantSelectList);
     const financialYearSelectList = useSelector(state => state.volume.financialYearSelectList);
@@ -414,8 +416,34 @@ function AddBudget(props) {
 
         props.hideForm(type)
     }
+
+    const allInputFieldsName = [
+        'Plant',
+        'FinancialYear',
+        'totalSumCurrency',
+        'currency',
+        'totalSum',
+        'clientName',
+    ]
     const cancelHandler = () => {
+        let count = 0;
+        allInputFieldsName.forEach((item) => {
+            if (getValues(item)) {
+                count++
+            }
+        })
+        if (count || vendorName.length !== 0 || part.length !== 0) {
+            setShowPopup(true)
+        } else {
+            cancel('cancel')
+        }
+    }
+    const onPopupConfirm = () => {
         cancel('cancel')
+        setShowPopup(false)
+    }
+    const closePopUp = () => {
+        setShowPopup(false)
     }
 
     /**
@@ -962,6 +990,7 @@ function AddBudget(props) {
                             </div>
                         </div>}
                 </div>
+                {showPopup && <PopupMsgWrapper isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${MESSAGES.CANCEL_MASTER_ALERT}`} />}
             </div >
 
         </>
