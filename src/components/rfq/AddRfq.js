@@ -1047,6 +1047,7 @@ function AddRfq(props) {
                                                                 }}
                                                                 frameworkComponents={frameworkComponents}
                                                                 stopEditingWhenCellsLoseFocus={true}
+                                                                suppressColumnVirtualisation={true}
                                                             >
                                                                 <AgGridColumn width={"230px"} field="PartNumber" headerName="Part No" cellClass={"colorWhite"} cellRenderer={'partNumberFormatter'}></AgGridColumn>
 
@@ -1286,7 +1287,7 @@ function AddRfq(props) {
                                     </Row>
 
 
-                                    <HeaderTitle title={'Remark and Attachments:'} customClass="mt-3" />
+                                    <HeaderTitle title={'Notes and Attachments:'} customClass="mt-3" />
                                     <Row className='part-detail-wrapper'>
                                         <Col md="4">
                                             <TextAreaHookForm
