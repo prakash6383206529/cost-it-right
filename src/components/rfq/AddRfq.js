@@ -92,6 +92,7 @@ function AddRfq(props) {
     const [viewTooltip, setViewTooltip] = useState(false)
     const [sopdate, setSOPDate] = useState('')
     const [fiveyearList, setFiveyearList] = useState([])
+    const [selectedparts, setSelectedParts] = useState([])
 
     useEffect(() => {
         const { vbcVendorGrid } = props;
@@ -289,7 +290,10 @@ function AddRfq(props) {
     }
 
     const deleteItemPartTable = (rowData, final) => {
-
+        const filteredArray = selectedparts.filter((obj) => {
+            return obj.value !== rowData.value;
+        });
+        setSelectedParts(filteredArray)
         let arr = final && final.filter(item => item.PartNo !== rowData?.PartNo)
         setPartList(arr)
         onResetPartNoTable()
@@ -390,6 +394,14 @@ function AddRfq(props) {
     }
 
     const onSubmit = debounce((data, e, isSent) => {
+        let tempArr = [...partList]
+        let list = []
+        list = tempArr && tempArr?.map(item => {
+            if (isNaN(Number(item?.Quantity))) {
+                item.Quantity = 0
+            }
+            return item
+        })
         if (vendorList.length === 0) {
             Toaster.warning("Please enter vendor details")
             return false
@@ -425,12 +437,12 @@ function AddRfq(props) {
         obj.VendorList = vendorList
 
         let temppartArr = []
-        let partIdList = _.uniq(_.map(partList, 'PartId'))
+        let partIdList = _.uniq(_.map(list, 'PartId'))
         partIdList && partIdList?.map((item) => {
             let temppartObj = {}
             let partListArr = []
             temppartObj.PartId = item
-            partList && partList.map((item1) => {
+            list && list.map((item1) => {
                 let partListObj = {}
                 if (item1?.PartId === item) {
                     partListObj.PartNumber = item1?.PartNo
@@ -618,30 +630,37 @@ function AddRfq(props) {
 
 
     const addRowPartNoTable = () => {
-        let arrTemp = []
-        let partNumber = getValues('partNumber')
+        if (!getValues('partNumber') || getValues('partNumber') === '') {
+            Toaster.warning("Please select part number")
+            return false
+        } else {
+            let tempArrayparts = [...selectedparts, getValues('partNumber')]
+            setSelectedParts(tempArrayparts)
+            let arrTemp = []
+            let partNumber = getValues('partNumber')
 
-        sopObjectTemp && sopObjectTemp.map((item, index) => {
-            let objTemp = {}
-            objTemp.YearName = fiveyearList[index]
-            objTemp.PartNo = partNumber?.label
-            objTemp.PartId = getValues('partNumber')?.value
-            if (index === 2) {
-                objTemp.PartNumber = partNumber?.label
-            }
-            objTemp.Quantity = 0
+            sopObjectTemp && sopObjectTemp.map((item, index) => {
+                let objTemp = {}
+                objTemp.YearName = fiveyearList[index]
+                objTemp.PartNo = partNumber?.label
+                objTemp.PartId = getValues('partNumber')?.value
+                if (index === 2) {
+                    objTemp.PartNumber = partNumber?.label
+                }
+                objTemp.Quantity = 0
 
-            arrTemp.push(objTemp)
-            return null
-        })
+                arrTemp.push(objTemp)
+                return null
+            })
 
-        let arr = [...partList, ...arrTemp]
+            let arr = [...partList, ...arrTemp]
 
-        setPartList(arr)
-        setValue('partNumber', "")
-        setValue('annualForecastQuantity', "")
-        // setValue('technology', "")
-        setUpdateButtonPartNoTable(false)
+            setPartList(arr)
+            setValue('partNumber', "")
+            setValue('annualForecastQuantity', "")
+            // setValue('technology', "")
+            setUpdateButtonPartNoTable(false)
+        }
     }
 
     const onResetPartNoTable = () => {
@@ -711,6 +730,16 @@ function AddRfq(props) {
             }
         }
     };
+
+    const removeAddedParts = (arr) => {
+        const filteredArray = arr.filter((item) => {
+            return !selectedparts.some((element) => {
+                return element.value === item.value;
+            });
+        });
+        return filteredArray
+    }
+
     const partFilterList = async (inputValue) => {
 
         const resultInput = inputValue.slice(0, searchCount)
@@ -719,10 +748,11 @@ function AddRfq(props) {
             setPartName(resultInput)
             let partDataAPI = res?.data?.DataList
             if (inputValue) {
-                return autoCompleteDropdownPart(inputValue, partDataAPI, false, [], true)
+                let temp = [...autoCompleteDropdownPart(inputValue, partDataAPI, false, [], true)]
+                return removeAddedParts(temp)
 
             } else {
-                return partDataAPI
+                return removeAddedParts([...partDataAPI])
             }
         }
         else {
@@ -730,9 +760,10 @@ function AddRfq(props) {
             else {
                 let partData = reactLocalStorage.getObject('PartData')
                 if (inputValue) {
-                    return autoCompleteDropdownPart(inputValue, partData, false, [], false)
+                    let arr = [...autoCompleteDropdownPart(inputValue, partData, false, [], false)]
+                    return removeAddedParts([...arr])
                 } else {
-                    return partData
+                    return removeAddedParts([...partData])
                 }
             }
         }
@@ -755,7 +786,7 @@ function AddRfq(props) {
         if (cellValue === undefined) {
             return true
         }
-        if (cellValue && !/^[+]?([0-9]+(?:[\.][0-9]*)?|\.[0-9]+)$/.test(cellValue)) {
+        if (cellValue && !/^[0-9]+$/.test(cellValue)) {
             Toaster.warning('Please enter a valid positive numbers.')
             return false
         }
@@ -824,7 +855,6 @@ function AddRfq(props) {
     }
 
     const handleSOPDateChange = (value) => {
-        console.log('DayTime(value).format(YYYY): ', value.getFullYear());
         let year = new Date(value).getFullYear()
         const yearList = getNextFiveYears(year)
         setFiveyearList(yearList)
@@ -949,7 +979,6 @@ function AddRfq(props) {
                                                 rules={{ required: false }}
                                                 register={register}
                                                 //defaultValue={DestinationPlant.length !== 0 ? DestinationPlant : ""}
-                                                options={renderListing("partNo")}
                                                 mandatory={true}
                                                 // handleChange={handleDestinationPlantChange}
                                                 handleChange={() => { }}
@@ -1241,6 +1270,7 @@ function AddRfq(props) {
                                                                 showMonthDropdown
                                                                 showYearDropdown
                                                                 showTimeInput
+                                                                minDate={new Date()}
                                                                 timeFormat='HH:mm'
                                                                 dateFormat="dd/MM/yyyy HH:mm"
                                                                 dropdownMode="select"
