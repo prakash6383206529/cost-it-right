@@ -90,6 +90,8 @@ function AddRfq(props) {
     const [isBulkUpload, setisBulkUpload] = useState(false)
     const [showTooltip, setShowTooltip] = useState(false)
     const [viewTooltip, setViewTooltip] = useState(false)
+    const [sopdate, setSOPDate] = useState('')
+    const [fiveyearList, setFiveyearList] = useState([])
 
     useEffect(() => {
         const { vbcVendorGrid } = props;
@@ -620,7 +622,7 @@ function AddRfq(props) {
 
         sopObjectTemp && sopObjectTemp.map((item, index) => {
             let objTemp = {}
-            objTemp.YearName = `SOP${index + 1}`
+            objTemp.YearName = fiveyearList[index]
             objTemp.PartNo = partNumber?.label
             objTemp.PartId = getValues('partNumber')?.value
             if (index === 2) {
@@ -812,6 +814,22 @@ function AddRfq(props) {
         setValue('Time', '')
     }
 
+    function getNextFiveYears(currentYear) {
+        const years = [];
+        for (let i = 0; i < 5; i++) {
+            years.push(currentYear + i);
+        }
+        return years;
+    }
+
+    const handleSOPDateChange = (value) => {
+        console.log('DayTime(value).format(YYYY): ', value.getFullYear());
+        let year = new Date(value).getFullYear()
+        const yearList = getNextFiveYears(year)
+        setFiveyearList(yearList)
+        setSOPDate(DayTime(value).format('YYYY-MM-DD HH:mm:ss'))
+    }
+
     const EditableCallback = (props) => {
         let value = dataProps?.isAddFlag ? true : dataProps?.isViewFlag ? false : isEditAll ? true : false
         return value
@@ -941,22 +959,36 @@ function AddRfq(props) {
                                                 NoOptionMessage={MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN}
                                             />
                                         </Col>
-                                        {/* <Col md="3">
-                                            <NumberFieldHookForm
-                                                label="YearName"
-                                                name={"YearName"}
-                                                Controller={Controller}
-                                                control={control}
-                                                register={register}
-                                                disableErrorOverflow={true}
-                                                mandatory={true}
-                                                handleChange={() => { }}
-                                                disabled={false}
-                                                placeholder={'Enter'}
-                                                customClassName={'withBorder'}
-                                                errors={errors.YearName}
-                                            />
-                                        </Col> */}
+                                        <Col md="3">
+                                            <div className="inputbox date-section">
+                                                <div className="form-group">
+                                                    <label>SOP Date</label>
+                                                    <div className="inputbox date-section">
+                                                        <DatePicker
+                                                            name={'SOPDate'}
+                                                            placeholder={'Select'}
+                                                            //selected={submissionDate}
+                                                            selected={DayTime(sopdate).isValid() ? new Date(sopdate) : ''}
+                                                            onChange={handleSOPDateChange}
+                                                            showMonthDropdown
+                                                            showYearDropdown
+                                                            minDate={new Date()}
+                                                            dateFormat="dd/MM/yyyy"
+                                                            dropdownMode="select"
+                                                            placeholderText="Select date"
+                                                            className="withBorder"
+                                                            autoComplete={"off"}
+                                                            mandatory={true}
+                                                            errors={errors.SOPDate}
+                                                            disabledKeyboardNavigation
+                                                            onChangeRaw={(e) => e.preventDefault()}
+                                                            disabled={dataProps?.isAddFlag ? partNoDisable : (dataProps?.isViewFlag || !isEditAll)}
+                                                        />
+                                                        {isWarningMessageShow && <WarningMessage dClass={"error-message"} textClass={"pt-1"} message={"Please select effective date"} />}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </Col>
                                         {/* <Col md="3">
                                             <NumberFieldHookForm
                                                 label="Annual Forecast Quantity"
