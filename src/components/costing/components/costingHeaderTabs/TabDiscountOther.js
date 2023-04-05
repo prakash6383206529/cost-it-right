@@ -994,12 +994,7 @@ function TabDiscountOther(props) {
     })
     seConditionTableData(finalListCondition)
     const sum = finalListCondition.reduce((acc, obj) => Number(acc) + Number(obj.ConditionCost), 0);
-    setTotalConditionCost(sum)
-    dispatch(isDiscountDataChange(true))
-    setDiscountObj({
-      ...discountObj,
-      totalConditionCost: Number(sum)
-    })
+
     if (finalListCondition) {
       let obj = {}
       obj.CostingId = RMCCTabData && RMCCTabData[0]?.CostingId
@@ -1039,13 +1034,26 @@ function TabDiscountOther(props) {
     })
 
     let netPO = sumForNPV + sumNPV
+
+    setTotalConditionCost(sum)
+    setTotalNpvCost(sumNPV)
+    dispatch(isDiscountDataChange(true))
+    setDiscountObj({
+      ...discountObj,
+      totalConditionCost: Number(sum),
+      totalNpvCost: Number(sumNPV)
+    })
+
     dispatch(setPOPrice(netPO, () => { }))
-
     setNpvTableData(finalList)
-    setTimeout(() => {
 
-      setUpdatednetPoPrice(finalList)
-    }, 500);
+    if (finalList) {
+      let obj = {}
+      obj.CostingId = RMCCTabData && RMCCTabData[0]?.CostingId
+      obj.LoggedInUserId = loggedInUserId()
+      obj.NpvDetails = finalList
+      dispatch(saveCostingDetailNpv(obj, () => { }))
+    }
   }
 
   return (
