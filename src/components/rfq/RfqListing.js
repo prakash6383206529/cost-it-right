@@ -261,7 +261,12 @@ function RfqListing(props) {
         return <div className={cell}>{tempStatus}</div>
     }
 
-    const dateFormater = (props) => {
+    const dashFormatter = (props) => {
+        const cellValue = props?.value;
+        return cellValue ? cellValue : '-';
+    }
+
+    const dateFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '-';
     }
@@ -334,7 +339,8 @@ function RfqListing(props) {
         quotationReceiveFormatter: quotationReceiveFormatter,
         attachmentFormatter: attachmentFormatter,
         statusFormatter: statusFormatter,
-        dateFormater: dateFormater
+        dateFormatter: dateFormatter,
+        dashFormatter: dashFormatter
     }
 
 
@@ -411,8 +417,11 @@ function RfqListing(props) {
                                                 <AgGridColumn field="TechnologyName" headerName='Technology'></AgGridColumn>
                                                 <AgGridColumn field="Remark" headerName='Notes'></AgGridColumn>
                                                 <AgGridColumn field="RaisedBy" headerName='Raised By'></AgGridColumn>
-                                                <AgGridColumn field="RaisedOn" headerName='Raised On' cellRenderer='dateFormater'></AgGridColumn>
-                                                <AgGridColumn field="LastSubmissionDate" headerName='Last Submission Date' cellRenderer='dateFormater'></AgGridColumn>
+                                                <AgGridColumn field="RaisedOn" headerName='Raised On' cellRenderer='dateFormatter'></AgGridColumn>
+                                                <AgGridColumn field="VisibilityMode" headerName='Visibility Mode' cellRenderer='dashFormatter'></AgGridColumn>
+                                                <AgGridColumn field="VisibilityDate" headerName='Visibility Date' cellRenderer='dateFormatter'></AgGridColumn>
+                                                <AgGridColumn field="VisibilityDuration" headerName='Visibility Duration' cellRenderer='dashFormatter'></AgGridColumn>
+                                                <AgGridColumn field="LastSubmissionDate" headerName='Last Submission Date' cellRenderer='dateFormatter'></AgGridColumn>
                                                 <AgGridColumn field="QuotationNumber" headerName='Attachments' cellRenderer='attachmentFormatter'></AgGridColumn>
                                                 <AgGridColumn field="Status" headerName="Status" tooltipField="tooltipText" cellClass="text-center" minWidth={170} cellRenderer="statusFormatter"></AgGridColumn>
                                                 {<AgGridColumn field="QuotationId" width={180} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
