@@ -16,7 +16,7 @@ import { PaginationWrapper } from '.././common/commonPagination'
 import { sendReminderForQuotation, getQuotationDetailsList, getMultipleCostingDetails } from './actions/rfq';
 import AddRfq from './AddRfq';
 import SendForApproval from '../costing/components/approval/SendForApproval';
-import { setCostingApprovalData, setCostingViewData, storePartNumber } from '../costing/actions/Costing';
+import { getSingleCostingDetails, setCostingApprovalData, setCostingViewData, storePartNumber } from '../costing/actions/Costing';
 import { getVolumeDataByPartAndYear } from '../masters/actions/Volume';
 import { checkForNull, formViewData } from '../../helper';
 import ApproveRejectDrawer from '../costing/components/approval/ApproveRejectDrawer';
@@ -27,6 +27,7 @@ import RemarkHistoryDrawer from './RemarkHistoryDrawer';
 import DayTime from '../common/DayTimeWrapper';
 import { hyphenFormatter } from '../masters/masterUtil';
 import _, { isNumber } from 'lodash';
+import CostingDetailSimulationDrawer from '../simulation/components/CostingDetailSimulationDrawer';
 const gridOptions = {};
 
 
@@ -55,6 +56,8 @@ function RfqListing(props) {
     const [remarkRowData, setRemarkRowData] = useState([])
     const viewCostingData = useSelector((state) => state.costing.viewCostingDetailData)
     const { data } = props
+    const [isOpen, setIsOpen] = useState(false)
+    const [isReportLoader, setIsReportLoader] = useState(false)
 
     const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
 
@@ -394,6 +397,26 @@ function RfqListing(props) {
     const closePopUp = () => {
         setShowPopup(false)
     }
+
+    const closeUserDetails = () => {
+        setIsOpen(false)
+    }
+
+    const viewCostingDetail = (rowData) => {
+        setIsReportLoader(true)
+        if (rowData?.CostingId && Object.keys(rowData?.CostingId).length > 0) {
+            dispatch(getSingleCostingDetails(rowData?.CostingId, (res) => {
+                if (res.data.Data) {
+                    let dataFromAPI = res.data.Data
+                    const tempObj = formViewData(dataFromAPI)
+                    dispatch(setCostingViewData(tempObj))
+                }
+                setIsReportLoader(false)
+            }))
+        }
+        setIsOpen(true)
+    }
+
     /**
     * @method buttonFormatter
     * @description Renders buttons
@@ -430,6 +453,7 @@ function RfqListing(props) {
                 {showActionIcons && <button title='Reject' className="CancelIcon mr-1" type={'button'} onClick={() => rejectDetails(cellValue, rowData)} />}
                 {showRemarkHistory && <button title='Remark History' className="btn-history-remark mr-1" type={'button'} onClick={() => { getRemarkHistory(cellValue, rowData) }}><div className='history-remark'></div></button>}
                 {showReminderIcon && <button title={`Reminder: ${reminderCount}`} className="btn-reminder mr-1" type={'button'} onClick={() => { sendReminder(cellValue, rowData) }}><div className="reminder"><div className="count">{reminderCount}</div></div></button>}
+                {rowData?.CostingId && < button title='View' className="View mr-1" type={'button'} onClick={() => viewCostingDetail(rowData)} />}
 
             </>
         )
@@ -750,8 +774,18 @@ function RfqListing(props) {
                         />
                     )
                 }
-
-
+                {
+                    isOpen &&
+                    <CostingDetailSimulationDrawer
+                        isOpen={isOpen}
+                        closeDrawer={closeUserDetails}
+                        anchor={"right"}
+                        isReport={isOpen}
+                        isSimulation={false}
+                        simulationDrawer={false}
+                        isReportLoader={isReportLoader}
+                    />
+                }
                 {rejectDrawer && (
                     <ApproveRejectDrawer
                         type={'Reject'}
