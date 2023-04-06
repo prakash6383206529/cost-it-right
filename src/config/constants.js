@@ -2578,5 +2578,18 @@ export const IV = 'ozzzguugcusjqmbj'
 export const KEYRFQ = "UAGSqTBCbZ8JqHJl"
 export const IVRFQ = "8vFNmRQEl91nOtrM"
 
+//CONSTANT FOR VENDOR TYPE 
+export const VENDOR_TYPE_BOP = 'BOP'
+export const VENDOR_TYPE_FREIGHT = 'FREIGHT'
+export const VENDOR_TYPE_LABOUR = 'LABOUR'
+export const VENDOR_TYPE_RAW_MATERIAL = 'RAW MATERIAL'
+export const VENDOR_TYPE_VBC = 'VBC'
+
+export const BOP_VENDOR_TYPE = Number(reactLocalStorage.getObject('vendortype')[VENDOR_TYPE_BOP])
+export const FREIGHT_VENDOR_TYPE = Number(reactLocalStorage.getObject('vendortype')[VENDOR_TYPE_FREIGHT])
+export const LABOUR_VENDOR_TYPE = Number(reactLocalStorage.getObject('vendortype')[VENDOR_TYPE_LABOUR])
+export const RAW_MATERIAL_VENDOR_TYPE = Number(reactLocalStorage.getObject('vendortype')[VENDOR_TYPE_RAW_MATERIAL])
+export const VBC_VENDOR_TYPE = Number(reactLocalStorage.getObject('vendortype')[VENDOR_TYPE_VBC])
+
 //VERSION 
 export const VERSION = "V2.1.122";

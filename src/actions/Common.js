@@ -1726,5 +1726,12 @@ export function getCostingCondition(callback) {
     });
   };
 }
-
+// check here @samrudhi
+export function getVendorNameByVendorSelectList(vendorTypeId, vendorName, callback) {
+  return axios.get(`${API.getVendorNameByVendorSelectList}?vendorTypeId=${vendorTypeId}&vendorName=${vendorName}`, config()).catch(error => {
+    apiErrors(error);
+    callback(error);
+    return Promise.reject(error)
+  });
+}
 
