@@ -9,7 +9,7 @@ import {
 import { renderText, searchableSelect, renderTextAreaField, renderDatePicker, renderTextInputField, focusOnError } from "../../layout/FormInputs";
 import { getPlantBySupplier, getUOMSelectList, getCurrencySelectList, getPlantSelectListByType, getCityByCountry, getAllCity } from '../../../actions/Common';
 import {
-  createBOPImport, updateBOPImport, getBOPCategorySelectList, getBOPImportById,
+  createBOP, updateBOP, getBOPCategorySelectList, getBOPImportById,
   fileUploadBOPDomestic, fileDeleteBOPDomestic, getIncoTermSelectList, getPaymentTermSelectList
 } from '../actions/BoughtOutParts';
 import { getVendorWithVendorCodeSelectList, getVendorTypeBOPSelectList, } from '../actions/Supplier';
@@ -342,7 +342,7 @@ class AddBOPImport extends Component {
               }, 500)
             })
             if (!this.state.isViewMode && Data.NetLandedCostConversion === 0) {
-              this.props.getExchangeRateByCurrency(Data.Currency, costingTypeId, DayTime(Data.EffectiveDate).format('YYYY-MM-DD'), costingTypeId === ZBCTypeId ? EMPTY_GUID : vendorName.value, client.value, res => {
+              this.props.getExchangeRateByCurrency(Data.Currency, costingTypeId, DayTime(Data.EffectiveDate).format('YYYY-MM-DD'), costingTypeId === ZBCTypeId ? EMPTY_GUID : vendorName.value, client.value, false, res => {
                 if (Object.keys(res.data.Data).length === 0) {
                   this.setState({ showWarning: true })
                 }
@@ -623,7 +623,7 @@ class AddBOPImport extends Component {
     } else {
       if (currency && currency.length !== 0 && effectiveDate) {
         const { costingTypeId, vendorName, client } = this.state;
-        this.props.getExchangeRateByCurrency(currency.label, costingTypeId, DayTime(effectiveDate).format('YYYY-MM-DD'), costingTypeId === ZBCTypeId ? EMPTY_GUID : vendorName.value, client.value, res => {
+        this.props.getExchangeRateByCurrency(currency.label, costingTypeId, DayTime(effectiveDate).format('YYYY-MM-DD'), costingTypeId === ZBCTypeId ? EMPTY_GUID : vendorName.value, client.value, false, res => {
           if (Object.keys(res.data.Data).length === 0) {
             this.setState({ showWarning: true });
           } else {
@@ -831,7 +831,7 @@ class AddBOPImport extends Component {
       }
       if (IsFinancialDataChanged) {
         if (isDateChange && (DayTime(oldDate).format("DD/MM/YYYY") !== DayTime(effectiveDate).format("DD/MM/YYYY"))) {
-          this.props.updateBOPImport(requestData, (res) => {
+          this.props.updateBOP(requestData, (res) => {
             this.setState({ setDisable: false })
             if (res?.data?.Result) {
               Toaster.success(MESSAGES.UPDATE_BOP_SUCESS);
@@ -859,7 +859,7 @@ class AddBOPImport extends Component {
         }
         else {
           // if (isSourceChange) {
-          this.props.updateBOPImport(requestData, (res) => {
+          this.props.updateBOP(requestData, (res) => {
             this.setState({ setDisable: false })
             if (res?.data?.Result) {
               Toaster.success(MESSAGES.UPDATE_BOP_SUCESS);
@@ -959,7 +959,7 @@ class AddBOPImport extends Component {
 
 
       } else {
-        this.props.createBOPImport(formData, (res) => {
+        this.props.createBOP(formData, (res) => {
           this.setState({ setDisable: false })
           if (res.data.Result) {
             Toaster.success(MESSAGES.BOP_ADD_SUCCESS)
@@ -993,7 +993,7 @@ class AddBOPImport extends Component {
         this.setState({ inputLoader: true })
         let res
         if (costingTypeId === VBCTypeId) {
-          res = await getVendorWithVendorCodeSelectList(resultInput)
+          res = await getVendorWithVendorCodeSelectList(costingTypeId, resultInput)
         }
         else {
           res = await getVendorTypeBOPSelectList(resultInput)
@@ -1676,8 +1676,8 @@ export default connect(mapStateToProps, {
   getPlantBySupplier,
   getUOMSelectList,
   getCurrencySelectList,
-  createBOPImport,
-  updateBOPImport,
+  createBOP,
+  updateBOP,
   getBOPCategorySelectList,
   getBOPImportById,
   fileUploadBOPDomestic,

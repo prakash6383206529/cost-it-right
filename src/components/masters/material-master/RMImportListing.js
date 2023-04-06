@@ -3,7 +3,7 @@ import { Row, Col, } from 'reactstrap';
 import {
   deleteRawMaterialAPI, getAllRMDataList
 } from '../actions/Material';
-import { APPROVED_STATUS, defaultPageSize, EMPTY_DATA, RMIMPORT } from '../../../config/constants';
+import { APPROVED_STATUS, defaultPageSize, EMPTY_DATA, ENTRY_TYPE_IMPORT, RMIMPORT } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
 import Toaster from '../../common/Toaster';
@@ -941,7 +941,7 @@ function RMImportListing(props) {
             messageLabel={"RM Import"}
             anchor={"right"}
             masterId={RM_MASTER_ID}
-            typeOfEntryId={RMIMPORT}
+            typeOfEntryId={ENTRY_TYPE_IMPORT}
           />
         )
       }

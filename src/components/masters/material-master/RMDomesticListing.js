@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { Row, Col, } from 'reactstrap';
 import { deleteRawMaterialAPI, getAllRMDataList, } from '../actions/Material';
 import { userDepartmetList } from "../../../helper/auth"
-import { APPROVED_STATUS, defaultPageSize, EMPTY_DATA, RMDOMESTIC } from '../../../config/constants';
+import { APPROVED_STATUS, defaultPageSize, EMPTY_DATA, ENTRY_TYPE_DOMESTIC, RMDOMESTIC } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
 import Toaster from '../../common/Toaster';
@@ -931,7 +931,7 @@ function RMDomesticListing(props) {
                         messageLabel={"RM Domestic"}
                         anchor={"right"}
                         masterId={RM_MASTER_ID}
-                        typeOfEntryId={RMDOMESTIC}
+                        typeOfEntryId={ENTRY_TYPE_DOMESTIC}
                     />
                 )
             }
