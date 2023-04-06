@@ -102,7 +102,6 @@ function RfqListing(props) {
 
         gridOptions?.columnApi?.resetColumnState(null);
         gridOptions?.api?.setFilterModel(null);
-        window.screen.width >= 1920 && gridApi.sizeColumnsToFit();
         gridApi.deselectAll()
     }
 
@@ -191,7 +190,6 @@ function RfqListing(props) {
 
     const onGridReady = (params) => {
         setgridApi(params.api);
-        window.screen.width >= 1920 && params.api.sizeColumnsToFit();
         setgridColumnApi(params.columnApi);
         params.api.paginationGoToPage(0);
     };
@@ -199,7 +197,6 @@ function RfqListing(props) {
 
     const onPageSizeChanged = (newPageSize) => {
         gridApi.paginationSetPageSize(Number(newPageSize));
-        window.screen.width >= 1920 && gridApi.sizeColumnsToFit();
 
     };
 
@@ -414,14 +411,14 @@ function RfqListing(props) {
                                                 <AgGridColumn field="CostingReceived" headerName='No. of Quotation Received' maxWidth={150} cellRenderer={'quotationReceiveFormatter'}></AgGridColumn>
                                                 <AgGridColumn field="VendorName" tooltipField="VendorName" headerName='Vendor (Code)'></AgGridColumn>
                                                 <AgGridColumn field="PlantName" headerName='Plant (Code)'></AgGridColumn>
-                                                <AgGridColumn field="TechnologyName" headerName='Technology'></AgGridColumn>
+                                                <AgGridColumn field="TechnologyName" width={"160px"} headerName='Technology'></AgGridColumn>
                                                 <AgGridColumn field="Remark" headerName='Notes'></AgGridColumn>
-                                                <AgGridColumn field="RaisedBy" headerName='Raised By'></AgGridColumn>
-                                                <AgGridColumn field="RaisedOn" headerName='Raised On' cellRenderer='dateFormatter'></AgGridColumn>
-                                                <AgGridColumn field="VisibilityMode" headerName='Visibility Mode' cellRenderer='dashFormatter'></AgGridColumn>
-                                                <AgGridColumn field="VisibilityDate" headerName='Visibility Date' cellRenderer='dateFormatter'></AgGridColumn>
-                                                <AgGridColumn field="VisibilityDuration" headerName='Visibility Duration' cellRenderer='dashFormatter'></AgGridColumn>
-                                                <AgGridColumn field="LastSubmissionDate" headerName='Last Submission Date' cellRenderer='dateFormatter'></AgGridColumn>
+                                                <AgGridColumn field="RaisedBy" width={"160px"} headerName='Raised By'></AgGridColumn>
+                                                <AgGridColumn field="RaisedOn" width={"145px"} headerName='Raised On' cellRenderer='dateFormatter'></AgGridColumn>
+                                                <AgGridColumn field="VisibilityMode" width={"140px"} headerName='Visibility Mode' cellRenderer='dashFormatter'></AgGridColumn>
+                                                <AgGridColumn field="VisibilityDate" width={"140px"} headerName='Visibility Date' cellRenderer='dateFormatter'></AgGridColumn>
+                                                <AgGridColumn field="VisibilityDuration" width={"150px"} headerName='Visibility Duration' cellRenderer='dashFormatter'></AgGridColumn>
+                                                <AgGridColumn field="LastSubmissionDate" width={"160px"} headerName='Last Submission Date' cellRenderer='dateFormatter'></AgGridColumn>
                                                 <AgGridColumn field="QuotationNumber" headerName='Attachments' cellRenderer='attachmentFormatter'></AgGridColumn>
                                                 <AgGridColumn field="Status" headerName="Status" tooltipField="tooltipText" cellClass="text-center" minWidth={170} cellRenderer="statusFormatter"></AgGridColumn>
                                                 {<AgGridColumn field="QuotationId" width={180} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
