@@ -268,6 +268,11 @@ function RfqListing(props) {
         return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '-';
     }
 
+    const dateTimeFormatter = (props) => {
+        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY  hh:mm') : '-';
+    }
+
     const viewAttachmentData = (index) => {
         setAttachment(true)
         setViewAttachment(index)
@@ -342,7 +347,8 @@ function RfqListing(props) {
         attachmentFormatter: attachmentFormatter,
         statusFormatter: statusFormatter,
         dateFormatter: dateFormatter,
-        dashFormatter: dashFormatter
+        dashFormatter: dashFormatter,
+        dateTimeFormatter: dateTimeFormatter
     }
 
 
@@ -421,7 +427,7 @@ function RfqListing(props) {
                                                 <AgGridColumn field="RaisedBy" width={"160px"} headerName='Raised By'></AgGridColumn>
                                                 <AgGridColumn field="RaisedOn" width={"145px"} headerName='Raised On' cellRenderer='dateFormatter'></AgGridColumn>
                                                 <AgGridColumn field="VisibilityMode" width={"140px"} headerName='Visibility Mode' cellRenderer='dashFormatter'></AgGridColumn>
-                                                <AgGridColumn field="VisibilityDate" width={"140px"} headerName='Visibility Date' cellRenderer='dateFormatter'></AgGridColumn>
+                                                <AgGridColumn field="VisibilityDate" width={"140px"} headerName='Visibility Date' cellRenderer='dateTimeFormatter'></AgGridColumn>
                                                 <AgGridColumn field="VisibilityDuration" width={"150px"} headerName='Visibility Duration' cellRenderer='dashFormatter'></AgGridColumn>
                                                 <AgGridColumn field="LastSubmissionDate" width={"160px"} headerName='Last Submission Date' cellRenderer='dateFormatter'></AgGridColumn>
                                                 <AgGridColumn field="QuotationNumber" headerName='Attachments' cellRenderer='attachmentFormatter'></AgGridColumn>
