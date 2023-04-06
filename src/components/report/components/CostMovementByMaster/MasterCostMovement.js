@@ -87,14 +87,13 @@ function MasterCostMovement() {
         setValue('MachineTypeId', '')
     }
     const handleMasterChange = (event) => {
-        console.log('event: ', event.value);
         setMaster(event.value);
         resetFields()
         switch (Number(event.value)) {
             case 2:
             case 1:
                 dispatch(getRMGradeSelectListByRawMaterial('', () => { }))
-                dispatch(getRawMaterialNameChild('', () => { }))
+                dispatch(getRawMaterialNameChild(() => { }))
                 dispatch(getRawMaterialCategory(() => { }))
                 break;
             case 4:
@@ -361,13 +360,13 @@ function MasterCostMovement() {
 
         if (newValue && newValue !== '') {
             setCategory(newValue)
-            dispatch(getRawMaterialNameChild(newValue.value, (res) => { }))
+            dispatch(getRawMaterialNameChild((res) => { }))
         } else {
             setCategory([])
             setRawMaterial([])
             setRMGrade([])
             setRMSpec([])
-            dispatch(getRawMaterialNameChild(0, (res) => { }))
+            dispatch(getRawMaterialNameChild((res) => { }))
             dispatch(fetchSpecificationDataAPI(0, () => { }))
         }
     };

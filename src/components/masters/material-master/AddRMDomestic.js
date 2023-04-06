@@ -11,7 +11,7 @@ import {
   fetchPlantDataAPI, getPlantSelectListByType, getCityByCountry, getAllCity
 } from '../../../actions/Common'
 import {
-  createRMDomestic, getRawMaterialDetailsAPI, updateRMDomesticAPI, getRawMaterialNameChild, getRMGradeSelectListByRawMaterial,
+  createRM, getRMDataById, updateRMAPI, getRawMaterialNameChild, getRMGradeSelectListByRawMaterial,
   getVendorListByVendorType, fileUploadRMDomestic, fileUpdateRMDomestic, fileDeleteRMDomestic, getVendorWithVendorCodeSelectList, checkAndGetRawMaterialCode,
 } from '../actions/Material'
 import Toaster from '../../common/Toaster';
@@ -25,7 +25,7 @@ import AddVendorDrawer from '../supplier-master/AddVendorDrawer'
 import Dropzone from 'react-dropzone-uploader'
 import 'react-dropzone-uploader/dist/styles.css'
 import 'react-datepicker/dist/react-datepicker.css'
-import { FILE_URL, ZBC, RM_MASTER_ID, EMPTY_GUID, SPACEBAR, ZBCTypeId, VBCTypeId, CBCTypeId, searchCount, SHEET_METAL } from '../../../config/constants'
+import { FILE_URL, ZBC, RM_MASTER_ID, EMPTY_GUID, SPACEBAR, ZBCTypeId, VBCTypeId, CBCTypeId, searchCount, RMDOMESTIC, SHEET_METAL } from '../../../config/constants'
 import DayTime from '../../common/DayTimeWrapper'
 import TooltipCustom from '../../common/Tooltip';
 import LoaderCustom from '../../common/LoaderCustom';
@@ -161,9 +161,12 @@ class AddRMDomestic extends Component {
    */
   componentDidMount() {
     const { data, initialConfiguration } = this.props
+    if ((this.props.data.isEditFlag || this.state.isViewFlag)) {
+      this.getDetails(data)
+    }
     this.getDetails(data)
     if (!this.state.isViewFlag) {
-      this.props.getRawMaterialNameChild('', () => { })
+      this.props.getRawMaterialNameChild(() => { })
       this.props.getAllCity(cityId => {
         this.props.getCityByCountry(cityId, 0, () => { })
       })
@@ -499,7 +502,7 @@ class AddRMDomestic extends Component {
       this.setState({
         isEditFlag: false, isLoader: true, isShowForm: true, RawMaterialID: data.Id,
       })
-      this.props.getRawMaterialDetailsAPI(data, true, (res) => {
+      this.props.getRMDataById(data, true, (res) => {
         if (res && res.data && res?.data?.Result) {
           const Data = res.data.Data
           this.setState({ DataToChange: Data })
@@ -562,7 +565,7 @@ class AddRMDomestic extends Component {
         isLoader: false,
         RawMaterialID: EMPTY_GUID,
       })
-      this.props.getRawMaterialDetailsAPI('', false, (res) => { })
+      this.props.getRMDataById('', false, (res) => { })
     }
   }
 
@@ -603,7 +606,7 @@ class AddRMDomestic extends Component {
   closeRMDrawer = (e = '', data = {}) => {
     this.setState({ isRMDrawerOpen: false }, () => {
       /* FOR SHOWING RM ,GRADE AND SPECIFICATION SELECTED IN RM SPECIFICATION DRAWER*/
-      this.props.getRawMaterialNameChild('', () => {
+      this.props.getRawMaterialNameChild(() => {
 
         if (Object.keys(data).length > 0) {
           this.props.getRMGradeSelectListByRawMaterial(data.RawMaterialId, (res) => {
@@ -681,7 +684,7 @@ class AddRMDomestic extends Component {
         }
       } else {
         if (this.state.vendorName && this.state.vendorName.length > 0) {
-          const res = await getVendorWithVendorCodeSelectList(this.state.vendorName)
+          const res = await getVendorWithVendorCodeSelectList(costingTypeId, this.state.vendorName)
           let vendorDataAPI = res?.data?.SelectList
           reactLocalStorage?.setObject('vendorData', vendorDataAPI)
         }
@@ -881,7 +884,7 @@ class AddRMDomestic extends Component {
       IsVendor: false,
       updatedObj: {}
     })
-    this.props.getRawMaterialDetailsAPI('', false, (res) => { })
+    this.props.getRMDataById('', false, (res) => { })
     this.props.fetchSpecificationDataAPI(0, () => { })
     this.props.hideForm(type)
   }
@@ -1093,10 +1096,11 @@ class AddRMDomestic extends Component {
         VendorPlant: [],
         MachiningScrapRate: values.MachiningScrap,
         JaliScrapCost: values.CircleScrapCost ? values.CircleScrapCost : '',// THIS KEY FOR CIRCLE SCRAP COST
+        RawMaterialEntryType: Number(RMDOMESTIC)
       }
       if (IsFinancialDataChanged) {
         if ((isDateChange) && (DayTime(oldDate).format("DD/MM/YYYY") !== DayTime(effectiveDate).format("DD/MM/YYYY"))) {
-          this.props.updateRMDomesticAPI(requestData, (res) => {
+          this.props.updateRMAPI(requestData, (res) => {
             this.setState({ setDisable: false })
             if (res?.data?.Result) {
               Toaster.success(MESSAGES.RAW_MATERIAL_DETAILS_UPDATE_SUCCESS)
@@ -1126,7 +1130,7 @@ class AddRMDomestic extends Component {
         }
         else {
 
-          this.props.updateRMDomesticAPI(requestData, (res) => {
+          this.props.updateRMAPI(requestData, (res) => {
             this.setState({ setDisable: false })
             if (res?.data?.Result) {
               Toaster.success(MESSAGES.RAW_MATERIAL_DETAILS_UPDATE_SUCCESS)
@@ -1176,6 +1180,7 @@ class AddRMDomestic extends Component {
       formData.CustomerId = costingTypeId === CBCTypeId ? client.value : ''
       formData.MachiningScrapRate = values.MachiningScrap
       formData.JaliScrapCost = values.CircleScrapCost ? values.CircleScrapCost : '' // THIS KEY FOR CIRCLE SCRAP COST
+      formData.RawMaterialEntryType = Number(RMDOMESTIC)
       if (CheckApprovalApplicableMaster(RM_MASTER_ID) === true && !this.state.isFinalApprovar) {
         formData.NetLandedCostConversion = 0
         formData.Currency = "INR"
@@ -1234,7 +1239,7 @@ class AddRMDomestic extends Component {
 
 
       } else {
-        this.props.createRMDomestic(formData, (res) => {
+        this.props.createRM(formData, (res) => {
           this.setState({ setDisable: false })
           if (res?.data?.Result) {
             Toaster.success(MESSAGES.MATERIAL_ADD_SUCCESS)
@@ -1276,7 +1281,7 @@ class AddRMDomestic extends Component {
         this.setState({ inputLoader: true })
         let res
         if (costingTypeId === VBCTypeId && resultInput) {
-          res = await getVendorWithVendorCodeSelectList(resultInput)
+          res = await getVendorWithVendorCodeSelectList(costingTypeId, resultInput)
         }
         else {
           res = await getVendorListByVendorType(costingTypeId, resultInput)
@@ -2178,18 +2183,18 @@ function mapStateToProps(state) {
  * @param {function} mapDispatchToProps
  */
 export default connect(mapStateToProps, {
-  createRMDomestic,
+  createRM,
   getRawMaterialCategory,
   getCostingSpecificTechnology,
   fetchSupplierCityDataAPI,
   fetchGradeDataAPI,
   fetchPlantDataAPI,
   fetchSpecificationDataAPI,
-  getRawMaterialDetailsAPI,
+  getRMDataById,
   getCityBySupplier,
   getPlantByCity,
   getPlantByCityAndSupplier,
-  updateRMDomesticAPI,
+  updateRMAPI,
   fetchRMGradeAPI,
   getRawMaterialNameChild,
   getRMGradeSelectListByRawMaterial,
