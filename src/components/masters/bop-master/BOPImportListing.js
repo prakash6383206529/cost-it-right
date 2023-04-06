@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { reduxForm, } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import { checkForDecimalAndNull } from "../../../helper/validation";
-import { BOPIMPORT, EMPTY_DATA, defaultPageSize, APPROVED_STATUS } from '../../../config/constants';
+import { BOPIMPORT, EMPTY_DATA, defaultPageSize, APPROVED_STATUS, ENTRY_TYPE_IMPORT } from '../../../config/constants';
 import { getBOPImportDataList, deleteBOP, getAllVendorSelectList, } from '../actions/BoughtOutParts';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
@@ -153,6 +153,7 @@ class BOPImportListing extends Component {
 
         let FloatingfilterData = this.state.filterModel
         let obj = { ...this.state.floatingFilterData }
+        dataObj.EntryType = ENTRY_TYPE_IMPORT
         this.props.getBOPImportDataList(filterData, skip, take, isPagination, dataObj, (res) => {
             this.setState({ noData: false })
             if (this.props.isSimulation) {
@@ -775,6 +776,7 @@ class BOPImportListing extends Component {
                         messageLabel={'BOP Import'}
                         anchor={'right'}
                         masterId={BOP_MASTER_ID}
+                        typeOfEntryId={ENTRY_TYPE_IMPORT}
                     />
                 }
 
