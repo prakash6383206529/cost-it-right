@@ -187,6 +187,7 @@ function RMSimulation(props) {
 
         basicRateCount = 0
         setValueFunction();
+        setShowTooltip(false)
     }, 600)
 
 
