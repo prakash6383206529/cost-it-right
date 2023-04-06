@@ -64,7 +64,7 @@ class MachineRateListing extends Component {
             selectedRowData: [],
 
             //states for pagination purpose
-            floatingFilterData: { CostingHead: "", Technologies: "", VendorName: "", Plants: "", MachineNumber: "", MachineName: "", MachineTypeName: "", MachineTonnage: "", ProcessName: "", MachineRate: "", EffectiveDateNew: "", DepartmentName: this.props.isSimulation ? userDepartmetList() : "", CustomerName: "" },
+            floatingFilterData: { CostingHead: "", Technology: "", VendorName: "", Plant: "", MachineNumber: "", MachineName: "", MachineTypeName: "", MachineTonnage: "", ProcessName: "", MachineRate: "", EffectiveDateNew: "", DepartmentName: this.props.isSimulation ? userDepartmetList() : "", CustomerName: "" },
             warningMessage: false,
             filterModel: {},
             pageNo: 1,
@@ -786,7 +786,8 @@ class MachineRateListing extends Component {
                                     suppressRowClickSelection={true}
                                 >
                                     <AgGridColumn field="CostingHead" headerName="Costing Head" cellRenderer={'costingHeadRenderer'}></AgGridColumn>
-                                    {!isSimulation && <AgGridColumn field="Technologies" headerName="Technology"></AgGridColumn>}
+                                    {/* check here @samrudhi */}
+                                    {!isSimulation && <AgGridColumn field="Technology" headerName="Technology"></AgGridColumn>}
                                     <AgGridColumn field="VendorName" headerName="Vendor (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                     {(reactLocalStorage.getObject('cbcCostingPermission')) && <AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
                                     <AgGridColumn field="Plants" headerName="Plant (Code)" cellRenderer='hyphenFormatter'></AgGridColumn>
@@ -798,7 +799,7 @@ class MachineRateListing extends Component {
                                     <AgGridColumn field="ProcessName" headerName="Process Name"></AgGridColumn>
                                     <AgGridColumn field="VendorName" headerName="Vendor (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                     {reactLocalStorage.getObject('cbcCostingPermission') && <AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
-                                    <AgGridColumn field="Plants" headerName="Plant (Code)" cellRenderer='hyphenFormatter'></AgGridColumn>
+                                    <AgGridColumn field="Plant" headerName="Plant (Code)" cellRenderer='hyphenFormatter'></AgGridColumn>
                                     <AgGridColumn field="MachineRate" headerName="Machine Rate"></AgGridColumn>
                                     <AgGridColumn field="EffectiveDateNew" headerName="Effective Date" cellRenderer={'effectiveDateRenderer'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
                                     {!isSimulation && !this.props?.isMasterSummaryDrawer && <AgGridColumn field="MachineId" width={230} cellClass={"actions-wrapper"} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
@@ -831,6 +832,7 @@ class MachineRateListing extends Component {
                         messageLabel={'Machine'}
                         anchor={'right'}
                         masterId={MACHINE_MASTER_ID}
+                        typeOfEntryId={MACHINERATE}
                     />
                 }
 
