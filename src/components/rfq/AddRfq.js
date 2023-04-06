@@ -630,8 +630,8 @@ function AddRfq(props) {
 
 
     const addRowPartNoTable = () => {
-        if (!getValues('partNumber') || getValues('partNumber') === '') {
-            Toaster.warning("Please select part number")
+        if (!getValues('partNumber') || getValues('partNumber') === '' || !sopdate || sopdate === '') {
+            Toaster.warning("Please select part number and SOP date")
             return false
         } else {
             let tempArrayparts = [...selectedparts, getValues('partNumber')]
@@ -657,7 +657,8 @@ function AddRfq(props) {
 
             setPartList(arr)
             setValue('partNumber', "")
-            setValue('annualForecastQuantity', "")
+            setSOPDate('')
+            setValue('SOPDate', "")
             // setValue('technology', "")
             setUpdateButtonPartNoTable(false)
         }
@@ -667,6 +668,7 @@ function AddRfq(props) {
         setUpdateButtonPartNoTable(false)
         setValue('partNumber', "")
         setValue('annualForecastQuantity', "")
+        setSOPDate('')
         // setValue('technology', "")
     }
 
