@@ -519,13 +519,9 @@ function RfqListing(props) {
 
 
     const onGridReady = (params) => {
-        setTimeout(() => {
-            setgridApi(params.api);
-            setgridColumnApi(params.columnApi);
-            params.api.paginationGoToPage(0);
-            params.api.sizeColumnsToFit()
-        }, 400);
-
+        setgridApi(params.api);
+        setgridColumnApi(params.columnApi);
+        params.api.paginationGoToPage(0);
     };
 
 
@@ -682,7 +678,17 @@ function RfqListing(props) {
         setSendForApproval(false)
         getDataList()
     }
+    const getRowStyle = () => {
+        return {
+            backgroundColor: 'white'
+        }
+    }
+    const onFirstDataRendered = () => {
+        if (gridApi) {
+            window.screen.width > 1600 && gridApi.sizeColumnsToFit();
 
+        }
+    };
 
     return (
         <>
@@ -691,19 +697,31 @@ function RfqListing(props) {
                     <>
 
                         <Row className={`filter-row-large`}>
-                            <Col md="6" lg="6" className='mb-2'>
-                                <div className='header-title heading-container'>
-                                    <div>Raised On: <span>{data.RaisedOn ? DayTime(data.RaisedOn).format('DD/MM/YYYY') : '-'}</span></div>
-                                    <div>Raised By: <span>{data.RaisedBy}</span></div>
-                                </div>
+                            <Col md="6" className='d-flex'>
+                                <h3 className='mt-2'>RFQ No. : {data?.QuotationNumber ? data?.QuotationNumber : '-'}</h3>
                             </Col>
-                            <Col md="6" lg="6" className="mb-1 d-flex justify-content-end align-items-center">
+                            <Col md="6" className='d-flex justify-content-end align-items-center mb-2 mt-1'>
+                                <div className='d-flex  align-items-center'><div className='w-min-fit'>Approved By:</div>
+                                    <input
+                                        type="text"
+                                        className="form-control mx-2"
+                                        value={data.RaisedBy}
+                                        disabled={true}
+                                    /> </div>
+                                <div className='d-flex align-items-center pr-0'><div className='w-min-fit'>Approved On:</div>
+                                    <input
+                                        type="text"
+                                        className="form-control ml-2"
+                                        disabled={true}
+                                        value={data.RaisedOn ? DayTime(data.RaisedOn).format('DD/MM/YYYY') : '-'}
+                                    />
+                                </div>
                                 {
                                     // SHOW FILTER BUTTON ONLY FOR RM MASTER NOT FOR SIMULATION AMD MASTER APPROVAL SUMMARY
                                     (!props.isMasterSummaryDrawer) &&
                                     <>
 
-                                        <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}>
+                                        <button type="button" className="user-btn ml-2" title="Reset Grid" onClick={() => resetState()}>
                                             <div className="refresh mr-0"></div>
                                         </button>
                                         {rowData[0]?.IsVisibiltyConditionMet === true && <Link to={"rfq-compare-drawer"} smooth={true} spy={true} offset={-250}>
@@ -744,9 +762,11 @@ function RfqListing(props) {
                                             }}
                                             frameworkComponents={frameworkComponents}
                                             rowSelection={'multiple'}
+                                            getRowStyle={getRowStyle}
                                             onRowSelected={onRowSelect}
                                             isRowSelectable={isRowSelectable}
                                             suppressRowClickSelection={true}
+                                            onFirstDataRendered={onFirstDataRendered}
                                         >
                                             <AgGridColumn cellClass={cellClass} field="PartNo" headerName='Part No'></AgGridColumn>
                                             <AgGridColumn field="TechnologyName" headerName='Technology'></AgGridColumn>
@@ -754,6 +774,9 @@ function RfqListing(props) {
                                             <AgGridColumn field="PlantName" headerName='Plant (Code)'></AgGridColumn>
                                             {/* <AgGridColumn field="PartNumber" headerName="Attachment "></AgGridColumn> */}
                                             <AgGridColumn field="Remark" headerName='Notes' cellRenderer={hyphenFormatter}></AgGridColumn>
+                                            <AgGridColumn field="VisibilityMode" headerName='Visibility Mode' cellRenderer={hyphenFormatter}></AgGridColumn>
+                                            <AgGridColumn field="VisibilityDate" headerName='Visibility Date' cellRenderer={hyphenFormatter}></AgGridColumn>
+                                            <AgGridColumn field="VisibilityDuration" headerName='Visibility Duration' cellRenderer={hyphenFormatter}></AgGridColumn>
                                             <AgGridColumn field="CostingNumber" headerName=' Costing Number' cellRenderer={hyphenFormatter}></AgGridColumn>
                                             <AgGridColumn field="CostingId" headerName='Costing Id ' hide={true}></AgGridColumn>
                                             <AgGridColumn field="NetPOPrice" headerName=" Net PO Price" cellRenderer={hyphenFormatter}></AgGridColumn>
