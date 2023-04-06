@@ -9,14 +9,14 @@ import {
 import { renderText, searchableSelect, renderTextAreaField, focusOnError, renderDatePicker, renderTextInputField } from "../../layout/FormInputs";
 import { getCityBySupplier, getPlantBySupplier, getUOMSelectList, getPlantSelectListByType, getCityByCountry, getAllCity } from '../../../actions/Common';
 import { getVendorWithVendorCodeSelectList, getVendorTypeBOPSelectList, } from '../actions/Supplier';
-import { createBOPDomestic, updateBOPDomestic, getBOPCategorySelectList, getBOPDomesticById, fileUploadBOPDomestic, fileDeleteBOPDomestic, } from '../actions/BoughtOutParts';
+import { createBOP, updateBOP, getBOPCategorySelectList, getBOPDomesticById, fileUploadBOPDomestic, fileDeleteBOPDomestic, } from '../actions/BoughtOutParts';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import { getConfigurationKey, loggedInUserId, userDetails } from "../../../helper/auth";
 import "react-datepicker/dist/react-datepicker.css";
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css';
-import { BOP_MASTER_ID, FILE_URL, ZBC, EMPTY_GUID, SPACEBAR, VBCTypeId, CBCTypeId, ZBCTypeId, searchCount } from '../../../config/constants';
+import { BOP_MASTER_ID, FILE_URL, ZBC, EMPTY_GUID, SPACEBAR, VBCTypeId, CBCTypeId, ZBCTypeId, searchCount, BOPDOMESTIC } from '../../../config/constants';
 import AddBOPCategory from './AddBOPCategory';
 import AddVendorDrawer from '../supplier-master/AddVendorDrawer';
 import AddUOM from '../uom-master/AddUOM';
@@ -428,7 +428,7 @@ class AddBOPDomestic extends Component {
       const { costingTypeId } = this.state;
       if (costingTypeId === VBCTypeId) {
         if (this.state.vendorName && this.state.vendorName.length > 0) {
-          const res = await getVendorWithVendorCodeSelectList(this.state.vendorName)
+          const res = await getVendorWithVendorCodeSelectList(costingTypeId, this.state.vendorName)
           let vendorDataAPI = res?.data?.SelectList
           reactLocalStorage?.setObject('vendorData', vendorDataAPI)
         }
@@ -707,12 +707,13 @@ class AddBOPDomestic extends Component {
         NumberOfPieces: 1,
         VendorPlant: [],
         IsFinancialDataChanged: isDateChange ? true : false,
-        CustomerId: client.value
+        CustomerId: client.value,
+        EntryType: Number(BOPDOMESTIC),
       }
 
       if (IsFinancialDataChanged) {
         if (isDateChange && (DayTime(oldDate).format("DD/MM/YYYY") !== DayTime(effectiveDate).format("DD/MM/YYYY"))) {
-          this.props.updateBOPDomestic(requestData, (res) => {
+          this.props.updateBOP(requestData, (res) => {
             this.setState({ setDisable: false })
             if (res?.data?.Result) {
               Toaster.success(MESSAGES.UPDATE_BOP_SUCESS);
@@ -734,7 +735,7 @@ class AddBOPDomestic extends Component {
           return false;
         }
         else {
-          this.props.updateBOPDomestic(requestData, (res) => {
+          this.props.updateBOP(requestData, (res) => {
             this.setState({ setDisable: false })
             if (res?.data?.Result) {
               Toaster.success(MESSAGES.UPDATE_BOP_SUCESS);
@@ -777,7 +778,9 @@ class AddBOPDomestic extends Component {
         VendorPlant: [],
         DestinationPlantId: (costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? selectedPlants.value : (costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant) ? selectedPlants.value : userDetailsBop.Plants[0].PlantId,
         Attachements: files,
-        CustomerId: client.value
+        CustomerId: client.value,
+        EntryType: Number(BOPDOMESTIC),
+        CategoryName: BOPCategory.label,
       }
 
       if (CheckApprovalApplicableMaster(BOP_MASTER_ID) === true && !this.state.isFinalApprovar) {
@@ -831,7 +834,7 @@ class AddBOPDomestic extends Component {
           return false
         }
       } else {
-        this.props.createBOPDomestic(formData, (res) => {
+        this.props.createBOP(formData, (res) => {
           this.setState({ setDisable: false })
           if (res?.data?.Result) {
             Toaster.success(MESSAGES.BOP_ADD_SUCCESS)
@@ -871,7 +874,7 @@ class AddBOPDomestic extends Component {
         this.setState({ inputLoader: true })
         let res
         if (costingTypeId === VBCTypeId) {
-          res = await getVendorWithVendorCodeSelectList(resultInput)
+          res = await getVendorWithVendorCodeSelectList(costingTypeId, resultInput)
         }
         else {
           res = await getVendorTypeBOPSelectList(resultInput)
@@ -1511,8 +1514,8 @@ function mapStateToProps(state) {
 * @param {function} mapDispatchToProps
 */
 export default connect(mapStateToProps, {
-  createBOPDomestic,
-  updateBOPDomestic,
+  createBOP,
+  updateBOP,
   getVendorWithVendorCodeSelectList,
   getVendorTypeBOPSelectList,
   getPlantBySupplier,

@@ -68,7 +68,7 @@ export function getProcessCode(obj, callback) {
  */
 export function getProcessDataList(data, callback) {
     return (dispatch) => {
-        const request = axios.get(`${API.getProcessDataList}?plant_id=${data.plant_id}&machine_id=${data.machine_id}`, config());
+        const request = axios.get(`${API.getProcessDataList}?ProcessName=${data.ProcessName}&ProcessCode=${data.ProcessCode}`, config());
         request.then((response) => {
             if (response.data.Result || response.status === 204) {
                 dispatch({

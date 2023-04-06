@@ -49,7 +49,7 @@ class AddSpecification extends Component {
   * @description Called before render the component
   */
   UNSAFE_componentWillMount() {
-    this.props.getRawMaterialNameChild('', () => { })
+    this.props.getRawMaterialNameChild(() => { })
     // this.props.getMaterialTypeSelectList(() => { })
     this.props.getRMGradeSelectListByRawMaterial('', res => { })
   }
@@ -271,7 +271,7 @@ class AddSpecification extends Component {
     this.setState({ isOpenRMDrawer: false, Id: '' }, () => {
       if (type === 'submit') {
         this.getDetails()
-        this.props.getRawMaterialNameChild('', () => {
+        this.props.getRawMaterialNameChild(() => {
           this.props.getRMGradeSelectListByRawMaterial('', res => { })
           /*FOR SHOWING DEFAULT VALUE FROM SELECTED FROM DRAWER*/
           const { rawMaterialNameSelectList } = this.props;
@@ -425,21 +425,19 @@ class AddSpecification extends Component {
       materialSpec: this.state.rmSpecification,
       materialCode: e.target.value
     }
-
     this.props.checkAndGetRawMaterialCode(obj, res => {
       if (res && res.data && res.data.Result === false) {
         Toaster.warning(res.data.Message);
         this.props.change('Code', "")
       } else {
-        let Data = res.data.DynamicData;
-        this.props.change('Code', Data.RawMaterialCode)
+        let Data = res.data.Identity;
+        this.props.change('Code', Data)
       }
     })
   }, 600)
 
 
   onSpecificationChange = debounce((e) => {
-
     this.setState({ rmSpecification: e.target.value })
     if (this.state.rawMaterialId && this.state.rmGradeId) {
       let obj = {
@@ -455,10 +453,9 @@ class AddSpecification extends Component {
 
 
   getRawMaterialCode = (obj) => {
-
     this.props.checkAndGetRawMaterialCode(obj, (res) => {
-      let Data = res.data.DynamicData;
-      this.props.change('Code', Data.RawMaterialCode)
+      let Data = res.data.Identity;
+      this.props.change('Code', Data)
     })
 
   }

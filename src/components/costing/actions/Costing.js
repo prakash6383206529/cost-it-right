@@ -1182,10 +1182,10 @@ export function getDiscountOtherCostTabData(data, callback) {
  * @method getExchangeRateByCurrency
  * @description GET EXCHANGE RATE BY CURRENCY
  */
-export function getExchangeRateByCurrency(currency, costingHeadId, effectiveDate, VendorId, customerId, callback) {
+export function getExchangeRateByCurrency(currency, costingHeadId, effectiveDate, VendorId, customerId, isBudgeting, callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
-    const request = axios.get(`${API.getExchangeRateByCurrency}?currency=${currency}&costingHeadId=${costingHeadId}&effectiveDate=${effectiveDate}&VendorId=${!VendorId ? EMPTY_GUID : VendorId}&customerId=${!customerId ? EMPTY_GUID : customerId}`, config());
+    const request = axios.get(`${API.getExchangeRateByCurrency}?currency=${currency}&costingHeadId=${costingHeadId}&effectiveDate=${effectiveDate}&VendorId=${!VendorId ? EMPTY_GUID : VendorId}&customerId=${!customerId ? EMPTY_GUID : customerId}&isBudgeting=${isBudgeting}`, config());
     request.then((response) => {
       if (response.data.Result) {
         dispatch({
