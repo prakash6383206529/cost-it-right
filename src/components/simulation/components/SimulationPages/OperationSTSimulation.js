@@ -343,6 +343,7 @@ function OperationSTSimulation(props) {
                 setShowVerifyPage(true)
             }
         }))
+        setShowTooltip(false)
     }, 500);
     const resetState = () => {
         gridApi?.setQuickFilter('');

@@ -360,6 +360,7 @@ function MRSimulation(props) {
                 setShowVerifyPage(true)
             }
         }))
+        setShowTooltip(false)
     }, 500);
     const basicRatetooltipToggle = () => {
         setBasicRateViewTooltip(!basicRateviewTooltip)

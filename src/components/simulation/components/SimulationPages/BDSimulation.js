@@ -138,6 +138,7 @@ function BDSimulation(props) {
                 setShowVerifyPage(true)
             }
         }))
+        setShowTooltip(false)
     }, 500)
 
 
