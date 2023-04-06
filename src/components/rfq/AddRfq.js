@@ -1226,7 +1226,7 @@ function AddRfq(props) {
                                                     className="custom-checkbox mb-0"
                                                     onChange={() => checkBoxHandler()}
                                                 >
-                                                    {'Visibility'}
+                                                    {'Visibility of Price'}
                                                     <input
                                                         type="checkbox"
                                                         value={"All"}
