@@ -285,7 +285,7 @@ export const API = {
   vendorBulkUpload: `${BASE_URL}/vendor/bulk-upload-for-vendor-json`,
   getAllVendorSelectList: `${BASE_URL}/vendor/all-vendor-select-list`,
   getVendorTypeByVendorSelectList: `${BASE_URL}/vendor/vendor-type-by-vendor-select-list`,
-  getVendorWithVendorCodeSelectList: `${BASE_URL}/vendor/vbc-vendor-with-code-select-list`,
+  getVendorWithVendorCodeSelectList: `${BASE_URL}/configuration/select-list-get-vendor`,
   getVendorTypeBOPSelectList: `${BASE_URL}/vendor/vendor-bop-type-select-list`,
   getReporterList: `${BASE_URL}/rfq-user/get-user-select-list`,
   getContactPerson: `${BASE_URL}/rfq-quotation/get-contact-person-by-vendor-selectlist`,
