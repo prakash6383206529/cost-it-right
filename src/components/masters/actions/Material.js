@@ -405,7 +405,7 @@ export function getRMSpecificationDataAPI(SpecificationId, callback) {
 export function getRMSpecificationDataList(data, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        const queryParams = `raw_material_id=${data.MaterialId}&grade_id=${data.GradeId}`
+        const queryParams = `grade_id=${data.GradeId}`
         const request = axios.get(`${API.getRMSpecificationDataList}?${queryParams}`, config());
         request.then((response) => {
             if (response.data.Result || response.status === 204) {
@@ -466,7 +466,8 @@ export function deleteRMSpecificationAPI(ID, callback) {
 export function getRMGradeSelectListByRawMaterial(Id, callback) {
     return (dispatch) => {
         if (Id !== '') {
-            const request = axios.get(`${API.getRMGradeSelectListByRawMaterial}/${Id}`, config());
+            const queryParams = `&id=${Id}`
+            const request = axios.get(`${API.getRMGradeSelectListByRawMaterial}?${queryParams}`, config());
             request.then((response) => {
                 if (response.data.Result) {
                     dispatch({
@@ -690,12 +691,12 @@ export function createRMDetailAPI(data, callback) {
 }
 
 /**
- * @method createRMDomestic
+ * @method createRM
  * @description create raw material domestic
  */
-export function createRMDomestic(data, callback) {
+export function createRM(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.createRMDomestic, data, config());
+        const request = axios.post(API.createRM, data, config());
         request.then((response) => {
             if (response.data.Result) {
                 callback(response);
@@ -737,13 +738,13 @@ export function getRawMaterialDetailsDataAPI(RawMaterialDetailsId, callback) {
 }
 
 /**
- * @method getRawMaterialDetailsAPI
+ * @method getRMDataById
  * @description get Raw Material Details
  */
-export function getRawMaterialDetailsAPI(data, isValid, callback) {
+export function getRMDataById(data, isValid, callback) {
     return (dispatch) => {
         if (isValid) {
-            axios.get(`${API.getRMDomesticDataById}/${data.Id}/${data.costingTypeId}`, config())
+            axios.get(`${API.getRMDataById}/${data.Id}`, config())
                 .then((response) => {
                     dispatch({
                         type: GET_RAW_MATERIAL_DETAILS_DATA_SUCCESS,
@@ -765,13 +766,13 @@ export function getRawMaterialDetailsAPI(data, isValid, callback) {
 }
 
 /**
- * @method updateRMDomesticAPI
+ * @method updateRMAPI
  * @description update Raw Material Domestic
  */
-export function updateRMDomesticAPI(requestData, callback) {
+export function updateRMAPI(requestData, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        axios.put(`${API.updateRMDomesticAPI}`, requestData, config())
+        axios.put(`${API.updateRMAPI}`, requestData, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -909,9 +910,9 @@ export function createRawMaterialNameChild(data, callback) {
  * @method getRawMaterialNameChild
  * @description get raw material name child
  */
-export function getRawMaterialNameChild(technologyId, callback) {
+export function getRawMaterialNameChild(callback) {
     return (dispatch) => {
-        const request = axios.get(`${API.getRawMaterialNameChild}/${technologyId === '' ? null : technologyId}`, config());
+        const request = axios.get(`${API.getRawMaterialNameChild}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -991,8 +992,8 @@ export function getVendorListByVendorType(costingTypeId, vendorName, callback) {
  * @method getVendorWithVendorCodeSelectList
  * @description GET VBC VENDOR WITH VENDOR CODE SELECTLIST
  */
-export function getVendorWithVendorCodeSelectList(vendorName, callback) {
-    return axios.get(`${API.getVendorWithVendorCodeSelectList}?vendorName=${vendorName}`, config()).catch(error => {
+export function getVendorWithVendorCodeSelectList(costingTypeId, vendorName, callback) {
+    return axios.get(`${API.getVendorWithVendorCodeSelectList}?costingTypeId=${costingTypeId}&vendorName=${vendorName}`, config()).catch(error => {
         apiErrors(error);
         callback(error);
         return Promise.reject(error)
@@ -1000,25 +1001,25 @@ export function getVendorWithVendorCodeSelectList(vendorName, callback) {
 }
 
 /**
- * @method getRMDomesticDataList
+ * @method getAllRMDataList
  * @description Used to get RM Domestic Datalist
  */
-export function getRMDomesticDataList(data, skip, take, isPagination, obj, callback) {
+export function getAllRMDataList(data, skip, take, isPagination, obj, isImport, callback) {
     return (dispatch) => {
 
         const queryParams = `technology_id=${data.technologyId}&net_landed_min_range=${data.net_landed_min_range}&net_landed_max_range=${data.net_landed_max_range}&NetCost=${obj.NetLandedCost !== undefined ? obj.NetLandedCost : ""}&ListFor=${data.ListFor ? data.ListFor : ''}&StatusId=${data.StatusId ? data.StatusId : ''}&DepartmentCode=${obj.DepartmentName !== undefined ? obj.DepartmentName : ""}&CustomerName=${obj.CustomerName !== undefined ? obj.CustomerName : ''}&FromDate=${(obj.dateArray && obj.dateArray.length > 1) ? obj.dateArray[0] : ""}&ToDate=${(obj.dateArray && obj.dateArray.length > 1) ? obj.dateArray[1] : ""}&IsCustomerDataShow=${reactLocalStorage.getObject('cbcCostingPermission') !== undefined ? reactLocalStorage.getObject('cbcCostingPermission') : false}`
         const queryParamsSecond = rmQueryParms(isPagination, skip, take, obj)
-        const request = axios.get(`${API.getRMDomesticDataList}?${queryParams}&${queryParamsSecond}`, config());
+        const request = axios.get(`${API.getAllRMDataList}?${queryParams}&${queryParamsSecond}`, config());
         request.then((response) => {
             if (response.data.Result || response.status === 204) {
                 if (isPagination === true) {
                     dispatch({
-                        type: GET_RM_DOMESTIC_LIST,
+                        type: isImport ? GET_RM_IMPORT_LIST : GET_RM_DOMESTIC_LIST,
                         payload: response.status === 204 ? [] : response.data.DataList
                     })
                 } else {
                     dispatch({
-                        type: GET_ALL_RM_DOMESTIC_LIST,
+                        type: isImport ? GET_ALL_RM_DOMESTIC_LIST : GET_ALL_RM_DOMESTIC_LIST,
                         payload: response.status === 204 ? [] : response.data.DataList
                     })
                 }
@@ -1189,12 +1190,12 @@ export function fileDeleteRMDomestic(data, callback) {
 }
 
 /**
- * @method bulkUploadRMDomesticZBC
+ * @method bulkUploadRM
  * @description upload bulk RM Domestic ZBC
  */
-export function bulkUploadRMDomesticZBC(data, callback) {
+export function bulkUploadRM(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.bulkUploadRMDomesticZBC, data, config());
+        const request = axios.post(API.bulkUploadRM, data, config());
         request.then((response) => {
             if (response.status === 200) {
                 callback(response);
@@ -1207,43 +1208,6 @@ export function bulkUploadRMDomesticZBC(data, callback) {
     };
 }
 
-/**
- * @method bulkUploadRMDomesticVBC
- * @description upload bulk RM Domestic VBC
- */
-export function bulkUploadRMDomesticVBC(data, callback) {
-    return (dispatch) => {
-        const request = axios.post(API.bulkUploadRMDomesticVBC, data, config());
-        request.then((response) => {
-            if (response.status === 200) {
-                callback(response);
-            }
-        }).catch((error) => {
-            dispatch({ type: API_FAILURE });
-            apiErrors(error);
-            callback(error);
-        });
-    };
-}
-
-/**
- * @method bulkUploadRMDomesticCBC
- * @description upload bulk RM Domestic CBC
- */
-export function bulkUploadRMDomesticCBC(data, callback) {
-    return (dispatch) => {
-        const request = axios.post(API.bulkUploadRMDomesticCBC, data, config());
-        request.then((response) => {
-            if (response.status === 200) {
-                callback(response);
-            }
-        }).catch((error) => {
-            dispatch({ type: API_FAILURE });
-            apiErrors(error);
-            callback(error);
-        });
-    };
-}
 /**
  * @method bulkfileUploadRM
  * @description upload bulk RM Domestic
@@ -1258,62 +1222,6 @@ export function bulkfileUploadRM(data, callback) {
         }).catch((error) => {
             dispatch({ type: API_FAILURE });
             apiErrors(error);
-        });
-    };
-}
-
-/**
- * @method bulkUploadRMImportZBC
- * @description upload bulk RM Domestic ZBC
- */
-export function bulkUploadRMImportZBC(data, callback) {
-    return (dispatch) => {
-        const request = axios.post(API.bulkUploadRMImportZBC, data, config());
-        request.then((response) => {
-            if (response.status === 200) {
-                callback(response);
-            }
-        }).catch((error) => {
-            dispatch({ type: API_FAILURE });
-            apiErrors(error);
-            callback(error);
-        });
-    };
-}
-
-/**
- * @method bulkUploadRMImportCBC
- * @description upload bulk RM Import CBC
- */
-export function bulkUploadRMImportCBC(data, callback) {
-    return (dispatch) => {
-        const request = axios.post(API.bulkUploadRMImportCBC, data, config());
-        request.then((response) => {
-            if (response.status === 200) {
-                callback(response);
-            }
-        }).catch((error) => {
-            dispatch({ type: API_FAILURE });
-            apiErrors(error);
-            callback(error);
-        });
-    };
-}
-/**
- * @method bulkUploadRMImportVBC
- * @description upload bulk RM Domestic VBC
- */
-export function bulkUploadRMImportVBC(data, callback) {
-    return (dispatch) => {
-        const request = axios.post(API.bulkUploadRMImportVBC, data, config());
-        request.then((response) => {
-            if (response.status === 200) {
-                callback(response);
-            }
-        }).catch((error) => {
-            dispatch({ type: API_FAILURE });
-            apiErrors(error);
-            callback(error);
         });
     };
 }
