@@ -4,8 +4,7 @@ import { reduxForm } from "redux-form";
 import { Container, Row, Col, Label } from 'reactstrap';
 import { checkForNull, getJsDateFromExcel, isDateFormatter } from "../../helper/validation";
 import {
-    bulkUploadRMDomesticZBC, bulkUploadRMDomesticVBC, bulkUploadRMImportCBC, bulkUploadRMDomesticCBC, bulkUploadRMImportZBC, bulkUploadRMImportVBC,
-    bulkfileUploadRM, bulkUploadRMSpecification,
+    bulkUploadRM, bulkfileUploadRM, bulkUploadRMSpecification,
 } from '../masters/actions/Material';
 import { bulkUploadMachineZBC, bulkUploadMachineVBC, bulkUploadMachineMoreZBC, bulkUploadMachineCBC } from '../masters/actions/MachineMaster';
 import { fuelBulkUpload } from '../masters/actions/Fuel';
@@ -14,7 +13,7 @@ import { vendorBulkUpload } from '../masters/actions/Supplier';
 import { overheadBulkUpload, profitBulkUpload } from '../masters/actions/OverheadProfit';
 import { operationZBCBulkUpload, operationVBCBulkUpload, operationCBCBulkUpload } from '../masters/actions/OtherOperation';
 import { partComponentBulkUpload, productComponentBulkUpload } from '../masters/actions/Part';
-import { bulkUploadBOPDomesticZBC, bulkUploadBOPDomesticCBC, bulkUploadBOPDomesticVBC, bulkUploadBOPImportZBC, bulkUploadBOPImportCBC, bulkUploadBOPImportVBC, } from '../masters/actions/BoughtOutParts';
+import { bulkUploadBOP } from '../masters/actions/BoughtOutParts';
 import { bulkUploadVolumeActualZBC, bulkUploadVolumeActualVBC, bulkUploadVolumeBudgetedZBC, bulkUploadVolumeBudgetedCBC, bulkUploadVolumeActualCBC, bulkUploadVolumeBudgetedVBC, } from '../masters/actions/Volume';
 import { bulkUploadBudgetMaster } from '../masters/actions/Budget'
 import { bulkUploadInterestRateZBC, bulkUploadInterestRateVBC, bulkUploadInterestRateCBC } from '../masters/actions/InterestRateMaster';
@@ -406,7 +405,7 @@ class BulkUpload extends Component {
             if (Data?.CountFailed > 0) {
                 Toaster.warning(res.data.Message);
                 this.setState({
-                    failedData: Data.FaildRecords,
+                    failedData: Data?.FailedRecords,
                     faildRecords: true,
                 })
             }
@@ -438,7 +437,7 @@ class BulkUpload extends Component {
     */
     onSubmit = (values) => {
         const { fileData, costingTypeId, IsFinalApprover } = this.state;
-        const { fileName } = this.props;
+        const { fileName, typeOfEntryId } = this.props;
         if (fileData.length === 0) {
             Toaster.warning('Please select a file to upload.')
             return false
@@ -452,39 +451,19 @@ class BulkUpload extends Component {
             Records: fileData,
             LoggedInUserId: loggedInUserId(),
             IsFinalApprover: IsFinalApprover,
-            CostingTypeId: costingTypeId
+            CostingTypeId: costingTypeId,
+            TypeOfEntry: Number(typeOfEntryId)
         }
         this.setState({ setDisable: true })
 
-        if (fileName === 'RM Domestic' && costingTypeId === ZBCTypeId) {
-            this.props.bulkUploadRMDomesticZBC(masterUploadData, (res) => {
+        if (fileName === 'RM Domestic' || fileName === 'RM Import') {
+            this.props.bulkUploadRM(masterUploadData, (res) => {
                 this.setState({ setDisable: false })
                 this.responseHandler(res)
             });
 
-        } else if (fileName === 'RM Domestic' && costingTypeId === VBCTypeId) {
-            this.props.bulkUploadRMDomesticVBC(masterUploadData, (res) => {
-                this.setState({ setDisable: false })
-                this.responseHandler(res)
-            });
-        } else if (fileName === 'RM Domestic' && costingTypeId === CBCTypeId) {
-            this.props.bulkUploadRMDomesticCBC(masterUploadData, (res) => {
-                this.setState({ setDisable: false })
-                this.responseHandler(res)
-            });
-        } else if (fileName === 'RM Import' && costingTypeId === ZBCTypeId) {
-            this.props.bulkUploadRMImportZBC(masterUploadData, (res) => {
-                this.setState({ setDisable: false })
-                this.responseHandler(res)
-            });
-
-        } else if (fileName === 'RM Import' && costingTypeId === VBCTypeId) {
-            this.props.bulkUploadRMImportVBC(masterUploadData, (res) => {
-                this.setState({ setDisable: false })
-                this.responseHandler(res)
-            });
-        } else if (fileName === 'RM Import' && costingTypeId === CBCTypeId) {
-            this.props.bulkUploadRMImportCBC(masterUploadData, (res) => {
+        } else if (fileName === 'BOP Domestic' || fileName === 'BOP Import') {
+            this.props.bulkUploadBOP(masterUploadData, (res) => {
                 this.setState({ setDisable: false })
                 this.responseHandler(res)
             });
@@ -566,40 +545,6 @@ class BulkUpload extends Component {
             });
         } else if (fileName === 'Part Component') {
             this.props.partComponentBulkUpload(uploadData, (res) => {
-                this.setState({ setDisable: false })
-                this.responseHandler(res)
-            });
-
-        } else if (fileName === 'BOP Domestic' && costingTypeId === ZBCTypeId) {
-            this.props.bulkUploadBOPDomesticZBC(masterUploadData, (res) => {
-                this.setState({ setDisable: false })
-                this.responseHandler(res)
-            });
-
-        } else if (fileName === 'BOP Domestic' && costingTypeId === VBCTypeId) {
-            this.props.bulkUploadBOPDomesticVBC(masterUploadData, (res) => {
-                this.setState({ setDisable: false })
-                this.responseHandler(res)
-            });
-        } else if (fileName === 'BOP Domestic' && costingTypeId === CBCTypeId) {
-            this.props.bulkUploadBOPDomesticCBC(masterUploadData, (res) => {
-                this.setState({ setDisable: false })
-                this.responseHandler(res)
-            });
-
-        } else if (fileName === 'BOP Import' && costingTypeId === ZBCTypeId) {
-            this.props.bulkUploadBOPImportZBC(masterUploadData, (res) => {
-                this.setState({ setDisable: false })
-                this.responseHandler(res)
-            });
-
-        } else if (fileName === 'BOP Import' && costingTypeId === VBCTypeId) {
-            this.props.bulkUploadBOPImportVBC(masterUploadData, (res) => {
-                this.setState({ setDisable: false })
-                this.responseHandler(res)
-            });
-        } else if (fileName === 'BOP Import' && costingTypeId === CBCTypeId) {
-            this.props.bulkUploadBOPImportCBC(masterUploadData, (res) => {
                 this.setState({ setDisable: false })
                 this.responseHandler(res)
             });
@@ -943,10 +888,7 @@ export default connect(mapStateToProps, {
     bulkUploadRMSpecification,
     fuelBulkUpload,
     vendorBulkUpload,
-    bulkUploadRMDomesticZBC,
-    bulkUploadRMDomesticVBC,
-    bulkUploadRMImportZBC,
-    bulkUploadRMImportVBC,
+    bulkUploadRM,
     overheadBulkUpload,
     profitBulkUpload,
     operationZBCBulkUpload,
@@ -957,10 +899,7 @@ export default connect(mapStateToProps, {
     bulkUploadMachineMoreZBC,
     partComponentBulkUpload,
     productComponentBulkUpload,
-    bulkUploadBOPDomesticZBC,
-    bulkUploadBOPDomesticVBC,
-    bulkUploadBOPImportZBC,
-    bulkUploadBOPImportVBC,
+    bulkUploadBOP,
     bulkUploadVolumeActualZBC,
     bulkUploadVolumeActualVBC,
     bulkUploadVolumeBudgetedZBC,
@@ -968,12 +907,8 @@ export default connect(mapStateToProps, {
     bulkUploadInterestRateZBC,
     bulkUploadInterestRateVBC,
     bulkUploadInterestRateCBC,
-    bulkUploadRMDomesticCBC,
-    bulkUploadRMImportCBC,
     operationCBCBulkUpload,
     bulkUploadMachineCBC,
-    bulkUploadBOPDomesticCBC,
-    bulkUploadBOPImportCBC,
     bulkUploadVolumeActualCBC,
     bulkUploadVolumeBudgetedCBC,
     bulkUploadBudgetMaster,

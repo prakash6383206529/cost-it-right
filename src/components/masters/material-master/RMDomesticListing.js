@@ -2,7 +2,7 @@ import React from 'react';
 import { useState, useEffect, } from 'react';
 import { useDispatch, useSelector } from 'react-redux'
 import { Row, Col, } from 'reactstrap';
-import { deleteRawMaterialAPI, getRMDomesticDataList, } from '../actions/Material';
+import { deleteRawMaterialAPI, getAllRMDataList, } from '../actions/Material';
 import { userDepartmetList } from "../../../helper/auth"
 import { APPROVED_STATUS, defaultPageSize, EMPTY_DATA, RMDOMESTIC } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
@@ -68,7 +68,7 @@ function RMDomesticListing(props) {
     const [dataCount, setDataCount] = useState(0)
     const [inRangeDate, setinRangeDate] = useState([])
     const [pageSize, setPageSize] = useState({ pageSize10: true, pageSize50: false, pageSize100: false })
-    const [floatingFilterData, setFloatingFilterData] = useState({ CostingHead: "", TechnologyName: "", RawMaterial: "", RMGrade: "", RMSpec: "", RawMaterialCode: "", Category: "", MaterialType: "", Plant: "", UOM: "", VendorName: "", BasicRate: "", ScrapRate: "", RMFreightCost: "", RMShearingCost: "", NetLandedCost: "", EffectiveDate: "", DepartmentName: isSimulation ? userDepartmetList() : "" })
+    const [floatingFilterData, setFloatingFilterData] = useState({ CostingHead: "", TechnologyName: "", RawMaterialName: "", RawMaterialGradeName: "", RawMaterialSpecificationName: "", RawMaterialCode: "", Category: "", MaterialType: "", DestinationPlantName: "", UnitOfMeasurementName: "", VendorName: "", BasicRatePerUOM: "", ScrapRate: "", RMFreightCost: "", RMShearingCost: "", NetLandedCost: "", EffectiveDate: "", DepartmentName: isSimulation ? userDepartmetList() : "" })
 
     var filterParams = {
         comparator: function (filterLocalDateAtMidnight, cellValue) {
@@ -194,8 +194,9 @@ function RMDomesticListing(props) {
         if (isPagination === true) {
             setloader(true)
         }
+        dataObj.RawMaterialEntryType = Number(RMDOMESTIC)
         if (!props.isMasterSummaryDrawer) {
-            dispatch(getRMDomesticDataList(filterData, skip, take, isPagination, dataObj, (res) => {
+            dispatch(getAllRMDataList(filterData, skip, take, isPagination, dataObj, false, (res) => {
                 // apply(selectedRowForPagination, selectedRowForPagination.length)
                 if (isSimulation) {
                     props?.changeTokenCheckBox(true)
@@ -878,18 +879,18 @@ function RMDomesticListing(props) {
                                     >
                                         <AgGridColumn cellClass="has-checkbox" field="CostingHead" headerName='Costing Head' cellRenderer={checkBoxRenderer}></AgGridColumn>
                                         <AgGridColumn field="TechnologyName" headerName='Technology'></AgGridColumn>
-                                        <AgGridColumn field="RawMaterial" ></AgGridColumn>
-                                        <AgGridColumn field="RMGrade" headerName="Grade"></AgGridColumn>
-                                        <AgGridColumn field="RMSpec" headerName="Spec"></AgGridColumn>
+                                        <AgGridColumn field="RawMaterialName" headerName='RawMaterial'></AgGridColumn>
+                                        <AgGridColumn field="RawMaterialGradeName" headerName="Grade"></AgGridColumn>
+                                        <AgGridColumn field="RawMaterialSpecificationName" headerName="Spec"></AgGridColumn>
                                         <AgGridColumn field="RawMaterialCode" headerName='Code' cellRenderer='hyphenFormatter'></AgGridColumn>
                                         <AgGridColumn field="Category"></AgGridColumn>
                                         <AgGridColumn field="MaterialType"></AgGridColumn>
-                                        <AgGridColumn field="Plant" headerName="Plant (Code)"></AgGridColumn>
+                                        <AgGridColumn field="DestinationPlantName" headerName="Plant (Code)"></AgGridColumn>
                                         <AgGridColumn field="VendorName" headerName="Vendor (Code)"></AgGridColumn>
                                         {/* <AgGridColumn field="DepartmentName" headerName="Department"></AgGridColumn> */}
                                         {reactLocalStorage.getObject('cbcCostingPermission') && <AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
-                                        <AgGridColumn field="UOM"></AgGridColumn>
-                                        <AgGridColumn field="BasicRate" cellRenderer='commonCostFormatter'></AgGridColumn>
+                                        <AgGridColumn field="UnitOfMeasurementName" headerName='UOM'></AgGridColumn>
+                                        <AgGridColumn field="BasicRatePerUOM" headerName='BasicRate' cellRenderer='commonCostFormatter'></AgGridColumn>
                                         <AgGridColumn field="ScrapRate" cellRenderer='commonCostFormatter'></AgGridColumn>
                                         {props.isMasterSummaryDrawer && <AgGridColumn width="140" field="MachiningScrapRate" headerName='Machining Scrap Cost'></AgGridColumn>}
                                         <AgGridColumn field="RMFreightCost" headerName="Freight Cost" cellRenderer='commonCostFormatter'></AgGridColumn>
@@ -930,6 +931,7 @@ function RMDomesticListing(props) {
                         messageLabel={"RM Domestic"}
                         anchor={"right"}
                         masterId={RM_MASTER_ID}
+                        typeOfEntryId={RMDOMESTIC}
                     />
                 )
             }

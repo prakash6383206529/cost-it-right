@@ -10,7 +10,7 @@ import {
   getCurrencySelectList, fetchSupplierCityDataAPI, fetchPlantDataAPI, getPlantSelectListByType, getCityByCountry, getAllCity
 } from '../../../actions/Common';
 import {
-  createRMImport, getRMImportDataById, updateRMImportAPI, getRawMaterialNameChild,
+  createRM, getRMDataById, updateRMAPI, getRawMaterialNameChild,
   getRMGradeSelectListByRawMaterial, getVendorListByVendorType, fileUploadRMDomestic, getVendorWithVendorCodeSelectList, checkAndGetRawMaterialCode,
   fileDeleteRMDomestic
 } from '../actions/Material';
@@ -25,7 +25,7 @@ import AddVendorDrawer from '../supplier-master/AddVendorDrawer';
 import 'react-dropzone-uploader/dist/styles.css'
 import Dropzone from 'react-dropzone-uploader';
 import "react-datepicker/dist/react-datepicker.css"
-import { FILE_URL, INR, ZBC, RM_MASTER_ID, EMPTY_GUID, SPACEBAR, ZBCTypeId, VBCTypeId, CBCTypeId, searchCount } from '../../../config/constants';
+import { FILE_URL, INR, ZBC, RM_MASTER_ID, EMPTY_GUID, SPACEBAR, ZBCTypeId, VBCTypeId, CBCTypeId, searchCount, RMIMPORT } from '../../../config/constants';
 import { AcceptableRMUOM, FORGING, SHEETMETAL } from '../../../config/masterData'
 import { getExchangeRateByCurrency, getCostingSpecificTechnology } from "../../costing/actions/Costing"
 import DayTime from '../../common/DayTimeWrapper'
@@ -153,7 +153,7 @@ class AddRMImport extends Component {
     }
     if (!(data.isEditFlag || data.isViewFlag)) {
       this.props.getRawMaterialCategory(res => { });
-      this.props.getRawMaterialNameChild('', () => { })
+      this.props.getRawMaterialNameChild(() => { })
       this.props.getCostingSpecificTechnology(loggedInUserId(), () => { this.setState({ inputLoader: false }) })
       this.props.fetchSpecificationDataAPI(0, () => { })
       this.props.getPlantSelectListByType(ZBC, () => { })
@@ -451,7 +451,7 @@ class AddRMImport extends Component {
     } else {
       if (currency && effectiveDate) {
         const { costingTypeId, vendorName, client } = this.state
-        this.props.getExchangeRateByCurrency(currency.label, costingTypeId, DayTime(effectiveDate).format('YYYY-MM-DD'), costingTypeId === ZBCTypeId ? EMPTY_GUID : vendorName.value, client.value, res => {
+        this.props.getExchangeRateByCurrency(currency.label, costingTypeId, DayTime(effectiveDate).format('YYYY-MM-DD'), costingTypeId === ZBCTypeId ? EMPTY_GUID : vendorName.value, client.value, false, res => {
           if (Object.keys(res.data.Data).length === 0) {
             this.setState({ showWarning: true })
           } else {
@@ -506,7 +506,7 @@ class AddRMImport extends Component {
         RawMaterialID: data.Id,
         isCallCalculation: true
       })
-      this.props.getRMImportDataById(data, true, res => {
+      this.props.getRMDataById(data, true, res => {
         if (res && res.data && res.data.Result) {
           const Data = res.data.Data;
           this.setState({ DataToChange: Data })
@@ -571,7 +571,7 @@ class AddRMImport extends Component {
         }
       })
     } else {
-      this.props.getRMImportDataById('', false, res => { })
+      this.props.getRMDataById('', false, res => { })
     }
   }
 
@@ -635,7 +635,7 @@ class AddRMImport extends Component {
   closeRMDrawer = (e = '', data = {}) => {
     this.setState({ isRMDrawerOpen: false }, () => {
       /* FOR SHOWING RM ,GRADE AND SPECIFICATION SELECTED IN RM SPECIFICATION DRAWER*/
-      this.props.getRawMaterialNameChild('', () => {
+      this.props.getRawMaterialNameChild(() => {
         if (Object.keys(data).length > 0) {
           this.props.getRMGradeSelectListByRawMaterial(data.RawMaterialId, (res) => {
             this.props.fetchSpecificationDataAPI(data.GradeId, (res) => {
@@ -888,7 +888,7 @@ class AddRMImport extends Component {
       IsVendor: false,
       updatedObj: {}
     })
-    this.props.getRMImportDataById('', false, res => { })
+    this.props.getRMDataById('', false, res => { })
     this.props.fetchSpecificationDataAPI(0, () => { })
     this.props.hideForm(type)
   }
@@ -1091,13 +1091,14 @@ class AddRMImport extends Component {
         MachiningScrapRate: values.MachiningScrap,
         MachiningScrapRateInINR: currency === INR ? values.MachiningScrap : values.MachiningScrap * currencyValue,
         JaliScrapCost: values.CircleScrapCost ? values.CircleScrapCost : '',// THIS KEY FOR CIRCLE SCRAP COST
+        RawMaterialEntryType: Number(RMIMPORT)
       }
       //DONT DELETE COMMENTED CODE BELOW
 
       if (IsFinancialDataChanged) {
 
         if (isDateChange && (DayTime(oldDate).format("DD/MM/YYYY") !== DayTime(effectiveDate).format("DD/MM/YYYY"))) {
-          this.props.updateRMImportAPI(requestData, (res) => {
+          this.props.updateRMAPI(requestData, (res) => {
             this.setState({ setDisable: false })
             if (res?.data?.Result) {
               Toaster.success(MESSAGES.RAW_MATERIAL_DETAILS_UPDATE_SUCCESS)
@@ -1125,7 +1126,7 @@ class AddRMImport extends Component {
           return false
         }
         else {
-          this.props.updateRMImportAPI(requestData, (res) => {
+          this.props.updateRMAPI(requestData, (res) => {
             this.setState({ setDisable: false })
             if (res?.data?.Result) {
               Toaster.success(MESSAGES.RAW_MATERIAL_DETAILS_UPDATE_SUCCESS)
@@ -1179,6 +1180,7 @@ class AddRMImport extends Component {
         MachiningScrapRate: values.MachiningScrap,
         MachiningScrapRateInINR: currency === INR ? values.MachiningScrap : values.MachiningScrap * currencyValue,
         JaliScrapCost: values.CircleScrapCost ? values.CircleScrapCost : '',// THIS KEY FOR CIRCLE SCRAP COST
+        RawMaterialEntryType: Number(RMIMPORT)
       }
       // let obj
       // if(CheckApprovalApplicableMaster(RM_MASTER_ID) === true){
@@ -1237,7 +1239,7 @@ class AddRMImport extends Component {
 
       } else {
 
-        this.props.createRMImport(formData, (res) => {
+        this.props.createRM(formData, (res) => {
           this.setState({ setDisable: false })
           if (res?.data?.Result) {
             Toaster.success(MESSAGES.MATERIAL_ADD_SUCCESS);
@@ -1273,7 +1275,7 @@ class AddRMImport extends Component {
         this.setState({ inputLoader: true })
         let res
         if (costingTypeId === VBCTypeId && resultInput) {
-          res = await getVendorWithVendorCodeSelectList(resultInput)
+          res = await getVendorWithVendorCodeSelectList(costingTypeId, resultInput)
         }
         else {
           res = await getVendorListByVendorType(costingTypeId, resultInput)
@@ -2184,16 +2186,16 @@ function mapStateToProps(state) {
 * @param {function} mapDispatchToProps
 */
 export default connect(mapStateToProps, {
-  createRMImport,
+  createRM,
   getRawMaterialCategory,
   fetchSupplierCityDataAPI,
   fetchGradeDataAPI,
   fetchSpecificationDataAPI,
-  getRMImportDataById,
+  getRMDataById,
   getCityBySupplier,
   getPlantByCity,
   getPlantByCityAndSupplier,
-  updateRMImportAPI,
+  updateRMAPI,
   fetchRMGradeAPI,
   getRawMaterialNameChild,
   getRMGradeSelectListByRawMaterial,
