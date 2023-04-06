@@ -930,7 +930,7 @@ function TabDiscountOther(props) {
         totalNpvCost: sum
       })
 
-      if (data) {
+      if (type === 'save') {
         let obj = {}
         obj.CostingId = RMCCTabData && RMCCTabData[0]?.CostingId
         obj.LoggedInUserId = loggedInUserId()
