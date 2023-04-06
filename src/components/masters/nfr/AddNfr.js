@@ -7,7 +7,7 @@ import { Redirect } from 'react-router';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { Col, Row, Table } from 'reactstrap';
 import { getVendorWithVendorCodeSelectList } from '../../../actions/Common';
-import { EMPTY_DATA, EMPTY_GUID, searchCount } from '../../../config/constants';
+import { EMPTY_DATA, EMPTY_GUID, VBCTypeId, searchCount } from '../../../config/constants';
 
 import { autoCompleteDropdown } from '../../common/CommonFunctions';
 import HeaderTitle from '../../common/HeaderTitle';
@@ -38,6 +38,7 @@ function AddNfr(props) {
     const [vendorName, setVendorname] = useState([])
     const [vendor, setVendor] = useState([]);
     const [addNewCosting, setAddNewCosting] = useState(false)
+    const [isRowEdited, setIsRowEdited] = useState(false)
 
     const { register, setValue, getValues, control, formState: { errors }, } = useForm({
         mode: 'onChange',
@@ -46,6 +47,12 @@ function AddNfr(props) {
     const handleVendorChange = (newValue) => {
         setVendorname(newValue)
     }
+
+    useEffect(() => {
+        if (rowData?.length === 0) {
+            setValue('GroupName', 'OEQA 1');
+        }
+    }, [rowData])
 
     // Sets the initial values of the form fields based on the nfrData prop.
     useEffect(() => {
@@ -57,7 +64,7 @@ function AddNfr(props) {
     }, [nfrData]);
 
     // Adds a new costing object to the list of existing costings.
-    const onSubmit = () => {
+    const addRow = () => {
         if (vendorName.length === 0 || getValues('GroupName') === '') {
             Toaster.warning('Please select group name and vendor name');
             return false;
@@ -67,12 +74,27 @@ function AddNfr(props) {
             data: vendorName
         };
         setRowData([...rowData, newCosting]);
-        resetData()
+        resetData(true)
     };
-    const resetData = () => {
+
+    const updateRow = () => {
+        let list = [...rowData]
+        let rowIndex = list.findIndex(element => element?.groupName === getValues('GroupName'))
+        let rowtemp = list[rowIndex]
+        rowtemp.data = getValues('VendorName')
+        let finalList = Object.assign([...list], { [rowIndex]: rowtemp })
+        setRowData([...finalList]);
+        resetData(true)
+        setIsRowEdited(false)
+    };
+
+    const resetData = (removeGroup) => {
         setVendorname([])
         setValue('VendorName', '')
-        setValue('GroupName', '')
+        setIsRowEdited(false)
+        if (removeGroup) {
+            setValue('GroupName', '')
+        }
     }
 
     const addDetails = debounce((index, type) => { }, 500);
@@ -82,13 +104,26 @@ function AddNfr(props) {
     const deleteItem = (index) => { };
     const deleteRowItem = (index) => { };
 
+    const editRow = (item, index) => {
+        setVendorname(item?.data)
+        setValue('VendorName', item?.data)
+        setValue('GroupName', item?.groupName)
+        setIsRowEdited(true)
+    }
 
-    // Fetches vendor data based on user input for the vendor filter field.
+    const deleteRow = (item, index) => {
+        let list = [...rowData]
+        let rowtemp = list.filter(element => element?.groupName !== item?.groupName)
+        setRowData(rowtemp)
+        setIsRowEdited(false)
+        resetData(true)
+    }
+
     const vendorFilterList = async (inputValue) => {
         const resultInput = inputValue.slice(0, searchCount)
         if (inputValue?.length >= searchCount && vendor !== resultInput) {
             let res
-            res = await getVendorWithVendorCodeSelectList(resultInput)
+            res = await getVendorWithVendorCodeSelectList(VBCTypeId, resultInput)
             setVendor(resultInput)
             let vendorDataAPI = res?.data?.SelectList
             if (inputValue) {
@@ -203,7 +238,7 @@ function AddNfr(props) {
                             className=""
                             customClassName={"withBorder"}
                             errors={errors.groupName}
-                            disabled={props.isViewFlag}
+                            disabled={true}
                         />
                     </Col>
                     <Col md="3">
@@ -216,7 +251,7 @@ function AddNfr(props) {
                             rules={{ required: false }}
                             register={register}
                             isMulti={true}
-                            defaultValue={vendor.length !== 0 ? vendor : ""}
+                            defaultValue={vendorName.length !== 0 ? vendorName : ""}
                             // options={renderListing("Vendor")}
                             asyncOptions={vendorFilterList}
                             mandatory={true}
@@ -228,18 +263,26 @@ function AddNfr(props) {
                     </Col>
                     <Col md="3" className="mt-4 pt-1">
 
-                        <button
-                            type="button"
-                            className={"user-btn  pull-left mt-1"}
-                            onClick={onSubmit}
-                        >
-                            <div className={"plus"}></div> ADD
-                            {/* {isEditMode ? "UPDATE" : 'ADD'} */}
-                        </button>
+                        {isRowEdited ?
+                            <button
+                                type="button"
+                                className={"user-btn  pull-left mt-1"}
+                                onClick={updateRow}
+                            >
+                                <div className={"plus"}></div> UPDATE
+                            </button> :
+                            <button
+                                type="button"
+                                className={"user-btn  pull-left mt-1"}
+                                onClick={addRow}
+                            >
+                                <div className={"plus"}></div> ADD
+                                {/* {isEditMode ? "UPDATE" : 'ADD'} */}
+                            </button>}
                         <button
                             type="button"
                             className={"reset-btn pull-left mt-1 ml5"}
-                            onClick={resetData}
+                            onClick={() => { resetData(false) }}
                         >
                             Reset
                         </button>
@@ -256,7 +299,7 @@ function AddNfr(props) {
                                 <th className="text-center">Status</th>
                                 <th>PO Price</th>
                                 <th className='text-right'>Action</th>
-                                <th className="table-record">Net Price</th>
+                                <th className="table-record">ROW ACTION</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -324,7 +367,10 @@ function AddNfr(props) {
                                                 {item?.CostingOptions?.length === 0 && <button title='Discard' className="CancelIcon" type={'button'} onClick={() => deleteRowItem(index)} />}
                                             </div></td>
                                             {index === 0 && (
-                                                <td rowSpan={item.data.length} className="table-record">{item.netPrice}</td>
+                                                <td rowSpan={item.data.length} className="table-record">
+                                                    <button className="Edit" type={"button"} title={"Edit Costing"} onClick={() => editRow(item, index)} />
+                                                    <button className="Delete All" title={"Delete Costing"} type={"button"} onClick={() => deleteRow(item, index)} />
+                                                </td>
                                             )}
                                         </tr>
                                     ))}
