@@ -3,11 +3,22 @@ import { Row, Col, Table } from 'reactstrap'
 import NoContentFound from '../../../../common/NoContentFound'
 import { EMPTY_DATA } from '../../../../../config/constants'
 import { checkForDecimalAndNull, getConfigurationKey } from '../../../../../helper'
+import { useState } from 'react'
+import { useSelector } from 'react-redux'
+import { useEffect } from 'react'
 
 function NpvCost(props) {
+    const [totalCost, setTotalCost] = useState(0)
+
     const editDeleteData = (indexValue, operation) => {
         props.editData(indexValue, operation)
     }
+    const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
+
+    useEffect(() => {
+        const sum = props?.tableData.reduce((acc, obj) => Number(acc) + Number(obj.NpvCost), 0);
+        setTotalCost(checkForDecimalAndNull(sum, initialConfiguration.NoOfDecimalForPrice))
+    }, [props?.tableData])
 
     return (
         <Fragment>
@@ -31,9 +42,9 @@ function NpvCost(props) {
                                         <Fragment>
                                             <tr key={index}>
                                                 <td>{item.NpvType} </td>
-                                                {<td>{checkForDecimalAndNull(item.NpvPercentage, getConfigurationKey().NoOfDecimalForInputOutput)}</td>}
+                                                {<td>{checkForDecimalAndNull(item.NpvPercentage, getConfigurationKey().NoOfDecimalForPrice)}</td>}
                                                 {<td>{checkForDecimalAndNull(item?.NpvQuantity)}</td>}
-                                                {<td>{checkForDecimalAndNull(item?.NpvCost, getConfigurationKey().NoOfDecimalForInputOutput)}</td>}
+                                                {<td>{checkForDecimalAndNull(item?.NpvCost, getConfigurationKey().NoOfDecimalForPrice)}</td>}
                                                 {!props.hideAction && <td><div className='text-right'><button title='Edit' className="Edit mr-1" type={'button'} onClick={() => editDeleteData(index, 'edit')} />
                                                     <button title='Delete' className="Delete mr-1" type={'button'} onClick={() => editDeleteData(index, 'delete')} />
                                                 </div>
@@ -50,6 +61,12 @@ function NpvCost(props) {
                                 </tr>
                             )}
                         </tbody>
+                        <tfoot>
+                            <tr className='table-footer'>
+                                <td colSpan={"4"} className="text-right">{'Total Cost:'}</td>
+                                <td colSpan={"2"}>{totalCost}</td>
+                            </tr>
+                        </tfoot>
                     </Table>
                 </Col>
             </Row>
