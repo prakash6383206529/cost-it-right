@@ -92,6 +92,10 @@ function AddConditionCosting(props) {
     // This function is called when the user clicks a button to add data to a table.
     const addData = () => {
 
+        if (errors.Percentage) {
+            return false
+        }
+
         // Get the current data in the table and set some initial variables.
         console.log(getValues('Condition'), "getValues('Condition')")
         let table = [...tableData]
@@ -241,7 +245,7 @@ function AddConditionCosting(props) {
                                             Controller={Controller}
                                             control={control}
                                             register={register}
-                                            mandatory={false}
+                                            mandatory={true}
                                             options={typePercentageAndFixed}
                                             handleChange={onTypeChange}
                                             defaultValue={''}
@@ -253,12 +257,12 @@ function AddConditionCosting(props) {
                                     </Col>
                                     <Col md="2" className='px-1'>
                                         <NumberFieldHookForm
-                                            label={`Percentage`}
+                                            label={`Percentage (%)`}
                                             name={'Percentage'}
                                             Controller={Controller}
                                             control={control}
                                             register={register}
-                                            mandatory={false}
+                                            mandatory={true}
                                             rules={{
                                                 required: false,
                                                 validate: { number, checkWhiteSpaces, percentageLimitValidation },
@@ -284,7 +288,7 @@ function AddConditionCosting(props) {
                                             Controller={Controller}
                                             control={control}
                                             register={register}
-                                            mandatory={false}
+                                            mandatory={true}
                                             rules={{
                                                 required: true,
                                                 validate: { number, checkWhiteSpaces, decimalNumberLimit6 },
