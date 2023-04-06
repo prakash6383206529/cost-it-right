@@ -32,28 +32,9 @@ import { reactLocalStorage } from 'reactjs-localstorage';
  * @method createBOPAPI
  * @description create baught out parts master
  */
-export function createBOPDomestic(data, callback) {
+export function createBOP(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.createBOPDomestic, data, config());
-        request.then((response) => {
-            if (response.data.Result) {
-                callback(response);
-            }
-        }).catch((error) => {
-            dispatch({ type: API_FAILURE });
-            apiErrors(error);
-            callback(error);
-        });
-    };
-}
-
-/**
- * @method createBOPImport
- * @description create BOP Import
- */
-export function createBOPImport(data, callback) {
-    return (dispatch) => {
-        const request = axios.post(API.createBOPImport, data, config());
+        const request = axios.post(API.createBOP, data, config());
         request.then((response) => {
             if (response.data.Result) {
                 callback(response);
@@ -112,7 +93,8 @@ export function getBOPDomesticDataList(data, skip, take, isPagination, obj, call
 export function getBOPImportDataList(data, skip, take, isPagination, obj, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        const queryParams = `bop_for=${data.bop_for}&Currency=${obj.Currency !== undefined ? obj.Currency : ""}&NetCostCurrency=${obj.NetLandedCost !== undefined ? obj.NetLandedCost : ""}&NetCost=${obj.NetLandedCostConversion !== undefined ? obj.NetLandedCostConversion : ""}&ListFor=${data.ListFor ? data.ListFor : ''}&StatusId=${data.StatusId ? data.StatusId : ''}&DepartmentCode=${obj.DepartmentCode !== undefined ? obj.DepartmentCode : ""}&CustomerName=${obj.CustomerName !== undefined ? obj.CustomerName : ''}&FromDate=${(obj.dateArray && obj.dateArray.length > 1) ? obj.dateArray[0] : ""}&ToDate=${(obj.dateArray && obj.dateArray.length > 1) ? obj.dateArray[1] : ""}&IsCustomerDataShow=${reactLocalStorage.getObject('cbcCostingPermission') !== undefined ? reactLocalStorage.getObject('cbcCostingPermission') : false}&IncoTerm=${obj.IncoTermDescriptionAndInfoTerm}&PaymentTerm=${obj.PaymentTermDescriptionAndPaymentTerm}&NumberOfPieces=${obj.NumberOfPieces ? obj.NumberOfPieces : ''}`
+        // check here @samrudhi
+        const queryParams = `Currency=${obj.Currency !== undefined ? obj.Currency : ""}&NetCostCurrency=${obj.NetLandedCost !== undefined ? obj.NetLandedCost : ""}&NetCost=${obj.NetLandedCostConversion !== undefined ? obj.NetLandedCostConversion : ""}&ListFor=${data.ListFor ? data.ListFor : ''}&StatusId=${data.StatusId ? data.StatusId : ''}&DepartmentCode=${obj.DepartmentCode !== undefined ? obj.DepartmentCode : ""}&CustomerName=${obj.CustomerName !== undefined ? obj.CustomerName : ''}&FromDate=${(obj.dateArray && obj.dateArray.length > 1) ? obj.dateArray[0] : ""}&ToDate=${(obj.dateArray && obj.dateArray.length > 1) ? obj.dateArray[1] : ""}&IsCustomerDataShow=${reactLocalStorage.getObject('cbcCostingPermission') !== undefined ? reactLocalStorage.getObject('cbcCostingPermission') : false}&IncoTerm=${obj.IncoTermDescriptionAndInfoTerm}&PaymentTerm=${obj.PaymentTermDescriptionAndPaymentTerm}`
         const queryParamsSecond = bopQueryParms(isPagination, skip, take, obj)
         const request = axios.get(`${API.getBOPImportDataList}?${queryParams}&${queryParamsSecond}`, config());
         request.then((response) => {
@@ -218,13 +200,13 @@ export function deleteBOP(Id, callback) {
 }
 
 /**
- * @method updateBOPDomestic
+ * @method updateBOP
  * @description update BOP Domestic
  */
-export function updateBOPDomestic(requestData, callback) {
+export function updateBOP(requestData, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.put(`${API.updateBOPDomestic}`, requestData, config())
+        axios.put(`${API.updateBOP}`, requestData, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -234,25 +216,6 @@ export function updateBOPDomestic(requestData, callback) {
             });
     };
 }
-
-/**
- * @method updateBOPImport
- * @description update BOP Import
- */
-export function updateBOPImport(requestData, callback) {
-    return (dispatch) => {
-        dispatch({ type: API_REQUEST });
-        axios.put(`${API.updateBOPImport}`, requestData, config())
-            .then((response) => {
-                callback(response);
-            }).catch((error) => {
-                apiErrors(error);
-                dispatch({ type: API_FAILURE });
-                callback(error);
-            });
-    };
-}
-
 
 /**
  * @method createBOPCategory
@@ -398,12 +361,12 @@ export function fileDeleteBOPDomestic(data, callback) {
 }
 
 /**
- * @method bulkUploadBOPDomesticZBC
+ * @method bulkUploadBOP
  * @description upload bulk BOP Domestic ZBC
  */
-export function bulkUploadBOPDomesticZBC(data, callback) {
+export function bulkUploadBOP(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.bulkUploadBOPDomesticZBC, data, config());
+        const request = axios.post(API.bulkUploadBOP, data, config());
         request.then((response) => {
             if (response.status === 200) {
                 callback(response);
@@ -415,6 +378,8 @@ export function bulkUploadBOPDomesticZBC(data, callback) {
         });
     };
 }
+
+// check here @samrudhi
 
 /**
  * @method bulkUploadBOPDomesticVBC

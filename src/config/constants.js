@@ -829,10 +829,8 @@ export const API = {
   updateMachineDetails: `${BASE_URL}/masters-machine/update-machine-Details`,
   getMachineDetailsData: `${BASE_URL}/masters-machine/get-machine-details`,
 
-  bulkUploadMachineZBC: `${BASE_URL}/masters-machine/bulk-upload-for-machine-zbc-json`,
-  bulkUploadMachineVBC: `${BASE_URL}/masters-machine/bulk-upload-for-machine-vbc-json`,
-  bulkUploadMachineMoreZBC: `${BASE_URL}/masters-machine/bulk-upload-for-machine-zbc-details-json`,
-  bulkUploadMachineCBC: `${BASE_URL}/masters-machine/bulk-upload-for-machine-cbc-json`,
+  bulkUploadMachine: `${BASE_URL}/masters-machine/bulk-upload-for-machine-json`,
+  bulkUploadMachineMoreZBC: `${BASE_URL}/masters-machine/bulk-upload-for-machine-details-json`,
 
   createProcess: `${BASE_URL}/masters-machine/create-process`,
   getProcessCode: `${BASE_URL}/masters-machine/generate-process-code`,
@@ -2580,6 +2578,8 @@ export const IV = 'vuqqsafvwouoqtgh'
 
 export const KEYRFQ = "UAGSqTBCbZ8JqHJl"
 export const IVRFQ = "8vFNmRQEl91nOtrM"
-
+//CONSTANT FOR DOMESTIC AND IMPORT COMMON LISTING API
+export const ENTRY_TYPE_DOMESTIC = 0
+export const ENTRY_TYPE_IMPORT = 1
 //VERSION 
 export const VERSION = "V2.1.188";

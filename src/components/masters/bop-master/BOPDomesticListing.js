@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { reduxForm, } from "redux-form";
 import { Row, Col, } from 'reactstrap';
-import { EMPTY_DATA, BOP_MASTER_ID, BOPDOMESTIC, defaultPageSize, APPROVED_STATUS } from '../../../config/constants';
+import { EMPTY_DATA, BOP_MASTER_ID, BOPDOMESTIC, defaultPageSize, APPROVED_STATUS, RMDOMESTIC, ENTRY_TYPE_DOMESTIC } from '../../../config/constants';
 import {
     getBOPDomesticDataList, deleteBOP, getAllVendorSelectList, getPlantSelectListByVendor,
 } from '../actions/BoughtOutParts';
@@ -143,6 +143,7 @@ class BOPDomesticListing extends Component {
 
                 let constantFilterData = this.state.filterModel
                 let obj = { ...this.state.floatingFilterData }
+                dataObj.EntryType = ENTRY_TYPE_DOMESTIC
                 this.props.getBOPDomesticDataList(filterData, skip, take, isPagination, dataObj, (res) => {
                     this.setState({ isLoader: false })
                     this.setState({ noData: false })
@@ -859,6 +860,7 @@ class BOPDomesticListing extends Component {
                         messageLabel={'Insert Domestic'}
                         anchor={'right'}
                         masterId={BOP_MASTER_ID}
+                        typeOfEntryId={ENTRY_TYPE_DOMESTIC}
                     />
                 }
 

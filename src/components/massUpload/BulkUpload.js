@@ -6,7 +6,7 @@ import { checkForNull, getJsDateFromExcel, isDateFormatter } from "../../helper/
 import {
     bulkUploadRM, bulkfileUploadRM, bulkUploadRMSpecification,
 } from '../masters/actions/Material';
-import { bulkUploadMachineZBC, bulkUploadMachineVBC, bulkUploadMachineMoreZBC, bulkUploadMachineCBC } from '../masters/actions/MachineMaster';
+import { bulkUploadMachine, bulkUploadMachineMoreZBC } from '../masters/actions/MachineMaster';
 import { fuelBulkUpload } from '../masters/actions/Fuel';
 import { labourBulkUpload } from '../masters/actions/Labour';
 import { vendorBulkUpload } from '../masters/actions/Supplier';
@@ -502,7 +502,7 @@ class BulkUpload extends Component {
             LoggedInUserId: loggedInUserId(),
             IsFinalApprover: IsFinalApprover,
             CostingTypeId: costingTypeId,
-            TypeOfEntry: Number(typeOfEntryId)
+            TypeOfEntry: typeOfEntryId
         }
         console.log(masterUploadData, "masterUploadData");
         this.setState({ setDisable: true })
@@ -572,25 +572,14 @@ class BulkUpload extends Component {
                 this.setState({ setDisable: false })
                 this.responseHandler(res)
             });
-        } else if (fileName === 'Machine' && costingTypeId === ZBCTypeId) {
-            this.props.bulkUploadMachineZBC(masterUploadData, (res) => {
-                this.setState({ setDisable: false })
-                this.responseHandler(res)
-            });
-
-        } else if (fileName === 'Machine' && costingTypeId === VBCTypeId) {
-            this.props.bulkUploadMachineVBC(masterUploadData, (res) => {
+        } else if (fileName === 'Machine' && costingTypeId !== ZBCADDMORE) {
+            this.props.bulkUploadMachine(masterUploadData, (res) => {
                 this.setState({ setDisable: false })
                 this.responseHandler(res)
             });
 
         } else if (fileName === 'Machine' && costingTypeId === ZBCADDMORE) {
             this.props.bulkUploadMachineMoreZBC(masterUploadData, (res) => {
-                this.setState({ setDisable: false })
-                this.responseHandler(res)
-            });
-        } else if (fileName === 'Machine' && costingTypeId === CBCTypeId) {
-            this.props.bulkUploadMachineCBC(masterUploadData, (res) => {
                 this.setState({ setDisable: false })
                 this.responseHandler(res)
             });
@@ -979,8 +968,7 @@ export default connect(mapStateToProps, {
     operationZBCBulkUpload,
     operationVBCBulkUpload,
     labourBulkUpload,
-    bulkUploadMachineZBC,
-    bulkUploadMachineVBC,
+    bulkUploadMachine,
     bulkUploadMachineMoreZBC,
     partComponentBulkUpload,
     productComponentBulkUpload,
@@ -993,7 +981,6 @@ export default connect(mapStateToProps, {
     bulkUploadInterestRateVBC,
     bulkUploadInterestRateCBC,
     operationCBCBulkUpload,
-    bulkUploadMachineCBC,
     bulkUploadVolumeActualCBC,
     bulkUploadVolumeBudgetedCBC,
     bulkUploadBudgetMaster,
