@@ -196,15 +196,19 @@ class AddFuel extends Component {
 
   checkDuplicateRateGrid = (rateGrid, country, effectiveDate, rateGridEditIndex) => {
     let countForGrid = 0
+
     rateGrid && rateGrid.map((item, index) => {
-      if ((String(country?.value) === String(item.countryId)) && ((DayTime(effectiveDate).format('DD/MM/YYYY')) === (DayTime(item.effectiveDate).format('DD/MM/YYYY'))) && rateGridEditIndex !== index) {
+      if ((String(country?.value) === String(item.countryId)) && (String(this.state.city?.value) === String(item.cityId)) && ((DayTime(effectiveDate).format('DD/MM/YYYY')) === (DayTime(item.effectiveDate).format('DD/MM/YYYY'))) && rateGridEditIndex !== index) {
+        if (this.state.StateName && this.state.StateName.length > 0 && (String(this.state.StateName?.value) === String(item.StateId))) {
+          return false
+        }
         countForGrid++
       }
       return null
     })
 
     if (countForGrid !== 0) {
-      Toaster.warning('Rate for this Country and Effective Date already exist')
+      Toaster.warning('Rate for this Data already exist')
     }
     return countForGrid
   }
