@@ -4,7 +4,7 @@ import { reduxForm, } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import { checkForDecimalAndNull } from "../../../helper/validation";
 import { BOPIMPORT, EMPTY_DATA, defaultPageSize, APPROVED_STATUS, ENTRY_TYPE_IMPORT } from '../../../config/constants';
-import { getBOPImportDataList, deleteBOP, getAllVendorSelectList, } from '../actions/BoughtOutParts';
+import { getBOPDataList, deleteBOP, getAllVendorSelectList, } from '../actions/BoughtOutParts';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
 import { onFloatingFilterChanged, onSearch, resetState, onBtPrevious, onBtNext, onPageSizeChanged, PaginationWrapper } from '../../common/commonPagination'
@@ -155,7 +155,7 @@ class BOPImportListing extends Component {
         let FloatingfilterData = this.state.filterModel
         let obj = { ...this.state.floatingFilterData }
         dataObj.EntryType = ENTRY_TYPE_IMPORT
-        this.props.getBOPImportDataList(filterData, skip, take, isPagination, dataObj, (res) => {
+        this.props.getBOPDataList(filterData, skip, take, isPagination, dataObj, true, (res) => {
             this.setState({ noData: false })
             if (this.props.isSimulation) {
                 this.props?.changeTokenCheckBox(true)
@@ -835,7 +835,7 @@ function mapStateToProps({ boughtOutparts, comman, supplier, auth, simulation })
 * @param {function} mapDispatchToProps
 */
 export default connect(mapStateToProps, {
-    getBOPImportDataList,
+    getBOPDataList,
     deleteBOP,
     getAllVendorSelectList,
     getListingForSimulationCombined,
