@@ -651,50 +651,12 @@ export function getOperationListByVendor(ID, callback) {
 }
 
 /**
- * @method operationZBCBulkUpload
+ * @method operationBulkUpload
  * @description create ZBC Opration by Bulk Upload
  */
-export function operationZBCBulkUpload(data, callback) {
+export function operationBulkUpload(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.operationZBCBulkUpload, data, config());
-        request.then((response) => {
-            if (response.status === 200) {
-                callback(response);
-            }
-        }).catch((error) => {
-            dispatch({ type: API_FAILURE });
-            apiErrors(error);
-            callback(error);
-        });
-    };
-}
-
-/**
- * @method operationVBCBulkUpload
- * @description create VBC Opration by Bulk Upload
- */
-export function operationVBCBulkUpload(data, callback) {
-    return (dispatch) => {
-        const request = axios.post(API.operationVBCBulkUpload, data, config());
-        request.then((response) => {
-            if (response.status === 200) {
-                callback(response);
-            }
-        }).catch((error) => {
-            dispatch({ type: API_FAILURE });
-            apiErrors(error);
-            callback(error);
-        });
-    };
-}
-
-/**
- * @method operationCBCBulkUpload
- * @description create CBC Opration by Bulk Upload
- */
-export function operationCBCBulkUpload(data, callback) {
-    return (dispatch) => {
-        const request = axios.post(API.operationCBCBulkUpload, data, config());
+        const request = axios.post(API.operationBulkUpload, data, config());
         request.then((response) => {
             if (response.status === 200) {
                 callback(response);

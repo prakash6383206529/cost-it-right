@@ -826,7 +826,6 @@ class MachineRateListing extends Component {
                         messageLabel={'Machine'}
                         anchor={'right'}
                         masterId={MACHINE_MASTER_ID}
-                        typeOfEntryId={MACHINERATE}
                     />
                 }
 
