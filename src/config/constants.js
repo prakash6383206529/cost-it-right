@@ -281,7 +281,7 @@ export const API = {
   //BOP DOMESTIC
   createBOP: `${BASE_URL}/masters-bought-out-part/create-bought-out-part`,
   getBOPDomesticById: `${BASE_URL}/masters-bought-out-part/get-domestic-bought-out-part-by-id`,
-  getBOPDomesticDataList: `${BASE_URL}/masters-bought-out-part/get-all-bought-out-part-by-filter`,
+  getBOPDataList: `${BASE_URL}/masters-bought-out-part/get-all-bought-out-part-by-filter`,
   updateBOP: `${BASE_URL}/masters-bought-out-part/update-bought-out-part`,
   deleteBOP: `${BASE_URL}/masters-bought-out-part/delete-bought-out-part`,
   fileUploadBOPDomestic: `${BASE_URL}/masters-bought-out-part/bought-out-part-file-upload`,
@@ -291,7 +291,6 @@ export const API = {
 
   //BOP IMPORT
   getBOPImportById: `${BASE_URL}/masters-bought-out-part/get-import-bought-out-part-by-id`,
-  getBOPImportDataList: `${BASE_URL}/masters-bought-out-part/get-all-bought-out-part-by-filter`,
   getManageBOPSOBDataList: `${BASE_URL}/masters-bought-out-part/get-bought-out-part-vendor-share-of-business-by-filter`,
   getManageBOPSOBById: `${BASE_URL}/masters-bought-out-part/get-bought-out-part-vendor-share-of-business-by-bop-part-number`,
   updateBOPSOBVendors: `${BASE_URL}/masters-bought-out-part/update-bought-out-part-vendor-share-of-business`,
@@ -381,9 +380,7 @@ export const API = {
   fileUploadOperation: `${BASE_URL}/masters-operation/operation-file-upload`,
   fileDeleteOperation: `${BASE_URL}/masters-operation/delete-operation-file`,
   checkAndGetOperationCode: `${BASE_URL}/masters-operation/check-operation-code-is-unique`,
-  operationZBCBulkUpload: `${BASE_URL}/masters-operation/bulk-upload-for-operation-zbc-json`,
-  operationVBCBulkUpload: `${BASE_URL}/masters-operation/bulk-upload-for-operation-vbc-json`,
-  operationCBCBulkUpload: `${BASE_URL}/masters-operation/bulk-upload-for-operation-cbc-json`,
+  operationBulkUpload: `${BASE_URL}/masters-operation/bulk-upload-operation`,
 
   getVendorListByTechnology: `${BASE_URL}/masters-operation/get-operation-vendor-by-technology-select-list`,
   getOperationListByTechnology: `${BASE_URL}/masters-operation/get-operation-by-technology-select-list`,
