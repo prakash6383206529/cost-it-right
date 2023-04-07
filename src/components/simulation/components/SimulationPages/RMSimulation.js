@@ -354,14 +354,14 @@ function RMSimulation(props) {
     const revisedBasicRateHeader = (props) => {
         return (
             <div className='ag-header-cell-label'>
-                <span className='ag-header-cell-text'>Revised<i className={`fa fa-info-circle tooltip_custom_right tooltip-icon mb-n3 ml-4 mt2 `} id={"basicRate-tooltip"}></i> </span>
+                <span className='ag-header-cell-text'>Revised {!isImpactedMaster && <i className={`fa fa-info-circle tooltip_custom_right tooltip-icon mb-n3 ml-4 mt2 `} id={"basicRate-tooltip"}></i>} </span>
             </div>
         );
     };
     const revisedScrapRateHeader = (props) => {
         return (
             <div className='ag-header-cell-label'>
-                <span className='ag-header-cell-text'>Revised<i className={`fa fa-info-circle tooltip_custom_right tooltip-icon mb-n3 ml-4 mt2 `} id={"scrapRate-tooltip"}></i> </span>
+                <span className='ag-header-cell-text'>Revised {!isImpactedMaster && <i className={`fa fa-info-circle tooltip_custom_right tooltip-icon mb-n3 ml-4 mt2 `} id={"scrapRate-tooltip"}></i>} </span>
             </div>
         );
     };
@@ -459,8 +459,8 @@ function RMSimulation(props) {
 
                     (!showverifyPage && !showMainSimulation) &&
                     <Fragment>
-                        {showTooltip && <Tooltip className="rfq-tooltip-left" placement={"top"} isOpen={basicRateviewTooltip} toggle={basicRatetooltipToggle} target={"basicRate-tooltip"} >{"To add revised basic rate please double click on the field."}</Tooltip>}
-                        {showTooltip && <Tooltip className="rfq-tooltip-left" placement={"top"} isOpen={scrapRateviewTooltip} toggle={scrapRatetooltipToggle} target={"scrapRate-tooltip"} >{"To add revised scrap rate please double click on the field."}</Tooltip>}
+                        {showTooltip && !isImpactedMaster && <Tooltip className="rfq-tooltip-left" placement={"top"} isOpen={basicRateviewTooltip} toggle={basicRatetooltipToggle} target={"basicRate-tooltip"} >{"To add revised basic rate please double click on the field."}</Tooltip>}
+                        {showTooltip && !isImpactedMaster && <Tooltip className="rfq-tooltip-left" placement={"top"} isOpen={scrapRateviewTooltip} toggle={scrapRatetooltipToggle} target={"scrapRate-tooltip"} >{"To add revised scrap rate please double click on the field."}</Tooltip>}
                         <Row>
                             <Col className="add-min-height mb-3 sm-edit-page">
                                 <div className={`ag-grid-wrapper height-width-wrapper reset-btn-container ${(list && list?.length <= 0) || noData ? "overlay-contain" : ""}`}>
