@@ -469,7 +469,7 @@ function MRSimulation(props) {
                                                 <AgGridColumn field="MachineName" editable='false' headerName="Machine Name" minWidth={140}></AgGridColumn>
                                                 <AgGridColumn field="MachineNumber" editable='false' headerName="Machine Number" minWidth={140}></AgGridColumn>
                                                 <AgGridColumn field="ProcessName" editable='false' headerName="Process Name" minWidth={140}></AgGridColumn>
-                                                {!isImpactedMaster && list[0].CostingTypeId !== CBCTypeId && <AgGridColumn field="VendorName" editable='false' headerName="Vendor (Code)" minWidth={190}></AgGridColumn>}
+                                                {!isImpactedMaster && list[0].CostingTypeId !== CBCTypeId && <AgGridColumn field="VendorName" editable='false' headerName="Vendor (Code)" minWidth={190} cellRenderer='vendorFormatter'></AgGridColumn>}
                                                 {!isImpactedMaster && list[0].CostingTypeId === CBCTypeId && <AgGridColumn width={100} field="CustomerName" editable='false' headerName="Customer (Code)" cellRenderer='customerFormatter'></AgGridColumn>}
                                                 {
                                                     !isImpactedMaster &&
