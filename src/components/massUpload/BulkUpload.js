@@ -11,7 +11,7 @@ import { fuelBulkUpload } from '../masters/actions/Fuel';
 import { labourBulkUpload } from '../masters/actions/Labour';
 import { vendorBulkUpload } from '../masters/actions/Supplier';
 import { overheadBulkUpload, profitBulkUpload } from '../masters/actions/OverheadProfit';
-import { operationZBCBulkUpload, operationVBCBulkUpload, operationCBCBulkUpload } from '../masters/actions/OtherOperation';
+import { operationBulkUpload } from '../masters/actions/OtherOperation';
 import { partComponentBulkUpload, productComponentBulkUpload } from '../masters/actions/Part';
 import { bulkUploadBOP } from '../masters/actions/BoughtOutParts';
 import { bulkUploadVolumeActualZBC, bulkUploadVolumeActualVBC, bulkUploadVolumeBudgetedZBC, bulkUploadVolumeBudgetedCBC, bulkUploadVolumeActualCBC, bulkUploadVolumeBudgetedVBC, } from '../masters/actions/Volume';
@@ -415,6 +415,8 @@ class BulkUpload extends Component {
                                     fileHeads[i] = 'JaliScrapCost'
                                 } else if ((fileName === 'RM Domestic' || fileName === 'RM Import') && fileHeads[i] === 'ScrapRate/JaliScrapCost') {
                                     fileHeads[i] = 'ScrapRate'
+                                } else if (fileName === 'Machine' && fileHeads[i] === 'PlantCode') {
+                                    fileHeads[i] = 'DestinationPlantCode'
                                 }
                                 obj[fileHeads[i]] = el;
                                 return null;
@@ -498,7 +500,7 @@ class BulkUpload extends Component {
             LoggedInUserId: loggedInUserId(),
             IsFinalApprover: IsFinalApprover,
             CostingTypeId: costingTypeId,
-            TypeOfEntry: Number(typeOfEntryId)
+            TypeOfEntry: typeOfEntryId ? typeOfEntryId : 0
         }
         console.log(masterUploadData, "masterUploadData");
         this.setState({ setDisable: true })
@@ -527,24 +529,11 @@ class BulkUpload extends Component {
                 this.responseHandler(res)
             });
 
-        } else if (fileName === 'Operation' && costingTypeId === ZBCTypeId) {
-            this.props.operationZBCBulkUpload(masterUploadData, (res) => {
+        } else if (fileName === 'Operation') {
+            this.props.operationBulkUpload(masterUploadData, (res) => {
                 this.setState({ setDisable: false })
                 this.responseHandler(res)
             });
-
-        } else if (fileName === 'Operation' && costingTypeId === VBCTypeId) {
-            this.props.operationVBCBulkUpload(masterUploadData, (res) => {
-                this.setState({ setDisable: false })
-                this.responseHandler(res)
-            });
-
-        } else if (fileName === 'Operation' && costingTypeId === CBCTypeId) {
-            this.props.operationCBCBulkUpload(masterUploadData, (res) => {
-                this.setState({ setDisable: false })
-                this.responseHandler(res)
-            });
-
         } else if (fileName === 'Fuel') {
             this.props.fuelBulkUpload(uploadData, (res) => {
                 this.setState({ setDisable: false })
@@ -932,8 +921,7 @@ export default connect(mapStateToProps, {
     bulkUploadRM,
     overheadBulkUpload,
     profitBulkUpload,
-    operationZBCBulkUpload,
-    operationVBCBulkUpload,
+    operationBulkUpload,
     labourBulkUpload,
     bulkUploadMachineMoreZBC,
     partComponentBulkUpload,
@@ -946,7 +934,6 @@ export default connect(mapStateToProps, {
     bulkUploadInterestRateZBC,
     bulkUploadInterestRateVBC,
     bulkUploadInterestRateCBC,
-    operationCBCBulkUpload,
     bulkUploadMachine,
     bulkUploadVolumeActualCBC,
     bulkUploadVolumeBudgetedCBC,

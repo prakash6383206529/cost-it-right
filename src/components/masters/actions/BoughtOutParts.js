@@ -67,10 +67,10 @@ export function createBOPImport(data, callback) {
 }
 
 /**
- * @method getBOPDomesticDataList
+ * @method getBOPDataList
  * @description get all BOP Domestic Data list.
  */
-export function getBOPDomesticDataList(data, skip, take, isPagination, obj, callback) {
+export function getBOPDataList(data, skip, take, isPagination, obj, isImport, callback) {
     return (dispatch) => {
         // dispatch({ type: API_REQUEST});
         if (isPagination === true) {
@@ -81,12 +81,12 @@ export function getBOPDomesticDataList(data, skip, take, isPagination, obj, call
         }
         const queryParams = `bop_for=${data.bop_for}&NetCost=${obj.NetLandedCost !== undefined ? obj.NetLandedCost : ""}&ListFor=${data.ListFor ? data.ListFor : ''}&StatusId=${data.StatusId ? data.StatusId : ''}&DepartmentCode=${obj.DepartmentName !== undefined ? obj.DepartmentName : ""}&CustomerName=${obj.CustomerName !== undefined ? obj.CustomerName : ''}&FromDate=${(obj.dateArray && obj.dateArray.length > 1) ? obj.dateArray[0] : ""}&ToDate=${(obj.dateArray && obj.dateArray.length > 1) ? obj.dateArray[1] : ""}&IsCustomerDataShow=${reactLocalStorage.getObject('cbcCostingPermission') !== undefined ? reactLocalStorage.getObject('cbcCostingPermission') : false}`
         const queryParamsSecond = bopQueryParms(isPagination, skip, take, obj)
-        const request = axios.get(`${API.getBOPDomesticDataList}?${queryParams}&${queryParamsSecond}`, config());
+        const request = axios.get(`${API.getBOPDataList}?${queryParams}&${queryParamsSecond}`, config());
         request.then((response) => {
             if (response.data.Result || response.status === 204) {
                 if (isPagination === true) {
                     dispatch({
-                        type: GET_BOP_DOMESTIC_DATA_LIST,
+                        type: isImport ? GET_BOP_IMPORT_DATA_LIST : GET_BOP_DOMESTIC_DATA_LIST,
                         payload: response.status === 204 ? [] : response.data.DataList
                     })
                 } else {

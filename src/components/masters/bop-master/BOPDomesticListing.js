@@ -2,9 +2,9 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { reduxForm, } from "redux-form";
 import { Row, Col, } from 'reactstrap';
-import { EMPTY_DATA, BOP_MASTER_ID, BOPDOMESTIC, defaultPageSize, APPROVED_STATUS } from '../../../config/constants';
+import { EMPTY_DATA, BOP_MASTER_ID, BOPDOMESTIC, defaultPageSize, APPROVED_STATUS, ENTRY_TYPE_DOMESTIC } from '../../../config/constants';
 import {
-    getBOPDomesticDataList, deleteBOP, getAllVendorSelectList, getPlantSelectListByVendor,
+    getBOPDataList, deleteBOP, getAllVendorSelectList, getPlantSelectListByVendor,
 } from '../actions/BoughtOutParts';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
@@ -143,7 +143,8 @@ class BOPDomesticListing extends Component {
 
                 let constantFilterData = this.state.filterModel
                 let obj = { ...this.state.floatingFilterData }
-                this.props.getBOPDomesticDataList(filterData, skip, take, isPagination, dataObj, (res) => {
+                dataObj.EntryType = ENTRY_TYPE_DOMESTIC
+                this.props.getBOPDataList(filterData, skip, take, isPagination, dataObj, false, (res) => {
                     this.setState({ isLoader: false })
                     this.setState({ noData: false })
                     if (this.props.isSimulation) {
@@ -844,7 +845,7 @@ function mapStateToProps({ boughtOutparts, supplier, auth, material, simulation,
 * @param {function} mapDispatchToProps
 */
 export default connect(mapStateToProps, {
-    getBOPDomesticDataList,
+    getBOPDataList,
     deleteBOP,
     getAllVendorSelectList,
     getPlantSelectListByVendor,
