@@ -1680,7 +1680,7 @@ class AddRMDomestic extends Component {
                               name={"cutOffPrice"}
                               type="text"
                               placeholder={isViewFlag || (isEditFlag && isRMAssociated) ? '-' : "Enter"}
-                              validate={[number, positiveAndDecimalNumber, maxLength15]}
+                              validate={[number, positiveAndDecimalNumber, maxLength15, decimalLengthsix]}
                               component={renderTextInputField}
                               required={false}
                               disabled={isViewFlag || (isEditFlag && isRMAssociated)}
