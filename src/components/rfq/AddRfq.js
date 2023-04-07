@@ -385,6 +385,10 @@ function AddRfq(props) {
         }
     }
 
+    const handleSubmitClick = (data, e, isSent) => {
+        handleSubmit(() => onSubmit(data, e, isSent))();
+    };
+
     /**
     * @method cancel
     * @description used to Reset form
@@ -393,7 +397,7 @@ function AddRfq(props) {
         props.closeDrawer('', {})
     }
 
-    const onSubmit = debounce((data, e, isSent) => {
+    const onSubmit = (data, e, isSent) => {
         let tempArr = [...partList]
         let list = []
         list = tempArr && tempArr?.map(item => {
@@ -487,7 +491,7 @@ function AddRfq(props) {
             }))
 
         }
-    }, 500)
+    }
 
 
     const defaultColDef = {
@@ -994,7 +998,7 @@ function AddRfq(props) {
                                         <Col md="3">
                                             <div className="inputbox date-section">
                                                 <div className="form-group">
-                                                    <label>SOP Date</label>
+                                                    <label>SOP Date<span className="asterisk-required">*</span></label>
                                                     <div className="inputbox date-section">
                                                         <DatePicker
                                                             name={'SOPDate'}
@@ -1447,14 +1451,14 @@ function AddRfq(props) {
                                             </button>
 
                                             <button type="button" className="submit-button save-btn mr-2" value="save"
-                                                onClick={(data, e) => { handleSubmit(onSubmit(data, e, false)) }}
+                                                onClick={(data, e) => handleSubmitClick(data, e, false)}
                                                 disabled={isViewFlag}>
                                                 <div className={"save-icon"}></div>
                                                 {"Save"}
                                             </button>
 
                                             <button type="button" className="submit-button save-btn" value="send"
-                                                onClick={(data, e) => { handleSubmit(onSubmit(data, e, true)) }}
+                                                onClick={(data, e) => handleSubmitClick(data, e, true)}
                                                 disabled={isViewFlag}>
                                                 <div className="send-for-approval mr-1"></div>
                                                 {"Send"}
