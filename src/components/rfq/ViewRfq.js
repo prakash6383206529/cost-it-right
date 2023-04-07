@@ -172,7 +172,7 @@ function RfqListing(props) {
     const resetState = () => {
         gridOptions?.columnApi?.resetColumnState(null);
         gridOptions?.api?.setFilterModel(null);
-        gridApi.sizeColumnsToFit()
+        window.screen.width > 1600 && gridApi.sizeColumnsToFit();
         gridApi.deselectAll()
         setSelectedCostings([])
         setaddComparisonToggle(false)
