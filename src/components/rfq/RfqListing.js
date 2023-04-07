@@ -2,7 +2,7 @@ import React from 'react';
 import { useState, useEffect, } from 'react';
 import { useDispatch, useSelector } from 'react-redux'
 import { Row, Col, } from 'reactstrap';
-import { APPROVED, CANCELLED, EMPTY_DATA, FILE_URL, RECEIVED, RFQ, SUBMITTED, UNDER_APPROVAL, UNDER_REVISION, } from '../.././config/constants'
+import { APPROVED, CANCELLED, DRAFT, EMPTY_DATA, FILE_URL, RECEIVED, RFQ, SENT, SUBMITTED, UNDER_APPROVAL, UNDER_REVISION, } from '../.././config/constants'
 import NoContentFound from '.././common/NoContentFound';
 import { MESSAGES } from '../.././config/message';
 import Toaster from '.././common/Toaster';
@@ -86,6 +86,15 @@ function RfqListing(props) {
                         break;
                     case UNDER_REVISION:
                         item.tooltipText = 'Total no. of costing under revision / Total no. of expected costing in that quotation'
+                        break;
+                    case DRAFT:
+                        item.tooltipText = 'The token is pending to send for approval from your side.'
+                        break;
+                    case CANCELLED:
+                        item.tooltipText = 'Quotation has been cancelled.'
+                        break;
+                    case SENT:
+                        item.tooltipText = 'Costing under the quotation has been sent.'
                         break;
                     default:
                         break;
@@ -422,7 +431,7 @@ function RfqListing(props) {
                                                 <AgGridColumn field="RaisedBy" width={"160px"} headerName='Raised By'></AgGridColumn>
                                                 <AgGridColumn field="RaisedOn" width={"145px"} headerName='Raised On' cellRenderer='dateFormatter'></AgGridColumn>
                                                 <AgGridColumn field="VisibilityMode" width={"140px"} headerName='Visibility Mode' cellRenderer='dashFormatter'></AgGridColumn>
-                                                <AgGridColumn field="VisibilityDate" width={"140px"} headerName='Visibility Date' cellRenderer='dateTimeFormatter'></AgGridColumn>
+                                                <AgGridColumn field="VisibilityDate" width={"160px"} headerName='Visibility Date' cellRenderer='dateTimeFormatter'></AgGridColumn>
                                                 <AgGridColumn field="VisibilityDuration" width={"150px"} headerName='Visibility Duration' cellRenderer='dashFormatter'></AgGridColumn>
                                                 <AgGridColumn field="LastSubmissionDate" width={"160px"} headerName='Last Submission Date' cellRenderer='dateFormatter'></AgGridColumn>
                                                 <AgGridColumn field="QuotationNumber" headerName='Attachments' cellRenderer='attachmentFormatter'></AgGridColumn>

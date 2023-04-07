@@ -26,7 +26,7 @@ function ConditionCosting(props) {
                             <tr>
                                 <th>{`Condition`}</th>
                                 {<th>{`Type`}</th>}
-                                {<th>{`Percentage`}</th>}
+                                {<th>{`Percentage (%)`}</th>}
                                 {<th>{`Fixed`}</th>}
                                 {<th>{`Cost`}</th>}
                                 {!props.hideAction && <th className='text-right'>{`Action`}</th>}
@@ -42,8 +42,8 @@ function ConditionCosting(props) {
                                                 <td>{item.condition} </td>
                                                 {<td>{item.ConditionType}</td>}
                                                 {<td>{item.Percentage ? checkForDecimalAndNull(item?.Percentage) : '-'}</td>}
-                                                {<td>{item.Percentage ? '-' : checkForDecimalAndNull(item?.ConditionCost, getConfigurationKey().NoOfDecimalForInputOutput)}</td>}
-                                                {<td>{checkForDecimalAndNull(item?.ConditionCost, getConfigurationKey().NoOfDecimalForInputOutput)}</td>}
+                                                {<td>{item.Percentage ? '-' : checkForDecimalAndNull(item?.ConditionCost, getConfigurationKey().NoOfDecimalForPrice)}</td>}
+                                                {<td>{checkForDecimalAndNull(item?.ConditionCost, getConfigurationKey().NoOfDecimalForPrice)}</td>}
                                                 {!props.hideAction && <td><div className='text-right'><button title='Edit' className="Edit mr-1" type={'button'} onClick={() => editDeleteData(index, 'edit')} />
                                                     <button title='Delete' className="Delete mr-1" type={'button'} onClick={() => editDeleteData(index, 'delete')} />
                                                 </div>
