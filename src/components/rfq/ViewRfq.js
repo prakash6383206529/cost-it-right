@@ -701,18 +701,20 @@ function RfqListing(props) {
                                 <h3 className='mt-2'>RFQ No. : {data?.QuotationNumber ? data?.QuotationNumber : '-'}</h3>
                             </Col>
                             <Col md="6" className='d-flex justify-content-end align-items-center mb-2 mt-1'>
-                                <div className='d-flex  align-items-center'><div className='w-min-fit'>Approved By:</div>
+                                <div className='d-flex  align-items-center'><div className='w-min-fit'>Raised By:</div>
                                     <input
                                         type="text"
                                         className="form-control mx-2"
                                         value={data.RaisedBy}
+                                        style={{ width: (data.RaisedBy.length * 9 + 10) + 'px' }}
                                         disabled={true}
                                     /> </div>
-                                <div className='d-flex align-items-center pr-0'><div className='w-min-fit'>Approved On:</div>
+                                <div className='d-flex align-items-center pr-0'><div className='w-min-fit'>Raised On:</div>
                                     <input
                                         type="text"
                                         className="form-control ml-2"
                                         disabled={true}
+                                        style={{ width: '100px' }}
                                         value={data.RaisedOn ? DayTime(data.RaisedOn).format('DD/MM/YYYY') : '-'}
                                     />
                                 </div>
