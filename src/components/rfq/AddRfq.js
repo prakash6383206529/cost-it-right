@@ -1065,7 +1065,7 @@ function AddRfq(props) {
                                                 <div className={''}></div>
                                                 RESET
                                             </button>
-                                            {(checkForNull(technology?.value) === LOGISTICS) && <button
+                                            {(false && checkForNull(technology?.value) === LOGISTICS) && <button
                                                 type="button"
                                                 className={"user-btn "}
                                                 onClick={bulkToggle}
