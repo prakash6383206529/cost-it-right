@@ -180,7 +180,7 @@ function AddConditionCosting(props) {
             // Retrieve the data at the specified index from the tableData array, and set the values of various form fields based on the data.
             let Data = tableData[indexValue]
             setDisableAllFields(false)
-            setValue('Condition', { label: Data.condition, value: Data.CostingConditionNumber })
+            setValue('Condition', { label: Data.condition, value: Data.CostingConditionNumber, CostingConditionNumber: Data.CostingConditionNumber })
             setValue('Type', { label: Data.ConditionType, value: Data.ConditionType })
             setValue('Percentage', Data.Percentage)
             setValue('Cost', checkForDecimalAndNull(Data.ConditionCost, initialConfiguration.NoOfDecimalForPrice))
