@@ -1450,6 +1450,9 @@ function CostingDetails(props) {
       dispatch(setCostingDataList('setHeaderCostRMCCTab', [], () => { }))
       dispatch(emptyCostingData())
       dispatch(setRMCCBOPCostData([], () => { }))
+      setIsLoader(true)
+      dispatch(getBriefCostingById('', (res) => { }))
+      dispatch(isDiscountDataChange(false))
 
     } else {
       setIsLoader(true)
