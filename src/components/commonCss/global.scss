@@ -49,6 +49,39 @@
   }
 }
 
+//GENERATE THE WIDTH FOR LAYOUT AND CUSTOM ELEMENTS
+$base: 20px;
+$max: 100;
+
+@for $i from 0 through $max {
+  $width: $i * $base;
+  $customWidth: $i * 2px;
+
+  .layout-width-#{$width} {
+    width: $width;
+  }
+
+  .layout-max-width-#{$width} {
+    max-width: $width;
+  }
+
+  .layout-min-width-#{$width} {
+    min-width: $width;
+  }
+
+  .custom-width-#{$customWidth} {
+    width: $customWidth;
+  }
+
+  .custom-max-width-#{$customWidth} {
+    max-width: $customWidth;
+  }
+
+  .custom-min-width-#{$customWidth} {
+    min-width: $customWidth;
+  }
+}
+
 .float-right {
   float: right;
 }
@@ -220,6 +253,10 @@ a:hover {
 
 .w-fit {
   width: fit-content;
+}
+
+.w-min-fit {
+  min-width: fit-content;
 }
 
 .min15 {

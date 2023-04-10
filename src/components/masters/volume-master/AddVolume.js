@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { Field, reduxForm } from 'redux-form'
-import { Row, Col, Label } from 'reactstrap'
+import { Field, clearFields, reduxForm } from 'redux-form'
+import { Row, Col, Label, Tooltip } from 'reactstrap'
 import { required } from '../../../helper/validation'
 import { searchableSelect } from '../../layout/FormInputs'
 import { createVolume, updateVolume, getVolumeData, getFinancialYearSelectList, getPartSelectListWtihRevNo, } from '../actions/Volume'
@@ -127,7 +127,10 @@ class AddVolume extends Component {
       client: [],
       partName: '',
       showPopup: false,
-      vendorFilter: []
+      vendorFilter: [],
+      viewTooltipBudgeted: false,
+      showTooltip: false,
+      viewTooltipActual: false
     }
   }
 
@@ -175,7 +178,6 @@ class AddVolume extends Component {
       clientSelectList
     } = this.props
     const temp = []
-
     if (label === 'plant') {
       plantSelectList && plantSelectList.map((item) => {
         if (item.PlantId === '0') return false
@@ -216,6 +218,17 @@ class AddVolume extends Component {
   * @description Used for Vendor checked
   */
   onPressVendor = (costingHeadFlag) => {
+    const fieldsToClear = [
+      'vendorName',
+      'Plant',
+      'DestinationPlant',
+      'clientName',
+      'FinancialYear',
+      'PartNumber'
+    ];
+    fieldsToClear.forEach(fieldName => {
+      this.props.dispatch(clearFields('AddVolume', false, false, fieldName));
+    });
     this.setState({
       vendorName: [],
       costingTypeId: costingHeadFlag
@@ -347,7 +360,20 @@ class AddVolume extends Component {
       </>
     )
   }
-
+  budgetedHeader = (props) => {
+    return (
+      <div className='ag-header-cell-label'>
+        <span className='ag-header-cell-text'>Budgeted Quantity<i className={`fa fa-info-circle tooltip_custom_right tooltip-icon mb-n3 ml-4 mt2 `} id={"budgeted-tooltip"}></i> </span>
+      </div>
+    );
+  };
+  actualHeader = (props) => {
+    return (
+      <div className='ag-header-cell-label'>
+        <span className='ag-header-cell-text'>Actual Quantity<i className={`fa fa-info-circle tooltip_custom_right tooltip-icon mb-n3 ml-4 mt2 `} id={"actual-tooltip"}></i> </span>
+      </div>
+    );
+  };
 
   /**
    * @method beforeSaveCell
@@ -464,12 +490,6 @@ class AddVolume extends Component {
       this.props.getVolumeData('', () => { })
     }
   }
-
-  // onGridReady = (params) => {
-  //   this.setState({ gridApi: params.api, gridColumnApi: params.columnApi })
-  //   this.state.gridApi.sizeColumnsToFit();
-  //   params.api.paginationGoToPage(0);
-  // };
 
   /**
    * @method cancel
@@ -653,10 +673,13 @@ class AddVolume extends Component {
 
 
   onGridReady = (params) => {
+    this.setState({ gridApi: params.api, gridColumnApi: params.columnApi })
     this.gridApi = params.api;
     this.gridApi.sizeColumnsToFit();
-    this.setState({ gridApi: params.api, gridColumnApi: params.columnApi })
     params.api.paginationGoToPage(0);
+    setTimeout(() => {
+      this.setState({ showTooltip: true })
+    }, 100);
   };
 
   // onPageSizeChanged = (newPageSize) => {
@@ -680,7 +703,6 @@ class AddVolume extends Component {
   render() {
     const { handleSubmit, } = this.props;
     const { isEditFlag, isOpenVendor, setDisable, costingTypeId } = this.state;
-
     const vendorFilterList = async (inputValue) => {
       const { vendorFilter } = this.state
       const resultInput = inputValue.slice(0, searchCount)
@@ -748,9 +770,16 @@ class AddVolume extends Component {
       buttonFormatter: this.buttonFormatter,
       customLoadingOverlay: LoaderCustom,
       budgetedQuantity: this.budgetedQuantity,
-      actualQuantity: this.actualQuantity
+      actualQuantity: this.actualQuantity,
+      budgetedHeader: this.budgetedHeader,
+      actualHeader: this.actualHeader
     };
-
+    const tooltipToggleBudgeted = () => {
+      this.setState({ viewTooltipBudgeted: !this.state.viewTooltipBudgeted })
+    }
+    const tooltipToggleActual = () => {
+      this.setState({ viewTooltipActual: !this.state.viewTooltipActual })
+    }
     return (
       <>
         <div className={`ag-grid-react`}>
@@ -995,9 +1024,10 @@ class AddVolume extends Component {
                             <Col>
                               <div className={`ag-grid-wrapper add-volume-table  ${this.state.tableData && this.state.tableData?.length <= 0 ? "overlay-contain" : ""}`} style={{ width: '100%', height: '100%' }}>
                                 {/* <Col md="12"> */}
+                                {this.state.showTooltip && <Tooltip className="rfq-tooltip-left" placement={"top"} isOpen={this.state.viewTooltipBudgeted} toggle={tooltipToggleBudgeted} target={"budgeted-tooltip"} >{"To add budgeted quantity please double click on the field."}</Tooltip>}
+                                {this.state.showTooltip && <Tooltip className="rfq-tooltip-left" placement={"top"} isOpen={this.state.viewTooltipActual} toggle={tooltipToggleActual} target={"actual-tooltip"} >{"To add actual quantity please double click on the field."}</Tooltip>}
                                 <div
                                   className="ag-theme-material"
-
                                 >
                                   <AgGridReact
                                     style={{ height: '100%', width: '100%' }}
@@ -1016,11 +1046,12 @@ class AddVolume extends Component {
                                       title: EMPTY_DATA,
                                     }}
                                     frameworkComponents={frameworkComponents}
+                                    suppressColumnVirtualisation={true}
                                     stopEditingWhenCellsLoseFocus={true}
                                   >
                                     <AgGridColumn field="Month" headerName="Month" editable='false'></AgGridColumn>
-                                    <AgGridColumn field="BudgetedQuantity" cellRenderer='budgetedQuantity' headerName="Budgeted Quantity"></AgGridColumn>
-                                    <AgGridColumn field="ApprovedQuantity" cellRenderer='actualQuantity' headerName="Actual Quantity"></AgGridColumn>
+                                    <AgGridColumn field="BudgetedQuantity" cellRenderer='budgetedQuantity' headerName="Budgeted Quantity" headerComponent={'budgetedHeader'}></AgGridColumn>
+                                    <AgGridColumn field="ApprovedQuantity" cellRenderer='actualQuantity' headerName="Actual Quantity" headerComponent={'actualHeader'}></AgGridColumn>
                                     <AgGridColumn field="VolumeApprovedDetailId" editable='false' cellRenderer='buttonFormatter' headerName="Action" type="rightAligned" ></AgGridColumn>
                                     <AgGridColumn field="VolumeApprovedDetailId" hide></AgGridColumn>
                                     <AgGridColumn field="VolumeBudgetedDetailId" hide></AgGridColumn>

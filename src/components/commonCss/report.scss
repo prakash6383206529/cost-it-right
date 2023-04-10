@@ -112,12 +112,36 @@
     margin-right: 50px;
 }
 
+.goat-given {
+    td {
+        width: 33% !important;
+
+        span {
+            font-size: 14px;
+        }
+    }
+}
+
+.master-movement-report {
+    min-height: calc(100vh - 268px);
+}
+
+.padding-top {
+    padding-top: 8px;
+}
+
+
 .report-btn-reset-container {
     width: fit-content;
     padding-left: 0;
     position: absolute;
-    top: -45px;
-    right: 0;
+    top: -12.6%;
+    right: 72px;
+
+    @media screen and (min-width: $max1367) {
+        top: -15.1%;
+        right: 109px;
+    }
 }
 
 .doughnut-graph {
@@ -138,5 +162,15 @@
     button {
         position: absolute;
         right: 0;
+    }
+}
+
+.goat-given {
+    td {
+        width: 33% !important;
+
+        span {
+            font-size: 14px;
+        }
     }
 }

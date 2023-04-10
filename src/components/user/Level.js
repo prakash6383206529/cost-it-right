@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Field, reduxForm } from "redux-form";
+import { Field, reduxForm, clearFields } from "redux-form";
 import Toaster from "../common/Toaster";
 import { connect } from "react-redux";
 import { required, checkWhiteSpaces, acceptAllExceptSingleSpecialCharacter, maxLength80, postiveNumber, maxLength2 } from "../../helper/validation";
@@ -18,6 +18,7 @@ import LoaderCustom from "../common/LoaderCustom";
 import { getApprovalTypeSelectList } from '../../actions/Common'
 import { CUSTOMER_BASED, NEW_COMPONENT, PROVISIONAL } from "../../config/constants";
 import { reactLocalStorage } from "reactjs-localstorage";
+import { costingTypeIdToApprovalTypeIdFunction } from "../common/CommonFunctions";
 
 /**************************************THIS FILE IS FOR ADDING LEVEL MAPPING*****************************************/
 class Level extends Component {
@@ -261,13 +262,19 @@ class Level extends Component {
   * @description LEVEL TYPE HANDLING
   */
   onPressRadioLevel = (label) => {
+
+    const fieldsToClear = ['ApprovalType', 'TechnologyId', 'LevelId'];
+    fieldsToClear.forEach(fieldName => {
+      this.props.dispatch(clearFields('Level', false, false, fieldName));
+    });
+
     if (label === 'Costing') {
       this.props.getAllTechnologyAPI(() => { })
     } else if (label === 'Simulation') {
       this.props.getSimulationTechnologySelectList(() => { })
     }
     this.setState({ levelType: label });
-    this.setState({ technology: [], level: [] });
+    this.setState({ technology: [], level: [], approvalTypeObject: [] });
   };
 
   /**
@@ -388,7 +395,7 @@ class Level extends Component {
             Technology: technology.value,
             Level: level.label,
             ModifiedBy: loggedInUserId(),
-            ApprovalTypeId: Number(approvalTypeObject?.value)
+            ApprovalTypeId: costingTypeIdToApprovalTypeIdFunction((Number(approvalTypeObject?.value)))
           }
 
           if (this.state.dataToCheck.label === formReq.Level) {
@@ -417,7 +424,7 @@ class Level extends Component {
             Technology: technology.value,
             Level: level.label,
             ModifiedBy: loggedInUserId(),
-            ApprovalTypeId: Number(approvalTypeObject?.value)
+            ApprovalTypeId: costingTypeIdToApprovalTypeIdFunction(Number(approvalTypeObject?.value))
           }
           if (this.state.dataToCheck.label === formReq.Level) {
             this.toggleDrawer('')
@@ -440,7 +447,7 @@ class Level extends Component {
             Master: technology.value,
             Level: level.label,
             ModifiedBy: loggedInUserId(),
-            ApprovalTypeId: Number(approvalTypeObject?.value)
+            ApprovalTypeId: costingTypeIdToApprovalTypeIdFunction(Number(approvalTypeObject?.value))
           }
           if (this.state.dataToCheck.label === formReq.Level) {
             this.toggleDrawer('')
@@ -460,7 +467,7 @@ class Level extends Component {
         let formData = {
           LevelId: level.value,
           TechnologyId: technology.value,
-          ApprovalTypeId: Number(approvalTypeObject?.value)
+          ApprovalTypeId: costingTypeIdToApprovalTypeIdFunction(Number(approvalTypeObject?.value))
 
         }
 
@@ -499,7 +506,7 @@ class Level extends Component {
             LevelId: level.value,
             MasterId: technology.value,
             UserId: loggedInUserId(),
-            ApprovalTypeId: Number(approvalTypeObject?.value)
+            ApprovalTypeId: costingTypeIdToApprovalTypeIdFunction(Number(approvalTypeObject?.value))
           }
           // ADD MASTER NEW LEVEL
           this.props.addMasterLevel(masterData, (res) => {

@@ -20,12 +20,14 @@ import { checkPartWithTechnology, getCostingSpecificTechnology, getPartCostingVe
 import { AsyncSearchableSelectHookForm, DatePickerHookForm, SearchableSelectHookForm } from "../../layout/HookFormInputs"
 import { getFormGridData, getRevisionNoFromPartId } from "../actions/ReportListing"
 import { PaginationWrapper } from '../../common/commonPagination';
+import { getClientSelectList } from "../../masters/actions/Client"
+import { getProductGroupSelectList } from "../../masters/actions/Part"
 
 
 
 const gridOptions = {}
 function CostReportForm(props) {
-    const { isDateMandatory } = props
+    const { isDateMandatory, showVendor } = props
     const [technology, setTechnology] = useState([])
     const [partName, setpartName] = useState('')
     const [part, setPart] = useState([]);
@@ -38,20 +40,23 @@ function CostReportForm(props) {
     const [minDate, setMinDate] = useState('')
     const [maxDate, setMaxDate] = useState('')
     const [gridApi, setGridApi] = useState(null);
+    const [customerPoamSummary, setCustomerPoamSummary] = useState(props.customerPoamSummary ? true : false);
+    const [productCategory, setProductCategory] = useState('');
+    const [includeQuarterData, setIncludeQuarterData] = useState(false);
 
     const dispatch = useDispatch()
 
     const technologySelectList = useSelector((state) => state.costing.costingSpecifiTechnology)
     const vendorSelectList = useSelector((state) => state.costing.costingVendorList)
     const DestinationplantSelectList = useSelector(state => state.comman.plantSelectList);
+    const clientSelectList = useSelector((state) => state.client.clientSelectList)
+    const productGroupSelectList = useSelector((state) => state.part.productGroupSelectList)
 
     const costReportFormData = useSelector(state => state.report.costReportFormGridData)
 
     let gridData = costReportFormData && costReportFormData.gridData ? costReportFormData.gridData : [];
     let startDate = costReportFormData && costReportFormData.fromDate
     let endDate = costReportFormData && costReportFormData.toDate
-
-
 
 
     // const toDate = useSelector(state => state.report.costReportFormGridData?.toDate)
@@ -67,6 +72,9 @@ function CostReportForm(props) {
     useEffect(() => {
         dispatch(getCostingSpecificTechnology(loggedInUserId(), () => { }))
         dispatch(getPartInfo('', () => { }))
+        dispatch(getProductGroupSelectList(() => { }))
+        dispatch(getClientSelectList((res) => {
+        }))
         if (props.isDataClear) {
             setValue('fromDate', startDate ? startDate : '')
             setValue('toDate', endDate ? endDate : '')
@@ -90,6 +98,10 @@ function CostReportForm(props) {
         obj.ShowRevisionNumber = getValues('Revision')?.label ? getValues('Revision')?.label : '-'
         obj.Vendor = getValues('Vendor')?.label ? getValues('Vendor')?.label : '-'
         obj.Plant = getValues('Plant')?.label ? getValues('Plant')?.label : '-'
+        obj.productCategory = getValues('productCategory')?.label ? getValues('productCategory')?.label : '-'
+        obj.productCategoryId = getValues('productCategory')?.value ? getValues('productCategory')?.value : '-'
+        obj.CustomerId = getValues('Customer')?.value ? getValues('Customer')?.value : '-'
+        obj.CustomerName = getValues('Customer')?.label ? getValues('Customer')?.label : '-'
 
         gridData && gridData.map((item) => {
             if (item.TechnologyId === obj.TechnologyId && item.PartId === obj.PartId && item.RevisionNumber === obj.RevisionNumber && item.VendorId === obj.VendorId && item.PlantId === obj.PlantId) {
@@ -178,6 +190,24 @@ function CostReportForm(props) {
             })
             return temp
         }
+
+        if (label === 'Customer') {
+            clientSelectList && clientSelectList.map(item => {
+                if (item.Value === '0') return false;
+                temp.push({ label: item.Text, value: item.Value })
+                return null;
+            });
+            return temp;
+        }
+
+        if (label === 'ProductGroup') {
+            productGroupSelectList && productGroupSelectList.map(item => {
+                if (item.Value === '0') return false;
+                temp.push({ label: item.Text, value: item.Value })
+                return null;
+            })
+            return temp;
+        }
     }
     const defaultColDef = {
         resizable: true,
@@ -209,6 +239,10 @@ function CostReportForm(props) {
         }
         setpartName([])
         reactLocalStorage.setObject('PartData', [])
+    }
+
+    const handleProductCategory = (newValue) => {
+        setProductCategory(newValue)
     }
 
     /**
@@ -322,13 +356,23 @@ function CostReportForm(props) {
         dispatch(getPartInfo('', () => { }))
         setValue('Technology', '')
         setValue('Part', '')
+        setValue('Customer', '')
         resetRevisionVendorPlant()
     }
 
     const onPageSizeChanged = (newPageSize) => {
         gridApi.paginationSetPageSize(Number(newPageSize));
     };
+    const resetState = () => {
+        gridOptions?.columnApi?.resetColumnState(null);
+        gridOptions?.api?.setFilterModel(null);
 
+    }
+
+    const includeQuarterDataCheck = () => {
+        dispatch(getFormGridData({ ...costReportFormData, includeQuarterData: !includeQuarterData }))
+        setIncludeQuarterData(!includeQuarterData)
+    }
 
     return (
         <>
@@ -396,7 +440,27 @@ function CostReportForm(props) {
                             </div>
                         </div>
                     </Row>
-                    <Row>
+
+
+                    {<Row>
+                        {customerPoamSummary && <Col md="3">
+                            <SearchableSelectHookForm
+                                label={"Product Category"}
+                                name={"productCategory"}
+                                placeholder={"Select"}
+                                Controller={Controller}
+                                control={control}
+                                rules={{ required: true }}
+                                register={register}
+                                defaultValue={productCategory.length !== 0 ? productCategory : ""}
+                                options={renderListing("ProductGroup")}
+                                mandatory={true}
+                                handleChange={handleProductCategory}
+                                errors={errors.productCategory}
+                            />
+                        </Col>}
+
+
                         <Col md="3">
                             <SearchableSelectHookForm
                                 label={"Technology"}
@@ -435,7 +499,9 @@ function CostReportForm(props) {
                             />
 
                         </Col>
-                        <Col md="3">
+
+
+                        {!customerPoamSummary && <Col md="3">
                             <SearchableSelectHookForm
                                 label={"Revision Number"}
                                 name={"Revision"}
@@ -451,23 +517,27 @@ function CostReportForm(props) {
                                 errors={errors.revision}
                                 disabled={part.length === 0 ? true : false}
                             />
-                        </Col>
-                        <Col md="3">
-                            <SearchableSelectHookForm
-                                label={"Vendor"}
-                                name={"Vendor"}
-                                placeholder={"Select"}
-                                Controller={Controller}
-                                control={control}
-                                register={register}
-                                defaultValue={vendor.length !== 0 ? vendor : ''}
-                                options={renderListing('Vendor')}
-                                mandatory={false}
-                                handleChange={handleVendorChange}
-                                errors={errors.vendor}
-                                disabled={part.length === 0 ? true : false}
-                            />
-                        </Col>
+                        </Col>}
+
+                        {showVendor &&
+                            <Col md="3">
+                                <SearchableSelectHookForm
+                                    label={"Vendor"}
+                                    name={"Vendor"}
+                                    placeholder={"Select"}
+                                    Controller={Controller}
+                                    control={control}
+                                    register={register}
+                                    defaultValue={vendor.length !== 0 ? vendor : ''}
+                                    options={renderListing('Vendor')}
+                                    mandatory={false}
+                                    handleChange={handleVendorChange}
+                                    errors={errors.vendor}
+                                    disabled={part.length === 0 ? true : false}
+                                />
+                            </Col>
+                        }
+
                         <Col md="3">
                             <SearchableSelectHookForm
                                 label={"Plant (Code)"}
@@ -475,16 +545,56 @@ function CostReportForm(props) {
                                 placeholder={"Select"}
                                 Controller={Controller}
                                 control={control}
-                                rules={{ required: false }}
+                                rules={{ required: props.isPlantRequired ? true : false }}
                                 register={register}
                                 defaultValue={plant.length !== 0 ? plant : ""}
                                 options={renderListing("Plant")}
-                                mandatory={false}
+                                mandatory={props.isPlantRequired ? true : false}
                                 handleChange={plantHandleChange}
-                                errors={errors.plant}
+                                errors={errors.Plant}
                                 disabled={part.length === 0 ? true : false}
                             />
                         </Col>
+
+
+                        {(!showVendor || customerPoamSummary) && <Col md="3">
+                            <SearchableSelectHookForm
+                                label={"Customer (Code)"}
+                                name={"Customer"}
+                                placeholder={"Select"}
+                                Controller={Controller}
+                                control={control}
+                                rules={{ required: false }}
+                                register={register}
+                                // defaultValue={customer.length !== 0 ? customer : ""}
+                                options={renderListing("Customer")}
+                                mandatory={false}
+                                handleChange={() => { }}
+                                errors={errors.Customer}
+                                disabled={part.length === 0 ? true : false}
+                            />
+                        </Col>}
+
+
+                        {customerPoamSummary && <Col md="2" className="d-flex align-items-center">
+                            <label
+                                className={`custom-checkbox w-auto mb-0 mt-3 `}
+                                onChange={() => includeQuarterDataCheck()}
+                            >
+                                Include Quarter Data
+                                <input
+                                    type="checkbox"
+                                    disabled={false}
+                                    checked={costReportFormData.includeQuarterData ? costReportFormData.includeQuarterData : ''}
+                                />
+                                <span
+                                    className=" before-box p-0"
+                                    onChange={() => includeQuarterDataCheck()}
+                                />
+                            </label>
+
+                        </Col>}
+
                         <Col md="3" className="mt-4 pt-1">
                             <button
                                 type="submit"
@@ -501,8 +611,12 @@ function CostReportForm(props) {
                                 Reset
                             </button>
                         </Col>
-
-                    </Row>
+                        <Col md={customerPoamSummary ? 4 : 6} className="mt-4 pt-2 text-right">
+                            <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}>
+                                <div className="refresh mr-0"></div>
+                            </button>
+                        </Col>
+                    </Row>}
                 </form>
                 <div className={`ag-grid-wrapper height-width-wrapper ${(gridData && gridData?.length <= 0) ? "overlay-contain" : ""}`}>
                     < div className={`ag-theme-material `}>
@@ -527,12 +641,14 @@ function CostReportForm(props) {
                             // onFilterModified={onFloatingFilterChanged}
                             frameworkComponents={frameworkComponents}
                         >
-                            <AgGridColumn field="TechnologyName" headerName="Tehnology"></AgGridColumn>
-                            <AgGridColumn field="PartNo" headerName="Part No."></AgGridColumn>
-                            <AgGridColumn field="ShowRevisionNumber" headerName="Revision No."></AgGridColumn>
-                            <AgGridColumn field="Vendor" headerName="Vendor (Code)"></AgGridColumn>
-                            <AgGridColumn field="Plant" headerName="Plant (Code)"></AgGridColumn>
-                            <AgGridColumn field="action" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'buttonFormatter'}></AgGridColumn>
+                            {<AgGridColumn field="TechnologyName" headerName="Tehnology"></AgGridColumn>}
+                            {customerPoamSummary && <AgGridColumn field="productCategory" headerName="Product Category"></AgGridColumn>}
+                            {<AgGridColumn field="PartNo" headerName="Part No."></AgGridColumn>}
+                            {!customerPoamSummary && <AgGridColumn field="ShowRevisionNumber" headerName="Revision No."></AgGridColumn>}
+                            {!customerPoamSummary && <AgGridColumn field="Vendor" headerName="Vendor (Code)"></AgGridColumn>}
+                            {<AgGridColumn field="Plant" headerName="Plant (Code)"></AgGridColumn>}
+                            {customerPoamSummary && <AgGridColumn field="CustomerName" headerName="Customer (Code)"></AgGridColumn>}
+                            {<AgGridColumn field="action" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'buttonFormatter'}></AgGridColumn>}
                         </AgGridReact>
                         {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />}
                     </div>

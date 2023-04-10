@@ -1,6 +1,6 @@
 import React, { Component, } from 'react';
 import { connect } from 'react-redux';
-import { Field, reduxForm, formValueSelector } from "redux-form";
+import { Field, reduxForm, formValueSelector, clearFields } from "redux-form";
 import { Row, Col, Label, } from 'reactstrap';
 import { required, getVendorCode, positiveAndDecimalNumber, acceptAllExceptSingleSpecialCharacter, maxLength512, checkForNull, checkForDecimalAndNull, decimalLengthsix, maxLength70, maxLength15, number } from "../../../helper/validation";
 import { renderText, searchableSelect, renderMultiSelectField, renderTextAreaField, renderDatePicker, renderTextInputField } from "../../layout/FormInputs";
@@ -40,7 +40,7 @@ import TooltipCustom from '../../common/Tooltip';
 import { labelWithUOMAndCurrency } from '../../../helper';
 import { getClientSelectList, } from '../actions/Client';
 import { reactLocalStorage } from 'reactjs-localstorage';
-import { autoCompleteDropdown } from '../../common/CommonFunctions';
+import { autoCompleteDropdown, costingTypeIdToApprovalTypeIdFunction } from '../../common/CommonFunctions';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { checkFinalUser } from '../../../components/costing/actions/Costing'
 import { getUsersMasterLevelAPI } from '../../../actions/auth/AuthActions';
@@ -123,7 +123,8 @@ class AddRMImport extends Component {
       showForgingMachiningScrapCost: false,
       showExtraCost: false,
       vendorFilterList: [],
-      isCallCalculation: false
+      isCallCalculation: false,
+      isDropDownChanged: false,
     }
   }
 
@@ -195,7 +196,7 @@ class AddRMImport extends Component {
         UserId: loggedInUserId(),
         TechnologyId: RM_MASTER_ID,
         Mode: 'master',
-        approvalTypeId: this.state.costingTypeId,
+        approvalTypeId: costingTypeIdToApprovalTypeIdFunction(this.state.costingTypeId),
       }
 
       this.setState({ finalApprovalLoader: true })
@@ -234,7 +235,7 @@ class AddRMImport extends Component {
   */
   handleRMChange = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
-      this.setState({ RawMaterial: newValue, RMGrade: [], }, () => {
+      this.setState({ RawMaterial: newValue, RMGrade: [], isDropDownChanged: true }, () => {
         const { RawMaterial } = this.state;
         this.props.getRMGradeSelectListByRawMaterial(RawMaterial.value, res => { })
       });
@@ -281,7 +282,7 @@ class AddRMImport extends Component {
   * @description  used to handle category selection
   */
   handleCategoryChange = (newValue, actionMeta) => {
-    this.setState({ Category: newValue })
+    this.setState({ Category: newValue, isDropDownChanged: true })
   }
 
   /**
@@ -296,7 +297,7 @@ class AddRMImport extends Component {
     } else {
       this.setState({ Technology: newValue, showForgingMachiningScrapCost: false, showExtraCost: false, nameDrawer: true })
     }
-    this.setState({ RawMaterial: [], nameDrawer: false })
+    this.setState({ RawMaterial: [], nameDrawer: false, isDropDownChanged: true })
   }
   /**
 * @method handleClient
@@ -304,7 +305,7 @@ class AddRMImport extends Component {
 */
   handleClient = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
-      this.setState({ client: newValue });
+      this.setState({ client: newValue, isDropDownChanged: true });
     } else {
       this.setState({ client: [] })
     }
@@ -324,7 +325,7 @@ class AddRMImport extends Component {
   */
   handleSourceSupplierPlant = (e) => {
     this.setState({ selectedPlants: e })
-    this.setState({ DropdownChanged: false })
+    this.setState({ DropdownChanged: false, isDropDownChanged: true })
   }
 
   /**
@@ -333,7 +334,7 @@ class AddRMImport extends Component {
   */
   handleVendorName = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
-      this.setState({ vendorName: newValue, isVendorNameNotSelected: false, vendorLocation: [] }, () => {
+      this.setState({ vendorName: newValue, isVendorNameNotSelected: false, vendorLocation: [], isDropDownChanged: true }, () => {
         const { vendorName } = this.state;
         const result = vendorName && vendorName.label ? getVendorCode(vendorName.label) : '';
         this.setState({ VendorCode: result })
@@ -583,6 +584,28 @@ class AddRMImport extends Component {
      * @description Used for Vendor checked
      */
   onPressVendor = (costingHeadFlag) => {
+    const fieldsToClear = ['TechnologyId',
+      'RawMaterialId',
+      'RawMaterialGradeId',
+      'RawMaterialSpecificationId',
+      'CategoryId',
+      'Code',
+      'Currency',
+      'SourceSupplierPlantId',
+      'DestinationPlant',
+      "UnitOfMeasurementId",
+      "cutOffPrice",
+      "BasicRate",
+      "ScrapRate",
+      "ForgingScrap",
+      "MachiningScrap",
+      "CircleScrapCost",
+      "JaliScrapCost",
+      "EffectiveDate",
+      "clientName"];
+    fieldsToClear.forEach(fieldName => {
+      this.props.dispatch(clearFields('AddRMImport', false, false, fieldName));
+    });
     this.setState({
       costingTypeId: costingHeadFlag,
       vendorName: [],
@@ -882,7 +905,11 @@ class AddRMImport extends Component {
     this.clearForm(type)
   }
   cancelHandler = () => {
-    this.setState({ showPopup: true })
+    if (Object.keys(this.props.fieldsObj).length !== 0 || this.state.isDropDownChanged || this.state.files.length !== 0) {
+      this.setState({ showPopup: true })
+    } else {
+      this.cancel('submit')
+    }
   }
   onPopupConfirm = () => {
     this.cancel('submit')
@@ -2134,7 +2161,7 @@ class AddRMImport extends Component {
 */
 function mapStateToProps(state) {
   const { comman, material, auth, costing, client } = state;
-  const fieldsObj = selector(state, 'BasicRate', 'FreightCharge', 'ShearingCost', 'ScrapRate', 'CircleScrapCost', 'JaliScrapCost', 'ForgingScrap', 'MachiningScrap');
+  const fieldsObj = selector(state, 'BasicRate', 'FreightCharge', 'ShearingCost', 'ScrapRate', 'CircleScrapCost', 'JaliScrapCost', 'ForgingScrap', 'MachiningScrap', 'EffectiveDate', 'Remark');
 
   const { uniOfMeasurementList, rowMaterialList, rmGradeList, rmSpecification, plantList,
     supplierSelectList, filterPlantList, filterCityListBySupplier, cityList, technologyList,

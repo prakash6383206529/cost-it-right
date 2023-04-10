@@ -65,6 +65,8 @@ function RunSimulationDrawer(props) {
     const [disableAdditionalPackaging, setDisableAdditionalPackaging] = useState(false)
     const [showPopup, setShowPopup] = useState(false)
     const [isProvisionalAccessibility, setIsProvisionalAccessibility] = useState(false)
+    const [isCostingCondition, setIsCostingCondition] = useState(false)
+    const [isCostingNPV, setIsCostingNPV] = useState(false)
     const selectedMasterForSimulation = useSelector(state => state.simulation.selectedMasterForSimulation)
     const selectedTechnologyForSimulation = useSelector(state => state.simulation.selectedTechnologyForSimulation)
 
@@ -196,6 +198,18 @@ function RunSimulationDrawer(props) {
         }
     }
 
+    const applyCondition = (e) => {
+        if (e) {
+            setIsCostingCondition(!isCostingCondition)
+        }
+    }
+
+    const applyNPV = (e) => {
+        if (e) {
+            setIsCostingNPV(!isCostingNPV)
+
+        }
+    }
 
     const handleAdditional = (value) => {
         if (value === 'Tool') {
@@ -288,6 +302,8 @@ function RunSimulationDrawer(props) {
         obj.IsAdditionalFreight = additionalFreight
         obj.AdditionalFreightValue = toggleSwitchAdditionalFreight ? getValues("FreightPercent") : getValues("Freight")
         obj.IsApplyLatestExchangeRate = LatestExchangeRate
+        obj.IsCostingCondition = isCostingCondition
+        obj.IsCostingNPV = isCostingNPV
 
         // obj.IsProvisional = provisionalCheck
         // obj.LinkingTokenNumber = linkingTokenNumber != '' ? linkingTokenNumber : tokenNo
@@ -1081,6 +1097,53 @@ function RunSimulationDrawer(props) {
                                                                 className=" before-box"
                                                                 // checked={IsAvailable(el.Value)}
                                                                 onChange={() => Provision(`Provisional`)}
+                                                            />
+                                                        </label>
+                                                    </div>
+                                                </Row>
+                                            )
+                                            }
+
+
+                                            {(
+                                                <Row>
+                                                    <div className="input-group col-md-12 mb-3 px-0 m-height-auto">
+                                                        <label
+                                                            className="custom-checkbox mb-0"
+                                                            onChange={() => applyCondition(`Condition`)}
+                                                        >
+                                                            Apply Condition
+                                                            <input
+                                                                type="checkbox"
+                                                            // disabled={true}
+                                                            />
+                                                            <span
+                                                                className=" before-box"
+                                                                // checked={IsAvailable(el.Value)}
+                                                                onChange={() => applyCondition(`Condition`)}
+                                                            />
+                                                        </label>
+                                                    </div>
+                                                </Row>
+                                            )
+                                            }
+
+                                            {(
+                                                <Row>
+                                                    <div className="input-group col-md-12 mb-3 px-0 m-height-auto">
+                                                        <label
+                                                            className="custom-checkbox mb-0"
+                                                            onChange={() => applyNPV(`NPV`)}
+                                                        >
+                                                            Apply NPV
+                                                            <input
+                                                                type="checkbox"
+                                                            // disabled={true}
+                                                            />
+                                                            <span
+                                                                className=" before-box"
+                                                                // checked={IsAvailable(el.Value)}
+                                                                onChange={() => applyNPV(`NPV`)}
                                                             />
                                                         </label>
                                                     </div>
