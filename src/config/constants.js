@@ -18,12 +18,12 @@ export const config = () => {
 
 
 // DEVELOPMENT
-const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
+// const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
 // const BASE_URL = `http://10.10.8.160/api/v1`;
 // const BASE_URL = `http://10.10.0.43/RohitCIR/api/v1`;
 // const BASE_URL = `https://demov3api.costitright.com/api/v1`;
 // const BASE_URL = `http://10.10.8.117/CIR/api/v1`;
-// const BASE_URL = `http://10.10.1.100:1002/api/v1`;
+const BASE_URL = `http://10.10.1.100:1002/api/v1`;
 // const BASE_URL = `https://upsapi.costitright.com/api/v1`; 
 //FILE URL
 export const FILE_URL = `${process.env.REACT_APP_FILE_URL}`;
@@ -388,7 +388,7 @@ export const API = {
   getVendorListByOperation: `${BASE_URL}/masters-operation/get-operation-vendor-by-operation-select-list`,
   getTechnologyListByVendor: `${BASE_URL}/masters-operation/get-operation-technology-by-vendor-select-list`,
   getOperationListByVendor: `${BASE_URL}/masters-operation/get-operation-by-vendor-select-list`,
-
+  getOperationPartSelectList: `${BASE_URL}/masters-operation/get-operation-code-select-list`,
 
   //OPERATION APPROVAL API'S
 
@@ -991,6 +991,9 @@ export const API = {
   getAllNfrList: `${BASE_URL}/reports/get-all-nfr-list`,
   getNfrPartDetails: `${BASE_URL}/reports/get-nfr-part-details`,
   getRMCostMovement: `${BASE_URL}/reports/get-raw-material-cost-movement`,
+  getBOPCostMovement: `${BASE_URL}/reports/get-bought-out-part-cost-movement`,
+  getOperationMovement: `${BASE_URL}/reports/get-operation-cost-movement`,
+  getMachineProcessMovement: `${BASE_URL}/reports/get-machine-process-cost-movement`,
 
   //SUB ASSEMBLY
   getSubAssemblyAPI: `${BASE_URL}/sub-assembly/get-sub-assembly`,
@@ -1297,6 +1300,7 @@ export const GET_INITIAL_VENDOR_WITH_VENDOR_CODE_SELECTLIST = 'GET_INITIAL_VENDO
 export const GET_INITIAL_TECHNOLOGY_SELECTLIST = 'GET_INITIAL_TECHNOLOGY_SELECTLIST'
 export const GET_OPERATION_APPROVAL_LIST = 'GET_OPERATION_APPROVAL_LIST'
 export const SET_OPERATION_DATA = 'SET_OPERATION_DATA'
+export const GET_OPERATION_SELECTLIST = 'GET_OPERATION_SELECTLIST'
 
 
 //FREIGHT MASTER

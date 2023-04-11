@@ -8926,13 +8926,16 @@ table.group-process-table {
 }
 
 @for $i from 1 through 1000 {
-  [row-id~="#{($i * 5) - 1}"] {
+  .rfq-grid {
+    [row-id~="#{($i * 5) - 1}"] {
 
-    [col-id="PartNumber"],
-    [aria-colindex="5"] {
-      border-bottom: 1px solid $agGridBorder !important;
+      [col-id="PartNumber"],
+      [aria-colindex="5"] {
+        border-bottom: 1px solid $agGridBorder !important;
+      }
     }
   }
+
 }
 
 .right-tooltip {

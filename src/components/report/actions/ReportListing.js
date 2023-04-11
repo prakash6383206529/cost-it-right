@@ -342,3 +342,46 @@ export function getRMCostMovement(data, callback) {
     };
 
 }
+export function getBOPCostMovement(data, callback) {
+
+    return (dispatch) => {
+        const request = axios.post(`${API.getBOPCostMovement}`, data, config());
+        request.then((response) => {
+            callback(response);
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE, });
+            callback(error);
+            //apiErrors(error);
+        });
+
+    };
+
+}
+export function getOperationMovement(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(`${API.getOperationMovement}`, data, config());
+        request.then((response) => {
+            callback(response);
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE, });
+            callback(error);
+            //apiErrors(error);
+        });
+
+    };
+
+}
+export function getMachineProcessMovement(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(`${API.getMachineProcessMovement}`, data, config());
+        request.then((response) => {
+            callback(response);
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE, });
+            callback(error);
+            //apiErrors(error);
+        });
+
+    };
+
+}

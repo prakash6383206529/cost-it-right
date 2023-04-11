@@ -22,6 +22,7 @@ import {
     GET_ALL_OPERATION_COMBINED_DATA_LIST,
     GET_OPERATION_APPROVAL_LIST,
     SET_OPERATION_DATA,
+    GET_OPERATION_SELECTLIST,
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
 import { MESSAGES } from '../../../config/message';
@@ -734,5 +735,25 @@ export function setOperationList(data) {
             type: SET_OPERATION_DATA,
             payload: data
         })
+    };
+}
+
+export function getOperationPartSelectList(callback) {
+    return (dispatch) => {
+        const request = axios.get(`${API.getOperationPartSelectList}`, config());
+        request.then((response) => {
+            console.log('response: ', response);
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_OPERATION_SELECTLIST,
+                    payload: response.data.SelectList,
+                });
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE, });
+            callback(error);
+            apiErrors(error);
+        });
     };
 }
