@@ -87,7 +87,7 @@ if (Detail && Object.keys(Detail).length > 0) {
 
     let queryParams = `refresh_token=${reqParams.refresh_token}&ClientId=${reqParams.ClientId}&grant_type=${reqParams.grant_type}`;
 
-    axios.post(API.tokenAPI, queryParams, CustomHeader)
+    axios.post(API.login, queryParams, CustomHeader)
       .then((response) => {
         if (response && response.status === 200) {
           let userDetail = formatLoginResult(response.data);
