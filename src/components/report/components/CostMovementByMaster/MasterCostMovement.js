@@ -12,13 +12,15 @@ import { loggedInUserId } from '../../../../helper';
 import { autoCompleteDropdown } from '../../../common/CommonFunctions';
 import DayTime from '../../../common/DayTimeWrapper';
 import { getCostingSpecificTechnology } from '../../../costing/actions/Costing';
-import { AsyncSearchableSelectHookForm, DatePickerHookForm, SearchableSelectHookForm } from '../../../layout/HookFormInputs';
+import { AsyncSearchableSelectHookForm, DatePickerHookForm, SearchableSelectHookForm, TextFieldHookForm } from '../../../layout/HookFormInputs';
 import { getBOPCategorySelectList } from '../../../masters/actions/BoughtOutParts';
 import { getClientSelectList } from '../../../masters/actions/Client';
 import { getRawMaterialNameChild, getRMGradeSelectListByRawMaterial } from '../../../masters/actions/Material';
-import { getBoughtOutPartSelectList } from '../../../masters/actions/Part';
+import { getBoughtOutPartSelectList, getDrawerBOPData } from '../../../masters/actions/Part';
 import { getSelectListOfMasters } from '../../../simulation/actions/Simulation';
 import CostMovementByMasterReportListing from './CostMovementByMasterReportListing';
+import { getOperationPartSelectList } from '../../../masters/actions/OtherOperation';
+import { getProcessesSelectList } from '../../../masters/actions/MachineMaster';
 
 function MasterCostMovement() {
     const [fromDate, setFromDate] = useState('')
@@ -31,12 +33,16 @@ function MasterCostMovement() {
     const [showCustomer, setShowCustomer] = useState(false)
     const [rawMaterial, setRawMaterial] = useState('');
     const [reportListing, setReportListing] = useState(false)
+    const [isSurfaceTrue, setIsSurfaceTrue] = useState(false)
     const [plant, setPlant] = useState('')
     const [RMGrade, setRMGrade] = useState('')
     const [RMSpec, setRMSpec] = useState('')
     const [category, setCategory] = useState('')
     const [vendor, setVendor] = useState('')
     const [formData, setFormData] = useState({})
+    const [BOPData, setBOPData] = useState([])
+    const [operationData, setOperationData] = useState([])
+    const [processData, setProcessData] = useState([])
     const masterList = useSelector(state => state.simulation.masterSelectList)
     const rawMaterialNameSelectList = useSelector(state => state.material.rawMaterialNameSelectList);
     const gradeSelectList = useSelector(state => state.material.gradeSelectList);
@@ -48,6 +54,9 @@ function MasterCostMovement() {
     const bopCategorySelectList = useSelector(state => state.boughtOutparts.bopCategorySelectList)
     const approvalTypeSelectList = useSelector(state => state.comman.approvalTypeSelectList)
     const costingSpecifiTechnology = useSelector(state => state.costing.costingSpecifiTechnology)
+    const operationSelectList = useSelector(state => state.otherOperation.operationSelectList)
+    const processSelectList = useSelector(state => state.machine.processSelectList)
+
 
 
 
@@ -106,8 +115,14 @@ function MasterCostMovement() {
                 dispatch(getBOPCategorySelectList(() => { }))
                 break;
             case 6:
+                dispatch(getOperationPartSelectList(() => { }))
+                break;
+            case 7:
+                dispatch(getOperationPartSelectList(() => { }))
+                setIsSurfaceTrue(true)
                 break;
             case 9:
+                dispatch(getProcessesSelectList(() => { }))
                 break;
             default:
                 break;
@@ -208,7 +223,7 @@ function MasterCostMovement() {
             case 5:
                 return (<> <Col md="3">
                     <SearchableSelectHookForm
-                        label={'BOP Name'}
+                        label={'BOP No.'}
                         name={'BOPId'}
                         placeholder={'Select'}
                         Controller={Controller}
@@ -218,32 +233,17 @@ function MasterCostMovement() {
                         defaultValue={""}
                         options={renderListing('BOPName')}
                         mandatory={true}
-                        handleChange={() => { }}
+                        handleChange={handleBOPChange}
                         errors={errors.BOPId}
                     />
                 </Col>
-                    <Col md="3">
-                        <SearchableSelectHookForm
-                            label={'Category'}
-                            name={'CategoryId'}
-                            placeholder={'Select'}
-                            Controller={Controller}
-                            control={control}
-                            rules={{ required: true }}
-                            register={register}
-                            defaultValue={""}
-                            options={renderListing('BOPCategory')}
-                            mandatory={true}
-                            handleChange={() => { }}
-                            errors={errors.BOPId}
-                        />
-                    </Col>
                 </>)
             case 6:
+            case 7:
                 return (<>
                     <Col md="3">
                         <SearchableSelectHookForm
-                            label={'Operation Name'}
+                            label={'Operation Code'}
                             name={'OperationId'}
                             placeholder={'Select'}
                             Controller={Controller}
@@ -251,9 +251,9 @@ function MasterCostMovement() {
                             rules={{ required: true }}
                             register={register}
                             defaultValue={""}
-                            options={renderListing('OperationName')}
+                            options={renderListing('Operation')}
                             mandatory={true}
-                            handleChange={() => { }}
+                            handleChange={(value) => { setOperationData(value) }}
                             errors={errors.OperationId}
                         />
                     </Col>
@@ -262,34 +262,18 @@ function MasterCostMovement() {
                 return (<>
                     <Col md="3">
                         <SearchableSelectHookForm
-                            label={'Machine Name'}
-                            name={'MachineId'}
+                            label={'Process'}
+                            name={'processCode'}
                             placeholder={'Select'}
                             Controller={Controller}
                             control={control}
                             rules={{ required: true }}
                             register={register}
                             defaultValue={""}
-                            options={renderListing('MachineName')}
+                            options={renderListing('process')}
                             mandatory={true}
-                            handleChange={() => { }}
+                            handleChange={(value) => { setProcessData(value) }}
                             errors={errors.MachineId}
-                        />
-                    </Col>
-                    <Col md="3">
-                        <SearchableSelectHookForm
-                            label={'Machine Type'}
-                            name={'MachineTypeId'}
-                            placeholder={'Select'}
-                            Controller={Controller}
-                            control={control}
-                            rules={{ required: true }}
-                            register={register}
-                            defaultValue={""}
-                            options={renderListing('MachineType')}
-                            mandatory={true}
-                            handleChange={() => { }}
-                            errors={errors.MachineTypeId}
                         />
                     </Col>
                 </>)
@@ -312,7 +296,9 @@ function MasterCostMovement() {
         'Customer': clientSelectList,
         'BOPName': boughtOutPartSelectList,
         'BOPCategory': bopCategorySelectList,
-        'RMCode': rmSpecification
+        'RMCode': rmSpecification,
+        'Operation': operationSelectList,
+        'process': processSelectList
 
     }
 
@@ -405,6 +391,20 @@ function MasterCostMovement() {
             setVendor([])
         }
     };
+    const handleBOPChange = (newValue) => {
+        if (newValue && newValue !== '') {
+            dispatch(getDrawerBOPData(newValue.value, (res) => {
+                if (res?.data?.Data) {
+                    setBOPData(res?.data?.Data)
+                    setValue('BOPPartName', res?.data?.Data.BoughtOutPartName ? res?.data?.Data.BoughtOutPartName : '-')
+                    setValue('BOPCategory', res?.data?.Data.Category ? res?.data?.Data.Category : '-')
+                    setValue('BOPSpecification', res?.data?.Data.Specification ? res?.data?.Data.Specification : '-')
+                }
+            }))
+        } else {
+            setBOPData([])
+        }
+    }
 
 
     const vendorFilterList = async (inputValue) => {
@@ -436,7 +436,6 @@ function MasterCostMovement() {
         }
     };
     const runReport = () => {
-
         let fixedData = {
             "FromDate": DayTime(fromDate).format('DD/MM/YYYY'),
             "ToDate": DayTime(toDate).format('DD/MM/YYYY'),
@@ -444,11 +443,13 @@ function MasterCostMovement() {
             "TechnologyId": Number(technology.value),
             "PlantId": plant.value,
             "VendorId": vendor.value,
+            "IsCustomerDataShow": showCustomer,
         }
 
         let masterData = {}
         switch (Number(master)) {
             case Number(1):
+            case Number(2):
                 masterData = {
                     "RawMaterialChildId": rawMaterial.value,
                     "RawMaterialCategoryId": rawMaterial.value,
@@ -457,7 +458,30 @@ function MasterCostMovement() {
                     "CategoryId": Number(category.value),
                 }
                 break;
-
+            case Number(4):
+            case Number(5):
+                masterData = {
+                    "BoughtOutPartCategoryId": Number(BOPData.CategoryId),
+                    "BoughtOutPartChildId": BOPData.BoughtOutPartId,
+                    "BoughtOutPartNumber": BOPData.BoughtOutPartNumber,
+                    "BoughtOutPartName": BOPData.BoughtOutPartName,
+                    "BoughtOutPartCategory": BOPData.Category,
+                    "BoughtOutPartSpec": BOPData.Specification,
+                }
+                break;
+            case Number(6):
+            case Number(7):
+                masterData = {
+                    "IsSurfaceTreatmentOperation": isSurfaceTrue,
+                    "OperationCode": operationData.label,
+                    "OperationChildId": operationData.value,
+                }
+                break;
+            case Number(9):
+                masterData = {
+                    "ProcessId": processData.value,
+                }
+                break
             default:
                 break;
         }

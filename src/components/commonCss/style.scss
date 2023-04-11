@@ -9017,16 +9017,17 @@ table.group-process-table {
 }
 
 @for $i from 1 through 1000 {
-  [row-id~="#{($i * 5) - 1}"] {
-    @for $j from 0 through 11 {
+  .rfq-grid {
+    [row-id~="#{($i * 5) - 1}"] {
 
       [col-id="PartNumber"],
-      [aria-colindex="#{$j}"] {
+      [aria-colindex="5"] {
         border-bottom: 1px solid $agGridBorder !important;
       }
     }
 
   }
+
 }
 
 .right-tooltip {
