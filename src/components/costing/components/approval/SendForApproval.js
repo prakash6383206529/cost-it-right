@@ -957,7 +957,7 @@ const SendForApproval = (props) => {
                             </div>
                           </Col>
 
-                          {data.oldPrice !== 0 && <Col md="4">
+                          {data.oldPrice > 0 && <Col md="4">
                             <div className="form-group">
                               <label>Budgeted Price</label>
                               <label className={data.oldPrice === 0 ? `form-control bg-grey input-form-control` : `form-control bg-grey input-form-control ${data.yearImpact < 0 ? 'green-value' : 'red-value'}`}>
@@ -965,9 +965,9 @@ const SendForApproval = (props) => {
                               </label>
                             </div>
                           </Col>}
-                          {data.oldPrice !== 0 && <Col md="4">
+                          {data.oldPrice > 0 && <Col md="4">
                             <div className="form-group">
-                              <label>Budgeted Price Variance</label>
+                              <label>Impact/Quarter (w.r.t. Budgeted Price)</label>
                               <label className={data.oldPrice === 0 ? `form-control bg-grey input-form-control` : `form-control bg-grey input-form-control ${data.yearImpact < 0 ? 'green-value' : 'red-value'}`}>
                                 {data.BudgetedPriceVariance && data.BudgetedPriceVariance ? checkForDecimalAndNull(data.BudgetedPriceVariance, initialConfiguration.NoOfDecimalForPrice) : 0}
                               </label>
