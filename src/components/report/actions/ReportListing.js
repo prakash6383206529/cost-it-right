@@ -327,3 +327,19 @@ export function getPoamImpactReport(data, callback) {
     };
 
 }
+
+export function getRMCostMovement(data, callback) {
+
+    return (dispatch) => {
+        const request = axios.post(`${API.getRMCostMovement}`, data, config());
+        request.then((response) => {
+            callback(response);
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE, });
+            callback(error);
+            //apiErrors(error);
+        });
+
+    };
+
+}
