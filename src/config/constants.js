@@ -387,7 +387,7 @@ export const API = {
   getVendorListByOperation: `${BASE_URL}/masters-operation/get-operation-vendor-by-operation-select-list`,
   getTechnologyListByVendor: `${BASE_URL}/masters-operation/get-operation-technology-by-vendor-select-list`,
   getOperationListByVendor: `${BASE_URL}/masters-operation/get-operation-by-vendor-select-list`,
-
+  getOperationPartSelectList: `${BASE_URL}/masters-operation/get-operation-code-select-list`,
 
   //OPERATION APPROVAL API'S
 
@@ -1330,6 +1330,7 @@ export const GET_INITIAL_VENDOR_WITH_VENDOR_CODE_SELECTLIST = 'GET_INITIAL_VENDO
 export const GET_INITIAL_TECHNOLOGY_SELECTLIST = 'GET_INITIAL_TECHNOLOGY_SELECTLIST'
 export const GET_OPERATION_APPROVAL_LIST = 'GET_OPERATION_APPROVAL_LIST'
 export const SET_OPERATION_DATA = 'SET_OPERATION_DATA'
+export const GET_OPERATION_SELECTLIST = 'GET_OPERATION_SELECTLIST'
 
 
 //FREIGHT MASTER
