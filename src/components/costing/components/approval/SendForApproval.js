@@ -465,7 +465,9 @@ const SendForApproval = (props) => {
         tempObj.ImpactOfTheYear = data.yearImpact
         tempObj.Remark = getValues("remarks")
         tempObj.IsApproved = true
-
+        tempObj.BasicRate = data.BasicRate
+        tempObj.BudgetedPrice = data.BudgetedPrice
+        tempObj.BudgetedPriceVariance = data.BudgetedPriceVariance
         temp.push(tempObj)
         return null
       })
@@ -584,6 +586,9 @@ const SendForApproval = (props) => {
         tempObj.CustomerId = data.customerId
         tempObj.CustomerName = data.customerName
         tempObj.CustomerCode = data.customerCode
+        tempObj.BasicRate = data.BasicRate
+        tempObj.BudgetedPrice = data.BudgetedPrice
+        tempObj.BudgetedPriceVariance = data.BudgetedPriceVariance
         temp.push(tempObj)
         return null
       })
@@ -773,7 +778,6 @@ const SendForApproval = (props) => {
                 ></div>
               </Col>
             </Row>
-            { }
             {viewApprovalData &&
               viewApprovalData.map((data, index) => {
 
@@ -952,6 +956,23 @@ const SendForApproval = (props) => {
                               </label>
                             </div>
                           </Col>
+
+                          {data.oldPrice !== 0 && <Col md="4">
+                            <div className="form-group">
+                              <label>Budgeted Price</label>
+                              <label className={data.oldPrice === 0 ? `form-control bg-grey input-form-control` : `form-control bg-grey input-form-control ${data.yearImpact < 0 ? 'green-value' : 'red-value'}`}>
+                                {data.BudgetedPrice && data.BudgetedPrice ? checkForDecimalAndNull(data.BudgetedPrice, initialConfiguration.NoOfDecimalForPrice) : 0}
+                              </label>
+                            </div>
+                          </Col>}
+                          {data.oldPrice !== 0 && <Col md="4">
+                            <div className="form-group">
+                              <label>Budgeted Price Variance</label>
+                              <label className={data.oldPrice === 0 ? `form-control bg-grey input-form-control` : `form-control bg-grey input-form-control ${data.yearImpact < 0 ? 'green-value' : 'red-value'}`}>
+                                {data.BudgetedPriceVariance && data.BudgetedPriceVariance ? checkForDecimalAndNull(data.BudgetedPriceVariance, initialConfiguration.NoOfDecimalForPrice) : 0}
+                              </label>
+                            </div>
+                          </Col>}
                         </>}
                       </Row>
                     </div>
