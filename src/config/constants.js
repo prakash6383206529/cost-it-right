@@ -990,6 +990,7 @@ export const API = {
   getPoamImpactReport: `${BASE_URL}/reports/get-poam-impact-report`,
   getAllNfrList: `${BASE_URL}/reports/get-all-nfr-list`,
   getNfrPartDetails: `${BASE_URL}/reports/get-nfr-part-details`,
+  getRMCostMovement: `${BASE_URL}/reports/get-raw-material-cost-movement`,
 
   //SUB ASSEMBLY
   getSubAssemblyAPI: `${BASE_URL}/sub-assembly/get-sub-assembly`,
