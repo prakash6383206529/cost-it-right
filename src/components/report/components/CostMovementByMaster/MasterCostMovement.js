@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { Col, Row } from 'reactstrap';
 import { fetchPlantDataAPI, fetchSpecificationDataAPI, getApprovalTypeSelectList, getPlantSelectListByType, getRawMaterialCategory, getVendorWithVendorCodeSelectList } from '../../../../actions/Common';
-import { searchCount, ZBC } from '../../../../config/constants';
+import { searchCount, VBCTypeId, ZBC } from '../../../../config/constants';
 import { MESSAGES } from '../../../../config/message';
 import { loggedInUserId } from '../../../../helper';
 import { autoCompleteDropdown } from '../../../common/CommonFunctions';
@@ -31,10 +31,12 @@ function MasterCostMovement() {
     const [showCustomer, setShowCustomer] = useState(false)
     const [rawMaterial, setRawMaterial] = useState('');
     const [reportListing, setReportListing] = useState(false)
+    const [plant, setPlant] = useState('')
     const [RMGrade, setRMGrade] = useState('')
     const [RMSpec, setRMSpec] = useState('')
     const [category, setCategory] = useState('')
     const [vendor, setVendor] = useState('')
+    const [formData, setFormData] = useState({})
     const masterList = useSelector(state => state.simulation.masterSelectList)
     const rawMaterialNameSelectList = useSelector(state => state.material.rawMaterialNameSelectList);
     const gradeSelectList = useSelector(state => state.material.gradeSelectList);
@@ -86,6 +88,8 @@ function MasterCostMovement() {
         setValue('MachineId', '')
         setValue('MachineTypeId', '')
     }
+
+
     const handleMasterChange = (event) => {
         setMaster(event.value);
         resetFields()
@@ -164,6 +168,22 @@ function MasterCostMovement() {
                             mandatory={true}
                             handleChange={() => { }}
                             errors={errors.RawMaterialSpecificationId}
+                        />
+                    </Col>
+                    <Col md="3">
+                        <SearchableSelectHookForm
+                            label={'Code'}
+                            name={'RMcode'}
+                            placeholder={'Select'}
+                            Controller={Controller}
+                            control={control}
+                            rules={{ required: true }}
+                            register={register}
+                            // defaultValue={RMcode}
+                            options={renderListing('RMCode')}
+                            mandatory={true}
+                            handleChange={handleRMChange}
+                            errors={errors.RMcode}
                         />
                     </Col>
                     <Col md="3">
@@ -292,6 +312,7 @@ function MasterCostMovement() {
         'Customer': clientSelectList,
         'BOPName': boughtOutPartSelectList,
         'BOPCategory': bopCategorySelectList,
+        'RMCode': rmSpecification
 
     }
 
@@ -304,12 +325,18 @@ function MasterCostMovement() {
             list.forEach((item) => {
                 if (item.Value !== '0') {
                     if (label === 'specification') {
-                        temp.push({ label: item.Text, value: item.Value, RawMaterialCode: item.RawMaterialCode });
+                        temp.push({ label: item.Text, value: item.Value });
                     } else if (label === 'plant') {
                         if (item.PlantId !== '0') {
                             temp.push({ label: item.PlantNameCode, value: item.PlantId });
                         }
-                    } else {
+                    } else if (label === 'RMCode') {
+                        if (item.RMcode !== '0') {
+                            temp.push({ label: item.RawMaterialCode, value: item.Value });
+                        }
+
+                    }
+                    else {
                         temp.push({ label: item.Text, value: item.Value });
                     }
                 }
@@ -319,7 +346,7 @@ function MasterCostMovement() {
     }
 
     const handleCostingHeadTypeChange = (newValue) => {
-
+        setCostingHeadType(newValue)
         if (newValue.value === '3') {
             setShowCustomer(true)
             dispatch(getClientSelectList((res) => { }))
@@ -332,7 +359,7 @@ function MasterCostMovement() {
     const handleRMChange = (newValue) => {
         if (newValue && newValue !== '') {
             setRawMaterial(newValue);
-            setRMGrade([])
+            setRMGrade(newValue)
             dispatch(getRMGradeSelectListByRawMaterial(
                 newValue.value,
                 (res) => { },
@@ -384,7 +411,7 @@ function MasterCostMovement() {
         const resultInput = inputValue.slice(0, searchCount)
         if (inputValue?.length >= searchCount && vendor !== resultInput) {
             let res
-            res = await getVendorWithVendorCodeSelectList(resultInput)
+            res = await getVendorWithVendorCodeSelectList(VBCTypeId, resultInput)
             setVendor(resultInput)
             let vendorDataAPI = res?.data?.SelectList
             if (inputValue) {
@@ -406,20 +433,38 @@ function MasterCostMovement() {
         }
     };
     const runReport = () => {
-        setReportListing(true)
-        let data = {
-            "FromDate": fromDate,
-            "ToDate": toDate,
-            "CostingHeadType": costingHeadType.value,
-            // "CostingHeadId": costingHeadType.value === '3' ? customer.value : costingHeadType.value === '2' ? vendor.value : costingHeadType.value === '1' ? vendor.value : '',
-            "RawMaterialId": rawMaterial.value,
-            "GradeId": RMGrade.value,
-            "SpecificationId": RMSpec.value,
-            "CategoryId": category.value,
-            "TechnologyId": technology.value,
-        }
-    }
 
+        let fixedData = {
+            "FromDate": DayTime(fromDate).format('DD/MM/YYYY'),
+            "ToDate": DayTime(toDate).format('DD/MM/YYYY'),
+            "CostingHeadId": Number(costingHeadType.value),
+            "TechnologyId": Number(technology.value),
+            "PlantId": plant.value,
+            "VendorId": vendor.value,
+        }
+
+        let masterData = {}
+        switch (Number(master)) {
+            case Number(1):
+                masterData = {
+                    "RawMaterialChildId": rawMaterial.value,
+                    "RawMaterialCategoryId": rawMaterial.value,
+                    "RawMaterialGradeId": RMGrade.value,
+                    "RawMaterialSpecsId": RMSpec.value,
+                    "CategoryId": Number(category.value),
+                }
+                break;
+
+            default:
+                break;
+        }
+        let finalObj = {
+            ...fixedData,
+            ...masterData
+        }
+        setFormData(finalObj)
+        setReportListing(true)
+    }
 
     const viewListingHandler = (value) => {
         setReportListing(value)
@@ -534,7 +579,7 @@ function MasterCostMovement() {
                                 defaultValue={technology}
                                 options={renderListing('technology')}
                                 mandatory={true}
-                                handleChange={() => { }}
+                                handleChange={(e) => { setTechnology(e) }}
                                 errors={errors.TechnologyId}
                             />
                         </Col>
@@ -589,8 +634,7 @@ function MasterCostMovement() {
                                 // defaultValue={vendor.length !== 0 ? vendor : ""}
                                 options={renderListing("plant")}
                                 mandatory={true}
-                                // handleChange={handleVendorChange}
-                                handleChange={() => { }}
+                                handleChange={(e) => { setPlant(e) }}
                                 errors={errors.plant}
                             // isLoading={VendorLoaderObj}
                             // disabled={dataProps?.isAddFlag ? false : (dataProps?.isViewFlag || !isEditAll)}
@@ -606,7 +650,7 @@ function MasterCostMovement() {
                     </div>
                 </Row>
             </form>}
-        {reportListing && <CostMovementByMasterReportListing viewList={viewListingHandler} masterData={master} />}
+        {reportListing && <CostMovementByMasterReportListing viewList={viewListingHandler} masterData={master} formData={formData} />}
     </Fragment>;
 }
 export default MasterCostMovement;
