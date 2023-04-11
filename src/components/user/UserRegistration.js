@@ -1411,6 +1411,7 @@ function UserRegistration(props) {
 
     if (isEditFlag) {
       let updatedData = {
+        IsForcefulUpdated: true,
         UserId: UserId,
         FullName: `${values.FirstName ? values.FirstName.trim() : ''} ${values.LastName ? values.LastName.trim() : ''}`,
         LevelId: registerUserData?.LevelId,
