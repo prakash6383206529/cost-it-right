@@ -39,7 +39,7 @@ function CostMovementByMasterReportListing(props) {
             let seprateData = grouped_data[x]
 
             // Adds a new property to show the category name in the middle row
-            seprateData[Math.round(seprateData.length / 2) - 1].CategoryShow = x;
+            seprateData[seprateData.length >= 10 ? 5 : Math.round(seprateData.length / 2) - 1].CategoryShow = x;
 
             // Adds a new property to mark the last row
             seprateData[seprateData.length - 1].LastRow = true;
@@ -67,7 +67,15 @@ function CostMovementByMasterReportListing(props) {
             if (item.field === masterCategory) {
                 item.field = 'CategoryShow';
                 item.cellClass = cellClass;
+            } else {
+                item.cellRenderer = dashFormatter
             }
+
+            // if (typeof item.field === 'string' && !isNaN(Date.parse(item.field))) {
+
+            // } else {
+
+            // }
             newTemp.push(item)
             return null
         })
@@ -103,6 +111,7 @@ function CostMovementByMasterReportListing(props) {
                     }
                     else {
                         setIsData(false)
+                        setIsLoader(false)
                     }
                 }))
                 break;
@@ -146,6 +155,11 @@ function CostMovementByMasterReportListing(props) {
     // Defines a function that returns a string of class names for the table cell based on the row data properties
     const cellClass = (props) => {
         return `${props?.data?.LastRow ? `border-color` : ''} ${props?.data?.RowMargin} colorWhite`
+    }
+
+    const dashFormatter = (props) => {
+        const cellValue = props?.value;
+        return cellValue ? cellValue : '-';
     }
 
     const gridOptions = {};

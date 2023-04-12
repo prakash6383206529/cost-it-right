@@ -38,11 +38,13 @@ function MasterCostMovement() {
     const [RMGrade, setRMGrade] = useState('')
     const [RMSpec, setRMSpec] = useState('')
     const [category, setCategory] = useState('')
+    const [BOPCategory, setBOPCategory] = useState('')
     const [vendor, setVendor] = useState('')
     const [formData, setFormData] = useState({})
     const [BOPData, setBOPData] = useState([])
     const [operationData, setOperationData] = useState([])
     const [processData, setProcessData] = useState([])
+    const [disabledButton, setDisabledButton] = useState(true)
     const masterList = useSelector(state => state.simulation.masterSelectList)
     const rawMaterialNameSelectList = useSelector(state => state.material.rawMaterialNameSelectList);
     const gradeSelectList = useSelector(state => state.material.gradeSelectList);
@@ -101,6 +103,7 @@ function MasterCostMovement() {
 
     const handleMasterChange = (event) => {
         setMaster(event.value);
+        setDisabledButton(false)
         resetFields()
         switch (Number(event.value)) {
             case 2:
@@ -237,6 +240,22 @@ function MasterCostMovement() {
                         errors={errors.BOPId}
                     />
                 </Col>
+                    <Col md="3">
+                        <SearchableSelectHookForm
+                            label={'Category'}
+                            name={'BOPCategoryId'}
+                            placeholder={'Select'}
+                            Controller={Controller}
+                            control={control}
+                            rules={{ required: true }}
+                            register={register}
+                            defaultValue={BOPCategory}
+                            options={renderListing('BOPCategory')}
+                            mandatory={true}
+                            handleChange={(value) => setBOPCategory(value)}
+                            errors={errors.BOPCategoryId}
+                        />
+                    </Col>
                 </>)
             case 6:
             case 7:
@@ -322,6 +341,23 @@ function MasterCostMovement() {
                         }
 
                     }
+                    else if (label === 'masters') {
+
+                        if (item.Value === '3' || item.Value === '8' || item.Value === '10') {
+                            return false;
+                        }
+                        else {
+                            temp.push({ label: item.Text, value: item.Value });
+                        }
+                    }
+                    else if (label === 'process') {
+                        if (item.Value === '5' || item.Value === '8') {
+                            return false
+                        }
+                        else {
+                            temp.push({ label: item.Text, value: item.Value });
+                        }
+                    }
                     else {
                         temp.push({ label: item.Text, value: item.Value });
                     }
@@ -396,9 +432,7 @@ function MasterCostMovement() {
             dispatch(getDrawerBOPData(newValue.value, (res) => {
                 if (res?.data?.Data) {
                     setBOPData(res?.data?.Data)
-                    setValue('BOPPartName', res?.data?.Data.BoughtOutPartName ? res?.data?.Data.BoughtOutPartName : '-')
-                    setValue('BOPCategory', res?.data?.Data.Category ? res?.data?.Data.Category : '-')
-                    setValue('BOPSpecification', res?.data?.Data.Specification ? res?.data?.Data.Specification : '-')
+
                 }
             }))
         } else {
@@ -452,16 +486,15 @@ function MasterCostMovement() {
             case Number(2):
                 masterData = {
                     "RawMaterialChildId": rawMaterial.value,
-                    "RawMaterialCategoryId": rawMaterial.value,
+                    "RawMaterialCategoryId": Number(category.value),
                     "RawMaterialGradeId": RMGrade.value,
                     "RawMaterialSpecsId": RMSpec.value,
-                    "CategoryId": Number(category.value),
                 }
                 break;
             case Number(4):
             case Number(5):
                 masterData = {
-                    "BoughtOutPartCategoryId": Number(BOPData.CategoryId),
+                    "BoughtOutPartCategoryId": Number(BOPCategory.value),
                     "BoughtOutPartChildId": BOPData.BoughtOutPartId,
                     "BoughtOutPartNumber": BOPData.BoughtOutPartNumber,
                     "BoughtOutPartName": BOPData.BoughtOutPartName,
@@ -571,7 +604,7 @@ function MasterCostMovement() {
                                 mandatory={true}
                                 handleChange={handleMasterChange}
                                 errors={errors.Masters}
-                                disabled={fromDate === '' ? true : false}
+                                disabled={(fromDate && toDate) === '' ? true : false}
                             />
 
                         </Col>
@@ -670,7 +703,7 @@ function MasterCostMovement() {
                 <Row className="sf-btn-footer no-gutters justify-content-between">
                     <div className="col-sm-12 text-right bluefooter-butn mt-3">
                         <div className="d-flex justify-content-end bd-highlight w100 align-items-center">
-                            <button type="button" className={"user-btn mr5 save-btn"} onClick={runReport}> <div className={"Run-icon"}></div>RUN REPORT</button>
+                            <button type="button" className={"user-btn mr5 save-btn"} disabled={disabledButton} onClick={runReport}> <div className={"Run-icon"}></div>RUN REPORT</button>
                         </div>
                     </div>
                 </Row>
