@@ -23,6 +23,7 @@ import Toaster from '../../../common/Toaster'
 import { ErrorMessage } from '../../../simulation/SimulationUtils'
 import PopupMsgWrapper from '../../../common/PopupMsgWrapper'
 import { reactLocalStorage } from 'reactjs-localstorage'
+import { costingTypeIdToApprovalTypeIdFunction } from '../../../common/CommonFunctions'
 
 function ApprovalSummary(props) {
   const { approvalNumber, approvalProcessId } = props.location.state
@@ -74,7 +75,7 @@ function ApprovalSummary(props) {
 
   useEffect(() => {
 
-    if (Object.keys(approvalData).length > 0 && (approvalDetails.CostingTypeId === VBCTypeId || approvalDetails.CostingTypeId === NCCTypeId)) {
+    if (Object.keys(approvalData).length > 0 && (approvalDetails.CostingTypeId === VBCTypeId)) {
       dispatch(getLastSimulationData(approvalData.VendorId, approvalData.EffectiveDate, res => {
         const structureOfData = {
           ExchangeRateImpactedMasterDataList: [],
@@ -178,7 +179,7 @@ function ApprovalSummary(props) {
         UserId: loggedInUserId(),
         TechnologyId: technologyId,
         Mode: 'costing',
-        approvalTypeId: CostingTypeId
+        approvalTypeId: costingTypeIdToApprovalTypeIdFunction(CostingTypeId)
       }
       dispatch(checkFinalUser(obj, res => {
         if (res && res.data && res.data.Result) {
@@ -402,7 +403,7 @@ function ApprovalSummary(props) {
                 <Table responsive className="table cr-brdr-main" size="sm">
                   <thead>
                     <tr>
-                      <th>{`Costing ID:`}</th>
+                      <th>{`Costing Id:`}</th>
                       {approvalDetails.CostingTypeId === VBCTypeId && (
                         <th>{`ZBC/Vendor (Code):`}</th>
                       )}

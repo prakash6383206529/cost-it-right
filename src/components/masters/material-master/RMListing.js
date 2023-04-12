@@ -158,18 +158,31 @@ class RMListing extends Component {
     * @method indexFormatter
     * @description Renders serial number
     */
-    indexFormatter = (cell, row, enumObject, rowIndex) => {
-        const { table } = this.refs;
-        let currentPage = table && table.state && table.state.currPage ? table.state.currPage : '';
-        let sizePerPage = table && table.state && table.state.sizePerPage ? table.state.sizePerPage : '';
-        let serialNumber = '';
-        if (currentPage === 1) {
-            serialNumber = rowIndex + 1;
-        } else {
-            serialNumber = (rowIndex + 1) + (sizePerPage * (currentPage - 1));
-        }
-        return serialNumber;
-    }
+    // indexFormatter = (cell, row, enumObject, rowIndex) => {
+    //     const { table } = this.refs;
+    //     let currentPage = table && table.state && table.state.currPage ? table.state.currPage : '';
+    //     let sizePerPage = table && table.state && table.state.sizePerPage ? table.state.sizePerPage : '';
+    //     let serialNumber = '';
+    //     if (currentPage === 1) {
+    //         serialNumber = rowIndex + 1;
+    //     } else {
+    //         serialNumber = (rowIndex + 1) + (sizePerPage * (currentPage - 1));
+    //     }
+    //     return serialNumber;
+    // }
+
+    // indexFormatter = (props) => {
+    //     const { table } = this.refs;
+    //     let currentPage = table && table.state && table.state.currPage ? table.state.currPage : '';
+    //     let sizePerPage = table && table.state && table.state.sizePerPage ? table.state.sizePerPage : '';
+    //     let serialNumber = '';
+    //     if (currentPage === 1) {
+    //         serialNumber = rowIndex + 1;
+    //     } else {
+    //         serialNumber = (rowIndex + 1) + (sizePerPage * (currentPage - 1));
+    //     }
+    //     return serialNumber;
+    // }
 
     /**
     * @method renderPaginationShowsTotal

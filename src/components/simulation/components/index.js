@@ -44,7 +44,6 @@ function SimulationTab(props) {
         <>
             <div className="user-page container-fluid">
                 <div>
-                    <h1>Simulation</h1>
                     <Nav tabs className="subtabs mt-0">
                         {(JSON.parse(localStorage.getItem('simulationAddPermission')))?.length !== 0 && <NavItem>
                             <NavLink

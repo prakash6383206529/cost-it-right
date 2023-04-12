@@ -1,16 +1,15 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Field, reduxForm, formValueSelector } from "redux-form";
+import { Field, reduxForm, formValueSelector, clearFields } from "redux-form";
 import { Row, Col, Label, } from 'reactstrap';
 import { required, positiveAndDecimalNumber, maxLength10, decimalLengthsix, maxPercentValue, number, checkWhiteSpaces, percentageLimitValidation, checkPercentageValue, } from "../../../helper/validation";
 import { createExchangeRate, getExchangeRateData, updateExchangeRate, getCurrencySelectList, } from '../actions/ExchangeRateMaster';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import { loggedInUserId, } from "../../../helper/auth";
-import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import DayTime from '../../common/DayTimeWrapper'
-import { renderText, renderTextInputField, searchableSelect, } from "../../layout/FormInputs";
+import { renderDatePicker, renderText, renderTextInputField, searchableSelect, } from "../../layout/FormInputs";
 import LoaderCustom from '../../common/LoaderCustom';
 import { debounce } from 'lodash';
 import { onFocus } from '../../../helper';
@@ -45,7 +44,8 @@ class AddExchangeRate extends Component {
       costingTypeId: ZBCTypeId,
       customer: [],
       vendorName: [],
-      vendorFilterList: []
+      vendorFilterList: [],
+      budgeting: false
     }
   }
 
@@ -74,6 +74,16 @@ class AddExchangeRate extends Component {
    * @description Used for Vendor checked
    */
   onPressVendor = (costingHeadFlag) => {
+    const fieldsToClear = [
+      'Currency',
+      'EffectiveDate',
+      'vendorName',
+      'clientName',
+      'CurrencyExchangeRate'
+    ];
+    fieldsToClear.forEach(fieldName => {
+      this.props.dispatch(clearFields('AddExchangeRate', false, false, fieldName));
+    });
     this.setState({
       vendorName: [],
       costingTypeId: costingHeadFlag,
@@ -157,7 +167,7 @@ class AddExchangeRate extends Component {
               costingTypeId: Data.CostingHeadId,
               customer: Data.CustomerName !== undefined ? { label: `${Data.CustomerName} (${Data.CustomerCode})`, value: Data.CustomerId } : [],
               vendorName: Data.VendorName !== undefined ? { label: `${Data.VendorName} (${Data.VendorCode})`, value: Data.VendorIdRef } : [],
-
+              budgeting: Data.IsBudgeting ? Data.IsBudgeting : false
             }, () => this.setState({ isLoader: false }))
           }, 500)
 
@@ -236,7 +246,7 @@ class AddExchangeRate extends Component {
   * @description Used to Submit the form
   */
   onSubmit = debounce((values) => {
-    const { isEditFlag, currency, effectiveDate, ExchangeRateId, DataToChange, DropdownChanged, customer, costingTypeId, vendorName } = this.state;
+    const { isEditFlag, currency, effectiveDate, ExchangeRateId, DataToChange, DropdownChanged, customer, costingTypeId, vendorName, budgeting } = this.state;
 
     /** Update existing detail of exchange master **/
     if (isEditFlag) {
@@ -271,7 +281,8 @@ class AddExchangeRate extends Component {
         IsForcefulUpdated: true,
         CustomerId: customer.value,
         CostingHeadId: costingTypeId,
-        VendorId: vendorName.value
+        VendorId: vendorName.value,
+        IsBudgeting: budgeting
       }
       if (isEditFlag) {
         this.props.updateExchangeRate(updateData, (res) => {
@@ -296,7 +307,8 @@ class AddExchangeRate extends Component {
         LoggedInUserId: loggedInUserId(),
         CustomerId: customer.value,
         CostingHeadId: costingTypeId,
-        VendorId: vendorName.value
+        VendorId: vendorName.value,
+        IsBudgeting: budgeting
       }
 
       this.props.createExchangeRate(formData, (res) => {
@@ -327,6 +339,12 @@ class AddExchangeRate extends Component {
       this.setState({ customer: [] })
     }
   };
+
+
+  onBudgetingChange = () => {
+    this.setState({ budgeting: !this.state.budgeting })
+  }
+
   /**
 * @method handleVendorName
 * @description called
@@ -577,36 +595,44 @@ class AddExchangeRate extends Component {
                         />
                       </Col>
                       <Col md="3">
-                        <div className="form-group">
-                          <label>
-                            Effective Date
-                            <span className="asterisk-required">*</span>
-                          </label>
-                          { }
-
-                          <div className="inputbox date-section">
-                            <DatePicker
-                              name="EffectiveDate"
-                              selected={DayTime(this.state.effectiveDate).isValid() ? new Date(this.state.effectiveDate) : null}
-                              onChange={this.handleEffectiveDateChange}
-                              showMonthDropdown
-                              showYearDropdown
-                              dateFormat="dd/MM/yyyy"
-                              dropdownMode="select"
-                              placeholderText={isViewMode || (!this.state.isFinancialDataChange && isEditFlag) ? '-' : "Select Date"}
-                              className="withBorder"
-                              autoComplete={"off"}
-                              disabledKeyboardNavigation
-                              validate={[required]}
-                              onChangeRaw={(e) => e.preventDefault()}
-                              required
-                              disabled={isViewMode || (!this.state.isFinancialDataChange && isEditFlag)}
-                              onFocus={() => onFocus(this, true)}
-                            />
-                            {this.state.showErrorOnFocusDate && this.state.effectiveDate === '' && <div className='text-help mt-1 p-absolute bottom-7'>This field is required.</div>}
-                          </div>
+                        <div className="inputbox date-section form-group">
+                          <Field
+                            label="Effective Date"
+                            name="EffectiveDate"
+                            selected={DayTime(this.state.effectiveDate).isValid() ? new Date(this.state.effectiveDate) : null}
+                            onChange={this.handleEffectiveDateChange}
+                            type="text"
+                            validate={[required]}
+                            autoComplete={"off"}
+                            required={true}
+                            changeHandler={(e) => {
+                            }}
+                            component={renderDatePicker}
+                            dropdownMode="select"
+                            disabled={isViewMode || (!this.state.isFinancialDataChange && isEditFlag)}
+                            placeholderText={isViewMode || (!this.state.isFinancialDataChange && isEditFlag) ? '-' : "Select Date"}
+                          />
                         </div>
                       </Col>
+
+                      <label
+                        className={`custom-checkbox w-auto mt-4 ml-4 ${costingTypeId === VBCTypeId ? "" : ""
+                          }`}
+                        onChange={this.onBudgetingChange}
+                      >
+                        Budgeting
+                        <input
+                          type="checkbox"
+                          checked={this.state.budgeting}
+                          disabled={isViewMode}
+                        />
+                        <span
+                          className=" before-box p-0"
+                          checked={this.state.budgeting}
+                          onChange={this.onBudgetingChange}
+                        />
+                      </label>
+
                     </Row>
                   </div>
                   <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">

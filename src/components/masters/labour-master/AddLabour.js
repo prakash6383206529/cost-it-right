@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { Field, reduxForm, formValueSelector } from 'redux-form'
+import { Field, reduxForm, formValueSelector, clearFields } from 'redux-form'
 import { Row, Col, Table } from 'reactstrap'
 import { required, checkForNull, positiveAndDecimalNumber, maxLength10, checkForDecimalAndNull, decimalLengthsix, number } from '../../../helper/validation'
 import { focusOnError, renderTextInputField, searchableSelect } from '../../layout/FormInputs'
@@ -206,6 +206,12 @@ class AddLabour extends Component {
    * @description EMPLOYEE TERMS
    */
   onPressEmployeeTerms = () => {
+    const fieldsToClear = [
+      'vendorName', 'state', 'Plant'
+    ];
+    fieldsToClear.forEach(fieldName => {
+      this.props.dispatch(clearFields('AddLabour', false, false, fieldName));
+    });
     this.setState({
       IsEmployeContractual: !this.state.IsEmployeContractual,
     })

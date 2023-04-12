@@ -1,6 +1,6 @@
 import React, { Component, } from 'react';
 import { connect } from 'react-redux';
-import { Field, reduxForm, formValueSelector } from "redux-form";
+import { Field, reduxForm, formValueSelector, clearFields } from "redux-form";
 import { Row, Col, Label } from 'reactstrap';
 import { required, getVendorCode, number, maxPercentValue, checkWhiteSpaces, percentageLimitValidation } from "../../../helper/validation";
 import { searchableSelect, renderTextAreaField, renderDatePicker, renderMultiSelectField, renderText } from "../../layout/FormInputs";
@@ -72,7 +72,6 @@ class AddOverhead extends Component {
       isDataChanged: this.props.data.isEditFlag,
       attachmentLoader: false,
       showErrorOnFocus: false,
-      showErrorOnFocusDate: false,
       showPopup: false,
       showPartCost: false,
       vendorFilterList: []
@@ -99,6 +98,22 @@ class AddOverhead extends Component {
     * @description Used for Vendor checked
     */
   onPressVendor = (costingHeadFlag) => {
+    const fieldsToClear = [
+      'vendorName',
+      'EffectiveDate',
+      'ModelType',
+      'Plant',
+      'DestinationPlant',
+      'clientName',
+      'OverheadApplicability',
+      'OverheadPercentage',
+      'OverheadRMPercentage',
+      'OverheadMachiningCCPercentage',
+      'OverheadBOPPercentage',
+    ];
+    fieldsToClear.forEach(fieldName => {
+      this.props.dispatch(clearFields('AddOverhead', false, false, fieldName));
+    });
     this.setState({
       vendorName: [],
       costingTypeId: costingHeadFlag
@@ -1176,10 +1191,8 @@ class AddOverhead extends Component {
                               className="form-control"
                               disabled={isViewMode || isDataChanged}
                               placeholder={isViewMode || isDataChanged ? '-' : "Select Date"}
-                              onFocus={() => onFocus(this, true)}
                             />
                           </div>
-                          {this.state.showErrorOnFocusDate && this.state.effectiveDate === '' && <div className='text-help mt-1 p-absolute bottom-22'>This field is required.</div>}
                         </Col>
                       </Row>
 

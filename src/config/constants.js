@@ -22,7 +22,7 @@ const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
 // const BASE_URL = `http://10.10.0.43/RohitCIR/api/v1`;
 // const BASE_URL = `https://demov3api.costitright.com/api/v1`;
 // const BASE_URL = `http://10.10.8.117/CIR/api/v1`;
-// const BASE_URL = `http://10.10.1.100:1005/api/v1`;
+// const BASE_URL = `http://10.10.1.100:1002/api/v1`;
 // const BASE_URL = `https://upsapi.costitright.com/api/v1`; 
 //FILE URL
 export const FILE_URL = `${process.env.REACT_APP_FILE_URL}`;
@@ -572,6 +572,11 @@ export const API = {
   checkDataForCopyCosting: `${BASE_URL}/costing/check-data-for-copy-costing`,
   saveAssemblyPartRowCostingCalculation: `${BASE_URL}/costing/save-assembly-part-row-costing-calculation`,
   checkHistoryCostingAndSAPPoPrice: `${BASE_URL}/sap-integration/check-history-costing-and-sap-po-price`,
+  saveCostingDetailNpv: `${BASE_URL}/costing/save-costing-detail-for-npv`,
+  saveCostingDetailCondition: `${BASE_URL}/costing/save-costing-condition-details`,
+  getNpvDetails: `${BASE_URL}/costing/get-costing-detail-for-npv`,
+  getConditionDetails: `${BASE_URL}/costing/get-costing-condition-details`,
+  getCostingCondition: `${BASE_URL}/costing/get-costing-condition-master-data`,
 
   //WEIGHT CALCULATION
   getWeightCalculationInfo: `${BASE_URL}/costing-sheet-metal/get-weight-calculation-info-by-costing`,
@@ -909,6 +914,7 @@ export const API = {
   deleteClient: `${BASE_URL}/client/delete`,
   getClientSelectList: `${BASE_URL}/client/select-list-client`,
   checkAndGetCustomerCode: `${BASE_URL}/client/generate-customer-company-code`,
+  getPoamStatusSelectList: `${BASE_URL}/configuration/select-list-get-poam-status`,
 
   //EXCHANGE RATE MASTER
   createExchangeRate: `${BASE_URL}/masters-exchange-rate/create`,
@@ -1020,6 +1026,11 @@ export const API = {
   getCostingBenchMarkOperationReport: `${BASE_URL}/reports/get-operation-cost-benchmarking-report`,
   getSupplierContributionData: `${BASE_URL}/reports/get-supplier-contribution-report`,
   getCostingBenchMarkMachineReport: `${BASE_URL}/reports/get-process-cost-benchmarking-report`,
+  getSalePurchaseProvisionReport: `${BASE_URL}/reports/get-sale-purchase-provision-report`,
+  getPoamSummaryReport: `${BASE_URL}/reports/get-poam-summary-report`,
+  getPoamImpactReport: `${BASE_URL}/reports/get-poam-impact-report`,
+  getAllNfrList: `${BASE_URL}/reports/get-all-nfr-list`,
+  getNfrPartDetails: `${BASE_URL}/reports/get-nfr-part-details`,
 
   //SUB ASSEMBLY
   getSubAssemblyAPI: `${BASE_URL}/sub-assembly/get-sub-assembly`,
@@ -1039,7 +1050,8 @@ export const API = {
   sendReminderForQuotation: `${BASE_URL}/rfq-quotation/send-reminder-for-quotation`,
   getQuotationDetailsList: `${BASE_URL}/rfq-quotation/get-quotation-details-list`,
   getCommunicationHistory: `${BASE_URL}/rfq-quotation/get-communication-history`,
-  checkExistCosting: `${BASE_URL}/rfq-quotation/rfq-check-exist-costing`
+  checkExistCosting: `${BASE_URL}/rfq-quotation/rfq-check-exist-costing`,
+
 }
 
 //Api constants
@@ -1500,6 +1512,7 @@ export const SET_OVERHEAD_PROFIT_ERRORS = 'SET_OVERHEAD_PROFIT_ERRORS'
 export const SET_TOOLS_ERRORS = 'SET_TOOLS_ERRORS'
 export const SET_DISCOUNT_ERRORS = 'SET_DISCOUNT_ERRORS'
 export const SET_TOOL_COST_FOR_OVERHEAD_PROFIT = 'SET_TOOL_COST_FOR_OVERHEAD_PROFIT'
+export const SET_NPV_DATA = 'SET_NPV_DATA'
 
 //WEIGHT CALCULATION COSTING RM DRAWER
 export const GET_RAW_MATERIAL_CALCI_INFO = 'GET_RAW_MATERIAL_CALCI_INFO'
@@ -1632,6 +1645,7 @@ export const CHECK_REGULARIZATION_LIMIT = 'CHECK_REGULARIZATION_LIMIT'
 export const GET_CLIENT_DATA_SUCCESS = 'GET_CLIENT_DATA_SUCCESS';
 export const GET_CLIENT_SELECTLIST_SUCCESS = 'GET_CLIENT_SELECTLIST_SUCCESS';
 export const GET_CLIENT_DATALIST_SUCCESS = 'GET_CLIENT_DATALIST_SUCCESS';
+export const GET_POAM_STATUS_SELECTLIST = 'GET_POAM_STATUS_SELECTLIST'
 
 //EXCHANGE RATE MASTER
 export const EXCHANGE_RATE_DATALIST = 'EXCHANGE_RATE_DATALIST'
@@ -1693,6 +1707,7 @@ export const GET_ALL_REPORT_LIST = 'GET_ALL_REPORT_LIST'
 export const GET_BENCHMARK_MASTER_LIST = 'GET_BENCHMARK_MASTER_LIST'
 export const GET_COST_RATIO_REPORT = 'GET_COST_RATIO_REPORT'
 export const GET_REPORT_FORM_GRID_DATA = 'GET_REPORT_FORM_GRID_DATA'
+export const GET_DATA_FROM_REPORT = 'GET_DATA_FROM_REPORT'
 
 //RFQ CONSTANTS
 export const GET_QUOTATION_BY_ID = 'GET_QUOTATION_BY_ID'
@@ -1720,6 +1735,7 @@ export const CANCELLED = 'Cancelled'
 export const UNDER_REVISION = 'UnderRevision'
 export const RECEIVED = 'Received'
 export const SUBMITTED = 'Submitted'
+export const SENT = 'Sent'
 
 // MASTER APPROVAL STATUS ID
 export const APPROVED_STATUS = '3,5'
@@ -1858,6 +1874,7 @@ export const SIMULATION_PATH = '/simulation'
 export const SIMULATION_HISTORY_PATH = '/simulation-history'
 export const USER_PATH = '/users'
 export const RFQ_LISTING = '/rfq-listing'
+export const NFR_LISTING = '/nfr-listing'
 
 
 export const EMPTY_GUID = "00000000-0000-0000-0000-000000000000"
@@ -2098,6 +2115,7 @@ export const MACHINE_MASTER_ID = 4
 export const PROVISIONAL = "Provisional"
 export const APPROVER = 'Approver'
 export const NEW_COMPONENT = "New Component"
+export const CUSTOMER_BASED = "Customer Based"
 
 //default value for page size
 export const defaultPageSize = 10;
@@ -2214,6 +2232,21 @@ export const CBCTypeIdFull = Number(reactLocalStorage.getObject('CostingHeadsLis
 export const NCCTypeIdFull = Number(reactLocalStorage.getObject('CostingHeadsListFullForm')[NCC])
 export const ZBCADDMORE = 0
 
+//CONSTANTS FOR APPROVAL TYPE 
+export const CBCAPPROVALTYPEID = Number(reactLocalStorage.getObject('ApprovalTypeListShortForm')[CBC])
+export const NCCAPPROVALTYPEID = Number(reactLocalStorage.getObject('ApprovalTypeListShortForm')[NCC])
+export const VBCAPPROVALTYPEID = Number(reactLocalStorage.getObject('ApprovalTypeListShortForm')[VBC])
+export const ZBCAPPROVALTYPEID = Number(reactLocalStorage.getObject('ApprovalTypeListShortForm')[ZBC])
+export const PROVISIONALAPPROVALTYPEID = Number(reactLocalStorage.getObject('ApprovalTypeListShortForm'))
+
+export const CBCAPPROVALTYPEIDFULL = Number(reactLocalStorage.getObject('ApprovalTypeListFullForm')[CBC])
+export const NCCAPPROVALTYPEIDFULL = Number(reactLocalStorage.getObject('ApprovalTypeListFullForm')[NCC])
+export const VBCAPPROVALTYPEIDFULL = Number(reactLocalStorage.getObject('ApprovalTypeListFullForm')[VBC])
+export const ZBCAPPROVALTYPEIDFULL = Number(reactLocalStorage.getObject('ApprovalTypeListFullForm')[ZBC])
+export const PROVISIONALAPPROVALTYPEIDFULL = Number(reactLocalStorage.getObject('ApprovalTypeListFullForm')[PROVISIONAL])
+
+
+
 // KEY AND IV
 export const KEY = 'ewswymuinfzfskjz';
 export const IV = 'ozzzguugcusjqmbj'
@@ -2222,4 +2255,4 @@ export const KEYRFQ = "UAGSqTBCbZ8JqHJl"
 export const IVRFQ = "8vFNmRQEl91nOtrM"
 
 //VERSION 
-export const VERSION = "V2.1.111.2";
+export const VERSION = "V2.1.132";

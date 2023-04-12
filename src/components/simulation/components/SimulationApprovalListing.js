@@ -25,6 +25,7 @@ import { checkFinalUser } from '../../costing/actions/Costing'
 import SingleDropdownFloationFilter from '../../masters/material-master/SingleDropdownFloationFilter'
 import { agGridStatus, isResetClick, getGridHeight, dashboardTabLock } from '../../../actions/Common'
 import { reactLocalStorage } from 'reactjs-localstorage'
+import { costingTypeIdToApprovalTypeIdFunction } from '../../common/CommonFunctions'
 
 
 const gridOptions = {};
@@ -65,7 +66,7 @@ function SimulationApprovalListing(props) {
     const [floatingFilterData, setFloatingFilterData] = useState({ ApprovalNumber: "", CostingNumber: "", PartNumber: "", PartName: "", VendorName: "", PlantName: "", TechnologyName: "", NetPOPrice: "", OldPOPrice: "", Reason: "", EffectiveDate: "", CreatedBy: "", CreatedOn: "", RequestedBy: "", RequestedOn: "" })
     const [noData, setNoData] = useState(false)
     const statusColumnData = useSelector((state) => state.comman.statusColumnData);
-   
+
     const { handleSubmit } = useForm({
         mode: 'onBlur',
         reValidateMode: 'onChange',
@@ -574,7 +575,7 @@ function SimulationApprovalListing(props) {
             UserId: loggedInUserId(),
             TechnologyId: selectedRowData[0].SimulationTechnologyId,
             Mode: 'simulation',
-            approvalTypeId: selectedRowData[0].SimulationHeadId,
+            approvalTypeId: costingTypeIdToApprovalTypeIdFunction(selectedRowData[0].SimulationHeadId),
         }
         dispatch(setMasterForSimulation({ label: selectedRowData[0].SimulationTechnologyHead, value: selectedRowData[0].SimulationTechnologyId }))
 
@@ -614,7 +615,7 @@ function SimulationApprovalListing(props) {
                     approvalProcessId: approvalData.approvalProcessId,
                     master: approvalData.SimulationTechnologyId,
                     statusForLinkedToken: statusForLinkedToken,
-                    approvalTypeId: approvalData.SimulationHeadId,
+                    approvalTypeId: costingTypeIdToApprovalTypeIdFunction(approvalData.SimulationHeadId),
                     DepartmentId: approvalData.DepartmentId
                 }
 
@@ -747,6 +748,7 @@ function SimulationApprovalListing(props) {
                                     onSelectionChanged={onRowSelect}
                                     isRowSelectable={isRowSelectable}
                                     suppressRowClickSelection={true}
+                                    enableBrowserTooltips={true}
                                 >
 
                                     <AgGridColumn width={120} field="ApprovalNumber" cellRenderer='linkableFormatter' headerName="Token No." cellClass="token-no-grid"></AgGridColumn>
@@ -768,7 +770,7 @@ function SimulationApprovalListing(props) {
                                     <AgGridColumn width={142} field="LastApprovedBy" headerName='Last Approved/Rejected By' cellRenderer='requestedByFormatter'></AgGridColumn>
                                     <AgGridColumn width={145} field="RequestedOn" headerName='Requested On' cellRenderer='requestedOnFormatter' filter="agDateColumnFilter" filterParams={filterParamsSecond}></AgGridColumn>
 
-                                    {!isSmApprovalListing && <AgGridColumn pinned="right" field="DisplayStatus" headerClass="justify-content-center" cellClass="text-center" headerName='Status' cellRenderer='statusFormatter' floatingFilterComponent="statusFilter" floatingFilterComponentParams={floatingFilterStatus}></AgGridColumn>}
+                                    {!isSmApprovalListing && <AgGridColumn pinned="right" field="DisplayStatus" headerClass="justify-content-center" cellClass="text-center" headerName='Status' tooltipField="TooltipText" cellRenderer='statusFormatter' floatingFilterComponent="statusFilter" floatingFilterComponentParams={floatingFilterStatus}></AgGridColumn>}
                                     <AgGridColumn width={115} field="SimulationId" headerName='Actions' type="rightAligned" floatingFilter={false} cellRenderer='buttonFormatter'></AgGridColumn>
 
                                 </AgGridReact >

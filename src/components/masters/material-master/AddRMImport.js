@@ -1,6 +1,6 @@
 import React, { Component, } from 'react';
 import { connect } from 'react-redux';
-import { Field, reduxForm, formValueSelector } from "redux-form";
+import { Field, reduxForm, formValueSelector, clearFields } from "redux-form";
 import { Row, Col, Label, } from 'reactstrap';
 import { required, getVendorCode, positiveAndDecimalNumber, acceptAllExceptSingleSpecialCharacter, maxLength512, checkForNull, checkForDecimalAndNull, decimalLengthsix, maxLength70, maxLength15, number } from "../../../helper/validation";
 import { renderText, searchableSelect, renderMultiSelectField, renderTextAreaField, renderDatePicker, renderTextInputField } from "../../layout/FormInputs";
@@ -40,7 +40,7 @@ import TooltipCustom from '../../common/Tooltip';
 import { labelWithUOMAndCurrency } from '../../../helper';
 import { getClientSelectList, } from '../actions/Client';
 import { reactLocalStorage } from 'reactjs-localstorage';
-import { autoCompleteDropdown } from '../../common/CommonFunctions';
+import { autoCompleteDropdown, costingTypeIdToApprovalTypeIdFunction } from '../../common/CommonFunctions';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { checkFinalUser } from '../../../components/costing/actions/Costing'
 import { getUsersMasterLevelAPI } from '../../../actions/auth/AuthActions';
@@ -121,7 +121,9 @@ class AddRMImport extends Component {
       noApprovalCycle: false,
       showForgingMachiningScrapCost: false,
       showExtraCost: false,
-      vendorFilterList: []
+      vendorFilterList: [],
+      isCallCalculation: false,
+      isDropDownChanged: false,
     }
   }
 
@@ -173,11 +175,12 @@ class AddRMImport extends Component {
       //     this.setState({ finalApprovalLoader: false })
       //   }
       // })
-
       this.props.getUsersMasterLevelAPI(loggedInUserId(), RM_MASTER_ID, (res) => {
-        setTimeout(() => {
-          this.commonFunction()
-        }, 100);
+        if (!(data.isEditFlag || data.isViewFlag)) {
+          setTimeout(() => {
+            this.commonFunction()
+          }, 100);
+        }
       })
     }
   }
@@ -192,7 +195,7 @@ class AddRMImport extends Component {
         UserId: loggedInUserId(),
         TechnologyId: RM_MASTER_ID,
         Mode: 'master',
-        approvalTypeId: this.state.costingTypeId,
+        approvalTypeId: costingTypeIdToApprovalTypeIdFunction(this.state.costingTypeId),
       }
 
       this.setState({ finalApprovalLoader: true })
@@ -210,8 +213,9 @@ class AddRMImport extends Component {
 
   componentDidUpdate(prevProps, prevState) {
     const { initialConfiguration } = this.props
-    if (!this.state.isViewFlag) {
+    if (!this.state.isViewFlag && !this.state.isCallCalculation) {
       if (this.props.fieldsObj !== prevProps.fieldsObj) {
+
         this.handleNetCost()
       }
       if ((prevState?.costingTypeId !== this.state.costingTypeId) && initialConfiguration.IsMasterApprovalAppliedConfigure) {
@@ -230,7 +234,7 @@ class AddRMImport extends Component {
   */
   handleRMChange = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
-      this.setState({ RawMaterial: newValue, RMGrade: [], }, () => {
+      this.setState({ RawMaterial: newValue, RMGrade: [], isDropDownChanged: true }, () => {
         const { RawMaterial } = this.state;
         this.props.getRMGradeSelectListByRawMaterial(RawMaterial.value, res => { })
       });
@@ -277,7 +281,7 @@ class AddRMImport extends Component {
   * @description  used to handle category selection
   */
   handleCategoryChange = (newValue, actionMeta) => {
-    this.setState({ Category: newValue })
+    this.setState({ Category: newValue, isDropDownChanged: true })
   }
 
   /**
@@ -292,7 +296,7 @@ class AddRMImport extends Component {
     } else {
       this.setState({ Technology: newValue, showForgingMachiningScrapCost: false, showExtraCost: false, nameDrawer: true })
     }
-    this.setState({ RawMaterial: [], nameDrawer: false })
+    this.setState({ RawMaterial: [], nameDrawer: false, isDropDownChanged: true })
   }
   /**
 * @method handleClient
@@ -300,7 +304,7 @@ class AddRMImport extends Component {
 */
   handleClient = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
-      this.setState({ client: newValue });
+      this.setState({ client: newValue, isDropDownChanged: true });
     } else {
       this.setState({ client: [] })
     }
@@ -320,7 +324,7 @@ class AddRMImport extends Component {
   */
   handleSourceSupplierPlant = (e) => {
     this.setState({ selectedPlants: e })
-    this.setState({ DropdownChanged: false })
+    this.setState({ DropdownChanged: false, isDropDownChanged: true })
   }
 
   /**
@@ -329,7 +333,7 @@ class AddRMImport extends Component {
   */
   handleVendorName = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
-      this.setState({ vendorName: newValue, isVendorNameNotSelected: false, vendorLocation: [] }, () => {
+      this.setState({ vendorName: newValue, isVendorNameNotSelected: false, vendorLocation: [], isDropDownChanged: true }, () => {
         const { vendorName } = this.state;
         const result = vendorName && vendorName.label ? getVendorCode(vendorName.label) : '';
         this.setState({ VendorCode: result })
@@ -436,15 +440,11 @@ class AddRMImport extends Component {
     const { currency, effectiveDate } = this.state
     const netCost = checkForNull(Number(fieldsObj.BasicRate ? fieldsObj.BasicRate : 0) + Number(fieldsObj.FreightCharge ? fieldsObj.FreightCharge : 0) + Number(fieldsObj.ShearingCost ? fieldsObj.ShearingCost : 0))
 
-
     if (this.state.isEditFlag && Number(netCost) === Number(this.state.DataToChange?.NetLandedCost) && Number(fieldsObj.ScrapRate) === Number(this.state.DataToChange?.ScrapRate)) {
-
       this.setState({ IsFinancialDataChanged: false })
     } else if (this.state.isEditFlag) {
       this.setState({ IsFinancialDataChanged: true })
-
     }
-
     if (currency === INR) {
       this.setState({ currencyValue: 1, netCost: checkForNull(netCost * this.state.currencyValue) }, () => {
         this.props.change('NetLandedCost', checkForDecimalAndNull(netCost * this.state.currencyValue, this.props.initialConfiguration.NoOfDecimalForPrice))
@@ -452,11 +452,10 @@ class AddRMImport extends Component {
     } else {
       if (currency && effectiveDate) {
         const { costingTypeId, vendorName, client } = this.state
-        this.props.getExchangeRateByCurrency(currency.label, costingTypeId, DayTime(effectiveDate).format('YYYY-MM-DD'), vendorName.value, client.value, res => {
+        this.props.getExchangeRateByCurrency(currency.label, costingTypeId, DayTime(effectiveDate).format('YYYY-MM-DD'), costingTypeId === ZBCTypeId ? EMPTY_GUID : vendorName.value, client.value, res => {
           if (Object.keys(res.data.Data).length === 0) {
             this.setState({ showWarning: true })
-          }
-          else {
+          } else {
             this.setState({ showWarning: false })
           }
           this.props.change('NetLandedCost', checkForDecimalAndNull(netCost, this.props.initialConfiguration.NoOfDecimalForPrice))
@@ -506,6 +505,7 @@ class AddRMImport extends Component {
         isLoader: true,
         isShowForm: true,
         RawMaterialID: data.Id,
+        isCallCalculation: true
       })
       this.props.getRMImportDataById(data, true, res => {
         if (res && res.data && res.data.Result) {
@@ -523,7 +523,7 @@ class AddRMImport extends Component {
             this.props.change('ForgingScrap', Data.ScrapRate ? Data.ScrapRate : '')
             this.props.change('JaliScrapCost', Data.ScrapRate)            // THIS KEY FOR CIRCLE SCRAP COST
             this.props.change('CircleScrapCost', Data.JaliScrapCost ? Data.JaliScrapCost : '')  //THIS KEY FOR JALI SCRAP COST AND SCRAP COST
-            this.props.change('NetLandedCostCurrency', Data.NetLandedCostConversion ? Data.NetLandedCostConversion : '')
+            this.props.change('NetLandedCost', Data.NetLandedCost ? Data.NetLandedCost : '')
             this.setState({
               IsFinancialDataChanged: false,
               isEditFlag: true,
@@ -551,7 +551,12 @@ class AddRMImport extends Component {
               showForgingMachiningScrapCost: Data.TechnologyId === FORGING ? true : false,
               showExtraCost: Data.TechnologyId === SHEETMETAL ? true : false,
               showCurrency: true
-            }, () => this.setState({ isLoader: false }))
+            }, () => {
+              setTimeout(() => {
+                this.setState({ isLoader: false, isCallCalculation: false })
+                this.commonFunction()
+              }, 500)
+            })
             // ********** ADD ATTACHMENTS FROM API INTO THE DROPZONE'S PERSONAL DATA STORE **********
             let files = Data.FileList && Data.FileList.map((item) => {
               item.meta = {}
@@ -562,7 +567,7 @@ class AddRMImport extends Component {
             if (this.dropzone.current !== null) {
               this.dropzone.current.files = files
             }
-          }, 200);
+          }, 500);
           // this.props.getPlantBySupplier(Data.Vendor, () => { })
         }
       })
@@ -576,6 +581,28 @@ class AddRMImport extends Component {
      * @description Used for Vendor checked
      */
   onPressVendor = (costingHeadFlag) => {
+    const fieldsToClear = ['TechnologyId',
+      'RawMaterialId',
+      'RawMaterialGradeId',
+      'RawMaterialSpecificationId',
+      'CategoryId',
+      'Code',
+      'Currency',
+      'SourceSupplierPlantId',
+      'DestinationPlant',
+      "UnitOfMeasurementId",
+      "cutOffPrice",
+      "BasicRate",
+      "ScrapRate",
+      "ForgingScrap",
+      "MachiningScrap",
+      "CircleScrapCost",
+      "JaliScrapCost",
+      "EffectiveDate",
+      "clientName"];
+    fieldsToClear.forEach(fieldName => {
+      this.props.dispatch(clearFields('AddRMImport', false, false, fieldName));
+    });
     this.setState({
       costingTypeId: costingHeadFlag,
       vendorName: [],
@@ -875,7 +902,11 @@ class AddRMImport extends Component {
     this.clearForm(type)
   }
   cancelHandler = () => {
-    this.setState({ showPopup: true })
+    if (Object.keys(this.props.fieldsObj).length !== 0 || this.state.isDropDownChanged || this.state.files.length !== 0) {
+      this.setState({ showPopup: true })
+    } else {
+      this.cancel('submit')
+    }
   }
   onPopupConfirm = () => {
     this.cancel('submit')
@@ -1002,7 +1033,7 @@ class AddRMImport extends Component {
     }
 
 
-    if (Number(fieldsObj.BasicRate) < Number(fieldsObj.ScrapRate)) {
+    if ((Number(fieldsObj.BasicRate) < Number(fieldsObj.ScrapRate)) || (fieldsObj.JaliScrapCost ? ((Number(fieldsObj.JaliScrapCost) + Number(checkForNull(fieldsObj.CircleScrapCost))) > Number(fieldsObj.BasicRate)) : false) || (fieldsObj.ForgingScrap ? ((Number(fieldsObj.ForgingScrap) + Number(checkForNull(fieldsObj.MachiningScrap))) > Number(fieldsObj.BasicRate)) : false)) {
       this.setState({ setDisable: false })
       Toaster.warning("Scrap rate should not be greater than basic rate")
       return false
@@ -1681,11 +1712,9 @@ class AddRMImport extends Component {
                                   className="form-control"
                                   disabled={isViewFlag || !this.state.IsFinancialDataChanged}
                                   placeholder="Select Date"
-                                  onFocus={() => onFocus(this, true)}
                                 />
                               </div>
                             </div>
-                            {this.state.showErrorOnFocusDate && this.state.effectiveDate === '' && <div className='text-help mt-1 p-absolute bottom-22'>This field is required.</div>}
                           </Col>
                           {/* NOT APPLICABLE FOR RE */}
                           {/* <Col md="3">
@@ -2117,7 +2146,7 @@ class AddRMImport extends Component {
 */
 function mapStateToProps(state) {
   const { comman, material, auth, costing, client } = state;
-  const fieldsObj = selector(state, 'BasicRate', 'FreightCharge', 'ShearingCost', 'ScrapRate');
+  const fieldsObj = selector(state, 'BasicRate', 'FreightCharge', 'ShearingCost', 'ScrapRate', 'CircleScrapCost', 'JaliScrapCost', 'ForgingScrap', 'MachiningScrap', 'EffectiveDate', 'Remark');
 
   const { uniOfMeasurementList, rowMaterialList, rmGradeList, rmSpecification, plantList,
     supplierSelectList, filterPlantList, filterCityListBySupplier, cityList, technologyList,

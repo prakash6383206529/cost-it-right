@@ -824,12 +824,48 @@ class SideBar extends Component {
     );
   };
 
+  renderNFR = (module) => {
+    const { topAndLeftMenuData } = this.props
+    return (
+      topAndLeftMenuData &&
+      topAndLeftMenuData.map((el, i) => {
+        if (el.ModuleName === module) {
+          return (
+            <li>
+              <Link
+                key={i}
+                className={`nav-link ${reactLocalStorage.get("ModuleId") === 'NFR' ? 'IsActive' : ''}`}
+                onClick={() => this.setLeftMenu('NFR')}
+                to={{
+                  pathname: "/nfr-listing",
+                  state: {
+                    ModuleId: el.ModuleId,
+                    PageName: "NFR",
+                    PageURL: "/nfr-listing",
+                  },
+                }}
+              >
+                <img
+                  className=""
+                  src={reactLocalStorage.get("ModuleId") === 'NFR' ? activeRFQ : RFQ}
+                  alt={module + " icon"}
+                />
+                <span className="rfq">{'NFR'}</span>
+              </Link>
+            </li>
+          );
+        }
+        return null
+      })
+    );
+  };
+
   render() {
     const { userData, topAndLeftMenuData } = this.props;
     const { isLoader, } = this.state;
     const isLoggedIn = isUserLoggedIn();
     return (
-      <nav>
+      <nav className={`${this.props.sidebarAndNavbarHide ? 'hide-navbar' : ''}`}>
         {isLoader && <Loader />}
         <div>
           <div className="flex-conatiner sign-social ">
@@ -927,8 +963,8 @@ class SideBar extends Component {
  */
 function mapStateToProps({ auth, comman }) {
   const { loading, userData, leftMenuData, menusData, moduleSelectList, menuData, topAndLeftMenuData } = auth
-  const { disabledClass } = comman;
-  return { loading, userData, leftMenuData, menusData, moduleSelectList, menuData, topAndLeftMenuData, disabledClass }
+  const { disabledClass, sidebarAndNavbarHide } = comman;
+  return { loading, userData, leftMenuData, menusData, moduleSelectList, menuData, topAndLeftMenuData, disabledClass, sidebarAndNavbarHide }
 }
 
 /**

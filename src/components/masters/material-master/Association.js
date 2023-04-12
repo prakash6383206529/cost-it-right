@@ -5,7 +5,7 @@ import { Container, Row, Col, } from 'reactstrap';
 import { searchableSelect } from '../../layout/FormInputs';
 import Drawer from '@material-ui/core/Drawer';
 import { required } from '../../../helper';
-import { getRawMaterialNameChild, getMaterialTypeDataAPI, createAssociation, getRMGradeSelectListByRawMaterial, getMaterialTypeSelectList, getUnassociatedRawMaterail } from '../actions/Material';
+import { getRawMaterialNameChild, getMaterialTypeDataAPI, createAssociation, getRMGradeSelectListByRawMaterial, getMaterialTypeSelectList, getUnassociatedRawMaterail, clearGradeSelectList } from '../actions/Material';
 import { MESSAGES } from '../../../config/message';
 import Toaster from '../../common/Toaster';
 import { debounce } from 'lodash';
@@ -19,7 +19,8 @@ class Association extends Component {
             RMGrade: [],
             material: [],
             setDisable: false,
-            showPopup: false
+            showPopup: false,
+            isDropDownChanged: false,
         }
 
     }
@@ -31,15 +32,13 @@ class Association extends Component {
     }
 
     componentDidMount() {
-        // this.props.getRawMaterialNameChild(() => { })
+        this.props.clearGradeSelectList([])
         // this.props.getMaterialTypeSelectList(() => { })
     }
 
 
     renderListing(label) {
         const { MaterialSelectList, gradeSelectList, unassociatedMaterialList } = this.props;
-
-
         const temp = [];
         if (label === 'RawMaterialName') {
             unassociatedMaterialList && unassociatedMaterialList.map(item => {
@@ -75,7 +74,7 @@ class Association extends Component {
 
         if (newValue && newValue !== '') {
 
-            this.setState({ RawMaterial: newValue, RMGrade: [], }, () => {
+            this.setState({ RawMaterial: newValue, RMGrade: [], isDropDownChanged: true }, () => {
                 const { RawMaterial } = this.state;
 
                 this.props.getRMGradeSelectListByRawMaterial(RawMaterial.value, res => { });
@@ -96,7 +95,7 @@ class Association extends Component {
 
     handleMaterialChange = (newValue) => {
         if (newValue && newValue !== '') {
-            this.setState({ material: newValue })
+            this.setState({ material: newValue, isDropDownChanged: true })
         } else {
             this.setState({ material: [] })
         }
@@ -131,7 +130,11 @@ class Association extends Component {
         this.props.closeDrawer('')
     };
     cancel = () => {
-        this.setState({ showPopup: true })
+        if (this.state.isDropDownChanged) {
+            this.setState({ showPopup: true })
+        } else {
+            this.props.closeDrawer('')
+        }
     }
     onPopupConfirm = () => {
         this.props.closeDrawer('')
@@ -294,7 +297,8 @@ export default connect(mapStateToProps, {
     getMaterialTypeDataAPI,
     getRMGradeSelectListByRawMaterial,
     getUnassociatedRawMaterail,
-    createAssociation
+    createAssociation,
+    clearGradeSelectList
 })(reduxForm({
     form: 'Association',
     enableReinitialize: true,

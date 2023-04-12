@@ -7,20 +7,24 @@
 	top: 95px;
 	z-index: 9;
 	position: static;
+
 	ul {
 		li {
 			position: relative;
+
 			&:first-child {
 				a {
 					padding-left: 0;
 				}
 			}
+
 			a {
 				color: #95a5ba;
 				font-size: $font-14;
 				position: $positio-relative;
 				padding: 0 13px;
 				display: inline-block;
+
 				&::after {
 					content: "\f105";
 					font-family: "Fontawesome";
@@ -28,18 +32,22 @@
 					right: 0;
 				}
 			}
+
 			a.active,
 			a.hover {
 				color: $colorPrimary;
 			}
 		}
+
 		li.active {
 			a {
 				color: $colorPrimary;
+
 				&::after {
 					content: "";
 				}
 			}
+
 			a.hover {
 				color: $colorPrimary;
 			}

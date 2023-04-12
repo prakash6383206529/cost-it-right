@@ -1,6 +1,6 @@
 import React, { Component, } from 'react';
 import { connect } from 'react-redux';
-import { Field, reduxForm, formValueSelector, isDirty } from "redux-form";
+import { Field, reduxForm, formValueSelector, isDirty, clearFields } from "redux-form";
 import { Row, Col, Table, Label } from 'reactstrap';
 import {
   required, checkForNull, postiveNumber, checkForDecimalAndNull, acceptAllExceptSingleSpecialCharacter,
@@ -30,13 +30,13 @@ import DayTime from '../../common/DayTimeWrapper'
 import attachClose from '../../../assests/images/red-cross.png'
 import MasterSendForApproval from '../MasterSendForApproval'
 import { debounce } from 'lodash';
-import { CheckApprovalApplicableMaster, displayUOM, onFocus, userTechnologyDetailByMasterId } from '../../../helper'
+import { CheckApprovalApplicableMaster, displayUOM, userTechnologyDetailByMasterId } from '../../../helper'
 import AsyncSelect from 'react-select/async';
 import { ProcessGroup } from '../masterUtil';
 import _ from 'lodash'
 import { getCostingSpecificTechnology } from '../../costing/actions/Costing'
 import { getClientSelectList, } from '../actions/Client';
-import { autoCompleteDropdown } from '../../common/CommonFunctions';
+import { autoCompleteDropdown, costingTypeIdToApprovalTypeIdFunction } from '../../common/CommonFunctions';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { checkFinalUser } from '../../../components/costing/actions/Costing'
@@ -106,7 +106,6 @@ class AddMachineRate extends Component {
         processUOM: false,
         machineRate: false
       },
-      showErrorOnFocusDate: false,
       finalApprovalLoader: false,
       costingTypeId: ZBCTypeId,
       levelDetails: {},
@@ -214,7 +213,7 @@ class AddMachineRate extends Component {
         DepartmentId: userDetails().DepartmentId,
         UserId: loggedInUserId(),
         Mode: 'master',
-        approvalTypeId: this.state.costingTypeId
+        approvalTypeId: costingTypeIdToApprovalTypeIdFunction(this.state.costingTypeId)
       }
       this.setState({ finalApprovalLoader: true })
       this.props.checkFinalUser(obj, (res) => {
@@ -239,13 +238,16 @@ class AddMachineRate extends Component {
   }
 
   componentWillUnmount() {
-    const { selectedPlants, effectiveDate, machineType, selectedTechnology, isFormHide } = this.state;
+    const { selectedPlants, effectiveDate, machineType, selectedTechnology, isFormHide, client, vendorName, costingTypeId } = this.state;
     const { fieldsObj } = this.props;
     let data = {
       fieldsObj: fieldsObj,
       selectedTechnology: selectedTechnology,
       selectedPlants: selectedPlants,
       machineType: machineType,
+      selectedCustomer: client,
+      selectedVedor: vendorName,
+      costingTypeId: costingTypeId
     }
     setTimeout(() => {
       this.setState({ selectedPlants: selectedPlants, effectiveDate: effectiveDate })
@@ -266,7 +268,10 @@ class AddMachineRate extends Component {
     this.setState({
       selectedTechnology: data.selectedTechnology,
       machineType: data.machineType,
-      effectiveDate: data.EffectiveDate
+      effectiveDate: data.EffectiveDate,
+      remarks: data.Remark,
+      client: data.selectedCustomer,
+      vendorName: data.selectedVedor
     })
     this.props.change('MachineName', data && data.fieldsObj && data.fieldsObj.MachineName)
     this.props.change('MachineNumber', data && data.fieldsObj && data.fieldsObj.MachineNumber)
@@ -422,6 +427,17 @@ class AddMachineRate extends Component {
     * @description Used for Vendor checked
     */
   onPressVendor = (costingHeadFlag) => {
+    const fieldsToClear = [
+      'technology',
+      'vendorName',
+      'Plant',
+      'DestinationPlant',
+      'clientName',
+      'EffectiveDate',
+    ];
+    fieldsToClear.forEach(fieldName => {
+      this.props.dispatch(clearFields('AddMachineRate', false, false, fieldName));
+    });
     this.setState({
       costingTypeId: costingHeadFlag,
       vendorName: [],
@@ -848,7 +864,7 @@ class AddMachineRate extends Component {
   * @description DELETE ROW ENTRY FROM TABLE 
   */
   deleteItem = (index) => {
-    const { processGrid, UOM } = this.state;
+    const { processGrid, UOM, isProcessGroup } = this.state;
 
     let tempData = processGrid.filter((item, i) => {
       if (i === index) {
@@ -856,10 +872,13 @@ class AddMachineRate extends Component {
       }
       return true;
     });
-
+    if (isProcessGroup) {
+      this.setState({ lockUOMAndRate: tempData.length === 0 ? false : true })
+    } else {
+      this.setState({ lockUOMAndRate: isProcessGroup })
+    }
     this.setState({
       processGrid: tempData,
-      lockUOMAndRate: tempData.length === 0 ? false : true,
       UOM: tempData.length === 0 ? [] : !this.state.lockUOMAndRate ? [] : UOM,
       isEditIndex: false,
       processName: [],
@@ -1630,14 +1649,12 @@ class AddMachineRate extends Component {
                                 placeholder={isViewMode || !this.state.IsFinancialDataChanged ? '-' : "Enter"}
                                 className="form-control"
                                 disabled={isViewMode || !this.state.IsFinancialDataChanged}
-                                onFocus={() => onFocus(this, true)}
                               />
-                              {this.state.showErrorOnFocusDate && this.state.effectiveDate === '' && <div className='text-help mt-1 p-absolute bottom-7'>This field is required.</div>}
                             </div>
                           </div>
                         </Col>
 
-                        {costingTypeId === ZBCTypeId &&
+                        {(costingTypeId === ZBCTypeId || getConfigurationKey().IsShowDetailMachineForAll) &&
                           <Col md="12">
                             <div>
                               {
@@ -1696,7 +1713,7 @@ class AddMachineRate extends Component {
                             </div>
                           </div>
                         </Col>
-                        <Col md="3">
+                        <Col md="3" className='p-relative'>
                           <Field
                             name="UOM"
                             type="text"
@@ -1712,7 +1729,7 @@ class AddMachineRate extends Component {
                           />
                           {this.state.errorObj.processUOM && (this.state.UOM === undefined) && <div className='text-help p-absolute'>This field is required.</div>}
                         </Col>
-                        <Col md="3" className='UOM-label-container'>
+                        <Col md="3" className='UOM-label-container p-relative'>
                           <Field
                             label={this.DisplayMachineRateLabel()}
                             name={"MachineRate"}

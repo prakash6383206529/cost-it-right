@@ -35,6 +35,7 @@ import { checkRFQBulkUpload } from '../rfq/actions/rfq';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { getUsersMasterLevelAPI } from '../../actions/auth/AuthActions';
 import { checkFinalUser } from '../../components/costing/actions/Costing';
+import { costingTypeIdToApprovalTypeIdFunction } from '../common/CommonFunctions';
 
 class BulkUpload extends Component {
     constructor(props) {
@@ -74,7 +75,7 @@ class BulkUpload extends Component {
 
     commonFunction() {
         let levelDetailsTemp = []
-        levelDetailsTemp = userTechnologyDetailByMasterId(this.state.costingTypeId, this.props?.masterId, this.props.userMasterLevelAPI)
+        levelDetailsTemp = userTechnologyDetailByMasterId(this.state.costingTypeId === Number(ZBCADDMORE) ? ZBCTypeId : this.state.costingTypeId, this.props?.masterId, this.props.userMasterLevelAPI)
         this.setState({ levelDetails: levelDetailsTemp })
         if (levelDetailsTemp?.length !== 0) {
             let obj = {
@@ -82,7 +83,7 @@ class BulkUpload extends Component {
                 DepartmentId: userDetails().DepartmentId,
                 UserId: loggedInUserId(),
                 Mode: 'master',
-                approvalTypeId: this.state.costingTypeId
+                approvalTypeId: costingTypeIdToApprovalTypeIdFunction(this.state.costingTypeId === Number(ZBCADDMORE) ? ZBCTypeId : this.state.costingTypeId)
             }
 
             this.props.checkFinalUser(obj, (res) => {
@@ -179,6 +180,7 @@ class BulkUpload extends Component {
                 } else {
                     fileHeads = resp.rows[0];
                     let checkForFileHead
+                    const { fileName } = this.props;
                     switch (String(this.props.fileName)) {
                         case String(RMDOMESTICBULKUPLOAD):
                             if (this.state.costingTypeId === ZBCTypeId) {
@@ -364,6 +366,10 @@ class BulkUpload extends Component {
                                 }
                                 else if (fileHeads[i] === 'Spec') {
                                     fileHeads[i] = 'RMSpec'
+                                } else if ((fileName === 'RM Domestic' || fileName === 'RM Import') && fileHeads[i] === 'CircleSrapCost') {
+                                    fileHeads[i] = 'JaliScrapCost'
+                                } else if ((fileName === 'RM Domestic' || fileName === 'RM Import') && fileHeads[i] === 'ScrapRate/JaliScrapCost') {
+                                    fileHeads[i] = 'ScrapRate'
                                 }
                                 obj[fileHeads[i]] = el;
                                 return null;

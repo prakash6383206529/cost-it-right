@@ -1,6 +1,6 @@
 import React, { Component, } from 'react';
 import { connect } from 'react-redux';
-import { Field, reduxForm, formValueSelector } from "redux-form";
+import { Field, reduxForm, formValueSelector, clearFields } from "redux-form";
 import { Row, Col, Label, } from 'reactstrap';
 import { required, getVendorCode, positiveAndDecimalNumber, maxLength15, acceptAllExceptSingleSpecialCharacter, maxLength70, maxLength512, checkForDecimalAndNull, checkForNull, decimalLengthsix, number } from "../../../helper/validation";
 import { renderText, renderTextInputField, searchableSelect, renderMultiSelectField, renderTextAreaField, focusOnError, renderDatePicker, } from '../../layout/FormInputs'
@@ -38,13 +38,33 @@ import AsyncSelect from 'react-select/async';
 import { getCostingSpecificTechnology } from '../../costing/actions/Costing';
 import { labelWithUOMAndCurrency } from '../../../helper';
 import { getClientSelectList, } from '../actions/Client';
-import { autoCompleteDropdown } from '../../common/CommonFunctions';
+import { autoCompleteDropdown, costingTypeIdToApprovalTypeIdFunction } from '../../common/CommonFunctions';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { checkFinalUser } from '../../../components/costing/actions/Costing'
 import { getUsersMasterLevelAPI } from '../../../actions/auth/AuthActions';
 
 const selector = formValueSelector('AddRMDomestic')
+
+const allInputFieldsName = ['TechnologyId',
+  'RawMaterialId',
+  'RawMaterialGradeId',
+  'RawMaterialSpecificationId',
+  'CategoryId',
+  'Code',
+  'SourceSupplierPlantId',
+  'DestinationPlant',
+  "UnitOfMeasurementId",
+  "cutOffPrice",
+  "BasicRate",
+  "ScrapRate",
+  "ForgingScrap",
+  "MachiningScrap",
+  "CircleScrapCost",
+  "JaliScrapCost",
+  "FrieghtCharge",
+  "EffectiveDate",
+  "clientName"];
 
 class AddRMDomestic extends Component {
   constructor(props) {
@@ -115,13 +135,13 @@ class AddRMDomestic extends Component {
       inputLoader: false,
       attachmentLoader: false,
       showErrorOnFocus: false,
-      showErrorOnFocusDate: false,
       showPopup: false,
       levelDetails: {},
       noApprovalCycle: false,
       showForgingMachiningScrapCost: false,
       showExtraCost: false,
-      vendorFilterList: []
+      vendorFilterList: [],
+      isDropDownChanged: false,
     }
   }
   /**
@@ -188,7 +208,7 @@ class AddRMDomestic extends Component {
         UserId: loggedInUserId(),
         TechnologyId: RM_MASTER_ID,
         Mode: 'master',
-        approvalTypeId: this.state.costingTypeId,
+        approvalTypeId: costingTypeIdToApprovalTypeIdFunction(this.state.costingTypeId),
       }
 
       this.props.checkFinalUser(obj, (res) => {
@@ -259,7 +279,7 @@ class AddRMDomestic extends Component {
    * @description  used to handle category selection
    */
   handleCategoryChange = (newValue, actionMeta) => {
-    this.setState({ Category: newValue })
+    this.setState({ Category: newValue, isDropDownChanged: true })
   }
 
 
@@ -275,7 +295,7 @@ class AddRMDomestic extends Component {
     } else {
       this.setState({ Technology: newValue, showForgingMachiningScrapCost: false, showExtraCost: false, nameDrawer: true })
     }
-    this.setState({ RawMaterial: [], nameDrawer: false })
+    this.setState({ RawMaterial: [], nameDrawer: false, isDropDownChanged: true })
   }
   /**
   * @method handleClient
@@ -312,7 +332,7 @@ class AddRMDomestic extends Component {
   handleVendorName = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
       this.setState(
-        { vendorName: newValue, isVendorNameNotSelected: false, vendorLocation: [] },
+        { vendorName: newValue, isVendorNameNotSelected: false, vendorLocation: [], isDropDownChanged: true },
         () => {
           const { vendorName } = this.state
           const result =
@@ -337,7 +357,7 @@ class AddRMDomestic extends Component {
    */
   handleVendorLocation = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
-      this.setState({ vendorLocation: newValue })
+      this.setState({ vendorLocation: newValue, isDropDownChanged: true })
     } else {
       this.setState({ vendorLocation: [] })
     }
@@ -373,7 +393,7 @@ class AddRMDomestic extends Component {
 
     if (newValue && newValue !== '') {
 
-      this.setState({ source: newValue, isSourceChange: true })
+      this.setState({ source: newValue, isSourceChange: true, isDropDownChanged: true })
 
     }
   }
@@ -384,7 +404,7 @@ class AddRMDomestic extends Component {
    */
   handleUOM = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
-      this.setState({ UOM: newValue })
+      this.setState({ UOM: newValue, isDropDownChanged: true })
     } else {
       this.setState({ UOM: [] })
     }
@@ -548,6 +568,9 @@ class AddRMDomestic extends Component {
    * @description Used for Vendor checked
    */
   onPressVendor = (costingHeadFlag) => {
+    allInputFieldsName.forEach(fieldName => {
+      this.props.dispatch(clearFields('AddRMDomestic', false, false, fieldName));
+    });
     this.setState({
       vendorName: [],
       costingTypeId: costingHeadFlag
@@ -868,7 +891,12 @@ class AddRMDomestic extends Component {
     this.clearForm(type)
   }
   cancelHandler = () => {
-    this.setState({ showPopup: true })
+    if (Object.keys(this.props.fieldsObj).length !== 0 || this.state.isDropDownChanged || this.state.files.length !== 0) {
+      this.setState({ showPopup: true })
+    } else {
+      this.cancel('cancel')
+    }
+
   }
   onPopupConfirm = () => {
     this.cancel('cancel')
@@ -1005,7 +1033,8 @@ class AddRMDomestic extends Component {
       this.setState({ isVendorNameNotSelected: true, setDisable: false })      // IF VENDOR NAME IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY AND SAVE BUTTON WILL NOT BE DISABLED
       return false
     }
-    if (Number(fieldsObj.BasicRate) < Number(fieldsObj.ScrapRate)) {
+
+    if ((Number(fieldsObj.BasicRate) < Number(fieldsObj.ScrapRate)) || (fieldsObj.JaliScrapCost ? ((Number(fieldsObj.JaliScrapCost) + Number(checkForNull(fieldsObj.CircleScrapCost))) > Number(fieldsObj.BasicRate)) : false) || (fieldsObj.ForgingScrap ? ((Number(fieldsObj.ForgingScrap) + Number(checkForNull(fieldsObj.MachiningScrap))) > Number(fieldsObj.BasicRate)) : false)) {
       this.setState({ setDisable: false })
       Toaster.warning("Scrap rate should not be greater than basic rate")
       return false
@@ -1651,7 +1680,7 @@ class AddRMDomestic extends Component {
                               name={"cutOffPrice"}
                               type="text"
                               placeholder={isViewFlag || (isEditFlag && isRMAssociated) ? '-' : "Enter"}
-                              validate={[number, positiveAndDecimalNumber, maxLength15]}
+                              validate={[number, positiveAndDecimalNumber, maxLength15, decimalLengthsix]}
                               component={renderTextInputField}
                               required={false}
                               disabled={isViewFlag || (isEditFlag && isRMAssociated)}
@@ -1830,10 +1859,8 @@ class AddRMDomestic extends Component {
                                 className="form-control"
                                 disabled={isViewFlag || !this.state.IsFinancialDataChanged || (isEditFlag && isRMAssociated)}
                                 placeholder={isViewFlag || !this.state.IsFinancialDataChanged || (isEditFlag && isRMAssociated) ? '-' : "Select Date"}
-                                onFocus={() => onFocus(this, true)}
                               />
                             </div>
-                            {this.state.showErrorOnFocusDate && this.state.effectiveDate === '' && <div className='text-help mt-1 p-absolute bottom-22'>This field is required.</div>}
                           </Col>
                         </Row>
 
@@ -2101,7 +2128,7 @@ class AddRMDomestic extends Component {
  */
 function mapStateToProps(state) {
   const { comman, material, auth, costing, client } = state
-  const fieldsObj = selector(state, 'BasicRate', 'FrieghtCharge', 'ShearingCost', 'ScrapRate')
+  const fieldsObj = selector(state, 'BasicRate', 'FrieghtCharge', 'ShearingCost', 'ScrapRate', 'CircleScrapCost', 'JaliScrapCost', 'ForgingScrap', 'MachiningScrap', 'cutOffPrice', 'EffectiveDate', 'Remark')
 
   const { rowMaterialList, rmGradeList, rmSpecification, plantList, supplierSelectList, filterPlantList, filterCityListBySupplier,
     cityList, technologyList, costingHead, categoryList, filterPlantListByCity, filterPlantListByCityAndSupplier, UOMSelectList,

@@ -39,7 +39,7 @@ import {
   OVERHEAD_AND_PROFIT, PART, PLANT, RAW_MATERIAL, UOM, USER, VENDOR,
   REASON, VOLUME, CLIENT, EXCHANGE_RATE, TAX, COSTING_PATH, APPROVAL_LISTING_PATH, COSTING_BREAKUP_DETAILS_REPORT, APPROVAL_APP,
   APPROVAL_SUMMARY_PATH, COSTING_BULK_UPLOAD, COSTING_SUMMARY_, COSTING_SUMMARY, Simulation_Page, Simulation_Upload, API,
-  DASHBOARDWITHGRAPH_PATH, SIMULATION_APPROVAL_SUMMARY_PATH, DASHBOARD_PATH, DASHBOARD_PATH_SECOND, SHEET_METAL, SIMULATION_PATH, SIMULATION_HISTORY_PATH, USER_PATH, RFQ_LISTING, RFQ, COST_RATIO_REPORT, BUDGETING
+  DASHBOARDWITHGRAPH_PATH, SIMULATION_APPROVAL_SUMMARY_PATH, DASHBOARD_PATH, DASHBOARD_PATH_SECOND, SHEET_METAL, SIMULATION_PATH, SIMULATION_HISTORY_PATH, USER_PATH, RFQ_LISTING, RFQ, COST_RATIO_REPORT, BUDGETING, NFR_LISTING
 } from '../config/constants'
 import ApprovalSummary from './costing/components/approval/ApprovalSummary'
 import CostingSummaryBulkUpload from './costing/components/CostingSummaryBulkUpload'
@@ -60,6 +60,11 @@ import CostMovementReport from './report/components/CostMovementReport/CostMovem
 import CostRatioReport from './report/components/CostRatioReport/CostRatioReport'
 import SupplierContributionReport from './report/components/SupplierContribution'
 import BudgetListing from './masters/budget-master/BudgetListing'
+import NfrListing from './masters/nfr/NfrListing'
+import SaleProvisionReport from './report/components/SaleProvisionReport/SaleProvisionReport'
+import PurchaseProvisionReport from './report/components/PurchaseProvisionReport/PurchaseProvisionReport'
+import CustomerPoamSummaryReport from './report/components/CustomerPoamSummaryReport/CustomerPoamSummaryReport'
+import HeadWiseCostingGotGiven from './report/components/HeadwiseCostingGotGiven/HeadWiseCostingGotGiven'
 const CustomHeader = {
   'Content-Type': 'application/x-www-form-urlencoded',
   'Access-Control-Allow-Origin': '*',
@@ -200,7 +205,8 @@ class Main extends Component {
         location.pathname === SIMULATION_PATH ||
         location.pathname === SIMULATION_HISTORY_PATH ||
         location.pathname === USER_PATH ||
-        location.pathname === RFQ_LISTING ? 'w-100' : ''
+        location.pathname === RFQ_LISTING ? 'w-100' : '' ||
+          location.pathname === NFR_LISTING ? 'w-100' : ''
 
     //  ADD DASHBPOARD CLASS FOR DASHBOARD PAGE ONLY
     const DashboardPage = location.pathname === DASHBOARDWITHGRAPH_PATH ? 'Dashboard-page' : '';
@@ -257,6 +263,7 @@ class Main extends Component {
                 location.pathname !== SIMULATION_HISTORY_PATH &&
                 location.pathname !== USER_PATH &&
                 location.pathname !== RFQ_LISTING &&
+                location.pathname !== NFR_LISTING &&
                 (
                   <LeftMenu {...this.props} />
                 )}
@@ -348,9 +355,14 @@ class Main extends Component {
                     <Route path="/master-benchmarking-report" component={CostingBenchmarkReport} />
                     <Route path="/cost-movement-report" component={CostMovementReport} />
                     <Route path="/supplier-contribution-report" component={SupplierContributionReport} />
+                    <Route path="/sale-provision-report" component={SaleProvisionReport} />
+                    <Route path="/purchase-provision-report" component={PurchaseProvisionReport} />
+                    <Route path="/customer-poam-summary-report" component={CustomerPoamSummaryReport} />
+                    <Route path="/headwise-costing-got-given" component={HeadWiseCostingGotGiven} />
                     {/*  NEED TO ADD PATH FROM BACKEND */}
                     <Route path="/simulation-insights" component={SimulationInsights} />
                     <Route path="/rfq-listing" component={AuthMiddleware(RfqListing, RFQ)} />
+                    <Route path="/nfr-listing" component={NfrListing} />
                     <Route path="/budgeting" component={AuthMiddleware(BudgetListing, BUDGETING)} />
 
                     {/* <Route path='/simulation-approval-listing' component={SimulationApprovalListing} /> */}

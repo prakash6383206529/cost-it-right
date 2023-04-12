@@ -11,7 +11,7 @@ import AssemblyWiseImpactSummary from './AssemblyWiseImpactSummary';
 import Toaster from '../../common/Toaster';
 import NoContentFound from '../../common/NoContentFound';
 import { ErrorMessage } from '../SimulationUtils';
-import { VBC, VBCTypeId } from '../../../config/constants';
+import { VBC, VBCTypeId, CBCTypeId } from '../../../config/constants';
 import { checkForDecimalAndNull, getConfigurationKey } from '../../../helper';
 
 
@@ -110,10 +110,11 @@ function VerifyImpactDrawer(props) {
                   <Table responsive className="border impact-drawer-table sub-table">
                     <tbody>
                       <tr>
-                        <th>Vendor (Code):</th>
+                        {CostingTypeId !== CBCTypeId && <th>Vendor (Code):</th>}
                         <th>Technology:</th>
                         <th>Master:</th>
                         <th>Costing Head:</th>
+                        {CostingTypeId === CBCTypeId && <th>CUSTOMER:</th>}
                         <th>Effective Date:</th>
                         <th>Impact/Quarter (w.r.t. Existing):</th>
                         <th>Impact/Quarter (w.r.t. Budgeted Price):</th>
@@ -121,10 +122,11 @@ function VerifyImpactDrawer(props) {
                     </tbody>
                     <tbody>
                       <tr>
-                        <td>{amendmentDetails.Vendor}</td>
+                        {CostingTypeId !== CBCTypeId && <td>{amendmentDetails.Vendor}</td>}
                         <td>{amendmentDetails.Technology}</td>
                         <td>{amendmentDetails.SimulationAppliedOn}</td>
                         <td>{amendmentDetails.CostingHead}</td>
+                        {CostingTypeId === CBCTypeId && <td>{amendmentDetails.CustomerName}</td>}
                         <td>{amendmentDetails.EffectiveDate === '' ? '-' : DayTime(amendmentDetails.EffectiveDate).format('DD-MM-YYYY')}</td>
                         <td>{amendmentDetails.TotalImpactPerQuarter === '' ? '-' : checkForDecimalAndNull(amendmentDetails.TotalImpactPerQuarter, getConfigurationKey().NoOfDecimalForPrice)}</td>
                         <td>{amendmentDetails.BudgetedPriceImpactPerQuarter === '' ? '-' : checkForDecimalAndNull(amendmentDetails.BudgetedPriceImpactPerQuarter, getConfigurationKey().NoOfDecimalForPrice)}</td>

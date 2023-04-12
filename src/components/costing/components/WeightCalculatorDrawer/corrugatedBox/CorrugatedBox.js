@@ -955,10 +955,12 @@ function CorrugatedBox(props) {
 
 
                                 <Col md="3" className='mt-2'>
+                                    <TooltipCustom disabledIcon={true} id={'quarter-length-calculator'} tooltipClass={'weight-of-sheet'} tooltipText={'Quarter Round Off (Length + Cutting Allowance) = 0.25 * Sheet Length + Cutting Allowance'} />
                                     <TextFieldHookForm
                                         label={`Quarter Round Off (Length + Cutting Allowance)`}
                                         name={'round_off_length_body'}
                                         Controller={Controller}
+                                        id={'quarter-length-calculator'}
                                         control={control}
                                         register={register}
                                         mandatory={true}

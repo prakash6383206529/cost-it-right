@@ -1,6 +1,6 @@
 import React from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { Row, Col, Label } from 'reactstrap'
+import { Row, Col, Label, Tooltip } from 'reactstrap'
 import { checkForDecimalAndNull, checkForNull } from '../../../helper/validation'
 import { getFinancialYearSelectList, getPartSelectListWtihRevNo, } from '../actions/Volume'
 import { getPlantSelectListByType, getVendorWithVendorCodeSelectList } from '../../../actions/Common'
@@ -23,6 +23,10 @@ import { useState } from 'react'
 import { NumberFieldHookForm, SearchableSelectHookForm } from '../../layout/HookFormInputs'
 import { Controller, useForm } from 'react-hook-form'
 import { createBudget, getApprovedPartCostingPrice, getMasterBudget, getPartCostingHead, updateBudget } from '../actions/Budget'
+import { getExchangeRateByCurrency } from '../../costing/actions/Costing'
+import AddConditionCosting from '../../costing/components/CostingHeadCosts/AdditionalOtherCost/AddConditionCosting'
+import ConditionCosting from '../../costing/components/CostingHeadCosts/AdditionalOtherCost/ConditionCosting'
+import PopupMsgWrapper from '../../common/PopupMsgWrapper'
 
 const gridOptions = {};
 
@@ -61,11 +65,18 @@ function AddBudget(props) {
     const [count, setCount] = useState(0);
     const [isVendorNameNotSelected, setIsVendorNameNotSelected] = useState(false);
     const [vendorFilter, setVendorFilter] = useState([]);
+    const [currency, setCurrency] = useState(0);
+    const [showPopup, setShowPopup] = useState(false);
+    const [currencyExchangeRate, setCurrencyExchangeRate] = useState(1);
+    const [isConditionCostingOpen, setIsConditionCostingOpen] = useState(false)
+    const [conditionTableData, seConditionTableData] = useState([])
+    const [totalConditionCost, setTotalConditionCost] = useState(0)
     const dispatch = useDispatch();
     const plantSelectList = useSelector(state => state.comman.plantSelectList);
     const financialYearSelectList = useSelector(state => state.volume.financialYearSelectList);
     const clientSelectList = useSelector((state) => state.client.clientSelectList)
-
+    const [showTooltip, setShowTooltip] = useState(false)
+    const [viewTooltip, setViewTooltip] = useState(false)
 
     useEffect(() => {
 
@@ -237,7 +248,13 @@ function AddBudget(props) {
         )
     }
 
-
+    const costHeader = (props) => {
+        return (
+            <div className='ag-header-cell-label'>
+                <span className='ag-header-cell-text'>Net Cost<i className={`fa fa-info-circle tooltip_custom_right tooltip-icon mb-n3 ml-4 mt2 `} id={"cost-tooltip"}></i> </span>
+            </div>
+        );
+    };
 
     const beforeSave = (props) => {
 
@@ -281,7 +298,6 @@ function AddBudget(props) {
      */
     const beforeSaveCell = (props) => {
 
-        console.log(props, "props")
         const cellValue = props
         if (Number.isInteger(Number(cellValue)) && /^\+?(0|[1-9]\d*)$/.test(cellValue) && cellValue.toString().replace(/\s/g, '').length) {
             if (cellValue.length > 8) {
@@ -383,6 +399,9 @@ function AddBudget(props) {
         setGridColumnApi(params.columnApi)
         gridApi?.sizeColumnsToFit();
         params.api.paginationGoToPage(0);
+        setTimeout(() => {
+            setShowTooltip(true)
+        }, 100);
     };
 
     /**
@@ -405,9 +424,55 @@ function AddBudget(props) {
 
         props.hideForm(type)
     }
+
+    const allInputFieldsName = [
+        'Plant',
+        'FinancialYear',
+        'totalSumCurrency',
+        'currency',
+        'totalSum',
+        'clientName',
+    ]
     const cancelHandler = () => {
-        cancel('cancel')
+        let count = 0;
+        allInputFieldsName.forEach((item) => {
+            if (getValues(item)) {
+                count++
+            }
+        })
+        if (count || vendorName.length !== 0 || part.length !== 0) {
+            setShowPopup(true)
+        } else {
+            cancel('cancel')
+        }
     }
+    const onPopupConfirm = () => {
+        cancel('cancel')
+        setShowPopup(false)
+    }
+    const closePopUp = () => {
+        setShowPopup(false)
+    }
+
+    const handleCurrencyChange = (newValue) => {
+        if (newValue && newValue !== '') {
+            setCurrency(newValue)
+
+            const finalYear = year?.label && year?.label?.slice(0, 4);
+            let date = (`${finalYear}-04-01`);
+
+            dispatch(getExchangeRateByCurrency(newValue.label, '', date, '', '', res => {
+                if (res && res.data && res.data.Result) {
+                    let Data = res.data.Data;
+                    setCurrencyExchangeRate(Data.CurrencyExchangeRate)
+                    if (getValues('totalSum')) {
+                        setValue('totalSumCurrency', checkForDecimalAndNull((getValues('totalSum') / Data.CurrencyExchangeRate), getConfigurationKey().NoOfDecimalForPrice))
+                    }
+                }
+            }))
+        }
+    }
+
 
     /**
      * @method onSubmit
@@ -588,8 +653,12 @@ function AddBudget(props) {
         buttonFormatter: buttonFormatter,
         customLoadingOverlay: LoaderCustom,
         budgetedQuantity: budgetedQuantity,
-        actualQuantity: actualQuantity
+        actualQuantity: actualQuantity,
+        costHeader: costHeader
     };
+    const tooltipToggle = () => {
+        setViewTooltip(!viewTooltip)
+    }
 
     return (
         <>
@@ -860,6 +929,7 @@ function AddBudget(props) {
 
                                                     <Col md="12">
                                                         <div className={`ag-grid-wrapper budgeting-table  ${tableData && tableData?.length <= 0 ? "overlay-contain" : ""}`} style={{ width: '100%', height: '100%' }}>
+                                                            {showTooltip && <Tooltip className="rfq-tooltip-left" placement={"top"} isOpen={viewTooltip} toggle={tooltipToggle} target={"cost-tooltip"} >{"Net cost's rows are editable. Double-click to fill data"}</Tooltip>}
                                                             <div className="ag-theme-material" >
                                                                 <AgGridReact
                                                                     style={{ height: '100%', width: '100%' }}
@@ -878,9 +948,10 @@ function AddBudget(props) {
                                                                         title: EMPTY_DATA,
                                                                     }}
                                                                     frameworkComponents={frameworkComponents}
+                                                                    suppressColumnVirtualisation={true}
                                                                     stopEditingWhenCellsLoseFocus={true}
                                                                 >
-                                                                    <AgGridColumn field="Text" headerName="" editable='false' pinned='left' cellStyle={{ 'font-size': '15px', 'font-weight': '500', 'color': '#3d4465' }} width={310} ></AgGridColumn>
+                                                                    <AgGridColumn field="Text" headerName="Net Cost" editable='false' pinned='left' cellStyle={{ 'font-size': '15px', 'font-weight': '500', 'color': '#3d4465' }} width={310} headerComponent={'costHeader'} ></AgGridColumn>
                                                                     <AgGridColumn width={115} field="April" headerName="April" cellRenderer='budgetedQuantity'></AgGridColumn>
                                                                     <AgGridColumn width={115} field="May" headerName="May" cellRenderer='budgetedQuantity'></AgGridColumn>
                                                                     <AgGridColumn width={115} field="June" headerName="June" cellRenderer='budgetedQuantity'></AgGridColumn>
@@ -942,11 +1013,12 @@ function AddBudget(props) {
                                                     </button>
                                                 </div>
                                             </Row>
-                                        </form ></div >
-                                </div >
-                            </div >
-                        </div >}
-                </div >
+                                        </form></div>
+                                </div>
+                            </div>
+                        </div>}
+                </div>
+                {showPopup && <PopupMsgWrapper isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${MESSAGES.CANCEL_MASTER_ALERT}`} />}
             </div >
 
         </>

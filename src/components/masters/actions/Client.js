@@ -7,6 +7,7 @@ import {
     GET_CLIENT_SELECTLIST_SUCCESS,
     GET_CLIENT_DATALIST_SUCCESS,
     config,
+    GET_POAM_STATUS_SELECTLIST
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
 // const config() = config
@@ -167,6 +168,28 @@ export function checkAndGetCustomerCode(code, name, callback) {
             }
         }).catch((error) => {
             dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    };
+}
+/**
+ * @method getPoamStatusSelectList
+ * @description Used to Get Poam Status selectlist
+ */
+export function getPoamStatusSelectList(callback) {
+    return (dispatch) => {
+        const request = axios.get(`${API.getPoamStatusSelectList}`, config());
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_POAM_STATUS_SELECTLIST,
+                    payload: response.data.SelectList,
+                });
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE, });
+            callback(error);
             apiErrors(error);
         });
     };

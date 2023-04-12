@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, Table } from 'reactstrap';
 import {
   setCostingDataList, setPOPrice, setRMCCBOPCostData, setSurfaceCostData,
-  setOverheadProfitCostData, setDiscountCost, showLoader, hideLoader, saveAssemblyPartRowCostingCalculation, savePartNumber, setPartNumberArrayAPICALL, saveBOMLevel, saveAssemblyNumber, setRMCCErrors, setOverheadProfitErrors, setToolsErrors, setDiscountErrors, setComponentDiscountOtherItemData
+  setOverheadProfitCostData, setDiscountCost, showLoader, hideLoader, saveAssemblyPartRowCostingCalculation, savePartNumber, setPartNumberArrayAPICALL, saveBOMLevel, saveAssemblyNumber, setRMCCErrors, setOverheadProfitErrors, setToolsErrors, setDiscountErrors, setComponentDiscountOtherItemData, isDiscountDataChange
 } from '../actions/Costing';
 import { calculatePercentage, checkForDecimalAndNull, checkForNull, getConfigurationKey } from '../../../helper';
 import DayTime from '../../common/DayTimeWrapper'
@@ -331,6 +331,7 @@ function CostingDetailStepTwo(props) {
         const discountedCost = data.DiscountCostType === 'Percentage' ? checkForNull(findApplicabilityCost(data, data?.DiscountApplicability, headerCostData, CostingData, data?.HundiOrDiscountPercentage)) : data.DiscountsAndOtherCost;
 
         const discountValues = {
+          BasicRateINR: checkForNull(SumOfTab - discountedCost) + checkForNull(data.AnyOtherCost),
           NetPOPriceINR: checkForNull(SumOfTab - discountedCost) + checkForNull(data.AnyOtherCost),
           HundiOrDiscountValue: checkForNull(discountedCost),
           AnyOtherCost: checkForNull(data.AnyOtherCost),
@@ -342,11 +343,13 @@ function CostingDetailStepTwo(props) {
           checkForNull(tempData.NetOverheadAndProfitCost) +
           checkForNull(tempData.NetPackagingAndFreight) +
           checkForNull(tempData.ToolCost) - checkForNull(discountedCost)
+
         tempData = {
           ...tempData,
           NetDiscountsCost: checkForNull(discountedCost),
           NetOtherCost: checkForNull(data.AnyOtherCost),
-          TotalCost: OverAllCost + checkForNull(data.AnyOtherCost),
+          TotalCost: OverAllCost + checkForNull(data.AnyOtherCost) + checkForNull(data.totalNpvCost) + checkForNull(data.totalConditionCost),
+          BasicRate: OverAllCost + checkForNull(data.AnyOtherCost),
           NetPackagingAndFreight: tempData.NetPackagingAndFreight,
         }
 
@@ -404,6 +407,7 @@ function CostingDetailStepTwo(props) {
     dispatch(setToolsErrors({}))
     dispatch(setDiscountErrors({}))
     dispatch(setComponentDiscountOtherItemData({}, () => { }))
+    dispatch(isDiscountDataChange(false))
 
     props.backBtn()
   }
@@ -439,7 +443,7 @@ function CostingDetailStepTwo(props) {
                         title={`${costingData.PlantName}(${costingData.PlantCode})`}>
                         {`${costingData.PlantName}`}</span></p></div></td>}
 
-                      {costingType !== NCC && < td > <div className={'part-info-title'}><p><span className="cr-tbl-label">SOB:</span><span className="dark-blue"> {costingData.ShareOfBusinessPercent}%</span></p></div></td>}
+                      {costingData.CostingTypeId !== NCCTypeId && < td > <div className={'part-info-title'}><p><span className="cr-tbl-label">SOB:</span><span className="dark-blue"> {costingData.ShareOfBusinessPercent}%</span></p></div></td>}
                       <td><div className={'part-info-title'}><p><span className="cr-tbl-label">Costing Version:</span><span className="dark-blue"> {`${DayTime(costingData.CreatedDate).format('DD/MM/YYYY')}-${costingData.CostingNumber}`}</span></p></div></td>
                     </tbody>
                   </Table>
@@ -457,10 +461,10 @@ function CostingDetailStepTwo(props) {
                           <th style={{ width: '220px' }}><span className="font-weight-500">{`Surface Treatment Cost`}</span></th>
                           <th style={{ width: '150px' }}><span className="font-weight-500">{`Overheads & Profits`}</span></th>
                           <th style={{ width: '150px' }}><span className="font-weight-500">{`Packaging & Freight Cost`}</span></th>
-
                           <th style={{ width: '150px' }}><span className="font-weight-500">{`Tool Cost`}</span></th>
                           <th style={{ width: '160px' }}><span className="font-weight-500">{`Other Cost`}</span></th>
                           <th style={{ width: '100px' }}><span className="font-weight-500">{`Discounts`}</span></th>
+                          <th style={{ width: '100px' }}><span className="font-weight-500">{`Basic Price`}</span></th>
                           <th style={{ width: '150px' }}><span className="font-weight-500">{`Net Cost(INR)`}</span></th>
                         </tr>
                       </thead>}
@@ -481,6 +485,7 @@ function CostingDetailStepTwo(props) {
                                   <td><span className="dark-blue fs1 font-weight-500">{checkForDecimalAndNull(item.ToolCost, initialConfiguration.NoOfDecimalForPrice)}</span></td>
                                   <td><span className="dark-blue fs1 font-weight-500">{checkForDecimalAndNull(item.NetOtherCost, initialConfiguration.NoOfDecimalForPrice)}</span></td>
                                   <td><span className="dark-blue fs1 font-weight-500">{checkForDecimalAndNull(item.NetDiscountsCost, initialConfiguration.NoOfDecimalForPrice)}</span></td>
+                                  <td><span className="dark-blue fs1 font-weight-500">{checkForDecimalAndNull(item.BasicRate, initialConfiguration.NoOfDecimalForPrice)}</span></td>
                                   <td><span className="dark-blue fs1 font-weight-500">{checkForDecimalAndNull(item.TotalCost, initialConfiguration.NoOfDecimalForPrice)}</span></td>
                                 </> : <>
                                   <td className="pr-0 pl-2"><span>Part Number: </span><span className="cr-prt-nm fs1 font-weight-500" title={item.PartNumber}>{item.PartNumber}</span></td>

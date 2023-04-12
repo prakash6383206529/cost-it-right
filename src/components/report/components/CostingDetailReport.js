@@ -765,7 +765,6 @@ function ReportListing(props) {
 
             <form onSubmit={handleSubmit(onSubmit)} noValidate>
 
-                <h1 className="mb-0">Costing Breakup Details</h1>
                 {disableDownload && <LoaderCustom message={MESSAGES.DOWNLOADING_MESSAGE} customClass="loader-center mt-n2" />}
                 <Row className="pt-4 mt-1 blue-before">
                     {/* <Col md="3">
@@ -780,7 +779,7 @@ function ReportListing(props) {
                             <button type="button" className="user-btn mr5" title="Reset Grid" onClick={() => resetState()}>
                                 <div className="refresh mr-0"></div>
                             </button>
-                            <button title={`Download ${dataCount === 0 ? "All" : "(" + dataCount + ")"}`} type="button" onClick={onExcelDownload} className={'user-btn mr5'}><div className="download mr-1"></div>
+                            <button title={`Download ${dataCount === 0 ? "All" : "(" + dataCount + ")"}`} type="button" onClick={onExcelDownload} className={'user-btn'}><div className="download mr-1"></div>
                                 {/* DOWNLOAD */}
                                 {`${dataCount === 0 ? "All" : "(" + dataCount + ")"}`}
                             </button>

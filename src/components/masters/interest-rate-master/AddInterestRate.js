@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Field, reduxForm, formValueSelector, propTypes } from "redux-form";
+import { Field, reduxForm, formValueSelector, propTypes, clearFields } from "redux-form";
 import { Row, Col, Label, } from 'reactstrap';
 import { required, postiveNumber, maxLength10, nonZero, number, maxPercentValue, checkWhiteSpaces, percentageLimitValidation, } from "../../../helper/validation";
 import { renderDatePicker, renderMultiSelectField, renderText, renderTextInputField, searchableSelect, } from "../../layout/FormInputs";
@@ -45,7 +45,6 @@ class AddInterestRate extends Component {
       isDataChanged: this.props.data.isEditFlag,
       minEffectiveDate: '',
       showErrorOnFocus: false,
-      showErrorOnFocusDate: false,
       costingTypeId: ZBCTypeId,
       client: [],
       showPopup: false,
@@ -59,7 +58,6 @@ class AddInterestRate extends Component {
   UNSAFE_componentWillMount() {
     if (!(this.props.data.isEditFlag || this.state.isViewMode)) {
       // this.props.getVendorListByVendorType(true, this.state.vendorName, (res) => {
-      //   console.log(res, 'res');
       // })
     }
   }
@@ -134,6 +132,20 @@ class AddInterestRate extends Component {
   * @description Used for Vendor checked
   */
   onPressVendor = (costingHeadFlag) => {
+    const fieldsToClear = [
+      'Mode',
+      'vendorName',
+      'Plant',
+      'DestinationPlant',
+      'clientName',
+      'ICCPercent',
+      'ICCApplicability',
+      'PaymentTermsApplicability',
+      'EffectiveDate',
+    ];
+    fieldsToClear.forEach(fieldName => {
+      this.props.dispatch(clearFields('AddInterestRate', false, false, fieldName));
+    });
     this.setState({
       vendorName: [],
       costingTypeId: costingHeadFlag
@@ -795,10 +807,8 @@ class AddInterestRate extends Component {
                               component={renderDatePicker}
                               disabled={isViewMode || isDataChanged}
                               className="form-control"
-                              onFocus={() => onFocus(this, true)}
                             />
                           </div>
-                          {this.state.showErrorOnFocusDate && this.state.effectiveDate === '' && <div className='text-help mt-1 p-absolute bottom-7'>This field is required.</div>}
                         </div>
                       </Col>
                     </Row>

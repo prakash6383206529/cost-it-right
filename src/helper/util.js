@@ -12,6 +12,7 @@ import { getConfigurationKey } from './auth'
 import _ from 'lodash';
 import { useDispatch } from 'react-redux';
 import { getUsersSimulationTechnologyLevelAPI } from '../actions/auth/AuthActions'
+import { costingTypeIdToApprovalTypeIdFunction } from '../components/common/CommonFunctions';
 
 /**
  * @method  apiErrors
@@ -586,6 +587,7 @@ export function formViewData(costingSummary, header = '') {
   obj.aValue = { applicability: 'Applicability', value: 'Value', }
   obj.ForgingScrapWeight = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingRawMaterialsCost.length > 0 ? dataFromAPI?.CostingPartDetails?.CostingRawMaterialsCost[0].ForgingScrapWeight : '-'
   obj.MachiningScrapWeight = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingRawMaterialsCost.length > 0 ? dataFromAPI?.CostingPartDetails?.CostingRawMaterialsCost[0].MachiningScrapWeight : '-'
+  obj.BasicRate = (dataFromAPI && dataFromAPI.BasicRate) ? dataFromAPI.BasicRate : 0
 
   obj.overheadOn = {
     overheadTitle: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingOverheadDetail !== null && dataFromAPI?.CostingPartDetails?.CostingOverheadDetail.OverheadApplicability !== null ? dataFromAPI?.CostingPartDetails?.CostingOverheadDetail.OverheadApplicability : '-',
@@ -1118,7 +1120,7 @@ export function ceilByMultiple(number, multiple = 0.25) {
 
 export function userTechnologyLevelDetails(approvalTypeId, data = []) {
   let dataList = [...data]
-  let filteredData = dataList?.filter(element => element.ApprovalTypeId === approvalTypeId)
+  let filteredData = dataList?.filter(element => element.ApprovalTypeId === costingTypeIdToApprovalTypeIdFunction(approvalTypeId))
   let obj = {
     Level: filteredData[0]?.Level,
     LevelId: filteredData[0]?.LevelId,

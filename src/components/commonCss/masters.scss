@@ -178,3 +178,18 @@
     min-height: 120px;
   }
 }
+
+.fetch-btn {
+  position: absolute !important;
+  right: 0;
+  bottom: 7px;
+}
+
+.form-group.inputbox.po-series {
+  margin-bottom: 0;
+  min-height: auto !important;
+
+  .text-help.mb-2 {
+    position: absolute;
+  }
+}

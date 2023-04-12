@@ -1,14 +1,24 @@
 import { reactLocalStorage } from "reactjs-localstorage";
 import _ from 'lodash';
-import { dropdownLimit } from "../../config/constants";
+import { CBCAPPROVALTYPEID, CBCTypeId, dropdownLimit, NCCAPPROVALTYPEID, NCCTypeId, VBCAPPROVALTYPEID, VBCTypeId, ZBCAPPROVALTYPEID, ZBCTypeId } from "../../config/constants";
 
 // COMMON FILTER FUNCTION FOR AUTOCOMPLETE DROPDOWN
-const commonFilterFunction = (inputValue, dropdownArray, filterByName) => {
+const commonFilterFunction = (inputValue, dropdownArray, filterByName, selectedParts = false) => {
     let tempArr = []
     tempArr = _.filter(dropdownArray, i => {
         return i[filterByName]?.toLowerCase().includes(inputValue?.toLowerCase())
     });
-    return tempArr
+
+    if (selectedParts) {
+        let temp = []
+        tempArr && tempArr.map(item => {
+            if (selectedParts.includes(item.value)) return false
+            temp.push(item)
+        })
+        return temp
+    } else {
+        return tempArr
+    }
 }
 const commonDropdownFunction = (array, tempBoolean = false, selectedParts = [], finalArray, partWithRev = false) => {
     array && array.map(item => {
@@ -39,7 +49,7 @@ export const autoCompleteDropdown = (inputValue, dropdownArray, tempBoolean = fa
         }
     }
     else {
-        tempArr = commonFilterFunction(inputValue, dropdownArray, "label")
+        tempArr = commonFilterFunction(inputValue, dropdownArray, "label", selectedParts)
         if (dropdownArray?.length <= 100) {
             return tempArr
         } else {
@@ -79,16 +89,47 @@ export const autoCompleteDropdownPart = (inputValue, dropdownArray, tempBoolean 
 export const hideCustomerFromExcel = (data, value) => {
     let excelData
     if (!reactLocalStorage.getObject('cbcCostingPermission')) {
-        excelData = data && data.map((item) => {
-            if (item.value === value) {
-                return false
-            } else {
-                return item
-            }
-        })
+        excelData = data && data.filter((item) => item.value !== value)
     }
     else {
         excelData = [...data]
     }
+    return excelData
+}
+
+export const costingTypeIdToApprovalTypeIdFunction = (value) => {
+    let approvalTypeId;
+    switch (value) {
+        case ZBCTypeId:
+            approvalTypeId = ZBCAPPROVALTYPEID;
+            break;
+        case VBCTypeId:
+            approvalTypeId = VBCAPPROVALTYPEID;
+            break;
+        case CBCTypeId:
+            approvalTypeId = CBCAPPROVALTYPEID;
+            break;
+        case NCCTypeId:
+            approvalTypeId = NCCAPPROVALTYPEID;
+            break;
+        //   case PROVTypeId:
+        //     approvalTypeId = PROVAPPROVALTYPEID;
+        // break;
+        default:
+            approvalTypeId = null; // or any default value you prefer
+            break;
+    }
+    return approvalTypeId;
+};
+
+export const hideColumnFromExcel = (data, value) => {
+    let excelData
+    excelData = data && data.map((item) => {
+        if (item.value === value) {
+            return false
+        } else {
+            return item
+        }
+    })
     return excelData
 }

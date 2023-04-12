@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { Row, Col, } from 'reactstrap';
+import { Row, Col, Tooltip, } from 'reactstrap';
 import DayTime from '../../../common/DayTimeWrapper'
-import { defaultPageSize, EMPTY_DATA } from '../../../../config/constants';
+import { defaultPageSize, EMPTY_DATA, CBCTypeId } from '../../../../config/constants';
 import NoContentFound from '../../../common/NoContentFound';
 import { checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUserId, searchNocontentFilter } from '../../../../helper';
 import Toaster from '../../../common/Toaster';
@@ -17,7 +17,6 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import Simulation from '../Simulation';
 import { debounce } from 'lodash'
-import { VBC, ZBC } from '../../../../config/constants';
 import { PaginationWrapper } from '../../../common/commonPagination';
 import DatePicker from "react-datepicker";
 import WarningMessage from '../../../common/WarningMessage';
@@ -44,7 +43,8 @@ function BDSimulation(props) {
     const [maxDate, setMaxDate] = useState('');
     const [titleObj, setTitleObj] = useState({})
     const [noData, setNoData] = useState(false);
-
+    const [showTooltip, setShowTooltip] = useState(false)
+    const [basicRateviewTooltip, setBasicRateViewTooltip] = useState(false)
 
     const { register, control, setValue, formState: { errors }, } = useForm({
         mode: 'onChange',
@@ -138,6 +138,7 @@ function BDSimulation(props) {
                 setShowVerifyPage(true)
             }
         }))
+        setShowTooltip(false)
     }, 500)
 
 
@@ -153,7 +154,12 @@ function BDSimulation(props) {
 
     const costingHeadFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        return (cell === true || cell === 'Vendor Based') ? 'Vendor Based' : 'Zero Based';
+        return cell ? cell : '-';
+    }
+
+    const customerFormatter = (props) => {
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        return (isbulkUpload ? row['Customer (Code)'] : row.CustomerName);
     }
 
     const newBasicRateFormatter = (props) => {
@@ -264,7 +270,13 @@ function BDSimulation(props) {
 
         }
     }
-
+    const revisedBasicRateHeader = (props) => {
+        return (
+            <div className='ag-header-cell-label'>
+                <span className='ag-header-cell-text'>Revised{!isImpactedMaster && <i className={`fa fa-info-circle tooltip_custom_right tooltip-icon mb-n3 ml-4 mt2 `} id={"basicRate-tooltip"}></i>}</span>
+            </div>
+        );
+    };
     const cancel = () => {
         list && list.map((item) => {
             item.NewBasicRate = undefined
@@ -291,6 +303,9 @@ function BDSimulation(props) {
         setGridApi(params.api)
         setGridColumnApi(params.columnApi)
         params.api.paginationGoToPage(0);
+        setTimeout(() => {
+            setShowTooltip(true)
+        }, 100);
     };
     const onFloatingFilterChanged = (value) => {
         if (list.length !== 0) {
@@ -337,8 +352,14 @@ function BDSimulation(props) {
         cellChange: cellChange,
         oldBasicRateFormatter: oldBasicRateFormatter,
         vendorFormatter: vendorFormatter,
-        plantFormatter: plantFormatter
+        plantFormatter: plantFormatter,
+        revisedBasicRateHeader: revisedBasicRateHeader,
+        customerFormatter: customerFormatter,
     };
+
+    const basicRatetooltipToggle = () => {
+        setBasicRateViewTooltip(!basicRateviewTooltip)
+    }
 
     return (
 
@@ -347,7 +368,7 @@ function BDSimulation(props) {
                 {
                     (!showverifyPage && !showMainSimulation) &&
                     <Fragment>
-
+                        {!isImpactedMaster && showTooltip && <Tooltip className="rfq-tooltip-left" placement={"top"} isOpen={basicRateviewTooltip} toggle={basicRatetooltipToggle} target={"basicRate-tooltip"} >{"To add revised basic rate please double click on the field."}</Tooltip>}
                         <Row>
                             <Col className={`add-min-height mb-3 sm-edit-page  ${(list && list?.length <= 0) || noData ? "overlay-contain" : ""}`}>
                                 <div className="ag-grid-wrapper height-width-wrapper">
@@ -358,7 +379,13 @@ function BDSimulation(props) {
                                                 <div className="refresh mr-0"></div>
                                             </button>
                                         </div>
-                                        {!isImpactedMaster && <button type="button" className={"apply"} onClick={cancel}> <div className={'back-icon'}></div>Back</button>}
+                                        {!isImpactedMaster && <div className={`d-flex align-items-center simulation-label-container`}>
+                                            {list[0].CostingTypeId !== CBCTypeId && <div className='d-flex pl-3'>
+                                                <label className='mr-1'>Vendor (Code):</label>
+                                                <p title={list[0].Vendor}>{list[0].Vendor ? list[0].Vendor : list[0]['Vendor (Code)']}</p>
+                                            </div>}
+                                            <button type="button" className={"apply"} onClick={cancel}> <div className={'back-icon'}></div>Back</button>
+                                        </div>}
 
                                     </div>
                                     {
@@ -407,7 +434,7 @@ function BDSimulation(props) {
                                     }
                                     <div className="ag-theme-material p-relative" style={{ width: '100%' }}>
                                         {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found simulation-lisitng" />}
-                                        <AgGridReact
+                                        {list && <AgGridReact
                                             ref={gridRef}
                                             floatingFilter={true}
                                             style={{ height: '100%', width: '100%' }}
@@ -425,6 +452,7 @@ function BDSimulation(props) {
                                                 title: EMPTY_DATA,
                                             }}
                                             frameworkComponents={frameworkComponents}
+                                            suppressColumnVirtualisation={true}
                                             stopEditingWhenCellsLoseFocus={true}
                                             onFilterModified={onFloatingFilterChanged}
                                         >
@@ -432,12 +460,13 @@ function BDSimulation(props) {
                                             <AgGridColumn field="BoughtOutPartNumber" editable='false' headerName="BOP Part No" minWidth={140}></AgGridColumn>
                                             <AgGridColumn field="BoughtOutPartName" editable='false' headerName="BOP Part Name" minWidth={140}></AgGridColumn>
                                             {!isImpactedMaster && <AgGridColumn field="BoughtOutPartCategory" editable='false' headerName="BOP Category" minWidth={140}></AgGridColumn>}
-                                            {!isImpactedMaster && <AgGridColumn field="Vendor" editable='false' headerName="Vendor (Code)" minWidth={140} cellRenderer='vendorFormatter'></AgGridColumn>}
+                                            {!isImpactedMaster && list[0].CostingTypeId !== CBCTypeId && <AgGridColumn field="Vendor" editable='false' headerName="Vendor (Code)" minWidth={140} cellRenderer='vendorFormatter'></AgGridColumn>}
+                                            {!isImpactedMaster && list[0].CostingTypeId === CBCTypeId && <AgGridColumn field="CustomerName" editable='false' headerName="Customer (Code)" minWidth={140} cellRenderer='customerFormatter'></AgGridColumn>}
                                             {!isImpactedMaster && <AgGridColumn field="Plants" editable='false' headerName="Plant (Code)" minWidth={140} cellRenderer='plantFormatter'></AgGridColumn>}
 
                                             <AgGridColumn headerClass="justify-content-center" cellClass="text-center" headerName={Number(selectedMasterForSimulation?.value) === 5 ? "Basic Rate (Currency)" : "Basic Rate (INR)"} marryChildren={true} width={240}>
-                                                <AgGridColumn width={120} field="BasicRate" editable='false' cellRenderer='oldBasicRateFormatter' headerName="Old" colId="BasicRate"></AgGridColumn>
-                                                <AgGridColumn width={120} cellRenderer='newBasicRateFormatter' editable={!isImpactedMaster} onCellValueChanged='cellChange' field="NewBasicRate" headerName="New" colId='NewBasicRate'></AgGridColumn>
+                                                <AgGridColumn width={120} field="BasicRate" editable='false' cellRenderer='oldBasicRateFormatter' headerName="Existing" colId="BasicRate"></AgGridColumn>
+                                                <AgGridColumn width={120} cellRenderer='newBasicRateFormatter' editable={!isImpactedMaster} onCellValueChanged='cellChange' field="NewBasicRate" headerName="Revised" colId='NewBasicRate' headerComponent={'revisedBasicRateHeader'}></AgGridColumn>
                                             </AgGridColumn>
 
                                             <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName={Number(selectedMasterForSimulation?.value) === 5 ? "Net Cost (Currency)" : "Net Cost (INR)"} marryChildren={true}>
@@ -450,7 +479,7 @@ function BDSimulation(props) {
                                             <AgGridColumn field="CostingId" hide={true}></AgGridColumn>
 
 
-                                        </AgGridReact>
+                                        </AgGridReact>}
 
                                         {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />}
                                     </div>

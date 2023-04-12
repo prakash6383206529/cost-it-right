@@ -16,7 +16,7 @@ import { PaginationWrapper } from '.././common/commonPagination'
 import { sendReminderForQuotation, getQuotationDetailsList, getMultipleCostingDetails } from './actions/rfq';
 import AddRfq from './AddRfq';
 import SendForApproval from '../costing/components/approval/SendForApproval';
-import { setCostingApprovalData, setCostingViewData, storePartNumber } from '../costing/actions/Costing';
+import { getSingleCostingDetails, setCostingApprovalData, setCostingViewData, storePartNumber } from '../costing/actions/Costing';
 import { getVolumeDataByPartAndYear } from '../masters/actions/Volume';
 import { checkForNull, formViewData } from '../../helper';
 import ApproveRejectDrawer from '../costing/components/approval/ApproveRejectDrawer';
@@ -26,7 +26,8 @@ import { Link } from 'react-scroll';
 import RemarkHistoryDrawer from './RemarkHistoryDrawer';
 import DayTime from '../common/DayTimeWrapper';
 import { hyphenFormatter } from '../masters/masterUtil';
-import _ from 'lodash';
+import _, { isNumber } from 'lodash';
+import CostingDetailSimulationDrawer from '../simulation/components/CostingDetailSimulationDrawer';
 const gridOptions = {};
 
 
@@ -55,6 +56,8 @@ function RfqListing(props) {
     const [remarkRowData, setRemarkRowData] = useState([])
     const viewCostingData = useSelector((state) => state.costing.viewCostingDetailData)
     const { data } = props
+    const [isOpen, setIsOpen] = useState(false)
+    const [isReportLoader, setIsReportLoader] = useState(false)
 
     const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
 
@@ -90,8 +93,12 @@ function RfqListing(props) {
     * @description HIDE DOMESTIC, IMPORT FORMS
     */
     const getDataList = () => {
+        setloader(true)
         dispatch(getQuotationDetailsList(data.QuotationId, (res) => {
-
+            if (res === 204) {
+                setloader(false)
+                return false;
+            }
             let grouped_data = _.groupBy(res?.data?.DataList, 'PartNumber')                           // GROUPING OF THE ROWS FOR SEPERATE PARTS
             let data = []
             for (let x in grouped_data) {
@@ -115,13 +122,14 @@ function RfqListing(props) {
             setRowData(newArray)
 
             setTechnologyId(res?.data?.DataList[0].TechnologyId)
+            setloader(false)
         }))
     }
 
     const resetState = () => {
         gridOptions?.columnApi?.resetColumnState(null);
         gridOptions?.api?.setFilterModel(null);
-        gridApi.sizeColumnsToFit()
+        window.screen.width > 1600 && gridApi.sizeColumnsToFit();
         gridApi.deselectAll()
         setSelectedCostings([])
         setaddComparisonToggle(false)
@@ -385,6 +393,26 @@ function RfqListing(props) {
     const closePopUp = () => {
         setShowPopup(false)
     }
+
+    const closeUserDetails = () => {
+        setIsOpen(false)
+    }
+
+    const viewCostingDetail = (rowData) => {
+        setIsReportLoader(true)
+        if (rowData?.CostingId && Object.keys(rowData?.CostingId).length > 0) {
+            dispatch(getSingleCostingDetails(rowData?.CostingId, (res) => {
+                if (res.data.Data) {
+                    let dataFromAPI = res.data.Data
+                    const tempObj = formViewData(dataFromAPI)
+                    dispatch(setCostingViewData(tempObj))
+                }
+                setIsReportLoader(false)
+            }))
+        }
+        setIsOpen(true)
+    }
+
     /**
     * @method buttonFormatter
     * @description Renders buttons
@@ -421,6 +449,7 @@ function RfqListing(props) {
                 {showActionIcons && <button title='Reject' className="CancelIcon mr-1" type={'button'} onClick={() => rejectDetails(cellValue, rowData)} />}
                 {showRemarkHistory && <button title='Remark History' className="btn-history-remark mr-1" type={'button'} onClick={() => { getRemarkHistory(cellValue, rowData) }}><div className='history-remark'></div></button>}
                 {showReminderIcon && <button title={`Reminder: ${reminderCount}`} className="btn-reminder mr-1" type={'button'} onClick={() => { sendReminder(cellValue, rowData) }}><div className="reminder"><div className="count">{reminderCount}</div></div></button>}
+                {rowData?.CostingId && < button title='View' className="View mr-1" type={'button'} onClick={() => viewCostingDetail(rowData)} />}
 
             </>
         )
@@ -443,13 +472,9 @@ function RfqListing(props) {
 
 
     const onGridReady = (params) => {
-        setTimeout(() => {
-            setgridApi(params.api);
-            setgridColumnApi(params.columnApi);
-            params.api.paginationGoToPage(0);
-            params.api.sizeColumnsToFit()
-        }, 400);
-
+        setgridApi(params.api);
+        setgridColumnApi(params.columnApi);
+        params.api.paginationGoToPage(0);
     };
 
 
@@ -553,7 +578,7 @@ function RfqListing(props) {
 
     const dateFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        return (cellValue != null && cellValue !== '' && cellValue !== undefined) ? DayTime(cellValue).format('DD/MM/YYYY') : '';
+        return (cellValue != null && cellValue !== '' && cellValue !== undefined) ? DayTime(cellValue).format('DD/MM/YYYY') : '-';
     }
 
     const isRowSelectable = rowNode => rowNode.data ? rowNode?.data?.ShowCheckBox : false;
@@ -584,31 +609,55 @@ function RfqListing(props) {
         setSendForApproval(false)
         getDataList()
     }
+    const getRowStyle = () => {
+        return {
+            backgroundColor: 'white'
+        }
+    }
+    const onFirstDataRendered = () => {
+        if (gridApi) {
+            window.screen.width > 1600 && gridApi.sizeColumnsToFit();
 
+        }
+    };
 
     return (
         <>
             <div className={`ag-grid-react rfq-portal ${(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) ? "" : ""} ${true ? "show-table-btn" : ""} ${false ? 'simulation-height' : props?.isMasterSummaryDrawer ? '' : 'min-height100vh'}`}>
-                {(loader && !props.isMasterSummaryDrawer) ? <LoaderCustom customClass="simulation-Loader" /> :
+                {loader ? <LoaderCustom customClass="simulation-Loader" /> :
                     <>
 
                         <Row className={`filter-row-large`}>
-                            <Col md="6" lg="6" className='mb-2'>
-                                <div className='header-title heading-container'>
-                                    <div>Raised On: <span>{DayTime(data.RaisedOn).format('DD/MM/YYYY')}</span></div>
-                                    <div>Raised By: <span>{data.RaisedBy}</span></div>
-                                </div>
+                            <Col md="6" className='d-flex'>
+                                <h3 className='mt-2'>RFQ No. : {data?.QuotationNumber ? data?.QuotationNumber : '-'}</h3>
                             </Col>
-                            <Col md="6" lg="6" className="mb-1 d-flex justify-content-end align-items-center">
+                            <Col md="6" className='d-flex justify-content-end align-items-center mb-2 mt-1'>
+                                <div className='d-flex  align-items-center'><div className='w-min-fit'>Raised By:</div>
+                                    <input
+                                        type="text"
+                                        className="form-control mx-2"
+                                        value={data.RaisedBy}
+                                        style={{ width: (data.RaisedBy.length * 9 + 10) + 'px' }}
+                                        disabled={true}
+                                    /> </div>
+                                <div className='d-flex align-items-center pr-0'><div className='w-min-fit'>Raised On:</div>
+                                    <input
+                                        type="text"
+                                        className="form-control ml-2"
+                                        disabled={true}
+                                        style={{ width: '100px' }}
+                                        value={data.RaisedOn ? DayTime(data.RaisedOn).format('DD/MM/YYYY') : '-'}
+                                    />
+                                </div>
                                 {
                                     // SHOW FILTER BUTTON ONLY FOR RM MASTER NOT FOR SIMULATION AMD MASTER APPROVAL SUMMARY
                                     (!props.isMasterSummaryDrawer) &&
                                     <>
 
-                                        <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}>
+                                        <button type="button" className="user-btn ml-2" title="Reset Grid" onClick={() => resetState()}>
                                             <div className="refresh mr-0"></div>
                                         </button>
-                                        <Link to={"rfq-compare-drawer"} smooth={true} spy={true} offset={-250}>
+                                        {rowData[0]?.IsVisibiltyConditionMet === true && <Link to={"rfq-compare-drawer"} smooth={true} spy={true} offset={-250}>
                                             <button
                                                 type="button"
                                                 className={'user-btn comparison-btn ml-1'}
@@ -616,7 +665,7 @@ function RfqListing(props) {
                                                 onClick={addComparisonDrawerToggle}
                                             >
                                                 <div className="compare-arrows"></div>Compare</button>
-                                        </Link>
+                                        </Link>}
                                         <button type="button" className={"apply ml-1"} onClick={cancel}> <div className={'back-icon'}></div>Back</button>
 
                                     </>
@@ -646,22 +695,27 @@ function RfqListing(props) {
                                             }}
                                             frameworkComponents={frameworkComponents}
                                             rowSelection={'multiple'}
+                                            getRowStyle={getRowStyle}
                                             onRowSelected={onRowSelect}
                                             isRowSelectable={isRowSelectable}
                                             suppressRowClickSelection={true}
+                                            onFirstDataRendered={onFirstDataRendered}
                                         >
                                             <AgGridColumn cellClass={cellClass} field="PartNo" headerName='Part No' ></AgGridColumn>
                                             <AgGridColumn field="TechnologyName" headerName='Technology'></AgGridColumn>
                                             <AgGridColumn field="VendorName" headerName='Vendor (Code)'></AgGridColumn>
                                             <AgGridColumn field="PlantName" headerName='Plant (Code)'></AgGridColumn>
                                             {/* <AgGridColumn field="PartNumber" headerName="Attachment "></AgGridColumn> */}
-                                            <AgGridColumn field="Remark" headerName='Remark' cellRenderer='hyphenFormatter'></AgGridColumn>
-                                            <AgGridColumn field="CostingNumber" headerName=' Costing Number'></AgGridColumn>
+                                            <AgGridColumn field="Remark" headerName='Notes' cellRenderer={hyphenFormatter}></AgGridColumn>
+                                            <AgGridColumn field="VisibilityMode" headerName='Visibility Mode' cellRenderer={hyphenFormatter}></AgGridColumn>
+                                            <AgGridColumn field="VisibilityDate" headerName='Visibility Date' cellRenderer={hyphenFormatter}></AgGridColumn>
+                                            <AgGridColumn field="VisibilityDuration" headerName='Visibility Duration' cellRenderer={hyphenFormatter}></AgGridColumn>
+                                            <AgGridColumn field="CostingNumber" headerName=' Costing Number' cellRenderer={hyphenFormatter}></AgGridColumn>
                                             <AgGridColumn field="CostingId" headerName='Costing Id ' hide={true}></AgGridColumn>
-                                            <AgGridColumn field="NetPOPrice" headerName=" Net PO Price"></AgGridColumn>
-                                            <AgGridColumn field="SubmissionDate" headerName='Submission Date' cellRenderer='dateFormatter'></AgGridColumn>
-                                            <AgGridColumn field="EffectiveDate" headerName='Effective Date' cellRenderer='dateFormatter'></AgGridColumn>
-                                            {<AgGridColumn width={200} field="QuotationId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
+                                            <AgGridColumn field="NetPOPrice" headerName=" Net PO Price" cellRenderer={hyphenFormatter}></AgGridColumn>
+                                            <AgGridColumn field="SubmissionDate" headerName='Submission Date' cellRenderer={dateFormatter}></AgGridColumn>
+                                            <AgGridColumn field="EffectiveDate" headerName='Effective Date' cellRenderer={dateFormatter}></AgGridColumn>
+                                            {rowData[0]?.IsVisibiltyConditionMet === true && <AgGridColumn width={200} field="QuotationId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
 
                                         </AgGridReact>
                                         {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} globalTake={10} />}
@@ -687,8 +741,18 @@ function RfqListing(props) {
                         />
                     )
                 }
-
-
+                {
+                    isOpen &&
+                    <CostingDetailSimulationDrawer
+                        isOpen={isOpen}
+                        closeDrawer={closeUserDetails}
+                        anchor={"right"}
+                        isReport={isOpen}
+                        isSimulation={false}
+                        simulationDrawer={false}
+                        isReportLoader={isReportLoader}
+                    />
+                }
                 {rejectDrawer && (
                     <ApproveRejectDrawer
                         type={'Reject'}

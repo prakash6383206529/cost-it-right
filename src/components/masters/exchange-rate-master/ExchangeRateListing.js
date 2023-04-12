@@ -379,13 +379,7 @@ class ExchangeRateListing extends Component {
                         <ScrollToTop pointProp="go-to-top" />
                         {this.state.isLoader && <LoaderCustom />}
                         <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
-                            {!this.props.isSimulation &&
-                                <Row>
-                                    <Col md="12"><h1 className="mb-0">Exchange Rate Master</h1></Col>
-                                </Row>
-                            }
-
-                            <Row className="pt-4 blue-before zindex-0">
+                            <Row className=" blue-before zindex-0">
                                 <Col md="6">
                                     <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={'off'} onChange={(e) => this.onFilterTextBoxChanged(e)} />
                                 </Col>

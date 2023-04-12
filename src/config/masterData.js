@@ -79,11 +79,13 @@ export const RMDomesticZBC = [
     { label: "SourceLocation", value: "SourceLocation" }, //NOUI
     { label: "UOM", value: "UOM" }, //*
     { label: "BasicRate", value: "BasicRate" }, //*
+    { label: "ScrapRate/JaliScrapCost", value: "ScrapRate" }, //*
     { label: "ScrapRate", value: "ScrapRate" }, //*
     // KEEP COMMENTED ON RE
     // { label: "CutOffPrice", value: "CutOffPrice" }, //*
     // { label: "FreightCost", value: "FreightCost" }, //*
     // { label: "ShearingCost", value: "ShearingCost" }, //*
+    // { label: "CircleSrapCost", value: "CircleSrapCost" }, //*
     { label: "EffectiveDate", value: "EffectiveDate" }, //*
     { label: "Remark", value: "Remark" },
 ]
@@ -111,6 +113,7 @@ export const RMDomesticZBCTempData = [
         // "CutOffPrice": "10",
         // "FreightCost": "10",
         // "ShearingCost": "10",
+        // "CircleSrapCost": "20",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         "Remark": "Remark Content",
     },
@@ -134,6 +137,7 @@ export const RMDomesticZBCTempData = [
         "CutOffPrice": "10",
         // "FreightCost": "10",
         // "ShearingCost": "10",
+        // "CircleSrapCost": "20",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         "Remark": "Remark Content",
     },
@@ -157,6 +161,7 @@ export const RMDomesticZBCTempData = [
         "CutOffPrice": "10",
         // "FreightCost": "10",
         // "ShearingCost": "10",
+        // "CircleSrapCost": "20",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         "Remark": "Remark Content",
     },
@@ -181,6 +186,7 @@ export const RMDomesticZBCTempData = [
         // "CutOffPrice": "10",
         // "FreightCost": "10",
         // "ShearingCost": "10",
+        // "CircleSrapCost": "20",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         "Remark": "Remark Content",
     }
@@ -204,11 +210,12 @@ export const RMDomesticVBC = [
     { label: "SourceLocation", value: "SourceLocation" },
     { label: "UOM", value: "UOM" }, //*
     { label: "BasicRate", value: "BasicRate" }, //*
-    { label: "ScrapRate", value: "ScrapRate" }, //*
+    { label: "ScrapRate/JaliScrapCost", value: "ScrapRate" }, //*
     // KEEP COMMENTED ON RE
     // { label: "CutOffPrice", value: "CutOffPrice" }, //*
     // { label: "FreightCost", value: "FreightCost" }, //*
     // { label: "ShearingCost", value: "ShearingCost" }, //*
+    // { label: "CircleSrapCost", value: "CircleSrapCost" }, //*
     { label: 'DestinationPlantName', value: 'DestinationPlantName', }, //*
     { label: 'DestinationPlantCode', value: 'DestinationPlantCode', }, //*
     { label: "EffectiveDate", value: "EffectiveDate" }, //*
@@ -236,6 +243,7 @@ export const RMDomesticVBCTempData = [
         //  "CutOffPrice": "10",
         // "FreightCost": "10",
         // "ShearingCost": "10",
+        // "CircleSrapCost": "20",
         "DestinationPlantName": "Manesar",
         "DestinationPlantCode": "1032",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
@@ -260,6 +268,7 @@ export const RMDomesticVBCTempData = [
         "CutOffPrice": "10",
         // "FreightCost": "10",
         // "ShearingCost": "10",
+        // "CircleSrapCost": "20",
         "DestinationPlantName": "Manesar",
         "DestinationPlantCode": "EC1",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
@@ -284,6 +293,7 @@ export const RMDomesticVBCTempData = [
         "CutOffPrice": "10",
         // "FreightCost": "10",
         // "ShearingCost": "10",
+        // "CircleSrapCost": "20",
         "DestinationPlantName": "Manesar",
         "DestinationPlantCode": "EC1",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
@@ -309,6 +319,7 @@ export const RMDomesticVBCTempData = [
         // "CutOffPrice": "10",
         // "FreightCost": "10",
         // "ShearingCost": "10",
+        // "CircleSrapCost": "20",
         "DestinationPlantName": "Manesar",
         "DestinationPlantCode": "EC1",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
@@ -342,6 +353,7 @@ export const RMImportZBC = [
     // { label: "CutOffPrice", value: "CutOffPrice" }, //*
     // { label: "FreightCost", value: "FreightCost" }, //*
     // { label: "ShearingCost", value: "ShearingCost" }, //*
+    // { label: "CircleSrapCost", value: "CircleSrapCost" }, //*
     { label: "EffectiveDate", value: "EffectiveDate" }, //*
     { label: "Remark", value: "Remark" },
 ]
@@ -362,6 +374,7 @@ export const RMDomesticCBCTempData = [
         "CutOffPrice": "10",
         // "FreightCost": "10",
         // "ShearingCost": "10",
+        // "CircleSrapCost": "20",
         "DestinationPlantName": "Manesar",
         "DestinationPlantCode": "1032",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
@@ -382,6 +395,7 @@ export const RMDomesticCBCTempData = [
         "CutOffPrice": "10",
         // "FreightCost": "10",
         // "ShearingCost": "10",
+        // "CircleSrapCost": "20",
         "DestinationPlantName": "Manesar",
         "DestinationPlantCode": "EC1",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
@@ -402,6 +416,7 @@ export const RMDomesticCBCTempData = [
         "CutOffPrice": "10",
         // "FreightCost": "10",
         // "ShearingCost": "10",
+        // "CircleSrapCost": "20",
         "DestinationPlantName": "Manesar",
         "DestinationPlantCode": "EC1",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
@@ -422,6 +437,7 @@ export const RMDomesticCBCTempData = [
         "CutOffPrice": "10",
         // "FreightCost": "10",
         // "ShearingCost": "10",
+        // "CircleSrapCost": "20",
         "DestinationPlantName": "Manesar",
         "DestinationPlantCode": "EC1",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
@@ -452,6 +468,7 @@ export const RMImportZBCTempData = [
         // "CutOffPrice": "10",
         // "FreightCost": "10",
         // "ShearingCost": "10",
+        // "CircleSrapCost": "20",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         "Remark": "Remark Text",
     },
@@ -476,6 +493,7 @@ export const RMImportZBCTempData = [
         "CutOffPrice": "10",
         // "FreightCost": "10",
         // "ShearingCost": "10",
+        // "CircleSrapCost": "20",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         "Remark": "Remark Text",
     },
@@ -500,6 +518,7 @@ export const RMImportZBCTempData = [
         "CutOffPrice": "10",
         // "FreightCost": "10",
         // "ShearingCost": "10",
+        // "CircleSrapCost": "20",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         "Remark": "Remark Text",
     },
@@ -525,6 +544,7 @@ export const RMImportZBCTempData = [
         // "CutOffPrice": "10",
         // "FreightCost": "10",
         // "ShearingCost": "10",
+        // "CircleSrapCost": "20",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         "Remark": "Remark Text",
     }
@@ -540,10 +560,11 @@ export const RMDomesticCBC = [
     { label: "CustomerCode", value: "CustomerCode" }, //NOUI,*
     { label: "UOM", value: "UOM" }, //*
     { label: "BasicRate", value: "BasicRate" }, //*
-    { label: "ScrapRate", value: "ScrapRate" }, //*
+    { label: "ScrapRate/JaliScrapCost", value: "ScrapRate" }, //*
     { label: "CutOffPrice", value: "CutOffPrice" }, //*
     // { label: "FreightCost", value: "FreightCost" }, //*
     // { label: "ShearingCost", value: "ShearingCost" }, //*
+    // { label: "CircleSrapCost", value: "CircleSrapCost" }, //*
     { label: 'DestinationPlantName', value: 'DestinationPlantName', }, //*
     { label: 'DestinationPlantCode', value: 'DestinationPlantCode', }, //*
     { label: "EffectiveDate", value: "EffectiveDate" }, //*
@@ -569,11 +590,12 @@ export const RMImportVBC = [
     { label: "UOM", value: "UOM" }, //*
     { label: "Currency", value: "Currency" }, //*
     { label: "BasicRate", value: "BasicRate" }, //*
-    { label: "ScrapRate", value: "ScrapRate" }, //*
+    { label: "ScrapRate/JaliScrapCost", value: "ScrapRate" }, //*
     // KEEP COMMENTED ON RE
     // { label: "CutOffPrice", value: "CutOffPrice" }, //*
     // { label: "FreightCost", value: "FreightCost" }, //*
     // { label: "ShearingCost", value: "ShearingCost" }, //*
+    // { label: "CircleSrapCost", value: "CircleSrapCost" }, //*
     { label: 'DestinationPlantName', value: 'DestinationPlantName', }, //*
     { label: 'DestinationPlantCode', value: 'DestinationPlantCode', }, //*
     { label: "EffectiveDate", value: "EffectiveDate" }, //*
@@ -602,6 +624,7 @@ export const RMImportVBCTempData = [
         // "CutOffPrice": "10",
         // "FreightCost": "10",
         // "ShearingCost": "10",
+        // "CircleSrapCost": "20",
         "DestinationPlantName": "Manesar",
         "DestinationPlantCode": "EC1",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
@@ -627,6 +650,7 @@ export const RMImportVBCTempData = [
         "CutOffPrice": "10",
         // "FreightCost": "10",
         // "ShearingCost": "10",
+        // "CircleSrapCost": "20",
         "DestinationPlantName": "Manesar",
         "DestinationPlantCode": "EC1",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
@@ -652,6 +676,7 @@ export const RMImportVBCTempData = [
         "CutOffPrice": "10",
         // "FreightCost": "10",
         // "ShearingCost": "10",
+        // "CircleSrapCost": "20",
         "DestinationPlantName": "Manesar",
         "DestinationPlantCode": "EC1",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
@@ -678,6 +703,7 @@ export const RMImportVBCTempData = [
         // "CutOffPrice": "10",
         // "FreightCost": "10",
         // "ShearingCost": "10",
+        // "CircleSrapCost": "20",
         "DestinationPlantName": "Manesar",
         "DestinationPlantCode": "EC1",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
@@ -697,10 +723,11 @@ export const RMImportCBC = [
     { label: "UOM", value: "UOM" }, //*
     { label: "Currency", value: "Currency" }, //*
     { label: "BasicRate", value: "BasicRate" }, //*
-    { label: "ScrapRate", value: "ScrapRate" }, //*
+    { label: "ScrapRate/JaliScrapCost", value: "ScrapRate" }, //*
     { label: "CutOffPrice", value: "CutOffPrice" }, //*
     // { label: "FreightCost", value: "FreightCost" }, //*
     // { label: "ShearingCost", value: "ShearingCost" }, //*
+    // { label: "CircleSrapCost", value: "CircleSrapCost" }, //*
     { label: 'DestinationPlantName', value: 'DestinationPlantName', }, //*
     { label: 'DestinationPlantCode', value: 'DestinationPlantCode', }, //*
     { label: "EffectiveDate", value: "EffectiveDate" }, //*
@@ -724,6 +751,7 @@ export const RMImportCBCTempData = [
         "CutOffPrice": "10",
         // "FreightCost": "10",
         // "ShearingCost": "10",
+        // "CircleSrapCost": "20",
         "DestinationPlantName": "Manesar",
         "DestinationPlantCode": "EC1",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
@@ -745,6 +773,7 @@ export const RMImportCBCTempData = [
         "CutOffPrice": "10",
         // "FreightCost": "10",
         // "ShearingCost": "10",
+        // "CircleSrapCost": "20",
         "DestinationPlantName": "Manesar",
         "DestinationPlantCode": "EC1",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
@@ -766,6 +795,7 @@ export const RMImportCBCTempData = [
         "CutOffPrice": "10",
         // "FreightCost": "10",
         // "ShearingCost": "10",
+        // "CircleSrapCost": "20",
         "DestinationPlantName": "Manesar",
         "DestinationPlantCode": "EC1",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
@@ -787,6 +817,7 @@ export const RMImportCBCTempData = [
         "CutOffPrice": "10",
         // "FreightCost": "10",
         // "ShearingCost": "10",
+        // "CircleSrapCost": "20",
         "DestinationPlantName": "Manesar",
         "DestinationPlantCode": "EC1",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
@@ -3301,7 +3332,7 @@ export const AcceptableSheetMetalUOM = ['Kilogram', 'Gram', 'Milligram']
 export const MULTIPLERMTECHNOLOGY = [4, 5, 7, 8, 14, 16, 17, 6, 9, 10, 2, 15, 23]
 
 export function isMultipleRMAllow(technology) {
-    const allowedMultipleRM = [4, 5, 7, 8, 14, 16, 17, 6, 9, 10, 2, 15, 23]
+    const allowedMultipleRM = [4, 5, 7, 8, 14, 16, 17, 6, 9, 10, 2, 15, 23, 20]
     return allowedMultipleRM.includes(technology);
 }
 
@@ -3332,7 +3363,7 @@ export const LOGISTICS = 24
 
 export const STRINGMAXLENGTH = 50
 export const NUMBERMAXLENGTH = 6
-export const REMARKMAXLENGTH = 50             //REMARK LENGTH CHANGED 255 TO 50 FOR ONLY RE, THIS IS RE SPECIFIC REQUIREMENT FROM CLIENT
+export const REMARKMAXLENGTH = 512
 
 export const SIMULATION_LEFT_MENU_NOT_INCLUDED = ["Simulation Upload", "RM Import", "RM Domestic", "BOP Domestic", "BOP Import", "Process-Simulation", "Process", "Operation-Simulation", "Surface Treatment", "Overhead-Simulation", "Overhead", "Profits", "Profits-Simulation", "Freight-Simulation", "Combined Process", "Operations", "Exchange Rates", "Machine Rate"]
 
@@ -3349,6 +3380,7 @@ export const RMDomesticSimulation = [
     { label: "Plant (Code)", value: "Plant" },
     { label: "Vendor (Code)", value: "VendorName" },
     { label: "VendorLocation", value: "VendorLocation" },
+    { label: "Customer (Code)", value: "CustomerName" },
     { label: "UOM", value: "UOM" },
     { label: "BasicRate", value: "BasicRate" },
     { label: 'RevisedBasicRate', value: 'NewBasicRate' },
@@ -3375,6 +3407,7 @@ export const RMImportSimulation = [
     { label: "Plant (Code)", value: "Plant" },
     { label: "Vendor (Code)", value: "VendorName" },
     { label: "VendorLocation", value: "VendorLocation" },
+    { label: "Customer (Code)", value: "CustomerName" },
     { label: "UOM", value: "UOM" },
     { label: "BasicRate", value: "BasicRate" },
     { label: 'RevisedBasicRate', value: 'NewBasicRate' },
@@ -3385,6 +3418,7 @@ export const RMImportSimulation = [
     { label: "RawMaterialId", value: "RawMaterialId" },
     { label: "VendorId", value: "VendorId" },
     { label: "PlantId", value: "PlantId" },
+    { label: "RMCode", value: "RawMaterialCode", },
     { label: "CostingTypeId", value: "CostingTypeId" }
 
 ]
@@ -3396,6 +3430,7 @@ export const SurfaceTreatmentSimulation = [
     { label: "OperationCode", value: "OperationCode" },
     { label: "DestinationPlant (Code)", value: "Plants" },
     { label: "Vendor (Code)", value: "VendorName", },
+    { label: "Customer (Code)", value: "CustomerName" },
     { label: "UnitOfMeasurement", value: "UOM" },
     { label: "Rate", value: "Rate" },
     { label: "RevisedRate", value: "NewRate" },
@@ -3411,11 +3446,13 @@ export const OperationSimulation = [
     { label: "OperationCode", value: "OperationCode" },
     { label: "DestinationPlant (Code)", value: "Plants" },
     { label: "Vendor (Code)", value: "VendorName", },
+    { label: "Customer (Code)", value: "CustomerName" },
     { label: "UnitOfMeasurement", value: "UOM" },
     { label: "Rate", value: "Rate" },
     { label: "RevisedRate", value: "NewRate" },
     { label: "EffectiveDate", value: "EffectiveDate" },
     { label: "OperationId", value: "OperationId" },
+    { label: "CostingTypeId", value: "CostingTypeId" }
 
 ]
 
@@ -3425,10 +3462,11 @@ export const MachineRateSimulation = [
     { label: "MachineName", value: "MachineName", },
     { label: "MachineNumber", value: "MachineNumber", },
     { label: "MachineTypeName", value: "MachineTypeName" },
-    { label: "MachineTonnage", value: "MachineTonnage" },
-    { label: "ProcessName", value: "ProcessName" },
     { label: "Vendor (Code)", value: "VendorName" },
     { label: "Plant (Code)", value: "Plants" },
+    { label: "Customer (Code)", value: "CustomerName" },
+    { label: "MachineTonnage", value: "MachineTonnage" },
+    { label: "ProcessName", value: "ProcessName" },
     { label: "MachineRate", value: "MachineRate" },
     { label: "RevisedMachineRate", value: "NewMachineRate" },
     { label: "EffectiveDate", value: "EffectiveDate" },
@@ -3444,6 +3482,7 @@ export const BOPDomesticSimulation = [
     { label: "BoughtOutPartCategory", value: "BoughtOutPartCategory" },
     { label: "Plant (Code)", value: "Plants", },
     { label: "Vendor (Code)", value: "Vendor" },
+    { label: "Customer (Code)", value: "CustomerName" },
     { label: "BasicRate", value: "BasicRate" },
     { label: "RevisedBasicRate", value: "NewBasicRate" },
     { label: "NetLandedCost", value: "NetLandedCost" },
@@ -3459,12 +3498,13 @@ export const BOPImportSimulation = [
     { label: "BoughtOutPartCategory", value: "BoughtOutPartCategory" },
     { label: "Plant (Code)", value: "Plants", },
     { label: "Vendor (Code)", value: "Vendor" },
+    { label: "Customer (Code)", value: "CustomerName" },
     { label: "BasicRate", value: "BasicRate" },
     { label: "RevisedBasicRate", value: "NewBasicRate" },
     { label: "NetLandedCost", value: "NetLandedCost" },
     { label: "EffectiveDate", value: "EffectiveDate" },
     { label: "BoughtOutPartId", value: "BoughtOutPartId" },
-    { label: "CostingTypeId", value: "CostingTypeId" },
+    { label: "CostingTypeId", value: "CostingTypeId" }
 ]
 
 export const OverheadProfitSimulation = [
@@ -3978,6 +4018,7 @@ export const CostingSimulationDownloadRM = [
     { label: "Vendor (Code)", value: "VendorName" },
     { label: "Plant (Code)", value: "PlantName" },
     { label: "PlantCode", value: "PlantCode" },
+    { label: "Customer (Code)", value: "CustomerName" },
     { label: "Budgeted Price", value: "BudgetedPrice" },
     { label: "Existing PO Price", value: "OldPOPrice" },
     { label: "Revised PO Price", value: "NewPOPrice" },
@@ -4074,6 +4115,7 @@ export const CostingSimulationDownloadST = [
     { label: "Vendor (Code)", value: "VendorName" },
     { label: "Plant (Code)", value: "PlantName" },
     { label: "PlantCode", value: "PlantCode" },
+    { label: "Customer (Code)", value: "CustomerName" },
     { label: "Budgeted Price", value: "BudgetedPrice" },
     { label: "Existing PO Price", value: "OldPOPrice" },
     { label: "Revised PO Price", value: "NewPOPrice" },
@@ -4130,6 +4172,7 @@ export const CostingSimulationDownloadOperation = [
     { label: "Vendor (Code)", value: "VendorName" },
     { label: "Plant (Code)", value: "PlantName" },
     { label: "PlantCode", value: "PlantCode" },
+    { label: "Customer (Code)", value: "CustomerName" },
     { label: "Budgeted Price", value: "BudgetedPrice" },
     { label: "Existing PO Price", value: "OldPOPrice" },
     { label: "Revised PO Price", value: "NewPOPrice" },
@@ -4188,6 +4231,7 @@ export const CostingSimulationDownloadBOP = [
     { label: "Vendor (Code)", value: "VendorName" },
     { label: "Plant (Code)", value: "PlantName" },
     { label: "PlantCode", value: "PlantCode" },
+    { label: "Customer (Code)", value: "CustomerName" },
     { label: "Budgeted Price", value: "BudgetedPrice" },
     { label: "Existing PO Price", value: "OldPOPrice" },
     { label: "Revised PO Price", value: "NewPOPrice" },
@@ -4240,6 +4284,7 @@ export const SIMULATIONAPPROVALSUMMARYDOWNLOADRM = [
     { label: "ECN Number", value: "ECNNumber" },
     { label: "Revision Number", value: "RevisionNumber" },
     { label: "Vendor (Code)", value: "VendorName" },
+    { label: "Customer (Code)", value: "CustomerName" },
     { label: "Plant (Code)", value: "PlantName" },
     { label: "Existing PO Price", value: "OldPOPrice" },
     { label: "Revised PO Price", value: "NewPOPrice" },
@@ -4261,6 +4306,7 @@ export const SIMULATIONAPPROVALSUMMARYDOWNLOADST = [
     { label: "Operation Code", value: "OperationCode" },
     { label: "Vendor (Code)", value: "VendorName" },
     { label: "Plant (Code)", value: "PlantName" },
+    { label: "Customer (Code)", value: "CustomerName" },
     { label: "Existing PO Price", value: "OldPOPrice" },
     { label: "Revised PO Price", value: "NewPOPrice" },
     { label: "Variance (w.r.t. Existing)", value: "POVariance" },
@@ -4298,6 +4344,7 @@ export const SIMULATIONAPPROVALSUMMARYDOWNLOADOPERATION = [
     { label: "OperationName", value: "OperationName" },
     { label: "OperationCode", value: "OperationCode" },
     { label: "Vendor (Code)", value: "VendorName" },
+    { label: "Customer (Code)", value: "CustomerName" },
     { label: "Plant (Code)", value: "PlantName" },
     { label: "Budgeted Price", value: "BudgetedPrice" },
     { label: "Existing PO Price", value: "OldPOPrice" },
@@ -4322,6 +4369,7 @@ export const SIMULATIONAPPROVALSUMMARYDOWNLOADBOP = [
     { label: "BOP Number", value: "BoughtOutPartNumber" },
     { label: "Vendor (Code)", value: "VendorName" },
     { label: "Plant (Code)", value: "PlantName" },
+    { label: "Customer (Code)", value: "CustomerName" },
     { label: "Budgeted Price", value: "BudgetedPrice" },
     { label: "Existing PO Price", value: "OldPOPrice" },
     { label: "Revised PO Price", value: "NewPOPrice" },
@@ -4892,6 +4940,7 @@ export const InitialGridForToken = [
     { label: "Vendor (Code)", value: "VendorName" },
     { label: "Plant", value: "PlantName" },
     { label: "PlantCode", value: "PlantCode" },
+    { label: "Customer (Code)", value: "CustomerName" },
     { label: "Existing PO Price", value: "OldPOPrice" },
     { label: "Revised PO Price", value: "NewPOPrice" },
     { label: "Variance (w.r.t. Existing)", value: "Variance" },
@@ -4933,6 +4982,7 @@ export const InitialGridForTokenSummary = [
     { label: "ECN Number", value: "ECNNumber" },
     { label: "Revision Number", value: "RevisionNumber" },
     { label: "Vendor (Code)", value: "VendorName" },
+    { label: "Customer (Code)", value: "CustomerName" },
     { label: "Plant", value: "PlantName" },
 ]
 
@@ -5063,6 +5113,7 @@ export const EXCHANGESIMULATIONDOWNLOAD = [
     { label: "ECN Number", value: "ECNNumber" },
     { label: "Revision Number", value: "RevisionNumber" },
     { label: "Vendor (Code)", value: "VendorName" },
+    { label: "Customer (Code)", value: "CustomerName" },
     { label: "Budgeted Price", value: "BudgetedPrice" },
     { label: "Currency", value: "Currency" },
     { label: "Existing Exchange Rate", value: "OldExchangeRate" },
@@ -5092,6 +5143,7 @@ export const CostingSimulationDownloadMR = [
     { label: "Vendor (Code)", value: "VendorName" },
     { label: "Plant (Code)", value: "PlantName" },
     { label: "PlantCode", value: "PlantCode" },
+    { label: "Customer (Code)", value: "CustomerName" },
     { label: "Budgeted Price", value: "BudgetedPrice" },
     { label: "Existing PO Price", value: "OldPOPrice" },
     { label: "Revised PO Price", value: "NewPOPrice" },
@@ -5146,6 +5198,7 @@ export const SIMULATIONAPPROVALSUMMARYDOWNLOADMR = [
     { label: "Revision Number", value: "RevisionNumber" },
     { label: "Vendor (Code)", value: "VendorName" },
     { label: "Plant (Code)", value: "PlantName" },
+    { label: "Customer (Code)", value: "CustomerName" },
     { label: "Budgeted Price", value: "BudgetedPrice" },
     { label: "Existing PO Price", value: "OldPOPrice" },
     { label: "Revised PO Price", value: "NewPOPrice" },
@@ -6337,6 +6390,7 @@ export const SIMULATIONAPPROVALSUMMARYDOWNLOADASSEMBLYTECHNOLOGY = [
     { label: "Vendor (Code)", value: "VendorName" },
     { label: "Plant", value: "PlantName" },
     { label: "Plant Code", value: "PlantCode" },
+    { label: "Customer (Code)", value: "CustomerName" },
     { label: "Existing PO Price", value: "OldPOPrice" },
     { label: "Revised PO Price", value: "NewPOPrice" },
     { label: "Variance (w.r.t. Existing)", value: "POVariance" },
@@ -6374,5 +6428,37 @@ export const visibilityModeDropdownArray = [
     { label: 'Duration', value: 'Duration' },
 ]
 
+export const typeofNpvDropdown = [
+    { label: 'Tool Investment', value: 'Tool Investment' },
+    { label: 'Additional Investment', value: 'Additional Investment' },
+    { label: 'One Time Investment', value: 'One Time Investment' }
+]
 
-
+export const tokenStatus = {
+    PendingForApproval: 'The token is pending for approval from your side.',
+    AwaitingForApproval: 'The token is pending for approval from your higher authority.',
+    Draft: 'The token is pending to send for approval from your side.',
+    Approved: 'The token is approved.',
+    Rejected: 'The token is rejected.',
+    Pushed: 'The token is pushed to SAP.',
+    Error: 'The token is approved but getting an error when pushed to SAP.',
+    History: 'The token is now old, it has new updated costing.',
+    Linked: 'The token is linked to another token.',
+    Provisional: 'The token is provisional, will not go for approval.'
+};
+export const tokenStatusName = {
+    PENDING_FOR_APPROVAL: 'PendingForApproval',
+    AWAITING_FOR_APPROVAL: 'AwaitingApproval',
+    DRAFT: 'Draft',
+    APPROVED: 'Approved',
+    REJECTED: 'Rejected',
+    PUSHED: 'Pushed',
+    ERROR: 'Error',
+    HISTORY: 'History',
+    LINKED: 'Linked',
+    PROVISIONAL: 'Provisional'
+}
+export const typePercentageAndFixed = [
+    { label: 'Fixed', value: 'Fixed' },
+    { label: 'Percentage', value: 'Percentage' },
+];

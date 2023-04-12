@@ -557,8 +557,7 @@ class UsersListing extends Component {
 			<div className={"ag-grid-react"} id={'userlist-go-to-top'}>
 				<ScrollToTop pointProp={"userlist-go-to-top"} />
 				<>
-					{" "}
-					{this.state.isLoader && <LoaderCustom />}
+
 					<form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
 						<Row className="pt-4">
 							{this.state.shown &&
@@ -644,7 +643,7 @@ class UsersListing extends Component {
 							</Col>
 						</Row>
 					</form>
-					<div className={`ag-grid-wrapper height-width-wrapper ${(this.props.userDataList && this.props.userDataList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
+					{this.state.isLoader ? <LoaderCustom customClass="loader-center" /> : <div className={`ag-grid-wrapper height-width-wrapper ${(this.props.userDataList && this.props.userDataList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
 						<div className="ag-grid-header">
 							<input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={'off'} onChange={(e) => this.onFilterTextBoxChanged(e)} />
 						</div>
@@ -688,7 +687,7 @@ class UsersListing extends Component {
 							</AgGridReact>
 							{<PaginationWrapper gridApi={this.gridApi} setPage={this.onPageSizeChanged} />}
 						</div>
-					</div>
+					</div>}
 
 					{this.state.isOpen && (
 						<ViewUserDetails

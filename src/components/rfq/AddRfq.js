@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useForm, Controller } from "react-hook-form";
 import { useDispatch, useSelector } from 'react-redux';
-import { Row, Col, } from 'reactstrap';
-import { AsyncSearchableSelectHookForm, SearchableSelectHookForm, TextAreaHookForm, TextFieldHookForm, } from '.././layout/HookFormInputs'
+import { Row, Col, Tooltip, } from 'reactstrap';
+import { AsyncSearchableSelectHookForm, SearchableSelectHookForm, TextAreaHookForm, TextFieldHookForm } from '.././layout/HookFormInputs'
 import { getVendorWithVendorCodeSelectList, getReporterList, fetchPlantDataAPI } from '../.././actions/Common';
 import { getCostingSpecificTechnology, } from '../costing/actions/Costing'
 import { addDays, checkForDecimalAndNull, getConfigurationKey, loggedInUserId } from '../.././helper';
@@ -52,7 +52,6 @@ function AddRfq(props) {
 
     const [getReporterListDropDown, setGetReporterListDropDown] = useState([]);
     const [vendor, setVendor] = useState([]);
-    const [initialFiles, setInitialFiles] = useState([]);
     const [isEditAll, setIsEditAll] = useState(false);
     const [isEditSubmissionDate, setIsEditSubmissionDate] = useState(false);
     const [isViewFlag, setIsViewFlag] = useState(false);
@@ -72,7 +71,6 @@ function AddRfq(props) {
     const [IsOpen, setIsOpen] = useState(false);
     const [apiData, setData] = useState({});
     const [isDisable, setIsDisable] = useState(false)
-    const [disableTechnology, setDisableTechnology] = useState(false)
     const [partNoDisable, setPartNoDisable] = useState(true)
     const [attachmentLoader, setAttachmentLoader] = useState(false)
     const [partName, setPartName] = useState(false)
@@ -80,7 +78,6 @@ function AddRfq(props) {
     const [submissionDate, setSubmissionDate] = useState('')
     const [visibilityMode, setVisibilityMode] = useState({})
     const [dateAndTime, setDateAndTime] = useState('')
-    const [time, setTime] = useState(new Date())
     const [isConditionalVisible, setIsConditionalVisible] = useState(false)
     const [isWarningMessageShow, setIsWarningMessageShow] = useState(false)
     const [loader, setLoader] = useState(false)
@@ -90,7 +87,12 @@ function AddRfq(props) {
     const checkRFQPartBulkUpload = useSelector((state) => state.rfq.checkRFQPartBulkUpload)
     // const getReporterListDropDown = useSelector(state => state.comman.getReporterListDropDown)
     const plantList = useSelector(state => state.comman.plantList)
-    const [isBulkUpload, setisBulkUpload] = useState(false);
+    const [isBulkUpload, setisBulkUpload] = useState(false)
+    const [showTooltip, setShowTooltip] = useState(false)
+    const [viewTooltip, setViewTooltip] = useState(false)
+    const [sopdate, setSOPDate] = useState('')
+    const [fiveyearList, setFiveyearList] = useState([])
+    const [selectedparts, setSelectedParts] = useState([])
 
     useEffect(() => {
         const { vbcVendorGrid } = props;
@@ -100,6 +102,7 @@ function AddRfq(props) {
             tempArr.push(el.VendorId)
             return null;
         })
+
         initialConfiguration?.IsDestinationPlantConfigure === false && setSelectedVendors(tempArr)
         return () => {
             reactLocalStorage?.setObject('Data', [])
@@ -126,8 +129,10 @@ function AddRfq(props) {
                     ele.PartNo = ele.PartNumber
                     ele.PartId = item.PartId
                 }
+                return null
             })
             tempArr = [...tempArr, ...item?.SOPQuantity]
+            return null
         })
 
         return tempArr
@@ -163,7 +168,6 @@ function AddRfq(props) {
                     setValue('VisibilityMode', { value: data?.VisibilityMode, label: data?.VisibilityMode })
                     setVisibilityMode({ value: data?.VisibilityMode, label: data?.VisibilityMode })
                     setDateAndTime(data?.VisibilityDate)
-                    setTime(data?.VisibilityDuration)
                     setValue('Time', data?.VisibilityDuration)
                     setFiles(data?.Attachments)
                     setPartList(convertToPartList(data.PartList))
@@ -286,11 +290,11 @@ function AddRfq(props) {
     }
 
     const deleteItemPartTable = (rowData, final) => {
-
+        const filteredArray = selectedparts.filter((obj) => {
+            return obj.value !== rowData.value;
+        });
+        setSelectedParts(filteredArray)
         let arr = final && final.filter(item => item.PartNo !== rowData?.PartNo)
-        if (arr.length === 0) {
-            setDisableTechnology(false)
-        }
         setPartList(arr)
         onResetPartNoTable()
     }
@@ -323,16 +327,6 @@ function AddRfq(props) {
         })
 
     }
-
-    const editItemPartTable = (gridData, props) => {
-
-        setSelectedRowPartNoTable(props.node.data)
-        setUpdateButtonPartNoTable(true)
-        setValue('partNumber', { label: props?.node?.data?.PartNumber, value: props?.node?.data?.PartId })
-        setValue('annualForecastQuantity', props?.node?.data?.Quantity)
-        setValue('technology', props?.node?.data?.technology)
-    }
-
 
     /**
     * @method renderListing
@@ -391,6 +385,10 @@ function AddRfq(props) {
         }
     }
 
+    const handleSubmitClick = (data, e, isSent) => {
+        handleSubmit(() => onSubmit(data, e, isSent))();
+    };
+
     /**
     * @method cancel
     * @description used to Reset form
@@ -399,7 +397,15 @@ function AddRfq(props) {
         props.closeDrawer('', {})
     }
 
-    const onSubmit = debounce((data, e, isSent) => {
+    const onSubmit = (data, e, isSent) => {
+        let tempArr = [...partList]
+        let list = []
+        list = tempArr && tempArr?.map(item => {
+            if (isNaN(Number(item?.Quantity))) {
+                item.Quantity = 0
+            }
+            return item
+        })
         if (vendorList.length === 0) {
             Toaster.warning("Please enter vendor details")
             return false
@@ -435,12 +441,12 @@ function AddRfq(props) {
         obj.VendorList = vendorList
 
         let temppartArr = []
-        let partIdList = _.uniq(_.map(partList, 'PartId'))
+        let partIdList = _.uniq(_.map(list, 'PartId'))
         partIdList && partIdList?.map((item) => {
             let temppartObj = {}
             let partListArr = []
             temppartObj.PartId = item
-            partList && partList.map((item1) => {
+            list && list.map((item1) => {
                 let partListObj = {}
                 if (item1?.PartId === item) {
                     partListObj.PartNumber = item1?.PartNo
@@ -448,9 +454,11 @@ function AddRfq(props) {
                     partListObj.Quantity = item1?.Quantity
                     partListArr.push(partListObj)
                 }
+                return null
             })
             temppartObj.SOPQuantityDetails = partListArr
             temppartArr.push(temppartObj)
+            return null
         })
 
         obj.PartList = temppartArr
@@ -483,7 +491,7 @@ function AddRfq(props) {
             }))
 
         }
-    }, 500)
+    }
 
 
     const defaultColDef = {
@@ -498,6 +506,9 @@ function AddRfq(props) {
         setGridColumnApi(params.columnApi)
         setGridApi(params.api)
         params.api.paginationGoToPage(0);
+        setTimeout(() => {
+            setShowTooltip(true)
+        }, 100);
     };
 
 
@@ -622,36 +633,45 @@ function AddRfq(props) {
     }
 
     const addRowPartNoTable = () => {
-        let arrTemp = []
-        let partNumber = getValues('partNumber')
+        if (!getValues('partNumber') || getValues('partNumber') === '' || !sopdate || sopdate === '') {
+            Toaster.warning("Please select part number and SOP date")
+            return false
+        } else {
+            let tempArrayparts = [...selectedparts, getValues('partNumber')]
+            setSelectedParts(tempArrayparts)
+            let arrTemp = []
+            let partNumber = getValues('partNumber')
 
-        sopObjectTemp && sopObjectTemp.map((item, index) => {
-            let objTemp = {}
-            objTemp.YearName = `SOP${index + 1}`
-            objTemp.PartNo = partNumber?.label
-            objTemp.PartId = getValues('partNumber')?.value
-            if (index === 2) {
-                objTemp.PartNumber = partNumber?.label
-            }
-            objTemp.Quantity = 0
+            sopObjectTemp && sopObjectTemp.map((item, index) => {
+                let objTemp = {}
+                objTemp.YearName = fiveyearList[index]
+                objTemp.PartNo = partNumber?.label
+                objTemp.PartId = getValues('partNumber')?.value
+                if (index === 2) {
+                    objTemp.PartNumber = partNumber?.label
+                }
+                objTemp.Quantity = 0
 
-            arrTemp.push(objTemp)
-        })
+                arrTemp.push(objTemp)
+                return null
+            })
 
-        let arr = [...partList, ...arrTemp]
+            let arr = [...partList, ...arrTemp]
 
-        setPartList(arr)
-        setValue('partNumber', "")
-        setValue('annualForecastQuantity', "")
-        // setValue('technology', "")
-        setUpdateButtonPartNoTable(false)
-        setDisableTechnology(true)
+            setPartList(arr)
+            setValue('partNumber', "")
+            setSOPDate('')
+            setValue('SOPDate', "")
+            // setValue('technology', "")
+            setUpdateButtonPartNoTable(false)
+        }
     }
 
     const onResetPartNoTable = () => {
         setUpdateButtonPartNoTable(false)
         setValue('partNumber', "")
         setValue('annualForecastQuantity', "")
+        setSOPDate('')
         // setValue('technology', "")
     }
 
@@ -667,6 +687,7 @@ function AddRfq(props) {
         setUpdateButtonVendorTable(false)
         setValue('vendor', "")
         setValue('contactPerson', "")
+        setGetReporterListDropDown([])
     }
 
 
@@ -715,6 +736,16 @@ function AddRfq(props) {
             }
         }
     };
+
+    const removeAddedParts = (arr) => {
+        const filteredArray = arr.filter((item) => {
+            return !selectedparts.some((element) => {
+                return element.value === item.value;
+            });
+        });
+        return filteredArray
+    }
+
     const partFilterList = async (inputValue) => {
 
         const resultInput = inputValue.slice(0, searchCount)
@@ -723,10 +754,11 @@ function AddRfq(props) {
             setPartName(resultInput)
             let partDataAPI = res?.data?.DataList
             if (inputValue) {
-                return autoCompleteDropdownPart(inputValue, partDataAPI, false, [], true)
+                let temp = [...autoCompleteDropdownPart(inputValue, partDataAPI, false, [], true)]
+                return removeAddedParts(temp)
 
             } else {
-                return partDataAPI
+                return removeAddedParts([...partDataAPI])
             }
         }
         else {
@@ -734,14 +766,22 @@ function AddRfq(props) {
             else {
                 let partData = reactLocalStorage.getObject('PartData')
                 if (inputValue) {
-                    return autoCompleteDropdownPart(inputValue, partData, false, [], false)
+                    let arr = [...autoCompleteDropdownPart(inputValue, partData, false, [], false)]
+                    return removeAddedParts([...arr])
                 } else {
-                    return partData
+                    return removeAddedParts([...partData])
                 }
             }
         }
 
     }
+    const quantityHeader = (props) => {
+        return (
+            <div className='ag-header-cell-label'>
+                <span className='ag-header-cell-text'>Annual Forecast Quantity<i className={`fa fa-info-circle tooltip_custom_right tooltip-icon mb-n3 ml-4 mt2 `} id={"quantity-tooltip"}></i> </span>
+            </div>
+        );
+    };
 
     /**
     * @method beforeSaveCell
@@ -752,7 +792,7 @@ function AddRfq(props) {
         if (cellValue === undefined) {
             return true
         }
-        if (cellValue && !/^[+]?([0-9]+(?:[\.][0-9]*)?|\.[0-9]+)$/.test(cellValue)) {
+        if (cellValue && !/^[0-9]+$/.test(cellValue)) {
             Toaster.warning('Please enter a valid positive numbers.')
             return false
         }
@@ -773,6 +813,9 @@ function AddRfq(props) {
     }
 
     const handleVisibilityMode = (value) => {
+        if (value?.label === "Duration") {
+            setDateAndTime('')
+        }
         setVisibilityMode(value)
         setValue('startPlanDate', '')
         setValue('Time', '')
@@ -794,11 +837,11 @@ function AddRfq(props) {
     }
 
     const handleChangeDateAndTime = (value) => {
-        setDateAndTime(value)
+        setDateAndTime(DayTime(value).format('YYYY-MM-DD HH:mm:ss'))
     }
 
-    const handleChangeTime = (value) => {
-        setTime(value)
+    const tooltipToggle = () => {
+        setViewTooltip(!viewTooltip)
     }
 
     const checkBoxHandler = () => {
@@ -807,6 +850,21 @@ function AddRfq(props) {
         setValue('VisibilityMode', '')
         setValue('startPlanDate', '')
         setValue('Time', '')
+    }
+
+    function getNextFiveYears(currentYear) {
+        const years = [];
+        for (let i = 0; i < 5; i++) {
+            years.push(currentYear + i);
+        }
+        return years;
+    }
+
+    const handleSOPDateChange = (value) => {
+        let year = new Date(value).getFullYear()
+        const yearList = getNextFiveYears(year)
+        setFiveyearList(yearList)
+        setSOPDate(DayTime(value).format('YYYY-MM-DD HH:mm:ss'))
     }
 
     const EditableCallback = (props) => {
@@ -822,7 +880,8 @@ function AddRfq(props) {
         partNumberFormatter: partNumberFormatter,
         sopFormatter: sopFormatter,
         EditableCallback: EditableCallback,
-        afcFormatter: afcFormatter
+        afcFormatter: afcFormatter,
+        quantityHeader: quantityHeader
     };
 
     const VendorLoaderObj = { isLoader: VendorInputLoader }
@@ -926,7 +985,6 @@ function AddRfq(props) {
                                                 rules={{ required: false }}
                                                 register={register}
                                                 //defaultValue={DestinationPlant.length !== 0 ? DestinationPlant : ""}
-                                                options={renderListing("partNo")}
                                                 mandatory={true}
                                                 // handleChange={handleDestinationPlantChange}
                                                 handleChange={() => { }}
@@ -937,22 +995,36 @@ function AddRfq(props) {
                                                 NoOptionMessage={MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN}
                                             />
                                         </Col>
-                                        {/* <Col md="3">
-                                            <NumberFieldHookForm
-                                                label="YearName"
-                                                name={"YearName"}
-                                                Controller={Controller}
-                                                control={control}
-                                                register={register}
-                                                disableErrorOverflow={true}
-                                                mandatory={true}
-                                                handleChange={() => { }}
-                                                disabled={false}
-                                                placeholder={'Enter'}
-                                                customClassName={'withBorder'}
-                                                errors={errors.YearName}
-                                            />
-                                        </Col> */}
+                                        <Col md="3">
+                                            <div className="inputbox date-section">
+                                                <div className="form-group">
+                                                    <label>SOP Date<span className="asterisk-required">*</span></label>
+                                                    <div className="inputbox date-section">
+                                                        <DatePicker
+                                                            name={'SOPDate'}
+                                                            placeholder={'Select'}
+                                                            //selected={submissionDate}
+                                                            selected={DayTime(sopdate).isValid() ? new Date(sopdate) : ''}
+                                                            onChange={handleSOPDateChange}
+                                                            showMonthDropdown
+                                                            showYearDropdown
+                                                            minDate={new Date()}
+                                                            dateFormat="dd/MM/yyyy"
+                                                            dropdownMode="select"
+                                                            placeholderText="Select date"
+                                                            className="withBorder"
+                                                            autoComplete={"off"}
+                                                            mandatory={true}
+                                                            errors={errors.SOPDate}
+                                                            disabledKeyboardNavigation
+                                                            onChangeRaw={(e) => e.preventDefault()}
+                                                            disabled={dataProps?.isAddFlag ? partNoDisable : (dataProps?.isViewFlag || !isEditAll)}
+                                                        />
+                                                        {isWarningMessageShow && <WarningMessage dClass={"error-message"} textClass={"pt-1"} message={"Please select effective date"} />}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </Col>
                                         {/* <Col md="3">
                                             <NumberFieldHookForm
                                                 label="Annual Forecast Quantity"
@@ -992,7 +1064,7 @@ function AddRfq(props) {
                                                 <div className={''}></div>
                                                 RESET
                                             </button>
-                                            {(checkForNull(technology?.value) === LOGISTICS) && <button
+                                            {(false && checkForNull(technology?.value) === LOGISTICS) && <button
                                                 type="button"
                                                 className={"user-btn "}
                                                 onClick={bulkToggle}
@@ -1004,7 +1076,7 @@ function AddRfq(props) {
                                         </Col>
                                     </Row>
                                     <div>
-                                        { }
+                                        {showTooltip && <Tooltip className="rfq-tooltip-left" placement={"top"} isOpen={viewTooltip} toggle={tooltipToggle} target={"quantity-tooltip"} >{"To add the quantity please double click on the field."}</Tooltip>}
                                         {!loader ? <div className={`ag-grid-react`}>
                                             <Row>
                                                 <Col>
@@ -1027,11 +1099,12 @@ function AddRfq(props) {
                                                                 }}
                                                                 frameworkComponents={frameworkComponents}
                                                                 stopEditingWhenCellsLoseFocus={true}
+                                                                suppressColumnVirtualisation={true}
                                                             >
                                                                 <AgGridColumn width={"230px"} field="PartNumber" headerName="Part No" cellClass={"colorWhite"} cellRenderer={'partNumberFormatter'}></AgGridColumn>
 
                                                                 <AgGridColumn width={"230px"} field="YearName" headerName="Production Year" cellRenderer={'sopFormatter'}></AgGridColumn>
-                                                                <AgGridColumn width={"230px"} field="Quantity" headerName="Annual Forecast Quantity" cellRenderer={'afcFormatter'} editable={EditableCallback} colId="Quantity"></AgGridColumn>
+                                                                <AgGridColumn width={"230px"} field="Quantity" headerName="Annual Forecast Quantity" headerComponent={'quantityHeader'} cellRenderer={'afcFormatter'} editable={EditableCallback} colId="Quantity"></AgGridColumn>
                                                                 <AgGridColumn width={"0px"} field="PartId" headerName="Part Id" hide={true} cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                                                 <AgGridColumn width={"190px"} field="PartId" headerName="Action" cellClass={"colorWhite text-right"} floatingFilter={false} type="rightAligned" cellRenderer={'buttonFormatterFirst'}></AgGridColumn>
                                                             </AgGridReact>
@@ -1159,7 +1232,7 @@ function AddRfq(props) {
                                                     className="custom-checkbox mb-0"
                                                     onChange={() => checkBoxHandler()}
                                                 >
-                                                    {'Visibility'}
+                                                    {'Visibility of Price'}
                                                     <input
                                                         type="checkbox"
                                                         value={"All"}
@@ -1203,6 +1276,7 @@ function AddRfq(props) {
                                                                 showMonthDropdown
                                                                 showYearDropdown
                                                                 showTimeInput
+                                                                minDate={new Date()}
                                                                 timeFormat='HH:mm'
                                                                 dateFormat="dd/MM/yyyy HH:mm"
                                                                 dropdownMode="select"
@@ -1266,11 +1340,11 @@ function AddRfq(props) {
                                     </Row>
 
 
-                                    <HeaderTitle title={'Remark and Attachments:'} customClass="mt-3" />
+                                    <HeaderTitle title={'Notes and Attachments:'} customClass="mt-3" />
                                     <Row className='part-detail-wrapper'>
                                         <Col md="4">
                                             <TextAreaHookForm
-                                                label={"Remark"}
+                                                label={"Notes"}
                                                 name={"remark"}
                                                 // placeholder={"Select"}
                                                 placeholder={isViewFlag ? '-' : "Type here..."}
@@ -1377,14 +1451,14 @@ function AddRfq(props) {
                                             </button>
 
                                             <button type="button" className="submit-button save-btn mr-2" value="save"
-                                                onClick={(data, e) => { handleSubmit(onSubmit(data, e, false)) }}
+                                                onClick={(data, e) => handleSubmitClick(data, e, false)}
                                                 disabled={isViewFlag}>
                                                 <div className={"save-icon"}></div>
                                                 {"Save"}
                                             </button>
 
                                             <button type="button" className="submit-button save-btn" value="send"
-                                                onClick={(data, e) => { handleSubmit(onSubmit(data, e, true)) }}
+                                                onClick={(data, e) => handleSubmitClick(data, e, true)}
                                                 disabled={isViewFlag}>
                                                 <div className="send-for-approval mr-1"></div>
                                                 {"Send"}

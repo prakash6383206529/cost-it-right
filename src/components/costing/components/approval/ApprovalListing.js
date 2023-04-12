@@ -31,6 +31,7 @@ import { agGridStatus, isResetClick, getGridHeight, dashboardTabLock } from '../
 import PopupMsgWrapper from '../../../common/PopupMsgWrapper'
 import ScrollToTop from '../../../common/ScrollToTop'
 import { reactLocalStorage } from 'reactjs-localstorage'
+import { costingTypeIdToApprovalTypeIdFunction } from '../../../common/CommonFunctions'
 
 const gridOptions = {};
 const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
@@ -764,7 +765,7 @@ function ApprovalListing(props) {
       UserId: loggedInUserId(),
       TechnologyId: selectedRowData[0].TechnologyId,
       Mode: 'costing',
-      approvalTypeId: selectedRowData[0]?.CostingTypeId
+      approvalTypeId: costingTypeIdToApprovalTypeIdFunction(selectedRowData[0]?.CostingTypeId)
     }
     dispatch(checkFinalUser(obj, res => {
       if (res && res.data && res.data.Result) {
@@ -971,11 +972,12 @@ function ApprovalListing(props) {
                           //onSelectionChanged={onRowSelect}
                           onRowSelected={onRowSelect}
                           isRowSelectable={isRowSelectable}
+                          enableBrowserTooltips={true}
                         >
                           <AgGridColumn field="CostingId" hide dataAlign="center" searchable={false} ></AgGridColumn>
                           <AgGridColumn cellClass="has-checkbox" field="ApprovalNumber" cellRenderer='linkableFormatter' headerName="Approval No."></AgGridColumn>
                           {/* {isApproval && <AgGridColumn headerClass="justify-content-center" cellClass="text-center" field="Status" cellRenderer='statusFormatter' headerName="Status" floatingFilterComponent="statusFilter" floatingFilterComponentParams={floatingFilterStatus} ></AgGridColumn>} */}
-                          <AgGridColumn field="CostingNumber" headerName="Costing ID" cellRenderer='hyperLinkableFormatter' ></AgGridColumn>
+                          <AgGridColumn field="CostingNumber" headerName="Costing Id" cellRenderer='hyperLinkableFormatter' ></AgGridColumn>
                           <AgGridColumn field="CostingHead" headerName="Costing Head"  ></AgGridColumn>
                           <AgGridColumn field="PartNumber" headerName='Part No.'></AgGridColumn>
                           <AgGridColumn field="PartName" headerName="Part Name"></AgGridColumn>
@@ -993,7 +995,7 @@ function ApprovalListing(props) {
                           <AgGridColumn field="CreatedOn" cellRenderer='dateFormatter' headerName="Created On" filter="agDateColumnFilter" filterParams={filterParamsThird}></AgGridColumn>
                           <AgGridColumn field="RequestedBy" headerName="Last Approved/Rejected By" cellRenderer={"lastApprovalFormatter"}></AgGridColumn>
                           <AgGridColumn field="RequestedOn" cellRenderer='requestedOnFormatter' headerName="Requested On" filter="agDateColumnFilter" filterParams={filterParamsSecond}></AgGridColumn>
-                          {!isApproval && <AgGridColumn headerClass="justify-content-center" pinned="right" cellClass="text-center" field="DisplayStatus" cellRenderer='statusFormatter' headerName="Status" floatingFilterComponent="statusFilter" floatingFilterComponentParams={floatingFilterStatus}></AgGridColumn>}
+                          {!isApproval && <AgGridColumn headerClass="justify-content-center" pinned="right" cellClass="text-center" field="DisplayStatus" tooltipField="TooltipText" cellRenderer='statusFormatter' headerName="Status" floatingFilterComponent="statusFilter" floatingFilterComponentParams={floatingFilterStatus}></AgGridColumn>}
                         </AgGridReact>
 
                         <div className='button-wrapper'>

@@ -17,7 +17,7 @@ import { getLabourTypeByMachineTypeSelectList } from '../actions/Labour';
 import { getFuelByPlant, } from '../actions/Fuel';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
-import { EMPTY_DATA, EMPTY_GUID, TIME, ZBCTypeId } from '../../../config/constants'
+import { EMPTY_DATA, EMPTY_GUID, TIME, ZBCTypeId, VBCTypeId, CBCTypeId } from '../../../config/constants'
 import { loggedInUserId, userDetails, getConfigurationKey } from "../../../helper/auth";
 import Switch from "react-switch";
 import Dropzone from 'react-dropzone-uploader';
@@ -29,7 +29,7 @@ import HeaderTitle from '../../common/HeaderTitle';
 import AddMachineTypeDrawer from './AddMachineTypeDrawer';
 import AddProcessDrawer from './AddProcessDrawer';
 import NoContentFound from '../../common/NoContentFound';
-import { calculatePercentage, CheckApprovalApplicableMaster, displayUOM, onFocus, userTechnologyDetailByMasterId } from '../../../helper';
+import { calculatePercentage, CheckApprovalApplicableMaster, displayUOM, userTechnologyDetailByMasterId } from '../../../helper';
 import EfficiencyDrawer from './EfficiencyDrawer';
 import DayTime from '../../common/DayTimeWrapper'
 import { AcceptableMachineUOM } from '../../../config/masterData'
@@ -43,6 +43,7 @@ import TooltipCustom from '../../common/Tooltip';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { checkFinalUser } from '../../../components/costing/actions/Costing'
 import { getUsersMasterLevelAPI } from '../../../actions/auth/AuthActions';
+import { costingTypeIdToApprovalTypeIdFunction } from '../../common/CommonFunctions';
 
 const selector = formValueSelector('AddMoreDetails');
 
@@ -129,14 +130,15 @@ class AddMoreDetails extends Component {
       UOMName: 'UOM',
       FuelEntryId: '',
       DataToChange: [],
-      showErrorOnFocusDate: false,
       labourDetailId: '',
       IsIncludeMachineRateDepreciation: false,
       powerIdFromAPI: EMPTY_GUID,
       finalApprovalLoader: false,
       showPopup: false,
       levelDetails: {},
-      noApprovalCycle: false
+      noApprovalCycle: false,
+      selectedCustomer: [],
+      selectedVedor: []
     }
     this.dropzone = React.createRef();
   }
@@ -190,7 +192,7 @@ class AddMoreDetails extends Component {
 
   commonFunction() {
     let levelDetailsTemp = []
-    levelDetailsTemp = userTechnologyDetailByMasterId(ZBCTypeId, MACHINE_MASTER_ID, this.props.userMasterLevelAPI)
+    levelDetailsTemp = userTechnologyDetailByMasterId(this.state.CostingTypeId, MACHINE_MASTER_ID, this.props.userMasterLevelAPI)
     this.setState({ levelDetails: levelDetailsTemp })
     if (levelDetailsTemp?.length !== 0) {
       let obj = {
@@ -198,7 +200,7 @@ class AddMoreDetails extends Component {
         DepartmentId: userDetails().DepartmentId,
         UserId: loggedInUserId(),
         Mode: 'master',
-        approvalTypeId: ZBCTypeId
+        approvalTypeId: costingTypeIdToApprovalTypeIdFunction(ZBCTypeId)
       }
       this.setState({ finalApprovalLoader: true })
       this.props.checkFinalUser(obj, (res) => {
@@ -214,8 +216,9 @@ class AddMoreDetails extends Component {
   }
 
   UNSAFE_componentWillReceiveProps(nextProps) {
+
     if (nextProps.data !== this.props.data) {
-      const { fieldsObj, machineType, selectedPlants, selectedTechnology } = nextProps.data;
+      const { fieldsObj, machineType, selectedPlants, selectedTechnology, selectedCustomer, selectedVedor, costingTypeId } = nextProps.data;
       if (Object.keys(selectedPlants)?.length > 0) {
         this.handlePlants(selectedPlants)
         if (machineType.value) {
@@ -232,7 +235,8 @@ class AddMoreDetails extends Component {
       this.props.change('TonnageCapacity', fieldsObj.TonnageCapacity)
       this.props.change('Description', fieldsObj.Description)
       this.props.change('Specification', fieldsObj.Specification)
-      this.props.change('EffectiveDate', fieldsObj.EffectiveDate ? fieldsObj.EffectiveDate : '')
+      fieldsObj.EffectiveDate && this.props.change('EffectiveDate', fieldsObj.EffectiveDate)
+
 
       setTimeout(() => {
         this.setState({ selectedPlants: selectedPlants, })
@@ -253,7 +257,10 @@ class AddMoreDetails extends Component {
         selectedTechnology: selectedTechnology,
         machineType: machineType,
         effectiveDate: fieldsObj.EffectiveDate ? fieldsObj.EffectiveDate : '',
-        minDate: fieldsObj.EffectiveDate ? fieldsObj.EffectiveDate : ''
+        minDate: fieldsObj.EffectiveDate ? fieldsObj.EffectiveDate : '',
+        selectedCustomer: selectedCustomer,
+        selectedVedor: selectedVedor,
+        CostingTypeId: costingTypeId
       }, () => {
         // if (machineType && machineType.value) {
         //   this.props.getLabourTypeByMachineTypeSelectList(machineType.value ? machineType.value : 0, () => { })
@@ -1933,7 +1940,7 @@ class AddMoreDetails extends Component {
     let updatedFiles = files.map((file) => ({ ...file, ContextId: MachineID }))
 
     let requestData = {
-      CostingTypeId: ZBCTypeId,
+      CostingTypeId: this.state.CostingTypeId,
       MachineId: MachineID,
       Manufacture: values.Manufacture,
       YearOfManufacturing: values.YearOfManufacturing,
@@ -1991,7 +1998,8 @@ class AddMoreDetails extends Component {
       TotalLabourCostPerYear: values.TotalLabourCostPerYear, // Need to look for this
       IsVendor: false,
       IsDetailedEntry: true,
-      VendorId: userDetail.ZBCSupplierInfo.VendorId,
+      VendorId: this.state.CostingTypeId !== VBCTypeId ? userDetail.ZBCSupplierInfo.VendorId : this.state.selectedVedor.value,
+      VendorName: this.state.CostingTypeId !== VBCTypeId ? '' : this.state.selectedVedor.label,
       MachineNumber: values.MachineNumber,
       MachineName: values.MachineName,
       MachineTypeId: machineType ? machineType.value : '',
@@ -2012,6 +2020,10 @@ class AddMoreDetails extends Component {
       IsIncludeMachineCost: IsIncludeMachineRateDepreciation,
       PowerEntryId: powerIdFromAPI,
       selectedPlants: selectedPlants,
+      CustomerId: this.state.CostingTypeId === CBCTypeId ? this.state.selectedCustomer.value : "00000000-0000-0000-0000-000000000000",
+      CustomerName: this.state.CostingTypeId === CBCTypeId ? this.state.selectedCustomer.label : "",
+      selectedCustomer: this.state.selectedCustomer,
+      selectedVedor: this.state.selectedVedor
       // LabourDetailId: labourType.value
     }
 
@@ -2070,7 +2082,7 @@ class AddMoreDetails extends Component {
       // EXECUTED WHEN:- ADD MORE MACHINE DETAIL CALLED FROM ADDMACHINERATE.JS FILE
 
       const formData = {
-        CostingTypeId: ZBCTypeId,
+        CostingTypeId: this.state.CostingTypeId,
         MachineId: MachineID,
         Manufacture: values.Manufacture,
         YearOfManufacturing: values.YearOfManufacturing,
@@ -2127,7 +2139,8 @@ class AddMoreDetails extends Component {
         TotalLabourCostPerYear: values.TotalLabourCostPerYear, //need to ask from where it come
         IsVendor: false,
         IsDetailedEntry: true,
-        VendorId: userDetail.ZBCSupplierInfo.VendorId,
+        VendorId: this.state.CostingTypeId !== VBCTypeId ? userDetail.ZBCSupplierInfo.VendorId : this.state.selectedVedor.value,
+        VendorName: this.state.CostingTypeId !== VBCTypeId ? '' : this.state.selectedVedor.label,
         MachineNumber: values.MachineNumber,
         MachineName: values.MachineName,
         MachineTypeId: machineType ? machineType.value : '',
@@ -2148,7 +2161,9 @@ class AddMoreDetails extends Component {
         IsFinancialDataChanged: this.state.isDateChange ? true : false,
         FuelEntryId: this.state.FuelEntryId,
         IsIncludeMachineCost: IsIncludeMachineRateDepreciation,
-        PowerEntryId: powerIdFromAPI
+        PowerEntryId: powerIdFromAPI,
+        CustomerId: this.state.CostingTypeId === CBCTypeId ? this.state.selectedCustomer.value : "00000000-0000-0000-0000-000000000000",
+        CustomerName: this.state.CostingTypeId === CBCTypeId ? this.state.selectedCustomer.label : "",
       }
 
       let obj = {}
@@ -2692,8 +2707,8 @@ class AddMoreDetails extends Component {
                               <Field
                                 label="Effective Date"
                                 name="EffectiveDate"
-                                minDate={this.state.minDate}
-                                selected={this.state.effectiveDate}
+                                minDate={this.state.minDate || null}
+                                selected={this.state.effectiveDate || null}
                                 placeholder={this.state.isViewFlag || !this.state.IsFinancialDataChanged ? '-' : "Select Date"}
                                 onChange={this.handleEffectiveDateChange}
                                 type="text"
@@ -2705,9 +2720,7 @@ class AddMoreDetails extends Component {
                                 component={renderDatePicker}
                                 className="form-control"
                                 disabled={this.state.isViewFlag || !this.state.IsFinancialDataChanged}
-                                onFocus={() => onFocus(this, true)}
                               />
-                              {this.state.showErrorOnFocusDate && (this.state.effectiveDate === '' || this.state.effectiveDate === undefined) && <div className='text-help mt-1 p-absolute bottom-7'>This field is required.</div>}
                             </div>
                           </div>
                         </Col>
@@ -3690,7 +3703,7 @@ class AddMoreDetails extends Component {
                                 </div>}
                               </div>
                             </Col>
-                            <Col md="2">
+                            <Col md="2" className='p-relative'>
                               <Field
                                 name="UOM"
                                 type="text"
@@ -3745,7 +3758,7 @@ class AddMoreDetails extends Component {
 
                             } */}
 
-                            <Col className="d-flex col-auto UOM-label-container">
+                            <Col className="d-flex col-auto UOM-label-container p-relative">
                               <div className="machine-rate-filed pr-3">
                                 <Field
                                   label={this.DisplayMachineRateLabel()}
@@ -4027,7 +4040,7 @@ class AddMoreDetails extends Component {
               approvalObj={this.state.approvalObj}
               isBulkUpload={false}
               IsImportEntery={false}
-              costingTypeId={ZBCTypeId}
+              costingTypeId={this.state.CostingTypeId}
             />
           )
         }

@@ -17,6 +17,8 @@ import DayTime from '../common/DayTimeWrapper'
 import DatePicker from "react-datepicker";
 import { EMPTY_GUID } from '../../config/constants';
 import { getUsersMasterLevelAPI } from '../../actions/auth/AuthActions';
+import { REMARKMAXLENGTH } from '../../config/masterData';
+import { costingTypeIdToApprovalTypeIdFunction } from '../common/CommonFunctions';
 
 function MasterSendForApproval(props) {
     const { type, IsFinalLevel, IsPushDrawer, reasonId, masterId, approvalObj, isBulkUpload, IsImportEntery, approvalDetails, IsFinalLevelButtonShow, approvalData, levelDetails } = props
@@ -63,7 +65,7 @@ function MasterSendForApproval(props) {
                 LoggedInUserId: loggedInUserId(),
                 DepartmentId: departObj && departObj[0]?.Value,
                 MasterId: masterId,
-                ApprovalTypeId: props?.costingTypeId,
+                ApprovalTypeId: costingTypeIdToApprovalTypeIdFunction(props?.costingTypeId),
                 ReasonId: reasonId
             }
 
@@ -126,7 +128,7 @@ function MasterSendForApproval(props) {
             DepartmentId: value.value,
             MasterId: masterId,
             ReasonId: '',
-            ApprovalTypeId: props?.costingTypeId,
+            ApprovalTypeId: costingTypeIdToApprovalTypeIdFunction(props?.costingTypeId),
         }
         dispatch(getAllMasterApprovalUserByDepartment(obj, (res) => {
             res.data.DataList &&
@@ -177,7 +179,7 @@ function MasterSendForApproval(props) {
             senderObj.PurchasingGroup = ''
             senderObj.MaterialGroup = ''
             senderObj.CostingTypeId = props?.costingTypeId
-            senderObj.ApprovalTypeId = props?.costingTypeId
+            senderObj.ApprovalTypeId = costingTypeIdToApprovalTypeIdFunction(props?.costingTypeId)
             let tempArray = []
             switch (masterId) {
                 case 1:                        // CASE 1 FOR RAW MATERIAL

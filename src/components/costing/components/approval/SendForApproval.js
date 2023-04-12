@@ -23,6 +23,7 @@ import VerifyImpactDrawer from '../../../simulation/components/VerifyImpactDrawe
 import LoaderCustom from '../../../common/LoaderCustom'
 import TooltipCustom from '../../../common/Tooltip'
 import { getUsersTechnologyLevelAPI } from '../../../../actions/auth/AuthActions'
+import { costingTypeIdToApprovalTypeIdFunction } from '../../../common/CommonFunctions'
 
 
 const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
@@ -48,7 +49,6 @@ const SendForApproval = (props) => {
   const [financialYear, setFinancialYear] = useState('')
   const [approvalDropDown, setApprovalDropDown] = useState([])
   const [showValidation, setShowValidation] = useState(false)
-  const [isFinalApproverShow, setIsFinalApproverShow] = useState(false)
   const [approver, setApprover] = useState('')
   const [isDisable, setIsDisable] = useState('')
   const [isRegularize, setIsRegularize] = useState(false);
@@ -132,7 +132,7 @@ const SendForApproval = (props) => {
     obj.DepartmentId = '00000000-0000-0000-0000-000000000000'
     obj.LoggedInUserLevelId = userDetails().LoggedInLevelId
     obj.LoggedInUserId = userDetails().LoggedInUserId
-    obj.approvalTypeId = viewApprovalData[0]?.costingTypeId
+    obj.approvalTypeId = costingTypeIdToApprovalTypeIdFunction(viewApprovalData[0]?.costingTypeId)
 
     let drawerDataObj = {}
     drawerDataObj.EffectiveDate = viewApprovalData[0]?.effectiveDate
@@ -176,7 +176,7 @@ const SendForApproval = (props) => {
         DepartmentId: departObj[0]?.Value,
         TechnologyId: props.technologyId,
         ReasonId: 0, // key only for minda
-        ApprovalTypeId: viewApprovalData[0]?.costingTypeId,
+        ApprovalTypeId: costingTypeIdToApprovalTypeIdFunction(viewApprovalData[0]?.costingTypeId),
       }
       dispatch(getAllApprovalUserFilterByDepartment(requestObject, (res) => {
         let tempDropdownList = []
@@ -269,7 +269,7 @@ const SendForApproval = (props) => {
         LoggedInUserId: userData.LoggedInUserId,
         DepartmentId: newValue.value,
         TechnologyId: props.technologyId,
-        ApprovalTypeId: viewApprovalData[0]?.costingTypeId,
+        ApprovalTypeId: costingTypeIdToApprovalTypeIdFunction(viewApprovalData[0]?.costingTypeId),
       }
       dispatch(getAllApprovalUserFilterByDepartment(requestObject, (res) => {
         res.data.DataList && res.data.DataList.map((item) => {
@@ -480,7 +480,7 @@ const SendForApproval = (props) => {
         SenderId: userData.LoggedInUserId,
         SenderRemark: data.remarks,
         LoggedInUserId: userData.LoggedInUserId,
-        ApprovalTypeId: viewApprovalData[0].costingTypeId,
+        ApprovalTypeId: costingTypeIdToApprovalTypeIdFunction(viewApprovalData[0].costingTypeId),
         // Quantity: getValues('Quantity'),
         // Attachment: files,
         // IsLimitCrossed: IsLimitCrossed
@@ -559,7 +559,7 @@ const SendForApproval = (props) => {
       // props.closeDrawer()
       dispatch(sendForApprovalBySender(obj, (res) => {
         setIsDisable(false)
-        Toaster.success(viewApprovalData.length === 1 ? `Costing ID ${viewApprovalData[0].costingName} has been sent for approval to ${approver.split('(')[0]}.` : `Costings has been sent for approval to ${approver.split('(')[0]}.`)
+        Toaster.success(viewApprovalData.length === 1 ? `Costing Id ${viewApprovalData[0].costingName} has been sent for approval to ${approver.split('(')[0]}.` : `Costings has been sent for approval to ${approver.split('(')[0]}.`)
         props.closeDrawer('', 'Submit')
         dispatch(setCostingApprovalData([]))
         dispatch(setCostingViewData([]))
@@ -754,7 +754,7 @@ const SendForApproval = (props) => {
                         <span className="grey-text">{`${isApprovalisting ? data.partNo : partNo.partNumber}`}</span>
                       </div>
                       <div className=" d-inline-block mr-4">
-                        {(data.costingTypeId === ZBCTypeId) ? `Plant Code:` : (data.costingTypeId === VBCTypeId || data.costingTypeId === NCCTypeId) ? `Vendor Code:` : `Customer Code:`}
+                        {(data.costingTypeId === ZBCTypeId) ? `Plant Code: ` : (data.costingTypeId === VBCTypeId || data.costingTypeId === NCCTypeId) ? `Vendor Code: ` : `Customer Code: `}
                         <span className="grey-text">{(data.costingTypeId === ZBCTypeId) ? `${data.plantCode}` : (data.costingTypeId === VBCTypeId || data.costingTypeId === NCCTypeId) ? `${data.vendorCode}` : `${data.customerCode}`}</span>
                       </div>
                       <div className=" d-inline-block">
@@ -1141,7 +1141,7 @@ const SendForApproval = (props) => {
                       <div className={'cancel-icon'}></div>
                       {"Cancel"}
                     </button>
-                    {viewApprovalData && viewApprovalData[0]?.costingTypeId !== NCCTypeId && <button type="button" className="user-btn mr5 save-btn" onClick={viewImpactDrawer}>
+                    {viewApprovalData && viewApprovalData[0]?.costingTypeId === VBCTypeId && <button type="button" className="user-btn mr5 save-btn" onClick={viewImpactDrawer}>
                       <div className={"save-icon"}></div>
                       {"Verify Impact"}
                     </button>
@@ -1150,7 +1150,7 @@ const SendForApproval = (props) => {
                       className="btn btn-primary save-btn"
                       type="button"
                       // className="submit-button save-btn"
-                      disabled={isDisable || isDisabledSAP || isFinalApproverShow}
+                      // disabled={isDisable || isDisabledSAP || isFinalApproverShow}
                       onClick={onSubmit}
                     >
                       <div className={'save-icon'}></div>

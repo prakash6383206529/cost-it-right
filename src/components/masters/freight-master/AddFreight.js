@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { Field, reduxForm, formValueSelector } from "redux-form";
+import { Field, reduxForm, formValueSelector, clearFields } from "redux-form";
 import { Row, Col, Table, Label } from "reactstrap";
 import { required, checkForNull, positiveAndDecimalNumber, maxLength10, checkForDecimalAndNull, decimalLengthFour, number } from "../../../helper/validation";
 import { renderTextInputField, searchableSelect } from "../../layout/FormInputs";
@@ -95,6 +95,18 @@ class AddFreight extends Component {
   * @description Used for Vendor checked
   */
   onPressVendor = (costingHeadFlag) => {
+    const fieldsToClear = [
+      'Mode',
+      'vendorName',
+      'SourceLocation',
+      'DestinationLocation',
+      'clientName',
+      'Plant',
+      'DestinationPlant',
+    ];
+    fieldsToClear.forEach(fieldName => {
+      this.props.dispatch(clearFields('AddFreight', false, false, fieldName));
+    });
     this.setState({
       vendorName: [],
       costingTypeId: costingHeadFlag
