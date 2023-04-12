@@ -159,6 +159,7 @@ function MasterCostMovement() {
                             options={renderListing('material')}
                             mandatory={false}
                             handleChange={handleRMChange}
+                            buttonCross={resetData('RawMaterialId')}
                             errors={errors.RawMaterialId}
                         />
                     </Col>
@@ -175,6 +176,7 @@ function MasterCostMovement() {
                             options={renderListing('grade')}
                             mandatory={false}
                             handleChange={handleGradeChange}
+                            buttonCross={resetData('RawMaterialGradeId')}
                             errors={errors.RawMaterialGradeId}
                         />
                     </Col>
@@ -191,6 +193,7 @@ function MasterCostMovement() {
                             options={renderListing('specification')}
                             mandatory={false}
                             handleChange={() => { }}
+                            buttonCross={resetData('RawMaterialSpecificationId')}
                             errors={errors.RawMaterialSpecificationId}
                         />
                     </Col>
@@ -208,6 +211,7 @@ function MasterCostMovement() {
                             mandatory={false}
                             handleChange={handleRMChange}
                             errors={errors.RMcode}
+                            buttonCross={resetData('RMcode')}
                         />
                     </Col>
                     <Col md="3">
@@ -223,7 +227,8 @@ function MasterCostMovement() {
                             options={renderListing('category')}
                             mandatory={false}
                             handleChange={handleCategoryChange}
-                            errors={errors.RawMaterialSpecificationId}
+                            buttonCross={resetData('CategoryId')}
+                            errors={errors.CategoryId}
                         />
                     </Col>
                 </>
@@ -243,6 +248,7 @@ function MasterCostMovement() {
                         options={renderListing('BOPName')}
                         mandatory={false}
                         handleChange={handleBOPChange}
+                        buttonCross={resetData('BOPId')}
                         errors={errors.BOPId}
                     />
                 </Col>
@@ -259,6 +265,7 @@ function MasterCostMovement() {
                             options={renderListing('BOPCategory')}
                             mandatory={false}
                             handleChange={(value) => setBOPCategory(value)}
+                            buttonCross={resetData('BOPCategoryId')}
                             errors={errors.BOPCategoryId}
                         />
                     </Col>
@@ -279,6 +286,7 @@ function MasterCostMovement() {
                             options={renderListing('Operation')}
                             mandatory={false}
                             handleChange={(value) => { setOperationData(value) }}
+                            buttonCross={resetData('OperationId')}
                             errors={errors.OperationId}
                         />
                     </Col>
@@ -298,6 +306,7 @@ function MasterCostMovement() {
                             options={renderListing('process')}
                             mandatory={false}
                             handleChange={(value) => { setProcessData(value) }}
+                            buttonCross={resetData('processCode')}
                             errors={errors.MachineId}
                         />
                     </Col>
@@ -307,7 +316,144 @@ function MasterCostMovement() {
                 break;
         }
     }
+    const resetData = (type) => {
+        function resetAllFields() {
+            setMaster([])
+            setTechnology([])
+            setVendor([])
+            setRMGrade([])
+            setRawMaterial([]);
+            setBOPCategory([])
+            setBOPData([])
+            setCategory([])
+            setRMSpec([])
+            setProcessData([])
+            setOperationData([])
+            setMaster('')
+            setIsNotBOP(false)
+            setValue('RMcode', '')
+            setValue('CategoryId', '')
+            setValue('BOPCategoryId', '')
+        }
+        const resetDate = (params) => {
+            setValue(params, '')
+            setValue('Masters', '')
+            setMaster([])
+            setDisabledButton(true)
+            setTechnology([])
+            resetAllFields()
+        }
+        switch (type) {
+            case 'plant':
+                return function resetField() {
+                    setValue('plant', '')
+                    setPlant([])
+                }
 
+            case 'vendor':
+                return function resetField() {
+                    setValue('vendor', '')
+                    setVendor([])
+                }
+            case 'Customer':
+                return function resetField() {
+                    setValue('Customer', '')
+                }
+            case 'costingHeadType':
+                return function resetField() {
+                    const fields = ['costingHeadType', 'vendor']
+                    fields.forEach((field) => {
+                        setValue(field, '')
+                    })
+                    setCostingHeadType([])
+                    setShowCustomer(false)
+                    setVendor([])
+                    setTechnology([])
+
+                }
+            case 'Masters':
+                return function resetField() {
+                    setValue('Masters', '')
+                    setDisabledButton(true)
+                    resetAllFields()
+                }
+
+            case 'Technology':
+                return function resetField() {
+                    setValue('technology', '')
+                    setTechnology([])
+                }
+            case 'RawMaterialId':
+                return function resetField() {
+                    const fields = ['RawMaterialId', 'RawMaterialGradeId', 'RawMaterialSpecificationId', 'RMcode',]
+                    fields.forEach((field) => {
+                        setValue(field, '')
+                    })
+
+                    setRMGrade([])
+                    setRawMaterial([]);
+                    dispatch(fetchSpecificationDataAPI(0, () => { }))
+                    setRMSpec([]);
+                }
+            case 'RawMaterialGradeId':
+                return function resetField() {
+                    const fields = ['RawMaterialGradeId', 'RawMaterialSpecificationId', 'RMcode']
+                    fields.forEach((field) => {
+                        setValue(field, '')
+                    })
+                    dispatch(fetchSpecificationDataAPI(0, () => { }))
+                    setRMSpec([])
+                    setRMGrade([])
+                }
+            case 'RawMaterialSpecificationId':
+                return function resetField() {
+                    setValue('RawMaterialSpecificationId', '')
+                    setValue('RMcode', '')
+                    setRMSpec([])
+                }
+            case 'RMcode':
+                return function resetField() {
+                    setValue('RMcode', '')
+                }
+            case 'CategoryId':
+                return function resetField() {
+                    setValue('CategoryId', '')
+                    setCategory([])
+                }
+            case 'BOPCategoryId':
+                return function resetField() {
+                    setValue('BOPCategoryId', '')
+                    setBOPCategory([])
+                }
+            case 'BOPId':
+                return function resetField() {
+                    setValue('BOPId', '')
+                    setBOPData([])
+                }
+            case 'processCode':
+                return function resetField() {
+                    setValue('processCode', '')
+                    setProcessData([])
+                }
+            case 'OperationId':
+                return function resetField() {
+                    setValue('OperationId', '')
+                    setOperationData([])
+                }
+            case 'fromDate':
+                return function resetField() {
+                    resetDate('fromDate')
+                    setToDate('')
+                }
+            case 'toDate':
+                return function resetField() {
+                    resetDate('toDate')
+                    setToDate('')
+                }
+            default:
+                return () => { };
+        }
+    }
 
     const listMapping = {
         'masters': masterList,
@@ -356,7 +502,7 @@ function MasterCostMovement() {
                             temp.push({ label: item.Text, value: item.Value });
                         }
                     }
-                    else if (label === 'process') {
+                    else if (label === 'costingHeadType') {
                         if (item.Value === '5' || item.Value === '8') {
                             return false
                         }
@@ -502,10 +648,8 @@ function MasterCostMovement() {
                 masterData = {
                     "BoughtOutPartCategoryId": Number(BOPCategory.value),
                     "BoughtOutPartChildId": BOPData.BoughtOutPartId,
-                    "BoughtOutPartNumber": BOPData.BoughtOutPartNumber,
-                    "BoughtOutPartName": BOPData.BoughtOutPartName,
-                    "BoughtOutPartCategory": BOPData.Category,
-                    "BoughtOutPartSpec": BOPData.Specification,
+
+
                 }
                 break;
             case Number(6):
@@ -535,9 +679,7 @@ function MasterCostMovement() {
     const viewListingHandler = (value) => {
         setReportListing(value)
     }
-    const resetData = () => {
 
-    }
     return <Fragment>
         {!reportListing &&
             <form onSubmit={handleSubmit(runReport)}>
@@ -567,6 +709,7 @@ function MasterCostMovement() {
                                     disabledKeyboardNavigation
                                     onChangeRaw={(e) => e.preventDefault()}
                                     // disabled={rowData.length !== 0}
+                                    buttonCross={resetData('fromDate')}
                                     mandatory={true}
                                     errors={errors && errors.fromDate}
                                 />
@@ -594,6 +737,7 @@ function MasterCostMovement() {
                                     disabledKeyboardNavigation
                                     onChangeRaw={(e) => e.preventDefault()}
                                     // disabled={rowData.length !== 0}
+                                    buttonCross={resetData('toDate')}
                                     mandatory={true}
                                     errors={errors && errors.toDate}
                                 />
@@ -613,6 +757,7 @@ function MasterCostMovement() {
                                 mandatory={true}
                                 handleChange={handleMasterChange}
                                 errors={errors.Masters}
+                                buttonCross={resetData('Masters')}
                                 disabled={(fromDate && toDate) === '' ? true : false}
                             />
 
@@ -620,7 +765,7 @@ function MasterCostMovement() {
                         <Col md="3">
                             <SearchableSelectHookForm
                                 label={"Costing Head Type"}
-                                name={"costingHeadTypeId"}
+                                name={"costingHeadType"}
                                 placeholder={"Costing Head Type"}
                                 Controller={Controller}
                                 control={control}
@@ -631,13 +776,14 @@ function MasterCostMovement() {
                                 mandatory={false}
                                 handleChange={handleCostingHeadTypeChange}
                                 errors={errors.costingHeadTypeId}
+                                buttonCross={resetData('costingHeadType')}
                             // isDisabled={isEditFlag || isViewFlag}
                             />
                         </Col>
                         {isNotBOP && <Col md="3">
                             <SearchableSelectHookForm
                                 label={'Technology'}
-                                name={'TechnologyId'}
+                                name={'Technology'}
                                 placeholder={'Technology'}
                                 Controller={Controller}
                                 control={control}
@@ -647,6 +793,7 @@ function MasterCostMovement() {
                                 options={renderListing('technology')}
                                 mandatory={false}
                                 handleChange={(e) => { setTechnology(e) }}
+                                buttonCross={resetData('Technology')}
                                 errors={errors.TechnologyId}
                             />
                         </Col>}
@@ -663,6 +810,7 @@ function MasterCostMovement() {
                                 register={register}
                                 // defaultValue={customer.length !== 0 ? customer : ""}
                                 options={renderListing("Customer")}
+                                buttonCross={resetData('Customer')}
                                 mandatory={false}
                                 handleChange={() => { }}
                                 errors={errors.Customer}
@@ -683,13 +831,14 @@ function MasterCostMovement() {
                                     errors={errors.vendor}
                                     // isLoading={VendorLoaderObj}
                                     asyncOptions={vendorFilterList}
+                                    buttonCross={resetData('vendor')}
                                     disabled={false}
                                     NoOptionMessage={MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN}
                                 />
                             }
 
                         </Col>
-                        <Col md="3" className='align-items-center'>
+                        <Col md="3" className='align-items-centeratory'>
                             <SearchableSelectHookForm
                                 label={"Plant (Code)"}
                                 name={"plant"}
@@ -703,6 +852,7 @@ function MasterCostMovement() {
                                 mandatory={false}
                                 handleChange={(e) => { setPlant(e) }}
                                 errors={errors.plant}
+                                buttonCross={resetData('plant')}
                             // isLoading={VendorLoaderObj}
                             // disabled={dataProps?.isAddFlag ? false : (dataProps?.isViewFlag || !isEditAll)}
                             />
