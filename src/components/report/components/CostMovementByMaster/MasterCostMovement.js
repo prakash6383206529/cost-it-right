@@ -45,6 +45,7 @@ function MasterCostMovement() {
     const [operationData, setOperationData] = useState([])
     const [processData, setProcessData] = useState([])
     const [disabledButton, setDisabledButton] = useState(true)
+    const [isNotBOP, setIsNotBOP] = useState(false)
     const masterList = useSelector(state => state.simulation.masterSelectList)
     const rawMaterialNameSelectList = useSelector(state => state.material.rawMaterialNameSelectList);
     const gradeSelectList = useSelector(state => state.material.gradeSelectList);
@@ -111,21 +112,26 @@ function MasterCostMovement() {
                 dispatch(getRMGradeSelectListByRawMaterial('', () => { }))
                 dispatch(getRawMaterialNameChild(() => { }))
                 dispatch(getRawMaterialCategory(() => { }))
+                setIsNotBOP(true)
                 break;
             case 4:
             case 5:
                 dispatch(getBoughtOutPartSelectList(DayTime(fromDate).format('DD-MM-YYYY'), () => { }))
                 dispatch(getBOPCategorySelectList(() => { }))
+                setIsNotBOP(false)
                 break;
             case 6:
                 dispatch(getOperationPartSelectList(() => { }))
+                setIsNotBOP(true)
                 break;
             case 7:
                 dispatch(getOperationPartSelectList(() => { }))
                 setIsSurfaceTrue(true)
+                setIsNotBOP(true)
                 break;
             case 9:
                 dispatch(getProcessesSelectList(() => { }))
+                setIsNotBOP(true)
                 break;
             default:
                 break;
@@ -147,11 +153,11 @@ function MasterCostMovement() {
                             placeholder={'Select'}
                             Controller={Controller}
                             control={control}
-                            rules={{ required: true }}
+                            rules={{ required: false }}
                             register={register}
                             defaultValue={rawMaterial}
                             options={renderListing('material')}
-                            mandatory={true}
+                            mandatory={false}
                             handleChange={handleRMChange}
                             errors={errors.RawMaterialId}
                         />
@@ -163,11 +169,11 @@ function MasterCostMovement() {
                             placeholder={'Select'}
                             Controller={Controller}
                             control={control}
-                            rules={{ required: true }}
+                            rules={{ required: false }}
                             register={register}
                             defaultValue={RMGrade}
                             options={renderListing('grade')}
-                            mandatory={true}
+                            mandatory={false}
                             handleChange={handleGradeChange}
                             errors={errors.RawMaterialGradeId}
                         />
@@ -179,11 +185,11 @@ function MasterCostMovement() {
                             placeholder={'Select'}
                             Controller={Controller}
                             control={control}
-                            rules={{ required: true }}
+                            rules={{ required: false }}
                             register={register}
                             defaultValue={RMSpec}
                             options={renderListing('specification')}
-                            mandatory={true}
+                            mandatory={false}
                             handleChange={() => { }}
                             errors={errors.RawMaterialSpecificationId}
                         />
@@ -195,11 +201,11 @@ function MasterCostMovement() {
                             placeholder={'Select'}
                             Controller={Controller}
                             control={control}
-                            rules={{ required: true }}
+                            rules={{ required: false }}
                             register={register}
                             // defaultValue={RMcode}
                             options={renderListing('RMCode')}
-                            mandatory={true}
+                            mandatory={false}
                             handleChange={handleRMChange}
                             errors={errors.RMcode}
                         />
@@ -211,11 +217,11 @@ function MasterCostMovement() {
                             placeholder={'Select'}
                             Controller={Controller}
                             control={control}
-                            rules={{ required: true }}
+                            rules={{ required: false }}
                             register={register}
                             defaultValue={category}
                             options={renderListing('category')}
-                            mandatory={true}
+                            mandatory={false}
                             handleChange={handleCategoryChange}
                             errors={errors.RawMaterialSpecificationId}
                         />
@@ -231,11 +237,11 @@ function MasterCostMovement() {
                         placeholder={'Select'}
                         Controller={Controller}
                         control={control}
-                        rules={{ required: true }}
+                        rules={{ required: false }}
                         register={register}
                         defaultValue={""}
                         options={renderListing('BOPName')}
-                        mandatory={true}
+                        mandatory={false}
                         handleChange={handleBOPChange}
                         errors={errors.BOPId}
                     />
@@ -247,11 +253,11 @@ function MasterCostMovement() {
                             placeholder={'Select'}
                             Controller={Controller}
                             control={control}
-                            rules={{ required: true }}
+                            rules={{ required: false }}
                             register={register}
                             defaultValue={BOPCategory}
                             options={renderListing('BOPCategory')}
-                            mandatory={true}
+                            mandatory={false}
                             handleChange={(value) => setBOPCategory(value)}
                             errors={errors.BOPCategoryId}
                         />
@@ -267,11 +273,11 @@ function MasterCostMovement() {
                             placeholder={'Select'}
                             Controller={Controller}
                             control={control}
-                            rules={{ required: true }}
+                            rules={{ required: false }}
                             register={register}
                             defaultValue={""}
                             options={renderListing('Operation')}
-                            mandatory={true}
+                            mandatory={false}
                             handleChange={(value) => { setOperationData(value) }}
                             errors={errors.OperationId}
                         />
@@ -286,11 +292,11 @@ function MasterCostMovement() {
                             placeholder={'Select'}
                             Controller={Controller}
                             control={control}
-                            rules={{ required: true }}
+                            rules={{ required: false }}
                             register={register}
                             defaultValue={""}
                             options={renderListing('process')}
-                            mandatory={true}
+                            mandatory={false}
                             handleChange={(value) => { setProcessData(value) }}
                             errors={errors.MachineId}
                         />
@@ -529,6 +535,9 @@ function MasterCostMovement() {
     const viewListingHandler = (value) => {
         setReportListing(value)
     }
+    const resetData = () => {
+
+    }
     return <Fragment>
         {!reportListing &&
             <form onSubmit={handleSubmit(runReport)}>
@@ -615,32 +624,32 @@ function MasterCostMovement() {
                                 placeholder={"Costing Head Type"}
                                 Controller={Controller}
                                 control={control}
-                                rules={{ required: true }}
+                                rules={{ required: false }}
                                 register={register}
                                 defaultValue={costingHeadType}
                                 options={renderListing("costingHeadType")}
-                                mandatory={true}
+                                mandatory={false}
                                 handleChange={handleCostingHeadTypeChange}
                                 errors={errors.costingHeadTypeId}
                             // isDisabled={isEditFlag || isViewFlag}
                             />
                         </Col>
-                        <Col md="3">
+                        {isNotBOP && <Col md="3">
                             <SearchableSelectHookForm
                                 label={'Technology'}
                                 name={'TechnologyId'}
                                 placeholder={'Technology'}
                                 Controller={Controller}
                                 control={control}
-                                rules={{ required: true }}
+                                rules={{ required: false }}
                                 register={register}
                                 defaultValue={technology}
                                 options={renderListing('technology')}
-                                mandatory={true}
+                                mandatory={false}
                                 handleChange={(e) => { setTechnology(e) }}
                                 errors={errors.TechnologyId}
                             />
-                        </Col>
+                        </Col>}
                         {inputFieldsRenderer()}
 
                         <Col md="3">
@@ -668,7 +677,7 @@ function MasterCostMovement() {
                                     register={register}
                                     defaultValue={vendor.length !== 0 ? vendor : ""}
                                     options={renderListing("vendor")}
-                                    mandatory={true}
+                                    mandatory={false}
                                     handleChange={handleVendorChange}
                                     // handleChange={() => { }}
                                     errors={errors.vendor}
@@ -680,18 +689,18 @@ function MasterCostMovement() {
                             }
 
                         </Col>
-                        <Col md="3" className='align-items-center mt2'>
+                        <Col md="3" className='align-items-center'>
                             <SearchableSelectHookForm
                                 label={"Plant (Code)"}
                                 name={"plant"}
                                 placeholder={"Select"}
                                 Controller={Controller}
                                 control={control}
-                                rules={{ required: true }}
+                                rules={{ required: false }}
                                 register={register}
                                 // defaultValue={vendor.length !== 0 ? vendor : ""}
                                 options={renderListing("plant")}
-                                mandatory={true}
+                                mandatory={false}
                                 handleChange={(e) => { setPlant(e) }}
                                 errors={errors.plant}
                             // isLoading={VendorLoaderObj}
