@@ -161,6 +161,7 @@ function AddRfq(props) {
                     setValue("plant", {
                         label: data.PlantName, value: data.PlantId
                     })
+                    setTechnology({ label: data.TechnologyName, value: data.TechnologyId })
                     // setInitialFiles(data?.Attachments)
                     // setValue('SubmissionDate', data?.LastSubmissionDate)
                     setSubmissionDate(data?.LastSubmissionDate)
