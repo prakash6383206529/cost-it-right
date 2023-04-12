@@ -45,7 +45,7 @@ function MasterCostMovement() {
     const [operationData, setOperationData] = useState([])
     const [processData, setProcessData] = useState([])
     const [disabledButton, setDisabledButton] = useState(true)
-    const [isNotBOP, setIsNotBOP] = useState(false)
+    const [showTechnologyField, setShowTechnologyField] = useState(false)
     const masterList = useSelector(state => state.simulation.masterSelectList)
     const rawMaterialNameSelectList = useSelector(state => state.material.rawMaterialNameSelectList);
     const gradeSelectList = useSelector(state => state.material.gradeSelectList);
@@ -112,26 +112,26 @@ function MasterCostMovement() {
                 dispatch(getRMGradeSelectListByRawMaterial('', () => { }))
                 dispatch(getRawMaterialNameChild(() => { }))
                 dispatch(getRawMaterialCategory(() => { }))
-                setIsNotBOP(true)
+                setShowTechnologyField(true)
                 break;
             case 4:
             case 5:
                 dispatch(getBoughtOutPartSelectList(DayTime(fromDate).format('DD-MM-YYYY'), () => { }))
                 dispatch(getBOPCategorySelectList(() => { }))
-                setIsNotBOP(false)
+                setShowTechnologyField(false)
                 break;
             case 6:
                 dispatch(getOperationPartSelectList(() => { }))
-                setIsNotBOP(true)
+                setShowTechnologyField(true)
                 break;
             case 7:
                 dispatch(getOperationPartSelectList(() => { }))
                 setIsSurfaceTrue(true)
-                setIsNotBOP(true)
+                setShowTechnologyField(true)
                 break;
             case 9:
                 dispatch(getProcessesSelectList(() => { }))
-                setIsNotBOP(true)
+                setShowTechnologyField(true)
                 break;
             default:
                 break;
@@ -330,7 +330,7 @@ function MasterCostMovement() {
             setProcessData([])
             setOperationData([])
             setMaster('')
-            setIsNotBOP(false)
+            setShowTechnologyField(false)
             setValue('RMcode', '')
             setValue('CategoryId', '')
             setValue('BOPCategoryId', '')
@@ -780,7 +780,7 @@ function MasterCostMovement() {
                             // isDisabled={isEditFlag || isViewFlag}
                             />
                         </Col>
-                        {isNotBOP && <Col md="3">
+                        {showTechnologyField && <Col md="3">
                             <SearchableSelectHookForm
                                 label={'Technology'}
                                 name={'Technology'}
