@@ -940,7 +940,6 @@ class SideBar extends Component {
 
                       return this.renderMenus(item.ModuleName, item.LandingPageURL);
                     })}
-                     {this.renderNFR('RFQ')}
                 </ul>
               </nav>
             </div>
