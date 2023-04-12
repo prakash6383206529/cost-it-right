@@ -742,7 +742,6 @@ export function getOperationPartSelectList(callback) {
     return (dispatch) => {
         const request = axios.get(`${API.getOperationPartSelectList}`, config());
         request.then((response) => {
-            console.log('response: ', response);
             if (response.data.Result) {
                 dispatch({
                     type: GET_OPERATION_SELECTLIST,
