@@ -10,6 +10,7 @@ import {
     GET_COST_RATIO_REPORT,
     GET_REPORT_FORM_GRID_DATA
 } from '../../../config/constants';
+import { apiErrors } from '../../../helper';
 
 // const config() = config
 
@@ -336,7 +337,7 @@ export function getRMCostMovement(data, callback) {
         }).catch((error) => {
             dispatch({ type: API_FAILURE, });
             callback(error);
-            //apiErrors(error);
+            apiErrors(error);
         });
 
     };
@@ -351,7 +352,7 @@ export function getBOPCostMovement(data, callback) {
         }).catch((error) => {
             dispatch({ type: API_FAILURE, });
             callback(error);
-            //apiErrors(error);
+            apiErrors(error);
         });
 
     };
@@ -365,7 +366,7 @@ export function getOperationMovement(data, callback) {
         }).catch((error) => {
             dispatch({ type: API_FAILURE, });
             callback(error);
-            //apiErrors(error);
+            apiErrors(error);
         });
 
     };
@@ -379,7 +380,7 @@ export function getMachineProcessMovement(data, callback) {
         }).catch((error) => {
             dispatch({ type: API_FAILURE, });
             callback(error);
-            //apiErrors(error);
+            apiErrors(error);
         });
 
     };
