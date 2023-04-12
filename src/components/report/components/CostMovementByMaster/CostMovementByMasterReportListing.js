@@ -122,7 +122,14 @@ function CostMovementByMasterReportListing(props) {
                     if (res.status === 200) {
                         setIsData(true)
                         setRowData(res.data.Data.Data)
-                        setColumnDefs(res.data.Data.TableHeads)
+                        let temp = res.data.Data.TableHeads;
+                        let newTemp = []
+                        temp.map((item) => {
+                            item.cellRenderer = dashFormatter
+                            newTemp.push(item)
+                            return null
+                        })
+                        setColumnDefs(newTemp)
                         setIsLoader(false)
                     }
                     else {
@@ -137,7 +144,14 @@ function CostMovementByMasterReportListing(props) {
                     if (res.status === 200) {
                         setIsData(true)
                         setRowData(res.data.Data.Data)
-                        setColumnDefs(res.data.Data.TableHeads)
+                        let temp = res.data.Data.TableHeads;
+                        let newTemp = []
+                        temp.map((item) => {
+                            item.cellRenderer = dashFormatter
+                            newTemp.push(item)
+                            return null
+                        })
+                        setColumnDefs(newTemp)
                         setIsLoader(false)
                     }
                     else {
