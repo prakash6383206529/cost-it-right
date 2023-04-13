@@ -4,7 +4,7 @@ import "./formInputs.scss";
 import AsyncSelect from 'react-select/async';
 import LoaderCustom from "../common/LoaderCustom";
 import { SPACEBAR } from "../../config/constants";
-import DatePicker from 'react-datepicker'
+import DatePicker, { ReactDatePicker } from 'react-datepicker'
 
 export const TextFieldHooks = (input) => {
 

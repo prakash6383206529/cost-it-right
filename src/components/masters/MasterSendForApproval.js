@@ -15,11 +15,11 @@ import Toaster from '../common/Toaster';
 import { getReasonSelectList } from '../costing/actions/Approval';
 import DayTime from '../common/DayTimeWrapper'
 import DatePicker from "react-datepicker";
-import { EMPTY_GUID } from '../../config/constants';
+import { BUDGET_ID, EMPTY_GUID, VBCTypeId, ZBCTypeId } from '../../config/constants';
 import { getUsersMasterLevelAPI } from '../../actions/auth/AuthActions';
 import { REMARKMAXLENGTH } from '../../config/masterData';
 import { costingTypeIdToApprovalTypeIdFunction } from '../common/CommonFunctions';
-import { masterApprovalRequestBySenderBudget } from './actions/Budget';
+import { masterApprovalAPI, masterApprovalRequestBySenderBudget } from './actions/Budget';
 
 function MasterSendForApproval(props) {
     const { type, IsFinalLevel, IsPushDrawer, reasonId, masterId, approvalObj, isBulkUpload, IsImportEntery, approvalDetails, IsFinalLevelButtonShow, approvalData, levelDetails } = props
@@ -160,8 +160,8 @@ function MasterSendForApproval(props) {
         if (type === 'Sender') {
             //THIS OBJ IS FOR SIMULATION SEND FOR APPROVAL
             let senderObj = {}
-            senderObj.ApprovalId = EMPTY_GUID
-            senderObj.ReasonId = reason ? reason.value : ''
+            senderObj.ApprovalMasterId = BUDGET_ID
+            senderObj.ReasonId = reason ? reason.value : 0
             senderObj.Reason = reason ? reason.label : ''
             senderObj.IsFinalApproved = false
             senderObj.DepartmentId = dept && dept.value ? dept.value : ''
@@ -171,9 +171,9 @@ function MasterSendForApproval(props) {
             senderObj.ApproverLevel = approver && approver.levelName ? approver.levelName : ''
             senderObj.ApproverDepartmentName = dept && dept.label ? dept.label : ''
             senderObj.ApproverId = approver && approver.value ? approver.value : ''
-            senderObj.SenderLevelId = levelDetails.LevelId
+            senderObj.SenderLevelId = levelDetails?.LevelId
             senderObj.SenderId = loggedInUserId()
-            senderObj.SenderLevel = levelDetails.Level
+            senderObj.SenderLevel = levelDetails?.Level
             senderObj.SenderRemark = remark
             senderObj.LoggedInUserId = loggedInUserId()
             senderObj.IsVendor = approvalObj && Object.keys(approvalObj).length > 0 ? approvalObj.IsVendor : false
@@ -182,6 +182,10 @@ function MasterSendForApproval(props) {
             senderObj.MaterialGroup = ''
             senderObj.CostingTypeId = props?.costingTypeId
             senderObj.ApprovalTypeId = costingTypeIdToApprovalTypeIdFunction(props?.costingTypeId)
+            senderObj.MasterIdList = [
+
+            ]
+            senderObj.BudgetingIdList = []
             let tempArray = []
             switch (masterId) {
                 case 1:                        // CASE 1 FOR RAW MATERIAL
@@ -277,16 +281,55 @@ function MasterSendForApproval(props) {
                     break;
 
                 case 5:  //CASE 5 FOR BUDGET MASTER
+                    // check here @ashok
+                    // if (isBulkUpload) {
+                    //     approvalData && approvalData.map(item => {
+                    //         tempArray.push({ BoughtOutPartId: item.BoughtOutPartId, IsImportEntery: item.EnteryType === 'Domestic' ? false : true, BoughtoutPartRequest: {}, CostingTypeId: item.CostingTypeId })
+                    //         return null
+                    //     })
+                    // } else {
+                    //     tempArray.push({ BoughtPartId: EMPTY_GUID, IsImportEntery: IsImportEntery, BoughtoutPartRequest: approvalObj })
+                    // }
+                    // senderObj.EntityList = tempArray
+                    let obj = {
 
-
-                    tempArray.push({
+                        LoggedInUserId: loggedInUserId(),
                         BudgetingId: 0,
-                        BudgetingRequest: approvalObj,
-                    })
+                        FinancialYear: approvalObj.FinancialYear,
+                        NetPoPrice: approvalObj.NetPoPrice,
+                        BudgetedPoPrice: approvalObj.BudgetedPoPrice,
+                        //RecordInsertedBy: "string",
+                        CostingHeadId: approvalObj.CostingHeadId,
+                        //CostingHead: "string",
+                        PartId: approvalObj.PartId,
+                        //PartName: "string",
+                        //PartNumber: "string",
+                        RevisionNumber: approvalObj.RevisionNumber,
+                        PlantId: approvalObj.PlantId,
+                        //PlantName: "string",
+                        //PlantCode: "string",
+                        VendorId: approvalObj.VendorId,
+                        //VendorName: "string",
+                        //VendorCode: "string",
+                        CustomerId: approvalObj.CustomerId,
+                        //CustomerName: "string",
+                        //CustomerCode: "string",
+                        TotalRecordCount: 0,
+                        CurrencyId: approvalObj.CurrencyId,
+                        //Currency: "string",
+                        BudgetedPoPriceInCurrency: approvalObj.BudgetedPoPriceInCurrency,
+                        IsSendForApproval: true,
+                        IsRecordInsertedBySimulation: false,
+                        IsFinancialDataChanged: true,
+                        BudgetingPartCostingDetails: approvalObj.BudgetingPartCostingDetails,
+                        ConditionsData: approvalObj.conditionTableData
+                    }
+                    senderObj.MasterCreateRequest = {
+                        CreateBudgeting: obj
+                    }
 
-                    senderObj.EntityList = tempArray
                     //THIS CONDITION IS FOR SIMULATION SEND FOR APPROVAL
-                    dispatch(masterApprovalRequestBySenderBudget(senderObj, res => {
+                    dispatch(masterApprovalAPI(senderObj, res => {
                         setIsDisable(false)
                         if (res?.data?.Result) {
                             Toaster.success('Budget has been sent for approval.')
@@ -737,6 +780,178 @@ function MasterSendForApproval(props) {
                                                         )
                                                     })
                                                     }
+                                                </div>
+                                            </>
+                                        }
+
+
+                                        {
+                                            !isBulkUpload && masterId === Number('5') &&
+                                            <>
+                                                {(props.costingTypeId === ZBCTypeId && (<>
+                                                    <div className="col-md-12">
+                                                        <SearchableSelectHookForm
+                                                            name="Plant"
+                                                            type="text"
+                                                            label={'Plant (Code)'}
+                                                            errors={errors.Plant}
+                                                            Controller={Controller}
+                                                            control={control}
+                                                            register={register}
+                                                            mandatory={true}
+                                                            rules={{
+                                                                required: true,
+                                                            }}
+                                                            placeholder={'Select'}
+                                                            defaultValue={{ label: approvalObj?.PlantName, value: approvalObj?.PlantId }}
+                                                            required={true}
+                                                            disabled={true}
+                                                        />
+                                                    </div>
+                                                </>)
+                                                )}
+
+                                                {(props.costingTypeId === VBCTypeId && (<>
+                                                    <div className="col-md-12">
+                                                        <SearchableSelectHookForm
+                                                            name="vendorName"
+                                                            type="text"
+                                                            label={'Vendor (Code)'}
+                                                            errors={errors.vendorName}
+                                                            Controller={Controller}
+                                                            control={control}
+                                                            register={register}
+                                                            mandatory={true}
+                                                            rules={{
+                                                                required: true,
+                                                            }}
+                                                            defaultValue={{ label: approvalObj?.VendorName, value: approvalObj?.VendorId }}
+                                                            placeholder={'Select'}
+                                                            required={true}
+                                                            disabled={true}
+                                                        />
+                                                    </div>
+                                                </>)
+                                                )}
+
+
+                                                {props.costingTypeId === VBCTypeId &&
+
+                                                    < div className="col-md-12">
+                                                        <SearchableSelectHookForm
+                                                            name="DestinationPlant"
+                                                            type="text"
+                                                            label={props.costingTypeId === VBCTypeId ? 'Destination Plant (Code)' : 'Plant (Code)'}
+                                                            errors={errors.Plant}
+                                                            Controller={Controller}
+                                                            control={control}
+                                                            register={register}
+                                                            mandatory={true}
+                                                            rules={{
+                                                                required: true,
+                                                            }}
+                                                            placeholder={'Select'}
+                                                            defaultValue={{ label: approvalObj?.PlantName, value: approvalObj?.PlantId }}
+                                                            required={true}
+                                                            disabled={true}
+                                                        />
+                                                    </div>
+                                                }
+
+                                                <>
+                                                    <div className="col-md-12">
+                                                        <SearchableSelectHookForm
+                                                            name="PartNumber"
+                                                            type="text"
+                                                            label={'Part No. (Revision No.)'}
+                                                            errors={errors.PartNumber}
+                                                            Controller={Controller}
+                                                            control={control}
+                                                            register={register}
+                                                            mandatory={true}
+                                                            rules={{
+                                                                required: true,
+                                                            }}
+                                                            defaultValue={{ label: approvalObj?.PartName, value: approvalObj?.PartId }}
+                                                            placeholder={'Select'}
+                                                            required={true}
+                                                            disabled={true}
+                                                        />
+                                                    </div>
+                                                </>
+
+
+                                                <div className="col-md-12 p-relative">
+                                                    <SearchableSelectHookForm
+                                                        name="FinancialYear"
+                                                        type="text"
+                                                        label="Year"
+                                                        errors={errors.FinancialYear}
+                                                        Controller={Controller}
+                                                        control={control}
+                                                        register={register}
+                                                        mandatory={true}
+                                                        rules={{
+                                                            required: true,
+                                                        }}
+                                                        defaultValue={{ label: approvalObj?.FinancialYear, value: 0 }}
+                                                        placeholder={'Select'}
+                                                        required={true}
+                                                        disabled={true}
+                                                    />
+                                                </div>
+
+                                                <div className="col-md-12 p-relative">
+                                                    <SearchableSelectHookForm
+                                                        name="currency"
+                                                        type="text"
+                                                        label="Currency"
+                                                        errors={errors.currency}
+                                                        Controller={Controller}
+                                                        control={control}
+                                                        register={register}
+                                                        mandatory={true}
+                                                        rules={{
+                                                            required: true,
+                                                        }}
+                                                        defaultValue={{ label: approvalObj?.Currency, value: approvalObj?.CurrencyId }}
+                                                        placeholder={'Select'}
+                                                        required={true}
+                                                        disabled={true}
+                                                    />
+                                                </div>
+
+                                                <div className="input-group form-group col-md-12">
+                                                    <TextFieldHookForm
+                                                        label="Total Sum"
+                                                        name={'totalSum'}
+                                                        Controller={Controller}
+                                                        control={control}
+                                                        register={register}
+                                                        className=""
+                                                        customClassName={'withBorder'}
+                                                        errors={errors.totalSum}
+                                                        defaultValue={Object.keys(approvalObj).length > 0 ? checkForDecimalAndNull(approvalObj.BudgetedPoPrice, initialConfiguration.NoOfDecimalForPrice) : ''}
+                                                        disabled={true}
+                                                        placeholder={'-'}
+                                                    />
+
+                                                </div>
+
+                                                <div className="input-group form-group col-md-12">
+                                                    <TextFieldHookForm
+                                                        label={approvalObj.Currency ? `Total Sum (${approvalObj.Currency})` : `Total Sum (Currency)`}
+                                                        name={'totalSumCurrency'}
+                                                        Controller={Controller}
+                                                        control={control}
+                                                        register={register}
+                                                        className=""
+                                                        customClassName={'withBorder'}
+                                                        errors={errors.totalSum}
+                                                        defaultValue={Object.keys(approvalObj).length > 0 ? checkForDecimalAndNull(approvalObj.BudgetedPoPriceInCurrency, initialConfiguration.NoOfDecimalForPrice) : ''}
+                                                        disabled={true}
+                                                        placeholder={'-'}
+                                                    />
                                                 </div>
                                             </>
                                         }
