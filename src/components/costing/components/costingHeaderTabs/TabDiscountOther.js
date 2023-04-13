@@ -1202,7 +1202,7 @@ function TabDiscountOther(props) {
                       />
                     </Col>
                   </Row>
-                  <Row>
+                  {initialConfiguration?.IsBasicRateAndCostingConditionVisible && <Row>
                     <Col md="8"><div className="left-border mt-1">Costing Condition:</div></Col>
                     <Col md="4" className="text-right">
                       <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setConditionAcc(!conditionAcc) }}>
@@ -1213,8 +1213,8 @@ function TabDiscountOther(props) {
                         )}
                       </button>
                     </Col>
-                  </Row>
-                  {conditionAcc && <div className='mb-2'><Row>
+                  </Row>}
+                  {initialConfiguration?.IsBasicRateAndCostingConditionVisible && conditionAcc && <div className='mb-2'><Row>
                     {!CostingViewMode && <Col md="12">
                       <div className='d-flex justify-content-end mb-2'>
                         <button
@@ -1229,7 +1229,7 @@ function TabDiscountOther(props) {
                     </Col>}
                   </Row>
                     <ConditionCosting hideAction={true} tableData={conditionTableData} /></div>}
-                  {
+                  {initialConfiguration?.IsBasicRateAndCostingConditionVisible &&
                     isConditionCostingOpen && <AddConditionCosting
                       isOpen={isConditionCostingOpen}
                       tableData={conditionTableData}
