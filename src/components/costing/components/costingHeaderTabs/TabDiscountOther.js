@@ -1224,10 +1224,11 @@ function TabDiscountOther(props) {
                         customClassName={'withBorder'}
                         errors={errors.BasicRateINR}
                         disabled={true}
+                        hidden={initialConfiguration?.IsBasicRateAndCostingConditionVisible ? false : true}
                       />
                     </Col>
                   </Row>
-                  <Row>
+                  {initialConfiguration?.IsBasicRateAndCostingConditionVisible && <Row>
                     <Col md="8"><div className="left-border mt-1">Costing Condition:</div></Col>
                     <Col md="4" className="text-right">
                       <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setConditionAcc(!conditionAcc) }}>
@@ -1238,8 +1239,8 @@ function TabDiscountOther(props) {
                         )}
                       </button>
                     </Col>
-                  </Row>
-                  {conditionAcc && <div className='mb-2'><Row>
+                  </Row>}
+                  {initialConfiguration?.IsBasicRateAndCostingConditionVisible && conditionAcc && <div className='mb-2'><Row>
                     {!CostingViewMode && <Col md="12">
                       <div className='d-flex justify-content-end mb-2'>
                         <button
@@ -1254,7 +1255,7 @@ function TabDiscountOther(props) {
                     </Col>}
                   </Row>
                     <ConditionCosting hideAction={true} tableData={conditionTableData} /></div>}
-                  {
+                  {initialConfiguration?.IsBasicRateAndCostingConditionVisible &&
                     isConditionCostingOpen && <AddConditionCosting
                       isOpen={isConditionCostingOpen}
                       tableData={conditionTableData}
@@ -1264,7 +1265,7 @@ function TabDiscountOther(props) {
                       basicRate={getValues('BasicRateINR')}
                     />
                   }
-                  <Row>
+                  {initialConfiguration?.IsShowNpvCost && <Row>
                     <Col md="8"><div className="left-border mt-1">NPV Cost:</div></Col>
                     <Col md="4" className="text-right">
                       <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setNpvAcc(!npvAcc) }}>
@@ -1275,8 +1276,8 @@ function TabDiscountOther(props) {
                         )}
                       </button>
                     </Col>
-                  </Row>
-                  {npvAcc && <>
+                  </Row>}
+                  {initialConfiguration?.IsShowNpvCost && npvAcc && <>
                     {!CostingViewMode && <Row className=''>
                       <Col md="12">
                         <div className='d-flex justify-content-end mb-2'>
@@ -1293,16 +1294,15 @@ function TabDiscountOther(props) {
                       </Col>
                     </Row>}
 
-                    {!isOpenandClose && true && <NpvCost netPOPrice={netPOPrice} tableData={npvTableData} hideAction={true} />}
+                    {initialConfiguration?.IsShowNpvCost && !isOpenandClose && <NpvCost netPOPrice={netPOPrice} tableData={npvTableData} hideAction={true} />}
                   </>}
-                  {
-                    isOpenandClose && <AddNpvCost
-                      isOpen={isOpenandClose}
-                      tableData={npvTableData}
-                      closeDrawer={openAndCloseAddNpvDrawer}
-                      anchor={'right'}
-                      netPOPrice={netPOPrice - totalNpvCost}
-                    />
+                  {initialConfiguration?.IsShowNpvCost && isOpenandClose && <AddNpvCost
+                    isOpen={isOpenandClose}
+                    tableData={npvTableData}
+                    closeDrawer={openAndCloseAddNpvDrawer}
+                    anchor={'right'}
+                    netPOPrice={netPOPrice - totalNpvCost}
+                  />
                   }
                   <Row className="mt-2">
                     <Col md="3">

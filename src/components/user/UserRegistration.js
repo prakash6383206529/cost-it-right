@@ -55,6 +55,7 @@ function UserRegistration(props) {
   const [isRedirect, setIsRedirect] = useState(false);
   const [isSignup, setIsSignup] = useState(false);
   const [department, setDepartment] = useState([]);
+  const [oldDepartment, setOldDepartment] = useState([]);
   const [role, setRole] = useState([]);
   const [city, setCity] = useState([]);
   const [isEditFlag, setIsEditFlag] = useState(false);
@@ -95,6 +96,7 @@ function UserRegistration(props) {
   const [simulationApprovalType, setSimulationApprovalType] = useState([]);
   const [masterApprovalType, setMasterApprovalType] = useState([]);
   const [primaryContact, setPrimaryContact] = useState(false);
+  const [isForcefulUpdate, setIsForcefulUpdate] = useState(false);
   const dispatch = useDispatch()
 
   const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
@@ -420,18 +422,20 @@ function UserRegistration(props) {
     }
   }
 
-
   /**
-    * @method departmentHandler
-    * @description Used to handle 
-    */
+   * @method departmentHandler
+   * @description Used to handle 
+  */
   const departmentHandler = (newValue, actionMeta) => {
-
     if (getConfigurationKey().IsMultipleDepartmentAllowed) {
       setDepartment(newValue)
     } else {
       setDepartment([newValue])
     }
+    if (JSON.stringify(newValue) !== JSON.stringify(oldDepartment)) {
+      setIsForcefulUpdate(true)
+    }
+    else { setIsForcefulUpdate(false) }
   };
 
 
@@ -441,18 +445,20 @@ function UserRegistration(props) {
     */
   const roleHandler = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
-
       setRole(newValue)
       setModules([])
       setIsShowAdditionalPermission(false)
       getRoleDetail(newValue.value)
 
     } else {
-
       setRole([])
       setModules([])
       setIsShowAdditionalPermission(false)
     }
+    if (newValue.value !== RoleId.value) {
+      setIsForcefulUpdate(true)
+    }
+    else { setIsForcefulUpdate(false) }
   };
 
 
@@ -522,10 +528,10 @@ function UserRegistration(props) {
             // setDepartment((getConfigurationKey().IsMultipleDepartmentAllowed && Data.IsMultipleDepartmentAllowed) ? depatArr : (getConfigurationKey().IsMultipleDepartmentAllowed && !Data.IsMultipleDepartmentAllowed) ? [{ label: DepartmentObj.DepartmentName, value: DepartmentObj.DepartmentId }] : DepartmentObj !== undefined ? { label: DepartmentObj.DepartmentName, value: DepartmentObj.DepartmentId } : [])
 
             setDepartment([{ label: Data.Departments && Data.Departments[0]?.DepartmentName, value: Data.Departments && Data.Departments[0]?.DepartmentId }])
-
+            setOldDepartment([{ label: Data.Departments && Data.Departments[0]?.DepartmentName, value: Data.Departments && Data.Departments[0]?.DepartmentId }])
             setRole(RoleObj !== undefined ? { label: RoleObj.RoleName, value: RoleObj.RoleId } : [])
             setCity({ label: registerUserData?.CityName, value: registerUserData?.CityId })
-
+            setRoleId(RoleObj !== undefined ? { label: RoleObj.RoleName, value: RoleObj.RoleId } : [])
             setValue('UserName', Data?.UserName)
             setCity({
               label: Data?.CityName, value: Data?.CityId
@@ -578,7 +584,6 @@ function UserRegistration(props) {
       }
     }))
   }
-
   /**
  * @method getUsersTechnologyLevelData
  * @description used to get users technology level listing
@@ -637,14 +642,13 @@ function UserRegistration(props) {
     */
   const setInitialModuleData = (data) => {
     setModules(data)
-
   }
 
 
   /**
    * @method moduleDataHandler
    * @description used to set PERMISSION MODULE
-   */
+  */
   const moduleDataHandler = (data, ModuleName) => {
     let temp111 = data;
 
@@ -688,7 +692,7 @@ function UserRegistration(props) {
         if (res && res.data && res.data.Data) {
           let Data = res.data.Data;
 
-          setRoleId(RoleId)
+          // setRoleId(RoleId)
           setModules(Data.Modules)
           setOldModules(Data.Modules)
           setIsLoader(false)
@@ -884,9 +888,7 @@ function UserRegistration(props) {
     }
 
     if (checkDuplicacy(TechnologyLevelGrid, obj, 'TechnologyId', technology.value, costingApprovalType.value, 'Technology', level.value)) return false
-
     tempArray.push(...TechnologyLevelGrid, obj)
-
     setTechnologyLevelGrid(tempArray)
     setLevel([])
     setTechnology([])
@@ -894,7 +896,6 @@ function UserRegistration(props) {
     setValue('LevelId', "")
     setCostingApprovalType([])
     setValue('CostingApprovalType', "")
-
   };
 
   /**
@@ -922,7 +923,6 @@ function UserRegistration(props) {
     if (checkDuplicacy(TechnologyLevelGrid, technologyLevelEditIndex, 'TechnologyId', technology.value, costingApprovalType.value, 'Technology', level.value)) return false
 
     tempArray = Object.assign([...TechnologyLevelGrid], { [technologyLevelEditIndex]: tempData })
-
     setTechnologyLevelGrid(tempArray)
     setLevel([])
     setTechnology([])
@@ -975,16 +975,13 @@ function UserRegistration(props) {
     }
 
     if (checkDuplicacy(HeadLevelGrid, obj, 'TechnologyId', simulationHeads.value, simulationApprovalType.value, 'Simulation Head', simualtionLevel.value)) return false
-
     tempArray.push(...HeadLevelGrid, obj)
-
     setHeadLevelGrid(tempArray)
     setSimualtionLevel([])
     setSimulationHeads([])
     setValue('Head', '')
     setValue('simualtionLevel', '')
     setValue('SimulationApprovalType', "")
-
   };
 
 
@@ -1016,7 +1013,6 @@ function UserRegistration(props) {
     if (checkDuplicacy(HeadLevelGrid, simulationLevelEditIndex, 'TechnologyId', simulationHeads.value, simulationApprovalType.value, 'Simulation Head', simualtionLevel.value)) return false
 
     tempArray = Object.assign([...HeadLevelGrid], { [simulationLevelEditIndex]: tempData })
-
     setHeadLevelGrid(tempArray)
     setSimualtionLevel([])
     setSimulationHeads([])
@@ -1035,7 +1031,6 @@ function UserRegistration(props) {
   * @description Used to handle simulation data
   */
   const resetSimualtionHeadLevel = () => {
-
     setSimualtionLevel([])
     setSimulationHeads([])
     setSimulationLevelEditIndex('')
@@ -1152,7 +1147,6 @@ function UserRegistration(props) {
     if (checkDuplicacy(masterLevelGrid, obj, 'MasterId', master.value, masterApprovalType.value, 'Master', masterLevel.value)) return false
 
     tempArray.push(...masterLevelGrid, obj)
-
     setMasterLevelGrid(tempArray)
     setMasterLevels([])
     setMaster([])
@@ -1187,7 +1181,6 @@ function UserRegistration(props) {
     if (checkDuplicacy(masterLevelGrid, masterLevelEditIndex, 'MasterId', master.value, masterApprovalType.value, 'Master', masterLevel.value)) return false
 
     tempArray = Object.assign([...masterLevelGrid], { [masterLevelEditIndex]: tempData })
-
     setMasterLevelGrid(tempArray)
     setMasterLevels([])
     setMaster([])
@@ -1245,14 +1238,12 @@ function UserRegistration(props) {
   * @description used to delete master item 
   */
   const deleteMasterItem = (index) => {
-
     let tempData = masterLevelGrid.filter((item, i) => {
       if (i === index) {
         return false;
       }
       return true;
     });
-
     setMasterLevelGrid(tempData)
     setMasterLevels([])
     setValue('Master', '')
@@ -1330,7 +1321,6 @@ function UserRegistration(props) {
 
     setIsShowForm(!isShowForm)
   }
-
   /**
    * @name onSubmit
    * @param values
@@ -1338,7 +1328,12 @@ function UserRegistration(props) {
    * @returns {{}}
    */
   const onSubmit = (values) => {
-
+    if (isEditFlag && !isForcefulUpdate) {
+      if (JSON.stringify(Modules) !== JSON.stringify(oldModules) || JSON.stringify(oldHeadLevelGrid) !== JSON.stringify(HeadLevelGrid) || JSON.stringify(oldMasterLevelGrid) !== JSON.stringify(masterLevelGrid) || JSON.stringify(oldTechnologyLevelGrid) !== JSON.stringify(TechnologyLevelGrid)) {
+        setIsForcefulUpdate(true)
+      }
+      else { setIsForcefulUpdate(false) }
+    }
     const { reset } = props;
     const userDetails = JSON.parse(localStorage.getItem('userDetail'))
     var key;
@@ -1414,7 +1409,7 @@ function UserRegistration(props) {
 
     if (isEditFlag) {
       let updatedData = {
-        IsForcefulUpdated: true,
+        IsForcefulUpdated: isForcefulUpdate,
         UserId: UserId,
         FullName: `${values.FirstName ? values.FirstName.trim() : ''} ${values.LastName ? values.LastName.trim() : ''}`,
         LevelId: registerUserData?.LevelId,
@@ -1472,6 +1467,7 @@ function UserRegistration(props) {
       const isRoleUpdate = (registerUserData.RoleId !== role.value) ? true : false;
       let isPermissionUpdate = false;
       let isTechnologyUpdate = false;
+
 
       if (JSON.stringify(Modules) === JSON.stringify(oldModules)) {
         isPermissionUpdate = false;
@@ -2163,21 +2159,10 @@ function UserRegistration(props) {
 
                           </div>)}
                       </div>
+                      {/************** USER WISE PERMISSION END **************/}
 
 
-                      {/* ///////////////////////////////////////////////
-                              ////////////////////////////////////////////////////
-                              /////////////// USER WISE PERMISSION END ////////
-                              //////////////////////////////////////////////////
-                              ///////////////////////////////////////////////// */}
-
-
-                      {/* ///////////////////////////////////////////////
-                              ////////////////////////////////////////////////////
-                              /////////////// User's technology level START ////////
-                              //////////////////////////////////////////////////
-                              ///////////////////////////////////////////////// */}
-
+                      {/*************** User's technology level START ***************/}
                       <Row>
                         <Col md="8">
                           <HeaderTitle title={'Costing Approval Level:'} customClass={''} />

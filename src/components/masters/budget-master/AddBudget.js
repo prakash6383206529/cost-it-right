@@ -1,6 +1,6 @@
 import React from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { Row, Col, Label, Tooltip } from 'reactstrap'
+import { Row, Col, Label, Button, Tooltip } from 'reactstrap'
 import { checkForDecimalAndNull, checkForNull } from '../../../helper/validation'
 import { getFinancialYearSelectList, getPartSelectListWtihRevNo, } from '../actions/Volume'
 import { getPlantSelectListByType, getVendorWithVendorCodeSelectList } from '../../../actions/Common'
@@ -75,8 +75,12 @@ function AddBudget(props) {
     const plantSelectList = useSelector(state => state.comman.plantSelectList);
     const financialYearSelectList = useSelector(state => state.volume.financialYearSelectList);
     const clientSelectList = useSelector((state) => state.client.clientSelectList)
+    const currencySelectList = useSelector((state) => state.comman.currencySelectList)
+    const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
+
     const [showTooltip, setShowTooltip] = useState(false)
     const [viewTooltip, setViewTooltip] = useState(false)
+    const [conditionAcc, setConditionAcc] = useState(false);
 
     useEffect(() => {
 
@@ -965,12 +969,52 @@ function AddBudget(props) {
                                                                     <AgGridColumn width={115} field="February" headerName="February" cellRenderer='budgetedQuantity'></AgGridColumn>
                                                                     <AgGridColumn width={115} field="March" headerName="March" cellRenderer='budgetedQuantity'></AgGridColumn>
                                                                     <AgGridColumn width={130} field="Sum" headerName="Sum" cellRenderer='actualQuantity' editable={false} valueGetter='(Number(data.March?data.March:0) + Number(data.January?data.January:0) + Number(data.February?data.February:0)+ Number(data.April?data.April:0)+ Number(data.May?data.May:0)+ Number(data.June?data.June:0)+ Number(data.July?data.July:0)+ Number(data.August?data.August:0)+ Number(data.September?data.September:0)+ Number(data.October?data.October:0)+ Number(data.November?data.November:0)+ Number(data.December?data.December:0))'></AgGridColumn>
-                                                                </AgGridReact >
-                                                            </div >
+                                                                </AgGridReact>
+                                                            </div>
                                                         </div >
                                                     </Col >
-                                                    <Col md="12">
-                                                        <div className='budgeting-details  mt-3'>
+                                                    {initialConfiguration?.IsBasicRateAndCostingConditionVisible && <><Col md="8" className='mt-3'><div className="left-border mt-1">Costing Condition:</div></Col>
+                                                        <Col md="4" className="text-right mt-3">
+                                                            <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setConditionAcc(!conditionAcc) }}>
+                                                                {conditionAcc ? (
+                                                                    <i className="fa fa-minus" ></i>
+                                                                ) : (
+                                                                    <i className="fa fa-plus"></i>
+                                                                )}
+                                                            </button>
+                                                        </Col>
+                                                        {conditionAcc && <div className='mb-2'><Row>
+                                                            <Col md="12">
+                                                                <div className='d-flex justify-content-end mb-2'>
+                                                                    <Button type='button' onClick={() => { setIsConditionCostingOpen(true) }}> <div className={`${conditionTableData.length === 0 ? 'plus' : 'fa fa-eye pr-1'}`}></div>{conditionTableData.length === 0 ? "Add" : "View"}</Button>
+                                                                </div>
+                                                            </Col>
+                                                        </Row>
+                                                            <ConditionCosting hideAction={true} tableData={conditionTableData} /></div>}
+                                                    </>}
+                                                    <Col md="9">
+                                                        <div className='budgeting-details  mt-2'>
+                                                            <label className='w-fit'>{`Total Sum ${currency?.label ? `(${currency.label})` : '(Currency)'}:`}</label>
+                                                            <NumberFieldHookForm
+                                                                label=""
+                                                                name={"totalSumCurrency"}
+                                                                errors={errors.totalSumCurrency}
+                                                                Controller={Controller}
+                                                                control={control}
+                                                                register={register}
+                                                                disableErrorOverflow={true}
+                                                                mandatory={false}
+                                                                rules={{
+                                                                    required: false,
+                                                                }}
+                                                                handleChange={() => { }}
+                                                                disabled={true}
+                                                                customClassName={'withBorder'}
+                                                            />
+                                                        </div>
+                                                    </Col>
+                                                    <Col md="3">
+                                                        <div className='budgeting-details  mt-2'>
                                                             <label className='w-fit'>Total Sum:</label>
                                                             <NumberFieldHookForm
                                                                 label=""
@@ -1013,11 +1057,11 @@ function AddBudget(props) {
                                                     </button>
                                                 </div>
                                             </Row>
-                                        </form></div>
-                                </div>
-                            </div>
-                        </div>}
-                </div>
+                                        </form ></div >
+                                </div >
+                            </div >
+                        </div >}
+                </div >
                 {showPopup && <PopupMsgWrapper isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${MESSAGES.CANCEL_MASTER_ALERT}`} />}
             </div >
 
