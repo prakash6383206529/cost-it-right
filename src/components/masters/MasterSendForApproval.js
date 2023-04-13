@@ -156,6 +156,7 @@ function MasterSendForApproval(props) {
         if (type === 'Sender') {
             //THIS OBJ IS FOR SIMULATION SEND FOR APPROVAL
             let senderObj = {}
+            senderObj.ApprovalMasterId = BUDGET_ID
             senderObj.ReasonId = reason ? reason.value : 0
             senderObj.Reason = reason ? reason.label : ''
             senderObj.IsFinalApproved = false
@@ -292,7 +293,6 @@ function MasterSendForApproval(props) {
                     //     tempArray.push({ BoughtPartId: EMPTY_GUID, IsImportEntery: IsImportEntery, BoughtoutPartRequest: approvalObj })
                     // }
                     // senderObj.EntityList = tempArray
-                    // check here @ashok
                     let obj = {
 
                         LoggedInUserId: loggedInUserId(),
