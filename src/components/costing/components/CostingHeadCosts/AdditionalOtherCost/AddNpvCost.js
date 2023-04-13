@@ -396,7 +396,7 @@ function AddNpvCost(props) {
                                     </Col>
                                 </Row>}
 
-                                {costingSummary &&
+                                {initialConfiguration?.IsShowNpvCost && costingSummary &&
                                     <>
                                         <Col md="12">
                                             <HeaderTitle className="border-bottom"
@@ -406,7 +406,7 @@ function AddNpvCost(props) {
                                         </Col>
                                     </>
                                 }
-                                <NpvCost showAddButton={false} tableData={tableData} hideAction={costingSummary} editData={editData} />
+                                {initialConfiguration?.IsBasicRateAndCostingConditionVisible && <NpvCost showAddButton={false} tableData={tableData} hideAction={costingSummary} editData={editData} />}
                                 {costingSummary &&
                                     <>
                                         <Col md="12" className={'mt25'}>
