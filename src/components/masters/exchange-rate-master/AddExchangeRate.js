@@ -368,6 +368,9 @@ class AddExchangeRate extends Component {
     const { isEditFlag, isViewMode, setDisable, costingTypeId } = this.state;
     const filterList = async (inputValue) => {
       const { vendorFilterList } = this.state
+      if (inputValue && typeof inputValue === 'string' && inputValue.includes(' ')) {
+        inputValue = inputValue.trim();
+      }
       const resultInput = inputValue.slice(0, searchCount)
       if (inputValue?.length >= searchCount && vendorFilterList !== resultInput) {
         this.setState({ inputLoader: true })

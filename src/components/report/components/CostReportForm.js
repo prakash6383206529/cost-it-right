@@ -294,7 +294,9 @@ function CostReportForm(props) {
     * @description get data from backend after entering three char
     */
     const filterList = async (inputValue) => {
-
+        if (inputValue && typeof inputValue === 'string' && inputValue.includes(' ')) {
+            inputValue = inputValue.trim();
+        }
         const resultInput = inputValue.slice(0, searchCount)
         if (inputValue?.length >= searchCount && partName !== resultInput) {
             const res = await getPartSelectListByTechnology(technology.value, resultInput);
