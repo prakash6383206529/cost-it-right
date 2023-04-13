@@ -1951,7 +1951,7 @@ const CostingSummaryTable = (props) => {
                             })}
                         </tr>
 
-                        <tr>
+                        {initialConfiguration?.IsBasicRateAndCostingConditionVisible && <tr>
                           <td>
                             <span className={`d-block small-grey-text ${isApproval && viewCostingData?.length > 1 && highlightCostingSummaryValue(viewCostingData[0]?.BasicRate, viewCostingData[1]?.BasicRate)}`}>Basic Price</span>
                           </td>
@@ -1966,8 +1966,8 @@ const CostingSummaryTable = (props) => {
                                 </td>
                               )
                             })}
-                        </tr>
-                        {drawerDetailPDF && <tr><th colSpan={2}>
+                        </tr>}
+                        {initialConfiguration?.IsShowNpvCost && drawerDetailPDF && <tr><th colSpan={2}>
                           <AddNpvCost
                             isOpen={openNpvDrawer}
                             costingSummary={true}
@@ -2358,7 +2358,7 @@ const CostingSummaryTable = (props) => {
         />
       }
 
-      {
+      {initialConfiguration?.IsShowNpvCost &&
         openNpvDrawer && <AddNpvCost
           isOpen={openNpvDrawer}
           viewCostingData={viewCostingData}
