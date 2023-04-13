@@ -639,7 +639,9 @@ function AddBudget(props) {
     };
 
     const partFilterList = async (inputValue) => {
-
+        if (inputValue && typeof inputValue === 'string' && inputValue.includes(' ')) {
+            inputValue = inputValue.trim();
+        }
         const resultInput = inputValue.slice(0, searchCount)
         if (inputValue?.length >= searchCount && partName !== resultInput) {
             const res = await getPartSelectListWtihRevNo(resultInput)

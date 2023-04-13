@@ -714,6 +714,9 @@ function AddRfq(props) {
         }))
     }
     const vendorFilterList = async (inputValue) => {
+        if (inputValue && typeof inputValue === 'string' && inputValue.includes(' ')) {
+            inputValue = inputValue.trim();
+        }
         const resultInput = inputValue.slice(0, searchCount)
         if (inputValue?.length >= searchCount && vendor !== resultInput) {
             let res
