@@ -68,6 +68,7 @@ function RunSimulationDrawer(props) {
     const [isCostingNPV, setIsCostingNPV] = useState(false)
     const selectedMasterForSimulation = useSelector(state => state.simulation.selectedMasterForSimulation)
     const selectedTechnologyForSimulation = useSelector(state => state.simulation.selectedTechnologyForSimulation)
+    const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
 
     useEffect(() => {
         dispatch(getSelectListOfSimulationApplicability(() => { }))
@@ -1130,7 +1131,7 @@ function RunSimulationDrawer(props) {
                                             )
                                             }
 
-                                            {(
+                                            {initialConfiguration?.IsShowNpvCost && (
                                                 <Row>
                                                     <div className="input-group col-md-12 mb-3 px-0 m-height-auto">
                                                         <label
