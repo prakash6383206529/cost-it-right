@@ -379,59 +379,58 @@ function BDSimulation(props) {
                                                 <div className="refresh mr-0"></div>
                                             </button>
                                         </div>
-                                        {!isImpactedMaster && <div className={`d-flex align-items-center simulation-label-container`}>
-                                            {list[0].CostingTypeId !== CBCTypeId && <div className='d-flex pl-3'>
-                                                <label className='mr-1'>Vendor (Code):</label>
-                                                <p title={list[0].Vendor}>{list[0].Vendor ? list[0].Vendor : list[0]['Vendor (Code)']}</p>
+                                        <div className='d-flex justify-content-end bulk-upload-row pr-0 zindex-2'>
+                                            {
+                                                isbulkUpload && <>
+                                                    <div className="d-flex align-items-center">
+                                                        <label>Rows with changes:</label>
+                                                        <TextFieldHookForm
+                                                            label=""
+                                                            name={'NoOfCorrectRow'}
+                                                            Controller={Controller}
+                                                            title={titleObj.rowWithChanges}
+                                                            control={control}
+                                                            register={register}
+                                                            rules={{ required: false }}
+                                                            mandatory={false}
+                                                            handleChange={() => { }}
+                                                            defaultValue={''}
+                                                            className=""
+                                                            customClassName={'withBorder mn-height-auto hide-label mb-0'}
+                                                            errors={errors.NoOfCorrectRow}
+                                                            disabled={true}
+                                                        />
+                                                    </div>
+                                                    <div className="d-flex align-items-center">
+                                                        <label>Rows without changes:</label>
+                                                        <TextFieldHookForm
+                                                            label=""
+                                                            name={'NoOfRowsWithoutChange'}
+                                                            title={titleObj.rowWithoutChanges}
+                                                            Controller={Controller}
+                                                            control={control}
+                                                            register={register}
+                                                            rules={{ required: false }}
+                                                            mandatory={false}
+                                                            handleChange={() => { }}
+                                                            defaultValue={''}
+                                                            className=""
+                                                            customClassName={'withBorder mn-height-auto hide-label mb-0'}
+                                                            errors={errors.NoOfRowsWithoutChange}
+                                                            disabled={true}
+                                                        />
+                                                    </div>
+                                                </>
+                                            }
+                                            {!isImpactedMaster && <div className={`d-flex align-items-center simulation-label-container`}>
+                                                {list[0].CostingTypeId !== CBCTypeId && <div className='d-flex pl-3'>
+                                                    <label className='mr-1'>Vendor (Code):</label>
+                                                    <p title={list[0].Vendor} className='mr-2'>{list[0].Vendor ? list[0].Vendor : list[0]['Vendor (Code)']}</p>
+                                                </div>}
+                                                <button type="button" className={"apply"} onClick={cancel}> <div className={'back-icon'}></div>Back</button>
                                             </div>}
-                                            <button type="button" className={"apply"} onClick={cancel}> <div className={'back-icon'}></div>Back</button>
-                                        </div>}
-
+                                        </div>
                                     </div>
-                                    {
-                                        isbulkUpload && <>
-                                            <div className='d-flex justify-content-end bulk-upload-row'>
-                                                <div className="d-flex align-items-center">
-                                                    <label>Rows with changes:</label>
-                                                    <TextFieldHookForm
-                                                        label=""
-                                                        name={'NoOfCorrectRow'}
-                                                        Controller={Controller}
-                                                        title={titleObj.rowWithChanges}
-                                                        control={control}
-                                                        register={register}
-                                                        rules={{ required: false }}
-                                                        mandatory={false}
-                                                        handleChange={() => { }}
-                                                        defaultValue={''}
-                                                        className=""
-                                                        customClassName={'withBorder mn-height-auto hide-label mb-0'}
-                                                        errors={errors.NoOfCorrectRow}
-                                                        disabled={true}
-                                                    />
-                                                </div>
-                                                <div className="d-flex align-items-center">
-                                                    <label>Rows without changes:</label>
-                                                    <TextFieldHookForm
-                                                        label=""
-                                                        name={'NoOfRowsWithoutChange'}
-                                                        title={titleObj.rowWithoutChanges}
-                                                        Controller={Controller}
-                                                        control={control}
-                                                        register={register}
-                                                        rules={{ required: false }}
-                                                        mandatory={false}
-                                                        handleChange={() => { }}
-                                                        defaultValue={''}
-                                                        className=""
-                                                        customClassName={'withBorder mn-height-auto hide-label mb-0'}
-                                                        errors={errors.NoOfRowsWithoutChange}
-                                                        disabled={true}
-                                                    />
-                                                </div>
-                                            </div>
-                                        </>
-                                    }
                                     <div className="ag-theme-material p-relative" style={{ width: '100%' }}>
                                         {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found simulation-lisitng" />}
                                         {list && <AgGridReact
