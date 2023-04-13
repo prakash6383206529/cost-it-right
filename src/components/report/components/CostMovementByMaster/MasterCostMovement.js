@@ -12,13 +12,15 @@ import { loggedInUserId } from '../../../../helper';
 import { autoCompleteDropdown } from '../../../common/CommonFunctions';
 import DayTime from '../../../common/DayTimeWrapper';
 import { getCostingSpecificTechnology } from '../../../costing/actions/Costing';
-import { AsyncSearchableSelectHookForm, DatePickerHookForm, SearchableSelectHookForm } from '../../../layout/HookFormInputs';
+import { AsyncSearchableSelectHookForm, DatePickerHookForm, SearchableSelectHookForm, TextFieldHookForm } from '../../../layout/HookFormInputs';
 import { getBOPCategorySelectList } from '../../../masters/actions/BoughtOutParts';
 import { getClientSelectList } from '../../../masters/actions/Client';
 import { getRawMaterialNameChild, getRMGradeSelectListByRawMaterial } from '../../../masters/actions/Material';
-import { getBoughtOutPartSelectList } from '../../../masters/actions/Part';
+import { getBoughtOutPartSelectList, getDrawerBOPData } from '../../../masters/actions/Part';
 import { getSelectListOfMasters } from '../../../simulation/actions/Simulation';
 import CostMovementByMasterReportListing from './CostMovementByMasterReportListing';
+import { getOperationPartSelectList } from '../../../masters/actions/OtherOperation';
+import { getProcessesSelectList } from '../../../masters/actions/MachineMaster';
 
 function MasterCostMovement() {
     const [fromDate, setFromDate] = useState('')
@@ -31,12 +33,19 @@ function MasterCostMovement() {
     const [showCustomer, setShowCustomer] = useState(false)
     const [rawMaterial, setRawMaterial] = useState('');
     const [reportListing, setReportListing] = useState(false)
+    const [isSurfaceTrue, setIsSurfaceTrue] = useState(false)
     const [plant, setPlant] = useState('')
     const [RMGrade, setRMGrade] = useState('')
     const [RMSpec, setRMSpec] = useState('')
     const [category, setCategory] = useState('')
+    const [BOPCategory, setBOPCategory] = useState('')
     const [vendor, setVendor] = useState('')
     const [formData, setFormData] = useState({})
+    const [BOPData, setBOPData] = useState([])
+    const [operationData, setOperationData] = useState([])
+    const [processData, setProcessData] = useState([])
+    const [disabledButton, setDisabledButton] = useState(true)
+    const [showTechnologyField, setShowTechnologyField] = useState(false)
     const masterList = useSelector(state => state.simulation.masterSelectList)
     const rawMaterialNameSelectList = useSelector(state => state.material.rawMaterialNameSelectList);
     const gradeSelectList = useSelector(state => state.material.gradeSelectList);
@@ -48,6 +57,9 @@ function MasterCostMovement() {
     const bopCategorySelectList = useSelector(state => state.boughtOutparts.bopCategorySelectList)
     const approvalTypeSelectList = useSelector(state => state.comman.approvalTypeSelectList)
     const costingSpecifiTechnology = useSelector(state => state.costing.costingSpecifiTechnology)
+    const operationSelectList = useSelector(state => state.otherOperation.operationSelectList)
+    const processSelectList = useSelector(state => state.machine.processSelectList)
+
 
 
 
@@ -92,6 +104,7 @@ function MasterCostMovement() {
 
     const handleMasterChange = (event) => {
         setMaster(event.value);
+        setDisabledButton(false)
         resetFields()
         switch (Number(event.value)) {
             case 2:
@@ -99,15 +112,26 @@ function MasterCostMovement() {
                 dispatch(getRMGradeSelectListByRawMaterial('', () => { }))
                 dispatch(getRawMaterialNameChild(() => { }))
                 dispatch(getRawMaterialCategory(() => { }))
+                setShowTechnologyField(true)
                 break;
             case 4:
             case 5:
                 dispatch(getBoughtOutPartSelectList(DayTime(fromDate).format('DD-MM-YYYY'), () => { }))
                 dispatch(getBOPCategorySelectList(() => { }))
+                setShowTechnologyField(false)
                 break;
             case 6:
+                dispatch(getOperationPartSelectList(() => { }))
+                setShowTechnologyField(true)
+                break;
+            case 7:
+                dispatch(getOperationPartSelectList(() => { }))
+                setIsSurfaceTrue(true)
+                setShowTechnologyField(true)
                 break;
             case 9:
+                dispatch(getProcessesSelectList(() => { }))
+                setShowTechnologyField(true)
                 break;
             default:
                 break;
@@ -129,12 +153,13 @@ function MasterCostMovement() {
                             placeholder={'Select'}
                             Controller={Controller}
                             control={control}
-                            rules={{ required: true }}
+                            rules={{ required: false }}
                             register={register}
                             defaultValue={rawMaterial}
                             options={renderListing('material')}
-                            mandatory={true}
+                            mandatory={false}
                             handleChange={handleRMChange}
+                            buttonCross={resetData('RawMaterialId')}
                             errors={errors.RawMaterialId}
                         />
                     </Col>
@@ -145,12 +170,13 @@ function MasterCostMovement() {
                             placeholder={'Select'}
                             Controller={Controller}
                             control={control}
-                            rules={{ required: true }}
+                            rules={{ required: false }}
                             register={register}
                             defaultValue={RMGrade}
                             options={renderListing('grade')}
-                            mandatory={true}
+                            mandatory={false}
                             handleChange={handleGradeChange}
+                            buttonCross={resetData('RawMaterialGradeId')}
                             errors={errors.RawMaterialGradeId}
                         />
                     </Col>
@@ -161,12 +187,13 @@ function MasterCostMovement() {
                             placeholder={'Select'}
                             Controller={Controller}
                             control={control}
-                            rules={{ required: true }}
+                            rules={{ required: false }}
                             register={register}
                             defaultValue={RMSpec}
                             options={renderListing('specification')}
-                            mandatory={true}
+                            mandatory={false}
                             handleChange={() => { }}
+                            buttonCross={resetData('RawMaterialSpecificationId')}
                             errors={errors.RawMaterialSpecificationId}
                         />
                     </Col>
@@ -177,13 +204,14 @@ function MasterCostMovement() {
                             placeholder={'Select'}
                             Controller={Controller}
                             control={control}
-                            rules={{ required: true }}
+                            rules={{ required: false }}
                             register={register}
                             // defaultValue={RMcode}
                             options={renderListing('RMCode')}
-                            mandatory={true}
+                            mandatory={false}
                             handleChange={handleRMChange}
                             errors={errors.RMcode}
+                            buttonCross={resetData('RMcode')}
                         />
                     </Col>
                     <Col md="3">
@@ -193,13 +221,14 @@ function MasterCostMovement() {
                             placeholder={'Select'}
                             Controller={Controller}
                             control={control}
-                            rules={{ required: true }}
+                            rules={{ required: false }}
                             register={register}
                             defaultValue={category}
                             options={renderListing('category')}
-                            mandatory={true}
+                            mandatory={false}
                             handleChange={handleCategoryChange}
-                            errors={errors.RawMaterialSpecificationId}
+                            buttonCross={resetData('CategoryId')}
+                            errors={errors.CategoryId}
                         />
                     </Col>
                 </>
@@ -208,52 +237,56 @@ function MasterCostMovement() {
             case 5:
                 return (<> <Col md="3">
                     <SearchableSelectHookForm
-                        label={'BOP Name'}
+                        label={'BOP No.'}
                         name={'BOPId'}
                         placeholder={'Select'}
                         Controller={Controller}
                         control={control}
-                        rules={{ required: true }}
+                        rules={{ required: false }}
                         register={register}
                         defaultValue={""}
                         options={renderListing('BOPName')}
-                        mandatory={true}
-                        handleChange={() => { }}
+                        mandatory={false}
+                        handleChange={handleBOPChange}
+                        buttonCross={resetData('BOPId')}
                         errors={errors.BOPId}
                     />
                 </Col>
                     <Col md="3">
                         <SearchableSelectHookForm
                             label={'Category'}
-                            name={'CategoryId'}
+                            name={'BOPCategoryId'}
                             placeholder={'Select'}
                             Controller={Controller}
                             control={control}
-                            rules={{ required: true }}
+                            rules={{ required: false }}
                             register={register}
-                            defaultValue={""}
+                            defaultValue={BOPCategory}
                             options={renderListing('BOPCategory')}
-                            mandatory={true}
-                            handleChange={() => { }}
-                            errors={errors.BOPId}
+                            mandatory={false}
+                            handleChange={(value) => setBOPCategory(value)}
+                            buttonCross={resetData('BOPCategoryId')}
+                            errors={errors.BOPCategoryId}
                         />
                     </Col>
                 </>)
             case 6:
+            case 7:
                 return (<>
                     <Col md="3">
                         <SearchableSelectHookForm
-                            label={'Operation Name'}
+                            label={'Operation Code'}
                             name={'OperationId'}
                             placeholder={'Select'}
                             Controller={Controller}
                             control={control}
-                            rules={{ required: true }}
+                            rules={{ required: false }}
                             register={register}
                             defaultValue={""}
-                            options={renderListing('OperationName')}
-                            mandatory={true}
-                            handleChange={() => { }}
+                            options={renderListing('Operation')}
+                            mandatory={false}
+                            handleChange={(value) => { setOperationData(value) }}
+                            buttonCross={resetData('OperationId')}
                             errors={errors.OperationId}
                         />
                     </Col>
@@ -262,34 +295,19 @@ function MasterCostMovement() {
                 return (<>
                     <Col md="3">
                         <SearchableSelectHookForm
-                            label={'Machine Name'}
-                            name={'MachineId'}
+                            label={'Process'}
+                            name={'processCode'}
                             placeholder={'Select'}
                             Controller={Controller}
                             control={control}
-                            rules={{ required: true }}
+                            rules={{ required: false }}
                             register={register}
                             defaultValue={""}
-                            options={renderListing('MachineName')}
-                            mandatory={true}
-                            handleChange={() => { }}
+                            options={renderListing('process')}
+                            mandatory={false}
+                            handleChange={(value) => { setProcessData(value) }}
+                            buttonCross={resetData('processCode')}
                             errors={errors.MachineId}
-                        />
-                    </Col>
-                    <Col md="3">
-                        <SearchableSelectHookForm
-                            label={'Machine Type'}
-                            name={'MachineTypeId'}
-                            placeholder={'Select'}
-                            Controller={Controller}
-                            control={control}
-                            rules={{ required: true }}
-                            register={register}
-                            defaultValue={""}
-                            options={renderListing('MachineType')}
-                            mandatory={true}
-                            handleChange={() => { }}
-                            errors={errors.MachineTypeId}
                         />
                     </Col>
                 </>)
@@ -298,7 +316,144 @@ function MasterCostMovement() {
                 break;
         }
     }
+    const resetData = (type) => {
+        function resetAllFields() {
+            setMaster([])
+            setTechnology([])
+            setVendor([])
+            setRMGrade([])
+            setRawMaterial([]);
+            setBOPCategory([])
+            setBOPData([])
+            setCategory([])
+            setRMSpec([])
+            setProcessData([])
+            setOperationData([])
+            setMaster('')
+            setShowTechnologyField(false)
+            setValue('RMcode', '')
+            setValue('CategoryId', '')
+            setValue('BOPCategoryId', '')
+        }
+        const resetDate = (params) => {
+            setValue(params, '')
+            setValue('Masters', '')
+            setMaster([])
+            setDisabledButton(true)
+            setTechnology([])
+            resetAllFields()
+        }
+        switch (type) {
+            case 'plant':
+                return function resetField() {
+                    setValue('plant', '')
+                    setPlant([])
+                }
 
+            case 'vendor':
+                return function resetField() {
+                    setValue('vendor', '')
+                    setVendor([])
+                }
+            case 'Customer':
+                return function resetField() {
+                    setValue('Customer', '')
+                }
+            case 'costingHeadType':
+                return function resetField() {
+                    const fields = ['costingHeadType', 'vendor']
+                    fields.forEach((field) => {
+                        setValue(field, '')
+                    })
+                    setCostingHeadType([])
+                    setShowCustomer(false)
+                    setVendor([])
+                    setTechnology([])
+
+                }
+            case 'Masters':
+                return function resetField() {
+                    setValue('Masters', '')
+                    setDisabledButton(true)
+                    resetAllFields()
+                }
+
+            case 'Technology':
+                return function resetField() {
+                    setValue('technology', '')
+                    setTechnology([])
+                }
+            case 'RawMaterialId':
+                return function resetField() {
+                    const fields = ['RawMaterialId', 'RawMaterialGradeId', 'RawMaterialSpecificationId', 'RMcode',]
+                    fields.forEach((field) => {
+                        setValue(field, '')
+                    })
+
+                    setRMGrade([])
+                    setRawMaterial([]);
+                    dispatch(fetchSpecificationDataAPI(0, () => { }))
+                    setRMSpec([]);
+                }
+            case 'RawMaterialGradeId':
+                return function resetField() {
+                    const fields = ['RawMaterialGradeId', 'RawMaterialSpecificationId', 'RMcode']
+                    fields.forEach((field) => {
+                        setValue(field, '')
+                    })
+                    dispatch(fetchSpecificationDataAPI(0, () => { }))
+                    setRMSpec([])
+                    setRMGrade([])
+                }
+            case 'RawMaterialSpecificationId':
+                return function resetField() {
+                    setValue('RawMaterialSpecificationId', '')
+                    setValue('RMcode', '')
+                    setRMSpec([])
+                }
+            case 'RMcode':
+                return function resetField() {
+                    setValue('RMcode', '')
+                }
+            case 'CategoryId':
+                return function resetField() {
+                    setValue('CategoryId', '')
+                    setCategory([])
+                }
+            case 'BOPCategoryId':
+                return function resetField() {
+                    setValue('BOPCategoryId', '')
+                    setBOPCategory([])
+                }
+            case 'BOPId':
+                return function resetField() {
+                    setValue('BOPId', '')
+                    setBOPData([])
+                }
+            case 'processCode':
+                return function resetField() {
+                    setValue('processCode', '')
+                    setProcessData([])
+                }
+            case 'OperationId':
+                return function resetField() {
+                    setValue('OperationId', '')
+                    setOperationData([])
+                }
+            case 'fromDate':
+                return function resetField() {
+                    resetDate('fromDate')
+                    setToDate('')
+                }
+            case 'toDate':
+                return function resetField() {
+                    resetDate('toDate')
+                    setToDate('')
+                }
+            default:
+                return () => { };
+        }
+    }
 
     const listMapping = {
         'masters': masterList,
@@ -312,7 +467,9 @@ function MasterCostMovement() {
         'Customer': clientSelectList,
         'BOPName': boughtOutPartSelectList,
         'BOPCategory': bopCategorySelectList,
-        'RMCode': rmSpecification
+        'RMCode': rmSpecification,
+        'Operation': operationSelectList,
+        'process': processSelectList
 
     }
 
@@ -335,6 +492,23 @@ function MasterCostMovement() {
                             temp.push({ label: item.RawMaterialCode, value: item.Value });
                         }
 
+                    }
+                    else if (label === 'masters') {
+
+                        if (item.Value === '3' || item.Value === '8' || item.Value === '10') {
+                            return false;
+                        }
+                        else {
+                            temp.push({ label: item.Text, value: item.Value });
+                        }
+                    }
+                    else if (label === 'costingHeadType') {
+                        if (item.Value === '5' || item.Value === '8') {
+                            return false
+                        }
+                        else {
+                            temp.push({ label: item.Text, value: item.Value });
+                        }
                     }
                     else {
                         temp.push({ label: item.Text, value: item.Value });
@@ -405,6 +579,18 @@ function MasterCostMovement() {
             setVendor([])
         }
     };
+    const handleBOPChange = (newValue) => {
+        if (newValue && newValue !== '') {
+            dispatch(getDrawerBOPData(newValue.value, (res) => {
+                if (res?.data?.Data) {
+                    setBOPData(res?.data?.Data)
+
+                }
+            }))
+        } else {
+            setBOPData([])
+        }
+    }
 
 
     const vendorFilterList = async (inputValue) => {
@@ -433,7 +619,6 @@ function MasterCostMovement() {
         }
     };
     const runReport = () => {
-
         let fixedData = {
             "FromDate": DayTime(fromDate).format('DD/MM/YYYY'),
             "ToDate": DayTime(toDate).format('DD/MM/YYYY'),
@@ -441,20 +626,42 @@ function MasterCostMovement() {
             "TechnologyId": Number(technology.value),
             "PlantId": plant.value,
             "VendorId": vendor.value,
+            "IsCustomerDataShow": showCustomer,
         }
 
         let masterData = {}
         switch (Number(master)) {
             case Number(1):
+            case Number(2):
                 masterData = {
                     "RawMaterialChildId": rawMaterial.value,
-                    "RawMaterialCategoryId": rawMaterial.value,
+                    "RawMaterialCategoryId": Number(category.value),
                     "RawMaterialGradeId": RMGrade.value,
                     "RawMaterialSpecsId": RMSpec.value,
-                    "CategoryId": Number(category.value),
                 }
                 break;
+            case Number(4):
+            case Number(5):
+                masterData = {
+                    "BoughtOutPartCategoryId": Number(BOPCategory.value),
+                    "BoughtOutPartChildId": BOPData.BoughtOutPartId,
 
+
+                }
+                break;
+            case Number(6):
+            case Number(7):
+                masterData = {
+                    "IsSurfaceTreatmentOperation": isSurfaceTrue,
+                    "OperationCode": operationData.label,
+                    "OperationChildId": operationData.value,
+                }
+                break;
+            case Number(9):
+                masterData = {
+                    "ProcessId": processData.value,
+                }
+                break
             default:
                 break;
         }
@@ -469,6 +676,7 @@ function MasterCostMovement() {
     const viewListingHandler = (value) => {
         setReportListing(value)
     }
+
     return <Fragment>
         {!reportListing &&
             <form onSubmit={handleSubmit(runReport)}>
@@ -499,6 +707,7 @@ function MasterCostMovement() {
                                     disabledKeyboardNavigation
                                     onChangeRaw={(e) => e.preventDefault()}
                                     // disabled={rowData.length !== 0}
+                                    buttonCross={resetData('fromDate')}
                                     mandatory={true}
                                     errors={errors && errors.fromDate}
                                 />
@@ -527,6 +736,7 @@ function MasterCostMovement() {
                                     disabledKeyboardNavigation
                                     onChangeRaw={(e) => e.preventDefault()}
                                     // disabled={rowData.length !== 0}
+                                    buttonCross={resetData('toDate')}
                                     mandatory={true}
                                     errors={errors && errors.toDate}
                                 />
@@ -546,43 +756,46 @@ function MasterCostMovement() {
                                 mandatory={true}
                                 handleChange={handleMasterChange}
                                 errors={errors.Masters}
-                                disabled={fromDate === '' ? true : false}
+                                buttonCross={resetData('Masters')}
+                                disabled={(fromDate && toDate) === '' ? true : false}
                             />
 
                         </Col>
                         <Col md="3">
                             <SearchableSelectHookForm
                                 label={"Costing Head Type"}
-                                name={"costingHeadTypeId"}
+                                name={"costingHeadType"}
                                 placeholder={"Costing Head Type"}
                                 Controller={Controller}
                                 control={control}
-                                rules={{ required: true }}
+                                rules={{ required: false }}
                                 register={register}
                                 defaultValue={costingHeadType}
                                 options={renderListing("costingHeadType")}
-                                mandatory={true}
+                                mandatory={false}
                                 handleChange={handleCostingHeadTypeChange}
                                 errors={errors.costingHeadTypeId}
+                                buttonCross={resetData('costingHeadType')}
                             // isDisabled={isEditFlag || isViewFlag}
                             />
                         </Col>
-                        <Col md="3">
+                        {showTechnologyField && <Col md="3">
                             <SearchableSelectHookForm
                                 label={'Technology'}
-                                name={'TechnologyId'}
+                                name={'Technology'}
                                 placeholder={'Technology'}
                                 Controller={Controller}
                                 control={control}
-                                rules={{ required: true }}
+                                rules={{ required: false }}
                                 register={register}
                                 defaultValue={technology}
                                 options={renderListing('technology')}
-                                mandatory={true}
+                                mandatory={false}
                                 handleChange={(e) => { setTechnology(e) }}
+                                buttonCross={resetData('Technology')}
                                 errors={errors.TechnologyId}
                             />
-                        </Col>
+                        </Col>}
                         {inputFieldsRenderer()}
 
                         <Col md="3">
@@ -596,6 +809,7 @@ function MasterCostMovement() {
                                 register={register}
                                 // defaultValue={customer.length !== 0 ? customer : ""}
                                 options={renderListing("Customer")}
+                                buttonCross={resetData('Customer')}
                                 mandatory={false}
                                 handleChange={() => { }}
                                 errors={errors.Customer}
@@ -610,32 +824,34 @@ function MasterCostMovement() {
                                     register={register}
                                     defaultValue={vendor.length !== 0 ? vendor : ""}
                                     options={renderListing("vendor")}
-                                    mandatory={true}
+                                    mandatory={false}
                                     handleChange={handleVendorChange}
                                     // handleChange={() => { }}
                                     errors={errors.vendor}
                                     // isLoading={VendorLoaderObj}
                                     asyncOptions={vendorFilterList}
+                                    buttonCross={resetData('vendor')}
                                     disabled={false}
                                     NoOptionMessage={MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN}
                                 />
                             }
 
                         </Col>
-                        <Col md="3" className='align-items-center mt2'>
+                        <Col md="3" className='align-items-centeratory'>
                             <SearchableSelectHookForm
                                 label={"Plant (Code)"}
                                 name={"plant"}
                                 placeholder={"Select"}
                                 Controller={Controller}
                                 control={control}
-                                rules={{ required: true }}
+                                rules={{ required: false }}
                                 register={register}
                                 // defaultValue={vendor.length !== 0 ? vendor : ""}
                                 options={renderListing("plant")}
-                                mandatory={true}
+                                mandatory={false}
                                 handleChange={(e) => { setPlant(e) }}
                                 errors={errors.plant}
+                                buttonCross={resetData('plant')}
                             // isLoading={VendorLoaderObj}
                             // disabled={dataProps?.isAddFlag ? false : (dataProps?.isViewFlag || !isEditAll)}
                             />
@@ -645,7 +861,7 @@ function MasterCostMovement() {
                 <Row className="sf-btn-footer no-gutters justify-content-between">
                     <div className="col-sm-12 text-right bluefooter-butn mt-3">
                         <div className="d-flex justify-content-end bd-highlight w100 align-items-center">
-                            <button type="button" className={"user-btn mr5 save-btn"} onClick={runReport}> <div className={"Run-icon"}></div>RUN REPORT</button>
+                            <button type="button" className={"user-btn mr5 save-btn"} disabled={disabledButton} onClick={runReport}> <div className={"Run-icon"}></div>RUN REPORT</button>
                         </div>
                     </div>
                 </Row>

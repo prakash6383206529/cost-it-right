@@ -20,6 +20,7 @@ import {
     GET_ALL_OPERATION_COMBINED_DATA_LIST,
     GET_OPERATION_APPROVAL_LIST,
     SET_OPERATION_DATA,
+    GET_OPERATION_SELECTLIST,
 } from '../../../config/constants';
 import { checkForDecimalAndNull, getConfigurationKey } from '../../../helper';
 
@@ -159,6 +160,12 @@ export default function OtherOperationReducer(state = initialState, action) {
                 ...state,
                 loading: false,
                 operationDataHold: action.payload
+            }
+        case GET_OPERATION_SELECTLIST:
+            return {
+                ...state,
+                loading: false,
+                operationSelectList: action.payload
             }
 
         default:

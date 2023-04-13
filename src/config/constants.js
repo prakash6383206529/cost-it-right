@@ -388,7 +388,7 @@ export const API = {
   getVendorListByOperation: `${BASE_URL}/masters-operation/get-operation-vendor-by-operation-select-list`,
   getTechnologyListByVendor: `${BASE_URL}/masters-operation/get-operation-technology-by-vendor-select-list`,
   getOperationListByVendor: `${BASE_URL}/masters-operation/get-operation-by-vendor-select-list`,
-
+  getOperationPartSelectList: `${BASE_URL}/masters-operation/get-operation-code-select-list`,
 
   //OPERATION APPROVAL API'S
 
@@ -991,6 +991,9 @@ export const API = {
   getAllNfrList: `${BASE_URL}/reports/get-all-nfr-list`,
   getNfrPartDetails: `${BASE_URL}/reports/get-nfr-part-details`,
   getRMCostMovement: `${BASE_URL}/reports/get-raw-material-cost-movement`,
+  getBOPCostMovement: `${BASE_URL}/reports/get-bought-out-part-cost-movement`,
+  getOperationMovement: `${BASE_URL}/reports/get-operation-cost-movement`,
+  getMachineProcessMovement: `${BASE_URL}/reports/get-machine-process-cost-movement`,
 
   //SUB ASSEMBLY
   getSubAssemblyAPI: `${BASE_URL}/sub-assembly/get-sub-assembly`,
@@ -1297,6 +1300,7 @@ export const GET_INITIAL_VENDOR_WITH_VENDOR_CODE_SELECTLIST = 'GET_INITIAL_VENDO
 export const GET_INITIAL_TECHNOLOGY_SELECTLIST = 'GET_INITIAL_TECHNOLOGY_SELECTLIST'
 export const GET_OPERATION_APPROVAL_LIST = 'GET_OPERATION_APPROVAL_LIST'
 export const SET_OPERATION_DATA = 'SET_OPERATION_DATA'
+export const GET_OPERATION_SELECTLIST = 'GET_OPERATION_SELECTLIST'
 
 
 //FREIGHT MASTER
@@ -2202,4 +2206,4 @@ export const IVRFQ = "8vFNmRQEl91nOtrM"
 export const ENTRY_TYPE_DOMESTIC = 0
 export const ENTRY_TYPE_IMPORT = 1
 //VERSION 
-export const VERSION = "V2.1.123";
+export const VERSION = "V2.1.124";
