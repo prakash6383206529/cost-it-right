@@ -174,7 +174,6 @@ export function masterApprovalRequestBySenderBudget(data, callback) {
         })
     }
 }
-
 export function masterApprovalAPI(data, callback) {
     return (dispatch) => {
         const request = axios.post(API.masterApprovalAPI, data, config())
@@ -194,4 +193,5 @@ export function masterApprovalAPI(data, callback) {
         })
     }
 }
+
 
