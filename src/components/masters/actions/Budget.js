@@ -154,7 +154,6 @@ export function bulkUploadBudgetMaster(data, callback) {
     };
 }
 
-
 export function masterApprovalRequestBySenderBudget(data, callback) {
     return (dispatch) => {
         const request = axios.post(API.masterApprovalRequestBySenderBudget, data, config())
@@ -174,4 +173,27 @@ export function masterApprovalRequestBySenderBudget(data, callback) {
         })
     }
 }
+
+export function masterApprovalAPI(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.masterApprovalAPI, data, config())
+        request.then((response) => {
+            if (response.data.Result) {
+                callback(response)
+            } else {
+                dispatch({ type: API_FAILURE })
+                if (response.data.Message) {
+                    Toaster.error(response.data.Message)
+                }
+            }
+        }).catch((error) => {
+            callback(error)
+            dispatch({ type: API_FAILURE })
+            apiErrors(error)
+        })
+    }
+}
+
+
+
 

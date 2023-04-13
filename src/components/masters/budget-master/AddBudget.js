@@ -1166,26 +1166,28 @@ function AddBudget(props) {
                                             </Row>
 
                                         </form></div>
-                                    {approveDrawer && (
-                                        <MasterSendForApproval
-                                            isOpen={approveDrawer}
-                                            closeDrawer={closeApprovalDrawer}
-                                            isEditFlag={false}
-                                            masterId={BUDGET_ID}
-                                            type={'Sender'}
-                                            anchor={"right"}
-                                            approvalObj={approvalObj}
-                                            isBulkUpload={false}
-                                            IsImportEntery={false}
-                                            costingTypeId={costingTypeId}
-                                            //costingTypeId={this.state.costingTypeId}
-                                            levelDetails={levelDetails}
-                                        />
-                                    )}
-                                </div>
-                            </div>
-                        </div>}
-                </div>
+                                    {
+                                        approveDrawer && (
+                                            <MasterSendForApproval
+                                                isOpen={approveDrawer}
+                                                closeDrawer={closeApprovalDrawer}
+                                                isEditFlag={false}
+                                                masterId={BUDGET_ID}
+                                                type={'Sender'}
+                                                anchor={"right"}
+                                                approvalObj={approvalObj}
+                                                isBulkUpload={false}
+                                                IsImportEntery={false}
+                                                costingTypeId={costingTypeId}
+                                                //costingTypeId={this.state.costingTypeId}
+                                                levelDetails={levelDetails}
+                                            />
+                                        )
+                                    }
+                                </div >
+                            </div >
+                        </div >}
+                </div >
                 {showPopup && <PopupMsgWrapper isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${MESSAGES.CANCEL_MASTER_ALERT}`} />}
             </div >
 

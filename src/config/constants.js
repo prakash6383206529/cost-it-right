@@ -195,6 +195,9 @@ export const API = {
   bulkfileUploadRM: `${BASE_URL}/masters-raw-material/bulk-file-upload-raw-material`,
   getUnassociatedRawMaterial: `${BASE_URL}/masters-raw-material/select-list-raw-material-name-child`,
 
+  //Master Approval 
+  masterApprovalAPI: `${BASE_URL}/masters-approval/master-send-to-approver-by-sender`,
+
   //RM APPROVAL API'S
   getRMApprovalList: `${BASE_URL}/app-approval-system/get-master-approvals-by-filter`,
   getAllMasterApprovalDepartment: `${BASE_URL}/app-approval-system/get-all-master-approval-department`,
