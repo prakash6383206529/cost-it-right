@@ -477,12 +477,13 @@ function BudgetListing(props) {
     };
 
     if (showBudgetForm) {
-        return (
-            <AddBudget
-                hideForm={hideForm}
-                data={data}
-            />
-        )
+        props.formToggle(data)
+        // return (
+        //     <AddBudget
+        //         hideForm={hideForm}
+        //         data={data}
+        //     />
+        // )
     }
 
     const toggleDrawer = () => {

@@ -8,6 +8,7 @@ import {
 
 } from '../../../config/constants'
 import { apiErrors } from '../../../helper/util'
+import Toaster from '../../common/Toaster'
 
 
 /**
@@ -151,6 +152,27 @@ export function bulkUploadBudgetMaster(data, callback) {
             callback(error);
         });
     };
+}
+
+
+export function masterApprovalAPI(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.masterApprovalAPI, data, config())
+        request.then((response) => {
+            if (response.data.Result) {
+                callback(response)
+            } else {
+                dispatch({ type: API_FAILURE })
+                if (response.data.Message) {
+                    Toaster.error(response.data.Message)
+                }
+            }
+        }).catch((error) => {
+            callback(error)
+            dispatch({ type: API_FAILURE })
+            apiErrors(error)
+        })
+    }
 }
 
 

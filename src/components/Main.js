@@ -66,6 +66,7 @@ import PurchaseProvisionReport from './report/components/PurchaseProvisionReport
 import CustomerPoamSummaryReport from './report/components/CustomerPoamSummaryReport/CustomerPoamSummaryReport'
 import HeadWiseCostingGotGiven from './report/components/HeadwiseCostingGotGiven/HeadWiseCostingGotGiven'
 import MasterCostMovement from './report/components/CostMovementByMaster/MasterCostMovement'
+import BudgetMaster from './masters/budget-master'
 const CustomHeader = {
   'Content-Type': 'application/x-www-form-urlencoded',
   'Access-Control-Allow-Origin': '*',
@@ -365,7 +366,7 @@ class Main extends Component {
                     <Route path="/simulation-insights" component={SimulationInsights} />
                     <Route path="/rfq-listing" component={AuthMiddleware(RfqListing, RFQ)} />
                     <Route path="/nfr-listing" component={NfrListing} />
-                    <Route path="/budgeting" component={AuthMiddleware(BudgetListing, BUDGETING)} />
+                    <Route path="/budgeting" component={AuthMiddleware(BudgetMaster, BUDGETING)} />
 
                     {/* <Route path='/simulation-approval-listing' component={SimulationApprovalListing} /> */}
 
