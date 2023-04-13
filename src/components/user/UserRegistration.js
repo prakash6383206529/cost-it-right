@@ -1328,7 +1328,7 @@ function UserRegistration(props) {
    * @returns {{}}
    */
   const onSubmit = (values) => {
-    if (isEditFlag) {
+    if (isEditFlag && !isForcefulUpdate) {
       if (JSON.stringify(Modules) !== JSON.stringify(oldModules) || JSON.stringify(oldHeadLevelGrid) !== JSON.stringify(HeadLevelGrid) || JSON.stringify(oldMasterLevelGrid) !== JSON.stringify(masterLevelGrid) || JSON.stringify(oldTechnologyLevelGrid) !== JSON.stringify(TechnologyLevelGrid)) {
         setIsForcefulUpdate(true)
       }
