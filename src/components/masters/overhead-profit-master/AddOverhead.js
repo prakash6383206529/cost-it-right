@@ -869,6 +869,9 @@ class AddOverhead extends Component {
     const { isRM, isCC, isBOP, isOverheadPercent, isEditFlag, isHideOverhead, isHideBOP, isHideRM, isHideCC, isViewMode, setDisable, isDataChanged, costingTypeId } = this.state;
     const filterList = async (inputValue) => {
       const { vendorFilterList } = this.state
+      if (inputValue && typeof inputValue === 'string' && inputValue.includes(' ')) {
+        inputValue = inputValue.trim();
+      }
       const resultInput = inputValue.slice(0, searchCount)
       if (inputValue?.length >= searchCount && vendorFilterList !== resultInput) {
         this.setState({ inputLoader: true })

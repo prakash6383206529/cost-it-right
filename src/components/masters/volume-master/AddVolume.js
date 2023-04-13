@@ -706,6 +706,9 @@ class AddVolume extends Component {
     const { isEditFlag, isOpenVendor, setDisable, costingTypeId } = this.state;
     const vendorFilterList = async (inputValue) => {
       const { vendorFilter } = this.state
+      if (inputValue && typeof inputValue === 'string' && inputValue.includes(' ')) {
+        inputValue = inputValue.trim();
+      }
       const resultInput = inputValue.slice(0, searchCount)
       if (inputValue?.length >= searchCount && vendorFilter !== resultInput) {
         this.setState({ inputLoader: true })
@@ -735,6 +738,9 @@ class AddVolume extends Component {
 
     const partFilterList = async (inputValue) => {
       const { partName } = this.state
+      if (inputValue && typeof inputValue === 'string' && inputValue.includes(' ')) {
+        inputValue = inputValue.trim();
+      }
       const resultInput = inputValue.slice(0, searchCount)
       if (inputValue?.length >= searchCount && partName !== resultInput) {
         const res = await getPartSelectListWtihRevNo(resultInput)
