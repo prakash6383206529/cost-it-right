@@ -1012,8 +1012,14 @@ export const API = {
   getSalePurchaseProvisionReport: `${BASE_URL}/reports/get-sale-purchase-provision-report`,
   getPoamSummaryReport: `${BASE_URL}/reports/get-poam-summary-report`,
   getPoamImpactReport: `${BASE_URL}/reports/get-poam-impact-report`,
-  getAllNfrList: `${BASE_URL}/reports/get-all-nfr-list`,
-  getNfrPartDetails: `${BASE_URL}/reports/get-nfr-part-details`,
+  getAllNfrList: `${BASE_URL}/nfr/get-all-nfr-list`,
+  getNfrPartDetails: `${BASE_URL}/nfr/get-nfr-part-details`,
+  getRMCostMovement: `${BASE_URL}/reports/get-raw-material-cost-movement`,
+  getBOPCostMovement: `${BASE_URL}/reports/get-bought-out-part-cost-movement`,
+  getOperationMovement: `${BASE_URL}/reports/get-operation-cost-movement`,
+  getMachineProcessMovement: `${BASE_URL}/reports/get-machine-process-cost-movement`,
+  saveNFRGroupDetails: `${BASE_URL}/nfr/save-nfr-group-details`,
+  getNFRPartWiseGroupDetail: `${BASE_URL}/nfr/get-nfr-part-wise-group-detail`,
 
   //SUB ASSEMBLY
   getSubAssemblyAPI: `${BASE_URL}/sub-assembly/get-sub-assembly`,
@@ -1832,6 +1838,7 @@ export const VBC = 'VBC'
 export const NCC = 'NCC'
 export const WAC = 'WAC'
 export const CBC = 'CBC'
+export const NFR = 'NFR'
 //PART TYPE'S USED AT ASSEMBLY CHILD DRAWER
 export const ASSEMBLYNAME = 'Assembly'
 export const COMPONENT_PART = 'Component'
@@ -2197,6 +2204,8 @@ export const VBCTypeIdFull = Number(reactLocalStorage.getObject('CostingHeadsLis
 export const CBCTypeIdFull = Number(reactLocalStorage.getObject('CostingHeadsListFullForm')[CBC])
 export const NCCTypeIdFull = Number(reactLocalStorage.getObject('CostingHeadsListFullForm')[NCC])
 export const ZBCADDMORE = 0
+
+export const NFRTypeId = Number(reactLocalStorage.getObject('CostingHeadsListShortForm')[NFR])
 
 //CONSTANTS FOR APPROVAL TYPE 
 export const CBCAPPROVALTYPEID = Number(reactLocalStorage.getObject('ApprovalTypeListShortForm')[CBC])

@@ -1,19 +1,23 @@
-import { debounce } from 'lodash';
+import _, { debounce } from 'lodash';
 import React, { useEffect } from 'react';
 import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import { useDispatch } from 'react-redux';
-import { Redirect } from 'react-router';
+import { useDispatch, useSelector } from 'react-redux';
+import { Redirect, useHistory } from 'react-router';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { Col, Row, Table } from 'reactstrap';
 import { getVendorWithVendorCodeSelectList } from '../../../actions/Common';
-import { EMPTY_DATA, EMPTY_GUID, VBCTypeId, searchCount } from '../../../config/constants';
+import { EMPTY_DATA, EMPTY_GUID, NFR, NFRTypeId, VBCTypeId, searchCount } from '../../../config/constants';
 
 import { autoCompleteDropdown } from '../../common/CommonFunctions';
 import HeaderTitle from '../../common/HeaderTitle';
 import NoContentFound from '../../common/NoContentFound';
 import Toaster from '../../common/Toaster';
 import { AsyncSearchableSelectHookForm, NumberFieldHookForm, SearchableSelectHookForm, TextFieldHookForm } from '../../layout/HookFormInputs';
+import { getNFRPartWiseGroupDetail, saveNFRGroupDetails } from './actions/nfr';
+import { checkVendorPlantConfigurable, loggedInUserId, userDetails } from '../../../helper';
+import { dataLiist } from '../../../config/masterData';
+import { createCosting, getBriefCostingById, storePartNumber } from '../../costing/actions/Costing';
 
 
 
@@ -32,13 +36,24 @@ import { AsyncSearchableSelectHookForm, NumberFieldHookForm, SearchableSelectHoo
 //         ], netPrice: 10
 //     }]
 function AddNfr(props) {
-    const { nfrData } = props;
+    const { nfrData, nfrIdsList } = props;
     const dispatch = useDispatch();
     const [rowData, setRowData] = useState([])
     const [vendorName, setVendorname] = useState([])
     const [vendor, setVendor] = useState([]);
     const [addNewCosting, setAddNewCosting] = useState(false)
     const [isRowEdited, setIsRowEdited] = useState(false)
+    const [nfrPartDetail, setNFRPartDetail] = useState([])
+    // const [nFRPartWiseGroupDetails, setNFRPartWiseGroupDetails] = useState({})
+    const partNumber = useSelector(state => state.costing.partNo);
+    const viewCostingData = useSelector((state) => state.costing.viewCostingDetailData)
+    const partInfo = useSelector((state) => state.costing.partInfo)
+    const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
+    let history = useHistory();
+    const [isAddDetails, setIsAddDetails] = useState(false);
+    const [partInfoStepTwo, setpartInfoStepTwo] = useState({});
+    const [costingData, setcostingData] = useState(false);
+    const [costingOptionsSelectedObject, setCostingOptionsSelectedObject] = useState([]);
 
     const { register, setValue, getValues, control, formState: { errors }, } = useForm({
         mode: 'onChange',
@@ -47,6 +62,38 @@ function AddNfr(props) {
     const handleVendorChange = (newValue) => {
         setVendorname(newValue)
     }
+
+    useEffect(() => {
+        let requestObject = {
+            nfrId: nfrIdsList?.NfrMasterId,
+            partWiseDetailId: nfrIdsList?.NfrPartWiseDetailId,
+            plantId: initialConfiguration?.DefaultPlantId
+        }
+        dispatch(getNFRPartWiseGroupDetail(requestObject, (res) => {
+            // setNFRPartWiseGroupDetails(res?.data?.Data)
+            if (res?.data?.Result) {
+                const newArray = res?.data?.Data?.groupWiseResponse?.map((item) => {
+                    const vendorData = item.VendorList.map((vendor) => {
+                        return {
+                            label: `${vendor.VendorName} (${vendor.VendorCode})`,
+                            value: vendor.VendorId,
+                            vendorName: vendor.VendorName,
+                            vendorCode: vendor.VendorCode,
+                            CostingOptions: vendor.CostingOptions
+                        };
+                    });
+
+                    return {
+                        groupName: item.GroupName,
+                        data: vendorData,
+                    };
+                });
+
+                setNFRPartDetail(res?.data?.Data)
+                setRowData(newArray)
+            }
+        }))
+    }, [])
 
     useEffect(() => {
         if (rowData?.length === 0) {
@@ -96,10 +143,76 @@ function AddNfr(props) {
             setValue('GroupName', '')
         }
     }
+    const addDetails = debounce((data, index1, index) => {
+        let dataa = rowData[index1]
+        let list = dataa?.data && dataa?.data[index]
+        const userDetail = userDetails()
+        let tempData = viewCostingData[0]
 
-    const addDetails = debounce((index, type) => { }, 500);
+        const Data = {
+            PartId: nfrData?.PartId,
+            PartTypeId: nfrPartDetail?.PartTypeId,
+            PartType: nfrData?.PartType,
+            PartNumber: nfrData?.PartNumber,
+            PartName: nfrData?.PartName,
+            TechnologyId: nfrData?.TechnologyId,
+            ZBCId: userDetail.ZBCSupplierInfo.VendorId,
+            VendorId: list?.value,
+            VendorPlantId: checkVendorPlantConfigurable() ? tempData.vendorPlantId : '',
+            // VendorPlantName: tempData.vendorPlantName,
+            // VendorPlantCode: tempData.vendorPlantCode,
+            VendorName: list?.vendorName,
+            VendorCode: list?.vendorCode,
+            PlantId: initialConfiguration?.DefaultPlantId,
+            PlantName: initialConfiguration?.DefaultPlantName,
+            PlantCode: initialConfiguration?.DefaultPlantCode,
+            DestinationPlantId: initialConfiguration?.DefaultPlantId,
+            DestinationPlantName: initialConfiguration?.DefaultPlantName,
+            DestinationPlantCode: initialConfiguration?.DefaultPlantCode,
+            UserId: loggedInUserId(),
+            LoggedInUserId: loggedInUserId(),
+            ShareOfBusinessPercent: 0,
+            IsAssemblyPart: false,
+            Description: nfrPartDetail?.Description,
+            ECNNumber: nfrPartDetail?.ECNNumber,
+            RevisionNumber: nfrPartDetail?.RevisionNumber,
+            DrawingNumber: nfrPartDetail?.DrawingNumber,
+            Price: nfrPartDetail?.Price ? nfrPartDetail?.Price : '',
+            EffectiveDate: nfrPartDetail?.EffectiveDate,
+            CostingHead: NFRTypeId,
+            CostingTypeId: NFRTypeId,
+            CustomerId: '',
+            CustomerName: '',
+            Customer: ''
+        }
+        dispatch(createCosting(Data, (res) => {
+            if (res.data?.Result) {
+                setpartInfoStepTwo({ costingId: res.data?.Data?.CostingId, NFRTypeId })
+                setcostingData(res.data?.Data)
+                dispatch(getBriefCostingById(res.data?.Data?.CostingId, () => {
+                    setIsAddDetails(true)
+                }))
+            }
+        }))
+
+    }, 500);
+
     const viewDetails = (index) => { };
-    const editCosting = (index) => { };
+
+    const editCosting = (index) => {
+        let tempData;
+        tempData = costingOptionsSelectedObject[index]
+        dispatch(getBriefCostingById(tempData?.CostingId, (res) => {
+            if (res?.data?.Result) {
+                setpartInfoStepTwo(partInfoStepTwo)
+                setcostingData({ costingId: tempData?.CostingId, NFRTypeId })
+                setIsAddDetails(true)
+            }
+
+        }))
+
+    };
+
     const copyCosting = (index) => { };
     const deleteItem = (index) => { };
     const deleteRowItem = (index) => { };
@@ -117,6 +230,19 @@ function AddNfr(props) {
         setRowData(rowtemp)
         setIsRowEdited(false)
         resetData(true)
+    }
+
+    const saveEstimation = () => {
+
+        let requestObject = {
+            GroupName: rowData[0]?.groupName,
+            NfrId: nfrIdsList?.NfrMasterId,
+            PlantId: '27D5F3F4-871A-40AD-8E75-D5AB4B7B227B',
+            NfrPartWiseDetailId: nfrIdsList?.NfrPartWiseDetailId,
+            LoggedInUserId: loggedInUserId(),
+            vendorList: _.map(rowData[0]?.data, 'value')
+        }
+        dispatch(saveNFRGroupDetails(requestObject, () => { }))
     }
 
     const vendorFilterList = async (inputValue) => {
@@ -144,19 +270,57 @@ function AddNfr(props) {
             }
         }
     };
-    // Redirects to the costing page when the "Add new costing" button is clicked.
-    if (addNewCosting === true) {
+
+    if (isAddDetails === true) {
         return <Redirect
             to={{
                 pathname: "/costing",
                 state: {
                     isAddMode: true,
-                    isViewMode: false
+                    isViewMode: false,
+                    costingData: costingData,
+                    partInfoStepTwo: partInfoStepTwo,
+                    isNFR: true
                 }
+
             }}
         />
     }
 
+    const renderListing = (options) => {
+        let opts1 = []
+        if (options?.length > 0) {
+            let opts = [...options]
+            opts1 = [...options]
+            opts1 = opts && opts?.map(item => {
+                item.label = item.DisplayCostingNumber
+                item.value = item.CostingId
+                return item
+            })
+        }
+        return opts1
+    }
+
+    // const handleCostingChange = (newValue, type, index, costingOptionsDropDown) => {
+    const handleCostingChange = (newValue, indexOuter, indexInside) => {
+        let tempObject = []
+        // if (type === VBC) {
+        tempObject = [...rowData[indexOuter]?.data[indexInside]?.CostingOptions]
+        // }
+
+        const indexOfCostingOptions = tempObject.findIndex((el) => el.CostingId === newValue.value)
+
+        let costingOptionsSelectedObjectTemp = {
+            ...tempObject[indexOfCostingOptions],
+            SubAssemblyCostingId: tempObject[indexOfCostingOptions]?.SubAssemblyCostingId,
+            AssemblyCostingId: tempObject[indexOfCostingOptions]?.AssemblyCostingId,
+            SentDate: tempObject[indexOfCostingOptions]?.SentDate,
+        }
+
+        let costingOptionsSelectedArray = Object.assign([...costingOptionsSelectedObject], { [indexInside]: costingOptionsSelectedObjectTemp })
+        setCostingOptionsSelectedObject(costingOptionsSelectedArray)
+
+    }
 
     return (
         <>
@@ -294,7 +458,6 @@ function AddNfr(props) {
                             <tr>
                                 <th className="table-record">Group Name</th>
                                 <th>Vendor</th>
-                                <th>Sob</th>
                                 <th>Costing Version</th>
                                 <th className="text-center">Status</th>
                                 <th>PO Price</th>
@@ -303,73 +466,49 @@ function AddNfr(props) {
                             </tr>
                         </thead>
                         <tbody>
-                            {rowData.map((item) => (
-                                <React.Fragment key={item.groupName}>
-                                    {item.data.map((dataItem, index) => (
-                                        <tr key={`${item.groupName}-${index}`}>
-                                            {index === 0 && (
-                                                <td rowSpan={item.data.length} className="table-record">{item.groupName}</td>
+                            {rowData?.map((item, indexOuter) => (
+                                <React.Fragment key={item?.groupName}>
+                                    {item?.data?.map((dataItem, indexInside) => (
+                                        <tr key={`${item?.groupName} -${indexInside} `}>
+                                            {indexInside === 0 && (
+                                                <td rowSpan={item?.data.length} className="table-record">{item?.groupName}</td>
                                             )}
-                                            <td>{dataItem.label}</td>
-                                            <td><NumberFieldHookForm
-                                                label=""
-                                                name={`${index}.ShareOfBusinessPercent`}
-                                                Controller={Controller}
-                                                control={control}
-                                                register={register}
-                                                mandatory={false}
-                                                rules={{
-                                                    required: true,
-                                                    pattern: {
-                                                        value: /^\d*\.?\d*$/,
-                                                        message: "Invalid Number.",
-                                                    },
-                                                    max: {
-                                                        value: 100,
-                                                        message: "Should not be greater then 100"
-                                                    }
-                                                }}
-                                                defaultValue={item.ShareOfBusinessPercent}
-                                                className=""
-                                                customClassName={"withBorder sob"}
-                                                handleChange={(e) => {
-                                                    e.preventDefault();
-                                                }}
-                                                errors={errors && errors.vbcGridFields && errors.vbcGridFields[index] !== undefined ? errors.vbcGridFields[index].ShareOfBusinessPercent : ""}
-                                            /></td>
+                                            <td>{dataItem?.label}</td>
+
                                             <td><SearchableSelectHookForm
                                                 label={""}
-                                                name={`${index}.CostingVersion`}
+                                                name={`${indexInside}.CostingVersion`}
                                                 placeholder={"Select"}
                                                 Controller={Controller}
                                                 control={control}
                                                 rules={{ required: false }}
                                                 register={register}
                                                 customClassName="costing-version"
-                                                defaultValue={item.SelectedCostingVersion}
-                                                // options={renderCostingOption(item.CostingOptions)}
+                                                defaultValue={costingOptionsSelectedObject[indexInside] ? costingOptionsSelectedObject[indexInside] : ''}
+                                                options={renderListing(dataItem?.CostingOptions)}
                                                 mandatory={false}
+                                                handleChange={(newValue) => handleCostingChange(newValue, indexOuter, indexInside)}
                                             // handleChange={(newValue) => handleCostingChange(newValue, VBCTypeId, index)}
-                                            // errors={`${index}CostingVersion`}
+                                            // errors={`${indexInside} CostingVersion`}
                                             /></td>
                                             <td className="text-center">
-                                                <div className={dataItem.CostingId !== EMPTY_GUID ? dataItem.Status : ''}>
-                                                    {dataItem.Status}
+                                                <div className={dataItem?.CostingId !== EMPTY_GUID ? dataItem?.Status : ''}>
+                                                    {dataItem?.Status}
                                                 </div>
                                             </td>
-                                            <td>{dataItem.poPrice}</td>
+                                            <td>{dataItem?.poPrice}</td>
                                             <td> <div className='action-btn-wrapper pr-2'>
-                                                {<button className="Add-file" type={"button"} title={"Add Costing"} onClick={() => addDetails(index)} />}
-                                                {!item.IsNewCosting && item.Status !== '' && (<button className="View" type={"button"} title={"View Costing"} onClick={() => viewDetails(index)} />)}
-                                                {!item.IsNewCosting && (<button className="Edit" type={"button"} title={"Edit Costing"} onClick={() => editCosting(index)} />)}
-                                                {!item.IsNewCosting && (<button className="Copy All" title={"Copy Costing"} type={"button"} onClick={() => copyCosting(index)} />)}
-                                                {!item.IsNewCosting && (<button className="Delete All" title={"Delete Costing"} type={"button"} onClick={() => deleteItem(item, index)} />)}
-                                                {item?.CostingOptions?.length === 0 && <button title='Discard' className="CancelIcon" type={'button'} onClick={() => deleteRowItem(index)} />}
+                                                {<button className="Add-file" type={"button"} title={"Add Costing"} onClick={() => addDetails(dataItem, indexOuter, indexInside)} />}
+                                                {!item?.IsNewCosting && item?.Status !== '' && (<button className="View" type={"button"} title={"View Costing"} onClick={() => viewDetails(indexInside)} />)}
+                                                {!item?.IsNewCosting && (<button className="Edit" type={"button"} title={"Edit Costing"} onClick={() => editCosting(indexInside)} />)}
+                                                {!item?.IsNewCosting && (<button className="Copy All" title={"Copy Costing"} type={"button"} onClick={() => copyCosting(indexInside)} />)}
+                                                {!item?.IsNewCosting && (<button className="Delete All" title={"Delete Costing"} type={"button"} onClick={() => deleteItem(item, indexInside)} />)}
+                                                {item?.CostingOptions?.length === 0 && <button title='Discard' className="CancelIcon" type={'button'} onClick={() => deleteRowItem(indexInside)} />}
                                             </div></td>
-                                            {index === 0 && (
-                                                <td rowSpan={item.data.length} className="table-record">
-                                                    <button className="Edit" type={"button"} title={"Edit Costing"} onClick={() => editRow(item, index)} />
-                                                    <button className="Delete All" title={"Delete Costing"} type={"button"} onClick={() => deleteRow(item, index)} />
+                                            {indexInside === 0 && (
+                                                <td rowSpan={item?.data.length} className="table-record">
+                                                    <button className="Edit" type={"button"} title={"Edit Costing"} onClick={() => editRow(item, indexInside)} />
+                                                    <button className="Delete All" title={"Delete Costing"} type={"button"} onClick={() => deleteRow(item, indexInside)} />
                                                 </td>
                                             )}
                                         </tr>
@@ -381,6 +520,14 @@ function AddNfr(props) {
                             </tr>)}
                         </tbody>
                     </Table>
+                    <button
+                        type="button"
+                        className="user-btn mr5 save-btn"
+                        onClick={() => saveEstimation()}
+                    >
+                        <div className={"save-icon"}></div>
+                        Save
+                    </button>
                 </div>
             </div>}
         </>
