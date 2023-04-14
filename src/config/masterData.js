@@ -2834,6 +2834,7 @@ export const PartComponent = [
     { label: 'ECNNumber', value: 'ECNNumber', },
     { label: 'RevisionNo', value: 'RevisionNo', },
     { label: 'DrawingNo', value: 'DrawingNo', },
+    { label: "SAPCode", value: "SAPCode", },
     { label: 'TechnologyName', value: 'TechnologyName', },
     { label: 'EffectiveDate', value: 'EffectiveDate', }, //,* maybe only star
     { label: 'Remark', value: 'Remark', },
@@ -2848,6 +2849,7 @@ export const PartComponentTempData = [
         'ECNNumber': '1',
         'RevisionNo': '1',
         'DrawingNo': '1',
+        'SAPCode': 'sap-1001',
         'TechnologyName': 'Sheet Metal',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text',
@@ -2988,6 +2990,7 @@ export const BOMUpload = [
     { label: "ECNNumber", value: "ECNNumber" },
     { label: "RevisionNo", value: "RevisionNo" },
     { label: "DrawingNo", value: "DrawingNo" },
+    { label: "SAPCode", value: "SAPCode", },
     { label: "IsAssembly", value: "IsAssembly" }, //NOUI,*
     { label: "BOMLevel", value: "BOMLevel" }, //NOUI,*
     { label: "Quantity", value: "Quantity" }, //NOUI
@@ -3009,6 +3012,7 @@ export const BOMUploadTempData = [
         "ECNNumber": 1,
         "RevisionNo": 1,
         "DrawingNo": 1,
+        "SAPCode": "sap-1001",
         "IsAssembly": "YES",
         "BOMLevel": 0,
         "Quantity": 2,
@@ -3028,6 +3032,7 @@ export const BOMUploadTempData = [
         "ECNNumber": 1,
         "RevisionNo": 1,
         "DrawingNo": 1,
+        "SAPCode": "sap-1002",
         "IsAssembly": "NO",
         "BOMLevel": 1,
         "Quantity": 3,
@@ -3047,6 +3052,7 @@ export const BOMUploadTempData = [
         "ECNNumber": 1,
         "RevisionNo": 1,
         "DrawingNo": 1,
+        "SAPCode": "sap-1003",
         "IsAssembly": "YES",
         "BOMLevel": 1,
         "Quantity": 4,
@@ -4569,6 +4575,7 @@ export const ASSEMBLYPART_DOWNLOAD_EXCEl = [
     { label: "BOM No.", value: "BOMNumber", },
     { label: "Part No.", value: "PartNumber", },
     { label: "Name", value: "PartName", },
+    { label: "SAP Code", value: "SAPCode", },
     { label: "No.of Child Parts", value: "NumberOfParts", },
     { label: "BOM Level Count", value: "BOMLevelCount", },
     { label: "ECN No.", value: "ECNNumber", },
@@ -4581,6 +4588,7 @@ export const INDIVIDUALPART_DOWNLOAD_EXCEl = [
     { label: "Technology", value: "Technology", },
     { label: "Part No.", value: "PartNumber", },
     { label: "Name", value: "PartName", },
+    { label: "SAP Code", value: "SAPCode", },
     { label: "ECN No.", value: "ECNNumber", },
     { label: "Revision No.", value: "RevisionNumber", },
     { label: "Drawing No.", value: "DrawingNumber", },
