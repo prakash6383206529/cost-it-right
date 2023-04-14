@@ -424,9 +424,9 @@ function RfqListing(props) {
                                                 <AgGridColumn field="PartNumber" tooltipField="PartNumber" headerName="Part No." width={150}></AgGridColumn>
                                                 <AgGridColumn field="CostingReceived" headerName='No. of Quotation Received' maxWidth={150} cellRenderer={'quotationReceiveFormatter'}></AgGridColumn>
                                                 <AgGridColumn field="VendorName" tooltipField="VendorName" headerName='Vendor (Code)'></AgGridColumn>
-                                                <AgGridColumn field="PlantName" headerName='Plant (Code)'></AgGridColumn>
+                                                <AgGridColumn field="PlantName" tooltipField="PlantName" headerName='Plant (Code)'></AgGridColumn>
                                                 <AgGridColumn field="TechnologyName" width={"160px"} headerName='Technology'></AgGridColumn>
-                                                <AgGridColumn field="Remark" headerName='Notes'></AgGridColumn>
+                                                <AgGridColumn field="Remark" tooltipField="Remark" headerName='Notes'></AgGridColumn>
                                                 <AgGridColumn field="RaisedBy" width={"160px"} headerName='Raised By'></AgGridColumn>
                                                 <AgGridColumn field="RaisedOn" width={"145px"} headerName='Raised On' cellRenderer='dateFormatter'></AgGridColumn>
                                                 <AgGridColumn field="VisibilityMode" width={"140px"} headerName='Visibility Mode' cellRenderer='dashFormatter'></AgGridColumn>
