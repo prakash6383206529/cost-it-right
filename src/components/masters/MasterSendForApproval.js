@@ -1,9 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { checkForDecimalAndNull, getConfigurationKey, loggedInUserId, userDetails, labelWithUOMAndCurrency, displayUOM, userSimulationTechnologyLevelDetails } from '../../helper';
 import { approvalOrRejectRequestByMasterApprove, getAllMasterApprovalDepartment, getAllMasterApprovalUserByDepartment, masterApprovalRequestBySender } from './actions/Material';
-import { masterApprovalRequestBySenderBop } from './actions/BoughtOutParts'
-import { masterApprovalRequestBySenderOperation } from './actions/OtherOperation'
-import { masterApprovalRequestBySenderMachine } from './actions/MachineMaster'
 import "react-datepicker/dist/react-datepicker.css";
 import { debounce } from 'lodash'
 import { Container, Row, Col } from 'reactstrap'
@@ -223,15 +220,6 @@ function MasterSendForApproval(props) {
                         tempArray.push({ BoughtPartId: EMPTY_GUID, IsImportEntery: IsImportEntery, BoughtoutPartRequest: approvalObj })
                     }
                     senderObj.EntityList = tempArray
-
-                    //THIS CONDITION IS FOR SIMULATION SEND FOR APPROVAL
-                    dispatch(masterApprovalRequestBySenderBop(senderObj, res => {
-                        setIsDisable(false)
-                        if (res?.data?.Result) {
-                            Toaster.success('Insert has been sent for approval.')
-                            props.closeDrawer('', 'submit')
-                        }
-                    }))
                     break;
 
 
@@ -247,14 +235,6 @@ function MasterSendForApproval(props) {
                     }
                     senderObj.EntityList = tempArray
 
-                    //THIS CONDITION IS FOR SIMULATION SEND FOR APPROVAL
-                    dispatch(masterApprovalRequestBySenderOperation(senderObj, res => {
-                        setIsDisable(false)
-                        if (res?.data?.Result) {
-                            Toaster.success('Operation has been sent for approval.')
-                            props.closeDrawer('', 'submit')
-                        }
-                    }))
                     break;
 
 
@@ -269,15 +249,6 @@ function MasterSendForApproval(props) {
                         tempArray.push({ MachineId: EMPTY_GUID, IsImportEntery: IsImportEntery, MachineRequest: approvalObj })
                     }
                     senderObj.EntityList = tempArray
-
-                    //THIS CONDITION IS FOR SIMULATION SEND FOR APPROVAL
-                    dispatch(masterApprovalRequestBySenderMachine(senderObj, res => {
-                        setIsDisable(false)
-                        if (res?.data?.Result) {
-                            Toaster.success('Machine has been sent for approval.')
-                            props.closeDrawer('', 'submit')
-                        }
-                    }))
                     break;
 
                 case 5:  //CASE 5 FOR BUDGET MASTER

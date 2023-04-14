@@ -44,8 +44,6 @@ function AddRM(props) {
 
   useEffect(() => {
     setSelectedRowData([])
-    // dispatch(getGradeSelectList(res => { }))
-    // dispatch(getRawMaterialFilterSelectList(() => { }))
     getDataList()
   }, []);
 

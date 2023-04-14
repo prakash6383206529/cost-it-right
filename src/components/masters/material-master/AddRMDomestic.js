@@ -25,7 +25,7 @@ import AddVendorDrawer from '../supplier-master/AddVendorDrawer'
 import Dropzone from 'react-dropzone-uploader'
 import 'react-dropzone-uploader/dist/styles.css'
 import 'react-datepicker/dist/react-datepicker.css'
-import { FILE_URL, ZBC, RM_MASTER_ID, EMPTY_GUID, SPACEBAR, ZBCTypeId, VBCTypeId, CBCTypeId, searchCount, SHEET_METAL, RMDOMESTIC } from '../../../config/constants'
+import { FILE_URL, ZBC, RM_MASTER_ID, EMPTY_GUID, SPACEBAR, ZBCTypeId, VBCTypeId, CBCTypeId, searchCount, RMDOMESTIC, ENTRY_TYPE_DOMESTIC, SHEET_METAL } from '../../../config/constants'
 import DayTime from '../../common/DayTimeWrapper'
 import TooltipCustom from '../../common/Tooltip';
 import LoaderCustom from '../../common/LoaderCustom';
@@ -1098,7 +1098,7 @@ class AddRMDomestic extends Component {
         VendorPlant: [],
         MachiningScrapRate: values.MachiningScrap,
         JaliScrapCost: values.CircleScrapCost ? values.CircleScrapCost : '',// THIS KEY FOR CIRCLE SCRAP COST
-        RawMaterialEntryType: Number(RMDOMESTIC)
+        RawMaterialEntryType: Number(ENTRY_TYPE_DOMESTIC)
       }
       if (IsFinancialDataChanged) {
         if ((isDateChange) && (DayTime(oldDate).format("DD/MM/YYYY") !== DayTime(effectiveDate).format("DD/MM/YYYY"))) {
@@ -1183,7 +1183,7 @@ class AddRMDomestic extends Component {
       formData.CustomerId = costingTypeId === CBCTypeId ? client.value : ''
       formData.MachiningScrapRate = values.MachiningScrap
       formData.JaliScrapCost = values.CircleScrapCost ? values.CircleScrapCost : '' // THIS KEY FOR CIRCLE SCRAP COST
-      formData.RawMaterialEntryType = Number(RMDOMESTIC)
+      formData.RawMaterialEntryType = Number(ENTRY_TYPE_DOMESTIC)
       if (CheckApprovalApplicableMaster(RM_MASTER_ID) === true && !this.state.isFinalApprovar) {
         formData.NetLandedCostConversion = 0
         formData.Currency = "INR"

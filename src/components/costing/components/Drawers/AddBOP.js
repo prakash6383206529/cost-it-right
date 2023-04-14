@@ -8,7 +8,6 @@ import { CBCTypeId, defaultPageSize, EMPTY_GUID, NCCTypeId, NFRTypeId, PFS1TypeI
 import NoContentFound from '../../../common/NoContentFound';
 import { EMPTY_DATA } from '../../../../config/constants';
 import Toaster from '../../../common/Toaster';
-import { getBOPCategorySelectList } from '../../../masters/actions/BoughtOutParts';
 import { checkForDecimalAndNull, getConfigurationKey, searchNocontentFilter } from '../../../../helper';
 import LoaderCustom from '../../../common/LoaderCustom';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
@@ -44,7 +43,6 @@ function AddBOP(props) {
   };
 
   useEffect(() => {
-    dispatch(getBOPCategorySelectList(res => { }))
     getDataList()
 
   }, []);

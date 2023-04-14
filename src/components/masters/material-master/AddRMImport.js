@@ -25,7 +25,7 @@ import AddVendorDrawer from '../supplier-master/AddVendorDrawer';
 import 'react-dropzone-uploader/dist/styles.css'
 import Dropzone from 'react-dropzone-uploader';
 import "react-datepicker/dist/react-datepicker.css"
-import { FILE_URL, INR, ZBC, RM_MASTER_ID, EMPTY_GUID, SPACEBAR, ZBCTypeId, VBCTypeId, CBCTypeId, searchCount, SHEET_METAL, RMIMPORT } from '../../../config/constants';
+import { FILE_URL, INR, ZBC, RM_MASTER_ID, EMPTY_GUID, SPACEBAR, ZBCTypeId, VBCTypeId, CBCTypeId, searchCount, SHEET_METAL, ENTRY_TYPE_IMPORT } from '../../../config/constants';
 import { AcceptableRMUOM, FORGING, SHEETMETAL } from '../../../config/masterData'
 import { getExchangeRateByCurrency, getCostingSpecificTechnology } from "../../costing/actions/Costing"
 import DayTime from '../../common/DayTimeWrapper'
@@ -1106,7 +1106,7 @@ class AddRMImport extends Component {
         MachiningScrapRate: values.MachiningScrap,
         MachiningScrapRateInINR: currency === INR ? values.MachiningScrap : values.MachiningScrap * currencyValue,
         JaliScrapCost: values.CircleScrapCost ? values.CircleScrapCost : '',// THIS KEY FOR CIRCLE SCRAP COST
-        RawMaterialEntryType: Number(RMIMPORT)
+        RawMaterialEntryType: Number(ENTRY_TYPE_IMPORT)
       }
       //DONT DELETE COMMENTED CODE BELOW
 
@@ -1197,7 +1197,7 @@ class AddRMImport extends Component {
         MachiningScrapRate: values.MachiningScrap,
         MachiningScrapRateInINR: currency === INR ? values.MachiningScrap : values.MachiningScrap * currencyValue,
         JaliScrapCost: values.CircleScrapCost ? values.CircleScrapCost : '',// THIS KEY FOR CIRCLE SCRAP COST
-        RawMaterialEntryType: Number(RMIMPORT)
+        RawMaterialEntryType: Number(ENTRY_TYPE_IMPORT)
       }
       // let obj
       // if(CheckApprovalApplicableMaster(RM_MASTER_ID) === true){
