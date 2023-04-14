@@ -1107,7 +1107,7 @@ function RunSimulationDrawer(props) {
                                             }
 
 
-                                            {(
+                                            {initialConfiguration?.IsBasicRateAndCostingConditionVisible && (
                                                 <Row>
                                                     <div className="input-group col-md-12 mb-3 px-0 m-height-auto">
                                                         <label
