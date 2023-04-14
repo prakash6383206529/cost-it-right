@@ -287,61 +287,6 @@ function AddNfr(props) {
             }
         }
     }
-    const addDetails = debounce((data, index1, index) => {
-        let dataa = rowData[index1]
-        let list = dataa?.data && dataa?.data[index]
-        const userDetail = userDetails()
-        let tempData = viewCostingData[0]
-        if (callAPI) {
-            saveEstimation()
-        }
-        const Data = {
-            PartId: nfrData?.PartId,
-            PartTypeId: nfrPartDetail?.PartTypeId,
-            PartType: nfrData?.PartType,
-            PartNumber: nfrData?.PartNumber,
-            PartName: nfrData?.PartName,
-            TechnologyId: nfrData?.TechnologyId,
-            ZBCId: userDetail.ZBCSupplierInfo.VendorId,
-            VendorId: list?.value,
-            VendorPlantId: checkVendorPlantConfigurable() ? tempData.vendorPlantId : '',
-            // VendorPlantName: tempData.vendorPlantName,
-            // VendorPlantCode: tempData.vendorPlantCode,
-            VendorName: list?.vendorName,
-            VendorCode: list?.vendorCode,
-            PlantId: initialConfiguration?.DefaultPlantId,
-            PlantName: initialConfiguration?.DefaultPlantName,
-            PlantCode: initialConfiguration?.DefaultPlantCode,
-            DestinationPlantId: initialConfiguration?.DefaultPlantId,
-            DestinationPlantName: initialConfiguration?.DefaultPlantName,
-            DestinationPlantCode: initialConfiguration?.DefaultPlantCode,
-            UserId: loggedInUserId(),
-            LoggedInUserId: loggedInUserId(),
-            ShareOfBusinessPercent: 0,
-            IsAssemblyPart: false,
-            Description: nfrPartDetail?.Description,
-            ECNNumber: nfrPartDetail?.ECNNumber,
-            RevisionNumber: nfrPartDetail?.RevisionNumber,
-            DrawingNumber: nfrPartDetail?.DrawingNumber,
-            Price: nfrPartDetail?.Price ? nfrPartDetail?.Price : '',
-            EffectiveDate: nfrPartDetail?.EffectiveDate,
-            CostingHead: NFRTypeId,
-            CostingTypeId: NFRTypeId,
-            CustomerId: '',
-            CustomerName: '',
-            Customer: ''
-        }
-        dispatch(createCosting(Data, (res) => {
-            if (res.data?.Result) {
-                setpartInfoStepTwo({ costingId: res.data?.Data?.CostingId, NFRTypeId })
-                setcostingData(res.data?.Data)
-                dispatch(getBriefCostingById(res.data?.Data?.CostingId, () => {
-                    setIsAddDetails(true)
-                }))
-            }
-        }))
-
-    }, 500);
 
     const viewDetails = (index) => {
         let tempData;
@@ -414,6 +359,59 @@ function AddNfr(props) {
         setShowPopup(false)
         setPopupMsg(false)
     }
+    const addDetails = debounce((data, index1, index) => {
+        let dataa = rowData[index1]
+        let list = dataa?.data && dataa?.data[index]
+        const userDetail = userDetails()
+        let tempData = viewCostingData[0]
+
+        const Data = {
+            PartId: nfrData?.PartId,
+            PartTypeId: nfrPartDetail?.PartTypeId,
+            PartType: nfrData?.PartType,
+            PartNumber: nfrData?.PartNumber,
+            PartName: nfrData?.PartName,
+            TechnologyId: nfrData?.TechnologyId,
+            ZBCId: userDetail.ZBCSupplierInfo.VendorId,
+            VendorId: list?.value,
+            VendorPlantId: checkVendorPlantConfigurable() ? tempData.vendorPlantId : '',
+            // VendorPlantName: tempData.vendorPlantName,
+            // VendorPlantCode: tempData.vendorPlantCode,
+            VendorName: list?.vendorName,
+            VendorCode: list?.vendorCode,
+            PlantId: initialConfiguration?.DefaultPlantId,
+            PlantName: initialConfiguration?.DefaultPlantName,
+            PlantCode: initialConfiguration?.DefaultPlantCode,
+            DestinationPlantId: initialConfiguration?.DefaultPlantId,
+            DestinationPlantName: initialConfiguration?.DefaultPlantName,
+            DestinationPlantCode: initialConfiguration?.DefaultPlantCode,
+            UserId: loggedInUserId(),
+            LoggedInUserId: loggedInUserId(),
+            ShareOfBusinessPercent: 0,
+            IsAssemblyPart: false,
+            Description: nfrPartDetail?.Description,
+            ECNNumber: nfrPartDetail?.ECNNumber,
+            RevisionNumber: nfrPartDetail?.RevisionNumber,
+            DrawingNumber: nfrPartDetail?.DrawingNumber,
+            Price: nfrPartDetail?.Price ? nfrPartDetail?.Price : '',
+            EffectiveDate: nfrPartDetail?.EffectiveDate,
+            CostingHead: NFRTypeId,
+            CostingTypeId: NFRTypeId,
+            CustomerId: '',
+            CustomerName: '',
+            Customer: ''
+        }
+        dispatch(createCosting(Data, (res) => {
+            if (res.data?.Result) {
+                setpartInfoStepTwo({ costingId: res.data?.Data?.CostingId, NFRTypeId })
+                setcostingData(res.data?.Data)
+                dispatch(getBriefCostingById(res.data?.Data?.CostingId, () => {
+                    setIsAddDetails(true)
+                }))
+            }
+        }))
+
+    }, 500);
 
     const copyCosting = (index) => { };
     const deleteRowItem = (index) => { };
@@ -445,20 +443,16 @@ function AddNfr(props) {
         confirmDeleteRow(deletedId);
     }
     const saveEstimation = () => {
-        let length = rowData?.length - 1
+
         let requestObject = {
-            GroupName: rowData[length]?.groupName,
+            GroupName: rowData[0]?.groupName,
             NfrId: nfrIdsList?.NfrMasterId,
-            PlantId: initialConfiguration?.DefaultPlantId,
+            PlantId: '27D5F3F4-871A-40AD-8E75-D5AB4B7B227B',
             NfrPartWiseDetailId: nfrIdsList?.NfrPartWiseDetailId,
             LoggedInUserId: loggedInUserId(),
-            vendorList: _.map(rowData[length]?.data, 'value')
+            vendorList: _.map(rowData[0]?.data, 'value')
         }
-        dispatch(saveNFRGroupDetails(requestObject, (res) => {
-            if (res?.data?.Result === true) {
-                Toaster.success("Group details saved successfully")
-            }
-        }))
+        dispatch(saveNFRGroupDetails(requestObject, () => { }))
     }
 
     const vendorFilterList = async (inputValue) => {

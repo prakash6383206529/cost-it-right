@@ -379,7 +379,8 @@ function NfrPartsListing(props) {
                 )
             }
             {editPart && <AddNfr showAddNfr={editPart} nfrData={estimationData} close={close} nfrIdsList={nfrIdsList} isViewEstimation={isViewMode} changeIsFromDiscount={props?.changeIsFromDiscount} NfrNumber={rowData && rowData[0]?.NfrNumber} />}
-            {showDrawer &&
+            {
+                showDrawer &&
                 <DrawerTechnologyUpdate
                     isOpen={showDrawer}
                     closeDrawer={closeTechnologyUpdateDrawer}
