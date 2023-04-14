@@ -19,7 +19,7 @@ import { getConfigurationKey, loggedInUserId, userDetails } from "../../../helpe
 import "react-datepicker/dist/react-datepicker.css";
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css';
-import { FILE_URL, ZBC, INR, BOP_MASTER_ID, EMPTY_GUID, SPACEBAR, ZBCTypeId, VBCTypeId, CBCTypeId, searchCount } from '../../../config/constants';
+import { FILE_URL, ZBC, INR, BOP_MASTER_ID, EMPTY_GUID, SPACEBAR, ZBCTypeId, VBCTypeId, CBCTypeId, searchCount, ENTRY_TYPE_IMPORT } from '../../../config/constants';
 import AddBOPCategory from './AddBOPCategory';
 import AddVendorDrawer from '../supplier-master/AddVendorDrawer';
 import AddUOM from '../uom-master/AddUOM';
@@ -827,7 +827,8 @@ class AddBOPImport extends Component {
         IsFinancialDataChanged: isDateChange ? true : false,
         CustomerId: client.value,
         BoughtOutPartIncoTermId: incoTerm.value,
-        BoughtOutPartPaymentTermId: paymentTerm.value
+        BoughtOutPartPaymentTermId: paymentTerm.value,
+        EntryType: Number(ENTRY_TYPE_IMPORT),
       }
       if (IsFinancialDataChanged) {
         if (isDateChange && (DayTime(oldDate).format("DD/MM/YYYY") !== DayTime(effectiveDate).format("DD/MM/YYYY"))) {
@@ -883,7 +884,6 @@ class AddBOPImport extends Component {
         BoughtOutPartId: BOPID,
         Currency: currency.label,
         CostingTypeId: costingTypeId,
-        EntryType: 0,
         BoughtOutPartNumber: values.BoughtOutPartNumber,
         BoughtOutPartName: values.BoughtOutPartName,
         CategoryId: BOPCategory.value,
@@ -907,7 +907,8 @@ class AddBOPImport extends Component {
         IsFinancialDataChanged: isDateChange ? true : false,
         CustomerId: client.value,
         BoughtOutPartIncoTermId: incoTerm.value,
-        BoughtOutPartPaymentTermId: paymentTerm.value
+        BoughtOutPartPaymentTermId: paymentTerm.value,
+        EntryType: Number(ENTRY_TYPE_IMPORT),
       }
 
       if (CheckApprovalApplicableMaster(BOP_MASTER_ID) === true && !this.state.isFinalApprovar) {
