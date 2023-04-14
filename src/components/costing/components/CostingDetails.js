@@ -1355,65 +1355,69 @@ function CostingDetails(props) {
    * @description used to Reset form
    */
   const backToFirstStep = () => {
-    setIsLoader(true)
-    dispatch(getBriefCostingById('', (res) => { }))
-    dispatch(isDiscountDataChange(false))
+    if (props?.nfrData?.isNFR) {
+      // CODE FIR BACK BUTTON
+    } else {
+      setIsLoader(true)
+      dispatch(getBriefCostingById('', (res) => { }))
+      dispatch(isDiscountDataChange(false))
 
-    reactLocalStorage.setObject('costingArray', [])
-    reactLocalStorage.setObject('surfaceCostingArray', [])
-    dispatch(setRMCCData([], () => { }))                            //THIS WILL CLEAR RM CC REDUCER
-    dispatch(setComponentItemData({}, () => { }))
+      reactLocalStorage.setObject('costingArray', [])
+      reactLocalStorage.setObject('surfaceCostingArray', [])
+      dispatch(setRMCCData([], () => { }))                            //THIS WILL CLEAR RM CC REDUCER
+      dispatch(setComponentItemData({}, () => { }))
 
-    dispatch(setOverheadProfitData([], () => { }))              //THIS WILL CLEAR OVERHEAD PROFIT REDUCER
-    dispatch(setComponentOverheadItemData({}, () => { }))       //THIS WILL CLEAR OVERHEAD PROFIT ITEM REDUCER
+      dispatch(setOverheadProfitData([], () => { }))              //THIS WILL CLEAR OVERHEAD PROFIT REDUCER
+      dispatch(setComponentOverheadItemData({}, () => { }))       //THIS WILL CLEAR OVERHEAD PROFIT ITEM REDUCER
 
 
-    dispatch(setPackageAndFreightData([], () => { }))           //THIS WILL CLEAR PACKAGE FREIGHT ITEM DATA
-    dispatch(setComponentPackageFreightItemData({}, () => { })) //THIS WILL CLEAR PACKAGE FREIGHT ITEM DATA
+      dispatch(setPackageAndFreightData([], () => { }))           //THIS WILL CLEAR PACKAGE FREIGHT ITEM DATA
+      dispatch(setComponentPackageFreightItemData({}, () => { })) //THIS WILL CLEAR PACKAGE FREIGHT ITEM DATA
 
-    dispatch(setToolTabData([], () => { }))                     //THIS WILL CLEAR TOOL ARR FROM REDUCER  
-    dispatch(setComponentToolItemData({}, () => { }))           //THIS WILL CLEAR TOOL ITEM DATA FROM REDUCER
+      dispatch(setToolTabData([], () => { }))                     //THIS WILL CLEAR TOOL ARR FROM REDUCER  
+      dispatch(setComponentToolItemData({}, () => { }))           //THIS WILL CLEAR TOOL ITEM DATA FROM REDUCER
 
-    dispatch(setComponentDiscountOtherItemData({}, () => { }))  //THIS WILL CLEAR DISCOUNT ITEM DATA FROM REDUCER
+      dispatch(setComponentDiscountOtherItemData({}, () => { }))  //THIS WILL CLEAR DISCOUNT ITEM DATA FROM REDUCER
 
-    dispatch(saveAssemblyBOPHandlingCharge({}, () => { }))
+      dispatch(saveAssemblyBOPHandlingCharge({}, () => { }))
 
-    dispatch(gridDataAdded(false)) //BASIS OF GRID DATA DISABLED/ENABLED COSTING EFFECTIVE DATE
-    setStepOne(true);
-    setStepTwo(false);
+      dispatch(gridDataAdded(false)) //BASIS OF GRID DATA DISABLED/ENABLED COSTING EFFECTIVE DATE
+      setStepOne(true);
+      setStepTwo(false);
 
-    resetGrid()
-    setZBCPlantGrid([])
-    setVBCVendorGrid([])
-    setNccGrid([])
-    dispatch(setSurfaceCostData({}, () => { }))
+      resetGrid()
+      setZBCPlantGrid([])
+      setVBCVendorGrid([])
+      setNccGrid([])
+      dispatch(setSurfaceCostData({}, () => { }))
 
-    setTimeout(() => {
+      setTimeout(() => {
 
-      nextToggle()
-    }, 700);
+        nextToggle()
+      }, 700);
 
-    dispatch(getPartInfo(part.value !== undefined ? part.value : partNumber.partId, (res) => {
-      let Data = res.data.Data;
-      setValue('PartName', Data.PartName)
-      setValue("Description", Data.Description)
-      setValue("ECNNumber", Data.ECNNumber)
-      setValue("DrawingNumber", Data.DrawingNumber)
-      setValue("RevisionNumber", Data.RevisionNumber)
-      setValue("ShareOfBusiness", Data.Price)
-      setEffectiveDate(DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate).format('MM/DD/YYYY') : '')
-    }))
-    setCostingOptionsSelectedObject({})
-    dispatch(setProcessGroupGrid([]))
-    dispatch(savePartNumber(''))
-    dispatch(saveBOMLevel(''))
-    dispatch(setPartNumberArrayAPICALL([]))
-    dispatch(isDataChange(false))
-    dispatch(saveAssemblyNumber([]))
-    dispatch(setRMCCErrors({}))
-    dispatch(setOverheadProfitErrors({}))
-    dispatch(setToolsErrors({}))
-    dispatch(setDiscountErrors({}))
+      dispatch(getPartInfo(part.value !== undefined ? part.value : partNumber.partId, (res) => {
+        let Data = res.data.Data;
+        setValue('PartName', Data.PartName)
+        setValue("Description", Data.Description)
+        setValue("ECNNumber", Data.ECNNumber)
+        setValue("DrawingNumber", Data.DrawingNumber)
+        setValue("RevisionNumber", Data.RevisionNumber)
+        setValue("ShareOfBusiness", Data.Price)
+        setEffectiveDate(DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate).format('MM/DD/YYYY') : '')
+      }))
+      setCostingOptionsSelectedObject({})
+      dispatch(setProcessGroupGrid([]))
+      dispatch(savePartNumber(''))
+      dispatch(saveBOMLevel(''))
+      dispatch(setPartNumberArrayAPICALL([]))
+      dispatch(isDataChange(false))
+      dispatch(saveAssemblyNumber([]))
+      dispatch(setRMCCErrors({}))
+      dispatch(setOverheadProfitErrors({}))
+      dispatch(setToolsErrors({}))
+      dispatch(setDiscountErrors({}))
+    }
   }
 
   /**

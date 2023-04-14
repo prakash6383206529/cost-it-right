@@ -42,18 +42,36 @@ export function getNfrPartDetails(nfrId, callback) {
     };
 }
 
+/**
+ * @method saveNFRGroupDetails
+ * @description save NFR Group Details
+ */
+export function saveNFRGroupDetails(requestData, callback) {
+    return (dispatch) => {
+        axios.post(API.saveNFRGroupDetails, requestData, config())
+            .then((response) => {
+                if (response && response.status === 200) {
+                    callback(response);
+                }
+            }).catch((error) => {
+                apiErrors(error);
+                callback(error);
+            });
+    };
+}
 
+export function getNFRPartWiseGroupDetail(data, callback) {
+    return (dispatch) => {
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+        const request = axios.get(`${API.getNFRPartWiseGroupDetail}/${data?.nfrId}/${data?.partWiseDetailId}/${data?.plantId}`, config());
+        request.then((response) => {
+            if (response.data.Result || response.status === 204) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE, });
+            callback(error);
+            apiErrors(error);
+        });
+    };
+}

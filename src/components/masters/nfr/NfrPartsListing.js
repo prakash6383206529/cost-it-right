@@ -41,6 +41,7 @@ function NfrPartsListing(props) {
     const [confirmPopup, setConfirmPopup] = useState(false);
     const [attachment, setAttachment] = useState(false);
     const [viewAttachment, setViewAttachment] = useState([])
+    const [nfrIdsList, setNFRIdsList] = useState({})
     const { topAndLeftMenuData } = useSelector(state => state.auth);
 
     useEffect(() => {
@@ -91,6 +92,7 @@ function NfrPartsListing(props) {
     const editPartHandler = (value, rowData) => {
         setEstimationData(rowData)
         setEditPart(true)
+        setNFRIdsList({ NfrMasterId: rowData?.NfrMasterId, NfrPartWiseDetailId: rowData?.NfrPartWiseDetailId })
     }
     const closePopUp = () => {
         setConfirmPopup(false)
@@ -332,7 +334,7 @@ function NfrPartsListing(props) {
                     />
                 )
             }
-            {editPart && <AddNfr showAddNfr={editPart} nfrData={estimationData} close={close} />}
+            {editPart && <AddNfr showAddNfr={editPart} nfrData={estimationData} close={close} nfrIdsList={nfrIdsList} />}
 
         </>
     );
