@@ -700,13 +700,14 @@ function RfqListing(props) {
                                             isRowSelectable={isRowSelectable}
                                             suppressRowClickSelection={true}
                                             onFirstDataRendered={onFirstDataRendered}
+                                            enableBrowserTooltips={true}
                                         >
-                                            <AgGridColumn cellClass={cellClass} field="PartNo" headerName='Part No' ></AgGridColumn>
+                                            <AgGridColumn cellClass={cellClass} field="PartNo" tooltipField="PartNo" headerName='Part No' ></AgGridColumn>
                                             <AgGridColumn field="TechnologyName" headerName='Technology'></AgGridColumn>
-                                            <AgGridColumn field="VendorName" headerName='Vendor (Code)'></AgGridColumn>
-                                            <AgGridColumn field="PlantName" headerName='Plant (Code)'></AgGridColumn>
+                                            <AgGridColumn field="VendorName" tooltipField="VendorName" headerName='Vendor (Code)'></AgGridColumn>
+                                            <AgGridColumn field="PlantName" tooltipField="PlantName" headerName='Plant (Code)'></AgGridColumn>
                                             {/* <AgGridColumn field="PartNumber" headerName="Attachment "></AgGridColumn> */}
-                                            <AgGridColumn field="Remark" headerName='Notes' cellRenderer={hyphenFormatter}></AgGridColumn>
+                                            <AgGridColumn field="Remark" tooltipField="Remark" headerName='Notes' cellRenderer={hyphenFormatter}></AgGridColumn>
                                             <AgGridColumn field="VisibilityMode" headerName='Visibility Mode' cellRenderer={hyphenFormatter}></AgGridColumn>
                                             <AgGridColumn field="VisibilityDate" headerName='Visibility Date' cellRenderer={hyphenFormatter}></AgGridColumn>
                                             <AgGridColumn field="VisibilityDuration" headerName='Visibility Duration' cellRenderer={hyphenFormatter}></AgGridColumn>
