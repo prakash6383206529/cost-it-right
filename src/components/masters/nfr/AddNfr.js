@@ -15,7 +15,7 @@ import Toaster from '../../common/Toaster';
 import { AsyncSearchableSelectHookForm, NumberFieldHookForm, SearchableSelectHookForm, TextFieldHookForm } from '../../layout/HookFormInputs';
 import { getNFRPartWiseGroupDetail, saveNFRCostingInfo, saveNFRGroupDetails } from './actions/nfr';
 import { checkForNull, checkVendorPlantConfigurable, loggedInUserId, userDetails, userTechnologyLevelDetails } from '../../../helper';
-import { createCosting, deleteDraftCosting, getBriefCostingById } from '../../costing/actions/Costing';
+import { createCosting, deleteDraftCosting, getBriefCostingById, storePartNumber } from '../../costing/actions/Costing';
 import ApprovalDrawer from './ApprovalDrawer';
 import TooltipCustom from '../../common/Tooltip'
 import { dataLiist } from '../../../config/masterData';
@@ -1011,8 +1011,9 @@ function AddNfr(props) {
                                                         <button className="Edit" type={"button"} title={"Edit Costing"} onClick={() => editRow(item, indexInside)} disabled={isViewEstimation || (!item?.isRowActionEditable && !item?.IsShowEditButtonForPFS)} />
                                                         {/* <button className="Delete All ml-1" title={"Delete Costing"} type={"button"} onClick={() => deleteRow(item, indexInside)} disabled={isViewEstimation || item?.statusId !== DRAFTID} /> */}
                                                     </td>
-                                                )}
-                                        </tr>
+                                                )
+                                            }
+                                        </tr >
                                     ))
                                     }
                                 </React.Fragment >
@@ -1036,23 +1037,25 @@ function AddNfr(props) {
                                 <div className={"save-icon"}></div>
                                 Save
                             </button>
-                            {isFinalApproverShowButton && <button
-                                className='user-btn'
-                                type='button'
-                                onClick={sendForApproval}
-                                disabled={isViewEstimation || sendForApprovalButtonDisable || allCostingNotSelected || topGroupNotAdded}
-                            >
-                                <div className="send-for-approval"></div>
-                                Send for Approval
-                            </button>}
+                            {
+                                isFinalApproverShowButton && <button
+                                    className='user-btn'
+                                    type='button'
+                                    onClick={sendForApproval}
+                                    disabled={isViewEstimation || sendForApprovalButtonDisable || allCostingNotSelected || topGroupNotAdded}
+                                >
+                                    <div className="send-for-approval"></div>
+                                    Send for Approval
+                                </button>
+                            }
                             <div>
                                 {editWarning && <WarningMessage dClass="mr-3" message={filterStatus} />}
                             </div>
                             {
                                 showPopup && <PopupMsgWrapper isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${MESSAGES.COSTING_DELETE_ALERT}`} />
                             }
-                        </Col>
-                    </Row>
+                        </Col >
+                    </Row >
 
                 </div >
             </div >}

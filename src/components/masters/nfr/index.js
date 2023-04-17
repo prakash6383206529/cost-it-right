@@ -30,7 +30,6 @@ function NfrTabs(props) {
                 <div>
                     <Nav tabs className="subtabs mt-0 mb-3">
                         <NavItem>
-
                             <NavLink
                                 className={classnames({ active: activeTab === "1" })}
                                 onClick={() => {
