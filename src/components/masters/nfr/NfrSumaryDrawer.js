@@ -36,7 +36,6 @@ function NfrSummaryDrawer(props) {
     const [isFinalLevelUser, setIsFinalLevelUser] = useState(false)
     const [isOpen, setIsOpen] = useState(false)
     const [isCostingDrawerLoader, setIsCostingDrawerLoader] = useState(false)
-    const [viewCostingData, setViewCostingData] = useState({})
     const [isApprovalDone, setIsApprovalDone] = useState(false) // this is for hiding approve and  reject button when costing is approved and  send for futher approval
     const [gridApi, setgridApi] = useState(null);                      // DONT DELETE THIS STATE , IT IS USED BY AG GRID
     const [gridColumnApi, setgridColumnApi] = useState(null);

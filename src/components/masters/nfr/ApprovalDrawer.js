@@ -257,64 +257,65 @@ const ApprovalDrawer = (props) => {
                                 ></div>
                             </Col>
                         </Row>
-                        {(!props.rejectDrawer && !isFinalLevelUser) && <> <Row>
-                            <Col md={props.hideTable ? 12 : 6}>
-                                <SearchableSelectHookForm
-                                    label={`${getConfigurationKey().IsCompanyConfigureOnPlant ? 'Company' : 'Department'}`}
-                                    name={"dept"}
-                                    placeholder={"Select"}
-                                    Controller={Controller}
-                                    control={control}
-                                    rules={{ required: true }}
-                                    register={register}
-                                    defaultValue={""}
-                                    options={renderDropdownListing("Dept")}
-                                    disabled={false}
-                                    mandatory={true}
-                                    handleChange={handleDepartmentChange}
-                                // errors={errors.dept}
-                                />
-                            </Col>
-                            <Col md={props.hideTable ? 12 : 6}>
-                                <SearchableSelectHookForm
-                                    label={"Approver"}
-                                    name={"approver"}
-                                    placeholder={"Select"}
-                                    Controller={Controller}
-                                    control={control}
-                                    rules={{ required: true }}
-                                    register={register}
-                                    defaultValue={""}
-                                    options={approvalDropDown}
-                                    handleChange={handleApproverChange}
-                                    mandatory={true}
-                                    disabled={false}
-                                // handleChange={handleApproverChange}
-                                // errors={errors.approver}
-                                />
-                            </Col>
-                            <Col md={props.hideTable ? 12 : 6}>
-                                <SearchableSelectHookForm
-                                    label={"Reason"}
-                                    // name={"reason"}
-                                    name={`reason`}
-                                    placeholder={"Select"}
-                                    Controller={Controller}
-                                    control={control}
-                                    rules={{ required: true }}
-                                    register={register}
-                                    defaultValue={""}
-                                    options={renderDropdownListing("Reason")}
-                                    mandatory={true}
-                                    handleChange={(e) => {
+                        {
+                            (!props.rejectDrawer && !isFinalLevelUser) && <> <Row>
+                                <Col md={props.hideTable ? 12 : 6}>
+                                    <SearchableSelectHookForm
+                                        label={`${getConfigurationKey().IsCompanyConfigureOnPlant ? 'Company' : 'Department'}`}
+                                        name={"dept"}
+                                        placeholder={"Select"}
+                                        Controller={Controller}
+                                        control={control}
+                                        rules={{ required: true }}
+                                        register={register}
+                                        defaultValue={""}
+                                        options={renderDropdownListing("Dept")}
+                                        disabled={false}
+                                        mandatory={true}
+                                        handleChange={handleDepartmentChange}
+                                    // errors={errors.dept}
+                                    />
+                                </Col>
+                                <Col md={props.hideTable ? 12 : 6}>
+                                    <SearchableSelectHookForm
+                                        label={"Approver"}
+                                        name={"approver"}
+                                        placeholder={"Select"}
+                                        Controller={Controller}
+                                        control={control}
+                                        rules={{ required: true }}
+                                        register={register}
+                                        defaultValue={""}
+                                        options={approvalDropDown}
+                                        handleChange={handleApproverChange}
+                                        mandatory={true}
+                                        disabled={false}
+                                    // handleChange={handleApproverChange}
+                                    // errors={errors.approver}
+                                    />
+                                </Col>
+                                <Col md={props.hideTable ? 12 : 6}>
+                                    <SearchableSelectHookForm
+                                        label={"Reason"}
+                                        // name={"reason"}
+                                        name={`reason`}
+                                        placeholder={"Select"}
+                                        Controller={Controller}
+                                        control={control}
+                                        rules={{ required: true }}
+                                        register={register}
+                                        defaultValue={""}
+                                        options={renderDropdownListing("Reason")}
+                                        mandatory={true}
+                                        handleChange={(e) => {
 
-                                    }}
-                                // errors={errors && errors.reasonFieldreason && errors.reasonFieldreason !== undefined ? errors.reasonFieldreason[index] : ""}
-                                // errors={`${errors}.${reasonField}[${index}]reason`}
+                                        }}
+                                    // errors={errors && errors.reasonFieldreason && errors.reasonFieldreason !== undefined ? errors.reasonFieldreason[index] : ""}
+                                    // errors={`${errors}.${reasonField}[${index}]reason`}
 
-                                />
-                            </Col>
-                        </Row></>}
+                                    />
+                                </Col>
+                            </Row></>}
                         <Row>
                             {!props.hideTable && <Col md="12">
                                 <Table className='table cr-brdr-main'>
@@ -388,8 +389,8 @@ const ApprovalDrawer = (props) => {
                             </Col>
                         </Row>
                     </div>
-                </div>
-            </Drawer>
+                </div >
+            </Drawer >
         </Fragment >
     );
 }
