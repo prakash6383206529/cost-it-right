@@ -453,7 +453,11 @@ function AddNfr(props) {
             LoggedInUserId: loggedInUserId(),
             vendorList: _.map(rowData[0]?.data, 'value')
         }
-        dispatch(saveNFRGroupDetails(requestObject, () => { }))
+        dispatch(saveNFRGroupDetails(requestObject, (res) => {
+            if (res?.data?.Result === true) {
+                Toaster.success("Group details saved successfully")
+            }
+        }))
     }
 
     const vendorFilterList = async (inputValue) => {
