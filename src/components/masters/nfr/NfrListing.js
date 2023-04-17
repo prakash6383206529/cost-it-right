@@ -359,6 +359,7 @@ function NfrListing(props) {
                     isEditFlag={isEdit}
                     nfrId={nfrId}
                     closeDrawer={closeDrawer}
+                    nfrDataFromAdd={props?.location?.state}
                 />
 
             }
