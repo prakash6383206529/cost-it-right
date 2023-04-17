@@ -64,11 +64,11 @@ const ApprovalDrawer = (props) => {
             // onClose={(e) => toggleDrawer(e)}
             >
                 <div className="container">
-                    <div className={"drawer-wrapper drawer-md"}>
+                    <div className={`drawer-wrapper drawer-${props.hideTable ? 'sm' : 'md'}`}>
                         <Row className="drawer-heading ">
-                            <Col>
+                            <Col className='px-0'>
                                 <div className={"header-wrapper left"}>
-                                    <h3>{"Send for Approval"}</h3>
+                                    <h3>{props.rejectDrawer ? "Reject Costing" : "Send for Approval"}</h3>
                                 </div>
                                 <div
                                     onClick={(e) => toggleDrawer(e)}
@@ -77,13 +77,8 @@ const ApprovalDrawer = (props) => {
                                 ></div>
                             </Col>
                         </Row>
-                        <Row className="px-3">
-                            <Col md="4">
-                                <div className="left-border">{"Approver"}</div>
-                            </Col>
-                        </Row>
-                        <Row className="px-3">
-                            <Col md="6">
+                        {!props.rejectDrawer && <> <Row>
+                            <Col md={props.hideTable ? 12 : 6}>
                                 <SearchableSelectHookForm
                                     label={`${getConfigurationKey().IsCompanyConfigureOnPlant ? 'Company' : 'Department'}`}
                                     name={"dept"}
@@ -100,7 +95,7 @@ const ApprovalDrawer = (props) => {
                                 // errors={errors.dept}
                                 />
                             </Col>
-                            <Col md="6">
+                            <Col md={props.hideTable ? 12 : 6}>
                                 <SearchableSelectHookForm
                                     label={"Approver"}
                                     name={"approver"}
@@ -117,7 +112,7 @@ const ApprovalDrawer = (props) => {
                                 // errors={errors.approver}
                                 />
                             </Col>
-                            <Col md="6">
+                            <Col md={props.hideTable ? 12 : 6}>
                                 <SearchableSelectHookForm
                                     label={"Reason"}
                                     // name={"reason"}
@@ -138,9 +133,9 @@ const ApprovalDrawer = (props) => {
 
                                 />
                             </Col>
-                        </Row>
-                        <Row className='px-3'>
-                            <Col md="12">
+                        </Row></>}
+                        <Row>
+                            {!props.hideTable && <Col md="12">
                                 <Table className='table cr-brdr-main'>
                                     <thead>
                                         <tr>
@@ -167,7 +162,7 @@ const ApprovalDrawer = (props) => {
                                         </tr>}
                                     </tbody>
                                 </Table>
-                            </Col>
+                            </Col>}
                             <Col md="12">
                                 <TextAreaHookForm
                                     label="Remarks"
@@ -175,7 +170,7 @@ const ApprovalDrawer = (props) => {
                                     Controller={Controller}
                                     control={control}
                                     register={register}
-                                    mandatory={false}
+                                    mandatory={props.rejectDrawer}
                                     handleChange={() => { }}
                                     defaultValue={""}
                                     className=""

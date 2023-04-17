@@ -6,13 +6,28 @@ import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import WarningMessage from '../../common/WarningMessage';
 import { PaginationWrapper } from '../../common/commonPagination';
 import { EMPTY_DATA, defaultPageSize } from '../../../config/constants';
+import NfrSummaryDrawer from './NfrSumaryDrawer';
 
 const gridOptions = {};
 
 function NFRApprovalListing(props) {
     const [gridApi, setGridApi] = useState(null);
     const [gridColumnApi, setGridColumnApi] = useState(null);
-    const [rowData, setRowData] = useState([]);
+    const [singleRowData, setSingleRowData] = useState([]);
+    const [isOpen, setIsOpen] = useState(false);
+    const [rowData, setRowData] = useState([
+        {
+            TokenNo: '11021',
+            NfrNo: '101',
+            GroupName: 'Alloy',
+            ProductCode: '1020',
+            InitiatedBy: 'Ankit',
+            CreatedBy: 'Aniket',
+            LastApprovedRejected: 'Anand',
+            DisplayStatus: 'PendingForApproval',
+
+        }
+    ]);
     const defaultColDef = {
 
         resizable: true,
@@ -27,6 +42,49 @@ function NFRApprovalListing(props) {
     const onFilterTextBoxChanged = (e) => {
         gridApi.setQuickFilter(e.target.value);
     }
+
+    const viewDetails = (approvalNumber, row) => {
+        setIsOpen(true)
+        setSingleRowData(row)
+    }
+    const linkableFormatter = (props) => {
+
+        // if (selectedRowForPagination?.length > 0) {
+        //     selectedRowForPagination.map((item) => {
+
+        //         if (item.CostingId === props.node.data.CostingId) {
+        //             props.node.setSelected(true)
+        //         }
+        //         return null
+        //     })
+
+        // }
+
+
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        return (
+            <Fragment>
+                {(cell === '' || cell === null) ? <div className='ml-4'>-</div> : <div onClick={() => viewDetails(cell, row)} className={'link'}>{cell}</div>}
+            </Fragment>
+        )
+    }
+
+    const statusFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        return <div className={cell}>{row.DisplayStatus}</div>
+    }
+
+    const closeDrawer = () => {
+        setIsOpen(false)
+    }
+
+    const frameworkComponents = {
+        linkableFormatter: linkableFormatter,
+        statusFormatter: statusFormatter,
+    };
+
     return (
         <Fragment>
 
@@ -59,10 +117,9 @@ function NFRApprovalListing(props) {
                                             title: EMPTY_DATA,
                                             imagClass: "imagClass"
                                         }}
-                                        // frameworkComponents={frameworkComponents}
+                                        frameworkComponents={frameworkComponents}
                                         suppressRowClickSelection={true}
                                         rowSelection={'multiple'}
-                                        // frameworkComponents={frameworkComponents}
                                         // onFilterModified={onFloatingFilterChanged}
                                         //onSelectionChanged={onRowSelect}
                                         // onRowSelected={onRowSelect}
@@ -75,13 +132,14 @@ function NFRApprovalListing(props) {
                                         <AgGridColumn field="PartNumber" headerName='Part No (Revision No)'></AgGridColumn>
                                         <AgGridColumn field="ProductCode" headerName="Product Code"></AgGridColumn>
                                         <AgGridColumn field="InitiatedBy" cellRenderer='renderVendor' headerName="Initiated By"></AgGridColumn>
-                                        <AgGridColumn field=" CreatedBy" cellRenderer='renderPlant' headerName=" Created By"></AgGridColumn>
+                                        <AgGridColumn field="CreatedBy" cellRenderer='renderPlant' headerName=" Created By"></AgGridColumn>
                                         <AgGridColumn field='LastApprovedRejected' headerName="Last Approved /Rejected By"></AgGridColumn>
                                         <AgGridColumn headerClass="justify-content-center" pinned="right" cellClass="text-center" field="DisplayStatus" tooltipField="TooltipText" cellRenderer='statusFormatter' headerName="Status"></AgGridColumn>
                                     </AgGridReact>
 
-
-                                    {<PaginationWrapper gridApi={gridApi} globalTake={defaultPageSize} />}
+                                    <div className='button-wrapper'>
+                                        {<PaginationWrapper gridApi={gridApi} globalTake={defaultPageSize} />}
+                                    </div>
 
 
 
@@ -94,7 +152,7 @@ function NFRApprovalListing(props) {
                     </Col>
                 </Row>
             </div>
-
+            {isOpen && <NfrSummaryDrawer isOpen={isOpen} closeDrawer={closeDrawer} anchor={"bottom"} rowData={singleRowData} />}
         </Fragment>
     )
 }
