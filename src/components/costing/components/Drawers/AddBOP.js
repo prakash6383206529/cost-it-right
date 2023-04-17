@@ -2,13 +2,12 @@ import React, { useState, useEffect, useContext } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Container, Row, Col, } from 'reactstrap';
 import Drawer from '@material-ui/core/Drawer';
-import { getBOPDrawerDataList, getBOPDrawerVBCDataList } from '../../actions/Costing';
+import { getBOPDrawerDataList } from '../../actions/Costing';
 import { costingInfoContext } from '../CostingDetailStepTwo';
-import { CBCTypeId, defaultPageSize, EMPTY_GUID, NCC, NCCTypeId, VBC, VBCTypeId, ZBC, ZBCTypeId } from '../../../../config/constants';
+import { CBCTypeId, defaultPageSize, EMPTY_GUID, NCC, NCCTypeId, NFRTypeId, VBC, VBCTypeId, ZBC, ZBCTypeId } from '../../../../config/constants';
 import NoContentFound from '../../../common/NoContentFound';
 import { EMPTY_DATA } from '../../../../config/constants';
 import Toaster from '../../../common/Toaster';
-import { getBOPCategorySelectList } from '../../../masters/actions/BoughtOutParts';
 import { checkForDecimalAndNull, getConfigurationKey, searchNocontentFilter } from '../../../../helper';
 import LoaderCustom from '../../../common/LoaderCustom';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
@@ -44,7 +43,6 @@ function AddBOP(props) {
   };
 
   useEffect(() => {
-    dispatch(getBOPCategorySelectList(res => { }))
     getDataList()
 
   }, []);
@@ -101,12 +99,12 @@ function AddBOP(props) {
   const getDataList = (categoryId = 0) => {
     const data = {
       VendorId: costData.VendorId ? costData.VendorId : EMPTY_GUID,
-      PlantId: (initialConfiguration?.IsDestinationPlantConfigure && (costData.CostingTypeId === VBCTypeId || costData.CostingTypeId === NCCTypeId)) || costData.CostingTypeId === CBCTypeId ? costData.DestinationPlantId : (costData.CostingTypeId === ZBCTypeId) ? costData.PlantId : EMPTY_GUID,
+      PlantId: (initialConfiguration?.IsDestinationPlantConfigure && (costData.CostingTypeId === VBCTypeId || costData.CostingTypeId === NCCTypeId || costData.CostingTypeId === NFRTypeId)) || costData.CostingTypeId === CBCTypeId ? costData.DestinationPlantId : (costData.CostingTypeId === ZBCTypeId) ? costData.PlantId : EMPTY_GUID,
       VendorPlantId: initialConfiguration?.IsVendorPlantConfigurable ? costData.VendorPlantId : EMPTY_GUID,
       EffectiveDate: CostingEffectiveDate,
       CostingId: costData.CostingId,
       categoryId: categoryId,
-      CostingTypeId: costData.CostingTypeId,
+      CostingTypeId: Number(costData.CostingTypeId) === NFRTypeId ? VBCTypeId : costData.CostingTypeId,
       CustomerId: costData.CustomerId
     }
     dispatch(getBOPDrawerDataList(data, (res) => {

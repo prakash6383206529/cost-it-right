@@ -1,9 +1,9 @@
-import React, { Component, useState } from 'react';
+import React, { useState } from 'react';
 import { Row, Col, TabContent, TabPane, Nav, NavItem, NavLink, } from "reactstrap";
 import classnames from 'classnames';
 import ScrollToTop from '../../common/ScrollToTop';
 import { CheckApprovalApplicableMaster } from '../../../helper';
-import { OPERATIONS_ID } from '../../../config/constants';
+import { BUDGET_ID, OPERATIONS_ID } from '../../../config/constants';
 import CommonApproval from '../material-master/CommonApproval';
 import BudgetListing from './BudgetListing';
 import AddBudget from './AddBudget';
@@ -120,7 +120,7 @@ function BudgetMaster() {
                                             EditAccessibility={EditAccessibility}
                                             DeleteAccessibility={DeleteAccessibility}
                                             DownloadAccessibility={DownloadAccessibility}
-                                            MasterId={OPERATIONS_ID}
+                                            MasterId={BUDGET_ID}
                                         />
                                     </TabPane>}
                             </TabContent>

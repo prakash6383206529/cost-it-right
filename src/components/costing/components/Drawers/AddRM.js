@@ -3,14 +3,13 @@ import { useDispatch, useSelector, } from 'react-redux';
 import { useForm } from 'react-hook-form'
 import { Container, Row, Col, } from 'reactstrap';
 import Drawer from '@material-ui/core/Drawer';
-import { getRMDrawerDataList, getRMDrawerVBCDataList } from '../../actions/Costing';
+import { getRMDrawerDataList } from '../../actions/Costing';
 import NoContentFound from '../../../common/NoContentFound';
-import { CBCTypeId, defaultPageSize, EMPTY_DATA, NCC, NCCTypeId, NFRTypeId, VBC, VBCTypeId, ZBCTypeId } from '../../../../config/constants';
+import { CBCTypeId, defaultPageSize, EMPTY_DATA, NCCTypeId, NFRTypeId, VBCTypeId, ZBCTypeId } from '../../../../config/constants';
 import Toaster from '../../../common/Toaster';
 import { costingInfoContext } from '../CostingDetailStepTwo';
 import { EMPTY_GUID, ZBC } from '../../../../config/constants';
 import LoaderCustom from '../../../common/LoaderCustom';
-import { getGradeSelectList, getRawMaterialFilterSelectList } from '../../../masters/actions/Material';
 import { checkForDecimalAndNull, getConfigurationKey, searchNocontentFilter } from '../../../../helper';
 import { isMultipleRMAllow } from '../../../../config/masterData'
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
@@ -43,8 +42,6 @@ function AddRM(props) {
 
   useEffect(() => {
     setSelectedRowData([])
-    // dispatch(getGradeSelectList(res => { }))
-    // dispatch(getRawMaterialFilterSelectList(() => { }))
     getDataList()
   }, []);
 

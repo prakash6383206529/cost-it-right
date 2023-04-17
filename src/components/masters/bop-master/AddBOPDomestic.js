@@ -16,7 +16,7 @@ import { getConfigurationKey, loggedInUserId, userDetails } from "../../../helpe
 import "react-datepicker/dist/react-datepicker.css";
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css';
-import { BOP_MASTER_ID, FILE_URL, ZBC, EMPTY_GUID, SPACEBAR, VBCTypeId, CBCTypeId, ZBCTypeId, searchCount, BOPDOMESTIC } from '../../../config/constants';
+import { BOP_MASTER_ID, FILE_URL, ZBC, EMPTY_GUID, SPACEBAR, VBCTypeId, CBCTypeId, ZBCTypeId, searchCount, ENTRY_TYPE_DOMESTIC } from '../../../config/constants';
 import AddBOPCategory from './AddBOPCategory';
 import AddVendorDrawer from '../supplier-master/AddVendorDrawer';
 import AddUOM from '../uom-master/AddUOM';
@@ -708,7 +708,7 @@ class AddBOPDomestic extends Component {
         VendorPlant: [],
         IsFinancialDataChanged: isDateChange ? true : false,
         CustomerId: client.value,
-        EntryType: Number(BOPDOMESTIC),
+        EntryType: Number(ENTRY_TYPE_DOMESTIC),
       }
 
       if (IsFinancialDataChanged) {
@@ -779,7 +779,7 @@ class AddBOPDomestic extends Component {
         DestinationPlantId: (costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? selectedPlants.value : (costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant) ? selectedPlants.value : userDetailsBop.Plants[0].PlantId,
         Attachements: files,
         CustomerId: client.value,
-        EntryType: Number(BOPDOMESTIC),
+        EntryType: Number(ENTRY_TYPE_DOMESTIC),
         CategoryName: BOPCategory.label,
       }
 

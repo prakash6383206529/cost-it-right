@@ -403,7 +403,7 @@ export function fileUploadOperation(data, callback) {
  */
 export function checkAndGetOperationCode(code, name, callback) {
     return (dispatch) => {
-        const request = axios.post(`${API.checkAndGetOperationCode}?operationCode=${code}&operationName=${name}`, '', config());
+        const request = axios.post(`${API.checkAndGetOperationCode}?operationCode=${code ? code : null}&operationName=${name}`, '', config());
         request.then((response) => {
             if (response && response.status === 200) {
                 callback(response);
@@ -666,60 +666,6 @@ export function operationBulkUpload(data, callback) {
             dispatch({ type: API_FAILURE });
             apiErrors(error);
             callback(error);
-        });
-    };
-}
-
-/**
- * @method masterApprovalRequestBySenderOperation
- * @description When sending Operation for approval for the first time
- * 
- */
-export function masterApprovalRequestBySenderOperation(data, callback) {
-    return (dispatch) => {
-        const request = axios.post(API.masterSendToApproverOperation, data, config())
-        request.then((response) => {
-            if (response.data.Result) {
-                callback(response)
-            } else {
-                dispatch({ type: API_FAILURE })
-                if (response.data.Message) {
-                    Toaster.error(response.data.Message)
-                }
-            }
-        }).catch((error) => {
-            callback(error)
-            dispatch({ type: API_FAILURE })
-            apiErrors(error)
-        })
-    }
-}
-
-
-/*
-@method getOperationApprovalList
-
-**/
-export function getOperationApprovalList(callback) {
-
-    return (dispatch) => {
-
-        dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getOperationApprovalList}?logged_in_user_id=${loggedInUserId()}&logged_in_user_level_id=${userDetails().LoggedInMasterLevelId}&masterId=3`, config());
-        request.then((response) => {
-            if (response.data.Result || response.status === 204) {
-                //
-                dispatch({
-                    type: GET_OPERATION_APPROVAL_LIST,
-                    payload: response.status === 204 ? [] : response.data.DataList
-                    // payload: JSON.data.DataList
-                })
-                callback(response);
-            }
-        }).catch((error) => {
-            dispatch({ type: API_FAILURE, });
-            callback(error);
-            apiErrors(error)
         });
     };
 }

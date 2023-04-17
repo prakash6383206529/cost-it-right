@@ -202,7 +202,7 @@ export const API = {
   getRMApprovalList: `${BASE_URL}/app-approval-system/get-master-approvals-by-filter`,
   getAllMasterApprovalDepartment: `${BASE_URL}/app-approval-system/get-all-master-approval-department`,
   getAllMasterApprovalUserByDepartment: `${BASE_URL}/app-approval-system/get-all-master-approval-users-level-filter-by-department`,
-  masterSendToApprover: `${BASE_URL}/masters-approval-raw-material/master-send-to-approver-by-sender`,
+  masterSendToApprover: `${BASE_URL}/masters-approval/master-send-to-approver-by-sender`,
   approveOrRejectMasterByApprover: `${BASE_URL}/app-approval-system/approve-or-reject-master-by-approver`,
   getMasterApprovalSummaryByApprovalNo: `${BASE_URL}/app-approval-system/get-approval-master-summary`,
   masterFinalLeveluser: `${BASE_URL}/app-approval-system/is-this-user-final-master-approver`,
@@ -302,7 +302,6 @@ export const API = {
 
   //BOP APPROVAL API'S
 
-  getBOPApprovalList: `${BASE_URL}/app-approval-system/get-master-approvals-by-filter`,
   masterSendToApproverBop: `${BASE_URL}/masters-approval-Bought-Out-Part/master-send-to-approver-by-sender`,
 
 
@@ -396,7 +395,6 @@ export const API = {
   //OPERATION APPROVAL API'S
 
   masterSendToApproverOperation: `${BASE_URL}/masters-approval-Operation/master-send-to-approver-by-sender`,
-  getOperationApprovalList: `${BASE_URL}/app-approval-system/get-master-approvals-by-filter`,
 
   //FREIGHT MASTER
   createFreight: `${BASE_URL}/masters-freight/create`,
@@ -757,7 +755,7 @@ export const API = {
   getLeftMenu: `${BASE_URL}/app-privilege-permission/get-left-menu-module-by-user-and-module-click`,
   checkPageAuthorization: `${BASE_URL}/app-privilege-permission/check-authorization-for-access-page-url`,
   getModuleIdByPathName: `${BASE_URL}/app-privilege-permission/get-module-by-page-url`,
-  getTopAndLeftMenuData: `${BASE_URL}//app-privilege-permission/get-user-top-menu-module-page-with-action-by-user`,
+  getTopAndLeftMenuData: `${BASE_URL}/app-privilege-permission/get-user-top-menu-module-page-with-action-by-user`,
 
 
 
@@ -2186,6 +2184,7 @@ export const NCCTypeIdFull = Number(reactLocalStorage.getObject('CostingHeadsLis
 export const ZBCADDMORE = 0
 
 export const NFRTypeId = Number(reactLocalStorage.getObject('CostingHeadsListShortForm')[NFR])
+// export const NFRTypeId = Number(reactLocalStorage.getObject('CostingHeadsListShortForm')[NCC])
 
 //CONSTANTS FOR APPROVAL TYPE 
 export const CBCAPPROVALTYPEID = Number(reactLocalStorage.getObject('ApprovalTypeListShortForm')[CBC])
@@ -2199,6 +2198,13 @@ export const NCCAPPROVALTYPEIDFULL = Number(reactLocalStorage.getObject('Approva
 export const VBCAPPROVALTYPEIDFULL = Number(reactLocalStorage.getObject('ApprovalTypeListFullForm')[VBC])
 export const ZBCAPPROVALTYPEIDFULL = Number(reactLocalStorage.getObject('ApprovalTypeListFullForm')[ZBC])
 export const PROVISIONALAPPROVALTYPEIDFULL = Number(reactLocalStorage.getObject('ApprovalTypeListFullForm')[PROVISIONAL])
+
+//CONSTANTS FOR MASTER APPROVAL TYPE 
+export const RMTYPE = Number(reactLocalStorage.getObject('masterType')[RAW_MATERIAL])
+export const BOPTYPE = Number(reactLocalStorage.getObject('masterType')[BOP])
+export const MACHINETYPE = Number(reactLocalStorage.getObject('masterType')[MACHINE])
+export const OPERATIONTYPE = Number(reactLocalStorage.getObject('masterType')[OPERATION])
+export const BUDGETTYPE = Number(reactLocalStorage.getObject('masterType')[BUDGETING])
 
 //AUTOCOMPLETE IN PART AND VENDOR
 export const searchCount = 3
