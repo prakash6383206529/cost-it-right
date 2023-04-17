@@ -1857,7 +1857,7 @@ export const SIMULATION_PATH = '/simulation'
 export const SIMULATION_HISTORY_PATH = '/simulation-history'
 export const USER_PATH = '/users'
 export const RFQ_LISTING = '/rfq-listing'
-export const NFR_LISTING = '/nfr-listing'
+export const NFR_LISTING = '/nfr'
 
 
 export const EMPTY_GUID = "00000000-0000-0000-0000-000000000000"
