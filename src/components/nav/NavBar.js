@@ -838,11 +838,11 @@ class SideBar extends Component {
                 className={`nav-link ${reactLocalStorage.get("ModuleId") === 'NFR' ? 'IsActive' : ''}`}
                 onClick={() => this.setLeftMenu('NFR')}
                 to={{
-                  pathname: "/nfr-listing",
+                  pathname: "/nfr",
                   state: {
                     ModuleId: el.ModuleId,
                     PageName: "NFR",
-                    PageURL: "/nfr-listing",
+                    PageURL: "/nfr",
                   },
                 }}
               >
@@ -948,7 +948,7 @@ class SideBar extends Component {
 
                       return this.renderMenus(item.ModuleName, item.LandingPageURL);
                     })}
-                     {this.renderNFR('RFQ')}
+                  {this.renderNFR('RFQ')}
                 </ul>
               </nav>
             </div>
