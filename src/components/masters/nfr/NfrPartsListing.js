@@ -89,7 +89,7 @@ function NfrPartsListing(props) {
     const onPopupConfirm = () => {
 
     }
-    const editPartHandler = (value, rowData) => {
+    const editPartHandler = (value, rowData, viewMode) => {
         setEstimationData(rowData)
         setEditPart(true)
         setNFRIdsList({ NfrMasterId: rowData?.NfrMasterId, NfrPartWiseDetailId: rowData?.NfrPartWiseDetailId })
@@ -109,8 +109,8 @@ function NfrPartsListing(props) {
 
         return (
             <>
-                {<button title='View' className="View mr-1" type={'button'} onClick={() => editPartHandler(cellValue, rowData)} />}
-                <button title='Edit' className="Edit mr-1" type={'button'} onClick={() => { }} />
+                {<button title='View' className="View mr-1" type={'button'} onClick={() => editPartHandler(cellValue, rowData, true)} />}
+                <button title='Edit' className="Edit mr-1" type={'button'} onClick={() => editPartHandler(cellValue, rowData, false)} />
 
             </>
         )

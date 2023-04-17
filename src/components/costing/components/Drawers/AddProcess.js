@@ -4,7 +4,7 @@ import { Container, Row, Col, NavItem, TabContent, TabPane, Nav, NavLink } from 
 import { getProcessDrawerDataList, getProcessDrawerVBCDataList, setIdsOfProcess, setIdsOfProcessGroup, setSelectedDataOfCheckBox } from '../../actions/Costing';
 import { costingInfoContext } from '../CostingDetailStepTwo';
 import NoContentFound from '../../../common/NoContentFound';
-import { CBCTypeId, defaultPageSize, EMPTY_DATA, NCC, NCCTypeId, VBC, VBCTypeId, COMBINED_PROCESS_NAME, ZBCTypeId } from '../../../../config/constants';
+import { CBCTypeId, defaultPageSize, EMPTY_DATA, NCC, NCCTypeId, VBC, VBCTypeId, COMBINED_PROCESS_NAME, ZBCTypeId, NFRTypeId } from '../../../../config/constants';
 import Toaster from '../../../common/Toaster';
 import classnames from 'classnames';
 import Drawer from '@material-ui/core/Drawer';
@@ -102,12 +102,12 @@ function AddProcess(props) {
     else {
       data = {
         VendorId: costData.VendorId ? costData.VendorId : EMPTY_GUID,
-        PlantId: (initialConfiguration?.IsDestinationPlantConfigure && (costData.CostingTypeId === VBCTypeId || costData.CostingTypeId === NCCTypeId)) || costData.CostingTypeId === CBCTypeId ? costData.DestinationPlantId : (costData.CostingTypeId === ZBCTypeId) ? costData.PlantId : EMPTY_GUID,
+        PlantId: (initialConfiguration?.IsDestinationPlantConfigure && (costData.CostingTypeId === VBCTypeId || costData.CostingTypeId === NCCTypeId || costData.CostingTypeId === NFRTypeId)) || costData.CostingTypeId === CBCTypeId ? costData.DestinationPlantId : (costData.CostingTypeId === ZBCTypeId) ? costData.PlantId : EMPTY_GUID,
         TechnologyId: String(costData?.TechnologyId),
         VendorPlantId: initialConfiguration?.IsVendorPlantConfigurable ? costData.VendorPlantId : EMPTY_GUID,
         CostingId: costData.CostingId,
         EffectiveDate: CostingEffectiveDate,
-        CostingTypeId: costData.CostingTypeId,
+        CostingTypeId: Number(costData.CostingTypeId) === NFRTypeId ? VBCTypeId : costData.CostingTypeId,
         CustomerId: costData.CustomerId
       }
     }

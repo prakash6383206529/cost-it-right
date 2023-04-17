@@ -56,6 +56,7 @@ function AddNfr(props) {
     const [costingData, setcostingData] = useState(false);
     const [showDrawer, setShowDrawer] = useState(false);
     const [costingOptionsSelectedObject, setCostingOptionsSelectedObject] = useState([]);
+    const [selectedCheckBox, setSelectedCheckbox] = useState(false);
 
     const { register, setValue, getValues, control, formState: { errors }, } = useForm({
         mode: 'onChange',
@@ -302,7 +303,6 @@ function AddNfr(props) {
         }
         return opts1
     }
-
     // const handleCostingChange = (newValue, type, index, costingOptionsDropDown) => {
     const handleCostingChange = (newValue, indexOuter, indexInside) => {
         let tempObject = []
@@ -321,6 +321,32 @@ function AddNfr(props) {
 
         let costingOptionsSelectedArray = Object.assign([...costingOptionsSelectedObject], { [indexInside]: costingOptionsSelectedObjectTemp })
         setCostingOptionsSelectedObject(costingOptionsSelectedArray)
+        let temprowData = [...rowData]
+        let temprowDataInside = temprowData[indexOuter]?.data
+        let costingOfVendors = {
+            ...rowData[indexOuter]?.data[indexInside]
+        }
+        let tempData = {
+            ...costingOfVendors,
+            SelectedCostingVersion: newValue,
+        }
+
+        temprowDataInside = Object.assign([...temprowDataInside], { [indexInside]: tempData })
+        let newObj = {
+            data: temprowDataInside,
+            groupName: temprowData[indexOuter]?.groupName
+        }
+        temprowData = Object.assign([...temprowData], { [indexOuter]: newObj })
+        setRowData(temprowData)
+    }
+
+    const onCheckBoxClick = (index) => {
+        let temp = selectedCheckBox
+        console.log(rowData, 'rowData');
+        setSelectedCheckbox(!temp)
+        if (!temp === true) {
+
+        }
 
     }
     const sendForApproval = () => {
@@ -478,7 +504,25 @@ function AddNfr(props) {
                                     {item?.data?.map((dataItem, indexInside) => (
                                         <tr key={`${item?.groupName} -${indexInside} `}>
                                             {indexInside === 0 && (
-                                                <td rowSpan={item?.data.length} className="table-record">{item?.groupName}</td>
+                                                <>
+                                                    <td rowSpan={item?.data.length} className="table-record">
+                                                        <label
+                                                            className={`custom-checkbox`}
+                                                            onChange={(e) => onCheckBoxClick(indexOuter)}
+                                                        >
+                                                            <input
+                                                                type="checkbox"
+                                                                checked={selectedCheckBox}
+                                                            //   disabled={CostingViewMode ? true : false}
+                                                            />
+                                                            <span
+                                                                className=" before-box"
+                                                                checked={selectedCheckBox}
+                                                                onChange={(e) => onCheckBoxClick(indexOuter)}
+                                                            />
+                                                        </label>
+                                                        {item?.groupName}</td>
+                                                </>
                                             )}
                                             <td>{dataItem?.label}</td>
 

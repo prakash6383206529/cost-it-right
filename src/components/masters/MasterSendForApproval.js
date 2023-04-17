@@ -219,7 +219,7 @@ function MasterSendForApproval(props) {
                     senderObj.EntityList = tempArray
 
                     //THIS CONDITION IS FOR SIMULATION SEND FOR APPROVAL
-                    dispatch(masterApprovalRequestBySenderBop(senderObj, res => {
+                    dispatch(masterApprovalRequestBySender(senderObj, res => {
                         setIsDisable(false)
                         if (res?.data?.Result) {
                             Toaster.success('BOP has been sent for approval.')
@@ -242,7 +242,7 @@ function MasterSendForApproval(props) {
                     senderObj.EntityList = tempArray
 
                     //THIS CONDITION IS FOR SIMULATION SEND FOR APPROVAL
-                    dispatch(masterApprovalRequestBySenderOperation(senderObj, res => {
+                    dispatch(masterApprovalRequestBySender(senderObj, res => {
                         setIsDisable(false)
                         if (res?.data?.Result) {
                             Toaster.success('Operation has been sent for approval.')
@@ -265,7 +265,7 @@ function MasterSendForApproval(props) {
                     senderObj.EntityList = tempArray
 
                     //THIS CONDITION IS FOR SIMULATION SEND FOR APPROVAL
-                    dispatch(masterApprovalRequestBySenderMachine(senderObj, res => {
+                    dispatch(masterApprovalRequestBySender(senderObj, res => {
                         setIsDisable(false)
                         if (res?.data?.Result) {
                             Toaster.success('Machine has been sent for approval.')
