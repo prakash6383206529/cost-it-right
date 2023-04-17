@@ -300,7 +300,7 @@ function MasterSendForApproval(props) {
                     }
 
                     //THIS CONDITION IS FOR SIMULATION SEND FOR APPROVAL
-                    dispatch(masterApprovalAPI(senderObj, res => {
+                    dispatch(masterApprovalRequestBySender(senderObj, res => {
                         setIsDisable(false)
                         if (res?.data?.Result) {
                             Toaster.success('Budget has been sent for approval.')

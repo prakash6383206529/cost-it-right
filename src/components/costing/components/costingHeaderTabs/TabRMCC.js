@@ -550,6 +550,7 @@ function TabRMCC(props) {
         let subAssemblyArray = tempArrForCosting && tempArrForCosting.filter(item => item.BOMLevel === 'L1')
 
         let assemblyObj = tempArrForCosting[0]
+        console.log('tempArrForCosting: ', tempArrForCosting);
         // WILL RUN IF IT IS ASSEMBLY COSTING. WILL NOT RUN FOR COMPONENT COSTING
         if (assemblyObj?.CostingPartDetails?.PartType === 'Assembly') {
 
