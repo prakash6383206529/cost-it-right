@@ -60,7 +60,7 @@ import CostRatioReport from './report/components/CostRatioReport/CostRatioReport
 import CostMovementReport from './report/components/CostMovementReport/CostMovementReport'
 import SupplierContributionReport from './report/components/SupplierContribution'
 import BudgetListing from './masters/budget-master/BudgetListing'
-import NfrListing from './masters/nfr/NfrListing'
+import NfrTabs from './masters/nfr'
 import SaleProvisionReport from './report/components/SaleProvisionReport/SaleProvisionReport'
 import PurchaseProvisionReport from './report/components/PurchaseProvisionReport/PurchaseProvisionReport'
 import CustomerPoamSummaryReport from './report/components/CustomerPoamSummaryReport/CustomerPoamSummaryReport'
@@ -365,7 +365,7 @@ class Main extends Component {
                     {/*  NEED TO ADD PATH FROM BACKEND */}
                     <Route path="/simulation-insights" component={SimulationInsights} />
                     <Route path="/rfq-listing" component={AuthMiddleware(RfqListing, RFQ)} />
-                    <Route path="/nfr-listing" component={NfrListing} />
+                    <Route path="/nfr" component={NfrTabs} />
                     <Route path="/budgeting" component={AuthMiddleware(BudgetMaster, BUDGETING)} />
 
                     {/* <Route path='/simulation-approval-listing' component={SimulationApprovalListing} /> */}
