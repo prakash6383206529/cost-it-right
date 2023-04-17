@@ -2184,6 +2184,7 @@ export const NCCTypeIdFull = Number(reactLocalStorage.getObject('CostingHeadsLis
 export const ZBCADDMORE = 0
 
 export const NFRTypeId = Number(reactLocalStorage.getObject('CostingHeadsListShortForm')[NFR])
+// export const NFRTypeId = Number(reactLocalStorage.getObject('CostingHeadsListShortForm')[NCC])
 
 //CONSTANTS FOR APPROVAL TYPE 
 export const CBCAPPROVALTYPEID = Number(reactLocalStorage.getObject('ApprovalTypeListShortForm')[CBC])
