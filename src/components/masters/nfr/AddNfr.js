@@ -18,6 +18,7 @@ import { getNFRPartWiseGroupDetail, saveNFRGroupDetails } from './actions/nfr';
 import { checkVendorPlantConfigurable, loggedInUserId, userDetails } from '../../../helper';
 import { dataLiist } from '../../../config/masterData';
 import { createCosting, getBriefCostingById, storePartNumber } from '../../costing/actions/Costing';
+import ApprovalDrawer from './ApprovalDrawer';
 
 
 
@@ -53,6 +54,7 @@ function AddNfr(props) {
     const [isAddDetails, setIsAddDetails] = useState(false);
     const [partInfoStepTwo, setpartInfoStepTwo] = useState({});
     const [costingData, setcostingData] = useState(false);
+    const [showDrawer, setShowDrawer] = useState(false);
     const [costingOptionsSelectedObject, setCostingOptionsSelectedObject] = useState([]);
 
     const { register, setValue, getValues, control, formState: { errors }, } = useForm({
@@ -321,7 +323,12 @@ function AddNfr(props) {
         setCostingOptionsSelectedObject(costingOptionsSelectedArray)
 
     }
-
+    const sendForApproval = () => {
+        setShowDrawer(true)
+    }
+    const closeShowApproval = () => {
+        setShowDrawer(false)
+    }
     return (
         <>
             {props.showAddNfr && <div>
@@ -462,7 +469,7 @@ function AddNfr(props) {
                                 <th className="text-center">Status</th>
                                 <th>PO Price</th>
                                 <th className='text-right'>Action</th>
-                                <th className="table-record">ROW ACTION</th>
+                                <th className="table-record">Row Action</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -508,7 +515,7 @@ function AddNfr(props) {
                                             {indexInside === 0 && (
                                                 <td rowSpan={item?.data.length} className="table-record">
                                                     <button className="Edit" type={"button"} title={"Edit Costing"} onClick={() => editRow(item, indexInside)} />
-                                                    <button className="Delete All" title={"Delete Costing"} type={"button"} onClick={() => deleteRow(item, indexInside)} />
+                                                    <button className="Delete All ml-1" title={"Delete Costing"} type={"button"} onClick={() => deleteRow(item, indexInside)} />
                                                 </td>
                                             )}
                                         </tr>
@@ -520,16 +527,41 @@ function AddNfr(props) {
                             </tr>)}
                         </tbody>
                     </Table>
-                    <button
-                        type="button"
-                        className="user-btn mr5 save-btn"
-                        onClick={() => saveEstimation()}
-                    >
-                        <div className={"save-icon"}></div>
-                        Save
-                    </button>
+                    <Row>
+                        <Col md="12" className='text-right'>
+                            <button
+                                type="button"
+                                className="user-btn mr5 save-btn"
+                                onClick={() => saveEstimation()}
+                            >
+                                <div className={"save-icon"}></div>
+                                Save
+                            </button>
+                            <button
+                                className='user-btn'
+                                type='button'
+                                onClick={sendForApproval}
+                            >
+                                <div className="send-for-approval"></div>
+                                Send for Approval
+                            </button>
+                        </Col>
+                    </Row>
+
                 </div>
             </div>}
+
+            {
+                showDrawer &&
+                <ApprovalDrawer
+                    isOpen={showDrawer}
+                    closeDrawer={closeShowApproval}
+                    anchor={'right'}
+                    // isApprovalisting={false}
+                    data={[]}
+                // technologyId={1}
+                />
+            }
         </>
     );
 }
