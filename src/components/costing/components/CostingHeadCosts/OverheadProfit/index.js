@@ -7,7 +7,7 @@ import { calculatePercentage, checkForDecimalAndNull, checkForNull, CheckIsCosti
 import { fetchModelTypeAPI, getPaymentTermsAppliSelectListKeyValue } from '../../../../../actions/Common';
 import { getOverheadProfitDataByModelType, gridDataAdded, isOverheadProfitDataChange, setOverheadProfitErrors, } from '../../../actions/Costing';
 import { costingInfoContext, netHeadCostContext, SurfaceCostContext } from '../../CostingDetailStepTwo';
-import { CBCTypeId, EMPTY_GUID, PART_COST, VBCTypeId } from '../../../../../config/constants';
+import { CBCTypeId, EMPTY_GUID, NFRTypeId, PART_COST, VBCTypeId } from '../../../../../config/constants';
 import { SelectedCostingDetail, ViewCostingContext } from '../../CostingDetails';
 import Rejection from './Rejection';
 import Icc from './Icc';
@@ -340,9 +340,9 @@ function OverheadProfit(props) {
                 const reqParams = {
                     ModelTypeId: newValue.value,
                     VendorId: costData.CostingTypeId === VBCTypeId ? costData.VendorId : EMPTY_GUID,
-                    costingTypeId: costData.CostingTypeId,
+                    costingTypeId: Number(costData.CostingTypeId) === NFRTypeId ? VBCTypeId : costData.CostingTypeId,
                     EffectiveDate: CostingEffectiveDate,
-                    plantId: (getConfigurationKey()?.IsPlantRequiredForOverheadProfitInterestRate && costData?.CostingTypeId !== VBCTypeId) ? costData.PlantId : (getConfigurationKey()?.IsDestinationPlantConfigure && costData?.CostingTypeId === VBCTypeId) || (costData?.CostingTypeId === CBCTypeId) ? costData.DestinationPlantId : EMPTY_GUID,
+                    plantId: (getConfigurationKey()?.IsPlantRequiredForOverheadProfitInterestRate && costData?.CostingTypeId !== VBCTypeId) ? costData.PlantId : (getConfigurationKey()?.IsDestinationPlantConfigure && costData?.CostingTypeId === VBCTypeId) || (costData?.CostingTypeId === CBCTypeId) || (costData?.CostingTypeId === NFRTypeId) ? costData.DestinationPlantId : EMPTY_GUID,
                     customerId: costData.CustomerId
                 }
 

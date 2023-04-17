@@ -18,7 +18,7 @@ import {
   getPartInfo, checkPartWithTechnology,
   updateZBCSOBDetail, updateVBCSOBDetail, storePartNumber, getBriefCostingById, deleteDraftCosting, getPartSelectListByTechnology,
   setOverheadProfitData, setComponentOverheadItemData, setPackageAndFreightData, setComponentPackageFreightItemData, setToolTabData,
-  setComponentToolItemData, setComponentDiscountOtherItemData, gridDataAdded, getCostingSpecificTechnology, setRMCCData, setComponentItemData, createNCCCosting, saveAssemblyBOPHandlingCharge, setProcessGroupGrid, savePartNumber, saveBOMLevel, setPartNumberArrayAPICALL, isDataChange, setSurfaceCostData, saveAssemblyNumber, createCosting, getExistingCosting, createMultiTechnologyCosting, setRMCCErrors, setOverheadProfitErrors, setToolsErrors, setDiscountErrors,
+  setComponentToolItemData, setComponentDiscountOtherItemData, gridDataAdded, getCostingSpecificTechnology, setRMCCData, setComponentItemData, createNCCCosting, saveAssemblyBOPHandlingCharge, setProcessGroupGrid, savePartNumber, saveBOMLevel, setPartNumberArrayAPICALL, isDataChange, setSurfaceCostData, saveAssemblyNumber, createCosting, getExistingCosting, createMultiTechnologyCosting, setRMCCErrors, setOverheadProfitErrors, setToolsErrors, setDiscountErrors, setCostingDataList, emptyCostingData, setRMCCBOPCostData,
 } from '../actions/Costing'
 import CopyCosting from './Drawers/CopyCosting'
 import { MESSAGES } from '../../../config/message';
@@ -34,6 +34,7 @@ import AddClientDrawer from './AddClientDrawer';
 import { IdForMultiTechnology } from '../../../config/masterData';
 import { autoCompleteDropdown } from '../../common/CommonFunctions';
 import { getUOMSelectList } from '../../../actions/Common';
+import { Redirect } from 'react-router';
 
 export const ViewCostingContext = React.createContext()
 export const EditCostingContext = React.createContext()
@@ -126,6 +127,7 @@ function CostingDetails(props) {
   const [inputLoader, setInputLoader] = useState(false)
   const [costingOptionsSelectedObject, setCostingOptionsSelectedObject] = useState({})
   const [partName, setpartName] = useState('')
+  const [nfrListing, setNFRListing] = useState(false)
 
   const dispatch = useDispatch()
 
@@ -1353,6 +1355,13 @@ function CostingDetails(props) {
   const backToFirstStep = () => {
     if (props?.nfrData?.isNFR) {
       // CODE FIR BACK BUTTON
+      setNFRListing(true)
+      dispatch(isDataChange(false))
+      dispatch(setRMCCData([], () => { }))                            //THIS WILL CLEAR RM CC REDUCER
+      dispatch(setCostingDataList('setHeaderCostRMCCTab', [], () => { }))
+      dispatch(emptyCostingData())
+      dispatch(setRMCCBOPCostData([], () => { }))
+
     } else {
       setIsLoader(true)
       dispatch(getBriefCostingById('', (res) => { }))
@@ -1751,6 +1760,19 @@ function CostingDetails(props) {
       }
     }
 
+  }
+
+  if (nfrListing === true) {
+
+    return <Redirect
+      to={{
+        pathname: "/nfr-listing",
+        state: {
+          isNFR: true
+        }
+
+      }}
+    />
   }
 
   const loaderObj = { isLoader: inputLoader, }
