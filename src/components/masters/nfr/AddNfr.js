@@ -89,6 +89,7 @@ function AddNfr(props) {
                     return {
                         groupName: item.GroupName,
                         data: vendorData,
+                        nfrPartWiseGroupDetailsId: item.NfrPartWiseGroupDetailsId
                     };
                 });
 
@@ -96,6 +97,9 @@ function AddNfr(props) {
                 setRowData(newArray)
             }
         }))
+
+
+
     }, [])
 
     useEffect(() => {
@@ -338,7 +342,8 @@ function AddNfr(props) {
         temprowDataInside = Object.assign([...temprowDataInside], { [indexInside]: tempData })
         let newObj = {
             data: temprowDataInside,
-            groupName: temprowData[indexOuter]?.groupName
+            groupName: temprowData[indexOuter]?.groupName,
+            nfrPartWiseGroupDetailsId: temprowData[indexOuter]?.nfrPartWiseGroupDetailsId
         }
         temprowData = Object.assign([...temprowData], { [indexOuter]: newObj })
         setRowData(temprowData)
@@ -346,7 +351,6 @@ function AddNfr(props) {
 
     const onCheckBoxClick = (index) => {
         let temp = selectedCheckBox
-        console.log(rowData, 'rowData');
         setSelectedCheckbox(!temp)
         if (!temp === true) {
 
@@ -606,8 +610,9 @@ function AddNfr(props) {
                     closeDrawer={closeShowApproval}
                     anchor={'right'}
                     // isApprovalisting={false}
-                    data={[]}
-                // technologyId={1}
+                    rowData={rowData}
+                    technologyId={nfrPartDetail?.TechnologyId}
+                    partData={{ PartId: nfrData?.PartId, PartName: nfrData?.PartName, PartNumber: nfrData?.PartNumber }}
                 />
             }
         </>
