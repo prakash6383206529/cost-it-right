@@ -57,6 +57,7 @@ function AddNfr(props) {
     const [showDrawer, setShowDrawer] = useState(false);
     const [costingOptionsSelectedObject, setCostingOptionsSelectedObject] = useState([]);
     const [selectedCheckBox, setSelectedCheckbox] = useState(false);
+    const [isCostingViewMode, setIsCostingViewMode] = useState(false);
 
     const { register, setValue, getValues, control, formState: { errors }, } = useForm({
         mode: 'onChange',
@@ -204,7 +205,19 @@ function AddNfr(props) {
 
     }, 500);
 
-    const viewDetails = (index) => { };
+    const viewDetails = (index) => {
+        // let tempData;
+        // tempData = costingOptionsSelectedObject[index]
+        // dispatch(getBriefCostingById(tempData?.CostingId, (res) => {
+        //     if (res?.data?.Result) {
+        //         setpartInfoStepTwo(partInfoStepTwo)
+        //         setcostingData({ costingId: tempData?.CostingId, NFRTypeId })
+        //         setIsAddDetails(true)
+        //         setIsCostingViewMode(true)
+        //     }
+
+        // }))
+    };
 
     const editCosting = (index) => {
         let tempData;
@@ -214,6 +227,7 @@ function AddNfr(props) {
                 setpartInfoStepTwo(partInfoStepTwo)
                 setcostingData({ costingId: tempData?.CostingId, NFRTypeId })
                 setIsAddDetails(true)
+                setIsCostingViewMode(false)
             }
 
         }))
@@ -290,8 +304,8 @@ function AddNfr(props) {
             to={{
                 pathname: "/costing",
                 state: {
-                    isAddMode: true,
-                    isViewMode: false,
+                    isAddMode: !isCostingViewMode,
+                    isViewMode: isCostingViewMode,
                     costingData: costingData,
                     partInfoStepTwo: partInfoStepTwo,
                     isNFR: true
@@ -520,7 +534,7 @@ function AddNfr(props) {
                                             {indexInside === 0 && (
                                                 <>
                                                     <td rowSpan={item?.data.length} className="table-record">
-                                                        <label
+                                                        {!isViewEstimation && <label
                                                             className={`custom-checkbox`}
                                                             onChange={(e) => onCheckBoxClick(indexOuter)}
                                                         >
@@ -534,7 +548,7 @@ function AddNfr(props) {
                                                                 checked={selectedCheckBox}
                                                                 onChange={(e) => onCheckBoxClick(indexOuter)}
                                                             />
-                                                        </label>
+                                                        </label>}
                                                         {item?.groupName}</td>
                                                 </>
                                             )}
@@ -563,17 +577,17 @@ function AddNfr(props) {
                                             </td>
                                             <td>{dataItem?.poPrice}</td>
                                             <td> <div className='action-btn-wrapper pr-2'>
-                                                {<button className="Add-file" type={"button"} title={"Add Costing"} onClick={() => addDetails(dataItem, indexOuter, indexInside)} />}
+                                                {!isViewEstimation && <button className="Add-file" type={"button"} title={"Add Costing"} onClick={() => addDetails(dataItem, indexOuter, indexInside)} />}
                                                 {!item?.IsNewCosting && item?.Status !== '' && (<button className="View" type={"button"} title={"View Costing"} onClick={() => viewDetails(indexInside)} />)}
-                                                {!item?.IsNewCosting && (<button className="Edit" type={"button"} title={"Edit Costing"} onClick={() => editCosting(indexInside)} />)}
-                                                {!item?.IsNewCosting && (<button className="Copy All" title={"Copy Costing"} type={"button"} onClick={() => copyCosting(indexInside)} />)}
-                                                {!item?.IsNewCosting && (<button className="Delete All" title={"Delete Costing"} type={"button"} onClick={() => deleteItem(item, indexInside)} />)}
-                                                {item?.CostingOptions?.length === 0 && <button title='Discard' className="CancelIcon" type={'button'} onClick={() => deleteRowItem(indexInside)} />}
+                                                {!isViewEstimation && !item?.IsNewCosting && (<button className="Edit" type={"button"} title={"Edit Costing"} onClick={() => editCosting(indexInside)} />)}
+                                                {!isViewEstimation && !item?.IsNewCosting && (<button className="Copy All" title={"Copy Costing"} type={"button"} onClick={() => copyCosting(indexInside)} />)}
+                                                {!isViewEstimation && !item?.IsNewCosting && (<button className="Delete All" title={"Delete Costing"} type={"button"} onClick={() => deleteItem(item, indexInside)} />)}
+                                                {!isViewEstimation && item?.CostingOptions?.length === 0 && <button title='Discard' className="CancelIcon" type={'button'} onClick={() => deleteRowItem(indexInside)} />}
                                             </div></td>
                                             {indexInside === 0 && (
                                                 <td rowSpan={item?.data.length} className="table-record">
-                                                    <button className="Edit" type={"button"} title={"Edit Costing"} onClick={() => editRow(item, indexInside)} />
-                                                    <button className="Delete All ml-1" title={"Delete Costing"} type={"button"} onClick={() => deleteRow(item, indexInside)} />
+                                                    <button className="Edit" type={"button"} title={"Edit Costing"} onClick={() => editRow(item, indexInside)} disabled={isViewEstimation} />
+                                                    <button className="Delete All ml-1" title={"Delete Costing"} type={"button"} onClick={() => deleteRow(item, indexInside)} disabled={isViewEstimation} />
                                                 </td>
                                             )}
                                         </tr>
@@ -591,6 +605,7 @@ function AddNfr(props) {
                                 type="button"
                                 className="user-btn mr5 save-btn"
                                 onClick={() => saveEstimation()}
+                                disabled={isViewEstimation}
                             >
                                 <div className={"save-icon"}></div>
                                 Save
@@ -599,6 +614,7 @@ function AddNfr(props) {
                                 className='user-btn'
                                 type='button'
                                 onClick={sendForApproval}
+                                disabled={isViewEstimation}
                             >
                                 <div className="send-for-approval"></div>
                                 Send for Approval
