@@ -457,11 +457,13 @@ class MachineRateListing extends Component {
         this.setState({ isBulkUpload: true })
     }
 
-    closeBulkUploadDrawer = () => {
-        this.setState({ isBulkUpload: false }, () => {
+    closeBulkUploadDrawer = (event, type) => {
+        this.setState({ isBulkUpload: false })
+        if (type !== 'cancel') {
             this.resetState()
-        })
+        }
     }
+
 
     displayForm = () => {
         this.props.displayForm()
