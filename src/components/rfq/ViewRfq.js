@@ -635,7 +635,7 @@ function RfqListing(props) {
                                 <div className='d-flex  align-items-center'><div className='w-min-fit'>Raised By:</div>
                                     <input
                                         type="text"
-                                        className="form-control mx-2"
+                                        className="form-control mx-2 defualt-input-value"
                                         value={data.RaisedBy}
                                         style={{ width: (data.RaisedBy.length * 9 + 10) + 'px' }}
                                         disabled={true}
@@ -643,7 +643,7 @@ function RfqListing(props) {
                                 <div className='d-flex align-items-center pr-0'><div className='w-min-fit'>Raised On:</div>
                                     <input
                                         type="text"
-                                        className="form-control ml-2"
+                                        className="form-control ml-2 defualt-input-value"
                                         disabled={true}
                                         style={{ width: '100px' }}
                                         value={data.RaisedOn ? DayTime(data.RaisedOn).format('DD/MM/YYYY') : '-'}
