@@ -1,18 +1,20 @@
 import React, { useContext, useState, } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { costingInfoContext } from '../../CostingDetailStepTwo';
+import { costingInfoContext, NetPOPriceContext } from '../../CostingDetailStepTwo';
 import BoughtOutPart from '../BOP';
 import PartCompoment from '../Part';
-import { getRMCCTabData, saveAssemblyBOPHandlingCharge } from '../../../actions/Costing';
-import { checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected, } from '../../../../../helper';
+import { getCostingLabourDetails, getRMCCTabData, saveAssemblyBOPHandlingCharge, saveAssemblyPartRowCostingCalculation, saveCostingLabourDetails, setRMCCData } from '../../../actions/Costing';
+import { checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected, loggedInUserId, } from '../../../../../helper';
 import AddAssemblyOperation from '../../Drawers/AddAssemblyOperation';
 import { CostingStatusContext, ViewCostingContext } from '../../CostingDetails';
-import { EMPTY_GUID } from '../../../../../config/constants';
+import { ASSEMBLYNAME, EMPTY_GUID } from '../../../../../config/constants';
 import _ from 'lodash'
 import AddBOPHandling from '../../Drawers/AddBOPHandling';
 import Toaster from '../../../../common/Toaster';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { useEffect } from 'react';
+import AddLabourCost from '../AdditionalOtherCost/AddLabourCost';
+import { createToprowObjAndSave } from '../../../CostingUtil';
 
 function AssemblyPart(props) {
   const { children, item, index } = props;
@@ -21,16 +23,20 @@ function AssemblyPart(props) {
   const [Count, setCount] = useState(0);
   const [IsDrawerOpen, setDrawerOpen] = useState(false)
   const [isOpenBOPDrawer, setIsOpenBOPDrawer] = useState(false)
+  const [isOpenLabourDrawer, setIsOpenLabourDrawer] = useState(false)
+  const [labourTableData, setLabourTableData] = useState([])
+  const [labourObj, setLabourObj] = useState(false)
   const [isBOPExists, setIsBOPExists] = useState(false)
+  const [callSaveAssemblyApi, setCallSaveAssemblyApi] = useState(false)
   const { partNumberAssembly } = useSelector(state => state.costing)
   const costingApprovalStatus = useContext(CostingStatusContext);
-
   const IsLocked = (item.IsLocked ? item.IsLocked : false) || (item.IsPartLocked ? item.IsPartLocked : false)
-
   const CostingViewMode = useContext(ViewCostingContext);
   const costData = useContext(costingInfoContext);
+
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
-  const { CostingEffectiveDate, bomLevel } = useSelector(state => state.costing)
+  const netPOPrice = useContext(NetPOPriceContext);
+  const { DiscountCostData, CostingEffectiveDate, bomLevel, RMCCTabData, SurfaceTabData, OverheadProfitTabData, PackageAndFreightTabData, ToolTabData, getAssemBOPCharge } = useSelector(state => state.costing)
   const dispatch = useDispatch()
   const toggle = (BOMLevel, PartNumber) => {
     if (CheckIsCostingDateSelected(CostingEffectiveDate)) return false;
@@ -107,12 +113,62 @@ function AssemblyPart(props) {
     setIsOpenBOPDrawer(true)
   }
 
+  const labourHandlingDrawer = () => {
+    if (CheckIsCostingDateSelected(CostingEffectiveDate)) return false;
+    setIsOpenLabourDrawer(true)
+  }
+
   const handleBOPCalculationAndClose = (e = '') => {
     setIsOpenBOPDrawer(false)
   }
 
+  const closeLabourDrawer = (type, data = labourTableData) => {
 
+    setIsOpenLabourDrawer(false)
+    if (type === 'save') {
+      setCallSaveAssemblyApi(true)
+      let sum = data.reduce((acc, obj) => Number(acc) + Number(obj.LabourCost), 0);
 
+      let obj = {}
+      obj.CostingId = item.CostingId !== null ? item.CostingId : "00000000-0000-0000-0000-000000000000"
+      obj.LoggedInUserId = loggedInUserId()
+      obj.IndirectLaborCost = data[0].indirectLabourCost
+      obj.StaffCost = data[0].staffCost
+      obj.StaffCostPercentage = data[0].staffCostPercent
+      obj.IndirectLaborCostPercentage = data[0].indirectLabourCostPercent
+      obj.NetLabourCost = sum
+      obj.CostingLabourDetailList = data
+
+      let temp = []
+      RMCCTabData && RMCCTabData.map((item, index) => {
+        if (index === 0) {
+          let objNew = { ...item, ...obj }
+          temp.push(objNew)
+        } else {
+          temp.push(item)
+        }
+      })
+
+      dispatch(setRMCCData(temp, () => { }))
+      dispatch(saveCostingLabourDetails(obj, (res) => {
+        if (res) {
+          Toaster.success('Labour details saved successfully.')
+        }
+      }))
+    }
+  }
+
+  useEffect(() => {
+    if (RMCCTabData && SurfaceTabData && callSaveAssemblyApi) {
+      const tabData = RMCCTabData[0]
+      const surfaceTabData = SurfaceTabData[0]
+      const overHeadAndProfitTabData = OverheadProfitTabData[0]
+      const discountAndOtherTabData = DiscountCostData
+      let assemblyRequestedData = createToprowObjAndSave(tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, netPOPrice, getAssemBOPCharge, 1, CostingEffectiveDate)
+      dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData, res => { }))
+    }
+
+  }, [RMCCTabData])
 
   const nestedPartComponent = children && children.map(el => {
     if (el.PartType === 'Part') {
@@ -138,6 +194,15 @@ function AssemblyPart(props) {
     let final = _.map(item && item?.CostingChildPartDetails, 'PartType')
     setIsBOPExists(final.includes('BOP'))
   }, [item])
+
+  useEffect(() => {
+    dispatch(getCostingLabourDetails(item.CostingId !== null ? item.CostingId : "00000000-0000-0000-0000-000000000000", (res) => {
+
+      setLabourTableData(res?.data?.Data?.CostingLabourDetailList)
+      setLabourObj(res?.data?.Data)
+    }))
+
+  }, [])
 
   const nestedAssembly = children && children.map(el => {
     if (el.PartType !== 'Sub Assembly') return false;
@@ -225,7 +290,12 @@ function AssemblyPart(props) {
 
           <div className='d-flex justify-content-end align-items-center'>
             <div className='d-flex'>
-
+              {item.PartType === ASSEMBLYNAME && <><button
+                type="button"
+                className={'user-btn add-oprn-btn mr-1'}
+                onClick={labourHandlingDrawer}>
+                <div className={'plus'}></div>{`LABOUR`}</button>
+              </>}
               {isBOPExists && <><button
                 type="button"
                 className={'user-btn add-oprn-btn mr-1'}
@@ -251,12 +321,9 @@ function AssemblyPart(props) {
         </td >
 
         {/* <td className="text-right"></td> */}
-      </tr >
-
+      </tr>
       {item?.CostingPartDetails?.IsOpen && nestedPartComponent}
-
       {item?.CostingPartDetails?.IsOpen && nestedBOP}
-
       {item?.CostingPartDetails?.IsOpen && nestedAssembly}
 
       {
@@ -283,6 +350,17 @@ function AssemblyPart(props) {
           anchor={'right'}
           setBOPCostWithAsssembly={props.setBOPCostWithAsssembly}
           isAssemblyTechnology={false}
+        />
+      }
+
+      {
+        isOpenLabourDrawer && <AddLabourCost
+          isOpen={isOpenLabourDrawer}
+          tableData={labourTableData}
+          labourObj={labourObj}
+          item={item}
+          closeDrawer={closeLabourDrawer}
+          anchor={'right'}
         />
       }
     </ >
