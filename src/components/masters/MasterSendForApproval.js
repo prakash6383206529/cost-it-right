@@ -12,7 +12,7 @@ import Toaster from '../common/Toaster';
 import { getReasonSelectList } from '../costing/actions/Approval';
 import DayTime from '../common/DayTimeWrapper'
 import DatePicker from "react-datepicker";
-import { BUDGET_ID, EMPTY_GUID, VBCTypeId, ZBCTypeId } from '../../config/constants';
+import { BOPTYPE, BUDGETTYPE, BUDGET_ID, EMPTY_GUID, MACHINETYPE, OPERATIONTYPE, RMTYPE, VBCTypeId, ZBCTypeId } from '../../config/constants';
 import { getUsersMasterLevelAPI } from '../../actions/auth/AuthActions';
 import { REMARKMAXLENGTH } from '../../config/masterData';
 import { costingTypeIdToApprovalTypeIdFunction } from '../common/CommonFunctions';
@@ -157,7 +157,6 @@ function MasterSendForApproval(props) {
         if (type === 'Sender') {
             //THIS OBJ IS FOR SIMULATION SEND FOR APPROVAL
             let senderObj = {}
-            senderObj.ApprovalMasterId = BUDGET_ID
             senderObj.ReasonId = reason ? reason.value : 0
             senderObj.Reason = reason ? reason.label : ''
             senderObj.IsFinalApproved = false
@@ -194,11 +193,14 @@ function MasterSendForApproval(props) {
                     } else {
                         tempArray.push({ RawMaterialId: EMPTY_GUID, IsImportEntery: IsImportEntery, RawMaterialRequest: approvalObj })
                     }
-                    senderObj.EntityList = tempArray
-
+                    senderObj.MasterCreateRequest = {
+                        CreateRawMaterial: approvalObj
+                    }
+                    // senderObj.EntityList = tempArray
+                    senderObj.ApprovalMasterId = RMTYPE
 
                     //THIS CONDITION IS FOR SIMULATION SEND FOR APPROVAL
-                    dispatch(masterApprovalRequestBySender(senderObj, res => {
+                    dispatch(masterApprovalAPI(senderObj, res => {
                         setIsDisable(false)
                         if (res?.data?.Result) {
                             Toaster.success('Raw Material has been sent for approval.')
@@ -220,6 +222,16 @@ function MasterSendForApproval(props) {
                         tempArray.push({ BoughtPartId: EMPTY_GUID, IsImportEntery: IsImportEntery, BoughtoutPartRequest: approvalObj })
                     }
                     senderObj.EntityList = tempArray
+                    senderObj.ApprovalMasterId = BOPTYPE
+
+                    //THIS CONDITION IS FOR SIMULATION SEND FOR APPROVAL
+                    dispatch(masterApprovalAPI(senderObj, res => {
+                        setIsDisable(false)
+                        if (res?.data?.Result) {
+                            Toaster.success('BOP has been sent for approval.')
+                            props.closeDrawer('', 'submit')
+                        }
+                    }))
                     break;
 
 
@@ -234,7 +246,16 @@ function MasterSendForApproval(props) {
                         tempArray.push({ OperationId: EMPTY_GUID, IsImportEntery: IsImportEntery ?? false, OperationRequest: approvalObj })
                     }
                     senderObj.EntityList = tempArray
+                    senderObj.ApprovalMasterId = OPERATIONTYPE
 
+                    //THIS CONDITION IS FOR SIMULATION SEND FOR APPROVAL
+                    dispatch(masterApprovalAPI(senderObj, res => {
+                        setIsDisable(false)
+                        if (res?.data?.Result) {
+                            Toaster.success('Operation has been sent for approval.')
+                            props.closeDrawer('', 'submit')
+                        }
+                    }))
                     break;
 
 
@@ -249,19 +270,17 @@ function MasterSendForApproval(props) {
                         tempArray.push({ MachineId: EMPTY_GUID, IsImportEntery: IsImportEntery, MachineRequest: approvalObj })
                     }
                     senderObj.EntityList = tempArray
+                    senderObj.ApprovalMasterId = MACHINETYPE
+                    dispatch(masterApprovalAPI(senderObj, res => {
+                        setIsDisable(false)
+                        if (res?.data?.Result) {
+                            Toaster.success('Machine has been sent for approval.')
+                            props.closeDrawer('', 'submit')
+                        }
+                    }))
                     break;
-
                 case 5:  //CASE 5 FOR BUDGET MASTER
-                    // check here @ashok
-                    // if (isBulkUpload) {
-                    //     approvalData && approvalData.map(item => {
-                    //         tempArray.push({ BoughtOutPartId: item.BoughtOutPartId, IsImportEntery: item.EnteryType === 'Domestic' ? false : true, BoughtoutPartRequest: {}, CostingTypeId: item.CostingTypeId })
-                    //         return null
-                    //     })
-                    // } else {
-                    //     tempArray.push({ BoughtPartId: EMPTY_GUID, IsImportEntery: IsImportEntery, BoughtoutPartRequest: approvalObj })
-                    // }
-                    // senderObj.EntityList = tempArray
+
                     let obj = {
 
                         LoggedInUserId: loggedInUserId(),
@@ -298,6 +317,7 @@ function MasterSendForApproval(props) {
                     senderObj.MasterCreateRequest = {
                         CreateBudgeting: obj
                     }
+                    senderObj.ApprovalMasterId = BUDGETTYPE
 
                     //THIS CONDITION IS FOR SIMULATION SEND FOR APPROVAL
                     dispatch(masterApprovalRequestBySender(senderObj, res => {
