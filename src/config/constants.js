@@ -2230,4 +2230,4 @@ export const IVRFQ = "8vFNmRQEl91nOtrM"
 export const ENTRY_TYPE_DOMESTIC = 0
 export const ENTRY_TYPE_IMPORT = 1
 //VERSION 
-export const VERSION = "V2.1.135";
+export const VERSION = "V2.1.136";
