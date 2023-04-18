@@ -4,7 +4,7 @@ import { reduxForm, } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import { checkForDecimalAndNull } from "../../../helper/validation";
 import { BOPIMPORT, EMPTY_DATA, defaultPageSize, APPROVED_STATUS, ENTRY_TYPE_IMPORT } from '../../../config/constants';
-import { getBOPDataList, deleteBOP, getAllVendorSelectList, } from '../actions/BoughtOutParts';
+import { getBOPDataList, deleteBOP } from '../actions/BoughtOutParts';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
 import { onFloatingFilterChanged, onSearch, resetState, onBtPrevious, onBtNext, onPageSizeChanged, PaginationWrapper } from '../../common/commonPagination'
@@ -837,7 +837,6 @@ function mapStateToProps({ boughtOutparts, comman, supplier, auth, simulation })
 export default connect(mapStateToProps, {
     getBOPDataList,
     deleteBOP,
-    getAllVendorSelectList,
     getListingForSimulationCombined,
     setSelectedRowForPagination,
     disabledClass

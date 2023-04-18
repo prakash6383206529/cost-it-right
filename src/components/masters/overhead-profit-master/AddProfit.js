@@ -4,16 +4,17 @@ import { Field, reduxForm, formValueSelector, clearFields } from "redux-form";
 import { Row, Col, Label } from 'reactstrap';
 import { required, getVendorCode, maxLength512, number, maxPercentValue, checkWhiteSpaces, percentageLimitValidation } from "../../../helper/validation";
 import { searchableSelect, renderTextAreaField, renderDatePicker, renderMultiSelectField, renderText } from "../../layout/FormInputs";
-import { fetchModelTypeAPI, fetchCostingHeadsAPI, getPlantSelectListByType } from '../../../actions/Common';
-import { getVendorWithVendorCodeSelectList } from '../actions/Supplier';
-import { createProfit, updateProfit, getProfitData, fileUploadProfit, fileDeleteProfit, } from '../actions/OverheadProfit';
+import { fetchModelTypeAPI, fetchCostingHeadsAPI, getPlantSelectListByType, getVendorNameByVendorSelectList } from '../../../actions/Common';
+import {
+  createProfit, updateProfit, getProfitData, fileUploadProfit, fileDeleteProfit,
+} from '../actions/OverheadProfit';
 import { getClientSelectList, } from '../actions/Client';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import { getConfigurationKey, loggedInUserId } from "../../../helper/auth";
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css'
-import { CBCTypeId, FILE_URL, SPACEBAR, VBCTypeId, ZBC, ZBCTypeId, searchCount } from '../../../config/constants';
+import { CBCTypeId, FILE_URL, SPACEBAR, VBCTypeId, VBC_VENDOR_TYPE, ZBC, ZBCTypeId, searchCount } from '../../../config/constants';
 import DayTime from '../../common/DayTimeWrapper'
 import LoaderCustom from '../../common/LoaderCustom';
 import attachClose from '../../../assests/images/red-cross.png'
@@ -848,7 +849,7 @@ class AddProfit extends Component {
       if (inputValue?.length >= searchCount && vendorFilterList !== resultInput) {
         this.setState({ inputLoader: true })
         let res
-        res = await getVendorWithVendorCodeSelectList(resultInput)
+        res = await getVendorNameByVendorSelectList(VBC_VENDOR_TYPE, resultInput)
         this.setState({ inputLoader: false })
         this.setState({ vendorFilterList: resultInput })
         let vendorDataAPI = res?.data?.SelectList
@@ -1354,7 +1355,6 @@ function mapStateToProps(state) {
 export default connect(mapStateToProps, {
   fetchModelTypeAPI,
   fetchCostingHeadsAPI,
-  getVendorWithVendorCodeSelectList,
   getClientSelectList,
   createProfit,
   getPlantSelectListByType,
@@ -1362,7 +1362,7 @@ export default connect(mapStateToProps, {
   getProfitData,
   fileUploadProfit,
   fileDeleteProfit,
-  getPlantSelectListByType
+  getVendorNameByVendorSelectList
 })(reduxForm({
   form: 'AddProfit',
   enableReinitialize: true,

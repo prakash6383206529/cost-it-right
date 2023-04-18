@@ -6,10 +6,10 @@ import { required, checkForDecimalAndNull, positiveAndDecimalNumber, maxLength10
 import {
   searchableSelect, focusOnError, renderTextInputField,
 } from "../../layout/FormInputs";
-import { getUOMSelectList, fetchStateDataAPI, getAllCity, getPlantSelectListByType, fetchCountryDataAPI, fetchCityDataAPI, getCityByCountry, } from '../../../actions/Common';
+import { getUOMSelectList, fetchStateDataAPI, getAllCity, getPlantSelectListByType, fetchCountryDataAPI, fetchCityDataAPI, getCityByCountry, getVendorNameByVendorSelectList, } from '../../../actions/Common';
 import { getFuelByPlant, createFuelDetail, updateFuelDetail, getFuelDetailData, getUOMByFuelId } from '../actions/Fuel';
 import { MESSAGES } from '../../../config/message';
-import { CBCTypeId, EMPTY_DATA, searchCount, SPACEBAR, VBCTypeId, ZBC, ZBCTypeId } from '../../../config/constants'
+import { CBCTypeId, EMPTY_DATA, searchCount, SPACEBAR, VBC_VENDOR_TYPE, VBCTypeId, ZBC, ZBCTypeId } from '../../../config/constants'
 import { loggedInUserId } from "../../../helper/auth";
 import Toaster from '../../common/Toaster';
 import DatePicker from "react-datepicker";
@@ -22,7 +22,6 @@ import LoaderCustom from '../../common/LoaderCustom';
 import { debounce } from 'lodash';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import AsyncSelect from 'react-select/async';
-import { getVendorListByVendorType, getVendorWithVendorCodeSelectList } from '../actions/Material';
 import { autoCompleteDropdown } from '../../common/CommonFunctions';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { onFocus } from '../../../helper';
@@ -760,19 +759,13 @@ class AddFuel extends Component {
     const { handleSubmit, initialConfiguration, } = this.props;
     const { isOpenFuelDrawer, isEditFlag, isViewMode, setDisable, isGridEdit, costingTypeId } = this.state;
 
-
     const filterList = async (inputValue) => {
       const { vendorFilterList } = this.state
       const resultInput = inputValue.slice(0, searchCount)
       if (inputValue?.length >= searchCount && vendorFilterList !== resultInput) {
         this.setState({ inputLoader: true })
         let res
-        if (costingTypeId === VBCTypeId && resultInput) {
-          res = await getVendorWithVendorCodeSelectList(resultInput)
-        }
-        else {
-          res = await getVendorListByVendorType(costingTypeId, resultInput)
-        }
+        res = await getVendorNameByVendorSelectList(VBC_VENDOR_TYPE, resultInput)
         this.setState({ inputLoader: false })
         this.setState({ vendorFilterList: resultInput })
         let vendorDataAPI = res?.data?.SelectList

@@ -7,12 +7,12 @@ import { renderText, renderTextInputField, searchableSelect, renderMultiSelectFi
 import { AcceptableRMUOM, FORGING, SHEETMETAL } from '../../../config/masterData'
 import {
   getRawMaterialCategory, fetchGradeDataAPI, fetchSpecificationDataAPI, getCityBySupplier, getPlantByCity,
-  getPlantByCityAndSupplier, fetchRMGradeAPI, getSupplierList, getPlantBySupplier, getUOMSelectList, fetchSupplierCityDataAPI,
-  fetchPlantDataAPI, getPlantSelectListByType, getCityByCountry, getAllCity
+  getPlantByCityAndSupplier, fetchRMGradeAPI, getSupplierList, getUOMSelectList, fetchSupplierCityDataAPI,
+  getPlantSelectListByType, getCityByCountry, getAllCity, getVendorNameByVendorSelectList
 } from '../../../actions/Common'
 import {
   createRM, getRMDataById, updateRMAPI, getRawMaterialNameChild, getRMGradeSelectListByRawMaterial,
-  getVendorListByVendorType, fileUploadRMDomestic, fileUpdateRMDomestic, fileDeleteRMDomestic, getVendorWithVendorCodeSelectList, checkAndGetRawMaterialCode,
+  fileUploadRMDomestic, fileUpdateRMDomestic, fileDeleteRMDomestic, checkAndGetRawMaterialCode,
 } from '../actions/Material'
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message'
@@ -25,7 +25,7 @@ import AddVendorDrawer from '../supplier-master/AddVendorDrawer'
 import Dropzone from 'react-dropzone-uploader'
 import 'react-dropzone-uploader/dist/styles.css'
 import 'react-datepicker/dist/react-datepicker.css'
-import { FILE_URL, ZBC, RM_MASTER_ID, EMPTY_GUID, SPACEBAR, ZBCTypeId, VBCTypeId, CBCTypeId, searchCount, RMDOMESTIC, ENTRY_TYPE_DOMESTIC, SHEET_METAL } from '../../../config/constants'
+import { FILE_URL, ZBC, RM_MASTER_ID, EMPTY_GUID, SPACEBAR, ZBCTypeId, VBCTypeId, CBCTypeId, searchCount, RMDOMESTIC, ENTRY_TYPE_DOMESTIC, SHEET_METAL, VBC_VENDOR_TYPE, RAW_MATERIAL_VENDOR_TYPE } from '../../../config/constants'
 import DayTime from '../../common/DayTimeWrapper'
 import TooltipCustom from '../../common/Tooltip';
 import LoaderCustom from '../../common/LoaderCustom';
@@ -151,7 +151,6 @@ class AddRMDomestic extends Component {
   UNSAFE_componentWillMount() {
     if (!(this.props.data.isEditFlag || this.state.isViewFlag)) {
       this.props.getUOMSelectList(() => { })
-      this.props.fetchPlantDataAPI(() => { })
       this.props.getRMGradeSelectListByRawMaterial('', (res) => { })
     }
   }
@@ -343,7 +342,6 @@ class AddRMDomestic extends Component {
               ? getVendorCode(vendorName.label)
               : ''
           this.setState({ VendorCode: result })
-          this.props.getPlantBySupplier(vendorName.value, () => { })
         },
       )
     } else {
@@ -351,7 +349,6 @@ class AddRMDomestic extends Component {
         vendorName: [],
         vendorLocation: [],
       })
-      this.props.getPlantBySupplier('', () => { })
     }
   }
   /**
@@ -507,7 +504,6 @@ class AddRMDomestic extends Component {
         if (res && res.data && res?.data?.Result) {
           const Data = res.data.Data
           this.setState({ DataToChange: Data })
-          // this.props.getPlantBySupplier(Data.Vendor, () => { })
           this.props.change('FrieghtCharge', Data.RMFreightCost ? Data.RMFreightCost : '')
           this.props.change('ShearingCost', Data.RMShearingCost ? Data.RMShearingCost : '')
           this.props.change('cutOffPrice', Data.CutOffPrice ? Data.CutOffPrice : '')
@@ -586,7 +582,6 @@ class AddRMDomestic extends Component {
       this.props.getClientSelectList(() => { })
     }
     else {
-      this.props.getPlantBySupplier('', () => { })
       this.props.getCityBySupplier(0, () => { })
     }
   }
@@ -675,7 +670,7 @@ class AddRMDomestic extends Component {
       const { costingTypeId } = this.state
       if (costingTypeId !== VBCTypeId) {
         if (this.state.vendorName && this.state.vendorName.length > 0) {
-          const res = await getVendorListByVendorType(costingTypeId, this.state.vendorName)
+          const res = await getVendorNameByVendorSelectList(RAW_MATERIAL_VENDOR_TYPE, this.state.vendorName)
           let vendorDataAPI = res?.data?.SelectList
           reactLocalStorage?.setObject('vendorData', vendorDataAPI)
         }
@@ -684,7 +679,7 @@ class AddRMDomestic extends Component {
         }
       } else {
         if (this.state.vendorName && this.state.vendorName.length > 0) {
-          const res = await getVendorWithVendorCodeSelectList(costingTypeId, this.state.vendorName)
+          const res = await getVendorNameByVendorSelectList(VBC_VENDOR_TYPE, this.state.vendorName)
           let vendorDataAPI = res?.data?.SelectList
           reactLocalStorage?.setObject('vendorData', vendorDataAPI)
         }
@@ -1287,10 +1282,10 @@ class AddRMDomestic extends Component {
         this.setState({ inputLoader: true })
         let res
         if (costingTypeId === VBCTypeId && resultInput) {
-          res = await getVendorWithVendorCodeSelectList(costingTypeId, resultInput)
+          res = await getVendorNameByVendorSelectList(VBC_VENDOR_TYPE, resultInput)
         }
         else {
-          res = await getVendorListByVendorType(costingTypeId, resultInput)
+          res = await getVendorNameByVendorSelectList(RAW_MATERIAL_VENDOR_TYPE, resultInput)
         }
         this.setState({ inputLoader: false })
         this.setState({ vendorFilterList: resultInput })
@@ -2201,7 +2196,6 @@ export default connect(mapStateToProps, {
   getCostingSpecificTechnology,
   fetchSupplierCityDataAPI,
   fetchGradeDataAPI,
-  fetchPlantDataAPI,
   fetchSpecificationDataAPI,
   getRMDataById,
   getCityBySupplier,
@@ -2212,20 +2206,18 @@ export default connect(mapStateToProps, {
   getRawMaterialNameChild,
   getRMGradeSelectListByRawMaterial,
   getSupplierList,
-  getPlantBySupplier,
   getUOMSelectList,
-  getVendorListByVendorType,
   fileUploadRMDomestic,
   fileUpdateRMDomestic,
   fileDeleteRMDomestic,
   getPlantSelectListByType,
-  getVendorWithVendorCodeSelectList,
   checkAndGetRawMaterialCode,
   getCityByCountry,
   getAllCity,
   getClientSelectList,
   checkFinalUser,
-  getUsersMasterLevelAPI
+  getUsersMasterLevelAPI,
+  getVendorNameByVendorSelectList
 })(
   reduxForm({
     form: 'AddRMDomestic',

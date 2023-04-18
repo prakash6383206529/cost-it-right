@@ -3,11 +3,11 @@ import { useForm, Controller } from "react-hook-form";
 import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, Tooltip, } from 'reactstrap';
 import { AsyncSearchableSelectHookForm, SearchableSelectHookForm, TextAreaHookForm, TextFieldHookForm } from '.././layout/HookFormInputs'
-import { getVendorWithVendorCodeSelectList, getReporterList, fetchPlantDataAPI, fetchSpecificationDataAPI } from '../.././actions/Common';
+import { getReporterList, fetchPlantDataAPI, getVendorNameByVendorSelectList, getPlantSelectListByType, fetchSpecificationDataAPI } from '../.././actions/Common';
 import { getCostingSpecificTechnology, } from '../costing/actions/Costing'
-import { addDays, checkForDecimalAndNull, getConfigurationKey, loggedInUserId } from '../.././helper';
-import { checkForNull } from '../.././helper/validation'
-import { EMPTY_DATA, FILE_URL, searchCount } from '../.././config/constants';
+import { addDays, loggedInUserId } from '../.././helper';
+import { postiveNumber, maxLength10, nonZero, checkForNull } from '../.././helper/validation'
+import { EMPTY_DATA, FILE_URL, VBC_VENDOR_TYPE, ZBC, searchCount } from '../.././config/constants';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
@@ -88,7 +88,7 @@ function AddRfq(props) {
     const checkRFQPartBulkUpload = useSelector((state) => state.rfq.checkRFQPartBulkUpload)
     const nfrSelectList = useSelector((state) => state.rfq.nfrSelectList)
     // const getReporterListDropDown = useSelector(state => state.comman.getReporterListDropDown)
-    const plantList = useSelector(state => state.comman.plantList)
+    const plantSelectList = useSelector(state => state.comman.plantSelectList)
     const [isBulkUpload, setisBulkUpload] = useState(false)
     const [showTooltip, setShowTooltip] = useState(false)
     const [viewTooltip, setViewTooltip] = useState(false)
@@ -109,6 +109,8 @@ function AddRfq(props) {
         dispatch(getRawMaterialNameChild('', () => { }))
         dispatch(fetchPlantDataAPI(() => { }))
         dispatch(getNfrSelectList(() => { }))
+        dispatch(getPlantSelectListByType(ZBC, () => { }))
+
         let tempArr = [];
         vbcVendorGrid && vbcVendorGrid.map(el => {
             tempArr.push(el.VendorId)
@@ -358,9 +360,9 @@ function AddRfq(props) {
         const temp = [];
 
         if (label === 'plant') {
-            plantList && plantList.map((item) => {
-                if (item.Value === '0') return false
-                temp.push({ label: item.Text, value: item.Value, PlantName: item.Text, PlantCode: item.Value })
+            plantSelectList && plantSelectList.map((item) => {
+                if (item.PlantId === '0') return false
+                temp.push({ label: item.PlantNameCode, value: item.PlantId })
                 return null
             })
             return temp
@@ -793,7 +795,7 @@ function AddRfq(props) {
         const resultInput = inputValue.slice(0, searchCount)
         if (inputValue?.length >= searchCount && vendor !== resultInput) {
             let res
-            res = await getVendorWithVendorCodeSelectList(resultInput)
+            res = await getVendorNameByVendorSelectList(VBC_VENDOR_TYPE, resultInput)
             setVendor(resultInput)
             let vendorDataAPI = res?.data?.SelectList
             if (inputValue) {

@@ -10,8 +10,6 @@ import $ from 'jquery';
 import NoContentFound from '../../common/NoContentFound';
 import {
     getSupplierDataList, activeInactiveVendorStatus, deleteSupplierAPI,
-    getVendorsByVendorTypeID,
-    getVendorTypeByVendorSelectList
 } from '../actions/Supplier';
 import Switch from "react-switch";
 import BulkUpload from '../../massUpload/BulkUpload';
@@ -379,50 +377,6 @@ class VendorListing extends Component {
         })
         this.setState({ showPopupToggle: false })
     }
-    /**
-    * @method handleVendorType
-    * @description Used to handle vendor type
-    */
-    handleVendorType = (newValue, actionMeta) => {
-        if (newValue && newValue !== '') {
-            this.setState({ vendorType: newValue, }, () => {
-                const { vendorType } = this.state;
-                this.props.getVendorsByVendorTypeID(vendorType.value, this.state.vendorName, (res) => { })
-            });
-        } else {
-            this.setState({ vendorType: [], }, () => {
-                this.props.getAllVendorSelectList()
-            })
-        }
-    };
-
-    /**
-    * @method handleVendorName
-    * @description Used to handle vendor name
-    */
-    handleVendorName = (newValue, actionMeta) => {
-        if (newValue && newValue !== '') {
-            this.setState({ vendorName: newValue, }, () => {
-                const { vendorName } = this.state;
-                this.props.getVendorTypeByVendorSelectList(vendorName.value)
-            });
-        } else {
-            this.setState({ vendorName: [], })
-        }
-    };
-
-    /**
-    * @method countryHandler
-    * @description Used to handle country
-    */
-    countryHandler = (newValue, actionMeta) => {
-        if (newValue && newValue !== '') {
-            this.setState({ country: newValue, });
-        } else {
-            this.setState({ country: [], })
-        }
-    };
-
     /**
     * @method statusButtonFormatter
     * @description Renders buttons
@@ -855,8 +809,6 @@ export default connect(mapStateToProps, {
     getSupplierDataList,
     activeInactiveVendorStatus,
     deleteSupplierAPI,
-    getVendorsByVendorTypeID,
-    getVendorTypeByVendorSelectList,
     setSelectedRowForPagination,
     disabledClass,
     isResetClick

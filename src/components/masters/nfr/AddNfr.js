@@ -6,8 +6,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Redirect, useHistory } from 'react-router';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { Col, Row, Table } from 'reactstrap';
-import { getVendorWithVendorCodeSelectList } from '../../../actions/Common';
-import { EMPTY_DATA, NFRTypeId, EMPTY_GUID, NFR, VBCTypeId, searchCount, DRAFT, DRAFTID, REJECTEDID } from '../../../config/constants';
+import { getVendorNameByVendorSelectList } from '../../../actions/Common';
+import { EMPTY_DATA, NFRTypeId, searchCount, DRAFT, DRAFTID, REJECTEDID, VBC_VENDOR_TYPE } from '../../../config/constants';
 import { autoCompleteDropdown } from '../../common/CommonFunctions';
 import HeaderTitle from '../../common/HeaderTitle';
 import NoContentFound from '../../common/NoContentFound';
@@ -610,7 +610,7 @@ function AddNfr(props) {
         const resultInput = inputValue.slice(0, searchCount)
         if (inputValue?.length >= searchCount && vendor !== resultInput) {
             let res
-            res = await getVendorWithVendorCodeSelectList(VBCTypeId, resultInput)
+            res = await getVendorNameByVendorSelectList(VBC_VENDOR_TYPE, resultInput)
             setVendor(resultInput)
             let vendorDataAPI = res?.data?.SelectList
             if (inputValue) {

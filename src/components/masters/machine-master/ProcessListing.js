@@ -619,8 +619,8 @@ class ProcessListing extends Component {
  * @param {*} state
  */
 function mapStateToProps({ process }) {
-  const { filterSelectList, processList } = process
-  return { filterSelectList, processList }
+  const { processList } = process
+  return { processList }
 }
 
 /**

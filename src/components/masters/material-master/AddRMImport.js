@@ -7,7 +7,7 @@ import { renderText, searchableSelect, renderMultiSelectField, renderTextAreaFie
 import {
   getRawMaterialCategory, fetchGradeDataAPI, fetchSpecificationDataAPI, getCityBySupplier, getPlantByCity,
   getPlantByCityAndSupplier, fetchRMGradeAPI, getPlantBySupplier, getUOMSelectList,
-  getCurrencySelectList, fetchSupplierCityDataAPI, fetchPlantDataAPI, getPlantSelectListByType, getCityByCountry, getAllCity
+  getCurrencySelectList, fetchSupplierCityDataAPI, getPlantSelectListByType, getCityByCountry, getAllCity, getVendorNameByVendorSelectList
 } from '../../../actions/Common';
 import {
   createRM, getRMDataById, updateRMAPI, getRawMaterialNameChild,
@@ -25,7 +25,7 @@ import AddVendorDrawer from '../supplier-master/AddVendorDrawer';
 import 'react-dropzone-uploader/dist/styles.css'
 import Dropzone from 'react-dropzone-uploader';
 import "react-datepicker/dist/react-datepicker.css"
-import { FILE_URL, INR, ZBC, RM_MASTER_ID, EMPTY_GUID, SPACEBAR, ZBCTypeId, VBCTypeId, CBCTypeId, searchCount, SHEET_METAL, ENTRY_TYPE_IMPORT } from '../../../config/constants';
+import { FILE_URL, INR, ZBC, RM_MASTER_ID, EMPTY_GUID, SPACEBAR, ZBCTypeId, VBCTypeId, CBCTypeId, searchCount, RMIMPORT, SHEET_METAL, ENTRY_TYPE_IMPORT, VBC_VENDOR_TYPE, RAW_MATERIAL_VENDOR_TYPE } from '../../../config/constants';
 import { AcceptableRMUOM, FORGING, SHEETMETAL } from '../../../config/masterData'
 import { getExchangeRateByCurrency, getCostingSpecificTechnology } from "../../costing/actions/Costing"
 import DayTime from '../../common/DayTimeWrapper'
@@ -136,7 +136,6 @@ class AddRMImport extends Component {
     if (!(this.props.data.isEditFlag || this.state.isViewFlag)) {
       this.props.getCurrencySelectList(() => { })
       this.props.getUOMSelectList(() => { })
-      this.props.fetchPlantDataAPI(() => { })
     }
   }
 
@@ -710,7 +709,7 @@ class AddRMImport extends Component {
       const { costingTypeId } = this.state
       if (costingTypeId !== VBCTypeId) {
         if (this.state.vendorName && this.state.vendorName.length > 0) {
-          const res = await getVendorListByVendorType(ZBCTypeId, this, this.state.vendorName)
+          const res = await getVendorNameByVendorSelectList(RAW_MATERIAL_VENDOR_TYPE, this.state.vendorName)
           let vendorDataAPI = res?.data?.SelectList
           reactLocalStorage?.setObject('vendorData', vendorDataAPI)
         }
@@ -719,7 +718,7 @@ class AddRMImport extends Component {
         }
       } else {
         if (this.state.vendorName && this.state.vendorName.length > 0) {
-          const res = await getVendorWithVendorCodeSelectList(this.state.vendorName)
+          const res = await getVendorNameByVendorSelectList(VBC_VENDOR_TYPE, this.state.vendorName)
           let vendorDataAPI = res?.data?.SelectList
           reactLocalStorage?.setObject('vendorData', vendorDataAPI)
         }
@@ -1295,10 +1294,10 @@ class AddRMImport extends Component {
         this.setState({ inputLoader: true })
         let res
         if (costingTypeId === VBCTypeId && resultInput) {
-          res = await getVendorWithVendorCodeSelectList(costingTypeId, resultInput)
+          res = await getVendorNameByVendorSelectList(VBC_VENDOR_TYPE, resultInput)
         }
         else {
-          res = await getVendorListByVendorType(costingTypeId, resultInput)
+          res = await getVendorNameByVendorSelectList(RAW_MATERIAL_VENDOR_TYPE, resultInput)
         }
         this.setState({ inputLoader: false })
         this.setState({ vendorFilterList: resultInput })
@@ -2235,13 +2234,10 @@ export default connect(mapStateToProps, {
   getRMGradeSelectListByRawMaterial,
   getPlantBySupplier,
   getUOMSelectList,
-  getVendorListByVendorType,
   fileUploadRMDomestic,
   getCurrencySelectList,
-  fetchPlantDataAPI,
   getPlantSelectListByType,
   getExchangeRateByCurrency,
-  getVendorWithVendorCodeSelectList,
   checkAndGetRawMaterialCode,
   masterFinalLevelUser,
   fileDeleteRMDomestic,
@@ -2250,7 +2246,8 @@ export default connect(mapStateToProps, {
   getAllCity,
   getCostingSpecificTechnology,
   getClientSelectList,
-  getUsersMasterLevelAPI
+  getUsersMasterLevelAPI,
+  getVendorNameByVendorSelectList
 })(reduxForm({
   form: 'AddRMImport',
   enableReinitialize: true,
