@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Redirect, useHistory } from 'react-router';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { Col, Row, Table } from 'reactstrap';
-import { getVendorNameByVendorSelectList, getVendorWithVendorCodeSelectList } from '../../../actions/Common';
+import { getVendorNameByVendorSelectList } from '../../../actions/Common';
 import { EMPTY_DATA, EMPTY_GUID, NFRTypeId, searchCount, DRAFT, DRAFTID, REJECTEDID, VBC_VENDOR_TYPE } from '../../../config/constants';
 
 import { autoCompleteDropdown, costingTypeIdToApprovalTypeIdFunction } from '../../common/CommonFunctions';
@@ -17,7 +17,7 @@ import { AsyncSearchableSelectHookForm, SearchableSelectHookForm, TextFieldHookF
 import { getNFRPartWiseGroupDetail, saveNFRGroupDetails } from './actions/nfr';
 import { checkVendorPlantConfigurable, loggedInUserId, userDetails, userTechnologyLevelDetails } from '../../../helper';
 import { dataLiist } from '../../../config/masterData';
-import { checkFinalUser, createCosting, deleteDraftCosting, getBriefCostingById, storePartNumber } from '../../costing/actions/Costing';
+import { checkFinalUser, createCosting, deleteDraftCosting, getBriefCostingById } from '../../costing/actions/Costing';
 import ApprovalDrawer from './ApprovalDrawer';
 import TooltipCustom from '../../common/Tooltip'
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';

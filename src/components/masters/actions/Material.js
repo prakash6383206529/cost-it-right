@@ -998,18 +998,6 @@ export function getVendorListByVendorType(costingTypeId, vendorName, callback) {
 }
 
 /**
- * @method getVendorWithVendorCodeSelectList
- * @description GET VBC VENDOR WITH VENDOR CODE SELECTLIST
- */
-export function getVendorWithVendorCodeSelectList(costingTypeId, vendorName, callback) {
-    return axios.get(`${API.getVendorWithVendorCodeSelectList}?costingTypeId=${costingTypeId}&vendorName=${vendorName}`, config()).catch(error => {
-        apiErrors(error);
-        callback(error);
-        return Promise.reject(error)
-    });
-}
-
-/**
  * @method getAllRMDataList
  * @description Used to get RM Domestic Datalist
  */

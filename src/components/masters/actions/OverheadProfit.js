@@ -449,14 +449,6 @@ export function fetchModelTypeAPI(modelTypeHeading, callback) {
 }
 
 /**
- * @method getVendorWithVendorCodeSelectList
- * @description GET VENDOR WITH VENDOR CODE SELECTLIST
- */
-export function getVendorWithVendorCodeSelectList(vendorName, callback) {
-    return axios.get(`${API.getVendorWithVendorCodeSelectList}?vendorName=${vendorName}`, config());
-}
-
-/**
  * @method getVendorFilterByModelTypeSelectList
  * @description GET VENDOR BY MODELTYPE IN FILTER IN OVERHEAD
  */
