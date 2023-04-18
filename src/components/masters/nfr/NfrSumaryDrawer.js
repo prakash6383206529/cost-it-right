@@ -1,5 +1,5 @@
 import { Drawer } from "@material-ui/core";
-import React from "react";
+import React, { useEffect } from "react";
 import { Col, Row, Table } from "reactstrap";
 import LoaderCustom from "../../common/LoaderCustom";
 import { useState } from "react";
@@ -8,15 +8,45 @@ import { Fragment } from "react";
 import ApprovalDrawer from "./ApprovalDrawer";
 import NoContentFound from "../../common/NoContentFound";
 import { EMPTY_DATA } from "../../../config/constants";
+import { useDispatch } from "react-redux";
+import { getNFRApprovalSummary } from "./actions/nfr";
+import { loggedInUserId } from "../../../helper";
+import { costingTypeIdToApprovalTypeIdFunction } from "../../common/CommonFunctions";
+import { checkFinalUser } from "../../costing/actions/Costing";
 
 
 function NfrSummaryDrawer(props) {
-
+    const { rowData } = props
     const [loader, setLoader] = useState(true)
     const [approvalLevelStep, setApprovalLevelStep] = useState([])
     const [tableData, setTableData] = useState([])
     const [approvalDrawer, setApprovalDrawer] = useState(false)
     const [rejectDrawer, setRejectDrawer] = useState(false)
+    const [nfrData, setNFRData] = useState({})
+    const [finalLevelUser, setFinalLevelUser] = useState(true)
+    const dispatch = useDispatch()
+
+    useEffect(() => {
+        dispatch(getNFRApprovalSummary(rowData?.NfrGroupId, loggedInUserId(), (res) => {
+
+            if (res?.data?.Result === true) {
+                setNFRData(res?.data?.Data)
+            }
+
+            // let obj = {
+            //     DepartmentId: DepartmentId,
+            //     UserId: loggedInUserId(),
+            //     TechnologyId: technologyId,
+            //     Mode: 'costing',
+            //     approvalTypeId: costingTypeIdToApprovalTypeIdFunction(CostingTypeId)
+            // }
+            // dispatch(checkFinalUser(obj, res => {
+            //     if (res && res.data && res.data.Result) {
+            //         setFinalLevelUser(res.data.Data.IsFinalApprover)
+            //     }
+            // }))
+        }))
+    }, [])
 
     const toggleDrawer = (event, type = 'cancel') => {
         if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
@@ -25,9 +55,13 @@ function NfrSummaryDrawer(props) {
         props.closeDrawer('', type)
     };
 
-    const closeDrawer = () => {
-        setApprovalDrawer(false)
-        setRejectDrawer(false)
+    const closeDrawer = (type) => {
+        if (type === "submit") {
+            props.closeDrawer('', "submit")
+        } else {
+            setApprovalDrawer(false)
+            setRejectDrawer(false)
+        }
     }
 
     return (
@@ -38,7 +72,7 @@ function NfrSummaryDrawer(props) {
                         <Row className="drawer-heading sticky-top-0">
                             <Col>
                                 <div className={'header-wrapper left'}>
-                                    <h3>{`NFR Summary (Token No.${props.rowData.TokenNo})`}</h3>
+                                    <h3>{`NFR Summary (Token No.${nfrData?.ApprovalToken})`}</h3>
                                 </div>
                                 <div
                                     onClick={(e) => toggleDrawer(e)}
@@ -49,7 +83,7 @@ function NfrSummaryDrawer(props) {
                         {/* {loader && <LoaderCustom />} */}
                         <Row className="mx-0 mb-3">
                             <Col>
-                                <ApprovalWorkFlow approvalLevelStep={approvalLevelStep} approvalNo={props.rowData.NfrNo} />
+                                {nfrData?.ApprovalSteps && <ApprovalWorkFlow approvalLevelStep={nfrData?.ApprovalSteps} approvalNo={nfrData?.ApprovalToken} />}
                             </Col>
                             <Col md="12">
                                 <Table className='table cr-brdr-main'>
@@ -63,17 +97,17 @@ function NfrSummaryDrawer(props) {
                                     </thead>
                                     <tbody>
 
-                                        {tableData && tableData.map((data, index) => {
+                                        {nfrData?.CostingData && nfrData?.CostingData?.map((data, index) => {
                                             return (
                                                 <tr key={index}>
-                                                    <td>{data.vendor}</td>
-                                                    <td>{data.plant}</td>
-                                                    <td>{data.costing}</td>
-                                                    <td>{data.netPO}</td>
+                                                    <td>{`${data.VendorName} (${data.VendorCode})`}</td>
+                                                    <td>{`${data.PlantName} (${data.PlantCode})`}</td>
+                                                    <td>{data.CostingNumber}</td>
+                                                    <td>{data.NetPOPrice}</td>
                                                 </tr>
                                             )
                                         })}
-                                        {tableData && tableData.length === 0 && <tr>
+                                        {nfrData?.CostingData && nfrData?.CostingData?.length === 0 && <tr>
                                             <td colSpan={4}><NoContentFound title={EMPTY_DATA} /></td>
                                         </tr>}
                                     </tbody>
@@ -105,7 +139,7 @@ function NfrSummaryDrawer(props) {
                     </div>
                 </div>
             </Drawer >
-            {approvalDrawer && <ApprovalDrawer isOpen={approvalDrawer} anchor="right" closeDrawer={closeDrawer} hideTable={true} />}
+            {approvalDrawer && <ApprovalDrawer isOpen={approvalDrawer} anchor="right" closeDrawer={closeDrawer} hideTable={true} IsFinalLevel={finalLevelUser} nfrData={nfrData} type='Approve' />}
             {rejectDrawer && <ApprovalDrawer isOpen={rejectDrawer} anchor="right" closeDrawer={closeDrawer} hideTable={true} rejectDrawer={true} />}
         </div >
     );
