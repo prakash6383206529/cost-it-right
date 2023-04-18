@@ -42,6 +42,7 @@ function NfrPartsListing(props) {
     const [attachment, setAttachment] = useState(false);
     const [viewAttachment, setViewAttachment] = useState([])
     const [nfrIdsList, setNFRIdsList] = useState({})
+    const [isViewMode, setIsViewMode] = useState(false)
     const { topAndLeftMenuData } = useSelector(state => state.auth);
 
     useEffect(() => {
@@ -90,6 +91,7 @@ function NfrPartsListing(props) {
 
     }
     const editPartHandler = (value, rowData, viewMode) => {
+        setIsViewMode(viewMode)
         setEstimationData(rowData)
         setEditPart(true)
         setNFRIdsList({ NfrMasterId: rowData?.NfrMasterId, NfrPartWiseDetailId: rowData?.NfrPartWiseDetailId })
@@ -334,7 +336,7 @@ function NfrPartsListing(props) {
                     />
                 )
             }
-            {editPart && <AddNfr showAddNfr={editPart} nfrData={estimationData} close={close} nfrIdsList={nfrIdsList} />}
+            {editPart && <AddNfr showAddNfr={editPart} nfrData={estimationData} close={close} nfrIdsList={nfrIdsList} isViewEstimation={isViewMode} />}
 
         </>
     );
