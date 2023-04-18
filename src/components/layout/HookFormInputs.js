@@ -39,7 +39,7 @@ export const TextFieldHooks = (input) => {
 const errorFunc = (errors, field) => {
   switch (errors?.type) {
     case "maxLength":
-      return <div className="text-help">{field?.rules?.maxLength?.message}</div>
+      return <div className="text-help">{field?.rules?.maxLength?.message ?? `Maximum length is ${field?.rules?.maxLength}`}</div>
 
     case "required":
       return <div className="text-help">This field is required</div>
