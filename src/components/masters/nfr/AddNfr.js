@@ -37,7 +37,7 @@ import ApprovalDrawer from './ApprovalDrawer';
 //         ], netPrice: 10
 //     }]
 function AddNfr(props) {
-    const { nfrData, nfrIdsList } = props;
+    const { nfrData, nfrIdsList, isViewEstimation } = props;
     const dispatch = useDispatch();
     const [rowData, setRowData] = useState([])
     const [vendorName, setVendorname] = useState([])
@@ -263,7 +263,7 @@ function AddNfr(props) {
         const resultInput = inputValue.slice(0, searchCount)
         if (inputValue?.length >= searchCount && vendor !== resultInput) {
             let res
-            res = await getVendorWithVendorCodeSelectList(VBCTypeId, resultInput)
+            res = await getVendorWithVendorCodeSelectList(resultInput)
             setVendor(resultInput)
             let vendorDataAPI = res?.data?.SelectList
             if (inputValue) {
@@ -459,13 +459,13 @@ function AddNfr(props) {
                             rules={{ required: false }}
                             register={register}
                             isMulti={true}
-                            defaultValue={vendorName.length !== 0 ? vendorName : ""}
+                            defaultValue={vendorName?.length !== 0 ? vendorName : ""}
                             // options={renderListing("Vendor")}
                             asyncOptions={vendorFilterList}
                             mandatory={true}
                             handleChange={handleVendorChange}
                             errors={errors.vendorName}
-                        // disabled={customer.length === 0 ? true : false}
+                            disabled={isViewEstimation ? true : false}
                         // isLoading={plantLoaderObj}
                         />
                     </Col>
@@ -476,6 +476,7 @@ function AddNfr(props) {
                                 type="button"
                                 className={"user-btn  pull-left mt-1"}
                                 onClick={updateRow}
+                                disabled={isViewEstimation}
                             >
                                 <div className={"plus"}></div> UPDATE
                             </button> :
@@ -483,6 +484,7 @@ function AddNfr(props) {
                                 type="button"
                                 className={"user-btn  pull-left mt-1"}
                                 onClick={addRow}
+                                disabled={isViewEstimation}
                             >
                                 <div className={"plus"}></div> ADD
                                 {/* {isEditMode ? "UPDATE" : 'ADD'} */}
@@ -491,6 +493,7 @@ function AddNfr(props) {
                             type="button"
                             className={"reset-btn pull-left mt-1 ml5"}
                             onClick={() => { resetData(false) }}
+                            disabled={isViewEstimation}
                         >
                             Reset
                         </button>

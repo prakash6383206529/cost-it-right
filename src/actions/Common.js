@@ -1370,8 +1370,8 @@ export function getPlantSelectListByType(TYPE, callback) {
   };
 }
 
-export function getVendorWithVendorCodeSelectList(costingTypeId, vendorName, callback) {
-  return axios.get(`${API.getVendorWithVendorCodeSelectList}?costingTypeId=${costingTypeId}&vendorName=${vendorName}`, config()).catch(error => {
+export function getVendorWithVendorCodeSelectList(vendorName, callback) {
+  return axios.get(`${API.getVendorWithVendorCodeSelectList}?vendorName=${vendorName}`, config()).catch(error => {
     apiErrors(error);
     callback(error);
     return Promise.reject(error)
