@@ -253,6 +253,7 @@ function AddNfr(props) {
                 setpartInfoStepTwo(partInfoStepTwo)
                 setcostingData({ costingId: tempData?.CostingId, NFRTypeId })
                 setIsAddDetails(true)
+                setIsCostingViewMode(false)
             }
 
         }))
@@ -606,11 +607,11 @@ function AddNfr(props) {
                                             <td>{dataItem?.SelectedCostingVersion?.Price}</td>
                                             <td> <div className='action-btn-wrapper pr-2'>
                                                 {!isViewEstimation && <button className="Add-file" type={"button"} title={"Add Costing"} onClick={() => addDetails(dataItem, indexOuter, indexInside)} />}
-                                                {!item?.IsNewCosting && item?.Status !== '' && getValues(`${indexInside}.CostingVersion`) && (<button className="View" type={"button"} title={"View Costing"} onClick={() => viewDetails(indexInside)} />)}
-                                                {!isViewEstimation && !item?.IsNewCosting && getValues(`${indexInside}.CostingVersion`) && (<button className="Edit" type={"button"} title={"Edit Costing"} onClick={() => editCosting(indexInside)} />)}
-                                                {!isViewEstimation && !item?.IsNewCosting && getValues(`${indexInside}.CostingVersion`) && (<button className="Copy All" title={"Copy Costing"} type={"button"} onClick={() => copyCosting(indexInside)} />)}
-                                                {!isViewEstimation && !item?.IsNewCosting && getValues(`${indexInside}.CostingVersion`) && (<button className="Delete All" title={"Delete Costing"} type={"button"} onClick={() => deleteItem(item, indexInside)} />)}
-                                                {!isViewEstimation && item?.CostingOptions?.length === 0 && getValues(`${indexInside}.CostingVersion`) && <button title='Discard' className="CancelIcon" type={'button'} onClick={() => deleteRowItem(indexInside)} />}
+                                                {!item?.IsNewCosting && item?.Status !== '' && (<button className="View" type={"button"} title={"View Costing"} onClick={() => viewDetails(indexInside)} />)}
+                                                {!isViewEstimation && !item?.IsNewCosting && (<button className="Edit" type={"button"} title={"Edit Costing"} onClick={() => editCosting(indexInside)} />)}
+                                                {!isViewEstimation && !item?.IsNewCosting && (<button className="Copy All" title={"Copy Costing"} type={"button"} onClick={() => copyCosting(indexInside)} />)}
+                                                {!isViewEstimation && !item?.IsNewCosting && (<button className="Delete All" title={"Delete Costing"} type={"button"} onClick={() => deleteItem(item, indexInside)} />)}
+                                                {!isViewEstimation && item?.CostingOptions?.length === 0 && <button title='Discard' className="CancelIcon" type={'button'} onClick={() => deleteRowItem(indexInside)} />}
                                             </div></td>
                                             {indexInside === 0 && (
                                                 <td rowSpan={item?.data.length} className="table-record">
