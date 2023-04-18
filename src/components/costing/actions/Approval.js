@@ -373,19 +373,19 @@ export function getApprovalSummary(
       `${API.getApprovalSummaryByApprovalNo}/${approvalNumber}/${approvalProcessId}/${loggedInUserId}`, config())
     request
       .then((response) => {
-        if (response.data.Result) {
+        if (response?.data?.Result) {
           dispatch({
             type: GET_APPROVAL_SUMMARY,
-            payload: response.data.Data,
+            payload: response?.data?.Data,
           })
           callback(response)
         } else {
           Toaster.error(MESSAGES.SOME_ERROR)
         }
-      })
-      .catch((error) => {
+      }).catch((error) => {
         dispatch({ type: API_FAILURE })
         apiErrors(error)
+        callback(error)
       })
   }
 }
