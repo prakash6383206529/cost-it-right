@@ -115,12 +115,12 @@ class BulkUpload extends Component {
         this.props.onCancel();
     }
 
-    toggleDrawer = (event) => {
+    toggleDrawer = (event, type = 'cancel') => {
         if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
             return;
         }
 
-        this.props.closeDrawer('')
+        this.props.closeDrawer('', type);
     };
 
     /**
@@ -133,10 +133,11 @@ class BulkUpload extends Component {
         this.setState({
             unitTypes: [],
         })
-        this.toggleDrawer('')
+        this.toggleDrawer('', 'cancel')
     }
     cancelHandler = () => {
-        this.setState({ showPopup: true })
+        this.cancel()
+        // this.setState({ showPopup: true })
     }
     onPopupConfirm = () => {
         this.cancel('cancel')
@@ -412,7 +413,7 @@ class BulkUpload extends Component {
             }
 
         }
-        this.toggleDrawer('')
+        this.toggleDrawer('', 'save')
     }
 
     responseHandlerRFQ = (res) => {
@@ -429,7 +430,7 @@ class BulkUpload extends Component {
                 })
             }
         }
-        this.toggleDrawer('')
+        this.toggleDrawer('', 'save')
     }
 
     /**
@@ -712,7 +713,7 @@ class BulkUpload extends Component {
                                             <h3>{isEditFlag ? '' : `${messageLabel} Bulk Upload `}</h3>
                                         </div>
                                         <div
-                                            onClick={(e) => this.toggleDrawer(e)}
+                                            onClick={(e) => this.toggleDrawer(e, 'cancel')}
                                             className={'close-button right'}>
                                         </div>
                                     </Col>
