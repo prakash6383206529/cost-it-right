@@ -1,6 +1,6 @@
 import React, { useState } from "react"
 import { Nav, NavItem, NavLink, TabContent, TabPane } from "reactstrap";
-import NFRApprovalListing from "./NFRApprovalLisitng";
+import NFRApprovalListing from "./NFRApprovalListing";
 import NfrListing from "./NfrListing";
 import classnames from 'classnames';
 
@@ -45,7 +45,7 @@ function NfrTabs(props) {
                         </TabPane>
 
                         <TabPane tabId="2">
-                            <NFRApprovalListing />
+                            <NFRApprovalListing activeTab={activeTab} />
                         </TabPane>
                     </TabContent>
                 </div>

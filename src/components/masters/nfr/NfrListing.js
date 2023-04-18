@@ -107,7 +107,7 @@ function NfrListing(props) {
             rowData: rowData,
             Id: Id
         }
-        console.log(rowData, "rowData")
+
         setSelectedPartData(rowData)
         setNfrId(rowData?.NfrNumber)
         setIsEdit(true)
@@ -289,9 +289,9 @@ function NfrListing(props) {
                                             </button>
                                         </>
                                     }
-                                </Col >
+                                </Col>
 
-                            </Row >
+                            </Row>
                             <Row>
                                 <Col>
                                     <div className={`ag-grid-wrapper ${(props?.isDataInMaster && noData) ? 'master-approval-overlay' : ''} ${(rowData && rowData?.length <= 0) || noData ? 'overlay-contain' : ''}`}>
@@ -329,10 +329,10 @@ function NfrListing(props) {
                                                 {<AgGridColumn field="Status" width={180} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
                                             </AgGridReact>
                                             <PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} globalTake={10} />
-                                        </div >
-                                    </div >
-                                </Col >
-                            </Row >
+                                        </div>
+                                    </div>
+                                </Col>
+                            </Row>
 
                         </>))
                     }
@@ -345,8 +345,7 @@ function NfrListing(props) {
                 </div >
             }
 
-            {
-                addRfq &&
+            {addRfq &&
 
                 <NfrPartsListing
                     data={selectedPartData}
