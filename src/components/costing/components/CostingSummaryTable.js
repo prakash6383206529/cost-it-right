@@ -217,7 +217,7 @@ const CostingSummaryTable = (props) => {
         case 'TC':
           dataArray.push(checkForDecimalAndNull(tempObj.totalToolCost, initialConfiguration.NoOfDecimalForPrice))
           break;
-        case 'OTHER DIS':
+        case 'HUNDI/DIS':
           dataArray.push(checkForDecimalAndNull(tempObj.otherDiscountCost, initialConfiguration.NoOfDecimalForPrice))
           break;
         case 'ANY OTHER COST':
@@ -2019,8 +2019,6 @@ const CostingSummaryTable = (props) => {
                           <th>Net PO Price ({getConfigurationKey().BaseCurrency}){simulationDrawer && '(Old)'}</th>
                           {viewCostingData &&
                             viewCostingData?.map((data, index) => {
-                              console.log('data: ', data);
-
                               return <td className={props?.isRfqCosting && data.status === APPROVED ? 'finalize-cost' : ''}>
                                 {data?.CostingHeading === VARIANCE && (isApproval ? viewCostingData?.length > 0 && viewCostingData[0]?.nPOPrice > viewCostingData[1]?.nPOPrice ? <span className='positive-sign'>+</span> : '' : '')}
                                 <span title={data?.nPOPrice}><span className='currency-symbol'>{getCurrencySymbol(getConfigurationKey().BaseCurrency)}</span>{checkForDecimalAndNull(data?.nPOPrice, initialConfiguration.NoOfDecimalForPrice)}</span>
