@@ -347,7 +347,7 @@ function ApprovalSummary(props) {
                       {(approvalDetails.CostingTypeId === ZBCTypeId || approvalDetails.CostingTypeId === CBCTypeId) && <th>  {`Plant (Code):`} </th>}
 
                       <th>{`SOB (%):`}</th>
-                      <th>{`Basic Price:`}</th>
+                      {initialConfiguration?.IsBasicRateAndCostingConditionVisible && <th>{`Basic Price:`}</th>}
                       {/* <th>{`ECN Ref No`}</th> */}
                       <th>{`Existing Price:`}</th>
                       <th>{`Revised Price:`}</th>
@@ -395,9 +395,9 @@ function ApprovalSummary(props) {
                       <td>
                         {approvalDetails.ShareOfBusiness !== null ? approvalDetails.ShareOfBusiness : '-'}
                       </td>
-                      <td>
+                      {initialConfiguration?.IsBasicRateAndCostingConditionVisible && <td>
                         {approvalDetails.BasicRate ? approvalDetails.BasicRate : '-'}
-                      </td>
+                      </td>}
                       {/* <td>
                           {approvalDetails.ECNNumber !== null ? approvalDetails.ECNNumber : '-'}
                         </td> */}

@@ -19,7 +19,8 @@ class Association extends Component {
             RMGrade: [],
             material: [],
             setDisable: false,
-            showPopup: false
+            showPopup: false,
+            isDropDownChanged: false,
         }
 
     }
@@ -73,7 +74,7 @@ class Association extends Component {
 
         if (newValue && newValue !== '') {
 
-            this.setState({ RawMaterial: newValue, RMGrade: [], }, () => {
+            this.setState({ RawMaterial: newValue, RMGrade: [], isDropDownChanged: true }, () => {
                 const { RawMaterial } = this.state;
 
                 this.props.getRMGradeSelectListByRawMaterial(RawMaterial.value, res => { });
@@ -94,7 +95,7 @@ class Association extends Component {
 
     handleMaterialChange = (newValue) => {
         if (newValue && newValue !== '') {
-            this.setState({ material: newValue })
+            this.setState({ material: newValue, isDropDownChanged: true })
         } else {
             this.setState({ material: [] })
         }
@@ -129,7 +130,11 @@ class Association extends Component {
         this.props.closeDrawer('')
     };
     cancel = () => {
-        this.setState({ showPopup: true })
+        if (this.state.isDropDownChanged) {
+            this.setState({ showPopup: true })
+        } else {
+            this.props.closeDrawer('')
+        }
     }
     onPopupConfirm = () => {
         this.props.closeDrawer('')

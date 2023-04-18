@@ -60,6 +60,8 @@ function AddNpvCost(props) {
 
     const handleNpvChange = (value) => {
         setDisableAllFields(false)
+        setDisableTotalCost(false)
+        setDisableNpvPercentage(false)
 
         if (value.label === 'Tool Investment') {
             if (!IsEnterToolCostManually) {
@@ -141,6 +143,7 @@ function AddNpvCost(props) {
 
             // Disable the "NPV Percentage" field since it will be calculated automatically.
             setDisableNpvPercentage(true)
+            setTotalCost(e.target.value)
 
             // If there is also a value in the "Quantity" field, calculate the NPV Percentage based on the new total cost.
             if (getValues('Quantity')) {
@@ -161,8 +164,12 @@ function AddNpvCost(props) {
     // This function is called when the user clicks a button to add data to a table.
     const addData = () => {
 
+        if (errors.NpvPercentage) {
+            return false
+        }
+
         // Get the current data in the table and set some initial variables.
-        let table = tableData
+        let table = [...tableData]
         let indexOfNpvType
         let type = getValues('TypeOfNpv') ? getValues('TypeOfNpv').label : ''
         let alreadyDataExist = false
@@ -216,6 +223,7 @@ function AddNpvCost(props) {
         setValue('Total', '')
         setTotalCost('')
         setDisableAllFields(true)
+        setIsEditMode(false)
     }
 
     // This function takes in two parameters - the index of the data being edited or deleted, and the operation to perform (either 'delete' or 'edit').
@@ -239,13 +247,15 @@ function AddNpvCost(props) {
 
             // Retrieve the data at the specified index from the tableData array, and set the values of various form fields based on the data.
             let Data = tableData[indexValue]
-            setDisableAllFields(false)
             setValue('TypeOfNpv', { label: Data.NpvType, value: Data.NpvType })
             setValue('NpvPercentage', Data.NpvPercentage)
             setValue('Quantity', Data.NpvQuantity)
             setValue('Total', checkForDecimalAndNull(Data.NpvCost, initialConfiguration.NoOfDecimalForPrice))
             setTotalCost(Data.NpvCost)
-            setDisableTotalCost(true)
+            setDisableTotalCost(false)
+            setDisableAllFields(false)
+            setDisableNpvPercentage(false)
+            setDisableQuantity(false)
         }
     }
 
@@ -378,7 +388,7 @@ function AddNpvCost(props) {
                                     </Col>
                                 </Row>}
 
-                                {costingSummary &&
+                                {initialConfiguration?.IsShowNpvCost && costingSummary &&
                                     <>
                                         <Col md="12">
                                             <HeaderTitle className="border-bottom"
@@ -388,8 +398,8 @@ function AddNpvCost(props) {
                                         </Col>
                                     </>
                                 }
-                                <NpvCost showAddButton={false} tableData={tableData} hideAction={costingSummary} editData={editData} />
-                                {costingSummary &&
+                                {initialConfiguration?.IsShowNpvCost && <NpvCost showAddButton={false} tableData={tableData} hideAction={costingSummary} editData={editData} />}
+                                {initialConfiguration?.IsBasicRateAndCostingConditionVisible && costingSummary &&
                                     <>
                                         <Col md="12" className={'mt25'}>
                                             <HeaderTitle className="border-bottom"
@@ -412,7 +422,7 @@ function AddNpvCost(props) {
                                     <button
                                         type={'button'}
                                         className="submit-button save-btn"
-                                        onClick={() => { props.closeDrawer('Close', tableData) }} >
+                                        onClick={() => { props.closeDrawer('save', tableData) }} >
                                         <div className={"save-icon"}></div>
                                         {'Save'}
                                     </button>
@@ -422,7 +432,7 @@ function AddNpvCost(props) {
                     </Container>
                 </div>
             </Drawer> : <>
-                {tableData.length !== 0 && <>
+                {initialConfiguration?.IsShowNpvCost && tableData && tableData.length !== 0 && <>
                     <Col md="12">
                         <HeaderTitle className="border-bottom"
                             title={'NPV Data'}
@@ -431,7 +441,7 @@ function AddNpvCost(props) {
                     </Col>
                     <NpvCost showAddButton={false} tableData={tableData} hideAction={costingSummary} editData={editData} />
                 </>}
-                {conditionTableData.length !== 0 && <> <Col md="12" className={'mt25'}>
+                {initialConfiguration?.IsBasicRateAndCostingConditionVisible && conditionTableData && conditionTableData.length !== 0 && <> <Col md="12" className={'mt25'}>
                     <HeaderTitle className="border-bottom"
                         title={'Costing Condition'}
                         customClass={'underLine-title'}

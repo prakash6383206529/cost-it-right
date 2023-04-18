@@ -2391,7 +2391,7 @@ input:disabled {
   min-height: calc(100vh - 263px);
 
   &.mb-3.sm-edit-page {
-    min-height: calc(100vh - 374px);
+    min-height: calc(100vh - 332px);
   }
 }
 
@@ -4484,12 +4484,6 @@ body {
     height: 32px;
     padding: 6px !important;
     min-width: 50px;
-  }
-
-  margin: -43px 110px 10px 0;
-
-  @media screen and (max-width: $max1367) {
-    margin: -43px 80px 10px 0;
   }
 
   &.rm-row {
@@ -8964,4 +8958,12 @@ table.group-process-table {
 
 .table-footer {
   background-color: $tableFooterBackground;
+}
+
+div[col-id="ApprovalNumber"] {
+  .ag-cell-wrapper {
+    .ag-selection-checkbox.ag-invisible {
+      display: block !important;
+    }
+  }
 }

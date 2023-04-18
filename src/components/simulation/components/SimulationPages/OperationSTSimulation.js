@@ -177,7 +177,7 @@ function OperationSTSimulation(props) {
     const revisedBasicRateHeader = (props) => {
         return (
             <div className='ag-header-cell-label'>
-                <span className='ag-header-cell-text'>Revised<i className={`fa fa-info-circle tooltip_custom_right tooltip-icon mb-n3 ml-4 mt2 `} id={"basicRate-tooltip"}></i> </span>
+                <span className='ag-header-cell-text'>Revised{!isImpactedMaster && <i className={`fa fa-info-circle tooltip_custom_right tooltip-icon mb-n3 ml-4 mt2 `} id={"basicRate-tooltip"}></i>}</span>
             </div>
         );
     };
@@ -344,6 +344,7 @@ function OperationSTSimulation(props) {
                 setShowVerifyPage(true)
             }
         }))
+        setShowTooltip(false)
     }, 500);
     const resetState = () => {
         gridApi?.setQuickFilter('');
@@ -360,7 +361,7 @@ function OperationSTSimulation(props) {
                 {
                     (!showverifyPage && !showMainSimulation) &&
                     <Fragment>
-                        {showTooltip && <Tooltip className="rfq-tooltip-left" placement={"top"} isOpen={basicRateviewTooltip} toggle={basicRatetooltipToggle} target={"basicRate-tooltip"} >{"To add revised net rate please double click on the field."}</Tooltip>}
+                        {!isImpactedMaster && showTooltip && <Tooltip className="rfq-tooltip-left" placement={"top"} isOpen={basicRateviewTooltip} toggle={basicRatetooltipToggle} target={"basicRate-tooltip"} >{"To add revised net rate please double click on the field."}</Tooltip>}
                         <form>
 
                             <Row>
@@ -373,62 +374,64 @@ function OperationSTSimulation(props) {
                                                     <div className="refresh mr-0"></div>
                                                 </button>
                                             </div>
-                                            {!isImpactedMaster && <div className={`d-flex align-items-center simulation-label-container`}>
-                                                <div className='d-flex pl-3'>
-                                                    <label>Technology: </label>
-                                                    <p className='technology ml-1' title={list[0].Technology}>{list[0].Technology}</p>
-                                                </div>
-                                                {list[0].CostingTypeId !== CBCTypeId && <div className='d-flex pl-3'>
-                                                    <label className='mr-1'>Vendor (Code):</label>
-                                                    <p title={list[0].VendorName}>{list[0].VendorName ? list[0].VendorName : list[0]['Vendor (Code)']}</p>
 
-                                                </div>}
-                                                <button type="button" className={"apply"} onClick={cancel} disabled={isDisable}> <div className={'back-icon'}></div>Back</button>
-                                            </div>}
-                                        </div>
-                                        {
-                                            isbulkUpload &&
+
                                             <div className='d-flex justify-content-end bulk-upload-row'>
-                                                <div className="d-flex align-items-center">
-                                                    <label>Rows with changes:</label>
-                                                    <TextFieldHookForm
-                                                        label=""
-                                                        name={'NoOfCorrectRow'}
-                                                        Controller={Controller}
-                                                        title={titleObj.rowWithChanges}
-                                                        control={control}
-                                                        register={register}
-                                                        rules={{ required: false }}
-                                                        mandatory={false}
-                                                        handleChange={() => { }}
-                                                        defaultValue={''}
-                                                        className=""
-                                                        customClassName={'withBorder mn-height-auto hide-label mb-0'}
-                                                        errors={errors.NoOfCorrectRow}
-                                                        disabled={true}
-                                                    />
-                                                </div>
-                                                <div className="d-flex align-items-center">
-                                                    <label>Rows without changes:</label>
-                                                    <TextFieldHookForm
-                                                        label=""
-                                                        name={'NoOfRowsWithoutChange'}
-                                                        Controller={Controller}
-                                                        title={titleObj.rowWithoutChanges}
-                                                        control={control}
-                                                        register={register}
-                                                        rules={{ required: false }}
-                                                        mandatory={false}
-                                                        handleChange={() => { }}
-                                                        defaultValue={''}
-                                                        className=""
-                                                        customClassName={'withBorder mn-height-auto hide-label mb-0'}
-                                                        errors={errors.NoOfRowsWithoutChange}
-                                                        disabled={true}
-                                                    />
-                                                </div>
+                                                {
+                                                    isbulkUpload && <>
+                                                        <div className="d-flex align-items-center">
+                                                            <label>Rows with changes:</label>
+                                                            <TextFieldHookForm
+                                                                label=""
+                                                                name={'NoOfCorrectRow'}
+                                                                Controller={Controller}
+                                                                title={titleObj.rowWithChanges}
+                                                                control={control}
+                                                                register={register}
+                                                                rules={{ required: false }}
+                                                                mandatory={false}
+                                                                handleChange={() => { }}
+                                                                defaultValue={''}
+                                                                className=""
+                                                                customClassName={'withBorder mn-height-auto hide-label mb-0'}
+                                                                errors={errors.NoOfCorrectRow}
+                                                                disabled={true}
+                                                            />
+                                                        </div>
+                                                        <div className="d-flex align-items-center">
+                                                            <label>Rows without changes:</label>
+                                                            <TextFieldHookForm
+                                                                label=""
+                                                                name={'NoOfRowsWithoutChange'}
+                                                                Controller={Controller}
+                                                                title={titleObj.rowWithoutChanges}
+                                                                control={control}
+                                                                register={register}
+                                                                rules={{ required: false }}
+                                                                mandatory={false}
+                                                                handleChange={() => { }}
+                                                                defaultValue={''}
+                                                                className=""
+                                                                customClassName={'withBorder mn-height-auto hide-label mb-0'}
+                                                                errors={errors.NoOfRowsWithoutChange}
+                                                                disabled={true}
+                                                            />
+                                                        </div>
+                                                    </>}
+                                                {!isImpactedMaster && <div className={`d-flex align-items-center simulation-label-container`}>
+                                                    <div className='d-flex pl-3'>
+                                                        <label>Technology: </label>
+                                                        <p className='technology ml-1' title={list[0].Technology}>{list[0].Technology}</p>
+                                                    </div>
+                                                    {list[0].CostingTypeId !== CBCTypeId && <div className='d-flex pl-3'>
+                                                        <label className='mr-1'>Vendor (Code):</label>
+                                                        <p title={list[0].VendorName} className='mr-2'>{list[0].VendorName ? list[0].VendorName : list[0]['Vendor (Code)']}</p>
+
+                                                    </div>}
+                                                    <button type="button" className={"apply"} onClick={cancel} disabled={isDisable}> <div className={'back-icon'}></div>Back</button>
+                                                </div>}
                                             </div>
-                                        }
+                                        </div>
                                         <div className="ag-theme-material p-relative" style={{ width: '100%' }}>
                                             {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found simulation-lisitng" />}
                                             {list && <AgGridReact
@@ -450,6 +453,7 @@ function OperationSTSimulation(props) {
                                                 }}
                                                 frameworkComponents={frameworkComponents}
                                                 stopEditingWhenCellsLoseFocus={true}
+                                                suppressColumnVirtualisation={true}
                                                 rowSelection={'multiple'}
                                                 onFilterModified={onFloatingFilterChanged}
                                             // frameworkComponents={frameworkComponents}

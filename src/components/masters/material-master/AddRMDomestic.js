@@ -45,6 +45,26 @@ import { getUsersMasterLevelAPI } from '../../../actions/auth/AuthActions';
 
 const selector = formValueSelector('AddRMDomestic')
 
+const allInputFieldsName = ['TechnologyId',
+  'RawMaterialId',
+  'RawMaterialGradeId',
+  'RawMaterialSpecificationId',
+  'CategoryId',
+  'Code',
+  'SourceSupplierPlantId',
+  'DestinationPlant',
+  "UnitOfMeasurementId",
+  "cutOffPrice",
+  "BasicRate",
+  "ScrapRate",
+  "ForgingScrap",
+  "MachiningScrap",
+  "CircleScrapCost",
+  "JaliScrapCost",
+  "FrieghtCharge",
+  "EffectiveDate",
+  "clientName"];
+
 class AddRMDomestic extends Component {
   constructor(props) {
     super(props)
@@ -119,7 +139,8 @@ class AddRMDomestic extends Component {
       noApprovalCycle: false,
       showForgingMachiningScrapCost: false,
       showExtraCost: false,
-      vendorFilterList: []
+      vendorFilterList: [],
+      isDropDownChanged: false,
     }
   }
   /**
@@ -260,7 +281,7 @@ class AddRMDomestic extends Component {
    * @description  used to handle category selection
    */
   handleCategoryChange = (newValue, actionMeta) => {
-    this.setState({ Category: newValue })
+    this.setState({ Category: newValue, isDropDownChanged: true })
   }
 
 
@@ -276,7 +297,7 @@ class AddRMDomestic extends Component {
     } else {
       this.setState({ Technology: newValue, showForgingMachiningScrapCost: false, showExtraCost: false, nameDrawer: true })
     }
-    this.setState({ RawMaterial: [], nameDrawer: false })
+    this.setState({ RawMaterial: [], nameDrawer: false, isDropDownChanged: true })
   }
   /**
   * @method handleClient
@@ -313,7 +334,7 @@ class AddRMDomestic extends Component {
   handleVendorName = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
       this.setState(
-        { vendorName: newValue, isVendorNameNotSelected: false, vendorLocation: [] },
+        { vendorName: newValue, isVendorNameNotSelected: false, vendorLocation: [], isDropDownChanged: true },
         () => {
           const { vendorName } = this.state
           const result =
@@ -338,7 +359,7 @@ class AddRMDomestic extends Component {
    */
   handleVendorLocation = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
-      this.setState({ vendorLocation: newValue })
+      this.setState({ vendorLocation: newValue, isDropDownChanged: true })
     } else {
       this.setState({ vendorLocation: [] })
     }
@@ -374,7 +395,7 @@ class AddRMDomestic extends Component {
 
     if (newValue && newValue !== '') {
 
-      this.setState({ source: newValue, isSourceChange: true })
+      this.setState({ source: newValue, isSourceChange: true, isDropDownChanged: true })
 
     }
   }
@@ -385,7 +406,7 @@ class AddRMDomestic extends Component {
    */
   handleUOM = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
-      this.setState({ UOM: newValue })
+      this.setState({ UOM: newValue, isDropDownChanged: true })
     } else {
       this.setState({ UOM: [] })
     }
@@ -549,26 +570,7 @@ class AddRMDomestic extends Component {
    * @description Used for Vendor checked
    */
   onPressVendor = (costingHeadFlag) => {
-    const fieldsToClear = ['TechnologyId',
-      'RawMaterialId',
-      'RawMaterialGradeId',
-      'RawMaterialSpecificationId',
-      'CategoryId',
-      'Code',
-      'SourceSupplierPlantId',
-      'DestinationPlant',
-      "UnitOfMeasurementId",
-      "cutOffPrice",
-      "BasicRate",
-      "ScrapRate",
-      "ForgingScrap",
-      "MachiningScrap",
-      "CircleScrapCost",
-      "JaliScrapCost",
-      "FrieghtCharge",
-      "EffectiveDate",
-      "clientName"];
-    fieldsToClear.forEach(fieldName => {
+    allInputFieldsName.forEach(fieldName => {
       this.props.dispatch(clearFields('AddRMDomestic', false, false, fieldName));
     });
     this.setState({
@@ -891,7 +893,12 @@ class AddRMDomestic extends Component {
     this.clearForm(type)
   }
   cancelHandler = () => {
-    this.setState({ showPopup: true })
+    if (Object.keys(this.props.fieldsObj).length !== 0 || this.state.isDropDownChanged || this.state.files.length !== 0) {
+      this.setState({ showPopup: true })
+    } else {
+      this.cancel('cancel')
+    }
+
   }
   onPopupConfirm = () => {
     this.cancel('cancel')
@@ -1265,6 +1272,9 @@ class AddRMDomestic extends Component {
     const { isRMDrawerOpen, isOpenGrade, isOpenSpecification, costingTypeId, isOpenCategory, isOpenVendor, isOpenUOM, isEditFlag, isViewFlag, setDisable, noApprovalCycle } = this.state
     const filterList = async (inputValue) => {
       const { vendorFilterList } = this.state
+      if (inputValue && typeof inputValue === 'string' && inputValue.includes(' ')) {
+        inputValue = inputValue.trim();
+      }
       const resultInput = inputValue.slice(0, searchCount)
       if (inputValue?.length >= searchCount && vendorFilterList !== resultInput) {
         this.setState({ inputLoader: true })
@@ -1675,7 +1685,7 @@ class AddRMDomestic extends Component {
                               name={"cutOffPrice"}
                               type="text"
                               placeholder={isViewFlag || (isEditFlag && isRMAssociated) ? '-' : "Enter"}
-                              validate={[number, positiveAndDecimalNumber, maxLength15]}
+                              validate={[number, positiveAndDecimalNumber, maxLength15, decimalLengthsix]}
                               component={renderTextInputField}
                               required={false}
                               disabled={isViewFlag || (isEditFlag && isRMAssociated)}
@@ -2123,7 +2133,7 @@ class AddRMDomestic extends Component {
  */
 function mapStateToProps(state) {
   const { comman, material, auth, costing, client } = state
-  const fieldsObj = selector(state, 'BasicRate', 'FrieghtCharge', 'ShearingCost', 'ScrapRate', 'CircleScrapCost', 'JaliScrapCost', 'ForgingScrap', 'MachiningScrap')
+  const fieldsObj = selector(state, 'BasicRate', 'FrieghtCharge', 'ShearingCost', 'ScrapRate', 'CircleScrapCost', 'JaliScrapCost', 'ForgingScrap', 'MachiningScrap', 'cutOffPrice', 'EffectiveDate', 'Remark')
 
   const { rowMaterialList, rmGradeList, rmSpecification, plantList, supplierSelectList, filterPlantList, filterCityListBySupplier,
     cityList, technologyList, costingHead, categoryList, filterPlantListByCity, filterPlantListByCityAndSupplier, UOMSelectList,

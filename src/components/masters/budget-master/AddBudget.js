@@ -29,6 +29,7 @@ import ConditionCosting from '../../costing/components/CostingHeadCosts/Addition
 import MasterSendForApproval from '../MasterSendForApproval'
 import { userTechnologyDetailByMasterId } from '../../../helper'
 import { getUsersMasterLevelAPI } from '../../../actions/auth/AuthActions'
+import PopupMsgWrapper from '../../common/PopupMsgWrapper'
 
 const gridOptions = {};
 
@@ -69,6 +70,7 @@ function AddBudget(props) {
     const [isVendorNameNotSelected, setIsVendorNameNotSelected] = useState(false);
     const [vendorFilter, setVendorFilter] = useState([]);
     const [currency, setCurrency] = useState(0);
+    const [showPopup, setShowPopup] = useState(false);
     const [currencyExchangeRate, setCurrencyExchangeRate] = useState(1);
     const [isConditionCostingOpen, setIsConditionCostingOpen] = useState(false)
     const [conditionTableData, seConditionTableData] = useState([])
@@ -82,6 +84,7 @@ function AddBudget(props) {
     const financialYearSelectList = useSelector(state => state.volume.financialYearSelectList);
     const clientSelectList = useSelector((state) => state.client.clientSelectList)
     const currencySelectList = useSelector((state) => state.comman.currencySelectList)
+    const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
 
     const [showTooltip, setShowTooltip] = useState(false)
     const [viewTooltip, setViewTooltip] = useState(false)
@@ -494,10 +497,35 @@ function AddBudget(props) {
 
         props.hideForm(type)
     }
-    const cancelHandler = () => {
-        cancel('cancel')
-    }
 
+    const allInputFieldsName = [
+        'Plant',
+        'FinancialYear',
+        'totalSumCurrency',
+        'currency',
+        'totalSum',
+        'clientName',
+    ]
+    const cancelHandler = () => {
+        let count = 0;
+        allInputFieldsName.forEach((item) => {
+            if (getValues(item)) {
+                count++
+            }
+        })
+        if (count || vendorName.length !== 0 || part.length !== 0) {
+            setShowPopup(true)
+        } else {
+            cancel('cancel')
+        }
+    }
+    const onPopupConfirm = () => {
+        cancel('cancel')
+        setShowPopup(false)
+    }
+    const closePopUp = () => {
+        setShowPopup(false)
+    }
 
     const handleCurrencyChange = (newValue) => {
         if (newValue && newValue !== '') {
@@ -683,7 +711,9 @@ function AddBudget(props) {
     };
 
     const partFilterList = async (inputValue) => {
-
+        if (inputValue && typeof inputValue === 'string' && inputValue.includes(' ')) {
+            inputValue = inputValue.trim();
+        }
         const resultInput = inputValue.slice(0, searchCount)
         if (inputValue?.length >= searchCount && partName !== resultInput) {
             const res = await getPartSelectListWtihRevNo(resultInput)
@@ -1059,6 +1089,7 @@ function AddBudget(props) {
                                                                         title: EMPTY_DATA,
                                                                     }}
                                                                     frameworkComponents={frameworkComponents}
+                                                                    suppressColumnVirtualisation={true}
                                                                     stopEditingWhenCellsLoseFocus={true}
                                                                 >
                                                                     <AgGridColumn field="Text" headerName="Net Cost" editable='false' pinned='left' cellStyle={{ 'font-size': '15px', 'font-weight': '500', 'color': '#3d4465' }} width={310} headerComponent={'costHeader'} ></AgGridColumn>
@@ -1079,24 +1110,25 @@ function AddBudget(props) {
                                                             </div>
                                                         </div>
                                                     </Col>
-                                                    <Col md="8" className='mt-3'><div className="left-border mt-1">Costing Condition:</div></Col>
-                                                    <Col md="4" className="text-right mt-3">
-                                                        <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setConditionAcc(!conditionAcc) }}>
-                                                            {conditionAcc ? (
-                                                                <i className="fa fa-minus" ></i>
-                                                            ) : (
-                                                                <i className="fa fa-plus"></i>
-                                                            )}
-                                                        </button>
-                                                    </Col>
-                                                    {conditionAcc && <div className='mb-2'><Row>
-                                                        <Col md="12">
-                                                            <div className='d-flex justify-content-end mb-2'>
-                                                                <Button type='button' onClick={() => { setIsConditionCostingOpen(true) }}> <div className={`${conditionTableData.length === 0 ? 'plus' : 'fa fa-eye pr-1'}`}></div>{conditionTableData.length === 0 ? "Add" : "View"}</Button>
-                                                            </div>
+                                                    {initialConfiguration?.IsBasicRateAndCostingConditionVisible && <><Col md="8" className='mt-3'><div className="left-border mt-1">Costing Condition:</div></Col>
+                                                        <Col md="4" className="text-right mt-3">
+                                                            <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setConditionAcc(!conditionAcc) }}>
+                                                                {conditionAcc ? (
+                                                                    <i className="fa fa-minus" ></i>
+                                                                ) : (
+                                                                    <i className="fa fa-plus"></i>
+                                                                )}
+                                                            </button>
                                                         </Col>
-                                                    </Row>
-                                                        <ConditionCosting hideAction={true} tableData={conditionTableData} /></div>}
+                                                        {conditionAcc && <div className='mb-2'><Row>
+                                                            <Col md="12">
+                                                                <div className='d-flex justify-content-end mb-2'>
+                                                                    <Button type='button' onClick={() => { setIsConditionCostingOpen(true) }}> <div className={`${conditionTableData.length === 0 ? 'plus' : 'fa fa-eye pr-1'}`}></div>{conditionTableData.length === 0 ? "Add" : "View"}</Button>
+                                                                </div>
+                                                            </Col>
+                                                        </Row>
+                                                            <ConditionCosting hideAction={true} tableData={conditionTableData} /></div>}
+                                                    </>}
                                                     <Col md="9">
                                                         <div className='budgeting-details  mt-2'>
                                                             <label className='w-fit'>{`Total Sum ${currency?.label ? `(${currency.label})` : '(Currency)'}:`}</label>
@@ -1210,6 +1242,7 @@ function AddBudget(props) {
                             </div>
                         </div>}
                 </div>
+                {showPopup && <PopupMsgWrapper isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${MESSAGES.CANCEL_MASTER_ALERT}`} />}
             </div >
 
         </>

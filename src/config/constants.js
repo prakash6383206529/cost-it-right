@@ -1701,6 +1701,7 @@ export const CANCELLED = 'Cancelled'
 export const UNDER_REVISION = 'UnderRevision'
 export const RECEIVED = 'Received'
 export const SUBMITTED = 'Submitted'
+export const SENT = 'Sent'
 
 // MASTER APPROVAL STATUS ID
 export const APPROVED_STATUS = '3,5'
@@ -2226,4 +2227,4 @@ export const IVRFQ = "8vFNmRQEl91nOtrM"
 export const ENTRY_TYPE_DOMESTIC = 0
 export const ENTRY_TYPE_IMPORT = 1
 //VERSION 
-export const VERSION = "V2.1.124";
+export const VERSION = "V2.1.135";
