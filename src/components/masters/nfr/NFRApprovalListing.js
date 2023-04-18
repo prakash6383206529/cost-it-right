@@ -43,12 +43,14 @@ function NFRApprovalListing(props) {
     }
 
     useEffect(() => {
-        dispatch(getNFRApprovals(res => {
-            if (res?.data?.Result === true) {
-                setRowData(res?.data?.DataList)
-            }
-        }))
-    }, [])
+        if (props?.activeTab === '2') {
+            dispatch(getNFRApprovals(res => {
+                if (res?.data?.Result === true) {
+                    setRowData(res?.data?.DataList)
+                }
+            }))
+        }
+    }, [props?.activeTab])
 
     /**
     * @method hyphenFormatter
@@ -241,19 +243,19 @@ function NFRApprovalListing(props) {
                                             <AgGridColumn headerClass="justify-content-center" pinned="right" cellClass="text-center" field="DisplayStatus" tooltipField="TooltipText" cellRenderer='statusFormatter' headerName="Status"></AgGridColumn>
                                         </AgGridReact>
                                         {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} globalTake={defaultPageSize} />}
-                                    </div>
-                                </div>
-                            </div>
+                                    </div >
+                                </div >
+                            </div >
                             <div className="text-right pb-3">
                                 <WarningMessage message="It may take up to 5 minutes for the status to be updated." />
                             </div>
-                        </Col>
-                    </Row>
-                </div>
+                        </Col >
+                    </Row >
+                </div >
             }
             {isOpen && <NfrSummaryDrawer isOpen={isOpen} closeDrawer={closeDrawer} anchor={"bottom"} rowData={singleRowData} />}
 
-        </Fragment>
+        </Fragment >
     )
 }
 
