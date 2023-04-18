@@ -7,14 +7,9 @@ import { calculatePercentage, checkForDecimalAndNull, checkForNull, CheckIsCosti
 import { fetchModelTypeAPI, getPaymentTermsAppliSelectListKeyValue } from '../../../../../actions/Common';
 import { getOverheadProfitDataByModelType, gridDataAdded, isOverheadProfitDataChange, setOverheadProfitErrors, } from '../../../actions/Costing';
 import { costingInfoContext, netHeadCostContext, SurfaceCostContext } from '../../CostingDetailStepTwo';
-<<<<<<< HEAD
 import TooltipCustom from '../../../../common/Tooltip';
 import { CBCTypeId, EMPTY_GUID, NFRTypeId, PART_COST, PFS1TypeId, PFS2TypeId, PFS3TypeId, VBCTypeId, ZBCTypeId } from '../../../../../config/constants';
-import { ViewCostingContext } from '../../CostingDetails';
-=======
-import { CBCTypeId, EMPTY_GUID, NFRTypeId, PART_COST, VBCTypeId } from '../../../../../config/constants';
 import { SelectedCostingDetail, ViewCostingContext } from '../../CostingDetails';
->>>>>>> aec22c5d57 (nfr CIR-T1555 WIP II)
 import Rejection from './Rejection';
 import Icc from './Icc';
 import PaymentTerms from './PaymentTerms';
@@ -63,7 +58,7 @@ function OverheadProfit(props) {
   const dispatch = useDispatch()
   const headerCosts = useContext(netHeadCostContext);
   const costData = useContext(costingInfoContext);
-  const { CostingEffectiveDate, CostingDataList, IsIncludedSurfaceInOverheadProfit, IsIncludedToolCost, ToolTabData } = useSelector(state => state.costing)
+  const { CostingEffectiveDate, CostingDataList, IsIncludedSurfaceInOverheadProfit, IsIncludedToolCost, ToolTabData, OverheadProfitTabData } = useSelector(state => state.costing)
 
   const [overheadObj, setOverheadObj] = useState(CostingOverheadDetail)
   const [profitObj, setProfitObj] = useState(CostingProfitDetail)
@@ -357,7 +352,11 @@ function OverheadProfit(props) {
             || (costData?.CostingTypeId === CBCTypeId) || (costData?.CostingTypeId === NFRTypeId)
             || (costData?.CostingTypeId === PFS1TypeId) || (costData?.CostingTypeId === PFS2TypeId)
             || (costData?.CostingTypeId === PFS3TypeId) ? costData.DestinationPlantId : EMPTY_GUID,
+          rawMaterialGradeId: initialConfiguration.IsShowRawMaterialInOverheadProfitAndICC ? OverheadProfitTabData[0]?.CostingPartDetails?.RawMaterialGradeId : EMPTY_GUID,
 
+          rawMaterialChildId: initialConfiguration.IsShowRawMaterialInOverheadProfitAndICC ? OverheadProfitTabData[0]?.CostingPartDetails?.RawMaterialChildId : EMPTY_GUID,
+
+          technologyId: initialConfiguration.IsShowRawMaterialInOverheadProfitAndICC ? OverheadProfitTabData[0]?.CostingPartDetails?.TechnologyId : EMPTY_GUID,
           customerId: costData.CustomerId
         }
 
@@ -1009,19 +1008,8 @@ function OverheadProfit(props) {
             })
             break;
 
-<<<<<<< HEAD
           case 'RM + CC':
           case 'Part Cost + CC':
-=======
-                const reqParams = {
-                    ModelTypeId: newValue.value,
-                    VendorId: costData.CostingTypeId === VBCTypeId ? costData.VendorId : EMPTY_GUID,
-                    costingTypeId: Number(costData.CostingTypeId) === NFRTypeId ? VBCTypeId : costData.CostingTypeId,
-                    EffectiveDate: CostingEffectiveDate,
-                    plantId: (getConfigurationKey()?.IsPlantRequiredForOverheadProfitInterestRate && costData?.CostingTypeId !== VBCTypeId) ? costData.PlantId : (getConfigurationKey()?.IsDestinationPlantConfigure && costData?.CostingTypeId === VBCTypeId) || (costData?.CostingTypeId === CBCTypeId) || (costData?.CostingTypeId === NFRTypeId) ? costData.DestinationPlantId : EMPTY_GUID,
-                    customerId: costData.CustomerId
-                }
->>>>>>> aec22c5d57 (nfr CIR-T1555 WIP II)
 
             overheadCombinedCost = checkForNull(RM_CC)
             overheadTotalCost = checkForNull(overheadCombinedCost) * calculatePercentage(checkForNull(OverheadPercentage))
