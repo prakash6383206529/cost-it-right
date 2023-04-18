@@ -1408,27 +1408,35 @@ const CostingSummaryTable = (props) => {
                                       <span className={`d-block small-grey-text ${isApproval && viewCostingData?.length > 1 && highlightCostingSummaryValue(reducer(viewCostingData[0]?.netRMCostView), reducer(viewCostingData[1]?.netRMCostView))}`}>
                                         <button type='button' className='btn-hyper-link' onClick={() => DrawerOpen('operation', index)}>{data?.CostingHeading !== VARIANCE ? data?.netOperationCost : ''}</button>
                                       </span>
-                                      {data?.technologyId === FORGING && <span className={`d-block small-grey-text ${isApproval && viewCostingData?.length > 1 && highlightCostingSummaryValue(viewCostingData[0]?.ForgingScrapWeight, viewCostingData[1]?.ForgingScrapWeight)}`}>
-                                        {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? (data?.netRMCostView.length > 1 || data?.IsAssemblyCosting === true) ? "Multiple RM" : <span title={(data?.ForgingScrapWeight && data?.ForgingScrapWeight)}>{(data?.ForgingScrapWeight ? data?.ForgingScrapWeight : "-")}</span> : '-')}
-                                        {/* {data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.fWeight, initialConfiguration.NoOfDecimalForInputOutput) : ''} */}
-                                      </span>}
-                                      {data?.technologyId === FORGING && <span className={`d-block small-grey-text ${isApproval && viewCostingData?.length > 1 && highlightCostingSummaryValue(viewCostingData[0]?.MachiningScrapWeight, viewCostingData[1]?.MachiningScrapWeight)}`}>
-                                        {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? (data?.netRMCostView.length > 1 || data?.IsAssemblyCosting === true) ? "Multiple RM" : <span title={(data?.MachiningScrapWeight && data?.MachiningScrapWeight)}>{(data?.MachiningScrapWeight ? data?.MachiningScrapWeight : '-')}</span> : '-')}
-                                        {/* {data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.fWeight, initialConfiguration.NoOfDecimalForInputOutput) : ''} */}
-                                      </span>}
-                                      {data?.technologyId === DIE_CASTING && <span className={`d-block small-grey-text ${isApproval && viewCostingData?.length > 1 && highlightCostingSummaryValue(viewCostingData[0]?.CastingWeight, viewCostingData[1]?.CastingWeight)}`}>
-                                        {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.IsAssemblyCosting === true ? "Multiple RM" : <span title={(data?.netRMCostView && data?.netRMCostView[0]?.CastingWeight)}>{checkForDecimalAndNull(data?.netRMCostView[0]?.CastingWeight, initialConfiguration.NoOfDecimalForInputOutput)}</span> : '-')}
-                                        {/* {data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.fWeight, initialConfiguration.NoOfDecimalForInputOutput) : ''} */}
-                                      </span>}
-                                      {data?.technologyId === DIE_CASTING && <span className={`d-block small-grey-text ${isApproval && viewCostingData?.length > 1 && highlightCostingSummaryValue(viewCostingData[0]?.MeltingLoss, viewCostingData[1]?.MeltingLoss)}`}>
-                                        {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.IsAssemblyCosting === true ? "Multiple RM" : <span title={(data?.netRMCostView && data?.netRMCostView[0]?.MeltingLoss)}>{checkForDecimalAndNull(data?.netRMCostView[0]?.MeltingLoss, initialConfiguration.NoOfDecimalForInputOutput)}</span> : '-')}
-                                        {/* {data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.fWeight, initialConfiguration.NoOfDecimalForInputOutput) : ''} */}
-                                      </span>}
+                                      {
+                                        data?.technologyId === FORGING && <span className={`d-block small-grey-text ${isApproval && viewCostingData?.length > 1 && highlightCostingSummaryValue(viewCostingData[0]?.ForgingScrapWeight, viewCostingData[1]?.ForgingScrapWeight)}`}>
+                                          {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? (data?.netRMCostView.length > 1 || data?.IsAssemblyCosting === true) ? "Multiple RM" : <span title={(data?.ForgingScrapWeight && data?.ForgingScrapWeight)}>{(data?.ForgingScrapWeight ? data?.ForgingScrapWeight : "-")}</span> : '-')}
+                                          {/* {data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.fWeight, initialConfiguration.NoOfDecimalForInputOutput) : ''} */}
+                                        </span>
+                                      }
+                                      {
+                                        data?.technologyId === FORGING && <span className={`d-block small-grey-text ${isApproval && viewCostingData?.length > 1 && highlightCostingSummaryValue(viewCostingData[0]?.MachiningScrapWeight, viewCostingData[1]?.MachiningScrapWeight)}`}>
+                                          {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? (data?.netRMCostView.length > 1 || data?.IsAssemblyCosting === true) ? "Multiple RM" : <span title={(data?.MachiningScrapWeight && data?.MachiningScrapWeight)}>{(data?.MachiningScrapWeight ? data?.MachiningScrapWeight : '-')}</span> : '-')}
+                                          {/* {data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.fWeight, initialConfiguration.NoOfDecimalForInputOutput) : ''} */}
+                                        </span>
+                                      }
+                                      {
+                                        data?.technologyId === DIE_CASTING && <span className={`d-block small-grey-text ${isApproval && viewCostingData?.length > 1 && highlightCostingSummaryValue(viewCostingData[0]?.CastingWeight, viewCostingData[1]?.CastingWeight)}`}>
+                                          {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.IsAssemblyCosting === true ? "Multiple RM" : <span title={(data?.netRMCostView && data?.netRMCostView[0]?.CastingWeight)}>{checkForDecimalAndNull(data?.netRMCostView[0]?.CastingWeight, initialConfiguration.NoOfDecimalForInputOutput)}</span> : '-')}
+                                          {/* {data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.fWeight, initialConfiguration.NoOfDecimalForInputOutput) : ''} */}
+                                        </span>
+                                      }
+                                      {
+                                        data?.technologyId === DIE_CASTING && <span className={`d-block small-grey-text ${isApproval && viewCostingData?.length > 1 && highlightCostingSummaryValue(viewCostingData[0]?.MeltingLoss, viewCostingData[1]?.MeltingLoss)}`}>
+                                          {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.IsAssemblyCosting === true ? "Multiple RM" : <span title={(data?.netRMCostView && data?.netRMCostView[0]?.MeltingLoss)}>{checkForDecimalAndNull(data?.netRMCostView[0]?.MeltingLoss, initialConfiguration.NoOfDecimalForInputOutput)}</span> : '-')}
+                                          {/* {data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.fWeight, initialConfiguration.NoOfDecimalForInputOutput) : ''} */}
+                                        </span>
+                                      }
 
-                                    </td>
+                                    </td >
                                   )
                                 })}
-                            </tr>
+                            </tr >
                             {drawerDetailPDF &&
                               <tr><th colSpan={2} className='py-0'>
                                 <ViewBOP
@@ -1439,42 +1447,48 @@ const CostingSummaryTable = (props) => {
                                   isPDFShow={true}
                                 />
                               </th></tr>}
-                            {drawerDetailPDF && <tr>
-                              <th colSpan={2} className='py-0'>
-                                <ViewConversionCost
-                                  isOpen={drawerOpen.process}
-                                  viewConversionCostData={viewConversionCostData}
-                                  closeDrawer={closeViewDrawer}
-                                  anchor={'right'}
-                                  index={index}
-                                  isPDFShow={true}
-                                  processShow={true}
-                                />
-                              </th>
-                            </tr>}
-                            {drawerDetailPDF && <tr>
-                              <th colSpan={2} className='py-0'>
-                                <ViewConversionCost
-                                  isOpen={drawerOpen.operation}
-                                  viewConversionCostData={viewConversionCostData}
-                                  closeDrawer={closeViewDrawer}
-                                  anchor={'right'}
-                                  index={index}
-                                  isPDFShow={true}
-                                  stCostShow={false}
-                                  operationShow={true}
-                                /></th></tr>}
-                            {drawerDetailPDF && <tr>
-                              <th colSpan={2} className='py-0'>
-                                <ViewMultipleTechnology
-                                  isOpen={viewMultipleTechnologyDrawer}
-                                  multipleTechnologyData={multipleTechnologyData}
-                                  closeDrawer={closeViewDrawer}
-                                  anchor={'right'}
-                                  index={index}
-                                  isPDFShow={true}
-                                  storeSummary={props?.storeSummary ? true : false}
-                                /></th></tr>}
+                            {
+                              drawerDetailPDF && <tr>
+                                <th colSpan={2} className='py-0'>
+                                  <ViewConversionCost
+                                    isOpen={drawerOpen.process}
+                                    viewConversionCostData={viewConversionCostData}
+                                    closeDrawer={closeViewDrawer}
+                                    anchor={'right'}
+                                    index={index}
+                                    isPDFShow={true}
+                                    processShow={true}
+                                  />
+                                </th>
+                              </tr>
+                            }
+                            {
+                              drawerDetailPDF && <tr>
+                                <th colSpan={2} className='py-0'>
+                                  <ViewConversionCost
+                                    isOpen={drawerOpen.operation}
+                                    viewConversionCostData={viewConversionCostData}
+                                    closeDrawer={closeViewDrawer}
+                                    anchor={'right'}
+                                    index={index}
+                                    isPDFShow={true}
+                                    stCostShow={false}
+                                    operationShow={true}
+                                  /></th></tr>
+                            }
+                            {
+                              drawerDetailPDF && <tr>
+                                <th colSpan={2} className='py-0'>
+                                  <ViewMultipleTechnology
+                                    isOpen={viewMultipleTechnologyDrawer}
+                                    multipleTechnologyData={multipleTechnologyData}
+                                    closeDrawer={closeViewDrawer}
+                                    anchor={'right'}
+                                    index={index}
+                                    isPDFShow={true}
+                                    storeSummary={props?.storeSummary ? true : false}
+                                  /></th></tr>
+                            }
 
                             <tr className={`background-light-blue  ${isApproval ? viewCostingData?.length > 0 && viewCostingData[0]?.netRM > viewCostingData[1]?.netRM ? 'green-row' : viewCostingData[0]?.netRM < viewCostingData[1]?.netRM ? 'red-row' : '' : '-'}`}>
                               <th>Cost/Assembly {simulationDrawer && (Number(master) === Number(RMDOMESTIC) || Number(master) === Number(RMIMPORT)) && '(Old)'}</th>
@@ -1687,41 +1701,43 @@ const CostingSummaryTable = (props) => {
                               </tr>
                             </>
                           }
-                          {!drawerDetailPDF ? <tr>
-                            <td>
-                              <span className={`d-block small-grey-text ${isApproval && viewCostingData?.length > 1 && highlightCostingSummaryValue(viewCostingData[0]?.sTreatment, viewCostingData[1]?.sTreatment)}`}>
-                                Surface Treatment
-                              </span>
-                              <span className={`d-block small-grey-text ${isApproval && viewCostingData?.length > 1 && highlightCostingSummaryValue(viewCostingData[0]?.tCost, viewCostingData[1]?.tCost)}`}>
-                                Extra Surface Treatment Cost
-                              </span>
-                            </td>
-                            {viewCostingData &&
-                              viewCostingData?.map((data) => {
-                                return (
-                                  <td>
-                                    <span className={`d-block small-grey-text ${isApproval && viewCostingData?.length > 1 && highlightCostingSummaryValue(viewCostingData[0]?.sTreatment, viewCostingData[1]?.sTreatment)}`}>
-                                      {data?.CostingHeading !== VARIANCE ? (data?.IsAssemblyCosting === true ? "Multiple Surface Treatment" : <span title={checkForDecimalAndNull(data?.sTreatment, initialConfiguration.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.sTreatment, initialConfiguration.NoOfDecimalForPrice)}</span>) : ''}
-                                    </span>
-                                    <span className={`d-block small-grey-text ${isApproval && viewCostingData?.length > 1 && highlightCostingSummaryValue(viewCostingData[0]?.tCost, viewCostingData[1]?.tCost)}`}>
-                                      {data?.CostingHeading !== VARIANCE ?
-                                        (data?.IsAssemblyCosting === true ? "Multiple Surface Treatment" : <span title={checkForDecimalAndNull(data?.tCost, initialConfiguration.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.tCost, initialConfiguration.NoOfDecimalForPrice)}</span>)
-                                        : ''}
-                                    </span>
-                                  </td>
-                                )
-                              })}
-                          </tr> : <tr><th className='py-0' colSpan={2}>
-                            <ViewConversionCost
-                              isOpen={isViewConversionCost}
-                              viewConversionCostData={viewConversionCostData}
-                              closeDrawer={closeViewDrawer}
-                              anchor={'right'}
-                              index={index}
-                              isPDFShow={true}
-                              stCostShow={true}
-                            />
-                          </th></tr>}
+                          {
+                            !drawerDetailPDF ? <tr>
+                              <td>
+                                <span className={`d-block small-grey-text ${isApproval && viewCostingData?.length > 1 && highlightCostingSummaryValue(viewCostingData[0]?.sTreatment, viewCostingData[1]?.sTreatment)}`}>
+                                  Surface Treatment
+                                </span>
+                                <span className={`d-block small-grey-text ${isApproval && viewCostingData?.length > 1 && highlightCostingSummaryValue(viewCostingData[0]?.tCost, viewCostingData[1]?.tCost)}`}>
+                                  Extra Surface Treatment Cost
+                                </span>
+                              </td>
+                              {viewCostingData &&
+                                viewCostingData?.map((data) => {
+                                  return (
+                                    <td>
+                                      <span className={`d-block small-grey-text ${isApproval && viewCostingData?.length > 1 && highlightCostingSummaryValue(viewCostingData[0]?.sTreatment, viewCostingData[1]?.sTreatment)}`}>
+                                        {data?.CostingHeading !== VARIANCE ? (data?.IsAssemblyCosting === true ? "Multiple Surface Treatment" : <span title={checkForDecimalAndNull(data?.sTreatment, initialConfiguration.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.sTreatment, initialConfiguration.NoOfDecimalForPrice)}</span>) : ''}
+                                      </span>
+                                      <span className={`d-block small-grey-text ${isApproval && viewCostingData?.length > 1 && highlightCostingSummaryValue(viewCostingData[0]?.tCost, viewCostingData[1]?.tCost)}`}>
+                                        {data?.CostingHeading !== VARIANCE ?
+                                          (data?.IsAssemblyCosting === true ? "Multiple Surface Treatment" : <span title={checkForDecimalAndNull(data?.tCost, initialConfiguration.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.tCost, initialConfiguration.NoOfDecimalForPrice)}</span>)
+                                          : ''}
+                                      </span>
+                                    </td>
+                                  )
+                                })}
+                            </tr> : <tr><th className='py-0' colSpan={2}>
+                              <ViewConversionCost
+                                isOpen={isViewConversionCost}
+                                viewConversionCostData={viewConversionCostData}
+                                closeDrawer={closeViewDrawer}
+                                anchor={'right'}
+                                index={index}
+                                isPDFShow={true}
+                                stCostShow={true}
+                              />
+                            </th></tr>
+                          }
 
 
 
@@ -1857,7 +1873,8 @@ const CostingSummaryTable = (props) => {
                               closeDrawer={closeViewDrawer}
                               anchor={'right'}
                               isPDFShow={true}
-                            /></td></tr>}
+                            /></td></tr>
+                          }
 
                           <tr className={`background-light-blue ${isApproval ? viewCostingData?.length > 0 && viewCostingData[0]?.nOverheadProfit > viewCostingData[1]?.nOverheadProfit ? 'green-row' : viewCostingData[0]?.nOverheadProfit < viewCostingData[1]?.nOverheadProfit ? 'red-row' : ' ' : '-'}`}>
                             <th>Net Overheads & Profits</th>
@@ -1996,48 +2013,51 @@ const CostingSummaryTable = (props) => {
                             /> </th> </tr>
                           }
 
-                          {!drawerDetailPDF ? <tr>
-                            <td>
-                              <span className={`d-block small-grey-text ${isApproval && viewCostingData?.length > 1 && highlightCostingSummaryValue(viewCostingData[0]?.sTreatment, viewCostingData[1]?.sTreatment)}`}>
-                                Surface Treatment
-                              </span>
-                              <span className={`d-block small-grey-text ${isApproval && viewCostingData?.length > 1 && highlightCostingSummaryValue(viewCostingData[0]?.tCost, viewCostingData[1]?.tCost)}`}>
-                                Extra Surface Treatment Cost
-                              </span>
-                            </td>
-                            {viewCostingData &&
-                              viewCostingData?.map((data) => {
-                                return (
-                                  <td>
-                                    <span className={`d-block small-grey-text ${isApproval && viewCostingData?.length > 1 && highlightCostingSummaryValue(viewCostingData[0]?.sTreatment, viewCostingData[1]?.sTreatment)}`}>
-                                      {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? (data?.IsAssemblyCosting === true ? "Multiple Surface Treatment" : <span title={checkForDecimalAndNull(data?.sTreatment, initialConfiguration.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.sTreatment, initialConfiguration.NoOfDecimalForPrice)}</span>) : '')}
-                                    </span>
-                                    <span className={`d-block small-grey-text ${isApproval && viewCostingData?.length > 1 && highlightCostingSummaryValue(viewCostingData[0]?.tCost, viewCostingData[1]?.tCost)}`}>
-                                      {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ?
-                                        (data?.IsAssemblyCosting === true ? "Multiple Surface Treatment" : <span title={checkForDecimalAndNull(data?.tCost, initialConfiguration.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.tCost, initialConfiguration.NoOfDecimalForPrice)}</span>)
-                                        : '')}
-                                    </span>
-                                  </td>
-                                )
-                              })}
-                          </tr> : <tr><th className='py-0' colSpan={2}>
-                            <ViewConversionCost
-                              isOpen={isViewConversionCost}
-                              viewConversionCostData={viewConversionCostData}
-                              closeDrawer={closeViewDrawer}
-                              anchor={'right'}
-                              index={index}
-                              isPDFShow={true}
-                              stCostShow={true}
-                            />
-                          </th></tr>}
+                          {
+                            !drawerDetailPDF ? <tr>
+                              <td>
+                                <span className={`d-block small-grey-text ${isApproval && viewCostingData?.length > 1 && highlightCostingSummaryValue(viewCostingData[0]?.sTreatment, viewCostingData[1]?.sTreatment)}`}>
+                                  Surface Treatment
+                                </span>
+                                <span className={`d-block small-grey-text ${isApproval && viewCostingData?.length > 1 && highlightCostingSummaryValue(viewCostingData[0]?.tCost, viewCostingData[1]?.tCost)}`}>
+                                  Extra Surface Treatment Cost
+                                </span>
+                              </td>
+                              {viewCostingData &&
+                                viewCostingData?.map((data) => {
+                                  return (
+                                    <td>
+                                      <span className={`d-block small-grey-text ${isApproval && viewCostingData?.length > 1 && highlightCostingSummaryValue(viewCostingData[0]?.sTreatment, viewCostingData[1]?.sTreatment)}`}>
+                                        {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? (data?.IsAssemblyCosting === true ? "Multiple Surface Treatment" : <span title={checkForDecimalAndNull(data?.sTreatment, initialConfiguration.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.sTreatment, initialConfiguration.NoOfDecimalForPrice)}</span>) : '')}
+                                      </span>
+                                      <span className={`d-block small-grey-text ${isApproval && viewCostingData?.length > 1 && highlightCostingSummaryValue(viewCostingData[0]?.tCost, viewCostingData[1]?.tCost)}`}>
+                                        {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ?
+                                          (data?.IsAssemblyCosting === true ? "Multiple Surface Treatment" : <span title={checkForDecimalAndNull(data?.tCost, initialConfiguration.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.tCost, initialConfiguration.NoOfDecimalForPrice)}</span>)
+                                          : '')}
+                                      </span>
+                                    </td>
+                                  )
+                                })}
+                            </tr> : <tr><th className='py-0' colSpan={2}>
+                              <ViewConversionCost
+                                isOpen={isViewConversionCost}
+                                viewConversionCostData={viewConversionCostData}
+                                closeDrawer={closeViewDrawer}
+                                anchor={'right'}
+                                index={index}
+                                isPDFShow={true}
+                                stCostShow={true}
+                              />
+                            </th></tr>
+                          }
 
 
 
                           <tr className={`background-light-blue  ${isApproval ? viewCostingData?.length > 0 && viewCostingData[0]?.nsTreamnt > viewCostingData[1]?.nsTreamnt ? 'green-row' : viewCostingData[0]?.nsTreamnt < viewCostingData[1]?.nsTreamnt ? 'red-row' : '' : '-'}`}>
                             <th>Net Surface Treatment Cost{simulationDrawer && (Number(master) === Number(SURFACETREATMENT)) && '(Old)'}</th>
 
-                            {viewCostingData &&
+                            {
+                              viewCostingData &&
                               viewCostingData?.map((data, index) => {
                                 return (
                                   <td className={props?.isRfqCosting && data.status === APPROVED && !props.uniqueShouldCostingId.includes(data.costingId) ? 'finalize-cost' : ''}>
@@ -2055,8 +2075,9 @@ const CostingSummaryTable = (props) => {
                                     }
                                   </td>
                                 )
-                              })}
-                          </tr>
+                              })
+                            }
+                          </tr >
 
 
                           {!drawerDetailPDF ? <tr>
@@ -2400,7 +2421,8 @@ const CostingSummaryTable = (props) => {
                         </tr>
                       }
 
-                      {viewCostingData[0]?.technologyId !== LOGISTICS &&
+                      {
+                        viewCostingData[0]?.technologyId !== LOGISTICS &&
                         <tr className={`background-light-blue  ${getCurrencyVarianceFormatter()}`}>
                           <th>Net PO Price (In Currency){simulationDrawer && '(Old)'}</th>
                           {/* {viewCostingData &&
