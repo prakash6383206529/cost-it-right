@@ -41,6 +41,7 @@ function NfrPartsListing(props) {
     const [confirmPopup, setConfirmPopup] = useState(false);
     const [attachment, setAttachment] = useState(false);
     const [viewAttachment, setViewAttachment] = useState([])
+    const [nfrIdsList, setNFRIdsList] = useState({})
     const { topAndLeftMenuData } = useSelector(state => state.auth);
 
     useEffect(() => {
@@ -88,9 +89,10 @@ function NfrPartsListing(props) {
     const onPopupConfirm = () => {
 
     }
-    const editPartHandler = (value, rowData) => {
+    const editPartHandler = (value, rowData, viewMode) => {
         setEstimationData(rowData)
         setEditPart(true)
+        setNFRIdsList({ NfrMasterId: rowData?.NfrMasterId, NfrPartWiseDetailId: rowData?.NfrPartWiseDetailId })
     }
     const closePopUp = () => {
         setConfirmPopup(false)
@@ -107,8 +109,8 @@ function NfrPartsListing(props) {
 
         return (
             <>
-                {<button title='View' className="View mr-1" type={'button'} onClick={() => editPartHandler(cellValue, rowData)} />}
-                <button title='Edit' className="Edit mr-1" type={'button'} onClick={() => { }} />
+                {<button title='View' className="View mr-1" type={'button'} onClick={() => editPartHandler(cellValue, rowData, true)} />}
+                <button title='Edit' className="Edit mr-1" type={'button'} onClick={() => editPartHandler(cellValue, rowData, false)} />
 
             </>
         )
@@ -332,7 +334,7 @@ function NfrPartsListing(props) {
                     />
                 )
             }
-            {editPart && <AddNfr showAddNfr={editPart} nfrData={estimationData} close={close} />}
+            {editPart && <AddNfr showAddNfr={editPart} nfrData={estimationData} close={close} nfrIdsList={nfrIdsList} />}
 
         </>
     );
