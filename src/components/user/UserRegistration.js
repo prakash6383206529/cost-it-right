@@ -66,6 +66,7 @@ function UserRegistration(props) {
   const [acc2, setAcc2] = useState(false);
   const [acc3, setAcc3] = useState(false);
   const [IsShowAdditionalPermission, setIsShowAdditionalPermission] = useState(false);
+  const [isForcefulUpdate, setIsForcefulUpdate] = useState(false);
   const [Modules, setModules] = useState([]);
   const [oldModules, setOldModules] = useState([]);
   const [technology, setTechnology] = useState([]);
