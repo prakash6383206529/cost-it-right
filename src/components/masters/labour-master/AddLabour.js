@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { Field, reduxForm, formValueSelector, clearFields } from 'redux-form'
-import { Row, Col, Table } from 'reactstrap'
+import { Row, Col, Table, Label } from 'reactstrap'
 import { required, checkForNull, positiveAndDecimalNumber, maxLength10, checkForDecimalAndNull, decimalLengthsix, number } from '../../../helper/validation'
 import { focusOnError, renderTextInputField, searchableSelect } from '../../layout/FormInputs'
 import { getPlantListByState } from '../actions/Fuel'
@@ -10,7 +10,7 @@ import { getMachineTypeSelectList } from '../actions/MachineMaster'
 import Toaster from '../../common/Toaster'
 import { fetchStateDataAPI, getAllCity } from '../../../actions/Common';
 import { MESSAGES } from '../../../config/message'
-import { EMPTY_DATA, searchCount, SPACEBAR } from '../../../config/constants'
+import { CBCTypeId, EMPTY_DATA, searchCount, SPACEBAR, VBCTypeId, ZBCTypeId } from '../../../config/constants'
 import { loggedInUserId } from '../../../helper/auth'
 import Switch from 'react-switch'
 import DatePicker from 'react-datepicker'
@@ -49,9 +49,8 @@ class AddLabour extends Component {
       machineType: [],
       labourType: [],
       effectiveDate: '',
-
+      costingTypeId: ZBCTypeId,
       isOpenMachineType: false,
-
       DropdownChanged: true,
       setDisable: false,
       inputLoader: false,
@@ -157,7 +156,7 @@ class AddLabour extends Component {
       stateList,
       machineTypeSelectList,
     } = this.props
-    const { labourData } = this.state
+    const { labourData, costingTypeId } = this.state
     const temp = []
 
     if (label === 'state') {
@@ -194,7 +193,14 @@ class AddLabour extends Component {
         labourData.map((item) => {
           if (item.Value === '0') return false
           if (this.findLabourtype(item.Value, this.state.gridTable)) return false;
-          temp.push({ label: item.Text, value: item.Value })
+
+          if (costingTypeId === CBCTypeId) {
+            if (item.Text === 'Skilled') {
+              temp.push({ label: item.Text, value: item.Value })
+            }
+          } else {
+            temp.push({ label: item.Text, value: item.Value })
+          }
           return null;
         })
       return temp
@@ -222,11 +228,11 @@ class AddLabour extends Component {
    * @method onPressVendor
    * @description Used for Vendor checked
    */
-  onPressVendor = () => {
+  onPressVendor = (costingHeadFlag) => {
     this.setState({
-      IsVendor: !this.state.IsVendor,
-
-    })
+      vendorName: [],
+      costingTypeId: costingHeadFlag
+    });
   }
 
   /**
@@ -368,9 +374,9 @@ class AddLabour extends Component {
   }
 
   gridHandler = () => {
-    const { machineType, labourType, gridTable, effectiveDate, vendorName, selectedPlants, StateName, IsEmployeContractual } = this.state
+    const { machineType, labourType, gridTable, effectiveDate, vendorName, selectedPlants, StateName, IsEmployeContractual, costingTypeId } = this.state
     const { fieldsObj } = this.props
-    if ((IsEmployeContractual ? vendorName.length === 0 : false) || selectedPlants.length === 0 || StateName === 0) {
+    if ((costingTypeId !== CBCTypeId ? vendorName.length === 0 : false) || selectedPlants.length === 0 || StateName === 0) {
       Toaster.warning('First fill upper detail')
       return false
     }
@@ -679,7 +685,7 @@ class AddLabour extends Component {
    */
   render() {
     const { handleSubmit, initialConfiguration } = this.props;
-    const { isEditFlag, isOpenMachineType, isViewMode, setDisable, gridTable, isEditMode } = this.state;
+    const { isEditFlag, isOpenMachineType, isViewMode, setDisable, gridTable, isEditMode, costingTypeId } = this.state;
     const filterList = async (inputValue) => {
       const { vendorFilterList } = this.state
       if (inputValue && typeof inputValue === 'string' && inputValue.includes(' ')) {
@@ -735,7 +741,7 @@ class AddLabour extends Component {
                   onKeyDown={(e) => { this.handleKeyDown(e, this.onSubmit.bind(this)); }}
                 >
                   <div className="add-min-height">
-                    <Row>
+                    {false && <Row>
                       <Col md="4" className="switch mb15">
                         <label className="switch-level">
                           <div className={"left-title"}>Employed</div>
@@ -757,15 +763,60 @@ class AddLabour extends Component {
                         </label>
                       </Col>
 
-                    </Row>
+                    </Row>}
+
+                    <Col md="12">
+                      <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
+                        <input
+                          type="radio"
+                          name="costingHead"
+                          checked={
+                            costingTypeId === ZBCTypeId ? true : false
+                          }
+                          onClick={() =>
+                            this.onPressVendor(ZBCTypeId)
+                          }
+                          disabled={isEditFlag ? true : false}
+                        />{" "}
+                        <span>Zero Based</span>
+                      </Label>
+                      <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
+                        <input
+                          type="radio"
+                          name="costingHead"
+                          checked={
+                            costingTypeId === VBCTypeId ? true : false
+                          }
+                          onClick={() =>
+                            this.onPressVendor(VBCTypeId)
+                          }
+                          disabled={isEditFlag ? true : false}
+                        />{" "}
+                        <span>Vendor Based</span>
+                      </Label>
+                      {<Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 pt-0 radio-box"} check>
+                        <input
+                          type="radio"
+                          name="costingHead"
+                          checked={
+                            costingTypeId === CBCTypeId ? true : false
+                          }
+                          onClick={() =>
+                            this.onPressVendor(CBCTypeId)
+                          }
+                          disabled={isEditFlag ? true : false}
+                        />{" "}
+                        <span>Customer Based</span>
+                      </Label>}
+                    </Col>
 
                     <Row>
                       <Col md="12" className="filter-block">
                         <div className=" flex-fills mb-2 w-100 pl-0">
-                          <h5>{"Vendor:"}</h5>
+                          <h5>{costingTypeId === CBCTypeId ? "Product:" : "Vendor:"}</h5>
                         </div>
                       </Col>
-                      {this.state.IsEmployeContractual && (
+                      {this.state.IsEmployeContractual && costingTypeId !== CBCTypeId && (
                         <Col md="3" className='mb-4'>
                           <label>{"Vendor (Code)"}<span className="asterisk-required">*</span></label>
                           <div className="p-relative">
@@ -790,6 +841,28 @@ class AddLabour extends Component {
                           </div>
                         </Col>
                       )}
+
+                      {costingTypeId === CBCTypeId &&
+                        < Col md="3">
+                          <div className="form-group">
+                            <Field
+                              name="state"
+                              type="text"
+                              label="Product"
+                              component={searchableSelect}
+                              placeholder={(isEditFlag && gridTable.length !== 0) ? '-' : "Select"}
+                              options={this.renderListing("state")}
+                              validate={
+                                this.state.StateName == null || this.state.StateName.length === 0 ? [required] : []}
+                              required={true}
+                              handleChangeDescription={this.handleState}
+                              valueDescription={this.state.StateName}
+                              disabled={(isEditFlag || gridTable.length !== 0) ? true : false}
+                            /></div>
+                          { }
+                        </Col>
+                      }
+
                       <Col md="3">
                         <div className="form-group">
                           <Field
@@ -1041,22 +1114,24 @@ class AddLabour extends Component {
               </div>
             </div>
           </div>
-        </div>
+        </div >
         {
           this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.CANCEL_MASTER_ALERT}`} />
         }
-        {isOpenMachineType && (
-          <AddMachineTypeDrawer
-            isOpen={isOpenMachineType}
-            closeDrawer={this.closeMachineTypeDrawer}
-            isEditFlag={isEditMode}
-            machineTypeId={this.state.machineType.value ? this.state.machineType.value : ''}
-            ID={""}
-            anchor={"right"}
-            gridTable={this.state.gridTable}
-          />
-        )}
-      </div>
+        {
+          isOpenMachineType && (
+            <AddMachineTypeDrawer
+              isOpen={isOpenMachineType}
+              closeDrawer={this.closeMachineTypeDrawer}
+              isEditFlag={isEditMode}
+              machineTypeId={this.state.machineType.value ? this.state.machineType.value : ''}
+              ID={""}
+              anchor={"right"}
+              gridTable={this.state.gridTable}
+            />
+          )
+        }
+      </div >
     );
   }
 }

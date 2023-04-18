@@ -2471,3 +2471,50 @@ export function setNPVData(data) {
     });
   }
 };
+
+
+export function saveCostingLabourDetails(data, callback) {
+  return (dispatch) => {
+    const request = axios.post(API.saveCostingLabourDetails, data, config())
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response)
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE })
+      apiErrors(error)
+    })
+  }
+}
+
+export function getCostingLabourDetails(data, callback) {
+  return (dispatch) => {
+    const queryParams = `costingId=${data}`
+    const request = axios.get(`${API.getCostingLabourDetails}?${queryParams}`, config())
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response)
+      }
+    }).catch((error) => {
+      callback(error)
+      dispatch({ type: API_FAILURE })
+      apiErrors(error)
+    })
+  }
+}
+
+export function getLabourDetailsByFilter(data, callback) {
+  return (dispatch) => {
+    const queryParams = `effectiveDate=${data.effectiveDate ? data.effectiveDate : ''}&costingHeadId=${data.costingHeadId ? data.costingHeadId : ''}&partId=${data.partId ? data.partId : ''}&plant_id=${data.plantId ? data.plantId : ''}&vendorId=${data.vendorId ? data.vendorId : ''}&customerId=${data.customerId ? data.customerId : ''}&machine_type_id=${0}&state_id=${0}&labour_type_id=${0}`
+    const request = axios.get(`${API.getLabourDetailsByFilter}?${queryParams}`, config())
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response)
+      }
+    }).catch((error) => {
+      callback(error)
+      dispatch({ type: API_FAILURE })
+      apiErrors(error)
+    })
+  }
+}
