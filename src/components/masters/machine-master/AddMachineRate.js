@@ -7,15 +7,14 @@ import {
   checkWhiteSpaces, maxLength80, maxLength10, positiveAndDecimalNumber, maxLength512, checkSpacesInString, decimalLengthsix
 } from "../../../helper/validation";
 import { renderText, searchableSelect, renderTextAreaField, focusOnError, renderDatePicker } from "../../layout/FormInputs";
-import { getPlantSelectListByType, getPlantBySupplier, getUOMSelectList } from '../../../actions/Common';
+import { getPlantSelectListByType, getPlantBySupplier, getUOMSelectList, getVendorNameByVendorSelectList } from '../../../actions/Common';
 import {
   createMachine, updateMachine, updateMachineDetails, getMachineTypeSelectList, getProcessesSelectList, fileUploadMachine, fileDeleteMachine,
   checkAndGetMachineNumber, getMachineData, getProcessGroupByMachineId, setGroupProcessList, setProcessList
 } from '../actions/MachineMaster';
-import { getVendorWithVendorCodeSelectList } from '../actions/Supplier';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
-import { CBCTypeId, EMPTY_DATA, EMPTY_GUID, SPACEBAR, VBCTypeId, ZBCTypeId, searchCount } from '../../../config/constants'
+import { CBCTypeId, EMPTY_DATA, EMPTY_GUID, SPACEBAR, VBCTypeId, VBC_VENDOR_TYPE, ZBCTypeId, searchCount } from '../../../config/constants'
 import { getConfigurationKey, loggedInUserId, userDetails } from "../../../helper/auth";
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css'
@@ -1373,7 +1372,7 @@ class AddMachineRate extends Component {
       if (inputValue?.length >= searchCount && vendorFilterList !== resultInput) {
         // this.setState({ inputLoader: true })
         let res
-        res = await getVendorWithVendorCodeSelectList(VBCTypeId, resultInput)
+        res = await getVendorNameByVendorSelectList(VBC_VENDOR_TYPE, resultInput)
         // this.setState({ inputLoader: false })
         this.setState({ vendorFilterList: resultInput })
         let vendorDataAPI = res?.data?.SelectList
@@ -2089,7 +2088,7 @@ export default connect(mapStateToProps, {
   getCostingSpecificTechnology,
   getClientSelectList,
   getUsersMasterLevelAPI,
-  getVendorWithVendorCodeSelectList
+  getVendorNameByVendorSelectList
 })(reduxForm({
   form: 'AddMachineRate',
   enableReinitialize: true,

@@ -5,14 +5,14 @@ import { Controller, useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { Col, Row } from 'reactstrap';
-import { fetchPlantDataAPI, fetchSpecificationDataAPI, getApprovalTypeSelectList, getPlantSelectListByType, getRawMaterialCategory, getVendorWithVendorCodeSelectList } from '../../../../actions/Common';
-import { searchCount, VBCTypeId, ZBC } from '../../../../config/constants';
+import { fetchPlantDataAPI, fetchSpecificationDataAPI, getApprovalTypeSelectList, getPlantSelectListByType, getRawMaterialCategory, getVendorNameByVendorSelectList } from '../../../../actions/Common';
+import { searchCount, VBC_VENDOR_TYPE, VBCTypeId, ZBC } from '../../../../config/constants';
 import { MESSAGES } from '../../../../config/message';
 import { loggedInUserId } from '../../../../helper';
 import { autoCompleteDropdown } from '../../../common/CommonFunctions';
 import DayTime from '../../../common/DayTimeWrapper';
 import { getCostingSpecificTechnology } from '../../../costing/actions/Costing';
-import { AsyncSearchableSelectHookForm, DatePickerHookForm, SearchableSelectHookForm, TextFieldHookForm } from '../../../layout/HookFormInputs';
+import { AsyncSearchableSelectHookForm, DatePickerHookForm, SearchableSelectHookForm } from '../../../layout/HookFormInputs';
 import { getBOPCategorySelectList } from '../../../masters/actions/BoughtOutParts';
 import { getClientSelectList } from '../../../masters/actions/Client';
 import { getRawMaterialNameChild, getRMGradeSelectListByRawMaterial } from '../../../masters/actions/Material';
@@ -597,7 +597,7 @@ function MasterCostMovement() {
         const resultInput = inputValue.slice(0, searchCount)
         if (inputValue?.length >= searchCount && vendor !== resultInput) {
             let res
-            res = await getVendorWithVendorCodeSelectList(VBCTypeId, resultInput)
+            res = await getVendorNameByVendorSelectList(VBC_VENDOR_TYPE, resultInput)
             setVendor(resultInput)
             let vendorDataAPI = res?.data?.SelectList
             if (inputValue) {

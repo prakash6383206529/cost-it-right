@@ -973,7 +973,7 @@ export function getSimulationLevelDataList(callback) {
 }
 
 /**
- * @method fetchPlantDataAPI
+ * @method getAllTechnologyAPI
  * @description Used to fetch plant list
  */
 export function getAllTechnologyAPI(callback, data) {

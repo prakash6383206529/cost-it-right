@@ -5,12 +5,12 @@ import { Row, Col, Table } from 'reactstrap'
 import { required, checkForNull, positiveAndDecimalNumber, maxLength10, checkForDecimalAndNull, decimalLengthsix, number } from '../../../helper/validation'
 import { focusOnError, renderTextInputField, searchableSelect } from '../../layout/FormInputs'
 import { getPlantListByState } from '../actions/Fuel'
-import { createLabour, getLabourData, updateLabour, labourTypeVendorSelectList, getLabourTypeByMachineTypeSelectList, } from '../actions/Labour'
+import { createLabour, getLabourData, updateLabour, getLabourTypeByMachineTypeSelectList, } from '../actions/Labour'
 import { getMachineTypeSelectList } from '../actions/MachineMaster'
 import Toaster from '../../common/Toaster'
-import { fetchStateDataAPI, getAllCity } from '../../../actions/Common';
+import { fetchStateDataAPI, getAllCity, getVendorNameByVendorSelectList } from '../../../actions/Common';
 import { MESSAGES } from '../../../config/message'
-import { EMPTY_DATA, searchCount, SPACEBAR } from '../../../config/constants'
+import { EMPTY_DATA, LABOUR_VENDOR_TYPE, searchCount, SPACEBAR } from '../../../config/constants'
 import { loggedInUserId } from '../../../helper/auth'
 import Switch from 'react-switch'
 import DatePicker from 'react-datepicker'
@@ -686,7 +686,7 @@ class AddLabour extends Component {
       if (inputValue?.length >= searchCount && vendorFilterList !== resultInput) {
         // this.setState({ inputLoader: true })
         let res
-        res = await labourTypeVendorSelectList(resultInput)
+        res = await getVendorNameByVendorSelectList(LABOUR_VENDOR_TYPE, resultInput)
         // this.setState({ inputLoader: false })
         this.setState({ vendorFilterList: resultInput })
         let vendorDataAPI = res?.data?.SelectList
@@ -1105,7 +1105,6 @@ export default connect(mapStateToProps, {
   fetchStateDataAPI,
   getAllCity,
   getPlantListByState,
-  labourTypeVendorSelectList,
 })(
   reduxForm({
     form: 'AddLabour',

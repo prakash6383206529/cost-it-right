@@ -7,11 +7,7 @@ import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import { EMPTY_DATA, OPERATIONS, SURFACETREATMENT, defaultPageSize, APPROVED_STATUS } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
-import {
-    getOperationsDataList, deleteOperationAPI, getOperationSelectList, getVendorWithVendorCodeSelectList, getTechnologySelectList,
-    getVendorListByTechnology, getOperationListByTechnology, getTechnologyListByOperation, getVendorListByOperation,
-    getTechnologyListByVendor, getOperationListByVendor, setOperationList
-} from '../actions/OtherOperation';
+import { getOperationsDataList, deleteOperationAPI, setOperationList } from '../actions/OtherOperation';
 import AddOperation from './AddOperation';
 import { onFloatingFilterChanged, onSearch, resetState, onBtPrevious, onBtNext, onPageSizeChanged, PaginationWrapper } from '../../common/commonPagination'
 import BulkUpload from '../../massUpload/BulkUpload';
@@ -293,45 +289,6 @@ class OperationListing extends Component {
         onPageSizeChanged(this, newPageSize, "Operation", this.state.currentRowIndex)    // COMMON PAGINATION FUNCTION
     };
 
-    /**
-    * @method renderListing
-    * @description Used show listing of unit of measurement
-    */
-    renderListing = (label) => {
-        const { filterOperation } = this.props;
-        const temp = [];
-
-        if (label === 'technology') {
-            filterOperation && filterOperation.technology && filterOperation.technology.map(item => {
-                if (item.Value === '0') return false;
-                temp.push({ label: item.Text, value: item.Value })
-                return null;
-            });
-            return temp;
-        }
-
-        if (label === 'costingHead') {
-            return costingHeadObjs;
-        }
-
-        if (label === 'OperationNameList') {
-            filterOperation && filterOperation.operations && filterOperation.operations.map(item => {
-                if (item.Value === '0') return false;
-                temp.push({ label: item.Text, value: item.Value })
-                return null;
-            });
-            return temp;
-        }
-
-        if (label === 'VendorList') {
-            filterOperation && filterOperation.vendors && filterOperation.vendors.map(item => {
-                if (item.Value === '0') return false;
-                temp.push({ label: item.Text, value: item.Value })
-                return null;
-            });
-            return temp;
-        }
-    }
 
     /**
     * @method viewOrEditItemDetails
@@ -419,84 +376,6 @@ class OperationListing extends Component {
                 {isDeleteButton && <button title='Delete' className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
             </>
         )
-    };
-
-    /**
-    * @method handleHeadChange
-    * @description called
-    */
-    handleHeadChange = (newValue, actionMeta) => {
-        if (newValue && newValue !== '') {
-            this.setState({ costingHead: newValue, });
-        } else {
-            this.setState({ costingHead: [], })
-        }
-    };
-
-    /**
-    * @method handleTechnology
-    * @description called
-    */
-    handleTechnology = (newValue, actionMeta) => {
-        if (newValue && newValue !== '') {
-            this.setState({ selectedTechnology: newValue, }, () => {
-                const { selectedTechnology } = this.state;
-                this.props.getVendorListByTechnology(selectedTechnology.value, () => { })
-                this.props.getOperationListByTechnology(selectedTechnology.value, () => { })
-            });
-        } else {
-            this.setState({ selectedTechnology: [], })
-            this.props.getOperationSelectList(() => { })
-            this.props.getVendorWithVendorCodeSelectList()
-        }
-    };
-
-    /**
-    * @method handleOperationName
-    * @description called
-    */
-    handleOperationName = (newValue, actionMeta) => {
-        if (newValue && newValue !== '') {
-            this.setState({ operationName: newValue }, () => {
-                const { operationName } = this.state;
-                this.props.getTechnologyListByOperation(operationName.value, () => { })
-                this.props.getVendorListByOperation(operationName.value, () => { })
-            });
-        } else {
-            this.setState({ operationName: [] })
-            this.props.getTechnologySelectList(() => { })
-            this.props.getVendorWithVendorCodeSelectList()
-        }
-    };
-
-    /**
-    * @method handleVendorName
-    * @description called
-    */
-    handleVendorName = (newValue, actionMeta) => {
-        if (newValue && newValue !== '') {
-            this.setState({ vendorName: newValue }, () => {
-                const { vendorName } = this.state;
-                this.props.getTechnologyListByVendor(vendorName.value, () => { })
-                this.props.getOperationListByVendor(vendorName.value, () => { })
-            });
-        } else {
-            this.setState({ vendorName: [] })
-            this.props.getTechnologySelectList(() => { })
-            this.props.getOperationSelectList(() => { })
-        }
-    };
-
-    /**
-    * @method handleVendorType
-    * @description Used to handle vendor type
-    */
-    handleVendorType = (newValue, actionMeta) => {
-        if (newValue && newValue !== '') {
-            this.setState({ vendorType: newValue, vendorName: [], });
-        } else {
-            this.setState({ vendorType: [], vendorName: [] })
-        }
     };
 
     /**
@@ -962,10 +841,10 @@ class OperationListing extends Component {
 * @param {*} state
                 */
 function mapStateToProps({ otherOperation, auth, simulation }) {
-    const { loading, filterOperation, operationList, allOperationList, operationSurfaceTreatmentList, operationIndividualList, setOperationData, operationDataHold } = otherOperation;
+    const { loading, operationList, allOperationList, operationSurfaceTreatmentList, operationIndividualList, setOperationData, operationDataHold } = otherOperation;
     const { leftMenuData, initialConfiguration, topAndLeftMenuData } = auth;
     const { selectedRowForPagination } = simulation;
-    return { loading, filterOperation, leftMenuData, operationList, allOperationList, initialConfiguration, topAndLeftMenuData, operationSurfaceTreatmentList, operationIndividualList, selectedRowForPagination, setOperationData, operationDataHold };
+    return { loading, leftMenuData, operationList, allOperationList, initialConfiguration, topAndLeftMenuData, operationSurfaceTreatmentList, operationIndividualList, selectedRowForPagination, setOperationData, operationDataHold };
 }
 
 /**
@@ -975,17 +854,8 @@ function mapStateToProps({ otherOperation, auth, simulation }) {
                 * @param {function} mapDispatchToProps
                 */
 export default connect(mapStateToProps, {
-    getTechnologySelectList,
     getOperationsDataList,
     deleteOperationAPI,
-    getVendorWithVendorCodeSelectList,
-    getOperationSelectList,
-    getVendorListByTechnology,
-    getOperationListByTechnology,
-    getTechnologyListByOperation,
-    getVendorListByOperation,
-    getTechnologyListByVendor,
-    getOperationListByVendor,
     getListingForSimulationCombined,
     setSelectedRowForPagination,
     setOperationList,

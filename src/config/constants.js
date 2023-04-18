@@ -33,7 +33,7 @@ export const API = {
 
   getMasterFilterUOMAPI: `${BASE_URL}/masters-unit-of-measurement/get`,
   getMaterialType: `${BASE_URL}/configuration/select-list-get-material-type`,
-  getPlant: `${BASE_URL}/configuration/select-list-get-plant`,
+  // getPlant: `${BASE_URL}/configuration/select-list-get-plant`,
   getTechnology: `${BASE_URL}/configuration/select-list-get-technology`,
   getSupplierCode: `${BASE_URL}/configuration/select-list-get-vendor-code`,
   getCategoryType: `${BASE_URL}/configuration/select-list-get-category-type`,
@@ -42,7 +42,6 @@ export const API = {
   getCostingHeads: `${BASE_URL}/configuration/select-list-get-costing-heads`,
   getModelTypes: `${BASE_URL}/configuration/select-list-get-costing-model-type`,
   getTechnologySelectList: `${BASE_URL}/configuration/select-list-get-technology`,
-  getPlantSelectList: `${BASE_URL}/configuration/select-list-get-plant`,
   getPlantSelectListByType: `${BASE_URL}/configuration/select-list-get-plants-by-type`,
   getVendorPlantSelectList: `${BASE_URL}/configuration/select-list-get-un-associated-vendor-plants`,
   getPartSelectLists: `${BASE_URL}/masters-part/select-list-component-part-for-convert-to-assembly`,
@@ -270,16 +269,11 @@ export const API = {
   deleteSupplierAPI: `${BASE_URL}/vendor/delete-vendor`,
   getRadioButtonSupplierType: `${BASE_URL}/configuration/radio-button-list-get-supplier-type`,
   getVendorTypesSelectList: `${BASE_URL}/vendor/vendor-types-select-list`,
-  // getSupplierLists: `${BASE_URL}/configuration/select-list-get-vendor`,
   activeInactiveVendorStatus: `${BASE_URL}/vendor/active-vendor`,
-  getVendorsByVendorTypeID: `${BASE_URL}/vendor/vendor-by-vendor-type-select-list`,
   vendorBulkUpload: `${BASE_URL}/vendor/bulk-upload-for-vendor-json`,
-  getAllVendorSelectList: `${BASE_URL}/vendor/all-vendor-select-list`,
-  getVendorTypeByVendorSelectList: `${BASE_URL}/vendor/vendor-type-by-vendor-select-list`,
-  getVendorWithVendorCodeSelectList: `${BASE_URL}/configuration/select-list-get-vendor`,
-  getVendorTypeBOPSelectList: `${BASE_URL}/vendor/vendor-bop-type-select-list`,
   getReporterList: `${BASE_URL}/rfq-user/get-user-select-list`,
   getContactPerson: `${BASE_URL}/rfq-quotation/get-contact-person-by-vendor-selectlist`,
+  getVendorNameByVendorSelectList: `${BASE_URL}/vendor/vendor-name-by-vendor-select-list`,
 
   //BOP DOMESTIC
   createBOP: `${BASE_URL}/masters-bought-out-part/create-bought-out-part`,
@@ -378,18 +372,11 @@ export const API = {
   getOperationsDataList: `${BASE_URL}/masters-operation/get-all-operation-by-filter`,
   getOperationDataAPI: `${BASE_URL}/masters-operation/get-operation`,
   deleteOperationAPI: `${BASE_URL}/masters-operation/delete-operation`,
-  getOperationSelectList: `${BASE_URL}/configuration/select-list-get-operation`,
   fileUploadOperation: `${BASE_URL}/masters-operation/operation-file-upload`,
   fileDeleteOperation: `${BASE_URL}/masters-operation/delete-operation-file`,
   checkAndGetOperationCode: `${BASE_URL}/masters-operation/check-operation-code-is-unique`,
   operationBulkUpload: `${BASE_URL}/masters-operation/bulk-upload-operation`,
 
-  getVendorListByTechnology: `${BASE_URL}/masters-operation/get-operation-vendor-by-technology-select-list`,
-  getOperationListByTechnology: `${BASE_URL}/masters-operation/get-operation-by-technology-select-list`,
-  getTechnologyListByOperation: `${BASE_URL}/masters-operation/get-operation-technology-by-operation-select-list`,
-  getVendorListByOperation: `${BASE_URL}/masters-operation/get-operation-vendor-by-operation-select-list`,
-  getTechnologyListByVendor: `${BASE_URL}/masters-operation/get-operation-technology-by-vendor-select-list`,
-  getOperationListByVendor: `${BASE_URL}/masters-operation/get-operation-by-vendor-select-list`,
   getOperationPartSelectList: `${BASE_URL}/masters-operation/get-operation-code-select-list`,
 
   //OPERATION APPROVAL API'S
@@ -420,7 +407,6 @@ export const API = {
   getLabourDataList: `${BASE_URL}/masters-labour/get-all-by-filter`,
   updateLabour: `${BASE_URL}/masters-labour/update`,
   deleteLabour: `${BASE_URL}/masters-labour/delete-individual`,
-  labourTypeVendorSelectList: `${BASE_URL}/vendor/vendor-labour-type-select-list`,
   getLabourTypeByPlantSelectList: `${BASE_URL}/masters-labour/get-labour-type-by-plant-select-list`,
   labourBulkUpload: `${BASE_URL}/masters-labour/bulk-upload-for-labour-details-vbc-json`,
   getLabourTypeByMachineTypeSelectList: `${BASE_URL}/masters-labour/get-labour-type-by-machine-type-select-list`,
@@ -1227,7 +1213,6 @@ export const GET_PROCESS_LIST_FAILURE = 'GET_PROCESS_LIST_FAILURE'
 export const GET_PROCESS_UNIT_DATA_SUCCESS = 'GET_PROCESS_UNIT_DATA_SUCCESS'
 export const GET_PROCESS_DATA_SUCCESS = 'GET_PROCESS_DATA_SUCCESS'
 export const GET_INITIAL_PLANT_SELECTLIST_SUCCESS = 'GET_INITIAL_PLANT_SELECTLIST_SUCCESS'
-//export const GET_INITIAL_VENDOR_WITH_VENDOR_CODE_SELECTLIST = 'GET_INITIAL_VENDOR_WITH_VENDOR_CODE_SELECTLIST';
 export const GET_INITIAL_MACHINE_TYPE_SELECTLIST = 'GET_INITIAL_MACHINE_TYPE_SELECTLIST'
 export const GET_INITIAL_MACHINE_LIST_SUCCESS = 'GET_INITIAL_MACHINE_LIST_SUCCESS'
 export const GET_INITIAL_PROCESSES_LIST_SUCCESS = 'GET_INITIAL_PROCESSES_LIST_SUCCESS'
@@ -1298,9 +1283,6 @@ export const GET_DATA_WHILE_LOADING = 'GET_DATA_WHILE_LOADING';
 //OPERATION
 export const GET_OPERATION_SUCCESS = 'GET_OPERATION_SUCCESS'
 export const GET_UNIT_OPERATION_DATA_SUCCESS = 'GET_UNIT_OPERATION_DATA_SUCCESS'
-export const GET_OPERATION_SELECTLIST_SUCCESS = 'GET_OPERATION_SELECTLIST_SUCCESS'
-export const GET_INITIAL_VENDOR_WITH_VENDOR_CODE_SELECTLIST = 'GET_INITIAL_VENDOR_WITH_VENDOR_CODE_SELECTLIST'
-export const GET_INITIAL_TECHNOLOGY_SELECTLIST = 'GET_INITIAL_TECHNOLOGY_SELECTLIST'
 export const GET_OPERATION_APPROVAL_LIST = 'GET_OPERATION_APPROVAL_LIST'
 export const SET_OPERATION_DATA = 'SET_OPERATION_DATA'
 export const GET_OPERATION_SELECTLIST = 'GET_OPERATION_SELECTLIST'
@@ -2216,8 +2198,23 @@ export const IV = 'eTEFSa0PinFKTQNB'
 
 export const KEYRFQ = "UAGSqTBCbZ8JqHJl"
 export const IVRFQ = "8vFNmRQEl91nOtrM"
+
 //CONSTANT FOR DOMESTIC AND IMPORT COMMON LISTING API
 export const ENTRY_TYPE_DOMESTIC = 0
 export const ENTRY_TYPE_IMPORT = 1
+
+//CONSTANT FOR VENDOR TYPE 
+export const VENDOR_TYPE_BOP = 'BOP'
+export const VENDOR_TYPE_FREIGHT = 'FREIGHT'
+export const VENDOR_TYPE_LABOUR = 'LABOUR'
+export const VENDOR_TYPE_RAW_MATERIAL = 'RAW MATERIAL'
+export const VENDOR_TYPE_VBC = 'VBC'
+
+export const BOP_VENDOR_TYPE = Number(reactLocalStorage.getObject('vendortype')[VENDOR_TYPE_BOP])
+export const FREIGHT_VENDOR_TYPE = Number(reactLocalStorage.getObject('vendortype')[VENDOR_TYPE_FREIGHT])
+export const LABOUR_VENDOR_TYPE = Number(reactLocalStorage.getObject('vendortype')[VENDOR_TYPE_LABOUR])
+export const RAW_MATERIAL_VENDOR_TYPE = Number(reactLocalStorage.getObject('vendortype')[VENDOR_TYPE_RAW_MATERIAL])
+export const VBC_VENDOR_TYPE = Number(reactLocalStorage.getObject('vendortype')[VENDOR_TYPE_VBC])
+
 //VERSION 
 export const VERSION = "V2.1.124";

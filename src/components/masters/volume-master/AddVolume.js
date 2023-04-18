@@ -5,13 +5,13 @@ import { Row, Col, Label, Tooltip } from 'reactstrap'
 import { required } from '../../../helper/validation'
 import { searchableSelect } from '../../layout/FormInputs'
 import { createVolume, updateVolume, getVolumeData, getFinancialYearSelectList, getPartSelectListWtihRevNo, } from '../actions/Volume'
-import { getPlantSelectListByType, getPlantBySupplier, getVendorWithVendorCodeSelectList } from '../../../actions/Common'
+import { getPlantSelectListByType, getPlantBySupplier, getVendorNameByVendorSelectList } from '../../../actions/Common'
 import { getPartSelectList } from '../actions/Part'
 import Toaster from '../../common/Toaster'
 import { MESSAGES } from '../../../config/message'
 import { getConfigurationKey, loggedInUserId, userDetails } from '../../../helper/auth'
 import AddVendorDrawer from '../supplier-master/AddVendorDrawer'
-import { CBCTypeId, searchCount, SPACEBAR, VBCTypeId, ZBC, ZBCTypeId } from '../../../config/constants'
+import { CBCTypeId, searchCount, SPACEBAR, VBC_VENDOR_TYPE, VBCTypeId, ZBC, ZBCTypeId } from '../../../config/constants'
 import LoaderCustom from '../../common/LoaderCustom'
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
@@ -282,7 +282,7 @@ class AddVolume extends Component {
   async closeVendorDrawer(e = '', formData = {}, type) {
     if (type === 'submit') {
       this.setState({ isOpenVendor: false })
-      const res = await getVendorWithVendorCodeSelectList(this.state.vendorName)
+      const res = await getVendorNameByVendorSelectList(VBC_VENDOR_TYPE, this.state.vendorName)
       let vendorDataAPI = res?.data?.SelectList
       reactLocalStorage?.setObject('vendorData', vendorDataAPI)
       if (Object.keys(formData).length > 0) {
@@ -710,7 +710,7 @@ class AddVolume extends Component {
       if (inputValue?.length >= searchCount && vendorFilter !== resultInput) {
         this.setState({ inputLoader: true })
         let res
-        res = await getVendorWithVendorCodeSelectList(resultInput)
+        res = await getVendorNameByVendorSelectList(VBC_VENDOR_TYPE, resultInput)
         this.setState({ inputLoader: false })
         this.setState({ vendorFilter: resultInput })
         let vendorDataAPI = res?.data?.SelectList
@@ -1153,7 +1153,6 @@ export default connect(mapStateToProps, {
   getVolumeData,
   getFinancialYearSelectList,
   getPartSelectList,
-  getVendorWithVendorCodeSelectList,
   getClientSelectList
 })(
   reduxForm({
