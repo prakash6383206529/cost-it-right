@@ -3,6 +3,7 @@ import axios from 'axios';
 import {
     API,
     API_FAILURE,
+    NFR_DETAILS_FOR_DISCOUNT,
     config,
 
 } from '../../../../config/constants';
@@ -149,3 +150,16 @@ export function approvedCostingByApprover(requestData, callback) {
             });
     };
 }
+
+/**
+ * @method nfrDetailsForDiscount
+ * @description nfrDetailsForDiscount  
+ */
+export function nfrDetailsForDiscountAction(data) {
+    return (dispatch) => {
+        dispatch({
+            type: NFR_DETAILS_FOR_DISCOUNT,
+            payload: data,
+        });
+    }
+};

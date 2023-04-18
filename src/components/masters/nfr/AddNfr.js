@@ -14,7 +14,7 @@ import HeaderTitle from '../../common/HeaderTitle';
 import NoContentFound from '../../common/NoContentFound';
 import Toaster from '../../common/Toaster';
 import { AsyncSearchableSelectHookForm, NumberFieldHookForm, SearchableSelectHookForm, TextFieldHookForm } from '../../layout/HookFormInputs';
-import { getNFRPartWiseGroupDetail, saveNFRGroupDetails } from './actions/nfr';
+import { getNFRPartWiseGroupDetail, nfrDetailsForDiscountAction, saveNFRGroupDetails } from './actions/nfr';
 import { checkVendorPlantConfigurable, loggedInUserId, userDetails } from '../../../helper';
 import { dataLiist } from '../../../config/masterData';
 import { createCosting, getBriefCostingById, storePartNumber } from '../../costing/actions/Costing';
@@ -57,6 +57,8 @@ function AddNfr(props) {
     const [showDrawer, setShowDrawer] = useState(false);
     const [costingOptionsSelectedObject, setCostingOptionsSelectedObject] = useState([]);
     const [selectedCheckBox, setSelectedCheckbox] = useState(false);
+    const [isCostingViewMode, setIsCostingViewMode] = useState(false);
+    const [isOEQAAdded, setIsOEQAAdded] = useState(false);
 
     const { register, setValue, getValues, control, formState: { errors }, } = useForm({
         mode: 'onChange',
@@ -94,19 +96,21 @@ function AddNfr(props) {
                 });
 
                 setNFRPartDetail(res?.data?.Data)
+                if (newArray?.length === 0) {
+                    setValue('GroupName', 'OEQA 1');
+                    setIsOEQAAdded(false)
+                } else {
+                    setValue('GroupName', '');
+                    setIsOEQAAdded(true)
+                }
                 setRowData(newArray)
             }
         }))
-
-
+        // return () => {
+        //     dispatch(nfrDetailsForDiscountAction({}))
+        // }
 
     }, [])
-
-    useEffect(() => {
-        if (rowData?.length === 0) {
-            setValue('GroupName', 'OEQA 1');
-        }
-    }, [rowData])
 
     // Sets the initial values of the form fields based on the nfrData prop.
     useEffect(() => {
@@ -129,9 +133,14 @@ function AddNfr(props) {
         };
         setRowData([...rowData, newCosting]);
         resetData(true)
+        setIsOEQAAdded(true)
     };
 
     const updateRow = () => {
+        if (!vendorName || vendorName?.length === 0) {
+            Toaster.warning("Please select at least one vendor")
+            return false
+        }
         let list = [...rowData]
         let rowIndex = list.findIndex(element => element?.groupName === getValues('GroupName'))
         let rowtemp = list[rowIndex]
@@ -140,14 +149,20 @@ function AddNfr(props) {
         setRowData([...finalList]);
         resetData(true)
         setIsRowEdited(false)
+        setIsOEQAAdded(true)
     };
 
     const resetData = (removeGroup) => {
-        setVendorname([])
-        setValue('VendorName', '')
-        setIsRowEdited(false)
-        if (removeGroup) {
-            setValue('GroupName', '')
+        if (isRowEdited) {
+            setValue('VendorName', '')
+            setVendorname([])
+        } else {
+            setVendorname([])
+            setValue('VendorName', '')
+            setIsRowEdited(false)
+            if (removeGroup) {
+                setValue('GroupName', '')
+            }
         }
     }
     const addDetails = debounce((data, index1, index) => {
@@ -204,12 +219,25 @@ function AddNfr(props) {
 
     }, 500);
 
-    const viewDetails = (index) => { };
+    const viewDetails = (index) => {
+        let tempData;
+        tempData = costingOptionsSelectedObject[index]
+        dispatch(getBriefCostingById(tempData?.CostingId, (res) => {
+            setIsCostingViewMode(true)
+            if (res?.data?.Result) {
+                setpartInfoStepTwo(partInfoStepTwo)
+                setcostingData({ costingId: tempData?.CostingId, NFRTypeId })
+                setIsAddDetails(true)
+            }
+
+        }))
+    };
 
     const editCosting = (index) => {
         let tempData;
         tempData = costingOptionsSelectedObject[index]
         dispatch(getBriefCostingById(tempData?.CostingId, (res) => {
+            setIsCostingViewMode(false)
             if (res?.data?.Result) {
                 setpartInfoStepTwo(partInfoStepTwo)
                 setcostingData({ costingId: tempData?.CostingId, NFRTypeId })
@@ -229,6 +257,7 @@ function AddNfr(props) {
         setValue('VendorName', item?.data)
         setValue('GroupName', item?.groupName)
         setIsRowEdited(true)
+        setIsOEQAAdded(false)
     }
 
     const deleteRow = (item, index) => {
@@ -237,6 +266,8 @@ function AddNfr(props) {
         setRowData(rowtemp)
         setIsRowEdited(false)
         resetData(true)
+        setValue('GroupName', 'OEQA 1');
+        setIsOEQAAdded(false)
     }
 
     const saveEstimation = () => {
@@ -355,12 +386,12 @@ function AddNfr(props) {
     const onCheckBoxClick = (index) => {
         let temp = selectedCheckBox
         setSelectedCheckbox(!temp)
-        if (!temp === true) {
-
-        }
-
     }
     const sendForApproval = () => {
+        if (selectedCheckBox === false) {
+            Toaster.warning("Please select group estimation")
+            return false
+        }
         setShowDrawer(true)
     }
     const closeShowApproval = () => {
@@ -376,7 +407,7 @@ function AddNfr(props) {
                     <Col md="8"><div className="parent-container">
                         <div className="child-container">
                             <TextFieldHookForm
-                                label="NPR Id:"
+                                label="NFR Id:"
                                 name={"NprId"}
                                 Controller={Controller}
                                 control={control}
@@ -465,7 +496,7 @@ function AddNfr(props) {
                             mandatory={true}
                             handleChange={handleVendorChange}
                             errors={errors.vendorName}
-                            disabled={isViewEstimation ? true : false}
+                            disabled={(isViewEstimation || isOEQAAdded) ? true : false}
                         // isLoading={plantLoaderObj}
                         />
                     </Col>
@@ -476,7 +507,7 @@ function AddNfr(props) {
                                 type="button"
                                 className={"user-btn  pull-left mt-1"}
                                 onClick={updateRow}
-                                disabled={isViewEstimation}
+                                disabled={(isViewEstimation || isOEQAAdded) ? true : false}
                             >
                                 <div className={"plus"}></div> UPDATE
                             </button> :
@@ -484,7 +515,7 @@ function AddNfr(props) {
                                 type="button"
                                 className={"user-btn  pull-left mt-1"}
                                 onClick={addRow}
-                                disabled={isViewEstimation}
+                                disabled={(isViewEstimation || isOEQAAdded) ? true : false}
                             >
                                 <div className={"plus"}></div> ADD
                                 {/* {isEditMode ? "UPDATE" : 'ADD'} */}
@@ -493,7 +524,7 @@ function AddNfr(props) {
                             type="button"
                             className={"reset-btn pull-left mt-1 ml5"}
                             onClick={() => { resetData(false) }}
-                            disabled={isViewEstimation}
+                            disabled={(isViewEstimation || isOEQAAdded) ? true : false}
                         >
                             Reset
                         </button>
@@ -558,17 +589,17 @@ function AddNfr(props) {
                                             /></td>
                                             <td className="text-center">
                                                 <div className={dataItem?.CostingId !== EMPTY_GUID ? dataItem?.Status : ''}>
-                                                    {dataItem?.Status}
+                                                    {dataItem?.SelectedCostingVersion?.Status ? dataItem?.SelectedCostingVersion?.Status : ''}
                                                 </div>
                                             </td>
-                                            <td>{dataItem?.poPrice}</td>
+                                            <td>{dataItem?.SelectedCostingVersion?.Price}</td>
                                             <td> <div className='action-btn-wrapper pr-2'>
-                                                {<button className="Add-file" type={"button"} title={"Add Costing"} onClick={() => addDetails(dataItem, indexOuter, indexInside)} />}
-                                                {!item?.IsNewCosting && item?.Status !== '' && (<button className="View" type={"button"} title={"View Costing"} onClick={() => viewDetails(indexInside)} />)}
-                                                {!item?.IsNewCosting && (<button className="Edit" type={"button"} title={"Edit Costing"} onClick={() => editCosting(indexInside)} />)}
-                                                {!item?.IsNewCosting && (<button className="Copy All" title={"Copy Costing"} type={"button"} onClick={() => copyCosting(indexInside)} />)}
-                                                {!item?.IsNewCosting && (<button className="Delete All" title={"Delete Costing"} type={"button"} onClick={() => deleteItem(item, indexInside)} />)}
-                                                {item?.CostingOptions?.length === 0 && <button title='Discard' className="CancelIcon" type={'button'} onClick={() => deleteRowItem(indexInside)} />}
+                                                {!isViewEstimation && <button className="Add-file" type={"button"} title={"Add Costing"} onClick={() => addDetails(dataItem, indexOuter, indexInside)} />}
+                                                {!item?.IsNewCosting && item?.Status !== '' && getValues(`${indexInside}.CostingVersion`) && (<button className="View" type={"button"} title={"View Costing"} onClick={() => viewDetails(indexInside)} />)}
+                                                {!isViewEstimation && !item?.IsNewCosting && getValues(`${indexInside}.CostingVersion`) && (<button className="Edit" type={"button"} title={"Edit Costing"} onClick={() => editCosting(indexInside)} />)}
+                                                {!isViewEstimation && !item?.IsNewCosting && getValues(`${indexInside}.CostingVersion`) && (<button className="Copy All" title={"Copy Costing"} type={"button"} onClick={() => copyCosting(indexInside)} />)}
+                                                {!isViewEstimation && !item?.IsNewCosting && getValues(`${indexInside}.CostingVersion`) && (<button className="Delete All" title={"Delete Costing"} type={"button"} onClick={() => deleteItem(item, indexInside)} />)}
+                                                {!isViewEstimation && item?.CostingOptions?.length === 0 && getValues(`${indexInside}.CostingVersion`) && <button title='Discard' className="CancelIcon" type={'button'} onClick={() => deleteRowItem(indexInside)} />}
                                             </div></td>
                                             {indexInside === 0 && (
                                                 <td rowSpan={item?.data.length} className="table-record">
