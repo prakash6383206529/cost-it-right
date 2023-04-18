@@ -75,3 +75,77 @@ export function getNFRPartWiseGroupDetail(data, callback) {
         });
     };
 }
+
+/**
+ * @method nfrSendToApproverBySender
+ * @description save NFR Group Details
+ */
+export function nfrSendToApproverBySender(requestData, callback) {
+    return (dispatch) => {
+        axios.post(API.nfrSendToApproverBySender, requestData, config())
+            .then((response) => {
+                if (response && response.status === 200) {
+                    callback(response);
+                }
+            }).catch((error) => {
+                apiErrors(error);
+                callback(error);
+            });
+    };
+}
+
+/**
+ * @method getNFRApprovals
+ * @description get NFR Approvals
+ */
+export function getNFRApprovals(callback) {
+    return (dispatch) => {
+        const request = axios.get(`${API.getNFRApprovals}`, config());
+        request.then((response) => {
+            if (response.data.Result || response.status === 204) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE, });
+            callback(error);
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method getNFRApprovalSummary
+ * @description get NFR Approval Summary
+ */
+export function getNFRApprovalSummary(nfrGroupId, loggedInUserId, callback) {
+    return (dispatch) => {
+        const request = axios.get(`${API.getNFRApprovalSummary}/${nfrGroupId}/${loggedInUserId}`, config());
+        request.then((response) => {
+            if (response.data.Result || response.status === 204) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE, });
+            callback(error);
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method approvedCostingByApprover
+ * @description approve Costing By Approver
+ */
+export function approvedCostingByApprover(requestData, callback) {
+    return (dispatch) => {
+        axios.post(API.approvedCostingByApprover, requestData, config())
+            .then((response) => {
+                if (response && response.status === 200) {
+                    callback(response);
+                }
+            }).catch((error) => {
+                apiErrors(error);
+                callback(error);
+            });
+    };
+}

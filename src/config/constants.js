@@ -1020,6 +1020,11 @@ export const API = {
   getMachineProcessMovement: `${BASE_URL}/reports/get-machine-process-cost-movement`,
   saveNFRGroupDetails: `${BASE_URL}/nfr/save-nfr-group-details`,
   getNFRPartWiseGroupDetail: `${BASE_URL}/nfr/get-nfr-part-wise-group-detail`,
+  nfrSendToApproverBySender: `${BASE_URL}/nfr/nfr-send-to-approver-by-sender`,
+  getNFRApprovals: `${BASE_URL}/nfr/get-nfr-approvals`,
+  getNFRApprovalSummary: `${BASE_URL}/nfr/get-nfr-approval-summary`,
+  approvedCostingByApprover: `${BASE_URL}/nfr/approved-nfr-by-approver`,
+
 
   //SUB ASSEMBLY
   getSubAssemblyAPI: `${BASE_URL}/sub-assembly/get-sub-assembly`,
@@ -2206,6 +2211,7 @@ export const NCCTypeIdFull = Number(reactLocalStorage.getObject('CostingHeadsLis
 export const ZBCADDMORE = 0
 
 export const NFRTypeId = Number(reactLocalStorage.getObject('CostingHeadsListShortForm')[NFR])
+export const NFRAPPROVALTYPEID = Number(reactLocalStorage.getObject('CostingHeadsListShortForm')[NFR])
 // export const NFRTypeId = Number(reactLocalStorage.getObject('CostingHeadsListShortForm')[NCC])
 
 //CONSTANTS FOR APPROVAL TYPE 
