@@ -483,6 +483,7 @@ function CostingHeaderTabs(props) {
                 setHeaderCost={props.setHeaderDiscountTab}
                 DiscountTabData={props.DiscountTabData}
                 toggle={props.toggle}
+                isNFR={props?.isNFR}
               />
             </TabPane>
           </TabContent>
