@@ -475,6 +475,9 @@ export const API = {
   createNCCCosting: `${BASE_URL}/costing/create-ncc-costing`,
   getMachineProcessGroupDetail: `${BASE_URL}/costing/get-costing-machine-process-group-detail`,
   getFgWiseImpactDataForCosting: `${BASE_URL}/costing/get-fgwise-impact-detail`,
+  saveCostingLabourDetails: `${BASE_URL}/costing/save-costing-labour-details`,
+  getCostingLabourDetails: `${BASE_URL}/costing/get-costing-labour-details`,
+  getLabourDetailsByFilter: `${BASE_URL}/masters-labour/get-all-by-filter`,
 
   getRMCCTabData: `${BASE_URL}/costing/get-costing-detail-for-rm-bop-cc`,
   getRMDrawerDataList: `${BASE_URL}/costing/get-costing-raw-materials-detail`,
