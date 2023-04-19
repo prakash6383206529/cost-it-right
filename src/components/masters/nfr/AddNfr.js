@@ -59,6 +59,7 @@ function AddNfr(props) {
     const [selectedCheckBox, setSelectedCheckbox] = useState(false);
     const [isCostingViewMode, setIsCostingViewMode] = useState(false);
     const [isOEQAAdded, setIsOEQAAdded] = useState(false);
+    const [callAPI, setCallAPI] = useState(false);
 
     const { register, setValue, getValues, control, formState: { errors }, } = useForm({
         mode: 'onChange',
@@ -103,19 +104,20 @@ function AddNfr(props) {
                     setValue('GroupName', '');
                     setIsOEQAAdded(true)
                 }
+                if (newArray?.length === 0) {
+                    setCallAPI(true)
+                }
                 setRowData(newArray)
             }
         }))
-        // return () => {
-        //     dispatch(nfrDetailsForDiscountAction({}))
-        // }
+        reactLocalStorage.setObject('isFromDiscountObj', false)
 
     }, [])
 
     // Sets the initial values of the form fields based on the nfrData prop.
     useEffect(() => {
         if (nfrData) {
-            setValue('NprId', nfrData?.NfrPartStatusId);
+            setValue('NfrId', nfrData?.NfrPartStatusId);
             setValue('PartNo', nfrData?.PartNumber);
             setValue('PartName', nfrData?.PartName);
         }
@@ -127,9 +129,14 @@ function AddNfr(props) {
             Toaster.warning('Please select group name and vendor name');
             return false;
         }
+        let vendorList = vendorName && vendorName?.map((item) => {
+            item.vendorName = item?.label.split(" (")[0]
+            item.vendorCode = item?.label.split(" (")[1].slice(0, -1)
+            return item
+        })
         const newCosting = {
             groupName: getValues('GroupName'),
-            data: vendorName
+            data: vendorList
         };
         setRowData([...rowData, newCosting]);
         resetData(true)
@@ -170,7 +177,9 @@ function AddNfr(props) {
         let list = dataa?.data && dataa?.data[index]
         const userDetail = userDetails()
         let tempData = viewCostingData[0]
-
+        if (callAPI) {
+            saveEstimation()
+        }
         const Data = {
             PartId: nfrData?.PartId,
             PartTypeId: nfrPartDetail?.PartTypeId,
@@ -397,6 +406,10 @@ function AddNfr(props) {
     const closeShowApproval = () => {
         setShowDrawer(false)
     }
+
+    const onBackButton = () => {
+        props?.close()
+    }
     return (
         <>
             {props.showAddNfr && <div>
@@ -407,8 +420,8 @@ function AddNfr(props) {
                     <Col md="8"><div className="parent-container">
                         <div className="child-container">
                             <TextFieldHookForm
-                                label="NPR Id:"
-                                name={"NprId"}
+                                label="NFR Id:"
+                                name={"NfrId"}
                                 Controller={Controller}
                                 control={control}
                                 register={register}
@@ -451,7 +464,7 @@ function AddNfr(props) {
                             />
                         </div>
                         <div className="child-container">
-                            <button type="button" className={"apply"} onClick={props?.close}>
+                            <button type="button" className={"apply"} onClick={onBackButton}>
                                 <div className={'back-icon'}></div>Back
                             </button>
                         </div>

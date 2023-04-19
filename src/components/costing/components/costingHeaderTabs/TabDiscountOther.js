@@ -32,6 +32,7 @@ import NpvCost from '../CostingHeadCosts/AdditionalOtherCost/NpvCost';
 import AddNpvCost from '../CostingHeadCosts/AdditionalOtherCost/AddNpvCost';
 import ConditionCosting from '../CostingHeadCosts/AdditionalOtherCost/ConditionCosting';
 import AddConditionCosting from '../CostingHeadCosts/AdditionalOtherCost/AddConditionCosting';
+import { reactLocalStorage } from 'reactjs-localstorage';
 
 let counter = 0;
 function TabDiscountOther(props) {
@@ -119,6 +120,10 @@ function TabDiscountOther(props) {
 
   useEffect(() => {
     dispatch(getCurrencySelectList(() => { }))
+    return () => {
+      reactLocalStorage.setObject('isFromDiscountObj', false)
+      setNfrListing(false)
+    }
   }, [])
 
 
@@ -760,6 +765,7 @@ function TabDiscountOther(props) {
   */
   const onSubmit = debounce((values, val, gotoNextValue) => {
     if (props?.isNFR && gotoNextValue) {
+      reactLocalStorage.setObject('isFromDiscountObj', true)
       setNfrListing(true)
     } else {
       if (errorCheckObject(ErrorObjDiscount)) return false;
@@ -1002,7 +1008,6 @@ function TabDiscountOther(props) {
       to={{
         pathname: "/nfr",
         state: {
-          isFromDiscount: true
         }
 
       }}
@@ -1537,4 +1542,4 @@ function TabDiscountOther(props) {
   );
 };
 
-export default React.memo(TabDiscountOther);
+export default React.memo(TabDiscountOther); 
