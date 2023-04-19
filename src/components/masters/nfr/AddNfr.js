@@ -59,6 +59,7 @@ function AddNfr(props) {
     const [selectedCheckBox, setSelectedCheckbox] = useState(false);
     const [isCostingViewMode, setIsCostingViewMode] = useState(false);
     const [isOEQAAdded, setIsOEQAAdded] = useState(false);
+    const [callAPI, setCallAPI] = useState(false);
 
     const { register, setValue, getValues, control, formState: { errors }, } = useForm({
         mode: 'onChange',
@@ -103,6 +104,9 @@ function AddNfr(props) {
                     setValue('GroupName', '');
                     setIsOEQAAdded(true)
                 }
+                if (newArray?.length === 0) {
+                    setCallAPI(true)
+                }
                 setRowData(newArray)
             }
         }))
@@ -127,9 +131,14 @@ function AddNfr(props) {
             Toaster.warning('Please select group name and vendor name');
             return false;
         }
+        let vendorList = vendorName && vendorName?.map((item) => {
+            item.vendorName = item?.label.split(" (")[0]
+            item.vendorCode = item?.label.split(" (")[1].slice(0, -1)
+            return item
+        })
         const newCosting = {
             groupName: getValues('GroupName'),
-            data: vendorName
+            data: vendorList
         };
         setRowData([...rowData, newCosting]);
         resetData(true)
@@ -170,7 +179,9 @@ function AddNfr(props) {
         let list = dataa?.data && dataa?.data[index]
         const userDetail = userDetails()
         let tempData = viewCostingData[0]
-
+        if (callAPI) {
+            saveEstimation()
+        }
         const Data = {
             PartId: nfrData?.PartId,
             PartTypeId: nfrPartDetail?.PartTypeId,
@@ -321,8 +332,8 @@ function AddNfr(props) {
             to={{
                 pathname: "/costing",
                 state: {
-                    isAddMode: true,
-                    isViewMode: false,
+                    isAddMode: !isCostingViewMode,
+                    isViewMode: isCostingViewMode,
                     costingData: costingData,
                     partInfoStepTwo: partInfoStepTwo,
                     isNFR: true
@@ -551,7 +562,7 @@ function AddNfr(props) {
                                             {indexInside === 0 && (
                                                 <>
                                                     <td rowSpan={item?.data.length} className="table-record">
-                                                        <label
+                                                        {!isViewEstimation && <label
                                                             className={`custom-checkbox`}
                                                             onChange={(e) => onCheckBoxClick(indexOuter)}
                                                         >
@@ -565,7 +576,7 @@ function AddNfr(props) {
                                                                 checked={selectedCheckBox}
                                                                 onChange={(e) => onCheckBoxClick(indexOuter)}
                                                             />
-                                                        </label>
+                                                        </label>}
                                                         {item?.groupName}</td>
                                                 </>
                                             )}
@@ -603,8 +614,8 @@ function AddNfr(props) {
                                             </div></td>
                                             {indexInside === 0 && (
                                                 <td rowSpan={item?.data.length} className="table-record">
-                                                    <button className="Edit" type={"button"} title={"Edit Costing"} onClick={() => editRow(item, indexInside)} />
-                                                    <button className="Delete All ml-1" title={"Delete Costing"} type={"button"} onClick={() => deleteRow(item, indexInside)} />
+                                                    <button className="Edit" type={"button"} title={"Edit Costing"} onClick={() => editRow(item, indexInside)} disabled={isViewEstimation} />
+                                                    <button className="Delete All ml-1" title={"Delete Costing"} type={"button"} onClick={() => deleteRow(item, indexInside)} disabled={isViewEstimation} />
                                                 </td>
                                             )}
                                         </tr>
@@ -622,6 +633,7 @@ function AddNfr(props) {
                                 type="button"
                                 className="user-btn mr5 save-btn"
                                 onClick={() => saveEstimation()}
+                                disabled={isViewEstimation}
                             >
                                 <div className={"save-icon"}></div>
                                 Save
@@ -630,6 +642,7 @@ function AddNfr(props) {
                                 className='user-btn'
                                 type='button'
                                 onClick={sendForApproval}
+                                disabled={isViewEstimation}
                             >
                                 <div className="send-for-approval"></div>
                                 Send for Approval
