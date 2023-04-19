@@ -15,13 +15,14 @@ import { PaginationWrapper } from '../../common/commonPagination'
 import { checkPermission, searchNocontentFilter, userDetails } from '../../../helper';
 import DayTime from '../../common/DayTimeWrapper';
 import Attachament from '../../costing/components/Drawers/Attachament';
-import { getNfrPartDetails } from './actions/nfr';
+import { getNfrPartDetails, nfrDetailsForDiscountAction } from './actions/nfr';
 import { hyphenFormatter } from '../masterUtil';
 import AddNfr from './AddNfr';
 const gridOptions = {};
 
 
 function NfrPartsListing(props) {
+    const { nfrDetailsForDiscount } = useSelector(state => state.costing)
     const [gridApi, setgridApi] = useState(null);                      // DONT DELETE THIS STATE , IT IS USED BY AG GRID
     const [gridColumnApi, setgridColumnApi] = useState(null);          // DONT DELETE THIS STATE , IT IS USED BY AG GRID
     const [loader, setloader] = useState(false);
@@ -30,18 +31,18 @@ function NfrPartsListing(props) {
     const [addRfqData, setAddRfqData] = useState({});
     const [isEdit, setIsEdit] = useState(false);
     const [rowData, setRowData] = useState([])
-    const [estimationData, setEstimationData] = useState([])
+    const [estimationData, setEstimationData] = useState(props?.isFromDiscount ? nfrDetailsForDiscount?.objForpart : [])
     const [noData, setNoData] = useState(false)
     const [viewRfq, setViewRfq] = useState(false)
     const [viewRfqData, setViewRfqData] = useState("")
     const [addAccessibility, setAddAccessibility] = useState(false);
     const [editAccessibility, setEditAccessibility] = useState(false);
     const [viewAccessibility, setViewAccessibility] = useState(false);
-    const [editPart, setEditPart] = useState(false)
+    const [editPart, setEditPart] = useState(props?.isFromDiscount ? true : false)
     const [confirmPopup, setConfirmPopup] = useState(false);
     const [attachment, setAttachment] = useState(false);
     const [viewAttachment, setViewAttachment] = useState([])
-    const [nfrIdsList, setNFRIdsList] = useState({})
+    const [nfrIdsList, setNFRIdsList] = useState(props?.isFromDiscount ? nfrDetailsForDiscount?.objectFordisc : {})
     const [isViewMode, setIsViewMode] = useState(false)
     const { topAndLeftMenuData } = useSelector(state => state.auth);
 
@@ -77,7 +78,7 @@ function NfrPartsListing(props) {
     * @description HIDE DOMESTIC, IMPORT FORMS
     */
     const getDataList = () => {
-        dispatch(getNfrPartDetails(props?.data?.NfrId, (res) => {
+        dispatch(getNfrPartDetails(props?.isFromDiscount ? nfrDetailsForDiscount?.rowData?.NfrId : props?.data?.NfrId, (res) => {
             if (res?.data?.DataList?.length > 0) {
                 setRowData(res?.data?.DataList)
             }
@@ -95,6 +96,12 @@ function NfrPartsListing(props) {
         setEstimationData(rowData)
         setEditPart(true)
         setNFRIdsList({ NfrMasterId: rowData?.NfrMasterId, NfrPartWiseDetailId: rowData?.NfrPartWiseDetailId })
+        let obj = {
+            ...nfrDetailsForDiscount, objectFordisc: {
+                NfrMasterId: rowData?.NfrMasterId, NfrPartWiseDetailId: rowData?.NfrPartWiseDetailId,
+            }, objForpart: { NfrPartStatusId: rowData?.NfrPartStatusId, PartNumber: rowData?.PartNumber, PartName: rowData?.PartName }
+        }
+        dispatch(nfrDetailsForDiscountAction(obj))
     }
     const closePopUp = () => {
         setConfirmPopup(false)
