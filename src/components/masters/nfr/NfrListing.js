@@ -363,6 +363,7 @@ function NfrListing(props) {
                     closeDrawer={closeDrawer}
                     nfrDataFromAdd={props?.location?.state}
                     isFromDiscount={props?.isFromDiscount}
+                    changeIsFromDiscount={props?.changeIsFromDiscount}
                 />
 
             }
