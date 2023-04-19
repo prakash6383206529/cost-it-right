@@ -1662,6 +1662,9 @@ export const GET_QUOTATION_BY_ID = 'GET_QUOTATION_BY_ID'
 export const GET_QUOTATION_LIST = 'GET_QUOTATION_LIST'
 export const CHECK_RFQ_BULK_UPLOAD = 'CHECK_RFQ_BULK_UPLOAD'
 
+// NFR
+export const NFR_DETAILS_FOR_DISCOUNT = 'NFR_DETAILS_FOR_DISCOUNT'
+
 //COSTING STATUS
 export const GET_COSTING_STATUS = 'GET_COSTING_STATUS'
 export const DRAFT = 'Draft'
@@ -2224,4 +2227,4 @@ export const RAW_MATERIAL_VENDOR_TYPE = Number(reactLocalStorage.getObject('vend
 export const VBC_VENDOR_TYPE = Number(reactLocalStorage.getObject('vendortype')[VENDOR_TYPE_VBC])
 
 //VERSION 
-export const VERSION = "V2.1.135";
+export const VERSION = "V2.1.142";

@@ -298,11 +298,11 @@ class BOPImportListing extends Component {
     bulkToggle = () => {
         this.setState({ isBulkUpload: true })
     }
-
-    closeBulkUploadDrawer = () => {
-        this.setState({ isBulkUpload: false }, () => {
+    closeBulkUploadDrawer = (event, type) => {
+        this.setState({ isBulkUpload: false })
+        if (type !== 'cancel') {
             this.resetState()
-        })
+        }
     }
 
     showAnalytics = (cell, rowData) => {

@@ -63,7 +63,7 @@ function NpvCost(props) {
                         </tbody>
                         <tfoot>
                             <tr className='table-footer'>
-                                <td colSpan={"4"} className="text-right">{'Total Cost:'}</td>
+                                <td colSpan={"3"} className="text-right">{'Total Cost:'}</td>
                                 <td colSpan={"2"}>{totalCost}</td>
                             </tr>
                         </tfoot>

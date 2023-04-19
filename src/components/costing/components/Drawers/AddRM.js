@@ -5,7 +5,7 @@ import { Container, Row, Col, } from 'reactstrap';
 import Drawer from '@material-ui/core/Drawer';
 import { getRMDrawerDataList } from '../../actions/Costing';
 import NoContentFound from '../../../common/NoContentFound';
-import { CBCTypeId, defaultPageSize, EMPTY_DATA, NCCTypeId, NFRTypeId, VBCTypeId, ZBCTypeId } from '../../../../config/constants';
+import { CBCTypeId, defaultPageSize, EMPTY_DATA, NCC, NCCTypeId, NFRTypeId, VBC, VBCTypeId, ZBCTypeId } from '../../../../config/constants';
 import Toaster from '../../../common/Toaster';
 import { costingInfoContext } from '../CostingDetailStepTwo';
 import { EMPTY_GUID, ZBC } from '../../../../config/constants';

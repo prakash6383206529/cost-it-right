@@ -325,11 +325,13 @@ function VolumeListing(props) {
    * @method closeActualBulkUploadDrawer
    * @description CLOSE ACTUAL BULK DRAWER
    */
-  const closeActualBulkUploadDrawer = () => {
+  const closeActualBulkUploadDrawer = (event, type) => {
     setBulkUploadBtn(false)
-    setTimeout(() => {
-      getTableListData(0, globalTake, true)
-    }, 200);
+    if (type !== 'cancel') {
+      setTimeout(() => {
+        getTableListData(0, globalTake, true)
+      }, 200);
+    }
   }
 
 
