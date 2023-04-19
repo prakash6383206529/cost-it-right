@@ -54,6 +54,7 @@ function NfrPartsListing(props) {
 
     useEffect(() => {
         getDataList()
+        props?.changeIsFromDiscount(false)
     }, [])
 
     /**
@@ -97,9 +98,13 @@ function NfrPartsListing(props) {
         setEditPart(true)
         setNFRIdsList({ NfrMasterId: rowData?.NfrMasterId, NfrPartWiseDetailId: rowData?.NfrPartWiseDetailId })
         let obj = {
-            ...nfrDetailsForDiscount, objectFordisc: {
+            ...nfrDetailsForDiscount,
+            objectFordisc: {
                 NfrMasterId: rowData?.NfrMasterId, NfrPartWiseDetailId: rowData?.NfrPartWiseDetailId,
-            }, objForpart: { NfrPartStatusId: rowData?.NfrPartStatusId, PartNumber: rowData?.PartNumber, PartName: rowData?.PartName }
+            },
+            objForpart: {
+                NfrPartStatusId: rowData?.NfrPartStatusId, PartNumber: rowData?.PartNumber, PartName: rowData?.PartName
+            }
         }
         dispatch(nfrDetailsForDiscountAction(obj))
     }
@@ -343,7 +348,7 @@ function NfrPartsListing(props) {
                     />
                 )
             }
-            {editPart && <AddNfr showAddNfr={editPart} nfrData={estimationData} close={close} nfrIdsList={nfrIdsList} isViewEstimation={isViewMode} />}
+            {editPart && <AddNfr showAddNfr={editPart} nfrData={estimationData} close={close} nfrIdsList={nfrIdsList} isViewEstimation={isViewMode} changeIsFromDiscount={props?.changeIsFromDiscount} />}
 
         </>
     );

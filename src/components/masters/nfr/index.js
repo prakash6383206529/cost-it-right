@@ -3,15 +3,22 @@ import { Nav, NavItem, NavLink, TabContent, TabPane } from "reactstrap";
 import NFRApprovalListing from "./NFRApprovalListing";
 import NfrListing from "./NfrListing";
 import classnames from 'classnames';
+import { reactLocalStorage } from "reactjs-localstorage";
 
 function NfrTabs(props) {
     const [activeTab, setActiveTab] = useState('1');
+    const [isFromDiscount, setisFromDiscount] = useState(reactLocalStorage.getObject("isFromDiscountObj"));
     const toggle = (tab) => {
         if (activeTab !== tab) {
             setActiveTab(tab);
         }
 
     }
+
+    const changeIsFromDiscount = (value) => {
+        setisFromDiscount(value)
+    }
+
     return (
         <>
             <div className="user-page container-fluid costing-main-container">
@@ -41,7 +48,7 @@ function NfrTabs(props) {
                     </Nav>
                     <TabContent activeTab={activeTab}>
                         <TabPane tabId="1">
-                            <NfrListing isFromDiscount={props?.location?.state?.isFromDiscount} />
+                            <NfrListing isFromDiscount={isFromDiscount} changeIsFromDiscount={changeIsFromDiscount} />
                         </TabPane>
 
                         <TabPane tabId="2">
