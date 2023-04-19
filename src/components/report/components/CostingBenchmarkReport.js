@@ -196,7 +196,7 @@ function CostingBenchmarkReport(props) {
                 <div className="simulation-main p-relative">
                     <Row>
                         {cancelButton && <Col md="12" className='mb-2'>
-                            <button type="button" className={`apply float-right report-btn-back`} onClick={cancelReport}> <div className={'back-icon'}></div>Back</button>
+                            <button type="button" className={`apply float-right`} onClick={cancelReport}> <div className={'back-icon'}></div>Back</button>
                         </Col>}
                     </Row>
 
