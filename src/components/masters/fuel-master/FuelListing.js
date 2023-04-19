@@ -224,9 +224,10 @@ class FuelListing extends Component {
     }
 
     closeBulkUploadDrawer = () => {
-        this.setState({ isBulkUpload: false }, () => this.getDataList(0, 0))
+        this.setState({ isBulkUpload: false }, () => {
+            this.getDataList(0, 0)
+        })
     }
-
     /**
     * @method onSubmit
     * @description Used to Submit the form

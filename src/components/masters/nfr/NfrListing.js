@@ -16,7 +16,7 @@ import { checkPermission, searchNocontentFilter, userDetails } from '../../../he
 import DayTime from '../../common/DayTimeWrapper';
 import Attachament from '../../costing/components/Drawers/Attachament';
 import NfrPartsListing from './NfrPartsListing';
-import { getAllNfrList } from './actions/nfr';
+import { getAllNfrList, nfrDetailsForDiscountAction } from './actions/nfr';
 import { hyphenFormatter } from '../masterUtil';
 const gridOptions = {};
 
@@ -26,7 +26,6 @@ function NfrListing(props) {
     const [gridColumnApi, setgridColumnApi] = useState(null);          // DONT DELETE THIS STATE , IT IS USED BY AG GRID
     const [loader, setloader] = useState(false);
     const dispatch = useDispatch();
-    const [addRfq, setAddRfq] = useState(false);
     const [addRfqData, setAddRfqData] = useState({});
     const [isEdit, setIsEdit] = useState(false);
     const [rowData, setRowData] = useState([])
@@ -39,9 +38,11 @@ function NfrListing(props) {
     const [confirmPopup, setConfirmPopup] = useState(false);
     const [attachment, setAttachment] = useState(false);
     const [viewAttachment, setViewAttachment] = useState([])
+    const { nfrDetailsForDiscount } = useSelector(state => state.costing)
     const [nfrId, setNfrId] = useState('');
     const [selectedPartData, setSelectedPartData] = useState([]);
     const { topAndLeftMenuData } = useSelector(state => state.auth);
+    const [addRfq, setAddRfq] = useState(props?.isFromDiscount ? true : false);
 
     useEffect(() => {
         setloader(true)
@@ -107,9 +108,11 @@ function NfrListing(props) {
             rowData: rowData,
             Id: Id
         }
-        console.log(rowData, "rowData")
+
         setSelectedPartData(rowData)
         setNfrId(rowData?.NfrNumber)
+        let obj = { ...nfrDetailsForDiscount, rowData: rowData }
+        dispatch(nfrDetailsForDiscountAction(obj))
         setIsEdit(true)
         setAddRfqData(data)
         setAddRfq(true)
@@ -273,7 +276,6 @@ function NfrListing(props) {
                 <div className={`ag-grid-react ${(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) ? "" : ""} ${true ? "show-table-btn" : ""} ${false ? 'simulation-height' : props?.isMasterSummaryDrawer ? '' : 'min-height100vh'}`}>
                     {(loader ? <LoaderCustom customClass="simulation-Loader" /> : !viewRfq && (
                         <>
-                            <h1 className='mb-0'>All NFRs</h1>
                             <Row className={`filter-row-large pt-2 ${props?.isSimulation ? 'zindex-0 ' : ''}`}>
 
                                 <Col md="3" lg="3" className='mb-2'>
@@ -359,6 +361,8 @@ function NfrListing(props) {
                     isEditFlag={isEdit}
                     nfrId={nfrId}
                     closeDrawer={closeDrawer}
+                    nfrDataFromAdd={props?.location?.state}
+                    isFromDiscount={props?.isFromDiscount}
                 />
 
             }

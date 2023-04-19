@@ -161,6 +161,7 @@ function AddRfq(props) {
                     setValue("plant", {
                         label: data.PlantName, value: data.PlantId
                     })
+                    setTechnology({ label: data.TechnologyName, value: data.TechnologyId })
                     // setInitialFiles(data?.Attachments)
                     // setValue('SubmissionDate', data?.LastSubmissionDate)
                     setSubmissionDate(data?.LastSubmissionDate)
@@ -713,6 +714,9 @@ function AddRfq(props) {
         }))
     }
     const vendorFilterList = async (inputValue) => {
+        if (inputValue && typeof inputValue === 'string' && inputValue.includes(' ')) {
+            inputValue = inputValue.trim();
+        }
         const resultInput = inputValue.slice(0, searchCount)
         if (inputValue?.length >= searchCount && vendor !== resultInput) {
             let res

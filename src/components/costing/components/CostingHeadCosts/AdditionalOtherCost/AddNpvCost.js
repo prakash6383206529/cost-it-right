@@ -387,7 +387,7 @@ function AddNpvCost(props) {
                                     </Col>
                                 </Row>}
 
-                                {costingSummary &&
+                                {initialConfiguration?.IsShowNpvCost && costingSummary &&
                                     <>
                                         <Col md="12">
                                             <HeaderTitle className="border-bottom"
@@ -397,8 +397,8 @@ function AddNpvCost(props) {
                                         </Col>
                                     </>
                                 }
-                                <NpvCost showAddButton={false} tableData={tableData} hideAction={costingSummary} editData={editData} />
-                                {costingSummary &&
+                                {initialConfiguration?.IsShowNpvCost && <NpvCost showAddButton={false} tableData={tableData} hideAction={costingSummary} editData={editData} />}
+                                {initialConfiguration?.IsBasicRateAndCostingConditionVisible && costingSummary &&
                                     <>
                                         <Col md="12" className={'mt25'}>
                                             <HeaderTitle className="border-bottom"
@@ -431,7 +431,7 @@ function AddNpvCost(props) {
                     </Container>
                 </div>
             </Drawer> : <>
-                {tableData && tableData.length !== 0 && <>
+                {initialConfiguration?.IsShowNpvCost && tableData && tableData.length !== 0 && <>
                     <Col md="12">
                         <HeaderTitle className="border-bottom"
                             title={'NPV Data'}
@@ -440,7 +440,7 @@ function AddNpvCost(props) {
                     </Col>
                     <NpvCost showAddButton={false} tableData={tableData} hideAction={costingSummary} editData={editData} />
                 </>}
-                {conditionTableData && conditionTableData.length !== 0 && <> <Col md="12" className={'mt25'}>
+                {initialConfiguration?.IsBasicRateAndCostingConditionVisible && conditionTableData && conditionTableData.length !== 0 && <> <Col md="12" className={'mt25'}>
                     <HeaderTitle className="border-bottom"
                         title={'Costing Condition'}
                         customClass={'underLine-title'}

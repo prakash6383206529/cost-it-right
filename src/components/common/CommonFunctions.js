@@ -1,6 +1,6 @@
 import { reactLocalStorage } from "reactjs-localstorage";
 import _ from 'lodash';
-import { CBCAPPROVALTYPEID, CBCTypeId, dropdownLimit, NCCAPPROVALTYPEID, NCCTypeId, VBCAPPROVALTYPEID, VBCTypeId, ZBCAPPROVALTYPEID, ZBCTypeId } from "../../config/constants";
+import { CBCAPPROVALTYPEID, CBCTypeId, dropdownLimit, NCCAPPROVALTYPEID, NCCTypeId, NFRAPPROVALTYPEID, NFRTypeId, VBCAPPROVALTYPEID, VBCTypeId, ZBCAPPROVALTYPEID, ZBCTypeId } from "../../config/constants";
 
 // COMMON FILTER FUNCTION FOR AUTOCOMPLETE DROPDOWN
 const commonFilterFunction = (inputValue, dropdownArray, filterByName, selectedParts = false) => {
@@ -99,7 +99,7 @@ export const hideCustomerFromExcel = (data, value) => {
 
 export const costingTypeIdToApprovalTypeIdFunction = (value) => {
     let approvalTypeId;
-    switch (value) {
+    switch (Number(value)) {
         case ZBCTypeId:
             approvalTypeId = ZBCAPPROVALTYPEID;
             break;
@@ -112,9 +112,9 @@ export const costingTypeIdToApprovalTypeIdFunction = (value) => {
         case NCCTypeId:
             approvalTypeId = NCCAPPROVALTYPEID;
             break;
-        //   case PROVTypeId:
-        //     approvalTypeId = PROVAPPROVALTYPEID;
-        // break;
+        case NFRTypeId:
+            approvalTypeId = NFRAPPROVALTYPEID;
+            break;
         default:
             approvalTypeId = null; // or any default value you prefer
             break;
@@ -123,12 +123,6 @@ export const costingTypeIdToApprovalTypeIdFunction = (value) => {
 };
 export const hideColumnFromExcel = (data, value) => {
     let excelData
-    excelData = data && data.map((item) => {
-        if (item.value === value) {
-            return false
-        } else {
-            return item
-        }
-    })
+    excelData = data && data.filter((item) => item.value !== value)
     return excelData
 }

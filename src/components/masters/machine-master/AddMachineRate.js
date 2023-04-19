@@ -1361,11 +1361,14 @@ class AddMachineRate extends Component {
     const { isEditFlag, isOpenMachineType, isOpenProcessDrawer, disableMachineType, IsCopied, isViewFlag, isViewMode, setDisable, lockUOMAndRate, UniqueProcessId, costingTypeId, noApprovalCycle } = this.state;
     const filterList = async (inputValue) => {
       const { vendorFilterList } = this.state
+      if (inputValue && typeof inputValue === 'string' && inputValue.includes(' ')) {
+        inputValue = inputValue.trim();
+      }
       const resultInput = inputValue.slice(0, searchCount)
       if (inputValue?.length >= searchCount && vendorFilterList !== resultInput) {
         // this.setState({ inputLoader: true })
         let res
-        res = await getVendorWithVendorCodeSelectList(resultInput)
+        res = await getVendorWithVendorCodeSelectList(VBCTypeId, resultInput)
         // this.setState({ inputLoader: false })
         this.setState({ vendorFilterList: resultInput })
         let vendorDataAPI = res?.data?.SelectList

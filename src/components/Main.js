@@ -60,7 +60,7 @@ import CostMovementReport from './report/components/CostMovementReport/CostMovem
 import CostRatioReport from './report/components/CostRatioReport/CostRatioReport'
 import SupplierContributionReport from './report/components/SupplierContribution'
 import BudgetListing from './masters/budget-master/BudgetListing'
-import NfrListing from './masters/nfr/NfrListing'
+import NfrTabs from './masters/nfr'
 import SaleProvisionReport from './report/components/SaleProvisionReport/SaleProvisionReport'
 import PurchaseProvisionReport from './report/components/PurchaseProvisionReport/PurchaseProvisionReport'
 import CustomerPoamSummaryReport from './report/components/CustomerPoamSummaryReport/CustomerPoamSummaryReport'
@@ -87,7 +87,7 @@ if (Detail && Object.keys(Detail).length > 0) {
 
     let queryParams = `refresh_token=${reqParams.refresh_token}&ClientId=${reqParams.ClientId}&grant_type=${reqParams.grant_type}`;
 
-    axios.post(API.tokenAPI, queryParams, CustomHeader)
+    axios.post(API.login, queryParams, CustomHeader)
       .then((response) => {
         if (response && response.status === 200) {
           let userDetail = formatLoginResult(response.data);
@@ -374,7 +374,7 @@ class Main extends Component {
                     {/*  NEED TO ADD PATH FROM BACKEND */}
                     {/* <Route path="/simulation-insights" component={SimulationInsights} />                   MAY BE USE IN FUTURE*/}
                     <Route path="/rfq-listing" component={AuthMiddleware(RfqListing, RFQ)} />
-                    <Route path="/nfr-listing" component={NfrListing} />
+                    <Route path="/nfr" component={NfrTabs} />
                     <Route path="/budgeting" component={AuthMiddleware(BudgetListing, BUDGETING)} />
 
                     {/* <Route path='/simulation-approval-listing' component={SimulationApprovalListing} /> */}

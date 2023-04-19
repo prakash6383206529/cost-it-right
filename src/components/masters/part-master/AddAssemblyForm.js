@@ -183,6 +183,9 @@ class AddAssemblyForm extends Component {
 
         const filterList = async (inputValue) => {
             const { partName, selectedParts } = this.state
+            if (inputValue && typeof inputValue === 'string' && inputValue.includes(' ')) {
+                inputValue = inputValue.trim();
+            }
             const resultInput = inputValue.slice(0, searchCount)
             if (inputValue?.length >= searchCount && partName !== resultInput) {
                 let obj = {
