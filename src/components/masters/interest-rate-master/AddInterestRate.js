@@ -5,7 +5,7 @@ import { Row, Col, Label, } from 'reactstrap';
 import { required, postiveNumber, maxLength10, nonZero, number, maxPercentValue, checkWhiteSpaces, percentageLimitValidation, } from "../../../helper/validation";
 import { renderDatePicker, renderMultiSelectField, renderText, renderTextInputField, searchableSelect, } from "../../layout/FormInputs";
 import { updateInterestRate, createInterestRate, getPaymentTermsAppliSelectList, getICCAppliSelectList, getInterestRateData, } from '../actions/InterestRateMaster';
-import { getVendorWithVendorCodeSelectList, getPlantSelectListByType } from '../../../actions/Common';
+import { getPlantSelectListByType, getVendorNameByVendorSelectList } from '../../../actions/Common';
 import { MESSAGES } from '../../../config/message';
 import { getConfigurationKey, loggedInUserId, userDetails } from "../../../helper/auth";
 import DayTime from '../../common/DayTimeWrapper'
@@ -14,7 +14,7 @@ import LoaderCustom from '../../common/LoaderCustom';
 import Toaster from '../../common/Toaster'
 import { debounce } from 'lodash';
 import AsyncSelect from 'react-select/async';
-import { CBCTypeId, SPACEBAR, VBCTypeId, ZBC, ZBCTypeId, searchCount } from '../../../config/constants';
+import { CBCTypeId, SPACEBAR, VBCTypeId, VBC_VENDOR_TYPE, ZBC, ZBCTypeId, searchCount } from '../../../config/constants';
 import { onFocus, showDataOnHover } from '../../../helper';
 import { getClientSelectList, } from '../actions/Client';
 import { reactLocalStorage } from 'reactjs-localstorage';
@@ -493,7 +493,7 @@ class AddInterestRate extends Component {
       if (inputValue?.length >= searchCount && vendorFilterList !== resultInput) {
         this.setState({ inputLoader: true })
         let res
-        res = await getVendorWithVendorCodeSelectList(resultInput)
+        res = await getVendorNameByVendorSelectList(VBC_VENDOR_TYPE, resultInput)
         this.setState({ inputLoader: false })
         this.setState({ vendorFilterList: resultInput })
         let vendorDataAPI = res?.data?.SelectList
@@ -894,7 +894,6 @@ export default connect(mapStateToProps, {
   getInterestRateData,
   getPaymentTermsAppliSelectList,
   getICCAppliSelectList,
-  getVendorWithVendorCodeSelectList,
   getClientSelectList
 })(reduxForm({
   form: 'AddInterestRate',

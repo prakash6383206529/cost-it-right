@@ -226,48 +226,6 @@ export function getBOPCategorySelectList(callback) {
 }
 
 /**
- * @method getAllVendorSelectList
- * @description GET ALL VENDORS SELECTLIST
- */
-export function getAllVendorSelectList() {
-    return (dispatch) => {
-        const request = axios.get(API.getAllVendorSelectList, config());
-        request.then((response) => {
-            dispatch({
-                type: GET_ALL_VENDOR_SELECTLIST_SUCCESS,
-                payload: response.data.SelectList,
-            });
-        }).catch((error) => {
-            dispatch({ type: API_FAILURE });
-            apiErrors(error);
-        });
-    };
-}
-
-/**
-* @method getPlantSelectList
-* @description Used to get select list of Vendor's
-*/
-export function getPlantSelectList(callback) {
-    return (dispatch) => {
-        dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getPlantSelectList}`, config());
-        request.then((response) => {
-            if (response.data.Result) {
-                dispatch({
-                    type: GET_PLANT_SELECTLIST_SUCCESS,
-                    payload: response.data.SelectList,
-                });
-                callback(response);
-            }
-        }).catch((error) => {
-            dispatch({ type: API_FAILURE, });
-            apiErrors(error);
-        });
-    };
-}
-
-/**
 * @method getPlantSelectListByVendor
 * @description Used to get select list of Plant by Vendors
 */
