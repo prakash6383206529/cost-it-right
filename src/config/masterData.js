@@ -3356,7 +3356,7 @@ export const LOGISTICS = 24
 
 export const STRINGMAXLENGTH = 50
 export const NUMBERMAXLENGTH = 6
-export const REMARKMAXLENGTH = 255
+export const REMARKMAXLENGTH = 512
 
 export const SIMULATION_LEFT_MENU_NOT_INCLUDED = ["Simulation Upload", "RM Import", "RM Domestic", "BOP Domestic", "BOP Import", "Process-Simulation", "Process", "Operation-Simulation", "Surface Treatment", "Overhead-Simulation", "Overhead", "Profits", "Profits-Simulation", "Freight-Simulation", "Combined Process", "Operations", "Exchange Rates", "Machine Rate"]
 
@@ -3453,16 +3453,14 @@ export const OperationSimulation = [
 export const MachineRateSimulation = [
     { label: "CostingHead", value: "CostingHead" },
     { label: "Technologies", value: "Technologies" },
-    { label: "Vendor (Code)", value: "VendorName" },
-    { label: "Plant (Code)", value: "Plants" },
-    { label: "Customer (Code)", value: "CustomerName" },
     { label: "MachineName", value: "MachineName", },
     { label: "MachineNumber", value: "MachineNumber", },
     { label: "MachineTypeName", value: "MachineTypeName" },
-    { label: "MachineTonnage", value: "MachineTonnage" },
-    { label: "ProcessName", value: "ProcessName" },
     { label: "Vendor (Code)", value: "VendorName" },
     { label: "Plant (Code)", value: "Plants" },
+    { label: "Customer (Code)", value: "CustomerName" },
+    { label: "MachineTonnage", value: "MachineTonnage" },
+    { label: "ProcessName", value: "ProcessName" },
     { label: "MachineRate", value: "MachineRate" },
     { label: "RevisedMachineRate", value: "NewMachineRate" },
     { label: "EffectiveDate", value: "EffectiveDate" },
@@ -4013,7 +4011,6 @@ export const CostingSimulationDownloadRM = [
     { label: "Gross Weight", value: "RawMaterialGrossWeight" },
     { label: "Vendor (Code)", value: "VendorName" },
     { label: "Plant (Code)", value: "PlantName" },
-    { label: "PlantCode", value: "PlantCode" },
     { label: "Customer (Code)", value: "CustomerName" },
     { label: "Budgeted Price", value: "BudgetedPrice" },
     { label: "Existing PO Price", value: "OldPOPrice" },
@@ -4067,7 +4064,6 @@ export const CostingSimulationDownloadST = [
     { label: "Revision Number", value: "RevisionNumber" },
     { label: "Vendor (Code)", value: "VendorName" },
     { label: "Plant (Code)", value: "PlantName" },
-    { label: "PlantCode", value: "PlantCode" },
     { label: "Customer (Code)", value: "CustomerName" },
     { label: "Budgeted Price", value: "BudgetedPrice" },
     { label: "Existing PO Price", value: "OldPOPrice" },
@@ -4124,7 +4120,6 @@ export const CostingSimulationDownloadOperation = [
     { label: "Revision Number", value: "RevisionNumber" },
     { label: "Vendor (Code)", value: "VendorName" },
     { label: "Plant (Code)", value: "PlantName" },
-    { label: "PlantCode", value: "PlantCode" },
     { label: "Customer (Code)", value: "CustomerName" },
     { label: "Budgeted Price", value: "BudgetedPrice" },
     { label: "Existing PO Price", value: "OldPOPrice" },
@@ -4183,7 +4178,6 @@ export const CostingSimulationDownloadBOP = [
     { label: "BOP Quantity", value: "BoughtOutPartQuantity" },
     { label: "Vendor (Code)", value: "VendorName" },
     { label: "Plant (Code)", value: "PlantName" },
-    { label: "PlantCode", value: "PlantCode" },
     { label: "Customer (Code)", value: "CustomerName" },
     { label: "Budgeted Price", value: "BudgetedPrice" },
     { label: "Existing PO Price", value: "OldPOPrice" },
@@ -5026,7 +5020,6 @@ export const CostingSimulationDownloadMR = [
     { label: "ProcessCode", value: "ProcessCode" },
     { label: "Vendor (Code)", value: "VendorName" },
     { label: "Plant (Code)", value: "PlantName" },
-    { label: "PlantCode", value: "PlantCode" },
     { label: "Customer (Code)", value: "CustomerName" },
     { label: "Budgeted Price", value: "BudgetedPrice" },
     { label: "Existing PO Price", value: "OldPOPrice" },
@@ -5102,13 +5095,17 @@ export const MRGridForTokenSummary = [
     { label: "Variance (Proc. Cost)", value: "NetProcessCostVariance" },
 ]
 
-export const RMImpactedDownloadArray = ["RawMaterial", "RMGrade", "RMSpec", "RawMaterialCode", "Category", "TechnologyName", "VendorName", "UOM", "ExistingBasicRate", "RevisedBasicRate", "ExistingScrapRate", "RevisedScrapRate", "RMFreightCost", "RMShearingCost", "EffectiveDate"]
+export const RMImpactedDownloadArray = ["RawMaterial", "RMGrade", "RMSpec", "RawMaterialCode", "Category", "UOM", "TechnologyName", "Vendor", "ExistingBasicRate", "RevisedBasicRate", "ExistingScrapRate", "RevisedScrapRate", "RMFreightCost", "RMShearingCost", "EffectiveDate"]
 
 export const OperationImpactDownloadArray = ["OperationName", "OperationCode", "UOM", "ExistingOperationRate", "RevisedOperationRate", "EffectiveDate",]
 
-export const BOPImpactDownloadArray = ["BoughtOutPartNumber", "BoughtOutPartName", "Category", "Vendor", "PartNumber", "ExistingBOPRate", "RevisedBOPRate", "ExistingPOPrice", "RevisedPOPrice", "EffectiveDate",]
+export const STOperationImpactDownloadArray = ["STOperationName", "OperationCode", "UOM", "ExistingOperationRate", "RevisedOperationRate", "EffectiveDate",]
 
-export const ERImpactDownloadArray = ["Currency", "CostingNumber", "PartNumber", "BankRate", "BankCommissionPercentage", "CustomRate", "CurrencyExchangeRate", "ExistingExchangeRate", "RevisedExchangeRate", "EffectiveDate",]
+export const BOPImpactDownloadArray = ["BoughtOutPartNumber", "BoughtOutPartName", "Category", "Vendor", "ExistingBOPRate", "RevisedBOPRate", "EffectiveDate",]
+
+export const ERImpactDownloadArray = ["Currency", "BankRate", "BankCommissionPercentage", "CustomRate", "CurrencyExchangeRate", "ExistingExchangeRate", "RevisedExchangeRate", "EffectiveDate",]
+
+export const MachineImpactDownloadArray = ['MachineName', 'MachineNumber', 'MachineTypeName', 'ProcessName', 'ProcessCode', 'UOM', 'Vendor', 'ExistingMachineRate', 'RevisedMachineRate', 'EffectiveDate']
 
 export const RawMaterialDomesticFileHeads = ["CostingHead", "RawMaterial", "Grade", "Spec", "Code", "Category", "TechnologyName"]
 

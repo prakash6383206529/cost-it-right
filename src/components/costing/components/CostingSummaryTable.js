@@ -1277,7 +1277,7 @@ const CostingSummaryTable = (props) => {
                               viewCostingData?.map((data, index) => {
                                 return (
                                   <td>
-                                    <span className={`d-flex justify-content-between ${(data?.bestCost === true) ? '' : 'bg-grey'}`}>
+                                    <span className={`d-flex justify-content-between ${(data?.bestCost === true) ? '' : 'bg-grey'} ${drawerDetailPDF ? 'p-0' : ''}`}>
                                       {(data?.bestCost === true) ? ' ' : `${DayTime(data?.costingDate).format('DD-MM-YYYY')}-${data?.CostingNumber}${props.costingSummaryMainPage ? '-' : ''}${props.costingSummaryMainPage ? data?.status : ''}`}{' '}
                                       {
                                         !viewMode &&
@@ -1953,7 +1953,7 @@ const CostingSummaryTable = (props) => {
                             })}
                         </tr>
 
-                        <tr>
+                        {initialConfiguration?.IsBasicRateAndCostingConditionVisible && <tr>
                           <td>
                             <span className={`d-block small-grey-text ${isApproval && viewCostingData?.length > 1 && highlightCostingSummaryValue(viewCostingData[0]?.BasicRate, viewCostingData[1]?.BasicRate)}`}>Basic Price</span>
                           </td>
@@ -1968,13 +1968,14 @@ const CostingSummaryTable = (props) => {
                                 </td>
                               )
                             })}
-                        </tr>
-                        {drawerDetailPDF && <tr><th colSpan={2}>
+                        </tr>}
+                        {initialConfiguration?.IsShowNpvCost && drawerDetailPDF && <tr><th colSpan={2}>
                           <AddNpvCost
                             isOpen={openNpvDrawer}
                             costingSummary={true}
                             viewCostingData={viewCostingData}
                             tableData={[]}
+                            npvIndex={npvIndex}
                             closeDrawer={closeNpvDrawer}
                             anchor={'right'}
                             isPDFShow={true}
@@ -2362,7 +2363,7 @@ const CostingSummaryTable = (props) => {
         />
       }
 
-      {
+      {initialConfiguration?.IsShowNpvCost &&
         openNpvDrawer && <AddNpvCost
           isOpen={openNpvDrawer}
           viewCostingData={viewCostingData}

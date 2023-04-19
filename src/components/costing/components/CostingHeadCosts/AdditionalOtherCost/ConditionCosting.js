@@ -26,7 +26,7 @@ function ConditionCosting(props) {
                             <tr>
                                 <th>{`Condition`}</th>
                                 {<th>{`Type`}</th>}
-                                {<th>{`Percentage`}</th>}
+                                {<th>{`Percentage (%)`}</th>}
                                 {<th>{`Fixed`}</th>}
                                 {<th>{`Cost`}</th>}
                                 {!props.hideAction && <th className='text-right'>{`Action`}</th>}

@@ -353,8 +353,8 @@ function ViewConversionCost(props) {
                 <th>{`Rate`}</th>
                 <th>{`Quantity`}</th>
                 {/* make it configurable after deployment */}
-                {/* <th>{`Labour Rate`}</th>
-                      <th>{`Labour Quantity`}</th> */}
+                {costingOperationCost && costingOperationCost[0]?.IsLabourRateExist === true && <th>{`Labour Rate`}</th>}
+                {costingOperationCost && costingOperationCost[0]?.IsLabourRateExist === true && <th>{`Labour Quantity`}</th>}
                 <th>{`Net Cost`}</th>
                 <th className="costing-border-right">{`Remark`}</th>
               </tr>
@@ -374,16 +374,8 @@ function ViewConversionCost(props) {
                       <td>{item.UOM ? item.UOM : '-'}</td>
                       <td>{item.Rate ? item.Rate : '-'}</td>
                       <td>{item.Quantity ? item.Quantity : '-'}</td>
-                      {/* <td>
-                              {item.IsLabourRateExist
-                                ? checkForDecimalAndNull(item.LabourRate, initialConfiguration.NoOfDecimalForPrice)
-                                : '-'}
-                            </td>
-                            <td>
-                              {item.LabourQuantity
-                                ? item.LabourQuantity
-                                : '-'}
-                            </td> */}
+                      <td>{item.IsLabourRateExist ? checkForDecimalAndNull(item.LabourRate, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
+                      <td>{item.IsLabourRateExist ? checkForDecimalAndNull(item.LabourQuantity, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
                       {/* <td>{netCost(item.OperationCost)}</td> */}
                       <td>
                         {item.OperationCost ? checkForDecimalAndNull(item.OperationCost, initialConfiguration.NoOfDecimalForPrice) : 0}
@@ -427,9 +419,8 @@ function ViewConversionCost(props) {
                 <th>{`UOM`}</th>
                 <th>{`Rate`}</th>
                 <th>{`Quantity`}</th>
-                {/* make it configurable after deployment */}
-                {/* <th>{`Labour Rate`}</th>
-                      <th>{`Labour Quantity`}</th> */}
+                {costingOperationCost && costingOperationCost[0]?.IsLabourRateExist === true && <th>{`Labour Rate`}</th>}
+                {costingOperationCost && costingOperationCost[0]?.IsLabourRateExist === true && <th>{`Labour Quantity`}</th>}
                 <th>{`Net Cost`}</th>
                 <th className="costing-border-right">{`Remark`}</th>
               </tr>
@@ -449,16 +440,8 @@ function ViewConversionCost(props) {
                       <td>{item.UOM ? item.UOM : '-'}</td>
                       <td>{item.Rate ? item.Rate : '-'}</td>
                       <td>{item.Quantity ? item.Quantity : '-'}</td>
-                      {/* <td>
-                              {item.IsLabourRateExist
-                                ? checkForDecimalAndNull(item.LabourRate, initialConfiguration.NoOfDecimalForPrice)
-                                : '-'}
-                            </td>
-                            <td>
-                              {item.LabourQuantity
-                                ? item.LabourQuantity
-                                : '-'}
-                            </td> */}
+                      {item.IsLabourRateExist && <td>{checkForDecimalAndNull(item.LabourRate, initialConfiguration.NoOfDecimalForPrice)}</td>}
+                      {item.IsLabourRateExist && <td>{checkForDecimalAndNull(item.LabourQuantity, initialConfiguration.NoOfDecimalForPrice)}</td>}
                       {/* <td>{netCost(item.OperationCost)}</td> */}
                       <td>
                         {item.OperationCost ? checkForDecimalAndNull(item.OperationCost, initialConfiguration.NoOfDecimalForPrice) : 0}
@@ -500,6 +483,8 @@ function ViewConversionCost(props) {
                 <th>{`Quantity`}</th>
                 <th>{`UOM`}</th>
                 <th>{`Rate/UOM`}</th>
+                {surfaceTreatmentCost && surfaceTreatmentCost[0]?.IsLabourRateExist === true && <th>{`Labour Rate/UOM`}</th>}
+                {surfaceTreatmentCost && surfaceTreatmentCost[0]?.IsLabourRateExist === true && <th>{`Labour Quantity`}</th>}
                 <th className="costing-border-right">{`Cost`}</th>
               </tr>
             </thead>
@@ -513,6 +498,8 @@ function ViewConversionCost(props) {
                       <td>{item.SurfaceArea ? item.SurfaceArea : '-'}</td>
                       <td>{item.UOM ? item.UOM : '-'}</td>
                       <td>{item.RatePerUOM ? checkForDecimalAndNull(item.RatePerUOM, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
+                      {item.IsLabourRateExist === true && <td>{checkForDecimalAndNull(item.LabourRate, initialConfiguration.NoOfDecimalForPrice)}</td>}
+                      {item.IsLabourRateExist === true && <td>{checkForDecimalAndNull(item.LabourQuantity, initialConfiguration.NoOfDecimalForPrice)}</td>}
                       <td>{item.SurfaceTreatmentCost ? checkForDecimalAndNull(item.SurfaceTreatmentCost, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
 
                     </tr>
