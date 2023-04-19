@@ -540,7 +540,7 @@ class LabourListing extends Component {
                 <AgGridColumn field="State" headerName="State"></AgGridColumn>
                 <AgGridColumn field="MachineType" headerName="Machine Type"></AgGridColumn>
                 <AgGridColumn field="LabourType" headerName="Labour Type"></AgGridColumn>
-                <AgGridColumn width={205} field="LabourRate" headerName="Rate Per Person/Annum" cellRenderer={'commonCostFormatter'}></AgGridColumn>
+                <AgGridColumn width={205} field="LabourRate" headerName="Rate per Person/Annum" cellRenderer={'commonCostFormatter'}></AgGridColumn>
                 <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateRenderer'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
                 <AgGridColumn field="LabourId" width={150} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
               </AgGridReact>

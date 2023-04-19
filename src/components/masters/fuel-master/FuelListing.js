@@ -418,7 +418,7 @@ class FuelListing extends Component {
                                     <AgGridColumn field="StateName" headerName="State"></AgGridColumn>
                                     <AgGridColumn field="Rate" headerName="Rate (INR)" cellRenderer={'commonCostFormatter'}></AgGridColumn>
                                     <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateRenderer'}></AgGridColumn>
-                                    <AgGridColumn field="ModifiedDate" minWidth={170} headerName="Date Of Modification" cellRenderer={'effectiveDateRenderer'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
+                                    <AgGridColumn field="ModifiedDate" minWidth={170} headerName="Date of Modification" cellRenderer={'effectiveDateRenderer'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
                                     <AgGridColumn field="FuelDetailId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                                 </AgGridReact>
                                 {<PaginationWrapper gridApi={this.gridApi} setPage={this.onPageSizeChanged} />}
