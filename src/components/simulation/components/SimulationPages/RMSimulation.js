@@ -181,6 +181,7 @@ function RMSimulation(props) {
             let rmNameString = rmName.join(', ')
             setPopupMessage(`Scrap rate is not changed for some raw material (${rmNameString}). Do you still wish to continue?`)
             setShowPopup(true)
+            setShowTooltip(false)
             return false
         }
         setIsDisable(true)
