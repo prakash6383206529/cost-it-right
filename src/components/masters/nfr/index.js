@@ -41,7 +41,7 @@ function NfrTabs(props) {
                     </Nav>
                     <TabContent activeTab={activeTab}>
                         <TabPane tabId="1">
-                            <NfrListing />
+                            <NfrListing isFromDiscount={props?.location?.state?.isFromDiscount} />
                         </TabPane>
 
                         <TabPane tabId="2">

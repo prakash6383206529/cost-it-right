@@ -322,10 +322,12 @@ class LabourListing extends Component {
    * @method closeBulkUploadDrawer
    * @description CLOSED BULK UPLOAD DRAWER
    */
-  closeBulkUploadDrawer = () => {
-    this.setState({ isBulkUpload: false }, () => {
+
+  closeBulkUploadDrawer = (event, type) => {
+    this.setState({ isBulkUpload: false })
+    if (type !== 'cancel') {
       this.getTableListData(null, null, null, null)
-    })
+    }
   }
 
   /**

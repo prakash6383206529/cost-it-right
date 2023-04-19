@@ -104,7 +104,7 @@ function CostingDetails(props) {
 
 
   //FOR VIEW MODE COSTING
-  const [IsCostingViewMode, setIsCostingViewMode] = useState(false)
+  const [IsCostingViewMode, setIsCostingViewMode] = useState(props?.isNFR ? props?.isViewModeCosting : false)
   // FOR EDIT MODE COSTING
   const [IsCostingEditMode, setIsCostingEditMode] = useState(false)
   // FOR COPY COSTING MODE
@@ -2503,6 +2503,7 @@ function CostingDetails(props) {
                                 toggle={props.toggle}
                                 IsCostingViewMode={IsCostingViewMode}
                                 IsCopyCostingMode={IsCopyCostingMode}
+                                isNFR={props?.isNFR}
                               />
                             </CostingStatusContext.Provider>
                           </SelectedCostingDetail.Provider>
