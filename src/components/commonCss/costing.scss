@@ -504,3 +504,11 @@
     margin-right: 4px;
   }
 }
+
+.finalize-cost {
+  color: $postiveValueColor;
+
+  span {
+    color: $postiveValueColor;
+  }
+}
