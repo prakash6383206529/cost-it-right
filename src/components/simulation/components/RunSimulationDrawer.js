@@ -956,7 +956,7 @@ function RunSimulationDrawer(props) {
                                                     </div>
                                                 </Col>
 
-                                                <Col md="12" className={`p-0 pb-3 ${!getConfigurationKey().IsProvisionalSimulation ? 'mb-4 pb-2' : ''}`}>
+                                                <Col md="12" className={`p-0 pb-3`}>
                                                     <div class={`custom-check1 d-inline-block drawer-side-input-other `}>
                                                         {(
                                                             <div className="input-group col-md-12 mb-3 px-0 m-height-auto">
