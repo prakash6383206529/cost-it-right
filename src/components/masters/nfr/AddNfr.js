@@ -110,16 +110,14 @@ function AddNfr(props) {
                 setRowData(newArray)
             }
         }))
-        // return () => {
-        //     dispatch(nfrDetailsForDiscountAction({}))
-        // }
+        reactLocalStorage.setObject('isFromDiscountObj', false)
 
     }, [])
 
     // Sets the initial values of the form fields based on the nfrData prop.
     useEffect(() => {
         if (nfrData) {
-            setValue('NprId', nfrData?.NfrPartStatusId);
+            setValue('NfrId', nfrData?.NfrPartStatusId);
             setValue('PartNo', nfrData?.PartNumber);
             setValue('PartName', nfrData?.PartName);
         }
@@ -408,6 +406,10 @@ function AddNfr(props) {
     const closeShowApproval = () => {
         setShowDrawer(false)
     }
+
+    const onBackButton = () => {
+        props?.close()
+    }
     return (
         <>
             {props.showAddNfr && <div>
@@ -419,7 +421,7 @@ function AddNfr(props) {
                         <div className="child-container">
                             <TextFieldHookForm
                                 label="NFR Id:"
-                                name={"NprId"}
+                                name={"NfrId"}
                                 Controller={Controller}
                                 control={control}
                                 register={register}
@@ -462,7 +464,7 @@ function AddNfr(props) {
                             />
                         </div>
                         <div className="child-container">
-                            <button type="button" className={"apply"} onClick={props?.close}>
+                            <button type="button" className={"apply"} onClick={onBackButton}>
                                 <div className={'back-icon'}></div>Back
                             </button>
                         </div>
