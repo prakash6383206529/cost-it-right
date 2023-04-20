@@ -493,10 +493,10 @@ class AddInterestRate extends Component {
         CreatedBy: loggedInUserId(),
         Plants: costingTypeId === CBCTypeId ? cbcPlantArray : plantArray,
         CustomerId: costingTypeId === CBCTypeId ? client.value : '',
-        RawMaterialChildId: RawMaterial.value,
-        RawMaterialName: RawMaterial.label,
-        RawMaterialGradeId: RMGrade.value,
-        RawMaterialGrade: RMGrade.label,
+        RawMaterialChildId: RawMaterial?.value,
+        RawMaterialName: RawMaterial?.label,
+        RawMaterialGradeId: RMGrade?.value,
+        RawMaterialGrade: RMGrade?.label,
       }
       if (this.state.isEditFlag) {
         if (DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss') === DayTime(Data?.EffectiveDate).format('YYYY-MM-DD HH:mm:ss')) {
@@ -531,10 +531,10 @@ class AddInterestRate extends Component {
         CreatedBy: loggedInUserId(),
         Plants: costingTypeId === CBCTypeId ? cbcPlantArray : plantArray,
         CustomerId: costingTypeId === CBCTypeId ? client.value : '',
-        RawMaterialChildId: RawMaterial.value,
-        RawMaterialName: RawMaterial.label,
-        RawMaterialGradeId: RMGrade.value,
-        RawMaterialGrade: RMGrade.label,
+        RawMaterialChildId: RawMaterial?.value,
+        RawMaterialName: RawMaterial?.label,
+        RawMaterialGradeId: RMGrade?.value,
+        RawMaterialGrade: RMGrade?.label,
       }
 
       this.props.createInterestRate(formData, (res) => {
