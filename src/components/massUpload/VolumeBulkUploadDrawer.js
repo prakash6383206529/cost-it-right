@@ -60,18 +60,19 @@ class VolumeBulkUploadDrawer extends Component {
         }
     }
 
-    toggleDrawer = (event) => {
+    toggleDrawer = (event, type) => {
         if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
             return;
         }
-        this.props.closeDrawer('')
+        this.props.closeDrawer('', type)
     };
 
-    cancel = () => {
-        this.toggleDrawer('')
+    cancel = (type) => {
+        this.toggleDrawer('', 'cancel')
     }
     cancelHandler = () => {
-        this.setState({ showPopup: true })
+        this.cancel('cancel')
+        // this.setState({ showPopup: true })
     }
     onPopupConfirm = () => {
         this.cancel('cancel')
@@ -131,7 +132,7 @@ class VolumeBulkUploadDrawer extends Component {
                 const { files } = this.state
                 files.push(Data)
             })
-            this.cancel()
+            this.toggleDrawer('', 'save')
         }
     }
     onBtExport = () => {
