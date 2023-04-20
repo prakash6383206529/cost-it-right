@@ -97,7 +97,6 @@ export const hideCustomerFromExcel = (data, value) => {
     return excelData
 }
 
-
 export const costingTypeIdToApprovalTypeIdFunction = (value) => {
     let approvalTypeId;
     switch (Number(value)) {
