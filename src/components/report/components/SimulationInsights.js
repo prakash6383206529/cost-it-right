@@ -397,8 +397,7 @@ function SimulationInsights(props) {
     // <div>{`hello`}</div>
     <div className="container-fluid report-listing-page ag-grid-react custom-pagination">
       {loader && <LoaderCustom />}
-      <h1 className="mb-0">Simulation Insights Report</h1>
-      <Row className="pt-4 blue-before ">
+      <Row className=" blue-before ">
         <Col md="10" lg="10" className="search-user-block mb-3">
           <div className="d-flex justify-content-end bd-highlight excel-btn w100">
             <div className="warning-message d-flex align-items-center">
