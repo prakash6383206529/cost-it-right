@@ -79,7 +79,9 @@ class AddInterestRate extends Component {
     this.getDetail()
     this.props.getICCAppliSelectList(() => { })
     this.props.getPaymentTermsAppliSelectList(() => { })
-    this.props.getRawMaterialNameChild(() => { })
+    if (getConfigurationKey().IsShowRawMaterialInOverheadProfitAndICC) {
+      this.props.getRawMaterialNameChild(() => { })
+    }
   }
 
   componentDidUpdate(prevProps) {
