@@ -832,10 +832,10 @@ class AddProfit extends Component {
         EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
         IsForcefulUpdated: true,
         Plants: costingTypeId === CBCTypeId ? cbcPlantArray : plantArray,
-        RawMaterialChildId: RawMaterial.value,
-        RawMaterialName: RawMaterial.label,
-        RawMaterialGradeId: RMGrade.value,
-        RawMaterialGrade: RMGrade.label,
+        RawMaterialChildId: RawMaterial?.value,
+        RawMaterialName: RawMaterial?.label,
+        RawMaterialGradeId: RMGrade?.value,
+        RawMaterialGrade: RMGrade?.label,
       }
       if (isEditFlag) {
         if (DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss') === DayTime(DataToChange?.EffectiveDate).format('YYYY-MM-DD HH:mm:ss')) {
@@ -874,10 +874,10 @@ class AddProfit extends Component {
         Attachements: files,
         EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
         Plants: costingTypeId === CBCTypeId ? cbcPlantArray : plantArray,
-        RawMaterialChildId: RawMaterial.value,
-        RawMaterialName: RawMaterial.label,
-        RawMaterialGradeId: RMGrade.value,
-        RawMaterialGrade: RMGrade.label,
+        RawMaterialChildId: RawMaterial?.value,
+        RawMaterialName: RawMaterial?.label,
+        RawMaterialGradeId: RMGrade?.value,
+        RawMaterialGrade: RMGrade?.label,
       }
 
       this.props.createProfit(formData, (res) => {
