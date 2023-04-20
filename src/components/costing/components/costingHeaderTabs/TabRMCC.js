@@ -315,6 +315,13 @@ function TabRMCC(props) {
         partObj.CostingPartDetails.TotalCalculatedRMBOPCCCost = GrandTotalCost;
         partObj.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity = GrandTotalCost * partObj.Quantity;
         partObj.CostingPartDetails.CostingRawMaterialCommonCalculationId = gridData[0]?.WeightCalculationId;
+        partObj.CostingPartDetails.NetPOPrice =
+          checkForNull(partObj.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity) +
+          checkForNull(partObj?.CostingPartDetails?.TotalBoughtOutPartCost) +
+          checkForNull(partObj?.CostingPartDetails?.TotalProcessCost) +
+          checkForNull(partObj?.CostingPartDetails?.TotalOperationCost)
+
+        // partObj.CostingPartDetails.NetPOPrice = gridData[0]?.WeightCalculationId;
         break;
       case 'BOP':
         partObj.CostingPartDetails.CostingBoughtOutPartCost = gridData;

@@ -553,10 +553,11 @@ function RMImportListing(props) {
     setisBulkUpload(true);
   }
 
-  const closeBulkUploadDrawer = () => {
+  const closeBulkUploadDrawer = (event, type) => {
     setisBulkUpload(false);
-
-    resetState()
+    if (type !== 'cancel') {
+      resetState()
+    }
   }
 
   /**

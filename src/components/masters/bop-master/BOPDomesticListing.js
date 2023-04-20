@@ -4,7 +4,7 @@ import { reduxForm, } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import { EMPTY_DATA, BOP_MASTER_ID, BOPDOMESTIC, defaultPageSize, APPROVED_STATUS, RMDOMESTIC, ENTRY_TYPE_DOMESTIC } from '../../../config/constants';
 import {
-    getBOPDataList, deleteBOP, getAllVendorSelectList, getPlantSelectListByVendor,
+    getBOPDataList, deleteBOP, getPlantSelectListByVendor,
 } from '../actions/BoughtOutParts';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
@@ -307,10 +307,11 @@ class BOPDomesticListing extends Component {
         this.setState({ isBulkUpload: true })
     }
 
-    closeBulkUploadDrawer = () => {
-        this.setState({ isBulkUpload: false }, () => {
+    closeBulkUploadDrawer = (event, type) => {
+        this.setState({ isBulkUpload: false })
+        if (type !== 'cancel') {
             this.resetState()
-        })
+        }
     }
 
 
@@ -847,7 +848,6 @@ function mapStateToProps({ boughtOutparts, supplier, auth, material, simulation,
 export default connect(mapStateToProps, {
     getBOPDataList,
     deleteBOP,
-    getAllVendorSelectList,
     getPlantSelectListByVendor,
     getListingForSimulationCombined,
     setSelectedRowForPagination,

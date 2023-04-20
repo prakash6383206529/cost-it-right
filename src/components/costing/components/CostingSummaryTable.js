@@ -16,7 +16,7 @@ import SendForApproval from './approval/SendForApproval'
 import Toaster from '../../common/Toaster'
 import { checkForDecimalAndNull, checkForNull, checkPermission, formViewData, getTechnologyPermission, loggedInUserId, userDetails, allEqual, getConfigurationKey, getCurrencySymbol, highlightCostingSummaryValue, checkVendorPlantConfigurable, userTechnologyLevelDetails } from '../../../helper'
 import Attachament from './Drawers/Attachament'
-import { BOPDOMESTIC, BOPIMPORT, COSTING, DRAFT, FILE_URL, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, VARIANCE, VBC, ZBC, VIEW_COSTING_DATA, VIEW_COSTING_DATA_LOGISTICS, NCC, EMPTY_GUID, CBC, ZBCTypeId, VBCTypeId, NCCTypeId, CBCTypeId } from '../../../config/constants'
+import { BOPDOMESTIC, BOPIMPORT, COSTING, DRAFT, FILE_URL, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, VARIANCE, VBC, ZBC, VIEW_COSTING_DATA, VIEW_COSTING_DATA_LOGISTICS, NCC, EMPTY_GUID, CBC, ZBCTypeId, VBCTypeId, NCCTypeId, CBCTypeId, APPROVED, PENDING } from '../../../config/constants'
 import { useHistory } from "react-router-dom";
 import WarningMessage from '../../common/WarningMessage'
 import DayTime from '../../common/DayTimeWrapper'
@@ -217,7 +217,7 @@ const CostingSummaryTable = (props) => {
         case 'TC':
           dataArray.push(checkForDecimalAndNull(tempObj.totalToolCost, initialConfiguration.NoOfDecimalForPrice))
           break;
-        case 'OTHER DIS':
+        case 'HUNDI/DIS':
           dataArray.push(checkForDecimalAndNull(tempObj.otherDiscountCost, initialConfiguration.NoOfDecimalForPrice))
           break;
         case 'ANY OTHER COST':
@@ -1214,7 +1214,7 @@ const CostingSummaryTable = (props) => {
                           viewCostingData?.map((data, index) => {
                             const title = data.costingTypeId === ZBCTypeId ? data?.plantName + "(SOB: " + data?.shareOfBusinessPercent + "%)" : (data.costingTypeId === VBCTypeId || data.costingTypeId === NCCTypeId) ? data?.vendorName + "(SOB: " + data?.shareOfBusinessPercent + "%)" : data.customerName
                             return (
-                              <th scope="col" className={`header-name ${isLockedState && data?.status !== DRAFT && costingSummaryMainPage && !pdfHead && !drawerDetailPDF ? 'pt-30' : ''}`}>
+                              <th scope="col" className={`${props?.isRfqCosting && data.status === APPROVED ? 'finalize-cost' : ''} header-name ${isLockedState && data?.status !== DRAFT && costingSummaryMainPage && !pdfHead && !drawerDetailPDF ? 'pt-30' : ''}`}>
                                 {data?.IsApprovalLocked && !pdfHead && !drawerDetailPDF && costingSummaryMainPage && data?.status === DRAFT && <WarningMessage title={data?.getApprovalLockedMessage} dClass={"costing-summary-warning-mesaage"} message={data?.getApprovalLockedMessage} />}    {/* ADD THIS CODE ONCE DEPLOYED FROM BACKEND{data.ApprovalLockedMessage}*/}
                                 <div className={` ${drawerDetailPDF ? 'pdf-header' : 'header-name-button-container'}`}>
                                   <div className="element d-inline-flex align-items-center">
@@ -1276,7 +1276,7 @@ const CostingSummaryTable = (props) => {
                             {viewCostingData &&
                               viewCostingData?.map((data, index) => {
                                 return (
-                                  <td>
+                                  <td className={props?.isRfqCosting && data.status === APPROVED ? 'finalize-cost' : ''}>
                                     <span className={`d-flex justify-content-between ${(data?.bestCost === true) ? '' : 'bg-grey'} ${drawerDetailPDF ? 'p-0' : ''}`}>
                                       {(data?.bestCost === true) ? ' ' : `${DayTime(data?.costingDate).format('DD-MM-YYYY')}-${data?.CostingNumber}${props.costingSummaryMainPage ? '-' : ''}${props.costingSummaryMainPage ? data?.status : ''}`}{' '}
                                       {
@@ -1331,7 +1331,7 @@ const CostingSummaryTable = (props) => {
                             {viewCostingData &&
                               viewCostingData?.map((data, index) => {
                                 return (
-                                  <td >
+                                  <td className={props?.isRfqCosting && data.status === APPROVED ? 'finalize-cost' : ''}>
                                     <span className="d-block small-grey-text">{data?.CostingHeading !== VARIANCE ? data?.netChildPartsCost : ''}</span>
                                     <span className={`d-block small-grey-text ${isApproval && viewCostingData?.length > 1 && highlightCostingSummaryValue(viewCostingData[0]?.rmRate, viewCostingData[1]?.rmRate)}`}>
                                       <button type='button' className='btn-hyper-link' onClick={() => DrawerOpen('BOP', index)}>{data?.CostingHeading !== VARIANCE ? data?.netBoughtOutPartCost : ''}</button>
@@ -1399,7 +1399,7 @@ const CostingSummaryTable = (props) => {
                             {viewCostingData &&
                               viewCostingData?.map((data, index) => {
                                 return (
-                                  <td>
+                                  <td className={props?.isRfqCosting && data.status === APPROVED ? 'finalize-cost' : ''}>
                                     {data?.CostingHeading === VARIANCE && (isApproval ? viewCostingData?.length > 0 && viewCostingData[0]?.netRM > viewCostingData[1]?.netRM ? <span className='positive-sign'>+</span> : '' : '')}
                                     <span title={data?.nTotalRMBOPCC}>{checkForDecimalAndNull(data?.nTotalRMBOPCC, initialConfiguration.NoOfDecimalForPrice)}</span>
                                     {
@@ -1433,7 +1433,7 @@ const CostingSummaryTable = (props) => {
                               {viewCostingData &&
                                 viewCostingData?.map((data) => {
                                   return (
-                                    <td >
+                                    <td className={props?.isRfqCosting && data.status === APPROVED ? 'finalize-cost' : ''}>
                                       <span className="d-block small-grey-text">{(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.netRMCostView && (data?.netRMCostView.length > 1 || data?.IsAssemblyCosting === true) ? 'Multiple RM' : data?.rm : '')}</span>
                                       <span className={`d-block small-grey-text ${isApproval && viewCostingData?.length > 1 && highlightCostingSummaryValue(viewCostingData[0]?.rmRate, viewCostingData[1]?.rmRate)}`}>
                                         {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.netRMCostView && (data?.netRMCostView.length > 1 || data?.IsAssemblyCosting === true) ? 'Multiple RM' : <span title={checkForDecimalAndNull(data?.netRMCostView && data?.netRMCostView[0] && data?.netRMCostView[0]?.RMRate, initialConfiguration.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.netRMCostView && data?.netRMCostView[0] && data?.netRMCostView[0]?.RMRate, initialConfiguration.NoOfDecimalForPrice)}</span> : '')}
@@ -1486,7 +1486,7 @@ const CostingSummaryTable = (props) => {
                               {viewCostingData &&
                                 viewCostingData?.map((data, index) => {
                                   return (
-                                    <td>
+                                    <td className={props?.isRfqCosting && data.status === APPROVED ? 'finalize-cost' : ''}>
                                       {data?.CostingHeading === VARIANCE && (isApproval ? viewCostingData?.length > 0 && viewCostingData[0]?.netRM > viewCostingData[1]?.netRM ? <span className='positive-sign'>+</span> : '' : '')}
                                       <span title={data?.netRM}>{checkForDecimalAndNull(data?.netRM, initialConfiguration.NoOfDecimalForPrice)}</span>
                                       {
@@ -1516,7 +1516,7 @@ const CostingSummaryTable = (props) => {
                               {viewCostingData &&
                                 viewCostingData?.map((data, index) => {
                                   return (
-                                    <td>
+                                    <td className={props?.isRfqCosting && data.status === APPROVED ? 'finalize-cost' : ''}>
                                       {data?.CostingHeading === VARIANCE && (isApproval ? viewCostingData?.length > 0 && viewCostingData[0]?.netBOP > viewCostingData[1]?.netBOP ? <span className='positive-sign'>+</span> : '' : '')}
                                       <span title={data?.netBOP}>{checkForDecimalAndNull(data?.netBOP, initialConfiguration.NoOfDecimalForPrice)}</span>
                                       {
@@ -1574,7 +1574,7 @@ const CostingSummaryTable = (props) => {
                               {viewCostingData &&
                                 viewCostingData?.map((data, index) => {
                                   return (
-                                    <td>
+                                    <td className={props?.isRfqCosting && data.status === APPROVED ? 'finalize-cost' : ''}>
                                       {data?.CostingHeading === VARIANCE && (isApproval ? viewCostingData?.length > 0 && viewCostingData[0]?.nConvCost > viewCostingData[1]?.nConvCost ? <span className='positive-sign'>+</span> : '' : '')}
                                       <span title={data?.nConvCost}>{data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.nConvCost, initialConfiguration.NoOfDecimalForPrice) : checkForDecimalAndNull(data?.nConvCost, initialConfiguration.NoOfDecimalForPrice)}</span>
                                       {
@@ -1636,7 +1636,7 @@ const CostingSummaryTable = (props) => {
                           {viewCostingData &&
                             viewCostingData?.map((data, index) => {
                               return (
-                                <td>
+                                <td className={props?.isRfqCosting && data.status === APPROVED ? 'finalize-cost' : ''}>
                                   {data?.CostingHeading === VARIANCE && (isApproval ? viewCostingData?.length > 0 && viewCostingData[0]?.nsTreamnt > viewCostingData[1]?.nsTreamnt ? <span className='positive-sign'>+</span> : '' : '')}
                                   <span title={data?.netSurfaceTreatmentCost}>{data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.netSurfaceTreatmentCost, initialConfiguration.NoOfDecimalForPrice) : checkForDecimalAndNull(data?.netSurfaceTreatmentCost, initialConfiguration.NoOfDecimalForPrice)}</span>
                                   {
@@ -1672,7 +1672,7 @@ const CostingSummaryTable = (props) => {
                             viewCostingData?.map((data) => {
                               return (
 
-                                <td>
+                                <td className={props?.isRfqCosting && data.status === APPROVED ? 'finalize-cost' : ''}>
                                   <span className="d-block">{(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.modelType : '')}</span>
                                   <div className={`d-flex`}>
                                     <span className="d-inline-block w-50">
@@ -1747,7 +1747,7 @@ const CostingSummaryTable = (props) => {
                           {viewCostingData &&
                             viewCostingData?.map((data, index) => {
                               return (
-                                <td>
+                                <td className={props?.isRfqCosting && data.status === APPROVED ? 'finalize-cost' : ''}>
                                   {data?.CostingHeading === VARIANCE && (isApproval ? viewCostingData?.length > 0 && viewCostingData[0]?.nOverheadProfit > viewCostingData[1]?.nOverheadProfit ? <span className='positive-sign'>+</span> : '' : '')}
                                   <span title={data?.nOverheadProfit}>{checkForDecimalAndNull(data?.nOverheadProfit, initialConfiguration.NoOfDecimalForPrice)}</span>
                                   {
@@ -1773,7 +1773,7 @@ const CostingSummaryTable = (props) => {
                           {viewCostingData &&
                             viewCostingData?.map((data) => {
                               return (
-                                <td>
+                                <td className={props?.isRfqCosting && data.status === APPROVED ? 'finalize-cost' : ''}>
                                   <span title={data?.packagingCost} className={`d-block small-grey-text w-fit ${isApproval && viewCostingData?.length > 1 && highlightCostingSummaryValue(viewCostingData[0]?.packagingCost, viewCostingData[1]?.packagingCost)}`}>
                                     {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.packagingCost, initialConfiguration.NoOfDecimalForPrice) : '')}
                                   </span>
@@ -1795,7 +1795,7 @@ const CostingSummaryTable = (props) => {
                           {viewCostingData &&
                             viewCostingData?.map((data, index) => {
                               return (
-                                <td>
+                                <td className={props?.isRfqCosting && data.status === APPROVED ? 'finalize-cost' : ''}>
                                   {data?.CostingHeading === VARIANCE && (isApproval ? viewCostingData?.length > 0 && viewCostingData[0]?.nPackagingAndFreight > viewCostingData[1]?.nPackagingAndFreight ? <span className='positive-sign'>+</span> : '' : '')}
                                   <span title={data?.nPackagingAndFreight}>{data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.nPackagingAndFreight, initialConfiguration.NoOfDecimalForPrice) : checkForDecimalAndNull(data?.nPackagingAndFreight, initialConfiguration.NoOfDecimalForPrice)}</span>
                                   {/* <span>{data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.nPackagingAndFreight, initialConfiguration.NoOfDecimalForPrice) : ''}</span> */}
@@ -1826,7 +1826,7 @@ const CostingSummaryTable = (props) => {
                           {viewCostingData &&
                             viewCostingData?.map((data) => {
                               return (
-                                <td className={` ${pdfHead || drawerDetailPDF ? '' : ''}`}>
+                                <td className={`${props?.isRfqCosting && data.status === APPROVED ? 'finalize-cost' : ''} ${pdfHead || drawerDetailPDF ? '' : ''}`}>
                                   <div className={`d-flex`}>
                                     <span className="d-inline-block p-0 w-50">
                                       {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.toolApplicability.applicability : '')}
@@ -1866,7 +1866,7 @@ const CostingSummaryTable = (props) => {
                           {viewCostingData &&
                             viewCostingData?.map((data, index) => {
                               return (
-                                <td>
+                                <td className={props?.isRfqCosting && data.status === APPROVED ? 'finalize-cost' : ''}>
                                   {data?.CostingHeading === VARIANCE && (isApproval ? viewCostingData?.length > 0 && viewCostingData[0]?.totalToolCost > viewCostingData[1]?.totalToolCost ? <span className='positive-sign'>+</span> : '' : '')}
                                   <span title={data?.totalToolCost}>{data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.totalToolCost, initialConfiguration.NoOfDecimalForPrice) : checkForDecimalAndNull(data?.totalToolCost, initialConfiguration.NoOfDecimalForPrice)}</span>
                                   {
@@ -1896,7 +1896,7 @@ const CostingSummaryTable = (props) => {
                             viewCostingData?.map((data) => {
                               return (
                                 (data?.bestCost !== true) && data?.CostingHeading !== VARIANCE ?
-                                  <td width={"32%"}>
+                                  <td className={props?.isRfqCosting && data.status === APPROVED ? 'finalize-cost' : ''} width={"32%"}>
                                     <div className="d-grid">
                                       {/* <span className="d-inline-block w-50 ">{data?.CostingHeading !== VARIANCE ? data?.otherDiscount.discount : ''}</span> &nbsp;{' '}
                                        <span className="d-inline-block w-50 ">{data?.CostingHeading !== VARIANCE ? data?.otherDiscount.value : ''}</span> */}
@@ -1930,7 +1930,7 @@ const CostingSummaryTable = (props) => {
                               return (
 
                                 (data?.bestCost !== true) && data?.CostingHeading !== VARIANCE ?
-                                  <td width={"32%"}>
+                                  <td className={props?.isRfqCosting && data.status === APPROVED ? 'finalize-cost' : ''} width={"32%"}>
                                     <div className="d-grid">
 
                                       <span className="d-inline-block">{"Type"}</span>
@@ -1960,7 +1960,7 @@ const CostingSummaryTable = (props) => {
                           {viewCostingData &&
                             viewCostingData?.map((data) => {
                               return (
-                                <td>
+                                <td className={props?.isRfqCosting && data.status === APPROVED ? 'finalize-cost' : ''}>
                                   <span title={data?.BasicRate} className={`d-block small-grey-text w-fit ${isApproval && viewCostingData?.length > 1 && highlightCostingSummaryValue(viewCostingData[0]?.BasicRate, viewCostingData[1]?.BasicRate)}`}>
                                     {data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.BasicRate, initialConfiguration.NoOfDecimalForPrice) : ''}
                                   </span>
@@ -1994,7 +1994,7 @@ const CostingSummaryTable = (props) => {
                           {viewCostingData &&
                             viewCostingData?.map((data, index) => {
                               return (
-                                <td>
+                                <td className={props?.isRfqCosting && data.status === APPROVED ? 'finalize-cost' : ''}>
                                   {data?.CostingHeading === VARIANCE && (isApproval ? viewCostingData?.length > 0 && viewCostingData[0]?.nPackagingAndFreight > viewCostingData[1]?.nPackagingAndFreight ? <span className='positive-sign'>+</span> : '' : '')}
                                   <span title={data?.nPackagingAndFreight}>{data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.nPackagingAndFreight, initialConfiguration.NoOfDecimalForPrice) : checkForDecimalAndNull(data?.nPackagingAndFreight, initialConfiguration.NoOfDecimalForPrice)}</span>
                                   {/* <span>{data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.nPackagingAndFreight, initialConfiguration.NoOfDecimalForPrice) : ''}</span> */}
@@ -2021,7 +2021,7 @@ const CostingSummaryTable = (props) => {
                           <th>Net PO Price ({getConfigurationKey().BaseCurrency}){simulationDrawer && '(Old)'}</th>
                           {viewCostingData &&
                             viewCostingData?.map((data, index) => {
-                              return <td>
+                              return <td className={props?.isRfqCosting && data.status === APPROVED ? 'finalize-cost' : ''}>
                                 {data?.CostingHeading === VARIANCE && (isApproval ? viewCostingData?.length > 0 && viewCostingData[0]?.nPOPrice > viewCostingData[1]?.nPOPrice ? <span className='positive-sign'>+</span> : '' : '')}
                                 <span title={data?.nPOPrice}><span className='currency-symbol'>{getCurrencySymbol(getConfigurationKey().BaseCurrency)}</span>{checkForDecimalAndNull(data?.nPOPrice, initialConfiguration.NoOfDecimalForPrice)}</span>
                                 {
@@ -2047,7 +2047,7 @@ const CostingSummaryTable = (props) => {
                         {viewCostingData &&
                           viewCostingData?.map((data) => {
                             return (
-                              <td>
+                              <td className={props?.isRfqCosting && data.status === APPROVED ? 'finalize-cost' : ''}>
                                 <div>
                                   <span className={`small-grey-text mr-1 ${data?.CostingHeading !== VARIANCE ? data?.currency.currencyValue === '-' ? 'd-none' : '' : ''}  `}>{(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? `${data?.currency.currencyTitle}/${getConfigurationKey().BaseCurrency}` : '')}</span> {' '}
                                   <span className="">{(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.currency.currencyValue === '-' ? '-' : checkForDecimalAndNull(data?.currency.currencyValue, initialConfiguration.NoOfDecimalForPrice) : '')}</span>
@@ -2087,7 +2087,7 @@ const CostingSummaryTable = (props) => {
                           {viewCostingData &&
                             viewCostingData?.map((data) => {
                               return (
-                                <td>
+                                <td className={props?.isRfqCosting && data.status === APPROVED ? 'finalize-cost' : ''}>
                                   <div>
                                     <span className="">{data?.CostingHeading !== VARIANCE ? data?.NCCPartQuantity === '-' ? '-' : checkForDecimalAndNull(data?.NCCPartQuantity, initialConfiguration.NoOfDecimalForPrice) : ''}</span>
                                   </div>
@@ -2103,7 +2103,7 @@ const CostingSummaryTable = (props) => {
                           {viewCostingData &&
                             viewCostingData?.map((data) => {
                               return (
-                                <td>
+                                <td className={props?.isRfqCosting && data.status === APPROVED ? 'finalize-cost' : ''}>
                                   <div>
                                     <span className="">{data?.CostingHeading !== VARIANCE ? (data.IsRegularized ? 'Yes' : 'No') : ""}</span>
                                   </div>
@@ -2119,7 +2119,7 @@ const CostingSummaryTable = (props) => {
                           viewCostingData?.map((data, index) => {
                             return (
 
-                              <td>
+                              <td className={props?.isRfqCosting && data.status === APPROVED ? 'finalize-cost' : ''}>
                                 {(data?.bestCost === true) ? ' ' :
                                   (data?.CostingHeading !== VARIANCE &&
                                     data?.attachment && data?.attachment.length === 0 ? (
@@ -2163,7 +2163,7 @@ const CostingSummaryTable = (props) => {
                         <th>Remarks</th>
                         {viewCostingData &&
                           viewCostingData?.map((data, index) => {
-                            return <td><span className="d-block small-grey-text">{(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.remark : '')}</span></td>
+                            return <td className={props?.isRfqCosting && data.status === APPROVED ? 'finalize-cost' : ''}><span className="d-block small-grey-text">{(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.remark : '')}</span></td>
                           })}
                       </tr>}
 

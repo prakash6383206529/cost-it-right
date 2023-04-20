@@ -18,7 +18,7 @@ import {
   getPartInfo, checkPartWithTechnology,
   updateZBCSOBDetail, updateVBCSOBDetail, storePartNumber, getBriefCostingById, deleteDraftCosting, getPartSelectListByTechnology,
   setOverheadProfitData, setComponentOverheadItemData, setPackageAndFreightData, setComponentPackageFreightItemData, setToolTabData,
-  setComponentToolItemData, setComponentDiscountOtherItemData, gridDataAdded, getCostingSpecificTechnology, setRMCCData, setComponentItemData, createNCCCosting, saveAssemblyBOPHandlingCharge, setProcessGroupGrid, savePartNumber, saveBOMLevel, setPartNumberArrayAPICALL, isDataChange, setSurfaceCostData, saveAssemblyNumber, createCosting, getExistingCosting, createMultiTechnologyCosting, setRMCCErrors, setOverheadProfitErrors, setToolsErrors, setDiscountErrors, setCostingDataList, emptyCostingData, setRMCCBOPCostData, isDiscountDataChange
+  setComponentToolItemData, setComponentDiscountOtherItemData, gridDataAdded, getCostingSpecificTechnology, setRMCCData, setComponentItemData, createNCCCosting, saveAssemblyBOPHandlingCharge, setProcessGroupGrid, savePartNumber, saveBOMLevel, setPartNumberArrayAPICALL, isDataChange, setSurfaceCostData, saveAssemblyNumber, createCosting, getExistingCosting, createMultiTechnologyCosting, setRMCCErrors, setOverheadProfitErrors, setToolsErrors, setDiscountErrors, isDiscountDataChange, setCostingDataList, emptyCostingData, setRMCCBOPCostData
 } from '../actions/Costing'
 import CopyCosting from './Drawers/CopyCosting'
 import { MESSAGES } from '../../../config/message';
@@ -104,7 +104,7 @@ function CostingDetails(props) {
 
 
   //FOR VIEW MODE COSTING
-  const [IsCostingViewMode, setIsCostingViewMode] = useState(false)
+  const [IsCostingViewMode, setIsCostingViewMode] = useState(props?.isNFR ? props?.isViewModeCosting : false)
   // FOR EDIT MODE COSTING
   const [IsCostingEditMode, setIsCostingEditMode] = useState(false)
   // FOR COPY COSTING MODE
@@ -2503,6 +2503,7 @@ function CostingDetails(props) {
                                 toggle={props.toggle}
                                 IsCostingViewMode={IsCostingViewMode}
                                 IsCopyCostingMode={IsCopyCostingMode}
+                                isNFR={props?.isNFR}
                               />
                             </CostingStatusContext.Provider>
                           </SelectedCostingDetail.Provider>

@@ -693,7 +693,7 @@ function RfqListing(props) {
                                 <div className='d-flex  align-items-center'><div className='w-min-fit'>Raised By:</div>
                                     <input
                                         type="text"
-                                        className="form-control mx-2"
+                                        className="form-control mx-2 defualt-input-value"
                                         value={data.RaisedBy}
                                         style={{ width: (data.RaisedBy.length * 9 + 10) + 'px' }}
                                         disabled={true}
@@ -701,7 +701,7 @@ function RfqListing(props) {
                                 <div className='d-flex align-items-center pr-0'><div className='w-min-fit'>Raised On:</div>
                                     <input
                                         type="text"
-                                        className="form-control ml-2"
+                                        className="form-control ml-2 defualt-input-value"
                                         disabled={true}
                                         style={{ width: '100px' }}
                                         value={data.RaisedOn ? DayTime(data.RaisedOn).format('DD/MM/YYYY') : '-'}
@@ -774,7 +774,7 @@ function RfqListing(props) {
                                             <AgGridColumn field="NetPOPrice" headerName=" Net PO Price" cellRenderer={hyphenFormatter}></AgGridColumn>
                                             <AgGridColumn field="SubmissionDate" headerName='Submission Date' cellRenderer={dateFormatter}></AgGridColumn>
                                             <AgGridColumn field="EffectiveDate" headerName='Effective Date' cellRenderer={dateFormatter}></AgGridColumn>
-                                            {rowData[0]?.IsVisibiltyConditionMet === true && <AgGridColumn width={200} field="QuotationId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
+                                            {rowData[0]?.IsVisibiltyConditionMet === true && <AgGridColumn width={window.screen.width >= 1920 ? 280 : 220} field="QuotationId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
 
                                         </AgGridReact>
                                         {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} globalTake={10} />}
