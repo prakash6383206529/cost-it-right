@@ -298,6 +298,7 @@ function ViewRM(props) {
                     rmMBDetail={rmMBDetail} // MASTER BATCH DETAIL
                     CostingViewMode={true}   // THIS KEY WILL BE USE TO OPEN CALCI IN VIEW MODE
                     fromCostingSummary={props.fromCostingSummary}
+                    rmData={calciData.WeightCalculatorRequest.CostingFerrousCalculationRawMaterials}
                   />
                 )}
               </Row>
