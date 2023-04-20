@@ -2899,6 +2899,8 @@ export const ZBCInterestRateTempData = [
 * @desc USED IN EXCEL HEADER FOR BULK UPLOAD
 */
 export const VBCInterestRate = [
+    { label: "RawMaterialName", value: "RawMaterialName", },
+    { label: "RawMaterialGrade", value: "RawMaterialGrade", },
     { label: 'VendorName', value: 'VendorName', }, //NOUI
     { label: 'VendorCode', value: 'VendorCode', }, //NOUI
     { label: "PlantName", value: "PlantName" },
@@ -2913,6 +2915,8 @@ export const VBCInterestRate = [
 
 export const VBCInterestRateTempData = [
     {
+        'RawMaterialName': '45455457',
+        'RawMaterialGrade': '2',
         'VendorName': 'Systematix',
         'VendorCode': 'VCode001',
         "PlantName": "1511",
@@ -2926,6 +2930,8 @@ export const VBCInterestRateTempData = [
     }
 ]
 export const CBCInterestRate = [
+    { label: "RawMaterialName", value: "RawMaterialName", },
+    { label: "RawMaterialGrade", value: "RawMaterialGrade", },
     { label: 'CustomerName', value: 'CustomerName', }, //NOUI
     { label: 'CustomerCode', value: 'CustomerCode', }, //NOUI
     { label: "PlantName", value: "PlantName" },
@@ -2940,6 +2946,8 @@ export const CBCInterestRate = [
 
 export const CBCInterestRateTempData = [
     {
+        'RawMaterialName': '45455457',
+        'RawMaterialGrade': '2',
         'CustomerName': 'Honda',
         'CustomerCode': 'C-10008',
         "PlantName": "1511",
@@ -4402,6 +4410,8 @@ export const POWERLISTING_VENDOR_DOWNLOAD_EXCEL = [
 
 export const INTERESTRATE_DOWNLOAD_EXCEl = [
     { label: "Costing Head", value: "CostingHead", },
+    { label: "Raw Material Name", value: "RawMaterialName", },
+    { label: "Raw Material Grade", value: "RawMaterialGrade", },
     { label: "Plant (Code)", value: "PlantName", },
     { label: "Vendor (Code)", value: "VendorName", },
     { label: "Customer (Code)", value: "CustomerName", },
@@ -4523,6 +4533,8 @@ export const OPERATION_DOWNLOAD_EXCEl = [
 
 export const OVERHEAD_DOWNLOAD_EXCEl = [
     { label: "Costing Head", value: "CostingHead", },
+    { label: "Raw Material Name", value: "RawMaterialName", },
+    { label: "Raw Material Grade", value: "RawMaterialGrade", },
     { label: "Plant (Code)", value: "PlantName", },
     { label: "Vendor (Code)", value: "VendorName", },
     { label: "Customer (Code)", value: "CustomerName", },
@@ -4640,6 +4652,8 @@ export const BUDGET_DOWNLOAD_EXCEl = [
 
 export const PROFIT_DOWNLOAD_EXCEl = [
     { label: "Costing Head", value: "CostingHead", },
+    { label: "Raw Material Name", value: "RawMaterialName", },
+    { label: "Raw Material Grade", value: "RawMaterialGrade", },
     { label: "Plant (Code)", value: "PlantName", },
     { label: "Vendor (Code)", value: "VendorName", },
     { label: "Customer (Code)", value: "CustomerName", },
