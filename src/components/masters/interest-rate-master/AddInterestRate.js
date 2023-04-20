@@ -20,6 +20,7 @@ import { getClientSelectList, } from '../actions/Client';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { autoCompleteDropdown } from '../../common/CommonFunctions';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
+import { getRawMaterialNameChild, getRMGradeSelectListByRawMaterial } from '../actions/Material'
 
 const selector = formValueSelector('AddInterestRate');
 
@@ -51,7 +52,9 @@ class AddInterestRate extends Component {
       costingTypeId: ZBCTypeId,
       client: [],
       showPopup: false,
-      vendorFilterList: []
+      vendorFilterList: [],
+      RawMaterial: [],
+      RMGrade: [],
     }
   }
   /**
@@ -76,6 +79,7 @@ class AddInterestRate extends Component {
     this.getDetail()
     this.props.getICCAppliSelectList(() => { })
     this.props.getPaymentTermsAppliSelectList(() => { })
+    this.props.getRawMaterialNameChild(() => { })
   }
 
   componentDidUpdate(prevProps) {
@@ -99,8 +103,25 @@ class AddInterestRate extends Component {
   * @description Used show listing of unit of measurement
   */
   renderListing = (label) => {
-    const { vendorWithVendorCodeSelectList, plantSelectList, paymentTermsSelectList, iccApplicabilitySelectList, clientSelectList } = this.props;
+    const { vendorWithVendorCodeSelectList, plantSelectList, paymentTermsSelectList, iccApplicabilitySelectList, clientSelectList, rawMaterialNameSelectList, gradeSelectList } = this.props;
     const temp = [];
+    if (label === 'material') {
+      rawMaterialNameSelectList && rawMaterialNameSelectList.map((item) => {
+        if (item.Value === '0') return false
+        temp.push({ label: item.Text, value: item.Value })
+        return null
+      })
+      return temp
+    }
+
+    if (label === 'grade') {
+      gradeSelectList && gradeSelectList.map((item) => {
+        if (item.Value === '0') return false
+        temp.push({ label: item.Text, value: item.Value })
+        return null
+      })
+      return temp
+    }
     if (label === 'ICC') {
       iccApplicabilitySelectList && iccApplicabilitySelectList.map(item => {
         if (item.Value === '0' || item.Text === 'Net Cost') return false;
@@ -158,6 +179,8 @@ class AddInterestRate extends Component {
       'ICCApplicability',
       'PaymentTermsApplicability',
       'EffectiveDate',
+      'RawMaterialGradeId',
+      'RawMaterialId',
     ];
     fieldsToClear.forEach(fieldName => {
       this.props.dispatch(clearFields('AddInterestRate', false, false, fieldName));
@@ -292,6 +315,39 @@ class AddInterestRate extends Component {
     }
   };
   /**
+  * @method handleRMChange
+  * @description  used to handle row material selection
+  */
+  handleRMChange = (newValue, actionMeta) => {
+    if (newValue && newValue !== '') {
+      this.setState({ RawMaterial: newValue, RMGrade: [] }, () => {
+        const { RawMaterial } = this.state
+        this.props.getRMGradeSelectListByRawMaterial(
+          RawMaterial.value,
+          (res) => { },
+        )
+      })
+    } else {
+      this.setState({ RMGrade: [], RMSpec: [], RawMaterial: [] })
+      this.props.getRMGradeSelectListByRawMaterial('', (res) => { })
+      this.props.fetchSpecificationDataAPI(0, () => { })
+    }
+  }
+
+  /**
+   * @method handleGradeChange
+   * @description  used to handle row material grade selection
+   */
+  handleGradeChange = (newValue, actionMeta) => {
+    if (newValue && newValue !== '') {
+      this.setState({ RMGrade: newValue })
+    } else {
+      this.setState({
+        RMGrade: [],
+      })
+    }
+  }
+  /**
   * @method getDetail
   * @description used to get user detail
   */
@@ -323,6 +379,8 @@ class AddInterestRate extends Component {
               ICCApplicability: iccObj && iccObj !== undefined ? { label: iccObj.Text, value: iccObj.Value } : [],
               PaymentTermsApplicability: paymentObj && paymentObj !== undefined ? { label: paymentObj.Text, value: paymentObj.Value } : [],
               effectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
+              RawMaterial: Data.RawMaterialName !== undefined ? { label: Data.RawMaterialName, value: Data.RawMaterialChildId } : [],
+              RMGrade: Data.RawMaterialGrade !== undefined ? { label: Data.RawMaterialGrade, value: Data.RawMaterialGradeId } : [],
             }, () => this.setState({ isLoader: false }))
           }, 500)
 
@@ -373,7 +431,7 @@ class AddInterestRate extends Component {
   */
 
   onSubmit = debounce((values) => {
-    const { Data, vendorName, costingTypeId, client, ICCApplicability, singlePlantSelected, selectedPlants, PaymentTermsApplicability, InterestRateId, effectiveDate, DropdownNotChanged } = this.state;
+    const { Data, vendorName, costingTypeId, client, ICCApplicability, singlePlantSelected, selectedPlants, PaymentTermsApplicability, InterestRateId, effectiveDate, DropdownNotChanged, RMGrade, RawMaterial } = this.state;
     const userDetail = userDetails()
     const userDetailsInterest = JSON.parse(localStorage.getItem('userDetail'))
     let plantArray = []
@@ -434,6 +492,11 @@ class AddInterestRate extends Component {
         CreatedDate: '',
         CreatedBy: loggedInUserId(),
         Plants: costingTypeId === CBCTypeId ? cbcPlantArray : plantArray,
+        CustomerId: costingTypeId === CBCTypeId ? client.value : '',
+        RawMaterialChildId: RawMaterial.value,
+        RawMaterialName: RawMaterial.label,
+        RawMaterialGradeId: RMGrade.value,
+        RawMaterialGrade: RMGrade.label,
       }
       if (this.state.isEditFlag) {
         if (DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss') === DayTime(Data?.EffectiveDate).format('YYYY-MM-DD HH:mm:ss')) {
@@ -467,7 +530,11 @@ class AddInterestRate extends Component {
         CreatedDate: '',
         CreatedBy: loggedInUserId(),
         Plants: costingTypeId === CBCTypeId ? cbcPlantArray : plantArray,
-        CustomerId: costingTypeId === CBCTypeId ? client.value : ''
+        CustomerId: costingTypeId === CBCTypeId ? client.value : '',
+        RawMaterialChildId: RawMaterial.value,
+        RawMaterialName: RawMaterial.label,
+        RawMaterialGradeId: RMGrade.value,
+        RawMaterialGrade: RMGrade.label,
       }
 
       this.props.createInterestRate(formData, (res) => {
@@ -598,6 +665,48 @@ class AddInterestRate extends Component {
                       </Col>
                     </Row>
                     <Row>
+                      {getConfigurationKey().IsShowRawMaterialInOverheadProfitAndICC &&
+                        <>                        <Col md="3">
+                          <div className="d-flex justify-space-between align-items-center inputwith-icon">
+                            <div className="fullinput-icon">
+                              <Field
+                                name="RawMaterialId"
+                                type="text"
+                                label="Raw Material Name"
+                                component={searchableSelect}
+                                placeholder={"Select"}
+                                options={this.renderListing("material")}
+                                validate={this.state.RawMaterial == null || this.state.RawMaterial.length === 0 ? [required] : []}
+                                required={true}
+                                handleChangeDescription={this.handleRMChange}
+                                valueDescription={this.state.RawMaterial}
+                                className="fullinput-icon"
+                                disabled={isEditFlag || isViewMode}
+                              />
+                            </div>
+                          </div>
+                        </Col>
+                          <Col md="3">
+                            <div className="d-flex justify-space-between align-items-center inputwith-icon">
+                              <div className="fullinput-icon">
+                                <Field
+                                  name="RawMaterialGradeId"
+                                  type="text"
+                                  label="Raw Material Grade"
+                                  component={searchableSelect}
+                                  placeholder={"Select"}
+                                  options={this.renderListing("grade")}
+                                  validate={this.state.RMGrade == null || this.state.RMGrade.length === 0 ? [required] : []}
+                                  required={true}
+                                  handleChangeDescription={this.handleGradeChange}
+                                  valueDescription={this.state.RMGrade}
+                                  disabled={isEditFlag || isViewMode}
+                                />
+                              </div>
+                            </div>
+                          </Col>
+                        </>
+                      }
                       {((costingTypeId === ZBCTypeId && getConfigurationKey().IsPlantRequiredForOverheadProfitInterestRate) && (
                         <Col md="3">
                           <Field
@@ -892,7 +1001,7 @@ class AddInterestRate extends Component {
 * @param {*} state
 */
 function mapStateToProps(state) {
-  const { interestRate, comman, client } = state;
+  const { interestRate, comman, client, material } = state;
 
   const filedObj = selector(state, 'ICCPercent', 'PaymentTermPercent');
 
@@ -900,7 +1009,7 @@ function mapStateToProps(state) {
   const { paymentTermsSelectList, iccApplicabilitySelectList, interestRateData } = interestRate;
   const { vendorWithVendorCodeSelectList, plantSelectList } = comman;
   const { clientSelectList } = client;
-
+  const { rawMaterialNameSelectList, gradeSelectList } = material
   let initialValues = {};
   if (interestRateData && interestRateData !== undefined) {
     initialValues = {
@@ -912,7 +1021,7 @@ function mapStateToProps(state) {
   }
 
   return {
-    paymentTermsSelectList, iccApplicabilitySelectList, plantSelectList, vendorWithVendorCodeSelectList, interestRateData, initialValues, filedObj, clientSelectList
+    paymentTermsSelectList, iccApplicabilitySelectList, plantSelectList, vendorWithVendorCodeSelectList, interestRateData, initialValues, filedObj, clientSelectList, rawMaterialNameSelectList, gradeSelectList
   }
 }
 
@@ -929,7 +1038,9 @@ export default connect(mapStateToProps, {
   getInterestRateData,
   getPaymentTermsAppliSelectList,
   getICCAppliSelectList,
-  getClientSelectList
+  getClientSelectList,
+  getRawMaterialNameChild,
+  getRMGradeSelectListByRawMaterial
 })(reduxForm({
   form: 'AddInterestRate',
   enableReinitialize: true,
