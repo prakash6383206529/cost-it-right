@@ -858,10 +858,10 @@ class AddOverhead extends Component {
         EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
         IsForcefulUpdated: true,
         Plants: costingTypeId === CBCTypeId ? cbcPlantArray : plantArray,
-        RawMaterialChildId: RawMaterial.value,
-        RawMaterialName: RawMaterial.label,
-        RawMaterialGradeId: RMGrade.value,
-        RawMaterialGrade: RMGrade.label,
+        RawMaterialChildId: RawMaterial?.value,
+        RawMaterialName: RawMaterial?.label,
+        RawMaterialGradeId: RMGrade?.value,
+        RawMaterialGrade: RMGrade?.label,
       }
       if (isEditFlag) {
         if (DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss') === DayTime(DataToChange?.EffectiveDate).format('YYYY-MM-DD HH:mm:ss')) {
@@ -902,10 +902,10 @@ class AddOverhead extends Component {
         Attachements: files,
         Plants: costingTypeId === CBCTypeId ? cbcPlantArray : plantArray,
         EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
-        RawMaterialChildId: RawMaterial.value,
-        RawMaterialName: RawMaterial.label,
-        RawMaterialGradeId: RMGrade.value,
-        RawMaterialGrade: RMGrade.label,
+        RawMaterialChildId: RawMaterial?.value,
+        RawMaterialName: RawMaterial?.label,
+        RawMaterialGradeId: RMGrade?.value,
+        RawMaterialGrade: RMGrade?.label,
       }
 
       this.props.createOverhead(formData, (res) => {
