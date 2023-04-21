@@ -24,7 +24,7 @@ function Icc(props) {
 
     const ICCApplicabilityDetail = CostingInterestRateDetail && CostingInterestRateDetail.ICCApplicabilityDetail !== null ? CostingInterestRateDetail.ICCApplicabilityDetail : {}
     const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
-    const { IsIncludedSurfaceInOverheadProfit } = useSelector(state => state.costing)
+    const { IsIncludedSurfaceInOverheadProfit, OverheadProfitTabData, includeOverHeadProfitIcc } = useSelector(state => state.costing)
 
     const [InventoryObj, setInventoryObj] = useState(ICCApplicabilityDetail)
     const [tempInventoryObj, setTempInventoryObj] = useState(ICCApplicabilityDetail)
@@ -38,7 +38,7 @@ function Icc(props) {
     const [errorMessage, setErrorMessage] = useState('')
     const [isNetWeight, setIsNetWeight] = useState((ICCApplicabilityDetail?.IsICCCalculationOnNetWeight) ? (ICCApplicabilityDetail?.IsICCCalculationOnNetWeight) : false)
     const [IsShowRmcAndNetWeightToggleForIcc, setIsShowRmcAndNetWeightToggleForIcc] = useState(reactLocalStorage.getObject('InitialConfiguration')?.IsShowRmcAndNetWeightToggleForIcc)
-
+    const [totalOverHeadAndProfit, setTotalOverHeadAndProfit] = useState((OverheadProfitTabData[0]?.CostingPartDetails?.TotalOverheadAndProfitPerAssembly) ? (OverheadProfitTabData[0]?.CostingPartDetails?.TotalOverheadAndProfitPerAssembly) : 0)
     const { CostingEffectiveDate } = useSelector(state => state.costing)
 
     const dispatch = useDispatch()
@@ -88,7 +88,10 @@ function Icc(props) {
                 costingTypeId: Number(costData.CostingTypeId) === NFRTypeId ? VBCTypeId : costData.CostingTypeId,
                 plantId: (getConfigurationKey()?.IsPlantRequiredForOverheadProfitInterestRate && costData?.CostingTypeId === ZBCTypeId) ? costData.PlantId : ((getConfigurationKey()?.IsDestinationPlantConfigure && costData?.CostingTypeId === VBCTypeId) || costData?.CostingTypeId === CBCTypeId || costData?.CostingTypeId === NFRTypeId) ? costData.DestinationPlantId : EMPTY_GUID,
                 customerId: costData?.CostingTypeId === CBCTypeId ? costData.CustomerId : EMPTY_GUID,
-                effectiveDate: CostingEffectiveDate ? (DayTime(CostingEffectiveDate).format('DD/MM/YYYY')) : ''
+                effectiveDate: CostingEffectiveDate ? (DayTime(CostingEffectiveDate).format('DD/MM/YYYY')) : '',
+                rawMaterialGradeId: initialConfiguration.IsShowRawMaterialInOverheadProfitAndICC ? OverheadProfitTabData[0]?.CostingPartDetails?.RawMaterialGradeId : EMPTY_GUID,
+                rawMaterialChildId: initialConfiguration.IsShowRawMaterialInOverheadProfitAndICC ? OverheadProfitTabData[0]?.CostingPartDetails?.RawMaterialChildId : EMPTY_GUID,
+                technologyId: initialConfiguration.IsShowRawMaterialInOverheadProfitAndICC ? OverheadProfitTabData[0]?.CostingPartDetails?.TechnologyId : EMPTY_GUID,
             }
             dispatch(getInventoryDataByHeads(reqParams, res => {
                 if (res && res.data && res.data.Result) {
@@ -127,6 +130,10 @@ function Icc(props) {
         }
     }, [interestRateValues])
 
+    useEffect(() => {
+        setTotalOverHeadAndProfit(OverheadProfitTabData[0]?.CostingPartDetails?.TotalOverheadAndProfitPerAssembly)
+    }, [OverheadProfitTabData[0]?.CostingPartDetails?.TotalOverheadAndProfitPerAssembly])
+
     /**
       * @method checkInventoryApplicability
       * @description INVENTORY APPLICABILITY CALCULATION
@@ -138,9 +145,9 @@ function Icc(props) {
             if (isNetWeight && !(costData.IsAssemblyPart) && !(isPartApplicability)) {
                 let rmValue = reactLocalStorage.getObject('costingArray')
                 let newRmCost = (Array.isArray(rmValue) && rmValue[0]?.CostingPartDetails?.CostingRawMaterialsCost[0]?.RMRate) * (Array.isArray(rmValue) && rmValue[0]?.CostingPartDetails?.CostingRawMaterialsCost[0]?.FinishWeight)
-                NetRawMaterialsCost = newRmCost
+                NetRawMaterialsCost = newRmCost + (includeOverHeadProfitIcc ? totalOverHeadAndProfit : 0)
             } else {
-                NetRawMaterialsCost = headerCosts.NetRawMaterialsCost
+                NetRawMaterialsCost = headerCosts.NetRawMaterialsCost + (includeOverHeadProfitIcc ? totalOverHeadAndProfit : 0)
             }
 
             const ConversionCostForCalculation = costData.IsAssemblyPart ? checkForNull(headerCosts.NetConversionCost) - checkForNull(headerCosts.TotalOtherOperationCostPerAssembly) : headerCosts.ProcessCostTotal + headerCosts.OperationCostTotal
@@ -158,7 +165,7 @@ function Icc(props) {
                     setTempInventoryObj({
                         ...tempInventoryObj,
                         CostApplicability: checkForNull(NetRawMaterialsCost),
-                        NetICCTotal: checkForNull(NetRawMaterialsCost) * calculatePercentage(InterestRatePercentage)
+                        NetICCTotal: checkForNull(headerCosts?.NetRawMaterialsCost + (includeOverHeadProfitIcc ? totalOverHeadAndProfit : 0)) * calculatePercentage(InterestRatePercentage)
                     })
                     break;
 
@@ -264,8 +271,8 @@ function Icc(props) {
 
     useEffect(() => {
         checkInventoryApplicability(ICCapplicability?.label)
+    }, [interestRateValues, IsIncludedSurfaceInOverheadProfit, ICCapplicability, isNetWeight, includeOverHeadProfitIcc, totalOverHeadAndProfit]);
 
-    }, [interestRateValues, IsIncludedSurfaceInOverheadProfit, ICCapplicability, isNetWeight]);
 
     useEffect(() => {
         setTimeout(() => {
@@ -282,6 +289,7 @@ function Icc(props) {
             }
             setValue('CostApplicability', IsInventoryApplicable ? checkForDecimalAndNull(tempInventoryObj.CostApplicability, initialConfiguration.NoOfDecimalForPrice) : '')
             if (!CostingViewMode) {
+
                 props.setICCDetail(tempObj, { BOMLevel: data.BOMLevel, PartNumber: data.PartNumber })
             }
         }, 200)

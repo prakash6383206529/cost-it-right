@@ -94,6 +94,7 @@ function AssemblyOverheadProfit(props) {
       "IsIncludeSurfaceTreatmentWithOverheadAndProfit": props.IsIncludeSurfaceTreatment,
       "IsIncludeSurfaceTreatmentWithRejection": props.IsIncludeSurfaceTreatmentRejection,
       "IsIncludeToolCostWithOverheadAndProfit": props.IsIncludeToolCost,
+      "IsIncludeOverheadAndProfitInICC": props.IncludeOverheadProfitInIcc,
       "IsApplicableForChildParts": false,
       "CostingNumber": costData.CostingNumber,
       "NetOverheadAndProfitCost": checkForNull(item?.CostingPartDetails?.OverheadCost) +

@@ -55,11 +55,11 @@ function OverheadProfit(props) {
     reValidateMode: 'onChange',
     defaultValues: defaultValues,
   });
+  const { CostingEffectiveDate, CostingDataList, IsIncludedSurfaceInOverheadProfit, IsIncludedToolCost, ToolTabData, OverheadProfitTabData } = useSelector(state => state.costing)
 
   const dispatch = useDispatch()
   const headerCosts = useContext(netHeadCostContext);
   const costData = useContext(costingInfoContext);
-  const { CostingEffectiveDate, CostingDataList, IsIncludedSurfaceInOverheadProfit, IsIncludedToolCost, ToolTabData } = useSelector(state => state.costing)
 
   const [overheadObj, setOverheadObj] = useState(CostingOverheadDetail)
   const [profitObj, setProfitObj] = useState(CostingProfitDetail)
@@ -335,11 +335,14 @@ function OverheadProfit(props) {
 
         const reqParams = {
           ModelTypeId: newValue.value,
-          VendorId: (costData.CostingTypeId === VBCTypeId || costData.CostingTypeId === NFRTypeId) ? costData.VendorId : EMPTY_GUID,
-          costingTypeId: (Number(costData.CostingTypeId) === NFRTypeId || Number(costData.CostingTypeId) === VBCTypeId) ? VBCTypeId : costData.CostingTypeId,
+          VendorId: costData.CostingTypeId === VBCTypeId ? costData.VendorId : EMPTY_GUID,
+          costingTypeId: Number(costData.CostingTypeId) === NFRTypeId ? VBCTypeId : costData.CostingTypeId,
           EffectiveDate: CostingEffectiveDate,
           plantId: (getConfigurationKey()?.IsPlantRequiredForOverheadProfitInterestRate && costData?.CostingTypeId !== VBCTypeId) ? costData.PlantId : (getConfigurationKey()?.IsDestinationPlantConfigure && costData?.CostingTypeId === VBCTypeId) || (costData?.CostingTypeId === CBCTypeId) || (costData?.CostingTypeId === NFRTypeId) ? costData.DestinationPlantId : EMPTY_GUID,
-          customerId: costData.CustomerId
+          customerId: costData.CustomerId,
+          rawMaterialGradeId: initialConfiguration.IsShowRawMaterialInOverheadProfitAndICC ? OverheadProfitTabData[0]?.CostingPartDetails?.RawMaterialGradeId : EMPTY_GUID,
+          rawMaterialChildId: initialConfiguration.IsShowRawMaterialInOverheadProfitAndICC ? OverheadProfitTabData[0]?.CostingPartDetails?.RawMaterialChildId : EMPTY_GUID,
+          technologyId: initialConfiguration.IsShowRawMaterialInOverheadProfitAndICC ? OverheadProfitTabData[0]?.CostingPartDetails?.TechnologyId : EMPTY_GUID,
         }
 
         dispatch(getOverheadProfitDataByModelType(reqParams, res => {
