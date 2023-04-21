@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { Row, Col, Container } from 'reactstrap'
 import { Drawer } from '@material-ui/core'
 import { NumberFieldHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs'
@@ -9,7 +9,8 @@ import Toaster from '../../../../common/Toaster'
 import LabourCost from './LabourCost'
 import { getCostingLabourDetails, getLabourDetailsByFilter } from '../../../actions/Costing'
 import DayTime from '../../../../common/DayTimeWrapper'
-import { CBCTypeId, VBCTypeId, ZBCTypeId } from '../../../../../config/constants'
+import { CBCTypeId, EMPTY_GUID, NCCTypeId, NFRTypeId, VBCTypeId, ZBCTypeId } from '../../../../../config/constants'
+import { costingInfoContext } from '../../CostingDetailStepTwo'
 
 function AddLabourCost(props) {
     const { item } = props
@@ -20,8 +21,9 @@ function AddLabourCost(props) {
     const [isEditMode, setIsEditMode] = useState(false)
     const [type, setType] = useState('')
     const [totalCost, setTotalCost] = useState('')
-    const [indirectLabourCostState, setIndirectLabourCostState] = useState('')
-    const [staffCostState, setStaffCostState] = useState('')
+    const [totalGridCost, setTotalGridCost] = useState(0)
+    const [indirectLabourCostState, setIndirectLabourCostState] = useState(0)
+    const [staffCostState, setStaffCostState] = useState(0)
     const dispatch = useDispatch()
     const { costingData } = useSelector(state => state.costing)
 
@@ -30,35 +32,50 @@ function AddLabourCost(props) {
         reValidateMode: 'onChange',
     })
     const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
+    const costData = useContext(costingInfoContext)
 
     useEffect(() => {
         let labourObj = false
         dispatch(getCostingLabourDetails(item.CostingId !== null ? item.CostingId : "00000000-0000-0000-0000-000000000000", (res) => {
+
             if (res) {
                 setTableData(res?.data?.Data?.CostingLabourDetailList)
+                let list = res?.data?.Data?.CostingLabourDetailList
                 labourObj = res?.data?.Data
-
                 if (labourObj) {
                     let Data = labourObj
                     setValue('indirectLabourCostPercent', Data?.IndirectLaborCostPercentage)
                     setValue('indirectLabourCost', Data?.IndirectLaborCost)
                     setValue('staffCostPercent', Data?.StaffCostPercentage)
                     setValue('staffCost', Data?.StaffCost)
+                    setStaffCostState(Number(Data?.StaffCost))
+                    setIndirectLabourCostState(Data?.IndirectLaborCost)
+                    let temp = []
+                    list && list.map((item, index) => {
+                        item.indirectLabourCostPercent = Data?.IndirectLaborCostPercentage
+                        item.indirectLabourCost = Data?.IndirectLaborCost
+                        item.staffCostPercent = Data?.StaffCostPercentage
+                        item.staffCost = Data?.StaffCost
+                        temp.push(item)
+                    })
+                    setTableData(temp)
                 }
             }
         }))
 
-
         let obj = {}
-        obj.partId = item.AssemblyPartId
-        obj.vendorId = item.VendorId
-        obj.customerId = item.CustomerId
+        obj.partId = costingData.CostingTypeId === CBCTypeId ? item.AssemblyPartId : EMPTY_GUID
+        obj.vendorId = costingData.CostingTypeId === VBCTypeId ? item.VendorId : EMPTY_GUID
+        obj.customerId = costingData.CostingTypeId === CBCTypeId ? item.CustomerId : EMPTY_GUID
         obj.effectiveDate = DayTime(item.CostingDate).format('DD/MM/YYYY')
-        obj.costingHeadId = item.CostingType.includes('Vendor') ? VBCTypeId : (item.CostingType.includes('Zero') ? ZBCTypeId : CBCTypeId)
-        obj.plantId = costingData.DestinationPlantId
+        obj.costingHeadId = costingData.CostingTypeId
+        obj.plantId = (initialConfiguration?.IsDestinationPlantConfigure && (costData.CostingTypeId === VBCTypeId || costData.CostingTypeId === NCCTypeId || costData.CostingTypeId === NFRTypeId)) || costData.CostingTypeId === CBCTypeId ? costData.DestinationPlantId : (costData.CostingTypeId === ZBCTypeId) ? costData.PlantId : EMPTY_GUID
         dispatch(getLabourDetailsByFilter(obj, (res) => {
             if (res) {
-
+                let Data = res.data.DataList[0]
+                setValue('labourRate', Data.LabourRate)
+                setValue('workingHours', Data.WorkingTime)
+                setValue('Efficiency', Data.Efficiency)
             }
         }))
     }, [])
@@ -91,13 +108,13 @@ function AddLabourCost(props) {
         if (sum && e?.target?.value) {
             let value = Number(e?.target?.value)
             let staffCost = (value / 100) * (sum)
-            setStaffCostState(staffCost)
+            setStaffCostState(Math.round(staffCost))
             setValue('staffCost', checkForDecimalAndNull(staffCost, initialConfiguration.NoOfDecimalForPrice))
 
             let temp = []
             tableData && tableData.map((item, index) => {
                 item.staffCostPercent = value
-                item.staffCost = staffCost
+                item.staffCost = Math.round(staffCost)
                 temp.push(item)
             })
             setTableData(temp)
@@ -113,12 +130,9 @@ function AddLabourCost(props) {
             let efficiency = Number(getValues('Efficiency'))
             efficiency = efficiency / 100
             let cycleTime = Number(e?.target?.value)
-
             labourCost = labourRate / (workingHours * (efficiency / cycleTime))
             setTotalCost(labourCost)
             setValue('labourCost', checkForDecimalAndNull(labourCost, initialConfiguration.NoOfDecimalForPrice))
-
-
         }
     }
 
@@ -139,6 +153,7 @@ function AddLabourCost(props) {
     // This function is called when the user clicks a button to add data to a table.
     const addData = () => {
         let table = [...tableData]
+        let indirectLabourCost = indirectLabourCostState
 
         // Get the current data in the table and set some initial variables.
         let indexOfLabour
@@ -147,7 +162,7 @@ function AddLabourCost(props) {
 
         // Check if the new data to be added is a duplicate of existing data.
         table && table.map((item, index) => {
-            if (item.description === description) {
+            if (item.Description === description) {
                 alreadyDataExist = true
                 indexOfLabour = index
             }
@@ -161,7 +176,7 @@ function AddLabourCost(props) {
 
 
         // If all mandatory fields are filled out, create a new object with the data and add it to the table.
-        if (getValues('CycleTime') && getValues('labourCost')) {
+        if (getValues('CycleTime') && getValues('labourCost') && getValues('description')) {
             let obj = {}
             obj.Description = getValues('description') ? getValues('description') : ''
             obj.LabourRate = getValues('labourRate') ? getValues('labourRate') : ''
@@ -179,10 +194,39 @@ function AddLabourCost(props) {
             }
 
             // Update the table data in the Redux store and reset the form fields.
+
+
             setTableData(table)
             resetData()
             setIsEditMode(false)
             setEditIndex('')
+            let sum = table.reduce((acc, obj) => Number(acc) + Number(obj.LabourCost), 0);
+            setTotalGridCost(sum)
+
+            if (getValues('indirectLabourCostPercent')) {
+                let indirectValuePercent = Number(getValues('indirectLabourCostPercent'))
+                let total = (indirectValuePercent / 100) * sum
+                setValue('indirectLabourCost', checkForDecimalAndNull(total, initialConfiguration.NoOfDecimalForPrice))
+                setIndirectLabourCostState(total)
+                indirectLabourCost = total
+            }
+
+            if (getValues('staffCostPercent')) {
+                sum = sum + indirectLabourCost
+                let staffCostPercent = Number(getValues('staffCostPercent'))
+                let totalStaff = (staffCostPercent / 100) * sum
+                setValue('staffCost', checkForDecimalAndNull(totalStaff, initialConfiguration.NoOfDecimalForPrice))
+                setStaffCostState(totalStaff)
+            }
+
+
+            table && table.map((item, ind) => {
+                item.indirectLabourCostPercent = getValues('indirectLabourCostPercent') ? Number(getValues('indirectLabourCostPercent')) : ''
+                item.indirectLabourCost = getValues('indirectLabourCost') ? Number(getValues('indirectLabourCost')) : ''
+                item.staffCostPercent = getValues('staffCostPercent') ? Number(getValues('staffCostPercent')) : ''
+                item.staffCost = getValues('staffCost') ? Number(getValues('staffCost')) : ''
+            })
+
 
         } else {
             // If not all mandatory fields are filled out, show an error message.
@@ -214,6 +258,19 @@ function AddLabourCost(props) {
                     temp.push(item)
                 }
             })
+
+            setValue('indirectLabourCostPercent', '')
+            setValue('indirectLabourCost', '')
+            setValue('staffCostPercent', '')
+            setValue('staffCost', '')
+
+            temp && temp.map((item, index) => {
+                delete item.indirectLabourCostPercent
+                delete item.indirectLabourCost
+                delete item.staffCostPercent
+                delete item.staffCost
+            })
+
             setTableData(temp) // Update the tableData state with the updated array
         }
 
@@ -301,7 +358,7 @@ function AddLabourCost(props) {
                                             className=""
                                             customClassName={'withBorder'}
                                             errors={errors.Cost}
-                                        //disabled={props.CostingViewMode || disableAllFields}
+                                            disabled={true}
                                         />
                                     </Col>
 
@@ -328,7 +385,7 @@ function AddLabourCost(props) {
                                             className=""
                                             customClassName={'withBorder'}
                                             errors={errors.workingHours}
-                                        //disabled={props.CostingViewMode || disableAllFields}
+                                            disabled={true}
                                         />
                                     </Col>
                                     <Col md="2" className='px-1'>
@@ -348,7 +405,7 @@ function AddLabourCost(props) {
                                             className=""
                                             customClassName={'withBorder'}
                                             errors={errors.Efficiency}
-                                        //disabled={props.CostingViewMode || disableAllFields}
+                                            disabled={true}
                                         />
                                     </Col>
 

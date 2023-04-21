@@ -26,6 +26,7 @@ function AssemblyPart(props) {
   const [isOpenLabourDrawer, setIsOpenLabourDrawer] = useState(false)
   const [labourTableData, setLabourTableData] = useState([])
   const [labourObj, setLabourObj] = useState(false)
+  const [totalLabourCost, setTotalLabourCost] = useState(0)
   const [isBOPExists, setIsBOPExists] = useState(false)
   const [callSaveAssemblyApi, setCallSaveAssemblyApi] = useState(false)
   const { partNumberAssembly } = useSelector(state => state.costing)
@@ -132,16 +133,19 @@ function AssemblyPart(props) {
       let obj = {}
       obj.CostingId = item.CostingId !== null ? item.CostingId : "00000000-0000-0000-0000-000000000000"
       obj.LoggedInUserId = loggedInUserId()
-      obj.IndirectLaborCost = data[0].indirectLabourCost
-      obj.StaffCost = data[0].staffCost
-      obj.StaffCostPercentage = data[0].staffCostPercent
-      obj.IndirectLaborCostPercentage = data[0].indirectLabourCostPercent
-      obj.NetLabourCost = sum
+      obj.IndirectLaborCost = data.length > 0 ? data[0].indirectLabourCost : 0
+      obj.StaffCost = data.length > 0 ? data[0].staffCost : 0
+      obj.StaffCostPercentage = data.length > 0 ? data[0].staffCostPercent : 0
+      obj.IndirectLaborCostPercentage = data.length > 0 ? data[0].indirectLabourCostPercent : 0
+      obj.NetLabourCost = Math.round(sum * 10) / 10
       obj.CostingLabourDetailList = data
+      props.setAssemblyLabourCost(obj)
 
+      setTotalLabourCost(Number(obj.NetLabourCost) + Number(obj.IndirectLaborCost) + Number(obj.StaffCost))
       let temp = []
       RMCCTabData && RMCCTabData.map((item, index) => {
         if (index === 0) {
+          item.CostingPartDetails.totalLabourCost = Number(obj.NetLabourCost) + Number(obj.IndirectLaborCost) + Number(obj.StaffCost)
           let objNew = { ...item, ...obj }
           temp.push(objNew)
         } else {
@@ -149,26 +153,31 @@ function AssemblyPart(props) {
         }
       })
 
-      dispatch(setRMCCData(temp, () => { }))
       dispatch(saveCostingLabourDetails(obj, (res) => {
         if (res) {
           Toaster.success('Labour details saved successfully.')
         }
       }))
+
+
     }
   }
 
   useEffect(() => {
     if (RMCCTabData && SurfaceTabData && callSaveAssemblyApi) {
       const tabData = RMCCTabData[0]
+      tabData.AddLabourCost = true
       const surfaceTabData = SurfaceTabData[0]
       const overHeadAndProfitTabData = OverheadProfitTabData[0]
       const discountAndOtherTabData = DiscountCostData
-      let assemblyRequestedData = createToprowObjAndSave(tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, netPOPrice, getAssemBOPCharge, 1, CostingEffectiveDate)
+
+      let assemblyRequestedData = createToprowObjAndSave(tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, netPOPrice, getAssemBOPCharge, 1, CostingEffectiveDate, true)
       dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData, res => { }))
+      setCallSaveAssemblyApi(false)
     }
 
   }, [RMCCTabData])
+
 
   const nestedPartComponent = children && children.map(el => {
     if (el.PartType === 'Part') {
@@ -198,7 +207,7 @@ function AssemblyPart(props) {
   useEffect(() => {
     dispatch(getCostingLabourDetails(item.CostingId !== null ? item.CostingId : "00000000-0000-0000-0000-000000000000", (res) => {
 
-      setLabourTableData(res?.data?.Data?.CostingLabourDetailList)
+      setLabourTableData((res?.data?.Data?.CostingLabourDetailList) ? (res?.data?.Data?.CostingLabourDetailList) : [])
       setLabourObj(res?.data?.Data)
     }))
 
@@ -290,7 +299,7 @@ function AssemblyPart(props) {
 
           <div className='d-flex justify-content-end align-items-center'>
             <div className='d-flex'>
-              {item.PartType === ASSEMBLYNAME && <><button
+              {item.PartType === ASSEMBLYNAME && (initialConfiguration.IsShowCostingLabour) && <><button
                 type="button"
                 className={'user-btn add-oprn-btn mr-1'}
                 onClick={labourHandlingDrawer}>
