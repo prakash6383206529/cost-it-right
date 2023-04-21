@@ -16,10 +16,8 @@ function AddLabourCost(props) {
     const { item } = props
     const [tableData, setTableData] = useState(props?.tableData)
     const [disableTotalCost, setDisableTotalCost] = useState(true)
-    const [disableAllFields, setDisableAllFields] = useState(true)
     const [editIndex, setEditIndex] = useState('')
     const [isEditMode, setIsEditMode] = useState(false)
-    const [type, setType] = useState('')
     const [totalCost, setTotalCost] = useState('')
     const [totalGridCost, setTotalGridCost] = useState(0)
     const [indirectLabourCostState, setIndirectLabourCostState] = useState(0)
@@ -75,7 +73,7 @@ function AddLabourCost(props) {
                 let Data = res.data.DataList[0]
                 setValue('labourRate', Data.LabourRate)
                 setValue('workingHours', Data.WorkingTime)
-                setValue('Efficiency', Data.Efficiency)
+                setValue('efficiency', Data.Efficiency)
             }
         }))
     }, [])
@@ -127,7 +125,7 @@ function AddLabourCost(props) {
             let labourCost
             let labourRate = Number(getValues('labourRate'))
             let workingHours = Number(getValues('workingHours'))
-            let efficiency = Number(getValues('Efficiency'))
+            let efficiency = Number(getValues('efficiency'))
             efficiency = efficiency / 100
             let cycleTime = Number(e?.target?.value)
             labourCost = labourRate / (workingHours * (efficiency / cycleTime))
@@ -176,13 +174,13 @@ function AddLabourCost(props) {
 
 
         // If all mandatory fields are filled out, create a new object with the data and add it to the table.
-        if (getValues('CycleTime') && getValues('labourCost') && getValues('description')) {
+        if (getValues('cycleTime') && getValues('labourCost') && getValues('description')) {
             let obj = {}
             obj.Description = getValues('description') ? getValues('description') : ''
             obj.LabourRate = getValues('labourRate') ? getValues('labourRate') : ''
             obj.WorkingTime = getValues('workingHours') ? getValues('workingHours') : ''
-            obj.Efficiency = getValues('Efficiency') ? getValues('Efficiency') : ''
-            obj.CycleTime = getValues('CycleTime') ? getValues('CycleTime') : ''
+            obj.Efficiency = getValues('efficiency') ? getValues('efficiency') : ''
+            obj.CycleTime = getValues('cycleTime') ? getValues('cycleTime') : ''
             obj.LabourCost = totalCost ? totalCost : ''
 
             // If we're in edit mode, update the existing row with the new data.
@@ -239,10 +237,9 @@ function AddLabourCost(props) {
         setValue('description', '')
         setValue('labourRate', '')
         setValue('workingHours', '')
-        setValue('Efficiency', '')
-        setValue('CycleTime', '')
+        setValue('efficiency', '')
+        setValue('cycleTime', '')
         setValue('labourCost', '')
-        setDisableAllFields(true)
         setDisableTotalCost(true)
         setTotalCost('')
     }
@@ -281,20 +278,17 @@ function AddLabourCost(props) {
 
             // Retrieve the data at the specified index from the tableData array, and set the values of various form fields based on the data.
             let Data = tableData[indexValue]
-            setDisableAllFields(false)
             setValue('description', Data.Description)
             setValue('labourRate', Data.LabourRate)
             setValue('workingHours', Data.WorkingTime)
-            setValue('Efficiency', Data.Efficiency)
-            setValue('CycleTime', Data.CycleTime)
+            setValue('efficiency', Data.Efficiency)
+            setValue('cycleTime', Data.CycleTime)
             setValue('labourCost', checkForDecimalAndNull(Data.LabourCost, initialConfiguration.NoOfDecimalForPrice))
 
             setTotalCost(Data.LabourCost)
             if (Data.ConditionType === 'Fixed') {
                 setDisableTotalCost(false)
-                setDisableAllFields(true)
             } else {
-                setDisableAllFields(false)
                 setDisableTotalCost(true)
             }
         }
@@ -373,10 +367,6 @@ function AddLabourCost(props) {
                                             rules={{
                                                 required: false,
                                                 validate: { number, checkWhiteSpaces },
-                                                // max: {
-                                                //     value: 100,
-                                                //     message: 'Percentage should be less than 100'
-                                                // },
 
                                             }}
 
@@ -391,7 +381,7 @@ function AddLabourCost(props) {
                                     <Col md="2" className='px-1'>
                                         <NumberFieldHookForm
                                             label={`Efficiency`}
-                                            name={'Efficiency'}
+                                            name={'efficiency'}
                                             Controller={Controller}
                                             control={control}
                                             register={register}
@@ -404,7 +394,7 @@ function AddLabourCost(props) {
                                             defaultValue={''}
                                             className=""
                                             customClassName={'withBorder'}
-                                            errors={errors.Efficiency}
+                                            errors={errors.efficiency}
                                             disabled={true}
                                         />
                                     </Col>
@@ -412,7 +402,7 @@ function AddLabourCost(props) {
                                     <Col md="2" className='px-1'>
                                         <NumberFieldHookForm
                                             label={`Cycle Time`}
-                                            name={'CycleTime'}
+                                            name={'cycleTime'}
                                             Controller={Controller}
                                             control={control}
                                             register={register}
@@ -425,8 +415,8 @@ function AddLabourCost(props) {
                                             defaultValue={''}
                                             className=""
                                             customClassName={'withBorder'}
-                                            errors={errors.CycleTime}
-                                        //disabled={props.CostingViewMode}
+                                            errors={errors.cycleTime}
+                                            disabled={props.CostingViewMode}
                                         />
                                     </Col>
 
@@ -468,9 +458,7 @@ function AddLabourCost(props) {
                                         </button>
                                     </Col>
                                 </Row>
-                                {/* <NpvCost showAddButton={false} tableData={tableData} hideAction={false} editData={editData} /> */}
                                 {<LabourCost hideAction={false} tableData={tableData} editData={editData} />}
-
                                 <Row className='mt-4'>
                                     <Col md="2" className='m-2'>
                                         <NumberFieldHookForm
@@ -493,7 +481,7 @@ function AddLabourCost(props) {
                                             className=""
                                             customClassName={'withBorder'}
                                             errors={errors.indirectLabourCostPercent}
-                                        //disabled={props.CostingViewMode || disableAllFields}
+                                            disabled={props.CostingViewMode}
                                         />
                                     </Col>
                                     <Col md="2" className='m-2'>
@@ -537,7 +525,7 @@ function AddLabourCost(props) {
                                             className=""
                                             customClassName={'withBorder'}
                                             errors={errors.staffCostPercent}
-                                        //disabled={props.CostingViewMode || disableAllFields}
+                                            disabled={props.CostingViewMode}
                                         />
                                     </Col>
                                     <Col md="2" className='m-2'>
