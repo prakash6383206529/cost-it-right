@@ -257,7 +257,7 @@ class AddClientDrawer extends Component {
         const { city, DataToCheck, DropdownChanged, statusGrid } = this.state;
         const { isEditFlag, ID } = this.props;
 
-        if (statusGrid && statusGrid.length === 0) {
+        if (getConfigurationKey().IsShowPOSeriesInCustomerMaster && statusGrid && statusGrid.length === 0) {
             Toaster.warning('PO Series Table entry required.')
             return false
         }

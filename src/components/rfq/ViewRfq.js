@@ -13,7 +13,7 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '.././common/PopupMsgWrapper';
 import { PaginationWrapper } from '.././common/commonPagination'
-import { sendReminderForQuotation, getQuotationDetailsList, getMultipleCostingDetails } from './actions/rfq';
+import { sendReminderForQuotation, getQuotationDetailsList, getMultipleCostingDetails, setQuotationIdForRFQ } from './actions/rfq';
 import AddRfq from './AddRfq';
 import SendForApproval from '../costing/components/approval/SendForApproval';
 import { getSingleCostingDetails, setCostingApprovalData, setCostingViewData, storePartNumber } from '../costing/actions/Costing';
@@ -66,6 +66,12 @@ function RfqListing(props) {
         getDataList()
 
     }, [])
+
+    useEffect(() => {
+        if (rowData[0]?.QuotationId) {
+            dispatch(setQuotationIdForRFQ(rowData[0]?.QuotationId))
+        }
+    }, [rowData[0]?.QuotationId])
 
     useEffect(() => {
 
@@ -767,7 +773,7 @@ function RfqListing(props) {
                                             {/* <AgGridColumn field="PartNumber" headerName="Attachment "></AgGridColumn> */}
                                             <AgGridColumn field="Remark" tooltipField="Remark" headerName='Notes' cellRenderer={hyphenFormatter}></AgGridColumn>
                                             <AgGridColumn field="VisibilityMode" headerName='Visibility Mode' cellRenderer={hyphenFormatter}></AgGridColumn>
-                                            <AgGridColumn field="VisibilityDate" headerName='Visibility Date' cellRenderer={hyphenFormatter}></AgGridColumn>
+                                            <AgGridColumn field="VisibilityDate" headerName='Visibility Date' cellRenderer={dateFormatter}></AgGridColumn>
                                             <AgGridColumn field="VisibilityDuration" headerName='Visibility Duration' cellRenderer={hyphenFormatter}></AgGridColumn>
                                             <AgGridColumn field="CostingNumber" headerName=' Costing Number' cellRenderer={hyphenFormatter}></AgGridColumn>
                                             <AgGridColumn field="CostingId" headerName='Costing Id ' hide={true}></AgGridColumn>

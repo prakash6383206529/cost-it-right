@@ -2560,12 +2560,12 @@ class AddMoreDetails extends Component {
                         <Col md="3">
                           <div className="form-group">
                             <label>
-                              Year Of Manufacturing
+                              Year of Manufacturing
                               {/* <span className="asterisk-required">*</span> */}
                             </label>
                             <div className="inputbox date-section">
                               <DatePicker
-                                // label={`Year Of Manufacturing`}
+                                // label={`Year of Manufacturing`}
                                 name="YearOfManufacturing"
                                 selected={this.state.manufactureYear}
                                 onChange={this.handleYearChange}
@@ -2585,7 +2585,7 @@ class AddMoreDetails extends Component {
                             </div>
                           </div>
                           {/* <Field
-                          label={`Year Of Manufacturing`}
+                          label={`Year of Manufacturing`}
                           name={"YearOfManufacturing"}
                           //type="text"
                           showYearPicker
@@ -2606,7 +2606,7 @@ class AddMoreDetails extends Component {
                         /> */}
 
                           {/* <RenderYearPicker
-                          label={"Year Of Manufacturing"}
+                          label={"Year of Manufacturing"}
                           name="YearOfManufacturing"
                           selected={this.state.manufactureYear}
                           handleChange={this.handleYearChange}
@@ -2784,7 +2784,7 @@ class AddMoreDetails extends Component {
 
                             <Col md="4">
                               <Field
-                                label={`Rate Of Interest (%) / Annum`}
+                                label={`Rate of Interest (%) / Annum`}
                                 name={this.props.fieldsObj.RateOfInterestPercentage === 0 ? '-' : "RateOfInterestPercentage"}
                                 type="text"
                                 placeholder={disableAllForm ? '-' : 'Enter'}
@@ -2863,7 +2863,7 @@ class AddMoreDetails extends Component {
                               <Field
                                 name="WorkingShift"
                                 type="text"
-                                label="No. Of Shifts"
+                                label="No. of Shifts"
                                 component={searchableSelect}
                                 placeholder={'Select'}
                                 options={this.renderListing('ShiftType')}
@@ -2891,7 +2891,7 @@ class AddMoreDetails extends Component {
                             </Col>
                             <Col md="3">
                               <Field
-                                label={`No. Of Working days/Annum`}
+                                label={`No. of Working days/Annum`}
                                 name={"NumberOfWorkingDaysPerYear"}
                                 type="text"
                                 placeholder={disableAllForm ? '-' : 'Enter'}
@@ -2929,7 +2929,7 @@ class AddMoreDetails extends Component {
                             </Col>
                             <Col md="3">
                               <Field
-                                label={`No. Of Working Hrs/Annum`}
+                                label={`No. of Working Hrs/Annum`}
                                 name={this.props.fieldsObj.NumberOfWorkingHoursPerYear === 0 ? '-' : "NumberOfWorkingHoursPerYear"}
                                 type="text"
                                 placeholder={'-'}
@@ -2997,7 +2997,7 @@ class AddMoreDetails extends Component {
                             {this.state.depreciationType && this.state.depreciationType.value === SLM &&
                               <Col md="3">
                                 <Field
-                                  label={`Life Of Asset(Years)`}
+                                  label={`Life of Asset(Years)`}
                                   name={"LifeOfAssetPerYear"}
                                   type="text"
                                   placeholder={disableAllForm ? '-' : 'Enter'}
@@ -3548,7 +3548,7 @@ class AddMoreDetails extends Component {
                             </Col>
                             <Col md="2">
                               <Field
-                                label={`No. Of People`}
+                                label={`No. of People`}
                                 name={"NumberOfLabour"}
                                 type="text"
                                 placeholder={disableAllForm ? '-' : 'Enter'}
@@ -3615,7 +3615,7 @@ class AddMoreDetails extends Component {
                                   <tr>
                                     <th>{`Labour Type`}</th>
                                     <th>{`Cost/Annum(INR)`}</th>
-                                    <th>{`No. Of People`}</th>
+                                    <th>{`No. of People`}</th>
                                     <th>{`Total Cost (INR)`}</th>
                                     <th>{`Action`}</th>
                                   </tr>
