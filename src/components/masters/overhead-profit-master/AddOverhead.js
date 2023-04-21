@@ -25,6 +25,7 @@ import { onFocus, showDataOnHover } from '../../../helper';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { autoCompleteDropdown } from '../../common/CommonFunctions';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
+import { getRawMaterialNameChild, getRMGradeSelectListByRawMaterial } from '../actions/Material'
 
 const selector = formValueSelector('AddOverhead');
 
@@ -73,7 +74,9 @@ class AddOverhead extends Component {
       showErrorOnFocus: false,
       showPopup: false,
       showPartCost: false,
-      vendorFilterList: []
+      vendorFilterList: [],
+      RawMaterial: [],
+      RMGrade: [],
     }
   }
 
@@ -82,6 +85,9 @@ class AddOverhead extends Component {
    * @description Called after rendering the component
    */
   componentDidMount() {
+    if (getConfigurationKey().IsShowRawMaterialInOverheadProfitAndICC) {
+      this.props.getRawMaterialNameChild(() => { })
+    }
     this.props.getPlantSelectListByType(ZBC, () => { })
     this.props.fetchCostingHeadsAPI('master', res => { });
     if (!this.state.isViewMode) {
@@ -109,6 +115,8 @@ class AddOverhead extends Component {
       'OverheadRMPercentage',
       'OverheadMachiningCCPercentage',
       'OverheadBOPPercentage',
+      'RawMaterialGradeId',
+      'RawMaterialId',
     ];
     fieldsToClear.forEach(fieldName => {
       this.props.dispatch(clearFields('AddOverhead', false, false, fieldName));
@@ -206,6 +214,8 @@ class AddOverhead extends Component {
               effectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
               selectedPlants: Data && Data.Plants[0] && Data.Plants[0].PlantId ? [{ Text: Data.Plants[0].PlantName, Value: Data.Plants[0].PlantId }] : [],
               singlePlantSelected: Data && Data.Plants[0] && Data.Plants[0]?.PlantId ? { label: Data.Plants[0]?.PlantName, value: Data.Plants[0]?.PlantId } : {},
+              RawMaterial: Data.RawMaterialName !== undefined ? { label: Data.RawMaterialName, value: Data.RawMaterialChildId } : [],
+              RMGrade: Data.RawMaterialGrade !== undefined ? { label: Data.RawMaterialGrade, value: Data.RawMaterialGradeId } : [],
             }, () => {
               this.checkOverheadFields()
               this.setState({ isLoader: false })
@@ -236,8 +246,25 @@ class AddOverhead extends Component {
   * @description Used to show type of listing
   */
   renderListing = (label) => {
-    const { clientSelectList, modelTypes, plantSelectList, costingHead } = this.props;
+    const { clientSelectList, modelTypes, plantSelectList, costingHead, rawMaterialNameSelectList, gradeSelectList } = this.props;
     const temp = [];
+    if (label === 'material') {
+      rawMaterialNameSelectList && rawMaterialNameSelectList.map((item) => {
+        if (item.Value === '0') return false
+        temp.push({ label: item.Text, value: item.Value })
+        return null
+      })
+      return temp
+    }
+
+    if (label === 'grade') {
+      gradeSelectList && gradeSelectList.map((item) => {
+        if (item.Value === '0') return false
+        temp.push({ label: item.Text, value: item.Value })
+        return null
+      })
+      return temp
+    }
 
     if (label === 'ModelType') {
       modelTypes && modelTypes.map(item => {
@@ -436,7 +463,39 @@ class AddOverhead extends Component {
 
     }
   };
+  /**
+   * @method handleRMChange
+   * @description  used to handle row material selection
+   */
+  handleRMChange = (newValue, actionMeta) => {
+    if (newValue && newValue !== '') {
+      this.setState({ RawMaterial: newValue, RMGrade: [] }, () => {
+        const { RawMaterial } = this.state
+        this.props.getRMGradeSelectListByRawMaterial(
+          RawMaterial.value,
+          (res) => { },
+        )
+      })
+    } else {
+      this.setState({ RMGrade: [], RMSpec: [], RawMaterial: [] })
+      this.props.getRMGradeSelectListByRawMaterial('', (res) => { })
+      this.props.fetchSpecificationDataAPI(0, () => { })
+    }
+  }
 
+  /**
+   * @method handleGradeChange
+   * @description  used to handle row material grade selection
+   */
+  handleGradeChange = (newValue, actionMeta) => {
+    if (newValue && newValue !== '') {
+      this.setState({ RMGrade: newValue })
+    } else {
+      this.setState({
+        RMGrade: [],
+      })
+    }
+  }
   handlePercent = (e) => {
     // if (e.target.value > 100) {
     //   Toaster.warning('Overhead Percent can not be greater than 100.')
@@ -716,8 +775,8 @@ class AddOverhead extends Component {
   * @description Used to Submit the form
   */
   onSubmit = debounce((values) => {
-    const { client, costingTypeId, ModelType, vendorName, overheadAppli, selectedPlants, remarks, OverheadID,
-      isRM, isCC, isBOP, isOverheadPercent, singlePlantSelected, isEditFlag, files, effectiveDate, DataToChange, DropdownNotChanged, uploadAttachements } = this.state;
+    const { client, costingTypeId, ModelType, vendorName, overheadAppli, selectedPlants, remarks, OverheadID, RMGrade,
+      isRM, isCC, isBOP, isOverheadPercent, singlePlantSelected, isEditFlag, files, effectiveDate, DataToChange, DropdownNotChanged, uploadAttachements, RawMaterial } = this.state;
     const userDetailsOverhead = JSON.parse(localStorage.getItem('userDetail'))
     let plantArray = []
     if (costingTypeId === VBCTypeId) {
@@ -800,7 +859,11 @@ class AddOverhead extends Component {
         Attachements: updatedFiles,
         EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
         IsForcefulUpdated: true,
-        Plants: costingTypeId === CBCTypeId ? cbcPlantArray : plantArray
+        Plants: costingTypeId === CBCTypeId ? cbcPlantArray : plantArray,
+        RawMaterialChildId: RawMaterial?.value,
+        RawMaterialName: RawMaterial?.label,
+        RawMaterialGradeId: RMGrade?.value,
+        RawMaterialGrade: RMGrade?.label,
       }
       if (isEditFlag) {
         if (DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss') === DayTime(DataToChange?.EffectiveDate).format('YYYY-MM-DD HH:mm:ss')) {
@@ -840,7 +903,11 @@ class AddOverhead extends Component {
         CreatedBy: loggedInUserId(),
         Attachements: files,
         Plants: costingTypeId === CBCTypeId ? cbcPlantArray : plantArray,
-        EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss')
+        EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
+        RawMaterialChildId: RawMaterial?.value,
+        RawMaterialName: RawMaterial?.label,
+        RawMaterialGradeId: RMGrade?.value,
+        RawMaterialGrade: RMGrade?.label,
       }
 
       this.props.createOverhead(formData, (res) => {
@@ -965,6 +1032,48 @@ class AddOverhead extends Component {
                         </Col>
                       </Row>
                       <Row>
+                        {getConfigurationKey().IsShowRawMaterialInOverheadProfitAndICC &&
+                          <>                        <Col md="3">
+                            <div className="d-flex justify-space-between align-items-center inputwith-icon">
+                              <div className="fullinput-icon">
+                                <Field
+                                  name="RawMaterialId"
+                                  type="text"
+                                  label="Raw Material Name"
+                                  component={searchableSelect}
+                                  placeholder={"Select"}
+                                  options={this.renderListing("material")}
+                                  validate={this.state.RawMaterial == null || this.state.RawMaterial.length === 0 ? [required] : []}
+                                  required={true}
+                                  handleChangeDescription={this.handleRMChange}
+                                  valueDescription={this.state.RawMaterial}
+                                  className="fullinput-icon"
+                                  disabled={isEditFlag || isViewMode}
+                                />
+                              </div>
+                            </div>
+                          </Col>
+                            <Col md="3">
+                              <div className="d-flex justify-space-between align-items-center inputwith-icon">
+                                <div className="fullinput-icon">
+                                  <Field
+                                    name="RawMaterialGradeId"
+                                    type="text"
+                                    label="Raw Material Grade"
+                                    component={searchableSelect}
+                                    placeholder={"Select"}
+                                    options={this.renderListing("grade")}
+                                    validate={this.state.RMGrade == null || this.state.RMGrade.length === 0 ? [required] : []}
+                                    required={true}
+                                    handleChangeDescription={this.handleGradeChange}
+                                    valueDescription={this.state.RMGrade}
+                                    disabled={isEditFlag || isViewMode}
+                                  />
+                                </div>
+                              </div>
+                            </Col>
+                          </>
+                        }
                         <Col md="3" >
                           <Field
                             name="ModelType"
@@ -1336,7 +1445,7 @@ class AddOverhead extends Component {
 * @param {*} state
 */
 function mapStateToProps(state) {
-  const { comman, overheadProfit, client, supplier } = state;
+  const { comman, overheadProfit, client, supplier, material } = state;
   const filedObj = selector(state, 'OverheadPercentage', 'OverheadRMPercentage', 'OverheadMachiningCCPercentage',
     'OverheadBOPPercentage')
 
@@ -1344,7 +1453,7 @@ function mapStateToProps(state) {
   const { overheadProfitData, } = overheadProfit;
   const { clientSelectList } = client;
   const { vendorWithVendorCodeSelectList } = supplier;
-
+  const { rawMaterialNameSelectList, gradeSelectList } = material
   let initialValues = {};
   if (overheadProfitData && overheadProfitData !== undefined) {
     initialValues = {
@@ -1358,7 +1467,7 @@ function mapStateToProps(state) {
 
   return {
     modelTypes, costingHead, overheadProfitData, clientSelectList,
-    vendorWithVendorCodeSelectList, filedObj, initialValues, plantSelectList
+    vendorWithVendorCodeSelectList, filedObj, initialValues, plantSelectList, rawMaterialNameSelectList, gradeSelectList
   }
 
 }
@@ -1379,7 +1488,9 @@ export default connect(mapStateToProps, {
   getOverheadData,
   fileUploadOverHead,
   fileDeleteOverhead,
-  getVendorNameByVendorSelectList
+  getVendorNameByVendorSelectList,
+  getRawMaterialNameChild,
+  getRMGradeSelectListByRawMaterial
 })(reduxForm({
   form: 'AddOverhead',
   enableReinitialize: true,
