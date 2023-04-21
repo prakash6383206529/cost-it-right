@@ -5,12 +5,14 @@ import { Row, Col, Table, Label } from 'reactstrap'
 import { required, checkForNull, positiveAndDecimalNumber, maxLength10, checkForDecimalAndNull, decimalLengthsix, number } from '../../../helper/validation'
 import { focusOnError, renderTextInputField, searchableSelect } from '../../layout/FormInputs'
 import { getPlantListByState } from '../actions/Fuel'
+import { getProductGroupSelectList } from '../actions/Part'
 import { createLabour, getLabourData, updateLabour, getLabourTypeByMachineTypeSelectList, } from '../actions/Labour'
 import { getMachineTypeSelectList } from '../actions/MachineMaster'
+import { getClientSelectList, } from '../actions/Client';
 import Toaster from '../../common/Toaster'
 import { fetchStateDataAPI, getAllCity, getVendorNameByVendorSelectList } from '../../../actions/Common';
 import { MESSAGES } from '../../../config/message'
-import { CBCTypeId, LABOUR_VENDOR_TYPE, EMPTY_DATA, searchCount, SPACEBAR, VBCTypeId, ZBCTypeId } from '../../../config/constants'
+import { CBCTypeId, EMPTY_DATA, LABOUR_VENDOR_TYPE, searchCount, SPACEBAR, VBCTypeId, ZBCTypeId } from '../../../config/constants'
 import { loggedInUserId } from '../../../helper/auth'
 import Switch from 'react-switch'
 import DatePicker from 'react-datepicker'
@@ -48,6 +50,8 @@ class AddLabour extends Component {
       gridTable: [],
       machineType: [],
       labourType: [],
+      product: [],
+      client: [],
       effectiveDate: '',
       costingTypeId: ZBCTypeId,
       isOpenMachineType: false,
@@ -55,6 +59,8 @@ class AddLabour extends Component {
       setDisable: false,
       inputLoader: false,
       labourRate: '',
+      workingHours: '',
+      efficiency: '',
       errorObj: {
         machineType: false,
         labourType: false,
@@ -78,6 +84,8 @@ class AddLabour extends Component {
     }
     if (!this.state.isViewMode) {
       this.props.getMachineTypeSelectList(() => { })
+      this.props.getProductGroupSelectList(() => { })
+      this.props.getClientSelectList(() => { })
     }
     if (!(this.props.data.isEditFlag || this.state.isViewMode)) {
       this.props.getAllCity(countryId => {
@@ -122,7 +130,9 @@ class AddLabour extends Component {
                   LabourType: item.LabourType,
                   EffectiveDate: DayTime(item.EffectiveDate).isValid() ? DayTime(item.EffectiveDate).format('YYYY-MM-DD HH:mm') : '',
                   LabourRate: item.LabourRate,
-                  IsAssociated: item.IsAssociated
+                  IsAssociated: item.IsAssociated,
+                  WorkingTime: item.WorkingTime,
+                  Efficiency: item.Efficiency
                 }
               })
 
@@ -135,6 +145,9 @@ class AddLabour extends Component {
               StateName: Data.StateName !== undefined ? { label: Data.StateName, value: Data.StateId } : [],
               selectedPlants: Data.Plants[0].PlantName !== undefined ? { label: Data.Plants[0].PlantName, value: Data.Plants[0].PlantId } : [],
               gridTable: GridArray,
+              costingTypeId: Data.CostingTypeId ? Data.CostingTypeId : '',
+              product: Data.ProductName !== undefined ? { label: Data.ProductName, value: Data.ProductId } : [],
+              client: { label: Data.CustomerName, value: Data.CustomerId },
             }, () => this.setState({ isLoader: false }))
           }, 500)
         }
@@ -154,7 +167,7 @@ class AddLabour extends Component {
     const {
       plantSelectList,
       stateList,
-      machineTypeSelectList,
+      machineTypeSelectList, productGroupSelectList, clientSelectList
     } = this.props
     const { labourData, costingTypeId } = this.state
     const temp = []
@@ -205,6 +218,25 @@ class AddLabour extends Component {
         })
       return temp
     }
+
+    if (label === 'ProductGroup') {
+      productGroupSelectList && productGroupSelectList.map(item => {
+        if (item.Value === '0') return false;
+        temp.push({ label: item.Text, value: item.Value })
+        return null;
+      })
+      return temp;
+    }
+
+    if (label === 'ClientList') {
+      clientSelectList && clientSelectList.map(item => {
+        if (item.Value === '0') return false;
+        temp.push({ label: item.Text, value: item.Value })
+        return null;
+      });
+      return temp;
+    }
+
   }
 
   /**
@@ -276,6 +308,24 @@ class AddLabour extends Component {
 
     }
   };
+
+
+  handleClient = (newValue, actionMeta) => {
+    if (newValue && newValue !== '') {
+      this.setState({ client: newValue });
+    } else {
+      this.setState({ client: [] })
+    }
+  };
+
+
+  handleProduct = (newValue) => {
+    if (newValue && newValue !== '') {
+      this.setState({ product: newValue })
+    } else {
+      this.setState({ product: [] })
+    }
+  }
 
   /**
    * @method handlePlants
@@ -351,6 +401,26 @@ class AddLabour extends Component {
     }
   }
 
+
+  handleWorkingHours = (newValue) => {
+
+    if (newValue && newValue !== '') {
+
+      this.setState({ workingHours: newValue.target.value })
+    } else {
+      this.setState({ workingHours: '' })
+    }
+  }
+
+  handleEfficiency = (newValue) => {
+    if (newValue && newValue !== '') {
+      this.setState({ efficiency: newValue.target.value })
+    } else {
+      this.setState({ efficiency: '' })
+    }
+  }
+
+
   findLabourtype = (clickedData, arr) => {
     const { machineType } = this.state
     let isLabourType = _.find(arr, function (obj) {
@@ -374,7 +444,7 @@ class AddLabour extends Component {
   }
 
   gridHandler = () => {
-    const { machineType, labourType, gridTable, effectiveDate, vendorName, selectedPlants, StateName, IsEmployeContractual, costingTypeId } = this.state
+    const { machineType, labourType, gridTable, effectiveDate, vendorName, selectedPlants, StateName, IsEmployeContractual, costingTypeId, efficiency, workingHours } = this.state
     const { fieldsObj } = this.props
     if ((costingTypeId !== CBCTypeId ? vendorName.length === 0 : false) || selectedPlants.length === 0 || StateName === 0) {
       Toaster.warning('First fill upper detail')
@@ -426,6 +496,8 @@ class AddLabour extends Component {
         LabourType: labourType.label,
         EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm'),
         LabourRate: LabourRate,
+        Efficiency: efficiency,
+        WorkingTime: workingHours
       })
 
       this.setState(
@@ -434,8 +506,12 @@ class AddLabour extends Component {
           machineType: [],
           labourType: [],
           effectiveDate: '',
+          workingHours: '',
+          efficiency: ''
         },
         () => this.props.change('LabourRate', ''),
+        this.props.change('workingHours', ''),
+        this.props.change('Efficiency', '')
       )
       this.setState({ DropdownChanged: false, errorObj: { machineType: false, labourType: false, labourRate: false } })
     }, 200);
@@ -446,13 +522,7 @@ class AddLabour extends Component {
    * @description Used to handle update grid
    */
   updateGrid = () => {
-    const {
-      machineType,
-      labourType,
-      gridTable,
-      effectiveDate,
-      gridEditIndex,
-    } = this.state
+    const { machineType, labourType, gridTable, effectiveDate, gridEditIndex, efficiency, workingHours } = this.state
     const { fieldsObj } = this.props
     const LabourRate =
       fieldsObj && fieldsObj !== undefined ? checkForNull(fieldsObj) : 0
@@ -489,6 +559,8 @@ class AddLabour extends Component {
       LabourType: labourType.label,
       EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm'),
       LabourRate: LabourRate,
+      Efficiency: efficiency,
+      WorkingTime: workingHours
     }
 
     tempArray = Object.assign([...gridTable], { [gridEditIndex]: tempData })
@@ -501,8 +573,12 @@ class AddLabour extends Component {
         effectiveDate: '',
         gridEditIndex: '',
         isEditIndex: false,
+        efficiency: '',
+        workingHours: ''
       },
       () => this.props.change('LabourRate', 0),
+      this.props.change('workingHours', ''),
+      this.props.change('Efficiency', '')
     )
     this.setState({ DropdownChanged: false, errorObj: { machineType: false, labourType: false, labourRate: false } })
   }
@@ -520,7 +596,7 @@ class AddLabour extends Component {
         isEditIndex: false,
         effectiveDate: ''
       },
-      () => this.props.change('LabourRate', ''), this.props.getLabourTypeByMachineTypeSelectList({ machineTypeId: '' }, (res) => { this.setState({ labourData: res?.data?.SelectList }) })
+      () => this.props.change('LabourRate', ''), this.props.change('workingHours', ''), this.props.change('Efficiency', ''), this.props.getLabourTypeByMachineTypeSelectList({ machineTypeId: '' }, (res) => { this.setState({ labourData: res?.data?.SelectList }) })
     )
   }
 
@@ -545,6 +621,7 @@ class AddLabour extends Component {
       },
     )
 
+
     this.setState(
       {
         gridEditIndex: index,
@@ -554,9 +631,15 @@ class AddLabour extends Component {
           value: tempData.MachineTypeId,
         },
         effectiveDate: tempData.EffectiveDate,
+        workingHours: tempData.WorkingTime,
+        efficiency: tempData.Efficiency
       },
       () => this.props.change('LabourRate', tempData.LabourRate),
+      () => this.props.change('workingHours', tempData.WorkingTime),
+      () => this.props.change('Efficiency', tempData.Efficiency)
     )
+    this.props.change('workingHours', tempData.WorkingTime)
+    this.props.change('Efficiency', tempData.Efficiency)
   }
 
   /**
@@ -609,9 +692,9 @@ class AddLabour extends Component {
    * @description Used to Submit the form
    */
   onSubmit = debounce((values) => {
-    const { IsEmployeContractual, IsVendor, StateName, selectedPlants, vendorName, LabourId, gridTable, DropdownChanged } = this.state
+    const { IsEmployeContractual, IsVendor, StateName, selectedPlants, vendorName, LabourId, gridTable, DropdownChanged, product, costingTypeId, client } = this.state
 
-    if (vendorName.length <= 0 && IsEmployeContractual) {
+    if (vendorName.length <= 0 && costingTypeId === VBCTypeId) {
       this.setState({ isVendorNameNotSelected: true, setDisable: false })      // IF VENDOR NAME IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY AND SAVE BUTTON WILL NOT BE DISABLED
       return false
     }
@@ -632,6 +715,9 @@ class AddLabour extends Component {
 
       this.setState({ setDisable: true })
       let updateData = {
+        CostingHeadId: this.state.costingTypeId,
+        CustomerId: client.value ? client.value : null,
+        ProductId: product.value,
         LabourId: LabourId,
         IsContractBase: IsEmployeContractual,
         IsVendor: IsVendor,
@@ -658,9 +744,12 @@ class AddLabour extends Component {
 
       this.setState({ setDisable: true })
       let formData = {
+        CostingHeadId: this.state.costingTypeId,
+        CustomerId: client.value ? client.value : null,
+        ProductId: product.value,
         IsContractBase: IsEmployeContractual,
         IsVendor: IsVendor,
-        VendorId: IsEmployeContractual ? vendorName.value : '',
+        VendorId: costingTypeId === VBCTypeId ? vendorName.value : '',
         StateId: StateName.value,
         LabourDetails: gridTable,
         Plants: [
@@ -845,21 +934,46 @@ class AddLabour extends Component {
                         </Col>
                       )}
 
+
+                      {costingTypeId === CBCTypeId && (
+                        <Col md="3">
+                          <Field
+                            name="clientName"
+                            type="text"
+                            label={"Customer (Code)"}
+                            component={searchableSelect}
+                            placeholder={isEditFlag ? '-' : "Select"}
+                            options={this.renderListing("ClientList")}
+                            //onKeyUp={(e) => this.changeItemDesc(e)}
+                            validate={
+                              this.state.client == null ||
+                                this.state.client.length === 0
+                                ? [required]
+                                : []
+                            }
+                            required={true}
+                            handleChangeDescription={this.handleClient}
+                            valueDescription={this.state.client}
+                            disabled={isEditFlag ? true : false}
+                          />
+                        </Col>
+                      )}
+
                       {costingTypeId === CBCTypeId &&
                         < Col md="3">
                           <div className="form-group">
                             <Field
-                              name="state"
+                              name="product"
                               type="text"
                               label="Product"
                               component={searchableSelect}
                               placeholder={(isEditFlag && gridTable.length !== 0) ? '-' : "Select"}
-                              options={this.renderListing("state")}
+                              options={this.renderListing("ProductGroup")}
                               validate={
-                                this.state.StateName == null || this.state.StateName.length === 0 ? [required] : []}
+                                this.state.product == null || this.state.product.length === 0 ? [required] : []}
                               required={true}
-                              handleChangeDescription={this.handleState}
-                              valueDescription={this.state.StateName}
+                              handleChangeDescription={this.handleProduct}
+                              valueDescription={this.state.product}
                               disabled={(isEditFlag || gridTable.length !== 0) ? true : false}
                             /></div>
                           { }
@@ -972,6 +1086,42 @@ class AddLabour extends Component {
                           {this.state.errorObj.labourRate && (this.props.fieldsObj === undefined || Number(this.props.fieldsObj) === 0) && <div className='text-help'>This field is required.</div>}
                         </div>
                       </Col>
+
+                      <Col md="auto">
+                        <div className="form-group">
+                          <Field
+                            label={`Working hours`}
+                            name={"workingHours"}
+                            type="text"
+                            placeholder={isViewMode ? "-" : "Enter"}
+                            disabled={isViewMode}
+                            validate={[positiveAndDecimalNumber, maxLength10, decimalLengthsix, number]}
+                            component={renderTextInputField}
+                            onChange={this.handleWorkingHours}
+                            required={true}
+                            className=" "
+                            customClassName="withBorder"
+                          />
+                        </div>
+                      </Col>
+                      <Col md="auto">
+                        <div className="form-group">
+                          <Field
+                            label={`Efficiency`}
+                            name={"Efficiency"}
+                            type="text"
+                            placeholder={isViewMode ? "-" : "Enter"}
+                            disabled={isViewMode}
+                            validate={[positiveAndDecimalNumber, maxLength10, decimalLengthsix, number]}
+                            component={renderTextInputField}
+                            onChange={this.handleEfficiency}
+                            required={true}
+                            className=" "
+                            customClassName="withBorder"
+                          />
+                        </div>
+                      </Col>
+
                       <Col md="auto" className="d-flex">
                         <div className="form-group date-filed pr-3">
                           <label>Effective Date<span className="asterisk-required">*</span></label>
@@ -1038,11 +1188,13 @@ class AddLabour extends Component {
                             <tr>
                               <th>{`Machine Type`}</th>
                               <th>{`Labour Type`}</th>
-                              <th>{`Rate per Person/Annum(INR)`}</th>
+                              <th>{`Rate Per Person/Annum(INR)`}</th>
+                              <th>{`Working hours`}</th>
+                              <th>{`Efficiency`}</th>
                               <th>{`Effective Date`}</th>
                               <th>{`Action`}</th>
-                            </tr>
-                          </thead>
+                            </tr >
+                          </thead >
                           <tbody>
                             {this.state.gridTable &&
                               this.state.gridTable.map((item, index) => {
@@ -1051,6 +1203,8 @@ class AddLabour extends Component {
                                     <td>{item.MachineType}</td>
                                     <td>{item.LabourType}</td>
                                     <td>{checkForDecimalAndNull(item.LabourRate, initialConfiguration.NoOfDecimalForPrice)}</td>
+                                    <td>{checkForDecimalAndNull(item.WorkingTime, initialConfiguration.NoOfDecimalForInputOutput)}</td>
+                                    <td>{checkForDecimalAndNull(item.Efficiency, initialConfiguration.NoOfDecimalForInputOutput)}</td>
                                     <td>
                                       {item.EffectiveDate ? DayTime(item.EffectiveDate).format(
                                         "DD/MM/YYYY"
@@ -1079,17 +1233,19 @@ class AddLabour extends Component {
                               })}
 
                           </tbody>
-                          {this.state.gridTable.length === 0 && (<tbody className='border'>
-                            <tr>
-                              <td colSpan={"5"}>
-                                <NoContentFound title={EMPTY_DATA} />
-                              </td>
-                            </tr>
-                          </tbody>)}
-                        </Table>
-                      </Col>
-                    </Row>
-                  </div>
+                          {
+                            this.state.gridTable.length === 0 && (<tbody className='border'>
+                              <tr>
+                                <td colSpan={"5"}>
+                                  <NoContentFound title={EMPTY_DATA} />
+                                </td>
+                              </tr>
+                            </tbody>)
+                          }
+                        </Table >
+                      </Col >
+                    </Row >
+                  </div >
 
                   <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
                     <div className="col-sm-12 text-right bluefooter-butn">
@@ -1112,10 +1268,10 @@ class AddLabour extends Component {
                       </button>
                     </div>
                   </Row>
-                </form>
-              </div>
-            </div>
-          </div>
+                </form >
+              </div >
+            </div >
+          </div >
         </div >
         {
           this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.CANCEL_MASTER_ALERT}`} />
@@ -1138,6 +1294,7 @@ class AddLabour extends Component {
   }
 }
 
+
 /**
  * @method mapStateToProps
  * @description return state to component as props
@@ -1145,16 +1302,18 @@ class AddLabour extends Component {
  */
 function mapStateToProps(state) {
   const fieldsObj = selector(state, 'LabourRate')
-  const { supplier, machine, fuel, labour, auth, comman } = state
+  const { supplier, machine, fuel, labour, auth, comman, part, client } = state
   const {
     VendorLabourTypeSelectList,
   } = labour
+  const { productGroupSelectList } = part;
   const { stateList } = comman;
 
   const { vendorWithVendorCodeSelectList } = supplier
   const { machineTypeSelectList } = machine
   const { fuelDataByPlant, plantSelectList } = fuel
   const { initialConfiguration } = auth;
+  const { clientSelectList } = client;
   let initialValues = {}
 
   return {
@@ -1166,7 +1325,7 @@ function mapStateToProps(state) {
     fieldsObj,
     initialValues,
     initialConfiguration,
-    stateList
+    stateList, productGroupSelectList, clientSelectList
   }
 }
 
@@ -1185,6 +1344,7 @@ export default connect(mapStateToProps, {
   fetchStateDataAPI,
   getAllCity,
   getPlantListByState,
+  getProductGroupSelectList, getClientSelectList
 })(
   reduxForm({
     form: 'AddLabour',

@@ -244,6 +244,12 @@ class LabourListing extends Component {
     return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? cellValue : '-';
   }
 
+  customerFormatter = (props) => {
+    const cellValue = props?.value;
+    const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+    return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? `${cellValue} (${row.CustomerCode})` : '-';
+  }
+
   /**
    * @method dashFormatter
    * @description Renders Costing head
@@ -435,7 +441,8 @@ class LabourListing extends Component {
       costingHeadFormatter: this.costingHeadFormatter,
       effectiveDateRenderer: this.effectiveDateFormatter,
       hyphenFormatter: this.hyphenFormatter,
-      commonCostFormatter: this.commonCostFormatter
+      commonCostFormatter: this.commonCostFormatter,
+      customerFormatter: this.customerFormatter
     };
 
     return (
@@ -536,6 +543,7 @@ class LabourListing extends Component {
               >
                 <AgGridColumn field="IsContractBase" headerName="Employment Terms" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
                 <AgGridColumn field="Vendor" headerName="Vendor (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                <AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'customerFormatter'}></AgGridColumn>
                 <AgGridColumn field="Plant" headerName="Plant (Code)"></AgGridColumn>
                 <AgGridColumn field="State" headerName="State"></AgGridColumn>
                 <AgGridColumn field="MachineType" headerName="Machine Type"></AgGridColumn>

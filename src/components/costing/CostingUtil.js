@@ -7,7 +7,7 @@ import DayTime from "../common/DayTimeWrapper";
 import { getBriefCostingById, gridDataAdded, isDataChange, saveAssemblyBOPHandlingCharge, saveBOMLevel, savePartNumber, setComponentDiscountOtherItemData, setComponentItemData, setComponentOverheadItemData, setComponentPackageFreightItemData, setComponentToolItemData, setOverheadProfitData, setPackageAndFreightData, setPartNumberArrayAPICALL, setProcessGroupGrid, setRMCCData, setSurfaceCostData, setToolTabData } from "./actions/Costing";
 
 // TO CREATE OBJECT FOR IN SAVE-ASSEMBLY-PART-ROW-COSTING
-export const createToprowObjAndSave = (tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, netPOPrice, getAssemBOPCharge, tabId, effectiveDate) => {
+export const createToprowObjAndSave = (tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, netPOPrice, getAssemBOPCharge, tabId, effectiveDate, AddLabour = false) => {
 
   let Arr = reactLocalStorage.getObject('costingArray')
   let surfaceTreatmentArr = reactLocalStorage.getObject('surfaceCostingArray')
@@ -99,7 +99,7 @@ export const createToprowObjAndSave = (tabData, surfaceTabData, PackageAndFreigh
       "EffectiveDate": DayTime(new Date(effectiveDate)),
       "TotalRawMaterialsCostWithQuantity": tabData && tabData.CostingPartDetails?.TotalRawMaterialsCostWithQuantity,
       "TotalBoughtOutPartCostWithQuantity": tabData && tabData.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity,
-      "TotalConversionCostWithQuantity": tabData && tabData.CostingPartDetails?.TotalConversionCostWithQuantity,
+      "TotalConversionCostWithQuantity": tabData && AddLabour ? (tabData.CostingPartDetails?.TotalConversionCostWithQuantity + checkForNull(tabData.CostingPartDetails.NetLabourCost) + checkForNull(tabData.CostingPartDetails.IndirectLaborCost) + checkForNull(tabData.CostingPartDetails.StaffCost)) : tabData.CostingPartDetails?.TotalConversionCostWithQuantity,
       "TotalCalculatedRMBOPCCCostWithQuantity": tabData && tabData.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity,
       "TotalCalculatedRMBOPCCCostPerAssembly": tabData && tabData.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity,
       "TotalOperationCostPerAssembly": tabData.CostingPartDetails?.TotalOperationCostPerAssembly,
@@ -120,11 +120,11 @@ export const createToprowObjAndSave = (tabData, surfaceTabData, PackageAndFreigh
       "TotalCalculatedSurfaceTreatmentCostComponent": surfaceTabData && surfaceTabData.CostingPartDetails?.TotalCalculatedSurfaceTreatmentCostComponent,
       "RawMaterialCostWithCutOff": tabData && tabData.CostingPartDetails?.RawMaterialCostWithCutOff,
       "IsRMCutOffApplicable": tabData && tabData.CostingPartDetails?.IsRMCutOffApplicable,
-      "NetLabourCost": tabData && tabData.NetLabourCost,
-      "IndirectLaborCost": tabData && tabData.IndirectLaborCost,
-      "StaffCost": tabData && tabData.StaffCost,
-      "StaffCostPercentage": tabData && tabData.StaffCostPercentage,
-      "IndirectLaborCostPercentage": tabData && tabData.IndirectLaborCostPercentage,
+      "NetLabourCost": tabData && tabData.CostingPartDetails.NetLabourCost,
+      "IndirectLaborCost": tabData && tabData.CostingPartDetails.IndirectLaborCost,
+      "StaffCost": tabData && tabData.CostingPartDetails.StaffCost,
+      "StaffCostPercentage": tabData && tabData.CostingPartDetails.StaffCostPercentage,
+      "IndirectLaborCostPercentage": tabData && tabData.CostingPartDetails.IndirectLaborCostPercentage,
       // "SurfaceTreatmentCostPerAssembly": surfaceTabData && surfaceTabData.CostingPartDetails?.SurfaceTreatmentCost,
       // "TransportationCostPerAssembly": surfaceTabData && surfaceTabData.CostingPartDetails?.TransportationCost,
       // "TotalSurfaceTreatmentCostPerAssembly": surfaceTabData && surfaceTabData.CostingPartDetails?.NetSurfaceTreatmentCost,
