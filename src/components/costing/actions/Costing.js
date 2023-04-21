@@ -45,6 +45,7 @@ import {
   SET_NPV_DATA,
   SET_YOY_COST_GRID,
   SET_YOY_COST_GRID_FOR_SAVE,
+  SET_OVERHEAD_PROFIT_ICC,
 } from '../../../config/constants'
 import { apiErrors } from '../../../helper/util'
 import { MESSAGES } from '../../../config/message'
@@ -837,7 +838,8 @@ export function setOverheadProfitData(TabData, callback) {
 export function getOverheadProfitDataByModelType(data, callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
-    const request = axios.get(`${API.getOverheadProfitDataByModelType}/${data.ModelTypeId}/${data.VendorId}/${data.EffectiveDate}/${data.costingTypeId}/${data.plantId}/${data.customerId}`, config(),)
+    let queryParams = `modelTypeId=${data.ModelTypeId}&vendorId=${data.VendorId}&effectiveDate=${data.EffectiveDate}&costingTypeId=${data.costingTypeId}&plantId=${data.plantId}&customerId=${data.customerId}&rawMaterialGradeId=${data.rawMaterialGradeId}&rawMaterialChildId=${data.rawMaterialChildId}&technologyId=${null}`
+    const request = axios.get(`${API.getOverheadProfitDataByModelType}?${queryParams}`, config(),)
     request.then((response) => {
       if (response.data.Result) {
         callback(response)
@@ -910,7 +912,7 @@ export function saveComponentOverheadProfitTab(data, callback) {
 export function getInventoryDataByHeads(data, callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
-    const request = axios.get(`${API.getInventoryDataByHeads}?vendorId=${data?.VendorId}&costingTypeId=${data?.costingTypeId}&plantId=${data?.plantId}&effectiveDate=${data?.effectiveDate}&customerId=${data.customerId}`, config());
+    const request = axios.get(`${API.getInventoryDataByHeads}?vendorId=${data?.VendorId}&costingTypeId=${data?.costingTypeId}&plantId=${data?.plantId}&effectiveDate=${data?.effectiveDate}&customerId=${data.customerId}&rawMaterialGradeId=${data.rawMaterialGradeId}&rawMaterialChildId=${data.rawMaterialChildId}&technologyId=${null}`, config());
     request
       .then((response) => {
         callback(response)
@@ -2407,6 +2409,16 @@ export function setToolCostInOverheadProfit(IsIncluded, callback) {
   return (dispatch) => {
     dispatch({
       type: SET_TOOL_COST_FOR_OVERHEAD_PROFIT,
+      payload: IsIncluded,
+    });
+    callback();
+  }
+};
+
+export function setIncludeOverheadProfitIcc(IsIncluded, callback) {
+  return (dispatch) => {
+    dispatch({
+      type: SET_OVERHEAD_PROFIT_ICC,
       payload: IsIncluded,
     });
     callback();
