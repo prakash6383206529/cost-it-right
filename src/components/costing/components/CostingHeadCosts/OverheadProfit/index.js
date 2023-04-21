@@ -64,7 +64,7 @@ function OverheadProfit(props) {
     const SurfaceTreatmentCost = useContext(SurfaceCostContext);
     const costingHead = useSelector(state => state.comman.costingHead)
 
-    const { CostingEffectiveDate, CostingDataList, IsIncludedSurfaceInOverheadProfit, IsIncludedToolCost, ToolTabData } = useSelector(state => state.costing)
+    const { CostingEffectiveDate, CostingDataList, IsIncludedSurfaceInOverheadProfit, IsIncludedToolCost, ToolTabData, OverheadProfitTabData } = useSelector(state => state.costing)
 
     const [overheadObj, setOverheadObj] = useState(CostingOverheadDetail)
     const [profitObj, setProfitObj] = useState(CostingProfitDetail)
@@ -343,7 +343,10 @@ function OverheadProfit(props) {
                     costingTypeId: Number(costData.CostingTypeId) === NFRTypeId ? VBCTypeId : costData.CostingTypeId,
                     EffectiveDate: CostingEffectiveDate,
                     plantId: (getConfigurationKey()?.IsPlantRequiredForOverheadProfitInterestRate && costData?.CostingTypeId !== VBCTypeId) ? costData.PlantId : (getConfigurationKey()?.IsDestinationPlantConfigure && costData?.CostingTypeId === VBCTypeId) || (costData?.CostingTypeId === CBCTypeId) || (costData?.CostingTypeId === NFRTypeId) ? costData.DestinationPlantId : EMPTY_GUID,
-                    customerId: costData.CustomerId
+                    customerId: costData.CustomerId,
+                    rawMaterialGradeId: initialConfiguration.IsShowRawMaterialInOverheadProfitAndICC ? OverheadProfitTabData[0]?.CostingPartDetails?.RawMaterialGradeId : EMPTY_GUID,
+                    rawMaterialChildId: initialConfiguration.IsShowRawMaterialInOverheadProfitAndICC ? OverheadProfitTabData[0]?.CostingPartDetails?.RawMaterialChildId : EMPTY_GUID,
+                    technologyId: initialConfiguration.IsShowRawMaterialInOverheadProfitAndICC ? OverheadProfitTabData[0]?.CostingPartDetails?.TechnologyId : EMPTY_GUID,
                 }
 
                 dispatch(getOverheadProfitDataByModelType(reqParams, res => {
