@@ -411,7 +411,7 @@ function AddNpvCost(props) {
                                         <ConditionCosting hideAction={true} tableData={conditionTableData} />
 
                                     </>}
-                                {costingSummary &&
+                                {costingSummary && props?.isRfqCosting &&
                                     <div className={'mt25 pb-15'}>
                                         <Col md="12" className={'mt25 pb-15'}>
                                             <HeaderTitle className="border-bottom"

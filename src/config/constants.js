@@ -593,6 +593,9 @@ export const API = {
   getRawMaterialCalculationForRubber: `${BASE_URL}/costing/get-raw-material-rubber-calculation-details`,
   saveRawMaterialCalculationForRubber: `${BASE_URL}/costing/save-raw-material-rubber-calculation-details`,
 
+  // YOY
+  getYOYCostList: `${BASE_URL}/rfq-costing/rfq-get-yoy-details`,
+  saveYOYCostList: `${BASE_URL}/rfq-costing/rfq-save-yoy-details`,
 
   // PROCESS COST CALCULATION
   getProcessMachiningCalculation: `${BASE_URL}/costing/get-process-machining-calculation-details`,
@@ -1037,6 +1040,10 @@ export const API = {
   getSettledCostingDetails: `${BASE_URL}/costing/get-settled-costing-details`,
   updateMultiTechnologyTopAndWorkingRowCalculation: `${BASE_URL}/costing/update-multi-technology-top-and-working-row-calculation`,
 
+  //RFQ
+  getQuotationList: `${BASE_URL}/rfq-quotation/get-quotation-list`,
+  getQuotationDetailsByVendor: `${BASE_URL}/rfq-quotation/get-quotation-details-by-vendor`,
+  createRfqQuotation: `${BASE_URL}/rfq-quotation/create`,
   updateRfqQuotation: `${BASE_URL}/rfq-quotation/update`,
   getQuotationById: `${BASE_URL}/rfq-quotation/get-quotation-by-id`,
   cancelRfqQuotation: `${BASE_URL}/rfq-quotation/cancel-quotation`,
@@ -1508,6 +1515,7 @@ export const SET_YOY_COST_GRID = 'SET_YOY_COST_GRID'
 export const SET_TOOL_COST_FOR_OVERHEAD_PROFIT = 'SET_TOOL_COST_FOR_OVERHEAD_PROFIT'
 export const SET_NPV_DATA = 'SET_NPV_DATA'
 export const SET_YOY_COST_GRID_FOR_SAVE = 'SET_YOY_COST_GRID_FOR_SAVE'
+export const SET_QUOTATION_ID_FOR_RFQ = 'SET_QUOTATION_ID_FOR_RFQ'
 
 //WEIGHT CALCULATION COSTING RM DRAWER
 export const GET_RAW_MATERIAL_CALCI_INFO = 'GET_RAW_MATERIAL_CALCI_INFO'

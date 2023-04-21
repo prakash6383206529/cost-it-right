@@ -20,11 +20,12 @@ function YOYCost(props) {
     const [loader, setLoader] = useState(outside ? true : false)
     const { setValue, getValues, control, errors, register } = props
     const { yoyCostGrid } = useSelector(state => state.costing)
-    const { quotationIDForRFQ } = useSelector(state => state.RFQ)
+    const { quotationIDForRFQ } = useSelector(state => state.rfq)
     const dispatch = useDispatch()
 
     useEffect(() => {
         if (outside && props.activeTab === '6') {
+            console.log('quotationIDForRFQ: ', quotationIDForRFQ);
             let requestObject = {
                 quotationId: quotationIDForRFQ,
                 partId: patId,
