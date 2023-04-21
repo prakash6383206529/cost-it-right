@@ -2370,6 +2370,9 @@ const CostingSummaryTable = (props) => {
           npvIndex={npvIndex}
           closeDrawer={closeNpvDrawer}
           anchor={'right'}
+          partId={viewCostingData[npvIndex]?.partId}
+          vendorId={viewCostingData[npvIndex]?.vendorId}
+          isRfqCosting={props?.isRfqCosting}
         />
       }
     </Fragment >
