@@ -773,7 +773,7 @@ function RfqListing(props) {
                                             {/* <AgGridColumn field="PartNumber" headerName="Attachment "></AgGridColumn> */}
                                             <AgGridColumn field="Remark" tooltipField="Remark" headerName='Notes' cellRenderer={hyphenFormatter}></AgGridColumn>
                                             <AgGridColumn field="VisibilityMode" headerName='Visibility Mode' cellRenderer={hyphenFormatter}></AgGridColumn>
-                                            <AgGridColumn field="VisibilityDate" headerName='Visibility Date' cellRenderer={hyphenFormatter}></AgGridColumn>
+                                            <AgGridColumn field="VisibilityDate" headerName='Visibility Date' cellRenderer={dateFormatter}></AgGridColumn>
                                             <AgGridColumn field="VisibilityDuration" headerName='Visibility Duration' cellRenderer={hyphenFormatter}></AgGridColumn>
                                             <AgGridColumn field="CostingNumber" headerName=' Costing Number' cellRenderer={hyphenFormatter}></AgGridColumn>
                                             <AgGridColumn field="CostingId" headerName='Costing Id ' hide={true}></AgGridColumn>
