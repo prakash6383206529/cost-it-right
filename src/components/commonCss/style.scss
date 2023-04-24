@@ -3125,12 +3125,32 @@ button:disabled,
     }
   }
 }
-
-.pie-chart {
-  @extend .tooltip-n;
-
-  .tooltiptext:after {
-    display: none;
+.pie-chart-wrapper {
+  position: relative;
+  .pie-chart-inner {
+      min-width: 300px;
+      background-color: #e4e9f0;
+      color: #3d4465;
+      text-align: center;
+      border-radius: 6px;
+      padding: 5px 10px;
+      position: absolute;
+      z-index: 12;
+     top: 5px;
+      right: 35px;
+      margin-left: -4px;
+      font-size: 14px;
+      box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
+      button {
+        position: absolute;
+        top: -8px;
+        right: -8px;
+        background: none;
+        &:focus {
+          border: none !important;
+          box-shadow: none !important;
+        }
+      }
   }
 }
 
