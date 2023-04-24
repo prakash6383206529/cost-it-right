@@ -43,6 +43,7 @@ import {
   SET_SURFACE_COST_FOR_REJECTION_DATA,
   SET_TOOL_COST_FOR_OVERHEAD_PROFIT,
   SET_NPV_DATA,
+  SET_OVERHEAD_PROFIT_ICC,
 } from '../../../config/constants'
 import { apiErrors } from '../../../helper/util'
 import { MESSAGES } from '../../../config/message'
@@ -830,7 +831,8 @@ export function setOverheadProfitData(TabData, callback) {
 export function getOverheadProfitDataByModelType(data, callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
-    const request = axios.get(`${API.getOverheadProfitDataByModelType}/${data.ModelTypeId}/${data.VendorId}/${data.EffectiveDate}/${data.costingTypeId}/${data.plantId}/${data.customerId}`, config(),)
+    let queryParams = `modelTypeId=${data.ModelTypeId}&vendorId=${data.VendorId}&effectiveDate=${data.EffectiveDate}&costingTypeId=${data.costingTypeId}&plantId=${data.plantId}&customerId=${data.customerId}&rawMaterialGradeId=${data.rawMaterialGradeId}&rawMaterialChildId=${data.rawMaterialChildId}&technologyId=${null}`
+    const request = axios.get(`${API.getOverheadProfitDataByModelType}?${queryParams}`, config(),)
     request.then((response) => {
       if (response.data.Result) {
         callback(response)
@@ -903,7 +905,7 @@ export function saveComponentOverheadProfitTab(data, callback) {
 export function getInventoryDataByHeads(data, callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
-    const request = axios.get(`${API.getInventoryDataByHeads}?vendorId=${data?.VendorId}&costingTypeId=${data?.costingTypeId}&plantId=${data?.plantId}&effectiveDate=${data?.effectiveDate}&customerId=${data.customerId}`, config());
+    const request = axios.get(`${API.getInventoryDataByHeads}?vendorId=${data?.VendorId}&costingTypeId=${data?.costingTypeId}&plantId=${data?.plantId}&effectiveDate=${data?.effectiveDate}&customerId=${data.customerId}&rawMaterialGradeId=${data.rawMaterialGradeId}&rawMaterialChildId=${data.rawMaterialChildId}&technologyId=${null}`, config());
     request
       .then((response) => {
         callback(response)
@@ -2406,6 +2408,16 @@ export function setToolCostInOverheadProfit(IsIncluded, callback) {
   }
 };
 
+export function setIncludeOverheadProfitIcc(IsIncluded, callback) {
+  return (dispatch) => {
+    dispatch({
+      type: SET_OVERHEAD_PROFIT_ICC,
+      payload: IsIncluded,
+    });
+    callback();
+  }
+};
+
 /**
  * @method createCosting
  * @description CREATE ZBC COSTING
@@ -2471,3 +2483,50 @@ export function setNPVData(data) {
     });
   }
 };
+
+
+export function saveCostingLabourDetails(data, callback) {
+  return (dispatch) => {
+    const request = axios.post(API.saveCostingLabourDetails, data, config())
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response)
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE })
+      apiErrors(error)
+    })
+  }
+}
+
+export function getCostingLabourDetails(data, callback) {
+  return (dispatch) => {
+    const queryParams = `costingId=${data}`
+    const request = axios.get(`${API.getCostingLabourDetails}?${queryParams}`, config())
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response)
+      }
+    }).catch((error) => {
+      callback(error)
+      dispatch({ type: API_FAILURE })
+      apiErrors(error)
+    })
+  }
+}
+
+export function getLabourDetailsByFilter(data, callback) {
+  return (dispatch) => {
+    const queryParams = `effectiveDate=${data.effectiveDate ? data.effectiveDate : ''}&costingHeadId=${data.costingHeadId ? data.costingHeadId : ''}&partId=${data.partId ? data.partId : ''}&plant_id=${data.plantId ? data.plantId : ''}&vendorId=${data.vendorId ? data.vendorId : ''}&customerId=${data.customerId ? data.customerId : ''}&machine_type_id=${0}&state_id=${0}&labour_type_id=${0}`
+    const request = axios.get(`${API.getLabourDetailsByFilter}?${queryParams}`, config())
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response)
+      }
+    }).catch((error) => {
+      callback(error)
+      dispatch({ type: API_FAILURE })
+      apiErrors(error)
+    })
+  }
+}
