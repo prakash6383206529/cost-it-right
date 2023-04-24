@@ -556,7 +556,7 @@ function AddRfq(props) {
             return null
         })
 
-        data.PartIdList = temp
+        data.PartIdList = _.uniq(temp)
         data.PlantId = getValues('plant')?.value
         data.VendorId = getValues('vendor')?.value
 
