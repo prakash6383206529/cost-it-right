@@ -2242,10 +2242,6 @@ export const statusOptions = _.sortBy([
   // { label: "SendForApproval", value: "7" },
 ], ({ label }) => label.toLowerCase());
 
-//AUTOCOMPLETE IN PART
-export const searchCount = 3
-export const dropdownLimit = 100
-
 //CONSTANTS FOR COSTING HEAD
 export const ZBCTypeId = Number(reactLocalStorage.getObject('CostingHeadsListShortForm')[ZBC])
 export const VBCTypeId = Number(reactLocalStorage.getObject('CostingHeadsListShortForm')[VBC])
@@ -2274,6 +2270,10 @@ export const VBCAPPROVALTYPEIDFULL = Number(reactLocalStorage.getObject('Approva
 export const ZBCAPPROVALTYPEIDFULL = Number(reactLocalStorage.getObject('ApprovalTypeListFullForm')[ZBC])
 export const PROVISIONALAPPROVALTYPEIDFULL = Number(reactLocalStorage.getObject('ApprovalTypeListFullForm')[PROVISIONAL])
 
+//AUTOCOMPLETE IN PART AND VENDOR
+export const searchCount = 3
+export const dropdownLimit = 100
+export const APPROVED_BY_SAP = "Approved By SAP"
 
 
 // KEY AND IV

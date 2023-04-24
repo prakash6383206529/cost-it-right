@@ -313,14 +313,14 @@ function OverheadProfit(props) {
   }
 
   /**
-     * @method handleModelTypeChange
-     * @description  USED TO HANDLE MODEL TYPE CHANGE
-     */
+    * @method handleModelTypeChange
+    * @description  USED TO HANDLE MODEL TYPE CHANGE
+    */
   const handleModelTypeChange = (newValue, IsDropdownClicked) => {
     // if(CheckIsCostingDateSelected(CostingEffectiveDate) && IsDropdownClicked){
     //   setModelType('')
     //   return false
-    // } 
+    // }
 
     if (IsDropdownClicked && !CostingViewMode && !CheckIsCostingDateSelected(CostingEffectiveDate)) {
       dispatch(isOverheadProfitDataChange(true))
@@ -335,7 +335,7 @@ function OverheadProfit(props) {
 
         const reqParams = {
           ModelTypeId: newValue.value,
-          VendorId: costData.CostingTypeId === VBCTypeId ? costData.VendorId : EMPTY_GUID,
+          VendorId: (costData.CostingTypeId === VBCTypeId || costData.CostingTypeId === NFRTypeId) ? costData.VendorId : EMPTY_GUID,
           costingTypeId: (Number(costData.CostingTypeId) === NFRTypeId || Number(costData.CostingTypeId) === VBCTypeId) ? VBCTypeId : costData.CostingTypeId,
           EffectiveDate: CostingEffectiveDate,
           plantId: (getConfigurationKey()?.IsPlantRequiredForOverheadProfitInterestRate && costData?.CostingTypeId !== VBCTypeId) ? costData.PlantId : (getConfigurationKey()?.IsDestinationPlantConfigure && costData?.CostingTypeId === VBCTypeId) || (costData?.CostingTypeId === CBCTypeId) || (costData?.CostingTypeId === NFRTypeId) ? costData.DestinationPlantId : EMPTY_GUID,
