@@ -320,7 +320,7 @@ function AddNfr(props) {
         let requestObject = {
             GroupName: rowData[length]?.groupName,
             NfrId: nfrIdsList?.NfrMasterId,
-            PlantId: '27D5F3F4-871A-40AD-8E75-D5AB4B7B227B',
+            PlantId: initialConfiguration?.DefaultPlantId,
             NfrPartWiseDetailId: nfrIdsList?.NfrPartWiseDetailId,
             LoggedInUserId: loggedInUserId(),
             vendorList: _.map(rowData[length]?.data, 'value')
