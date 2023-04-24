@@ -439,6 +439,11 @@ button.add-btn {
   color: #3D4465;
   vertical-align: middle;
 }
+.table.cr-brdr-main .thead th {
+  color: #3D4465;
+  vertical-align: middle;
+  font-weight: 500;
+}
 
 .withBorder .form-control,
 .form-control {
@@ -3120,12 +3125,32 @@ button:disabled,
     }
   }
 }
-
-.pie-chart {
-  @extend .tooltip-n;
-
-  .tooltiptext:after {
-    display: none;
+.pie-chart-wrapper {
+  position: relative;
+  .pie-chart-inner {
+      min-width: 300px;
+      background-color: #e4e9f0;
+      color: #3d4465;
+      text-align: center;
+      border-radius: 6px;
+      padding: 5px 10px;
+      position: absolute;
+      z-index: 12;
+     top: 5px;
+      right: 35px;
+      margin-left: -4px;
+      font-size: 14px;
+      box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
+      button {
+        position: absolute;
+        top: -8px;
+        right: -8px;
+        background: none;
+        &:focus {
+          border: none !important;
+          box-shadow: none !important;
+        }
+      }
   }
 }
 
@@ -8075,6 +8100,7 @@ body {
   margin: 0mm 1mm 1mm 0mm;
 }
 
+
 @media print {
   .simple-pdf {
     .table-responsive {
@@ -8097,26 +8123,29 @@ body {
     }
   }
 
+  @-moz-document url-prefix() {
+    .firefox-spaces {
+      margin-top: 35px;
+    }
+    .firefox-space-bottom {
+      margin-bottom: 30px;
+    }
+    .firefox-10 {
+      padding-top: 50px;
+    }
+  }
+
   .remove-space-border {
     .table-responsive {
 
       .header-name-left,
       .header-name {
-        border-right: none !important;
         background-color: #ececec !important;
       }
 
     }
 
-    .background-light-blue {
-      th {
-        border-right: none !important;
-      }
 
-      td {
-        border-left: none !important;
-      }
-    }
   }
 
   .background-light-blue {

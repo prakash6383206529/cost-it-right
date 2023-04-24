@@ -251,8 +251,9 @@ function ViewConversionCost(props) {
         {/*PROCESS COST GRID */}
         <Col md="12">
           <Table className="table cr-brdr-main conversion-cost" size="sm">
-            <thead>
-              <tr>
+            
+            <tbody>
+            <tr className='thead'>
                 {partNumberList.length === 0 && (IsAssemblyCosting && isPDFShow) && <th>{`Part No`}</th>}
                 <th style={{ width: "150px" }}>{`Process`}</th>
                 {processGroup && <th>{`Sub Process`}</th>}
@@ -267,9 +268,6 @@ function ViewConversionCost(props) {
                 <th>{`Net Cost`}</th>
                 <th className="costing-border-right">{`Remark`}</th>
               </tr>
-            </thead>
-            <tbody>
-              { }
               {costingProcessCost &&
                 costingProcessCost.map((item, index) => {
                   return (
@@ -334,7 +332,7 @@ function ViewConversionCost(props) {
   }
   const operationTableData = () => {
     return <>
-      <Row>
+      <Row className='firefox-spaces'>
         <Col md="8">
           <div className="left-border">{'Operation Cost:'}</div>
         </Col>
@@ -344,8 +342,9 @@ function ViewConversionCost(props) {
 
         <Col md="12">
           <Table className="table cr-brdr-main" size="sm">
-            <thead>
-              <tr>
+            
+            <tbody>
+            <tr className='thead'>
                 {partNumberList.length === 0 && IsAssemblyCosting && <th>{`Part No`}</th>}
                 <th>{`Operation Name`}</th>
                 <th>{`Operation Code`}</th>
@@ -358,8 +357,6 @@ function ViewConversionCost(props) {
                 <th>{`Net Cost`}</th>
                 <th className="costing-border-right">{`Remark`}</th>
               </tr>
-            </thead>
-            <tbody>
               {costingOperationCost &&
                 costingOperationCost.map((item, index) => {
                   return (
@@ -409,10 +406,10 @@ function ViewConversionCost(props) {
       <Row>
         {/*OTHER OPERATION COST GRID */}
 
-        <Col md="12">
+        <Col md="12" className='firefox-space-bottom'>
           <Table className="table cr-brdr-main" size="sm">
-            <thead>
-              <tr>
+            <tbody>
+            <tr className='thead'>
                 {partNumberList.length === 0 && IsAssemblyCosting && <th>{`Part No`}</th>}
                 <th>{`Operation Name`}</th>
                 <th>{`Operation Code`}</th>
@@ -424,8 +421,6 @@ function ViewConversionCost(props) {
                 <th>{`Net Cost`}</th>
                 <th className="costing-border-right">{`Remark`}</th>
               </tr>
-            </thead>
-            <tbody>
               {othercostingOperationCost &&
                 othercostingOperationCost.map((item, index) => {
                   return (
@@ -476,8 +471,8 @@ function ViewConversionCost(props) {
         {/*PROCESS COST GRID */}
         <Col md="12">
           <Table className="table cr-brdr-main" size="sm">
-            <thead>
-              <tr>
+            <tbody>
+            <tr className='thead'>
                 {partNumberList.length === 0 && IsAssemblyCosting && <th>{`Part No`}</th>}
                 <th>{`Operation Name`}</th>
                 <th>{`Quantity`}</th>
@@ -487,8 +482,6 @@ function ViewConversionCost(props) {
                 {surfaceTreatmentCost && surfaceTreatmentCost[0]?.IsLabourRateExist === true && <th>{`Labour Quantity`}</th>}
                 <th className="costing-border-right">{`Cost`}</th>
               </tr>
-            </thead>
-            <tbody>
               {surfaceTreatmentCost &&
                 surfaceTreatmentCost.map((item, index) => {
                   return (
@@ -529,17 +522,14 @@ function ViewConversionCost(props) {
         {/*TRANSPORTATION COST GRID */}
         <Col md="12" className='mb-3'>
           <Table className="table cr-brdr-main mb-0" size="sm">
-            <thead>
-              <tr>
+            <tbody>
+            <tr className='thead'>
                 {/* {partNumberList.length ===0 && <th>{`Part No`}</th>}  */}
                 <th>{`Type`}</th>
                 <th>{`Rate`}</th>
                 <th>{`Quantity`}</th>
                 <th className="costing-border-right">{`Cost`}</th>
               </tr>
-            </thead>
-            <tbody>
-
               {transportCost &&
                 transportCost.map((item, index) => {
                   return (

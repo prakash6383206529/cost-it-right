@@ -335,7 +335,7 @@ function Icc(props) {
                         </Col>
                         <Col md={ICCapplicability?.label?.includes('RM') && !(costData.IsAssemblyPart) && IsShowRmcAndNetWeightToggleForIcc ? '2' : '3'}>
                             <span className="head-text">
-                                {ICCapplicability.label !== 'Fixed' ? 'Interest Rate (%)' : '`Interest Rate'}
+                                {ICCapplicability.label !== 'Fixed' ? 'Interest Rate (%)' : 'Interest Rate'}
                             </span>
                         </Col>
 
