@@ -19,6 +19,7 @@ import { checkVendorPlantConfigurable, loggedInUserId, userDetails } from '../..
 import { dataLiist } from '../../../config/masterData';
 import { createCosting, getBriefCostingById, storePartNumber } from '../../costing/actions/Costing';
 import ApprovalDrawer from './ApprovalDrawer';
+import TooltipCustom from '../../common/Tooltip'
 
 
 
@@ -61,12 +62,23 @@ function AddNfr(props) {
     const [isOEQAAdded, setIsOEQAAdded] = useState(false);
     const [callAPI, setCallAPI] = useState(false);
 
+    const [isVendorDisabled, setIsVendorDisabled] = useState(false);
+    const [shouldBeLevel, setShouldBeLevel] = useState(0);
+    const [freezeUpperLevels, setFreezeUpperLevels] = useState('');
+    const [freezeUpperLevelsNumbers, setFreezeUpperLevelsNumber] = useState('');
+
     const { register, setValue, getValues, control, formState: { errors }, } = useForm({
         mode: 'onChange',
         reValidateMode: 'onChange',
     });
     const handleVendorChange = (newValue) => {
-        setVendorname(newValue)
+        if (vendorName?.length < 4 || newValue?.length < 4 || !newValue?.length) {
+            setVendorname(newValue)
+        } else {
+            setTimeout(() => {
+                setValue('VendorName', vendorName)
+            }, 50);
+        }
     }
 
     useEffect(() => {
@@ -98,15 +110,31 @@ function AddNfr(props) {
 
                 setNFRPartDetail(res?.data?.Data)
                 if (newArray?.length === 0) {
-                    setValue('GroupName', 'OEQA 1');
-                    setIsOEQAAdded(false)
-                } else {
-                    setValue('GroupName', '');
-                    setIsOEQAAdded(true)
-                }
-                if (newArray?.length === 0) {
                     setCallAPI(true)
                 }
+
+                let shouldBelevel = 0
+                if (newArray?.length === 0) {
+                    setIsVendorDisabled(false)
+                    setValue("GroupName", "OEQA 1")
+                    shouldBelevel = 1
+                } else {
+                    let index = newArray?.length - 1
+                    if (newArray[index]?.isRejectedBySAP === true) {                // NOT REJECTED         first level
+                        // if (!newArray[index]?.isRejectedBySAP) {
+                        shouldBelevel = newArray?.length + 1
+                        setFreezeUpperLevels(true)
+                        setFreezeUpperLevelsNumber(newArray?.length - 1)
+                        setValue("GroupName", `OEQA ${shouldBelevel}`)
+                        setIsVendorDisabled(false)
+                    } else {
+                        shouldBelevel = newArray?.length
+                        // setFreezeUpperLevels(false)                                  // Dont open in NOT REJECTED first level also all action button is hidden ?? if we open this 
+                        setValue("GroupName", "")
+                        setIsVendorDisabled(true)
+                    }
+                }
+                setShouldBeLevel(shouldBelevel)
                 setRowData(newArray)
             }
         }))
@@ -138,6 +166,7 @@ function AddNfr(props) {
             groupName: getValues('GroupName'),
             data: vendorList
         };
+        setCallAPI(true)
         setRowData([...rowData, newCosting]);
         resetData(true)
         setIsOEQAAdded(true)
@@ -153,7 +182,9 @@ function AddNfr(props) {
         let rowtemp = list[rowIndex]
         rowtemp.data = getValues('VendorName')
         let finalList = Object.assign([...list], { [rowIndex]: rowtemp })
+        setCallAPI(true)
         setRowData([...finalList]);
+        setValue("GroupName", '')
         resetData(true)
         setIsRowEdited(false)
         setIsOEQAAdded(true)
@@ -162,7 +193,10 @@ function AddNfr(props) {
     const resetData = (removeGroup) => {
         if (isRowEdited) {
             setValue('VendorName', '')
+            setValue('GroupName', '')
+            setIsRowEdited(false)
             setVendorname([])
+            setIsOEQAAdded(true)
         } else {
             setVendorname([])
             setValue('VendorName', '')
@@ -267,6 +301,8 @@ function AddNfr(props) {
         setValue('GroupName', item?.groupName)
         setIsRowEdited(true)
         setIsOEQAAdded(false)
+
+        setIsVendorDisabled(false)              // enable vendor
     }
 
     const deleteRow = (item, index) => {
@@ -275,19 +311,19 @@ function AddNfr(props) {
         setRowData(rowtemp)
         setIsRowEdited(false)
         resetData(true)
-        setValue('GroupName', 'OEQA 1');
+        setValue('GroupName', `OEQA ${shouldBeLevel}`);
         setIsOEQAAdded(false)
     }
 
     const saveEstimation = () => {
-
+        let length = rowData?.length - 1
         let requestObject = {
-            GroupName: rowData[0]?.groupName,
+            GroupName: rowData[length]?.groupName,
             NfrId: nfrIdsList?.NfrMasterId,
-            PlantId: '27D5F3F4-871A-40AD-8E75-D5AB4B7B227B',
+            PlantId: initialConfiguration?.DefaultPlantId,
             NfrPartWiseDetailId: nfrIdsList?.NfrPartWiseDetailId,
             LoggedInUserId: loggedInUserId(),
-            vendorList: _.map(rowData[0]?.data, 'value')
+            vendorList: _.map(rowData[length]?.data, 'value')
         }
         dispatch(saveNFRGroupDetails(requestObject, (res) => {
             if (res?.data?.Result === true) {
@@ -297,6 +333,9 @@ function AddNfr(props) {
     }
 
     const vendorFilterList = async (inputValue) => {
+        if (vendorName?.length === 4) {
+            return false
+        }
         if (inputValue && typeof inputValue === 'string' && inputValue.includes(' ')) {
             inputValue = inputValue.trim();
         }
@@ -397,6 +436,14 @@ function AddNfr(props) {
         setSelectedCheckbox(!temp)
     }
     const sendForApproval = () => {
+        if (rowData && rowData[shouldBeLevel - 1]) {
+            let dataList = _.map(rowData[shouldBeLevel - 1]?.data, 'SelectedCostingVersion')
+            const areAllUndefined = _.every(dataList, (value) => _.isUndefined(value));
+            if (areAllUndefined) {
+                Toaster.warning("Please select at least one costing to send for approval")
+                return false
+            }
+        }
         if (selectedCheckBox === false) {
             Toaster.warning("Please select group estimation")
             return false
@@ -494,6 +541,7 @@ function AddNfr(props) {
                         />
                     </Col>
                     <Col md="3">
+                        <TooltipCustom customClass="ml-1 mt-2" id="variance" tooltipText="Vendors should not exceed a selection limit of 4" />
                         <AsyncSearchableSelectHookForm
                             label={"Vendor (Code)"}
                             name={"VendorName"}
@@ -509,8 +557,7 @@ function AddNfr(props) {
                             mandatory={true}
                             handleChange={handleVendorChange}
                             errors={errors.vendorName}
-                            disabled={(isViewEstimation || isOEQAAdded) ? true : false}
-                        // isLoading={plantLoaderObj}
+                            disabled={(isViewEstimation || isVendorDisabled || isOEQAAdded) ? true : false}
                         />
                     </Col>
                     <Col md="3" className="mt-4 pt-1">
@@ -564,14 +611,13 @@ function AddNfr(props) {
                                             {indexInside === 0 && (
                                                 <>
                                                     <td rowSpan={item?.data.length} className="table-record">
-                                                        {!isViewEstimation && <label
+                                                        {!isViewEstimation && (freezeUpperLevels === '' ? true : indexOuter > (freezeUpperLevelsNumbers)) && <label
                                                             className={`custom-checkbox`}
                                                             onChange={(e) => onCheckBoxClick(indexOuter)}
                                                         >
                                                             <input
                                                                 type="checkbox"
                                                                 checked={selectedCheckBox}
-                                                            //   disabled={CostingViewMode ? true : false}
                                                             />
                                                             <span
                                                                 className=" before-box"
@@ -607,17 +653,27 @@ function AddNfr(props) {
                                             </td>
                                             <td>{dataItem?.SelectedCostingVersion?.Price}</td>
                                             <td> <div className='action-btn-wrapper pr-2'>
-                                                {!isViewEstimation && <button className="Add-file" type={"button"} title={"Add Costing"} onClick={() => addDetails(dataItem, indexOuter, indexInside)} />}
+                                                {(freezeUpperLevels === '' ? true : indexOuter > (freezeUpperLevelsNumbers)) &&
+                                                    <>
+                                                        {!isViewEstimation && <button className="Add-file" type={"button"} title={"Add Costing"} onClick={() => addDetails(dataItem, indexOuter, indexInside)} />}
+                                                    </>}
+
                                                 {!item?.IsNewCosting && item?.Status !== '' && getValues(`${indexInside}.CostingVersion`) && (<button className="View" type={"button"} title={"View Costing"} onClick={() => viewDetails(indexInside)} />)}
-                                                {!isViewEstimation && !item?.IsNewCosting && getValues(`${indexInside}.CostingVersion`) && (<button className="Edit" type={"button"} title={"Edit Costing"} onClick={() => editCosting(indexInside)} />)}
-                                                {!isViewEstimation && !item?.IsNewCosting && getValues(`${indexInside}.CostingVersion`) && (<button className="Copy All" title={"Copy Costing"} type={"button"} onClick={() => copyCosting(indexInside)} />)}
-                                                {!isViewEstimation && !item?.IsNewCosting && getValues(`${indexInside}.CostingVersion`) && (<button className="Delete All" title={"Delete Costing"} type={"button"} onClick={() => deleteItem(item, indexInside)} />)}
-                                                {!isViewEstimation && item?.CostingOptions?.length === 0 && getValues(`${indexInside}.CostingVersion`) && <button title='Discard' className="CancelIcon" type={'button'} onClick={() => deleteRowItem(indexInside)} />}
+                                                {(freezeUpperLevels === '' ? true : indexOuter > (freezeUpperLevelsNumbers)) &&
+                                                    <>
+                                                        {!isViewEstimation && !item?.IsNewCosting && getValues(`${indexInside}.CostingVersion`) && (<button className="Edit" type={"button"} title={"Edit Costing"} onClick={() => editCosting(indexInside)} />)}
+                                                        {!isViewEstimation && !item?.IsNewCosting && getValues(`${indexInside}.CostingVersion`) && (<button className="Copy All" title={"Copy Costing"} type={"button"} onClick={() => copyCosting(indexInside)} />)}
+                                                        {!isViewEstimation && !item?.IsNewCosting && getValues(`${indexInside}.CostingVersion`) && (<button className="Delete All" title={"Delete Costing"} type={"button"} onClick={() => deleteItem(item, indexInside)} />)}
+                                                        {!isViewEstimation && item?.CostingOptions?.length === 0 && getValues(`${indexInside}.CostingVersion`) && <button title='Discard' className="CancelIcon" type={'button'} onClick={() => deleteRowItem(indexInside)} />}
+                                                    </>}
                                             </div></td>
                                             {indexInside === 0 && (
                                                 <td rowSpan={item?.data.length} className="table-record">
-                                                    <button className="Edit" type={"button"} title={"Edit Costing"} onClick={() => editRow(item, indexInside)} disabled={isViewEstimation} />
-                                                    <button className="Delete All ml-1" title={"Delete Costing"} type={"button"} onClick={() => deleteRow(item, indexInside)} disabled={isViewEstimation} />
+                                                    {(freezeUpperLevels === '' ? true : indexOuter > (freezeUpperLevelsNumbers)) &&
+                                                        <>
+                                                            <button className="Edit" type={"button"} title={"Edit Costing"} onClick={() => editRow(item, indexInside)} disabled={isViewEstimation} />
+                                                            <button className="Delete All ml-1" title={"Delete Costing"} type={"button"} onClick={() => deleteRow(item, indexInside)} disabled={isViewEstimation} />
+                                                        </>}
                                                 </td>
                                             )}
                                         </tr>
