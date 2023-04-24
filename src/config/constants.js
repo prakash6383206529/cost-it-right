@@ -2233,6 +2233,7 @@ export const PROVISIONALAPPROVALTYPEIDFULL = Number(reactLocalStorage.getObject(
 //AUTOCOMPLETE IN PART AND VENDOR
 export const searchCount = 3
 export const dropdownLimit = 100
+export const APPROVED_BY_SAP = "Approved By SAP"
 
 // KEY AND IVgit
 export const KEY = 'gQUJ79YKYm22Cazw';
