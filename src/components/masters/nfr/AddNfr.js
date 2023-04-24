@@ -17,9 +17,11 @@ import { AsyncSearchableSelectHookForm, NumberFieldHookForm, SearchableSelectHoo
 import { getNFRPartWiseGroupDetail, nfrDetailsForDiscountAction, saveNFRGroupDetails } from './actions/nfr';
 import { checkVendorPlantConfigurable, loggedInUserId, userDetails } from '../../../helper';
 import { dataLiist } from '../../../config/masterData';
-import { createCosting, getBriefCostingById, storePartNumber } from '../../costing/actions/Costing';
+import { createCosting, deleteDraftCosting, getBriefCostingById, storePartNumber } from '../../costing/actions/Costing';
 import ApprovalDrawer from './ApprovalDrawer';
 import TooltipCustom from '../../common/Tooltip'
+import PopupMsgWrapper from '../../common/PopupMsgWrapper';
+import { MESSAGES } from '../../../config/message';
 
 
 
@@ -66,6 +68,11 @@ function AddNfr(props) {
     const [shouldBeLevel, setShouldBeLevel] = useState(0);
     const [freezeUpperLevels, setFreezeUpperLevels] = useState('');
     const [freezeUpperLevelsNumbers, setFreezeUpperLevelsNumber] = useState('');
+    const [costingObj, setCostingObj] = useState({
+        item: {},
+        index: []
+    })
+    const [showPopup, setShowPopup] = useState(false)
 
     const { register, setValue, getValues, control, formState: { errors }, } = useForm({
         mode: 'onChange',
@@ -291,8 +298,49 @@ function AddNfr(props) {
 
     };
 
+    const onPopupConfirm = () => {
+        const { item, index, indexOuter } = costingObj;
+        deleteCosting(item, index, indexOuter);
+    }
+
+    /**
+  * @method deleteRowItem
+  * @description CONFIRM DELETE COSTINGS
+  */
+    const deleteItem = (Item, index, indexOuter) => {
+        setShowPopup(true)
+        setCostingObj({ item: Item, index: index, indexOuter: indexOuter })
+    }
+
+    /**
+     * @method deleteCosting
+     * @description USED FOR DELETE COSTING
+     */
+    const deleteCosting = (Item, index, indexOuter) => {
+        let tempItem = { ...Item }
+        let tempItemFinal = { ...Item }
+        let reqData = { Id: Item?.SelectedCostingVersion?.CostingId, UserId: loggedInUserId() }
+        dispatch(deleteDraftCosting(reqData, (res) => {
+            if (res?.data?.Result) {
+                Toaster.success("Costing is deleted successfully")
+                setTimeout(() => {
+                    setValue(`${index}.CostingVersion`, '')
+                }, 200);
+                let tempRowData = [...rowData]
+                tempItemFinal.CostingOptions = tempItem?.CostingOptions.filter(e => e.CostingId !== Item?.SelectedCostingVersion?.CostingId)
+                delete tempItemFinal.SelectedCostingVersion
+                tempRowData[indexOuter].data[index] = tempItemFinal
+                setRowData(tempRowData)
+                setShowPopup(false)
+            }
+        }))
+    }
+
+    const closePopUp = () => {
+        setShowPopup(false)
+    }
+
     const copyCosting = (index) => { };
-    const deleteItem = (index) => { };
     const deleteRowItem = (index) => { };
 
     const editRow = (item, index) => {
@@ -658,13 +706,13 @@ function AddNfr(props) {
                                                         {!isViewEstimation && <button className="Add-file" type={"button"} title={"Add Costing"} onClick={() => addDetails(dataItem, indexOuter, indexInside)} />}
                                                     </>}
 
-                                                {!item?.IsNewCosting && item?.Status !== '' && getValues(`${indexInside}.CostingVersion`) && (<button className="View" type={"button"} title={"View Costing"} onClick={() => viewDetails(indexInside)} />)}
+                                                {!item?.IsNewCosting && item?.Status !== '' && dataItem?.SelectedCostingVersion && (<button className="View" type={"button"} title={"View Costing"} onClick={() => viewDetails(indexInside)} />)}
                                                 {(freezeUpperLevels === '' ? true : indexOuter > (freezeUpperLevelsNumbers)) &&
                                                     <>
-                                                        {!isViewEstimation && !item?.IsNewCosting && getValues(`${indexInside}.CostingVersion`) && (<button className="Edit" type={"button"} title={"Edit Costing"} onClick={() => editCosting(indexInside)} />)}
-                                                        {!isViewEstimation && !item?.IsNewCosting && getValues(`${indexInside}.CostingVersion`) && (<button className="Copy All" title={"Copy Costing"} type={"button"} onClick={() => copyCosting(indexInside)} />)}
-                                                        {!isViewEstimation && !item?.IsNewCosting && getValues(`${indexInside}.CostingVersion`) && (<button className="Delete All" title={"Delete Costing"} type={"button"} onClick={() => deleteItem(item, indexInside)} />)}
-                                                        {!isViewEstimation && item?.CostingOptions?.length === 0 && getValues(`${indexInside}.CostingVersion`) && <button title='Discard' className="CancelIcon" type={'button'} onClick={() => deleteRowItem(indexInside)} />}
+                                                        {!isViewEstimation && !item?.IsNewCosting && dataItem?.SelectedCostingVersion && (<button className="Edit" type={"button"} title={"Edit Costing"} onClick={() => editCosting(indexInside)} />)}
+                                                        {!isViewEstimation && !item?.IsNewCosting && dataItem?.SelectedCostingVersion && (<button className="Copy All" title={"Copy Costing"} type={"button"} onClick={() => copyCosting(indexInside)} />)}
+                                                        {!isViewEstimation && !item?.IsNewCosting && dataItem?.SelectedCostingVersion && (<button className="Delete All" title={"Delete Costing"} type={"button"} onClick={() => deleteItem(dataItem, indexInside, indexOuter)} />)}
+                                                        {!isViewEstimation && item?.CostingOptions?.length === 0 && dataItem?.SelectedCostingVersion && <button title='Discard' className="CancelIcon" type={'button'} onClick={() => deleteRowItem(indexInside)} />}
                                                     </>}
                                             </div></td>
                                             {indexInside === 0 && (
@@ -705,6 +753,9 @@ function AddNfr(props) {
                                 <div className="send-for-approval"></div>
                                 Send for Approval
                             </button>
+                            {
+                                showPopup && <PopupMsgWrapper isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${MESSAGES.COSTING_DELETE_ALERT}`} />
+                            }
                         </Col>
                     </Row>
 
