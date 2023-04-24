@@ -14,8 +14,10 @@ import Toaster from '../../../../common/Toaster'
 import ConditionCosting from './ConditionCosting'
 import HeaderTitle from '../../../../common/HeaderTitle'
 import LoaderCustom from '../../../../common/LoaderCustom'
+import YOYCost from './YOYCost'
 
 function AddNpvCost(props) {
+    const { partId, vendorId } = props
     const [tableData, setTableData] = useState(props.tableData)
     const [conditionTableData, seConditionTableData] = useState([])
     const [costingSummary, setCostingSummary] = useState(props.costingSummary ? props.costingSummary : false)
@@ -410,6 +412,28 @@ function AddNpvCost(props) {
                                         <ConditionCosting hideAction={true} tableData={conditionTableData} />
 
                                     </>}
+                                {costingSummary && props?.isRfqCosting &&
+                                    <div className={'mt25 pb-15'}>
+                                        <Col md="12" className={'mt25 pb-15'}>
+                                            <HeaderTitle className="border-bottom"
+                                                title={'YOY'}
+                                                customClass={'underLine-title'}
+                                            />
+                                        </Col>
+                                        <YOYCost
+                                            outside={true}
+                                            NetPOPrice={props.netPOPrice}
+                                            setValue={setValue}
+                                            getValues={getValues}
+                                            control={control}
+                                            register={register}
+                                            errors={errors}
+                                            activeTab={'6'}
+                                            patId={partId}
+                                            vendorId={vendorId}
+                                            hideAddButton={true}
+                                        />
+                                    </div>}
                             </div>
                             {!costingSummary && <Row className="sf-btn-footer no-gutters drawer-sticky-btn justify-content-between mx-0">
                                 <div className="col-sm-12 text-left bluefooter-butn d-flex justify-content-end">

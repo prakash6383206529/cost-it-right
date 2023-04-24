@@ -128,7 +128,7 @@ function TabDiscountOther(props) {
 
 
   useEffect(() => {
-    if (RMCCTabData && RMCCTabData[0]?.CostingId && true) {
+    if (RMCCTabData && RMCCTabData[0]?.CostingId) {
       let npvSum = 0
       dispatch(getNpvDetails(RMCCTabData && RMCCTabData[0]?.CostingId, (res) => {
         if (res?.data?.DataList) {
