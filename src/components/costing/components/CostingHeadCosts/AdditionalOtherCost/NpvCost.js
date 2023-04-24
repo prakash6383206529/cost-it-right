@@ -24,9 +24,10 @@ function NpvCost(props) {
         <Fragment>
             <Row>
                 <Col md={props.hideAction ? 12 : 12}>
-                    <Table className="table mb-0 forging-cal-table" size="sm">
-                        <thead>
-                            <tr>
+                    <Table className="table cr-brdr-main mb-0 forging-cal-table" size="sm">
+
+                        <tbody>
+                            <tr className='thead'>
                                 <th>{`Type of Investment`}</th>
                                 {<th>{`Percentage (%)`}</th>}
                                 {<th>{`Quantity`}</th>}
@@ -34,8 +35,6 @@ function NpvCost(props) {
                                 {!props.hideAction && <th className='text-right'>{`Action`}</th>}
 
                             </tr>
-                        </thead>
-                        <tbody>
                             {props?.tableData &&
                                 props?.tableData.map((item, index) => {
                                     return (
@@ -60,13 +59,11 @@ function NpvCost(props) {
                                     </td>
                                 </tr>
                             )}
-                        </tbody>
-                        <tfoot>
                             <tr className='table-footer'>
                                 <td colSpan={"4"} className="text-right">{'Total Cost:'}</td>
                                 <td colSpan={"2"}>{totalCost}</td>
                             </tr>
-                        </tfoot>
+                        </tbody>
                     </Table>
                 </Col>
             </Row>

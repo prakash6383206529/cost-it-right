@@ -439,6 +439,11 @@ button.add-btn {
   color: #3D4465;
   vertical-align: middle;
 }
+.table.cr-brdr-main .thead th {
+  color: #3D4465;
+  vertical-align: middle;
+  font-weight: 500;
+}
 
 .withBorder .form-control,
 .form-control {
@@ -8085,6 +8090,7 @@ body {
   margin: 0mm 1mm 1mm 0mm;
 }
 
+
 @media print {
   .simple-pdf {
     .table-responsive {
@@ -8107,26 +8113,29 @@ body {
     }
   }
 
+  @-moz-document url-prefix() {
+    .firefox-spaces {
+      margin-top: 35px;
+    }
+    .firefox-space-bottom {
+      margin-bottom: 30px;
+    }
+    .firefox-10 {
+      padding-top: 50px;
+    }
+  }
+
   .remove-space-border {
     .table-responsive {
 
       .header-name-left,
       .header-name {
-        border-right: none !important;
         background-color: #ececec !important;
       }
 
     }
 
-    .background-light-blue {
-      th {
-        border-right: none !important;
-      }
 
-      td {
-        border-left: none !important;
-      }
-    }
   }
 
   .background-light-blue {
