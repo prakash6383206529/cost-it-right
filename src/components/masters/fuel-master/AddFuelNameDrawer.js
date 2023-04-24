@@ -139,7 +139,7 @@ class AddFuelNameDrawer extends Component {
               <Row className="drawer-heading">
                 <Col>
                   <div className={"header-wrapper left"}>
-                    <h3>{isEditFlag ? "UPDATE FUEL" : "ADD FUEL"}</h3>
+                    <h3>{isEditFlag ? "Update " : "Add "}Fuel</h3>
                   </div>
                   <div
                     onClick={(e) => this.toggleDrawer(e)}
