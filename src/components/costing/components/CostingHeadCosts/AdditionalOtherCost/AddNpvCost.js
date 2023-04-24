@@ -410,16 +410,17 @@ function AddNpvCost(props) {
                                 }
                                 {initialConfiguration?.IsShowNpvCost && <NpvCost showAddButton={false} tableData={tableData} hideAction={costingSummary} editData={editData} />}
                                 {initialConfiguration?.IsBasicRateAndCostingConditionVisible && costingSummary &&
-                                    <>
-                                        <Col md="12" className={'mt25'}>
-                                            <HeaderTitle className="border-bottom"
+                                    <div className='firefox-spaces'>
+                                        <Col md="12" className={'mt25 firefox-spaces'}>
+                                            <HeaderTitle className="border-bottom firefox-spaces"
                                                 title={'Costing Condition'}
                                                 customClass={'underLine-title'}
                                             />
                                         </Col>
                                         <ConditionCosting hideAction={true} tableData={conditionTableData} />
 
-                                    </>}
+
+                                    </div>}
                                 {costingSummary && props?.isRfqCosting &&
                                     <div className={'mt25 pb-15'}>
                                         <Col md="12" className={'mt25 pb-15'}>
@@ -441,6 +442,8 @@ function AddNpvCost(props) {
                                             vendorId={vendorId}
                                             hideAddButton={true}
                                         />
+
+
                                     </div>}
                             </div>
                             {!costingSummary && <Row className="sf-btn-footer no-gutters drawer-sticky-btn justify-content-between mx-0">
@@ -464,7 +467,7 @@ function AddNpvCost(props) {
                     </Container>
                 </div>
             </Drawer> : <>
-                {initialConfiguration?.IsShowNpvCost && tableData && tableData.length !== 0 && <>
+                {tableData && tableData.length !== 0 && <>
                     <Col md="12">
                         <HeaderTitle className="border-bottom"
                             title={'NPV Data'}
@@ -473,7 +476,7 @@ function AddNpvCost(props) {
                     </Col>
                     <NpvCost showAddButton={false} tableData={tableData} hideAction={costingSummary} editData={editData} />
                 </>}
-                {initialConfiguration?.IsBasicRateAndCostingConditionVisible && conditionTableData && conditionTableData.length !== 0 && <> <Col md="12" className={'mt25'}>
+                {conditionTableData && conditionTableData.length !== 0 && <> <Col md="12" className={'mt25 firefox-10'}>
                     <HeaderTitle className="border-bottom"
                         title={'Costing Condition'}
                         customClass={'underLine-title'}
