@@ -541,7 +541,7 @@ function AddNfr(props) {
                         />
                     </Col>
                     <Col md="3">
-                        <TooltipCustom customClass="ml-1 mt-2" id="variance" tooltipText="Vendors should not be more than 4" />
+                        <TooltipCustom customClass="ml-1 mt-2" id="variance" tooltipText="Vendors should not exceed a selection limit of 4" />
                         <AsyncSearchableSelectHookForm
                             label={"Vendor (Code)"}
                             name={"VendorName"}
