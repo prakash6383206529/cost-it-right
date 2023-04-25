@@ -16,6 +16,7 @@ import ConditionCosting from './ConditionCosting'
 import HeaderTitle from '../../../../common/HeaderTitle'
 import LoaderCustom from '../../../../common/LoaderCustom'
 import YOYCost from './YOYCost'
+import TooltipCustom from '../../../../common/Tooltip'
 
 function AddNpvCost(props) {
     const { partId, vendorId } = props
@@ -314,9 +315,11 @@ function AddNpvCost(props) {
                                         />
                                     </Col>
                                     <Col md="2" className='px-1'>
+                                        <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'percentage'} tooltipText={'Percentage = (Total * 100) / Quantity * Net Cost'} />
                                         <NumberFieldHookForm
-                                            label={`Percenatge(%)`}
+                                            label={`Percenatge (%)`}
                                             name={'NpvPercentage'}
+                                            id={'percentage'}
                                             Controller={Controller}
                                             control={control}
                                             register={register}
@@ -360,9 +363,11 @@ function AddNpvCost(props) {
                                         />
                                     </Col>
                                     <Col md="2" className='px-1'>
+                                        <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'total-cost'} tooltipText={'Total = (Percentage / 100) * Quantity * Net Cost'} />
                                         <NumberFieldHookForm
                                             label={`Total`}
                                             name={'Total'}
+                                            id={'total-cost'}
                                             Controller={Controller}
                                             control={control}
                                             register={register}
@@ -402,7 +407,7 @@ function AddNpvCost(props) {
                                     <>
                                         <Col md="12">
                                             <HeaderTitle className="border-bottom"
-                                                title={'NPV Data'}
+                                                title={'NPV Cost'}
                                                 customClass={'underLine-title'}
                                             />
                                         </Col>
@@ -470,7 +475,7 @@ function AddNpvCost(props) {
                 {tableData && tableData.length !== 0 && <>
                     <Col md="12">
                         <HeaderTitle className="border-bottom"
-                            title={'NPV Data'}
+                            title={'NPV Cost'}
                             customClass={'underLine-title'}
                         />
                     </Col>
