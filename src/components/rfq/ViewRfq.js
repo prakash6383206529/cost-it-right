@@ -694,6 +694,11 @@ function RfqListing(props) {
         }
     };
 
+    const hideSummaryHandler = () => {
+        setaddComparisonToggle(false)
+        gridApi.deselectAll()
+    }
+
     return (
         <>
             <div className={`ag-grid-react rfq-portal ${(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) ? "" : ""} ${true ? "show-table-btn" : ""} ${false ? 'simulation-height' : props?.isMasterSummaryDrawer ? '' : 'min-height100vh'}`}>
@@ -872,7 +877,10 @@ function RfqListing(props) {
                                 approvalMode={true}
                                 // isApproval={approvalData.LastCostingId !== EMPTY_GUID ? true : false}
                                 simulationMode={false}
-                                costingIdExist={true} />
+                                costingIdExist={true}
+                                bestCostObjectFunction={bestCostObjectFunction}
+                                crossButton={hideSummaryHandler}
+                            />
                         )}
                     </div>
                 }

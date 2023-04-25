@@ -1167,11 +1167,12 @@ const CostingSummaryTable = (props) => {
 
               {
                 DownloadAccessibility ? <LoaderCustom customClass="pdf-loader" /> :
-                  <>
+                  <div className='d-flex justify-content-end'>
                     <ExcelFile filename={'Costing Summary'} fileExtension={'.xls'} element={<button type="button" className={'user-btn excel-btn mr5 mb-2'} title="Excel"><img src={ExcelIcon} alt="download" /></button>}>
                       {onBtExport()}
                     </ExcelFile>
-                  </>
+                 {props.isRfqCosting && <button onClick={()=>props?.crossButton()} title='Discard Summary' className='CancelIcon rfq-summary-discard'></button>}
+                  </div>
               }
               {!simulationMode && !props.isRfqCosting &&
                 <ReactToPrint
@@ -1310,8 +1311,8 @@ const CostingSummaryTable = (props) => {
                                         </button>
                                       }
                                     </span>
-                                    <span className="d-flex justify-content-between align-items-center pie-chart-container"><span>{(data?.bestCost === true) ? ' ' : checkForDecimalAndNull(data?.poPrice, initialConfiguration.NoOfDecimalForPrice)} {(data?.bestCost === true) ? ' ' : `(${(data?.effectiveDate && data?.effectiveDate !== '') ? DayTime(data?.effectiveDate).format('DD-MM-YYYY') : "-"})`}</span>{(!pdfHead && !drawerDetailPDF && data.totalCost !== 0 && !simulationDrawer) &&
-                                      <span className='pie-chart-wrapper'>
+                                  {(!data?.bestCost === true) &&   <span className="d-flex justify-content-between align-items-center pie-chart-container"><span>{(data?.bestCost === true) ? ' ' : checkForDecimalAndNull(data?.poPrice, initialConfiguration.NoOfDecimalForPrice)} {(data?.bestCost === true) ? ' ' : `(${(data?.effectiveDate && data?.effectiveDate !== '') ? DayTime(data?.effectiveDate).format('DD-MM-YYYY') : "-"})`}</span>{(!pdfHead && !drawerDetailPDF && data.totalCost !== 0 && !simulationDrawer) &&
+                                      <span className={`pie-chart-wrapper ${props.isRfqCosting ? 'mt-1': ''}`}>
                                         <button type='button' className='pie-chart' onClick={() => viewPieData(index)}></button>
                                         {viewPieChart === index &&
                                           <span className='pie-chart-inner'> <Costratiograph data={pieChartData} options={pieChartOption} />
@@ -1319,7 +1320,7 @@ const CostingSummaryTable = (props) => {
                                             </button>
                                           </span>}
                                       </span>}
-                                    </span>
+                                    </span>}
                                     {/* USE PART NUMBER KEY HERE */}
                                     <span className="d-block">{data?.partNumber}</span>
                                     <span className="d-block">{data?.partName}</span>
