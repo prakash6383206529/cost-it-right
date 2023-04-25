@@ -2005,7 +2005,7 @@ function UserRegistration(props) {
                       />
                     </div>
                     <div className="input-group col-md-3 input-withouticon">
-                      <NumberFieldHookForm
+                      <TextFieldHookForm
                         label="ZipCode"
                         name={"ZipCode"}
                         errors={errors.ZipCode}
@@ -2016,7 +2016,7 @@ function UserRegistration(props) {
                         mandatory={false}
                         rules={{
                           required: false,
-                          validate: { postiveNumber, maxLength6 }
+                          validate: { postiveNumber, maxLength6, number }
                         }}
                         handleChange={() => { }}
                         placeholder={'Enter'}
