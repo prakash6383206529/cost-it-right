@@ -104,7 +104,8 @@ class AddBOPImport extends Component {
       levelDetails: {},
       noApprovalCycle: false,
       vendorFilterList: [],
-      isCallCalculation: false
+      isCallCalculation: false,
+      isClientVendorBOP: false
     }
   }
   /**
@@ -333,7 +334,8 @@ class AddBOPImport extends Component {
               isLoader: false,
               incoTerm: Data.IncoTerm !== undefined ? { label: `${Data.IncoTermDescription ? Data.IncoTermDescription : ''} ${Data.IncoTerm ? `(${Data.IncoTerm})` : '-'}`, value: Data.BoughtOutPartIncoTermId } : [],
               paymentTerm: Data.PaymentTerm !== undefined ? { label: `${Data.PaymentTermDescription ? Data.PaymentTermDescription : ''} ${Data.PaymentTerm ? `(${Data.PaymentTerm})` : '-'}`, value: Data.BoughtOutPartPaymentTermId } : [],
-              showCurrency: true
+              showCurrency: true,
+              isClientVendorBOP: Data.IsClientVendorBOP,
             }, () => {
               setTimeout(() => {
                 this.setState({ isLoader: false, isCallCalculation: false })
@@ -606,7 +608,7 @@ class AddBOPImport extends Component {
 
     if (
       this.state.isEditFlag &&
-      Number(checkForDecimalAndNull(netLandedCost, initialConfiguration.NoOfDecimalForPrice)) === Number(checkForDecimalAndNull(this.state.DataToChange?.NetLandedCostConversion, initialConfiguration.NoOfDecimalForPrice)) &&
+      Number(checkForDecimalAndNull(netLandedCost, initialConfiguration.NoOfDecimalForPrice)) === Number(checkForDecimalAndNull(this.state.DataToChange?.NetLandedCost, initialConfiguration.NoOfDecimalForPrice)) &&
       this.state.DataToChange.BoughtOutPartIncoTermId === this.state.incoTerm.value &&
       this.state.DataToChange.BoughtOutPartPaymentTermId === this.state.paymentTerm.value
     ) {
@@ -785,7 +787,7 @@ class AddBOPImport extends Component {
   * @description Used to Submit the form
   */
   onSubmit = debounce((values) => {
-    const { BOPCategory, selectedPlants, costingTypeId, client, vendorName, currency, isSourceChange, sourceLocation, BOPID, isEditFlag, files, effectiveDate, oldDate, UOM, netLandedConverionCost, DataToChange, DropdownChange, uploadAttachements, isDateChange, IsFinancialDataChanged, incoTerm, paymentTerm } = this.state;
+    const { BOPCategory, selectedPlants, costingTypeId, client, vendorName, currency, isSourceChange, sourceLocation, BOPID, isEditFlag, files, effectiveDate, oldDate, UOM, netLandedConverionCost, DataToChange, DropdownChange, uploadAttachements, isDateChange, IsFinancialDataChanged, incoTerm, paymentTerm, isClientVendorBOP } = this.state;
     const userDetailsBop = JSON.parse(localStorage.getItem('userDetail'))
     if (costingTypeId !== CBCTypeId && vendorName.length <= 0) {
       this.setState({ isVendorNameNotSelected: true, setDisable: false })      // IF VENDOR NAME IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY AND SAVE BUTTON WILL NOT BE DISABLED
@@ -828,6 +830,7 @@ class AddBOPImport extends Component {
         BoughtOutPartIncoTermId: incoTerm.value,
         BoughtOutPartPaymentTermId: paymentTerm.value,
         EntryType: Number(ENTRY_TYPE_IMPORT),
+        IsClientVendorBOP: isClientVendorBOP
       }
       if (IsFinancialDataChanged) {
         if (isDateChange && (DayTime(oldDate).format("DD/MM/YYYY") !== DayTime(effectiveDate).format("DD/MM/YYYY"))) {
@@ -853,7 +856,7 @@ class AddBOPImport extends Component {
         if (DropdownChange && String(DataToChange.Source) === String(values.Source) &&
           Number(DataToChange.BasicRate) === Number(values.BasicRate) && DataToChange.Remark === values.Remark && JSON.stringify(updatedFiles) === JSON.stringify(DataToChange.Attachements) &&
           ((DataToChange.Source ? DataToChange.Source : '-') === (values.Source ? values.Source : '-')) &&
-          ((DataToChange.SourceLocation ? DataToChange.SourceLocation : '-') === (sourceLocation.value ? sourceLocation.value : '-')) && (DataToChange.BoughtOutPartIncoTermId === incoTerm.value)) {
+          ((DataToChange.SourceLocation ? DataToChange.SourceLocation : '-') === (sourceLocation.value ? sourceLocation.value : '-')) && (DataToChange.BoughtOutPartIncoTermId === incoTerm.value) && DataToChange.IsClientVendorBOP === isClientVendorBOP) {
           this.cancel('submit')
           return false;
         }
@@ -908,6 +911,7 @@ class AddBOPImport extends Component {
         BoughtOutPartIncoTermId: incoTerm.value,
         BoughtOutPartPaymentTermId: paymentTerm.value,
         EntryType: Number(ENTRY_TYPE_IMPORT),
+        IsClientVendorBOP: isClientVendorBOP
       }
 
       if (CheckApprovalApplicableMaster(BOP_MASTER_ID) === true && !this.state.isFinalApprovar) {
@@ -978,14 +982,16 @@ class AddBOPImport extends Component {
       e.preventDefault();
     }
   };
-
+  onIsClientVendorBOP = () => {
+    this.setState({ isClientVendorBOP: !this.state.isClientVendorBOP })
+  }
   /**
   * @method render
   * @description Renders the component
   */
   render() {
     const { handleSubmit, isBOPAssociated, initialConfiguration } = this.props;
-    const { isCategoryDrawerOpen, isOpenVendor, isOpenUOM, isEditFlag, isViewMode, setDisable, costingTypeId, noApprovalCycle } = this.state;
+    const { isCategoryDrawerOpen, isOpenVendor, isOpenUOM, isEditFlag, isViewMode, setDisable, costingTypeId, noApprovalCycle, isClientVendorBOP } = this.state;
     const filterList = async (inputValue) => {
       const { vendorFilterList } = this.state
       if (inputValue && typeof inputValue === 'string' && inputValue.includes(' ')) {
@@ -1435,7 +1441,24 @@ class AddBOPImport extends Component {
                         <Row> */}
 
                         </Row>
-
+                        {getConfigurationKey().IsShowClientVendorBOP && <Col md="3" className="d-flex align-items-center mb-3">
+                          <label
+                            className={`custom-checkbox`}
+                            onChange={this.onIsClientVendorBOP}
+                          >
+                            Client Approved Vendor
+                            <input
+                              type="checkbox"
+                              checked={isClientVendorBOP}
+                              disabled={(isEditFlag && isBOPAssociated) || isViewMode ? true : false}
+                            />
+                            <span
+                              className=" before-box"
+                              checked={isClientVendorBOP}
+                              onChange={this.onIsClientVendorBOP}
+                            />
+                          </label>
+                        </Col>}
                         <Row>
                           <Col md="12">
                             <div className="left-border">
