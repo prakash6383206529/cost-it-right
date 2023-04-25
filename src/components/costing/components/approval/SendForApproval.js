@@ -794,8 +794,9 @@ const SendForApproval = (props) => {
                         </Col>
                         <Col md="4">
                           <div className="form-group">
+                            <TooltipCustom id={"variance-tooltip"} disabledIcon={true} tooltipText={`Existing Price - Revised Price`} />
                             <label>Variance (w.r.t. Existing)</label>
-                            <label className={data.oldPrice === 0 ? `form-control bg-grey input-form-control` : `form-control bg-grey input-form-control ${data.variance < 0 ? 'red-value' : 'green-value'}`}>
+                            <label id={"variance-tooltip"} className={data.oldPrice === 0 ? `form-control bg-grey input-form-control` : `form-control bg-grey input-form-control ${data.variance < 0 ? 'red-value' : 'green-value'}`}>
                               {data.variance ? checkForDecimalAndNull(data.variance, initialConfiguration.NoOfDecimalForPrice) : 0}
                             </label>
                           </div>
@@ -804,6 +805,7 @@ const SendForApproval = (props) => {
                         {viewApprovalData && viewApprovalData[0]?.CostingHead !== NCC && <>
                           <Col md="4">
                             <div className="form-group">
+                              <TooltipCustom id={"consumed-quantity"} tooltipText={`Consumed Quantity is calculated based on the data present in the volume master (${data.effectiveDate !== "" ? DayTime(data.effectiveDate).format('DD/MM/YYYY') : ""}).`} />
                               <label>Consumed Quantity</label>
                               <div className="d-flex align-items-center">
                                 <label className="form-control bg-grey input-form-control">
@@ -815,8 +817,9 @@ const SendForApproval = (props) => {
                           </Col>
                           <Col md="4">
                             <div className="form-group">
+                              <TooltipCustom id={"remaining-budgeted-quantity-formula"} disabledIcon={true} tooltipText={`Budgeted Quantity (Refer From Volume Master) - Consumed Quantity`} />
                               <label>Remaining Budgeted Quantity</label>
-                              <label className="form-control bg-grey input-form-control">
+                              <label id={"remaining-budgeted-quantity-formula"} className="form-control bg-grey input-form-control">
                                 {data.remainingQty && data.remainingQty !== "" ? checkForDecimalAndNull(data.remainingQty, initialConfiguration.NoOfDecimalForPrice) : 0}
                               </label>
                             </div>
@@ -824,8 +827,9 @@ const SendForApproval = (props) => {
                           <Col md="4">
                             <div className="form-group">
                               <TooltipCustom id={"costing-approval"} tooltipText={`The current impact is calculated based on the data present in the volume master (${data.effectiveDate !== "" ? DayTime(data.effectiveDate).format('DD/MM/YYYY') : ""}).`} />
+                              <TooltipCustom id={"annual-formula"} disabledIcon={true} tooltipText={`Total Budget Quantity (Refer From Volume Master) * Variance`} />
                               <label>Annual Impact</label>
-                              <label className={data.oldPrice === 0 ? `form-control bg-grey input-form-control` : `form-control bg-grey input-form-control ${data.annualImpact < 0 ? 'green-value' : 'red-value'}`}>
+                              <label id={"annual-formula"} className={data.oldPrice === 0 ? `form-control bg-grey input-form-control` : `form-control bg-grey input-form-control ${data.annualImpact < 0 ? 'green-value' : 'red-value'}`}>
                                 {data.annualImpact && data.annualImpact ? checkForDecimalAndNull(data.annualImpact, initialConfiguration.NoOfDecimalForPrice) : 0}
                               </label>
                             </div>
@@ -833,8 +837,9 @@ const SendForApproval = (props) => {
 
                           <Col md="4">
                             <div className="form-group">
+                              <TooltipCustom id={"impact-for-year-formula"} disabledIcon={true} tooltipText={`(Total Budget Quantity (Refer From Volume Master) * Consumed Quantity) - Variance`} />
                               <label>Impact for the Year</label>
-                              <label className={data.oldPrice === 0 ? `form-control bg-grey input-form-control` : `form-control bg-grey input-form-control ${data.yearImpact < 0 ? 'green-value' : 'red-value'}`}>
+                              <label id={"impact-for-year-formula"} className={data.oldPrice === 0 ? `form-control bg-grey input-form-control` : `form-control bg-grey input-form-control ${data.yearImpact < 0 ? 'green-value' : 'red-value'}`}>
                                 {data.yearImpact && data.yearImpact ? checkForDecimalAndNull(data.yearImpact, initialConfiguration.NoOfDecimalForPrice) : 0}
                               </label>
                             </div>
