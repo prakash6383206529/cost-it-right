@@ -516,7 +516,61 @@ function RfqListing(props) {
     }
 
 
+    // Function that takes an array of objects as an input and returns the same array with an additional object representing the "best cost"
+    const bestCostObjectFunction = (arrayList) => {
+        // Create a copy of the input array to prevent mutation
+        let finalArrayList = [...arrayList];
 
+        // Check if the input array is empty or null
+        if (!finalArrayList || finalArrayList.length === 0) {
+            // If so, return an empty array
+            return [];
+        } else {
+            // Define an array of keys to check when finding the "best cost"
+            const keysToCheck = ["netRM", "netBOP", "pCost", "oCost", "sTreatment", "nPackagingAndFreight", "totalToolCost", "nsTreamnt", "tCost", "nConvCost", "nTotalRMBOPCC", "netSurfaceTreatmentCost", "nOverheadProfit", "nPoPriceCurrency", "nPOPrice", "nPOPriceWithCurrency"];
+            // const keysToCheck = ["nPOPriceWithCurrency"];
+
+            // Create a new object to represent the "best cost" and set it to the first object in the input array
+            let minObject = { ...finalArrayList[0] };
+
+            // Loop through each object in the input array
+            for (let i = 0; i < finalArrayList?.length; i++) {
+                // Get the current object
+                let currentObject = finalArrayList[i];
+
+                // Loop through each key in the current object
+                for (let key in currentObject) {
+                    // Check if the key is in the keysToCheck array
+                    if (keysToCheck?.includes(key)) {
+                        // Check if the current value and the minimum value for this key are both numbers
+                        if (isNumber(currentObject[key]) && isNumber(minObject[key])) {
+                            // If so, check if the current value is smaller than the minimum value
+                            if (checkForNull(currentObject[key]) < checkForNull(minObject[key])) {
+                                // If so, set the current value as the minimum value
+                                minObject[key] = currentObject[key];
+                            }
+                            // If the current value is an array
+                        } else if (Array.isArray(currentObject[key])) {
+                            // Set the minimum value for this key to an empty array
+                            minObject[key] = [];
+                        }
+                    } else {
+                        // If the key is not in the keysToCheck array, set the minimum value for this key to a dash
+                        minObject[key] = "-";
+                        // delete minObject[key];
+                    }
+                }
+                // Set the attachment and bestCost properties of the minimum object
+                minObject.attachment = []
+                minObject.bestCost = true
+            }
+            // Add the minimum object to the end of the array
+            finalArrayList.push(minObject);
+        }
+
+        // Return the modified array
+        return finalArrayList;
+    }
 
     const addComparisonDrawerToggle = () => {
 
@@ -624,6 +678,11 @@ function RfqListing(props) {
 
         }
     };
+
+    const hideSummaryHandler = () => {
+        setaddComparisonToggle(false)
+        gridApi.deselectAll()
+    }
 
     return (
         <>
@@ -803,7 +862,10 @@ function RfqListing(props) {
                                 approvalMode={true}
                                 // isApproval={approvalData.LastCostingId !== EMPTY_GUID ? true : false}
                                 simulationMode={false}
-                                costingIdExist={true} />
+                                costingIdExist={true}
+                                bestCostObjectFunction={bestCostObjectFunction}
+                                crossButton={hideSummaryHandler}
+                            />
                         )}
                     </div>
                 }
