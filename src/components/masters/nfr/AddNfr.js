@@ -589,7 +589,7 @@ function AddNfr(props) {
                         />
                     </Col>
                     <Col md="3">
-                        <TooltipCustom customClass="ml-1 mt-2" id="variance" tooltipText="Vendors should not exceed a selection limit of 4" />
+                        <TooltipCustom customClass="ml-1 add-nfr-tooltip" id="variance" tooltipText="Vendors should not exceed a selection limit of 4" />
                         <AsyncSearchableSelectHookForm
                             label={"Vendor (Code)"}
                             name={"VendorName"}
@@ -668,7 +668,7 @@ function AddNfr(props) {
                                                                 checked={selectedCheckBox}
                                                             />
                                                             <span
-                                                                className=" before-box"
+                                                                className="pl-1 before-box"
                                                                 checked={selectedCheckBox}
                                                                 onChange={(e) => onCheckBoxClick(indexOuter)}
                                                             />
@@ -695,7 +695,7 @@ function AddNfr(props) {
                                             // errors={`${indexInside} CostingVersion`}
                                             /></td>
                                             <td className="text-center">
-                                                <div className={dataItem?.CostingId !== EMPTY_GUID ? dataItem?.Status : ''}>
+                                                <div className={dataItem?.CostingId !== EMPTY_GUID ? dataItem?.SelectedCostingVersion?.Status : ''}>
                                                     {dataItem?.SelectedCostingVersion?.Status ? dataItem?.SelectedCostingVersion?.Status : ''}
                                                 </div>
                                             </td>
