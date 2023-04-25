@@ -10,6 +10,15 @@
 @import "../../../node_modules/ag-grid-community/src/styles/ag-grid.scss";
 @import "../../../node_modules/ag-grid-community/src/styles/ag-theme-material/sass/ag-theme-material-mixin";
 
+
+
+@-moz-document url-prefix() {
+  .border {
+    border-collapse: separate !important;
+    border-spacing: 0 !important;
+  }
+
+}
 @for $i from 0 through 12 {
   .mr-#{$i} {
     margin-right: $i * 0.25rem;
