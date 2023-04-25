@@ -9,19 +9,20 @@ import { Col, Row, Table } from 'reactstrap';
 import { getVendorWithVendorCodeSelectList } from '../../../actions/Common';
 import { EMPTY_DATA, EMPTY_GUID, NFR, NFRTypeId, VBCTypeId, searchCount } from '../../../config/constants';
 
-import { autoCompleteDropdown } from '../../common/CommonFunctions';
+import { autoCompleteDropdown, costingTypeIdToApprovalTypeIdFunction } from '../../common/CommonFunctions';
 import HeaderTitle from '../../common/HeaderTitle';
 import NoContentFound from '../../common/NoContentFound';
 import Toaster from '../../common/Toaster';
 import { AsyncSearchableSelectHookForm, NumberFieldHookForm, SearchableSelectHookForm, TextFieldHookForm } from '../../layout/HookFormInputs';
 import { getNFRPartWiseGroupDetail, nfrDetailsForDiscountAction, saveNFRGroupDetails } from './actions/nfr';
-import { checkVendorPlantConfigurable, loggedInUserId, userDetails } from '../../../helper';
+import { checkVendorPlantConfigurable, loggedInUserId, userDetails, userTechnologyLevelDetails } from '../../../helper';
 import { dataLiist } from '../../../config/masterData';
-import { createCosting, deleteDraftCosting, getBriefCostingById, storePartNumber } from '../../costing/actions/Costing';
+import { checkFinalUser, createCosting, deleteDraftCosting, getBriefCostingById, storePartNumber } from '../../costing/actions/Costing';
 import ApprovalDrawer from './ApprovalDrawer';
 import TooltipCustom from '../../common/Tooltip'
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { MESSAGES } from '../../../config/message';
+import { getUsersTechnologyLevelAPI } from '../../../actions/auth/AuthActions';
 
 
 
@@ -73,6 +74,8 @@ function AddNfr(props) {
         index: []
     })
     const [showPopup, setShowPopup] = useState(false)
+    const [levelDetails, setLevelDetails] = useState({})
+    const [sendForApprovalButtonDisable, setSendForApprovalButtonDisable] = useState(false)
 
     const { register, setValue, getValues, control, formState: { errors }, } = useForm({
         mode: 'onChange',
@@ -146,6 +149,28 @@ function AddNfr(props) {
             }
         }))
         reactLocalStorage.setObject('isFromDiscountObj', false)
+        let levelDetailsTemp = ''
+        dispatch(getUsersTechnologyLevelAPI(loggedInUserId(), nfrData?.TechnologyId, (res) => {
+            levelDetailsTemp = userTechnologyLevelDetails(NFRTypeId, res?.data?.Data?.TechnologyLevels)
+            if (levelDetailsTemp?.length === 0) {
+                setSendForApprovalButtonDisable(true)
+            } else {
+                let obj = {}
+                obj.DepartmentId = userDetails().DepartmentId
+                obj.UserId = loggedInUserId()
+                obj.TechnologyId = nfrData?.TechnologyId
+                obj.Mode = 'costing'
+                obj.approvalTypeId = costingTypeIdToApprovalTypeIdFunction(NFRTypeId)
+                dispatch(checkFinalUser(obj, (res) => {
+                    console.log('res: ', res);
+                    if (res?.data?.Result) {
+                        setSendForApprovalButtonDisable(res?.data?.Data?.IsFinalApprover)
+                    }
+                }))
+            }
+            setLevelDetails(levelDetailsTemp)
+
+        }))
 
     }, [])
 
@@ -748,7 +773,7 @@ function AddNfr(props) {
                                 className='user-btn'
                                 type='button'
                                 onClick={sendForApproval}
-                                disabled={isViewEstimation}
+                                disabled={isViewEstimation || sendForApprovalButtonDisable}
                             >
                                 <div className="send-for-approval"></div>
                                 Send for Approval
@@ -772,6 +797,7 @@ function AddNfr(props) {
                     rowData={rowData}
                     technologyId={nfrPartDetail?.TechnologyId}
                     partData={{ PartId: nfrData?.PartId, PartName: nfrData?.PartName, PartNumber: nfrData?.PartNumber }}
+                    levelDetails={levelDetails}
                 />
             }
         </>
