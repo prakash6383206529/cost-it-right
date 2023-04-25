@@ -89,7 +89,8 @@ class AddBOPDomestic extends Component {
       showPopup: false,
       levelDetails: {},
       noApprovalCycle: false,
-      vendorFilterList: []
+      vendorFilterList: [],
+      isClientVendorBOP: false
     }
   }
 
@@ -271,6 +272,7 @@ class AddBOPDomestic extends Component {
               UOM: Data.UnitOfMeasurement !== undefined ? { label: Data.UnitOfMeasurement, value: Data.UnitOfMeasurementId } : [],
               isLoader: false,
               client: Data.CustomerName !== undefined ? { label: Data.CustomerName, value: Data.CustomerId } : [],
+              isClientVendorBOP: Data.IsClientVendorBOP,
             }, () => this.setState({ isLoader: false }))
             // ********** ADD ATTACHMENTS FROM API INTO THE DROPZONE'S PERSONAL DATA STORE **********
             let files = Data.Attachements && Data.Attachements.map((item) => {
@@ -671,7 +673,7 @@ class AddBOPDomestic extends Component {
   onSubmit = debounce((values) => {
     const { BOPCategory, selectedPlants, vendorName, costingTypeId,
 
-      sourceLocation, BOPID, isEditFlag, files, DropdownChanged, oldDate, isSourceChange, client, effectiveDate, UOM, DataToCheck, isDateChange, IsFinancialDataChanged } = this.state;
+      sourceLocation, BOPID, isEditFlag, files, DropdownChanged, oldDate, isSourceChange, client, effectiveDate, UOM, DataToCheck, isDateChange, IsFinancialDataChanged, isClientVendorBOP } = this.state;
     const userDetailsBop = JSON.parse(localStorage.getItem('userDetail'))
     if (costingTypeId !== CBCTypeId && vendorName.length <= 0) {
       this.setState({ isVendorNameNotSelected: true, setDisable: false })      // IF VENDOR NAME IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY AND SAVE BUTTON WILL NOT BE DISABLED
@@ -709,6 +711,7 @@ class AddBOPDomestic extends Component {
         IsFinancialDataChanged: isDateChange ? true : false,
         CustomerId: client.value,
         EntryType: Number(ENTRY_TYPE_DOMESTIC),
+        IsClientVendorBOP: isClientVendorBOP
       }
 
       if (IsFinancialDataChanged) {
@@ -730,7 +733,7 @@ class AddBOPDomestic extends Component {
       else {
         if (DropdownChanged && (DataToCheck.Remark) === (values.Remark) && JSON.stringify(updatedFiles) === JSON.stringify(DataToCheck.Attachements) && Number(DataToCheck.BasicRate) === Number(values.BasicRate) &&
           ((DataToCheck.Source ? String(DataToCheck.Source) : '-') === (values.Source ? String(values.Source) : '-')) &&
-          ((DataToCheck.SourceLocation ? String(DataToCheck.SourceLocation) : '') === (sourceLocation.value ? String(sourceLocation.value) : ''))) {
+          ((DataToCheck.SourceLocation ? String(DataToCheck.SourceLocation) : '') === (sourceLocation.value ? String(sourceLocation.value) : '')) && DataToCheck.IsClientVendorBOP === isClientVendorBOP) {
           this.cancel('submit')
           return false;
         }
@@ -781,6 +784,7 @@ class AddBOPDomestic extends Component {
         CustomerId: client.value,
         EntryType: Number(ENTRY_TYPE_DOMESTIC),
         CategoryName: BOPCategory.label,
+        IsClientVendorBOP: isClientVendorBOP
       }
 
       if (CheckApprovalApplicableMaster(BOP_MASTER_ID) === true && !this.state.isFinalApprovar) {
@@ -861,13 +865,16 @@ class AddBOPDomestic extends Component {
       <span className='d-flex'>Basic Rate/{displayUOM(value)} (INR)</span>
     </div>
   }
+  onIsClientVendorBOP = () => {
+    this.setState({ isClientVendorBOP: !this.state.isClientVendorBOP })
+  }
   /**
   * @method render
   * @description Renders the component
   */
   render() {
     const { handleSubmit, isBOPAssociated, initialConfiguration } = this.props;
-    const { isCategoryDrawerOpen, isOpenVendor, costingTypeId, isOpenUOM, isEditFlag, isViewMode, setDisable, noApprovalCycle } = this.state;
+    const { isCategoryDrawerOpen, isOpenVendor, costingTypeId, isOpenUOM, isEditFlag, isViewMode, setDisable, noApprovalCycle, isClientVendorBOP } = this.state;
     const filterList = async (inputValue) => {
       const { vendorFilterList } = this.state
       const resultInput = inputValue.slice(0, searchCount)
@@ -1273,7 +1280,24 @@ class AddBOPDomestic extends Component {
                           </Col>
 
                         </Row>
-
+                        {getConfigurationKey().IsShowClientVendorBOP && <Col md="3" className="d-flex align-items-center mb-3">
+                          <label
+                            className={`custom-checkbox`}
+                            onChange={this.onIsClientVendorBOP}
+                          >
+                            Client Approved Vendor
+                            <input
+                              type="checkbox"
+                              checked={isClientVendorBOP}
+                              disabled={(isEditFlag && isBOPAssociated) || isViewMode ? true : false}
+                            />
+                            <span
+                              className=" before-box"
+                              checked={isClientVendorBOP}
+                              onChange={this.onIsClientVendorBOP}
+                            />
+                          </label>
+                        </Col>}
                         <Row>
                           <Col md="12">
                             <div className="left-border">
