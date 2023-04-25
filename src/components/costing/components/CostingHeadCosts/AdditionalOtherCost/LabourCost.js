@@ -25,7 +25,7 @@ function LabourCost(props) {
         <Fragment>
             <Row>
                 <Col md={props.hideAction ? 12 : 12}>
-                    <Table className="table mb-0 forging-cal-table" size="sm">
+                    <Table className="table mb-0 cr-brdr-main forging-cal-table" size="sm">
                         <thead>
                             <tr>
                                 <th>{`Description`}</th>
