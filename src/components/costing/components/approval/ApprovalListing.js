@@ -708,6 +708,7 @@ function ApprovalListing(props) {
       costingObj.customerName = item.CustomerName
       costingObj.customerCode = item.CustomerCode
       costingObj.customer = item.Customer
+      costingObj.BasicRate = item.BasicRate
       let date = costingObj.effectiveDate
       if (costingObj.effectiveDate) {
         let variance = Number(item.OldPOPrice && item.OldPOPrice !== '-' ? item.OldPOPrice : 0) - Number(item.NetPOPrice && item.NetPOPrice !== '-' ? item.NetPOPrice : 0)

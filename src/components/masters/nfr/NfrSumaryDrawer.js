@@ -7,12 +7,13 @@ import ApprovalWorkFlow from "../../costing/components/approval/ApprovalWorkFlow
 import { Fragment } from "react";
 import ApprovalDrawer from "./ApprovalDrawer";
 import NoContentFound from "../../common/NoContentFound";
-import { EMPTY_DATA } from "../../../config/constants";
+import { EMPTY_DATA, NFRTypeId } from "../../../config/constants";
 import { useDispatch } from "react-redux";
 import { getNFRApprovalSummary } from "./actions/nfr";
-import { loggedInUserId } from "../../../helper";
+import { loggedInUserId, userDetails, userTechnologyLevelDetails } from "../../../helper";
 import { costingTypeIdToApprovalTypeIdFunction } from "../../common/CommonFunctions";
 import { checkFinalUser } from "../../costing/actions/Costing";
+import { getUsersTechnologyLevelAPI } from "../../../actions/auth/AuthActions";
 
 
 function NfrSummaryDrawer(props) {
@@ -24,6 +25,9 @@ function NfrSummaryDrawer(props) {
     const [rejectDrawer, setRejectDrawer] = useState(false)
     const [nfrData, setNFRData] = useState({})
     const [finalLevelUser, setFinalLevelUser] = useState(true)
+    const [levelDetails, setLevelDetails] = useState({})
+    const [sendForApprovalButtonShow, setSendForApprovalButtonShow] = useState(true)
+    const [isFinalLevelUser, setIsFinalLevelUser] = useState(false)
     const dispatch = useDispatch()
 
     useEffect(() => {
@@ -45,6 +49,27 @@ function NfrSummaryDrawer(props) {
             //         setFinalLevelUser(res.data.Data.IsFinalApprover)
             //     }
             // }))
+        }))
+        let levelDetailsTemp = ''
+        dispatch(getUsersTechnologyLevelAPI(loggedInUserId(), nfrData?.TechnologyId, (res) => {
+            levelDetailsTemp = userTechnologyLevelDetails(NFRTypeId, res?.data?.Data?.TechnologyLevels)
+            setLevelDetails(levelDetailsTemp)
+            if (levelDetailsTemp?.length === 0) {
+                setSendForApprovalButtonShow(false)
+            }
+            setLevelDetails(levelDetailsTemp)
+
+        }))
+        let obj = {}
+        obj.DepartmentId = userDetails().DepartmentId
+        obj.UserId = loggedInUserId()
+        obj.TechnologyId = nfrData?.TechnologyId
+        obj.Mode = 'costing'
+        obj.approvalTypeId = costingTypeIdToApprovalTypeIdFunction(NFRTypeId)
+        dispatch(checkFinalUser(obj, (res) => {
+            if (res?.data?.Result) {
+                setIsFinalLevelUser(res?.data?.Data?.IsFinalApprover)
+            }
         }))
     }, [])
 
@@ -72,7 +97,7 @@ function NfrSummaryDrawer(props) {
                         <Row className="drawer-heading sticky-top-0">
                             <Col>
                                 <div className={'header-wrapper left'}>
-                                    <h3>{`NFR Summary (Token No.${nfrData?.ApprovalToken})`}</h3>
+                                    <h3>{`NFR Summary (Token No.${nfrData?.ApprovalToken ?? ''})`}</h3>
                                 </div>
                                 <div
                                     onClick={(e) => toggleDrawer(e)}
@@ -139,8 +164,8 @@ function NfrSummaryDrawer(props) {
                     </div>
                 </div>
             </Drawer >
-            {approvalDrawer && <ApprovalDrawer isOpen={approvalDrawer} anchor="right" closeDrawer={closeDrawer} hideTable={true} IsFinalLevel={finalLevelUser} nfrData={nfrData} type='Approve' />}
-            {rejectDrawer && <ApprovalDrawer isOpen={rejectDrawer} anchor="right" closeDrawer={closeDrawer} hideTable={true} rejectDrawer={true} />}
+            {approvalDrawer && sendForApprovalButtonShow && <ApprovalDrawer isOpen={approvalDrawer} anchor="right" closeDrawer={closeDrawer} hideTable={true} nfrData={nfrData} type='Approve' isFinalLevelUser={isFinalLevelUser} />}
+            {rejectDrawer && sendForApprovalButtonShow && <ApprovalDrawer isOpen={rejectDrawer} anchor="right" closeDrawer={closeDrawer} hideTable={true} rejectDrawer={true} isFinalLevelUser={isFinalLevelUser} />}
         </div >
     );
 }

@@ -474,10 +474,8 @@ function RfqListing(props) {
 
     }
 
-    const closeRemarkDrawer = () => {
-
+    const closeRemarkDrawer = (type) => {
         setRemarkHistoryDrawer(false)
-        getDataList()
     }
 
 
@@ -685,6 +683,11 @@ function RfqListing(props) {
         }
     };
 
+    const hideSummaryHandler = () => {
+        setaddComparisonToggle(false)
+        gridApi.deselectAll()
+    }
+
     return (
         <>
             <div className={`ag-grid-react rfq-portal ${(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) ? "" : ""} ${true ? "show-table-btn" : ""} ${false ? 'simulation-height' : props?.isMasterSummaryDrawer ? '' : 'min-height100vh'}`}>
@@ -865,6 +868,7 @@ function RfqListing(props) {
                                 simulationMode={false}
                                 costingIdExist={true}
                                 bestCostObjectFunction={bestCostObjectFunction}
+                                crossButton ={hideSummaryHandler}
                             />
                         )}
                     </div>

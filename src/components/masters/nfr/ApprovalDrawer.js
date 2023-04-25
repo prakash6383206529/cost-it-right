@@ -16,7 +16,7 @@ import Toaster from '../../common/Toaster';
 
 
 const ApprovalDrawer = (props) => {
-    const { rowData, technologyId, partData, IsFinalLevel, nfrData, type } = props
+    const { rowData, technologyId, partData, nfrData, type, levelDetails, isFinalLevelUser } = props
     const { register, setValue, getValues, control, formState: { errors }, } = useForm({
         mode: 'onChange',
         reValidateMode: 'onChange',
@@ -155,15 +155,15 @@ const ApprovalDrawer = (props) => {
 
 
     const onSubmit = (data) => {
-        if (IsFinalLevel) {
+        if (isFinalLevelUser) {
             let req = [
                 {
                     "ApprovalProcessSummaryId": nfrData?.ApprovalProcessSummaryId,
                     "ApprovalToken": nfrData?.ApprovalToken,
                     "LoggedInUserId": loggedInUserId(),
-                    "SenderLevelId": userData?.LoggedInLevelId,
+                    "SenderLevelId": levelDetails?.LevelId,
                     "SenderId": userData?.LoggedInUserId,
-                    "SenderLevel": userData?.LoggedInLevel,
+                    "SenderLevel": levelDetails?.Level,
                     "ApproverId": getValues("approver")?.value ? getValues("approver")?.value : '',
                     "ApproverLevelId": getValues("approver")?.levelId ? getValues("approver")?.levelId : '',
                     "ApproverLevel": getValues("approver")?.levelName ? getValues("approver")?.levelName : '',
@@ -210,11 +210,11 @@ const ApprovalDrawer = (props) => {
                 "ApproverLevelId": getValues("approver")?.levelId,
                 "ApproverLevel": getValues("approver")?.levelName,
                 "ApproverId": getValues("approver")?.value,
-                "SenderLevelId": userData?.LoggedInLevelId,
+                "SenderLevelId": levelDetails?.LevelId,
                 "SenderId": userData?.LoggedInUserId,
                 "ApprovalTypeId": NFRAPPROVALTYPEID,
                 "NfrPartWiseGroupDetailsId": tempRowData[0]?.nfrPartWiseGroupDetailsId,
-                "SenderLevel": userData?.LoggedInLevel,
+                "SenderLevel": levelDetails?.Level,
                 "SenderRemark": "string",
                 "LoggedInUserId": loggedInUserId(),
                 "ReasonId": 0,
@@ -241,7 +241,7 @@ const ApprovalDrawer = (props) => {
                         <Row className="drawer-heading ">
                             <Col className='px-0'>
                                 <div className={"header-wrapper left"}>
-                                    <h3>{props.rejectDrawer ? "Reject Costing" : "Send for Approval"}</h3>
+                                    <h3>{props.rejectDrawer ? "Reject Costing" : props?.IsFinalApproved ? "Approve Costing" : "Send for Approval"}</h3>
                                 </div>
                                 <div
                                     onClick={(e) => toggleDrawer(e)}
@@ -250,7 +250,7 @@ const ApprovalDrawer = (props) => {
                                 ></div>
                             </Col>
                         </Row>
-                        {(!props.rejectDrawer && !IsFinalLevel) && <> <Row>
+                        {(!props.rejectDrawer && !isFinalLevelUser) && <> <Row>
                             <Col md={props.hideTable ? 12 : 6}>
                                 <SearchableSelectHookForm
                                     label={`${getConfigurationKey().IsCompanyConfigureOnPlant ? 'Company' : 'Department'}`}
