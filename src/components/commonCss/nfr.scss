@@ -35,6 +35,11 @@
             max-width: 65px;
         }
     }
+    .custom-checkbox {
+        .before-box {
+            padding-left: 1px;
+        }
+    }
 }
 
 .parent-container {
@@ -58,4 +63,18 @@
 
 .defualt-input-value {
     height: 28px !important;
+}
+
+.add-nfr-tooltip {
+    &::before {
+        top: 5px;
+    }
+}
+.nfr-id-wrapper {
+    min-height: auto !important;
+}
+@media screen and (max-width: $middleDesktop) {
+    .nfr-id-wrapper {
+       padding: 2px 10px !important;
+    }
 }
