@@ -474,10 +474,8 @@ function RfqListing(props) {
 
     }
 
-    const closeRemarkDrawer = () => {
-
+    const closeRemarkDrawer = (type) => {
         setRemarkHistoryDrawer(false)
-        getDataList()
     }
 
 
