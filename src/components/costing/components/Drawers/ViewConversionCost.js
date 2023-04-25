@@ -703,9 +703,10 @@ function ViewConversionCost(props) {
                   {props.viewConversionCostData.isSurfaceTreatmentCost &&                   // SHOW ONLY WHEN NETSURFACETREATMENT COST EYE BUTTON IS CLICKED
                     <>
                       {stTableData()}
+                      <br />
                     </>
                   }
-                  <br />
+
                   {props.viewConversionCostData.isSurfaceTreatmentCost &&    // SHOW ONLY WHEN NETSURFACETREATMENT COST EYE BUTTON IS CLICKED
                     <>{extraCostTableData()} </>
                   }
@@ -736,11 +737,13 @@ function ViewConversionCost(props) {
         {!stCostShow && costingProcessCost.length !== 0 && !props?.processShow && !props?.operationShow && processTableData()}
         {!stCostShow && costingOperationCost.length !== 0 && !props?.processShow && !props?.operationShow && operationTableData()}
         {!stCostShow && othercostingOperationCost.length !== 0 && !props?.processShow && !props?.operationShow && otherOperTableData()}
+        {!stCostShow && showLabourData && labourTable.length !== 0 && labourTableData()}
         {/* {costingToolsCost.length != 0 && toolCostTableData()} */}
         {stCostShow && surfaceTreatmentCost.length !== 0 && !props?.processShow && !props?.operationShow && stTableData()}
         {stCostShow && transportCost.length !== 0 && !props?.processShow && !props?.operationShow && extraCostTableData()}
         {props?.processShow && costingProcessCost.length !== 0 && processTableData()}
         {props?.operationShow && costingOperationCost.length !== 0 && operationTableData()}
+
       </>}
     </>
   )
