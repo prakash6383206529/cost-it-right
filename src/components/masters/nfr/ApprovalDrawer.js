@@ -241,7 +241,7 @@ const ApprovalDrawer = (props) => {
                         <Row className="drawer-heading ">
                             <Col className='px-0'>
                                 <div className={"header-wrapper left"}>
-                                    <h3>{props.rejectDrawer ? "Reject Costing" : "Send for Approval"}</h3>
+                                    <h3>{props.rejectDrawer ? "Reject Costing" : props?.IsFinalApproved ? "Approve Costing" : "Send for Approval"}</h3>
                                 </div>
                                 <div
                                     onClick={(e) => toggleDrawer(e)}
