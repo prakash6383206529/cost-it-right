@@ -1055,7 +1055,7 @@ class AddLabour extends Component {
                           )}
                         </div>
                       </Col>
-                      <Col md="2" className="col">
+                      <Col md="3" className="col">
                         <div className="form-group">
                           <Field
                             name="LabourTypeIds"
@@ -1072,7 +1072,7 @@ class AddLabour extends Component {
                           {this.state.errorObj.labourType && this.state.labourType.length === 0 && <div className='text-help'>This field is required.</div>}
                         </div>
                       </Col>
-                      <Col md="auto">
+                      <Col md="3">
                         <div className="form-group">
                           <Field
                             label={`Rate Per Person/Annum (INR)`}
@@ -1090,7 +1090,7 @@ class AddLabour extends Component {
                         </div>
                       </Col>
 
-                      <Col md="auto">
+                      <Col md="3">
                         <div className="form-group">
                           <Field
                             label={`Working hours`}
@@ -1107,7 +1107,7 @@ class AddLabour extends Component {
                           />
                         </div>
                       </Col>
-                      <Col md="auto">
+                      <Col md="3">
                         <div className="form-group">
                           <Field
                             label={`Efficiency`}
@@ -1125,8 +1125,8 @@ class AddLabour extends Component {
                         </div>
                       </Col>
 
-                      <Col md="auto" className="d-flex">
-                        <div className="form-group date-filed pr-3">
+                      <Col md="3">
+                        <div className="form-group">
                           <label>Effective Date<span className="asterisk-required">*</span></label>
                           <div className="inputbox date-section">
                             <DatePicker
@@ -1148,7 +1148,10 @@ class AddLabour extends Component {
                             {this.state.errorObj.effectiveDate && this.state.effectiveDate === "" && <div className='text-help'>This field is required.</div>}
                           </div>
                         </div>
-                        <div className="btn-mr-rate mt30 pt-1 pr-0 col-auto">
+                        
+                      </Col>
+                      <Col md="3">
+                      <div className="btn-mr-rate mt30 pt-1 pr-0 col-auto">
                           {this.state.isEditIndex ? (
                             <>
                               <button type="button"
@@ -1239,7 +1242,7 @@ class AddLabour extends Component {
                           </tbody>
                           {this.state.gridTable.length === 0 && (<tbody className='border'>
                             <tr>
-                              <td colSpan={"5"}>
+                              <td colSpan={"7"}>
                                 <NoContentFound title={EMPTY_DATA} />
                               </td>
                             </tr>
