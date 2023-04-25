@@ -424,7 +424,7 @@ function AddLabourCost(props) {
                                     </Col>
 
                                     <Col md="3" className='px-1'>
-                                        <TooltipCustom disabledIcon={true} id={`labour-cost`} tooltipClass='weight-of-sheet' tooltipText={"Labour cost = Labour Rate / (Working Time * Effeciency% / Cycle Time)"} />
+                                        <TooltipCustom disabledIcon={true} id={`labour-cost`} tooltipClass='weight-of-sheet' tooltipText={"Labour Cost = Labour Rate / (Working Time * (Effeciency %) / Cycle Time)"} />
                                         <NumberFieldHookForm
                                             label={`Labour Cost Rs/Pcs`}
                                             name={'labourCost'}
@@ -491,9 +491,11 @@ function AddLabourCost(props) {
                                         />
                                     </Col>
                                     <Col md="3" className='px-1'>
+                                    <TooltipCustom disabledIcon={true} id={`Indirect-Labour-Cost`} tooltipClass='weight-of-sheet' tooltipText={"Indirect Labour Cost = Total Labour Rate * (Indirect Labour Cost %)"} />
                                         <NumberFieldHookForm
                                             label={`Indirect Labour Cost`}
                                             name={'indirectLabourCost'}
+                                            id={`Indirect-Labour-Cost`}
                                             Controller={Controller}
                                             control={control}
                                             register={register}
@@ -535,9 +537,11 @@ function AddLabourCost(props) {
                                         />
                                     </Col>
                                     <Col md="3" className='pl-1'>
+                                    <TooltipCustom disabledIcon={true} id={`staff-cost`} tooltipClass='weight-of-sheet' tooltipText={"Staff Cost = (Total Labour Cost + Indirect Labour Cost) * (Staff Cost %)"} />
                                         <NumberFieldHookForm
                                             label={`Staff Cost`}
                                             name={'staffCost'}
+                                            id={`staff-cost`} 
                                             Controller={Controller}
                                             control={control}
                                             register={register}
