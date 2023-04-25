@@ -1101,10 +1101,14 @@ function TabDiscountOther(props) {
           <Row>
             <Col md="12">
               <div className="shadow-lgg login-formg">
-                <button type="button" id="overhead-refresh" className={'refresh-icon mt12'} onClick={() => refreshAllData()}>
-                  <TooltipCustom disabledIcon={true} id="overhead-refresh" tooltipText="Refresh to update Overhead and Profit cost" />
-                </button>
-                <div className='tab-disount-total-cost'><span>Total Cost:</span> <p className='disabled-input-data'>{`${totalCost && totalCost !== undefined ? checkForDecimalAndNull(totalCost, initialConfiguration?.NoOfDecimalForPrice) : 0}`}</p></div>
+                <div className='tab-disount-total-cost'>
+                  <span>Total Cost:</span>
+                  <p className='disabled-input-data'>{`${totalCost && totalCost !== undefined ? checkForDecimalAndNull(totalCost, initialConfiguration?.NoOfDecimalForPrice) : 0}`}
+                  </p>
+                  <button type="button" id="overhead-refresh" className={'refresh-icon ml-2'} onClick={() => refreshAllData()}>
+                    <TooltipCustom disabledIcon={true} id="overhead-refresh" tooltipText="Refresh to update Overhead and Profit cost" />
+                  </button>
+                </div>
                 <form
                   noValidate
                   className="form"
