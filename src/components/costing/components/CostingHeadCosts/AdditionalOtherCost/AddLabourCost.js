@@ -11,6 +11,7 @@ import { getCostingLabourDetails, getLabourDetailsByFilter } from '../../../acti
 import DayTime from '../../../../common/DayTimeWrapper'
 import { CBCTypeId, EMPTY_GUID, NCCTypeId, NFRTypeId, VBCTypeId, ZBCTypeId } from '../../../../../config/constants'
 import { costingInfoContext } from '../../CostingDetailStepTwo'
+import { ViewCostingContext } from '../../CostingDetails'
 
 function AddLabourCost(props) {
     const { item } = props
@@ -31,6 +32,7 @@ function AddLabourCost(props) {
     })
     const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
     const costData = useContext(costingInfoContext)
+    const CostingViewMode = useContext(ViewCostingContext);
 
     useEffect(() => {
         let labourObj = false
@@ -43,9 +45,9 @@ function AddLabourCost(props) {
                 if (labourObj) {
                     let Data = labourObj
                     setValue('indirectLabourCostPercent', Data?.IndirectLaborCostPercentage)
-                    setValue('indirectLabourCost', Data?.IndirectLaborCost)
+                    setValue('indirectLabourCost', checkForDecimalAndNull(Data?.IndirectLaborCost, initialConfiguration.NoOfDecimalForPrice))
                     setValue('staffCostPercent', Data?.StaffCostPercentage)
-                    setValue('staffCost', Data?.StaffCost)
+                    setValue('staffCost', checkForDecimalAndNull(Data?.StaffCost, initialConfiguration.NoOfDecimalForPrice))
                     setStaffCostState(Number(Data?.StaffCost))
                     setIndirectLabourCostState(Data?.IndirectLaborCost)
                     let temp = []
@@ -112,7 +114,7 @@ function AddLabourCost(props) {
             let temp = []
             tableData && tableData.map((item, index) => {
                 item.staffCostPercent = value
-                item.staffCost = Math.round(staffCost)
+                item.staffCost = (staffCost)
                 temp.push(item)
             })
             setTableData(temp)
@@ -332,7 +334,7 @@ function AddLabourCost(props) {
                                             className=""
                                             customClassName={'withBorder'}
                                             errors={errors.description}
-                                            disabled={props.CostingViewMode}
+                                            disabled={CostingViewMode}
                                         />
                                     </Col>
                                     <Col md="2" className='px-1'>
@@ -416,7 +418,7 @@ function AddLabourCost(props) {
                                             className=""
                                             customClassName={'withBorder'}
                                             errors={errors.cycleTime}
-                                            disabled={props.CostingViewMode}
+                                            disabled={CostingViewMode}
                                         />
                                     </Col>
 
@@ -437,28 +439,29 @@ function AddLabourCost(props) {
                                             className=""
                                             customClassName={'withBorder'}
                                             errors={errors.labourCost}
-                                            disabled={props.CostingViewMode || disableTotalCost}
+                                            disabled={CostingViewMode || disableTotalCost}
                                         />
                                     </Col>
                                     <Col md="3" className="mt-4 pt-1">
 
-                                        <button
+                                        {!CostingViewMode && < button
                                             type="button"
                                             className={"user-btn  pull-left mt-1"}
                                             onClick={addData}
                                         >
                                             <div className={"plus"}></div>{isEditMode ? "UPDATE" : 'ADD'}
-                                        </button>
-                                        <button
+                                        </button>}
+                                        {!CostingViewMode && <button
                                             type="button"
                                             className={"reset-btn pull-left mt-1 ml5"}
                                             onClick={resetData}
                                         >
                                             Reset
                                         </button>
+                                        }
                                     </Col>
                                 </Row>
-                                {<LabourCost hideAction={false} tableData={tableData} editData={editData} />}
+                                {<LabourCost hideAction={CostingViewMode} tableData={tableData} editData={editData} />}
                                 <Row className='mt-4'>
                                     <Col md="2" className='m-2'>
                                         <NumberFieldHookForm
@@ -481,7 +484,7 @@ function AddLabourCost(props) {
                                             className=""
                                             customClassName={'withBorder'}
                                             errors={errors.indirectLabourCostPercent}
-                                            disabled={props.CostingViewMode}
+                                            disabled={CostingViewMode}
                                         />
                                     </Col>
                                     <Col md="2" className='m-2'>
@@ -525,7 +528,7 @@ function AddLabourCost(props) {
                                             className=""
                                             customClassName={'withBorder'}
                                             errors={errors.staffCostPercent}
-                                            disabled={props.CostingViewMode}
+                                            disabled={CostingViewMode}
                                         />
                                     </Col>
                                     <Col md="2" className='m-2'>
@@ -562,6 +565,7 @@ function AddLabourCost(props) {
                                     <button
                                         type={'button'}
                                         className="submit-button save-btn"
+                                        disabled={CostingViewMode}
                                         onClick={() => { props.closeDrawer('save', tableData) }} >
                                         <div className={"save-icon"}></div>
                                         {'Save'}
