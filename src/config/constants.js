@@ -468,6 +468,7 @@ export const API = {
   getVBCDetailByVendorId: `${BASE_URL}/costing/get-vbc-vendor-by-id`,
   updateZBCSOBDetail: `${BASE_URL}/costing/bulk-update-zbc-sob-detail`,
   updateVBCSOBDetail: `${BASE_URL}/costing/bulk-update-vbc-sob-detail`,
+  updateSOBDetail: `${BASE_URL}/costing/update-sob-details`,
   getBriefCostingById: `${BASE_URL}/costing/get-costing-detail-by-id`,
   getVBCCostingByCostingId: `${BASE_URL}/costing/get-vbc-costing-detail-by-id`,
   deleteDraftCosting: `${BASE_URL}/costing/delete-draft-costing`,

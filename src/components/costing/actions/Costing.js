@@ -188,10 +188,10 @@ export function getExistingCosting(PartId, callback) {
  * @method updateZBCSOBDetail
  * @description UPDATE ZBC SOB DETAILS
  */
-export function updateZBCSOBDetail(requestData, callback) {
+export function updateSOBDetail(requestData, callback) {
   return (dispatch) => {
     dispatch({ type: API_REQUEST })
-    axios.put(`${API.updateZBCSOBDetail}`, requestData, config())
+    axios.put(`${API.updateSOBDetail}`, requestData, config())
       .then((response) => {
         callback(response)
       }).catch((error) => {
