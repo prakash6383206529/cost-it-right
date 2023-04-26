@@ -10,10 +10,11 @@ import NoContentFound from "../../common/NoContentFound";
 import { EMPTY_DATA, NFRTypeId } from "../../../config/constants";
 import { useDispatch } from "react-redux";
 import { getNFRApprovalSummary } from "./actions/nfr";
-import { loggedInUserId, userDetails, userTechnologyLevelDetails } from "../../../helper";
+import { formViewData, loggedInUserId, userDetails, userTechnologyLevelDetails } from "../../../helper";
 import { costingTypeIdToApprovalTypeIdFunction } from "../../common/CommonFunctions";
-import { checkFinalUser } from "../../costing/actions/Costing";
+import { checkFinalUser, getSingleCostingDetails, setCostingViewData } from "../../costing/actions/Costing";
 import { getUsersTechnologyLevelAPI } from "../../../actions/auth/AuthActions";
+import CostingDetailSimulationDrawer from "../../simulation/components/CostingDetailSimulationDrawer";
 
 
 function NfrSummaryDrawer(props) {
@@ -28,6 +29,9 @@ function NfrSummaryDrawer(props) {
     const [levelDetails, setLevelDetails] = useState({})
     const [sendForApprovalButtonShow, setSendForApprovalButtonShow] = useState(true)
     const [isFinalLevelUser, setIsFinalLevelUser] = useState(false)
+    const [isOpen, setIsOpen] = useState(false)
+    const [isCostingDrawerLoader, setIsCostingDrawerLoader] = useState(false)
+    const [isApprovalDone, setIsApprovalDone] = useState(false) // this is for hiding approve and  reject button when costing is approved and  send for futher approval
     const dispatch = useDispatch()
 
     useEffect(() => {
@@ -35,6 +39,7 @@ function NfrSummaryDrawer(props) {
 
             if (res?.data?.Result === true) {
                 setNFRData(res?.data?.Data)
+                setIsApprovalDone(res?.data?.Data?.IsSent)
             }
 
             // let obj = {
@@ -49,26 +54,30 @@ function NfrSummaryDrawer(props) {
             //         setFinalLevelUser(res.data.Data.IsFinalApprover)
             //     }
             // }))
-        }))
-        let levelDetailsTemp = ''
-        dispatch(getUsersTechnologyLevelAPI(loggedInUserId(), nfrData?.TechnologyId, (res) => {
-            levelDetailsTemp = userTechnologyLevelDetails(NFRTypeId, res?.data?.Data?.TechnologyLevels)
-            setLevelDetails(levelDetailsTemp)
-            if (levelDetailsTemp?.length === 0) {
-                setSendForApprovalButtonShow(false)
-            }
-            setLevelDetails(levelDetailsTemp)
+            let levelDetailsTemp = ''
+            if (res?.data?.Data?.CostingData) {
+                let technologyId = res?.data?.Data?.CostingData[0]?.TechnologyId
+                dispatch(getUsersTechnologyLevelAPI(loggedInUserId(), technologyId, (res) => {
+                    levelDetailsTemp = userTechnologyLevelDetails(NFRTypeId, res?.data?.Data?.TechnologyLevels)
+                    if (Number(levelDetailsTemp?.length) === 0) {
+                        setSendForApprovalButtonShow(false)
+                    } else {
+                        let obj = {}
+                        obj.DepartmentId = userDetails().DepartmentId
+                        obj.UserId = loggedInUserId()
+                        obj.TechnologyId = technologyId
+                        obj.Mode = 'costing'
+                        obj.approvalTypeId = costingTypeIdToApprovalTypeIdFunction(NFRTypeId)
+                        dispatch(checkFinalUser(obj, (res) => {
+                            if (res?.data?.Result) {
+                                setSendForApprovalButtonShow(true)
+                                setIsFinalLevelUser(res?.data?.Data?.IsFinalApprover)
+                            }
+                        }))
+                    }
+                    setLevelDetails(levelDetailsTemp)
+                }))
 
-        }))
-        let obj = {}
-        obj.DepartmentId = userDetails().DepartmentId
-        obj.UserId = loggedInUserId()
-        obj.TechnologyId = nfrData?.TechnologyId
-        obj.Mode = 'costing'
-        obj.approvalTypeId = costingTypeIdToApprovalTypeIdFunction(NFRTypeId)
-        dispatch(checkFinalUser(obj, (res) => {
-            if (res?.data?.Result) {
-                setIsFinalLevelUser(res?.data?.Data?.IsFinalApprover)
             }
         }))
     }, [])
@@ -89,6 +98,24 @@ function NfrSummaryDrawer(props) {
         }
     }
 
+    const viewCosting = (costingNumber) => {
+        console.log(nfrData?.CostingData, "CostingData");
+        setIsCostingDrawerLoader(true)
+        dispatch(getSingleCostingDetails(costingNumber, (res) => {
+            setIsCostingDrawerLoader(false)
+            if (res.data.Data) {
+                let dataFromAPI = res.data.Data
+                const tempObj = formViewData(dataFromAPI)
+                dispatch(setCostingViewData(tempObj))
+            }
+        },
+            setIsOpen(true)
+        ))
+    }
+
+    const closeCostingDrawer = () => {
+        setIsOpen(false)
+    }
     return (
         <div>
             <Drawer className="bottom-drawer" anchor={props.anchor} open={props.isOpen}>
@@ -114,10 +141,12 @@ function NfrSummaryDrawer(props) {
                                 <Table className='table cr-brdr-main'>
                                     <thead>
                                         <tr>
+                                            <th>{"Group Name"}</th>
                                             <th>{"Vendor"}</th>
                                             <th>{"Plant"}</th>
                                             <th>{"Costing"}</th>
                                             <th>{"Net PO"}</th>
+                                            <th className="text-right">{"Actions"}</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -129,6 +158,13 @@ function NfrSummaryDrawer(props) {
                                                     <td>{`${data.PlantName} (${data.PlantCode})`}</td>
                                                     <td>{data.CostingNumber}</td>
                                                     <td>{data.NetPOPrice}</td>
+                                                    <td> <button
+                                                        type="button"
+                                                        title='View'
+                                                        className="float-right mb-0 View "
+                                                        onClick={() => viewCosting(data.CostingId)}
+                                                    >
+                                                    </button></td>
                                                 </tr>
                                             )
                                         })}
@@ -139,33 +175,41 @@ function NfrSummaryDrawer(props) {
                                 </Table>
                             </Col>
                         </Row>
-                        {
+                        {!isApprovalDone && sendForApprovalButtonShow && <Row className="sf-btn-footer no-gutters drawer-sticky-btn justify-content-between">
+                            <div className="col-sm-12 text-right bluefooter-butn mx-0">
+                                <Fragment>
+                                    <button type={'button'} className="mr5 approve-reject-btn"
+                                        onClick={() => setRejectDrawer(true)}
+                                    >
+                                        <div className={'cancel-icon-white mr5'}></div>
+                                        {'Reject'}
+                                    </button>
+                                    <button type="button" className="approve-button mr5 approve-hover-btn"
 
-                            <Row className="sf-btn-footer no-gutters drawer-sticky-btn justify-content-between">
-                                <div className="col-sm-12 text-right bluefooter-butn mx-0">
-                                    <Fragment>
-                                        <button type={'button'} className="mr5 approve-reject-btn"
-                                            onClick={() => setRejectDrawer(true)}
-                                        >
-                                            <div className={'cancel-icon-white mr5'}></div>
-                                            {'Reject'}
-                                        </button>
-                                        <button type="button" className="approve-button mr5 approve-hover-btn"
-
-                                            onClick={() => setApprovalDrawer(true)}
-                                        >
-                                            <div className={'save-icon'}></div>
-                                            {'Approve'}
-                                        </button>
-                                    </Fragment>
-                                </div>
-                            </Row>
+                                        onClick={() => setApprovalDrawer(true)}
+                                    >
+                                        <div className={'save-icon'}></div>
+                                        {'Approve'}
+                                    </button>
+                                </Fragment>
+                            </div>
+                        </Row>
                         }
                     </div>
                 </div>
             </Drawer >
+            {isOpen &&
+                <CostingDetailSimulationDrawer
+                    isOpen={isOpen}
+                    closeDrawer={closeCostingDrawer}
+                    anchor={"right"}
+                    isReport={isOpen}
+                    isSimulation={false}
+                    simulationDrawer={false}
+                    isReportLoader={isCostingDrawerLoader}
+                />}
             {approvalDrawer && sendForApprovalButtonShow && <ApprovalDrawer isOpen={approvalDrawer} anchor="right" closeDrawer={closeDrawer} hideTable={true} nfrData={nfrData} type='Approve' isFinalLevelUser={isFinalLevelUser} />}
-            {rejectDrawer && sendForApprovalButtonShow && <ApprovalDrawer isOpen={rejectDrawer} anchor="right" closeDrawer={closeDrawer} hideTable={true} rejectDrawer={true} isFinalLevelUser={isFinalLevelUser} />}
+            {rejectDrawer && sendForApprovalButtonShow && <ApprovalDrawer isOpen={rejectDrawer} anchor="right" closeDrawer={closeDrawer} hideTable={true} nfrData={nfrData} rejectDrawer={true} isFinalLevelUser={isFinalLevelUser} />}
         </div >
     );
 }

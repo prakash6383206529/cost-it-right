@@ -13,6 +13,7 @@ import { approvedCostingByApprover, nfrSendToApproverBySender } from './actions/
 import _ from 'lodash';
 import { datalist } from 'react-dom-factories';
 import Toaster from '../../common/Toaster';
+import { MESSAGES } from '../../../config/message';
 
 
 const ApprovalDrawer = (props) => {
@@ -178,7 +179,11 @@ const ApprovalDrawer = (props) => {
             ]
             dispatch(approvedCostingByApprover(req, (res) => {
                 if (res?.data?.Result === true) {
-                    Toaster.success("NFR is approved successfully")
+                    if (type === 'Approve') {
+                        Toaster.success(MESSAGES.NFR_APPROVED)
+                    } else {
+                        Toaster.success(MESSAGES.NFR_REJECTED)
+                    }
                     props?.closeDrawer("submit")
                 }
             }))
