@@ -909,8 +909,9 @@ function ApprovalListing(props) {
       {
         !showApprovalSumary &&
         <> {
-          (loader) ? <LoaderCustom customClass="center-loader" /> :
-            <div className={` ${!isApproval && 'container-fluid'} approval-listing-page`} id={'approval-go-to-top'}>
+
+          <div className={` ${!isApproval && 'container-fluid'} approval-listing-page ${loader ? 'dashboard-loader' : ''}`} id={'approval-go-to-top'}>
+            {(loader) ? <LoaderCustom customClass={isDashboard ? "dashboard-loader" : "loader-center"} /> : <div>
               {!isDashboard && <ScrollToTop pointProp={"approval-go-to-top"} />}
               <form noValidate>
                 <Row className="pt-4 blue-before">
@@ -1022,7 +1023,8 @@ function ApprovalListing(props) {
                   </div>
                 </Col>
               </Row>
-            </div>
+            </div>}
+          </div>
         }</>
 
         // :

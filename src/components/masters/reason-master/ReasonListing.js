@@ -392,7 +392,7 @@ class ReasonListing extends Component {
       <>
         <div className={`ag-grid-react container-fluid p-relative ${DownloadAccessibility ? "show-table-btn no-tab-page" : ""}`} id='go-to-top'>
           <ScrollToTop pointProp="go-to-top" />
-          {this.state.isLoader && <LoaderCustom />}
+          {this.state.isLoader && <LoaderCustom customClass="loader-center" />}
           <Row className="no-filter-row">
             <Col md={6} className="text-right filter-block"></Col>
             <Col md="6" className="text-right search-user-block pr-0">
