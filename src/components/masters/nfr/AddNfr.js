@@ -511,9 +511,8 @@ function AddNfr(props) {
     const sendForApproval = () => {
         if (rowData && rowData[shouldBeLevel - 1]) {
             let dataList = _.map(rowData[shouldBeLevel - 1]?.data, 'SelectedCostingVersion')
-            const areAllUndefined = _.every(dataList, (value) => _.isUndefined(value));
-            if (areAllUndefined) {
-                Toaster.warning("Please select at least one costing to send for approval")
+            if (dataList.includes(undefined)) {
+                Toaster.warning("Please select all costing to send for approval")
                 return false
             }
         }
