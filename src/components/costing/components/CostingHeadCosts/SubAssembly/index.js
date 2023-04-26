@@ -7,7 +7,7 @@ import { getCostingLabourDetails, getRMCCTabData, saveAssemblyBOPHandlingCharge,
 import { checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected, loggedInUserId, } from '../../../../../helper';
 import AddAssemblyOperation from '../../Drawers/AddAssemblyOperation';
 import { CostingStatusContext, ViewCostingContext } from '../../CostingDetails';
-import { ASSEMBLYNAME, EMPTY_GUID } from '../../../../../config/constants';
+import { ASSEMBLYNAME, EMPTY_GUID, ZBCTypeId } from '../../../../../config/constants';
 import _ from 'lodash'
 import AddBOPHandling from '../../Drawers/AddBOPHandling';
 import Toaster from '../../../../common/Toaster';
@@ -295,11 +295,10 @@ function AssemblyPart(props) {
             }
           </td>
         } */}
-        < td width={"0"} >
-
+        <td width={"0"}>
           <div className='d-flex justify-content-end align-items-center'>
             <div className='d-flex'>
-              {item.PartType === ASSEMBLYNAME && (initialConfiguration.IsShowCostingLabour) && <><button
+              {item.PartType === ASSEMBLYNAME && (initialConfiguration.IsShowCostingLabour) && (costData.CostingTypeId === ZBCTypeId) && <><button
                 type="button"
                 className={'user-btn add-oprn-btn mr-1'}
                 onClick={labourHandlingDrawer}>

@@ -16,9 +16,9 @@ import CostingDetailStepTwo from './CostingDetailStepTwo';
 import { DRAFT, EMPTY_GUID, REJECTED, COSTING } from '../../../config/constants';
 import {
   getPartInfo, checkPartWithTechnology,
-  updateZBCSOBDetail, updateVBCSOBDetail, storePartNumber, getBriefCostingById, deleteDraftCosting, getPartSelectListByTechnology,
+  storePartNumber, getBriefCostingById, deleteDraftCosting, getPartSelectListByTechnology,
   setOverheadProfitData, setComponentOverheadItemData, setPackageAndFreightData, setComponentPackageFreightItemData, setToolTabData,
-  setComponentToolItemData, setComponentDiscountOtherItemData, gridDataAdded, getCostingSpecificTechnology, setRMCCData, setComponentItemData, createNCCCosting, saveAssemblyBOPHandlingCharge, setProcessGroupGrid, savePartNumber, saveBOMLevel, setPartNumberArrayAPICALL, isDataChange, setSurfaceCostData, saveAssemblyNumber, createCosting, getExistingCosting, createMultiTechnologyCosting, setRMCCErrors, setOverheadProfitErrors, setToolsErrors, setDiscountErrors, isDiscountDataChange, setCostingDataList, emptyCostingData, setRMCCBOPCostData
+  setComponentToolItemData, setComponentDiscountOtherItemData, gridDataAdded, getCostingSpecificTechnology, setRMCCData, setComponentItemData, createNCCCosting, saveAssemblyBOPHandlingCharge, setProcessGroupGrid, savePartNumber, saveBOMLevel, setPartNumberArrayAPICALL, isDataChange, setSurfaceCostData, saveAssemblyNumber, createCosting, getExistingCosting, createMultiTechnologyCosting, setRMCCErrors, setOverheadProfitErrors, setToolsErrors, setDiscountErrors, isDiscountDataChange, setCostingDataList, emptyCostingData, setRMCCBOPCostData, updateSOBDetail
 } from '../actions/Costing'
 import CopyCosting from './Drawers/CopyCosting'
 import { MESSAGES } from '../../../config/message';
@@ -1482,7 +1482,7 @@ function CostingDetails(props) {
             data = {
               PlantId: el.PlantId,
               PartId: part.value,
-              ShareOfBusinessPercent: el.ShareOfBusinessPercent,
+              ShareOfBusinessPercentage: el.ShareOfBusinessPercent,
               LoggedInUserId: loggedInUserId(),
             }
             tempArr.push(data)
@@ -1491,7 +1491,7 @@ function CostingDetails(props) {
         })
 
         setTimeout(() => {
-          dispatch(updateZBCSOBDetail(tempArr, (res) => {
+          dispatch(updateSOBDetail(tempArr, (res) => {
             resetSOBChanged()
           }))
         }, 200)
@@ -1538,7 +1538,7 @@ function CostingDetails(props) {
           data = {
             PlantId: el.PlantId,
             PartId: part.value,
-            ShareOfBusinessPercent: el.ShareOfBusinessPercent,
+            ShareOfBusinessPercentage: el.ShareOfBusinessPercent,
             LoggedInUserId: loggedInUserId(),
           }
           tempArr.push(data)
@@ -1547,7 +1547,7 @@ function CostingDetails(props) {
       })
 
       setTimeout(() => {
-        dispatch(updateZBCSOBDetail(tempArr, (res) => {
+        dispatch(updateSOBDetail(tempArr, (res) => {
           resetSOBChanged()
         }))
       }, 200)
@@ -1562,7 +1562,7 @@ function CostingDetails(props) {
           data = {
             PlantId: el.PlantId,
             PartId: part.value,
-            ShareOfBusinessPercent: el.ShareOfBusinessPercent,
+            ShareOfBusinessPercentage: el.ShareOfBusinessPercent,
             LoggedInUserId: loggedInUserId(),
             VendorId: el.VendorId,
             VendorPlantId: initialConfiguration && initialConfiguration.IsVendorPlantConfigurable ? el.VendorPlantId : EMPTY_GUID,
@@ -1574,7 +1574,7 @@ function CostingDetails(props) {
       })
 
       setTimeout(() => {
-        dispatch(updateVBCSOBDetail(tempArr, (res) => {
+        dispatch(updateSOBDetail(tempArr, (res) => {
           resetSOBChanged()
         }))
       }, 200)
@@ -1597,7 +1597,7 @@ function CostingDetails(props) {
             data = {
               PlantId: el.PlantId,
               PartId: part.value,
-              ShareOfBusinessPercent: el.ShareOfBusinessPercent,
+              ShareOfBusinessPercentage: el.ShareOfBusinessPercent,
               LoggedInUserId: loggedInUserId(),
               VendorId: el.VendorId,
               VendorPlantId: initialConfiguration && initialConfiguration.IsVendorPlantConfigurable ? el.VendorPlantId : EMPTY_GUID,
@@ -1609,7 +1609,7 @@ function CostingDetails(props) {
         })
 
         setTimeout(() => {
-          dispatch(updateVBCSOBDetail(tempArr, (res) => {
+          dispatch(updateSOBDetail(tempArr, (res) => {
             resetSOBChanged()
           }))
         }, 200)
