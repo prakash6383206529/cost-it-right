@@ -448,6 +448,10 @@
 .overhead-profit-tab {
   border-left: 1px solid $borderColor;
   border-right: 1px solid $borderColor;
+  @media screen and (max-width: $middleDesktop) {
+    display: grid;
+    grid-template-columns: auto auto;
+  }
 }
 
 .costing-main-container {

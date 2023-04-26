@@ -12,6 +12,7 @@ import DayTime from '../../../../common/DayTimeWrapper'
 import { CBCTypeId, EMPTY_GUID, NCCTypeId, NFRTypeId, VBCTypeId, ZBCTypeId } from '../../../../../config/constants'
 import { costingInfoContext } from '../../CostingDetailStepTwo'
 import { ViewCostingContext } from '../../CostingDetails'
+import TooltipCustom from '../../../../common/Tooltip'
 
 function AddLabourCost(props) {
     const { item } = props
@@ -337,7 +338,7 @@ function AddLabourCost(props) {
                                             disabled={CostingViewMode}
                                         />
                                     </Col>
-                                    <Col md="2" className='px-1'>
+                                    <Col md="3" className='px-1'>
                                         <NumberFieldHookForm
                                             label={`Labour Rate (Rs/Shift)`}
                                             name={'labourRate'}
@@ -358,7 +359,7 @@ function AddLabourCost(props) {
                                         />
                                     </Col>
 
-                                    <Col md="2" className='px-1'>
+                                    <Col md="3" className='px-1'>
                                         <NumberFieldHookForm
                                             label={`Working hours`}
                                             name={'workingHours'}
@@ -380,7 +381,7 @@ function AddLabourCost(props) {
                                             disabled={true}
                                         />
                                     </Col>
-                                    <Col md="2" className='px-1'>
+                                    <Col md="3" className='pl-1'>
                                         <NumberFieldHookForm
                                             label={`Efficiency`}
                                             name={'efficiency'}
@@ -401,7 +402,7 @@ function AddLabourCost(props) {
                                         />
                                     </Col>
 
-                                    <Col md="2" className='px-1'>
+                                    <Col md="3" className='pr-1'>
                                         <NumberFieldHookForm
                                             label={`Cycle Time`}
                                             name={'cycleTime'}
@@ -422,10 +423,12 @@ function AddLabourCost(props) {
                                         />
                                     </Col>
 
-                                    <Col md="2" className='px-1'>
+                                    <Col md="3" className='px-1'>
+                                        <TooltipCustom disabledIcon={true} id={`labour-cost`} tooltipClass='weight-of-sheet' tooltipText={"Labour Cost = Labour Rate / (Working Time * (Effeciency %) / Cycle Time)"} />
                                         <NumberFieldHookForm
                                             label={`Labour Cost Rs/Pcs`}
                                             name={'labourCost'}
+                                            id={`labour-cost`}
                                             Controller={Controller}
                                             control={control}
                                             register={register}
@@ -442,7 +445,7 @@ function AddLabourCost(props) {
                                             disabled={CostingViewMode || disableTotalCost}
                                         />
                                     </Col>
-                                    <Col md="3" className="mt-4 pt-1">
+                                    <Col md="3" className="mt-4 pt-2">
 
                                         {!CostingViewMode && < button
                                             type="button"
@@ -463,7 +466,7 @@ function AddLabourCost(props) {
                                 </Row>
                                 {<LabourCost hideAction={CostingViewMode} tableData={tableData} editData={editData} />}
                                 <Row className='mt-4'>
-                                    <Col md="2" className='m-2'>
+                                    <Col md="3" className='pr-1'>
                                         <NumberFieldHookForm
                                             label={`Indirect Labour Cost (%)`}
                                             name={'indirectLabourCostPercent'}
@@ -487,10 +490,12 @@ function AddLabourCost(props) {
                                             disabled={CostingViewMode}
                                         />
                                     </Col>
-                                    <Col md="2" className='m-2'>
+                                    <Col md="3" className='px-1'>
+                                    <TooltipCustom disabledIcon={true} id={`Indirect-Labour-Cost`} tooltipClass='weight-of-sheet' tooltipText={"Indirect Labour Cost = Total Labour Rate * (Indirect Labour Cost %)"} />
                                         <NumberFieldHookForm
                                             label={`Indirect Labour Cost`}
                                             name={'indirectLabourCost'}
+                                            id={`Indirect-Labour-Cost`}
                                             Controller={Controller}
                                             control={control}
                                             register={register}
@@ -507,7 +512,7 @@ function AddLabourCost(props) {
                                             disabled={true}
                                         />
                                     </Col>
-                                    <Col md="2" className='m-2'>
+                                    <Col md="3" className='px-1'>
                                         <NumberFieldHookForm
                                             label={`Staff Cost (%)`}
                                             name={'staffCostPercent'}
@@ -531,10 +536,12 @@ function AddLabourCost(props) {
                                             disabled={CostingViewMode}
                                         />
                                     </Col>
-                                    <Col md="2" className='m-2'>
+                                    <Col md="3" className='pl-1'>
+                                    <TooltipCustom disabledIcon={true} id={`staff-cost`} tooltipClass='weight-of-sheet' tooltipText={"Staff Cost = (Total Labour Cost + Indirect Labour Cost) * (Staff Cost %)"} />
                                         <NumberFieldHookForm
                                             label={`Staff Cost`}
                                             name={'staffCost'}
+                                            id={`staff-cost`} 
                                             Controller={Controller}
                                             control={control}
                                             register={register}
