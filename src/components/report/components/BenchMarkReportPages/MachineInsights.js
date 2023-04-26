@@ -437,16 +437,14 @@ function MachineInsights(props) {
 
     return (
         <>
+            {showListing && <button type="button" className="user-btn report-btn-reset float-right mb-2" title="Reset Grid" onClick={() => resetState()}>
+                <div className="refresh mr-0"></div>
+            </button>}
             <div className="container-fluid rminsights_page">
                 {isLoader ? <LoaderCustom customClass="loader-center" /> :
                     <form noValidate >
                         {showListing && <>
                             <Row>
-                                <div className='report-btn-reset-container'>
-                                    {<button type="button" className="user-btn float-right mb-2" title="Reset Grid" onClick={() => resetState()}>
-                                        <div className="refresh mr-0"></div>
-                                    </button>}
-                                </div>
                                 <Col md="12">
                                     <div className={`ag-grid-react`}>
                                         <div className={`ag-grid-wrapper rminsights_table  ${rowDataNew && rowDataNew?.length <= 0 ? "overlay-contain" : ""}`}>
