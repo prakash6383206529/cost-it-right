@@ -10,10 +10,11 @@ import NoContentFound from "../../common/NoContentFound";
 import { EMPTY_DATA, NFRTypeId } from "../../../config/constants";
 import { useDispatch } from "react-redux";
 import { getNFRApprovalSummary } from "./actions/nfr";
-import { loggedInUserId, userDetails, userTechnologyLevelDetails } from "../../../helper";
+import { formViewData, loggedInUserId, userDetails, userTechnologyLevelDetails } from "../../../helper";
 import { costingTypeIdToApprovalTypeIdFunction } from "../../common/CommonFunctions";
-import { checkFinalUser } from "../../costing/actions/Costing";
+import { checkFinalUser, getSingleCostingDetails, setCostingViewData } from "../../costing/actions/Costing";
 import { getUsersTechnologyLevelAPI } from "../../../actions/auth/AuthActions";
+import CostingDetailSimulationDrawer from "../../simulation/components/CostingDetailSimulationDrawer";
 
 
 function NfrSummaryDrawer(props) {
@@ -28,6 +29,8 @@ function NfrSummaryDrawer(props) {
     const [levelDetails, setLevelDetails] = useState({})
     const [sendForApprovalButtonShow, setSendForApprovalButtonShow] = useState(true)
     const [isFinalLevelUser, setIsFinalLevelUser] = useState(false)
+    const [isOpen, setIsOpen] = useState(false)
+    const [isCostingDrawerLoader, setIsCostingDrawerLoader] = useState(false)
     const [isApprovalDone, setIsApprovalDone] = useState(false) // this is for hiding approve and  reject button when costing is approved and  send for futher approval
     const dispatch = useDispatch()
 
@@ -95,6 +98,24 @@ function NfrSummaryDrawer(props) {
         }
     }
 
+    const viewCosting = (costingNumber) => {
+        console.log(nfrData?.CostingData, "CostingData");
+        setIsCostingDrawerLoader(true)
+        dispatch(getSingleCostingDetails(costingNumber, (res) => {
+            setIsCostingDrawerLoader(false)
+            if (res.data.Data) {
+                let dataFromAPI = res.data.Data
+                const tempObj = formViewData(dataFromAPI)
+                dispatch(setCostingViewData(tempObj))
+            }
+        },
+            setIsOpen(true)
+        ))
+    }
+
+    const closeCostingDrawer = () => {
+        setIsOpen(false)
+    }
     return (
         <div>
             <Drawer className="bottom-drawer" anchor={props.anchor} open={props.isOpen}>
@@ -120,10 +141,12 @@ function NfrSummaryDrawer(props) {
                                 <Table className='table cr-brdr-main'>
                                     <thead>
                                         <tr>
+                                            <th>{"Group Name"}</th>
                                             <th>{"Vendor"}</th>
                                             <th>{"Plant"}</th>
                                             <th>{"Costing"}</th>
                                             <th>{"Net PO"}</th>
+                                            <th className="text-right">{"Actions"}</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -135,6 +158,13 @@ function NfrSummaryDrawer(props) {
                                                     <td>{`${data.PlantName} (${data.PlantCode})`}</td>
                                                     <td>{data.CostingNumber}</td>
                                                     <td>{data.NetPOPrice}</td>
+                                                    <td> <button
+                                                        type="button"
+                                                        title='View'
+                                                        className="float-right mb-0 View "
+                                                        onClick={() => viewCosting(data.CostingId)}
+                                                    >
+                                                    </button></td>
                                                 </tr>
                                             )
                                         })}
@@ -168,6 +198,16 @@ function NfrSummaryDrawer(props) {
                     </div>
                 </div>
             </Drawer >
+            {isOpen &&
+                <CostingDetailSimulationDrawer
+                    isOpen={isOpen}
+                    closeDrawer={closeCostingDrawer}
+                    anchor={"right"}
+                    isReport={isOpen}
+                    isSimulation={false}
+                    simulationDrawer={false}
+                    isReportLoader={isCostingDrawerLoader}
+                />}
             {approvalDrawer && sendForApprovalButtonShow && <ApprovalDrawer isOpen={approvalDrawer} anchor="right" closeDrawer={closeDrawer} hideTable={true} nfrData={nfrData} type='Approve' isFinalLevelUser={isFinalLevelUser} />}
             {rejectDrawer && sendForApprovalButtonShow && <ApprovalDrawer isOpen={rejectDrawer} anchor="right" closeDrawer={closeDrawer} hideTable={true} nfrData={nfrData} rejectDrawer={true} isFinalLevelUser={isFinalLevelUser} />}
         </div >
