@@ -193,12 +193,7 @@ function CostingBenchmarkReport(props) {
         <div className="container-fluid simulation-page">
             {
                 !showEditTable &&
-                <div className="simulation-main p-relative mt-3">
-                    <Row>
-                        {cancelButton && <Col md="12" className='mb-2'>
-                            <button type="button" className={`apply float-right`} onClick={cancelReport}> <div className={'back-icon'}></div>Back</button>
-                        </Col>}
-                    </Row>
+                <div className="simulation-main p-relative mt-3">      
 
                     <Row>
                         <Col md="12" className="filter-block">
@@ -229,8 +224,14 @@ function CostingBenchmarkReport(props) {
 
                     {loader && < LoaderCustom />}
                     {showMasterList && renderModule(master)}
+                    <div className='p-relative'>
+                    <Row>
+                        {cancelButton && <Col md="12" className='mb-2'>
+                            <button type="button" className={`apply float-right`} onClick={cancelReport}> <div className={'back-icon'}></div>Back</button>
+                        </Col>}
+                    </Row>
                     {showInsight && renderInsights(master)}
-
+                        </div>
                     {blueDivison && runReportButton &&
                         <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer sticky-btn-footer">
                             <div className="col-sm-12 text-right bluefooter-butn mt-3">
