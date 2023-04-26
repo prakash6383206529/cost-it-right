@@ -466,7 +466,7 @@ function SupplierContributionReport(props) {
                 </form>
 
             </div >}
-            {isLoader && <LoaderCustom />}
+            {isLoader && <LoaderCustom customClass="loader-center" />}
             {hideSideBarNavbar && <div className="supplier-back-btn"><button type="button" className={"apply ml-1"} onClick={exitReport}> <div className={'back-icon'}></div>Back</button></div>}
             {graphListing &&
                 <div className="doughnut-graph-container">
@@ -476,7 +476,7 @@ function SupplierContributionReport(props) {
                 </div>
 
             }
-            {noContent &&
+            {noContent && !isLoader &&
                 <NoContentFound
                     title={'There are no supplier contribution for this plant'}
                 />
