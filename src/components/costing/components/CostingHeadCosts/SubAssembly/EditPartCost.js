@@ -15,7 +15,7 @@ import NoContentFound from '../../../../common/NoContentFound';
 import { getSingleCostingDetails, gridDataAdded, setCostingViewData } from '../../../actions/Costing';
 import CostingDetailSimulationDrawer from '../../../../simulation/components/CostingDetailSimulationDrawer';
 import { ViewCostingContext } from '../../CostingDetails';
-import { EMPTY_DATA } from '../../../../../config/constants';
+import { EMPTY_DATA, ZBCTypeId } from '../../../../../config/constants';
 
 function EditPartCost(props) {
 
@@ -107,7 +107,8 @@ function EditPartCost(props) {
         let obj = {
             partId: props?.tabAssemblyIndividualPartDetail?.PartId,
             plantId: costData?.DestinationPlantId,
-            costingTypeId: costData?.CostingTypeId
+            isRequestForWAC: (costData.CostingTypeId === ZBCTypeId) ? true : false,
+            costingTypeId: (costData.CostingTypeId === ZBCTypeId) ? null : costData?.CostingTypeId
         }
 
         !props.costingSummary && dispatch(getCostingForMultiTechnology(obj, res => { }))
@@ -470,7 +471,7 @@ function EditPartCost(props) {
                                             <th>Costing Number</th>
                                             <th>Settled Price</th>
                                             <th>SOB%</th>
-                                            <th>Delta</th>
+                                            {costData.CostingTypeId !== ZBCTypeId && <th>Delta</th>}
                                             <th>Net Cost</th>
                                             <th>Action</th>
                                         </tr>
@@ -508,7 +509,7 @@ function EditPartCost(props) {
                                                                 disabled={CostingViewMode || props.costingSummary ? true : false}
                                                             />
                                                         </td>
-                                                        <td >
+                                                        {costData.CostingTypeId !== ZBCTypeId && <td >
                                                             <div className='delta-warpper'>
                                                                 <SearchableSelectHookForm
                                                                     name={`${PartCostFields}.${index}.DeltaSign`}
@@ -544,7 +545,7 @@ function EditPartCost(props) {
                                                                     disabled={CostingViewMode || props.costingSummary ? true : false}
                                                                 />
                                                             </div>
-                                                        </td>
+                                                        </td>}
                                                         <td >
                                                             <NumberFieldHookForm
                                                                 name={`${PartCostFields}.${index}.NetCost`}
