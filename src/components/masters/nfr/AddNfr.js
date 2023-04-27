@@ -162,7 +162,6 @@ function AddNfr(props) {
                 obj.Mode = 'costing'
                 obj.approvalTypeId = costingTypeIdToApprovalTypeIdFunction(NFRTypeId)
                 dispatch(checkFinalUser(obj, (res) => {
-                    console.log('res: ', res);
                     if (res?.data?.Result) {
                         setSendForApprovalButtonDisable(res?.data?.Data?.IsFinalApprover)
                     }
@@ -209,10 +208,15 @@ function AddNfr(props) {
             Toaster.warning("Please select at least one vendor")
             return false
         }
+        let vendorList = vendorName && vendorName?.map((item) => {
+            item.vendorName = item?.label.split(" (")[0]
+            item.vendorCode = item?.label.split(" (")[1].slice(0, -1)
+            return item
+        })
         let list = [...rowData]
         let rowIndex = list.findIndex(element => element?.groupName === getValues('GroupName'))
         let rowtemp = list[rowIndex]
-        rowtemp.data = getValues('VendorName')
+        rowtemp.data = vendorList
         let finalList = Object.assign([...list], { [rowIndex]: rowtemp })
         setCallAPI(true)
         setRowData([...finalList]);
