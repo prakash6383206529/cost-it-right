@@ -173,7 +173,9 @@ function NFRApprovalListing(props) {
     };
     const resetState = () => {
         gridOptions?.columnApi?.resetColumnState(null);
-        window.screen.width >= 1600 && gridApi.sizeColumnsToFit();
+        gridOptions?.api?.setFilterModel(null);
+        window.screen.width >= 1920 && gridApi.sizeColumnsToFit();
+        gridApi.deselectAll()
     }
 
     const onPageSizeChanged = (newPageSize) => {
