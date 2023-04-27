@@ -11,7 +11,7 @@ import BoughtOutPart from '../BOP';
 import AddBOPHandling from '../../Drawers/AddBOPHandling';
 import { findSurfaceTreatmentData, formatMultiTechnologyUpdate } from '../../../CostingUtil';
 import { getRMCCTabData, gridDataAdded, saveAssemblyCostingRMCCTab, saveCostingLabourDetails } from '../../../actions/Costing';
-import { EMPTY_GUID } from '../../../../../config/constants';
+import { EMPTY_GUID, ZBCTypeId } from '../../../../../config/constants';
 import _ from 'lodash';
 import AddLabourCost from '../AdditionalOtherCost/AddLabourCost';
 import Toaster from '../../../../common/Toaster';
@@ -418,7 +418,7 @@ function AssemblyTechnology(props) {
 
                 {item?.CostingPartDetails?.PartType === 'Assembly' ? <td>
                     <div className='assembly-button-container'>
-                        {(initialConfiguration.IsShowCostingLabour) && <><button
+                        {(initialConfiguration.IsShowCostingLabour) && (costData.CostingTypeId === ZBCTypeId) && <><button
                             type="button"
                             className={'user-btn add-oprn-btn mr-1'}
                             onClick={labourHandlingDrawer}>
