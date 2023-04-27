@@ -178,6 +178,12 @@ function NFRApprovalListing(props) {
         gridApi.deselectAll()
     }
 
+    const onPageSizeChanged = (newPageSize) => {
+        gridApi.paginationSetPageSize(Number(newPageSize));
+        window.screen.width >= 1920 && gridApi.sizeColumnsToFit();
+
+    };
+
     return (
         <Fragment>
             {!showApprovalSumary &&
@@ -236,7 +242,7 @@ function NFRApprovalListing(props) {
                                             <AgGridColumn field='LastApprovedByName' headerName="Last Approved /Rejected By" cellRenderer='hyphenFormatter'></AgGridColumn>
                                             <AgGridColumn headerClass="justify-content-center" pinned="right" cellClass="text-center" field="DisplayStatus" tooltipField="TooltipText" cellRenderer='statusFormatter' headerName="Status"></AgGridColumn>
                                         </AgGridReact>
-                                        {<PaginationWrapper gridApi={gridApi} globalTake={defaultPageSize} />}
+                                        {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} globalTake={defaultPageSize} />}
                                     </div>
                                 </div>
                             </div>
