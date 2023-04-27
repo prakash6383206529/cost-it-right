@@ -447,6 +447,7 @@ function CostingDetails(props) {
           setVBCVendorGrid(vbcArray)
           setCBCGrid(cbcArray)
           setvbcVendorOldArray(Data)
+          setzbcPlantOldArray(Data)
           setIsLoader(false)
         }
       }))

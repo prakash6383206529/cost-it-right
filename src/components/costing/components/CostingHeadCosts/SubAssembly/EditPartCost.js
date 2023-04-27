@@ -301,6 +301,7 @@ function EditPartCost(props) {
     const addGrid = () => {
         if (Object.keys(costingNumberData).length > 0) {
             setGridData([...gridData, costingNumberData])
+            let currentGrid = [...gridData, costingNumberData]
             setValue('CostingNumber', {})
             setCostingNumberData({})
             let indexForUpdate = _.findIndex([...gridData, costingNumberData], costingNumberData);
@@ -309,6 +310,12 @@ function EditPartCost(props) {
             setValue(`${PartCostFields}.${indexForUpdate}.DeltaSign`, 0)
             setValue(`${PartCostFields}.${indexForUpdate}.SOBPercentage`, 0)
             setValue(`${PartCostFields}.${indexForUpdate}.NetCost`, 0)
+
+            if (costData.CostingTypeId === ZBCTypeId) {
+                if (indexForUpdate) {
+                    setValue(`${PartCostFields}.${indexForUpdate}.SOBPercentage`, currentGrid[indexForUpdate].SOBPercentage)
+                }
+            }
         } else {
             Toaster.warning('Please select Costing Number')
             return false
@@ -323,7 +330,7 @@ function EditPartCost(props) {
                 if (item?.Value === '0' || final.includes(item?.CostingNumber)) return false;
                 temp.push({
                     label: item?.CostingNumber, value: item?.BaseCostingIdRef,
-                    SettledPrice: item?.SettledPrice, VendorCode: item?.VendorCode, VendorName: item?.VendorName
+                    SettledPrice: item?.SettledPrice, VendorCode: item?.VendorCode, VendorName: item?.VendorName, SOBPercentage: (item?.SOBPercentage) ? item.SOBPercentage : 0
                 })
                 return null;
             });
@@ -506,7 +513,7 @@ function EditPartCost(props) {
                                                                 defaultValue={''}
                                                                 className=""
                                                                 customClassName={'withBorder'}
-                                                                disabled={CostingViewMode || props.costingSummary ? true : false}
+                                                                disabled={(CostingViewMode || props.costingSummary || costData.CostingTypeId === ZBCTypeId) ? true : false}
                                                             />
                                                         </td>
                                                         {costData.CostingTypeId !== ZBCTypeId && <td >
