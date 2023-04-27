@@ -13,7 +13,7 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '.././common/PopupMsgWrapper';
 import { PaginationWrapper } from '.././common/commonPagination'
-import { sendReminderForQuotation, getQuotationDetailsList, getMultipleCostingDetails, setQuotationIdForRFQ } from './actions/rfq';
+import { sendReminderForQuotation, getQuotationDetailsList, getMultipleCostingDetails, setQuotationIdForRFQ, checkExistCosting } from './actions/rfq';
 import AddRfq from './AddRfq';
 import SendForApproval from '../costing/components/approval/SendForApproval';
 import { getSingleCostingDetails, setCostingApprovalData, setCostingViewData, storePartNumber } from '../costing/actions/Costing';
@@ -58,6 +58,9 @@ function RfqListing(props) {
     const { data } = props
     const [isOpen, setIsOpen] = useState(false)
     const [isReportLoader, setIsReportLoader] = useState(false)
+    const [selectedCostingsToShow, setSelectedCostingsToShow] = useState([])
+    const [multipleCostingDetails, setMultipleCostingDetails] = useState([])
+    const [selectedRowIndex, setSelectedRowIndex] = useState('')
 
     const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
 
@@ -76,7 +79,7 @@ function RfqListing(props) {
     useEffect(() => {
 
         if (selectedCostings?.length === selectedRows?.length && selectedRows?.length > 0) {
-            dispatch(setCostingViewData(selectedCostings))
+            setSelectedCostingsToShow(selectedCostings)
             setaddComparisonToggle(true)
         }
 
@@ -105,6 +108,9 @@ function RfqListing(props) {
                 setloader(false)
                 return false;
             }
+            let requestObject = {}
+            requestObject.PartIdList = _.uniq(_.map(res?.data?.DataList, 'PartId'))
+            requestObject.PlantId = res?.data?.DataList[0]?.PlantId
             let grouped_data = _.groupBy(res?.data?.DataList, 'PartNumber')                           // GROUPING OF THE ROWS FOR SEPERATE PARTS
             let data = []
             for (let x in grouped_data) {
@@ -406,6 +412,11 @@ function RfqListing(props) {
 
     const closeUserDetails = () => {
         setIsOpen(false)
+        setloader(true)
+        setTimeout(() => {
+            dispatch(setCostingViewData([...multipleCostingDetails]))
+            setloader(false)
+        }, 200);
     }
 
     const viewCostingDetail = (rowData) => {
@@ -576,32 +587,28 @@ function RfqListing(props) {
     }
 
     const addComparisonDrawerToggle = () => {
-
         let temp = []
         let tempObj = {}
-
         const isApproval = selectedRows.filter(item => item.ShowApprovalButton)
         setDisableApproveRejectButton(isApproval.length > 0)
-
-        dispatch(getMultipleCostingDetails(selectedRows, (res) => {
-
-
+        let costingIdList = [...selectedRows[0]?.ShouldCostings, ...selectedRows]
+        setloader(true)
+        dispatch(getMultipleCostingDetails(costingIdList, (res) => {
             if (res) {
                 res.map((item) => {
                     tempObj = formViewData(item?.data?.Data)
-
                     temp.push(tempObj[0])
                     return null
                 })
-
-                let arr = bestCostObjectFunction(temp)
-                dispatch(setCostingViewData(arr))
+                let dat = [...temp]
+                let tempArrToSend = _.uniqBy(dat, 'costingId')
+                let arr = bestCostObjectFunction(tempArrToSend)
+                setMultipleCostingDetails([...arr])
+                dispatch(setCostingViewData([...arr]))
                 setaddComparisonToggle(true)
+                setloader(false)
             }
-        },
-        ))
-
-
+        }))
     }
 
 
@@ -614,7 +621,11 @@ function RfqListing(props) {
 
     }
 
-    const onRowSelect = () => {
+    const onRowSelect = (event) => {
+        if (event.node.isSelected()) {
+            const selectedRowIndex = event.node.rowIndex;
+            setSelectedRowIndex(selectedRowIndex)
+        }
         const selectedRows = gridApi?.getSelectedRows()
         let partNumber = []
 
@@ -660,10 +671,19 @@ function RfqListing(props) {
         return `${props?.data?.LastRow ? `border-color` : ''} ${props?.data?.RowMargin} colorWhite`          // ADD SCSS CLASSES FOR ROW MERGING
     }
 
+    const partNumberFormatter = (props) => {
+        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        if (props?.rowIndex === selectedRowIndex) {
+            props.node.setSelected(true)
+        }
+        return cellValue ? cellValue : ''
+    }
+
     const frameworkComponents = {
         totalValueRenderer: buttonFormatter,
         linkableFormatter: linkableFormatter,
-        dateFormatter: dateFormatter
+        dateFormatter: dateFormatter,
+        partNumberFormatter: partNumberFormatter
     }
 
     const closeSendForApproval = () => {
@@ -685,6 +705,7 @@ function RfqListing(props) {
 
     const hideSummaryHandler = () => {
         setaddComparisonToggle(false)
+        setSelectedRowIndex('')
         gridApi.deselectAll()
     }
 
@@ -761,7 +782,7 @@ function RfqListing(props) {
                                                 imagClass: 'imagClass'
                                             }}
                                             frameworkComponents={frameworkComponents}
-                                            rowSelection={'multiple'}
+                                            rowSelection={'single'}
                                             getRowStyle={getRowStyle}
                                             onRowSelected={onRowSelect}
                                             isRowSelectable={isRowSelectable}
@@ -769,7 +790,7 @@ function RfqListing(props) {
                                             onFirstDataRendered={onFirstDataRendered}
                                             enableBrowserTooltips={true}
                                         >
-                                            <AgGridColumn cellClass={cellClass} field="PartNo" tooltipField="PartNo" headerName='Part No' ></AgGridColumn>
+                                            <AgGridColumn cellClass={cellClass} field="PartNo" tooltipField="PartNo" headerName='Part No' cellRenderer={'partNumberFormatter'}></AgGridColumn>
                                             <AgGridColumn field="TechnologyName" headerName='Technology'></AgGridColumn>
                                             <AgGridColumn field="VendorName" tooltipField="VendorName" headerName='Vendor (Code)'></AgGridColumn>
                                             <AgGridColumn field="PlantName" tooltipField="PlantName" headerName='Plant (Code)'></AgGridColumn>
@@ -806,6 +827,7 @@ function RfqListing(props) {
                             isRfq={true}
                             technologyId={technologyId}
                             cancel={cancel}
+                            selectedRows={selectedRows}
                         />
                     )
                 }

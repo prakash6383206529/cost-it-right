@@ -296,7 +296,6 @@ export function getQuotationDetailsByVendor(data, callback) {
 }
 
 export function setSelectedRow(data) {
-    console.log('data: ', data);
     return (dispatch) => {
         dispatch({
             type: SELECTED_ROW_ARRAY,
@@ -317,3 +316,18 @@ export function setQuotationIdForRFQ(data) {
         });
     }
 };
+
+export function rfqSaveBestCosting(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.rfqSaveBestCosting, data, config());
+        request.then((response) => {
+            if (response.data.Result) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+            callback(error)
+        });
+    };
+}
