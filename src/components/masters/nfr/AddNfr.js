@@ -76,6 +76,8 @@ function AddNfr(props) {
     const [showPopup, setShowPopup] = useState(false)
     const [levelDetails, setLevelDetails] = useState({})
     const [sendForApprovalButtonDisable, setSendForApprovalButtonDisable] = useState(false)
+    const [popupMsg, setPopupMsg] = useState(false)
+    const [deletedId, setDeletedId] = useState('')
 
     const { register, setValue, getValues, control, formState: { errors }, } = useForm({
         mode: 'onChange',
@@ -367,6 +369,7 @@ function AddNfr(props) {
 
     const closePopUp = () => {
         setShowPopup(false)
+        setPopupMsg(false)
     }
 
     const copyCosting = (index) => { };
@@ -381,8 +384,11 @@ function AddNfr(props) {
 
         setIsVendorDisabled(false)              // enable vendor
     }
-
-    const deleteRow = (item, index) => {
+    const deleteRow = (item) => {
+        setPopupMsg(true)
+        setDeletedId(item)
+    }
+    const confirmDeleteRow = (item, index) => {
         let list = [...rowData]
         let rowtemp = list.filter(element => element?.groupName !== item?.groupName)
         setRowData(rowtemp)
@@ -390,8 +396,11 @@ function AddNfr(props) {
         resetData(true)
         setValue('GroupName', `OEQA ${shouldBeLevel}`);
         setIsOEQAAdded(false)
+        setPopupMsg(false)
     }
-
+    const onPopupConfirmDelete = () => {
+        confirmDeleteRow(deletedId);
+    }
     const saveEstimation = () => {
         let length = rowData?.length - 1
         let requestObject = {
@@ -788,6 +797,9 @@ function AddNfr(props) {
                     </Row>
 
                 </div>
+                {
+                    popupMsg && <PopupMsgWrapper isOpen={popupMsg} closePopUp={closePopUp} confirmPopup={onPopupConfirmDelete} message={`Are you sure you want to delete this group?`} />
+                }
             </div>}
 
             {
