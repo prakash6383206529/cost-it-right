@@ -141,7 +141,7 @@ function NfrSummaryDrawer(props) {
                                 <Table className='table cr-brdr-main'>
                                     <thead>
                                         <tr>
-                                            <th>{"Group Name"}</th>
+                                            {/* <th>{"Group Name"}</th> */}
                                             <th>{"Vendor"}</th>
                                             <th>{"Plant"}</th>
                                             <th>{"Costing"}</th>
