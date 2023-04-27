@@ -85,6 +85,7 @@ function ApprovalListing(props) {
   useEffect(() => {
     if (props.activeTab === "3" || isDashboard) {
       getTableData("", "", "", "", 0, defaultPageSize, true, floatingFilterData)
+      resetState()
     }
     dispatch(isResetClick(false))
     dispatch(agGridStatus("", ""))
@@ -708,6 +709,7 @@ function ApprovalListing(props) {
       costingObj.customerName = item.CustomerName
       costingObj.customerCode = item.CustomerCode
       costingObj.customer = item.Customer
+      costingObj.BasicRate = item.BasicRate
       let date = costingObj.effectiveDate
       if (costingObj.effectiveDate) {
         let variance = Number(item.OldPOPrice && item.OldPOPrice !== '-' ? item.OldPOPrice : 0) - Number(item.NetPOPrice && item.NetPOPrice !== '-' ? item.NetPOPrice : 0)
@@ -903,8 +905,9 @@ function ApprovalListing(props) {
       {
         !showApprovalSumary &&
         <> {
-          (loader) ? <LoaderCustom customClass="center-loader" /> :
-            <div className={` ${!isApproval && 'container-fluid'} approval-listing-page`} id={'approval-go-to-top'}>
+
+          <div className={` ${!isApproval && 'container-fluid'} approval-listing-page ${loader ? 'dashboard-loader' : ''}`} id={'approval-go-to-top'}>
+            {(loader) ? <LoaderCustom customClass={isDashboard ? "dashboard-loader" : "loader-center"} /> : <div>
               {!isDashboard && <ScrollToTop pointProp={"approval-go-to-top"} />}
               <form noValidate>
                 <Row className="pt-4 blue-before">
@@ -1016,7 +1019,8 @@ function ApprovalListing(props) {
                   </div>
                 </Col>
               </Row>
-            </div>
+            </div>}
+          </div>
         }</>
 
         // :

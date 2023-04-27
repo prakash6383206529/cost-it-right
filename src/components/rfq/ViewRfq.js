@@ -2,7 +2,7 @@ import React from 'react';
 import { useState, useEffect, } from 'react';
 import { useDispatch, useSelector } from 'react-redux'
 import { Row, Col, } from 'reactstrap';
-import { DRAFT, EMPTY_DATA, EMPTY_GUID, VBCTypeId, } from '../.././config/constants'
+import { EMPTY_DATA, VBCTypeId, } from '../.././config/constants'
 import NoContentFound from '.././common/NoContentFound';
 import { MESSAGES } from '../.././config/message';
 import Toaster from '.././common/Toaster';
@@ -13,7 +13,7 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '.././common/PopupMsgWrapper';
 import { PaginationWrapper } from '.././common/commonPagination'
-import { sendReminderForQuotation, getQuotationDetailsList, getMultipleCostingDetails } from './actions/rfq';
+import { sendReminderForQuotation, getQuotationDetailsList, getMultipleCostingDetails, setQuotationIdForRFQ } from './actions/rfq';
 import AddRfq from './AddRfq';
 import SendForApproval from '../costing/components/approval/SendForApproval';
 import { getSingleCostingDetails, setCostingApprovalData, setCostingViewData, storePartNumber } from '../costing/actions/Costing';
@@ -26,7 +26,7 @@ import { Link } from 'react-scroll';
 import RemarkHistoryDrawer from './RemarkHistoryDrawer';
 import DayTime from '../common/DayTimeWrapper';
 import { hyphenFormatter } from '../masters/masterUtil';
-import _ from 'lodash';
+import _, { isNumber } from 'lodash';
 import CostingDetailSimulationDrawer from '../simulation/components/CostingDetailSimulationDrawer';
 const gridOptions = {};
 
@@ -54,11 +54,7 @@ function RfqListing(props) {
     const [remarkHistoryDrawer, setRemarkHistoryDrawer] = useState(false)
     const [disableApproveRejectButton, setDisableApproveRejectButton] = useState(true)
     const [remarkRowData, setRemarkRowData] = useState([])
-    const [comparisonToggle, setComparisonToggle] = useState(false)
-    const [gridLoader, setGridLoader] = useState(false)
-    const [rejectDrawerData, setRejectDrawerData] = useState([])
     const viewCostingData = useSelector((state) => state.costing.viewCostingDetailData)
-    const approvalData = useSelector((state) => state.rfq.selectedRowRFQ)
     const { data } = props
     const [isOpen, setIsOpen] = useState(false)
     const [isReportLoader, setIsReportLoader] = useState(false)
@@ -71,44 +67,11 @@ function RfqListing(props) {
 
     }, [])
 
-
-
-
     useEffect(() => {
-        if (comparisonToggle) {
-            let temp = []
-
-            if (selectedRows && selectedRows.length == 0) {
-                setGridLoader(true)
-            }
-            Array.isArray(viewCostingData) && viewCostingData.length > 0 && viewCostingData.map((item, index) => {
-                setGridLoader(true)
-                selectedRows?.map((ele, ind) => {
-                    if (ele.CostingNumber == item.CostingNumber) {
-                        temp.push(ele)
-                    }
-                })
-            })
-
-            setSelectedRows(temp)
-            setTimeout(() => {
-
-                setGridLoader(false)
-            }, 50);
+        if (rowData[0]?.QuotationId) {
+            dispatch(setQuotationIdForRFQ(rowData[0]?.QuotationId))
         }
-
-        setaddComparisonToggle(viewCostingData.length > 0)
-        let rejectedDataTemp = [];
-        approvalData && approvalData.map(item => {
-            if (item.ApprovalToken && item.ShowApprovalButton) {
-                rejectedDataTemp.push(item)
-            }
-        })
-        setRejectDrawerData(rejectedDataTemp)
-    }, [viewCostingData])
-
-
-
+    }, [rowData[0]?.QuotationId])
 
     useEffect(() => {
 
@@ -178,9 +141,9 @@ function RfqListing(props) {
         setaddComparisonToggle(false)
     }
 
-    //   const cancel =()=> {
+    // const cancel = () => {
     //     props.closeDrawer()
-    //   }
+    // }
     /**
     * @method editItemDetails
     * @description edit material type
@@ -511,10 +474,8 @@ function RfqListing(props) {
 
     }
 
-    const closeRemarkDrawer = () => {
-
+    const closeRemarkDrawer = (type) => {
         setRemarkHistoryDrawer(false)
-        getDataList()
     }
 
 
@@ -558,11 +519,64 @@ function RfqListing(props) {
         )
     }
 
+    // Function that takes an array of objects as an input and returns the same array with an additional object representing the "best cost"
+    const bestCostObjectFunction = (arrayList) => {
+        // Create a copy of the input array to prevent mutation
+        let finalArrayList = [...arrayList];
 
+        // Check if the input array is empty or null
+        if (!finalArrayList || finalArrayList.length === 0) {
+            // If so, return an empty array
+            return [];
+        } else {
+            // Define an array of keys to check when finding the "best cost"
+            const keysToCheck = ["netRM", "netBOP", "pCost", "oCost", "sTreatment", "nPackagingAndFreight", "totalToolCost", "nsTreamnt", "tCost", "nConvCost", "nTotalRMBOPCC", "netSurfaceTreatmentCost", "nOverheadProfit", "nPoPriceCurrency", "nPOPrice", "nPOPriceWithCurrency"];
+            // const keysToCheck = ["nPOPriceWithCurrency"];
 
+            // Create a new object to represent the "best cost" and set it to the first object in the input array
+            let minObject = { ...finalArrayList[0] };
+
+            // Loop through each object in the input array
+            for (let i = 0; i < finalArrayList?.length; i++) {
+                // Get the current object
+                let currentObject = finalArrayList[i];
+
+                // Loop through each key in the current object
+                for (let key in currentObject) {
+                    // Check if the key is in the keysToCheck array
+                    if (keysToCheck?.includes(key)) {
+                        // Check if the current value and the minimum value for this key are both numbers
+                        if (isNumber(currentObject[key]) && isNumber(minObject[key])) {
+                            // If so, check if the current value is smaller than the minimum value
+                            if (checkForNull(currentObject[key]) < checkForNull(minObject[key])) {
+                                // If so, set the current value as the minimum value
+                                minObject[key] = currentObject[key];
+                            }
+                            // If the current value is an array
+                        } else if (Array.isArray(currentObject[key])) {
+                            // Set the minimum value for this key to an empty array
+                            minObject[key] = [];
+                        }
+                    } else {
+                        // If the key is not in the keysToCheck array, set the minimum value for this key to a dash
+                        minObject[key] = "-";
+                        // delete minObject[key];
+                    }
+                }
+                // Set the attachment and bestCost properties of the minimum object
+                minObject.attachment = []
+                minObject.bestCost = true
+            }
+            // Add the minimum object to the end of the array
+            finalArrayList.push(minObject);
+        }
+
+        // Return the modified array
+        return finalArrayList;
+    }
 
     const addComparisonDrawerToggle = () => {
-        setComparisonToggle(true)
+
         let temp = []
         let tempObj = {}
 
@@ -580,9 +594,9 @@ function RfqListing(props) {
                     return null
                 })
 
-                dispatch(setCostingViewData(temp))
+                let arr = bestCostObjectFunction(temp)
+                dispatch(setCostingViewData(arr))
                 setaddComparisonToggle(true)
-                setComparisonToggle(false)
             }
         },
         ))
@@ -601,11 +615,10 @@ function RfqListing(props) {
     }
 
     const onRowSelect = () => {
-        const selectedRowss = gridApi?.getSelectedRows() ? gridApi?.getSelectedRows() : selectedRows
-        console.log('selectedRows: ', selectedRows);
+        const selectedRows = gridApi?.getSelectedRows()
         let partNumber = []
 
-        selectedRowss?.map(item => partNumber.push(item.PartNo))                 //STORE ALL PARS NUMBER
+        selectedRows?.map(item => partNumber.push(item.PartNo))                 //STORE ALL PARS NUMBER
 
         let data = partNumber.map(item => rowData.filter(el => el.PartNumber === item))             // SELECTED ALL COSTING ON THE CLICK ON PART
         let newArray = []
@@ -621,7 +634,7 @@ function RfqListing(props) {
             setAddComparisonButton(true)
         } else {
             setAddComparisonButton(false)
-            setTechnologyId(selectedRowss[0]?.TechnologyId)
+            setTechnologyId(selectedRows[0]?.TechnologyId)
         }
     }
 
@@ -632,25 +645,6 @@ function RfqListing(props) {
 
     const isRowSelectable = rowNode => rowNode.data ? rowNode?.data?.ShowCheckBox : false;
 
-    // const checkBoxRenderer = (props) => {
-    //     console.log('props: ', props);
-    //     let selectedRowForPagination = selectedRows
-    //     if (!props.value) {
-    //         return false
-    //     }
-    //     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-    //     if (selectedRowForPagination?.length > 0) {
-    //         selectedRowForPagination.map((item) => {
-    //             if (item.CostingNumber === props.node.data.CostingNumber) {
-    //                 props.node.setSelected(true)
-    //             }
-    //             return null
-    //         })
-    //         return cellValue
-    //     } else {
-    //         return cellValue
-    //     }
-    // }
 
     const defaultColDef = {
         resizable: true,
@@ -669,8 +663,7 @@ function RfqListing(props) {
     const frameworkComponents = {
         totalValueRenderer: buttonFormatter,
         linkableFormatter: linkableFormatter,
-        dateFormatter: dateFormatter,
-        // checkBoxRenderer: checkBoxRenderer
+        dateFormatter: dateFormatter
     }
 
     const closeSendForApproval = () => {
@@ -690,6 +683,11 @@ function RfqListing(props) {
         }
     };
 
+    const hideSummaryHandler = () => {
+        setaddComparisonToggle(false)
+        gridApi.deselectAll()
+    }
+
     return (
         <>
             <div className={`ag-grid-react rfq-portal ${(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) ? "" : ""} ${true ? "show-table-btn" : ""} ${false ? 'simulation-height' : props?.isMasterSummaryDrawer ? '' : 'min-height100vh'}`}>
@@ -704,7 +702,7 @@ function RfqListing(props) {
                                 <div className='d-flex  align-items-center'><div className='w-min-fit'>Raised By:</div>
                                     <input
                                         type="text"
-                                        className="form-control mx-2"
+                                        className="form-control mx-2 defualt-input-value"
                                         value={data.RaisedBy}
                                         style={{ width: (data.RaisedBy.length * 9 + 10) + 'px' }}
                                         disabled={true}
@@ -712,7 +710,7 @@ function RfqListing(props) {
                                 <div className='d-flex align-items-center pr-0'><div className='w-min-fit'>Raised On:</div>
                                     <input
                                         type="text"
-                                        className="form-control ml-2"
+                                        className="form-control ml-2 defualt-input-value"
                                         disabled={true}
                                         style={{ width: '100px' }}
                                         value={data.RaisedOn ? DayTime(data.RaisedOn).format('DD/MM/YYYY') : '-'}
@@ -778,14 +776,14 @@ function RfqListing(props) {
                                             {/* <AgGridColumn field="PartNumber" headerName="Attachment "></AgGridColumn> */}
                                             <AgGridColumn field="Remark" tooltipField="Remark" headerName='Notes' cellRenderer={hyphenFormatter}></AgGridColumn>
                                             <AgGridColumn field="VisibilityMode" headerName='Visibility Mode' cellRenderer={hyphenFormatter}></AgGridColumn>
-                                            <AgGridColumn field="VisibilityDate" headerName='Visibility Date' cellRenderer={hyphenFormatter}></AgGridColumn>
+                                            <AgGridColumn field="VisibilityDate" headerName='Visibility Date' cellRenderer={dateFormatter}></AgGridColumn>
                                             <AgGridColumn field="VisibilityDuration" headerName='Visibility Duration' cellRenderer={hyphenFormatter}></AgGridColumn>
                                             <AgGridColumn field="CostingNumber" headerName=' Costing Number' cellRenderer={hyphenFormatter}></AgGridColumn>
                                             <AgGridColumn field="CostingId" headerName='Costing Id ' hide={true}></AgGridColumn>
                                             <AgGridColumn field="NetPOPrice" headerName=" Net PO Price" cellRenderer={hyphenFormatter}></AgGridColumn>
                                             <AgGridColumn field="SubmissionDate" headerName='Submission Date' cellRenderer={dateFormatter}></AgGridColumn>
                                             <AgGridColumn field="EffectiveDate" headerName='Effective Date' cellRenderer={dateFormatter}></AgGridColumn>
-                                            {rowData[0]?.IsVisibiltyConditionMet === true && <AgGridColumn width={200} field="QuotationId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
+                                            {rowData[0]?.IsVisibiltyConditionMet === true && <AgGridColumn width={window.screen.width >= 1920 ? 280 : 220} field="QuotationId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
 
                                         </AgGridReact>
                                         {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} globalTake={10} />}
@@ -827,7 +825,7 @@ function RfqListing(props) {
                     <ApproveRejectDrawer
                         type={'Reject'}
                         isOpen={rejectDrawer}
-                        approvalData={rejectDrawerData}
+                        approvalData={selectedRows}
                         closeDrawer={closeDrawer}
                         //  tokenNo={approvalNumber}
                         anchor={'right'}
@@ -868,7 +866,10 @@ function RfqListing(props) {
                                 approvalMode={true}
                                 // isApproval={approvalData.LastCostingId !== EMPTY_GUID ? true : false}
                                 simulationMode={false}
-                                costingIdExist={true} />
+                                costingIdExist={true}
+                                bestCostObjectFunction={bestCostObjectFunction}
+                                crossButton={hideSummaryHandler}
+                            />
                         )}
                     </div>
                 }
@@ -910,6 +911,7 @@ function RfqListing(props) {
             {
                 showPopup && <PopupMsgWrapper isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${MESSAGES.RAW_MATERIAL_DETAIL_DELETE_ALERT}`} />
             }
+
         </>
     );
 }

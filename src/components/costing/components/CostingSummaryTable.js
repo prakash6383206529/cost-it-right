@@ -16,7 +16,7 @@ import SendForApproval from './approval/SendForApproval'
 import Toaster from '../../common/Toaster'
 import { checkForDecimalAndNull, checkForNull, checkPermission, formViewData, getTechnologyPermission, loggedInUserId, userDetails, allEqual, getConfigurationKey, getCurrencySymbol, highlightCostingSummaryValue, checkVendorPlantConfigurable, userTechnologyLevelDetails } from '../../../helper'
 import Attachament from './Drawers/Attachament'
-import { BOPDOMESTIC, BOPIMPORT, COSTING, DRAFT, FILE_URL, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, VARIANCE, VBC, ZBC, VIEW_COSTING_DATA, VIEW_COSTING_DATA_LOGISTICS, NCC, EMPTY_GUID, CBC, ZBCTypeId, VBCTypeId, NCCTypeId, CBCTypeId } from '../../../config/constants'
+import { BOPDOMESTIC, BOPIMPORT, COSTING, DRAFT, FILE_URL, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, VARIANCE, VBC, ZBC, VIEW_COSTING_DATA, VIEW_COSTING_DATA_LOGISTICS, NCC, EMPTY_GUID, CBC, ZBCTypeId, VBCTypeId, NCCTypeId, CBCTypeId, APPROVED } from '../../../config/constants'
 import { useHistory } from "react-router-dom";
 import WarningMessage from '../../common/WarningMessage'
 import DayTime from '../../common/DayTimeWrapper'
@@ -40,6 +40,7 @@ import { reactLocalStorage } from 'reactjs-localstorage'
 import { getUsersTechnologyLevelAPI } from '../../../actions/auth/AuthActions'
 import { costingTypeIdToApprovalTypeIdFunction } from '../../common/CommonFunctions'
 import AddNpvCost from './CostingHeadCosts/AdditionalOtherCost/AddNpvCost'
+import CrossIcon from '../../../assests/images/red-cross.png'
 
 const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
 
@@ -83,6 +84,8 @@ const CostingSummaryTable = (props) => {
   const [drawerDetailPDF, setDrawerDetailPDF] = useState(false);
   const [loader, setLoader] = useState(false);
   const [isAttachment, setAttachment] = useState(false)
+  const [viewPieChart, setViewPieChart] = useState(null)
+  const [pieChartColor, setPieChartColor] = useState([])
   /*CONSTANT FOR  CREATING AND EDITING COSTING*/
   const [partInfoStepTwo, setPartInfo] = useState({});
   const [index, setIndex] = useState('')
@@ -176,64 +179,82 @@ const CostingSummaryTable = (props) => {
 
   }, [viewCostingData])
 
-  const viewPieData = debounce((index) => {
+  const viewPieData = (index) => {
+    setViewPieChart(index)
     let temp = []
     let tempObj = viewCostingData[index]
-    temp = [checkForDecimalAndNull(tempObj.netRM, initialConfiguration.NoOfDecimalForPrice),
-    checkForDecimalAndNull(tempObj.netBOP, initialConfiguration.NoOfDecimalForPrice),
-    checkForDecimalAndNull(tempObj.nConvCost, initialConfiguration.NoOfDecimalForPrice),
-    checkForDecimalAndNull(tempObj.nsTreamnt, initialConfiguration.NoOfDecimalForPrice),
-    checkForDecimalAndNull(tempObj.nOverheadProfit, initialConfiguration.NoOfDecimalForPrice),
-    checkForDecimalAndNull(tempObj.nPackagingAndFreight, initialConfiguration.NoOfDecimalForPrice),
-    checkForDecimalAndNull(tempObj.totalToolCost, initialConfiguration.NoOfDecimalForPrice),
-    checkForDecimalAndNull(tempObj.otherDiscountCost, initialConfiguration.NoOfDecimalForPrice),
-    checkForDecimalAndNull(tempObj.anyOtherCost, initialConfiguration.NoOfDecimalForPrice),
-    ]
-    setPieChartDataArray(temp)
-    let labelArray = []
     let labels = ['RM', 'BOP', 'CC', 'ST', 'O&P', 'P&F', 'TC', 'HUNDI/DIS', 'ANY OTHER COST']
-    temp && temp.map((item, index) => {
+    let dataArray = [];
+    let tempColorArray = [];
+
+    temp = [
+      checkForDecimalAndNull(tempObj.netRM, initialConfiguration.NoOfDecimalForPrice),
+      checkForDecimalAndNull(tempObj.netBOP, initialConfiguration.NoOfDecimalForPrice),
+      checkForDecimalAndNull(tempObj.nConvCost, initialConfiguration.NoOfDecimalForPrice),
+      checkForDecimalAndNull(tempObj.nsTreamnt, initialConfiguration.NoOfDecimalForPrice),
+      checkForDecimalAndNull(tempObj.nOverheadProfit, initialConfiguration.NoOfDecimalForPrice),
+      checkForDecimalAndNull(tempObj.nPackagingAndFreight, initialConfiguration.NoOfDecimalForPrice),
+      checkForDecimalAndNull(tempObj.totalToolCost, initialConfiguration.NoOfDecimalForPrice),
+      checkForDecimalAndNull(tempObj.otherDiscountCost, initialConfiguration.NoOfDecimalForPrice),
+      checkForDecimalAndNull(tempObj.anyOtherCost, initialConfiguration.NoOfDecimalForPrice),
+    ]
+
+    let labelArray = temp.reduce((acc, item, index) => {
       if (item !== 0) {
-        labelArray.push(labels[index])
+        acc.push(labels[index]);
       }
-    })
-    let dataArray = []
-    labelArray && labelArray.map(item => {
+      return acc;
+    }, []);
+
+    labelArray.forEach(item => {
       switch (item) {
         case 'RM':
           dataArray.push(checkForDecimalAndNull(tempObj.netRM, initialConfiguration.NoOfDecimalForPrice))
+          tempColorArray.push(colorArray[0])
           break;
         case 'BOP':
           dataArray.push(checkForDecimalAndNull(tempObj.netBOP, initialConfiguration.NoOfDecimalForPrice))
+          tempColorArray.push(colorArray[1])
           break;
         case 'CC':
           dataArray.push(checkForDecimalAndNull(tempObj.nConvCost, initialConfiguration.NoOfDecimalForPrice))
+          tempColorArray.push(colorArray[2])
           break;
         case 'ST':
           dataArray.push(checkForDecimalAndNull(tempObj.nsTreamnt, initialConfiguration.NoOfDecimalForPrice))
+          tempColorArray.push(colorArray[3])
           break;
         case 'O&P':
           dataArray.push(checkForDecimalAndNull(tempObj.nOverheadProfit, initialConfiguration.NoOfDecimalForPrice))
+          tempColorArray.push(colorArray[4])
           break;
         case 'P&F':
           dataArray.push(checkForDecimalAndNull(tempObj.nPackagingAndFreight, initialConfiguration.NoOfDecimalForPrice))
+          tempColorArray.push(colorArray[5])
           break;
         case 'TC':
           dataArray.push(checkForDecimalAndNull(tempObj.totalToolCost, initialConfiguration.NoOfDecimalForPrice))
+          tempColorArray.push(colorArray[6])
           break;
-        case 'OTHER DIS':
+        case 'HUNDI/DIS':
           dataArray.push(checkForDecimalAndNull(tempObj.otherDiscountCost, initialConfiguration.NoOfDecimalForPrice))
+          tempColorArray.push(colorArray[7])
           break;
         case 'ANY OTHER COST':
           dataArray.push(checkForDecimalAndNull(tempObj.anyOtherCost, initialConfiguration.NoOfDecimalForPrice))
+          tempColorArray.push(colorArray[8])
           break;
         default:
           break;
       }
     })
+
     setPieChartLabel(labelArray)
     setPieChartDataArray(dataArray);
-  }, [400])
+    setPieChartColor(tempColorArray)
+  }
+
+
   useEffect(() => {
     applyPermission(topAndLeftMenuData, selectedTechnology)
   }, [topAndLeftMenuData, selectedTechnology])
@@ -464,6 +485,7 @@ const CostingSummaryTable = (props) => {
     setIsEditFlag(true)
     setaddComparisonToggle(true)
     setEditObject(editObject)
+    setViewPieChart(null)
   }
 
   /**
@@ -1105,7 +1127,7 @@ const CostingSummaryTable = (props) => {
       {
         label: '',
         data: pieChartDataArray,
-        backgroundColor: colorArray,
+        backgroundColor: pieChartColor,
         borderWidth: 1,
       },
     ],
@@ -1145,11 +1167,12 @@ const CostingSummaryTable = (props) => {
 
               {
                 DownloadAccessibility ? <LoaderCustom customClass="pdf-loader" /> :
-                  <>
+                  <div className='d-flex justify-content-end'>
                     <ExcelFile filename={'Costing Summary'} fileExtension={'.xls'} element={<button type="button" className={'user-btn excel-btn mr5 mb-2'} title="Excel"><img src={ExcelIcon} alt="download" /></button>}>
                       {onBtExport()}
                     </ExcelFile>
-                  </>
+                 {props.isRfqCosting && <button onClick={()=>props?.crossButton()} title='Discard Summary' className='CancelIcon rfq-summary-discard'></button>}
+                  </div>
               }
               {!simulationMode && !props.isRfqCosting &&
                 <ReactToPrint
@@ -1288,7 +1311,16 @@ const CostingSummaryTable = (props) => {
                                         </button>
                                       }
                                     </span>
-                                    <span className="d-flex justify-content-between align-items-center pie-chart-container"><span>{checkForDecimalAndNull(data?.poPrice, initialConfiguration.NoOfDecimalForPrice)} ({(data?.effectiveDate && data?.effectiveDate !== '') ? DayTime(data?.effectiveDate).format('DD-MM-YYYY') : "-"})</span>{(!pdfHead && !drawerDetailPDF && data.totalCost !== 0 && !simulationDrawer) && <span><button type='button' className='pie-chart' onMouseOver={() => viewPieData(index)}><span className='tooltiptext graph-tooltip'><Costratiograph data={pieChartData} options={pieChartOption} /></span></button></span>}</span>
+                                  {(!data?.bestCost === true) &&   <span className="d-flex justify-content-between align-items-center pie-chart-container"><span>{(data?.bestCost === true) ? ' ' : checkForDecimalAndNull(data?.poPrice, initialConfiguration.NoOfDecimalForPrice)} {(data?.bestCost === true) ? ' ' : `(${(data?.effectiveDate && data?.effectiveDate !== '') ? DayTime(data?.effectiveDate).format('DD-MM-YYYY') : "-"})`}</span>{(!pdfHead && !drawerDetailPDF && data.totalCost !== 0 && !simulationDrawer) &&
+                                      <span className={`pie-chart-wrapper ${props.isRfqCosting ? 'mt-1': ''}`}>
+                                        <button type='button' className='pie-chart' onClick={() => viewPieData(index)}></button>
+                                        {viewPieChart === index &&
+                                          <span className='pie-chart-inner'> <Costratiograph data={pieChartData} options={pieChartOption} />
+                                            <button type='button' onClick={() => setViewPieChart(null)}><img src={CrossIcon} alt='Discard' />
+                                            </button>
+                                          </span>}
+                                      </span>}
+                                    </span>}
                                     {/* USE PART NUMBER KEY HERE */}
                                     <span className="d-block">{data?.partNumber}</span>
                                     <span className="d-block">{data?.partName}</span>
@@ -2019,7 +2051,7 @@ const CostingSummaryTable = (props) => {
                           <th>Net PO Price ({getConfigurationKey().BaseCurrency}){simulationDrawer && '(Old)'}</th>
                           {viewCostingData &&
                             viewCostingData?.map((data, index) => {
-                              return <td>
+                              return <td className={props?.isRfqCosting && data.status === APPROVED ? 'finalize-cost' : ''}>
                                 {data?.CostingHeading === VARIANCE && (isApproval ? viewCostingData?.length > 0 && viewCostingData[0]?.nPOPrice > viewCostingData[1]?.nPOPrice ? <span className='positive-sign'>+</span> : '' : '')}
                                 <span title={data?.nPOPrice}><span className='currency-symbol'>{getCurrencySymbol(getConfigurationKey().BaseCurrency)}</span>{checkForDecimalAndNull(data?.nPOPrice, initialConfiguration.NoOfDecimalForPrice)}</span>
                                 {
@@ -2367,6 +2399,9 @@ const CostingSummaryTable = (props) => {
           npvIndex={npvIndex}
           closeDrawer={closeNpvDrawer}
           anchor={'right'}
+          partId={viewCostingData[npvIndex]?.partId}
+          vendorId={viewCostingData[npvIndex]?.vendorId}
+          isRfqCosting={props?.isRfqCosting}
         />
       }
     </Fragment >

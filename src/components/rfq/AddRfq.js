@@ -556,7 +556,7 @@ function AddRfq(props) {
             return null
         })
 
-        data.PartIdList = temp
+        data.PartIdList = _.uniq(temp)
         data.PlantId = getValues('plant')?.value
         data.VendorId = getValues('vendor')?.value
 
@@ -1455,12 +1455,12 @@ function AddRfq(props) {
                                                 {"Cancel"}
                                             </button>
 
-                                            <button type="button" className="submit-button save-btn mr-2" value="save"
+                                            {!dataProps?.rowData?.IsSent && <button type="button" className="submit-button save-btn mr-2" value="save"
                                                 onClick={(data, e) => handleSubmitClick(data, e, false)}
                                                 disabled={isViewFlag}>
                                                 <div className={"save-icon"}></div>
                                                 {"Save"}
-                                            </button>
+                                            </button>}
 
                                             <button type="button" className="submit-button save-btn" value="send"
                                                 onClick={(data, e) => handleSubmitClick(data, e, true)}

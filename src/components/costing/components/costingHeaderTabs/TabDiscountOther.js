@@ -32,6 +32,7 @@ import TooltipCustom from '../../../common/Tooltip';
 import { number, percentageLimitValidation, checkWhiteSpaces, decimalNumberLimit6, hashValidation, maxLength20 } from "../../../../helper/validation";
 import ConditionCosting from '../CostingHeadCosts/AdditionalOtherCost/ConditionCosting';
 import AddConditionCosting from '../CostingHeadCosts/AdditionalOtherCost/AddConditionCosting';
+import { reactLocalStorage } from 'reactjs-localstorage';
 
 let counter = 0;
 function TabDiscountOther(props) {
@@ -119,11 +120,15 @@ function TabDiscountOther(props) {
 
   useEffect(() => {
     dispatch(getCurrencySelectList(() => { }))
+    return () => {
+      reactLocalStorage.setObject('isFromDiscountObj', false)
+      setNfrListing(false)
+    }
   }, [])
 
 
   useEffect(() => {
-    if (RMCCTabData && RMCCTabData[0]?.CostingId && true) {
+    if (RMCCTabData && RMCCTabData[0]?.CostingId) {
       let npvSum = 0
       dispatch(getNpvDetails(RMCCTabData && RMCCTabData[0]?.CostingId, (res) => {
         if (res?.data?.DataList) {
@@ -764,122 +769,120 @@ function TabDiscountOther(props) {
   * @description Used to Submit the form
   */
   const onSubmit = debounce((values, val, gotoNextValue) => {
-    if (props?.isNFR && gotoNextValue) {
-      setNfrListing(true)
-    } else {
-      if (errorCheckObject(ErrorObjDiscount)) return false;
+    if (errorCheckObject(ErrorObjDiscount)) return false;
 
-      const tabData = RMCCTabData[0]
-      const surfaceTabData = SurfaceTabData[0]
-      const overHeadAndProfitTabData = OverheadProfitTabData[0]
-      const discountAndOtherTabData = DiscountCostData
-      const packageAndFreightTabData = PackageAndFreightTabData && PackageAndFreightTabData[0]
-      const toolTabData = ToolTabData && ToolTabData[0]
+    const tabData = RMCCTabData[0]
+    const surfaceTabData = SurfaceTabData[0]
+    const overHeadAndProfitTabData = OverheadProfitTabData[0]
+    const discountAndOtherTabData = DiscountCostData
+    const packageAndFreightTabData = PackageAndFreightTabData && PackageAndFreightTabData[0]
+    const toolTabData = ToolTabData && ToolTabData[0]
 
-      let updatedFiles = files.map((file) => {
-        return { ...file, ContextId: costData.CostingId }
-      })
-      let data = {
-        "CostingId": costData.CostingId,
+    let updatedFiles = files.map((file) => {
+      return { ...file, ContextId: costData.CostingId }
+    })
+    let data = {
+      "CostingId": costData.CostingId,
+      "PartId": costData.PartId,
+      "PartNumber": costData.PartNumber,
+      "NetPOPrice": netPOPrice,
+      "TotalCost": netPOPrice,
+      "LoggedInUserId": loggedInUserId(),
+      "EffectiveDate": CostingEffectiveDate,
+      "CostingPartDetails": {
+        "BasicRate": netPOPrice - (totalNpvCost + totalConditionCost),
+        "CostingDetailId": costData.CostingId,
         "PartId": costData.PartId,
+        "PartTypeId": "00000000-0000-0000-0000-000000000000",
+        "Type": costData.VendorType,
         "PartNumber": costData.PartNumber,
-        "NetPOPrice": netPOPrice,
+        "PartName": costData.PartName,
+        "Quantity": 1,
+        "IsOpen": true,
+        "IsPrimary": true,
+        "Sequence": '0',
+        "NetDiscountsCost": DiscountCostData.HundiOrDiscountValue,
         "TotalCost": netPOPrice,
-        "LoggedInUserId": loggedInUserId(),
-        "EffectiveDate": CostingEffectiveDate,
-        "CostingPartDetails": {
+        "NetOtherCost": DiscountCostData.AnyOtherCost,
+        "OtherCostDetails": {
+          "OtherCostDetailId": '',
+          "HundiOrDiscountPercentage": getValues('HundiOrDiscountPercentage'),
+          "HundiOrDiscountValue": DiscountCostData.HundiOrDiscountValue,
+          "AnyOtherCost": DiscountCostData.AnyOtherCost,
+          "TotalOtherCost": DiscountCostData.AnyOtherCost,
+          "TotalDiscount": DiscountCostData.HundiOrDiscountValue,
+          "IsChangeCurrency": IsCurrencyChange,
           "BasicRate": netPOPrice - (totalNpvCost + totalConditionCost),
-          "CostingDetailId": costData.CostingId,
-          "PartId": costData.PartId,
-          "PartTypeId": "00000000-0000-0000-0000-000000000000",
-          "Type": costData.VendorType,
-          "PartNumber": costData.PartNumber,
-          "PartName": costData.PartName,
-          "Quantity": 1,
-          "IsOpen": true,
-          "IsPrimary": true,
-          "Sequence": '0',
-          "NetDiscountsCost": DiscountCostData.HundiOrDiscountValue,
-          "TotalCost": netPOPrice,
-          "NetOtherCost": DiscountCostData.AnyOtherCost,
-          "OtherCostDetails": {
-            "OtherCostDetailId": '',
-            "HundiOrDiscountPercentage": getValues('HundiOrDiscountPercentage'),
-            "HundiOrDiscountValue": DiscountCostData.HundiOrDiscountValue,
-            "AnyOtherCost": DiscountCostData.AnyOtherCost,
-            "TotalOtherCost": DiscountCostData.AnyOtherCost,
-            "TotalDiscount": DiscountCostData.HundiOrDiscountValue,
-            "IsChangeCurrency": IsCurrencyChange,
-            "BasicRate": netPOPrice - (totalNpvCost + totalConditionCost),
-            "NetPOPriceINR": netPOPrice,
-            "NetPOPriceOtherCurrency": netPoPriceCurrencyState,
-            "CurrencyId": currency.value,
-            "Currency": currency.label,
-            "Remark": getValues('Remarks'),
-            "OtherCostDescription": getValues('OtherCostDescription'),
-            "CurrencyExchangeRate": CurrencyExchangeRate,
-            "EffectiveDate": effectiveDate,
-            "OtherCostPercentage": getValues('PercentageOtherCost'),
-            "PercentageOtherCost": getValues('PercentageOtherCost'),
-            "OtherCostType": otherCostType.value,
-            "SANumber": getValues('SANumber'),
-            "LineNumber": getValues('LineNumber'),
-            "DiscountCostType": hundiscountType.value,
-            "OtherCostApplicabilityId": otherCostApplicability.value,
-            "OtherCostApplicability": otherCostApplicability.label,
-            "DiscountApplicbilityId": discountCostApplicability.value,
-            "DiscountApplicability": discountCostApplicability.label
-          }
-        },
-        "Attachements": updatedFiles
-      }
-      if (costData.IsAssemblyPart === true && !partType) {
-        let assemblyRequestedData = createToprowObjAndSave(tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, netPOPrice, getAssemBOPCharge, 6, CostingEffectiveDate)
-        if (!CostingViewMode) {
-          dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData, res => { }))
-          dispatch(isDiscountDataChange(false))
+          "NetPOPriceINR": netPOPrice,
+          "NetPOPriceOtherCurrency": netPoPriceCurrencyState,
+          "CurrencyId": currency.value,
+          "Currency": currency.label,
+          "Remark": getValues('Remarks'),
+          "OtherCostDescription": getValues('OtherCostDescription'),
+          "CurrencyExchangeRate": CurrencyExchangeRate,
+          "EffectiveDate": effectiveDate,
+          "OtherCostPercentage": getValues('PercentageOtherCost'),
+          "PercentageOtherCost": getValues('PercentageOtherCost'),
+          "OtherCostType": otherCostType.value,
+          "DiscountCostType": hundiscountType.value,
+          "OtherCostApplicabilityId": otherCostApplicability.value,
+          "OtherCostApplicability": otherCostApplicability.label,
+          "DiscountApplicbilityId": discountCostApplicability.value,
+          "DiscountApplicability": discountCostApplicability.label
         }
-      }
-
-      if (!CostingViewMode) {
-        dispatch(saveDiscountOtherCostTab(data, res => {
-          if (res.data.Result) {
-            Toaster.success(MESSAGES.OTHER_DISCOUNT_COSTING_SAVE_SUCCESS);
-            dispatch(setComponentDiscountOtherItemData({}, () => { }))
-            dispatch(saveAssemblyBOPHandlingCharge({}, () => { }))
-            dispatch(isDiscountDataChange(false))
-            if (gotoNextValue) {
-              props.toggle('2')
-              history.push('/costing-summary')
-            }
-          }
-        }))
-      }
-
-      setTimeout(() => {
-        if (partType) {
-
-          let tempsubAssemblyTechnologyArray = subAssemblyTechnologyArray[0]
-          tempsubAssemblyTechnologyArray.CostingPartDetails.NetOtherCost = DiscountCostData.AnyOtherCost
-          tempsubAssemblyTechnologyArray.CostingPartDetails.NetDiscounts = DiscountCostData.HundiOrDiscountValue
-
-          let totalCost = (checkForNull(tempsubAssemblyTechnologyArray?.CostingPartDetails?.TotalCalculatedRMBOPCCCost) +
-            checkForNull(surfaceTabData?.CostingPartDetails?.NetSurfaceTreatmentCost) +
-            checkForNull(PackageAndFreightTabData[0]?.CostingPartDetails?.NetFreightPackagingCost) +
-            checkForNull(ToolTabData && ToolTabData[0]?.CostingPartDetails?.TotalToolCost) +
-            checkForNull(overHeadAndProfitTabData?.CostingPartDetails?.NetOverheadAndProfitCost) +
-            checkForNull(DiscountCostData?.AnyOtherCost)) -
-            checkForNull(DiscountCostData?.HundiOrDiscountValue)
-
-          let request = formatMultiTechnologyUpdate(tempsubAssemblyTechnologyArray, totalCost, surfaceTabData, overHeadAndProfitTabData, packageAndFreightTabData, toolTabData, DiscountCostData, CostingEffectiveDate)
-          dispatch(updateMultiTechnologyTopAndWorkingRowCalculation(request, res => { }))
-          dispatch(gridDataAdded(true))
-          dispatch(isDiscountDataChange(false))
-          dispatch(setComponentDiscountOtherItemData({}, () => { }))
-
-        }
-      }, 500);
+      },
+      "Attachements": updatedFiles
     }
+    if (costData.IsAssemblyPart === true && !partType) {
+      let assemblyRequestedData = createToprowObjAndSave(tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, netPOPrice, getAssemBOPCharge, 6, CostingEffectiveDate)
+      if (!CostingViewMode) {
+        dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData, res => { }))
+        dispatch(isDiscountDataChange(false))
+      }
+    }
+
+    if (!CostingViewMode) {
+      dispatch(saveDiscountOtherCostTab(data, res => {
+        if (res.data.Result) {
+          Toaster.success(MESSAGES.OTHER_DISCOUNT_COSTING_SAVE_SUCCESS);
+          dispatch(setComponentDiscountOtherItemData({}, () => { }))
+          dispatch(saveAssemblyBOPHandlingCharge({}, () => { }))
+          dispatch(isDiscountDataChange(false))
+          if (gotoNextValue && !props?.isNFR) {
+            props.toggle('2')
+            history.push('/costing-summary')
+          }
+          if (props?.isNFR && gotoNextValue) {
+            reactLocalStorage.setObject('isFromDiscountObj', true)
+            setNfrListing(true)
+          }
+        }
+      }))
+    }
+
+    setTimeout(() => {
+      if (partType) {
+
+        let tempsubAssemblyTechnologyArray = subAssemblyTechnologyArray[0]
+        tempsubAssemblyTechnologyArray.CostingPartDetails.NetOtherCost = DiscountCostData.AnyOtherCost
+        tempsubAssemblyTechnologyArray.CostingPartDetails.NetDiscounts = DiscountCostData.HundiOrDiscountValue
+
+        let totalCost = (checkForNull(tempsubAssemblyTechnologyArray?.CostingPartDetails?.TotalCalculatedRMBOPCCCost) +
+          checkForNull(surfaceTabData?.CostingPartDetails?.NetSurfaceTreatmentCost) +
+          checkForNull(PackageAndFreightTabData[0]?.CostingPartDetails?.NetFreightPackagingCost) +
+          checkForNull(ToolTabData && ToolTabData[0]?.CostingPartDetails?.TotalToolCost) +
+          checkForNull(overHeadAndProfitTabData?.CostingPartDetails?.NetOverheadAndProfitCost) +
+          checkForNull(DiscountCostData?.AnyOtherCost)) -
+          checkForNull(DiscountCostData?.HundiOrDiscountValue)
+
+        let request = formatMultiTechnologyUpdate(tempsubAssemblyTechnologyArray, totalCost, surfaceTabData, overHeadAndProfitTabData, packageAndFreightTabData, toolTabData, DiscountCostData, CostingEffectiveDate)
+        dispatch(updateMultiTechnologyTopAndWorkingRowCalculation(request, res => { }))
+        dispatch(gridDataAdded(true))
+        dispatch(isDiscountDataChange(false))
+        dispatch(setComponentDiscountOtherItemData({}, () => { }))
+
+      }
+    }, 500);
 
   }, 500)
 
@@ -1009,7 +1012,6 @@ function TabDiscountOther(props) {
       to={{
         pathname: "/nfr",
         state: {
-          isFromDiscount: true
         }
 
       }}
@@ -1580,4 +1582,4 @@ function TabDiscountOther(props) {
   );
 };
 
-export default React.memo(TabDiscountOther);
+export default React.memo(TabDiscountOther); 

@@ -54,6 +54,7 @@ function NfrPartsListing(props) {
 
     useEffect(() => {
         getDataList()
+        props?.changeIsFromDiscount(false)
     }, [])
 
     /**
@@ -97,9 +98,13 @@ function NfrPartsListing(props) {
         setEditPart(true)
         setNFRIdsList({ NfrMasterId: rowData?.NfrMasterId, NfrPartWiseDetailId: rowData?.NfrPartWiseDetailId })
         let obj = {
-            ...nfrDetailsForDiscount, objectFordisc: {
+            ...nfrDetailsForDiscount,
+            objectFordisc: {
                 NfrMasterId: rowData?.NfrMasterId, NfrPartWiseDetailId: rowData?.NfrPartWiseDetailId,
-            }, objForpart: { NfrPartStatusId: rowData?.NfrPartStatusId, PartNumber: rowData?.PartNumber, PartName: rowData?.PartName }
+            },
+            objForpart: {
+                NfrPartStatusId: rowData?.NfrPartStatusId, PartNumber: rowData?.PartNumber, PartName: rowData?.PartName
+            }
         }
         dispatch(nfrDetailsForDiscountAction(obj))
     }
@@ -245,14 +250,16 @@ function NfrPartsListing(props) {
         dateFormater: dateFormater
     }
 
-
+    const resetState = () => {
+        gridOptions?.columnApi?.resetColumnState(null);
+        window.screen.width >= 1920 && gridApi.sizeColumnsToFit();
+    }
     return (
         <>
             {!addRfq && !editPart &&
                 <div className={`ag-grid-react ${(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) ? "" : ""} ${true ? "show-table-btn" : ""} ${false ? 'simulation-height' : props?.isMasterSummaryDrawer ? '' : 'min-height100vh'}`}>
                     {(loader ? <LoaderCustom customClass="simulation-Loader" /> : !viewRfq && (
                         <>
-                            <h1 className='mb-0'>View Parts</h1>
                             <Row className={`filter-row-large ${props?.isSimulation ? 'zindex-0 ' : ''}`}>
                                 <Col md="3" lg="3" className='mb-2'>
                                     <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
@@ -263,19 +270,19 @@ function NfrPartsListing(props) {
                                         (!props.isMasterSummaryDrawer) &&
                                         <>
 
-                                            {/* <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}>
-                                            <div className="refresh mr-0"></div>
-                                        </button> */}
+
                                             <div className={`d-flex align-items-center simulation-label-container mr-2`}>
                                                 <div className='d-flex pl-3'>
                                                     <label>NFR ID: </label>
-                                                    <p className='technology ml-1' >{props.nfrId ? props.nfrId : ''}</p>
+                                                    <p className='technology ml-1 nfr-id-wrapper' >{props.nfrId ? props.nfrId : ''}</p>
                                                 </div>
                                             </div>
                                             <button type="button" className={"apply ml-1"} onClick={props?.closeDrawer}> <div className={'back-icon'}></div>Back</button>
-
                                         </>
                                     }
+                                            <button type="button" className= "ml-1 user-btn" title="Reset Grid" onClick={() => resetState()}>
+                                                <div className="refresh mr-0"></div>
+                                            </button>
                                 </Col>
 
                             </Row>
@@ -343,7 +350,7 @@ function NfrPartsListing(props) {
                     />
                 )
             }
-            {editPart && <AddNfr showAddNfr={editPart} nfrData={estimationData} close={close} nfrIdsList={nfrIdsList} isViewEstimation={isViewMode} />}
+            {editPart && <AddNfr showAddNfr={editPart} nfrData={estimationData} close={close} nfrIdsList={nfrIdsList} isViewEstimation={isViewMode} changeIsFromDiscount={props?.changeIsFromDiscount} />}
 
         </>
     );
