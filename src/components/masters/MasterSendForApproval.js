@@ -435,7 +435,6 @@ function MasterSendForApproval(props) {
                                                             showMonthDropdown
                                                             showYearDropdown
                                                             dateFormat="dd/MM/yyyy"
-                                                            dropdownMode="select"
                                                             placeholderText="-"
                                                             className="withBorder"
                                                             autoComplete={"off"}
@@ -542,7 +541,6 @@ function MasterSendForApproval(props) {
                                                             showMonthDropdown
                                                             showYearDropdown
                                                             dateFormat="dd/MM/yyyy"
-                                                            dropdownMode="select"
                                                             placeholderText="-"
                                                             className="withBorder"
                                                             autoComplete={"off"}
@@ -644,7 +642,6 @@ function MasterSendForApproval(props) {
                                                             showMonthDropdown
                                                             showYearDropdown
                                                             dateFormat="dd/MM/yyyy"
-                                                            dropdownMode="select"
                                                             placeholderText="-"
                                                             className="withBorder"
                                                             autoComplete={"off"}
@@ -688,7 +685,6 @@ function MasterSendForApproval(props) {
                                                             showMonthDropdown
                                                             showYearDropdown
                                                             dateFormat="dd/MM/yyyy"
-                                                            dropdownMode="select"
                                                             placeholderText="-"
                                                             className="withBorder"
                                                             autoComplete={"off"}

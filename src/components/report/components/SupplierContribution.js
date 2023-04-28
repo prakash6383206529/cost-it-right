@@ -385,7 +385,6 @@ function SupplierContributionReport(props) {
                                     showMonthDropdown
                                     showYearDropdown
                                     dateFormat="DD/MM/YYYY"
-                                    dropdownMode="select"
                                     maxDate={maxDate}
                                     placeholder="Select date"
                                     customClassName="withBorder"
@@ -415,7 +414,6 @@ function SupplierContributionReport(props) {
                                     showYearDropdown
                                     dateFormat="DD/MM/YYYY"
                                     minDate={minDate}
-                                    dropdownMode="select"
                                     placeholder="Select date"
                                     customClassName="withBorder"
                                     className="withBorder"
