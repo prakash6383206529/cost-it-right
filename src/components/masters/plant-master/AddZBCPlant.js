@@ -219,7 +219,8 @@ class AddZBCPlant extends Component {
     this.toggleDrawer('', type)
   }
   cancelHandler = () => {
-    this.setState({ showPopup: true })
+    // this.setState({ showPopup: true })
+    this.cancel('cancel')
   }
   onPopupConfirm = () => {
     this.cancel('cancel')
