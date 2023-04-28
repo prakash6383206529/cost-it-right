@@ -274,15 +274,15 @@ function NfrPartsListing(props) {
                                             <div className={`d-flex align-items-center simulation-label-container mr-2`}>
                                                 <div className='d-flex pl-3'>
                                                     <label>NFR ID: </label>
-                                                    <p className='technology ml-1 nfr-id-wrapper' >{props.nfrId ? props.nfrId : ''}</p>
+                                                    <p className='technology ml-1 nfr-id-wrapper' >{rowData && rowData[0]?.NfrNumber ? rowData[0]?.NfrNumber : ''}</p>
                                                 </div>
                                             </div>
                                             <button type="button" className={"apply ml-1"} onClick={props?.closeDrawer}> <div className={'back-icon'}></div>Back</button>
                                         </>
                                     }
-                                            <button type="button" className= "ml-1 user-btn" title="Reset Grid" onClick={() => resetState()}>
-                                                <div className="refresh mr-0"></div>
-                                            </button>
+                                    <button type="button" className="ml-1 user-btn" title="Reset Grid" onClick={() => resetState()}>
+                                        <div className="refresh mr-0"></div>
+                                    </button>
                                 </Col>
 
                             </Row>
@@ -350,7 +350,7 @@ function NfrPartsListing(props) {
                     />
                 )
             }
-            {editPart && <AddNfr showAddNfr={editPart} nfrData={estimationData} close={close} nfrIdsList={nfrIdsList} isViewEstimation={isViewMode} changeIsFromDiscount={props?.changeIsFromDiscount} />}
+            {editPart && <AddNfr showAddNfr={editPart} nfrData={estimationData} close={close} nfrIdsList={nfrIdsList} isViewEstimation={isViewMode} changeIsFromDiscount={props?.changeIsFromDiscount} NfrNumber={rowData && rowData[0]?.NfrNumber} />}
 
         </>
     );
