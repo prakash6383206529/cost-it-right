@@ -130,42 +130,45 @@ function TabDiscountOther(props) {
   useEffect(() => {
     if (RMCCTabData && RMCCTabData[0]?.CostingId) {
       let npvSum = 0
-      dispatch(getNpvDetails(RMCCTabData && RMCCTabData[0]?.CostingId, (res) => {
-        if (res?.data?.DataList) {
-          let Data = res?.data?.DataList
-          setNpvTableData(Data)
-          const sum = Data.reduce((acc, obj) => Number(acc) + Number(obj.NpvCost), 0);
-          setTotalNpvCost(sum)
-          npvSum = sum
-          dispatch(isDiscountDataChange(true))
-          setDiscountObj({
-            ...discountObj,
-            totalNpvCost: sum
-          })
-        }
-      }))
-
-
-      dispatch(getConditionDetails(RMCCTabData && RMCCTabData[0]?.CostingId, (res) => {
-        if (res?.data?.Data) {
-          let Data = res?.data?.Data.ConditionsData
-          let temp = []
-          Data && Data.map((item) => {
-            item.condition = `${item.Description} (${item.CostingConditionNumber})`
-            temp.push(item)
-          })
-          seConditionTableData(temp)
-          const sum = Data.reduce((acc, obj) => Number(acc) + Number(obj.ConditionCost), 0);
-          setTotalConditionCost(sum)
-          setTimeout(() => {
+      if (initialConfiguration?.IsShowNpvCost) {
+        dispatch(getNpvDetails(RMCCTabData && RMCCTabData[0]?.CostingId, (res) => {
+          if (res?.data?.DataList) {
+            let Data = res?.data?.DataList
+            setNpvTableData(Data)
+            const sum = Data.reduce((acc, obj) => Number(acc) + Number(obj.NpvCost), 0);
+            setTotalNpvCost(sum)
+            npvSum = sum
             dispatch(isDiscountDataChange(true))
             setDiscountObj({
               ...discountObj,
-              totalConditionCost: Number(sum)
+              totalNpvCost: sum
             })
-          }, 1000);
-        }
-      }))
+          }
+        }))
+      }
+
+      if (initialConfiguration?.IsBasicRateAndCostingConditionVisible) {
+        dispatch(getConditionDetails(RMCCTabData && RMCCTabData[0]?.CostingId, (res) => {
+          if (res?.data?.Data) {
+            let Data = res?.data?.Data.ConditionsData
+            let temp = []
+            Data && Data.map((item) => {
+              item.condition = `${item.Description} (${item.CostingConditionNumber})`
+              temp.push(item)
+            })
+            seConditionTableData(temp)
+            const sum = Data.reduce((acc, obj) => Number(acc) + Number(obj.ConditionCost), 0);
+            setTotalConditionCost(sum)
+            setTimeout(() => {
+              dispatch(isDiscountDataChange(true))
+              setDiscountObj({
+                ...discountObj,
+                totalConditionCost: Number(sum)
+              })
+            }, 1000);
+          }
+        }))
+      }
 
     }
   }, [RMCCTabData])

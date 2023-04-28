@@ -76,6 +76,8 @@ function AddNfr(props) {
     const [showPopup, setShowPopup] = useState(false)
     const [levelDetails, setLevelDetails] = useState({})
     const [sendForApprovalButtonDisable, setSendForApprovalButtonDisable] = useState(false)
+    const [popupMsg, setPopupMsg] = useState(false)
+    const [deletedId, setDeletedId] = useState('')
 
     const { register, setValue, getValues, control, formState: { errors }, } = useForm({
         mode: 'onChange',
@@ -162,7 +164,6 @@ function AddNfr(props) {
                 obj.Mode = 'costing'
                 obj.approvalTypeId = costingTypeIdToApprovalTypeIdFunction(NFRTypeId)
                 dispatch(checkFinalUser(obj, (res) => {
-                    console.log('res: ', res);
                     if (res?.data?.Result) {
                         setSendForApprovalButtonDisable(res?.data?.Data?.IsFinalApprover)
                     }
@@ -209,10 +210,15 @@ function AddNfr(props) {
             Toaster.warning("Please select at least one vendor")
             return false
         }
+        let vendorList = vendorName && vendorName?.map((item) => {
+            item.vendorName = item?.label.split(" (")[0]
+            item.vendorCode = item?.label.split(" (")[1].slice(0, -1)
+            return item
+        })
         let list = [...rowData]
         let rowIndex = list.findIndex(element => element?.groupName === getValues('GroupName'))
         let rowtemp = list[rowIndex]
-        rowtemp.data = getValues('VendorName')
+        rowtemp.data = vendorList
         let finalList = Object.assign([...list], { [rowIndex]: rowtemp })
         setCallAPI(true)
         setRowData([...finalList]);
@@ -363,6 +369,7 @@ function AddNfr(props) {
 
     const closePopUp = () => {
         setShowPopup(false)
+        setPopupMsg(false)
     }
 
     const copyCosting = (index) => { };
@@ -377,8 +384,11 @@ function AddNfr(props) {
 
         setIsVendorDisabled(false)              // enable vendor
     }
-
-    const deleteRow = (item, index) => {
+    const deleteRow = (item) => {
+        setPopupMsg(true)
+        setDeletedId(item)
+    }
+    const confirmDeleteRow = (item, index) => {
         let list = [...rowData]
         let rowtemp = list.filter(element => element?.groupName !== item?.groupName)
         setRowData(rowtemp)
@@ -386,8 +396,11 @@ function AddNfr(props) {
         resetData(true)
         setValue('GroupName', `OEQA ${shouldBeLevel}`);
         setIsOEQAAdded(false)
+        setPopupMsg(false)
     }
-
+    const onPopupConfirmDelete = () => {
+        confirmDeleteRow(deletedId);
+    }
     const saveEstimation = () => {
         let length = rowData?.length - 1
         let requestObject = {
@@ -784,6 +797,9 @@ function AddNfr(props) {
                     </Row>
 
                 </div>
+                {
+                    popupMsg && <PopupMsgWrapper isOpen={popupMsg} closePopUp={closePopUp} confirmPopup={onPopupConfirmDelete} message={`Are you sure you want to delete this group?`} />
+                }
             </div>}
 
             {

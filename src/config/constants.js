@@ -1052,6 +1052,7 @@ export const API = {
   getQuotationDetailsList: `${BASE_URL}/rfq-quotation/get-quotation-details-list`,
   getCommunicationHistory: `${BASE_URL}/rfq-quotation/get-communication-history`,
   checkExistCosting: `${BASE_URL}/rfq-quotation/rfq-check-exist-costing`,
+  rfqSaveBestCosting: `${BASE_URL}/rfq-costing/rfq-save-best-costing`,
 
 }
 
@@ -2253,4 +2254,4 @@ export const KEYRFQ = "UAGSqTBCbZ8JqHJl"
 export const IVRFQ = "8vFNmRQEl91nOtrM"
 
 //VERSION 
-export const VERSION = "V2.1.148";
+export const VERSION = "V2.1.152";
