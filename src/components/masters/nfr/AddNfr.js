@@ -182,7 +182,7 @@ function AddNfr(props) {
             setValue('PartNo', nfrData?.PartNumber);
             setValue('PartName', nfrData?.PartName);
         }
-    }, [nfrData]);
+    }, [nfrData, props?.NfrNumber]);
 
     // Adds a new costing object to the list of existing costings.
     const addRow = () => {

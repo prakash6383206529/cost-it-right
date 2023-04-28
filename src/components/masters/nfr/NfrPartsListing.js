@@ -298,7 +298,7 @@ function NfrPartsListing(props) {
                                             <div className={`d-flex align-items-center simulation-label-container mr-2`}>
                                                 <div className='d-flex pl-3'>
                                                     <label>NFR ID: </label>
-                                                    <p className='technology ml-1 nfr-id-wrapper' >{props.nfrId ? props.nfrId : ''}</p>
+                                                    <p className='technology ml-1 nfr-id-wrapper' >{rowData && rowData[0]?.NfrNumber ? rowData[0]?.NfrNumber : ''}</p>
                                                 </div>
                                             </div>
                                             <button type="button" className={"apply ml-1"} onClick={props?.closeDrawer}> <div className={'back-icon'}></div>Back</button>
