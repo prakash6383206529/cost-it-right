@@ -958,7 +958,6 @@ function AddRfq(props) {
                                                             showYearDropdown
                                                             minDate={new Date()}
                                                             dateFormat="dd/MM/yyyy"
-                                                            dropdownMode="select"
                                                             placeholderText="Select date"
                                                             className="withBorder"
                                                             autoComplete={"off"}
@@ -1011,7 +1010,6 @@ function AddRfq(props) {
                                                             showYearDropdown
                                                             minDate={new Date()}
                                                             dateFormat="dd/MM/yyyy"
-                                                            dropdownMode="select"
                                                             placeholderText="Select date"
                                                             className="withBorder"
                                                             autoComplete={"off"}
@@ -1280,7 +1278,6 @@ function AddRfq(props) {
                                                                 minDate={new Date()}
                                                                 timeFormat='HH:mm'
                                                                 dateFormat="dd/MM/yyyy HH:mm"
-                                                                dropdownMode="select"
                                                                 placeholderText="Select"
                                                                 className="withBorder"
                                                                 autoComplete={'off'}
@@ -1301,8 +1298,7 @@ function AddRfq(props) {
                                                                 selected={time}
                                                                 showTimeInput
                                                                 timeFormat='HH:mm'
-                                                                showTimeSelectOnly
-                                                                dropdownMode="select"
+                                                                showTimeSelectOnly                                                    
                                                                 placeholderText="Select"
                                                                 onChange={handleChangeTime}
                                                                 disabledKeyboardNavigation

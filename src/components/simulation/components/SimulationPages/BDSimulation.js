@@ -500,7 +500,6 @@ function BDSimulation(props) {
                                             showYearDropdown
                                             dateFormat="dd/MM/yyyy"
                                             minDate={new Date(maxDate)}
-                                            dropdownMode="select"
                                             placeholderText="Select effective date"
                                             className="withBorder"
                                             autoComplete={"off"}
