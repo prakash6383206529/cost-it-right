@@ -110,6 +110,9 @@ export default function ApprovalReducer(state = initialState, action) {
           case tokenStatusName.PROVISIONAL:
             item.TooltipText = tokenStatus.Provisional;
             break;
+          case tokenStatusName.POUPDATED:
+            item.TooltipText = tokenStatus.POUpdated;
+            break;
 
           default:
             break;
