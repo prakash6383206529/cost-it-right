@@ -785,7 +785,6 @@ const SendForApproval = (props) => {
                                     showYearDropdown
                                     dateFormat="DD/MM/YYYY"
                                     //maxDate={new Date()}
-                                    dropdownMode="select"
                                     placeholderText="Select date"
                                     customClassName="withBorder"
                                     className="withBorder"

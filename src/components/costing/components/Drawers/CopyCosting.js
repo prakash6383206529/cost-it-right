@@ -759,7 +759,6 @@ function CopyCosting(props) {
                         dateFormat="dd/MM/yyyy"
                         //maxDate={new Date()}
                         minDate={new Date(minDate)}
-                        dropdownMode="select"
                         placeholderText="Select date"
                         className="withBorder"
                         autoComplete={"off"}
@@ -859,7 +858,7 @@ function CopyCosting(props) {
                         dateFormat="dd/MM/yyyy"
                         //maxDate={new Date()}
                         minDate={new Date(minDate)}
-                        dropdownMode="select"
+                        
                         placeholderText="Select date"
                         className="withBorder"
                         autoComplete={"off"}
@@ -888,7 +887,7 @@ function CopyCosting(props) {
                         dateFormat="DD/MM/YYYY"
                         minDate={new Date(minDate)}
                         //maxDate={new Date()}
-                        dropdownMode="select"
+
                         placeholderText="Select date"
                         customClassName="withBorder"
                         className="withBorder"
@@ -984,7 +983,6 @@ function CopyCosting(props) {
                         dateFormat="DD/MM/YYYY"
                         minDate={new Date(minDate)}
                         //maxDate={new Date()}
-                        dropdownMode="select"
                         placeholderText="Select date"
                         customClassName="withBorder"
                         className="withBorder"

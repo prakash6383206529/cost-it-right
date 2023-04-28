@@ -255,7 +255,6 @@ function ManageSOBDrawer(props) {
                       dateFormat="dd/MM/yyyy"
                       mandatory={true}
                       rules={{ required: true }}
-                      dropdownMode="select"
                       placeholderText="Select date"
                       className="withBorder"
                       autoComplete={"off"}
