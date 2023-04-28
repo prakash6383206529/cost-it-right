@@ -156,7 +156,8 @@ function ManageSOBDrawer(props) {
     props.closeDrawer('', type)
   }
   const cancelHandler = () => {
-    setShowPopup(true)
+    // setShowPopup(true)
+    cancel('cancel')
   }
   const onPopupConfirm = () => {
     cancel('cancel')
