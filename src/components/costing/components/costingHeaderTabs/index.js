@@ -371,7 +371,6 @@ function CostingHeaderTabs(props) {
                   //maxDate={new Date()}
                   // USER SHOULD NOT BE ABLE TO SELECT EFFECTIVE DATE, OF BEFORE THE PART WAS CREATED
                   minDate={costData.LastApproveEffectiveDate !== null ? (costData.PartEffectiveDate < costData.LastApproveEffectiveDate ? new Date(costData.LastApproveEffectiveDate) : new Date(costData.PartEffectiveDate)) : new Date(costData.PartEffectiveDate)}
-                  dropdownMode="select"
                   placeholderText="Select date"
                   className="withBorder"
                   autoComplete={"off"}
