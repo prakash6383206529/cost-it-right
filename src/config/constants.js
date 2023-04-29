@@ -19,6 +19,7 @@ export const config = () => {
 
 const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
 //const BASE_URL = `http://10.10.8.117/CIR/api/v1`;
+// const BASE_URL = `http://10.10.1.100:10132/api/v1`;
 //const BASE_URL = `https://apiinsightqa.unominda.com/api/v1`;
 
 //DEVELOPMENT MIL URL
@@ -1669,7 +1670,7 @@ export const ERROR = 'Error'
 export const POUPDATED = 'POUpdated'
 export const LINKED = 'Linked'
 export const REJECTED_BY_SYSTEM = 'RejectedBySystem'
-export const UNDER_APPROVAL = 'Under Approval'
+export const UNDER_APPROVAL = 'UnderApproval'
 export const CANCELLED = 'Cancelled'
 export const UNDER_REVISION = 'UnderRevision'
 export const RECEIVED = 'Received'
@@ -2155,4 +2156,4 @@ export const KEYRFQ = "UAGSqTBCbZ8JqHJl"
 export const IVRFQ = "8vFNmRQEl91nOtrM"
 
 //VERSION 
-export const VERSION = "V2.1.45.1";
+export const VERSION = "V2.1.45.5";

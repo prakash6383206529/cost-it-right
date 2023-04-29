@@ -19,6 +19,7 @@ import ViewRfq from './ViewRfq';
 import AddRfq from './AddRfq';
 import { checkPermission, userDetails } from '../../helper';
 import TooltipCustom from '../common/Tooltip';
+import DayTime from '../common/DayTimeWrapper';
 const gridOptions = {};
 
 
@@ -52,11 +53,9 @@ function RfqListing(props) {
       */
     const applyPermission = (topAndLeftMenuData) => {
         if (topAndLeftMenuData !== undefined) {
-            console.log('topAndLeftMenuData: ', topAndLeftMenuData);
             const Data = topAndLeftMenuData && topAndLeftMenuData.find(el => el.ModuleName === RFQ);
             const accessData = Data && Data.Pages.find(el => el.PageName === RFQ)
             const permmisionData = accessData && accessData.Actions && checkPermission(accessData.Actions)
-            console.log('permmisionData: ', permmisionData);
 
             if (permmisionData !== undefined) {
                 setAddAccessibility(permmisionData && permmisionData.Add ? permmisionData.Add : false)
@@ -99,7 +98,7 @@ function RfqListing(props) {
     const viewOrEditItemDetails = (Id, rowData = {}, isViewMode) => {
 
         let data = {
-            isEditFlag: true,
+            isEditFlag: !isViewMode,
             isViewFlag: isViewMode,
             rowData: rowData,
             Id: Id
@@ -157,6 +156,10 @@ function RfqListing(props) {
 
     const formToggle = () => {
         setAddRfq(true)
+        let data = {
+            isAddFlag: true,
+        }
+        setAddRfqData(data)
     }
 
     const closeDrawer = () => {
@@ -271,7 +274,10 @@ function RfqListing(props) {
         )
 
     }
-
+    const raisedOnFormatter = (props) => {
+        const cellValue = props?.value;
+        return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '-'
+    }
 
     const viewDetails = (UserId) => {
 
@@ -296,7 +302,8 @@ function RfqListing(props) {
         totalValueRenderer: buttonFormatter,
         linkableFormatter: linkableFormatter,
         attachmentFormatter: attachmentFormatter,
-        statusFormatter: statusFormatter
+        statusFormatter: statusFormatter,
+        raisedOnFormatter: raisedOnFormatter
     }
 
 
@@ -372,10 +379,10 @@ function RfqListing(props) {
                                                 <AgGridColumn field="TechnologyName" headerName='Technology'></AgGridColumn>
                                                 <AgGridColumn field="Remark" headerName='Remark'></AgGridColumn>
                                                 <AgGridColumn field="RaisedBy" headerName='Raised By'></AgGridColumn>
-                                                <AgGridColumn field="RaisedOn" headerName='Raised On'></AgGridColumn>
+                                                <AgGridColumn field="RaisedOn" headerName='Raised On' cellRenderer='raisedOnFormatter' ></AgGridColumn>
                                                 <AgGridColumn field="QuotationNumber" headerName='Attachments' cellRenderer='attachmentFormatter'></AgGridColumn>
                                                 <AgGridColumn field="Status" headerName="Status" cellClass="text-center" minWidth={150} cellRenderer="statusFormatter"></AgGridColumn>
-                                                {<AgGridColumn field="QuotationId" width={150} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
+                                                {<AgGridColumn field="QuotationId" width={160} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
 
                                             </AgGridReact>
                                             <PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} globalTake={10} />

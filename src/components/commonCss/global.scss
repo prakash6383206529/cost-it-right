@@ -1063,7 +1063,7 @@ a:hover {
 
   .ag-row,
   .ag-cell {
-    line-height: 35px;
+    line-height: 35px !important;
     height: 35px !important;
 
     @media screen and (min-width: $middleDesktop) {
@@ -2764,6 +2764,9 @@ td,
   .Draft,
   .Linked,
   .Under.Approval,
+  .UnderApproval,
+  .Under.Revision,
+  .Open,
   [class^="Pending"],
   [class^="Awaiting"],
   .Approved,
@@ -2790,11 +2793,14 @@ td,
   }
 
   [class^="Pending"],
-  .Under.Approval {
+  .Under.Revision
+   {
     background-color: #f8a000;
   }
 
-  [class^="Awaiting"] {
+  [class^="Awaiting"],
+  .Under.Approval,
+  .UnderApproval {
     background-color: #eac607;
   }
 

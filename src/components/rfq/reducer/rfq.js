@@ -17,3 +17,12 @@ export default function RFQReducer(state = initialState, action) {
             return state;
     }
 }
+
+export function setRFQBulkUpload(data) {
+    return (dispatch) => {
+        dispatch({
+            type: CHECK_RFQ_BULK_UPLOAD,
+            payload: data
+        })
+    };
+}
