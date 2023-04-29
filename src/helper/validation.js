@@ -2,6 +2,7 @@ import DayTime from '../components/common/DayTimeWrapper';
 import Toaster from '../components/common/Toaster';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import _ from 'lodash'
+import { NUMBERMAXLENGTH } from '../config/masterData';
 
 export const minLength = min => value =>
     value && value.length < min ? `Min length must be ${min}.` : undefined;
@@ -17,10 +18,14 @@ export const minValue = min => value =>
 export const maxValue = max => value =>
     value && value > max ? `Maximum no of days should be ${max}.` : undefined;
 
+export const maxPercentageValue = max => value =>
+    value && value > max ? `Percentage value should be equal to ${max}.` : undefined;
 
 export const minValue1 = minValue(1);
 export const minValueLessThan1 = minValue(0.1);
 export const maxValue366 = maxValue(366)
+export const maxPercentValue = maxPercentageValue(100)
+export const maxValue100 = maxValue(100)
 
 export const minLength1 = minLength(1);
 export const minLength2 = minLength(2);
@@ -110,6 +115,9 @@ export const required = value =>
 ((typeof value !== 'undefined' && value !== null && value !== "")
     ? undefined : 'This field is required.');
 
+export const requiredDropDown = value =>
+    ('This field is required.');
+
 export const selectRequired = value =>
 ((typeof value !== 'undefined' && value !== null && value !== "")
     ? undefined : 'This field is required.');
@@ -145,7 +153,7 @@ export const acceptAllExceptSingleSpecialCharacter = value => {
 }
 // For alphanumeric
 export const excludeOnlySpecialCharacter = value =>
-    value && /^(?=.*[@#$%^&+=]).*$/.test(value)
+    value && /^(?=.*[@#$%^&+=/`:;"'<>?/.,|~!*()]).*$/.test(value)
         ? 'This field do not accept  special character' : undefined;
 
 export const alphabetsOnly = value =>
@@ -430,5 +438,14 @@ export const NoSignMaxLengthRegex = /^\d{0,6}(\.\d{0,6})?$/i;
 
 export const NoSignNoDecimalRegex = /^\d*$/i;
 
-export const NoSignMaxLengthMessage = `Input should be numeric, and should not exceed 6 digit before and after decimal.`
+export const NoSignMaxLengthMessage = `Input should be numeric, and should not exceed ${NUMBERMAXLENGTH} digit before and after decimal.`
 export const NoSignNoDecimalMessage = `Input should be integer.`
+
+
+export const isDateFormatter = value =>
+    value && !/^[0-3]?[0-9].[0-3]?[0-9].(?:[0-9]{2})?[0-9]{2}$/.test(value)
+        ? false : true;
+export const timeValidation = value =>
+    value && !/^([0-9]*):([0-5]?[0-9])$/.test(value)
+        ? 'Input should not contain #.' : undefined;
+

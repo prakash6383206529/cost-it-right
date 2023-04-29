@@ -12,6 +12,7 @@ function CostMovementReport(props) {
 
     const [reportListing, setReportListing] = useState(true)
     const [graphListing, setGraphListing] = useState(false)
+    const [isDataClear, setIsDataClear] = useState(false)
     const costReportFormData = useSelector(state => state.report.costReportFormGridData)
     let gridData = costReportFormData && costReportFormData.gridData ? costReportFormData.gridData : [];
 
@@ -29,13 +30,13 @@ function CostMovementReport(props) {
     const closeGraph = () => {
         setReportListing(true)
         setGraphListing(false)
+        setIsDataClear(true)
     }
 
     return (
         <>{reportListing &&
             <div className="container-fluid ag-grid-react">
-                <h1 className="mb-0">Cost Movement Report</h1>
-                <CostReportForm />
+                <CostReportForm isDataClear={isDataClear} showVendor={true} />
                 <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
                     <div className="col-sm-12 text-right bluefooter-butn mt-3">
                         <div className="d-flex justify-content-end bd-highlight w100 my-2 align-items-center">

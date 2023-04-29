@@ -1,14 +1,14 @@
-import React, { useState, useEffect, Fragment, useRef } from 'react'
+import React, { useState, useEffect, Fragment } from 'react'
 import { Row, Col } from 'reactstrap'
 import { useDispatch, useSelector } from 'react-redux'
 import { getApprovalList, } from '../../actions/Approval'
 import { loggedInUserId, userDetails } from '../../../../helper/auth'
 import ApprovalSummary from './ApprovalSummary'
 import NoContentFound from '../../../common/NoContentFound'
-import { CBCTypeId, defaultPageSize, DRAFT, EMPTY_DATA, EMPTY_GUID, ZBCTypeId } from '../../../../config/constants'
+import { defaultPageSize, DRAFT, EMPTY_DATA, EMPTY_GUID, ZBCTypeId } from '../../../../config/constants'
 import DayTime from '../../../common/DayTimeWrapper'
 import ApproveRejectDrawer from './ApproveRejectDrawer'
-import { allEqual, checkForDecimalAndNull, checkForNull, formViewData, searchNocontentFilter } from '../../../../helper'
+import { allEqual, checkForNull, formViewData, searchNocontentFilter } from '../../../../helper'
 import { PENDING } from '../../../../config/constants'
 import Toaster from '../../../common/Toaster'
 import imgArrowDown from "../../../../assests/images/arrow-down.svg";
@@ -27,10 +27,11 @@ import { PaginationWrapper } from '../../../common/commonPagination'
 import _ from 'lodash';
 import { setSelectedRowForPagination } from '../../../simulation/actions/Simulation'
 import SingleDropdownFloationFilter from '../../../masters/material-master/SingleDropdownFloationFilter'
-import { agGridStatus, isResetClick, getGridHeight } from '../../../../actions/Common'
+import { agGridStatus, isResetClick, getGridHeight, dashboardTabLock } from '../../../../actions/Common'
 import PopupMsgWrapper from '../../../common/PopupMsgWrapper'
 import ScrollToTop from '../../../common/ScrollToTop'
 import { reactLocalStorage } from 'reactjs-localstorage'
+import { costingTypeIdToApprovalTypeIdFunction } from '../../../common/CommonFunctions'
 
 const gridOptions = {};
 const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
@@ -68,7 +69,6 @@ function ApprovalListing(props) {
   const [currentRowIndex, setCurrentRowIndex] = useState(0)
   const [noData, setNoData] = useState(false)
   const [pageSize, setPageSize] = useState({ pageSize10: true, pageSize50: false, pageSize100: false })
-  const [gridHeight, setGridHeight] = useState('')
   const [floatingFilterData, setFloatingFilterData] = useState({ ApprovalNumber: "", CostingNumber: "", PartNumber: "", PartName: "", VendorName: "", PlantName: "", TechnologyName: "", NetPOPriceNew: "", OldPOPriceNew: "", Reason: "", EffectiveDate: "", CreatedBy: "", CreatedOn: "", RequestedBy: "", RequestedOn: "" })
 
   const isApproval = props.isApproval;
@@ -85,6 +85,7 @@ function ApprovalListing(props) {
   useEffect(() => {
     if (props.activeTab === "3" || isDashboard) {
       getTableData("", "", "", "", 0, defaultPageSize, true, floatingFilterData)
+      resetState()
     }
     dispatch(isResetClick(false))
     dispatch(agGridStatus("", ""))
@@ -103,11 +104,13 @@ function ApprovalListing(props) {
 
 
   useEffect(() => {
-    if (statusColumnData && statusColumnData.data) {
-      setDisableFilter(false)
-      setWarningMessage(true)
-      setFloatingFilterData(prevState => ({ ...prevState, DisplayStatus: statusColumnData.data }))
-    }
+    setTimeout(() => {
+      if (statusColumnData && statusColumnData.data) {
+        setDisableFilter(false)
+        setWarningMessage(true)
+        setFloatingFilterData(prevState => ({ ...prevState, DisplayStatus: statusColumnData.data }))
+      }
+    }, 200)
   }, [statusColumnData])
 
 
@@ -206,7 +209,6 @@ function ApprovalListing(props) {
     if (isDashboard) {
       dataObj.DisplayStatus = props.status
     }
-    dataObj.IsCustomerDataShow = reactLocalStorage.getObject('cbcCostingPermission')
     let filterData = {
       loggedUser: loggedUser,
       logged_in_user_level_id: userDetails().LoggedInLevelId,
@@ -217,11 +219,12 @@ function ApprovalListing(props) {
       isDashboard: isDashboard ?? false
     }
     setloader(true)
-
+    isDashboard && dispatch(dashboardTabLock(true))
     dispatch(
       getApprovalList(filterData, skip, take, isPagination, dataObj, (res) => {
         if (res.status === 204 && res.data === '') {
           setloader(false)
+          dispatch(dashboardTabLock(false))
           setTotalRecordCount(0)
           setPageNo(0)
           let isReset = true
@@ -264,6 +267,7 @@ function ApprovalListing(props) {
             return temp
           })
           setloader(false)
+          dispatch(dashboardTabLock(false))
           //  setTableData(Data)
 
           if (res) {
@@ -362,14 +366,12 @@ function ApprovalListing(props) {
     setIsFilterButtonClicked(false)
     gridOptions?.columnApi?.resetColumnState(null);
     gridOptions?.api?.setFilterModel(null);
-
     for (var prop in floatingFilterData) {
 
       if (prop !== "DepartmentCode") {
         floatingFilterData[prop] = ""
       }
     }
-
     setFloatingFilterData(floatingFilterData)
     setWarningMessage(false)
     setPageNo(1)
@@ -509,7 +511,7 @@ function ApprovalListing(props) {
   }
   const reasonFormatter = (props) => {
     const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-    return cell != null ? cell : '-';
+    return !cell ? '-' : cell;
   }
   const lastApprovalFormatter = (props) => {
     const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
@@ -707,6 +709,7 @@ function ApprovalListing(props) {
       costingObj.customerName = item.CustomerName
       costingObj.customerCode = item.CustomerCode
       costingObj.customer = item.Customer
+      costingObj.BasicRate = item.BasicRate
       let date = costingObj.effectiveDate
       if (costingObj.effectiveDate) {
         let variance = Number(item.OldPOPrice && item.OldPOPrice !== '-' ? item.OldPOPrice : 0) - Number(item.NetPOPrice && item.NetPOPrice !== '-' ? item.NetPOPrice : 0)
@@ -759,14 +762,15 @@ function ApprovalListing(props) {
       DepartmentId: selectedRowData[0].Status === DRAFT ? EMPTY_GUID : selectedRowData[0]?.DepartmentId,
       UserId: loggedInUserId(),
       TechnologyId: selectedRowData[0].TechnologyId,
-      Mode: 'costing'
+      Mode: 'costing',
+      approvalTypeId: costingTypeIdToApprovalTypeIdFunction(selectedRowData[0]?.CostingTypeId)
     }
     dispatch(checkFinalUser(obj, res => {
       if (res && res.data && res.data.Result) {
         if (selectedRowData[0].Status === DRAFT) {
           setOpenDraftDrawer(res.data.Data.IsFinalApprover ? false : true)
           if (res.data.Data.IsFinalApprover) {
-            Toaster.warning("Final level aprrover can not send draft costing for aprroval")
+            Toaster.warning("Final level approver can not send draft costing for approval")
             gridApi.deselectAll()
           }
         }
@@ -901,8 +905,9 @@ function ApprovalListing(props) {
       {
         !showApprovalSumary &&
         <> {
-          (loader) ? <LoaderCustom customClass="center-loader" /> :
-            <div className={` ${!isApproval && 'container-fluid'} approval-listing-page`} id={'approval-go-to-top'}>
+
+          <div className={` ${!isApproval && 'container-fluid'} approval-listing-page ${loader ? 'dashboard-loader' : ''}`} id={'approval-go-to-top'}>
+            {(loader) ? <LoaderCustom customClass={isDashboard ? "dashboard-loader" : "loader-center"} /> : <div>
               {!isDashboard && <ScrollToTop pointProp={"approval-go-to-top"} />}
               <form noValidate>
                 <Row className="pt-4 blue-before">
@@ -966,20 +971,22 @@ function ApprovalListing(props) {
                           //onSelectionChanged={onRowSelect}
                           onRowSelected={onRowSelect}
                           isRowSelectable={isRowSelectable}
+                          enableBrowserTooltips={true}
                         >
                           <AgGridColumn field="CostingId" hide dataAlign="center" searchable={false} ></AgGridColumn>
                           <AgGridColumn cellClass="has-checkbox" field="ApprovalNumber" cellRenderer='linkableFormatter' headerName="Approval No."></AgGridColumn>
                           {/* {isApproval && <AgGridColumn headerClass="justify-content-center" cellClass="text-center" field="Status" cellRenderer='statusFormatter' headerName="Status" floatingFilterComponent="statusFilter" floatingFilterComponentParams={floatingFilterStatus} ></AgGridColumn>} */}
-                          <AgGridColumn field="CostingNumber" headerName="Costing ID" cellRenderer='hyperLinkableFormatter' ></AgGridColumn>
+                          <AgGridColumn field="CostingNumber" headerName="Costing Id" cellRenderer='hyperLinkableFormatter' ></AgGridColumn>
                           <AgGridColumn field="CostingHead" headerName="Costing Head"  ></AgGridColumn>
                           <AgGridColumn field="PartNumber" headerName='Part No.'></AgGridColumn>
                           <AgGridColumn field="PartName" headerName="Part Name"></AgGridColumn>
                           <AgGridColumn field="VendorName" cellRenderer='renderVendor' headerName="Vendor (Code)"></AgGridColumn>
                           <AgGridColumn field="PlantName" cellRenderer='renderPlant' headerName="Plant (Code)"></AgGridColumn>
-                          <AgGridColumn field="Customer" cellRenderer='renderCustomer' headerName="Customer (Code)"></AgGridColumn>
+                          {reactLocalStorage.getObject('cbcCostingPermission') && <AgGridColumn field="Customer" cellRenderer='renderCustomer' headerName="Customer (Code)"></AgGridColumn>}
                           <AgGridColumn field='TechnologyName' headerName="Technology"></AgGridColumn>
-                          <AgGridColumn field="NetPOPriceNew" cellRenderer='priceFormatter' headerName="New Price"></AgGridColumn>
-                          <AgGridColumn field="OldPOPriceNew" cellRenderer='oldpriceFormatter' headerName="Old PO Price"></AgGridColumn>
+                          {initialConfiguration?.IsBasicRateAndCostingConditionVisible && <AgGridColumn field="BasicRate" cellRenderer='reasonFormatter' headerName="Basic Price"></AgGridColumn>}
+                          <AgGridColumn field="OldPOPriceNew" cellRenderer='oldpriceFormatter' headerName="Existing PO Price"></AgGridColumn>
+                          <AgGridColumn field="NetPOPriceNew" cellRenderer='priceFormatter' headerName="Revised PO Price"></AgGridColumn>
                           <AgGridColumn field="NCCPartQuantity" headerName="Quantity" cellRenderer={"reasonFormatter"} ></AgGridColumn>
                           <AgGridColumn field="IsRegularized" headerName="Is Regularized" cellRenderer={"reasonFormatter"} ></AgGridColumn>
                           <AgGridColumn field='Reason' headerName="Reason" cellRenderer={"reasonFormatter"}></AgGridColumn>
@@ -988,7 +995,7 @@ function ApprovalListing(props) {
                           <AgGridColumn field="CreatedOn" cellRenderer='dateFormatter' headerName="Created On" filter="agDateColumnFilter" filterParams={filterParamsThird}></AgGridColumn>
                           <AgGridColumn field="RequestedBy" headerName="Last Approved/Rejected By" cellRenderer={"lastApprovalFormatter"}></AgGridColumn>
                           <AgGridColumn field="RequestedOn" cellRenderer='requestedOnFormatter' headerName="Requested On" filter="agDateColumnFilter" filterParams={filterParamsSecond}></AgGridColumn>
-                          {!isApproval && <AgGridColumn headerClass="justify-content-center" pinned="right" cellClass="text-center" field="DisplayStatus" cellRenderer='statusFormatter' headerName="Status" floatingFilterComponent="statusFilter" floatingFilterComponentParams={floatingFilterStatus}></AgGridColumn>}
+                          {!isApproval && <AgGridColumn headerClass="justify-content-center" pinned="right" cellClass="text-center" field="DisplayStatus" tooltipField="TooltipText" cellRenderer='statusFormatter' headerName="Status" floatingFilterComponent="statusFilter" floatingFilterComponentParams={floatingFilterStatus}></AgGridColumn>}
                         </AgGridReact>
 
                         <div className='button-wrapper'>
@@ -1012,7 +1019,8 @@ function ApprovalListing(props) {
                   </div>
                 </Col>
               </Row>
-            </div>
+            </div>}
+          </div>
         }</>
 
         // :
@@ -1035,6 +1043,7 @@ function ApprovalListing(props) {
           approvalData={selectedRowData}
           anchor={'right'}
           IsFinalLevel={!showFinalLevelButtons}
+          costingTypeId={selectedRowData[0]?.CostingTypeId}
         />
       )}
       {

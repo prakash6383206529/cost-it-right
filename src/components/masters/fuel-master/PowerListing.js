@@ -199,8 +199,11 @@ class PowerListing extends Component {
 * @description Renders buttons
 */
   effectiveDateFormatter = (props) => {
-    const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-    return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
+    let cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+    if (cellValue?.includes('T')) {
+      cellValue = DayTime(cellValue).format('DD/MM/YYYY')
+    }
+    return (!cellValue ? '-' : cellValue)
   }
 
   /**
@@ -243,14 +246,6 @@ class PowerListing extends Component {
     return cellValue != null ? cellValue : '';
   }
 
-  /**
-  * @method effectiveDateFormatter
-  * @description Renders buttons
-  */
-  effectiveDateFormatter = (props) => {
-    const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-    return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
-  }
   renderEffectiveDate = () => {
     return <>Effective <br />Date</>
   }
@@ -294,6 +289,8 @@ class PowerListing extends Component {
         item.Plants = ' '
       } if (item.Vendor === '-') {
         item.Vendor = ' '
+      } else if (item?.EffectiveDate?.includes('T')) {
+        item.EffectiveDate = DayTime(item.EffectiveDate).format('DD/MM/YYYY')
       }
       return item
     })
@@ -449,7 +446,7 @@ class PowerListing extends Component {
                       DownloadAccessibility &&
                       <>
 
-                        <ExcelFile filename={'PowerMaster'} fileExtension={'.xls'} element={
+                        <ExcelFile filename={'Power'} fileExtension={'.xls'} element={
                           <button title={`Download ${this.state.dataCount === 0 ? "All" : "(" + this.state.dataCount + ")"}`} type="button" className={'user-btn mr5'}><div className="download mr-1" ></div>
                             {/* DOWNLOAD */}
                             {`${this.state.dataCount === 0 ? "All" : "(" + this.state.dataCount + ")"}`}

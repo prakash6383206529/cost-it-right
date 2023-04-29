@@ -41,7 +41,7 @@ function OperationCost(props) {
   const [headerPinned, setHeaderPinned] = useState(true)
   const CostingViewMode = useContext(ViewCostingContext);
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
-  const { CostingEffectiveDate } = useSelector(state => state.costing)
+  const { CostingEffectiveDate, ErrorObjRMCC } = useSelector(state => state.costing)
   const costData = useContext(costingInfoContext);
 
   useEffect(() => {
@@ -81,9 +81,7 @@ function OperationCost(props) {
   */
   const DrawerToggle = () => {
     if (CheckIsCostingDateSelected(CostingEffectiveDate)) return false;
-    setTimeout(() => {
-      document.getElementsByClassName('MuiPaper-elevation16')[0].removeAttribute('tabIndex');
-    }, 500);
+
     setDrawerOpen(true)
   }
 
@@ -193,6 +191,10 @@ function OperationCost(props) {
     })
     setIds(Ids && Ids.filter(item => item !== OperationId))
     setGridData(tempArr)
+    setValue(`${OperationGridFields}.${index}.remarkPopUp`, '')
+    tempArr && tempArr.map((el, i) => {
+      setValue(`${OperationGridFields}.${i}.remarkPopUp`, el.Remark)
+    })
     dispatch(setSelectedIdsOperation(Ids && Ids.filter(item => item !== OperationId)))
     let totalFinishWeight = 0
     totalFinishWeight = tempArr && tempArr.reduce((accummlator, el) => {
@@ -257,17 +259,6 @@ function OperationCost(props) {
       setOperationCostAssemblyTechnology(value)
       setGridData(tempArr)
 
-    } else {
-      const WithLaboutCost = checkForNull(tempData.Rate) * 0;
-      const WithOutLabourCost = tempData.IsLabourRateExist ? checkForNull(tempData.LabourRate) * tempData.LabourQuantity : 0;
-      const OperationCost = WithLaboutCost + WithOutLabourCost;
-      tempData = { ...tempData, Quantity: 0, OperationCost: OperationCost }
-      tempArr = Object.assign([...gridData], { [index]: tempData })
-      setGridData(tempArr)
-      // Toaster.warning('Please enter valid number.')
-      setTimeout(() => {
-        setValue(`${OperationGridFields}.${index}.Quantity`, '')
-      }, 200)
     }
   }
 
@@ -300,12 +291,15 @@ function OperationCost(props) {
   /**
    * @method setRMCCErrors
    * @description CALLING TO SET BOP COST FORM'S ERROR THAT WILL USE WHEN HITTING SAVE RMCC TAB API.
-   */
+  */
+  let temp = ErrorObjRMCC
   if (Object.keys(errors).length > 0 && counter < 2) {
-    dispatch(setRMCCErrors(errors))
+    temp.OperationGridFields = errors.OperationGridFields;
+    dispatch(setRMCCErrors(temp))
     counter++;
   } else if (Object.keys(errors).length === 0 && counter > 0) {
-    dispatch(setRMCCErrors({}))
+    temp.OperationGridFields = {};
+    dispatch(setRMCCErrors(temp))
     counter = 0
   }
 
@@ -369,7 +363,7 @@ function OperationCost(props) {
                             <td style={{ width: 130 }}>
                               {
                                 <TextFieldHookForm
-                                  label=""
+                                  label={false}
                                   name={`${OperationGridFields}.${index}.Quantity`}
                                   Controller={Controller}
                                   control={control}
@@ -380,7 +374,7 @@ function OperationCost(props) {
                                   }}
                                   defaultValue={checkForDecimalAndNull(item.Quantity, initialConfiguration.NoOfDecimalForInputOutput)}
                                   className=""
-                                  customClassName={'withBorder hide-label-inside mb-0'}
+                                  customClassName={'withBorder error-label mb-0'}
                                   handleChange={(e) => {
                                     e.preventDefault()
                                     handleQuantityChange(e, index)
@@ -399,7 +393,7 @@ function OperationCost(props) {
                                 {
                                   item.IsLabourRateExist ?
                                     <TextFieldHookForm
-                                      label=""
+                                      label={false}
                                       name={`${OperationGridFields}.${index}.LabourQuantity`}
                                       Controller={Controller}
                                       control={control}
@@ -410,7 +404,7 @@ function OperationCost(props) {
                                       }}
                                       defaultValue={item.LabourQuantity}
                                       className=""
-                                      customClassName={'withBorder hide-label-inside mb-0'}
+                                      customClassName={'withBorder error-label mb-0'}
                                       handleChange={(e) => {
                                         e.preventDefault()
                                         handleLabourQuantityChange(e, index)

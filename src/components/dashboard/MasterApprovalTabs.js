@@ -3,12 +3,12 @@ import { Nav, NavItem, NavLink, TabPane, TabContent } from "reactstrap";
 import classnames from 'classnames';
 import { APPROVED, PENDING, REJECTED, WAITING_FOR_APPROVAL } from "../../config/constants";
 import CommonApproval from "../masters/material-master/CommonApproval";
+import { useSelector } from "react-redux";
 
 const MasterApprovalTabs = (props) => {
-    console.log('props: ', props);
 
     const [activeTab, setActiveTab] = useState('1')
-
+    const dashboardTabLock = useSelector(state => state.comman.dashboardTabLock)
     /**
 * @method toggle
 * @description toggling the tabs
@@ -22,6 +22,7 @@ const MasterApprovalTabs = (props) => {
     return (
         <>
             <Nav tabs className="subtabs mt-0 p-relative">
+                {dashboardTabLock && <div className="disabled-overflow min-width"></div>}
                 <NavItem>
                     <NavLink className={classnames({ active: activeTab === '1' })} onClick={() => { toggle('1'); }}>
                         Pending For Approval

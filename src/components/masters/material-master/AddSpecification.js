@@ -40,7 +40,8 @@ class AddSpecification extends Component {
       rmGradeId: '',
       rmSpecification: '',
       rmCode: '',
-      showPopup: false
+      showPopup: false,
+      isDropDownChanged: false,
     }
   }
 
@@ -120,7 +121,7 @@ class AddSpecification extends Component {
   handleRawMaterial = (newValue, actionMeta) => {
 
     if (newValue && newValue !== '') {
-      this.setState({ RawMaterial: newValue, RMGrade: [], rawMaterialId: newValue.value }, () => {
+      this.setState({ RawMaterial: newValue, RMGrade: [], rawMaterialId: newValue.value, isDropDownChanged: true }, () => {
         const { RawMaterial } = this.state;
         this.props.change('Specification', "")
         this.props.getRMGradeSelectListByRawMaterial(RawMaterial.value, res => { });
@@ -172,7 +173,7 @@ class AddSpecification extends Component {
   handleGrade = (newValue, actionMeta) => {
 
     if (newValue && newValue !== '') {
-      this.setState({ RMGrade: newValue, rmGradeId: newValue.value });
+      this.setState({ RMGrade: newValue, rmGradeId: newValue.value, isDropDownChanged: true });
 
       if (this.state.rawMaterialId && this.state.rmSpecification) {
         let obj = {
@@ -242,7 +243,13 @@ class AddSpecification extends Component {
   }
 
   cancelHandler = () => {
-    this.setState({ showPopup: true })
+    const { dirty } = this.props;
+    if (dirty || this.state.isDropDownChanged) {
+      this.setState({ showPopup: true })
+    }
+    else {
+      this.cancel('cancel')
+    }
   }
   onPopupConfirm = () => {
     this.cancel('cancel')
@@ -548,7 +555,7 @@ class AddSpecification extends Component {
                           <Field
                             name="GradeId"
                             type="text"
-                            label="RM Grade"
+                            label="Grade"
                             component={searchableSelect}
                             placeholder={"Select"}
                             options={this.renderListing("RMGrade")}

@@ -11,6 +11,7 @@ import { getVendorCode } from '../../../helper/validation';
 import { getVendorWithVendorCodeSelectList } from '../../../actions/Common';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { autoCompleteDropdown } from '../../common/CommonFunctions';
+import { MESSAGES } from '../../../config/message';
 
 function AddNCCDrawer(props) {
 
@@ -132,6 +133,9 @@ function AddNCCDrawer(props) {
     toggleDrawer('')
   }
   const filterList = async (inputValue) => {
+    if (inputValue && typeof inputValue === 'string' && inputValue.includes(' ')) {
+      inputValue = inputValue.trim();
+    }
     const resultInput = inputValue.slice(0, searchCount)
     if (inputValue?.length >= searchCount && vendorName !== resultInput) {
       let res
@@ -214,7 +218,7 @@ function AddNCCDrawer(props) {
                     handleChange={handleVendorChange}
                     asyncOptions={filterList}
                     errors={errors.Vendor}
-                    NoOptionMessage={"Enter 3 characters to show data"}
+                    NoOptionMessage={MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN}
                   />
                 </Col>
               </Row>

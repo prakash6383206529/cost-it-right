@@ -2,9 +2,9 @@ import React, { Component, } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col, Table } from 'reactstrap';
-import { required, checkForDecimalAndNull, positiveAndDecimalNumber, maxLength10, decimalLengthsix } from "../../../helper/validation";
+import { required, checkForDecimalAndNull, positiveAndDecimalNumber, maxLength10, decimalLengthsix, number } from "../../../helper/validation";
 import {
-  searchableSelect, focusOnError, renderNumberInputField,
+  searchableSelect, focusOnError, renderTextInputField,
 } from "../../layout/FormInputs";
 import { getUOMSelectList, fetchStateDataAPI, getAllCity } from '../../../actions/Common';
 import { getFuelByPlant, createFuelDetail, updateFuelDetail, getFuelDetailData, getUOMByFuelId } from '../actions/Fuel';
@@ -673,8 +673,8 @@ class AddFuel extends Component {
                                 name={"Rate"}
                                 type="text"
                                 placeholder={isViewMode ? '-' : 'Enter'}
-                                validate={[positiveAndDecimalNumber, maxLength10, decimalLengthsix]}
-                                component={renderNumberInputField}
+                                validate={[positiveAndDecimalNumber, maxLength10, decimalLengthsix, number]}
+                                component={renderTextInputField}
                                 required={true}
                                 className=""
                                 customClassName="mb-0 withBorder"

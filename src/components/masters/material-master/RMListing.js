@@ -158,18 +158,31 @@ class RMListing extends Component {
     * @method indexFormatter
     * @description Renders serial number
     */
-    indexFormatter = (cell, row, enumObject, rowIndex) => {
-        const { table } = this.refs;
-        let currentPage = table && table.state && table.state.currPage ? table.state.currPage : '';
-        let sizePerPage = table && table.state && table.state.sizePerPage ? table.state.sizePerPage : '';
-        let serialNumber = '';
-        if (currentPage === 1) {
-            serialNumber = rowIndex + 1;
-        } else {
-            serialNumber = (rowIndex + 1) + (sizePerPage * (currentPage - 1));
-        }
-        return serialNumber;
-    }
+    // indexFormatter = (cell, row, enumObject, rowIndex) => {
+    //     const { table } = this.refs;
+    //     let currentPage = table && table.state && table.state.currPage ? table.state.currPage : '';
+    //     let sizePerPage = table && table.state && table.state.sizePerPage ? table.state.sizePerPage : '';
+    //     let serialNumber = '';
+    //     if (currentPage === 1) {
+    //         serialNumber = rowIndex + 1;
+    //     } else {
+    //         serialNumber = (rowIndex + 1) + (sizePerPage * (currentPage - 1));
+    //     }
+    //     return serialNumber;
+    // }
+
+    // indexFormatter = (props) => {
+    //     const { table } = this.refs;
+    //     let currentPage = table && table.state && table.state.currPage ? table.state.currPage : '';
+    //     let sizePerPage = table && table.state && table.state.sizePerPage ? table.state.sizePerPage : '';
+    //     let serialNumber = '';
+    //     if (currentPage === 1) {
+    //         serialNumber = rowIndex + 1;
+    //     } else {
+    //         serialNumber = (rowIndex + 1) + (sizePerPage * (currentPage - 1));
+    //     }
+    //     return serialNumber;
+    // }
 
     /**
     * @method renderPaginationShowsTotal
@@ -322,7 +335,7 @@ class RMListing extends Component {
                             DownloadAccessibility &&
                             <>
                                 <>
-                                    <ExcelFile filename={'RmMaterial'} fileExtension={'.xls'} element={
+                                    <ExcelFile filename={'Rm Material'} fileExtension={'.xls'} element={
                                         <button title={`Download ${this.state.dataCount === 0 ? "All" : "(" + this.state.dataCount + ")"}`} type="button" className={'user-btn mr5'} ><div className="download mr-1"></div>
                                             {`${this.state.dataCount === 0 ? "All" : "(" + this.state.dataCount + ")"}`}</button>}>
                                         {this.onBtExport()}
@@ -375,7 +388,7 @@ class RMListing extends Component {
                                     <AgGridColumn field="RawMaterial" headerName="Material"></AgGridColumn>
                                     <AgGridColumn field="Density"></AgGridColumn>
                                     <AgGridColumn field="RMName" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                                    <AgGridColumn field="RMGrade" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                                    <AgGridColumn field="RMGrade" headerName="Grade" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                     <AgGridColumn field="MaterialId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                                 </AgGridReact>
                                 {<PaginationWrapper gridApi={this.gridApi} setPage={this.onPageSizeChanged} />}

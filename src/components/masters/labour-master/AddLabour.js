@@ -1,9 +1,9 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { Field, reduxForm, formValueSelector } from 'redux-form'
+import { Field, reduxForm, formValueSelector, clearFields } from 'redux-form'
 import { Row, Col, Table } from 'reactstrap'
-import { required, checkForNull, positiveAndDecimalNumber, maxLength10, checkForDecimalAndNull, decimalLengthsix } from '../../../helper/validation'
-import { focusOnError, renderNumberInputField, searchableSelect } from '../../layout/FormInputs'
+import { required, checkForNull, positiveAndDecimalNumber, maxLength10, checkForDecimalAndNull, decimalLengthsix, number } from '../../../helper/validation'
+import { focusOnError, renderTextInputField, searchableSelect } from '../../layout/FormInputs'
 import { getPlantListByState } from '../actions/Fuel'
 import { createLabour, getLabourData, updateLabour, labourTypeVendorSelectList, getLabourTypeByMachineTypeSelectList, } from '../actions/Labour'
 import { getMachineTypeSelectList } from '../actions/MachineMaster'
@@ -64,7 +64,8 @@ class AddLabour extends Component {
       },
       showErrorOnFocus: false,
       isEditMode: false,
-      showPopup: false
+      showPopup: false,
+      vendorFilterList: []
     }
   }
 
@@ -205,6 +206,12 @@ class AddLabour extends Component {
    * @description EMPLOYEE TERMS
    */
   onPressEmployeeTerms = () => {
+    const fieldsToClear = [
+      'vendorName', 'state', 'Plant'
+    ];
+    fieldsToClear.forEach(fieldName => {
+      this.props.dispatch(clearFields('AddLabour', false, false, fieldName));
+    });
     this.setState({
       IsEmployeContractual: !this.state.IsEmployeContractual,
     })
@@ -683,14 +690,17 @@ class AddLabour extends Component {
     const { handleSubmit, initialConfiguration } = this.props;
     const { isEditFlag, isOpenMachineType, isViewMode, setDisable, gridTable, isEditMode } = this.state;
     const filterList = async (inputValue) => {
-      const { vendorName } = this.state
+      const { vendorFilterList } = this.state
+      if (inputValue && typeof inputValue === 'string' && inputValue.includes(' ')) {
+        inputValue = inputValue.trim();
+      }
       const resultInput = inputValue.slice(0, searchCount)
-      if (inputValue?.length >= searchCount && vendorName !== resultInput) {
+      if (inputValue?.length >= searchCount && vendorFilterList !== resultInput) {
         // this.setState({ inputLoader: true })
         let res
         res = await labourTypeVendorSelectList(resultInput)
         // this.setState({ inputLoader: false })
-        this.setState({ vendorName: resultInput })
+        this.setState({ vendorFilterList: resultInput })
         let vendorDataAPI = res?.data?.SelectList
         if (inputValue) {
           // this.setState({ inputLoader: false })
@@ -776,7 +786,7 @@ class AddLabour extends Component {
                               loadOptions={filterList}
                               onChange={(e) => this.handleVendorName(e)}
                               value={this.state.vendorName}
-                              noOptionsMessage={({ inputValue }) => inputValue.length < 3 ? "Enter 3 characters to show data" : "No results found"}
+                              noOptionsMessage={({ inputValue }) => inputValue.length < 3 ? MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN : "No results found"}
                               isDisabled={(isEditFlag) || gridTable.length !== 0 ? true : false}
                               onKeyDown={(onKeyDown) => {
                                 if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
@@ -829,7 +839,7 @@ class AddLabour extends Component {
                     <Row className='sub-form-container'>
                       <Col md="12" className="filter-block">
                         <div className=" flex-fills mb-2 w-100 pl-0">
-                          <h5>{"Rate Per Person:"}</h5>
+                          <h5>{"Rate per Person:"}</h5>
                         </div>
                       </Col>
 
@@ -881,13 +891,13 @@ class AddLabour extends Component {
                       <Col md="auto">
                         <div className="form-group">
                           <Field
-                            label={`Rate Per Person/Annum (INR)`}
+                            label={`Rate per Person/Annum (INR)`}
                             name={"LabourRate"}
                             type="text"
                             placeholder={isViewMode ? "-" : "Enter"}
                             disabled={isViewMode}
-                            validate={[positiveAndDecimalNumber, maxLength10, decimalLengthsix]}
-                            component={renderNumberInputField}
+                            validate={[positiveAndDecimalNumber, maxLength10, decimalLengthsix, number]}
+                            component={renderTextInputField}
                             required={true}
                             className=" "
                             customClassName="withBorder"
@@ -962,7 +972,7 @@ class AddLabour extends Component {
                             <tr>
                               <th>{`Machine Type`}</th>
                               <th>{`Labour Type`}</th>
-                              <th>{`Rate Per Person/Annum(INR)`}</th>
+                              <th>{`Rate per Person/Annum(INR)`}</th>
                               <th>{`Effective Date`}</th>
                               <th>{`Action`}</th>
                             </tr>

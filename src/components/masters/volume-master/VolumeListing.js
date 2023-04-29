@@ -28,6 +28,7 @@ import { reactLocalStorage } from 'reactjs-localstorage'
 import VolumeBulkUploadDrawer from '../../massUpload/VolumeBulkUploadDrawer'
 import { Drawer } from '@material-ui/core'
 import classnames from 'classnames';
+import { hideCustomerFromExcel } from '../../common/CommonFunctions'
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -315,21 +316,25 @@ function VolumeListing(props) {
    * @method closeActualBulkUploadDrawer
    * @description CLOSE ACTUAL BULK DRAWER
    */
-  const closeBulkUploadDrawer = () => {
+  const closeBulkUploadDrawer = (event, type) => {
     setBulkUploadBtn(false)
-    setTimeout(() => {
-      getTableListData(0, globalTake, true)
-    }, 200);
+    if (type !== 'cancel') {
+      setTimeout(() => {
+        getTableListData(0, globalTake, true)
+      }, 200);
+    }
   }
   /**
    * @method closeActualBulkUploadDrawer
    * @description CLOSE ACTUAL BULK DRAWER
    */
-  const closeActualBulkUploadDrawer = () => {
+  const closeActualBulkUploadDrawer = (event, type) => {
     setBulkUploadBtn(false)
-    setTimeout(() => {
-      getTableListData(0, globalTake, true)
-    }, 200);
+    if (type !== 'cancel') {
+      setTimeout(() => {
+        getTableListData(0, globalTake, true)
+      }, 200);
+    }
   }
 
 
@@ -338,9 +343,10 @@ function VolumeListing(props) {
   }
 
   const returnExcelColumn = (data = [], TempData) => {
+    let excelData = hideCustomerFromExcel(data, "CustomerName")
     return (
       <ExcelSheet data={TempData} name={VolumeMaster}>
-        {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
+        {excelData && excelData.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
       </ExcelSheet>);
   }
 
@@ -362,8 +368,8 @@ function VolumeListing(props) {
       }
       selectedRows = [...selectedRows, ...finalData]
     }
-    let uniqeArrayVolumeApprovedId = _.uniqBy(selectedRows, "VolumeApprovedId")          //UNIQBY FUNCTION IS USED TO FIND THE UNIQUE ELEMENTS & DELETE DUPLICATE ENTRY
-    let uniqeArrayVolumeBudgetedId = _.uniqBy(uniqeArrayVolumeApprovedId, "VolumeBudgetedId")          //UNIQBY FUNCTION IS USED TO FIND THE UNIQUE ELEMENTS & DELETE DUPLICATE ENTRY
+
+    let uniqeArrayVolumeBudgetedId = _.uniqBy(selectedRows, v => [v.VolumeApprovedId, v.VolumeBudgetedId].join())          //UNIQBY FUNCTION IS USED TO FIND THE UNIQUE ELEMENTS & DELETE DUPLICATE ENTRY
     dispatch(setSelectedRowForPagination(uniqeArrayVolumeBudgetedId))              //SETTING CHECKBOX STATE DATA IN REDUCER
     setDataCount(uniqeArrayVolumeBudgetedId.length)
   }
@@ -605,7 +611,7 @@ function VolumeListing(props) {
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
     if (selectedRowForPagination?.length > 0) {
       selectedRowForPagination.map((item) => {
-        if (item.VolumeId === props.node.data.VolumeId) {
+        if (item.VolumeApprovedId === props.node.data.VolumeApprovedId && item.VolumeBudgetedId === props.node.data.VolumeBudgetedId) {
           props.node.setSelected(true)
         }
         return null
@@ -645,12 +651,9 @@ function VolumeListing(props) {
         <ScrollToTop pointProp="go-to-top" />
         {isLoader ? <LoaderCustom customClass={"loader-center"} /> :
           <>
-            {disableDownload && <LoaderCustom message={MESSAGES.DOWNLOADING_MESSAGE} />}
+            {disableDownload && <LoaderCustom message={MESSAGES.DOWNLOADING_MESSAGE} customClass="mt-5" />}
             <form noValidate>
-              <Row>
-                <Col md="12"><h1 className="mb-0">Volume Master</h1></Col>
-              </Row>
-              <Row className="pt-4 blue-before">
+              <Row className="blue-before">
                 <Col md="9" className="search-user-block mb-3">
                   <div className="d-flex justify-content-end bd-highlight">
                     <div className="warning-message d-flex align-items-center">
@@ -810,7 +813,7 @@ function VolumeListing(props) {
                       <BulkUpload
                         closeDrawer={closeActualBulkUploadDrawer}
                         isEditFlag={false}
-                        fileName={'ActualVolume'}
+                        fileName={'Actual Volume'}
                         isZBCVBCTemplate={true}
                         messageLabel={'Volume Actual'}
                         anchor={'right'}
@@ -822,7 +825,7 @@ function VolumeListing(props) {
                       <BulkUpload
                         closeDrawer={closeActualBulkUploadDrawer}
                         isEditFlag={false}
-                        fileName={'BudgetedVolume'}
+                        fileName={'Budgeted Volume'}
                         isZBCVBCTemplate={true}
                         messageLabel={'Volume Budgeted'}
                         anchor={'right'}

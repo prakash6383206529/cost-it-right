@@ -36,7 +36,7 @@ function OperationCostExcludedOverhead(props) {
   const [headerPinned, setHeaderPinned] = useState(true)
   const CostingViewMode = useContext(ViewCostingContext);
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
-  const { CostingEffectiveDate } = useSelector(state => state.costing)
+  const { CostingEffectiveDate, ErrorObjRMCC } = useSelector(state => state.costing)
 
   useEffect(() => {
     const Params = {
@@ -170,7 +170,12 @@ function OperationCostExcludedOverhead(props) {
       return true;
     })
     setIds(Ids && Ids.filter(item => item !== OperationId))
+    setValue(`${OperationGridFields}.${index}.remarkPopUp`, '')
     setGridData(tempArr)
+    tempArr && tempArr.map((el, i) => {
+      setValue(`${OperationGridFields}.${i}.remarkPopUp`, el.Remark)
+    })
+
     dispatch(setSelectedIds(Ids && Ids.filter(item => item !== OperationId)))
   }
 
@@ -265,11 +270,14 @@ function OperationCostExcludedOverhead(props) {
    * @method setRMCCErrors
    * @description CALLING TO SET BOP COST FORM'S ERROR THAT WILL USE WHEN HITTING SAVE RMCC TAB API.
    */
+  let temp = ErrorObjRMCC
   if (Object.keys(errors).length > 0 && counter < 2) {
-    dispatch(setRMCCErrors(errors))
+    temp.OperationGridFields = errors.OperationGridFields;
+    dispatch(setRMCCErrors(temp))
     counter++;
   } else if (Object.keys(errors).length === 0 && counter > 0) {
-    dispatch(setRMCCErrors({}))
+    temp.OperationGridFields = {};
+    dispatch(setRMCCErrors(temp))
     counter = 0
   }
 
@@ -334,7 +342,7 @@ function OperationCostExcludedOverhead(props) {
                             <td>
                               {
                                 <TextFieldHookForm
-                                  label=""
+                                  label={false}
                                   name={`${OperationGridFields}[${index}].Quantity`}
                                   Controller={Controller}
                                   control={control}
@@ -345,7 +353,7 @@ function OperationCostExcludedOverhead(props) {
                                   }}
                                   defaultValue={checkForDecimalAndNull(item.Quantity, initialConfiguration.NoOfDecimalForInputOutput)}
                                   className=""
-                                  customClassName={'withBorder hide-label-inside mb-0'}
+                                  customClassName={'withBorder error-label mb-0'}
                                   handleChange={(e) => {
                                     e.preventDefault()
                                     handleQuantityChange(e, index)
@@ -364,7 +372,7 @@ function OperationCostExcludedOverhead(props) {
                                 {
                                   item.IsLabourRateExist ?
                                     <TextFieldHookForm
-                                      label=""
+                                      label={false}
                                       name={`${OperationGridFields}[${index}]LabourQuantity`}
                                       Controller={Controller}
                                       control={control}
@@ -375,7 +383,7 @@ function OperationCostExcludedOverhead(props) {
                                       }}
                                       defaultValue={item.LabourQuantity}
                                       className=""
-                                      customClassName={'withBorder hide-label-inside mb-0'}
+                                      customClassName={'withBorder error-label mb-0'}
                                       handleChange={(e) => {
                                         e.preventDefault()
                                         handleLabourQuantityChange(e, index)

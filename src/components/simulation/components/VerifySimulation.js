@@ -3,7 +3,7 @@ import { Row, Col, } from 'reactstrap';
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import NoContentFound from '../../common/NoContentFound';
-import { EMPTY_DATA, EXCHNAGERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, BOPDOMESTIC, BOPIMPORT, MACHINERATE, OVERHEAD, defaultPageSize } from '../../../config/constants';
+import { EMPTY_DATA, EXCHNAGERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, BOPDOMESTIC, BOPIMPORT, MACHINERATE, OVERHEAD, defaultPageSize, CBCTypeId } from '../../../config/constants';
 import { getAllMultiTechnologyCostings, getAllMultiTechnologyImpactedSimulationCostings, getVerifyBoughtOutPartSimulationList, getVerifyExchangeSimulationList, getVerifyMachineRateSimulationList, getVerifySimulationList, getVerifySurfaceTreatmentSimulationList } from '../actions/Simulation';
 import RunSimulationDrawer from './RunSimulationDrawer';
 import CostingSimulation from './CostingSimulation';
@@ -15,7 +15,7 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import { debounce } from 'lodash'
 import { PaginationWrapper } from '../../common/commonPagination';
-import { ASSEMBLY_TECHNOLOGY } from '../../../config/masterData';
+import { ASSEMBLY_TECHNOLOGY_MASTER } from '../../../config/masterData';
 // import AssemblySimulation from './AssemblySimulation';
 
 const gridOptions = {};
@@ -45,7 +45,7 @@ function VerifySimulation(props) {
     const isBOPDomesticOrImport = ((Number(selectedMasterForSimulation.value) === Number(BOPDOMESTIC)) || (Number(selectedMasterForSimulation.value) === Number(BOPIMPORT)))
     const isMachineRate = Number(selectedMasterForSimulation.value) === (Number(MACHINERATE));
     const isOverHeadProfit = Number(selectedMasterForSimulation.value) === (Number(OVERHEAD));
-    const isMultiTechnology = (checkForNull(selectedMasterForSimulation.value) === ASSEMBLY_TECHNOLOGY) ? true : false;
+    const isMultiTechnology = (checkForNull(selectedMasterForSimulation.value) === ASSEMBLY_TECHNOLOGY_MASTER) ? true : false;
     const runSimulationPermission = !((JSON.parse(localStorage.getItem('simulationRunPermission'))).includes(selectedMasterForSimulation?.label))
     const { selectedTechnologyForSimulation } = useSelector(state => state.simulation)
     const { selectedVendorForSimulation } = useSelector(state => state.simulation)
@@ -66,7 +66,7 @@ function VerifySimulation(props) {
 
     const verifyCostingList = (plantId = '', rawMatrialId = '') => {
         const plant = filteredRMData.plantId && filteredRMData.plantId.value ? filteredRMData.plantId.value : null
-        if (checkForNull(selectedMasterForSimulation?.value) === ASSEMBLY_TECHNOLOGY) {
+        if (checkForNull(selectedMasterForSimulation?.value) === ASSEMBLY_TECHNOLOGY_MASTER) {
             dispatch(getAllMultiTechnologyImpactedSimulationCostings(props?.token, (res) => {
                 if (res?.data?.Result) {
                     const data = res?.data?.Data
@@ -186,6 +186,7 @@ function VerifySimulation(props) {
                             }
                             setTokenNo(data.TokenNumber)
                             setSimualtionId(data.SimulationId)
+                            setSimulationTechnologyId(data.SimulationtechnologyId)
                             setHideRunButton(false)
                             setEffectiveDate(data.EffectiveDate)
                         }
@@ -203,6 +204,7 @@ function VerifySimulation(props) {
                             }
                             setTokenNo(data.TokenNumber)
                             setSimualtionId(data.SimulationId)
+                            setSimulationTechnologyId(data.SimulationtechnologyId)
                             setHideRunButton(false)
                             setEffectiveDate(data.EffectiveDate)
                         }
@@ -220,6 +222,7 @@ function VerifySimulation(props) {
                             }
                             setTokenNo(data.TokenNumber)
                             setSimualtionId(data.SimulationId)
+                            setSimulationTechnologyId(data.SimulationtechnologyId)
                             setHideRunButton(false)
                             setEffectiveDate(data.EffectiveDate)
                         }
@@ -327,6 +330,11 @@ function VerifySimulation(props) {
     }
 
     const renderVendor = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        return (cell !== null && cell !== '-') ? `${cell}` : '-'
+    }
+
+    const renderCustomer = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         return (cell !== null && cell !== '-') ? `${cell}` : '-'
     }
@@ -543,6 +551,7 @@ function VerifySimulation(props) {
         poPriceFormatter: poPriceFormatter,
         newExchangeRateFormatter: newExchangeRateFormatter,
         renderPart: renderPart,
+        renderCustomer: renderCustomer
     };
 
     return (
@@ -608,47 +617,51 @@ function VerifySimulation(props) {
                                         >
                                             <AgGridColumn field="CostingId" hide ></AgGridColumn>
                                             <AgGridColumn width={185} field="CostingNumber" headerName="Costing Number"></AgGridColumn>
-                                            {!isMultiTechnology && <AgGridColumn width={140} field="VendorName" cellRenderer='renderVendor' headerName="Vendor (Code)"></AgGridColumn>}
-                                            <AgGridColumn width={120} field="PlantName" cellRenderer='renderPlant' headerName="Plant (Code)"></AgGridColumn>
                                             <AgGridColumn width={110} field="PartNo" headerName="Part No." cellRenderer='renderPart'></AgGridColumn>
                                             <AgGridColumn width={120} field="PartName" cellRenderer='descriptionFormatter' headerName="Part Name"></AgGridColumn>
                                             <AgGridColumn width={130} field="RevisionNumber" cellRenderer='revisionFormatter' headerName="Revision No."></AgGridColumn>
-                                            <AgGridColumn width={130} field="POPrice" headerName="Current PO Price" cellRenderer='poPriceFormatter'></AgGridColumn>
-
+                                            {isRMDomesticOrRMImport === true && <AgGridColumn width={120} field="RMName" headerName="RM Name" ></AgGridColumn>}
+                                            {isRMDomesticOrRMImport === true && <AgGridColumn width={120} field="RMGrade" headerName="Grade" ></AgGridColumn>}
+                                            {isMachineRate && <AgGridColumn width={145} field="ProcessName" headerName="Process Name"></AgGridColumn>}
+                                            {isMachineRate && <AgGridColumn width={150} field="MachineNumber" headerName="Machine Number"></AgGridColumn>}
+                                            {isBOPDomesticOrImport === true && <AgGridColumn width={130} field="BoughtOutPartCode" headerName="BOP Number"></AgGridColumn>}
+                                            {isBOPDomesticOrImport === true && <AgGridColumn width={130} field="BoughtOutPartName" headerName="BOP Name"></AgGridColumn>}
                                             {isSurfaceTreatmentOrOperation === true && <AgGridColumn width={185} field="OperationName" headerName="Operation Name"></AgGridColumn>}
                                             {isSurfaceTreatmentOrOperation === true && <AgGridColumn width={185} field="OperationCode" headerName="Operation Code"></AgGridColumn>}
-                                            {isSurfaceTreatmentOrOperation === true && <AgGridColumn width={185} field="OldOperationRate" headerName="Old Rate"></AgGridColumn>}
-                                            {isSurfaceTreatmentOrOperation === true && <AgGridColumn width={185} field="NewOperationRate" headerName="New Rate"></AgGridColumn>}
+                                            {!isMultiTechnology && verifyList && verifyList[0]?.CostingTypeId !== CBCTypeId && <AgGridColumn width={140} field="VendorName" cellRenderer='renderVendor' headerName="Vendor (Code)"></AgGridColumn>}
+                                            {!isMultiTechnology && verifyList && verifyList[0]?.CostingTypeId === CBCTypeId && <AgGridColumn width={140} field="CustomerName" cellRenderer='renderCustomer' headerName="Customer (Code)"></AgGridColumn>}
+                                            <AgGridColumn width={120} field="PlantName" cellRenderer='renderPlant' headerName="Plant (Code)"></AgGridColumn>
+                                            <AgGridColumn width={130} field="POPrice" headerName="Existing PO Price" cellRenderer='poPriceFormatter'></AgGridColumn>
+
+                                            {isSurfaceTreatmentOrOperation === true && <AgGridColumn width={185} field="OldOperationRate" headerName="Existing Rate"></AgGridColumn>}
+                                            {isSurfaceTreatmentOrOperation === true && <AgGridColumn width={185} field="NewOperationRate" headerName="Revised Rate"></AgGridColumn>}
 
                                             {isBOPDomesticOrImport === true && <AgGridColumn width={130} field="BoughtOutPartCode" headerName="Insert Number"></AgGridColumn>}
                                             {isBOPDomesticOrImport === true && <AgGridColumn width={130} field="BoughtOutPartName" headerName="Insert Name"></AgGridColumn>}
-                                            {isBOPDomesticOrImport === true && <AgGridColumn width={145} field="OldBoughtOutPartRate" headerName="Old Basic Rate"></AgGridColumn>}
-                                            {isBOPDomesticOrImport === true && <AgGridColumn width={150} field="NewBoughtOutPartRate" cellRenderer='newBRFormatter' headerName="New Basic Rate"></AgGridColumn>}
+                                            {isBOPDomesticOrImport === true && <AgGridColumn width={145} field="OldBoughtOutPartRate" headerName="Existing Basic Rate"></AgGridColumn>}
+                                            {isBOPDomesticOrImport === true && <AgGridColumn width={150} field="NewBoughtOutPartRate" cellRenderer='newBRFormatter' headerName="Revised Basic Rate"></AgGridColumn>}
 
-                                            {isMachineRate && <AgGridColumn width={145} field="ProcessName" headerName="Process Name"></AgGridColumn>}
-                                            {isMachineRate && <AgGridColumn width={150} field="MachineNumber" headerName="Machine Number"></AgGridColumn>}
-                                            {isMachineRate && <AgGridColumn width={145} field="OldMachineRate" headerName="Old Machine Rate"></AgGridColumn>}
-                                            {isMachineRate && <AgGridColumn width={150} field="NewMachineRate" headerName="New Machine Rate"></AgGridColumn>}
+                                            {isMachineRate && <AgGridColumn width={145} field="OldMachineRate" headerName="Existing Machine Rate"></AgGridColumn>}
+                                            {isMachineRate && <AgGridColumn width={150} field="NewMachineRate" headerName="Revised Machine Rate"></AgGridColumn>}
 
-                                            {isRMDomesticOrRMImport === true && <AgGridColumn width={120} field="RMName" headerName="RM Name" ></AgGridColumn>}
-                                            {isRMDomesticOrRMImport === true && <AgGridColumn width={120} field="RMGrade" headerName="RM Grade" ></AgGridColumn>}
-                                            {isRMDomesticOrRMImport === true && <AgGridColumn width={145} field="OldBasicRate" headerName="Old Basic Rate"></AgGridColumn>}
-                                            {isRMDomesticOrRMImport === true && <AgGridColumn width={150} field="NewBasicRate" cellRenderer='newBRFormatter' headerName="New Basic Rate"></AgGridColumn>}
-                                            {isRMDomesticOrRMImport === true && <AgGridColumn width={145} field="OldScrapRate" headerName="Old Scrap Rate"></AgGridColumn>}
-                                            {isRMDomesticOrRMImport === true && <AgGridColumn width={150} field="NewScrapRate" cellRenderer='newSRFormatter' headerName="New Scrap Rate" ></AgGridColumn>}
+
+                                            {isRMDomesticOrRMImport === true && <AgGridColumn width={145} field="OldBasicRate" headerName="Existing Basic Rate"></AgGridColumn>}
+                                            {isRMDomesticOrRMImport === true && <AgGridColumn width={150} field="NewBasicRate" cellRenderer='newBRFormatter' headerName="Revised Basic Rate"></AgGridColumn>}
+                                            {isRMDomesticOrRMImport === true && <AgGridColumn width={145} field="OldScrapRate" headerName="Existing Scrap Rate"></AgGridColumn>}
+                                            {isRMDomesticOrRMImport === true && <AgGridColumn width={150} field="NewScrapRate" cellRenderer='newSRFormatter' headerName="Revised Scrap Rate" ></AgGridColumn>}
                                             {isRMDomesticOrRMImport === true && <AgGridColumn field="RawMaterialId" hide ></AgGridColumn>}
 
                                             {isExchangeRate && <AgGridColumn width={130} field="Currency" headerName="Currency"></AgGridColumn>}
-                                            {isExchangeRate && <AgGridColumn width={130} field="POPrice" headerName="PO Price Old"></AgGridColumn>}
-                                            {isExchangeRate && <AgGridColumn width={145} field="OldExchangeRate" headerName="Old Exchange Rate"></AgGridColumn>}
-                                            {isExchangeRate && <AgGridColumn width={150} field="NewExchangeRate" cellRenderer='newExchangeRateFormatter' headerName="New Exchange Rate"></AgGridColumn>}
+                                            {isExchangeRate && <AgGridColumn width={130} field="POPrice" headerName="Existing PO Price"></AgGridColumn>}
+                                            {isExchangeRate && <AgGridColumn width={145} field="OldExchangeRate" headerName="Existing Exchange Rate"></AgGridColumn>}
+                                            {isExchangeRate && <AgGridColumn width={150} field="NewExchangeRate" cellRenderer='newExchangeRateFormatter' headerName="Revised Exchange Rate"></AgGridColumn>}
 
                                             {isMultiTechnology && <AgGridColumn width={150} field="Delta" headerName="Delta"></AgGridColumn>}
                                             {isMultiTechnology && <AgGridColumn width={150} field="DeltaSign" headerName="DeltaSign"></AgGridColumn>}
                                             {isMultiTechnology && <AgGridColumn width={150} field="NetCost" headerName="Net Cost"></AgGridColumn>}
                                             {isMultiTechnology && <AgGridColumn width={150} field="SOBPercentage" headerName="SOB Percentage"></AgGridColumn>}
-                                            {isMultiTechnology && <AgGridColumn width={150} field="OldPOPrice" headerName="Old PO Price"></AgGridColumn>}
-                                            {isMultiTechnology && <AgGridColumn width={150} field="NewPOPrice" headerName="New PO Price"></AgGridColumn>}
+                                            {isMultiTechnology && <AgGridColumn width={150} field="OldPOPrice" headerName="Existing PO Price"></AgGridColumn>}
+                                            {isMultiTechnology && <AgGridColumn width={150} field="NewPOPrice" headerName="Revised PO Price"></AgGridColumn>}
 
 
                                             {isOverHeadProfit === true && <AgGridColumn width={120} field="OverheadName" headerName="Overhead Name" ></AgGridColumn>}

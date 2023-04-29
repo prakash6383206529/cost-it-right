@@ -107,3 +107,63 @@
     //     height: 450px;
     // }
 }
+
+.report-btn-back {
+    margin-right: 50px;
+}
+
+.goat-given {
+    td {
+        width: 33% !important;
+
+        span {
+            font-size: 14px;
+        }
+    }
+}
+
+.master-movement-report {
+    min-height: calc(100vh - 268px);
+}
+
+.padding-top {
+    padding-top: 8px;
+}
+
+
+.report-btn-reset {
+    position: absolute !important;
+    top: 0;
+    right: 6.7%;
+}
+
+.doughnut-graph {
+    canvas {
+        transform: scale(0.9);
+    }
+
+    @media screen and (max-width: $middleDesktop) {
+        margin-top: -25px;
+    }
+}
+
+.supplier-back-btn {
+    position: relative;
+    text-align: right;
+    z-index: 2;
+
+    button {
+        position: absolute;
+        right: 0;
+    }
+}
+
+.goat-given {
+    td {
+        width: 33% !important;
+
+        span {
+            font-size: 14px;
+        }
+    }
+}

@@ -262,8 +262,9 @@ function ViewConversionCost(props) {
         {/*PROCESS COST GRID */}
         <Col md="12">
           <Table className="table cr-brdr-main conversion-cost" size="sm">
-            <thead>
-              <tr>
+            
+            <tbody>
+            <tr className='thead'>
                 {partNumberList.length === 0 && (IsAssemblyCosting && isPDFShow) && <th>{`Part No`}</th>}
                 <th style={{ width: "150px" }}>{`Process`}</th>
                 {processGroup && <th>{`Sub Process`}</th>}
@@ -278,16 +279,13 @@ function ViewConversionCost(props) {
                 <th>{`Net Cost`}</th>
                 <th className="costing-border-right">{`Remark`}</th>
               </tr>
-            </thead>
-            <tbody>
-              { }
               {costingProcessCost &&
                 costingProcessCost.map((item, index) => {
                   return (
                     <>
                       <tr key={index}>
                         {IsAssemblyCosting && partNumberList.length === 0 && <td>{item.PartNumber !== null || item.PartNumber !== "" ? item.PartNumber : ""}</td>}
-                        <td className={`${isPDFShow ? '' : 'text-overflow process-name'}`}>
+                        <td className={`${isPDFShow ? '' : `text-overflow  ${(item?.GroupName === '' || item?.GroupName === null) ? '' : 'process-name no-border'} `}`}>
                           {
                             (item?.GroupName === '' || item?.GroupName === null) ? '' :
                               <div onClick={() =>
@@ -319,7 +317,7 @@ function ViewConversionCost(props) {
                         <td>{item.Quantity ? checkForDecimalAndNull(item.Quantity, initialConfiguration.NoOfDecimalForInputOutput) : '-'}</td>
                         <td>{item.ProcessCost ? checkForDecimalAndNull(item.ProcessCost, initialConfiguration.NoOfDecimalForPrice) : 0}
                         </td>
-                        <td className='remark-overflow'><span title={item?.Remark ? item.Remark : "-"}>{item?.Remark ? item.Remark : "-"}</span></td>
+                        <td className={`${isPDFShow ? '' : 'text-overflow'}`}><span title={item?.Remark ? item.Remark : "-"}>{item?.Remark ? item.Remark : "-"}</span></td>
                       </tr>
                       {isPDFShow && renderSingleProcess(item, index)}
                       {processAccObj[index] && <>
@@ -347,7 +345,7 @@ function ViewConversionCost(props) {
   }
   const operationTableData = () => {
     return <>
-      <Row>
+      <Row className='firefox-spaces'>
         <Col md="8">
           <div className="left-border">{'Operation Cost:'}</div>
         </Col>
@@ -357,8 +355,9 @@ function ViewConversionCost(props) {
 
         <Col md="12">
           <Table className="table cr-brdr-main" size="sm">
-            <thead>
-              <tr>
+            
+            <tbody>
+            <tr className='thead'>
                 {partNumberList.length === 0 && IsAssemblyCosting && <th>{`Part No`}</th>}
                 <th>{`Operation Name`}</th>
                 <th>{`Operation Code`}</th>
@@ -366,13 +365,11 @@ function ViewConversionCost(props) {
                 <th>{`Rate`}</th>
                 <th>{`Quantity`}</th>
                 {/* make it configurable after deployment */}
-                {/* <th>{`Labour Rate`}</th>
-                      <th>{`Labour Quantity`}</th> */}
+                {costingOperationCost && costingOperationCost[0]?.IsLabourRateExist === true && <th>{`Labour Rate`}</th>}
+                {costingOperationCost && costingOperationCost[0]?.IsLabourRateExist === true && <th>{`Labour Quantity`}</th>}
                 <th>{`Net Cost`}</th>
                 <th className="costing-border-right">{`Remark`}</th>
               </tr>
-            </thead>
-            <tbody>
               {costingOperationCost &&
                 costingOperationCost.map((item, index) => {
                   return (
@@ -387,16 +384,8 @@ function ViewConversionCost(props) {
                       <td>{item.UOM ? item.UOM : '-'}</td>
                       <td>{item.Rate ? item.Rate : '-'}</td>
                       <td>{item.Quantity ? item.Quantity : '-'}</td>
-                      {/* <td>
-                              {item.IsLabourRateExist
-                                ? checkForDecimalAndNull(item.LabourRate, initialConfiguration.NoOfDecimalForPrice)
-                                : '-'}
-                            </td>
-                            <td>
-                              {item.LabourQuantity
-                                ? item.LabourQuantity
-                                : '-'}
-                            </td> */}
+                      <td>{item.IsLabourRateExist ? checkForDecimalAndNull(item.LabourRate, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
+                      <td>{item.IsLabourRateExist ? checkForDecimalAndNull(item.LabourQuantity, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
                       {/* <td>{netCost(item.OperationCost)}</td> */}
                       <td>
                         {item.OperationCost ? checkForDecimalAndNull(item.OperationCost, initialConfiguration.NoOfDecimalForPrice) : 0}
@@ -430,24 +419,21 @@ function ViewConversionCost(props) {
       <Row>
         {/*OTHER OPERATION COST GRID */}
 
-        <Col md="12">
+        <Col md="12" className='firefox-space-bottom'>
           <Table className="table cr-brdr-main" size="sm">
-            <thead>
-              <tr>
+            <tbody>
+            <tr className='thead'>
                 {partNumberList.length === 0 && IsAssemblyCosting && <th>{`Part No`}</th>}
                 <th>{`Operation Name`}</th>
                 <th>{`Operation Code`}</th>
                 <th>{`UOM`}</th>
                 <th>{`Rate`}</th>
                 <th>{`Quantity`}</th>
-                {/* make it configurable after deployment */}
-                {/* <th>{`Labour Rate`}</th>
-                      <th>{`Labour Quantity`}</th> */}
+                {costingOperationCost && costingOperationCost[0]?.IsLabourRateExist === true && <th>{`Labour Rate`}</th>}
+                {costingOperationCost && costingOperationCost[0]?.IsLabourRateExist === true && <th>{`Labour Quantity`}</th>}
                 <th>{`Net Cost`}</th>
                 <th className="costing-border-right">{`Remark`}</th>
               </tr>
-            </thead>
-            <tbody>
               {othercostingOperationCost &&
                 othercostingOperationCost.map((item, index) => {
                   return (
@@ -462,16 +448,8 @@ function ViewConversionCost(props) {
                       <td>{item.UOM ? item.UOM : '-'}</td>
                       <td>{item.Rate ? item.Rate : '-'}</td>
                       <td>{item.Quantity ? item.Quantity : '-'}</td>
-                      {/* <td>
-                              {item.IsLabourRateExist
-                                ? checkForDecimalAndNull(item.LabourRate, initialConfiguration.NoOfDecimalForPrice)
-                                : '-'}
-                            </td>
-                            <td>
-                              {item.LabourQuantity
-                                ? item.LabourQuantity
-                                : '-'}
-                            </td> */}
+                      {item.IsLabourRateExist && <td>{checkForDecimalAndNull(item.LabourRate, initialConfiguration.NoOfDecimalForPrice)}</td>}
+                      {item.IsLabourRateExist && <td>{checkForDecimalAndNull(item.LabourQuantity, initialConfiguration.NoOfDecimalForPrice)}</td>}
                       {/* <td>{netCost(item.OperationCost)}</td> */}
                       <td>
                         {item.OperationCost ? checkForDecimalAndNull(item.OperationCost, initialConfiguration.NoOfDecimalForPrice) : 0}
@@ -506,17 +484,17 @@ function ViewConversionCost(props) {
         {/*PROCESS COST GRID */}
         <Col md="12">
           <Table className="table cr-brdr-main" size="sm">
-            <thead>
-              <tr>
+            <tbody>
+            <tr className='thead'>
                 {partNumberList.length === 0 && IsAssemblyCosting && <th>{`Part No`}</th>}
                 <th>{`Operation Name`}</th>
                 <th>{`Surface Area`}</th>
                 <th>{`UOM`}</th>
                 <th>{`Rate/UOM`}</th>
+                {surfaceTreatmentCost && surfaceTreatmentCost[0]?.IsLabourRateExist === true && <th>{`Labour Rate/UOM`}</th>}
+                {surfaceTreatmentCost && surfaceTreatmentCost[0]?.IsLabourRateExist === true && <th>{`Labour Quantity`}</th>}
                 <th className="costing-border-right">{`Cost`}</th>
               </tr>
-            </thead>
-            <tbody>
               {surfaceTreatmentCost &&
                 surfaceTreatmentCost.map((item, index) => {
                   return (
@@ -526,6 +504,8 @@ function ViewConversionCost(props) {
                       <td>{item.SurfaceArea ? item.SurfaceArea : '-'}</td>
                       <td>{item.UOM ? item.UOM : '-'}</td>
                       <td>{item.RatePerUOM ? checkForDecimalAndNull(item.RatePerUOM, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
+                      {item.IsLabourRateExist === true && <td>{checkForDecimalAndNull(item.LabourRate, initialConfiguration.NoOfDecimalForPrice)}</td>}
+                      {item.IsLabourRateExist === true && <td>{checkForDecimalAndNull(item.LabourQuantity, initialConfiguration.NoOfDecimalForPrice)}</td>}
                       <td>{item.SurfaceTreatmentCost ? checkForDecimalAndNull(item.SurfaceTreatmentCost, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
 
                     </tr>
@@ -555,17 +535,14 @@ function ViewConversionCost(props) {
         {/*TRANSPORTATION COST GRID */}
         <Col md="12" className='mb-3'>
           <Table className="table cr-brdr-main mb-0" size="sm">
-            <thead>
-              <tr>
+            <tbody>
+            <tr className='thead'>
                 {/* {partNumberList.length ===0 && <th>{`Part No`}</th>}  */}
                 <th>{`Type`}</th>
                 <th>{`Rate`}</th>
                 <th>{`Quantity`}</th>
                 <th className="costing-border-right">{`Cost`}</th>
               </tr>
-            </thead>
-            <tbody>
-
               {transportCost &&
                 transportCost.map((item, index) => {
                   return (

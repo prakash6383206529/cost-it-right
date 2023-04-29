@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { Row, Col, } from 'reactstrap';
+import { Row, Col, Tooltip, } from 'reactstrap';
 import DayTime from '../../../common/DayTimeWrapper'
-import { defaultPageSize, EMPTY_DATA, OPERATIONS, SURFACETREATMENT } from '../../../../config/constants';
+import { CBCTypeId, defaultPageSize, EMPTY_DATA, OPERATIONS, SURFACETREATMENT } from '../../../../config/constants';
 import NoContentFound from '../../../common/NoContentFound';
 import { checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUserId, searchNocontentFilter } from '../../../../helper';
 import Toaster from '../../../common/Toaster';
@@ -16,7 +16,6 @@ import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import Simulation from '../Simulation';
 import debounce from 'lodash.debounce';
 import { TextFieldHookForm } from '../../../layout/HookFormInputs';
-import { VBC, ZBC } from '../../../../config/constants';
 import { runVerifySurfaceTreatmentSimulation } from '../../actions/Simulation';
 import VerifySimulation from '../VerifySimulation';
 import { PaginationWrapper } from '../../../common/commonPagination';
@@ -28,7 +27,7 @@ const gridOptions = {
 
 };
 function OperationSTSimulation(props) {
-    const { list, isbulkUpload, rowCount, isImpactedMaster, masterId, lastRevision, tokenForMultiSimulation } = props
+    const { list, isbulkUpload, rowCount, isImpactedMaster, lastRevision, tokenForMultiSimulation } = props
     const [showRunSimulationDrawer, setShowRunSimulationDrawer] = useState(false)
     const [showverifyPage, setShowVerifyPage] = useState(false)
     const [token, setToken] = useState('')
@@ -42,7 +41,8 @@ function OperationSTSimulation(props) {
     const [maxDate, setMaxDate] = useState('');
     const [titleObj, setTitleObj] = useState({})
     const [noData, setNoData] = useState(false);
-
+    const [showTooltip, setShowTooltip] = useState(false)
+    const [basicRateviewTooltip, setBasicRateViewTooltip] = useState(false)
     const gridRef = useRef();
 
     const { register, control, setValue, formState: { errors }, } = useForm({
@@ -137,6 +137,28 @@ function OperationSTSimulation(props) {
         )
     }
 
+    const vendorFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        return (
+            <>
+                {isbulkUpload ? row['Vendor (Code)'] : cell}
+
+            </>
+        )
+    }
+
+    const plantFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        return (
+            <>
+                {isbulkUpload ? row['DestinationPlant (Code)'] : cell}
+
+            </>
+        )
+    }
+
     const statusFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
@@ -152,7 +174,13 @@ function OperationSTSimulation(props) {
         return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
     }
 
-
+    const revisedBasicRateHeader = (props) => {
+        return (
+            <div className='ag-header-cell-label'>
+                <span className='ag-header-cell-text'>Revised{!isImpactedMaster && <i className={`fa fa-info-circle tooltip_custom_right tooltip-icon mb-n3 ml-4 mt2 `} id={"basicRate-tooltip"}></i>}</span>
+            </div>
+        );
+    };
     /**
   * @method beforeSaveCell
   * @description CHECK FOR ENTER NUMBER IN CELL
@@ -197,6 +225,9 @@ function OperationSTSimulation(props) {
         setGridColumnApi(params.columnApi)
         params.api.sizeColumnsToFit()
         params.api.paginationGoToPage(0);
+        setTimeout(() => {
+            setShowTooltip(true)
+        }, 100);
 
     };
 
@@ -230,6 +261,15 @@ function OperationSTSimulation(props) {
         setIsWarningMessageShow(false)
     }
 
+    const costingHeadFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        return cell ? cell : '-';
+    }
+
+    const customerFormatter = (props) => {
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        return (isbulkUpload ? row['Customer (Code)'] : row.CustomerName);
+    }
 
     const frameworkComponents = {
         effectiveDateRenderer: effectiveDateFormatter,
@@ -239,7 +279,12 @@ function OperationSTSimulation(props) {
         statusFormatter: statusFormatter,
         NewcostFormatter: NewcostFormatter,
         OldcostFormatter: OldcostFormatter,
-        oldRateFormatter: oldRateFormatter
+        oldRateFormatter: oldRateFormatter,
+        vendorFormatter: vendorFormatter,
+        plantFormatter: plantFormatter,
+        revisedBasicRateHeader: revisedBasicRateHeader,
+        costingHeadFormatter: costingHeadFormatter,
+        customerFormatter: customerFormatter
     };
 
 
@@ -265,7 +310,7 @@ function OperationSTSimulation(props) {
             return null;
         })
         if (Count === tempData.length) {
-            Toaster.warning('There is no changes in new value. Please correct the data, then run simulation')
+            Toaster.warning('Please change the rate, then run simulation')
             return false
         }
         setIsDisable(true)
@@ -299,6 +344,7 @@ function OperationSTSimulation(props) {
                 setShowVerifyPage(true)
             }
         }))
+        setShowTooltip(false)
     }, 500);
     const resetState = () => {
         gridApi?.setQuickFilter('');
@@ -306,14 +352,16 @@ function OperationSTSimulation(props) {
         gridOptions?.api?.setFilterModel(null);
         gridRef.current.api.sizeColumnsToFit();
     }
-
+    const basicRatetooltipToggle = () => {
+        setBasicRateViewTooltip(!basicRateviewTooltip)
+    }
     return (
         <div>
             <div className={`ag-grid-react`}>
                 {
                     (!showverifyPage && !showMainSimulation) &&
                     <Fragment>
-
+                        {!isImpactedMaster && showTooltip && <Tooltip className="rfq-tooltip-left" placement={"top"} isOpen={basicRateviewTooltip} toggle={basicRatetooltipToggle} target={"basicRate-tooltip"} >{"To add revised net rate please double click on the field."}</Tooltip>}
                         <form>
 
                             <Row>
@@ -326,54 +374,67 @@ function OperationSTSimulation(props) {
                                                     <div className="refresh mr-0"></div>
                                                 </button>
                                             </div>
-                                            {!isImpactedMaster && <button type="button" className={"apply"} onClick={cancel} disabled={isDisable}> <div className={'back-icon'}></div>Back</button>}
-                                        </div>
-                                        {
-                                            isbulkUpload &&
+
+
                                             <div className='d-flex justify-content-end bulk-upload-row'>
-                                                <div className="d-flex align-items-center">
-                                                    <label>Rows with changes:</label>
-                                                    <TextFieldHookForm
-                                                        label=""
-                                                        name={'NoOfCorrectRow'}
-                                                        Controller={Controller}
-                                                        title={titleObj.rowWithChanges}
-                                                        control={control}
-                                                        register={register}
-                                                        rules={{ required: false }}
-                                                        mandatory={false}
-                                                        handleChange={() => { }}
-                                                        defaultValue={''}
-                                                        className=""
-                                                        customClassName={'withBorder mn-height-auto hide-label mb-0'}
-                                                        errors={errors.NoOfCorrectRow}
-                                                        disabled={true}
-                                                    />
-                                                </div>
-                                                <div className="d-flex align-items-center">
-                                                    <label>Rows without changes:</label>
-                                                    <TextFieldHookForm
-                                                        label=""
-                                                        name={'NoOfRowsWithoutChange'}
-                                                        Controller={Controller}
-                                                        title={titleObj.rowWithoutChanges}
-                                                        control={control}
-                                                        register={register}
-                                                        rules={{ required: false }}
-                                                        mandatory={false}
-                                                        handleChange={() => { }}
-                                                        defaultValue={''}
-                                                        className=""
-                                                        customClassName={'withBorder mn-height-auto hide-label mb-0'}
-                                                        errors={errors.NoOfRowsWithoutChange}
-                                                        disabled={true}
-                                                    />
-                                                </div>
+                                                {
+                                                    isbulkUpload && <>
+                                                        <div className="d-flex align-items-center">
+                                                            <label>Rows with changes:</label>
+                                                            <TextFieldHookForm
+                                                                label=""
+                                                                name={'NoOfCorrectRow'}
+                                                                Controller={Controller}
+                                                                title={titleObj.rowWithChanges}
+                                                                control={control}
+                                                                register={register}
+                                                                rules={{ required: false }}
+                                                                mandatory={false}
+                                                                handleChange={() => { }}
+                                                                defaultValue={''}
+                                                                className=""
+                                                                customClassName={'withBorder mn-height-auto hide-label mb-0'}
+                                                                errors={errors.NoOfCorrectRow}
+                                                                disabled={true}
+                                                            />
+                                                        </div>
+                                                        <div className="d-flex align-items-center">
+                                                            <label>Rows without changes:</label>
+                                                            <TextFieldHookForm
+                                                                label=""
+                                                                name={'NoOfRowsWithoutChange'}
+                                                                Controller={Controller}
+                                                                title={titleObj.rowWithoutChanges}
+                                                                control={control}
+                                                                register={register}
+                                                                rules={{ required: false }}
+                                                                mandatory={false}
+                                                                handleChange={() => { }}
+                                                                defaultValue={''}
+                                                                className=""
+                                                                customClassName={'withBorder mn-height-auto hide-label mb-0'}
+                                                                errors={errors.NoOfRowsWithoutChange}
+                                                                disabled={true}
+                                                            />
+                                                        </div>
+                                                    </>}
+                                                {!isImpactedMaster && <div className={`d-flex align-items-center simulation-label-container`}>
+                                                    <div className='d-flex pl-3'>
+                                                        <label>Technology: </label>
+                                                        <p className='technology ml-1' title={list[0].Technology}>{list[0].Technology}</p>
+                                                    </div>
+                                                    {list[0].CostingTypeId !== CBCTypeId && <div className='d-flex pl-3'>
+                                                        <label className='mr-1'>Vendor (Code):</label>
+                                                        <p title={list[0].VendorName} className='mr-2'>{list[0].VendorName ? list[0].VendorName : list[0]['Vendor (Code)']}</p>
+
+                                                    </div>}
+                                                    <button type="button" className={"apply"} onClick={cancel} disabled={isDisable}> <div className={'back-icon'}></div>Back</button>
+                                                </div>}
                                             </div>
-                                        }
+                                        </div>
                                         <div className="ag-theme-material p-relative" style={{ width: '100%' }}>
                                             {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found simulation-lisitng" />}
-                                            <AgGridReact
+                                            {list && <AgGridReact
                                                 ref={gridRef}
                                                 floatingFilter={true}
                                                 style={{ height: '100%', width: '100%' }}
@@ -392,27 +453,26 @@ function OperationSTSimulation(props) {
                                                 }}
                                                 frameworkComponents={frameworkComponents}
                                                 stopEditingWhenCellsLoseFocus={true}
+                                                suppressColumnVirtualisation={true}
                                                 rowSelection={'multiple'}
                                                 onFilterModified={onFloatingFilterChanged}
                                             // frameworkComponents={frameworkComponents}
                                             >
-                                                {!isImpactedMaster && <>
-                                                    <AgGridColumn field="Technology" editable='false' headerName="Technology" minWidth={190}></AgGridColumn>
-                                                    <AgGridColumn field="VendorName" editable='false' headerName="Vendor (Code)" minWidth={190}></AgGridColumn>
-                                                </>}
+                                                {!isImpactedMaster && <AgGridColumn width={140} field="CostingHead" headerName="Costing Head" editable='false' cellRenderer={'costingHeadFormatter'}></AgGridColumn>}
                                                 <AgGridColumn field="OperationName" editable='false' headerName="Operation Name" minWidth={190}></AgGridColumn>
                                                 <AgGridColumn field="OperationCode" editable='false' headerName="Operation Code" minWidth={190}></AgGridColumn>
-                                                {!isImpactedMaster && <>
-                                                    <AgGridColumn field={`${isbulkUpload ? 'DestinationPlant' : 'Plants'}`} editable='false' headerName="Plant (Code)" minWidth={190}></AgGridColumn>
-                                                </>}
+                                                {!isImpactedMaster && <><AgGridColumn field="Technology" editable='false' headerName="Technology" minWidth={190}></AgGridColumn></>}
+                                                {!isImpactedMaster && list[0].CostingTypeId !== CBCTypeId && <><AgGridColumn field="VendorName" editable='false' headerName="Vendor (Code)" minWidth={190} cellRenderer='vendorFormatter'></AgGridColumn></>}
+                                                {!isImpactedMaster && <><AgGridColumn field={`${isbulkUpload ? 'DestinationPlant' : 'Plants'}`} editable='false' headerName="Plant (Code)" minWidth={190} cellRenderer='plantFormatter'></AgGridColumn></>}
+                                                {!isImpactedMaster && list[0].CostingTypeId === CBCTypeId && <AgGridColumn width={100} field="CustomerName" editable='false' headerName="Customer (Code)" cellRenderer='customerFormatter'></AgGridColumn>}
                                                 <AgGridColumn headerClass="justify-content-center" cellClass="text-center" minWidth={240} headerName="Net Rate" marryChildren={true} >
-                                                    <AgGridColumn minWidth={120} field="Rate" editable='false' headerName="Old" colId="Rate" cellRenderer="oldRateFormatter"></AgGridColumn>
-                                                    <AgGridColumn minWidth={120} cellRenderer='newRateFormatter' editable={!isImpactedMaster} field="NewRate" headerName="New" colId='NewRate'></AgGridColumn>
+                                                    <AgGridColumn minWidth={120} field="Rate" editable='false' headerName="Existing" colId="Rate" cellRenderer="oldRateFormatter"></AgGridColumn>
+                                                    <AgGridColumn minWidth={120} cellRenderer='newRateFormatter' editable={!isImpactedMaster} field="NewRate" headerName="Revised" colId='NewRate' headerComponent={'revisedBasicRateHeader'}></AgGridColumn>
                                                 </AgGridColumn>
                                                 <AgGridColumn field="EffectiveDate" headerName="Effective Date" editable='false' minWidth={190} cellRenderer='effectiveDateRenderer'></AgGridColumn>
                                                 <AgGridColumn field="CostingId" hide={true}></AgGridColumn>
 
-                                            </AgGridReact>
+                                            </AgGridReact>}
                                             {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />}
                                         </div>
                                     </div>

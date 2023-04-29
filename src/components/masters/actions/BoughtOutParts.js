@@ -17,6 +17,8 @@ import {
     GET_BOP_APPROVAL_LIST,
     config,
     GET_SOB_LISTING,
+    GET_INCO_SELECTLIST_SUCCESS,
+    GET_PAYMENT_SELECTLIST_SUCCESS
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
 import { loggedInUserId, userDetails } from '../../../helper';
@@ -70,7 +72,6 @@ export function createBOPImport(data, callback) {
  */
 export function getBOPDomesticDataList(data, skip, take, isPagination, obj, callback) {
     return (dispatch) => {
-        console.log(obj, "objobj")
         // dispatch({ type: API_REQUEST});
         if (isPagination === true) {
             dispatch({
@@ -78,7 +79,7 @@ export function getBOPDomesticDataList(data, skip, take, isPagination, obj, call
                 payload: undefined
             })
         }
-        const queryParams = `bop_for=${data.bop_for}&NetCost=${obj.NetLandedCost !== undefined ? obj.NetLandedCost : ""}&ListFor=${data.ListFor ? data.ListFor : ''}&StatusId=${data.StatusId ? data.StatusId : ''}&DepartmentCode=${obj.DepartmentName !== undefined ? obj.DepartmentName : ""}&CustomerName=${obj.CustomerName !== undefined ? obj.CustomerName : ''}&FromDate=${(obj.dateArray && obj.dateArray.length > 1) ? obj.dateArray[0] : ""}&ToDate=${(obj.dateArray && obj.dateArray.length > 1) ? obj.dateArray[1] : ""}&IsCustomerDataShow=${reactLocalStorage.getObject('cbcCostingPermission') !== undefined ? reactLocalStorage.getObject('cbcCostingPermission') : false}`
+        const queryParams = `bop_for=${data.bop_for}&NetCost=${obj.NetLandedCost !== undefined ? obj.NetLandedCost : ""}&ListFor=${data.ListFor ? data.ListFor : ''}&StatusId=${data.StatusId ? data.StatusId : ''}&DepartmentCode=${obj.DepartmentName !== undefined ? obj.DepartmentName : ""}&CustomerName=${obj.CustomerName !== undefined ? obj.CustomerName : ''}&FromDate=${(obj.dateArray && obj.dateArray.length > 1) ? obj.dateArray[0] : ""}&ToDate=${(obj.dateArray && obj.dateArray.length > 1) ? obj.dateArray[1] : ""}&IsCustomerDataShow=${reactLocalStorage.getObject('cbcCostingPermission') !== undefined ? reactLocalStorage.getObject('cbcCostingPermission') : false}&NumberOfPieces=${obj.NumberOfPieces ? obj.NumberOfPieces : ''}`
         const queryParamsSecond = bopQueryParms(isPagination, skip, take, obj)
         const request = axios.get(`${API.getBOPDomesticDataList}?${queryParams}&${queryParamsSecond}`, config());
         request.then((response) => {
@@ -111,7 +112,7 @@ export function getBOPDomesticDataList(data, skip, take, isPagination, obj, call
 export function getBOPImportDataList(data, skip, take, isPagination, obj, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        const queryParams = `bop_for=${data.bop_for}&Currency=${obj.Currency !== undefined ? obj.Currency : ""}&NetCostCurrency=${obj.NetLandedCost !== undefined ? obj.NetLandedCost : ""}&NetCost=${obj.NetLandedCostConversion !== undefined ? obj.NetLandedCostConversion : ""}&ListFor=${data.ListFor ? data.ListFor : ''}&StatusId=${data.StatusId ? data.StatusId : ''}&DepartmentCode=${obj.DepartmentCode !== undefined ? obj.DepartmentCode : ""}&CustomerName=${obj.CustomerName !== undefined ? obj.CustomerName : ''}&FromDate=${(obj.dateArray && obj.dateArray.length > 1) ? obj.dateArray[0] : ""}&ToDate=${(obj.dateArray && obj.dateArray.length > 1) ? obj.dateArray[1] : ""}&IsCustomerDataShow=${reactLocalStorage.getObject('cbcCostingPermission') !== undefined ? reactLocalStorage.getObject('cbcCostingPermission') : false}`
+        const queryParams = `bop_for=${data.bop_for}&Currency=${obj.Currency !== undefined ? obj.Currency : ""}&NetCostCurrency=${obj.NetLandedCost !== undefined ? obj.NetLandedCost : ""}&NetCost=${obj.NetLandedCostConversion !== undefined ? obj.NetLandedCostConversion : ""}&ListFor=${data.ListFor ? data.ListFor : ''}&StatusId=${data.StatusId ? data.StatusId : ''}&DepartmentCode=${obj.DepartmentCode !== undefined ? obj.DepartmentCode : ""}&CustomerName=${obj.CustomerName !== undefined ? obj.CustomerName : ''}&FromDate=${(obj.dateArray && obj.dateArray.length > 1) ? obj.dateArray[0] : ""}&ToDate=${(obj.dateArray && obj.dateArray.length > 1) ? obj.dateArray[1] : ""}&IsCustomerDataShow=${reactLocalStorage.getObject('cbcCostingPermission') !== undefined ? reactLocalStorage.getObject('cbcCostingPermission') : false}&IncoTerm=${obj.IncoTermDescriptionAndInfoTerm}&PaymentTerm=${obj.PaymentTermDescriptionAndPaymentTerm}&NumberOfPieces=${obj.NumberOfPieces ? obj.NumberOfPieces : ''}`
         const queryParamsSecond = bopQueryParms(isPagination, skip, take, obj)
         const request = axios.get(`${API.getBOPImportDataList}?${queryParams}&${queryParamsSecond}`, config());
         request.then((response) => {
@@ -660,4 +661,50 @@ export function masterApprovalRequestBySenderBop(data, callback) {
             apiErrors(error)
         })
     }
+}
+/**
+ * @method getIncoSelectList
+ * @description Used to get Inco terms selectlist
+ */
+export function getIncoTermSelectList(callback) {
+    return (dispatch) => {
+        //dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getIncoTermSelectList}`, config());
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_INCO_SELECTLIST_SUCCESS,
+                    payload: response.data.DataList,
+                });
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE, });
+            callback(error);
+            apiErrors(error);
+        });
+    };
+}
+/**
+ * @method getPaymentSelectList
+ * @description Used to get Payment terms selectlist
+ */
+export function getPaymentTermSelectList(callback) {
+    return (dispatch) => {
+        //dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getPaymentTermSelectList}`, config());
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_PAYMENT_SELECTLIST_SUCCESS,
+                    payload: response.data.DataList,
+                });
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE, });
+            callback(error);
+            apiErrors(error);
+        });
+    };
 }

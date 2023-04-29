@@ -3,7 +3,6 @@ import { Row, Col, } from 'reactstrap';
 import {
   deleteRawMaterialAPI, getRMImportDataList, masterFinalLevelUser
 } from '../actions/Material';
-import { checkForDecimalAndNull } from "../../../helper/validation";
 import { APPROVED_STATUS, defaultPageSize, EMPTY_DATA, RMIMPORT } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
@@ -29,9 +28,9 @@ import WarningMessage from '../../common/WarningMessage';
 import { PaginationWrapper } from '../../common/commonPagination';
 import _ from 'lodash';
 import { disabledClass } from '../../../actions/Common';
-import SelectRowWrapper from '../../common/SelectRowWrapper';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import AnalyticsDrawer from './AnalyticsDrawer';
+import { hideCustomerFromExcel } from '../../common/CommonFunctions';
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -48,7 +47,6 @@ function RMImportListing(props) {
   const [gridApi, setgridApi] = useState(null);   // DONT DELETE THIS STATE , IT IS USED BY AG GRID
   const [gridColumnApi, setgridColumnApi] = useState(null);   // DONT DELETE THIS STATE , IT IS USED BY AG GRID
   const [loader, setloader] = useState(true);
-  const [isFinalLevelUser, setIsFinalLevelUser] = useState(false)
   const dispatch = useDispatch();
   const rmImportDataList = useSelector((state) => state.material.rmImportDataList);
   const filteredRMData = useSelector((state) => state.material.filteredRMData);
@@ -132,17 +130,6 @@ function RMImportListing(props) {
     setTimeout(() => {
       reactLocalStorage.setObject('selectedRow', {})
       if (!props.stopApiCallOnCancel) {
-        let obj = {
-          MasterId: RM_MASTER_ID,
-          DepartmentId: userDetails().DepartmentId,
-          LoggedInUserLevelId: userDetails().LoggedInMasterLevelId,
-          LoggedInUserId: loggedInUserId()
-        }
-        dispatch(masterFinalLevelUser(obj, (res) => {
-          if (res?.data?.Result) {
-            setIsFinalLevelUser(res.data.Data.IsFinalApprovar)
-          }
-        }))
 
         return () => {
           dispatch(setSelectedRowForPagination([]))
@@ -160,7 +147,7 @@ function RMImportListing(props) {
           props?.changeSetLoader(true)
           dispatch(getListingForSimulationCombined(objectForMultipleSimulation, RMIMPORT, (res) => {
             props?.changeSetLoader(false)
-
+            setloader(false)
           }))
 
         } else {
@@ -333,7 +320,7 @@ function RMImportListing(props) {
 
 
   const onSearch = () => {
-
+    setNoData(false)
     setWarningMessage(false)
     setIsFilterButtonClicked(true)
     setPageNo(1)
@@ -575,10 +562,11 @@ function RMImportListing(props) {
     setisBulkUpload(true);
   }
 
-  const closeBulkUploadDrawer = () => {
+  const closeBulkUploadDrawer = (event, type) => {
     setisBulkUpload(false);
-
-    resetState()
+    if (type !== 'cancel') {
+      resetState()
+    }
   }
 
   /**
@@ -628,6 +616,7 @@ function RMImportListing(props) {
   };
 
   const returnExcelColumn = (data = [], TempData) => {
+    let excelData = hideCustomerFromExcel(data, "CustomerName")
     let temp = []
     temp = TempData && TempData.map((item) => {
       if (item.CostingHead === true) {
@@ -644,7 +633,7 @@ function RMImportListing(props) {
     return (
 
       <ExcelSheet data={temp} name={'RM Import'}>
-        {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
+        {excelData && excelData.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
       </ExcelSheet>);
   }
 
@@ -712,6 +701,9 @@ function RMImportListing(props) {
     setPageSize(prevState => ({ ...prevState, pageSize10: true, pageSize50: false, pageSize100: false }))
     setDataCount(0)
     reactLocalStorage.setObject('selectedRow', {})
+    if (isSimulation) {
+      props.isReset()
+    }
   }
 
 
@@ -760,7 +752,7 @@ function RMImportListing(props) {
     }
 
     if (props?.benchMark) {
-      let uniqueArrayNew = _.uniqBy(uniqueArray, "TechnologyId")
+      let uniqueArrayNew = _.uniqBy(selectedRows, v => [v.TechnologyId, v.RawMaterial].join())
       if (uniqueArrayNew.length > 1) {
         dispatch(setSelectedRowForPagination([]))
         gridApi.deselectAll()
@@ -906,15 +898,10 @@ function RMImportListing(props) {
                     suppressRowClickSelection={true}
                   >
                     <AgGridColumn cellClass="has-checkbox" field="CostingHead" headerName='Costing Head' cellRenderer={checkBoxRenderer}></AgGridColumn>
-
-                    <AgGridColumn field="TechnologyName" headerName="Technology"></AgGridColumn>
-
-                    <AgGridColumn field="RawMaterial" headerName="Raw Material"></AgGridColumn>
-
-                    <AgGridColumn field="RMGrade" headerName="RM Grade"></AgGridColumn>
-
-                    <AgGridColumn field="RMSpec" headerName="RM Spec"></AgGridColumn>
-
+                    <AgGridColumn field="TechnologyName" headerName='Technology'></AgGridColumn>
+                    <AgGridColumn field="RawMaterial" ></AgGridColumn>
+                    <AgGridColumn field="RMGrade" headerName='Grade'></AgGridColumn>
+                    <AgGridColumn field="RMSpec" headerName='Spec'></AgGridColumn>
                     <AgGridColumn field="RawMaterialCode" headerName='Code' cellRenderer='hyphenFormatter'></AgGridColumn>
                     <AgGridColumn field="Category"></AgGridColumn>
                     <AgGridColumn field="MaterialType"></AgGridColumn>
@@ -927,15 +914,11 @@ function RMImportListing(props) {
                     <AgGridColumn field="UOM"></AgGridColumn>
 
                     <AgGridColumn field="Currency" cellRenderer={"currencyFormatter"}></AgGridColumn>
-
-                    <AgGridColumn field="BasicRate" headerName="Basic Rate(INR)" cellRenderer='commonCostFormatter'></AgGridColumn>
-
-                    <AgGridColumn field="ScrapRate" headerName="Scrap Rate(INR)" cellRenderer='commonCostFormatter' ></AgGridColumn>
-
-                    <AgGridColumn field="RMFreightCost" headerName="Freight Cost(INR)" cellRenderer='commonCostFormatter'></AgGridColumn>
-
-                    <AgGridColumn field="RMShearingCost" headerName="Shearing Cost(INR)" cellRenderer='commonCostFormatter'></AgGridColumn>
-
+                    <AgGridColumn field="BasicRate" cellRenderer='commonCostFormatter'></AgGridColumn>
+                    <AgGridColumn field="ScrapRate" cellRenderer='commonCostFormatter'></AgGridColumn>
+                    {props.isMasterSummaryDrawer && <AgGridColumn width="140" field="MachiningScrapRate" headerName='Machining Scrap Cost'></AgGridColumn>}
+                    <AgGridColumn field="RMFreightCost" headerName="Freight Cost" cellRenderer='commonCostFormatter'></AgGridColumn>
+                    <AgGridColumn field="RMShearingCost" headerName="Shearing Cost" cellRenderer='shearingCostFormatter'></AgGridColumn>
                     <AgGridColumn field="NetLandedCost" headerName="Net Cost (Currency)" cellRenderer='costFormatter'></AgGridColumn>
 
                     <AgGridColumn field="NetLandedCostConversion" headerName="Net Cost (INR)" cellRenderer='costFormatter'></AgGridColumn>
@@ -970,11 +953,11 @@ function RMImportListing(props) {
             closeDrawer={closeBulkUploadDrawer}
             isEditFlag={false}
             densityAlert={densityAlert}
-            fileName={"RMImport"}
+            fileName={"RM Import"}
             isZBCVBCTemplate={true}
             messageLabel={"RM Import"}
             anchor={"right"}
-            isFinalApprovar={isFinalLevelUser}
+            masterId={RM_MASTER_ID}
           />
         )
       }
@@ -992,6 +975,7 @@ function RMImportListing(props) {
           isSimulation={true}
           //cellValue={cellValue}
           rowData={selectedRowData}
+          import={true}
         />
       }
 

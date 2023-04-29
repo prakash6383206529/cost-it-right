@@ -1,14 +1,13 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Field, reduxForm, formValueSelector, propTypes } from "redux-form";
+import { Field, reduxForm, formValueSelector, propTypes, clearFields } from "redux-form";
 import { Row, Col, Label, } from 'reactstrap';
-import { required, positiveAndDecimalNumber, postiveNumber, maxLength10, checkPercentageValue, decimalLengthThree, nonZero, } from "../../../helper/validation";
-import { renderDatePicker, renderMultiSelectField, renderNumberInputField, searchableSelect, } from "../../layout/FormInputs";
+import { required, postiveNumber, maxLength10, nonZero, number, positiveAndDecimalNumber, checkPercentageValue, decimalLengthThree } from "../../../helper/validation";
+import { renderDatePicker, renderMultiSelectField, renderTextInputField, searchableSelect, renderNumberInputField } from "../../layout/FormInputs";
 import { updateInterestRate, createInterestRate, getPaymentTermsAppliSelectList, getICCAppliSelectList, getInterestRateData, } from '../actions/InterestRateMaster';
 import { getVendorWithVendorCodeSelectList, getPlantSelectListByType } from '../../../actions/Common';
 import { MESSAGES } from '../../../config/message';
 import { getConfigurationKey, loggedInUserId, userDetails } from "../../../helper/auth";
-import Switch from "react-switch";
 import DayTime from '../../common/DayTimeWrapper'
 import "react-datepicker/dist/react-datepicker.css";
 import LoaderCustom from '../../common/LoaderCustom';
@@ -49,10 +48,10 @@ class AddInterestRate extends Component {
       isDataChanged: this.props.data.isEditFlag,
       minEffectiveDate: '',
       showErrorOnFocus: false,
-      showErrorOnFocusDate: false,
       costingTypeId: ZBCTypeId,
       client: [],
-      showPopup: false
+      showPopup: false,
+      vendorFilterList: []
     }
   }
   /**
@@ -62,7 +61,6 @@ class AddInterestRate extends Component {
   UNSAFE_componentWillMount() {
     if (!(this.props.data.isEditFlag || this.state.isViewMode)) {
       // this.props.getVendorListByVendorType(true, this.state.vendorName, (res) => {
-      //   console.log(res, 'res');
       // })
     }
   }
@@ -150,6 +148,20 @@ class AddInterestRate extends Component {
   * @description Used for Vendor checked
   */
   onPressVendor = (costingHeadFlag) => {
+    const fieldsToClear = [
+      'Mode',
+      'vendorName',
+      'Plant',
+      'DestinationPlant',
+      'clientName',
+      'ICCPercent',
+      'ICCApplicability',
+      'PaymentTermsApplicability',
+      'EffectiveDate',
+    ];
+    fieldsToClear.forEach(fieldName => {
+      this.props.dispatch(clearFields('AddInterestRate', false, false, fieldName));
+    });
     this.setState({
       vendorName: [],
       costingTypeId: costingHeadFlag
@@ -487,14 +499,17 @@ class AddInterestRate extends Component {
     const { isEditFlag, isViewMode, setDisable, costingTypeId, isDataChanged } = this.state;
 
     const filterList = async (inputValue) => {
-      const { vendorName } = this.state
+      const { vendorFilterList } = this.state
+      if (inputValue && typeof inputValue === 'string' && inputValue.includes(' ')) {
+        inputValue = inputValue.trim();
+      }
       const resultInput = inputValue.slice(0, searchCount)
-      if (inputValue?.length >= searchCount && vendorName !== resultInput) {
+      if (inputValue?.length >= searchCount && vendorFilterList !== resultInput) {
         this.setState({ inputLoader: true })
         let res
         res = await getVendorWithVendorCodeSelectList(resultInput)
         this.setState({ inputLoader: false })
-        this.setState({ vendorName: resultInput })
+        this.setState({ vendorFilterList: resultInput })
         let vendorDataAPI = res?.data?.SelectList
         if (inputValue) {
           return autoCompleteDropdown(inputValue, vendorDataAPI, false, [], true)
@@ -619,7 +634,7 @@ class AddInterestRate extends Component {
                               key={this.state.updateAsyncDropdown}
                               loadOptions={filterList}
                               onChange={(e) => this.handleVendorName(e)}
-                              noOptionsMessage={({ inputValue }) => inputValue.length < 3 ? "Enter 3 characters to show data" : "No results found"}
+                              noOptionsMessage={({ inputValue }) => inputValue.length < 3 ? MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN : "No results found"}
                               value={this.state.vendorName} isDisabled={(isEditFlag) ? true : false}
                               onKeyDown={(onKeyDown) => {
                                 if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
@@ -765,8 +780,8 @@ class AddInterestRate extends Component {
                               name={"RepaymentPeriod"}
                               type="text"
                               placeholder={isViewMode ? '-' : "Enter"}
-                              validate={[postiveNumber, maxLength10, nonZero]}
-                              component={renderNumberInputField}
+                              validate={[postiveNumber, maxLength10, nonZero, number]}
+                              component={renderTextInputField}
                               required={false}
                               onChange={(event) => this.handleChangeRepaymentPeriod(event.target.value)}
                               disabled={isViewMode}
@@ -830,10 +845,8 @@ class AddInterestRate extends Component {
                               component={renderDatePicker}
                               disabled={isViewMode || isDataChanged}
                               className="form-control"
-                              onFocus={() => onFocus(this, true)}
                             />
                           </div>
-                          {this.state.showErrorOnFocusDate && this.state.effectiveDate === '' && <div className='text-help mt-1 p-absolute bottom-7'>This field is required.</div>}
                         </div>
                       </Col>
                     </Row>

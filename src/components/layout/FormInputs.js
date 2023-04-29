@@ -2,7 +2,7 @@ import React from "react";
 import Select, { createFilter } from "react-select";
 import DatePicker from "react-datepicker";
 import PropTypes from "prop-types";
-import "./formInputs.css";
+import "./formInputs.scss";
 import { SPACEBAR } from "../../config/constants";
 
 /*
@@ -234,7 +234,7 @@ export function renderMultiSelectField(field) {
   //const inputbox = `inputbox ${active ? "active" : ""}`;
   const inputbox = ` ${active ? "active" : ""}`;
   const className = `form-group ${touched && error ? "has-danger" : ""}`;
-  const InputClassName = `basic-multi-select ${field.className ? field.className : ""
+  const InputClassName = `basic-multi-select multidropdown-container ${field.className ? field.className : ""
     }`;
   const optionValue = field.optionValue;
   const optionLabel = field.optionLabel;
@@ -348,8 +348,8 @@ export function renderTextInputField(field) {
     meta: { touched, error, active },
     ...others
   } = field;
-  const inputbox = `inputbox ${active ? "active" : ""}`;
-  const className = `form-group ${touched && error ? "has-danger" : ""}`;
+  const inputbox = `${active ? "active" : ""}`;
+  const className = `form-group inputbox  withBorder ${touched && error ? "has-danger" : ""}`;
   const inputStyle = field.inputStyle ? field.inputStyle : "";
   const inputIconStyle = field.inputIconStyle ? field.inputIconStyle : "";
   const InputClassName = `form-control ${field.className ? field.className : ""
@@ -396,7 +396,7 @@ export function renderSelectField(field) {
     meta: { touched, error, active },
   } = field;
   const inputbox = ` ${active ? "active" : ""}`;
-  const className = `form-group inputbox ${touched && error ? "has-danger" : ""
+  const className = `form-group inputbox multidropdown-container ${touched && error ? "has-danger" : ""
     }`;
   const InputClassName = `form-control ${field.className ? field.className : ""
     }`;
@@ -622,7 +622,7 @@ export function renderDatePicker(field) {
         showMonthDropdown
         showYearDropdown
         readonly="readonly"
-        onBlur={() => null}
+        onBlur={input.onBlur}
         selected={input.value ? new Date(input.value) : null}
         className={field.className}
         onSelect={field.changeHandler ? (date) => field.changeHandler(date) : null}
@@ -631,7 +631,7 @@ export function renderDatePicker(field) {
         onChangeRaw={(e) => e.preventDefault()}
         disabled={disabled}
       />
-      {touched ? <div className="text-help mb-2 mb-2">{error}</div> : ""}
+      {(touched) ? <div className="text-help mb-2 mb-2">{error}</div> : ""}
     </div>
   );
 }
@@ -715,7 +715,7 @@ export const searchableSelect = ({
         isDisabled={isDisable}
         placeholder={placeholder}
         menuPlacement={menuPlacement}
-        className={"searchable"}
+        className={"searchable multidropdown-container"}
         onKeyDown={(onKeyDown) => {
           if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
         }}

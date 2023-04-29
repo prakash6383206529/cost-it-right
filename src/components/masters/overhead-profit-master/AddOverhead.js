@@ -1,16 +1,16 @@
 import React, { Component, } from 'react';
 import { connect } from 'react-redux';
-import { Field, reduxForm, formValueSelector } from "redux-form";
+import { Field, reduxForm, formValueSelector, clearFields } from "redux-form";
 import { Row, Col, Label } from 'reactstrap';
-import { required, getVendorCode, positiveAndDecimalNumber, maxLength15, checkPercentageValue, decimalLengthThree } from "../../../helper/validation";
-import { searchableSelect, renderTextAreaField, renderNumberInputField, renderDatePicker, renderMultiSelectField } from "../../layout/FormInputs";
+import { required, getVendorCode, number, maxPercentValue, checkWhiteSpaces, percentageLimitValidation } from "../../../helper/validation";
+import { searchableSelect, renderTextAreaField, renderDatePicker, renderMultiSelectField, renderText } from "../../layout/FormInputs";
 import { fetchModelTypeAPI, fetchCostingHeadsAPI, getPlantSelectListByType } from '../../../actions/Common';
 import { getVendorWithVendorCodeSelectList } from '../actions/Supplier';
 import { createOverhead, updateOverhead, getOverheadData, fileUploadOverHead, fileDeleteOverhead, } from '../actions/OverheadProfit';
 import { getClientSelectList, } from '../actions/Client';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
-import { getConfigurationKey, loggedInUserId, userDetails } from "../../../helper/auth";
+import { getConfigurationKey, loggedInUserId } from "../../../helper/auth";
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css'
 import { CBCTypeId, FILE_URL, SPACEBAR, VBCTypeId, ZBC, ZBCTypeId, searchCount } from '../../../config/constants';
@@ -69,9 +69,9 @@ class AddOverhead extends Component {
       isDataChanged: this.props.data.isEditFlag,
       attachmentLoader: false,
       showErrorOnFocus: false,
-      showErrorOnFocusDate: false,
       showPopup: false,
-      showPartCost: false
+      showPartCost: false,
+      vendorFilterList: []
     }
   }
 
@@ -95,6 +95,22 @@ class AddOverhead extends Component {
     * @description Used for Vendor checked
     */
   onPressVendor = (costingHeadFlag) => {
+    const fieldsToClear = [
+      'vendorName',
+      'EffectiveDate',
+      'ModelType',
+      'Plant',
+      'DestinationPlant',
+      'clientName',
+      'OverheadApplicability',
+      'OverheadPercentage',
+      'OverheadRMPercentage',
+      'OverheadMachiningCCPercentage',
+      'OverheadBOPPercentage',
+    ];
+    fieldsToClear.forEach(fieldName => {
+      this.props.dispatch(clearFields('AddOverhead', false, false, fieldName));
+    });
     this.setState({
       vendorName: [],
       costingTypeId: costingHeadFlag
@@ -295,23 +311,10 @@ class AddOverhead extends Component {
     if (prevProps.filedObj !== this.props.filedObj) {
 
       const { filedObj } = this.props;
-      if (this.props.filedObj.OverheadPercentage) {
-        checkPercentageValue(this.props.filedObj.OverheadPercentage, "Overhead percentage should not be more than 100") ? this.props.change('OverheadPercentage', this.props.filedObj.OverheadPercentage) : this.props.change('OverheadPercentage', 0)
-      }
-      if (this.props.filedObj.OverheadRMPercentage) {
-        checkPercentageValue(this.props.filedObj.OverheadRMPercentage, "Overhead RM percentage should not be more than 100") ? this.props.change('OverheadRMPercentage', this.props.filedObj.OverheadRMPercentage) : this.props.change('OverheadRMPercentage', 0)
-      }
-      if (this.props.filedObj.OverheadMachiningCCPercentage) {
-        checkPercentageValue(this.props.filedObj.OverheadMachiningCCPercentage, "Overhead CC percentage should not be more than 100") ? this.props.change('OverheadMachiningCCPercentage', this.props.filedObj.OverheadMachiningCCPercentage) : this.props.change('OverheadMachiningCCPercentage', 0)
-      }
-      if (this.props.filedObj.OverheadBOPPercentage) {
-        checkPercentageValue(this.props.filedObj.OverheadBOPPercentage, "Overhead BOP percentage should not be more than 100") ? this.props.change('OverheadBOPPercentage', this.props.filedObj.OverheadBOPPercentage) : this.props.change('OverheadBOPPercentage', 0)
-      }
-
-      const OverheadPercentage = filedObj && filedObj.OverheadPercentage !== undefined && filedObj.OverheadPercentage !== '' ? true : false;
-      const OverheadRMPercentage = filedObj && filedObj.OverheadRMPercentage !== undefined && filedObj.OverheadRMPercentage !== '' ? true : false;
-      const OverheadMachiningCCPercentage = filedObj && filedObj.OverheadMachiningCCPercentage !== undefined && filedObj.OverheadMachiningCCPercentage !== '' ? true : false;
-      const OverheadBOPPercentage = filedObj && filedObj.OverheadBOPPercentage !== undefined && filedObj.OverheadBOPPercentage !== '' ? true : false;
+      const OverheadPercentage = filedObj && filedObj.OverheadPercentage !== undefined && filedObj.OverheadPercentage !== '' && filedObj.OverheadPercentage !== null ? true : false;
+      const OverheadRMPercentage = filedObj && filedObj.OverheadRMPercentage !== undefined && filedObj.OverheadRMPercentage !== '' && filedObj.OverheadRMPercentage !== null ? true : false;
+      const OverheadMachiningCCPercentage = filedObj && filedObj.OverheadMachiningCCPercentage !== undefined && filedObj.OverheadMachiningCCPercentage !== '' && filedObj.OverheadMachiningCCPercentage !== null ? true : false;
+      const OverheadBOPPercentage = filedObj && filedObj.OverheadBOPPercentage !== undefined && filedObj.OverheadBOPPercentage !== '' && filedObj.OverheadBOPPercentage !== null ? true : false;
 
       if (OverheadPercentage) {
         this.setState({ isRM: true, isCC: true, isBOP: true, })
@@ -332,6 +335,9 @@ class AddOverhead extends Component {
     if (newValue && newValue !== '') {
       if (newValue?.label?.includes('Part Cost')) {
         this.setState({ showPartCost: true })
+      }
+      else {
+        this.setState({ showPartCost: false })
       }
       this.setState({ overheadAppli: newValue, isRM: false, isCC: false, isBOP: false, isOverheadPercent: false }, () => {
         this.checkOverheadFields()
@@ -857,14 +863,17 @@ class AddOverhead extends Component {
     const { handleSubmit, } = this.props;
     const { isRM, isCC, isBOP, isOverheadPercent, isEditFlag, isHideOverhead, isHideBOP, isHideRM, isHideCC, isViewMode, setDisable, isDataChanged, costingTypeId } = this.state;
     const filterList = async (inputValue) => {
-      const { vendorName } = this.state
+      const { vendorFilterList } = this.state
+      if (inputValue && typeof inputValue === 'string' && inputValue.includes(' ')) {
+        inputValue = inputValue.trim();
+      }
       const resultInput = inputValue.slice(0, searchCount)
-      if (inputValue?.length >= searchCount && vendorName !== resultInput) {
+      if (inputValue?.length >= searchCount && vendorFilterList !== resultInput) {
         this.setState({ inputLoader: true })
         let res
         res = await getVendorWithVendorCodeSelectList(resultInput)
         this.setState({ inputLoader: false })
-        this.setState({ vendorName: resultInput })
+        this.setState({ vendorFilterList: resultInput })
         let vendorDataAPI = res?.data?.SelectList
         if (inputValue) {
           return autoCompleteDropdown(inputValue, vendorDataAPI, false, [], true)
@@ -884,7 +893,6 @@ class AddOverhead extends Component {
         }
       }
     };
-
     return (
       <>
         {this.state.isLoader && <LoaderCustom />}
@@ -978,7 +986,7 @@ class AddOverhead extends Component {
                         {costingTypeId === VBCTypeId && (
                           <Col md="3" >
                             <label>{"Vendor (Code)"}<span className="asterisk-required">*</span></label>
-                            <div className='p-relative'>
+                            <div className='p-relative vendor-loader'>
                               {this.state.inputLoader && <LoaderCustom customClass={`input-loader`} />}
                               <AsyncSelect
                                 name="vendorName"
@@ -987,7 +995,7 @@ class AddOverhead extends Component {
                                 loadOptions={filterList}
                                 onChange={(e) => this.handleVendorName(e)}
                                 value={this.state.vendorName}
-                                noOptionsMessage={({ inputValue }) => inputValue.length < 3 ? "Enter 3 characters to show data" : "No results found"}
+                                noOptionsMessage={({ inputValue }) => inputValue.length < 3 ? MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN : "No results found"}
                                 isDisabled={(isEditFlag) ? true : false}
                                 onFocus={() => onFocus(this)}
                                 onKeyDown={(onKeyDown) => {
@@ -1096,9 +1104,9 @@ class AddOverhead extends Component {
                               type="text"
                               placeholder={isOverheadPercent || isViewMode ? "-" : "Enter"}
                               validate={
-                                !isOverheadPercent ? [required, positiveAndDecimalNumber, maxLength15, decimalLengthThree] : []
+                                !isOverheadPercent ? [required, number, maxPercentValue, checkWhiteSpaces, percentageLimitValidation] : []
                               }
-                              component={renderNumberInputField}
+                              component={renderText}
                               onBlur={this.handlePercent}
                               required={!isOverheadPercent ? true : false}
                               onChange={(event) => this.handleChangeOverheadPercentage(event.target.value)}
@@ -1116,8 +1124,8 @@ class AddOverhead extends Component {
                               name={"OverheadRMPercentage"}
                               type="text"
                               placeholder={isRM || isViewMode ? "-" : "Enter"}
-                              validate={!isRM ? [required, positiveAndDecimalNumber, maxLength15, decimalLengthThree] : []}
-                              component={renderNumberInputField}
+                              validate={!isRM ? [required, number, maxPercentValue, checkWhiteSpaces, percentageLimitValidation] : []}
+                              component={renderText}
                               required={!isRM ? true : false}
                               onChange={(event) => this.handleChangeOverheadPercentageRM(event.target.value)}
                               className=""
@@ -1133,8 +1141,8 @@ class AddOverhead extends Component {
                               name={"OverheadMachiningCCPercentage"}
                               type="text"
                               placeholder={isCC || isViewMode ? "-" : "Enter"}
-                              validate={!isCC ? [required, positiveAndDecimalNumber, maxLength15, decimalLengthThree] : []}
-                              component={renderNumberInputField}
+                              validate={!isCC ? [required, number, maxPercentValue, checkWhiteSpaces, percentageLimitValidation] : []}
+                              component={renderText}
                               required={!isCC ? true : false}
                               onChange={(event) => this.handleChangeOverheadPercentageCC(event.target.value)}
                               className=""
@@ -1150,8 +1158,8 @@ class AddOverhead extends Component {
                               name={"OverheadBOPPercentage"}
                               type="text"
                               placeholder={isBOP || isViewMode ? "-" : "Enter"}
-                              validate={!isBOP ? [required, positiveAndDecimalNumber, maxLength15, decimalLengthThree] : []}
-                              component={renderNumberInputField}
+                              validate={!isBOP ? [required, number, maxPercentValue, checkWhiteSpaces, percentageLimitValidation] : []}
+                              component={renderText}
                               required={!isBOP ? true : false}
                               onChange={(event) => this.handleChangeOverheadPercentageBOP(event.target.value)}
                               className=""
@@ -1179,10 +1187,8 @@ class AddOverhead extends Component {
                               className="form-control"
                               disabled={isViewMode || isDataChanged}
                               placeholder={isViewMode || isDataChanged ? '-' : "Select Date"}
-                              onFocus={() => onFocus(this, true)}
                             />
                           </div>
-                          {this.state.showErrorOnFocusDate && this.state.effectiveDate === '' && <div className='text-help mt-1 p-absolute bottom-22'>This field is required.</div>}
                         </Col>
                       </Row >
 

@@ -7,17 +7,18 @@ import { ViewCostingContext } from '../CostingDetails';
 import { useContext } from 'react';
 import { useEffect } from 'react';
 import { calculatePercentage, checkForDecimalAndNull, checkForNull, getConfigurationKey } from '../../../../helper';
-import Toaster from '../../../common/Toaster';
 import { useDispatch, useSelector } from 'react-redux';
 import { isDataChange } from '../../actions/Costing';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { IdForMultiTechnology } from '../../../../config/masterData';
-import { setSubAssemblyTechnologyArray } from '../../actions/SubAssembly';
+import { number, percentageLimitValidation, checkWhiteSpaces } from "../../../../helper/validation";
+import Toaster from '../../../common/Toaster';
 
 function AddBOPHandling(props) {
   const { item, isAssemblyTechnology } = props
   const CostingViewMode = useContext(ViewCostingContext);
   const { subAssemblyTechnologyArray } = useSelector(state => state.subAssembly)
+  const [handlingChargesChange, setHandlingChargesChange] = useState(null)
   const IsLocked = (item?.IsLocked ? item?.IsLocked : false) || (item?.IsPartLocked ? item?.IsPartLocked : false)
   const dispatch = useDispatch()
   const [BOPHandling, setBOPHandling] = useState(subAssemblyTechnologyArray ? subAssemblyTechnologyArray[0]?.BOPHandlingCharges : 0);
@@ -49,6 +50,7 @@ function AddBOPHandling(props) {
       setValue('BOPCost', checkForDecimalAndNull(BOPTotalCost, getConfigurationKey().NoOfDecimalForPrice))
       setValue('BOPHandlingPercentage', subAssemblyTechnologyArray && checkForDecimalAndNull(subAssemblyTechnologyArray[0]?.CostingPartDetails?.BOPHandlingPercentage, getConfigurationKey().NoOfDecimalForPrice))
       setValue('BOPHandlingCharges', subAssemblyTechnologyArray && checkForDecimalAndNull(subAssemblyTechnologyArray[0]?.CostingPartDetails?.BOPHandlingCharges, getConfigurationKey().NoOfDecimalForPrice))
+      setHandlingChargesChange(subAssemblyTechnologyArray && checkForDecimalAndNull(subAssemblyTechnologyArray[0]?.CostingPartDetails?.BOPHandlingCharges, getConfigurationKey().NoOfDecimalForPrice))
       setValue('BOPHandlingFixed', subAssemblyTechnologyArray[0]?.CostingPartDetails?.BOPHandlingChargeType === "Fixed" ? checkForNull(subAssemblyTechnologyArray[0]?.CostingPartDetails?.BOPHandlingCharges) : 0)
       setValue('BOPHandlingType', subAssemblyTechnologyArray && { label: subAssemblyTechnologyArray[0]?.CostingPartDetails?.BOPHandlingChargeType, value: subAssemblyTechnologyArray[0]?.CostingPartDetails?.BOPHandlingChargeType })
       setBOPCost(BOPTotalCost)
@@ -67,6 +69,7 @@ function AddBOPHandling(props) {
       setValue('BOPCost', obj[0]?.CostingPartDetails?.IsApplyBOPHandlingCharges ? checkForDecimalAndNull(obj[0]?.CostingPartDetails?.BOPHandlingChargeApplicability, getConfigurationKey().NoOfDecimalForPrice) : checkForDecimalAndNull(BOPSum, getConfigurationKey().NoOfDecimalForPrice))
       setValue('BOPHandlingPercentage', checkForNull(obj[0]?.CostingPartDetails?.BOPHandlingPercentage))
       setValue('BOPHandlingCharges', checkForNull(obj[0]?.CostingPartDetails?.BOPHandlingCharges))
+      setHandlingChargesChange(checkForNull(obj[0]?.CostingPartDetails?.BOPHandlingCharges));
       setValue('BOPHandlingFixed', obj[0]?.CostingPartDetails?.BOPHandlingChargeType === "Fixed" ? checkForNull(obj[0]?.CostingPartDetails?.BOPHandlingCharges) : 0)
       setValue('BOPHandlingType', obj[0]?.CostingPartDetails?.BOPHandlingChargeType ? { label: obj[0]?.CostingPartDetails?.BOPHandlingChargeType, value: obj[0]?.CostingPartDetails?.BOPHandlingChargeType } : {})   // COMMENT
       setBOPHandlingType(obj[0]?.CostingPartDetails?.BOPHandlingChargeType)
@@ -93,7 +96,6 @@ function AddBOPHandling(props) {
     } else {
       setValue('BOPHandlingCharges', 0)
       setValue('BOPHandlingPercentage', 0)
-      Toaster.warning('Please enter valid number.')
     }
   }
 
@@ -149,6 +151,7 @@ function AddBOPHandling(props) {
   };
 
   const saveHandleCharge = () => {
+    if (Object.keys(errors).length > 0) return false
     // WILL BE EXECUTED WHEN COSTING TECHNOLOGY IS ASSEMBLY FOR OTHER TECHNOLOGIES ELSE WILL GET EXECUTED
     let percentage = getValues('BOPHandlingPercentage')
     let obj = {
@@ -161,6 +164,10 @@ function AddBOPHandling(props) {
       BOPHandlingPercentage: getValues('BOPHandlingPercentage'),
       BOPHandlingCharges: getValues('BOPHandlingCharges'),
       BOPHandlingChargeType: BOPHandlingType
+    }
+
+    if (handlingChargesChange !== obj.BOPHandlingCharges) {
+      Toaster.success('BOP Handling charges saved successfully')
     }
     props.setBOPCostWithAsssembly(obj, item)
     setTimeout(() => {
@@ -259,10 +266,7 @@ function AddBOPHandling(props) {
                           mandatory={false}
                           rules={{
                             required: true,
-                            pattern: {
-                              value: /^[0-9]\d*(\.\d+)?$/i,
-                              message: 'Invalid Number.'
-                            },
+                            validate: { number, checkWhiteSpaces, percentageLimitValidation },
                             max: {
                               value: 100,
                               message: 'Percentage cannot be greater than 100'

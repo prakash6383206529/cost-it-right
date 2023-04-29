@@ -238,7 +238,7 @@
 
 .send-for-approval {
     @include icons("../../assests/images/send-for-approval.svg", 13px, 16px);
-    // margin-right: 5px;
+    margin-right: 5px;
 }
 
 .compare-arrows {
@@ -681,6 +681,7 @@
     height: 26px;
     border-radius: 4px;
     margin: auto;
+    margin-bottom: 5px;
 
     &:focus {
         box-shadow: 0 0 5px #4DC771 !important;
@@ -695,6 +696,7 @@
     height: 26px;
     padding: 0;
     border-radius: 4px;
+    margin-bottom: 5px;
 
     &:focus {
         box-shadow: 0 0 5px #0cbeeb !important;

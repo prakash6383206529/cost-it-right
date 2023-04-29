@@ -14,15 +14,14 @@ import { INR } from '../../../../../config/constants';
 import WarningMessage from '../../../../common/WarningMessage';
 import { MESSAGES } from '../../../../../config/message';
 import TooltipCustom from '../../../../common/Tooltip';
-import { AcceptableBOPUOM, NUMBERMAXLENGTH, STRINGMAXLENGTH, TEMPOBJECTBOP } from '../../../../../config/masterData';
-import { number, decimalNumberLimit6, percentageLimitValidation, checkWhiteSpaces, hashValidation, numberLimit6, noDecimal, isNumber, NoSignMaxLengthRegex, NoSignMaxLengthMessage } from "../../../../../helper/validation";
+import { number, decimalNumberLimit6, percentageLimitValidation, checkWhiteSpaces, numberLimit6, noDecimal, isNumber } from "../../../../../helper/validation";
 
 let counter = 0;
 function BOPCost(props) {
   const { item, data } = props;
   const IsLocked = (item.IsLocked ? item.IsLocked : false) || (item.IsPartLocked ? item.IsPartLocked : false)
 
-  const { register, handleSubmit, control, formState: { errors }, setValue, getValues, clearErrors } = useForm({
+  const { register, handleSubmit, control, formState: { errors }, setValue, clearErrors } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
     defaultValues: {
@@ -47,8 +46,7 @@ function BOPCost(props) {
   const [errorMessage, setErrorMessage] = useState('')
 
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
-  const { CostingEffectiveDate } = useSelector(state => state.costing)
-
+  const { CostingEffectiveDate, ErrorObjRMCC } = useSelector(state => state.costing)
   const CostingViewMode = useContext(ViewCostingContext);
 
   // useEffect(() => {
@@ -444,16 +442,19 @@ function BOPCost(props) {
   * @description Used to Submit the form
   */
   const onSubmit = (values) => { }
-
   /**
    * @method setRMCCErrors
    * @description CALLING TO SET BOP COST FORM'S ERROR THAT WILL USE WHEN HITTING SAVE RMCC TAB API.
    */
+
+  let temp = ErrorObjRMCC
   if (Object.keys(errors).length > 0 && counter < 2) {
-    dispatch(setRMCCErrors(errors))
+    temp.bopGridFields = errors.bopGridFields;
+    dispatch(setRMCCErrors(temp))
     counter++;
   } else if (Object.keys(errors).length === 0 && counter > 0) {
-    dispatch(setRMCCErrors({}))
+    temp.bopGridFields = {};
+    dispatch(setRMCCErrors(temp))
     counter = 0
   }
 
@@ -512,7 +513,7 @@ function BOPCost(props) {
                                   item.BoughtOutPartUOM === 'Number' ?
                                     <>
                                       <TextFieldHookForm
-                                        label=""
+                                        label={false}
                                         name={`${bopGridFields}.${index}.Quantity`}
                                         Controller={Controller}
                                         control={control}
@@ -523,7 +524,7 @@ function BOPCost(props) {
                                         }}
                                         defaultValue={item.Quantity}
                                         className=""
-                                        customClassName={'withBorder'}
+                                        customClassName={'withBorder error-label'}
                                         handleChange={(e) => {
                                           e.preventDefault()
                                           handleQuantityChange(e, index)
@@ -534,7 +535,7 @@ function BOPCost(props) {
                                     </>
                                     :
                                     <TextFieldHookForm
-                                      label=""
+                                      label={false}
                                       name={`${bopGridFields}.${index}.Quantity`}
                                       Controller={Controller}
                                       control={control}
@@ -545,7 +546,7 @@ function BOPCost(props) {
                                       }}
                                       defaultValue={item.Quantity}
                                       className=""
-                                      customClassName={'withBorder'}
+                                      customClassName={'withBorder error-label'}
                                       handleChange={(e) => {
                                         e.preventDefault()
                                         handleQuantityChange(e, index)

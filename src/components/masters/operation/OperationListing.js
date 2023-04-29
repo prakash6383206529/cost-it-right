@@ -28,13 +28,13 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { getListingForSimulationCombined, setSelectedRowForPagination, } from '../../simulation/actions/Simulation'
-import { masterFinalLevelUser } from '../../masters/actions/Material'
 import WarningMessage from '../../common/WarningMessage';
 import _ from 'lodash';
 import { disabledClass } from '../../../actions/Common';
 import SelectRowWrapper from '../../common/SelectRowWrapper';
 import AnalyticsDrawer from '../material-master/AnalyticsDrawer';
 import { reactLocalStorage } from 'reactjs-localstorage';
+import { hideCustomerFromExcel } from '../../common/CommonFunctions';
 
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -66,7 +66,6 @@ class OperationListing extends Component {
             showPopup: false,
             deletedId: '',
             isLoader: true,
-            isFinalApprovar: false,
             disableFilter: true,
             disableDownload: false,
             analyticsDrawer: false,
@@ -96,22 +95,11 @@ class OperationListing extends Component {
                     this.props?.changeSetLoader(true)
                     this.props.getListingForSimulationCombined(this.props.objectForMultipleSimulation, OPERATIONS, (res) => {
                         this.props?.changeSetLoader(false)
-                        this.setState({ tableData: res.data.DataList })
+                        this.setState({ tableData: res.data.DataList, isLoader: false })
                     })
                 } else {
                     this.getTableListData(null, null, null, null, 0, defaultPageSize, true, this.state.floatingFilterData)
                 }
-                let obj = {
-                    MasterId: OPERATIONS_ID,
-                    DepartmentId: userDetails().DepartmentId,
-                    LoggedInUserLevelId: userDetails().LoggedInMasterLevelId,
-                    LoggedInUserId: loggedInUserId()
-                }
-                this.props.masterFinalLevelUser(obj, (res) => {
-                    if (res?.data?.Result) {
-                        this.setState({ isFinalApprovar: res.data.Data.IsFinalApprovar })
-                    }
-                })
             }
 
             if (this.props.stopAPICall === true) {
@@ -289,7 +277,7 @@ class OperationListing extends Component {
             resetState(gridOptions, this, "Operation")  //COMMON PAGINATION FUNCTION
         }, 400);
         this.props.setSelectedRowForPagination([])
-
+        this.state.gridApi.deselectAll()
     }
 
     onBtPrevious = () => {
@@ -583,10 +571,11 @@ class OperationListing extends Component {
         this.setState({ isBulkUpload: true })
     }
 
-    closeBulkUploadDrawer = () => {
-        this.setState({ isBulkUpload: false }, () => {
+    closeBulkUploadDrawer = (event, type) => {
+        this.setState({ isBulkUpload: false })
+        if (type !== 'cancel') {
             this.resetState()
-        })
+        }
     }
 
     /**
@@ -635,6 +624,7 @@ class OperationListing extends Component {
     };
 
     returnExcelColumn = (data = [], TempData) => {
+        let excelData = hideCustomerFromExcel(data, "CustomerName")
         let temp = []
         temp = TempData && TempData.map((item) => {
             if (item.Specification === null) {
@@ -650,7 +640,7 @@ class OperationListing extends Component {
         return (
 
             <ExcelSheet data={temp} name={OperationMaster}>
-                {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
+                {excelData && excelData.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
             </ExcelSheet>);
     }
 
@@ -803,7 +793,7 @@ class OperationListing extends Component {
                 {this.state.disableDownload && <LoaderCustom message={MESSAGES.DOWNLOADING_MESSAGE} />}
                 <div className={`ag-grid-react ${(this.props?.isMasterSummaryDrawer === undefined || this.props?.isMasterSummaryDrawer === false) ? "custom-pagination" : ""} ${DownloadAccessibility ? "show-table-btn no-tab-page" : ""}`}>
                     <form>
-                        <Row className={`${this.props?.isMasterSummaryDrawer ? '' : 'pt-4'} filter-row-large blue-before ${isSimulation ? "zindex-0" : ""}`}>
+                        <Row className={`${this.props?.isMasterSummaryDrawer ? '' : 'pt-4'} filter-row-large blue-before ${isSimulation || this.props.benchMark ? "zindex-0" : ""}`}>
                             <Col md="3" lg="3">
                                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={'off'} onChange={(e) => this.onFilterTextBoxChanged(e)} />
                             </Col>
@@ -820,7 +810,7 @@ class OperationListing extends Component {
                                         <button disabled={this.state.disableFilter} title="Filtered data" type="button" class="user-btn mr5" onClick={() => this.onSearch()}><div class="filter mr-0"></div></button>
 
                                     }
-                                    {(!isSimulation) && <>
+                                    {(!isSimulation && !this?.props?.benchMark) && <>
 
                                         {this.state.shown ?
                                             <button type="button" className="user-btn mr5 filter-btn-top mt3px" onClick={() => this.setState({ shown: !this.state.shown })}>
@@ -942,7 +932,7 @@ class OperationListing extends Component {
                         isZBCVBCTemplate={true}
                         messageLabel={'Operation'}
                         anchor={'right'}
-                        isFinalApprovar={this.state.isFinalApprovar}
+                        masterId={OPERATIONS_ID}
                     />}
 
                     {
@@ -1001,7 +991,6 @@ export default connect(mapStateToProps, {
     getTechnologyListByVendor,
     getOperationListByVendor,
     getListingForSimulationCombined,
-    masterFinalLevelUser,
     setSelectedRowForPagination,
     setOperationList,
     disabledClass

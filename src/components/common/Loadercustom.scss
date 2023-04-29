@@ -110,6 +110,7 @@
         max-width: 330px;
         object-fit: contain;
         max-height: 100%;
+        user-select: none;
     }
 
     .loaderinner {
@@ -372,8 +373,11 @@
 }
 
 .costing-table {
-    .loaderinner {
-        max-height: 160px;
+    position: relative;
+    min-height: calc(100vh - 500px);
+
+    @media screen and (max-height: 768px) {
+        min-height: calc(100vh - 400px);
     }
 }
 
@@ -442,6 +446,7 @@
 
 .loader-center {
     min-height: calc(100vh - 230px);
+    top: -1px;
 }
 
 .simulation-loader {
@@ -461,5 +466,11 @@
             max-width: 80px;
             max-height: 100%;
         }
+    }
+}
+
+.vendor-loader {
+    .text-help {
+        position: absolute;
     }
 }

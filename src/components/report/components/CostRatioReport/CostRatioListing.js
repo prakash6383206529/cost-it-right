@@ -6,7 +6,8 @@ import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Row, Table } from 'reactstrap';
 import { EMPTY_DATA } from '../../../../config/constants';
-import { checkForDecimalAndNull } from '../../../../helper';
+import { checkForDecimalAndNull, getConfigurationKey, getCurrencySymbol } from '../../../../helper';
+import DayTime from '../../../common/DayTimeWrapper';
 import LoaderCustom from '../../../common/LoaderCustom';
 import NoContentFound from '../../../common/NoContentFound';
 import { colorArray } from '../../../dashboard/ChartsDashboard';
@@ -18,6 +19,7 @@ const CostRatioListing = (props) => {
     const [pieChartDataArray, setPieChartDataArray] = useState([])
     const [pieChartLabelArray, setPieChartLabelArray] = useState([])
     const [isLoader, setIsLoader] = useState(false)
+    const [noContentData, setNoContentData] = useState(false)
     const [gridDataState, setGridDataState] = useState()
     const dispatch = useDispatch()
 
@@ -34,8 +36,8 @@ const CostRatioListing = (props) => {
     useEffect(() => {
 
         let obj = {}
-        obj.FromDate = startDate
-        obj.ToDate = endDate
+        obj.FromDate = startDate ? DayTime(startDate).format('MM/DD/YYYY') : ''
+        obj.ToDate = endDate ? DayTime(endDate).format('MM/DD/YYYY') : ''
         let sampleArray = []
 
         gridData && gridData.map((item) => {
@@ -45,6 +47,7 @@ const CostRatioListing = (props) => {
 
         setIsLoader(true)
         dispatch(getCostRatioReport(obj, (res) => {
+            setNoContentData(true)
             setIsLoader(false)
             let Data = res.data && res.data.DataList
             if (res.status === 200) {
@@ -193,21 +196,23 @@ const CostRatioListing = (props) => {
         <>
             <div className='container-fluid costing-ratio-report'>
                 {isLoader && <LoaderCustom />}
+                <div className='w-100 mb-2 d-flex justify-content-end'>
+                    <button type="button" className={"apply"} onClick={cancelReport}> <div className={'back-icon'}></div>Back</button>
+                </div>
                 <div className='row overflow-auto report-height'>
-                    <div className='w-100 mb-2 d-flex justify-content-end'>
-                        <button type="button" className={"apply"} onClick={cancelReport}> <div className={'back-icon'}></div>Back</button>
-                    </div>
-                    {tableData?.length === 0 ? <div className='d-flex w-100 align-items-center'><NoContentFound title={EMPTY_DATA} /></div> : <Table className='border px-0 mb-0'>
+                    {tableData?.length === 0 ? <div className='d-flex w-100 align-items-center'>{noContentData && <NoContentFound title={'Cost card is not available for this date range'} />}</div> : <Table className='border px-0 mb-0'>
                         <thead>
                             <tr>
                                 <th>
                                     <div className='column-data'> Costing Head</div>
                                     <div className='column-data'>Costing Number</div>
                                     <div className='column-data'>Technology</div>
+                                    <div className='column-data'>Effective Date</div>
                                     <div className='column-data'>Part No.</div>
                                     <div className='column-data'>Revision No.</div>
                                     <div className='column-data'> Vendor (Code)</div>
                                     <div className='column-data'>Plant (Code)</div>
+                                    {initialConfiguration?.IsBasicRateAndCostingConditionVisible && <div className='column-data'>Basic Price</div>}
                                     <div className='column-data'> Net PO Price</div>
                                     <div className='column-data'>Net PO Price (Currency)</div>
                                     <div className='column-data'>Graph</div>
@@ -218,12 +223,14 @@ const CostRatioListing = (props) => {
                                             <div className='column-data'>{item.CostingHead ? item.CostingHead : '-'}</div>
                                             <div className='column-data'>{item.CostingNumber ? item.CostingNumber : '-'}</div>
                                             <div className='column-data'>{item.Technology ? item.Technology : '-'} </div>
+                                            <div className='column-data'>{item.EffectiveDate ? DayTime(item.EffectiveDate).format('DD/MM/YYYY') : '-'} </div>
                                             <div className='column-data'>{item.PartNumber ? item.PartNumber : '-'} </div>
                                             <div className='column-data'>{item.RevisionNumber ? item.RevisionNumber : '-'} </div>
-                                            <div className={`column-data code-container`} ref={divRef} >{(item.VendorName || item.VendorCode) ? <div className={`code-specific ${tableData?.length >= 3 ? 'max-height-reduce' : ''}`} style={{ maxWidth: divRef?.current?.clientWidth }}><span className='name'>{item.VendorName}</span> <span>({item.VendorCode})</span></div> : '-'}</div>
-                                            <div className='column-data code-container' ref={divRef} >{(item.PlantName || item.PlantCode) ? <div className={`code-specific ${tableData?.length >= 3 ? 'max-height-reduce' : ''}`} style={{ maxWidth: divRef?.current?.clientWidth }}><span className='name'>{item.PlantName}</span> <span>({item.PlantCode})</span></div> : '-'}</div>
-                                            <div className='column-data'>{checkForDecimalAndNull(item.NetPOPriceINR, initialConfiguration.NoOfDecimalForPrice)} </div>
-                                            <div className='column-data'>{checkForDecimalAndNull(item.NetPOPriceOtherCurrency, initialConfiguration.NoOfDecimalForPrice)}</div>
+                                            <div className={`column-data code-container`} ref={divRef} >{(item.VendorName || item.VendorCode) ? <div className={`code-specific ${tableData?.length >= 3 ? 'max-height-reduce' : ''}`} style={{ maxWidth: divRef?.current?.clientWidth }}><span title={item.VendorName + " (" + item.VendorCode + ")"} className='name'>{item.VendorName}</span> <span>({item.VendorCode})</span></div> : '-'}</div>
+                                            <div className='column-data code-container' ref={divRef} >{(item.PlantName || item.PlantCode) ? <div className={`code-specific ${tableData?.length >= 3 ? 'max-height-reduce' : ''}`} style={{ maxWidth: divRef?.current?.clientWidth }}><span className='name' title={item.PlantName + " (" + item.PlantCode + ")"}>{item.PlantName}</span> <span>({item.PlantCode})</span></div> : '-'}</div>
+                                            {initialConfiguration?.IsBasicRateAndCostingConditionVisible && <div className='column-data'>{getCurrencySymbol(getConfigurationKey().BaseCurrency)} {checkForDecimalAndNull(item.BasicRate, initialConfiguration.NoOfDecimalForPrice)} </div>}
+                                            <div className='column-data'>{getCurrencySymbol(getConfigurationKey().BaseCurrency)} {checkForDecimalAndNull(item.NetPOPriceINR, initialConfiguration.NoOfDecimalForPrice)} </div>
+                                            <div className='column-data'>{item.Currency ? getCurrencySymbol(item.Currency) : ''} {checkForDecimalAndNull(item.NetPOPriceOtherCurrency, initialConfiguration.NoOfDecimalForPrice)}</div>
                                             <div className='column-data'>{item.NetPOPriceINR && <button className='view-pie-button btn-hyper-link ml-0' onMouseOver={() => viewPieData(index)}><span className='tooltiptext graph-tooltip'><div className='mb-2'><strong>All value is showing in Percentage</strong></div><Costratiograph data={pieChartData} options={pieChartOption} /></span>View Graph</button>}</div>
 
                                         </th>

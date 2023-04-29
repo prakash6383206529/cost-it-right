@@ -7,7 +7,7 @@ import {
     GET_MODULE_SELECTLIST_SUCCESS, GET_PAGE_SELECTLIST_BY_MODULE_SUCCESS, GET_PAGES_SELECTLIST_SUCCESS, GET_ACTION_HEAD_SELECTLIST_SUCCESS,
     GET_MENU_BY_USER_DATA_SUCCESS, GET_LEFT_MENU_BY_MODULE_ID_AND_USER, LOGIN_PAGE_INIT_CONFIGURATION, config, GET_USERS_BY_TECHNOLOGY_AND_LEVEL,
     GET_LEVEL_BY_TECHNOLOGY, GET_MENU_BY_MODULE_ID_AND_USER, LEVEL_MAPPING_API, GET_SIMULATION_TECHNOLOGY_SELECTLIST_SUCCESS,
-    SIMULATION_LEVEL_DATALIST_API, GET_SIMULATION_LEVEL_BY_TECHNOLOGY, GET_TOP_AND_LEFT_MENU_DATA, GET_MASTER_SELECT_LIST, MASTER_LEVEL_DATALIST_API, GET_MASTER_LEVEL_BY_MASTERID, COSTINGS_APPROVAL_DASHBOARD, AMENDMENTS_APPROVAL_DASHBOARD
+    SIMULATION_LEVEL_DATALIST_API, GET_SIMULATION_LEVEL_BY_TECHNOLOGY, GET_TOP_AND_LEFT_MENU_DATA, GET_MASTER_SELECT_LIST, MASTER_LEVEL_DATALIST_API, GET_MASTER_LEVEL_BY_MASTERID, COSTINGS_APPROVAL_DASHBOARD, AMENDMENTS_APPROVAL_DASHBOARD, GET_USERS_MASTER_LEVEL_API
 } from '../../config/constants';
 import { formatLoginResult } from '../../helper/ApiResponse';
 import { MESSAGES } from "../../config/message";
@@ -49,6 +49,7 @@ export function loginUserAPI(requestData, callback) {
     };
 }
 
+
 export function TokenAPI(requestData, callback) {
     return (dispatch) => {
         dispatch({ type: AUTH_API_REQUEST });
@@ -58,7 +59,7 @@ export function TokenAPI(requestData, callback) {
         } else {
             queryParams = `userName=${requestData.username}&password=${requestData.password}&grant_type=${requestData.grant_type}`;
         }
-        axios.post(API.tokenAPI, queryParams, CustomHeader)
+        axios.post(API.login, queryParams, CustomHeader)
             .then((response) => {
                 if (response && response.status === 200) {
                     callback(response);
@@ -361,10 +362,10 @@ export function setEmptyUserDataAPI(UserId, callback) {
 * @method getUsersTechnologyLevelAPI
 * @description get User's technology level
 */
-export function getUsersTechnologyLevelAPI(UserId, callback) {
+export function getUsersTechnologyLevelAPI(UserId, technologyId, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getUserTechnologyLevelForCosting}/${UserId}`, config());
+        const request = axios.get(`${API.getUserTechnologyLevelForCosting}/${UserId}/${technologyId}`, config());
         request.then((response) => {
             dispatch({ type: API_SUCCESS });
             if (response && response.data && response.data.Result) {
@@ -831,9 +832,9 @@ export function updateSimulationLevel(requestData, callback) {
  * @method getSimulationLevel
  * @description GET SIMULATION LEVEL
  */
-export function getSimulationLevel(LevelId, callback) {
+export function getSimulationLevel(LevelId, approvalTypeId, callback) {
     return (dispatch) => {
-        const request = axios.get(`${API.getSimulationLevel}/${LevelId}`, config());
+        const request = axios.get(`${API.getSimulationLevel}/${LevelId}/${approvalTypeId}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 callback(response);
@@ -890,10 +891,10 @@ export function setApprovalLevelForTechnology(requestData, callback) {
  * @method getLevelMappingAPI
  * @description get Level mapping 
  */
-export function getLevelMappingAPI(LevelId, callback) {
+export function getLevelMappingAPI(LevelId, approvalTypeId, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getLevelMappingAPI}/${LevelId}`, config());
+        const request = axios.get(`${API.getLevelMappingAPI}/${LevelId}/${approvalTypeId}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 callback(response);
@@ -1459,27 +1460,29 @@ export function getUsersByTechnologyAndLevel(callback) {
  * @description GET LEVEL DROPDOWN BY TECHNOLOGY
  * @param technologyId
  */
-export function getLevelByTechnology(technologyId, callback) {
+export function getLevelByTechnology(isAPICall, technologyId, approvalTypeId, callback) {
     return (dispatch) => {
-        if (technologyId !== '') {
+        if (isAPICall) {
+            if (technologyId !== '') {
 
-            //dispatch({ type: API_REQUEST });
-            const request = axios.get(`${API.getLevelByTechnology}/${technologyId}`, config());
-            request.then((response) => {
-                if (response.data.Result) {
-                    dispatch({
-                        type: GET_LEVEL_BY_TECHNOLOGY,
-                        payload: response.data.SelectList,
-                    });
-                    callback(response);
-                } else {
-                    Toaster.error(MESSAGES.SOME_ERROR);
-                }
-            }).catch((error) => {
-                dispatch({ type: API_FAILURE });
-                callback(error);
-                apiErrors(error);
-            });
+                //dispatch({ type: API_REQUEST });
+                const request = axios.get(`${API.getLevelByTechnology}/${technologyId}/${approvalTypeId}`, config());
+                request.then((response) => {
+                    if (response.data.Result) {
+                        dispatch({
+                            type: GET_LEVEL_BY_TECHNOLOGY,
+                            payload: response.data.SelectList,
+                        });
+                        callback(response);
+                    } else {
+                        Toaster.error(MESSAGES.SOME_ERROR);
+                    }
+                }).catch((error) => {
+                    dispatch({ type: API_FAILURE });
+                    callback(error);
+                    apiErrors(error);
+                });
+            }
         } else {
             dispatch({
                 type: GET_LEVEL_BY_TECHNOLOGY,
@@ -1553,26 +1556,28 @@ export function updateCompanyAPI(requestData, callback) {
     };
 }
 
-export function getSimualationLevelByTechnology(technologyId, callback) {
+export function getSimualationLevelByTechnology(isAPICall, technologyId, approvalTypeId, callback) {
     return (dispatch) => {
-        if (technologyId !== '') {
-            //dispatch({ type: API_REQUEST });
-            const request = axios.get(`${API.getSimulationLevelByTechnology}/${technologyId}`, config());
-            request.then((response) => {
-                if (response.data.Result) {
-                    dispatch({
-                        type: GET_SIMULATION_LEVEL_BY_TECHNOLOGY,
-                        payload: response.data.SelectList,
-                    });
-                    callback(response);
-                } else {
-                    Toaster.error(MESSAGES.SOME_ERROR);
-                }
-            }).catch((error) => {
-                dispatch({ type: API_FAILURE });
-                callback(error);
-                apiErrors(error);
-            });
+        if (isAPICall) {
+            if (technologyId !== '') {
+                //dispatch({ type: API_REQUEST });
+                const request = axios.get(`${API.getSimulationLevelByTechnology}/${technologyId}/${approvalTypeId}`, config());
+                request.then((response) => {
+                    if (response.data.Result) {
+                        dispatch({
+                            type: GET_SIMULATION_LEVEL_BY_TECHNOLOGY,
+                            payload: response.data.SelectList,
+                        });
+                        callback(response);
+                    } else {
+                        Toaster.error(MESSAGES.SOME_ERROR);
+                    }
+                }).catch((error) => {
+                    dispatch({ type: API_FAILURE });
+                    callback(error);
+                    apiErrors(error);
+                });
+            }
         } else {
             dispatch({
                 type: GET_SIMULATION_LEVEL_BY_TECHNOLOGY,
@@ -1588,10 +1593,10 @@ export function getSimualationLevelByTechnology(technologyId, callback) {
 * @method getUsersSimulationTechnologyLevelAPI
 * @description get User's technology level
 */
-export function getUsersSimulationTechnologyLevelAPI(UserId, callback) {
+export function getUsersSimulationTechnologyLevelAPI(UserId, technologyId, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getUserSimulationTechnologyLevelForCosting}/${UserId}`, config());
+        const request = axios.get(`${API.getUserSimulationTechnologyLevelForCosting}/${UserId}/${technologyId}`, config());
         request.then((response) => {
             dispatch({ type: API_SUCCESS });
             if (response && response.data && response.data.Result) {
@@ -1696,9 +1701,9 @@ export function updateMasterLevel(requestData, callback) {
  * @method getMasterLevel
  * @description GET MASTER LEVEL
  */
-export function getMasterLevel(LevelId, callback) {
+export function getMasterLevel(LevelId, approvalTypeId, callback) {
     return (dispatch) => {
-        const request = axios.get(`${API.getMasterLevel}/${LevelId}`, config());
+        const request = axios.get(`${API.getMasterLevel}/${LevelId}/${approvalTypeId}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 callback(response);
@@ -1735,26 +1740,28 @@ export function getMasterLevelDataList(callback) {
 }
 
 
-export function getMasterLevelByMasterId(masterId, callback) {
+export function getMasterLevelByMasterId(isAPICall, masterId, approvalId, callback) {
     return (dispatch) => {
-        if (masterId !== '') {
-            //dispatch({ type: API_REQUEST });
-            const request = axios.get(`${API.getMasterLevelByMasterId}/${masterId}`, config());
-            request.then((response) => {
-                if (response.data.Result) {
-                    dispatch({
-                        type: GET_MASTER_LEVEL_BY_MASTERID,
-                        payload: response.data.SelectList,
-                    });
-                    callback(response);
-                } else {
-                    Toaster.error(MESSAGES.SOME_ERROR);
-                }
-            }).catch((error) => {
-                dispatch({ type: API_FAILURE });
-                callback(error);
-                apiErrors(error);
-            });
+        if (isAPICall) {
+            if (masterId !== '') {
+                //dispatch({ type: API_REQUEST });
+                const request = axios.get(`${API.getMasterLevelByMasterId}/${masterId}/${approvalId}`, config());
+                request.then((response) => {
+                    if (response.data.Result) {
+                        dispatch({
+                            type: GET_MASTER_LEVEL_BY_MASTERID,
+                            payload: response.data.SelectList,
+                        });
+                        callback(response);
+                    } else {
+                        Toaster.error(MESSAGES.SOME_ERROR);
+                    }
+                }).catch((error) => {
+                    dispatch({ type: API_FAILURE });
+                    callback(error);
+                    apiErrors(error);
+                });
+            }
         } else {
             dispatch({
                 type: GET_MASTER_LEVEL_BY_MASTERID,
@@ -1770,13 +1777,16 @@ export function getMasterLevelByMasterId(masterId, callback) {
 * @method getUsersSimulationTechnologyLevelAPI
 * @description get User's technology level
 */
-export function getUsersMasterLevelAPI(UserId, callback) {
+export function getUsersMasterLevelAPI(UserId, technologyId, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getUserMasterLevelForCosting}/${UserId}`, config());
+        const request = axios.get(`${API.getUserMasterLevelForCosting}/${UserId}/${technologyId}`, config());
         request.then((response) => {
-            dispatch({ type: API_SUCCESS });
             if (response && response.data && response.data.Result) {
+                dispatch({
+                    type: GET_USERS_MASTER_LEVEL_API,
+                    payload: response.data.Data.MasterLevels,
+                });
                 callback(response);
             }
         }).catch((error) => {

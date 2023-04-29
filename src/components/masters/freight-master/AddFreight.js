@@ -1,9 +1,9 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { Field, reduxForm, formValueSelector } from "redux-form";
+import { Field, reduxForm, formValueSelector, clearFields } from "redux-form";
 import { Row, Col, Table, Label } from "reactstrap";
-import { required, checkForNull, positiveAndDecimalNumber, maxLength10, checkForDecimalAndNull, decimalLengthFour } from "../../../helper/validation";
-import { renderNumberInputField, searchableSelect } from "../../layout/FormInputs";
+import { required, checkForNull, positiveAndDecimalNumber, maxLength10, checkForDecimalAndNull, decimalLengthFour, number } from "../../../helper/validation";
+import { renderTextInputField, searchableSelect } from "../../layout/FormInputs";
 import { fetchSupplierCityDataAPI, getCityByCountry, getAllCity } from "../../../actions/Common";
 import { getVendorWithVendorCodeSelectList } from "../actions/Supplier";
 import {
@@ -65,7 +65,8 @@ class AddFreight extends Component {
         effectiveDate: false
       },
       showErrorOnFocus: false,
-      showPopup: false
+      showPopup: false,
+      vendorFilterList: []
     };
   }
   /**
@@ -94,6 +95,18 @@ class AddFreight extends Component {
   * @description Used for Vendor checked
   */
   onPressVendor = (costingHeadFlag) => {
+    const fieldsToClear = [
+      'Mode',
+      'vendorName',
+      'SourceLocation',
+      'DestinationLocation',
+      'clientName',
+      'Plant',
+      'DestinationPlant',
+    ];
+    fieldsToClear.forEach(fieldName => {
+      this.props.dispatch(clearFields('AddFreight', false, false, fieldName));
+    });
     this.setState({
       vendorName: [],
       costingTypeId: costingHeadFlag
@@ -621,14 +634,17 @@ class AddFreight extends Component {
     const { handleSubmit, initialConfiguration } = this.props;
     const { isOpenVendor, isEditFlag, isViewMode, setDisable, costingTypeId } = this.state;
     const filterList = async (inputValue) => {
-      const { vendorName } = this.state
+      const { vendorFilterList } = this.state
+      if (inputValue && typeof inputValue === 'string' && inputValue.includes(' ')) {
+        inputValue = inputValue.trim();
+      }
       const resultInput = inputValue.slice(0, searchCount)
-      if (inputValue?.length >= searchCount && vendorName !== resultInput) {
+      if (inputValue?.length >= searchCount && vendorFilterList !== resultInput) {
         this.setState({ inputLoader: true })
         let res
         res = await getVendorWithVendorCodeSelectList(resultInput)
         this.setState({ inputLoader: false })
-        this.setState({ vendorName: resultInput })
+        this.setState({ vendorFilterList: resultInput })
         let vendorDataAPI = res?.data?.SelectList
         if (inputValue) {
           return autoCompleteDropdown(inputValue, vendorDataAPI, false, [], true)
@@ -764,7 +780,7 @@ class AddFreight extends Component {
                                     loadOptions={filterList}
                                     onChange={(e) => this.handleVendorName(e)}
                                     value={this.state.vendorName}
-                                    noOptionsMessage={({ inputValue }) => inputValue.length < 3 ? "Enter 3 characters to show data" : "No results found"}
+                                    noOptionsMessage={({ inputValue }) => inputValue.length < 3 ? MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN : "No results found"}
                                     isDisabled={(isEditFlag) ? true : false}
                                     onKeyDown={(onKeyDown) => {
                                       if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
@@ -874,8 +890,8 @@ class AddFreight extends Component {
                               name={"LoadingUnloadingCharges"}
                               type="text"
                               placeholder={isViewMode ? '-' : 'Enter'}
-                              validate={[positiveAndDecimalNumber, maxLength10, decimalLengthFour]}
-                              component={renderNumberInputField}
+                              validate={[positiveAndDecimalNumber, maxLength10, decimalLengthFour, number]}
+                              component={renderTextInputField}
                               disabled={isViewMode}
                               className=""
                               customClassName=" withBorder mn-height-auto"
@@ -895,8 +911,8 @@ class AddFreight extends Component {
                               name={"PartTruckLoadRatePerKilogram"}
                               type="text"
                               placeholder={isViewMode ? '-' : 'Enter'}
-                              validate={[positiveAndDecimalNumber, maxLength10, decimalLengthFour]}
-                              component={renderNumberInputField}
+                              validate={[positiveAndDecimalNumber, maxLength10, decimalLengthFour, number]}
+                              component={renderTextInputField}
                               disabled={isViewMode}
                               className=" "
                               customClassName=" withBorder"
@@ -908,8 +924,8 @@ class AddFreight extends Component {
                               name={"PartTruckLoadRatePerCubicFeet"}
                               type="text"
                               placeholder={isViewMode ? '-' : 'Enter'}
-                              validate={[positiveAndDecimalNumber, maxLength10, decimalLengthFour]}
-                              component={renderNumberInputField}
+                              validate={[positiveAndDecimalNumber, maxLength10, decimalLengthFour, number]}
+                              component={renderTextInputField}
                               disabled={isViewMode}
                               className=" "
                               customClassName=" withBorder"
@@ -969,8 +985,8 @@ class AddFreight extends Component {
                               name={"Rate"}
                               type="text"
                               placeholder={isViewMode ? '-' : 'Enter'}
-                              validate={[positiveAndDecimalNumber, maxLength10]}
-                              component={renderNumberInputField}
+                              validate={[positiveAndDecimalNumber, maxLength10, number]}
+                              component={renderTextInputField}
                               required={true}
                               disabled={isViewMode}
                               className=" "

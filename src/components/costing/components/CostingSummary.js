@@ -18,6 +18,7 @@ import LoaderCustom from '../../common/LoaderCustom';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { searchCount } from '../../../config/constants'
 import { autoCompleteDropdown } from '../../common/CommonFunctions'
+import { MESSAGES } from '../../../config/message'
 
 function CostingSummary(props) {
 
@@ -59,7 +60,7 @@ function CostingSummary(props) {
       dispatch(getSingleCostingDetails(costingData.CostingId, (res) => {
         if (res.data.Data) {
           let dataFromAPI = res.data.Data
-          const tempObj = formViewData(dataFromAPI)
+          const tempObj = formViewData(dataFromAPI, 'CostingSummaryMainPage')
           dispatch(setCostingViewData(tempObj))
         }
         // history.push("/costing-summary");
@@ -112,7 +113,7 @@ function CostingSummary(props) {
           dispatch(getSingleCostingDetails(costingData.CostingId, (res) => {
             if (res.data.Data) {
               let dataFromAPI = res.data.Data
-              const tempObj = formViewData(dataFromAPI)
+              const tempObj = formViewData(dataFromAPI, 'CostingSummaryMainPage')
               dispatch(setCostingViewData(tempObj))
             }
           },
@@ -243,7 +244,7 @@ function CostingSummary(props) {
                               // dispatch(getSingleCostingDetails('5cdcad92-277f-48e2-8eb2-7a7c838104e1', res => {
                               if (res.data.Data) {
                                 let dataFromAPI = res.data.Data
-                                const tempObj = formViewData(dataFromAPI)
+                                const tempObj = formViewData(dataFromAPI, 'CostingSummaryMainPage')
                                 dispatch(setCostingViewData(tempObj))
                                 setIsLoader(false)
                               }
@@ -329,7 +330,9 @@ function CostingSummary(props) {
   }
 
   const filterList = async (inputValue) => {
-
+    if (inputValue && typeof inputValue === 'string' && inputValue.includes(' ')) {
+      inputValue = inputValue.trim();
+    }
     const resultInput = inputValue.slice(0, searchCount)
     if (inputValue?.length >= searchCount && partName !== resultInput) {
       setInputLoader(true)
@@ -440,7 +443,7 @@ function CostingSummary(props) {
                           handleChange={handlePartChange}
                           errors={errors.Part}
                           disabled={(technology.length === 0) ? true : false}
-                          NoOptionMessage={"Enter 3 characters to show data"}
+                          NoOptionMessage={MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN}
                         />
 
                         {/* <SearchableSelectHookForm

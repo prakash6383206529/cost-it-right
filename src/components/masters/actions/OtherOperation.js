@@ -402,7 +402,7 @@ export function fileUploadOperation(data, callback) {
  */
 export function checkAndGetOperationCode(code, name, callback) {
     return (dispatch) => {
-        const request = axios.post(`${API.checkAndGetOperationCode}?operationCode=${code}&operationName=${name}`, '', config());
+        const request = axios.post(`${API.checkAndGetOperationCode}?operationCode=${code ? code : null}&operationName=${name}`, '', config());
         request.then((response) => {
             if (response && response.status === 200) {
                 callback(response);

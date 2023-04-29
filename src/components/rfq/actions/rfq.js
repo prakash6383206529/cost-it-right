@@ -7,6 +7,8 @@ import {
     config,
     API_REQUEST,
     CHECK_RFQ_BULK_UPLOAD,
+    SELECTED_ROW_ARRAY,
+    SET_QUOTATION_ID_FOR_RFQ,
 } from '../../../config/constants';
 import { MESSAGES } from '../../../config/message';
 import { loggedInUserId, userDetails } from '../../../helper';
@@ -14,10 +16,10 @@ import { apiErrors } from '../../../helper/util';
 import Toaster from '../../common/Toaster';
 
 
-export function getQuotationList(callback) {
+export function getQuotationList(DepartmentCode, callback) {
     return (dispatch) => {
 
-        const request = axios.get(`${API.getQuotationList}`, config());
+        const request = axios.get(`${API.getQuotationList}?DepartmentCode=${''}`, config());
         request.then((response) => {
             if (response.data.Result || response.status === 204) {
 
@@ -179,6 +181,8 @@ export function getQuotationDetailsList(id, callback) {
         request.then((response) => {
             if (response.data.Result) {
                 callback(response);
+            } else {
+                callback(response.status)
             }
         }).catch((error) => {
             dispatch({ type: API_FAILURE });
@@ -199,10 +203,10 @@ export function getMultipleCostingDetails(selectedRows, callback) {
 
         let temp = []
         selectedRows && selectedRows.map((item) => {
-
-            let request = axios.get(`${API.getCostingDetailsByCostingId}/${item.CostingId}`, config(),)
-            temp.push(request)
-
+            if (item.CostingId !== null) {
+                let request = axios.get(`${API.getCostingDetailsByCostingId}/${item.CostingId}`, config(),)
+                temp.push(request)
+            }
         })
 
         axios.all(temp).then((response) => {
@@ -269,3 +273,47 @@ export function checkRFQBulkUpload(data, callback) {
         });
     };
 }
+
+export function setRFQBulkUpload(data) {
+    return (dispatch) => {
+        dispatch({
+            type: CHECK_RFQ_BULK_UPLOAD,
+            payload: data
+        })
+    };
+}
+
+export function getQuotationDetailsByVendor(data, callback) {
+    return (dispatch) => {
+        axios.get(`${API.getQuotationDetailsByVendor}?vendorId=${userDetails().VendorId}&quotationId=${data}`, config())
+            .then((response) => {
+                callback(response)
+            }).catch((error) => {
+                dispatch({ type: API_FAILURE });
+                apiErrors(error);
+            });
+    };
+}
+
+export function setSelectedRow(data) {
+    console.log('data: ', data);
+    return (dispatch) => {
+        dispatch({
+            type: SELECTED_ROW_ARRAY,
+            payload: data
+        })
+    }
+}
+
+/**
+ * @method setQuotationIdForRFQ
+ * @description set Quotation Id For RFQ
+ */
+export function setQuotationIdForRFQ(data) {
+    return (dispatch) => {
+        dispatch({
+            type: SET_QUOTATION_ID_FOR_RFQ,
+            payload: data,
+        });
+    }
+};

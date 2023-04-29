@@ -35,8 +35,8 @@ function InsightsBop(props) {
     const [minimumGrpahData, setMinimumGrpahData] = useState()
     const [maximumGrpahData, setMaximumGrpahData] = useState()
     const [tableHeaderColumnDefs, setTableHeaderColumnDefs] = useState([])
-
     const [rowDataNew, setRowDataNew] = useState([])
+    const [isLoader, setIsLoader] = useState(true)
     const [vendor, setVendor] = useState([])
     const [plantName, setPlantName] = useState([])
     const [uniqueVendors, setUniqueVendors] = useState([])
@@ -48,7 +48,6 @@ function InsightsBop(props) {
     // const [technology, setTechnology] = useState({})
     const dispatch = useDispatch()
     let bopBenchmarkList = useSelector((state) => state.report.BenchmarkList)
-
 
 
 
@@ -191,13 +190,8 @@ function InsightsBop(props) {
 
 
     useEffect(() => {
-
-
         let arr = []
-
         props.data && props.data.map((item) => {
-
-
             arr.push({
                 BoughtOutPartId: item.BoughtOutPartId
                 ,
@@ -212,7 +206,11 @@ function InsightsBop(props) {
             bOPCostBenchMarkingReports: arr
         }
 
-        dispatch(getCostingBenchMarkBopReport(data, () => { }))
+        dispatch(getCostingBenchMarkBopReport(data, (res) => {
+            if (res) {
+                setIsLoader(false)
+            }
+        }))
 
     }, [])
 
@@ -228,13 +226,10 @@ function InsightsBop(props) {
         let vendorTemp = []
         let uniqueVendors = []
 
-
-
-
         //////////////////////////////////////////////////////////////////////////////////////
 
 
-        true && bopBenchmarkList.BOPSpecifications.map((item, i) => {               //ITERATION FOR ALL SPECIFICATIONS
+        bopBenchmarkList && bopBenchmarkList?.BOPSpecifications?.map((item, i) => {               //ITERATION FOR ALL SPECIFICATIONS
             let plantTemp = []
             let obj = {
                 Specification: item.BoughtOutPartName,                       //SETTING 6 VALUES FOR EACH SPECIFICATION IN OBJ
@@ -564,7 +559,10 @@ function InsightsBop(props) {
 
             plantLabel.map((element, ind) => {
                 let ele = element.slice(5)
-                var newStr = item.replace('-', '')
+
+                var newStr = item.replaceAll('-', '')
+                ele = ele.replaceAll('-', '')
+
                 if (newStr.includes(ele)) {
                     newArr[index] = array[ind]
                 }
@@ -574,9 +572,15 @@ function InsightsBop(props) {
 
         graphDataNew = newArr
         setDynamicGrpahData(graphDataNew);
-        setAverageGrpahData(avgGraphData);
+        // setAverageGrpahData(avgGraphData);
         setMinimumGrpahData(minGraphData);
         setMaximumGrpahData(maxGraphData);
+
+        let avgArray = []
+        labelArr && labelArr.map((item, ind) => {
+            avgArray.push(avgGraphData)
+        })
+        setAverageGrpahData(avgArray)
 
         // 
     }
@@ -651,7 +655,7 @@ function InsightsBop(props) {
                 tension: 0.1,
                 borderDash: [5, 5],
                 // data: [averageGrpahData, averageGrpahData, averageGrpahData, averageGrpahData, averageGrpahData]
-                data: [25, 25, 30, 35, 45, 55, 65, 75]
+                data: averageGrpahData
             },
             {
                 type: 'line',
@@ -682,83 +686,91 @@ function InsightsBop(props) {
         ],
     };
 
-
-
+    const resetState = () => {
+        setIsLoader(true)
+        setTimeout(() => {
+            setIsLoader(false)
+        }, 50);
+    }
 
     return (
         <>
+            {showListing && <button type="button" className="user-btn report-btn-reset float-right mb-2" title="Reset Grid" onClick={() => resetState()}>
+                <div className="refresh mr-0"></div>
+            </button>}
             <div className="container-fluid rminsights_page">
-                <form onSubmit={handleSubmit} noValidate >
-                    {false && <Row className="pt-4">
-                        <Col md="12" className="filter-block">
-                            <div className="d-inline-flex justify-content-start align-items-center mr-3">
-                                <div className="flex-fills label">Technology:</div>
-                                <div className="hide-label flex-fills pl-0 w-auto">
-                                    <SearchableSelectHookForm
-                                        label={''}
-                                        name={'Technology'}
-                                        placeholder={'Technology'}
-                                        Controller={Controller}
-                                        control={control}
-                                        rules={{ required: false }}
-                                        register={register}
-                                        // defaultValue={technology.length !== 0 ? technology : ''}
-                                        options={renderListing('technology')}
-                                        mandatory={false}
-                                        handleChange={handleTechnologyChange}
-                                        errors={errors.Masters}
-                                        customClassName="mb-0"
-                                    />
-                                </div>
-                            </div>{/* d-inline-flex */}
+                {isLoader ? <LoaderCustom customClass="loader-center" /> :
+                    <form onSubmit={handleSubmit} noValidate >
+                        {false && <Row className="pt-4">
+                            <Col md="12" className="filter-block">
+                                <div className="d-inline-flex justify-content-start align-items-center mr-3">
+                                    <div className="flex-fills label">Technology:</div>
+                                    <div className="hide-label flex-fills pl-0 w-auto">
+                                        <SearchableSelectHookForm
+                                            label={''}
+                                            name={'Technology'}
+                                            placeholder={'Technology'}
+                                            Controller={Controller}
+                                            control={control}
+                                            rules={{ required: false }}
+                                            register={register}
+                                            // defaultValue={technology.length !== 0 ? technology : ''}
+                                            options={renderListing('technology')}
+                                            mandatory={false}
+                                            handleChange={handleTechnologyChange}
+                                            errors={errors.Masters}
+                                            customClassName="mb-0"
+                                        />
+                                    </div>
+                                </div>{/* d-inline-flex */}
 
-                            <div className="d-inline-flex justify-content-start align-items-center mr-3">
-                                <div className="flex-fills label">Raw Material:</div>
-                                <div className="hide-label flex-fills pl-0 w-auto">
-                                    <SearchableSelectHookForm
-                                        label={''}
-                                        name={'Raw Material'}
-                                        placeholder={'Raw Material'}
-                                        Controller={Controller}
-                                        control={control}
-                                        rules={{ required: false }}
-                                        register={register}
-                                        // defaultValue={technology.length !== 0 ? technology : ''}
-                                        options={renderListing('material')}
-                                        mandatory={false}
-                                        handleChange={handleMaterialChange}
-                                        errors={errors.Masters}
-                                        customClassName="mb-0"
-                                    />
-                                </div>
-                            </div>{/* d-inline-flex */}
+                                <div className="d-inline-flex justify-content-start align-items-center mr-3">
+                                    <div className="flex-fills label">Raw Material:</div>
+                                    <div className="hide-label flex-fills pl-0 w-auto">
+                                        <SearchableSelectHookForm
+                                            label={''}
+                                            name={'Raw Material'}
+                                            placeholder={'Raw Material'}
+                                            Controller={Controller}
+                                            control={control}
+                                            rules={{ required: false }}
+                                            register={register}
+                                            // defaultValue={technology.length !== 0 ? technology : ''}
+                                            options={renderListing('material')}
+                                            mandatory={false}
+                                            handleChange={handleMaterialChange}
+                                            errors={errors.Masters}
+                                            customClassName="mb-0"
+                                        />
+                                    </div>
+                                </div>{/* d-inline-flex */}
 
-                            <div className="d-inline-flex justify-content-start align-items-center mr-3">
-                                <div className="flex-fills label">Grade:</div>
-                                <div className="hide-label flex-fills pl-0 w-auto">
-                                    <SearchableSelectHookForm
-                                        label={''}
-                                        name={'Grade'}
-                                        placeholder={'Grade'}
-                                        Controller={Controller}
-                                        control={control}
-                                        rules={{ required: false }}
-                                        register={register}
-                                        // defaultValue={technology.length !== 0 ? technology : ''}
-                                        options={renderListing('grade')}
-                                        mandatory={false}
-                                        handleChange={handleGradeChange}
-                                        errors={errors.Masters}
-                                        customClassName="mb-0"
-                                    />
-                                </div>
-                            </div>{/* d-inline-flex */}
-                            <button title="Run" type="button" class="user-btn" onClick={submitDropdown}><div class="save-icon mr-0"></div></button>
-                        </Col>
-                    </Row>}
+                                <div className="d-inline-flex justify-content-start align-items-center mr-3">
+                                    <div className="flex-fills label">Grade:</div>
+                                    <div className="hide-label flex-fills pl-0 w-auto">
+                                        <SearchableSelectHookForm
+                                            label={''}
+                                            name={'Grade'}
+                                            placeholder={'Grade'}
+                                            Controller={Controller}
+                                            control={control}
+                                            rules={{ required: false }}
+                                            register={register}
+                                            // defaultValue={technology.length !== 0 ? technology : ''}
+                                            options={renderListing('grade')}
+                                            mandatory={false}
+                                            handleChange={handleGradeChange}
+                                            errors={errors.Masters}
+                                            customClassName="mb-0"
+                                        />
+                                    </div>
+                                </div>{/* d-inline-flex */}
+                                <button title="Run" type="button" class="user-btn" onClick={submitDropdown}><div class="save-icon mr-0"></div></button>
+                            </Col>
+                        </Row>}
 
-                    {showListing && <>
-                        <Row>
+                        {showListing && <>
+                            <Row>
                             <Col md="12">
                                 <div className={`ag-grid-react`}>
                                     <div className={`ag-grid-wrapper rminsights_table  ${rowDataNew && rowDataNew?.length <= 0 ? "overlay-contain" : ""}`}>
@@ -816,9 +828,8 @@ function InsightsBop(props) {
                         </Row>
 
                     </>}
-                </form>
-            </div>
-            {/* container-fluid */}
+            </form>}
+        </div>
         </>
     )
 }

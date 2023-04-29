@@ -1,6 +1,6 @@
 import React, { Component, } from 'react';
 import { connect } from 'react-redux';
-import { Field, reduxForm, formValueSelector, isDirty } from "redux-form";
+import { Field, reduxForm, formValueSelector, isDirty, clearFields } from "redux-form";
 import { Row, Col, Table, Label } from 'reactstrap';
 import {
   required, checkForNull, postiveNumber, checkForDecimalAndNull, acceptAllExceptSingleSpecialCharacter,
@@ -8,7 +8,6 @@ import {
 } from "../../../helper/validation";
 import { renderText, searchableSelect, renderTextAreaField, focusOnError, renderDatePicker } from "../../layout/FormInputs";
 import { getPlantSelectListByType, getPlantBySupplier, getUOMSelectList } from '../../../actions/Common';
-import { masterFinalLevelUser } from '../actions/Material';
 import {
   createMachine, updateMachine, updateMachineDetails, getMachineTypeSelectList, getProcessesSelectList, fileUploadMachine, fileDeleteMachine,
   checkAndGetMachineNumber, getMachineData, getProcessGroupByMachineId, setGroupProcessList, setProcessList
@@ -31,15 +30,17 @@ import DayTime from '../../common/DayTimeWrapper'
 import attachClose from '../../../assests/images/red-cross.png'
 import MasterSendForApproval from '../MasterSendForApproval'
 import { debounce } from 'lodash';
-import { CheckApprovalApplicableMaster, displayUOM, onFocus } from '../../../helper'
+import { CheckApprovalApplicableMaster, displayUOM, userTechnologyDetailByMasterId } from '../../../helper'
 import AsyncSelect from 'react-select/async';
 import { ProcessGroup } from '../masterUtil';
 import _ from 'lodash'
 import { getCostingSpecificTechnology } from '../../costing/actions/Costing'
 import { getClientSelectList, } from '../actions/Client';
-import { autoCompleteDropdown } from '../../common/CommonFunctions';
+import { autoCompleteDropdown, costingTypeIdToApprovalTypeIdFunction } from '../../common/CommonFunctions';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
+import { checkFinalUser } from '../../../components/costing/actions/Costing'
+import { getUsersMasterLevelAPI } from '../../../actions/auth/AuthActions';
 
 
 const selector = formValueSelector('AddMachineRate');
@@ -105,9 +106,11 @@ class AddMachineRate extends Component {
         processUOM: false,
         machineRate: false
       },
-      showErrorOnFocusDate: false,
       finalApprovalLoader: false,
       costingTypeId: ZBCTypeId,
+      levelDetails: {},
+      noApprovalCycle: false,
+      vendorFilterList: []
     }
   }
 
@@ -150,20 +153,14 @@ class AddMachineRate extends Component {
     if (!editDetails.isViewMode) {
       this.props.getUOMSelectList(() => { })
       this.props.getProcessesSelectList(() => { })
-      let obj = {
-        MasterId: MACHINE_MASTER_ID,
-        DepartmentId: userDetails().DepartmentId,
-        LoggedInUserLevelId: userDetails().LoggedInMasterLevelId,
-        LoggedInUserId: loggedInUserId()
+      if (initialConfiguration.IsMasterApprovalAppliedConfigure) {
+        this.props.getUsersMasterLevelAPI(loggedInUserId(), MACHINE_MASTER_ID, (res) => {
+          setTimeout(() => {
+            this.commonFunction()
+          }, 100);
+        })
       }
-      this.setState({ finalApprovalLoader: true })
-      this.props.masterFinalLevelUser(obj, (res) => {
-        if (res.data.Result) {
-          this.setState({ isFinalApprovar: res.data.Data.IsFinalApprovar })
-          this.setState({ finalApprovalLoader: false })
-        }
 
-      })
     }
 
     if (!(editDetails.isEditFlag || editDetails.isViewMode)) {
@@ -206,14 +203,51 @@ class AddMachineRate extends Component {
     this.getDetails()
   }
 
+  commonFunction() {
+    let levelDetailsTemp = []
+    levelDetailsTemp = userTechnologyDetailByMasterId(this.state.costingTypeId, MACHINE_MASTER_ID, this.props.userMasterLevelAPI)
+    this.setState({ levelDetails: levelDetailsTemp })
+    if (levelDetailsTemp?.length !== 0) {
+      let obj = {
+        TechnologyId: MACHINE_MASTER_ID,
+        DepartmentId: userDetails().DepartmentId,
+        UserId: loggedInUserId(),
+        Mode: 'master',
+        approvalTypeId: costingTypeIdToApprovalTypeIdFunction(this.state.costingTypeId)
+      }
+      this.setState({ finalApprovalLoader: true })
+      this.props.checkFinalUser(obj, (res) => {
+        if (res?.data?.Result) {
+          this.setState({ isFinalApprovar: res?.data?.Data?.IsFinalApprover })
+          this.setState({ finalApprovalLoader: false })
+        }
+      })
+      this.setState({ noApprovalCycle: false })
+    } else {
+      this.setState({ noApprovalCycle: true })
+    }
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    const { initialConfiguration } = this.props
+    if (!this.props.data.isViewFlag) {
+      if ((prevState?.costingTypeId !== this.state.costingTypeId) && initialConfiguration.IsMasterApprovalAppliedConfigure) {
+        this.commonFunction()
+      }
+    }
+  }
+
   componentWillUnmount() {
-    const { selectedPlants, effectiveDate, machineType, selectedTechnology, isFormHide } = this.state;
+    const { selectedPlants, effectiveDate, machineType, selectedTechnology, isFormHide, client, vendorName, costingTypeId } = this.state;
     const { fieldsObj } = this.props;
     let data = {
       fieldsObj: fieldsObj,
       selectedTechnology: selectedTechnology,
       selectedPlants: selectedPlants,
       machineType: machineType,
+      selectedCustomer: client,
+      selectedVedor: vendorName,
+      costingTypeId: costingTypeId
     }
     setTimeout(() => {
       this.setState({ selectedPlants: selectedPlants, effectiveDate: effectiveDate })
@@ -235,7 +269,10 @@ class AddMachineRate extends Component {
     this.setState({
       selectedTechnology: data.selectedTechnology,
       machineType: data.machineType,
-      effectiveDate: data.EffectiveDate
+      effectiveDate: data.EffectiveDate,
+      remarks: data.Remark,
+      client: data.selectedCustomer,
+      vendorName: data.selectedVedor
     })
     this.props.change('MachineName', data && data.fieldsObj && data.fieldsObj.MachineName)
     this.props.change('MachineNumber', data && data.fieldsObj && data.fieldsObj.MachineNumber)
@@ -391,6 +428,17 @@ class AddMachineRate extends Component {
     * @description Used for Vendor checked
     */
   onPressVendor = (costingHeadFlag) => {
+    const fieldsToClear = [
+      'technology',
+      'vendorName',
+      'Plant',
+      'DestinationPlant',
+      'clientName',
+      'EffectiveDate',
+    ];
+    fieldsToClear.forEach(fieldName => {
+      this.props.dispatch(clearFields('AddMachineRate', false, false, fieldName));
+    });
     this.setState({
       costingTypeId: costingHeadFlag,
       vendorName: [],
@@ -815,7 +863,7 @@ class AddMachineRate extends Component {
   * @description DELETE ROW ENTRY FROM TABLE 
   */
   deleteItem = (index) => {
-    const { processGrid, UOM } = this.state;
+    const { processGrid, UOM, isProcessGroup } = this.state;
 
     let tempData = processGrid.filter((item, i) => {
       if (i === index) {
@@ -823,10 +871,13 @@ class AddMachineRate extends Component {
       }
       return true;
     });
-
+    if (isProcessGroup) {
+      this.setState({ lockUOMAndRate: tempData.length === 0 ? false : true })
+    } else {
+      this.setState({ lockUOMAndRate: isProcessGroup })
+    }
     this.setState({
       processGrid: tempData,
-      lockUOMAndRate: tempData.length === 0 ? false : true,
       UOM: tempData.length === 0 ? [] : !this.state.lockUOMAndRate ? [] : UOM,
       isEditIndex: false,
       processName: [],
@@ -884,7 +935,7 @@ class AddMachineRate extends Component {
     this.setState({ showPopup: true })
   }
   onPopupConfirm = () => {
-    this.cancel('cancel')
+    this.cancel('submit')
     this.setState({ showPopup: false })
   }
   closePopUp = () => {
@@ -1307,16 +1358,19 @@ class AddMachineRate extends Component {
   */
   render() {
     const { handleSubmit, AddAccessibility, EditAccessibility, initialConfiguration, isMachineAssociated } = this.props;
-    const { isEditFlag, isOpenMachineType, isOpenProcessDrawer, disableMachineType, IsCopied, isViewFlag, isViewMode, setDisable, lockUOMAndRate, UniqueProcessId, costingTypeId } = this.state;
+    const { isEditFlag, isOpenMachineType, isOpenProcessDrawer, disableMachineType, IsCopied, isViewFlag, isViewMode, setDisable, lockUOMAndRate, UniqueProcessId, costingTypeId, noApprovalCycle } = this.state;
     const filterList = async (inputValue) => {
-      const { vendorName } = this.state
+      const { vendorFilterList } = this.state
+      if (inputValue && typeof inputValue === 'string' && inputValue.includes(' ')) {
+        inputValue = inputValue.trim();
+      }
       const resultInput = inputValue.slice(0, searchCount)
-      if (inputValue?.length >= searchCount && vendorName !== resultInput) {
+      if (inputValue?.length >= searchCount && vendorFilterList !== resultInput) {
         // this.setState({ inputLoader: true })
         let res
         res = await getVendorWithVendorCodeSelectList(resultInput)
         // this.setState({ inputLoader: false })
-        this.setState({ vendorName: resultInput })
+        this.setState({ vendorFilterList: resultInput })
         let vendorDataAPI = res?.data?.SelectList
         if (inputValue) {
           // this.setState({ inputLoader: false })
@@ -1444,7 +1498,7 @@ class AddMachineRate extends Component {
                                 key={this.state.updateAsyncDropdown}
                                 loadOptions={filterList}
                                 onChange={(e) => this.handleVendorName(e)}
-                                noOptionsMessage={({ inputValue }) => inputValue.length < 3 ? "Enter 3 characters to show data" : "No results found"}
+                                noOptionsMessage={({ inputValue }) => inputValue.length < 3 ? MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN : "No results found"}
                                 value={this.state.vendorName}
                                 isDisabled={(isEditFlag || this.state.inputLoader || isViewFlag) ? true : false}
                                 onKeyDown={(onKeyDown) => {
@@ -1596,14 +1650,12 @@ class AddMachineRate extends Component {
                                 placeholder={isViewMode || !this.state.IsFinancialDataChanged ? '-' : "Enter"}
                                 className="form-control"
                                 disabled={isViewMode || !this.state.IsFinancialDataChanged}
-                                onFocus={() => onFocus(this, true)}
                               />
-                              {this.state.showErrorOnFocusDate && this.state.effectiveDate === '' && <div className='text-help mt-1 p-absolute bottom-7'>This field is required.</div>}
                             </div>
                           </div>
                         </Col>
 
-                        {costingTypeId === ZBCTypeId &&
+                        {(costingTypeId === ZBCTypeId || getConfigurationKey().IsShowDetailMachineForAll) &&
                           <Col md="12">
                             <div>
                               {
@@ -1662,7 +1714,7 @@ class AddMachineRate extends Component {
                             </div>
                           </div>
                         </Col>
-                        <Col md="3">
+                        <Col md="3" className='p-relative'>
                           <Field
                             name="UOM"
                             type="text"
@@ -1678,7 +1730,7 @@ class AddMachineRate extends Component {
                           />
                           {this.state.errorObj.processUOM && (this.state.UOM === undefined) && <div className='text-help p-absolute'>This field is required.</div>}
                         </Col>
-                        <Col md="3" className='UOM-label-container'>
+                        <Col md="3" className='UOM-label-container p-relative'>
                           <Field
                             label={this.DisplayMachineRateLabel()}
                             name={"MachineRate"}
@@ -1882,11 +1934,10 @@ class AddMachineRate extends Component {
                                 <div className={"cancel-icon"}></div> {'Cancel'}
                               </button>
 
-                              {!isViewMode && (CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true && !this.state.isFinalApprovar) ?
+                              {!isViewMode && (CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true && !this.state.isFinalApprovar) && initialConfiguration.IsMasterApprovalAppliedConfigure ?
                                 <button type="submit"
                                   class="user-btn approval-btn save-btn mr5"
-
-                                  disabled={isViewMode || setDisable}
+                                  disabled={isViewMode || setDisable || noApprovalCycle}
                                 >
                                   <div className="send-for-approval"></div>
                                   {'Send For Approval'}
@@ -1896,7 +1947,7 @@ class AddMachineRate extends Component {
                                 <button
                                   type="submit"
                                   className="user-btn mr5 save-btn"
-                                  disabled={isViewMode || setDisable}
+                                  disabled={isViewMode || setDisable || noApprovalCycle}
                                 >
                                   <div className={"save-icon"}></div>
                                   {isEditFlag ? "Update" : "Save"}
@@ -1960,6 +2011,8 @@ class AddMachineRate extends Component {
               approvalObj={this.state.approvalObj}
               isBulkUpload={false}
               IsImportEntery={false}
+              costingTypeId={this.state.costingTypeId}
+              levelDetails={this.state.levelDetails}
             />
           )
         }
@@ -1979,7 +2032,7 @@ function mapStateToProps(state) {
 
   const { plantList, plantSelectList, filterPlantList, UOMSelectList, } = comman;
   const { machineTypeSelectList, processSelectList, machineData, loading, processGroupApiData } = machine;
-  const { initialConfiguration, } = auth;
+  const { initialConfiguration, userMasterLevelAPI } = auth;
   const { costingSpecifiTechnology } = costing
   const { clientSelectList } = client;
   const { vendorWithVendorCodeSelectList } = supplier;
@@ -1998,7 +2051,7 @@ function mapStateToProps(state) {
 
   return {
     plantList, plantSelectList, filterPlantList, UOMSelectList,
-    machineTypeSelectList, processSelectList, vendorWithVendorCodeSelectList, clientSelectList, fieldsObj, machineData, initialValues, loading, initialConfiguration, processGroupApiData, costingSpecifiTechnology
+    machineTypeSelectList, processSelectList, vendorWithVendorCodeSelectList, clientSelectList, fieldsObj, machineData, initialValues, loading, initialConfiguration, processGroupApiData, costingSpecifiTechnology, userMasterLevelAPI
   }
 
 }
@@ -2022,13 +2075,14 @@ export default connect(mapStateToProps, {
   createMachine,
   updateMachine,
   updateMachineDetails,
-  masterFinalLevelUser,
+  checkFinalUser,
   getMachineData,
   getProcessGroupByMachineId,
   setGroupProcessList,
   setProcessList,
   getCostingSpecificTechnology,
   getClientSelectList,
+  getUsersMasterLevelAPI,
   getVendorWithVendorCodeSelectList
 })(reduxForm({
   form: 'AddMachineRate',

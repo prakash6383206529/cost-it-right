@@ -176,7 +176,6 @@ class User extends Component {
       <Container fluid className="user-page">
         {/* {this.props.loading && <Loader/>} */}
         <div>
-          {ViewRoleAccessibility && <h1>User Management</h1>}
           <Nav tabs className="subtabs">
             {ViewUserAccessibility && <NavItem>
               <NavLink className={classnames({ active: this.state.activeTab === '1' })} onClick={() => { this.toggle('1'); }}>
@@ -213,6 +212,7 @@ class User extends Component {
                   RFQUser={false}
                   formToggle={this.displayForm}
                   getUserDetail={this.getUserDetail}
+                  tabId={this.state.activeTab}
                 />
               </TabPane>}
             {this.state.activeTab === '2' && ViewRoleAccessibility &&
@@ -238,6 +238,7 @@ class User extends Component {
                   RFQUser={true}
                   formToggle={this.displayForm}
                   getUserDetail={this.getUserDetail}
+                  tabId={this.state.activeTab}
                 />
               </TabPane>}
           </TabContent>

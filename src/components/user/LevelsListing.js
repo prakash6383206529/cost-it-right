@@ -5,7 +5,7 @@ import { getAllLevelAPI, deleteUserLevelAPI, getUsersByTechnologyAndLevel } from
 import Toaster from '../common/Toaster';
 import Switch from "react-switch";
 import { MESSAGES } from '../../config/message';
-import { EMPTY_DATA } from '../../config/constants';
+import { COSTING, EMPTY_DATA, MASTERS, SIMULATION } from '../../config/constants';
 import NoContentFound from '../common/NoContentFound';
 import { getConfigurationKey } from '../../helper/auth';
 import { checkPermission, searchNocontentFilter } from '../../helper/util';
@@ -24,6 +24,7 @@ import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '../common/PopupMsgWrapper';
 import { PaginationWrapper } from '../common/commonPagination';
 import ScrollToTop from '../common/ScrollToTop';
+import { costingTypeIdToApprovalTypeIdFunction } from '../common/CommonFunctions';
 
 const gridOptions = {};
 
@@ -58,8 +59,8 @@ class LevelsListing extends Component {
 			isLoader: false,
 			updateApi: false,
 			cancelButton: false,
-			noData: false
-
+			noData: false,
+			approvalTypeId: ''
 		}
 	}
 
@@ -139,7 +140,9 @@ class LevelsListing extends Component {
 	 * @method getLevelMappingDetail
 	 * @description confirm edit item
 	 */
-	getLevelMappingDetail = (Id, levelType) => {
+	getLevelMappingDetail = (Id, levelType, approvalTypeId) => {
+		let obj = {}
+		obj[levelType] = costingTypeIdToApprovalTypeIdFunction(approvalTypeId)
 		this.setState({
 			isEditFlag: true,
 			TechnologyId: Id,
@@ -147,6 +150,7 @@ class LevelsListing extends Component {
 			isShowForm: false,
 			isShowMappingForm: true,
 			levelType: levelType,
+			approvalTypeId: obj
 		})
 	}
 
@@ -409,8 +413,10 @@ class LevelsListing extends Component {
 														enableBrowserTooltips={true}
 													>
 														{/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
-														<AgGridColumn width="250" suppressSizeToFit={true} field="Technology" headerName={`Technology/Heads${getConfigurationKey().IsMasterApprovalAppliedConfigure ? '/Masters' : ''}`}></AgGridColumn>
-														<AgGridColumn width="100" field="Level" suppressSizeToFit={true} headerName="Level"></AgGridColumn>
+														<AgGridColumn width="40" field="ApprovalType" headerName="Approval Type"></AgGridColumn>
+														<AgGridColumn width="35" field="Module" headerName="Module"></AgGridColumn>
+														<AgGridColumn width="65" field="Technology" headerName={`Technology/Heads${getConfigurationKey().IsMasterApprovalAppliedConfigure ? '/Masters' : ''}`}></AgGridColumn>
+														<AgGridColumn width="35" field="Level" headerName="Level"></AgGridColumn>
 														<AgGridColumn field="Users" tooltipField="Users" headerName="Users"></AgGridColumn>
 													</AgGridReact>
 													{<PaginationWrapper gridApi={this.gridApi} setPage={this.onPageSizeChanged} pageSize1={5} pageSize2={15} pageSize3={25} />}
@@ -434,6 +440,7 @@ class LevelsListing extends Component {
 									TechnologyId={TechnologyId}
 									anchor={'right'}
 									isEditedlevelType={this.state.levelType}
+									approvalTypeId={this.state.approvalTypeId}
 								/>
 							)}
 							{showImpact && (

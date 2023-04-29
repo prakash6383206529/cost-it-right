@@ -12,8 +12,10 @@ import LoaderCustom from '../common/LoaderCustom';
 import OperationListing from './operation/OperationListing'
 import { BOP_MASTER_ID, RM_MASTER_ID, OPERATIONS_ID, MACHINE_MASTER_ID, FILE_URL } from '../../config/constants';
 import MachineRateListing from './machine-master/MachineRateListing';
-import { loggedInUserId } from '../../helper';
+import { loggedInUserId, userDetails, userTechnologyDetailByMasterId } from '../../helper';
 import { checkFinalUser } from '../costing/actions/Costing';
+import { getUsersMasterLevelAPI } from '../../actions/auth/AuthActions';
+import { costingTypeIdToApprovalTypeIdFunction } from '../common/CommonFunctions';
 
 function SummaryDrawer(props) {
     const { approvalData } = props
@@ -47,33 +49,42 @@ function SummaryDrawer(props) {
     const [isMachineApproval, setIsMachineApproval] = useState(false)
     const [isDataInMaster, setIsDataInMaster] = useState(false)
     const [finalLevelUser, setFinalLevelUser] = useState(false)
+    const [costingTypeId, setCostingTypeId] = useState('')
+    const [levelDetails, setLevelDetails] = useState('')
 
     useEffect(() => {
+        let CostingTypeId = ''
         dispatch(getMasterApprovalSummary(approvalData.approvalNumber, approvalData.approvalProcessId, props.masterId, res => {
             const Data = res.data.Data
             setApprovalLevelStep(Data.MasterSteps)
             setApprovalDetails({ IsSent: Data.IsSent, IsFinalLevelButtonShow: Data.IsFinalLevelButtonShow, ApprovalProcessId: Data.ApprovalProcessId, MasterApprovalProcessSummaryId: Data.ApprovalProcessSummaryId, Token: Data.Token, MasterId: Data.MasterId })
             setLoader(false)
             if (Number(props.masterId) === RM_MASTER_ID) {
+                CostingTypeId = Data.ImpactedMasterDataList[0]?.CostingTypeId
                 setFiles(Data.ImpactedMasterDataList[0].Files)
                 Data.ImpactedMasterDataList.length > 0 ? setIsDataInMaster(true) : setIsDataInMaster(false);
             }
             else if (Number(props.masterId) === BOP_MASTER_ID) {
+                CostingTypeId = Data.ImpactedMasterDataListBOP[0]?.CostingTypeId
                 setFiles(Data.ImpactedMasterDataListBOP[0].Files)
                 Data.ImpactedMasterDataListBOP.length > 0 ? setIsDataInMaster(true) : setIsDataInMaster(false);
             } else if (Number(props.masterId) === OPERATIONS_ID) {
+                CostingTypeId = Data.ImpactedMasterDataListOperation[0]?.CostingTypeId
                 setFiles(Data.ImpactedMasterDataListOperation[0].Files)
                 Data.ImpactedMasterDataListOperation.length > 0 ? setIsDataInMaster(true) : setIsDataInMaster(false);
             } else if (Number(props.masterId) === MACHINE_MASTER_ID) {
+                CostingTypeId = Data.ImpactedMasterDataListMachine[0]?.CostingTypeId
                 setFiles(Data.ImpactedMasterDataListMachine[0].Files)
                 Data.ImpactedMasterDataListMachine.length > 0 ? setIsDataInMaster(true) : setIsDataInMaster(false);
             }
+            setCostingTypeId(CostingTypeId)
             Data.NumberOfMaster > 0 ? setIsDataInMaster(true) : setIsDataInMaster(false);
             let obj = {
                 DepartmentId: Data.DepartmentId,
                 UserId: loggedInUserId(),
                 TechnologyId: props.masterId,
-                Mode: 'master'
+                Mode: 'master',
+                approvalTypeId: costingTypeIdToApprovalTypeIdFunction(CostingTypeId)
             }
             dispatch(checkFinalUser(obj, res => {
                 if (res && res.data && res.data.Result) {
@@ -94,6 +105,14 @@ function SummaryDrawer(props) {
             setIsMachineApproval(true)
         }
 
+        dispatch(getUsersMasterLevelAPI(loggedInUserId(), props.masterId, res => {
+            if (res && res.data && res.data.Result) {
+                setFinalLevelUser(res.data.Data.IsFinalApprover)
+                let levelDetailsTemp = []
+                levelDetailsTemp = userTechnologyDetailByMasterId(CostingTypeId, props.masterId, res.data.Data.MasterLevels)
+                setLevelDetails(levelDetailsTemp)
+            }
+        }))
 
     }, [])
     // const [approvalData, setApprovalData] = useState('')
@@ -139,10 +158,9 @@ function SummaryDrawer(props) {
                                 {isMachineApproval &&
                                     <MachineRateListing isMasterSummaryDrawer={true} selectionForListingMasterAPI='Master' isDataInMaster={isDataInMaster} />}
 
-
-                                <Row>
+                                {files.length > 0 && <Row>
                                     <Col md="12" className='mt-2'>
-                                        <h5 className="left-border">Attachments</h5>
+                                        <h5 className="left-border">Attachments:</h5>
                                     </Col>
                                     <Col md="12">
                                         <div className={"attachment-wrapper mt-0"}>
@@ -165,7 +183,7 @@ function SummaryDrawer(props) {
                                                 })}
                                         </div>
                                     </Col>
-                                </Row>
+                                </Row>}
                             </Col>
 
 
@@ -202,6 +220,8 @@ function SummaryDrawer(props) {
                     masterId={approvalDetails.MasterId}
                     closeDrawer={closeApproveRejectDrawer}
                     IsFinalLevelButtonShow={finalLevelUser}
+                    costingTypeId={costingTypeId}
+                    levelDetails={levelDetails}
                 />
             }
         </div >

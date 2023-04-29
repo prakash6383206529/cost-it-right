@@ -14,7 +14,7 @@ import DayTime from '../../common/DayTimeWrapper'
 import BulkUpload from '../../massUpload/BulkUpload';
 import { BOP_DOMESTIC_DOWNLOAD_EXCEl, } from '../../../config/masterData';
 import LoaderCustom from '../../common/LoaderCustom';
-import { checkForDecimalAndNull, getConfigurationKey, loggedInUserId, searchNocontentFilter, userDepartmetList, userDetails } from '../../../helper';
+import { getConfigurationKey, searchNocontentFilter, userDepartmetList } from '../../../helper';
 import { BopDomestic, } from '../../../config/constants';
 import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
@@ -22,14 +22,14 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { getListingForSimulationCombined, setSelectedRowForPagination } from '../../simulation/actions/Simulation';
-import { masterFinalLevelUser } from '../../masters/actions/Material'
 import WarningMessage from '../../common/WarningMessage';
 import { hyphenFormatter } from '../masterUtil';
 import { disabledClass } from '../../../actions/Common';
 import _ from 'lodash';
-import SelectRowWrapper from '../../common/SelectRowWrapper';
 import AnalyticsDrawer from '../material-master/AnalyticsDrawer';
 import { reactLocalStorage } from 'reactjs-localstorage';
+import { hideCustomerFromExcel } from '../../common/CommonFunctions';
+
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -57,7 +57,6 @@ class BOPDomesticListing extends Component {
             showPopup: false,
             deletedId: '',
             isLoader: true,
-            isFinalApprovar: false,
             disableFilter: true,
             disableDownload: false,
             inRangeDate: [],
@@ -87,17 +86,6 @@ class BOPDomesticListing extends Component {
         setTimeout(() => {
             if (!this.props.stopApiCallOnCancel) {
                 this.getDataList("", 0, "", "", 0, defaultPageSize, true, this.state.floatingFilterData)
-                let obj = {
-                    MasterId: BOP_MASTER_ID,
-                    DepartmentId: userDetails().DepartmentId,
-                    LoggedInUserLevelId: userDetails().LoggedInMasterLevelId,
-                    LoggedInUserId: loggedInUserId()
-                }
-                this.props.masterFinalLevelUser(obj, (res) => {
-                    if (res?.data?.Result) {
-                        this.setState({ isFinalApprovar: res.data.Data.IsFinalApprovar })
-                    }
-                })
             }
         }, 300);
     }
@@ -143,7 +131,7 @@ class BOPDomesticListing extends Component {
             this.props?.changeSetLoader(true)
             this.props.getListingForSimulationCombined(this.props.objectForMultipleSimulation, BOPDOMESTIC, (res) => {
                 this.props?.changeSetLoader(false)
-
+                this.setState({ isLoader: false })
             })
         } else {
 
@@ -318,10 +306,11 @@ class BOPDomesticListing extends Component {
         this.setState({ isBulkUpload: true })
     }
 
-    closeBulkUploadDrawer = () => {
-        this.setState({ isBulkUpload: false }, () => {
+    closeBulkUploadDrawer = (event, type) => {
+        this.setState({ isBulkUpload: false })
+        if (type !== 'cancel') {
             this.resetState()
-        })
+        }
     }
 
     /**
@@ -537,6 +526,7 @@ class BOPDomesticListing extends Component {
     };
 
     returnExcelColumn = (data = [], TempData) => {
+        let excelData = hideCustomerFromExcel(data, "CustomerName")
         let temp = []
         temp = TempData && TempData.map((item) => {
             if (item.Plants === '-') {
@@ -552,11 +542,9 @@ class BOPDomesticListing extends Component {
             return item
         })
 
-
         return (
-
             <ExcelSheet data={temp} name={BopDomestic}>
-                {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
+                {excelData && excelData.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
             </ExcelSheet>);
     }
 
@@ -837,6 +825,9 @@ class BOPDomesticListing extends Component {
                                     <AgGridColumn field="DepartmentName" headerName="Company (Code)" ></AgGridColumn>
                                     {(reactLocalStorage.getObject('cbcCostingPermission')) && <AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
                                     {/* <AgGridColumn field="DepartmentName" headerName="Department"></AgGridColumn> */}
+                                    {this.props?.isMasterSummaryDrawer && <AgGridColumn field="IncoSummary" headerName="Inco Terms"></AgGridColumn>}
+                                    {this.props?.isMasterSummaryDrawer && <AgGridColumn field="PaymentSummary" headerName="Payment Terms"></AgGridColumn>}
+                                    <AgGridColumn field="NumberOfPieces" headerName="Minimum Order Quantity"></AgGridColumn>
                                     <AgGridColumn field="BasicRate" headerName="Basic Rate" cellRenderer={'commonCostFormatter'} ></AgGridColumn>
                                     <AgGridColumn field="NetLandedCost" headerName="Net Cost" cellRenderer={'commonCostFormatter'} ></AgGridColumn>
                                     <AgGridColumn field="EffectiveDateNew" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'} filter="agDateColumnFilter" filterParams={filterParams} ></AgGridColumn>
@@ -863,11 +854,11 @@ class BOPDomesticListing extends Component {
                         isOpen={isBulkUpload}
                         closeDrawer={this.closeBulkUploadDrawer}
                         isEditFlag={false}
-                        fileName={'InsertDomestic'}
+                        fileName={'Insert Domestic'}
                         isZBCVBCTemplate={true}
                         messageLabel={'Insert Domestic'}
                         anchor={'right'}
-                        isFinalApprovar={this.state.isFinalApprovar}
+                        masterId={BOP_MASTER_ID}
                     />
                 }
 
@@ -922,7 +913,6 @@ export default connect(mapStateToProps, {
     getAllVendorSelectList,
     getPlantSelectListByVendor,
     getListingForSimulationCombined,
-    masterFinalLevelUser,
     setSelectedRowForPagination,
     disabledClass
 })(reduxForm({

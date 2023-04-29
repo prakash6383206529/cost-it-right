@@ -10,12 +10,12 @@ import { getImpactedMasterData, getLastSimulationData } from '../actions/Simulat
 import AssemblyWiseImpactSummary from './AssemblyWiseImpactSummary';
 import Toaster from '../../common/Toaster';
 import NoContentFound from '../../common/NoContentFound';
-import { VBC, VBCTypeId } from '../../../config/constants';
+import { CBCTypeId, VBCTypeId } from '../../../config/constants';
 import { checkForDecimalAndNull, getConfigurationKey } from '../../../helper';
 
 
 function VerifyImpactDrawer(props) {
-  const { SimulationTechnologyIdState, simulationId, vendorIdState, EffectiveDate, TypeOfCosting, amendmentDetails, dataForAssemblyImpactInVerifyImpact, assemblyImpactButtonTrue, costingDrawer, CostingTypeId } = props
+  const { SimulationTechnologyIdState, simulationId, vendorIdState, EffectiveDate, CostingTypeId, amendmentDetails, dataForAssemblyImpactInVerifyImpact, assemblyImpactButtonTrue, costingDrawer } = props
   const [impactedMasterDataListForLastRevisionData, setImpactedMasterDataListForLastRevisionData] = useState([])
   const [impactedMasterDataListForImpactedMaster, setImpactedMasterDataListForImpactedMaster] = useState([])
   const [showAssemblyWise, setShowAssemblyWise] = useState(false)
@@ -26,9 +26,9 @@ function VerifyImpactDrawer(props) {
   const [lastRevisionDataAcc, setLastRevisionDataAcc] = useState(false)
   const [masterIdForLastRevision, setMasterIdForLastRevision] = useState('')
   const [editWarning, setEditWarning] = useState(false)
-  const headerName = ['Revision No.', 'Name', 'Old Cost/Pc', 'New Cost/Pc', 'Quantity', 'Impact/Pc', 'Volume/Year', 'Impact/Quarter', 'Impact/Year']
+  const headerName = ['Revision No.', 'Name', 'Existing Cost/Pc', 'Revised Cost/Pc', 'Quantity', 'Impact/Pc', 'Volume/Year', 'Impact/Quarter', 'Impact/Year']
   const parentField = ['PartNumber', '-', 'PartName', '-', '-', '-', 'VariancePerPiece', 'VolumePerYear', 'ImpactPerQuarter', 'ImpactPerYear']
-  const childField = ['PartNumber', 'ECNNumber', 'PartName', 'OldCost', 'NewCost', 'Quantity', 'VariancePerPiece', '-', '-', '-']
+  const childField = ['PartNumber', 'ECNNumber', 'PartName', 'ExistingCost', 'RevisedCost', 'Quantity', 'VariancePerPiece', '-', '-', '-']
 
   const dispatch = useDispatch()
 
@@ -47,6 +47,7 @@ function VerifyImpactDrawer(props) {
       impactedMasterDataListForLastRevisionData?.OperationImpactedMasterDataList?.length <= 0 &&
       impactedMasterDataListForLastRevisionData?.ExchangeRateImpactedMasterDataList?.length <= 0 &&
       impactedMasterDataListForLastRevisionData?.BoughtOutPartImpactedMasterDataList?.length <= 0 &&
+      impactedMasterDataListForLastRevisionData?.SurfaceTreatmentImpactedMasterDataList?.length <= 0 &&
       impactedMasterDataListForLastRevisionData?.MachineProcessImpactedMasterDataList <= 0
     if (lastRevisionDataAcc && check) {
       Toaster.warning('There is no data for the Last Revision.')
@@ -67,7 +68,7 @@ function VerifyImpactDrawer(props) {
   }, [lastSimulationData, impactedMasterData])
 
   useEffect(() => {
-    if (vendorIdState && EffectiveDate && (TypeOfCosting === VBCTypeId)) {
+    if (vendorIdState && EffectiveDate && (CostingTypeId === VBCTypeId)) {
       dispatch(getLastSimulationData(vendorIdState, EffectiveDate, (res) => {
         setMasterIdForLastRevision(res?.data?.Data?.SimulationTechnologyId)
       }))
@@ -104,24 +105,26 @@ function VerifyImpactDrawer(props) {
                   <Table responsive className="border impact-drawer-table sub-table">
                     <tbody>
                       <tr>
-                        <th>Vendor (Code):</th>
+                        {CostingTypeId !== CBCTypeId && <th>Vendor (Code):</th>}
                         <th>Technology:</th>
                         <th>Master:</th>
                         <th>Costing Head:</th>
+                        {CostingTypeId === CBCTypeId && <th>CUSTOMER:</th>}
                         <th>Effective Date:</th>
-                        <th>Impact for Quarter(INR):</th>
-                        <th>Total Budgeted Price Impact/Quarter(INR):</th>
+                        <th>Impact/Quarter (w.r.t. Existing):</th>
+                        <th>Impact/Quarter (w.r.t. Budgeted Price):</th>
                       </tr>
                     </tbody>
                     <tbody>
                       <tr>
-                        <td>{amendmentDetails.Vendor}</td>
+                        {CostingTypeId !== CBCTypeId && <td>{amendmentDetails.Vendor}</td>}
                         <td>{amendmentDetails.Technology}</td>
                         <td>{amendmentDetails.SimulationAppliedOn}</td>
                         <td>{amendmentDetails.CostingHead}</td>
+                        {CostingTypeId === CBCTypeId && <td>{amendmentDetails.CustomerName}</td>}
                         <td>{amendmentDetails.EffectiveDate === '' ? '-' : DayTime(amendmentDetails.EffectiveDate).format('DD-MM-YYYY')}</td>
                         <td>{amendmentDetails.TotalImpactPerQuarter === '' ? '-' : checkForDecimalAndNull(amendmentDetails.TotalImpactPerQuarter, getConfigurationKey().NoOfDecimalForPrice)}</td>
-                        <td>{amendmentDetails.totalBudgetedPriceImpactPerQuarter === '' ? '-' : checkForDecimalAndNull(amendmentDetails.totalBudgetedPriceImpactPerQuarter, getConfigurationKey().NoOfDecimalForPrice)}</td>
+                        <td>{amendmentDetails.BudgetedPriceImpactPerQuarter === '' ? '-' : checkForDecimalAndNull(amendmentDetails.BudgetedPriceImpactPerQuarter, getConfigurationKey().NoOfDecimalForPrice)}</td>
                       </tr>
                     </tbody>
                   </Table>
@@ -204,7 +207,7 @@ function VerifyImpactDrawer(props) {
                   </Row>
                 </>
               }
-              {(TypeOfCosting === VBCTypeId) && <>
+              {(CostingTypeId === VBCTypeId) && <>
                 <Row className="mb-3 pr-0 mx-0">
                   <Col md="6"> <HeaderTitle title={'Last Revision Data:'} /></Col>
                   <Col md="6">

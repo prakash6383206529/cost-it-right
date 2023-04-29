@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Field, reduxForm, formValueSelector } from "redux-form";
+import { Field, reduxForm, formValueSelector, clearFields } from "redux-form";
 import { Row, Col, Label, } from 'reactstrap';
-import { required, getVendorCode, maxLength80, checkWhiteSpaces, acceptAllExceptSingleSpecialCharacter, maxLength10, maxLength15, positiveAndDecimalNumber, maxLength512, decimalLengthsix, checkSpacesInString } from "../../../helper/validation";
-import { renderText, renderMultiSelectField, searchableSelect, renderTextAreaField, renderDatePicker, renderNumberInputField, focusOnError } from "../../layout/FormInputs";
+import { required, getVendorCode, maxLength80, checkWhiteSpaces, acceptAllExceptSingleSpecialCharacter, maxLength10, maxLength15, positiveAndDecimalNumber, maxLength512, decimalLengthsix, checkSpacesInString, number } from "../../../helper/validation";
+import { renderText, renderMultiSelectField, searchableSelect, renderTextAreaField, renderDatePicker, focusOnError, renderTextInputField } from "../../layout/FormInputs";
 import { getVendorWithVendorCodeSelectList } from '../actions/Supplier';
 import { createOperationsAPI, getOperationDataAPI, updateOperationAPI, fileUploadOperation, fileDeleteOperation, checkAndGetOperationCode } from '../actions/OtherOperation';
 import { getPlantSelectListByType, getPlantBySupplier, getUOMSelectList, } from '../../../actions/Common';
@@ -22,13 +22,14 @@ import MasterSendForApproval from '../MasterSendForApproval'
 import { debounce } from 'lodash';
 import AsyncSelect from 'react-select/async';
 import LoaderCustom from '../../common/LoaderCustom';
-import { CheckApprovalApplicableMaster, onFocus, showDataOnHover } from '../../../helper';
-import { masterFinalLevelUser } from '../actions/Material'
+import { CheckApprovalApplicableMaster, onFocus, showDataOnHover, userTechnologyDetailByMasterId } from '../../../helper';
 import { getCostingSpecificTechnology } from '../../costing/actions/Costing'
 import { getClientSelectList, } from '../actions/Client';
 import { reactLocalStorage } from 'reactjs-localstorage';
-import { autoCompleteDropdown } from '../../common/CommonFunctions';
+import { autoCompleteDropdown, costingTypeIdToApprovalTypeIdFunction } from '../../common/CommonFunctions';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
+import { checkFinalUser } from '../../../components/costing/actions/Costing'
+import { getUsersMasterLevelAPI } from '../../../actions/auth/AuthActions';
 
 const selector = formValueSelector('AddOperation');
 
@@ -78,11 +79,13 @@ class AddOperation extends Component {
       inputLoader: false,
       attachmentLoader: false,
       showErrorOnFocus: false,
-      showErrorOnFocusDate: false,
       operationName: '',
       operationCode: '',
       finalApprovalLoader: false,
-      showPopup: false
+      showPopup: false,
+      levelDetails: {},
+      noApprovalCycle: false,
+      vendorFilterList: []
     }
   }
 
@@ -101,33 +104,55 @@ class AddOperation extends Component {
    * @description called after render the component
    */
   componentDidMount() {
+    const { initialConfiguration } = this.props
     if (!(this.props.data.isEditFlag || this.props.data.isViewFlag)) {
       this.props.getCostingSpecificTechnology(loggedInUserId(), () => { })
       this.props.getPlantSelectListByType(ZBC, () => { })
     }
-    if (!this.state.isViewMode) {
-      let obj = {
-        MasterId: OPERATIONS_ID,
-        DepartmentId: userDetails()?.DepartmentId,
-        LoggedInUserLevelId: userDetails()?.LoggedInMasterLevelId,
-        LoggedInUserId: loggedInUserId()
-      }
-      this.setState({ finalApprovalLoader: true })
-      this.props.masterFinalLevelUser(obj, (res) => {
-        if (res.data.Result) {
-          this.setState({ isFinalApprovar: res.data.Data.IsFinalApprovar })
-          this.setState({ finalApprovalLoader: false })
-        }
+    if (!this.state.isViewMode && initialConfiguration.IsMasterApprovalAppliedConfigure) {
+      this.props.getUsersMasterLevelAPI(loggedInUserId(), OPERATIONS_ID, (res) => {
+        setTimeout(() => {
+          this.commonFunction()
+        }, 100);
       })
     }
     this.getDetail()
   }
 
-  componentDidUpdate(prevProps) {
+  commonFunction() {
+    let levelDetailsTemp = []
+    levelDetailsTemp = userTechnologyDetailByMasterId(this.state.costingTypeId, OPERATIONS_ID, this.props.userMasterLevelAPI)
+    this.setState({ levelDetails: levelDetailsTemp })
+    if (levelDetailsTemp?.length !== 0) {
+      let obj = {
+        TechnologyId: OPERATIONS_ID,
+        DepartmentId: userDetails().DepartmentId,
+        UserId: loggedInUserId(),
+        Mode: 'master',
+        approvalTypeId: costingTypeIdToApprovalTypeIdFunction(this.state.costingTypeId)
+      }
+      this.setState({ finalApprovalLoader: true })
+      this.props.checkFinalUser(obj, (res) => {
+        if (res?.data?.Result) {
+          this.setState({ isFinalApprovar: res?.data?.Data?.IsFinalApprover })
+          this.setState({ finalApprovalLoader: false })
+        }
+      })
+      this.setState({ noApprovalCycle: false })
+    } else {
+      this.setState({ noApprovalCycle: true })
+    }
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    const { initialConfiguration } = this.props
     if (prevProps.filedObj !== this.props.filedObj) {
       const { filedObj } = this.props;
       if (filedObj && filedObj !== undefined && filedObj.length > 4) {
       }
+    }
+    if ((prevState?.costingTypeId !== this.state.costingTypeId) && initialConfiguration.IsMasterApprovalAppliedConfigure) {
+      this.commonFunction()
     }
   }
   componentWillUnmount() {
@@ -190,6 +215,21 @@ class AddOperation extends Component {
    * @description Used for Vendor checked
    */
   onPressVendor = (costingHeadFlag) => {
+    const fieldsToClear = [
+      'technology',
+      'OperationName',
+      'OperationCode',
+      'Plant',
+      'DestinationPlant',
+      'UnitOfMeasurementId',
+      'vendorName',
+      'clientName',
+      'Rate',
+      'EffectiveDate'
+    ];
+    fieldsToClear.forEach(fieldName => {
+      this.props.dispatch(clearFields('AddOperation', false, false, fieldName));
+    });
     this.setState({
       vendorName: [],
       costingTypeId: costingHeadFlag
@@ -340,7 +380,11 @@ class AddOperation extends Component {
           this.setState({ DataToChange: Data })
           this.props.change('EffectiveDate', DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
           this.setState({ minEffectiveDate: Data.EffectiveDate })
-
+          this.props.change('OperationName', Data.OperationName ? Data.OperationName : '')
+          this.props.change('OperationCode', Data.OperationCode ? Data.OperationCode : '')
+          this.props.change('Description', Data.Description ? Data.Description : '')
+          this.props.change('Rate', Data.Rate ? Data.Rate : '')
+          this.props.change('Remark', Data.Remark ? Data.Remark : '')
           let technologyArray = [];
           Data && Data.Technology.map((item) => {
             technologyArray.push({ Text: item.Technology, Value: item.TechnologyId })
@@ -777,16 +821,19 @@ class AddOperation extends Component {
   */
   render() {
     const { handleSubmit, initialConfiguration, isOperationAssociated } = this.props;
-    const { isEditFlag, isOpenVendor, isOpenUOM, isDisableCode, isViewMode, setDisable, costingTypeId } = this.state;
+    const { isEditFlag, isOpenVendor, isOpenUOM, isDisableCode, isViewMode, setDisable, costingTypeId, noApprovalCycle } = this.state;
     const filterList = async (inputValue) => {
-      const { vendorName } = this.state
+      const { vendorFilterList } = this.state
+      if (inputValue && typeof inputValue === 'string' && inputValue.includes(' ')) {
+        inputValue = inputValue.trim();
+      }
       const resultInput = inputValue.slice(0, searchCount)
-      if (inputValue?.length >= searchCount && vendorName !== resultInput) {
+      if (inputValue?.length >= searchCount && vendorFilterList !== resultInput) {
         this.setState({ inputLoader: true })
         let res
         res = await getVendorWithVendorCodeSelectList(resultInput)
         this.setState({ inputLoader: false })
-        this.setState({ vendorName: resultInput })
+        this.setState({ vendorFilterList: resultInput })
         let vendorDataAPI = res?.data?.SelectList
         if (inputValue) {
           return autoCompleteDropdown(inputValue, vendorDataAPI, false, [], true)
@@ -975,7 +1022,7 @@ class AddOperation extends Component {
                                 loadOptions={filterList}
                                 onChange={(e) => this.handleVendorName(e)}
                                 value={this.state.vendorName}
-                                noOptionsMessage={({ inputValue }) => inputValue.length < 3 ? "Enter 3 characters to show data" : "No results found"}
+                                noOptionsMessage={({ inputValue }) => inputValue.length < 3 ? MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN : "No results found"}
                                 isDisabled={(isEditFlag) ? true : false}
                                 onKeyDown={(onKeyDown) => {
                                   if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
@@ -1060,8 +1107,8 @@ class AddOperation extends Component {
                           name={"Rate"}
                           type="text"
                           placeholder={isViewMode || (isEditFlag && isOperationAssociated) ? '-' : "Select"}
-                          validate={[required, positiveAndDecimalNumber, maxLength10, decimalLengthsix]}
-                          component={renderNumberInputField}
+                          validate={[required, positiveAndDecimalNumber, maxLength10, decimalLengthsix, number]}
+                          component={renderTextInputField}
                           required={true}
                           disabled={isViewMode || (isEditFlag && isOperationAssociated)}
                           onChange={this.handleRateChange}
@@ -1075,8 +1122,8 @@ class AddOperation extends Component {
                           name={"LabourRatePerUOM"}
                           type="text"
                           placeholder={isViewMode ? '-' : "Select"}
-                          validate={[positiveAndDecimalNumber, maxLength10]}
-                          component={renderNumberInputField}
+                          validate={[positiveAndDecimalNumber, maxLength10, number]}
+                          component={renderTextInputField}
                           disabled={isEditFlag ? true : false}
                           className=" "
                           customClassName=" withBorder"
@@ -1102,9 +1149,7 @@ class AddOperation extends Component {
                             disabled={isViewMode || !this.state.IsFinancialDataChanged}
                             customClassName=" withBorder"
                             placeholder={isViewMode || !this.state.IsFinancialDataChanged ? '-' : "Select Date"}
-                            onFocus={() => onFocus(this, true)}
                           />
-                          {this.state.showErrorOnFocusDate && this.state.effectiveDate === '' && <div className='text-help mt-1 p-absolute bottom-7'>This field is required.</div>}
                         </div>
                       </Col>
                     </Row>
@@ -1247,10 +1292,10 @@ class AddOperation extends Component {
                         <div className={"cancel-icon"}></div>
                         {"Cancel"}
                       </button>
-                      {!isViewMode && (CheckApprovalApplicableMaster(OPERATIONS_ID) === true && !this.state.isFinalApprovar) ?
+                      {!isViewMode && (CheckApprovalApplicableMaster(OPERATIONS_ID) === true && !this.state.isFinalApprovar) && initialConfiguration.IsMasterApprovalAppliedConfigure ?
                         <button type="submit"
                           class="user-btn approval-btn save-btn mr5"
-                          disabled={isViewMode || setDisable}
+                          disabled={isViewMode || setDisable || noApprovalCycle}
                         >
                           <div className="send-for-approval"></div>
                           {'Send For Approval'}
@@ -1259,7 +1304,7 @@ class AddOperation extends Component {
                         <button
                           type="submit"
                           className="user-btn mr5 save-btn"
-                          disabled={isViewMode || setDisable}
+                          disabled={isViewMode || setDisable || noApprovalCycle}
                         >
                           <div className={"save-icon"}></div>
                           {isEditFlag ? "Update" : "Save"}
@@ -1309,6 +1354,8 @@ class AddOperation extends Component {
               approvalObj={this.state.approvalObj}
               isBulkUpload={false}
               IsImportEntery={false}
+              costingTypeId={this.state.costingTypeId}
+              levelDetails={this.state.levelDetails}
             />
           )
         }
@@ -1328,26 +1375,21 @@ function mapStateToProps(state) {
   const { plantSelectList, filterPlantList, UOMSelectList, } = comman;
   const { operationData } = otherOperation;
   const { vendorWithVendorCodeSelectList } = supplier;
-  const { initialConfiguration } = auth;
+  const { initialConfiguration, userMasterLevelAPI } = auth;
   const { costingSpecifiTechnology } = costing
   const { clientSelectList } = client;
 
   let initialValues = {};
   if (operationData && operationData !== undefined) {
     initialValues = {
-      OperationName: operationData.OperationName,
-      OperationCode: operationData.OperationCode,
-      Description: operationData.Description,
-      Rate: operationData.Rate,
       LabourRatePerUOM: operationData.LabourRatePerUOM,
-      Remark: operationData.Remark,
     }
   }
 
   return {
     plantSelectList, UOMSelectList,
     operationData, filterPlantList, vendorWithVendorCodeSelectList, filedObj,
-    initialValues, initialConfiguration, costingSpecifiTechnology, clientSelectList
+    initialValues, initialConfiguration, costingSpecifiTechnology, clientSelectList, userMasterLevelAPI
   }
 }
 
@@ -1367,10 +1409,11 @@ export default connect(mapStateToProps, {
   getOperationDataAPI,
   fileUploadOperation,
   fileDeleteOperation,
-  masterFinalLevelUser,
+  checkFinalUser,
   checkAndGetOperationCode,
   getCostingSpecificTechnology,
-  getClientSelectList
+  getClientSelectList,
+  getUsersMasterLevelAPI
 })(reduxForm({
   form: 'AddOperation',
   touchOnChange: true,

@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Row, Col } from 'reactstrap';
-import { required, checkWhiteSpaces, alphaNumeric, acceptAllExceptSingleSpecialCharacter, maxLength20, maxLength80, maxLength85, maxLength512, checkSpacesInString } from "../../../helper/validation";
+import { required, checkWhiteSpaces, alphaNumeric, acceptAllExceptSingleSpecialCharacter, maxLength20, maxLength80, maxLength85, maxLength512, checkSpacesInString, minLength3 } from "../../../helper/validation";
 import { getConfigurationKey, loggedInUserId } from "../../../helper/auth";
 import { focusOnError, renderDatePicker, renderMultiSelectField, renderText, renderTextAreaField, searchableSelect } from "../../layout/FormInputs";
 import { createPart, updatePart, getPartData, fileUploadPart, fileDeletePart, getProductGroupSelectList, getPartDescription } from '../actions/Part';
@@ -17,9 +17,10 @@ import { reactLocalStorage } from 'reactjs-localstorage';
 import LoaderCustom from '../../common/LoaderCustom';
 import imgRedcross from "../../../assests/images/red-cross.png";
 import _, { debounce } from 'lodash';
-import { onFocus, showDataOnHover } from '../../../helper';
+import { showDataOnHover } from '../../../helper';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { getCostingSpecificTechnology } from '../../costing/actions/Costing'
+import { ASSEMBLY } from '../../../config/masterData';
 
 class AddIndivisualPart extends Component {
   constructor(props) {
@@ -48,7 +49,6 @@ class AddIndivisualPart extends Component {
       minEffectiveDate: '',
       disablePartName: false,
       attachmentLoader: false,
-      showErrorOnFocusDate: false,
       showPopup: false
     }
   }
@@ -130,11 +130,12 @@ class AddIndivisualPart extends Component {
           let finalData = res.data.Data
           this.props.change("Description", finalData.Description)
           this.props.change("PartName", finalData.PartName)
-          this.setState({ disablePartName: true, minEffectiveDate: finalData.EffectiveDate })
+          this.setState({ disablePartName: true, minEffectiveDate: finalData.EffectiveDate, TechnologySelected: { label: finalData.Technology, value: finalData.TechnologyId } })
         } else {
           this.props.change("Description", "")
           this.props.change("PartName", "")
-          this.setState({ disablePartName: false, minEffectiveDate: "" })
+          this.props.change("TechnologyId", '')
+          this.setState({ disablePartName: false, minEffectiveDate: "", TechnologySelected: [] })
         }
       })
     }
@@ -190,7 +191,7 @@ class AddIndivisualPart extends Component {
       costingSpecifiTechnology &&
         costingSpecifiTechnology.map((item) => {
 
-          if (item.Value === '0') return false
+          if (item.Value === '0' || Number(item.Value) === Number(ASSEMBLY)) return false
           temp.push({ label: item.Text, value: item.Value })
           return null
         })
@@ -490,7 +491,7 @@ class AddIndivisualPart extends Component {
                               name={"PartNumber"}
                               type="text"
                               placeholder={isEditFlag ? '-' : "Enter"}
-                              validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength20, checkSpacesInString]}
+                              validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength20, checkSpacesInString,  minLength3]}
                               component={renderText}
                               required={true}
                               onChange={this.onPartNoChange}
@@ -505,7 +506,7 @@ class AddIndivisualPart extends Component {
                               name={"PartName"}
                               type="text"
                               placeholder={isViewMode || (!isEditFlag && this.state.disablePartName) || isEditFlag ? '-' : "Enter"}
-                              validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength85, checkSpacesInString]}
+                              validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength85]}
                               component={renderText}
                               required={true}
                               className=""
@@ -625,9 +626,10 @@ class AddIndivisualPart extends Component {
                                 this.handleTechnologyChange
                               }
                               valueDescription={this.state.TechnologySelected}
-                              disabled={(isViewMode) || (isEditFlag && !((isEditFlag && this.state.IsTechnologyUpdateRequired) || (isEditFlag && this.state.isBomEditable)))}
+                              disabled={(isViewMode) || (!isEditFlag && this.state.disablePartName) || (isEditFlag && !((isEditFlag && this.state.IsTechnologyUpdateRequired) || (isEditFlag && this.state.isBomEditable)))}
                             />
                           </Col>
+
 
                           <Col md="3">
                             <div className="form-group">
@@ -647,10 +649,8 @@ class AddIndivisualPart extends Component {
                                   }}
                                   component={renderDatePicker}
                                   className="form-control"
-                                  onFocus={() => onFocus(this, true)}
                                   disabled={isEditFlag && !isViewMode ? getConfigurationKey().IsBOMEditable ? false : true : (isViewMode)}
                                 />
-                                {this.state.showErrorOnFocusDate && this.state.effectiveDate === '' && <div className='text-help mt-1 p-absolute bottom-7'>This field is required.</div>}
                               </div>
                             </div>
                           </Col>

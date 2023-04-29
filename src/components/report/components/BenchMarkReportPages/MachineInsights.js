@@ -11,7 +11,7 @@ import { defaultPageSize, EMPTY_DATA } from '../../../../config/constants'
 import { Costmovementgraph } from '../../../dashboard/CostMovementGraph'
 import { graphColor1, graphColor3, graphColor4, graphColor6 } from '../../../dashboard/ChartsDashboard'
 import { PaginationWrapper } from '../../../common/commonPagination';
-import { getCostingBenchMarkMachineReport, getCostingBenchMarkOperationReport } from '../../actions/ReportListing';
+import { getCostingBenchMarkMachineReport } from '../../actions/ReportListing';
 import DayTime from '../../../common/DayTimeWrapper';
 import { checkForDecimalAndNull } from '../../../../helper';
 
@@ -27,6 +27,7 @@ function MachineInsights(props) {
     const [tableHeaderColumnDefs, setTableHeaderColumnDefs] = useState([])
     const [rowDataNew, setRowDataNew] = useState([])
     const [vendor, setVendor] = useState([])
+    const [isLoader, setIsLoader] = useState(true)
     const [labelArray, setLabelArray] = useState([])
     const gridOptions = {};
     const dispatch = useDispatch()
@@ -49,7 +50,11 @@ function MachineInsights(props) {
             ProcessBenchMarkingReports: arr
         }
 
-        dispatch(getCostingBenchMarkMachineReport(data, () => { }))
+        dispatch(getCostingBenchMarkMachineReport(data, (res) => {
+            if (res) {
+                setIsLoader(false)
+            }
+        }))
 
     }, [])
 
@@ -93,9 +98,9 @@ function MachineInsights(props) {
 
                     let Val3 = `value${data.VendorName}${ele.PlantName}`                           // SETTING PLANTS FOR EACH VENDOR IN OBJ
                     obj[Val3] = ele.TotalValue
-
+                    return null
                 })
-
+                return null
             })
 
 
@@ -112,18 +117,18 @@ function MachineInsights(props) {
 
                 ele.PlantDetails.map((el) => {
                     plantTemp.push(el.PlantName)
-
+                    return null
                 })
                 obj2.plants = plantTemp
                 plantTemp = []
 
                 arrSample.push(obj2)
                 uniqueVendors.push(ele.VendorName)
-
+                return null
             })
 
             vendorTemp.push(arrSample)
-
+            return null
         })
 
 
@@ -145,13 +150,14 @@ function MachineInsights(props) {
 
                         plants = [...plants, ...e.plants]
                     }
-
+                    return null
                 })
-
+                return null
             })
             let uniqueP = plants.filter((item, i, ar) => ar.indexOf(item) === i);
             obj.plants = uniqueP
             finalArray.push(obj)
+            return null
         })
 
 
@@ -255,7 +261,7 @@ function MachineInsights(props) {
 
                 }
                 childPlants.push(plantObj)
-
+                return null
             })
 
 
@@ -269,7 +275,7 @@ function MachineInsights(props) {
             }
 
             array55.push(obj)
-
+            return null
         })
 
 
@@ -292,8 +298,10 @@ function MachineInsights(props) {
 
                 item.children.map((ele) => {
                     labelArr.push(`${item.headerName}-${ele.headerName}`)
+                    return null
                 })
             }
+            return null
         })
 
 
@@ -325,22 +333,30 @@ function MachineInsights(props) {
 
             plantLabel.map((element, ind) => {
                 let ele = element.slice(5)
-                ele = ele.replace('-', '')
-                var newStr = item.replace('-', '')
-                newStr = newStr.replace('-', '')
+
+                var newStr = item.replaceAll('-', '')
+                ele = ele.replaceAll('-', '')
 
                 if (newStr.includes(ele)) {
                     newArr[index] = array[ind]
                 }
+                return null
             })
-
+            return null
         })
 
         graphDataNew = newArr
         setDynamicGrpahData(graphDataNew);
-        setAverageGrpahData(avgGraphData);
+        //setAverageGrpahData(avgGraphData);
         setMinimumGrpahData(minGraphData);
         setMaximumGrpahData(maxGraphData);
+
+        let avgArray = []
+        labelArr && labelArr.map((item, ind) => {
+            avgArray.push(avgGraphData)
+            return null
+        })
+        setAverageGrpahData(avgArray)
 
 
     }
@@ -381,7 +397,7 @@ function MachineInsights(props) {
                 tension: 0.1,
                 borderDash: [5, 5],
                 // data: [averageGrpahData, averageGrpahData, averageGrpahData, averageGrpahData, averageGrpahData]
-                data: [25, 25, 30, 35, 45, 55, 65, 75]
+                data: averageGrpahData
             },
             {
                 type: 'line',
@@ -412,63 +428,71 @@ function MachineInsights(props) {
         ],
     };
 
+    const resetState = () => {
+        setIsLoader(true)
+        setTimeout(() => {
+            setIsLoader(false)
+        }, 50);
+    }
 
     return (
         <>
+            {showListing && <button type="button" className="user-btn report-btn-reset float-right mb-2" title="Reset Grid" onClick={() => resetState()}>
+                <div className="refresh mr-0"></div>
+            </button>}
             <div className="container-fluid rminsights_page">
-                <form noValidate >
+                {isLoader ? <LoaderCustom customClass="loader-center" /> :
+                    <form noValidate >
+                        {showListing && <>
+                            <Row>
+                                <Col md="12">
+                                    <div className={`ag-grid-react`}>
+                                        <div className={`ag-grid-wrapper rminsights_table  ${rowDataNew && rowDataNew?.length <= 0 ? "overlay-contain" : ""}`}>
+                                            <div className="ag-theme-material">
+                                                <AgGridReact
+                                                    style={{ height: '100%', width: '100%' }}
+                                                    defaultColDef={defaultColDef}
+                                                    columnDefs={tableHeaderColumnDefs}
+                                                    domLayout='autoHeight'
+                                                    rowData={rowDataNew}
+                                                    rowSelection={'single'}
+                                                    onSelectionChanged={onSelectionChanged}
+                                                    pagination={true}
+                                                    paginationPageSize={defaultPageSize}
+                                                    onGridReady={onGridReady}
+                                                    gridOptions={gridOptions}
+                                                    // enableCellTextSelection={true}
+                                                    loadingOverlayComponent={'customLoadingOverlay'}
+                                                    noRowsOverlayComponent={'customNoRowsOverlay'}
+                                                    noRowsOverlayComponentParams={{
+                                                        title: EMPTY_DATA,
+                                                    }}
+                                                    frameworkComponents={frameworkComponents}
+                                                >
+                                                    <AgGridColumn pinned="left" field="Specification" />
+                                                    <AgGridColumn pinned="left" width="120" field="Minimum" />
+                                                    <AgGridColumn pinned="left" width="120" field="Maximum" />
+                                                    <AgGridColumn pinned="left" width="120" field="Average" />
 
-                    {showListing && <>
-                        <Row>
-                            <Col md="12">
-                                <div className={`ag-grid-react`}>
-                                    <div className={`ag-grid-wrapper rminsights_table  ${rowDataNew && rowDataNew?.length <= 0 ? "overlay-contain" : ""}`}>
-                                        <div className="ag-theme-material">
-                                            <AgGridReact
-                                                style={{ height: '100%', width: '100%' }}
-                                                defaultColDef={defaultColDef}
-                                                columnDefs={tableHeaderColumnDefs}
-                                                domLayout='autoHeight'
-                                                floatingFilter={true}
-                                                rowData={rowDataNew}
-                                                rowSelection={'single'}
-                                                onSelectionChanged={onSelectionChanged}
-                                                pagination={true}
-                                                paginationPageSize={defaultPageSize}
-                                                onGridReady={onGridReady}
-                                                gridOptions={gridOptions}
-                                                // enableCellTextSelection={true}
-                                                loadingOverlayComponent={'customLoadingOverlay'}
-                                                noRowsOverlayComponent={'customNoRowsOverlay'}
-                                                noRowsOverlayComponentParams={{
-                                                    title: EMPTY_DATA,
-                                                }}
-                                                frameworkComponents={frameworkComponents}
-                                            >
-                                                <AgGridColumn pinned="left" field="Specification" />
-                                                <AgGridColumn pinned="left" width="120" field="Minimum" />
-                                                <AgGridColumn pinned="left" width="120" field="Maximum" />
-                                                <AgGridColumn pinned="left" width="120" field="Average" />
-
-                                                <AgGridColumn headerName="Vendor1" headerClass="justify-content-center" marryChildren={true}>
-                                                    <AgGridColumn width="150" field="Plant1" headerName="Plant 1" />
-                                                    <AgGridColumn width="150" field="Plant2" headerName="Plant 2" />
-                                                </AgGridColumn>
-                                            </AgGridReact>
-                                            {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />}
+                                                    <AgGridColumn headerName="Vendor1" headerClass="justify-content-center" marryChildren={true}>
+                                                        <AgGridColumn width="150" field="Plant1" headerName="Plant 1" />
+                                                        <AgGridColumn width="150" field="Plant2" headerName="Plant 2" />
+                                                    </AgGridColumn>
+                                                </AgGridReact>
+                                                {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />}
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                            </Col>
-                        </Row>
-                        <Row className="mt-4">
-                            <Col md="12">
-                                <Costmovementgraph graphData={data1} graphHeight={60} />
-                            </Col>
-                        </Row>
+                                </Col>
+                            </Row>
+                            <Row className="mt-4">
+                                <Col md="12">
+                                    <Costmovementgraph graphData={data1} graphHeight={60} />
+                                </Col>
+                            </Row>
 
-                    </>}
-                </form>
+                        </>}
+                    </form>}
             </div>
             {/* container-fluid */}
         </>

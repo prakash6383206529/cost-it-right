@@ -55,7 +55,10 @@ import {
   config,
   GET_GRID_HEIGHT,
   GET_STATE_WHILE_DOWNLOADING,
-  GET_REPORTER_LIST
+  GET_REPORTER_LIST,
+  GET_APPROVAL_TYPE_SELECT_LIST,
+  GET_DATA_WHILE_LOADING,
+  GET_DATA_FROM_REPORT
 } from '../config/constants';
 import { apiErrors } from '../helper/util';
 import { MESSAGES } from '../config/message';
@@ -1367,12 +1370,12 @@ export function getPlantSelectListByType(TYPE, callback) {
   };
 }
 
-/**
- * @method getVendorWithVendorCodeSelectList
- * @description GET VBC VENDOR WITH VENDOR CODE SELECTLIST
- */
 export function getVendorWithVendorCodeSelectList(vendorName, callback) {
-  return axios.get(`${API.getVendorWithVendorCodeSelectList}?vendorName=${vendorName}`, config());
+  return axios.get(`${API.getVendorWithVendorCodeSelectList}?vendorName=${vendorName}`, config()).catch(error => {
+    apiErrors(error);
+    callback(error);
+    return Promise.reject(error)
+  });
 }
 
 
@@ -1511,8 +1514,12 @@ export function getAllCity(callback) {
   }
 }
 
-export function getPartSelectList(callback) {
-  return axios.get(`${API.getPartSelectLists}`, config());
+export function getPartSelectList(partNumber, callback) {
+  return axios.get(`${API.getPartSelectLists}?partNumber=${partNumber}`, config()).catch(error => {
+    apiErrors(error);
+    callback(error);
+    return Promise.reject(error)
+  });
 }
 
 
@@ -1592,3 +1599,132 @@ export function getCostMovementReport(data, callback) {
       })
   }
 }
+
+/**
+ * @method getApprovalTypeSelectList
+ * @description Used to fetch Labour type selectlist
+ */
+export function getApprovalTypeSelectList(callback) {
+  return (dispatch) => {
+    //dispatch({ type: API_REQUEST });
+    const request = axios.get(`${API.getApprovalTypeSelectList}`, config());
+    request.then((response) => {
+      if (response.data.Result) {
+        dispatch({
+          type: GET_APPROVAL_TYPE_SELECT_LIST,
+          payload: response.data.SelectList,
+        });
+        callback(response);
+      }
+    }).catch((error) => {
+      callback(error);
+      apiErrors(error);
+    });
+  };
+}
+
+export function dashboardTabLock(data) {
+  return (dispatch) => {
+    dispatch({
+      type: GET_DATA_WHILE_LOADING,
+      payload: data
+    })
+  }
+}
+export function sidebarAndNavbarHide(data) {
+  return (dispatch) => {
+    dispatch({
+      type: GET_DATA_FROM_REPORT,
+      payload: data
+    })
+  }
+}
+
+export function saveCostingDetailNpv(data, callback) {
+  return (dispatch) => {
+    const request = axios.post(API.saveCostingDetailNpv, data, config())
+    request
+      .then((response) => {
+        if (response.data.Result) {
+          callback(response)
+        } else {
+          dispatch({ type: API_FAILURE })
+          if (response.data.Message) {
+            Toaster.error(response.data.Message)
+          }
+        }
+      })
+      .catch((error) => {
+        dispatch({ type: API_FAILURE })
+        apiErrors(error)
+      })
+  }
+}
+
+export function saveCostingDetailCondition(data, callback) {
+  return (dispatch) => {
+    const request = axios.post(API.saveCostingDetailCondition, data, config())
+    request
+      .then((response) => {
+        if (response.data.Result) {
+          callback(response)
+        } else {
+          dispatch({ type: API_FAILURE })
+          if (response.data.Message) {
+            Toaster.error(response.data.Message)
+          }
+        }
+      })
+      .catch((error) => {
+        dispatch({ type: API_FAILURE })
+        apiErrors(error)
+      })
+  }
+}
+
+export function getNpvDetails(costingId, callback) {
+  return (dispatch) => {
+    dispatch({ type: API_REQUEST });
+    const request = axios.get(`${API.getNpvDetails}/${costingId}`, config());
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response);
+      }
+    }).catch((error) => {
+      dispatch({ type: FETCH_MATER_DATA_FAILURE, });
+      apiErrors(error);
+    });
+  };
+}
+
+export function getConditionDetails(costingId, callback) {
+  return (dispatch) => {
+    dispatch({ type: API_REQUEST });
+    const request = axios.get(`${API.getConditionDetails}?costingId=${costingId}`, config());
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response);
+      }
+    }).catch((error) => {
+      dispatch({ type: FETCH_MATER_DATA_FAILURE, });
+      apiErrors(error);
+    });
+  };
+}
+
+export function getCostingCondition(callback) {
+  return (dispatch) => {
+    dispatch({ type: API_REQUEST });
+    const request = axios.get(`${API.getCostingCondition}`, config());
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response);
+      }
+    }).catch((error) => {
+      dispatch({ type: FETCH_MATER_DATA_FAILURE, });
+      apiErrors(error);
+    });
+  };
+}
+
+

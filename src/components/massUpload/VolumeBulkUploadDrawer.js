@@ -9,6 +9,11 @@ import LoaderCustom from '../common/LoaderCustom';
 import Toaster from '../common/Toaster';
 import { bulkUploadVolume } from '../masters/actions/Volume';
 import { loggedInUserId } from '../../helper';
+import ExcelFile from 'react-export-excel/dist/ExcelPlugin/components/ExcelFile';
+import { Volume, VolumeTempData } from '../../config/masterData';
+import PopupMsgWrapper from '../common/PopupMsgWrapper';
+import { MESSAGES } from '../../config/message';
+import WarningMessage from '../common/WarningMessage';
 
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -21,7 +26,8 @@ class VolumeBulkUploadDrawer extends Component {
             fileData: '',
             fileName: '',
             Technology: [],
-            attachmentLoader: false
+            attachmentLoader: false,
+            showPopup: false
         }
     }
 
@@ -54,17 +60,27 @@ class VolumeBulkUploadDrawer extends Component {
         }
     }
 
-    toggleDrawer = (event) => {
+    toggleDrawer = (event, type) => {
         if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
             return;
         }
-        this.props.closeDrawer('')
+        this.props.closeDrawer('', type)
     };
 
-    cancel = () => {
-        this.toggleDrawer('')
+    cancel = (type) => {
+        this.toggleDrawer('', 'cancel')
     }
-
+    cancelHandler = () => {
+        this.cancel('cancel')
+        // this.setState({ showPopup: true })
+    }
+    onPopupConfirm = () => {
+        this.cancel('cancel')
+        this.setState({ showPopup: false })
+    }
+    closePopUp = () => {
+        this.setState({ showPopup: false })
+    }
     Preview = ({ meta }) => {
         return (
             <span
@@ -82,12 +98,10 @@ class VolumeBulkUploadDrawer extends Component {
     * @method returnExcelColumn
     * @description Used to get excel column names
     */
-    returnExcelColumn = (data = [], TempData) => {
-
+    returnExcelColumn = (data = []) => {
         const fileName = "Volume"
-
-        return (<ExcelSheet data={TempData} name={fileName}>
-            {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.label} />)}
+        return (<ExcelSheet data={VolumeTempData} name={fileName}>
+            {Volume && Volume.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
         </ExcelSheet>);
     }
     fileHandler = event => {
@@ -118,22 +132,29 @@ class VolumeBulkUploadDrawer extends Component {
                 const { files } = this.state
                 files.push(Data)
             })
-            this.cancel()
+            this.toggleDrawer('', 'save')
         }
     }
-
+    onBtExport = () => {
+        return this.returnExcelColumn(VolumeTempData)
+    };
     render() {
         const { handleSubmit } = this.props
         return (
             <>
                 <form
                     noValidate
-                    className="form"
+                    className="form bulkupload-drawer"
                     onSubmit={handleSubmit(this.onSubmit.bind(this))}>
-
-
                     <Col md="12" className='px-3'>
-                        <label>Upload File</label>
+                        <div>
+                            <ExcelFile filename={'Volume'} fileExtension={'.xls'} element={
+                                <button type="button" className={'btn btn-primary pull-right w-100 mb-3'}><div className="download mr-1" ></div>
+                                    {"Download Volume"}
+                                </button>}>
+                                {this.onBtExport()}
+                            </ExcelFile>
+                        </div>
                         {this.state.fileName !== "" ? (
                             <div class="alert alert-danger" role="alert">
                                 {this.state.fileName}
@@ -177,11 +198,12 @@ class VolumeBulkUploadDrawer extends Component {
                         {this.state.attachmentLoader && <LoaderCustom customClass="attachment-loader" />}
                     </Col>
                     <Row className="sf-btn-footer no-gutters justify-content-between">
+                        <WarningMessage dClass="ml-5 mb-2" message={'In order to upload, Part must have an approved costing version'} />
                         <div className="col-md-12 pl-3 pr-3">
                             <div className="text-right ">
                                 <button
-                                    onClick={this.cancel}
-                                    type="submit"
+                                    onClick={this.cancelHandler}
+                                    type="button"
                                     value="CANCEL"
                                     className="reset mr15 cancel-btn"
                                 >
@@ -196,6 +218,9 @@ class VolumeBulkUploadDrawer extends Component {
                         </div>
                     </Row>
                 </form>
+                {
+                    this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.CANCEL_MASTER_ALERT}`} />
+                }
             </>
         );
     }

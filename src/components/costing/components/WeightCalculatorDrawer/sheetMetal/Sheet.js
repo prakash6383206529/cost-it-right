@@ -47,7 +47,7 @@ function Sheet(props) {
         SheetLength: WeightCalculatorRequest && WeightCalculatorRequest.LengthOfSheet !== null ? WeightCalculatorRequest.LengthOfSheet : '',
         SheetWeight: WeightCalculatorRequest && WeightCalculatorRequest.WeightOfSheetInUOM !== null ? WeightCalculatorRequest.WeightOfSheetInUOM : '',
         StripWidth: WeightCalculatorRequest && WeightCalculatorRequest.StripWidth !== null ? WeightCalculatorRequest.StripWidth : '',
-        StripsNumber: WeightCalculatorRequest && WeightCalculatorRequest.NoOfStrips !== null ? WeightCalculatorRequest.NoOfStrips : '',
+        StripsNumber: WeightCalculatorRequest && WeightCalculatorRequest.NumberOfStrips !== null ? WeightCalculatorRequest.NumberOfStrips : '',
         BlankSize: WeightCalculatorRequest && WeightCalculatorRequest.BlankSize !== null ? WeightCalculatorRequest.BlankSize : '',
         ComponentPerStrip: WeightCalculatorRequest && WeightCalculatorRequest.ComponentsPerStrip !== null ? WeightCalculatorRequest.ComponentsPerStrip : '',
         NoOfComponent: WeightCalculatorRequest && WeightCalculatorRequest.NumberOfPartsPerSheet !== null ? WeightCalculatorRequest.NumberOfPartsPerSheet : '', // TOTAL COMPONENT PER SHEET
@@ -216,7 +216,7 @@ function Sheet(props) {
         updatedValue.newGrossWeight = setValueAccToUOM(grossWeight, UOMDimension.label)
         setTimeout(() => {
             setDataToSend(updatedValue)
-            setGrossWeights(setValueAccToUOM(grossWeight, UOMDimension.label))
+            setGrossWeights(grossWeight)
             setValue('GrossWeight', checkForDecimalAndNull(setValueAccToUOM(grossWeight, UOMDimension.label), localStorage.NoOfDecimalForInputOutput))
         }, 200);
     }
@@ -271,6 +271,9 @@ function Sheet(props) {
                 setIsChangeApplied(false)
             }
         }
+
+        let grossWeight = (dataToSend.newGrossWeight === undefined || dataToSend.newGrossWeight === 0) ? GrossWeight : dataToSend.newGrossWeight
+
         let data = {
             LayoutType: 'Sheet',
             SheetMetalCalculationId: WeightCalculatorRequest && WeightCalculatorRequest.SheetMetalCalculationId ? WeightCalculatorRequest.SheetMetalCalculationId : "0",
@@ -279,23 +282,23 @@ function Sheet(props) {
             CostingRawMaterialDetailId: rmRowData.RawMaterialDetailId,
             RawMaterialIdRef: rmRowData.RawMaterialId,
             LoggedInUserId: loggedInUserId(),
-            RawMaterialCost: dataToSend.GrossWeight * rmRowData.RMRate - (dataToSend.GrossWeight - getValues('FinishWeightOfSheet')) * rmRowData.ScrapRate,
+            RawMaterialCost: grossWeight * rmRowData.RMRate - (grossWeight - getValues('FinishWeightOfSheet')) * rmRowData.ScrapRate,
             UOMForDimensionId: UOMDimension ? UOMDimension.value : '',
             UOMForDimension: UOMDimension ? UOMDimension.label : '',
             Cavity: values.Cavity,
             Thickness: values.SheetThickness,
             LengthOfSheet: values.SheetLength,
-            WeightOfSheetInUOM: dataToSend.SheetWidth,
+            WeightOfSheetInUOM: dataToSend.WeightOfSheet,
             Width: values.SheetWidth,
             StripWidth: values.StripWidth,
-            NoOfStrips: values.StripsNumber,
+            NumberOfStrips: values.StripsNumber,
             BlankSize: values.BlankSize,
             ComponentsPerStrip: values.ComponentPerStrip,
             NumberOfPartsPerSheet: values.NoOfComponent, //TOTAL COMPONENT PER SHEET
             UOMId: rmRowData.UOMId,
             UOM: rmRowData.UOM,
             NetSurfaceArea: values.NetSurfaceArea,
-            GrossWeight: (dataToSend.newGrossWeight === undefined || dataToSend.newGrossWeight === 0) ? GrossWeight : dataToSend.newGrossWeight,
+            GrossWeight: grossWeight,
             FinishWeight: getValues('FinishWeightOfSheet'),
         }
 

@@ -159,7 +159,7 @@ function Coil(props) {
             cavity: getValues('Cavity')
         }
         grossWeight = calculateWeight(data.density, data.stripWidth, data.thickness, data.pitch) / data.cavity
-        setGrossWeights(setValueAccToUOM(grossWeight, UOMDimension.label))
+        setGrossWeights(grossWeight)
         const updatedValue = dataToSend
         updatedValue.GrossWeight = setValueAccToUOM(grossWeight, UOMDimension.label)
         updatedValue.newGrossWeight = setValueAccToUOM(grossWeight, UOMDimension.label)
@@ -217,6 +217,10 @@ function Coil(props) {
                 setIsChangeApplied(false)
             }
         }
+
+
+        let grossWeight = (dataToSend.newGrossWeight === undefined || dataToSend.newGrossWeight === 0) ? dataToSend.GrossWeight : dataToSend.newGrossWeight
+
         let data = {
             LayoutType: 'Coil',
             SheetMetalCalculationId: WeightCalculatorRequest && WeightCalculatorRequest.SheetMetalCalculationId ? WeightCalculatorRequest.SheetMetalCalculationId : "0",
@@ -225,7 +229,7 @@ function Coil(props) {
             CostingRawMaterialDetailId: rmRowData.RawMaterialDetailId,
             RawMaterialIdRef: rmRowData.RawMaterialId,
             LoggedInUserId: loggedInUserId(),
-            RawMaterialCost: dataToSend.GrossWeight * rmRowData.RMRate - (dataToSend.GrossWeight - getValues('FinishWeight')) * rmRowData.ScrapRate,
+            RawMaterialCost: grossWeight * rmRowData.RMRate - (grossWeight - getValues('FinishWeight')) * rmRowData.ScrapRate,
             UOMForDimensionId: UOMDimension ? UOMDimension.value : '',
             UOMForDimension: UOMDimension ? UOMDimension.label : '',
             Thickness: values.Thickness,
@@ -236,7 +240,7 @@ function Coil(props) {
             UOMId: rmRowData.UOMId,
             UOM: rmRowData.UOM,
             NetSurfaceArea: values.NetSurfaceArea,
-            GrossWeight: (dataToSend.newGrossWeight === undefined || dataToSend.newGrossWeight === 0) ? dataToSend.GrossWeight : dataToSend.newGrossWeight,
+            GrossWeight: grossWeight,
             FinishWeight: getValues('FinishWeight'),
         }
 

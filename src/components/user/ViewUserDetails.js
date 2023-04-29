@@ -80,7 +80,7 @@ class ViewUserDetails extends Component {
  * @description used to get users technology level listing
  */
   getUsersTechnologyLevelData = (UserId) => {
-    this.props.getUsersTechnologyLevelAPI(UserId, (res) => {
+    this.props.getUsersTechnologyLevelAPI(UserId, 0, (res) => {
       if (res && res.data && res.data.Data) {
 
         let Data = res.data.Data;
@@ -93,7 +93,7 @@ class ViewUserDetails extends Component {
     })
   }
   getUsersSimulationTechnologyLevelData = (UserId) => {
-    this.props.getUsersSimulationTechnologyLevelAPI(UserId, (res) => {
+    this.props.getUsersSimulationTechnologyLevelAPI(UserId, 0, (res) => {
       if (res && res.data && res.data.Data) {
         let Data = res.data.Data;
         let simulationLevel = Data.TechnologyLevels;
@@ -104,7 +104,7 @@ class ViewUserDetails extends Component {
     })
   }
   getUsersMasterLevelData = (UserId) => {
-    this.props.getUsersMasterLevelAPI(UserId, (res) => {
+    this.props.getUsersMasterLevelAPI(UserId, 0, (res) => {
       if (res && res.data && res.data.Data) {
         let Data = res.data.Data;
         let masterLevel = Data.MasterLevels;
@@ -365,6 +365,7 @@ class ViewUserDetails extends Component {
                             <thead>
                               <tr>
                                 <th className="text-left" >{`Technology`}</th>
+                                <th className="text-left">{`Approval Type`}</th>
                                 <th className="text-left">{`Level`}</th>
                               </tr>
                             </thead>
@@ -375,6 +376,7 @@ class ViewUserDetails extends Component {
                                   return (
                                     <tr key={index}>
                                       <td>{item.Technology}</td>
+                                      <td>{item?.ApprovalType}</td>
                                       <td>{item.Level}</td>
                                     </tr>
                                   )
@@ -408,6 +410,7 @@ class ViewUserDetails extends Component {
                           <thead>
                             <tr>
                               <th className="text-left" >{`Technology`}</th>
+                              <th className="text-left">{`Approval Type`}</th>
                               <th className="text-left">{`Level`}</th>
                             </tr>
                           </thead>
@@ -418,6 +421,7 @@ class ViewUserDetails extends Component {
                                 return (
                                   <tr key={index}>
                                     <td>{item.Technology}</td>
+                                    <td>{item?.ApprovalType}</td>
                                     <td>{item.Level}</td>
                                   </tr>
                                 )
@@ -455,6 +459,7 @@ class ViewUserDetails extends Component {
                             <thead>
                               <tr>
                                 <th className="text-left" >{`Technology`}</th>
+                                <th className="text-left">{`Approval Type`}</th>
                                 <th className="text-left">{`Level`}</th>
                               </tr>
                             </thead>
@@ -465,6 +470,7 @@ class ViewUserDetails extends Component {
                                   return (
                                     <tr key={index}>
                                       <td>{item.Master}</td>
+                                      <td>{item?.ApprovalType}</td>
                                       <td>{item.Level}</td>
                                     </tr>
                                   )

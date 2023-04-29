@@ -11,6 +11,7 @@ import { useContext } from 'react';
 import { costingInfoContext } from '../CostingDetailStepTwo';
 import { useEffect } from 'react';
 import { ViewCostingContext } from '../CostingDetails';
+import { useRef } from 'react';
 
 function AddAssemblyProcess(props) {
   const { item } = props;
@@ -21,6 +22,7 @@ function AddAssemblyProcess(props) {
   const costData = useContext(costingInfoContext)
   const { ToolTabData, ToolsDataList, ComponentItemDiscountData, RMCCTabData, SurfaceTabData, OverheadProfitTabData, DiscountCostData, PackageAndFreightTabData, checkIsToolTabChange, getAssemBOPCharge } = useSelector(state => state.costing)
   const CostingViewMode = useContext(ViewCostingContext);
+  const drawerRef = useRef();
 
   // useEffect(() => {
   //   let obj = {
@@ -177,7 +179,14 @@ function AddAssemblyProcess(props) {
     }))
 
   }
+  const handleRendered = () => {
+    setTimeout(() => {
+      const drawerEl = drawerRef.current;
+      const divEl = drawerEl.querySelector('.MuiDrawer-paperAnchorBottom');
+      divEl.removeAttribute('tabindex');
+    }, 500);
 
+  };
   /**
   * @method render
   * @description Renders the component
@@ -185,6 +194,8 @@ function AddAssemblyProcess(props) {
   return (
     <div>
       <Drawer className="bottom-drawer" anchor='bottom' open={props.isOpen}
+        ref={drawerRef}
+        onRendered={handleRendered}
       >
         <div className="container-fluid add-operation-drawer">
           <div className={'drawer-wrapper drawer-1500px'}>
@@ -204,14 +215,7 @@ function AddAssemblyProcess(props) {
             <Row className="mb-3 pt-3">
               <Col>
                 <div className="user-page p-0">
-                  <div className="cr-process-costwrap">
-                    {/* <Row className="cr-innertool-cost">
-
-                      <Col md="3" className="cr-costlabel"><span className="d-inline-block align-middle">{`Process Cost: ${item?.CostingPartDetails && item?.CostingPartDetails?.TotalOperationCostPerAssembly !== null ? checkForDecimalAndNull(item?.CostingPartDetails?.TotalOperationCostPerAssembly, initialConfiguration.NoOfDecimalForPrice) : 0}`}</span></Col>
-                      <Col md="3" className="cr-costlabel text-center"><span className="d-inline-block align-middle">{``}</span></Col>
-                    </Row> */}
-
-
+                  <div className="cr-process-costwrap multi-technology-container">
                     <ProcessCost
                       index={props.index}
                       data={processGrid}

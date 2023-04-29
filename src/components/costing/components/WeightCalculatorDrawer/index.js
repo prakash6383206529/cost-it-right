@@ -6,10 +6,10 @@ import ForgingCalculator from './forging'
 import Plastic from './Plastic'
 import { SHEETMETAL, RUBBER, PLASTIC, FORGING, DIE_CASTING, CORRUGATEDBOX, Ferrous_Casting } from '../../../../config/masterData'
 import { calculatePercentageValue, checkForDecimalAndNull, checkForNull, getConfigurationKey } from '../../../../helper'
-import CorrugatedBox from './CorrugatedBox';
 import NonFerrousCalculator from './dieCasting'
 import Ferrous from './Ferrous'
 import StandardRub from './rubber/StandardRub'
+import CorrugatedBoxCalculator from './corrugatedBox/index'
 
 function OpenWeightCalculator(props) {
   const { rmRowData, item, isSummary, rmMBDetail, CostingViewMode, rmData, technology, DisableMasterBatchCheckbox } = props
@@ -123,7 +123,7 @@ function OpenWeightCalculator(props) {
 
       case CORRUGATEDBOX:
         return (
-          <CorrugatedBox
+          <CorrugatedBoxCalculator
             rmRowData={props.rmRowData}
             isEditFlag={props.isEditFlag}
             toggleDrawer={toggleDrawer}
@@ -176,7 +176,7 @@ function OpenWeightCalculator(props) {
             <Row className="drawer-heading">
               <Col>
                 <div className={'header-wrapper left'}>
-                  <h3>{'Weight Calculator'}</h3>
+                  <h3>{Number(technology) !== Number(Ferrous_Casting) ? 'Weight Calculator' : 'Alloy Composition '}</h3>
                 </div>
                 <div
                   onClick={(e) => toggleDrawer(e)}

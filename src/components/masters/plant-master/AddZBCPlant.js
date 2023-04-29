@@ -2,9 +2,9 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, } from 'reactstrap';
-import { required, maxLength6, maxLength80, checkWhiteSpaces, minLength10, alphaNumeric, maxLength71, maxLength5, acceptAllExceptSingleSpecialCharacter, maxLength4, postiveNumber, maxLength12, checkSpacesInString, postiveNumberForPlantCode } from "../../../helper/validation";
+import { required, maxLength6, maxLength80, checkWhiteSpaces, minLength10, alphaNumeric, maxLength71, maxLength5, acceptAllExceptSingleSpecialCharacter, postiveNumber, maxLength12, checkSpacesInString, postiveNumberForPlantCode, number } from "../../../helper/validation";
 import { userDetails, loggedInUserId } from "../../../helper/auth";
-import { focusOnError, renderNumberInputField, renderText, searchableSelect } from "../../layout/FormInputs";
+import { focusOnError, renderText, renderTextInputField, searchableSelect } from "../../layout/FormInputs";
 import { createPlantAPI, getPlantUnitAPI, updatePlantAPI, getComapanySelectList } from '../actions/Plant';
 import {
   fetchCountryDataAPI, fetchStateDataAPI, fetchCityDataAPI, fetchSupplierCityDataAPI,
@@ -87,7 +87,7 @@ class AddZBCPlant extends Component {
               country: Data.CountryName !== undefined ? { label: Data.CountryName, value: Data.CountryId } : [],
               state: Data.StateName !== undefined ? { label: Data.StateName, value: Data.StateId } : [],
               city: Data.CityName !== undefined ? { label: Data.CityName, value: Data.CityIdRef } : [],
-              company: Data.CompanyName !== undefined ? { label: Data.CompanyName, value: Data.CompanyId } : []
+              company: Data.CompanyName !== undefined ? { label: `${Data.CompanyName}${Data.CompanyCode ? ` (${Data.CompanyCode})` : ''}`, value: Data.CompanyId } : []
             }, () => this.setState({ isLoader: false }))
           }, 500)
         }
@@ -424,8 +424,8 @@ class AddZBCPlant extends Component {
                           name={"PhoneNumber"}
                           type="text"
                           placeholder={isViewMode ? '-' : "Enter"}
-                          validate={[postiveNumber, minLength10, maxLength12, checkWhiteSpaces]}
-                          component={renderNumberInputField}
+                          validate={[postiveNumber, minLength10, maxLength12, checkWhiteSpaces, number]}
+                          component={renderTextInputField}
                           maxLength={12}
                           className=""
                           customClassName={"withBorder"}
@@ -438,8 +438,8 @@ class AddZBCPlant extends Component {
                           name={"Extension"}
                           type="text"
                           placeholder={isViewMode ? '-' : "Enter"}
-                          validate={[postiveNumber, maxLength5, checkWhiteSpaces]}
-                          component={renderNumberInputField}
+                          validate={[postiveNumber, maxLength5, checkWhiteSpaces, number]}
+                          component={renderTextInputField}
                           maxLength={5}
                           className=""
                           customClassName={"withBorder"}

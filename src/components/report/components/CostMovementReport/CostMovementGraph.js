@@ -49,8 +49,8 @@ function CostMovementGraph(props) {
     useEffect(() => {
 
         let obj = {}
-        obj.FromDate = startDate
-        obj.ToDate = endDate
+        obj.FromDate = startDate ? DayTime(startDate).format('MM/DD/YYYY') : ''
+        obj.ToDate = endDate ? DayTime(endDate).format('MM/DD/YYYY') : ''
         let sampleArray = []
         let allEffectiveDates = []
 
@@ -125,7 +125,7 @@ function CostMovementGraph(props) {
 
                             if (`${ele.PartNumber}${ele.PlantCode}${ele.VendorCode}` == uniqueItem) {
 
-                                uniquePlantLabel = `${ele.PartNumber}-${ele.PlantCode}-${ele.VendorCode}`
+                                uniquePlantLabel = ` ${ele.PartNumber} | ${ele.VendorCode} | ${ele.PlantCode}`
 
                                 allEffectiveDates.map((date, indexFromDate) => {
 
@@ -155,7 +155,6 @@ function CostMovementGraph(props) {
                     let finalPartData = [] // ARRAY FOR LINE CHART
                     for (let i = 0; i < perPartData.length; i++) {    //FOR LOOP IS FOR LINE CHART (COVERT UNDEFINED VALUE IN ARRAY TO PREVOUS VALUE TO SHOW LINE
                         if (i === 0) {
-
                             if (perPartData[i]) {
                                 finalPartData.push(perPartData[i])
                             } else {
@@ -165,13 +164,11 @@ function CostMovementGraph(props) {
                         else if (perPartData[i]) {
                             finalPartData.push(perPartData[i])
                         } else {
-                            finalPartData.push(perPartData[i - 1])
+                            finalPartData.push(null)
                         }
-
                     }
 
                     lineDataSet.push({         //PUSHING VALUE FOR LINE CHART
-
                         label: `${uniquePlantLabel}`,
                         fill: false,
                         lineTension: 0,
@@ -179,6 +176,7 @@ function CostMovementGraph(props) {
                         borderColor: getGraphColour(uniqueIndex),
                         borderWidth: 2,
                         data: finalPartData,
+                        spanGaps: true,
                         pointBackgroundColor: getGraphColour(uniqueIndex)
                     })
 
@@ -249,6 +247,7 @@ function CostMovementGraph(props) {
     const state = {
         labels: dateRangeArray,
         datasets: lineDataSets
+
     }
 
 
@@ -285,6 +284,12 @@ function CostMovementGraph(props) {
 
     const POPriceFormatter = (props) => {
         const cellValue = props?.value;
+        const currencySymbol = getCurrencySymbol(getConfigurationKey().BaseCurrency)
+        return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined && cellValue !== 0) ? currencySymbol + " " + cellValue : '-';
+    }
+
+    const POPriceCurrencyFormatter = (props) => {
+        const cellValue = props?.value;
         const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
         const currencySymbol = getCurrencySymbol(rowData?.Currency ? rowData?.Currency : getConfigurationKey().BaseCurrency)
         return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined && cellValue !== 0) ? currencySymbol + " " + cellValue : '-';
@@ -314,7 +319,7 @@ function CostMovementGraph(props) {
                 callbacks: {
                     label: function (context) {
 
-                        let label = '';
+                        let label = context.dataset.label;
 
                         if (label) {
                             label += ': ';
@@ -329,7 +334,7 @@ function CostMovementGraph(props) {
             subtitle: {
                 display: true,
                 position: 'bottom',
-                text: '  Format: Color | Part No.-Vendor code-Plant code ',
+                text: '  Format: Color | Part No. | Vendor Code | Plant Code ',
                 fontSize: 10,
                 align: 'start',
                 color: '#000',
@@ -408,7 +413,7 @@ function CostMovementGraph(props) {
                 callbacks: {
                     label: function (context) {
 
-                        let label = '';
+                        let label = context.dataset.label;
 
                         if (label) {
                             label += ': ';
@@ -423,7 +428,7 @@ function CostMovementGraph(props) {
             subtitle: {
                 display: true,
                 position: 'bottom',
-                text: '  Format: Color | Part No.-Vendor code-Plant code ',
+                text: '  Format: Color | Part No. | Vendor Code | Plant Code ',
                 fontSize: 10,
                 align: 'start',
                 color: '#000',
@@ -499,7 +504,9 @@ function CostMovementGraph(props) {
                                                 {<AgGridColumn field="PlantNameWithCode" headerName="Plant (Code)" cellRenderer={hyphenFormatter} floatingFilter={true}></AgGridColumn>}
                                                 {<AgGridColumn field="VendorNameWithCode" headerName="Vendor (Code)" cellRenderer={hyphenFormatter} floatingFilter={true}></AgGridColumn>}
                                                 {(ModeId === 1 || ModeId === 2) && importEntry && <AgGridColumn field="NetLandedCostCurrency" headerName="Landed Total (Currency)" cellRenderer={hyphenFormatter} floatingFilter={true}></AgGridColumn>}
+                                                {initialConfiguration?.IsBasicRateAndCostingConditionVisible && <AgGridColumn field="BasicRate" headerName="Basic Price" cellRenderer={POPriceFormatter} floatingFilter={true}></AgGridColumn>}
                                                 {<AgGridColumn field="NetPOPrice" headerName="Net PO Price" cellRenderer={POPriceFormatter} floatingFilter={true}></AgGridColumn>}
+                                                {<AgGridColumn field="NetPOPriceCurrency" headerName="Net PO Price (Currency)" cellRenderer={POPriceCurrencyFormatter} floatingFilter={true}></AgGridColumn>}
                                                 {<AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer='effectiveDateRenderer' floatingFilter={true}></AgGridColumn>}
                                             </AgGridReact>
                                             <PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />
@@ -515,7 +522,7 @@ function CostMovementGraph(props) {
                     {showBarGraph &&
                         <Row className="mt-2 ">
                             <Col md="12">
-                                <Costmovementgraph graphData={data1} options1={barChartOptions} graphHeight={120} currency={getCurrencySymbol(getConfigurationKey().BaseCurrency)} />
+                                <Costmovementgraph graphData={data1} options1={barChartOptions} graphHeight={120} currency={getConfigurationKey().BaseCurrency} />
                             </Col>
                         </Row>
 
@@ -524,7 +531,7 @@ function CostMovementGraph(props) {
                     {showLineGraph && noRecordFound &&
                         <Row>
                             <Col className='pr-3 d-flex align-items-center mt-2'>
-                                <div className='mb-5 pb-5 mr-2'><strong>{getCurrencySymbol(getConfigurationKey().BaseCurrency)}</strong></div>
+                                <div className='mb-5 pb-5 mr-2 currency-symbol' title={getConfigurationKey().BaseCurrency}>{getCurrencySymbol(getConfigurationKey().BaseCurrency)}</div>
                                 <Line
                                     data={state}
                                     height={120}
@@ -535,7 +542,7 @@ function CostMovementGraph(props) {
                     }
                 </form>
                 {!noRecordFound && <div className='h-298 d-flex align-items-center mt-3'>
-                    <NoContentFound title={EMPTY_DATA} />
+                    <NoContentFound title={'Cost card is not available for this date range'} />
                 </div>}
                 {isLoader && <LoaderCustom customClass="center-loader" />}
             </div >

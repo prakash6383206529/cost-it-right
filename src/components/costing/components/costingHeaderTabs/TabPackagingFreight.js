@@ -157,7 +157,7 @@ function TabPackagingFreight(props) {
   * @method saveCosting
   * @description SAVE COSTING
   */
-  const saveCosting = debounce(handleSubmit((gotoNextValue) => {
+  const saveCosting = debounce((data, e, gotoNextValue) => {
 
     if (checkIsFreightPackageChange) {
 
@@ -216,13 +216,11 @@ function TabPackagingFreight(props) {
         }
       }))
     }
-  }), 500)
+  }, 500)
 
 
   const InjectDiscountAPICall = () => {
-    dispatch(saveDiscountOtherCostTab({ ...ComponentItemDiscountData, CallingFrom: 3 }, res => {
-      dispatch(setComponentDiscountOtherItemData({}, () => { }))
-    }))
+    dispatch(saveDiscountOtherCostTab({ ...ComponentItemDiscountData, CallingFrom: 3 }, res => { }))
   }
 
   return (
@@ -285,7 +283,7 @@ function TabPackagingFreight(props) {
                   {!CostingViewMode && <button
                     type={"button"}
                     className="submit-button mr5 save-btn"
-                    onClick={(data, e) => { handleSubmit(saveCosting(false)) }}
+                    onClick={(data, e) => { handleSubmit(saveCosting(data, e, false)) }}
                   >
                     <div className={"save-icon"}></div>
                     {"Save"}
@@ -293,7 +291,7 @@ function TabPackagingFreight(props) {
                   {!CostingViewMode && costingData.TechnologyId === LOGISTICS && <button
                     type="button"
                     className="submit-button save-btn"
-                    onClick={(data, e) => { handleSubmit(saveCosting(true)) }}
+                    onClick={(data, e) => { handleSubmit(saveCosting(data, e, true)) }}
                   // disabled={isDisable}
                   >
                     {"Next"}

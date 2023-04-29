@@ -413,6 +413,13 @@
   }
 }
 
+//Sticky headers for multiple technology
+.multi-technology-container {
+  .sticky-headers {
+    top: 72px;
+  }
+}
+
 .pin-btn-container {
   display: flex;
   align-items: center;
@@ -436,4 +443,78 @@
 
 .float-unset {
   float: unset;
+}
+
+.overhead-profit-tab {
+  border-left: 1px solid $borderColor;
+  border-right: 1px solid $borderColor;
+}
+
+.costing-main-container {
+  table.costing-table-next {
+
+    .cr-select-height,
+    .form-group-searchable-select {
+      max-width: 320px;
+
+      @media screen and (max-width: $middleDesktop) {
+        max-width: 230px;
+      }
+    }
+  }
+}
+
+.overflow-y-hidden {
+  overflow-y: hidden !important;
+}
+
+.error-label {
+  .text-error-title {
+    .text-help {
+      bottom: -21px !important;
+      margin: 0 !important;
+
+      @media screen and (min-width: $middleDesktop) {
+        bottom: -23px !important;
+      }
+    }
+  }
+
+  &.surface-treament {
+    .text-help {
+      bottom: -21px !important;
+      margin: 0 !important;
+
+      @media screen and (min-width: $middleDesktop) {
+        bottom: -21px !important;
+      }
+    }
+  }
+}
+
+.tab-disount-total-cost {
+  display: flex;
+  align-items: center;
+  justify-content: end;
+  margin-bottom: 8px;
+
+  span {
+    font-weight: 700;
+    color: $headinlightgblack;
+    margin-right: 4px;
+  }
+}
+
+.finalize-cost {
+  color: $postiveValueColor;
+
+  span {
+    color: $postiveValueColor;
+  }
+}
+
+.rfq-summary-discard {
+  width: 32px;
+  height: 32px;
+  margin: 0;
 }

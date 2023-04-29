@@ -50,6 +50,21 @@ class AddAssemblyForm extends Component {
         this.setState({ selectedParts: tempArr })
     }
 
+    componentDidUpdate(prevProps, prevState) {
+        if (this.props.BOMViewerData !== prevProps.BOMViewerData) {
+            const { BOMViewerData } = this.props;
+
+            let tempArr = [];
+            BOMViewerData && BOMViewerData.map(el => {
+                if (el.PartType === ASSEMBLYNAME) {
+                    tempArr.push(el.PartId)
+                }
+                return null;
+            })
+            this.setState({ selectedParts: tempArr })
+        }
+    }
+
     componentWillUnmount() {
         reactLocalStorage?.setObject('PartData', [])
     }
@@ -168,6 +183,9 @@ class AddAssemblyForm extends Component {
 
         const filterList = async (inputValue) => {
             const { partName, selectedParts } = this.state
+            if (inputValue && typeof inputValue === 'string' && inputValue.includes(' ')) {
+                inputValue = inputValue.trim();
+            }
             const resultInput = inputValue.slice(0, searchCount)
             if (inputValue?.length >= searchCount && partName !== resultInput) {
                 let obj = {
@@ -223,7 +241,7 @@ class AddAssemblyForm extends Component {
                                     loadOptions={filterList}
                                     onChange={(e) => this.handleAssemblyPartChange(e)}
                                     noOptionsMessage={({ inputValue }) => inputValue.length < 3 ? 'Enter 3 characters to show data' : "No results found"}
-                                    onFocus={() => onFocus(this)}
+                                    onBlur={() => this.setState({ showErrorOnFocus: true })}
                                     onKeyDown={(onKeyDown) => {
                                         if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
                                     }}

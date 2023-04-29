@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col } from 'reactstrap';
-import { required, checkWhiteSpaces, alphaNumeric, acceptAllExceptSingleSpecialCharacter, maxLength75, maxLength20, maxLength80, maxLength512, checkSpacesInString } from "../../../helper/validation";
+import { required, checkWhiteSpaces, alphaNumeric, acceptAllExceptSingleSpecialCharacter, maxLength75, maxLength20, maxLength80, maxLength512, checkSpacesInString, minLength3 } from "../../../helper/validation";
 import { getConfigurationKey, loggedInUserId } from "../../../helper/auth";
 import { renderText, renderTextAreaField, focusOnError, renderDatePicker, renderMultiSelectField, searchableSelect } from "../../layout/FormInputs";
 import {
@@ -15,11 +15,11 @@ import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { ASSEMBLY, BOUGHTOUTPART, COMPONENT_PART, FILE_URL, SPACEBAR, ASSEMBLYNAME, searchCount } from '../../../config/constants';
+import { BOUGHTOUTPART, COMPONENT_PART, FILE_URL, SPACEBAR, ASSEMBLYNAME, searchCount } from '../../../config/constants';
 import AddChildDrawer from './AddChildDrawer';
 import DayTime from '../../common/DayTimeWrapper'
 import BOMViewer from './BOMViewer';
-import { getRandomSixDigit, onFocus, showDataOnHover } from '../../../helper/util';
+import { getRandomSixDigit, showDataOnHover } from '../../../helper/util';
 import LoaderCustom from '../../common/LoaderCustom';
 import imgRedcross from "../../../assests/images/red-cross.png";
 import _, { debounce } from 'lodash';
@@ -76,10 +76,10 @@ class AddAssemblyPart extends Component {
       inputLoader: false,
       convertPartToAssemblyPartId: "",
       uploadAttachements: true,
-      showErrorOnFocusDate: false,
       IsTechnologyUpdateRequired: false,
       partName: '',
-      showPopup: false
+      showPopup: false,
+      partAssembly: ''
     }
   }
 
@@ -182,6 +182,7 @@ class AddAssemblyPart extends Component {
     this.props.change("Remark", "")
     this.setState({ ProductGroup: [], BOMViewerData: [] })
     this.setState({ minEffectiveDate: "", warningMessage: false, warningMessageTechnology: false, TechnologySelected: [] })
+    this.setState({ partAssembly: { ...this.state.partAssembly, convertPartToAssembly: false } })
   }
 
   isRequired = () => {
@@ -212,8 +213,9 @@ class AddAssemblyPart extends Component {
 
 
   handlePartNo = (newValue, actionMeta) => {
-    this.setState({ partAssembly: newValue })
+
     if (newValue && newValue !== '') {
+      this.setState({ partAssembly: { ...newValue, convertPartToAssembly: true } })
 
       this.props.getPartData(newValue.value, res => {
         if (res && res.data && res.data.Result) {
@@ -965,12 +967,12 @@ class AddAssemblyPart extends Component {
                             name={"BOMNumber"}
                             type="text"
                             placeholder={(isEditFlag && this.state.isDisableBomNo === false) ? '-' : "Enter"}
-                            validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength20, checkSpacesInString]}
+                            validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength20, checkSpacesInString,  minLength3]}
                             component={renderText}
                             required={true}
                             className=""
                             customClassName={"withBorder"}
-                            disabled={(isEditFlag && this.state.isDisableBomNo === false) ? true : false}
+                            disabled={(isEditFlag && this.state.isDisableBomNo === false) || (isEditFlag && this.state.isBomEditable) ? true : false}
                           />
                         </Col>
                         <Col md="3">
@@ -979,7 +981,7 @@ class AddAssemblyPart extends Component {
                             name={"AssemblyPartNumber"}
                             type="text"
                             placeholder={isEditFlag || convertPartToAssembly ? '-' : "Enter"}
-                            validate={[this.isRequired(), acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength20, checkSpacesInString]}
+                            validate={[this.isRequired(), acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength20, checkSpacesInString, minLength3]}
                             component={renderText}
                             required={true}
                             onChange={this.onPartNoChange}
@@ -994,7 +996,7 @@ class AddAssemblyPart extends Component {
                             name={"AssemblyPartName"}
                             type="text"
                             placeholder={isViewMode || (!isEditFlag && this.state.disablePartName) || convertPartToAssembly ? '-' : "Enter"}
-                            validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength75, checkSpacesInString]}
+                            validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength75]}
                             component={renderText}
                             required={true}
                             className=""
@@ -1139,9 +1141,7 @@ class AddAssemblyPart extends Component {
                                 component={renderDatePicker}
                                 className="form-control"
                                 disabled={isEditFlag && !isViewMode ? getConfigurationKey().IsBOMEditable ? false : true : (isViewMode)}
-                                onFocus={() => onFocus(this, true)}
                               />
-                              {this.state.showErrorOnFocusDate && (this.state.effectiveDate === '' || this.state.effectiveDate === undefined) && <div className='text-help mt-1 p-absolute bottom-7'>This field is required.</div>}
                             </div>
                           </div>
                           {this.state.warningMessage && !isViewMode && <WarningMessage dClass="assembly-view-bom-wrapper date mt-2" message={`Revised date is ${DayTime(this.state?.minEffectiveDate).format('DD/MM/YYYY')} please reset the BOM to select the previous date`} />}

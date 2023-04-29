@@ -1,15 +1,14 @@
 import React, { Component, } from 'react';
 import { connect } from 'react-redux';
-import { Field, reduxForm, formValueSelector } from "redux-form";
+import { Field, reduxForm, formValueSelector, clearFields } from "redux-form";
 import { Row, Col, Label, } from 'reactstrap';
 import {
   required, checkForNull, number, checkForDecimalAndNull, acceptAllExceptSingleSpecialCharacter, maxLength20,
   maxLength, maxLength10, positiveAndDecimalNumber, maxLength512, maxLength80, checkWhiteSpaces, decimalLengthsix, checkSpacesInString, postiveNumber
 } from "../../../helper/validation";
-import { renderText, searchableSelect, renderTextAreaField, focusOnError, renderDatePicker, renderNumberInputField } from "../../layout/FormInputs";
+import { renderText, searchableSelect, renderTextAreaField, focusOnError, renderDatePicker, renderTextInputField } from "../../layout/FormInputs";
 import { getCityBySupplier, getPlantBySupplier, getUOMSelectList, getPlantSelectListByType, getCityByCountry, getAllCity } from '../../../actions/Common';
 import { getVendorWithVendorCodeSelectList, getVendorTypeBOPSelectList, } from '../actions/Supplier';
-import { masterFinalLevelUser } from '../actions/Material'
 import { createBOPDomestic, updateBOPDomestic, getBOPCategorySelectList, getBOPDomesticById, fileUploadBOPDomestic, fileDeleteBOPDomestic, } from '../actions/BoughtOutParts';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
@@ -29,13 +28,16 @@ import { applySuperScripts } from '../../../helper';
 import LoaderCustom from '../../common/LoaderCustom';
 import imgRedcross from '../../../assests/images/red-cross.png';
 import MasterSendForApproval from '../MasterSendForApproval'
-import { CheckApprovalApplicableMaster, displayUOM, onFocus } from '../../../helper';
+import { CheckApprovalApplicableMaster, displayUOM, onFocus, userTechnologyDetailByMasterId } from '../../../helper';
 import { debounce } from 'lodash';
 import AsyncSelect from 'react-select/async';
 import { getClientSelectList, } from '../actions/Client';
 import { reactLocalStorage } from 'reactjs-localstorage';
-import { autoCompleteDropdown } from '../../common/CommonFunctions';
+import { autoCompleteDropdown, costingTypeIdToApprovalTypeIdFunction } from '../../common/CommonFunctions';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
+import { checkFinalUser } from '../../../components/costing/actions/Costing'
+import { getUsersMasterLevelAPI } from '../../../actions/auth/AuthActions';
+import TooltipCustom from '../../common/Tooltip';
 
 
 const selector = formValueSelector('AddBOPDomestic');
@@ -88,7 +90,11 @@ class AddBOPDomestic extends Component {
       finalApprovalLoader: false,
       client: [],
       costingTypeId: ZBCTypeId,
-      showPopup: false
+      showPopup: false,
+      levelDetails: {},
+      noApprovalCycle: false,
+      vendorFilterList: [],
+      uomIsNo: false
     }
   }
 
@@ -109,6 +115,7 @@ class AddBOPDomestic extends Component {
    * @description Called after rendering the component
    */
   componentDidMount() {
+    const { initialConfiguration } = this.props
     if (!this.state.isViewMode) {
       this.props.getAllCity(cityId => {
         this.props.getCityByCountry(cityId, 0, () => { })
@@ -116,31 +123,52 @@ class AddBOPDomestic extends Component {
     }
     setTimeout(() => {
       this.getDetails()
-      if (!(this.props.data.isEditFlag || this.props.data.isViewFlag)) {
+      if (!(this.props.data.isEditFlag || this.props.data.isViewMode)) {
         this.props.getClientSelectList(() => { })
       }
-      if (!this.state.isViewMode) {
-        let obj = {
-          MasterId: BOP_MASTER_ID,
-          DepartmentId: userDetails().DepartmentId,
-          LoggedInUserLevelId: userDetails().LoggedInMasterLevelId,
-          LoggedInUserId: loggedInUserId()
-        }
-        this.setState({ finalApprovalLoader: true })
-        this.props.masterFinalLevelUser(obj, (res) => {
-          if (res.data.Result) {
-            this.setState({ isFinalApprovar: res.data.Data.IsFinalApprovar })
-            this.setState({ finalApprovalLoader: false })
-          }
-
+      if (!this.state.isViewMode && initialConfiguration.IsMasterApprovalAppliedConfigure) {
+        this.props.getUsersMasterLevelAPI(loggedInUserId(), BOP_MASTER_ID, (res) => {
+          setTimeout(() => {
+            this.commonFunction()
+          }, 100);
         })
       }
     }, 300);
   }
 
-  componentDidUpdate(prevProps) {
+  commonFunction() {
+    let levelDetailsTemp = []
+    levelDetailsTemp = userTechnologyDetailByMasterId(this.state.costingTypeId, BOP_MASTER_ID, this.props.userMasterLevelAPI)
+    this.setState({ levelDetails: levelDetailsTemp })
+    if (levelDetailsTemp?.length !== 0) {
+      let obj = {
+        TechnologyId: BOP_MASTER_ID,
+        DepartmentId: userDetails().DepartmentId,
+        UserId: loggedInUserId(),
+        Mode: 'master',
+        approvalTypeId: costingTypeIdToApprovalTypeIdFunction(this.state.costingTypeId)
+      }
+
+      this.setState({ finalApprovalLoader: true })
+      this.props.checkFinalUser(obj, (res) => {
+        if (res?.data?.Result) {
+          this.setState({ isFinalApprovar: res?.data?.Data?.IsFinalApprover })
+          this.setState({ finalApprovalLoader: false })
+        }
+      })
+      this.setState({ noApprovalCycle: false })
+    } else {
+      this.setState({ noApprovalCycle: true })
+    }
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    const { initialConfiguration } = this.props
     if (this.props.fieldsObj !== prevProps.fieldsObj) {
       this.handleCalculation()
+    }
+    if ((prevState?.costingTypeId !== this.state.costingTypeId) && initialConfiguration.IsMasterApprovalAppliedConfigure) {
+      this.commonFunction()
     }
   }
   componentWillUnmount() {
@@ -151,6 +179,20 @@ class AddBOPDomestic extends Component {
    * @description Used for Vendor checked
    */
   onPressVendor = (costingHeadFlag) => {
+    const fieldsToClear = [
+      'BoughtOutPartNumber',
+      'BoughtOutPartName',
+      'BOPCategory',
+      'Specification',
+      'Plant',
+      "UOM",
+      "cutOffPrice",
+      "BasicRate",
+      "EffectiveDate",
+      "clientName"];
+    fieldsToClear.forEach(fieldName => {
+      this.props.dispatch(clearFields('AddBOPDomestic', false, false, fieldName));
+    });
     this.setState({
       vendorName: [],
       costingTypeId: costingHeadFlag,
@@ -449,9 +491,13 @@ class AddBOPDomestic extends Component {
   * @description called
   */
   handleUOM = (newValue, actionMeta) => {
-    if (newValue && newValue !== '') {
-      this.setState({ UOM: newValue, })
-    } else {
+    if (newValue && newValue !== '' && newValue.label === "No") {
+      this.setState({ UOM: newValue, uomIsNo: true })
+    }
+    else if (newValue.label !== "No") {
+      this.setState({ UOM: newValue, uomIsNo: false })
+    }
+    else {
       this.setState({ UOM: [] })
     }
   };
@@ -469,9 +515,8 @@ class AddBOPDomestic extends Component {
     const { fieldsObj, initialConfiguration } = this.props
     const BasicRate = fieldsObj && fieldsObj.BasicRate !== undefined ? fieldsObj.BasicRate : 0;
     const NoOfPieces = fieldsObj && fieldsObj.NumberOfPieces !== undefined ? fieldsObj.NumberOfPieces : 1;
-    console.log('NoOfPieces: ', NoOfPieces);
     const NetLandedCost = checkForNull((BasicRate / NoOfPieces)) // THIS CALCULATION IS FOR BASE
-    console.log('NetLandedCost: ', NetLandedCost);
+
 
 
     if (this.state.isEditFlag && Number(NetLandedCost) === Number(this.state.DataToCheck?.NetLandedCost)) {
@@ -831,12 +876,15 @@ class AddBOPDomestic extends Component {
   * @description Renders the component
   */
   render() {
-    const { handleSubmit, isBOPAssociated } = this.props;
-    const { isCategoryDrawerOpen, isOpenVendor, costingTypeId, isOpenUOM, isEditFlag, isViewMode, setDisable } = this.state;
+    const { handleSubmit, isBOPAssociated, initialConfiguration } = this.props;
+    const { isCategoryDrawerOpen, isOpenVendor, costingTypeId, isOpenUOM, isEditFlag, isViewMode, setDisable, noApprovalCycle } = this.state;
     const filterList = async (inputValue) => {
-      const { vendorName } = this.state
+      const { vendorFilterList } = this.state
+      if (inputValue && typeof inputValue === 'string' && inputValue.includes(' ')) {
+        inputValue = inputValue.trim();
+      }
       const resultInput = inputValue.slice(0, searchCount)
-      if (inputValue?.length >= searchCount && vendorName !== resultInput) {
+      if (inputValue?.length >= searchCount && vendorFilterList !== resultInput) {
         this.setState({ inputLoader: true })
         let res
         if (costingTypeId === VBCTypeId) {
@@ -846,7 +894,7 @@ class AddBOPDomestic extends Component {
           res = await getVendorTypeBOPSelectList(resultInput)
         }
         this.setState({ inputLoader: false })
-        this.setState({ vendorName: resultInput })
+        this.setState({ vendorFilterList: resultInput })
         let vendorDataAPI = res?.data?.SelectList
         if (inputValue) {
           return autoCompleteDropdown(inputValue, vendorDataAPI, false, [], true)
@@ -1089,7 +1137,7 @@ class AddBOPDomestic extends Component {
                               optionLabel={(option) => option.Text}
                               component={renderMultiSelectField}
                               //  mendatory={true}
-                              className="multiselect-with-border"
+                            //className="multiselect-with-border"
                             //disabled={(this.state.IsVendor || isEditFlag) ? true : false}
                             />
                           </Col> */}
@@ -1114,7 +1162,7 @@ class AddBOPDomestic extends Component {
                                         loadOptions={filterList}
                                         onChange={(e) => this.handleVendorName(e)}
                                         value={this.state.vendorName}
-                                        noOptionsMessage={({ inputValue }) => inputValue.length < 3 ? "Enter 3 characters to show data" : "No results found"}
+                                        noOptionsMessage={({ inputValue }) => inputValue.length < 3 ? MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN : "No results found"}
                                         isDisabled={(isEditFlag) ? true : false}
                                         onFocus={() => onFocus(this)}
                                         onKeyDown={(onKeyDown) => {
@@ -1201,25 +1249,21 @@ class AddBOPDomestic extends Component {
                                 className="form-control"
                                 disabled={isViewMode || !this.state.IsFinancialDataChanged}
                                 placeholder={isViewMode || !this.state.IsFinancialDataChanged ? '-' : 'Select Date'}
-                                onFocus={() => onFocus(this, true)}
                               />
                             </div>
-                            {this.state.showErrorOnFocusDate && this.state.effectiveDate === '' && <div className='text-help mt-1 p-absolute bottom-22'>This field is required.</div>}
                           </Col>
-
-
                           <Col md="3">
                             <Field
                               label={`Minimum Order Quantity`}
                               name={"NumberOfPieces"}
                               type="text"
                               placeholder={"Enter"}
-                              validate={[postiveNumber, maxLength10]}
+                              validate={this.state.uomIsNo ? [postiveNumber, maxLength10] : [positiveAndDecimalNumber, maxLength10, decimalLengthsix, number]}
                               component={renderText}
                               required={false}
                               className=""
                               customClassName=" withBorder"
-                              disabled={isViewMode}
+                              disabled={isViewMode || (isEditFlag && isBOPAssociated)}
                             />
                           </Col>
 
@@ -1229,8 +1273,8 @@ class AddBOPDomestic extends Component {
                               name={"BasicRate"}
                               type="text"
                               placeholder={isEditFlag || (isEditFlag && isBOPAssociated) ? '-' : "Enter"}
-                              validate={[required, positiveAndDecimalNumber, maxLength10, decimalLengthsix]}
-                              component={renderNumberInputField}
+                              validate={[required, positiveAndDecimalNumber, maxLength10, decimalLengthsix, number]}
+                              component={renderTextInputField}
                               required={true}
                               disabled={isViewMode || (isEditFlag && isBOPAssociated)}
                               className=" "
@@ -1238,13 +1282,14 @@ class AddBOPDomestic extends Component {
                             />
                           </Col>
                           <Col md="3">
+                            <TooltipCustom id="bop-net-cost" tooltipText={'Net Cost = Basic Rate / Minimum Order Quantity'} />
                             <Field
                               label={`Net Cost (INR)`}
                               name={`${this.state.NetLandedCost === 0 ? '' : "NetLandedCost"}`}
                               type="text"
                               placeholder={"-"}
-                              validate={[number]}
-                              component={renderNumberInputField}
+                              validate={[]}
+                              component={renderTextInputField}
                               required={false}
                               disabled={true}
                               className=" "
@@ -1375,10 +1420,10 @@ class AddBOPDomestic extends Component {
                             {"Cancel"}
                           </button>
 
-                          {!isViewMode && (CheckApprovalApplicableMaster(BOP_MASTER_ID) === true && !this.state.isFinalApprovar) ?
+                          {!isViewMode && (CheckApprovalApplicableMaster(BOP_MASTER_ID) === true && !this.state.isFinalApprovar) && initialConfiguration.IsMasterApprovalAppliedConfigure ?
                             <button type="submit"
                               class="user-btn approval-btn save-btn mr5"
-                              disabled={isViewMode || setDisable}
+                              disabled={isViewMode || setDisable || noApprovalCycle}
                             >
                               <div className="send-for-approval"></div>
                               {'Send For Approval'}
@@ -1388,7 +1433,7 @@ class AddBOPDomestic extends Component {
                             <button
                               type="submit"
                               className="user-btn mr5 save-btn"
-                              disabled={isViewMode || setDisable}
+                              disabled={isViewMode || setDisable || noApprovalCycle}
                             >
                               <div className={"save-icon"}></div>
                               {isEditFlag ? "Update" : "Save"}
@@ -1447,6 +1492,8 @@ class AddBOPDomestic extends Component {
                 isBulkUpload={false}
                 IsImportEntery={false}
                 UOM={this.state.UOM}
+                costingTypeId={this.state.costingTypeId}
+                levelDetails={this.state.levelDetails}
               />
             )
           }
@@ -1469,7 +1516,7 @@ function mapStateToProps(state) {
   const { plantList, filterPlantList, filterCityListBySupplier, cityList, UOMSelectList, plantSelectList, costingHead } = comman;
   const { partSelectList } = part;
   const { vendorWithVendorCodeSelectList } = supplier;
-  const { initialConfiguration } = auth;
+  const { initialConfiguration, userMasterLevelAPI } = auth;
   const { clientSelectList } = client;
 
   let initialValues = {};
@@ -1488,7 +1535,7 @@ function mapStateToProps(state) {
 
   return {
     vendorWithVendorCodeSelectList, plantList, filterPlantList, filterCityListBySupplier, cityList, UOMSelectList,
-    plantSelectList, bopCategorySelectList, bopData, partSelectList, costingHead, fieldsObj, initialValues, initialConfiguration, clientSelectList
+    plantSelectList, bopCategorySelectList, bopData, partSelectList, costingHead, fieldsObj, initialValues, initialConfiguration, clientSelectList, userMasterLevelAPI
   }
 
 }
@@ -1512,10 +1559,11 @@ export default connect(mapStateToProps, {
   fileUploadBOPDomestic,
   fileDeleteBOPDomestic,
   getPlantSelectListByType,
-  masterFinalLevelUser,
+  checkFinalUser,
   getCityByCountry,
   getAllCity,
-  getClientSelectList
+  getClientSelectList,
+  getUsersMasterLevelAPI
 })(reduxForm({
   form: 'AddBOPDomestic',
   touchOnChange: true,

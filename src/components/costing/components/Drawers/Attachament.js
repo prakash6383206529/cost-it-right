@@ -5,9 +5,9 @@ import { useSelector } from 'react-redux'
 import { FILE_URL } from '../../../../config/constants'
 
 function Attachament(props) {
-  const { index } = props
+  const { index, gridListing } = props
   const viewCostingData = useSelector((state) => state.costing.viewCostingDetailData)
-  const Data = viewCostingData[index]
+  const Data = gridListing ? index : viewCostingData[index]
   /*
    * @method toggleDrawer
    * @description closing drawer
@@ -38,10 +38,10 @@ function Attachament(props) {
               </Col>
             </Row>
             <Row className="mx-0">
-              <Col md="12">
+              {gridListing ? <Col md="12">
 
-                {Data.attachment &&
-                  Data.attachment.map((f) => {
+                {Data.Attachments &&
+                  Data.Attachments.map((f) => {
                     const withOutTild = f.FileURL
                       ? f.FileURL.replace('~', '')
                       : ''
@@ -55,7 +55,24 @@ function Attachament(props) {
                     )
                   })}
 
-              </Col>
+              </Col> :
+                <Col md="12">
+                  {Data.attachment &&
+                    Data.attachment.map((f) => {
+                      const withOutTild = f.FileURL
+                        ? f.FileURL.replace('~', '')
+                        : ''
+                      const fileURL = `${FILE_URL}${withOutTild}`
+                      return (
+                        <div className={"attachment-row"}>
+                          <a href={fileURL} target="_blank" rel="noreferrer">
+                            {f.OriginalFileName}
+                          </a>
+                        </div>
+                      )
+                    })}
+
+                </Col>}
             </Row>
           </div>
         </Container>

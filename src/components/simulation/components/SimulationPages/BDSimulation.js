@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { Row, Col, } from 'reactstrap';
+import { Row, Col, Tooltip, } from 'reactstrap';
 import DayTime from '../../../common/DayTimeWrapper'
-import { defaultPageSize, EMPTY_DATA } from '../../../../config/constants';
+import { defaultPageSize, EMPTY_DATA, CBCTypeId } from '../../../../config/constants';
 import NoContentFound from '../../../common/NoContentFound';
 import { checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUserId, searchNocontentFilter } from '../../../../helper';
 import Toaster from '../../../common/Toaster';
@@ -17,7 +17,6 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import Simulation from '../Simulation';
 import { debounce } from 'lodash'
-import { VBC, ZBC } from '../../../../config/constants';
 import { PaginationWrapper } from '../../../common/commonPagination';
 import DatePicker from "react-datepicker";
 import WarningMessage from '../../../common/WarningMessage';
@@ -44,7 +43,8 @@ function BDSimulation(props) {
     const [maxDate, setMaxDate] = useState('');
     const [titleObj, setTitleObj] = useState({})
     const [noData, setNoData] = useState(false);
-
+    const [showTooltip, setShowTooltip] = useState(false)
+    const [basicRateviewTooltip, setBasicRateViewTooltip] = useState(false)
 
     const { register, control, setValue, formState: { errors }, } = useForm({
         mode: 'onChange',
@@ -95,7 +95,7 @@ function BDSimulation(props) {
         })
 
         if (basicRateCount === list.length) {
-            Toaster.warning('There is no changes in new value. Please correct the data, then run simulation')
+            Toaster.warning('There is no changes in net cost. Please change the basic rate, then run simulation')
             return false
         }
         setIsDisable(true)
@@ -103,7 +103,7 @@ function BDSimulation(props) {
         // setShowVerifyPage(true)
         /**********POST METHOD TO CALL HERE AND AND SEND TOKEN TO VERIFY PAGE TODO ****************/
         let obj = {}
-        obj.SimulationTechnologyId = selectedMasterForSimulation.value
+        obj.SimulationTechnologyId = selectedMasterForSimulation?.value
         obj.SimulationTypeId = list[0].CostingTypeId
         obj.LoggedInUserId = loggedInUserId()
         obj.TechnologyId = selectedTechnologyForSimulation.value
@@ -119,8 +119,8 @@ function BDSimulation(props) {
                 tempObj.BoughtOutPartId = item.BoughtOutPartId
                 tempObj.OldBOPRate = item.BasicRate
                 tempObj.NewBOPRate = item.NewBasicRate
-                tempObj.OldNetLandedCost = checkForNull(item.BasicRate)
-                tempObj.NewNetLandedCost = checkForNull(item.NewBasicRate)
+                tempObj.OldNetLandedCost = checkForNull(item.BasicRate) / checkForNull(item.NumberOfPieces)
+                tempObj.NewNetLandedCost = checkForNull(item.NewBasicRate) / checkForNull(item.NumberOfPieces)
                 tempArr.push(tempObj)
             }
             return null;
@@ -138,6 +138,7 @@ function BDSimulation(props) {
                 setShowVerifyPage(true)
             }
         }))
+        setShowTooltip(false)
     }, 500)
 
 
@@ -153,7 +154,12 @@ function BDSimulation(props) {
 
     const costingHeadFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        return (cell === true || cell === 'Vendor Based') ? 'Vendor Based' : 'Zero Based';
+        return cell ? cell : '-';
+    }
+
+    const customerFormatter = (props) => {
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        return (isbulkUpload ? row['Customer (Code)'] : row.CustomerName);
     }
 
     const newBasicRateFormatter = (props) => {
@@ -183,6 +189,28 @@ function BDSimulation(props) {
                         row.OldBOPRate :
                         <span>{cell && value ? Number(cell) : Number(row.BasicRate)} </span>
                 }
+
+            </>
+        )
+    }
+
+    const vendorFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        return (
+            <>
+                {isbulkUpload ? row['Vendor (Code)'] : cell}
+
+            </>
+        )
+    }
+
+    const plantFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        return (
+            <>
+                {isbulkUpload ? row['Plant (Code)'] : cell}
 
             </>
         )
@@ -223,10 +251,10 @@ function BDSimulation(props) {
             return row.NewNetBoughtOutPartCost ? row.NewNetBoughtOutPartCost : '-'
         } else {
             if (!row.NewBasicRate || Number(row.BasicRate) === Number(row.NewBasicRate) || row.NewBasicRate === '') return ''
-            const BasicRate = Number(row.BasicRate)
-            const NewBasicRate = Number(row.NewBasicRate)
+            const BasicRate = Number(row.BasicRate) / Number(row.NumberOfPieces)
+            const NewBasicRate = Number(row.NewBasicRate) / Number(row.NumberOfPieces)
             const classGreen = (BasicRate < NewBasicRate) ? 'red-value form-control' : (BasicRate > NewBasicRate) ? 'green-value form-control' : 'form-class'
-            return row.NewBasicRate != null ? <span className={classGreen}>{checkForDecimalAndNull(Number(row.NewBasicRate), getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
+            return row.NewBasicRate != null ? <span className={classGreen}>{checkForDecimalAndNull(Number(row.NewBasicRate) / Number(row.NumberOfPieces), getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
 
         }
     }
@@ -237,12 +265,17 @@ function BDSimulation(props) {
             return row.OldNetBoughtOutPartCost ? row.OldNetBoughtOutPartCost : '-'
         } else {
             if (!row.BasicRate || row.BasicRate === '') return ''
-
-            return row.BasicRate != null ? checkForDecimalAndNull(Number(row.BasicRate), getConfigurationKey().NoOfDecimalForPrice) : ''
+            return row.BasicRate != null ? checkForDecimalAndNull(Number(row.BasicRate) / Number(row.NumberOfPieces), getConfigurationKey().NoOfDecimalForPrice) : ''
 
         }
     }
-
+    const revisedBasicRateHeader = (props) => {
+        return (
+            <div className='ag-header-cell-label'>
+                <span className='ag-header-cell-text'>Revised{!isImpactedMaster && <i className={`fa fa-info-circle tooltip_custom_right tooltip-icon mb-n3 ml-4 mt2 `} id={"basicRate-tooltip"}></i>}</span>
+            </div>
+        );
+    };
     const cancel = () => {
         list && list.map((item) => {
             item.NewBasicRate = undefined
@@ -269,6 +302,9 @@ function BDSimulation(props) {
         setGridApi(params.api)
         setGridColumnApi(params.columnApi)
         params.api.paginationGoToPage(0);
+        setTimeout(() => {
+            setShowTooltip(true)
+        }, 100);
     };
     const onFloatingFilterChanged = (value) => {
         if (list.length !== 0) {
@@ -313,8 +349,16 @@ function BDSimulation(props) {
         customNoRowsOverlay: NoContentFound,
         newBasicRateFormatter: newBasicRateFormatter,
         cellChange: cellChange,
-        oldBasicRateFormatter: oldBasicRateFormatter
+        oldBasicRateFormatter: oldBasicRateFormatter,
+        vendorFormatter: vendorFormatter,
+        plantFormatter: plantFormatter,
+        revisedBasicRateHeader: revisedBasicRateHeader,
+        customerFormatter: customerFormatter,
     };
+
+    const basicRatetooltipToggle = () => {
+        setBasicRateViewTooltip(!basicRateviewTooltip)
+    }
 
     return (
 
@@ -323,7 +367,7 @@ function BDSimulation(props) {
                 {
                     (!showverifyPage && !showMainSimulation) &&
                     <Fragment>
-
+                        {!isImpactedMaster && showTooltip && <Tooltip className="rfq-tooltip-left" placement={"top"} isOpen={basicRateviewTooltip} toggle={basicRatetooltipToggle} target={"basicRate-tooltip"} >{"To add revised basic rate please double click on the field."}</Tooltip>}
                         <Row>
                             <Col className={`add-min-height mb-3 sm-edit-page  ${(list && list?.length <= 0) || noData ? "overlay-contain" : ""}`}>
                                 <div className="ag-grid-wrapper height-width-wrapper">
@@ -334,56 +378,61 @@ function BDSimulation(props) {
                                                 <div className="refresh mr-0"></div>
                                             </button>
                                         </div>
-                                        {!isImpactedMaster && <button type="button" className={"apply"} onClick={cancel}> <div className={'back-icon'}></div>Back</button>}
-
+                                        <div className='d-flex justify-content-end bulk-upload-row pr-0 zindex-2'>
+                                            {
+                                                isbulkUpload && <>
+                                                    <div className="d-flex align-items-center">
+                                                        <label>Rows with changes:</label>
+                                                        <TextFieldHookForm
+                                                            label=""
+                                                            name={'NoOfCorrectRow'}
+                                                            Controller={Controller}
+                                                            title={titleObj.rowWithChanges}
+                                                            control={control}
+                                                            register={register}
+                                                            rules={{ required: false }}
+                                                            mandatory={false}
+                                                            handleChange={() => { }}
+                                                            defaultValue={''}
+                                                            className=""
+                                                            customClassName={'withBorder mn-height-auto hide-label mb-0'}
+                                                            errors={errors.NoOfCorrectRow}
+                                                            disabled={true}
+                                                        />
+                                                    </div>
+                                                    <div className="d-flex align-items-center">
+                                                        <label>Rows without changes:</label>
+                                                        <TextFieldHookForm
+                                                            label=""
+                                                            name={'NoOfRowsWithoutChange'}
+                                                            title={titleObj.rowWithoutChanges}
+                                                            Controller={Controller}
+                                                            control={control}
+                                                            register={register}
+                                                            rules={{ required: false }}
+                                                            mandatory={false}
+                                                            handleChange={() => { }}
+                                                            defaultValue={''}
+                                                            className=""
+                                                            customClassName={'withBorder mn-height-auto hide-label mb-0'}
+                                                            errors={errors.NoOfRowsWithoutChange}
+                                                            disabled={true}
+                                                        />
+                                                    </div>
+                                                </>
+                                            }
+                                            {!isImpactedMaster && <div className={`d-flex align-items-center simulation-label-container`}>
+                                                {list[0].CostingTypeId !== CBCTypeId && <div className='d-flex pl-3'>
+                                                    <label className='mr-1'>Vendor (Code):</label>
+                                                    <p title={list[0].Vendor} className='mr-2'>{list[0].Vendor ? list[0].Vendor : list[0]['Vendor (Code)']}</p>
+                                                </div>}
+                                                <button type="button" className={"apply"} onClick={cancel}> <div className={'back-icon'}></div>Back</button>
+                                            </div>}
+                                        </div>
                                     </div>
-                                    {
-                                        isbulkUpload && <>
-                                            <div className='d-flex justify-content-end bulk-upload-row'>
-                                                <div className="d-flex align-items-center">
-                                                    <label>Rows with changes:</label>
-                                                    <TextFieldHookForm
-                                                        label=""
-                                                        name={'NoOfCorrectRow'}
-                                                        Controller={Controller}
-                                                        title={titleObj.rowWithChanges}
-                                                        control={control}
-                                                        register={register}
-                                                        rules={{ required: false }}
-                                                        mandatory={false}
-                                                        handleChange={() => { }}
-                                                        defaultValue={''}
-                                                        className=""
-                                                        customClassName={'withBorder mn-height-auto hide-label mb-0'}
-                                                        errors={errors.NoOfCorrectRow}
-                                                        disabled={true}
-                                                    />
-                                                </div>
-                                                <div className="d-flex align-items-center">
-                                                    <label>Rows without changes:</label>
-                                                    <TextFieldHookForm
-                                                        label=""
-                                                        name={'NoOfRowsWithoutChange'}
-                                                        title={titleObj.rowWithoutChanges}
-                                                        Controller={Controller}
-                                                        control={control}
-                                                        register={register}
-                                                        rules={{ required: false }}
-                                                        mandatory={false}
-                                                        handleChange={() => { }}
-                                                        defaultValue={''}
-                                                        className=""
-                                                        customClassName={'withBorder mn-height-auto hide-label mb-0'}
-                                                        errors={errors.NoOfRowsWithoutChange}
-                                                        disabled={true}
-                                                    />
-                                                </div>
-                                            </div>
-                                        </>
-                                    }
                                     <div className="ag-theme-material p-relative" style={{ width: '100%' }}>
                                         {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found simulation-lisitng" />}
-                                        <AgGridReact
+                                        {list && <AgGridReact
                                             ref={gridRef}
                                             floatingFilter={true}
                                             style={{ height: '100%', width: '100%' }}
@@ -401,32 +450,34 @@ function BDSimulation(props) {
                                                 title: EMPTY_DATA,
                                             }}
                                             frameworkComponents={frameworkComponents}
+                                            suppressColumnVirtualisation={true}
                                             stopEditingWhenCellsLoseFocus={true}
                                             onFilterModified={onFloatingFilterChanged}
                                         >
                                             {/* <AgGridColumn field="Technologies" editable='false' headerName="Technology" minWidth={190}></AgGridColumn> */}
                                             <AgGridColumn field="BoughtOutPartNumber" editable='false' headerName="Insert Part No" minWidth={140}></AgGridColumn>
                                             <AgGridColumn field="BoughtOutPartName" editable='false' headerName="Insert Part Name" minWidth={140}></AgGridColumn>
-                                            {!isImpactedMaster && <AgGridColumn field="BoughtOutPartCategory" editable='false' headerName="Insert Category" minWidth={140}></AgGridColumn>}
-                                            {!isImpactedMaster && <AgGridColumn field="Vendor" editable='false' headerName="Vendor (Code)" minWidth={140}></AgGridColumn>}
-                                            {!isImpactedMaster && <AgGridColumn field="Plants" editable='false' headerName="Plant (Code)" minWidth={140}></AgGridColumn>}
+                                            {!isImpactedMaster && <AgGridColumn field="BoughtOutPartCategory" editable='false' headerName="BOP Category" minWidth={140}></AgGridColumn>}
+                                            {!isImpactedMaster && list[0].CostingTypeId !== CBCTypeId && <AgGridColumn field="Vendor" editable='false' headerName="Vendor (Code)" minWidth={140} cellRenderer='vendorFormatter'></AgGridColumn>}
+                                            {!isImpactedMaster && list[0].CostingTypeId === CBCTypeId && <AgGridColumn field="CustomerName" editable='false' headerName="Customer (Code)" minWidth={140} cellRenderer='customerFormatter'></AgGridColumn>}
+                                            {!isImpactedMaster && <AgGridColumn field="Plants" editable='false' headerName="Plant (Code)" minWidth={140} cellRenderer='plantFormatter'></AgGridColumn>}
 
-                                            <AgGridColumn headerClass="justify-content-center" cellClass="text-center" headerName="Basic Rate (INR)" marryChildren={true} width={240}>
-                                                <AgGridColumn width={120} field="BasicRate" editable='false' cellRenderer='oldBasicRateFormatter' headerName="Old" colId="BasicRate"></AgGridColumn>
-                                                <AgGridColumn width={120} cellRenderer='newBasicRateFormatter' editable={!isImpactedMaster} onCellValueChanged='cellChange' field="NewBasicRate" headerName="New" colId='NewBasicRate'></AgGridColumn>
+                                            <AgGridColumn headerClass="justify-content-center" cellClass="text-center" headerName={Number(selectedMasterForSimulation?.value) === 5 ? "Basic Rate (Currency)" : "Basic Rate (INR)"} marryChildren={true} width={240}>
+                                                <AgGridColumn width={120} field="BasicRate" editable='false' cellRenderer='oldBasicRateFormatter' headerName="Existing" colId="BasicRate"></AgGridColumn>
+                                                <AgGridColumn width={120} cellRenderer='newBasicRateFormatter' editable={!isImpactedMaster} onCellValueChanged='cellChange' field="NewBasicRate" headerName="Revised" colId='NewBasicRate' headerComponent={'revisedBasicRateHeader'}></AgGridColumn>
                                             </AgGridColumn>
 
-                                            <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName="Net Cost (INR)" marryChildren={true}>
+                                            <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName={Number(selectedMasterForSimulation?.value) === 5 ? "Net Cost (Currency)" : "Net Cost (INR)"} marryChildren={true}>
                                                 {/* {!isImpactedMaster &&<AgGridColumn width={120} field="OldNetLandedCost" editable='false' cellRenderer={'OldcostFormatter'} headerName="Old" colId='NetLandedCost'></AgGridColumn>} */}
-                                                <AgGridColumn width={120} field="OldNetLandedCost" editable='false' cellRenderer={'OldcostFormatter'} headerName="Old" colId='NetLandedCost'></AgGridColumn>
-                                                <AgGridColumn width={120} field="NewNetLandedCost" editable='false' valueGetter='data.NewBasicRate' cellRenderer={'NewcostFormatter'} headerName="New" colId='NewNetLandedCost'></AgGridColumn>
+                                                <AgGridColumn width={120} field="OldNetLandedCost" editable='false' cellRenderer={'OldcostFormatter'} headerName="Existing" colId='NetLandedCost'></AgGridColumn>
+                                                <AgGridColumn width={120} field="NewNetLandedCost" editable='false' valueGetter='data.NewBasicRate' cellRenderer={'NewcostFormatter'} headerName="Revised" colId='NewNetLandedCost'></AgGridColumn>
                                             </AgGridColumn>
 
                                             <AgGridColumn field="EffectiveDate" headerName="Effective Date" editable='false' minWidth={150} cellRenderer='effectiveDateRenderer'></AgGridColumn>
                                             <AgGridColumn field="CostingId" hide={true}></AgGridColumn>
 
 
-                                        </AgGridReact>
+                                        </AgGridReact>}
 
                                         {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />}
                                     </div>

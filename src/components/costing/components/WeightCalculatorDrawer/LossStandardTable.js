@@ -2,7 +2,7 @@ import React, { Fragment, useState, useEffect } from 'react'
 import { Row, Col, Table } from 'reactstrap'
 import { useForm, Controller, useWatch } from 'react-hook-form'
 import { useDispatch, } from 'react-redux'
-import { SearchableSelectHookForm, NumberFieldHookForm, } from '../../../layout/HookFormInputs'
+import { SearchableSelectHookForm, NumberFieldHookForm, TextFieldHookForm, } from '../../../layout/HookFormInputs'
 import NoContentFound from '../../../common/NoContentFound'
 import { EMPTY_DATA } from '../../../../config/constants'
 import { checkForDecimalAndNull, checkForNull, findLostWeight, getConfigurationKey, } from '../../../../helper'
@@ -10,6 +10,7 @@ import Toaster from '../../../common/Toaster'
 import { setPlasticArray } from '../../actions/Costing'
 import { setForgingCalculatorMachiningStockSection } from '../../actions/Costing'
 import TooltipCustom from '../../../common/Tooltip'
+import { number, percentageLimitValidation, checkWhiteSpaces } from "../../../../helper/validation";
 function LossStandardTable(props) {
   const { rmRowData, isLossStandard, isNonFerrous, NonFerrousErrors, disableAll, ferrousErrors, isFerrous } = props
   const trimValue = getConfigurationKey()
@@ -343,6 +344,20 @@ function LossStandardTable(props) {
       FlashLoss: '',
     })
   }
+  const rateTableReset = () => {
+    reset({
+      LossPercentage: '',
+      FlashLength: '',
+      FlashThickness: '',
+      FlashWidth: '',
+      BarDiameter: '',
+      BladeThickness: '',
+      LossOfType: '',
+      LossWeight: '',
+      FlashLoss: '',
+    })
+  }
+
   /**
    * @method editRow
    * @description for filling the row above table for editing
@@ -645,7 +660,7 @@ function LossStandardTable(props) {
         {percentage &&
           <>
             <Col md="2">
-              <NumberFieldHookForm
+              <TextFieldHookForm
                 label={`Loss (%)`}
                 name={'LossPercentage'}
                 Controller={Controller}
@@ -654,16 +669,11 @@ function LossStandardTable(props) {
                 mandatory={false}
                 rules={{
                   required: false,
-                  pattern: {
-                    //value: /^[0-9]*$/i,
-                    value: /^[0-9]\d*(\.\d+)?$/i,
-                    message: 'Invalid Number.',
-                  },
+                  validate: { number, checkWhiteSpaces, percentageLimitValidation },
                   max: {
                     value: 100,
                     message: 'Percentage cannot be greater than 100'
                   },
-                  // maxLength: 4,
                 }}
                 handleChange={() => { }}
                 defaultValue={''}
@@ -713,14 +723,24 @@ function LossStandardTable(props) {
                 </button>
               </>
             ) : (
-              <button
-                type="button"
-                className={'user-btn mt30 pull-left'}
-                onClick={addRow}
-                disabled={props.CostingViewMode || disableAll}
-              >
-                <div className={'plus'}></div>ADD
-              </button>
+              <>
+                <button
+                  type="button"
+                  className={'user-btn mt30 pull-left'}
+                  onClick={addRow}
+                  disabled={props.CostingViewMode || disableAll}
+                >
+                  <div className={'plus'}></div>ADD
+                </button>
+                <button
+                  type="button"
+                  className={"mr15 ml-1 mt30 reset-btn"}
+                  disabled={props.CostingViewMode || disableAll}
+                  onClick={rateTableReset}
+                >
+                  Reset
+                </button>
+              </>
             )}
           </div>
         </Col>

@@ -94,6 +94,7 @@ class VendorListing extends Component {
 
     componentWillUnmount() {
         this.props.setSelectedRowForPagination([])
+        this.props.isResetClick(true, "vendorType")
     }
 
     componentDidMount() {
@@ -133,6 +134,9 @@ class VendorListing extends Component {
 
     onSearch = () => {
         onSearch(gridOptions, this, "Vendor", this.state.globalTake)  // COMMON PAGINATION FUNCTION
+        setTimeout(() => {
+            this.setState({ warningMessage: false })
+        }, 1700);
     }
 
 
@@ -226,14 +230,20 @@ class VendorListing extends Component {
                 }
                 let isReset = true
                 setTimeout(() => {
-
                     for (var prop in object) {
                         if (prop !== "DepartmentCode" && object[prop] !== "") {
                             isReset = false
                         }
                     }
+
                     // Sets the filter model via the grid API
-                    isReset ? (gridOptions?.api?.setFilterModel({})) : (gridOptions?.api?.setFilterModel(constantFilterData))
+                    if (isReset) {
+                        (gridOptions?.api?.setFilterModel({}))
+                        this.setState({ filterModel: {} })
+                    } else {
+                        (gridOptions?.api?.setFilterModel(constantFilterData))
+                    }
+
                     setTimeout(() => {
                         this.setState({ warningMessage: false })
                     }, 23);
@@ -530,7 +540,7 @@ class VendorListing extends Component {
 
     onGridReady = (params) => {
         this.gridApi = params.api;
-        window.screen.width >= 1367 && params.api.sizeColumnsToFit();
+        window.screen.width > 1440 && params.api.sizeColumnsToFit();
         this.setState({ gridApi: params.api, gridColumnApi: params.columnApi })
         params.api.paginationGoToPage(0);
     };
@@ -670,14 +680,10 @@ class VendorListing extends Component {
         return (
             <div className={`ag-grid-react container-fluid blue-before-inside report-grid custom-pagination ${DownloadAccessibility ? "show-table-btn no-tab-page" : ""}`} id='go-to-top'>
                 <ScrollToTop pointProp="go-to-top" />
+                {this.state.disableDownload && <LoaderCustom message={MESSAGES.DOWNLOADING_MESSAGE} customClass="mt-5" />}
                 {this.state.isLoader && <LoaderCustom customClass={"loader-center"} />}
-                {this.state.disableDownload && <LoaderCustom message={MESSAGES.DOWNLOADING_MESSAGE} />}
-                <Row>
-                    <Col md="12" className="d-flex justify-content-between">
-                        <h1 className="mb-0">Vendor Master</h1>
-                    </Col>
-                </Row>
-                <Row className="py-4 no-filter-row zindex-2">
+
+                <Row className="pb-4 no-filter-row zindex-2">
                     <Col md="3"> <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={'off'} onChange={(e) => this.onFilterTextBoxChanged(e)} /></Col>
                     <Col md="9">
                         <div className="d-flex justify-content-end bd-highlight w100 ">

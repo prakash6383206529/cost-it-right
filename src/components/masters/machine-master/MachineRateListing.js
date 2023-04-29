@@ -22,15 +22,14 @@ import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { onFloatingFilterChanged, onSearch, resetState, onBtPrevious, onBtNext, onPageSizeChanged, PaginationWrapper } from '../../common/commonPagination'
 import { userDetails, loggedInUserId, getConfigurationKey, userDepartmetList, searchNocontentFilter } from '../../../helper'
 import { getListingForSimulationCombined } from '../../simulation/actions/Simulation';
-import { masterFinalLevelUser } from '../../masters/actions/Material'
 import ProcessGroupDrawer from './ProcessGroupDrawer'
 import WarningMessage from '../../common/WarningMessage';
 import _ from 'lodash';
 import { setSelectedRowForPagination } from '../../simulation/actions/Simulation';
 import { disabledClass } from '../../../actions/Common';
-import SelectRowWrapper from '../../common/SelectRowWrapper';
 import AnalyticsDrawer from '../material-master/AnalyticsDrawer';
 import { reactLocalStorage } from 'reactjs-localstorage';
+import { hideCustomerFromExcel } from '../../common/CommonFunctions';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -58,7 +57,6 @@ class MachineRateListing extends Component {
             showCopyPopup: false,
             deletedId: '',
             copyId: '',
-            isFinalApprovar: false,
             isProcessGroup: getConfigurationKey().IsMachineProcessGroup, // UNCOMMENT IT AFTER DONE FROM BACKEND AND REMOVE BELOW CODE
             // isProcessGroup: false,
             isOpenProcessGroupDrawer: false,
@@ -92,28 +90,18 @@ class MachineRateListing extends Component {
             if (!this.props.stopApiCallOnCancel) {
 
                 if (this.props.isSimulation) {
+                    this.setState({ isLoader: false })
                     if (this.props.selectionForListingMasterAPI === 'Combined') {
                         this.props?.changeSetLoader(true)
                         this.props.getListingForSimulationCombined(this.props.objectForMultipleSimulation, MACHINERATE, () => {
                             this.props?.changeSetLoader(false)
-
+                            this.setState({ isLoader: false })
                         })
                     }
                 }
                 if (this.props.selectionForListingMasterAPI === 'Master') {
                     this.getDataList("", 0, "", 0, "", "", 0, defaultPageSize, true, this.state.floatingFilterData)
                 }
-                let obj = {
-                    MasterId: MACHINE_MASTER_ID,
-                    DepartmentId: userDetails().DepartmentId,
-                    LoggedInUserLevelId: userDetails().LoggedInMasterLevelId,
-                    LoggedInUserId: loggedInUserId()
-                }
-                this.props.masterFinalLevelUser(obj, (res) => {
-                    if (res?.data?.Result) {
-                        this.setState({ isFinalApprovar: res.data.Data.IsFinalApprovar })
-                    }
-                })
             }
         }, 300);
     }
@@ -125,8 +113,6 @@ class MachineRateListing extends Component {
 
 
     getDataList = (costing_head = '', technology_id = 0, vendor_id = '', machine_type_id = 0, process_id = '', plant_id = '', skip = 0, take = 100, isPagination = true, dataObj) => {
-
-
         if (this.state.filterModel?.EffectiveDateNew) {
             if (this.state.filterModel.EffectiveDateNew.dateTo) {
                 let temp = []
@@ -143,7 +129,7 @@ class MachineRateListing extends Component {
 
         const filterData = {
             costing_head: costing_head,
-            technology_id: this.props.isSimulation ? this.props.technology : technology_id,
+            technology_id: this.props.isSimulation ? this.props.technology.value : technology_id,
             vendor_id: vendor_id,
             machine_type_id: machine_type_id,
             process_id: process_id,
@@ -151,6 +137,10 @@ class MachineRateListing extends Component {
             StatusId: statusString
         }
         dataObj.IsCustomerDataShow = reactLocalStorage.getObject('cbcCostingPermission')
+        if (this.props.isSimulation) {
+            dataObj.TechnologyId = this.props.technology.value
+            dataObj.Technologies = this.props.technology.label
+        }
 
         if (this.props.isMasterSummaryDrawer !== undefined && !this.props.isMasterSummaryDrawer) {
             if (this.props.isSimulation) {
@@ -235,6 +225,7 @@ class MachineRateListing extends Component {
             resetState(gridOptions, this, "Machine")  //COMMON PAGINATION FUNCTION
         }, 300);
         this.props.setSelectedRowForPagination([])
+        this.state.gridApi.deselectAll()
     }
 
     onBtPrevious = () => {
@@ -450,7 +441,7 @@ class MachineRateListing extends Component {
     * @description Renders buttons
     */
     effectiveDateFormatter = (props) => {
-        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value ? props?.value : props.data.EffectiveDate;
         return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
     }
 
@@ -465,11 +456,13 @@ class MachineRateListing extends Component {
         this.setState({ isBulkUpload: true })
     }
 
-    closeBulkUploadDrawer = () => {
-        this.setState({ isBulkUpload: false }, () => {
+    closeBulkUploadDrawer = (event, type) => {
+        this.setState({ isBulkUpload: false })
+        if (type !== 'cancel') {
             this.resetState()
-        })
+        }
     }
+
 
     displayForm = () => {
         this.props.displayForm()
@@ -481,6 +474,7 @@ class MachineRateListing extends Component {
     */
     onSubmit = (values) => { }
     returnExcelColumn = (data = [], TempData) => {
+        let excelData = hideCustomerFromExcel(data, "CustomerName")
         let temp = []
         temp = TempData && TempData.map((item) => {
             if (item.MachineTonnage === null) {
@@ -503,7 +497,7 @@ class MachineRateListing extends Component {
         })
 
         return (<ExcelSheet data={temp} name={`${MachineRate}`}>
-            {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)
+            {excelData && excelData.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)
             }
         </ExcelSheet>);
     }
@@ -547,10 +541,10 @@ class MachineRateListing extends Component {
         this.state.gridApi.setQuickFilter(e.target.value);
     }
 
-    resetState() {
-        gridOptions.columnApi.resetColumnState();
-        gridOptions.api.setFilterModel(null);
-    }
+    // resetState() {
+    //     gridOptions.columnApi.resetColumnState();
+    //     gridOptions.api.setFilterModel(null);
+    // }
 
     /**
     * @method render
@@ -572,7 +566,7 @@ class MachineRateListing extends Component {
 
                 let date = document.getElementsByClassName('ag-input-field-input')
                 for (let i = 0; i < date.length; i++) {
-                    if (date[i].type == 'radio') {
+                    if (date[i].type === 'radio') {
                         date[i].click()
                     }
                 }
@@ -639,7 +633,7 @@ class MachineRateListing extends Component {
             sortable: false,
             headerCheckboxSelectionFilteredOnly: true,
             checkboxSelection: isFirstColumn,
-            headerCheckboxSelection: this.props.isSimulation ? isFirstColumn : false,
+            headerCheckboxSelection: (this.props.isSimulation || this.props?.benchMark) ? isFirstColumn : false,
         };
 
         const frameworkComponents = {
@@ -695,7 +689,7 @@ class MachineRateListing extends Component {
                 <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
                     {(this.state.isLoader && !this.props.isMasterSummaryDrawer) && <LoaderCustom customClass="simulation-Loader" />}
                     {this.state.disableDownload && <LoaderCustom message={MESSAGES.DOWNLOADING_MESSAGE} />}
-                    <Row className={`${this.props?.isMasterSummaryDrawer ? '' : 'pt-4'} filter-row-large ${this.props.isSimulation ? 'simulation-filter zindex-0' : ''}`}>
+                    <Row className={`${this.props?.isMasterSummaryDrawer ? '' : 'pt-4'} filter-row-large ${(this.props.isSimulation || this.props.benchMark) ? 'simulation-filter zindex-0' : ''}`}>
                         <Col md="3" lg="3">
                             <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={'off'} onChange={(e) => this.onFilterTextBoxChanged(e)} />
                         </Col>
@@ -802,6 +796,9 @@ class MachineRateListing extends Component {
                                     <AgGridColumn field="MachineTypeName" headerName="Machine Type" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                     <AgGridColumn field="MachineTonnage" cellRenderer={'hyphenFormatter'} headerName="Machine Tonnage"></AgGridColumn>
                                     <AgGridColumn field="ProcessName" headerName="Process Name"></AgGridColumn>
+                                    <AgGridColumn field="VendorName" headerName="Vendor (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                                    {reactLocalStorage.getObject('cbcCostingPermission') && <AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
+                                    <AgGridColumn field="Plants" headerName="Plant (Code)" cellRenderer='hyphenFormatter'></AgGridColumn>
                                     <AgGridColumn field="MachineRate" headerName="Machine Rate"></AgGridColumn>
                                     <AgGridColumn field="EffectiveDateNew" headerName="Effective Date" cellRenderer={'effectiveDateRenderer'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
                                     {!isSimulation && !this.props?.isMasterSummaryDrawer && <AgGridColumn field="MachineId" width={230} cellClass={"actions-wrapper"} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
@@ -833,7 +830,7 @@ class MachineRateListing extends Component {
                         isMachineMoreTemplate={true}
                         messageLabel={'Machine'}
                         anchor={'right'}
-                        isFinalApprovar={this.state.isFinalApprovar}
+                        masterId={MACHINE_MASTER_ID}
                     />
                 }
 
@@ -900,7 +897,6 @@ export default connect(mapStateToProps, {
     deleteMachine,
     copyMachine,
     getListingForSimulationCombined,
-    masterFinalLevelUser,
     getProcessGroupByMachineId,
     setSelectedRowForPagination,
     disabledClass

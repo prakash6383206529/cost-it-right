@@ -145,6 +145,10 @@ class ZBCPlantListing extends Component {
             </>
         )
     };
+    hyphenFormatter = (props) => {
+        const cellValue = `${props.data.CompanyName}${props.data.CompanyCode ? ` (${props.data.CompanyCode})` : ''}`
+        return (cellValue)
+    }
     handleChange = (cell, row) => {
         let data = {
             Id: row.PlantId,
@@ -454,12 +458,13 @@ class ZBCPlantListing extends Component {
         const frameworkComponents = {
             totalValueRenderer: this.buttonFormatter,
             customNoRowsOverlay: NoContentFound,
-            statusButtonFormatter: this.statusButtonFormatter
+            statusButtonFormatter: this.statusButtonFormatter,
+            hyphenFormatter: this.hyphenFormatter
         };
 
         return (
             <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""}`}>
-                {this.state.isLoader && <LoaderCustom customClass={"loader-center"} />}
+                {this.state.isLoader && <LoaderCustom customClass="loader-center" />}
                 <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
                     <Row className="pt-4">
 
@@ -534,7 +539,7 @@ class ZBCPlantListing extends Component {
                         >
                             <AgGridColumn field="PlantName" headerName="Plant Name"></AgGridColumn>
                             <AgGridColumn field="PlantCode" headerName="Plant Code"></AgGridColumn>
-                            <AgGridColumn field="CompanyName" headerName="Company (Code)"></AgGridColumn>
+                            <AgGridColumn field="CompanyName" headerName="Company (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                             <AgGridColumn field="CountryName" headerName="Country"></AgGridColumn>
                             <AgGridColumn field="StateName" headerName="State"></AgGridColumn>
                             <AgGridColumn field="CityName" headerName="City"></AgGridColumn>

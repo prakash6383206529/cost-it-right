@@ -37,9 +37,8 @@ function Insights(props) {
     const [tableHeaderColumnDefs, setTableHeaderColumnDefs] = useState([])
 
     const [rowDataNew, setRowDataNew] = useState([])
+    const [isLoader, setIsLoader] = useState(true)
     const [vendor, setVendor] = useState([])
-    const [plantName, setPlantName] = useState([])
-    const [uniqueVendors, setUniqueVendors] = useState([])
 
     const [labelArray, setLabelArray] = useState([])
 
@@ -410,7 +409,11 @@ function Insights(props) {
             RMCostBenchMarkingReports: arr
         }
 
-        dispatch(getCostingBenchMarkRmReport(data, () => { }))
+        dispatch(getCostingBenchMarkRmReport(data, (res) => {
+            if (res) {
+                setIsLoader(false)
+            }
+        }))
 
     }, [])
 
@@ -679,7 +682,6 @@ function Insights(props) {
 
         setTableHeaderColumnDefs([...arr, ...array55])
 
-
         setTimeout(() => {
 
             setShowListing(true)
@@ -738,7 +740,6 @@ function Insights(props) {
 
 
 
-    let rowData2 = []
 
 
     const rowData = [
@@ -769,9 +770,6 @@ function Insights(props) {
 
         let labelArr = []
 
-
-
-
         tableHeaderColumnDefs?.map((item, index) => {
 
             if (index > 6) {
@@ -795,13 +793,10 @@ function Insights(props) {
         var minGraphData = rowCount[0].minimumData;
         var maxGraphData = rowCount[0].maximumData;
 
+
         var array = []
         var plantLabel = []
         var obj = rowCount[0]
-
-
-
-
 
         for (var prop in obj) {
             if (prop.includes('plantBar')) {
@@ -812,31 +807,30 @@ function Insights(props) {
         }
 
 
-
-
-
         let newArr = []
         labelArr.map((item, index) => {
-
             plantLabel.map((element, ind) => {
                 let ele = element.slice(8, -1)
-                var newStr = item.replace('-', '')
 
+                var newStr = item.replaceAll('-', '')
+                ele = ele.replaceAll('-', '')
 
                 if (newStr.includes(ele)) {
                     newArr[index] = array[ind]
                 }
             })
-
-
         })
 
         graphDataNew = newArr
         setDynamicGrpahData(graphDataNew);
-        setAverageGrpahData(avgGraphData);
         setMinimumGrpahData(minGraphData);
         setMaximumGrpahData(maxGraphData);
 
+        let avgArray = []
+        labelArr && labelArr.map((item, ind) => {
+            avgArray.push(avgGraphData)
+        })
+        setAverageGrpahData(avgArray)
 
         // var rowCount = event.api.getSelectedRows();
 
@@ -854,7 +848,6 @@ function Insights(props) {
         //     }
 
         // }
-
 
         // graphDataNew = array
 
@@ -921,7 +914,7 @@ function Insights(props) {
     };
 
     const frameworkComponents = {
-        customLoadingOverlay: LoaderCustom,
+        // customLoadingOverlay: LoaderCustom,
         customNoRowsOverlay: NoContentFound,
     }
 
@@ -937,7 +930,7 @@ function Insights(props) {
                 tension: 0.1,
                 borderDash: [5, 5],
                 // data: [averageGrpahData, averageGrpahData, averageGrpahData, averageGrpahData, averageGrpahData]
-                data: [25, 25, 30, 35, 45, 55, 65, 75]
+                data: averageGrpahData
             },
             {
                 type: 'line',
@@ -968,143 +961,153 @@ function Insights(props) {
         ],
     };
 
-
-
+    const resetState = () => {
+        setIsLoader(true)
+        setTimeout(() => {
+            setIsLoader(false)
+        }, 50);
+    }
 
     return (
         <>
+            {showListing &&
+                <button type="button" className="user-btn report-btn-reset float-right mb-2" title="Reset Grid" onClick={() => resetState()}>
+                    <div className="refresh mr-0"></div>
+                </button>}
             <div className="container-fluid rminsights_page">
-                <form onSubmit={handleSubmit} noValidate >
-                    {false && <Row className="pt-4">
-                        <Col md="12" className="filter-block">
-                            <div className="d-inline-flex justify-content-start align-items-center mr-3">
-                                <div className="flex-fills label">Technology:</div>
-                                <div className="hide-label flex-fills pl-0 w-auto">
-                                    <SearchableSelectHookForm
-                                        label={''}
-                                        name={'Technology'}
-                                        placeholder={'Technology'}
-                                        Controller={Controller}
-                                        control={control}
-                                        rules={{ required: false }}
-                                        register={register}
-                                        // defaultValue={technology.length !== 0 ? technology : ''}
-                                        options={renderListing('technology')}
-                                        mandatory={false}
-                                        handleChange={handleTechnologyChange}
-                                        errors={errors.Masters}
-                                        customClassName="mb-0"
-                                    />
-                                </div>
-                            </div>{/* d-inline-flex */}
+                {isLoader ? <LoaderCustom customClass="loader-center" /> :
+                    <form onSubmit={handleSubmit} noValidate >
 
-                            <div className="d-inline-flex justify-content-start align-items-center mr-3">
-                                <div className="flex-fills label">Raw Material:</div>
-                                <div className="hide-label flex-fills pl-0 w-auto">
-                                    <SearchableSelectHookForm
-                                        label={''}
-                                        name={'Raw Material'}
-                                        placeholder={'Raw Material'}
-                                        Controller={Controller}
-                                        control={control}
-                                        rules={{ required: false }}
-                                        register={register}
-                                        // defaultValue={technology.length !== 0 ? technology : ''}
-                                        options={renderListing('material')}
-                                        mandatory={false}
-                                        handleChange={handleMaterialChange}
-                                        errors={errors.Masters}
-                                        customClassName="mb-0"
-                                    />
-                                </div>
-                            </div>{/* d-inline-flex */}
+                        {false && <Row className="pt-4">
+                            <Col md="12" className="filter-block">
+                                <div className="d-inline-flex justify-content-start align-items-center mr-3">
+                                    <div className="flex-fills label">Technology:</div>
+                                    <div className="hide-label flex-fills pl-0 w-auto">
+                                        <SearchableSelectHookForm
+                                            label={''}
+                                            name={'Technology'}
+                                            placeholder={'Technology'}
+                                            Controller={Controller}
+                                            control={control}
+                                            rules={{ required: false }}
+                                            register={register}
+                                            // defaultValue={technology.length !== 0 ? technology : ''}
+                                            options={renderListing('technology')}
+                                            mandatory={false}
+                                            handleChange={handleTechnologyChange}
+                                            errors={errors.Masters}
+                                            customClassName="mb-0"
+                                        />
+                                    </div>
+                                </div>{/* d-inline-flex */}
 
-                            <div className="d-inline-flex justify-content-start align-items-center mr-3">
-                                <div className="flex-fills label">Grade:</div>
-                                <div className="hide-label flex-fills pl-0 w-auto">
-                                    <SearchableSelectHookForm
-                                        label={''}
-                                        name={'Grade'}
-                                        placeholder={'Grade'}
-                                        Controller={Controller}
-                                        control={control}
-                                        rules={{ required: false }}
-                                        register={register}
-                                        // defaultValue={technology.length !== 0 ? technology : ''}
-                                        options={renderListing('grade')}
-                                        mandatory={false}
-                                        handleChange={handleGradeChange}
-                                        errors={errors.Masters}
-                                        customClassName="mb-0"
-                                    />
-                                </div>
-                            </div>{/* d-inline-flex */}
-                            <button title="Run" type="button" class="user-btn" onClick={submitDropdown}><div class="save-icon mr-0"></div></button>
-                        </Col>
-                    </Row>}
-                    { }
+                                <div className="d-inline-flex justify-content-start align-items-center mr-3">
+                                    <div className="flex-fills label">Raw Material:</div>
+                                    <div className="hide-label flex-fills pl-0 w-auto">
+                                        <SearchableSelectHookForm
+                                            label={''}
+                                            name={'Raw Material'}
+                                            placeholder={'Raw Material'}
+                                            Controller={Controller}
+                                            control={control}
+                                            rules={{ required: false }}
+                                            register={register}
+                                            // defaultValue={technology.length !== 0 ? technology : ''}
+                                            options={renderListing('material')}
+                                            mandatory={false}
+                                            handleChange={handleMaterialChange}
+                                            errors={errors.Masters}
+                                            customClassName="mb-0"
+                                        />
+                                    </div>
+                                </div>{/* d-inline-flex */}
 
-                    {showListing && <>
-                        <Row>
-                            <Col md="12">
-                                <div className={`ag-grid-react`}>
-                                    <div className={`ag-grid-wrapper rminsights_table  ${rowDataNew && rowDataNew?.length <= 0 ? "overlay-contain" : ""}`}>
-                                        <div className="ag-theme-material">
-                                            <AgGridReact
-                                                style={{ height: '100%', width: '100%' }}
-                                                defaultColDef={defaultColDef}
-                                                columnDefs={tableHeaderColumnDefs}
-                                                domLayout='autoHeight'
-                                                rowData={rowDataNew}
-                                                rowSelection={'single'}
-                                                onSelectionChanged={onSelectionChanged}
-                                                pagination={true}
-                                                paginationPageSize={defaultPageSize}
-                                                onGridReady={onGridReady}
-                                                gridOptions={gridOptions}
-                                                // enableCellTextSelection={true}
-                                                loadingOverlayComponent={'customLoadingOverlay'}
-                                                noRowsOverlayComponent={'customNoRowsOverlay'}
-                                                noRowsOverlayComponentParams={{
-                                                    title: EMPTY_DATA,
-                                                }}
-                                                frameworkComponents={frameworkComponents}
-                                                enableBrowserTooltips={true}
-                                            >
-                                                <AgGridColumn pinned="left" field="Specification" />
-                                                <AgGridColumn pinned="left" width="120" field="Minimum" />
-                                                <AgGridColumn pinned="left" width="120" field="Maximum" />
-                                                <AgGridColumn pinned="left" width="120" field="Average" />
+                                <div className="d-inline-flex justify-content-start align-items-center mr-3">
+                                    <div className="flex-fills label">Grade:</div>
+                                    <div className="hide-label flex-fills pl-0 w-auto">
+                                        <SearchableSelectHookForm
+                                            label={''}
+                                            name={'Grade'}
+                                            placeholder={'Grade'}
+                                            Controller={Controller}
+                                            control={control}
+                                            rules={{ required: false }}
+                                            register={register}
+                                            // defaultValue={technology.length !== 0 ? technology : ''}
+                                            options={renderListing('grade')}
+                                            mandatory={false}
+                                            handleChange={handleGradeChange}
+                                            errors={errors.Masters}
+                                            customClassName="mb-0"
+                                        />
+                                    </div>
+                                </div>{/* d-inline-flex */}
+                                <button title="Run" type="button" class="user-btn" onClick={submitDropdown}><div class="save-icon mr-0"></div></button>
+                            </Col>
+                        </Row>}
+                        { }
 
-                                                <AgGridColumn headerName="Vendor1" headerClass="justify-content-center" marryChildren={true}>
-                                                    <AgGridColumn width="150" field="Plant1" headerName="Plant 1" />
-                                                    <AgGridColumn width="150" field="Plant2" headerName="Plant 2" />
-                                                </AgGridColumn>
-                                                {/* <AgGridColumn headerName="Vendor2" headerClass="justify-content-center" marryChildren={true}>
+                        {showListing && <>
+                            <Row>
+                                <Col md="12">
+                                    <div className={`ag-grid-react`}>
+                                        <div className={`ag-grid-wrapper rminsights_table  ${rowDataNew && rowDataNew?.length <= 0 ? "overlay-contain" : ""}`}>
+                                            <div className="ag-theme-material">
+                                                <AgGridReact
+                                                    style={{ height: '100%', width: '100%' }}
+                                                    defaultColDef={defaultColDef}
+                                                    columnDefs={tableHeaderColumnDefs}
+                                                    domLayout='autoHeight'
+                                                    rowData={rowDataNew}
+                                                    rowSelection={'single'}
+                                                    onSelectionChanged={onSelectionChanged}
+                                                    pagination={true}
+                                                    paginationPageSize={defaultPageSize}
+                                                    onGridReady={onGridReady}
+                                                    gridOptions={gridOptions}
+                                                    // enableCellTextSelection={true}
+                                                    loadingOverlayComponent={'customLoadingOverlay'}
+                                                    noRowsOverlayComponent={'customNoRowsOverlay'}
+                                                    noRowsOverlayComponentParams={{
+                                                        title: EMPTY_DATA,
+                                                    }}
+                                                    frameworkComponents={frameworkComponents}
+                                                    enableBrowserTooltips={true}
+                                                >
+                                                    <AgGridColumn pinned="left" field="Specification" />
+                                                    <AgGridColumn pinned="left" width="120" field="Minimum" />
+                                                    <AgGridColumn pinned="left" width="120" field="Maximum" />
+                                                    <AgGridColumn pinned="left" width="120" field="Average" />
+
+                                                    <AgGridColumn headerName="Vendor1" headerClass="justify-content-center" marryChildren={true}>
+                                                        <AgGridColumn width="150" field="Plant1" headerName="Plant 1" />
+                                                        <AgGridColumn width="150" field="Plant2" headerName="Plant 2" />
+                                                    </AgGridColumn>
+                                                    {/* <AgGridColumn headerName="Vendor2" headerClass="justify-content-center" marryChildren={true}>
                                                     <AgGridColumn width="150" field="Plant3" headerName="Plant 3" />
                                                     <AgGridColumn width="150" field="Plant4" headerName="Plant 4" />
                                                     <AgGridColumn width="150" field="Plant5" headerName="Plant 5" />
                                                 </AgGridColumn> */}
-                                                {/* <AgGridColumn headerName="Vendor3" headerClass="justify-content-center" marryChildren={true}>
+                                                    {/* <AgGridColumn headerName="Vendor3" headerClass="justify-content-center" marryChildren={true}>
                                                     <AgGridColumn width="150" field="Plant6" headerName="Plant 6" />
                                                     <AgGridColumn width="150" field="Plant7" headerName="Plant 7" />
                                                     <AgGridColumn width="150" field="Plant8" headerName="Plant 8" />
                                                 </AgGridColumn> */}
-                                            </AgGridReact>
-                                            {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />}
+                                                </AgGridReact>
+                                                {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />}
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                            </Col>
-                        </Row>
-                        <Row className="mt-4">
-                            <Col md="12">
-                                <Costmovementgraph graphData={data1} graphHeight={60} />
-                            </Col>
-                        </Row>
+                                </Col>
+                            </Row>
+                            <Row className="mt-4">
+                                <Col md="12">
+                                    <Costmovementgraph graphData={data1} graphHeight={60} />
+                                </Col>
+                            </Row>
 
-                    </>}
-                </form>
+                        </>}
+                    </form>}
             </div>
             {/* container-fluid */}
         </>

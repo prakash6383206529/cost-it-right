@@ -23,6 +23,8 @@ import NoContentFound from '../../../common/NoContentFound'
 import { getLastSimulationData } from '../../../simulation/actions/Simulation'
 import Toaster from '../../../common/Toaster'
 import PopupMsgWrapper from '../../../common/PopupMsgWrapper'
+import { reactLocalStorage } from 'reactjs-localstorage'
+import { costingTypeIdToApprovalTypeIdFunction } from '../../../common/CommonFunctions'
 
 function ApprovalSummary(props) {
   const { approvalNumber, approvalProcessId } = props.location.state
@@ -56,24 +58,26 @@ function ApprovalSummary(props) {
   const [costingHead, setCostingHead] = useState("")
   const [nccPartQuantity, setNccPartQuantity] = useState("")
   const [IsRegularized, setIsRegularized] = useState("")
+  const [costingTypeId, setCostingTypeId] = useState("")
   const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
 
-  const headerName = ['Revision No.', 'Name', 'Old Cost/Pc', 'New Cost/Pc', 'Quantity', 'Impact/Pc', 'Volume/Year', 'Impact/Quarter', 'Impact/Year']
+  const headerName = ['Revision No.', 'Name', 'Existing Cost/Pc', 'Revised Cost/Pc', 'Quantity', 'Impact/Pc', 'Volume/Year', 'Impact/Quarter', 'Impact/Year']
   const parentField = ['PartNumber', '-', 'PartName', '-', '-', '-', 'VariancePerPiece', 'VolumePerYear', 'ImpactPerQuarter', 'ImpactPerYear']
-  const childField = ['PartNumber', 'ECNNumber', 'PartName', 'OldCost', 'NewCost', 'Quantity', 'VariancePerPiece', '-', '-', '-']
+  const childField = ['PartNumber', 'ECNNumber', 'PartName', 'ExistingCost', 'RevisedCost', 'Quantity', 'VariancePerPiece', '-', '-', '-']
   useEffect(() => {
     approvalSummaryHandler()
   }, [])
 
   useEffect(() => {
 
-    if (Object.keys(approvalData).length > 0 && (approvalDetails.CostingTypeId === VBCTypeId || approvalDetails.CostingTypeId === NCCTypeId)) {
+    if (Object.keys(approvalData).length > 0 && (approvalDetails.CostingTypeId === VBCTypeId)) {
       dispatch(getLastSimulationData(approvalData.VendorId, approvalData.EffectiveDate, res => {
         const structureOfData = {
           ExchangeRateImpactedMasterDataList: [],
           OperationImpactedMasterDataList: [],
           RawMaterialImpactedMasterDataList: [],
           BoughtOutPartImpactedMasterDataList: [],
+          SurfaceTreatmentImpactedMasterDataList: [],
           MachineProcessImpactedMasterDataList: []
         }
         let masterId
@@ -100,6 +104,7 @@ function ApprovalSummary(props) {
       impactedMasterDataListForLastRevisionData?.OperationImpactedMasterDataList?.length <= 0 &&
       impactedMasterDataListForLastRevisionData?.ExchangeRateImpactedMasterDataList?.length <= 0 &&
       impactedMasterDataListForLastRevisionData?.BoughtOutPartImpactedMasterDataList?.length <= 0 &&
+      impactedMasterDataListForLastRevisionData?.SurfaceTreatmentImpactedMasterDataList?.length <= 0 &&
       impactedMasterDataListForLastRevisionData?.MachineProcessImpactedMasterDataList <= 0
     if (lastRevisionDataAcc && check) {
       Toaster.warning('There is no data for the Last Revision.')
@@ -115,9 +120,8 @@ function ApprovalSummary(props) {
 
       const { PartDetails, ApprovalDetails, ApprovalLevelStep, DepartmentId, Technology, ApprovalProcessId,
         ApprovalProcessSummaryId, ApprovalNumber, IsSent, IsFinalLevelButtonShow, IsPushedButtonShow,
-        CostingId, PartId, LastCostingId, PurchasingGroup, MaterialGroup, DecimalOption, VendorId, IsRegularizationLimitCrossed, CostingHead, NCCPartQuantity, IsRegularized } = res?.data?.Data?.Costings[0];
-
-
+        CostingId, PartId, LastCostingId, PurchasingGroup, MaterialGroup, DecimalOption, VendorId, IsRegularizationLimitCrossed, CostingHead, NCCPartQuantity, IsRegularized, CostingTypeId } = res?.data?.Data?.Costings[0];
+      setCostingTypeId(CostingTypeId)
       setNccPartQuantity(NCCPartQuantity)
       setIsRegularized(IsRegularized)
       setCostingHead(CostingHead)
@@ -152,7 +156,8 @@ function ApprovalSummary(props) {
         DepartmentId: DepartmentId,
         UserId: loggedInUserId(),
         TechnologyId: technologyId,
-        Mode: 'costing'
+        Mode: 'costing',
+        approvalTypeId: costingTypeIdToApprovalTypeIdFunction(CostingTypeId)
       }
       dispatch(checkFinalUser(obj, res => {
         if (res && res.data && res.data.Result) {
@@ -377,11 +382,11 @@ function ApprovalSummary(props) {
                 <Table responsive className="table cr-brdr-main" size="sm">
                   <thead>
                     <tr>
-                      <th>{`Costing ID:`}</th>
+                      <th>{`Costing Id:`}</th>
                       {approvalDetails.CostingTypeId === VBCTypeId && (
                         <th>{`ZBC/Vendor (Code):`}</th>
                       )}
-                      {approvalDetails.CostingTypeId === CBCTypeId && (
+                      {approvalDetails.CostingTypeId === CBCTypeId && reactLocalStorage.getObject('cbcCostingPermission') && (
                         <th>{`Customer (Code)`}</th>
                       )}
                       {
@@ -395,10 +400,11 @@ function ApprovalSummary(props) {
                       {(approvalDetails.CostingTypeId === ZBCTypeId || approvalDetails.CostingTypeId === CBCTypeId) && <th>  {`Plant (Code):`} </th>}
 
                       <th>{`SOB (%):`}</th>
+                      {initialConfiguration?.IsBasicRateAndCostingConditionVisible && <th>{`Basic Price:`}</th>}
                       {/* <th>{`ECN Ref No`}</th> */}
-                      <th>{`Old/Current Price:`}</th>
-                      <th>{`New/Revised Price:`}</th>
-                      <th>{`Variance:`}</th>
+                      <th>{`Existing Price:`}</th>
+                      <th>{`Revised Price:`}</th>
+                      <th>{`Variance (w.r.t. Existing):`}</th>
                       {approvalDetails.CostingTypeId !== NCCTypeId && <th>{`Consumption Quantity:`}</th>}
                       {approvalDetails.CostingTypeId !== NCCTypeId && <th>{`Remaining Quantity:`}</th>}
                       {approvalDetails.CostingTypeId === NCCTypeId && (
@@ -442,6 +448,9 @@ function ApprovalSummary(props) {
                       <td>
                         {approvalDetails.ShareOfBusiness !== null ? approvalDetails.ShareOfBusiness : '-'}
                       </td>
+                      {initialConfiguration?.IsBasicRateAndCostingConditionVisible && <td>
+                        {approvalDetails.BasicRate ? approvalDetails.BasicRate : '-'}
+                      </td>}
                       {/* <td>
                           {approvalDetails.ECNNumber !== null ? approvalDetails.ECNNumber : '-'}
                         </td> */}
@@ -648,6 +657,8 @@ function ApprovalSummary(props) {
           IsPushDrawer={showPushDrawer}
           dataSend={[approvalDetails, partDetail]}
           showFinalLevelButtons={showFinalLevelButtons}
+          costingTypeId={costingTypeId}
+          TechnologyId={approvalData?.TechnologyId}
         />
       )}
       {rejectDrawer && (
@@ -662,6 +673,7 @@ function ApprovalSummary(props) {
           reasonId={approvalDetails.ReasonId}
           IsPushDrawer={showPushDrawer}
           dataSend={[approvalDetails, partDetail]}
+          costingTypeId={costingTypeId}
         />
       )}
       {pushButton && (

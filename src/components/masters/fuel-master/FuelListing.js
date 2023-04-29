@@ -197,8 +197,11 @@ class FuelListing extends Component {
     * @description Renders buttons
     */
     effectiveDateFormatter = (props) => {
-        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
+        let cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        if (cellValue?.includes('T')) {
+            cellValue = DayTime(cellValue).format('DD/MM/YYYY')
+        }
+        return (!cellValue ? '-' : cellValue)
     }
 
 
@@ -221,9 +224,10 @@ class FuelListing extends Component {
     }
 
     closeBulkUploadDrawer = () => {
-        this.setState({ isBulkUpload: false }, () => this.getDataList(0, 0))
+        this.setState({ isBulkUpload: false }, () => {
+            this.getDataList(0, 0)
+        })
     }
-
     /**
     * @method onSubmit
     * @description Used to Submit the form
@@ -241,6 +245,9 @@ class FuelListing extends Component {
                 item.Plants = ' '
             } if (item.Vendor === '-') {
                 item.Vendor = ' '
+            } else if (item?.EffectiveDate?.includes('T') || item?.ModifiedDate?.includes('T')) {
+                item.EffectiveDate = DayTime(item.EffectiveDate).format('DD/MM/YYYY')
+                item.ModifiedDate = DayTime(item.ModifiedDate).format('DD/MM/YYYY')
             }
             return item
         })
@@ -426,7 +433,7 @@ class FuelListing extends Component {
                                     <AgGridColumn field="StateName" headerName="State"></AgGridColumn>
                                     <AgGridColumn field="Rate" headerName="Rate (INR)" cellRenderer={'commonCostFormatter'}></AgGridColumn>
                                     <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateRenderer'}></AgGridColumn>
-                                    <AgGridColumn field="ModifiedDate" minWidth={170} headerName="Date Of Modification" cellRenderer={'effectiveDateRenderer'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
+                                    <AgGridColumn field="ModifiedDate" minWidth={170} headerName="Date of Modification" cellRenderer={'effectiveDateRenderer'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
                                     <AgGridColumn field="FuelDetailId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                                 </AgGridReact>
                                 {<PaginationWrapper gridApi={this.gridApi} setPage={this.onPageSizeChanged} />}

@@ -25,6 +25,7 @@ import { debounce } from 'lodash'
 import { number, checkWhiteSpaces, hashValidation, percentageLimitValidation, decimalNumberLimit6 } from "../../../../../helper/validation";
 
 let counter = 0;
+let timerId = 0
 function RawMaterialCost(props) {
   const { item } = props;
   const IsLocked = (item.IsLocked ? item.IsLocked : false) || (item.IsPartLocked ? item.IsPartLocked : false)
@@ -55,10 +56,11 @@ function RawMaterialCost(props) {
   const [editCalculation, setEditCalculation] = useState(true)
   const [confirmPopup, setConfirmPopup] = useState(false)
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
-  const { CostingEffectiveDate } = useSelector(state => state.costing)
+  const { CostingEffectiveDate, ErrorObjRMCC } = useSelector(state => state.costing)
   const [showPopup, setShowPopup] = useState(false)
   const [masterBatch, setMasterBatch] = useState(false)
   const [remarkError, setRemarkError] = useState(true)
+  const [forgingInfoIcon, setForgingInfoIcon] = useState({})
 
   const { ferrousCalculatorReset } = useSelector(state => state.costWorking)
   const RMDivisor = (item?.CostingPartDetails?.RMDivisor !== null) ? item?.CostingPartDetails?.RMDivisor : 0;
@@ -68,7 +70,14 @@ function RawMaterialCost(props) {
 
   useEffect(() => {
 
-
+    let temp = {}
+    gridData && gridData.map((item, index) => {
+      if (item.RawMaterialCalculatorId === null && item.GrossWeight !== null) {
+        temp[index] = true
+      }
+      return null
+    })
+    setForgingInfoIcon(temp)
 
     switch (costData.TechnologyName) {
       case 'Sheet Metal':
@@ -160,6 +169,7 @@ function RawMaterialCost(props) {
             RawMaterialCategory: el.Category,
             CutOffPrice: el.CutOffPrice,
             IsCutOffApplicable: el.IsCutOffApplicable,
+            MachiningScrapRate: el.MachiningScrapRate
           }
         })
 
@@ -183,6 +193,7 @@ function RawMaterialCost(props) {
           RawMaterialCategory: rowData.Category,
           CutOffPrice: rowData.CutOffPrice,
           IsCutOffApplicable: rowData.IsCutOffApplicable,
+          MachiningScrapRate: rowData.MachiningScrapRate
         }
         setGridData([...gridData, tempObj])
         tempArray = [...gridData, tempObj]
@@ -228,15 +239,12 @@ function RawMaterialCost(props) {
     let tempData = gridData[index]
     if (technologyForDensity.includes(costData?.TechnologyId)) {
       if ((tempData.Density === undefined && tempData.Density === null && tempData.Density === "") || Number(tempData.Density) === 0) {
-
         Toaster.warning("This Material's density is not available for weight calculation. Please add density for this material in RM Master > Manage Material.")
         return false
       }
     }
 
-
     switch ((Number(costData?.TechnologyId))) {
-
       case SHEETMETAL:
         dispatch(getRawMaterialCalculationForSheetMetal(item.CostingId, tempData.RawMaterialId, tempData.RawMaterialCalculatorId, res => {
           setCalculatorData(res, index)
@@ -248,7 +256,7 @@ function RawMaterialCost(props) {
         }))
         break;
       case Ferrous_Casting:
-        dispatch(getRawMaterialCalculationForFerrous(item.CostingId, tempData.RawMaterialId, item?.CostingPartDetails?.RawMaterialCalculatorId, res => {
+        dispatch(getRawMaterialCalculationForFerrous(item.CostingId, tempData.RawMaterialId, gridData[0].WeightCalculationId ? gridData[0].WeightCalculationId : tempData.RawMaterialCalculatorId, res => {
           setCalculatorData(res, index)
         }))
         break;
@@ -282,10 +290,11 @@ function RawMaterialCost(props) {
    * @description HIDE WEIGHT CALCULATOR DRAWER
    */
   const closeWeightDrawer = (e = '', weightData = {}, originalWeight = {}) => {
-
     setInputDiameter(weightData.Diameter)
     setWeight(weightData, originalWeight)
     setWeightDrawerOpen(false)
+    if (Object.keys(weightData).length > 0) setForgingInfoIcon({ ...forgingInfoIcon, [editIndex]: false })
+
   }
 
   const checkCutOffNegative = (value, index) => {
@@ -325,6 +334,8 @@ function RawMaterialCost(props) {
    * @description HANDLE GROSS WEIGHT CHANGE
    */
   const handleGrossWeightChange = (event, index) => {
+    clearTimeout(timerId);
+    setForgingInfoIcon({ ...forgingInfoIcon, [index]: true })
     let tempArr = []
     let tempData = gridData[index]
     setEditCalculation(false)
@@ -360,6 +371,7 @@ function RawMaterialCost(props) {
           WeightCalculatorRequest: {},
           WeightCalculationId: "00000000-0000-0000-0000-000000000000",
           IsCalculatedEntry: false,
+          RawMaterialCalculatorId: null,
           CutOffRMC: CutOffRMC,
           ScrapWeight: scrapWeight
         }
@@ -389,42 +401,29 @@ function RawMaterialCost(props) {
         setValue(`${rmGridFields}.${index}.GrossWeight`, grossValue)     //COMMENT
         setValue(`${rmGridFields}.${index}.FinishWeight`, checkForNull(tempData.FinishWeight))
       } else {
-        const GrossWeight = checkForNull(grossValue)
-        const FinishWeight = 0                                           //Finish weight will be zero when  Gross Weight < Finish weight
-        // let scrapWeight = checkForNull(GrossWeight - FinishWeight);
-        let scrapWeight = 0
+        timerId = setTimeout(() => {
+          const GrossWeight = checkForNull(grossValue)
+          const FinishWeight = 0                                           //Finish weight will be zero when  Gross Weight < Finish weight
+          // let scrapWeight = checkForNull(GrossWeight - FinishWeight);
+          let scrapWeight = 0
 
-        const ScrapCost = (checkForNull(tempData.FinishWeight) !== 0) ? scrapWeight * tempData.ScrapRate : 0;
-        const CutOffRMC = tempData.IsCutOffApplicable ? (GrossWeight * checkForNull(tempData.CutOffPrice)) - ScrapCost : 0;
-        if (tempData.IsCutOffApplicable && checkCutOffNegative(CutOffRMC, index)) {
-          return false
-        }
-        const ApplicableFinishWeight = 0;
-        const NetLandedCost = (GrossWeight * tempData.RMRate) - ApplicableFinishWeight;
-        tempData = {
-          ...tempData,
-          GrossWeight: GrossWeight ? GrossWeight : 0,
-          FinishWeight: 0,
-          NetLandedCost: isRMDivisorApplicable(costData.TechnologyName) ? checkForDecimalAndNull(NetLandedCost / RMDivisor, initialConfiguration.NoOfDecimalForPrice) : NetLandedCost,
-          WeightCalculatorRequest: {},
-          WeightCalculationId: "00000000-0000-0000-0000-000000000000",
-          IsCalculatedEntry: false,
-          CutOffRMC: CutOffRMC,
-          ScrapWeight: scrapWeight,
-          ScrapRecoveryPercentage: 0
-        }
-        tempArr = Object.assign([...gridData], { [index]: tempData })
+          if (costData?.IsCopied && !initialConfiguration.IsCopyCostingFinishAndGrossWeightEditable) {
+            setValue(`${rmGridFields}.${index}.GrossWeight`, 0)
+            Toaster.warning('Gross Weight should not be less than Finish Weight')
+            return false
+          }
 
-        if (IsApplyMasterBatch) {
-
-          const RMRate = calculatePercentageValue(tempData.RMRate, (100 - getValues('MBPercentage')));
-          const RMRatePlusMasterBatch = (RMRate + checkForNull(getValues('RMTotal'))) * GrossWeight;
-          const ScrapRate = (tempData.ScrapRate * (GrossWeight - FinishWeight))
-          const NetLandedCost = RMRatePlusMasterBatch - ScrapRate;
-
+          const ScrapCost = (checkForNull(tempData.FinishWeight) !== 0) ? scrapWeight * tempData.ScrapRate : 0;
+          const CutOffRMC = tempData.IsCutOffApplicable ? (GrossWeight * checkForNull(tempData.CutOffPrice)) - ScrapCost : 0;
+          if (tempData.IsCutOffApplicable && checkCutOffNegative(CutOffRMC, index)) {
+            return false
+          }
+          const ApplicableFinishWeight = 0;
+          const NetLandedCost = (GrossWeight * tempData.RMRate) - ApplicableFinishWeight;
           tempData = {
             ...tempData,
             GrossWeight: GrossWeight ? GrossWeight : 0,
+            FinishWeight: 0,
             NetLandedCost: isRMDivisorApplicable(costData.TechnologyName) ? checkForDecimalAndNull(NetLandedCost / RMDivisor, initialConfiguration.NoOfDecimalForPrice) : NetLandedCost,
             WeightCalculatorRequest: {},
             WeightCalculationId: "00000000-0000-0000-0000-000000000000",
@@ -434,15 +433,43 @@ function RawMaterialCost(props) {
             ScrapRecoveryPercentage: 0
           }
           tempArr = Object.assign([...gridData], { [index]: tempData })
-        }
-        dispatch(setRMCutOff({ IsCutOffApplicable: tempData.IsCutOffApplicable, CutOffRMC: CutOffRMC }))
-        setGridData(tempArr)
-        setValue(`${rmGridFields}.${index}.GrossWeight`, grossValue)     //COMMENT
-        setValue(`${rmGridFields}.${index}.FinishWeight`, 0)
-        setValue(`${rmGridFields}.${index}.ScrapRecoveryPercentage`, 0)
-        Toaster.warning('Gross Weight should not be less than Finish Weight')
+
+          if (IsApplyMasterBatch) {
+
+            const RMRate = calculatePercentageValue(tempData.RMRate, (100 - getValues('MBPercentage')));
+            const RMRatePlusMasterBatch = (RMRate + checkForNull(getValues('RMTotal'))) * GrossWeight;
+            const ScrapRate = (tempData.ScrapRate * (GrossWeight - FinishWeight))
+            const NetLandedCost = RMRatePlusMasterBatch - ScrapRate;
+
+            tempData = {
+              ...tempData,
+              GrossWeight: GrossWeight ? GrossWeight : 0,
+              NetLandedCost: isRMDivisorApplicable(costData.TechnologyName) ? checkForDecimalAndNull(NetLandedCost / RMDivisor, initialConfiguration.NoOfDecimalForPrice) : NetLandedCost,
+              WeightCalculatorRequest: {},
+              WeightCalculationId: "00000000-0000-0000-0000-000000000000",
+              IsCalculatedEntry: false,
+              CutOffRMC: CutOffRMC,
+              ScrapWeight: scrapWeight,
+              ScrapRecoveryPercentage: 0
+            }
+            tempArr = Object.assign([...gridData], { [index]: tempData })
+          }
+          dispatch(setRMCutOff({ IsCutOffApplicable: tempData.IsCutOffApplicable, CutOffRMC: CutOffRMC }))
+          setGridData(tempArr)
+          setValue(`${rmGridFields}.${index}.GrossWeight`, grossValue)     //COMMENT
+          setValue(`${rmGridFields}.${index}.FinishWeight`, 0)
+          setValue(`${rmGridFields}.${index}.ScrapRecoveryPercentage`, 0)
+          Toaster.warning('Gross Weight should not be less than Finish Weight')
+        }, 800);
       }
     }
+    for (let i = 0; i < gridData.length; i++) {
+      if (forgingInfoIcon[i] === undefined) {
+        forgingInfoIcon[i] = false
+      }
+    }
+    forgingInfoIcon[index] = true
+    setForgingInfoIcon(forgingInfoIcon)
   }
 
   /**
@@ -453,7 +480,7 @@ function RawMaterialCost(props) {
     let tempArr = []
     let tempData = gridData[index]
     setEditCalculation(false)
-
+    setForgingInfoIcon({ ...forgingInfoIcon, [index]: true })
     let finishValue = event
 
     if (checkForNull(finishValue) <= 0) {
@@ -476,6 +503,7 @@ function RawMaterialCost(props) {
         WeightCalculatorRequest: {},
         WeightCalculationId: "00000000-0000-0000-0000-000000000000",
         IsCalculatedEntry: false,
+        RawMaterialCalculatorId: null,
         CutOffRMC: CutOffRMC,
         ScrapWeight: scrapWeight,
         ScrapRecoveryPercentage: 0,
@@ -623,6 +651,13 @@ function RawMaterialCost(props) {
 
       }
     }
+    for (let i = 0; i < gridData.length; i++) {
+      if (forgingInfoIcon[i] === undefined) {
+        forgingInfoIcon[i] = false
+      }
+    }
+    forgingInfoIcon[index] = true
+    setForgingInfoIcon(forgingInfoIcon)
   }
 
   /**
@@ -633,6 +668,7 @@ function RawMaterialCost(props) {
     let tempArr = []
     let tempData = gridData[index]
     setEditCalculation(false)
+    setForgingInfoIcon({ ...forgingInfoIcon, [index]: true })
     if (checkForNull(event.target.value) > 0) {
       const ScrapRecoveryPercentage = checkForNull(event.target.value);
 
@@ -727,6 +763,7 @@ function RawMaterialCost(props) {
         finishWeight = weightData.FinishWeight
         netLandedCost = weightData.RawMaterialCost
       }
+
       const FinishWeight = finishWeight
       const GrossWeight = grossWeight
       const RecoveryPercentage = weightData.RecoveryPercentage
@@ -815,6 +852,15 @@ function RawMaterialCost(props) {
       if (i === index) return false;
       return true;
     })
+
+    delete forgingInfoIcon[index]
+    let count = 0
+    let obj = {}
+    for (let prop in forgingInfoIcon) {
+      obj[count] = forgingInfoIcon[prop]
+      count++
+    }
+    setForgingInfoIcon(obj)
 
     tempArr && tempArr.map((item, index) => {
       setValue(`${rmGridFields}.${index}.GrossWeight`, checkForDecimalAndNull(item.GrossWeight, getConfigurationKey().NoOfDecimalForInputOutput))     //COMMENT
@@ -999,11 +1045,14 @@ function RawMaterialCost(props) {
    * @method setRMCCErrors
    * @description CALLING TO SET RAWMATERIAL COST FORM'S ERROR THAT WILL USE WHEN HITTING SAVE RMCC TAB API.
    */
+  let temp = ErrorObjRMCC
   if (Object.keys(errors).length > 0 && counter < 2) {
-    dispatch(setRMCCErrors(errors))
+    temp.rmGridFields = errors.rmGridFields;
+    dispatch(setRMCCErrors(temp))
     counter++;
   } else if (Object.keys(errors).length === 0 && counter > 0) {
-    dispatch(setRMCCErrors({}))
+    temp.rmGridFields = {};
+    dispatch(setRMCCErrors(temp))
     counter = 0
   }
 
@@ -1021,23 +1070,20 @@ function RawMaterialCost(props) {
   }
   const onPopupConfirm = () => {
     dispatch(setFerrousCalculatorReset(true))
-    setConfirmPopup(true)
-    gridData.map((item, index) => {
+    let tempList = [...gridData]
+    tempList && tempList.map((item, index) => {
       item.NetLandedCost = ''
       item.ScrapWeight = ''
       setValue(`${rmGridFields}.${index}.GrossWeight`, '')     //COMMENT
       setValue(`${rmGridFields}.${index}.FinishWeight`, '')
       return item
     })
-    setGridData(gridData)
-    gridData && gridData.map((index) => {
-      setValue(`${rmGridFields}.${index}.FinishWeight`, '')
-      setValue(`${rmGridFields}.${index}.GrossWeight`, '')     //COMMENT
-      return null
-    })
-    // setGridData(gridData)
-    setDrawerOpen(true)
-    setShowPopup(false)
+    setGridData(tempList)
+    setTimeout(() => {
+      setConfirmPopup(true)
+      setDrawerOpen(true)
+      setShowPopup(false)
+    }, 200);
 
   }
   const closePopUp = () => {
@@ -1182,11 +1228,11 @@ function RawMaterialCost(props) {
                                     handleFinishWeightChange(e?.target?.value, index)
                                   }}
                                   errors={errors && errors.rmGridFields && errors.rmGridFields[index] !== undefined ? errors.rmGridFields[index].FinishWeight : ''}
-                                  disabled={(CostingViewMode || IsLocked || (initialConfiguration?.IsCopyCostingFinishAndGrossWeightEditable && item?.IsRMCopied)) ? true : false}
+                                  disabled={(CostingViewMode || IsLocked || (!initialConfiguration?.IsCopyCostingFinishAndGrossWeightEditable && item.IsRMCopied)) ? true : false}
                                 />
                               </div>
                             </td>
-
+                            {costData?.TechnologyId === Ferrous_Casting && <td>{checkForDecimalAndNull(item.Percentage, initialConfiguration.NoOfDecimalForPrice)}</td>}
                             {
                               costData?.TechnologyId === PLASTIC && <td>{checkForDecimalAndNull(item.BurningLossWeight, initialConfiguration.NoOfDecimalForInputOutput)}</td>
                             }
@@ -1217,20 +1263,21 @@ function RawMaterialCost(props) {
                                       handleScrapRecoveryChange(e, index)
                                     }}
                                     errors={errors && errors.rmGridFields && errors.rmGridFields[index] !== undefined ? errors.rmGridFields[index].ScrapRecoveryPercentage : ''}
-                                    disabled={CostingViewMode || IsLocked || (gridData[index].FinishWeight === 0) || (gridData[index].FinishWeight === "") || (gridData[index].FinishWeight === null) || (gridData[index].FinishWeight === undefined) ? true : false}
+                                    disabled={CostingViewMode || IsLocked || (gridData[index].FinishWeight === 0) || (gridData[index].FinishWeight === "") || (gridData[index].FinishWeight === null) || (gridData[index].FinishWeight === undefined) || gridData[index].IsCalculatedEntry ? true : false}
                                   />
                                 </div>
                               </td>
                             }
                             <td><div className='w-fit' id={`scrap-weight${index}`}>{checkForDecimalAndNull(item.ScrapWeight, initialConfiguration.NoOfDecimalForPrice)} <TooltipCustom disabledIcon={true} tooltipClass={isScrapRecoveryPercentageApplied && "net-rm-cost"} id={`scrap-weight${index}`} tooltipText={isScrapRecoveryPercentageApplied ? "Scrap weight = ((Gross Weight - Finish Weight) * Recovery Percentage / 100)" : "Scrap weight = (Gross Weight - Finish Weight)"} /></div></td>
-                            {costData?.TechnologyId === 6 && <td>{checkForDecimalAndNull(item.Percentage, initialConfiguration.NoOfDecimalForPrice)}</td>}
                             <td>
-                              <div className='w-fit' id={`net-rm-cost${index}`}><TooltipCustom disabledIcon={true} tooltipClass="net-rm-cost" id={`net-rm-cost${index}`} tooltipText="Net RM Cost = (RM Rate * Gross Weight) - (Scrap Weight * Scrap Rate)" />{item?.NetLandedCost !== undefined ? checkForDecimalAndNull(item.NetLandedCost, initialConfiguration.NoOfDecimalForPrice) : ''}
-                              </div></td>
+                              <div className='d-flex'>
+                                <div className='w-fit' id={`net-rm-cost${index}`}><TooltipCustom disabledIcon={true} tooltipClass="net-rm-cost" id={`net-rm-cost${index}`} tooltipText="Net RM Cost = (RM Rate * Gross Weight) - (Scrap Weight * Scrap Rate)" />{item?.NetLandedCost !== undefined ? checkForDecimalAndNull(item.NetLandedCost, initialConfiguration.NoOfDecimalForPrice) : ''}
+                                </div> {forgingInfoIcon[index] && costData?.TechnologyId === FORGING && <TooltipCustom id={`forging-tooltip${index}`} customClass={"mt-1 ml-2"} tooltipText={`RMC is calculated on the basis of Forging Scrap Rate.`} />}
+                              </div>
+                            </td>
                             <td>
-
                               <div className='action-btn-wrapper'>
-                                {!CostingViewMode && !IsLocked && !(initialConfiguration?.IsCopyCostingFinishAndGrossWeightEditable && item?.IsRMCopied) && < button
+                                {!CostingViewMode && !IsLocked && (item.IsRMCopied ? (initialConfiguration.IsCopyCostingFinishAndGrossWeightEditable ? true : false) : true) && < button
                                   className="Delete "
                                   title='Delete'
                                   type={'button'}
@@ -1286,7 +1333,7 @@ function RawMaterialCost(props) {
             <Row>
               {/* IF THERE IS NEED TO APPLY FOR MULTIPLE TECHNOLOGY, CAN MODIFIED BELOW CONDITION */}
               {costData?.TechnologyId === PLASTIC &&
-                <Col md="2" className="py-3 pr-1 mb-width">
+                <Col md="2" className="py-3 pr-0 apply-mb">
                   <label
                     className={`custom-checkbox mb-0`}
                     onChange={onPressApplyMasterBatch}
@@ -1310,9 +1357,9 @@ function RawMaterialCost(props) {
               {/* IF THERE IS NEED TO APPLY FOR MULTIPLE TECHNOLOGY, CAN MODIFIED BELOW CONDITION */}
               {IsApplyMasterBatch && costData?.TechnologyId === PLASTIC &&
                 <>
-                  <div>
+                  <Col md="2">
                     <button onClick={MasterBatchToggle} title={'Add Master Batch'} disabled={(CostingViewMode || IsLocked || masterBatch)} type="button" class="user-btn mt30"><div class="plus"></div>Add Master Batch</button>
-                  </div>
+                  </Col>
                   {/* <Col md="2" > */}
                   <TextFieldHookForm
                     label="MB Id"

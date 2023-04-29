@@ -12,11 +12,13 @@ import { IdForMultiTechnology } from '../../../../config/masterData';
 import { createToprowObjAndSave, findSurfaceTreatmentData, formatMultiTechnologyUpdate } from '../../CostingUtil';
 import { setSubAssemblyTechnologyArray, updateMultiTechnologyTopAndWorkingRowCalculation } from '../../actions/SubAssembly';
 import { useEffect } from 'react';
+import { useRef } from 'react';
 
 function AddAssemblyOperation(props) {
   const { item, CostingViewMode, isAssemblyTechnology } = props;
   const [IsOpenTool, setIsOpenTool] = useState(false);
   const IsLocked = (item.IsLocked ? item.IsLocked : false) || (item.IsPartLocked ? item.IsPartLocked : false)
+  const drawerRef = useRef();
 
   const [operationGridData, setOperationGridData] = useState([]);
   const [operationCostAssemblyTechnology, setOperationCostAssemblyTechnology] = useState(item?.CostingPartDetails?.TotalOperationCost);
@@ -199,7 +201,14 @@ function AddAssemblyOperation(props) {
     }
 
   }
+  const handleRendered = () => {
+    setTimeout(() => {
+      const drawerEl = drawerRef.current;
+      const divEl = drawerEl.querySelector('.MuiDrawer-paperAnchorBottom');
+      divEl.removeAttribute('tabindex');
+    }, 500);
 
+  };
   /**
   * @method render
   * @description Renders the component
@@ -207,6 +216,8 @@ function AddAssemblyOperation(props) {
   return (
     <div>
       <Drawer className="bottom-drawer" anchor='bottom' open={props.isOpen}
+        ref={drawerRef}
+        onRendered={handleRendered}
       >
         <div className="container-fluid add-operation-drawer">
           <div className={'drawer-wrapper drawer-1500px'}>
@@ -226,7 +237,7 @@ function AddAssemblyOperation(props) {
             <Row className="mb-3 pt-3">
               <Col>
                 <div className="user-page p-0">
-                  <div className="cr-process-costwrap">
+                  <div className="cr-process-costwrap multi-technology-container">
                     <Row className="cr-innertool-cost">
 
                       <Col md="3" className="cr-costlabel"><span className="d-inline-block align-middle">{`Operation Cost: ${partType ? operationCostAssemblyTechnology : operationCost}`}</span></Col>

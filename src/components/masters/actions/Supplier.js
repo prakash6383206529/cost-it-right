@@ -267,7 +267,11 @@ export function getAllVendorSelectList() {
  * @description GET VENDOR SELECTLIST BY VENDOR TYPE
  */
 export function getVendorsByVendorTypeID(vendorTypeId, vendorName, callback) {
-    return axios.get(`${API.getVendorsByVendorTypeID}?vendorTypeId=${vendorTypeId}&vendorName=${vendorName}`, config());
+    return axios.get(`${API.getVendorsByVendorTypeID}?vendorTypeId=${vendorTypeId}&vendorName=${vendorName}`, config()).catch(error => {
+        apiErrors(error);
+        callback(error);
+        return Promise.reject(error)
+    });
 }
 
 /**
@@ -294,7 +298,11 @@ export function getVendorTypeByVendorSelectList(VendorId) {
  * @description GET VBC VENDOR WITH VENDOR CODE SELECTLIST
  */
 export function getVendorWithVendorCodeSelectList(vendorName, callback) {
-    return axios.get(`${API.getVendorWithVendorCodeSelectList}?vendorName=${vendorName}`, config());
+    return axios.get(`${API.getVendorWithVendorCodeSelectList}?vendorName=${vendorName}`, config()).catch(error => {
+        apiErrors(error);
+        callback(error);
+        return Promise.reject(error)
+    });
 }
 
 /**
@@ -302,5 +310,9 @@ export function getVendorWithVendorCodeSelectList(vendorName, callback) {
  * @description GET BOP TYPE VENDOR'S SELECTLIST
  */
 export function getVendorTypeBOPSelectList(vendorName, callback) {
-    return axios.get(`${API.getVendorTypeBOPSelectList}?vendorName=${vendorName}`, config());
+    return axios.get(`${API.getVendorTypeBOPSelectList}?vendorName=${vendorName}`, config()).catch(error => {
+        apiErrors(error);
+        callback(error);
+        return Promise.reject(error)
+    });
 }
