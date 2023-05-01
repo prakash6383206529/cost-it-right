@@ -1028,7 +1028,8 @@ export const API = {
   getNFRApprovals: `${BASE_URL}/nfr/get-nfr-approvals`,
   getNFRApprovalSummary: `${BASE_URL}/nfr/get-nfr-approval-summary`,
   approvedCostingByApprover: `${BASE_URL}/nfr/approved-nfr-by-approver`,
-
+  pushNfrOnSap: `${BASE_URL}/nfr/push-nfr-on-sap`,
+  getSapnfrData: `${BASE_URL}/nfr/get-sap-nfr-data`,
 
   //SUB ASSEMBLY
   getSubAssemblyAPI: `${BASE_URL}/sub-assembly/get-sub-assembly`,
