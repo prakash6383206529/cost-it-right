@@ -177,7 +177,7 @@ function AddNfr(props) {
     // Sets the initial values of the form fields based on the nfrData prop.
     useEffect(() => {
         if (nfrData) {
-            setValue('NfrId', nfrData?.NfrPartStatusId);
+            setValue('NfrId', props?.NfrNumber);
             setValue('PartNo', nfrData?.PartNumber);
             setValue('PartName', nfrData?.PartName);
         }
