@@ -314,7 +314,6 @@ function ERSimulation(props) {
                                             showMonthDropdown
                                             showYearDropdown
                                             dateFormat="dd/MM/yyyy"
-                                            dropdownMode="select"
                                             placeholderText="Select effective date"
                                             className="withBorder"
                                             autoComplete={"off"}

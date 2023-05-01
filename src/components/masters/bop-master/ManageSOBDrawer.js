@@ -156,7 +156,8 @@ function ManageSOBDrawer(props) {
     props.closeDrawer('', type)
   }
   const cancelHandler = () => {
-    setShowPopup(true)
+    // setShowPopup(true)
+    cancel('cancel')
   }
   const onPopupConfirm = () => {
     cancel('cancel')
@@ -256,7 +257,6 @@ function ManageSOBDrawer(props) {
                       dateFormat="dd/MM/yyyy"
                       mandatory={true}
                       rules={{ required: true }}
-                      dropdownMode="select"
                       placeholderText="Select date"
                       className="withBorder"
                       autoComplete={"off"}

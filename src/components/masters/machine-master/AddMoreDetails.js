@@ -2574,7 +2574,6 @@ class AddMoreDetails extends Component {
                                 showYearPicker
                                 dateFormat="yyyy"
                                 //maxDate={new Date()}
-                                //dropdownMode="select"
                                 placeholderText="Enter"
                                 className="withBorder"
                                 autoComplete={'off'}
@@ -2589,8 +2588,7 @@ class AddMoreDetails extends Component {
                           name={"YearOfManufacturing"}
                           //type="text"
                           showYearPicker
-                          selected={this.state.manufactureYear}
-                          dropdownMode="select"
+                          selected={this.state.manufactureYear}                       
                           onSelect={this.handleYearChange}
                           placeholder={disableAllForm ? '-' :'Enter'}
                           // dateFormat={'yyyy'}
@@ -2619,7 +2617,7 @@ class AddMoreDetails extends Component {
                             required: false,
                           }}
                           //maxDate={new Date()}
-                          dropdownMode="select"
+                          
                           placeholder={disableAllForm ? '-' :'Enter'}
                           className="withBorder"
                           autoComplete={'off'}
@@ -3038,7 +3036,6 @@ class AddMoreDetails extends Component {
                                     showYearDropdown
                                     dateFormat="dd/MM/yyyy"
                                     //maxDate={new Date()}
-                                    dropdownMode="select"
                                     placeholderText={disableAllForm ? '-' : "Select Date"}
                                     className="withBorder"
                                     autoComplete={'off'}

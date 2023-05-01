@@ -841,7 +841,6 @@ function ApproveRejectDrawer(props) {
                               showYearDropdown
                               dateFormat="aa/MM/yyyy"
                               //maxDate={new Date()}
-                              dropdownMode="select"
                               placeholderText="Select date"
                               customClassName="withBorder"
                               className="withBorder"
@@ -866,7 +865,6 @@ function ApproveRejectDrawer(props) {
                                 showYearDropdown
                                 dateFormat="dd/MM/yyyy"
                                 //maxDate={new Date()}
-                                dropdownMode="select"
                                 placeholderText="Select date"
                                 className="withBorder"
                                 autoComplete={"off"}
