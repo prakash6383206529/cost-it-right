@@ -140,7 +140,7 @@ function NfrPartsListing(props) {
             <>
                 {<button title='View' className="View mr-1" type={'button'} onClick={() => editPartHandler(cellValue, rowData, true)} />}
                 <button title='Edit' className="Edit mr-1" type={'button'} onClick={() => editPartHandler(cellValue, rowData, false)} />
-                <button title='Associate part with technology' className="Edit mr-1" type={'button'} onClick={() => associatePartWithTechnology(cellValue, rowData, false)} />
+                <button title='Associate part with technology' className="create-rfq mr-1" type={'button'} onClick={() => associatePartWithTechnology(cellValue, rowData, false)} />
 
             </>
         )
@@ -211,6 +211,9 @@ function NfrPartsListing(props) {
     }
 
     const closeTechnologyUpdateDrawer = (e = '') => {
+        if (e === 'submit') {
+            getDataList()
+        }
         setShowDrawer(false)
     }
 

@@ -13,7 +13,7 @@ import { MESSAGES } from '../../../config/message';
 import Toaster from '../../common/Toaster';
 import DayTime from '../../common/DayTimeWrapper';
 
-function ViewDrawer(props) {
+function DrawerTechnologyUpdate(props) {
     const { rowDataFortechnologyUpdate, closeDrawer } = props
     const { register, setValue, control, handleSubmit, formState: { errors }, } = useForm({
         mode: 'onChange',
@@ -80,7 +80,7 @@ function ViewDrawer(props) {
         dispatch(updatePart(updateData, (res) => {
             if (res?.data?.Result) {
                 Toaster.success(MESSAGES.UPDATE_PART_SUCESS);
-                closeDrawer()
+                closeDrawer("submit")
                 setDisable(false)
             }
         }))
@@ -97,7 +97,7 @@ function ViewDrawer(props) {
                                     <h3>{`Technology Update`}</h3>
                                 </div>
                                 <div
-                                    onClick={(e) => closeDrawer()}
+                                    onClick={(e) => closeDrawer('close')}
                                     className={'close-button right'}
                                 ></div>
                             </Col>
@@ -147,7 +147,7 @@ function ViewDrawer(props) {
                                         type="button"
                                         className="reset mr15 cancel-btn"
                                         disabled={disable}
-                                        onClick={(e) => closeDrawer()}
+                                        onClick={(e) => closeDrawer('close')}
                                     >
                                         <div className={'cancel-icon'}></div>
                                         {'Cancel'}
@@ -171,4 +171,4 @@ function ViewDrawer(props) {
     )
 }
 
-export default React.memo(ViewDrawer)
+export default React.memo(DrawerTechnologyUpdate)
