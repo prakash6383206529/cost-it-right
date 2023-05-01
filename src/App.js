@@ -65,6 +65,7 @@ class App extends Component {
         reactLocalStorage.setObject('ApprovalTypeListFullForm', objFullApp)
       }
     })
+    reactLocalStorage.setObject('isFromDiscountObj', false)
   }
 
   /**
