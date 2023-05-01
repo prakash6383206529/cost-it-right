@@ -163,3 +163,32 @@ export function nfrDetailsForDiscountAction(data) {
         });
     }
 };
+
+export function pushNfrOnSap(requestData, callback) {
+    return (dispatch) => {
+        axios.post(API.pushNfrOnSap, requestData, config())
+            .then((response) => {
+                if (response && response.status === 200) {
+                    callback(response);
+                }
+            }).catch((error) => {
+                apiErrors(error);
+                callback(error);
+            });
+    };
+}
+
+export function fetchNfrDetailFromSap(callback) {
+    return (dispatch) => {
+        const request = axios.get(`${API.getSapnfrData}?fromDate=null&toDate=null`, config());
+        request.then((response) => {
+            if (response.data.Result || response.status === 204) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE, });
+            callback(error);
+            apiErrors(error);
+        });
+    };
+}

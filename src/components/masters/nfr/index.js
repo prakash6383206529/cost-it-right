@@ -4,16 +4,21 @@ import NFRApprovalListing from "./NFRApprovalListing";
 import NfrListing from "./NfrListing";
 import classnames from 'classnames';
 import { reactLocalStorage } from "reactjs-localstorage";
+import { useDispatch } from "react-redux";
+import { fetchNfrDetailFromSap } from "./actions/nfr";
+import Toaster from "../../common/Toaster";
 
 function NfrTabs(props) {
     const [activeTab, setActiveTab] = useState('1');
     const [isFromDiscount, setisFromDiscount] = useState(reactLocalStorage.getObject("isFromDiscountObj"));
+
     const toggle = (tab) => {
         if (activeTab !== tab) {
             setActiveTab(tab);
         }
 
     }
+
 
     const changeIsFromDiscount = (value) => {
         setisFromDiscount(value)
@@ -25,6 +30,7 @@ function NfrTabs(props) {
                 <div>
                     <Nav tabs className="subtabs mt-0 mb-3">
                         <NavItem>
+
                             <NavLink
                                 className={classnames({ active: activeTab === "1" })}
                                 onClick={() => {
