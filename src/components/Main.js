@@ -59,13 +59,13 @@ import RfqListing from './rfq/RfqListing'
 import CostRatioReport from './report/components/CostRatioReport/CostRatioReport'
 import CostMovementReport from './report/components/CostMovementReport/CostMovementReport'
 import SupplierContributionReport from './report/components/SupplierContribution'
-import BudgetListing from './masters/budget-master/BudgetListing'
 import NfrTabs from './masters/nfr'
 import SaleProvisionReport from './report/components/SaleProvisionReport/SaleProvisionReport'
 import PurchaseProvisionReport from './report/components/PurchaseProvisionReport/PurchaseProvisionReport'
 import CustomerPoamSummaryReport from './report/components/CustomerPoamSummaryReport/CustomerPoamSummaryReport'
 import HeadWiseCostingGotGiven from './report/components/HeadwiseCostingGotGiven/HeadWiseCostingGotGiven'
 import MasterCostMovement from './report/components/CostMovementByMaster/MasterCostMovement'
+import BudgetMaster from './masters/budget-master'
 const CustomHeader = {
   'Content-Type': 'application/x-www-form-urlencoded',
   'Access-Control-Allow-Origin': '*',
@@ -365,7 +365,7 @@ class Main extends Component {
                     <Route path="/simulation-insights" component={SimulationInsights} />
                     <Route path="/rfq-listing" component={AuthMiddleware(RfqListing, RFQ)} />
                     <Route path="/nfr" component={NfrTabs} />
-                    <Route path="/budgeting" component={AuthMiddleware(BudgetListing, BUDGETING)} />
+                    <Route path="/budgeting" component={AuthMiddleware(BudgetMaster, BUDGETING)} />
 
                     {/* <Route path='/simulation-approval-listing' component={SimulationApprovalListing} /> */}
 
