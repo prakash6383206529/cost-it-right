@@ -26,6 +26,7 @@ function NfrListing(props) {
     const [gridApi, setgridApi] = useState(null);                      // DONT DELETE THIS STATE , IT IS USED BY AG GRID
     const [gridColumnApi, setgridColumnApi] = useState(null);          // DONT DELETE THIS STATE , IT IS USED BY AG GRID
     const [loader, setloader] = useState(false);
+    const [sapLoader, setSapLoader] = useState(false);
     const dispatch = useDispatch();
     const [addRfqData, setAddRfqData] = useState({});
     const [isEdit, setIsEdit] = useState(false);
@@ -281,8 +282,10 @@ function NfrListing(props) {
     }
 
     const openFetchDrawer = () => {
+        setSapLoader(true)
         dispatch(fetchNfrDetailFromSap(res => {
-            if (res.data.Result) {
+            setSapLoader(false)
+            if (res && res.data && res.data.Result) {
                 Toaster.success('Data has been pushed successfully')
             }
         }))
@@ -294,52 +297,34 @@ function NfrListing(props) {
                 <div className={`ag-grid-react ${(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) ? "" : ""} ${true ? "show-table-btn" : ""} ${false ? 'simulation-height' : props?.isMasterSummaryDrawer ? '' : 'min-height100vh'}`}>
                     {(loader ? <LoaderCustom customClass="simulation-Loader" /> : !viewRfq && (
                         <>
+                            {sapLoader && <LoaderCustom message="Fetching data from SAP" />}
                             <Row className={`filter-row-large pt-2 ${props?.isSimulation ? 'zindex-0 ' : ''}`}>
 
                                 <Col md="3" lg="3" className='mb-2'>
                                     <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
                                 </Col>
 
-                                <Col md="9" lg="9" className="mb-3 d-flex justify-content-end">
-                                    <div className="d-flex justify-content-end bd-highlight w100">
-
-                                        <>
-
-                                            <button type="button" className="user-btn mr-10" title="Reset Grid" onClick={() => resetState()}>
-                                                <div className="refresh mr-0"></div>
-                                            </button>
-
-                                            <button
-
-                                                type="button"
-
-                                                className={'secondary-btn fetch-btn mb-2'}
-
-                                                title="Fetch"
-
-                                                onClick={openFetchDrawer}
-
-                                                onMouseOver={handleMouse}
-
-                                                onMouseOut={handleMouseOut}
-
-                                            >
-
-                                                <div className={`${isHover ? "swap-hover" : "swap"} mr-0`}></div>
-
-                                            </button>
-
-
-
-                                        </>
-                                    </div>
+                                <Col md="9" className="mb-3 d-flex justify-content-end">
+                                    <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}>
+                                        <div className="refresh mr-0"></div>
+                                    </button>
+                                    <button
+                                        type="button"
+                                        className={'secondary-btn ml-1'}
+                                        title="Fetch"
+                                        onClick={openFetchDrawer}
+                                        onMouseOver={handleMouse}
+                                        onMouseOut={handleMouseOut}
+                                    >
+                                        <div className={`${isHover ? "swap-hover" : "swap"} mr-0`}></div>
+                                    </button>
                                 </Col>
 
                             </Row>
                             <Row>
                                 <Col>
                                     <div className={`ag-grid-wrapper ${(props?.isDataInMaster && noData) ? 'master-approval-overlay' : ''} ${(rowData && rowData?.length <= 0) || noData ? 'overlay-contain' : ''}`}>
-                                        <div className={`ag-theme-material ${(loader) && "max-loader-height"}`}>
+                                        <div className={`ag-theme-material`}>
                                             {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
                                             <AgGridReact
                                                 style={{ height: '100%', width: '100%' }}
