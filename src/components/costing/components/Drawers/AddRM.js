@@ -18,11 +18,12 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import { PaginationWrapper } from '../../../common/commonPagination';
 import _ from 'lodash';
+import { IsNFR } from '../CostingDetails';
 const gridOptions = {};
 
 function AddRM(props) {
 
-  const { IsApplyMasterBatch, Ids } = props;
+  const { IsApplyMasterBatch, Ids, rmNameList } = props;
   const { handleSubmit } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
@@ -40,6 +41,7 @@ function AddRM(props) {
 
   const { rmDrawerList, CostingEffectiveDate } = useSelector(state => state.costing)
   const { initialConfiguration } = useSelector(state => state.auth)
+  const isNFR = useContext(IsNFR);
 
   useEffect(() => {
     setSelectedRowData([])
@@ -123,7 +125,7 @@ function AddRM(props) {
       CostingTypeId: Number(costData.CostingTypeId) === NFRTypeId ? VBCTypeId : costData.CostingTypeId,
       CustomerId: costData.CustomerId
     }
-    dispatch(getRMDrawerDataList(data, (res) => {
+    dispatch(getRMDrawerDataList(data, isNFR, rmNameList, (res) => {
       if (res && res.status === 200) {
         let Data = res.data.DataList;
         setTableDataList(Data)
