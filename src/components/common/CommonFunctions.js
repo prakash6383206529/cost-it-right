@@ -1,6 +1,10 @@
 import { reactLocalStorage } from "reactjs-localstorage";
 import _ from 'lodash';
+<<<<<<< HEAD
 import { CBCAPPROVALTYPEID, CBCTypeId, dropdownLimit, NCCAPPROVALTYPEID, NCCTypeId, NFRAPPROVALTYPEID, NFRTypeId, PFS2APPROVALTYPEID, PFS2APPROVALTYPEIDFULL, PFS2TypeId, VBCAPPROVALTYPEID, VBCTypeId, ZBCAPPROVALTYPEID, ZBCTypeId } from "../../config/constants";
+=======
+import { CBCAPPROVALTYPEID, CBCTypeId, dropdownLimit, NCCAPPROVALTYPEID, NCCTypeId, NFRAPPROVALTYPEID, NFRTypeId, VBCAPPROVALTYPEID, VBCTypeId, WACAPPROVALTYPEID, WACTypeId, ZBCAPPROVALTYPEID, ZBCTypeId } from "../../config/constants";
+>>>>>>> 0a75ea2261 (CIR T 1605 Weighted average costing task ongoing)
 
 // COMMON FILTER FUNCTION FOR AUTOCOMPLETE DROPDOWN
 const commonFilterFunction = (inputValue, dropdownArray, filterByName, selectedParts = false) => {
@@ -117,6 +121,8 @@ export const costingTypeIdToApprovalTypeIdFunction = (value) => {
             break;
         case PFS2TypeId:
             approvalTypeId = PFS2APPROVALTYPEID;
+        case WACTypeId:
+            approvalTypeId = WACAPPROVALTYPEID;
             break;
         default:
             approvalTypeId = null; // or any default value you prefer
