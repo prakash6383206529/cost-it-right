@@ -12,12 +12,15 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { PaginationWrapper } from '../../common/commonPagination'
-import { checkPermission, searchNocontentFilter, userDetails } from '../../../helper';
+import { checkPermission, searchNocontentFilter } from '../../../helper';
 import DayTime from '../../common/DayTimeWrapper';
 import Attachament from '../../costing/components/Drawers/Attachament';
 import { getNfrPartDetails, nfrDetailsForDiscountAction } from './actions/nfr';
 import { hyphenFormatter } from '../masterUtil';
 import AddNfr from './AddNfr';
+import DrawerTechnologyUpdate from './DrawerTechnologyUpdate';
+import { ASSEMBLY } from '../../../config/masterData';
+import Toaster from '../../common/Toaster';
 const gridOptions = {};
 
 
@@ -44,6 +47,8 @@ function NfrPartsListing(props) {
     const [viewAttachment, setViewAttachment] = useState([])
     const [nfrIdsList, setNFRIdsList] = useState(props?.isFromDiscount ? nfrDetailsForDiscount?.objectFordisc : {})
     const [isViewMode, setIsViewMode] = useState(false)
+    const [showDrawer, setShowDrawer] = useState(false)
+    const [rowDataFortechnologyUpdate, setRowDataFortechnologyUpdate] = useState({})
     const { topAndLeftMenuData } = useSelector(state => state.auth);
 
     useEffect(() => {
@@ -93,6 +98,10 @@ function NfrPartsListing(props) {
 
     }
     const editPartHandler = (value, rowData, viewMode) => {
+        if (Number(rowData?.TechnologyId) === ASSEMBLY) {
+            Toaster.warning("Please update the technology of this part to create costing of this part.")
+            return false
+        }
         setIsViewMode(viewMode)
         setEstimationData(rowData)
         setEditPart(true)
@@ -108,6 +117,12 @@ function NfrPartsListing(props) {
         }
         dispatch(nfrDetailsForDiscountAction(obj))
     }
+
+    const associatePartWithTechnology = (value, rowData, viewMode) => {
+        setRowDataFortechnologyUpdate(rowData)
+        setShowDrawer(true)
+    }
+
     const closePopUp = () => {
         setConfirmPopup(false)
     }
@@ -125,6 +140,7 @@ function NfrPartsListing(props) {
             <>
                 {<button title='View' className="View mr-1" type={'button'} onClick={() => editPartHandler(cellValue, rowData, true)} />}
                 <button title='Edit' className="Edit mr-1" type={'button'} onClick={() => editPartHandler(cellValue, rowData, false)} />
+                <button title='Associate part with technology' className="create-rfq mr-1" type={'button'} onClick={() => associatePartWithTechnology(cellValue, rowData, false)} />
 
             </>
         )
@@ -193,6 +209,14 @@ function NfrPartsListing(props) {
     const closeAttachmentDrawer = (e = '') => {
         setAttachment(false)
     }
+
+    const closeTechnologyUpdateDrawer = (e = '') => {
+        if (e === 'submit') {
+            getDataList()
+        }
+        setShowDrawer(false)
+    }
+
     const onFloatingFilterChanged = (value) => {
         rowData.length !== 0 && setNoData(searchNocontentFilter(value, noData))
     }
@@ -274,15 +298,15 @@ function NfrPartsListing(props) {
                                             <div className={`d-flex align-items-center simulation-label-container mr-2`}>
                                                 <div className='d-flex pl-3'>
                                                     <label>NFR ID: </label>
-                                                    <p className='technology ml-1 nfr-id-wrapper' >{props.nfrId ? props.nfrId : ''}</p>
+                                                    <p className='technology ml-1 nfr-id-wrapper' >{rowData && rowData[0]?.NfrNumber ? rowData[0]?.NfrNumber : ''}</p>
                                                 </div>
                                             </div>
                                             <button type="button" className={"apply ml-1"} onClick={props?.closeDrawer}> <div className={'back-icon'}></div>Back</button>
                                         </>
                                     }
-                                            <button type="button" className= "ml-1 user-btn" title="Reset Grid" onClick={() => resetState()}>
-                                                <div className="refresh mr-0"></div>
-                                            </button>
+                                    <button type="button" className="ml-1 user-btn" title="Reset Grid" onClick={() => resetState()}>
+                                        <div className="refresh mr-0"></div>
+                                    </button>
                                 </Col>
 
                             </Row>
@@ -350,7 +374,15 @@ function NfrPartsListing(props) {
                     />
                 )
             }
-            {editPart && <AddNfr showAddNfr={editPart} nfrData={estimationData} close={close} nfrIdsList={nfrIdsList} isViewEstimation={isViewMode} changeIsFromDiscount={props?.changeIsFromDiscount} />}
+            {editPart && <AddNfr showAddNfr={editPart} nfrData={estimationData} close={close} nfrIdsList={nfrIdsList} isViewEstimation={isViewMode} changeIsFromDiscount={props?.changeIsFromDiscount} NfrNumber={rowData && rowData[0]?.NfrNumber} />}
+            {showDrawer &&
+                <DrawerTechnologyUpdate
+                    isOpen={showDrawer}
+                    closeDrawer={closeTechnologyUpdateDrawer}
+                    anchor={'right'}
+                    rowDataFortechnologyUpdate={rowDataFortechnologyUpdate}
+                />
+            }
 
         </>
     );

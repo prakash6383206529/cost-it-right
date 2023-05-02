@@ -587,7 +587,6 @@ function CostingSummary(props) {
                               showYearDropdown
                               dateFormat="dd/MM/yyyy"
                               //maxDate={new Date()}
-                              dropdownMode="select"
                               placeholderText="-"
                               className="withBorder"
                               autoComplete={'off'}

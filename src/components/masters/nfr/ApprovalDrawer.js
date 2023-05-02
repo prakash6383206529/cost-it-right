@@ -9,7 +9,7 @@ import { EMPTY_DATA, EMPTY_GUID, NFRAPPROVALTYPEID, NFRTypeId } from '../../../c
 import { useDispatch, useSelector } from 'react-redux';
 import { getAllApprovalDepartment, getAllApprovalUserFilterByDepartment, getReasonSelectList } from '../../costing/actions/Approval';
 import { costingTypeIdToApprovalTypeIdFunction } from '../../common/CommonFunctions';
-import { approvedCostingByApprover, nfrSendToApproverBySender } from './actions/nfr';
+import { approvedCostingByApprover, nfrSendToApproverBySender, pushNfrOnSap } from './actions/nfr';
 import _ from 'lodash';
 import { datalist } from 'react-dom-factories';
 import Toaster from '../../common/Toaster';
@@ -168,19 +168,29 @@ const ApprovalDrawer = (props) => {
                     "ApproverId": getValues("approver")?.value ? getValues("approver")?.value : '',
                     "ApproverLevelId": getValues("approver")?.levelId ? getValues("approver")?.levelId : '',
                     "ApproverLevel": getValues("approver")?.levelName ? getValues("approver")?.levelName : '',
-                    "Remark": "string",
+                    "Remark": getValues('remarks'),
                     "IsApproved": type === 'Approve' ? true : false,
                     "ApproverDepartmentId": getValues("dept")?.value ? getValues("dept")?.value : '',
                     "ApproverDepartmentName": getValues("dept")?.label ? getValues("dept")?.label : '',
                     "IsFinalApprovalProcess": true,
-                    "ReasonId": 0,
-                    "Reason": "string"
+                    "ReasonId": getValues('reason')?.value ? getValues('reason')?.value : 0,
+                    "Reason": getValues('reason')?.label ? getValues('reason')?.label : ""
                 }
             ]
+            let pushRequest = {
+                nfrGroupId: props?.nfrData?.NfrGroupId,
+                costingId: props?.pushData?.CostingId
+            }
+
             dispatch(approvedCostingByApprover(req, (res) => {
                 if (res?.data?.Result === true) {
                     if (type === 'Approve') {
                         Toaster.success(MESSAGES.NFR_APPROVED)
+                        dispatch(pushNfrOnSap(pushRequest, res => {
+                            if (res?.data?.Result) {
+                                Toaster.success(MESSAGES.NFR_PUSHED)
+                            }
+                        }))
                     } else {
                         Toaster.success(MESSAGES.NFR_REJECTED)
                     }

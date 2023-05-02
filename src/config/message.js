@@ -359,4 +359,6 @@ export const MESSAGES = {
   // NFR
   NFR_APPROVED: 'NFR is approved successfully',
   NFR_REJECTED: 'NFR is rejected successfully',
+  NFR_PUSHED: 'NFR is pushed successfully'
+
 }

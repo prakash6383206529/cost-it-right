@@ -613,7 +613,6 @@ class AddExchangeRate extends Component {
                             changeHandler={(e) => {
                             }}
                             component={renderDatePicker}
-                            dropdownMode="select"
                             disabled={isViewMode || (!this.state.isFinancialDataChange && isEditFlag)}
                             placeholderText={isViewMode || (!this.state.isFinancialDataChange && isEditFlag) ? '-' : "Select Date"}
                           />

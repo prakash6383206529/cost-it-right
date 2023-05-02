@@ -16,8 +16,9 @@ import { checkPermission, searchNocontentFilter, userDetails } from '../../../he
 import DayTime from '../../common/DayTimeWrapper';
 import Attachament from '../../costing/components/Drawers/Attachament';
 import NfrPartsListing from './NfrPartsListing';
-import { getAllNfrList, nfrDetailsForDiscountAction } from './actions/nfr';
+import { fetchNfrDetailFromSap, getAllNfrList, nfrDetailsForDiscountAction } from './actions/nfr';
 import { hyphenFormatter } from '../masterUtil';
+import Toaster from '../../common/Toaster';
 const gridOptions = {};
 
 
@@ -43,7 +44,7 @@ function NfrListing(props) {
     const [selectedPartData, setSelectedPartData] = useState([]);
     const { topAndLeftMenuData } = useSelector(state => state.auth);
     const [addRfq, setAddRfq] = useState(props?.isFromDiscount ? true : false);
-
+    const [isHover, setIsHover] = useState(false)
     useEffect(() => {
         setloader(true)
         getDataList()
@@ -268,7 +269,24 @@ function NfrListing(props) {
         statusFormatter: statusFormatter,
         dateFormater: dateFormater
     }
+    const handleMouse = () => {
+        setIsHover(true)
+    }
+    /**
+    * @method handleMouseOut
+    * @description FOR FETCH BUTTON CHANGE CSS ON MOUSE LEAVE
+    */
+    const handleMouseOut = () => {
+        setIsHover(false)
+    }
 
+    const openFetchDrawer = () => {
+        dispatch(fetchNfrDetailFromSap(res => {
+            if (res.data.Result) {
+                Toaster.success('Data has been pushed successfully')
+            }
+        }))
+    }
 
     return (
         <>
@@ -281,17 +299,40 @@ function NfrListing(props) {
                                 <Col md="3" lg="3" className='mb-2'>
                                     <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
                                 </Col>
+
                                 <Col md="9" lg="9" className="mb-3 d-flex justify-content-end">
-                                    {
-                                        // SHOW FILTER BUTTON ONLY FOR RM MASTER NOT FOR SIMULATION AMD MASTER APPROVAL SUMMARY
-                                        (!props.isMasterSummaryDrawer) &&
+                                    <div className="d-flex justify-content-end bd-highlight w100">
+
                                         <>
 
-                                            <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}>
+                                            <button type="button" className="user-btn mr-10" title="Reset Grid" onClick={() => resetState()}>
                                                 <div className="refresh mr-0"></div>
                                             </button>
+
+                                            <button
+
+                                                type="button"
+
+                                                className={'secondary-btn fetch-btn mb-2'}
+
+                                                title="Fetch"
+
+                                                onClick={openFetchDrawer}
+
+                                                onMouseOver={handleMouse}
+
+                                                onMouseOut={handleMouseOut}
+
+                                            >
+
+                                                <div className={`${isHover ? "swap-hover" : "swap"} mr-0`}></div>
+
+                                            </button>
+
+
+
                                         </>
-                                    }
+                                    </div>
                                 </Col>
 
                             </Row>
@@ -348,7 +389,8 @@ function NfrListing(props) {
                 </div >
             }
 
-            {addRfq &&
+            {
+                addRfq &&
 
                 <NfrPartsListing
                     data={selectedPartData}

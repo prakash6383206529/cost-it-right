@@ -1028,7 +1028,8 @@ export const API = {
   getNFRApprovals: `${BASE_URL}/nfr/get-nfr-approvals`,
   getNFRApprovalSummary: `${BASE_URL}/nfr/get-nfr-approval-summary`,
   approvedCostingByApprover: `${BASE_URL}/nfr/approved-nfr-by-approver`,
-
+  pushNfrOnSap: `${BASE_URL}/nfr/push-nfr-on-sap`,
+  getSapnfrData: `${BASE_URL}/nfr/get-sap-nfr-data`,
 
   //SUB ASSEMBLY
   getSubAssemblyAPI: `${BASE_URL}/sub-assembly/get-sub-assembly`,
@@ -1053,6 +1054,7 @@ export const API = {
   getQuotationDetailsList: `${BASE_URL}/rfq-quotation/get-quotation-details-list`,
   getCommunicationHistory: `${BASE_URL}/rfq-quotation/get-communication-history`,
   checkExistCosting: `${BASE_URL}/rfq-quotation/rfq-check-exist-costing`,
+  rfqSaveBestCosting: `${BASE_URL}/rfq-costing/rfq-save-best-costing`,
 
 }
 
@@ -2259,4 +2261,4 @@ export const KEYRFQ = "UAGSqTBCbZ8JqHJl"
 export const IVRFQ = "8vFNmRQEl91nOtrM"
 
 //VERSION 
-export const VERSION = "V2.1.150";
+export const VERSION = "V2.1.153";

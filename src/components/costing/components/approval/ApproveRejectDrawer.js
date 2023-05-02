@@ -436,7 +436,7 @@ function ApproveRejectDrawer(props) {
         dispatch(rejectRequestByApprove(Data, res => {
           setIsDisable(false)
           if (res?.data?.Result) {
-            Toaster.success('Costing Rejected')
+            Toaster.success(`Costing ${props?.isRFQApproval ? 'Returned' : 'Rejected'}`)
             props.closeDrawer('', 'submit')
           }
           if (props?.isRFQApproval) {
@@ -808,7 +808,7 @@ function ApproveRejectDrawer(props) {
               <Row className="drawer-heading">
                 <Col>
                   <div className={'header-wrapper left'}>
-                    <h3>{`${isSimulation ? `${type === 'Sender' ? 'Send For Approval' : `${type} Simulation`}` : `${type} Costing`} `}</h3>
+                    <h3>{`${isSimulation ? `${type === 'Sender' ? 'Send For Approval' : `${type} Simulation`}` : `${props?.isRFQApproval ? 'Return' : type} Costing`} `}</h3>
                   </div>
 
                   <div
@@ -933,7 +933,6 @@ function ApproveRejectDrawer(props) {
                               showYearDropdown
                               dateFormat="aa/MM/yyyy"
                               //maxDate={new Date()}
-                              dropdownMode="select"
                               placeholderText="Select date"
                               customClassName="withBorder"
                               className="withBorder"
@@ -958,7 +957,6 @@ function ApproveRejectDrawer(props) {
                                 showYearDropdown
                                 dateFormat="dd/MM/yyyy"
                                 //maxDate={new Date()}
-                                dropdownMode="select"
                                 placeholderText="Select date"
                                 className="withBorder"
                                 autoComplete={"off"}
