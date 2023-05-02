@@ -29,6 +29,7 @@ import { autoCompleteDropdown, costingTypeIdToApprovalTypeIdFunction } from '../
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { checkFinalUser } from '../../../components/costing/actions/Costing'
 import { getUsersMasterLevelAPI } from '../../../actions/auth/AuthActions';
+import AddMoreOperation from './AddMoreOperation';
 
 const selector = formValueSelector('AddOperation');
 
@@ -84,7 +85,12 @@ class AddOperation extends Component {
       showPopup: false,
       levelDetails: {},
       noApprovalCycle: false,
-      vendorFilterList: []
+      vendorFilterList: [],
+      addMoreDetails: false,
+      operationType: '',
+      addMoreDetailObj: {},
+      isDetailEntry: false,
+      detailObject: {}
     }
   }
 
@@ -207,6 +213,13 @@ class AddOperation extends Component {
       });
       return temp;
     }
+
+    if (label === 'operationType') {
+      temp.push({ label: "Welding", value: 1 })
+      temp.push({ label: "Surface Treatment", value: 2 })
+      temp.push({ label: "Other Operation", value: 3 })
+      return temp;
+    }
   }
   /**
    * @method onPressVendor
@@ -308,6 +321,19 @@ class AddOperation extends Component {
     }
   };
 
+  handleOperationType = (newValue) => {
+    if (newValue && newValue !== '') {
+      this.setState({ operationType: newValue, })
+      if (String(newValue.label) === 'Surface Treatment') {
+        this.setState({ isSurfaceTreatment: true })
+      } else {
+        this.setState({ isSurfaceTreatment: false })
+      }
+    } else {
+      this.setState({ operationType: [] })
+    }
+  };
+
   uomToggler = () => {
     this.setState({ isOpenUOM: true })
   }
@@ -375,7 +401,8 @@ class AddOperation extends Component {
       this.props.getOperationDataAPI(data.ID, (res) => {
         if (res && res.data && res.data.Data) {
           let Data = res.data.Data;
-          this.setState({ DataToChange: Data })
+
+          this.setState({ DataToChange: Data, isDetailEntry: Data?.IsDetailedEntry, detailObject: Data })
           this.props.change('EffectiveDate', DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
           this.setState({ minEffectiveDate: Data.EffectiveDate })
           this.props.change('OperationName', Data.OperationName ? Data.OperationName : '')
@@ -408,7 +435,8 @@ class AddOperation extends Component {
               effectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
               oldDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
               destinationPlant: Data.DestinationPlantName !== undefined ? { label: Data.DestinationPlantName, value: Data.DestinationPlantId } : [],
-              dataToChange: Data
+              dataToChange: Data,
+              operationType: { label: Data.ForType, value: 1 }
             })
             // ********** ADD ATTACHMENTS FROM API INTO THE DROPZONE'S PERSONAL DATA STORE **********
             let files = Data.Attachements && Data.Attachements.map((item) => {
@@ -813,6 +841,40 @@ class AddOperation extends Component {
       e.preventDefault();
     }
   };
+
+  moreDetailsToggler = () => {
+
+    const { filedObj } = this.props
+    const { selectedPlants, operationType, selectedTechnology, UOM, destinationPlant, costingTypeId, isSurfaceTreatment, OperationId } = this.state
+    let isPlant = costingTypeId === ZBCTypeId ? selectedPlants.length > 0 : destinationPlant.label
+
+    if (operationType && selectedTechnology.length > 0 && filedObj.OperationName && UOM.label && filedObj.EffectiveDate && isPlant) {
+      let obj = {}
+      obj.operationType = this.state.operationType
+      obj.technology = this.state.selectedTechnology
+      obj.operationName = filedObj.OperationName
+      obj.description = filedObj.Description
+      obj.plants = this.state.selectedPlants
+      obj.UOM = this.state.UOM
+      obj.vendor = this.state.vendorName
+      obj.effectiveDate = this.state.effectiveDate
+      obj.destinationPlant = this.state.destinationPlant
+      obj.costingTypeId = this.state.costingTypeId
+      obj.customer = this.state.client
+      obj.isSurfaceTreatment = isSurfaceTreatment
+      obj.OperationId = OperationId
+      this.setState({ addMoreDetails: true, addMoreDetailObj: obj })
+
+    } else {
+      Toaster.warning('Please enter mandatory details')
+    }
+  }
+
+  cancelAddMoreDetails = () => {
+    this.setState({ addMoreDetails: false })
+
+  }
+
   /**
   * @method render
   * @description Renders the component
@@ -851,7 +913,7 @@ class AddOperation extends Component {
     return (
       <div className="container-fluid">
         {(this.state.isLoader || this.state.finalApprovalLoader) && <LoaderCustom />}
-        <div className="login-container signup-form">
+        {!this.state.addMoreDetails && <div className="login-container signup-form">
           <div className="row">
             <div className="col-md-12">
               <div className="shadow-lgg login-formg">
@@ -915,6 +977,23 @@ class AddOperation extends Component {
                       </Col>
                     </Row>
                     <Row>
+
+                      <Col md="3">
+                        <Field
+                          name="operationType"
+                          type="text"
+                          label="Operation Type"
+                          component={searchableSelect}
+                          placeholder={"Select"}
+                          options={this.renderListing("operationType")}
+                          validate={this.state.operationType == null || this.state.operationType.length === 0 ? [required] : []}
+                          required={true}
+                          handleChangeDescription={this.handleOperationType}
+                          valueDescription={this.state.operationType}
+                          disabled={isViewMode || isEditFlag ? true : false}
+                        />
+                      </Col>
+
                       <Col md="3">
                         <Field
                           title={showDataOnHover(this.state.selectedTechnology)}
@@ -1165,6 +1244,12 @@ class AddOperation extends Component {
                         </label>
                       </Col>
 
+                      {(!isEditFlag || (isEditFlag && this.state.isDetailEntry)) && < button
+                        type="button"
+                        className={'user-btn '}
+                        disabled={false}
+                        onClick={() => this.moreDetailsToggler()}>
+                        <div className={'plus'}></div>{this.state.isDetailEntry ? (isViewMode ? "VIEW MORE OPERATION DETAILS" : "EDIT MORE OPERATION DETAILS") : "ADD MORE OPERATION DETAILS"}</button>}
                     </Row>
 
                     <Row>
@@ -1287,29 +1372,46 @@ class AddOperation extends Component {
               </div>
             </div>
           </div>
-        </div>
+        </div >}
+
+        {
+          this.state.addMoreDetails &&
+          <AddMoreOperation
+            cancelAddMoreDetails={this.cancelAddMoreDetails}
+            addMoreDetailObj={this.state.addMoreDetailObj}
+            detailObject={this.state.detailObject}
+            cancel={this.cancel}
+            isEditFlag={this.state.isEditFlag}
+            isViewMode={this.state.isViewMode}
+          />
+        }
+
         {
           this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.CANCEL_MASTER_ALERT}`} />
 
         }
-        {isOpenVendor && (
-          <AddVendorDrawer
-            isOpen={isOpenVendor}
-            closeDrawer={this.closeVendorDrawer = this.closeVendorDrawer.bind(this)}
-            isEditFlag={false}
-            ID={""}
-            anchor={"right"}
-          />
-        )}
-        {isOpenUOM && (
-          <AddUOM
-            isOpen={isOpenUOM}
-            closeDrawer={this.closeUOMDrawer}
-            isEditFlag={false}
-            ID={""}
-            anchor={"right"}
-          />
-        )}
+        {
+          isOpenVendor && (
+            <AddVendorDrawer
+              isOpen={isOpenVendor}
+              closeDrawer={this.closeVendorDrawer = this.closeVendorDrawer.bind(this)}
+              isEditFlag={false}
+              ID={""}
+              anchor={"right"}
+            />
+          )
+        }
+        {
+          isOpenUOM && (
+            <AddUOM
+              isOpen={isOpenUOM}
+              closeDrawer={this.closeUOMDrawer}
+              isEditFlag={false}
+              ID={""}
+              anchor={"right"}
+            />
+          )
+        }
 
         {
           this.state.approveDrawer && (
@@ -1328,7 +1430,7 @@ class AddOperation extends Component {
             />
           )
         }
-      </div>
+      </div >
     );
   }
 }
@@ -1340,7 +1442,7 @@ class AddOperation extends Component {
 */
 function mapStateToProps(state) {
   const { comman, otherOperation, supplier, auth, costing, client } = state;
-  const filedObj = selector(state, 'OperationCode', 'text');
+  const filedObj = selector(state, 'OperationCode', 'text', 'OperationName', 'Description', 'operationType', 'technology', 'clientName', 'EffectiveDate', 'Plant');
   const { plantSelectList, filterPlantList, UOMSelectList, } = comman;
   const { operationData } = otherOperation;
   const { vendorWithVendorCodeSelectList } = supplier;
