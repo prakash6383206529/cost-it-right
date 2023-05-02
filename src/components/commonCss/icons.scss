@@ -342,6 +342,11 @@
     @include extra-icon-styles;
 }
 
+.create-rfq {
+    @include icons("../../assests/images/create-rfq.svg", $shadowColor: #f8a000, $borderColor: #feeccc);
+    @include extra-icon-styles;
+}
+
 .lock_icon {
     @include icons("../../assests/images/lock.svg", 17px, 17px);
     cursor: pointer;
