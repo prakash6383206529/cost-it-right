@@ -2172,6 +2172,7 @@ export const statusOptions = _.sortBy([
 export const ZBCTypeId = Number(reactLocalStorage.getObject('CostingHeadsListShortForm')[ZBC])
 export const VBCTypeId = Number(reactLocalStorage.getObject('CostingHeadsListShortForm')[VBC])
 export const CBCTypeId = Number(reactLocalStorage.getObject('CostingHeadsListShortForm')[CBC])
+export const WACTypeId = Number(reactLocalStorage.getObject('CostingHeadsListShortForm')[WAC])
 export const NCCTypeId = Number(reactLocalStorage.getObject('CostingHeadsListShortForm')[NCC])
 export const ZBCTypeIdFull = Number(reactLocalStorage.getObject('CostingHeadsListFullForm')[ZBC])
 export const VBCTypeIdFull = Number(reactLocalStorage.getObject('CostingHeadsListFullForm')[VBC])
@@ -2188,6 +2189,7 @@ export const CBCAPPROVALTYPEID = Number(reactLocalStorage.getObject('ApprovalTyp
 export const NCCAPPROVALTYPEID = Number(reactLocalStorage.getObject('ApprovalTypeListShortForm')[NCC])
 export const VBCAPPROVALTYPEID = Number(reactLocalStorage.getObject('ApprovalTypeListShortForm')[VBC])
 export const ZBCAPPROVALTYPEID = Number(reactLocalStorage.getObject('ApprovalTypeListShortForm')[ZBC])
+export const WACAPPROVALTYPEID = Number(reactLocalStorage.getObject('ApprovalTypeListShortForm')[WAC])
 export const PROVISIONALAPPROVALTYPEID = Number(reactLocalStorage.getObject('ApprovalTypeListShortForm'))
 
 export const CBCAPPROVALTYPEIDFULL = Number(reactLocalStorage.getObject('ApprovalTypeListFullForm')[CBC])
