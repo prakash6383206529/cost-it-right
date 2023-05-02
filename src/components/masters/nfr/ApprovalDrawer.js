@@ -174,7 +174,8 @@ const ApprovalDrawer = (props) => {
                     "ApproverDepartmentName": getValues("dept")?.label ? getValues("dept")?.label : '',
                     "IsFinalApprovalProcess": true,
                     "ReasonId": getValues('reason')?.value ? getValues('reason')?.value : 0,
-                    "Reason": getValues('reason')?.label ? getValues('reason')?.label : ""
+                    "Reason": getValues('reason')?.label ? getValues('reason')?.label : "",
+                    "PushedCostingId": props?.pushData?.CostingId
                 }
             ]
             let pushRequest = {
