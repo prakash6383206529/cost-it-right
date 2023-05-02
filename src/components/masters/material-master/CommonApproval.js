@@ -8,7 +8,7 @@ import LoaderCustom from '../../common/LoaderCustom'
 import NoContentFound from '../../common/NoContentFound';
 import DayTime from '../../common/DayTimeWrapper'
 import { checkForDecimalAndNull, loggedInUserId, searchNocontentFilter, userTechnologyDetailByMasterId } from '../../../helper'
-import { BOP_MASTER_ID, defaultPageSize, EMPTY_DATA, MACHINE_MASTER_ID, OPERATIONS_ID } from '../../../config/constants';
+import { BOP_MASTER_ID, BUDGET_ID, defaultPageSize, EMPTY_DATA, MACHINE_MASTER_ID, OPERATIONS_ID } from '../../../config/constants';
 import { getRMApprovalList } from '../actions/Material';
 import SummaryDrawer from '../SummaryDrawer';
 import { DRAFT, RM_MASTER_ID } from '../../../config/constants';
@@ -808,10 +808,20 @@ function CommonApproval(props) {
                                     {props?.MasterId === OPERATIONS_ID && <AgGridColumn field="BasicRate" headerName='Rate'></AgGridColumn>}
 
                                     {/* {props?.MasterId === OPERATIONS_ID && !props?.isApproval && <AgGridColumn headerClass="justify-content-center" pinned="right" cellClass="text-center" field="DisplayStatus" cellRenderer='statusFormatter' headerName="Status" ></AgGridColumn>} */}
+                                    {props?.MasterId === BUDGET_ID && <AgGridColumn width="145" cellClass="has-checkbox" field="ApprovalNumber" cellRenderer='linkableFormatter' headerName="Token No."></AgGridColumn>}
+                                    {props?.MasterId === BUDGET_ID && <AgGridColumn width="145" field="CostingHead" headerName='Costing Head'></AgGridColumn>}
+                                    {props?.MasterId === BUDGET_ID && <AgGridColumn width="145" field="FinancialYear" headerName='Financial Year'></AgGridColumn>}
+                                    {props?.MasterId === BUDGET_ID && <AgGridColumn width="145" field="PartNumber" headerName='Part No.'></AgGridColumn>}
+                                    {props?.MasterId === BUDGET_ID && <AgGridColumn width="145" field="PlantName" headerName='Plant (Code)'></AgGridColumn>}
+                                    {props?.MasterId === BUDGET_ID && <AgGridColumn width="145" field="VendorName" headerName='Vendor (Code)'></AgGridColumn>}
+                                    {props?.MasterId === BUDGET_ID && <AgGridColumn width="160" field="CustomerName" headerName='Customer (Code)'></AgGridColumn>}
+                                    {props?.MasterId === BUDGET_ID && <AgGridColumn field="BudgetedPoPrice" headerName="Budgeted Po Price" ></AgGridColumn>}
+                                    {props?.MasterId === BUDGET_ID && <AgGridColumn width="145" field="NetPoPrice" headerName="Net Po Price"></AgGridColumn>}
+
                                     <AgGridColumn width="150" field="RequestedBy" cellRenderer='createdOnFormatter' headerName="Initiated By"></AgGridColumn>
                                     <AgGridColumn width="150" field="CreatedByName" cellRenderer='createdOnFormatter' headerName="Created By"></AgGridColumn>
                                     <AgGridColumn width="160" field="LastApprovedBy" cellRenderer='requestedOnFormatter' headerName="Last Approved/Rejected By"></AgGridColumn>
-                                    <AgGridColumn cell width="190" field="EffectiveDate" cellRenderer='effectiveDateRenderer' filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
+                                    {!props?.MasterId === BUDGET_ID && <AgGridColumn cell width="190" field="EffectiveDate" cellRenderer='effectiveDateRenderer' filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>}
                                 </AgGridReact>
                                 <div className='button-wrapper'>
                                     {!loader &&
