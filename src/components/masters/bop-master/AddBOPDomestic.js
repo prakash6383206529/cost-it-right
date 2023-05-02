@@ -93,11 +93,8 @@ class AddBOPDomestic extends Component {
       levelDetails: {},
       noApprovalCycle: false,
       vendorFilterList: [],
-<<<<<<< HEAD
-      uomIsNo: false
-=======
+      uomIsNo: false,
       isClientVendorBOP: false
->>>>>>> f24185b9de (CIR-T1610|Added checkbox in BOP master for client approved vendor)
     }
   }
 
