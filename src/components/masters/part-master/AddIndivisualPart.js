@@ -76,10 +76,10 @@ class AddIndivisualPart extends Component {
       this.setState({
         isEditFlag: false,
         isLoader: true,
-        PartId: data.Id,
+        PartId: data?.Id,
       })
       this.props.getPartData(data.Id, res => {
-        if (res && res.data && res.data.Result) {
+        if (res && res?.data && res?.data?.Result) {
           const Data = res.data.Data;
           let productArray = []
 
@@ -493,7 +493,7 @@ class AddIndivisualPart extends Component {
                               name={"PartNumber"}
                               type="text"
                               placeholder={isEditFlag ? '-' : "Enter"}
-                              validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength20, checkSpacesInString,  minLength3]}
+                              validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength20, checkSpacesInString, minLength3]}
                               component={renderText}
                               required={true}
                               onChange={this.onPartNoChange}
