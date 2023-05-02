@@ -72,10 +72,12 @@ function BudgetListing(props) {
 
     useEffect(() => {
         applyPermission(topAndLeftMenuData)
-        getTableListData(0, defaultPageSize, true)
-        dispatch(getPartCostingHead((res) => {
-            reactLocalStorage.setObject("budgetCostingHeads", res?.data?.SelectList); //FOR SHOWING DYNAMIC HEADERS IN BUDGET BULK UPLOAD EXCEL DOWNLOAD
-        }))
+        if (!props?.isMasterSummaryDrawer) {
+            getTableListData(0, defaultPageSize, true)
+            dispatch(getPartCostingHead((res) => {
+                reactLocalStorage.setObject("budgetCostingHeads", res?.data?.SelectList); //FOR SHOWING DYNAMIC HEADERS IN BUDGET BULK UPLOAD EXCEL DOWNLOAD
+            }))
+        }
         return () => {
             dispatch(setSelectedRowForPagination([]))
         }
@@ -439,7 +441,11 @@ function BudgetListing(props) {
     const isFirstColumn = (params) => {
         var displayedColumns = params.columnApi.getAllDisplayedColumns();
         var thisIsFirstColumn = displayedColumns[0] === params.column;
-        return thisIsFirstColumn;
+        if (props?.isMasterSummaryDrawer) {
+            return false
+        } else {
+            return thisIsFirstColumn;
+        }
     }
 
     const defaultColDef = {
@@ -477,12 +483,13 @@ function BudgetListing(props) {
     };
 
     if (showBudgetForm) {
-        return (
-            <AddBudget
-                hideForm={hideForm}
-                data={data}
-            />
-        )
+        props?.formToggle(data)
+        // return (
+        //     <AddBudget
+        //         hideForm={hideForm}
+        //         data={data}
+        //     />
+        // )
     }
 
     const toggleDrawer = () => {
@@ -494,19 +501,20 @@ function BudgetListing(props) {
      */
     return (
         <>
-            <div className={`ag-grid-react container-fluid blue-before-inside ${downloadAccessibility ? "show-table-btn no-tab-page" : ""}`} id='go-to-top'>
+            <div className={`ag-grid-react ${(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) ? "custom-pagination" : ""} ${downloadAccessibility ? "show-table-btn no-tab-page" : ""}`}>
                 <ScrollToTop pointProp="go-to-top" />
                 {isLoader ? <LoaderCustom customClass={"loader-center"} /> :
                     <>
                         {disableDownload && <LoaderCustom message={MESSAGES.DOWNLOADING_MESSAGE} customClass="mt-5" />}
                         <form noValidate>
-                            <Row className="blue-before">
+                            <Row className="pt-4 blue-before">
                                 <Col md="9" className="search-user-block mb-3">
                                     <div className="d-flex justify-content-end bd-highlight">
-                                        <div className="warning-message d-flex align-items-center">
-                                            {warningMessage && !disableDownload && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
-                                        </div>
-                                        <button disabled={disableFilter} title="Filtered data" type="button" class="user-btn mr5" onClick={() => onSearch()}><div class="filter mr-0"></div></button>
+                                        {(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) &&
+                                            <div className="warning-message d-flex align-items-center">
+                                                {warningMessage && !disableDownload && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
+                                            </div>}
+                                        {(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) && <button disabled={disableFilter} title="Filtered data" type="button" class="user-btn mr5" onClick={() => onSearch()}><div class="filter mr-0"></div></button>}
                                         {shown ? (
                                             <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => setShown(!shown)}>
                                                 <div className="cancel-icon-white"></div></button>
@@ -514,7 +522,7 @@ function BudgetListing(props) {
                                             ""
                                         )}
 
-                                        {addAccessibility && (
+                                        {addAccessibility && !props?.isMasterSummaryDrawer && (
                                             <button
                                                 type="button"
                                                 className={"user-btn mr5"}
@@ -525,7 +533,7 @@ function BudgetListing(props) {
                                                 {/* ADD */}
                                             </button>
                                         )}
-                                        {bulkUploadAccessibility && <button
+                                        {bulkUploadAccessibility && !props?.isMasterSummaryDrawer && <button
                                             type="button"
                                             className={"user-btn mr5"}
                                             onClick={BulkToggle}
@@ -536,7 +544,7 @@ function BudgetListing(props) {
                                         </button>}
 
                                         {
-                                            downloadAccessibility &&
+                                            downloadAccessibility && !props?.isMasterSummaryDrawer &&
                                             <>
                                                 <button title={`Download ${dataCount === 0 ? "All" : "(" + dataCount + ")"}`} type="button" onClick={onExcelDownload} className={'user-btn mr5'}><div className="download mr-1" ></div>
                                                     {/* DOWNLOAD */}
@@ -561,7 +569,7 @@ function BudgetListing(props) {
                             <div className="ag-grid-header">
                                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
                             </div>
-                            <div className={`ag-theme-material ${isLoader && "max-loader-height"}`}>
+                            <div className={`ag-theme-material ${isLoader && !props?.isMasterSummaryDrawer && "max-loader-height"}`}>
                                 {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
                                 <AgGridReact
                                     defaultColDef={defaultColDef}
@@ -589,18 +597,12 @@ function BudgetListing(props) {
                                     <AgGridColumn field="FinancialYear" headerName="Financial Year"></AgGridColumn>
                                     <AgGridColumn field="NetPoPrice" headerName="Net Po Price"></AgGridColumn>
                                     <AgGridColumn field="BudgetedPoPrice" headerName="Budgeted Po Price" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-
-                                    <AgGridColumn field="PartName" headerName="Part Name" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                                    <AgGridColumn field="PartNumber" headerName="Part No." width={200}></AgGridColumn>
-                                    <AgGridColumn field="PlantName" headerName="Plant Name"></AgGridColumn>
-                                    <AgGridColumn field="PlantCode" headerName="Plant Code"></AgGridColumn>
+                                    <AgGridColumn field="partNoWithRevNo" headerName="Part No. (Revision No.)" width={200}></AgGridColumn>
+                                    <AgGridColumn field="plantNameWithCode" headerName="Plant (Code)"></AgGridColumn>
                                     {/*  <AgGridColumn field="BudgetedPrice" headerName="Budgeted Price"></AgGridColumn>   ONCE CODE DEPLOY FROM BACKEND THEN UNCOMENT THE LINE */}
-                                    <AgGridColumn field="VendorName" headerName="Vendor Name" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                                    <AgGridColumn field="VendorCode" headerName="Vendor Code" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-
-                                    <AgGridColumn field="CustomerName" headerName="Customer Name" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                                    <AgGridColumn field="CustomerCode" headerName="Customer Code" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                                    <AgGridColumn field="BudgetingId" width={120} headerName="Actions" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                                    <AgGridColumn field="vendorNameWithCode" headerName="Vendor (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                                    <AgGridColumn field="customerNameWithCode" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                                    {!props?.isMasterSummaryDrawer && <AgGridColumn field="BudgetingId" width={120} headerName="Actions" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
                                 </AgGridReact>
                                 <div className='button-wrapper'>
                                     {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} globalTake={globalTake} />}
