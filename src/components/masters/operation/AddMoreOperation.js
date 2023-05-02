@@ -18,7 +18,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { reactLocalStorage } from "reactjs-localstorage";
 import { autoCompleteDropdown } from "../../common/CommonFunctions";
 import { getClientSelectList } from "../actions/Client";
-import { AcceptableOperationUOM } from "../../../config/masterData";
+import { AcceptableOperationUOM, InitialGridForToken } from "../../../config/masterData";
 import { getUOMSelectList, getVendorNameByVendorSelectList } from "../../../actions/Common";
 import DayTime from "../../common/DayTimeWrapper";
 import { createOperationsAPI, fileDeleteOperation, fileUploadOperation, getOperationPartSelectList, updateOperationAPI } from "../actions/OtherOperation";
@@ -61,23 +61,23 @@ function AddMoreOperation(props) {
     let defaultValues = {
         remark: detailObject && detailObject.Remark ? detailObject.Remark : '',
         crmHeadWireRate: detailObject && detailObject.MaterialWireCRMHead && { label: detailObject.MaterialWireCRMHead, value: 1 },
-        wireRate: detailObject && detailObject.MaterialWireRate ? detailObject.MaterialWireRate : '',
-        consumptionWire: detailObject && detailObject.MaterialWireConsumption ? detailObject.MaterialWireConsumption : '',
-        wireCost: detailObject && detailObject.MaterialWireCost ? detailObject.MaterialWireCost : '',
+        wireRate: detailObject && detailObject.MaterialWireRate ? checkForDecimalAndNull(detailObject.MaterialWireRate, initialConfiguration.NoOfDecimalForPrice) : '',
+        consumptionWire: detailObject && detailObject.MaterialWireConsumption ? checkForDecimalAndNull(detailObject.MaterialWireConsumption, initialConfiguration.NoOfDecimalForPrice) : '',
+        wireCost: detailObject && detailObject.MaterialWireCost ? checkForDecimalAndNull(detailObject.MaterialWireCost, initialConfiguration.NoOfDecimalForPrice) : '',
         crmHeadGasRate: detailObject && detailObject.MaterialGasCRMHead && { label: detailObject.MaterialGasCRMHead, value: 1 },
-        gasRate: detailObject && detailObject.MaterialGasRate ? detailObject.MaterialGasRate : '',
-        consumptionGas: detailObject && detailObject.MaterialGasConsumption ? detailObject.MaterialGasConsumption : '',
-        gasCostWelding: detailObject && detailObject.MaterialGasCost ? detailObject.MaterialGasCost : '',
+        gasRate: detailObject && detailObject.MaterialGasRate ? checkForDecimalAndNull(detailObject.MaterialGasRate, initialConfiguration.NoOfDecimalForPrice) : '',
+        consumptionGas: detailObject && detailObject.MaterialGasConsumption ? checkForDecimalAndNull(detailObject.MaterialGasConsumption, initialConfiguration.NoOfDecimalForPrice) : '',
+        gasCostWelding: detailObject && detailObject.MaterialGasCost ? checkForDecimalAndNull(detailObject.MaterialGasCost, initialConfiguration.NoOfDecimalForPrice) : '',
         //////////////////////////
         crmHeadPowerWelding: detailObject && detailObject.PowerCRMHead && { label: detailObject.PowerCRMHead, value: 1 },
-        electricityRate: detailObject && detailObject.PowerElectricityRate ? detailObject.PowerElectricityRate : '',
-        consumptionPower: detailObject && detailObject.PowerElectricityConsumption ? detailObject.PowerElectricityConsumption : '',
-        electricityCostWelding: detailObject && detailObject.PowerElectricityCost ? detailObject.PowerElectricityCost : '',
+        electricityRate: detailObject && detailObject.PowerElectricityRate ? checkForDecimalAndNull(detailObject.PowerElectricityRate, initialConfiguration.NoOfDecimalForPrice) : '',
+        consumptionPower: detailObject && detailObject.PowerElectricityConsumption ? checkForDecimalAndNull(detailObject.PowerElectricityConsumption, initialConfiguration.NoOfDecimalForPrice) : '',
+        electricityCostWelding: detailObject && detailObject.PowerElectricityCost ? checkForDecimalAndNull(detailObject.PowerElectricityCost, initialConfiguration.NoOfDecimalForPrice) : '',
         //////////////////////////
         crmHeadLabourWelding: detailObject && detailObject.LabourCRMHead && { label: detailObject.LabourCRMHead, value: 1 },
-        labourRate: detailObject && detailObject.LabourManPowerRate ? detailObject.LabourManPowerRate : '',
-        weldingShift: detailObject && detailObject.LabourManPowerConsumption ? detailObject.LabourManPowerConsumption : '',
-        labourCost: detailObject && detailObject.LabourManPowerCost ? detailObject.LabourManPowerCost : '',
+        labourRate: detailObject && detailObject.LabourManPowerRate ? checkForDecimalAndNull(detailObject.LabourManPowerRate, initialConfiguration.NoOfDecimalForPrice) : '',
+        weldingShift: detailObject && detailObject.LabourManPowerConsumption ? checkForDecimalAndNull(detailObject.LabourManPowerConsumption, initialConfiguration.NoOfDecimalForPrice) : '',
+        labourCost: detailObject && detailObject.LabourManPowerCost ? checkForDecimalAndNull(detailObject.LabourManPowerCost, initialConfiguration.NoOfDecimalForPrice) : '',
         //////////////////////////
         crmHeadConsumableMachineCost: detailObject && detailObject.ConsumableMachineCRMHead && { label: detailObject.ConsumableMachineCRMHead, value: 1 },
 
@@ -245,57 +245,57 @@ function AddMoreOperation(props) {
             setValue('effectiveDate', DayTime(addMoreDetailObj.effectiveDate).$d)
             if (String(props?.addMoreDetailObj?.operationType?.label) === "Welding") {
                 setFiles(detailObject?.Attachements)
-                setValue('machineConsumableCost', detailObject && detailObject.MachineConsumptionCost ? detailObject.MachineConsumptionCost : '',)
+                setValue('machineConsumableCost', detailObject && detailObject.MachineConsumptionCost ? checkForDecimalAndNull(detailObject.MachineConsumptionCost, initialConfiguration.NoOfDecimalForPrice) : '',)
                 setValue('crmHeadConsumableWelderCost', detailObject && detailObject.ConsumableWelderCRMHead && { label: detailObject.ConsumableWelderCRMHead, value: 1 })
-                setValue('welderCost', detailObject && detailObject.WelderCost ? detailObject.WelderCost : '',)
+                setValue('welderCost', detailObject && detailObject.WelderCost ? checkForDecimalAndNull(detailObject.WelderCost, initialConfiguration.NoOfDecimalForPrice) : '',)
                 setValue('crmHeadInterestDepriciationWelding', detailObject && detailObject.InterestAndDepriciationCRMHead && { label: detailObject.InterestAndDepriciationCRMHead, value: 1 })
-                setValue('interestDepriciationCost', detailObject && detailObject.InterestAndDepriciationCost ? detailObject.InterestAndDepriciationCost : '',)
+                setValue('interestDepriciationCost', detailObject && detailObject.InterestAndDepriciationCost ? checkForDecimalAndNull(detailObject.InterestAndDepriciationCost, initialConfiguration.NoOfDecimalForPrice) : '',)
                 setValue('crmHeadAdditionalOtherCostWelding', detailObject && detailObject.OtherCostCRMHead && { label: detailObject.OtherCostCRMHead, value: 1 })
-                setValue('otherCostDescriptionWelding', detailObject && detailObject.OtherCostDescription ? detailObject.OtherCostDescription : '',)
-                setValue('otherCostWelding', detailObject && detailObject.OtherCost ? detailObject.OtherCost : '',)
+                setValue('otherCostDescriptionWelding', detailObject && detailObject.OtherCostDescription ? checkForDecimalAndNull(detailObject.OtherCostDescription, initialConfiguration.NoOfDecimalForPrice) : '',)
+                setValue('otherCostWelding', detailObject && detailObject.OtherCost ? checkForDecimalAndNull(detailObject.OtherCost, initialConfiguration.NoOfDecimalForPrice) : '',)
 
             } else {
 
                 setIncludeInterestInRejection(detailObject?.IsIncludeInterestRateAndDepriciationInRjectionAndProfit)
                 setValue('crmHeadMaterialCost', detailObject && detailObject.MaterialGasCRMHead && { label: detailObject.MaterialGasCRMHead, value: 1 })
-                setValue('gasCost', detailObject && detailObject.MaterialGasCost ? detailObject.MaterialGasCost : '',)
+                setValue('gasCost', detailObject && detailObject.MaterialGasCost ? checkForDecimalAndNull(detailObject.MaterialGasCost, initialConfiguration.NoOfDecimalForPrice) : '',)
                 setValue('crmHeadPower', detailObject && detailObject.PowerCRMHead && { label: detailObject.PowerCRMHead, value: 1 })
-                setValue('electricityCost', detailObject && detailObject.PowerElectricityCost ? detailObject.PowerElectricityCost : '',)
+                setValue('electricityCost', detailObject && detailObject.PowerElectricityCost ? checkForDecimalAndNull(detailObject.PowerElectricityCost, initialConfiguration.NoOfDecimalForPrice) : '',)
                 //////////
                 setValue('crmHeadLabour', detailObject && detailObject.LabourCRMHead && { label: detailObject.LabourCRMHead, value: 1 })
-                setValue('manPowerCost', detailObject && detailObject.LabourManPowerCost ? detailObject.LabourManPowerCost : '',)
+                setValue('manPowerCost', detailObject && detailObject.LabourManPowerCost ? checkForDecimalAndNull(detailObject.LabourManPowerCost, initialConfiguration.NoOfDecimalForPrice) : '',)
                 //setValue('crmHeadLabourStaffCost', detailObject && detailObject.PowerCRMHead && { label: detailObject.PowerCRMHead, value: 1 })
-                setValue('staffCost', detailObject && detailObject.LabourStaffCost ? detailObject.LabourStaffCost : '',)
+                setValue('staffCost', detailObject && detailObject.LabourStaffCost ? checkForDecimalAndNull(detailObject.LabourStaffCost, initialConfiguration.NoOfDecimalForPrice) : '',)
                 //////////
                 setValue('crmHeadConsumableMaintenanceCost', detailObject && detailObject.ConsumableMaintenanceCRMHead && { label: detailObject.ConsumableMaintenanceCRMHead, value: 1 })
-                setValue('maintenanceCost', detailObject && detailObject.ConsumableMaintenanceCost ? detailObject.ConsumableMaintenanceCost : '',)
+                setValue('maintenanceCost', detailObject && detailObject.ConsumableMaintenanceCost ? checkForDecimalAndNull(detailObject.ConsumableMaintenanceCost, initialConfiguration.NoOfDecimalForPrice) : '',)
                 setValue('crmHeadConsumableCost', detailObject && detailObject.ConsumableCRMHead && { label: detailObject.ConsumableCRMHead, value: 1 })
-                setValue('consumablesCost', detailObject && detailObject.ConsumableCost ? detailObject.ConsumableCost : '',)
+                setValue('consumablesCost', detailObject && detailObject.ConsumableCost ? checkForDecimalAndNull(detailObject.ConsumableCost, initialConfiguration.NoOfDecimalForPrice) : '',)
                 setValue('crmHeadWaterCost', detailObject && detailObject.ConsumableWaterCRMHead && { label: detailObject.ConsumableWaterCRMHead, value: 1 })
-                setValue('waterCost', detailObject && detailObject.ConsumableWaterCost ? detailObject.ConsumableWaterCost : '',)
+                setValue('waterCost', detailObject && detailObject.ConsumableWaterCost ? checkForDecimalAndNull(detailObject.ConsumableWaterCost, initialConfiguration.NoOfDecimalForPrice) : '',)
                 setValue('crmHeadJigStripping', detailObject && detailObject.ConsumableJigStrippingCRMHead && { label: detailObject.ConsumableJigStrippingCRMHead, value: 1 })
-                setValue('jigStripping', detailObject && detailObject.ConsumableJigStrippingCost ? detailObject.ConsumableJigStrippingCost : '',)
+                setValue('jigStripping', detailObject && detailObject.ConsumableJigStrippingCost ? checkForDecimalAndNull(detailObject.ConsumableJigStrippingCost, initialConfiguration.NoOfDecimalForPrice) : '',)
                 ///////////
                 setValue('crmHeadInterest', detailObject && detailObject.InterestCRMHead && { label: detailObject.InterestCRMHead, value: 1 })
-                setValue('interestCost', detailObject && detailObject.InterestCost ? detailObject.InterestCost : '',)
+                setValue('interestCost', detailObject && detailObject.InterestCost ? checkForDecimalAndNull(detailObject.InterestCost, initialConfiguration.NoOfDecimalForPrice) : '',)
                 setValue('crmHeadDepriciation', detailObject && detailObject.DepriciationCRMHead && { label: detailObject.DepriciationCRMHead, value: 1 })
-                setValue('depriciationCost', detailObject && detailObject.DepriciationCost ? detailObject.DepriciationCost : '',)
+                setValue('depriciationCost', detailObject && detailObject.DepriciationCost ? checkForDecimalAndNull(detailObject.DepriciationCost, initialConfiguration.NoOfDecimalForPrice) : '',)
                 ///////////
                 setValue('crmHeadOtherOperation', detailObject && detailObject.OtherOperationCRMHead && { label: detailObject.OtherOperationCRMHead, value: 1 })
                 setValue('operationName', detailObject && detailObject.OtherOperationName && { label: detailObject.OtherOperationName, value: detailObject.OtherOperationIdRef })
-                setValue('rateOperation', detailObject && detailObject.OtherOperationCost ? detailObject.OtherOperationCost : '',)
+                setValue('rateOperation', detailObject && detailObject.OtherOperationCost ? checkForDecimalAndNull(detailObject.OtherOperationCost, initialConfiguration.NoOfDecimalForPrice) : '',)
                 ///////////
                 setValue('crmHeadStatuaryLicense', detailObject && detailObject.StatuatoryAndLicenseCRMHead && { label: detailObject.StatuatoryAndLicenseCRMHead, value: 1 })
-                setValue('statuatoryLicense', detailObject && detailObject.StatuatoryAndLicenseCost ? detailObject.StatuatoryAndLicenseCost : '',)
+                setValue('statuatoryLicense', detailObject && detailObject.StatuatoryAndLicenseCost ? checkForDecimalAndNull(detailObject.StatuatoryAndLicenseCost, initialConfiguration.NoOfDecimalForPrice) : '',)
                 setValue('crmHeadRejoinRework', detailObject && detailObject.RejectionAndReworkCRMHead && { label: detailObject.RejectionAndReworkCRMHead, value: 1 })
-                setValue('rejnReworkPercent', detailObject && detailObject.RejectionAndReworkPercentage ? detailObject.RejectionAndReworkPercentage : '',)
-                setValue('rejoinReworkCost', detailObject && detailObject.RejectionAndReworkCost ? detailObject.RejectionAndReworkCost : '')
+                setValue('rejnReworkPercent', detailObject && detailObject.RejectionAndReworkPercentage ? checkForDecimalAndNull(detailObject.RejectionAndReworkPercentage, initialConfiguration.NoOfDecimalForPrice) : '',)
+                setValue('rejoinReworkCost', detailObject && detailObject.RejectionAndReworkCost ? checkForDecimalAndNull(detailObject.RejectionAndReworkCost, initialConfiguration.NoOfDecimalForPrice) : '')
                 setValue('crmHeadProfit', detailObject && detailObject.ProfitCRMHead && { label: detailObject.ProfitCRMHead, value: 1 })
-                setValue('profitPercent', detailObject && detailObject.ProfitCRMPercentage ? detailObject.ProfitCRMPercentage : '')
-                setValue('profitCost', detailObject && detailObject.ProfitCRMCost ? detailObject.ProfitCRMCost : '',)
+                setValue('profitPercent', detailObject && detailObject.ProfitCRMPercentage ? checkForDecimalAndNull(detailObject.ProfitCRMPercentage, initialConfiguration.NoOfDecimalForPrice) : '')
+                setValue('profitCost', detailObject && detailObject.ProfitCRMCost ? checkForDecimalAndNull(detailObject.ProfitCRMCost, initialConfiguration.NoOfDecimalForPrice) : '',)
                 setValue('crmHeadOtherCost', detailObject && detailObject.OtherCostCRMHead && { label: detailObject.OtherCostCRMHead, value: 1 })
-                setValue('otherCost', detailObject && detailObject.OtherCost ? detailObject.OtherCost : '',)
-                setValue('otherCostDescription', detailObject && detailObject.OtherCostDescription ? detailObject.OtherCostDescription : '',)
+                setValue('otherCost', detailObject && detailObject.OtherCost ? checkForDecimalAndNull(detailObject.OtherCost, initialConfiguration.NoOfDecimalForPrice) : '',)
+                setValue('otherCostDescription', detailObject && detailObject.OtherCostDescription ? checkForDecimalAndNull(detailObject.OtherCostDescription, initialConfiguration.NoOfDecimalForPrice) : '',)
             }
 
             setTimeout(() => {
