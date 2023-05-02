@@ -621,7 +621,7 @@ export function renderDatePicker(field) {
         showMonthDropdown
         showYearDropdown
         readonly="readonly"
-        onBlur={input.onBlur}
+        onBlur={field.selected ? () => null : input.onBlur}
         selected={input.value ? new Date(input.value) : null}
         className={field.className}
         onSelect={field.changeHandler ? (date) => field.changeHandler(date) : null}
