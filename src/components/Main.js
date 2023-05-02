@@ -64,7 +64,6 @@ import SaleProvisionReport from './report/components/SaleProvisionReport/SalePro
 import PurchaseProvisionReport from './report/components/PurchaseProvisionReport/PurchaseProvisionReport'
 import CustomerPoamSummaryReport from './report/components/CustomerPoamSummaryReport/CustomerPoamSummaryReport'
 import HeadWiseCostingGotGiven from './report/components/HeadwiseCostingGotGiven/HeadWiseCostingGotGiven'
-import MasterCostMovement from './report/components/CostMovementByMaster/MasterCostMovement'
 import BudgetMaster from './masters/budget-master'
 const CustomHeader = {
   'Content-Type': 'application/x-www-form-urlencoded',
