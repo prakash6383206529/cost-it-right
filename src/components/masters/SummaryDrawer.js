@@ -10,12 +10,13 @@ import { Fragment } from 'react';
 import MasterSendForApproval from './MasterSendForApproval';
 import LoaderCustom from '../common/LoaderCustom';
 import OperationListing from './operation/OperationListing'
-import { BOP_MASTER_ID, RM_MASTER_ID, OPERATIONS_ID, MACHINE_MASTER_ID, FILE_URL } from '../../config/constants';
+import { BOP_MASTER_ID, RM_MASTER_ID, OPERATIONS_ID, MACHINE_MASTER_ID, FILE_URL, BUDGET_ID } from '../../config/constants';
 import MachineRateListing from './machine-master/MachineRateListing';
 import { loggedInUserId, userDetails, userTechnologyDetailByMasterId } from '../../helper';
 import { checkFinalUser } from '../costing/actions/Costing';
 import { getUsersMasterLevelAPI } from '../../actions/auth/AuthActions';
 import { costingTypeIdToApprovalTypeIdFunction } from '../common/CommonFunctions';
+import BudgetListing from './budget-master/BudgetListing';
 
 function SummaryDrawer(props) {
     const { approvalData } = props
@@ -51,7 +52,7 @@ function SummaryDrawer(props) {
     const [finalLevelUser, setFinalLevelUser] = useState(false)
     const [costingTypeId, setCostingTypeId] = useState('')
     const [levelDetails, setLevelDetails] = useState('')
-
+    const [isBudgetApproval, setIsBudgetApproval] = useState(false)
     useEffect(() => {
         let CostingTypeId = ''
         dispatch(getMasterApprovalSummary(approvalData.approvalNumber, approvalData.approvalProcessId, props.masterId, res => {
@@ -62,20 +63,23 @@ function SummaryDrawer(props) {
             if (Number(props.masterId) === RM_MASTER_ID) {
                 CostingTypeId = Data.ImpactedMasterDataList[0]?.CostingTypeId
                 setFiles(Data.ImpactedMasterDataList[0].Files)
-                Data.ImpactedMasterDataList.length > 0 ? setIsDataInMaster(true) : setIsDataInMaster(false);
-            }
-            else if (Number(props.masterId) === BOP_MASTER_ID) {
+                Data.ImpactedMasterDataList?.length > 0 ? setIsDataInMaster(true) : setIsDataInMaster(false);
+            } else if (Number(props.masterId) === BOP_MASTER_ID) {
                 CostingTypeId = Data.ImpactedMasterDataListBOP[0]?.CostingTypeId
                 setFiles(Data.ImpactedMasterDataListBOP[0].Files)
-                Data.ImpactedMasterDataListBOP.length > 0 ? setIsDataInMaster(true) : setIsDataInMaster(false);
+                Data.ImpactedMasterDataListBOP?.length > 0 ? setIsDataInMaster(true) : setIsDataInMaster(false);
             } else if (Number(props.masterId) === OPERATIONS_ID) {
                 CostingTypeId = Data.ImpactedMasterDataListOperation[0]?.CostingTypeId
                 setFiles(Data.ImpactedMasterDataListOperation[0].Files)
-                Data.ImpactedMasterDataListOperation.length > 0 ? setIsDataInMaster(true) : setIsDataInMaster(false);
+                Data.ImpactedMasterDataListOperation?.length > 0 ? setIsDataInMaster(true) : setIsDataInMaster(false);
             } else if (Number(props.masterId) === MACHINE_MASTER_ID) {
                 CostingTypeId = Data.ImpactedMasterDataListMachine[0]?.CostingTypeId
                 setFiles(Data.ImpactedMasterDataListMachine[0].Files)
-                Data.ImpactedMasterDataListMachine.length > 0 ? setIsDataInMaster(true) : setIsDataInMaster(false);
+                Data.ImpactedMasterDataListMachine?.length > 0 ? setIsDataInMaster(true) : setIsDataInMaster(false);
+            } else if (Number(props.masterId) === BUDGET_ID) {
+                CostingTypeId = Data.ImpactedMasterDataListBudgeting[0]?.CostingHeadId
+                setFiles(Data.ImpactedMasterDataListBudgeting[0].Files)
+                Data.ImpactedMasterDataListBudgeting?.length > 0 ? setIsDataInMaster(true) : setIsDataInMaster(false);
             }
             setCostingTypeId(CostingTypeId)
             Data.NumberOfMaster > 0 ? setIsDataInMaster(true) : setIsDataInMaster(false);
@@ -100,9 +104,10 @@ function SummaryDrawer(props) {
             setIsBOPApproval(true)
         } else if (Number(props.masterId) === OPERATIONS_ID) {  // MASTER ID 3 FOR OPERATION
             setIsOperationApproval(true)
-
         } else if (Number(props.masterId) === MACHINE_MASTER_ID) {  // MASTER ID 4 FOR MACHINE
             setIsMachineApproval(true)
+        } else if (Number(props.masterId) === BUDGET_ID) {
+            setIsBudgetApproval(true)
         }
 
         dispatch(getUsersMasterLevelAPI(loggedInUserId(), props.masterId, res => {
@@ -157,8 +162,10 @@ function SummaryDrawer(props) {
 
                                 {isMachineApproval &&
                                     <MachineRateListing isMasterSummaryDrawer={true} selectionForListingMasterAPI='Master' isDataInMaster={isDataInMaster} />}
+                                {isBudgetApproval &&
+                                    <BudgetListing isMasterSummaryDrawer={true} selectionForListingMasterAPI='Master' />}
 
-                                {files.length > 0 && <Row>
+                                {files?.length > 0 && <Row>
                                     <Col md="12" className='mt-2'>
                                         <h5 className="left-border">Attachments:</h5>
                                     </Col>
