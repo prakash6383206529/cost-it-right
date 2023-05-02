@@ -286,7 +286,7 @@ function NfrListing(props) {
         dispatch(fetchNfrDetailFromSap(res => {
             setSapLoader(false)
             if (res && res.data && res.data.Result) {
-                Toaster.success('Data has been pushed successfully')
+                Toaster.success('Data has been pulled successfully')
             }
         }))
     }
