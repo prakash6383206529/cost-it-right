@@ -18,7 +18,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { reactLocalStorage } from "reactjs-localstorage";
 import { autoCompleteDropdown } from "../../common/CommonFunctions";
 import { getClientSelectList } from "../actions/Client";
-import { AcceptableOperationUOM, InitialGridForToken } from "../../../config/masterData";
+import { AcceptableOperationUOM } from "../../../config/masterData";
 import { getUOMSelectList, getVendorNameByVendorSelectList } from "../../../actions/Common";
 import DayTime from "../../common/DayTimeWrapper";
 import { createOperationsAPI, fileDeleteOperation, fileUploadOperation, getOperationPartSelectList, updateOperationAPI } from "../actions/OtherOperation";
@@ -244,6 +244,7 @@ function AddMoreOperation(props) {
         if (isEditFlag) {
             setValue('effectiveDate', DayTime(addMoreDetailObj.effectiveDate).$d)
             if (String(props?.addMoreDetailObj?.operationType?.label) === "Welding") {
+                setDataToSend(prevState => ({ ...prevState, netCostWelding: detailObject && detailObject.Rate ? detailObject.Rate : '', wireCostWelding: detailObject && detailObject.MaterialWireCost ? detailObject.MaterialWireCost : '', gasCostWelding: detailObject && detailObject.MaterialGasCost ? detailObject.MaterialGasCost : '', electricityCostWelding: detailObject && detailObject.PowerElectricityCost ? detailObject.PowerElectricityCost : '', labourCostWelding: detailObject && detailObject.LabourManPowerCost ? detailObject.LabourManPowerCost : '' }))
                 setFiles(detailObject?.Attachements)
                 setValue('machineConsumableCost', detailObject && detailObject.MachineConsumptionCost ? checkForDecimalAndNull(detailObject.MachineConsumptionCost, initialConfiguration.NoOfDecimalForPrice) : '',)
                 setValue('crmHeadConsumableWelderCost', detailObject && detailObject.ConsumableWelderCRMHead && { label: detailObject.ConsumableWelderCRMHead, value: 1 })
@@ -255,7 +256,7 @@ function AddMoreOperation(props) {
                 setValue('otherCostWelding', detailObject && detailObject.OtherCost ? checkForDecimalAndNull(detailObject.OtherCost, initialConfiguration.NoOfDecimalForPrice) : '',)
 
             } else {
-
+                setDataToSend(prevState => ({ ...prevState, netCost: detailObject && detailObject.Rate ? detailObject.Rate : '', rejectionReworkCostState: detailObject && detailObject.RejectionAndReworkCost ? detailObject.RejectionAndReworkCost : '', profitCostState: detailObject && detailObject.ProfitCRMCost ? detailObject.ProfitCRMCost : '' }))
                 setIncludeInterestInRejection(detailObject?.IsIncludeInterestRateAndDepriciationInRjectionAndProfit)
                 setValue('crmHeadMaterialCost', detailObject && detailObject.MaterialGasCRMHead && { label: detailObject.MaterialGasCRMHead, value: 1 })
                 setValue('gasCost', detailObject && detailObject.MaterialGasCost ? checkForDecimalAndNull(detailObject.MaterialGasCost, initialConfiguration.NoOfDecimalForPrice) : '',)
@@ -350,21 +351,21 @@ function AddMoreOperation(props) {
 
             MaterialGasRate: values?.gasRate,//welding
             MaterialGasConsumption: values?.consumptionGas,//welding
-            MaterialGasCost: isWelding ? values?.gasCostWelding : values?.gasCost,
+            MaterialGasCost: isWelding ? dataToSend?.gasCostWelding : values?.gasCost,
             MaterialWireCRMHead: values?.crmHeadWireRate?.label,//welding
             MaterialWireRate: values?.wireRate,//welding
             MaterialWireConsumption: values?.consumptionWire,//welding
-            MaterialWireCost: values?.wireCost,//welding
+            MaterialWireCost: dataToSend?.wireCostWelding,//welding  
 
             PowerCRMHead: isWelding ? values?.crmHeadPowerWelding?.label : values?.crmHeadPower?.label,
             PowerElectricityRate: values?.electricityRate,//welding
             PowerElectricityConsumption: values?.consumptionPower,//welding
-            PowerElectricityCost: isWelding ? values?.electricityCostWelding : values?.electricityCost,
+            PowerElectricityCost: isWelding ? dataToSend?.electricityCostWelding : values?.electricityCost,
 
             LabourCRMHead: isWelding ? values?.crmHeadLabourWelding?.label : values?.crmHeadLabour?.label,
             LabourManPowerRate: values?.labourRate,
             LabourManPowerConsumption: values?.weldingShift,//welding/shift
-            LabourManPowerCost: isWelding ? values?.labourCost : values?.manPowerCost,
+            LabourManPowerCost: isWelding ? dataToSend?.labourCostWelding : values?.manPowerCost,
             LabourStaffCost: values?.staffCost,
 
             ConsumableMaintenanceCRMHead: values?.crmHeadConsumableMaintenanceCost?.label,
@@ -395,10 +396,10 @@ function AddMoreOperation(props) {
             StatuatoryAndLicenseCost: values?.statuatoryLicense,
             RejectionAndReworkCRMHead: values?.crmHeadRejoinRework?.label,
             RejectionAndReworkPercentage: values?.rejnReworkPercent,
-            RejectionAndReworkCost: values?.rejoinReworkCost,
+            RejectionAndReworkCost: dataToSend?.rejectionReworkCostState,
             ProfitCRMHead: values?.crmHeadProfit?.label,
             ProfitCRMPercentage: values?.profitPercent,
-            ProfitCRMCost: values?.profitCost,
+            ProfitCRMCost: dataToSend?.profitCostState,
 
             OtherCostCRMHead: isWelding ? values?.crmHeadAdditionalOtherCostWelding?.label : values?.crmHeadOtherCost?.label,
             OtherCostDescription: isWelding ? values?.otherCostDescriptionWelding : values?.otherCostDescription,
