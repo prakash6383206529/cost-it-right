@@ -1201,7 +1201,7 @@ function RawMaterialCost(props) {
             </Col>
           </Row>
           <form noValidate className="form" onSubmit={handleSubmit(onSubmit)}>
-            {isNFR && <Row>
+            {false && isNFR && <Row>
               {/*RAW MATERIAL COST GRID */}
 
               <Col md="12">
