@@ -7,7 +7,7 @@ import ApprovalWorkFlow from "../../costing/components/approval/ApprovalWorkFlow
 import { Fragment } from "react";
 import ApprovalDrawer from "./ApprovalDrawer";
 import NoContentFound from "../../common/NoContentFound";
-import { EMPTY_DATA, NFRTypeId } from "../../../config/constants";
+import { EMPTY_DATA, NFRTypeId, defaultPageSize } from "../../../config/constants";
 import { useDispatch } from "react-redux";
 import { getNFRApprovalSummary } from "./actions/nfr";
 import { formViewData, loggedInUserId, searchNocontentFilter, userDetails, userTechnologyLevelDetails } from "../../../helper";
@@ -23,7 +23,7 @@ const gridOptions = {};
 
 function NfrSummaryDrawer(props) {
     const { rowData } = props
-    const [loader, setLoader] = useState(true)
+    const [loader, setLoader] = useState(false)
     const [approvalLevelStep, setApprovalLevelStep] = useState([])
     const [tableData, setTableData] = useState([])
     const [approvalDrawer, setApprovalDrawer] = useState(false)
@@ -44,8 +44,9 @@ function NfrSummaryDrawer(props) {
     const dispatch = useDispatch()
 
     useEffect(() => {
+        setLoader(true)
         dispatch(getNFRApprovalSummary(rowData?.NfrGroupId, loggedInUserId(), (res) => {
-
+            setLoader(false)
             if (res?.data?.Result === true) {
                 setNFRData(res?.data?.Data)
                 setIsApprovalDone(res?.data?.Data?.IsSent)
@@ -108,7 +109,6 @@ function NfrSummaryDrawer(props) {
     }
 
     const viewCosting = (costingNumber) => {
-        console.log(nfrData?.CostingData, "CostingData");
         setIsCostingDrawerLoader(true)
         dispatch(getSingleCostingDetails(costingNumber, (res) => {
             setIsCostingDrawerLoader(false)
@@ -173,9 +173,7 @@ function NfrSummaryDrawer(props) {
     }
     const vendorFormatter = (props) => {
         const cellValue = props?.value;
-        console.log('cellValue: ', cellValue);
         const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
-        console.log('rowData: ', rowData);
 
         return `${cellValue} (${rowData.VendorCode})`
     }
@@ -207,7 +205,10 @@ function NfrSummaryDrawer(props) {
         }
 
     }
-
+    const onPageSizeChanged = (newPageSize) => {
+        var value = document.getElementById('page-size').value;
+        gridApi.paginationSetPageSize(Number(value));
+    };
 
     return (
         <div>
@@ -268,13 +269,13 @@ function NfrSummaryDrawer(props) {
                                 </Table>
                             </Col> */}
                             <Col md="12">
-                                <div className={`ag-grid-react container-fluid p-relative`} id='go-to-top'>
-
+                                <div className={`ag-grid-react container-fluid p-relative`}>
                                     <Row >
                                         <Col>
                                             <div className={`ag-grid-wrapper height-width-wrapper min-height-auto p-relative ${rowData.length <= 0 ? 'overlay-contain' : ''}`}>
-                                                <div className={`ag-theme-material ${(loader) && "max-loader-height"}`}>
+                                                <div className={`ag-theme-material`}>
                                                     {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
+                                                    {loader && <LoaderCustom />}
                                                     <AgGridReact
                                                         style={{ height: '100%', width: '100%' }}
                                                         defaultColDef={defaultColDef}
@@ -304,10 +305,11 @@ function NfrSummaryDrawer(props) {
                                                         <AgGridColumn field="PlantName" headerName='Plant' cellRenderer={'plantFormatter'}></AgGridColumn>
                                                         <AgGridColumn field="CostingNumber" headerName='Costing' ></AgGridColumn>
                                                         <AgGridColumn field="NetPOPrice" headerName='Net PO' ></AgGridColumn>
-                                                        <AgGridColumn field="CostingId" headerName='Actions' cellRenderer={'onAction'}></AgGridColumn>
+                                                        <AgGridColumn field="CostingId" headerName='Actions' type="rightAligned" cellRenderer={'onAction'}></AgGridColumn>
 
                                                     </AgGridReact>
 
+                                                    {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} globalTake={defaultPageSize} />}
                                                 </div>
                                                 <div className="text-right pb-3">
                                                     <WarningMessage message="Select one costing to push on SAP." />
@@ -318,7 +320,7 @@ function NfrSummaryDrawer(props) {
                                 </div>
                             </Col>
                         </Row>
-                        {!isApprovalDone && sendForApprovalButtonShow && <Row className="sf-btn-footer no-gutters drawer-sticky-btn justify-content-between">
+                        {<Row className="sf-btn-footer no-gutters drawer-sticky-btn justify-content-between">
                             <div className="col-sm-12 text-right bluefooter-butn mx-0">
                                 <Fragment>
                                     <button type={'button'} className="mr5 approve-reject-btn"

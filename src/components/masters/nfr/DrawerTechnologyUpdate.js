@@ -102,8 +102,8 @@ function DrawerTechnologyUpdate(props) {
                                 ></div>
                             </Col>
                         </Row>
-                        <div className="row process workflow-row  mx-0">
-                            <div className="child-container">
+                        <div className="row process workflow-row">
+                            <div className="child-container px-0">
                                 <Row>
                                     <Col md="12">
                                         <TextFieldHookForm
@@ -141,28 +141,27 @@ function DrawerTechnologyUpdate(props) {
                                     </Col>
                                 </Row>
                             </div>
-                            <Row className="sf-btn-footer no-gutters justify-content-between">
-                                <div className="col-sm-12 text-right bluefooter-butn">
-                                    <button
-                                        type="button"
-                                        className="reset mr15 cancel-btn"
-                                        disabled={disable}
-                                        onClick={(e) => closeDrawer('close')}
-                                    >
-                                        <div className={'cancel-icon'}></div>
-                                        {'Cancel'}
-                                    </button>
-                                    <button
-                                        type="button"
-                                        className="submit-button save-btn mr2"
-                                        disabled={!isTechnologyUpdateRequired}
-                                        onClick={onSubmit}
-                                    >
-                                        <div className={"save-icon"}></div>
-                                        {'Update'}
-                                    </button>
-                                </div>
-                            </Row>
+
+                            <div className="text-right px-0">
+                                <button
+                                    type="button"
+                                    className="reset mr15 cancel-btn"
+                                    disabled={disable}
+                                    onClick={(e) => closeDrawer('close')}
+                                >
+                                    <div className={'cancel-icon'}></div>
+                                    {'Cancel'}
+                                </button>
+                                <button
+                                    type="button"
+                                    className="submit-button save-btn mr2"
+                                    disabled={!isTechnologyUpdateRequired}
+                                    onClick={onSubmit}
+                                >
+                                    <div className={"save-icon"}></div>
+                                    {'Update'}
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
