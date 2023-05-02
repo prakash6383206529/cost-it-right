@@ -537,7 +537,6 @@ function CostingDetailStepTwo(props) {
                             headCostOverheadProfitData={OverheadProfitCostData}
                             backBtn={props.backBtn}
                             toggle={props.toggle}
-                            isNFR={props?.isNFR}
                           />
                         </NetPOPriceContext.Provider>
                       </SurfaceCostContext.Provider>
