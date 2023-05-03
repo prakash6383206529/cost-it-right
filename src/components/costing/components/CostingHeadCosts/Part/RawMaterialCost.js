@@ -1201,12 +1201,12 @@ function RawMaterialCost(props) {
             </Col>
           </Row>
           <form noValidate className="form" onSubmit={handleSubmit(onSubmit)}>
-            {isNFR && <Row>
+            {false && isNFR && <Row>
               {/*RAW MATERIAL COST GRID */}
 
               <Col md="12">
-                <Table className="table cr-brdr-main costing-raw-material-section" size="sm">
-                  <thead className='rm-table-header'>
+                <Table className="table cr-brdr-main sap-rm-table" size="sm">
+                  <thead>
                     <tr>
                       <th >{`RM Name`}</th>
                       <th>{`RM Code`}</th>
