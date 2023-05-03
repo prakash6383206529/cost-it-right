@@ -15,7 +15,7 @@ import Dropzone from 'react-dropzone-uploader'
 import 'react-dropzone-uploader/dist/styles.css'
 import Toaster from '../common/Toaster';
 import { MESSAGES } from '../../config/message';
-import { createRfqQuotation, fileDeleteQuotation, fileUploadQuotation, getQuotationById, updateRfqQuotation, getContactPerson, checkExistCosting, setRFQBulkUpload } from './actions/rfq';
+import { createRfqQuotation, fileDeleteQuotation, fileUploadQuotation, getQuotationById, updateRfqQuotation, getContactPerson, checkExistCosting, setRFQBulkUpload, getNfrSelectList } from './actions/rfq';
 import PopupMsgWrapper from '../common/PopupMsgWrapper';
 import LoaderCustom from '../common/LoaderCustom';
 import redcrossImg from '../../assests/images/red-cross.png'
@@ -85,6 +85,7 @@ function AddRfq(props) {
     const dispatch = useDispatch()
     const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
     const checkRFQPartBulkUpload = useSelector((state) => state.rfq.checkRFQPartBulkUpload)
+    const nfrSelectList = useSelector((state) => state.rfq.nfrSelectList)
     // const getReporterListDropDown = useSelector(state => state.comman.getReporterListDropDown)
     const plantList = useSelector(state => state.comman.plantList)
     const [isBulkUpload, setisBulkUpload] = useState(false)
@@ -93,10 +94,11 @@ function AddRfq(props) {
     const [sopdate, setSOPDate] = useState('')
     const [fiveyearList, setFiveyearList] = useState([])
     const [selectedparts, setSelectedParts] = useState([])
-
+    const [nfrId, setNfrId] = useState('')
     useEffect(() => {
         const { vbcVendorGrid } = props;
         dispatch(fetchPlantDataAPI(() => { }))
+        dispatch(getNfrSelectList(() => { }))
         let tempArr = [];
         vbcVendorGrid && vbcVendorGrid.map(el => {
             tempArr.push(el.VendorId)
@@ -354,7 +356,14 @@ function AddRfq(props) {
             })
             return temp
         }
-
+        if (label === 'nfrId') {
+            nfrSelectList && nfrSelectList.map((item) => {
+                if (item.Value === '0') return false
+                temp.push({ label: item.Text, value: item.Value })
+                return null
+            })
+            return temp
+        }
 
         // if (label === 'partNo') {
         //     partSelectListByTechnology && partSelectListByTechnology.map((item) => {
@@ -425,20 +434,17 @@ function AddRfq(props) {
         let obj = {}
         obj.QuotationId = apiData.QuotationId ? apiData.QuotationId : ""
         obj.QuotationNumber = apiData.QuotationNumber ? apiData.QuotationNumber : ""
-
         obj.Remark = getValues('remark')
         obj.TechnologyId = getValues('technology').value
         obj.PlantId = getValues('plant')?.value
         obj.LoggedInUserId = loggedInUserId()
         obj.StatusId = ''
-
         obj.IsSent = isSent
         obj.IsConditionallyVisible = isConditionalVisible
         obj.VisibilityMode = visibilityMode?.label
         obj.VisibilityDate = dateAndTime
         obj.VisibilityDuration = getValues('Time')
         obj.LastSubmissionDate = DayTime(submissionDate).format('YYYY-MM-DD HH:mm:ss')
-
         obj.VendorList = vendorList
 
         let temppartArr = []
@@ -465,7 +471,7 @@ function AddRfq(props) {
         obj.PartList = temppartArr
         obj.Attachments = files
         obj.IsSent = isSent
-
+        obj.NfrId = nfrId
         if (dataProps?.isEditFlag) {
             dispatch(updateRfqQuotation(obj, (res) => {
                 if (res?.data?.Result) {
@@ -705,6 +711,13 @@ function AddRfq(props) {
         }
     }
 
+    const handleNfrChnage = (newValue) => {
+        if (newValue && newValue !== '') {
+            // setPartNoDisable(false)
+            setValue('partNumber', "")
+            setNfrId(newValue)
+        }
+    }
 
     const handleVendorChange = (data) => {
 
@@ -926,6 +939,25 @@ function AddRfq(props) {
                                                 disabled={((dataProps?.isViewFlag || isEditAll) ? true : false)
                                                     || (partList?.length !== 0)}
                                                 isLoading={VendorLoaderObj}
+                                            />
+                                        </Col>
+                                        <Col md="3">
+                                            <SearchableSelectHookForm
+                                                label={"NFR Id"}
+                                                name={"nfrId"}
+                                                placeholder={"Select"}
+                                                Controller={Controller}
+                                                control={control}
+                                                rules={{ required: false }}
+                                                register={register}
+                                                defaultValue={vendor.length !== 0 ? vendor : ""}
+                                                options={renderListing("nfrId")}
+                                                mandatory={false}
+                                                handleChange={handleNfrChnage}
+                                                errors={errors.nfrId}
+                                                disabled={((dataProps?.isViewFlag || isEditAll) ? true : false)
+                                                    || (partList?.length !== 0)}
+                                            // isLoading={VendorLoaderObj}
                                             />
                                         </Col>
                                         <Col md="3">
