@@ -60,28 +60,30 @@ const ApprovalDrawer = (props) => {
 
         let dataListTemp = []
         let length = rowData?.length - 1
-        let tem = _.map(rowData, 'data')[length]
-        tem && tem?.map(item => {
-            if (item?.SelectedCostingVersion) {
-                let obj = {}
+        if (!props.hideTable) {
+            let tem = [..._.map(rowData, 'data')[0]]
+            tem && tem?.map(item => {
+                if (item?.SelectedCostingVersion) {
+                    let obj = {}
 
 
-                obj.vendor = item?.label
-                obj.vendorCode = item?.vendorCode
-                obj.vendorName = item?.vendorName
-                obj.vendorid = item?.value
-                obj.PlantName = initialConfiguration.DefaultPlantName
-                obj.PlantCode = initialConfiguration.DefaultPlantCode
-                obj.PlantId = initialConfiguration.DefaultPlantId
-                obj.CostingNumber = item?.SelectedCostingVersion?.CostingNumber
-                obj.CostingId = item?.SelectedCostingVersion?.CostingId
-                obj.Price = item?.SelectedCostingVersion?.Price
+                    obj.vendor = item?.label
+                    obj.vendorCode = item?.vendorCode
+                    obj.vendorName = item?.vendorName
+                    obj.vendorid = item?.value
+                    obj.PlantName = initialConfiguration.DefaultPlantName
+                    obj.PlantCode = initialConfiguration.DefaultPlantCode
+                    obj.PlantId = initialConfiguration.DefaultPlantId
+                    obj.CostingNumber = item?.SelectedCostingVersion?.CostingNumber
+                    obj.CostingId = item?.SelectedCostingVersion?.CostingId
+                    obj.Price = item?.SelectedCostingVersion?.Price
 
-                dataListTemp.push(obj)
-            }
-        })
-        setGridData(dataListTemp)
+                    dataListTemp.push(obj)
+                }
+            })
+            setGridData(dataListTemp)
 
+        }
 
 
     }, [])
@@ -187,11 +189,13 @@ const ApprovalDrawer = (props) => {
                 if (res?.data?.Result === true) {
                     if (type === 'Approve') {
                         Toaster.success(MESSAGES.NFR_APPROVED)
-                        dispatch(pushNfrOnSap(pushRequest, res => {
-                            if (res?.data?.Result) {
-                                Toaster.success(MESSAGES.NFR_PUSHED)
-                            }
-                        }))
+                        if (props?.nfrData?.ApprovalTypeId === NFRAPPROVALTYPEID) {
+                            dispatch(pushNfrOnSap(pushRequest, res => {
+                                if (res?.data?.Result) {
+                                    Toaster.success(MESSAGES.NFR_PUSHED)
+                                }
+                            }))
+                        }
                     } else {
                         Toaster.success(MESSAGES.NFR_REJECTED)
                     }
@@ -228,7 +232,7 @@ const ApprovalDrawer = (props) => {
                 "ApproverId": getValues("approver")?.value,
                 "SenderLevelId": levelDetails?.LevelId,
                 "SenderId": userData?.LoggedInUserId,
-                "ApprovalTypeId": NFRAPPROVALTYPEID,
+                "ApprovalTypeId": costingTypeIdToApprovalTypeIdFunction(tempRowData[0]?.data[0]?.SelectedCostingVersion?.CostingTypeId),
                 "NfrPartWiseGroupDetailsId": tempRowData[0]?.nfrPartWiseGroupDetailsId,
                 "SenderLevel": levelDetails?.Level,
                 "SenderRemark": "string",

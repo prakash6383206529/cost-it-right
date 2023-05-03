@@ -1030,7 +1030,7 @@ export const API = {
   approvedCostingByApprover: `${BASE_URL}/nfr/approved-nfr-by-approver`,
   pushNfrOnSap: `${BASE_URL}/nfr/push-nfr-on-sap`,
   getSapnfrData: `${BASE_URL}/nfr/get-sap-nfr-data`,
-  createPFS2Costing: `${BASE_URL}/nfr/`,
+  createPFS2Costing: `${BASE_URL}/nfr/create-pfs2-costing`,
   getNfrSelectList: `${BASE_URL}/rfq/`,
 
   //SUB ASSEMBLY
@@ -2247,6 +2247,7 @@ export const NCCAPPROVALTYPEID = Number(reactLocalStorage.getObject('ApprovalTyp
 export const VBCAPPROVALTYPEID = Number(reactLocalStorage.getObject('ApprovalTypeListShortForm')[VBC])
 export const ZBCAPPROVALTYPEID = Number(reactLocalStorage.getObject('ApprovalTypeListShortForm')[ZBC])
 export const PROVISIONALAPPROVALTYPEID = Number(reactLocalStorage.getObject('ApprovalTypeListShortForm'))
+export const PFS2APPROVALTYPEID = Number(reactLocalStorage.getObject('ApprovalTypeListShortForm')[PFS2])
 
 export const CBCAPPROVALTYPEIDFULL = Number(reactLocalStorage.getObject('ApprovalTypeListFullForm')[CBC])
 export const NCCAPPROVALTYPEIDFULL = Number(reactLocalStorage.getObject('ApprovalTypeListFullForm')[NCC])

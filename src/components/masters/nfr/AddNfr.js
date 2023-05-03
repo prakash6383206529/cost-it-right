@@ -7,8 +7,7 @@ import { Redirect, useHistory } from 'react-router';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { Col, Row, Table } from 'reactstrap';
 import { getVendorWithVendorCodeSelectList } from '../../../actions/Common';
-import { EMPTY_DATA, EMPTY_GUID, NFR, NFRTypeId, VBCTypeId, searchCount } from '../../../config/constants';
-
+import { EMPTY_DATA, EMPTY_GUID, NFR, NFRTypeId, VBCTypeId, searchCount, PFS2TypeId } from '../../../config/constants';
 import { autoCompleteDropdown, costingTypeIdToApprovalTypeIdFunction } from '../../common/CommonFunctions';
 import HeaderTitle from '../../common/HeaderTitle';
 import NoContentFound from '../../common/NoContentFound';
@@ -17,7 +16,7 @@ import { AsyncSearchableSelectHookForm, NumberFieldHookForm, SearchableSelectHoo
 import { getNFRPartWiseGroupDetail, nfrDetailsForDiscountAction, saveNFRGroupDetails } from './actions/nfr';
 import { checkVendorPlantConfigurable, loggedInUserId, userDetails, userTechnologyLevelDetails } from '../../../helper';
 import { dataLiist } from '../../../config/masterData';
-import { checkFinalUser, createCosting, deleteDraftCosting, getBriefCostingById, storePartNumber } from '../../costing/actions/Costing';
+import { checkFinalUser, createCosting, createPFS2Costing, deleteDraftCosting, getBriefCostingById, storePartNumber } from '../../costing/actions/Costing';
 import ApprovalDrawer from './ApprovalDrawer';
 import TooltipCustom from '../../common/Tooltip'
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
@@ -64,6 +63,7 @@ function AddNfr(props) {
     const [isCostingViewMode, setIsCostingViewMode] = useState(false);
     const [isOEQAAdded, setIsOEQAAdded] = useState(false);
     const [callAPI, setCallAPI] = useState(false);
+    const [latestRow, setlatestRow] = useState('');
 
     const [isVendorDisabled, setIsVendorDisabled] = useState(false);
     const [shouldBeLevel, setShouldBeLevel] = useState(0);
@@ -147,7 +147,15 @@ function AddNfr(props) {
                     }
                 }
                 setShouldBeLevel(shouldBelevel)
-                setRowData(newArray)
+                let pfsIndex = newArray?.findIndex(element => element?.groupName === 'PFS1')
+                let pfsArray = newArray?.filter(element => element?.groupName === 'PFS1')
+                let tempArrForCosting = [...newArray]
+                if (pfsArray?.length > 0) {
+                    pfsArray[0].SelectedCostingVersion = pfsArray[0]?.data[0]?.CostingOptions[0]
+                    tempArrForCosting = Object.assign([...newArray], { [pfsIndex]: pfsArray[0] })
+                    setlatestRow(tempArrForCosting?.length - 1)
+                }
+                setRowData(tempArrForCosting)
             }
         }))
         reactLocalStorage.setObject('isFromDiscountObj', false)
@@ -244,60 +252,75 @@ function AddNfr(props) {
             }
         }
     }
-    const addDetails = debounce((data, index1, index) => {
-        let dataa = rowData[index1]
-        let list = dataa?.data && dataa?.data[index]
-        const userDetail = userDetails()
-        let tempData = viewCostingData[0]
-        if (callAPI) {
-            saveEstimation()
-        }
-        const Data = {
-            PartId: nfrData?.PartId,
-            PartTypeId: nfrPartDetail?.PartTypeId,
-            PartType: nfrData?.PartType,
-            PartNumber: nfrData?.PartNumber,
-            PartName: nfrData?.PartName,
-            TechnologyId: nfrData?.TechnologyId,
-            ZBCId: userDetail.ZBCSupplierInfo.VendorId,
-            VendorId: list?.value,
-            VendorPlantId: checkVendorPlantConfigurable() ? tempData.vendorPlantId : '',
-            // VendorPlantName: tempData.vendorPlantName,
-            // VendorPlantCode: tempData.vendorPlantCode,
-            VendorName: list?.vendorName,
-            VendorCode: list?.vendorCode,
-            PlantId: initialConfiguration?.DefaultPlantId,
-            PlantName: initialConfiguration?.DefaultPlantName,
-            PlantCode: initialConfiguration?.DefaultPlantCode,
-            DestinationPlantId: initialConfiguration?.DefaultPlantId,
-            DestinationPlantName: initialConfiguration?.DefaultPlantName,
-            DestinationPlantCode: initialConfiguration?.DefaultPlantCode,
-            UserId: loggedInUserId(),
-            LoggedInUserId: loggedInUserId(),
-            ShareOfBusinessPercent: 0,
-            IsAssemblyPart: false,
-            Description: nfrPartDetail?.Description,
-            ECNNumber: nfrPartDetail?.ECNNumber,
-            RevisionNumber: nfrPartDetail?.RevisionNumber,
-            DrawingNumber: nfrPartDetail?.DrawingNumber,
-            Price: nfrPartDetail?.Price ? nfrPartDetail?.Price : '',
-            EffectiveDate: nfrPartDetail?.EffectiveDate,
-            CostingHead: NFRTypeId,
-            CostingTypeId: NFRTypeId,
-            CustomerId: '',
-            CustomerName: '',
-            Customer: ''
-        }
-        dispatch(createCosting(Data, (res) => {
-            if (res.data?.Result) {
-                setpartInfoStepTwo({ costingId: res.data?.Data?.CostingId, NFRTypeId })
-                setcostingData(res.data?.Data)
-                dispatch(getBriefCostingById(res.data?.Data?.CostingId, () => {
-                    setIsAddDetails(true)
-                }))
+    const addDetails = debounce((data, index1, index, isPFS) => {
+        if (isPFS) {
+            let dataObj = {
+                "nfrPartWiseDetailId": nfrIdsList?.NfrPartWiseDetailId,
+                "costingId": data?.SelectedCostingVersion?.CostingId
             }
-        }))
-
+            dispatch(createPFS2Costing(dataObj, (res) => {
+                if (res?.data?.Result) {
+                    setpartInfoStepTwo({ costingId: res?.data?.Data?.CostingId, PFS2TypeId })
+                    setcostingData(res?.data?.Data)
+                    dispatch(getBriefCostingById(res?.data?.Data?.CostingId, () => {
+                        setIsAddDetails(true)
+                    }))
+                }
+            }))
+        } else {
+            let dataa = rowData[index1]
+            let list = dataa?.data && dataa?.data[index]
+            const userDetail = userDetails()
+            let tempData = viewCostingData[0]
+            if (callAPI) {
+                saveEstimation()
+            }
+            const Data = {
+                PartId: nfrData?.PartId,
+                PartTypeId: nfrPartDetail?.PartTypeId,
+                PartType: nfrData?.PartType,
+                PartNumber: nfrData?.PartNumber,
+                PartName: nfrData?.PartName,
+                TechnologyId: nfrData?.TechnologyId,
+                ZBCId: userDetail.ZBCSupplierInfo.VendorId,
+                VendorId: list?.value,
+                VendorPlantId: checkVendorPlantConfigurable() ? tempData.vendorPlantId : '',
+                // VendorPlantName: tempData.vendorPlantName,
+                // VendorPlantCode: tempData.vendorPlantCode,
+                VendorName: list?.vendorName,
+                VendorCode: list?.vendorCode,
+                PlantId: initialConfiguration?.DefaultPlantId,
+                PlantName: initialConfiguration?.DefaultPlantName,
+                PlantCode: initialConfiguration?.DefaultPlantCode,
+                DestinationPlantId: initialConfiguration?.DefaultPlantId,
+                DestinationPlantName: initialConfiguration?.DefaultPlantName,
+                DestinationPlantCode: initialConfiguration?.DefaultPlantCode,
+                UserId: loggedInUserId(),
+                LoggedInUserId: loggedInUserId(),
+                ShareOfBusinessPercent: 0,
+                IsAssemblyPart: false,
+                Description: nfrPartDetail?.Description,
+                ECNNumber: nfrPartDetail?.ECNNumber,
+                RevisionNumber: nfrPartDetail?.RevisionNumber,
+                DrawingNumber: nfrPartDetail?.DrawingNumber,
+                Price: nfrPartDetail?.Price ? nfrPartDetail?.Price : '',
+                EffectiveDate: nfrPartDetail?.EffectiveDate,
+                CostingHead: NFRTypeId,
+                CostingTypeId: NFRTypeId,
+                CustomerId: '',
+                CustomerName: '',
+                Customer: ''
+            }
+            dispatch(createCosting(Data, (res) => {
+                if (res.data?.Result) {
+                    setpartInfoStepTwo({ costingId: res.data?.Data?.CostingId, NFRTypeId })
+                    setcostingData(res.data?.Data)
+                    dispatch(getBriefCostingById(res.data?.Data?.CostingId, () => {
+                        setIsAddDetails(true)
+                    }))
+                }
+            }))
+        }
     }, 500);
 
     const viewDetails = (index) => {
@@ -524,10 +547,10 @@ function AddNfr(props) {
     const sendForApproval = () => {
         if (rowData && rowData[shouldBeLevel - 1]) {
             let dataList = _.map(rowData[shouldBeLevel - 1]?.data, 'SelectedCostingVersion')
-            if (dataList.includes(undefined)) {
-                Toaster.warning("Please select all costing to send for approval")
-                return false
-            }
+            // if (dataList.includes(undefined)) {
+            //     Toaster.warning("Please select all costing to send for approval")
+            //     return false
+            // }
         }
         if (selectedCheckBox === false) {
             Toaster.warning("Please select group estimation")
@@ -696,7 +719,7 @@ function AddNfr(props) {
                                             {indexInside === 0 && (
                                                 <>
                                                     <td rowSpan={item?.data.length} className="table-record">
-                                                        {!isViewEstimation && (freezeUpperLevels === '' ? true : indexOuter > (freezeUpperLevelsNumbers)) && <label
+                                                        {!isViewEstimation && (freezeUpperLevels === '' ? true : indexOuter > (freezeUpperLevelsNumbers)) && indexOuter === 0 && <label
                                                             className={`custom-checkbox`}
                                                             onChange={(e) => onCheckBoxClick(indexOuter)}
                                                         >
@@ -740,11 +763,11 @@ function AddNfr(props) {
                                             <td> <div className='action-btn-wrapper pr-2'>
                                                 {(freezeUpperLevels === '' ? true : indexOuter > (freezeUpperLevelsNumbers)) &&
                                                     <>
-                                                        {!isViewEstimation && <button className="Add-file" type={"button"} title={"Add Costing"} onClick={() => addDetails(dataItem, indexOuter, indexInside)} />}
+                                                        {!isViewEstimation && <button className="Add-file" type={"button"} title={`${item?.groupName === 'PFS1' ? 'Create PFS1 Costing' : 'Add Costing'}`} onClick={() => addDetails(dataItem, indexOuter, indexInside, item?.groupName === 'PFS1')} />}
                                                     </>}
 
                                                 {!item?.IsNewCosting && item?.Status !== '' && dataItem?.SelectedCostingVersion && (<button className="View" type={"button"} title={"View Costing"} onClick={() => viewDetails(indexInside)} />)}
-                                                {(freezeUpperLevels === '' ? true : indexOuter > (freezeUpperLevelsNumbers)) &&
+                                                {(freezeUpperLevels === '' ? true : indexOuter > (freezeUpperLevelsNumbers)) && item?.groupName !== 'PFS1' &&
                                                     <>
                                                         {!isViewEstimation && !item?.IsNewCosting && dataItem?.SelectedCostingVersion && (<button className="Edit" type={"button"} title={"Edit Costing"} onClick={() => editCosting(indexInside)} />)}
                                                         {!isViewEstimation && !item?.IsNewCosting && dataItem?.SelectedCostingVersion && (<button className="Copy All" title={"Copy Costing"} type={"button"} onClick={() => copyCosting(indexInside)} />)}

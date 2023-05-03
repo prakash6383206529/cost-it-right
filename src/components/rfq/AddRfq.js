@@ -98,7 +98,7 @@ function AddRfq(props) {
     useEffect(() => {
         const { vbcVendorGrid } = props;
         dispatch(fetchPlantDataAPI(() => { }))
-        dispatch(getNfrSelectList(() => { }))
+        // dispatch(getNfrSelectList(() => { }))
         let tempArr = [];
         vbcVendorGrid && vbcVendorGrid.map(el => {
             tempArr.push(el.VendorId)
@@ -941,7 +941,7 @@ function AddRfq(props) {
                                                 isLoading={VendorLoaderObj}
                                             />
                                         </Col>
-                                        <Col md="3">
+                                        {/* <Col md="3">
                                             <SearchableSelectHookForm
                                                 label={"NFR Id"}
                                                 name={"nfrId"}
@@ -959,7 +959,7 @@ function AddRfq(props) {
                                                     || (partList?.length !== 0)}
                                             // isLoading={VendorLoaderObj}
                                             />
-                                        </Col>
+                                        </Col> */}
                                         <Col md="3">
                                             <SearchableSelectHookForm
                                                 label={"Plant (Code)"}
