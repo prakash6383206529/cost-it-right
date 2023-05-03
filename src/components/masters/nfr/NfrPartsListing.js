@@ -297,7 +297,7 @@ function NfrPartsListing(props) {
 
                                             <div className={`d-flex align-items-center simulation-label-container mr-2`}>
                                                 <div className='d-flex pl-3'>
-                                                    <label>NFR ID: </label>
+                                                    <label>NFR Id: </label>
                                                     <p className='technology ml-1 nfr-id-wrapper' >{rowData && rowData[0]?.NfrNumber ? rowData[0]?.NfrNumber : ''}</p>
                                                 </div>
                                             </div>
