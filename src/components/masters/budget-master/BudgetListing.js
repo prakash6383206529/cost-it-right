@@ -406,26 +406,28 @@ function BudgetListing(props) {
     }
 
     const resetState = () => {
-        gridApi.deselectAll()
         gridOptions.columnApi.resetColumnState();
         gridOptions.api.setFilterModel(null);
+        if (props.isMasterSummaryDrawer === false) {
+            gridApi.deselectAll()
 
-        for (var prop in floatingFilterData) {
-            floatingFilterData[prop] = ""
+            for (var prop in floatingFilterData) {
+                floatingFilterData[prop] = ""
+            }
+
+            setFloatingFilterData(floatingFilterData)
+            setWarningMessage(false)
+            setPageNo(1)
+            setPageNoNew(1)
+            setCurrentRowIndex(0)
+            getTableListData(0, 10, true)
+            dispatch(setSelectedRowForPagination([]))
+            setGlobalTake(10)
+            setPageSize(prevState => ({ ...prevState, pageSize10: true, pageSize50: false, pageSize100: false }))
+            setDataCount(0)
         }
 
-        setFloatingFilterData(floatingFilterData)
-        setWarningMessage(false)
-        setPageNo(1)
-        setPageNoNew(1)
-        setCurrentRowIndex(0)
-        getTableListData(0, 10, true)
-        dispatch(setSelectedRowForPagination([]))
-        setGlobalTake(10)
-        setPageSize(prevState => ({ ...prevState, pageSize10: true, pageSize50: false, pageSize100: false }))
-        setDataCount(0)
     }
-
     const BulkToggle = () => {
         setBulkUploadBtn(true)
     }
@@ -507,7 +509,7 @@ function BudgetListing(props) {
                     <>
                         {disableDownload && <LoaderCustom message={MESSAGES.DOWNLOADING_MESSAGE} customClass="mt-5" />}
                         <form noValidate>
-                            <Row className="pt-4 blue-before">
+                            <Row className={`${props?.isMasterSummaryDrawer ? '' : 'pt-4'} blue-before`}>
                                 <Col md="9" className="search-user-block mb-3">
                                     <div className="d-flex justify-content-end bd-highlight">
                                         {(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) &&
@@ -606,15 +608,13 @@ function BudgetListing(props) {
                                 </AgGridReact>
                                 <div className='button-wrapper'>
                                     {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} globalTake={globalTake} />}
-                                    {(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) &&
-                                        <div className="d-flex pagination-button-container">
-                                            <p><button className="previous-btn" type="button" disabled={false} onClick={() => onBtPrevious()}> </button></p>
-                                            {pageSize.pageSize10 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{pageNo}</span> of {Math.ceil(totalRecordCount / 10)}</p>}
-                                            {pageSize.pageSize50 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{pageNo}</span> of {Math.ceil(totalRecordCount / 50)}</p>}
-                                            {pageSize.pageSize100 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{pageNo}</span> of {Math.ceil(totalRecordCount / 100)}</p>}
-                                            <p><button className="next-btn" type="button" onClick={() => onBtNext()}> </button></p>
-                                        </div>
-                                    }
+                                    <div className="d-flex pagination-button-container">
+                                        <p><button className="previous-btn" type="button" disabled={false} onClick={() => onBtPrevious()}> </button></p>
+                                        {pageSize.pageSize10 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{pageNo}</span> of {Math.ceil(totalRecordCount / 10)}</p>}
+                                        {pageSize.pageSize50 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{pageNo}</span> of {Math.ceil(totalRecordCount / 50)}</p>}
+                                        {pageSize.pageSize100 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{pageNo}</span> of {Math.ceil(totalRecordCount / 100)}</p>}
+                                        <p><button className="next-btn" type="button" onClick={() => onBtNext()}> </button></p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
