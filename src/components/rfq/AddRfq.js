@@ -73,7 +73,7 @@ function AddRfq(props) {
     const [isDisable, setIsDisable] = useState(false)
     const [partNoDisable, setPartNoDisable] = useState(true)
     const [attachmentLoader, setAttachmentLoader] = useState(false)
-    const [partName, setPartName] = useState(false)
+    const [partName, setPartName] = useState('')
     const [technology, setTechnology] = useState({})
     const [submissionDate, setSubmissionDate] = useState('')
     const [visibilityMode, setVisibilityMode] = useState({})
@@ -703,6 +703,8 @@ function AddRfq(props) {
             setValue('partNumber', "")
             setTechnology(newValue)
         }
+        setPartName('')
+        reactLocalStorage.setObject('PartData', [])
     }
 
 
