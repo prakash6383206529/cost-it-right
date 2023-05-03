@@ -770,6 +770,7 @@ const CostingSummaryTable = (props) => {
           obj.customerId = viewCostingData[index]?.customerId
           obj.customerCode = viewCostingData[index]?.customerCode
           obj.customer = viewCostingData[index]?.customer
+          obj.BasicRate = viewCostingData[index]?.BasicRate
           temp.push(obj)
         }
         dispatch(setCostingApprovalData(temp))
