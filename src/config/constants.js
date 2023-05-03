@@ -1030,6 +1030,8 @@ export const API = {
   approvedCostingByApprover: `${BASE_URL}/nfr/approved-nfr-by-approver`,
   pushNfrOnSap: `${BASE_URL}/nfr/push-nfr-on-sap`,
   getSapnfrData: `${BASE_URL}/nfr/get-sap-nfr-data`,
+  createPFS2Costing: `${BASE_URL}/nfr/`,
+  getNfrSelectList: `${BASE_URL}/rfq/`,
 
   //SUB ASSEMBLY
   getSubAssemblyAPI: `${BASE_URL}/sub-assembly/get-sub-assembly`,
@@ -1717,6 +1719,8 @@ export const GET_QUOTATION_BY_ID = 'GET_QUOTATION_BY_ID'
 export const GET_QUOTATION_LIST = 'GET_QUOTATION_LIST'
 export const CHECK_RFQ_BULK_UPLOAD = 'CHECK_RFQ_BULK_UPLOAD'
 export const SELECTED_ROW_ARRAY = 'SELECTED_ROW_ARRAY'
+export const GET_NFR_SELECT_LIST = 'GET_NFR_SELECT_LIST'
+
 
 // NFR
 export const NFR_DETAILS_FOR_DISCOUNT = 'NFR_DETAILS_FOR_DISCOUNT'
@@ -1862,6 +1866,8 @@ export const NCC = 'NCC'
 export const WAC = 'WAC'
 export const CBC = 'CBC'
 export const NFR = 'NFR'
+export const PFS2 = 'PFS2'
+
 //PART TYPE'S USED AT ASSEMBLY CHILD DRAWER
 export const ASSEMBLYNAME = 'Assembly'
 export const COMPONENT_PART = 'Component'
@@ -2228,6 +2234,7 @@ export const ZBCTypeIdFull = Number(reactLocalStorage.getObject('CostingHeadsLis
 export const VBCTypeIdFull = Number(reactLocalStorage.getObject('CostingHeadsListFullForm')[VBC])
 export const CBCTypeIdFull = Number(reactLocalStorage.getObject('CostingHeadsListFullForm')[CBC])
 export const NCCTypeIdFull = Number(reactLocalStorage.getObject('CostingHeadsListFullForm')[NCC])
+export const PFS2TypeId = Number(reactLocalStorage.getObject('CostingHeadsListShortForm')[PFS2])
 export const ZBCADDMORE = 0
 
 export const NFRTypeId = Number(reactLocalStorage.getObject('CostingHeadsListShortForm')[NFR])
@@ -2245,6 +2252,7 @@ export const CBCAPPROVALTYPEIDFULL = Number(reactLocalStorage.getObject('Approva
 export const NCCAPPROVALTYPEIDFULL = Number(reactLocalStorage.getObject('ApprovalTypeListFullForm')[NCC])
 export const VBCAPPROVALTYPEIDFULL = Number(reactLocalStorage.getObject('ApprovalTypeListFullForm')[VBC])
 export const ZBCAPPROVALTYPEIDFULL = Number(reactLocalStorage.getObject('ApprovalTypeListFullForm')[ZBC])
+export const PFS2APPROVALTYPEIDFULL = Number(reactLocalStorage.getObject('ApprovalTypeListFullForm')[PFS2])
 export const PROVISIONALAPPROVALTYPEIDFULL = Number(reactLocalStorage.getObject('ApprovalTypeListFullForm')[PROVISIONAL])
 
 //AUTOCOMPLETE IN PART AND VENDOR
