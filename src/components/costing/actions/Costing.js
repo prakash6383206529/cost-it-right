@@ -2517,3 +2517,18 @@ export function getYOYCostList(data, callback) {
     })
   }
 }
+
+
+export function createPFS2Costing(data, callback) {
+  return (dispatch) => {
+    const request = axios.post(API.createPFS2Costing, data, config())
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response)
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE })
+      apiErrors(error)
+    })
+  }
+}
