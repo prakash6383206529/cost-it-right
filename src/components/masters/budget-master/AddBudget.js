@@ -384,8 +384,12 @@ function AddBudget(props) {
         })
 
         // setValue('currentPrice', total + currentPrice)
+
         setTotalSum(total + currentPrice)
-        setValue('totalSum', total + currentPrice)
+        setValue('totalSum', checkForDecimalAndNull(total + currentPrice, getConfigurationKey().NoOfDecimalForPrice))
+        if (currencyExchangeRate > 1) {
+            setValue('totalSumCurrency', checkForDecimalAndNull((total + currentPrice) / currencyExchangeRate, getConfigurationKey().NoOfDecimalForPrice))
+        }
     }
 
     /**
