@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Col, Row, } from 'reactstrap';
-import { TextFieldHookForm } from '../../../../layout/HookFormInputs';
+import { SearchableSelectHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs';
 import { calculatePercentage, checkForDecimalAndNull, checkForNull, decimalAndNumberValidationBoolean, getConfigurationKey, } from '../../../../../helper';
 import { getInventoryDataByHeads, gridDataAdded, isOverheadProfitDataChange, setOverheadProfitErrors, } from '../../../actions/Costing';
 import { ViewCostingContext } from '../../CostingDetails';
 import { costingInfoContext, netHeadCostContext } from '../../CostingDetailStepTwo';
-import { CBCTypeId, EMPTY_GUID, NFRTypeId, VBCTypeId, ZBCTypeId } from '../../../../../config/constants';
+import { CBCTypeId, CRMHeads, EMPTY_GUID, NFRTypeId, VBCTypeId, ZBCTypeId } from '../../../../../config/constants';
 import Switch from "react-switch";
 import DayTime from '../../../../common/DayTimeWrapper';
 import { MESSAGES } from '../../../../../config/message';
@@ -61,6 +61,10 @@ function Icc(props) {
         dispatch(gridDataAdded(true))
         dispatch(isOverheadProfitDataChange(true))
         setInterestRateFixedLimit(false)
+
+        if (ICCApplicabilityDetail) {
+            setValue('crmHeadIcc', ICCApplicabilityDetail.ICCCRMHead ? ICCApplicabilityDetail.ICCCRMHead : '')
+        }
     }
 
 
@@ -113,6 +117,12 @@ function Icc(props) {
         }
     }
 
+    useEffect(() => {
+        if (ICCApplicabilityDetail) {
+            setValue('crmHeadIcc', ICCApplicabilityDetail.ICCCRMHead ? ICCApplicabilityDetail.ICCCRMHead : '')
+        }
+
+    }, [])
 
     /**
     * @description SET VALUE IN NetICCTotal WHEN FIXED AND ENABLED 'InterestRatePercentage'
@@ -278,7 +288,8 @@ function Icc(props) {
                 "InterestRate": IsInventoryApplicable ? getValues('InterestRatePercentage') : '',
                 "NetCost": IsInventoryApplicable ? tempInventoryObj.NetICCTotal : '',
                 "EffectiveDate": "",
-                "IsICCCalculationOnNetWeight": isNetWeight
+                "IsICCCalculationOnNetWeight": isNetWeight,
+                "ICCCRMHead": tempInventoryObj.ICCCRMHead ? tempInventoryObj.ICCCRMHead : ''
             }
             setValue('CostApplicability', IsInventoryApplicable ? checkForDecimalAndNull(tempInventoryObj.CostApplicability, initialConfiguration.NoOfDecimalForPrice) : '')
             if (!CostingViewMode) {
@@ -307,6 +318,16 @@ function Icc(props) {
     } else if (Object.keys(errors).length === 0 && counter > 0) {
         counter = 0
         dispatch(setOverheadProfitErrors({}))
+    }
+
+    const handleCrmHeadChange = (e) => {
+        if (e) {
+            setTempInventoryObj({
+                ...tempInventoryObj,
+                ICCCRMHead: e?.label
+            })
+        }
+
     }
 
     return (
@@ -464,6 +485,26 @@ function Icc(props) {
                             </Col>
                         </>
                     </Row>
+                    {initialConfiguration.IsShowCRMHead && <Col md="2">
+                        <SearchableSelectHookForm
+                            name={`crmHeadIcc`}
+                            type="text"
+                            label="CRM Head"
+                            errors={errors.crmHeadIcc}
+                            Controller={Controller}
+                            control={control}
+                            register={register}
+                            mandatory={true}
+                            rules={{
+                                required: false,
+                            }}
+                            placeholder={'Select'}
+                            options={CRMHeads}
+                            required={true}
+                            handleChange={handleCrmHeadChange}
+                            disabled={CostingViewMode}
+                        />
+                    </Col>}
                 </>
             }
         </>

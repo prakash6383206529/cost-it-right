@@ -1015,6 +1015,7 @@ export const API = {
   saveOutsourcingData: `${BASE_URL}/nfr/save-nfr-costing-outsorcing-details`,
   getNFRCostingOutsourcingDetails: `${BASE_URL}/nfr/get-nfr-costing-outsorcing-details`,
   getRMFromNFR: `${BASE_URL}/nfr/get-nfr-part-wise-raw-materials`,
+  getGotAndGivenDetails: `${BASE_URL}/reports/get-got-and-given-details`,
 
 
   //SUB ASSEMBLY
@@ -2499,6 +2500,25 @@ export const statusOptions = _.sortBy([
   { label: "ApprovedByASMSimulation", value: "16" },
   // { label: "SendForApproval", value: "7" },
 ], ({ label }) => label.toLowerCase());
+
+
+export const CRMHeads = [
+  { label: "Net Sales", value: 1 },
+  { label: "Consumption", value: 1 },
+  { label: "Labour Cost", value: 2 },
+  { label: "Manufacturing Expenses", value: 4 },
+  { label: "Office Expenses", value: 6 },
+  { label: "Repairs Expenses", value: 6 },
+  { label: "Selling & Distribution Expenses", value: 6 },
+  { label: "Common Expenses", value: 6 },
+  { label: "Staff Cost", value: 3 },
+  { label: "EBIDTA", value: 5 },
+  { label: "Finance Cost", value: 3 },
+  { label: "Depriciation", value: 3 },
+  { label: "PBT", value: 3 },
+  { label: "Amortization", value: 8 },
+
+]
 
 
 //CONSTANTS FOR COSTING HEAD

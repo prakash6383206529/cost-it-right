@@ -2,20 +2,23 @@ import React, { useState, useEffect, useContext } from 'react';
 import { useForm, Controller, useWatch, } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import { Col, Row, } from 'reactstrap';
-import { SearchableSelectHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs';
+import { SearchableSelectHookForm, TextAreaHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs';
 import { calculatePercentage, checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected, getConfigurationKey, } from '../../../../../helper';
 import { fetchModelTypeAPI, getPaymentTermsAppliSelectListKeyValue } from '../../../../../actions/Common';
 import { getOverheadProfitDataByModelType, gridDataAdded, isOverheadProfitDataChange, setOverheadProfitErrors, } from '../../../actions/Costing';
 import { costingInfoContext, netHeadCostContext, SurfaceCostContext } from '../../CostingDetailStepTwo';
-import TooltipCustom from '../../../../common/Tooltip';
-import { CBCTypeId, EMPTY_GUID, NFRTypeId, PART_COST, PFS1TypeId, PFS2TypeId, PFS3TypeId, VBCTypeId, ZBCTypeId } from '../../../../../config/constants';
+import { CBCTypeId, CRMHeads, EMPTY_GUID, NFRTypeId, PART_COST, PFS1TypeId, PFS2TypeId, PFS3TypeId, VBCTypeId, WACTypeId, ZBCTypeId } from '../../../../../config/constants';
 import { SelectedCostingDetail, ViewCostingContext } from '../../CostingDetails';
 import Rejection from './Rejection';
 import Icc from './Icc';
 import PaymentTerms from './PaymentTerms';
-import { IdForMultiTechnology } from '../../../../../config/masterData';
+import { Link } from 'react-scroll'
+import { IdForMultiTechnology, REMARKMAXLENGTH } from '../../../../../config/masterData';
 import _, { debounce } from 'lodash';
 import { number, checkWhiteSpaces, decimalNumberLimit6 } from "../../../../../helper/validation";
+import TooltipCustom from '../../../../common/Tooltip';
+import Popup from 'reactjs-popup';
+import Toaster from '../../../../common/Toaster';
 
 let counter = 0;
 function OverheadProfit(props) {
@@ -30,7 +33,8 @@ function OverheadProfit(props) {
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
 
   const defaultValues = {
-
+    overHeadRemark: CostingOverheadDetail.Remark ? CostingOverheadDetail.Remark : '',
+    crmHeadOverhead: CostingOverheadDetail && CostingOverheadDetail.OverheadCRMHead && { label: CostingOverheadDetail.OverheadCRMHead, value: 1 },
     //REJECTION FIELDS
     Applicability: CostingRejectionDetail && CostingRejectionDetail.RejectionApplicability !== null ? { label: CostingRejectionDetail.RejectionApplicability, value: CostingRejectionDetail.RejectionApplicabilityId } : '',
     RejectionPercentage: CostingRejectionDetail && CostingRejectionDetail.RejectionPercentage !== null ? CostingRejectionDetail.RejectionPercentage : '',
@@ -58,6 +62,11 @@ function OverheadProfit(props) {
   const dispatch = useDispatch()
   const headerCosts = useContext(netHeadCostContext);
   const costData = useContext(costingInfoContext);
+
+  const CostingViewMode = useContext(ViewCostingContext);
+  const SurfaceTreatmentCost = useContext(SurfaceCostContext);
+  const costingHead = useSelector(state => state.comman.costingHead)
+
   const { CostingEffectiveDate, CostingDataList, IsIncludedSurfaceInOverheadProfit, IsIncludedToolCost, ToolTabData, OverheadProfitTabData } = useSelector(state => state.costing)
 
   const [overheadObj, setOverheadObj] = useState(CostingOverheadDetail)
@@ -65,14 +74,10 @@ function OverheadProfit(props) {
   const [tempOverheadObj, setTempOverheadObj] = useState(CostingOverheadDetail)
   const [tempProfitObj, setTempProfitObj] = useState(CostingProfitDetail)
   const [applicabilityList, setApplicabilityList] = useState(CostingProfitDetail)
-
-  const CostingViewMode = useContext(ViewCostingContext);
-  const SurfaceTreatmentCost = useContext(SurfaceCostContext);
-  const costingHead = useSelector(state => state.comman.costingHead)
-
+  const [totalToolCost, setTotalToolCost] = useState(0)
 
   // partType USED FOR MANAGING CONDITION IN CASE OF NORMAL COSTING AND ASSEMBLY TECHNOLOGY COSTING (TRUE FOR ASSEMBLY TECHNOLOGY)
-  const partType = IdForMultiTechnology.includes(String(costData?.TechnologyId))
+  const partType = (IdForMultiTechnology.includes(String(costData?.TechnologyId)) || costData.CostingTypeId === WACTypeId)
 
   const [modelType, setModelType] = useState((data?.CostingPartDetails && data?.CostingPartDetails.ModelType !== null) ? { label: data?.CostingPartDetails?.ModelType, value: data?.CostingPartDetails?.ModelTypeId } : [])
 
@@ -93,6 +98,10 @@ function OverheadProfit(props) {
     //GET FIXED VALUE IN GET API
     if (Object.keys(CostingProfitDetail).length > 0) {
       setProfitValues(CostingProfitDetail, false)
+      setValue('crmHeadProfit', CostingProfitDetail && CostingProfitDetail.ProfitCRMHead && {
+        label: CostingProfitDetail.ProfitCRMHead, value: 1
+      })
+      setValue('profitRemark', CostingProfitDetail && CostingProfitDetail.Remark ? CostingProfitDetail.Remark : '')
     }
 
     setTimeout(() => {
@@ -100,14 +109,11 @@ function OverheadProfit(props) {
     }, 3000)
 
   }, []);
+
+
   useEffect(() => {
     IncludeSurfaceTreatmentCall()
   }, [IsIncludedSurfaceInOverheadProfit, IsIncludedToolCost])
-
-
-  useEffect(() => {
-    IncludeSurfaceTreatmentCall()
-  }, [IsIncludedSurfaceInOverheadProfit])
 
   useEffect(() => {
     setIsSurfaceTreatmentAdded(false)
@@ -200,6 +206,8 @@ function OverheadProfit(props) {
         "OverheadFixedTotalCost": overheadObj && overheadObj.IsOverheadFixedApplicable ? overheadObj.OverheadFixedPercentage : '',
 
         "IsSurfaceTreatmentApplicable": IsIncludedSurfaceInOverheadProfit,
+        "OverheadCRMHead": overheadObj.OverheadCRMHead ? overheadObj.OverheadCRMHead : '',
+        "Remark": overheadObj.Remark ? overheadObj.Remark : ''
       }
 
       let profitTempObj = {
@@ -233,6 +241,8 @@ function OverheadProfit(props) {
         "ProfitFixedTotalCost": profitObj && profitObj.IsProfitFixedApplicable ? profitObj.ProfitFixedTotalCost : '',
 
         "IsSurfaceTreatmentApplicable": IsIncludedSurfaceInOverheadProfit,
+        "ProfitCRMHead": profitObj.ProfitCRMHead ? profitObj.ProfitCRMHead : '',
+        "Remark": profitObj.Remark ? profitObj.Remark : ''
       }
 
       if (!CostingViewMode) {
@@ -339,7 +349,6 @@ function OverheadProfit(props) {
 
         const reqParams = {
           ModelTypeId: newValue.value,
-
           VendorId: (costData.CostingTypeId === VBCTypeId || costData.CostingTypeId === NFRTypeId
             || costData.CostingTypeId === PFS1TypeId || costData.CostingTypeId === PFS2TypeId || costData.CostingTypeId === PFS3TypeId) ? costData.VendorId : EMPTY_GUID,
 
@@ -358,7 +367,7 @@ function OverheadProfit(props) {
           rawMaterialChildId: initialConfiguration.IsShowRawMaterialInOverheadProfitAndICC ? OverheadProfitTabData[0]?.CostingPartDetails?.RawMaterialChildId : EMPTY_GUID,
 
           technologyId: initialConfiguration.IsShowRawMaterialInOverheadProfitAndICC ? OverheadProfitTabData[0]?.CostingPartDetails?.TechnologyId : EMPTY_GUID,
-          customerId: costData.CustomerId
+          customerId: costData.CustomerId,
         }
 
         dispatch(getOverheadProfitDataByModelType(reqParams, res => {
@@ -590,6 +599,13 @@ function OverheadProfit(props) {
   * @description  SET PROFIT VALUES IN FIXED, COMBINED, RM, CC AND FIXED
   */
   const setProfitValues = (dataObj, IsAPIResponse) => {
+    let totalToolCost = 0
+    if (IsIncludedToolCost) {
+      totalToolCost = checkForDecimalAndNull(ToolTabData[0]?.CostingPartDetails?.TotalToolCost, initialConfiguration.NoOfDecimalForPrice)
+    } else {
+      totalToolCost = 0
+    }
+
     if (!CostingViewMode) {
 
       let ProfitRMCost = 0
@@ -613,7 +629,7 @@ function OverheadProfit(props) {
       // IF BLOCK WILL GET EXECUTED WHEN TECHNOLOGY FOR COSTING IS ASSEMBLY FOR OTHER TECHNOLOGIES ELSE WILL EXECUTE
       if (partType) {
         ProfitRMCost = checkForNull(headerCosts?.NetRawMaterialsCost)
-        ProfitCCCost = checkForNull(headerCosts?.ProcessCostTotal) + checkForNull(headerCosts?.OperationCostTotal)
+        ProfitCCCost = checkForNull(headerCosts?.ProcessCostTotal) + checkForNull(headerCosts?.OperationCostTotal) + totalToolCost
         ProfitBOPCost = checkForNull(headerCosts?.NetBoughtOutPartCost)
         ProfitRMTotalCost = ProfitRMCost * calculatePercentage(ProfitRMPercentage)
         ProfitCCTotalCost = ProfitCCCost * calculatePercentage(ProfitCCPercentage)
@@ -623,7 +639,7 @@ function OverheadProfit(props) {
         ProfitRMTotalCost = (IsCutOffApplicable ? checkForNull(CutOffRMC) : checkForNull(headerCosts?.NetRawMaterialsCost)) * calculatePercentage(checkForNull(ProfitRMPercentage))
         ProfitBOPCost = checkForNull(headerCosts && headerCosts?.NetBoughtOutPartCost)
         ProfitBOPTotalCost = checkForNull(ProfitBOPCost) * calculatePercentage(checkForNull(ProfitBOPPercentage))
-        ProfitCCCost = (checkForNull(headerCosts && headerCosts?.ProcessCostTotal) + checkForNull(headerCosts && headerCosts?.OperationCostTotal))
+        ProfitCCCost = (checkForNull(headerCosts && headerCosts?.ProcessCostTotal) + checkForNull(headerCosts && headerCosts?.OperationCostTotal)) + totalToolCost
         ProfitCCTotalCost = ProfitCCCost * calculatePercentage(ProfitCCPercentage)
       }
 
@@ -1243,6 +1259,79 @@ function OverheadProfit(props) {
     let value = checkForDecimalAndNull(checkForNull(data?.CostingPartDetails?.OverheadCost) + checkForNull(data?.CostingPartDetails?.ProfitCost), initialConfiguration.NoOfDecimalForPrice);
     return value === 0 ? '' : value;
   }
+
+  const onCRMHeadChangeOverhead = (e) => {
+    if (e) {
+      setOverheadObj({
+        ...overheadObj,
+        OverheadCRMHead: e?.label
+      })
+    }
+  }
+
+  const onCRMHeadChangeProfit = (e) => {
+    if (e) {
+      setProfitObj({
+        ...profitObj,
+        ProfitCRMHead: e?.label
+      })
+    }
+  }
+
+  const onRemarkPopUpClickOverHead = () => {
+
+    if (errors.overHeadRemark !== undefined) {
+      return false
+    }
+
+    setOverheadObj({
+      ...overheadObj,
+      Remark: getValues('overHeadRemark')
+    })
+
+    if (getValues(`overHeadRemark`)) {
+      Toaster.success('Remark saved successfully')
+    }
+    var button = document.getElementById(`popUpTriggerOverHead`)
+    button.click()
+  }
+
+  const onRemarkPopUpCloseOverHead = () => {
+    let button = document.getElementById(`popUpTriggerOverHead`)
+    setValue(`overHeadRemark`, overheadObj.Remark)
+    if (errors.overHeadRemark) {
+      delete errors.overHeadRemark;
+    }
+    button.click()
+  }
+
+  const onRemarkPopUpClickProfit = () => {
+
+    if (errors.profitRemark !== undefined) {
+      return false
+    }
+
+    setProfitObj({
+      ...profitObj,
+      Remark: getValues('profitRemark')
+    })
+
+    if (getValues(`profitRemark`)) {
+      Toaster.success('Remark saved successfully')
+    }
+    var button = document.getElementById(`popUpTriggerProfit`)
+    button.click()
+  }
+
+  const onRemarkPopUpCloseProfit = () => {
+    let button = document.getElementById(`popUpTriggerProfit`)
+    setValue(`profitRemark`, profitObj.Remark)
+    if (errors.profitRemark) {
+      delete errors.profitRemark;
+    }
+    button.click()
+  }
+
   return (
     <>
       <div className="user-page p-0">
@@ -1301,11 +1390,33 @@ function OverheadProfit(props) {
 
               <Col md="12" className="">
                 <div className="left-border">
-                  {`Overheads ${overheadObj && overheadObj.OverheadApplicability ? '(' + overheadObj.OverheadApplicability + ')' : ''}`}
+                  {`Overheads ${overheadObj && overheadObj.OverheadApplicability ? '(' + overheadObj.OverheadApplicability + ')' : '-'}`}
                 </div>
               </Col>
 
-              <Col md="12">
+              {initialConfiguration.IsShowCRMHead && <Col md="3">
+                <SearchableSelectHookForm
+                  name={`crmHeadOverhead`}
+                  type="text"
+                  label="CRM Head"
+                  errors={errors.crmHeadOverhead}
+                  Controller={Controller}
+                  control={control}
+                  register={register}
+                  mandatory={false}
+                  rules={{
+                    required: false,
+                  }}
+                  placeholder={'Select'}
+                  options={CRMHeads}
+                  required={false}
+                  handleChange={onCRMHeadChangeOverhead}
+                  disabled={CostingViewMode}
+                />
+              </Col>}
+
+
+              <Col md={overheadObj?.OverheadApplicability ? "11" : "12"} className='first-section'>
                 <Row className="costing-border-inner-section m-0">
                   <Col md="3">
                     <span className="head-text">
@@ -1334,7 +1445,7 @@ function OverheadProfit(props) {
                     <>
                       <Col md="3">
                         <label className="col-label">
-                          {`${overheadObj && overheadObj.OverheadApplicability ? overheadObj.OverheadApplicability : ''}`}
+                          {`${overheadObj && overheadObj.OverheadApplicability ? overheadObj.OverheadApplicability : '-'}`}
                         </label>
                       </Col>
                       <Col md="3">
@@ -1398,7 +1509,7 @@ function OverheadProfit(props) {
                     <>
                       <Col md="3">
                         <label className="col-label">
-                          {`${overheadObj && overheadObj.OverheadApplicability ? '(' + overheadObj.OverheadApplicability + ')' : ''}`}
+                          {`${overheadObj && overheadObj.OverheadApplicability ? '(' + overheadObj.OverheadApplicability + ')' : '-'}`}
                         </label>
                       </Col>
                       <Col md="3">
@@ -1432,11 +1543,9 @@ function OverheadProfit(props) {
                             customClassName={'withBorder'}
                             errors={errors.OverheadCombinedCost}
                             disabled={true}
-                          /> {(overheadObj && overheadObj?.OverheadApplicability.includes('RM') && CostingDataList[0]?.IsRMCutOffApplicable === true) &&
-                            <span className={'fa fa-info-circle mt9 tooltip-n tooltip_custom_right mb-n3'}>
-                              <span class="tooltiptext">{`RM cut-off price ${checkForDecimalAndNull(CostingDataList && CostingDataList[0]?.RawMaterialCostWithCutOff, initialConfiguration.NoOfDecimalForPrice)} applied`}</span>
-                            </span>
-                          }
+                          />
+                          {(overheadObj && overheadObj?.OverheadApplicability.includes('RM') && CostingDataList[0]?.IsRMCutOffApplicable === true) && <TooltipCustom id="OverheadCombinedCost" customClass="mt-2" tooltipText={`RM cut-off price ${checkForDecimalAndNull(CostingDataList && CostingDataList[0]?.RawMaterialCostWithCutOff, initialConfiguration.NoOfDecimalForPrice)} applied`} />}
+
                         </div>
                       </Col>
                       <Col md="3">
@@ -1502,9 +1611,7 @@ function OverheadProfit(props) {
                             disabled={true}
                           />
                           {(CostingDataList && CostingDataList[0]?.IsRMCutOffApplicable === true) &&
-                            <span className={'fa fa-info-circle mt9 tooltip-n tooltip_custom_right mb-n3 costing-tooltip'}>
-                              <span class="tooltiptext">{`RM cut-off price ${checkForDecimalAndNull(CostingDataList && CostingDataList[0]?.RawMaterialCostWithCutOff, initialConfiguration.NoOfDecimalForPrice)} applied`}</span>
-                            </span>}
+                            <TooltipCustom id="OverheadRMCost" customClass="mt-2" tooltipText={`RM cut-off price ${checkForDecimalAndNull(CostingDataList && CostingDataList[0]?.RawMaterialCostWithCutOff, initialConfiguration.NoOfDecimalForPrice)} applied`} />}
                         </div>
                       </Col>
                       <Col md="3">
@@ -1532,7 +1639,7 @@ function OverheadProfit(props) {
                     <>
                       <Col md="3">
                         <label className="col-label">
-                          {`${overheadObj && overheadObj.OverheadApplicability ? 'BOP' : ''}`}
+                          {`${overheadObj && overheadObj.OverheadApplicability ? 'BOP' : '-'}`}
                         </label>
                       </Col>
                       <Col md="3">
@@ -1591,7 +1698,7 @@ function OverheadProfit(props) {
                     <>
                       <Col md="3">
                         <label className="col-label">
-                          {`${overheadObj && overheadObj.OverheadApplicability ? 'CC' : ''}`}
+                          {`${overheadObj && overheadObj.OverheadApplicability ? 'CC' : '-'}`}
                         </label>
                       </Col>
                       <Col md="3">
@@ -1646,14 +1753,68 @@ function OverheadProfit(props) {
                   }
                 </Row>
               </Col>
+              {
+                overheadObj && overheadObj.OverheadApplicability &&
+                <Col md="1" className='second-section'>
+                  <div className='costing-border-inner-section'>
+                    <Col md="12" className='text-center'>Remark</Col>
+                    <Col md="12"> <Popup trigger={<button id={`popUpTriggerOverHead`} title="Remark" className="Comment-box" type={'button'} />}
+                      position="top center">
+                      <TextAreaHookForm
+                        label="Remark:"
+                        name={`overHeadRemark`}
+                        Controller={Controller}
+                        control={control}
+                        register={register}
+                        mandatory={false}
+                        rules={{
+                          maxLength: REMARKMAXLENGTH
+                        }}
+                        handleChange={() => { }}
+                        className=""
+                        customClassName={"withBorder"}
+                        errors={errors.overHeadRemark}
+                        disabled={CostingViewMode}
+                        hidden={false}
+                      />
+                      <Row>
+                        <Col md="12" className='remark-btn-container'>
+                          <button className='submit-button mr-2' disabled={(CostingViewMode) ? true : false} onClick={() => onRemarkPopUpClickOverHead()} > <div className='save-icon'></div> </button>
+                          <button className='reset' onClick={() => onRemarkPopUpCloseOverHead()} > <div className='cancel-icon'></div></button>
+                        </Col>
+                      </Row>
+                    </Popup></Col>
+                  </div>
+                </Col>
+              }
 
               {/* new section from below with heasing */}
-              <Col md="12" className="pt-3">
+              <Col md={"12"} className="pt-3">
                 <div className="left-border">
-                  {`Profits ${profitObj && profitObj.ProfitApplicability ? '(' + profitObj.ProfitApplicability + ')' : ''}`}
+                  {`Profits ${profitObj && profitObj.ProfitApplicability ? '(' + profitObj.ProfitApplicability + ')' : '-'}`}
                 </div>
               </Col>
-              <Col md="12">
+              {initialConfiguration.IsShowCRMHead && <Col md="3">
+                <SearchableSelectHookForm
+                  name={`crmHeadProfit`}
+                  type="text"
+                  label="CRM Head"
+                  errors={errors.crmHeadProfit}
+                  Controller={Controller}
+                  control={control}
+                  register={register}
+                  mandatory={false}
+                  rules={{
+                    required: false,
+                  }}
+                  placeholder={'Select'}
+                  options={CRMHeads}
+                  required={false}
+                  handleChange={onCRMHeadChangeProfit}
+                  disabled={CostingViewMode}
+                />
+              </Col>}
+              <Col md={profitObj?.ProfitApplicability ? "11" : "12"} className='first-section'>
                 <Row className="costing-border-inner-section m-0">
                   <Col md="3">
                     <span className="head-text">
@@ -1682,7 +1843,7 @@ function OverheadProfit(props) {
                     <>
                       <Col md="3">
                         <label className="col-label">
-                          {`${profitObj && profitObj.ProfitApplicability ? '(' + profitObj.ProfitApplicability + ')' : ''}`}
+                          {`${profitObj && profitObj.ProfitApplicability ? '(' + profitObj.ProfitApplicability + ')' : '-'}`}
                         </label>
                       </Col>
                       <Col md="3">
@@ -1746,7 +1907,7 @@ function OverheadProfit(props) {
                     <>
                       <Col md="3">
                         <label className="col-label">
-                          {`${profitObj && profitObj.ProfitApplicability ? '(' + profitObj.ProfitApplicability + ')' : ''}`}
+                          {`${profitObj && profitObj.ProfitApplicability ? '(' + profitObj.ProfitApplicability + ')' : '-'}`}
                         </label>
                       </Col>
                       <Col md="3">
@@ -1873,7 +2034,7 @@ function OverheadProfit(props) {
                     <>
                       <Col md="3">
                         <label className="col-label">
-                          {`${profitObj && profitObj.ProfitApplicability ? 'BOP' : ''}`}
+                          {`${profitObj && profitObj.ProfitApplicability ? 'BOP' : '-'}`}
                         </label>
                       </Col>
                       <Col md="3">
@@ -1932,7 +2093,7 @@ function OverheadProfit(props) {
                     <>
                       <Col md="3">
                         <label className="col-label">
-                          {`${profitObj && profitObj.ProfitApplicability ? 'CC' : ''}`}
+                          {`${profitObj && profitObj.ProfitApplicability ? 'CC' : '-'}`}
                         </label>
                       </Col>
                       <Col md="3">
@@ -1987,6 +2148,41 @@ function OverheadProfit(props) {
                   }
                 </Row>
               </Col>
+              {
+                profitObj && profitObj.ProfitApplicability &&
+                <Col md="1" className='second-section'>
+                  <div className='costing-border-inner-section'>
+                    <Col md="12" className='text-center'>Remark</Col>
+                    <Col md="12"> <Popup trigger={<button id={`popUpTriggerProfit`} title="Remark" className="Comment-box" type={'button'} />}
+                      position="top center">
+                      <TextAreaHookForm
+                        label="Remark:"
+                        name={`profitRemark`}
+                        Controller={Controller}
+                        control={control}
+                        register={register}
+                        mandatory={false}
+                        rules={{
+                          maxLength: REMARKMAXLENGTH
+                        }}
+                        handleChange={() => { }}
+                        className=""
+                        customClassName={"withBorder"}
+                        errors={errors.profitRemark}
+                        disabled={CostingViewMode}
+                        hidden={false}
+                      />
+                      <Row>
+                        <Col md="12" className='remark-btn-container'>
+                          <button className='submit-button mr-2' disabled={(CostingViewMode) ? true : false} onClick={() => onRemarkPopUpClickProfit()} > <div className='save-icon'></div> </button>
+                          <button className='reset' onClick={() => onRemarkPopUpCloseProfit()} > <div className='cancel-icon'></div></button>
+                        </Col>
+                      </Row>
+                    </Popup></Col>
+                  </div>
+                </Col>
+              }
+
             </Row>
 
             {/* THIS IS REJECTION SECTION */}

@@ -2600,7 +2600,7 @@ function CostingDetails(props) {
                         </>
                       )}
 
-                    </div>}
+                    </>}
                     {!IsOpenVendorSOBDetails &&
                       <Row className="justify-content-between btn-row">
                         <div className="col-sm-12 text-right">
