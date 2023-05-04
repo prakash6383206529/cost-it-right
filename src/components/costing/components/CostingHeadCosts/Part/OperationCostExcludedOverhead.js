@@ -349,7 +349,7 @@ function OperationCostExcludedOverhead(props) {
                                   register={register}
                                   mandatory={false}
                                   rules={{
-                                    validate: item.UOM === "Number" ? { number, checkWhiteSpaces, noDecimal, numberLimit6 } : { number, checkWhiteSpaces, decimalNumberLimit6 },
+                                    validate: { number, checkWhiteSpaces, decimalNumberLimit6 },
                                   }}
                                   defaultValue={checkForDecimalAndNull(item.Quantity, initialConfiguration.NoOfDecimalForInputOutput)}
                                   className=""
