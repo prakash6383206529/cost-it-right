@@ -114,8 +114,8 @@ function ViewConversionCost(props) {
 
   const setCalculatorData = (data, list, id, parentId) => {
     if (parentId === '') {
-      let tempData = viewCostingData[props.index].netConversionCostView.CostingProcessCostResponse[id]
-      setCalculatorTechnology(viewCostingData[props.index].netConversionCostView.CostingProcessCostResponse[id].ProcessTechnologyId)
+      let tempData = costingProcessCost[id]
+      setCalculatorTechnology(costingProcessCost[id].ProcessTechnologyId)
       tempData = { ...tempData, WeightCalculatorRequest: data, }
       setCalciData(tempData)
       setTimeout(() => {
@@ -140,9 +140,9 @@ function ViewConversionCost(props) {
     let UOMType = ''
     if (parentCalciIndex === '') {
       tempData = viewCostingData[props.index]
-      processCalciId = tempData?.netConversionCostView?.CostingProcessCostResponse[index]?.ProcessCalculatorId
-      technologyId = tempData?.netConversionCostView?.CostingProcessCostResponse[index]?.ProcessTechnologyId
-      UOMType = tempData?.netConversionCostView?.CostingProcessCostResponse[index]?.UOMType
+      processCalciId = costingProcessCost[index]?.ProcessCalculatorId
+      technologyId = costingProcessCost[index]?.ProcessTechnologyId
+      UOMType = costingProcessCost[index]?.UOMType
 
     } else {
       tempData = list[index]
@@ -251,9 +251,9 @@ function ViewConversionCost(props) {
         {/*PROCESS COST GRID */}
         <Col md="12">
           <Table className="table cr-brdr-main conversion-cost" size="sm">
-            
+
             <tbody>
-            <tr className='thead'>
+              <tr className='thead'>
                 {partNumberList.length === 0 && (IsAssemblyCosting && isPDFShow) && <th>{`Part No`}</th>}
                 <th style={{ width: "150px" }}>{`Process`}</th>
                 {processGroup && <th>{`Sub Process`}</th>}
@@ -342,9 +342,9 @@ function ViewConversionCost(props) {
 
         <Col md="12">
           <Table className="table cr-brdr-main" size="sm">
-            
+
             <tbody>
-            <tr className='thead'>
+              <tr className='thead'>
                 {partNumberList.length === 0 && IsAssemblyCosting && <th>{`Part No`}</th>}
                 <th>{`Operation Name`}</th>
                 <th>{`Operation Code`}</th>
@@ -409,7 +409,7 @@ function ViewConversionCost(props) {
         <Col md="12" className='firefox-space-bottom'>
           <Table className="table cr-brdr-main" size="sm">
             <tbody>
-            <tr className='thead'>
+              <tr className='thead'>
                 {partNumberList.length === 0 && IsAssemblyCosting && <th>{`Part No`}</th>}
                 <th>{`Operation Name`}</th>
                 <th>{`Operation Code`}</th>
@@ -472,7 +472,7 @@ function ViewConversionCost(props) {
         <Col md="12">
           <Table className="table cr-brdr-main" size="sm">
             <tbody>
-            <tr className='thead'>
+              <tr className='thead'>
                 {partNumberList.length === 0 && IsAssemblyCosting && <th>{`Part No`}</th>}
                 <th>{`Operation Name`}</th>
                 <th>{`Quantity`}</th>
@@ -523,7 +523,7 @@ function ViewConversionCost(props) {
         <Col md="12" className='mb-3'>
           <Table className="table cr-brdr-main mb-0" size="sm">
             <tbody>
-            <tr className='thead'>
+              <tr className='thead'>
                 {/* {partNumberList.length ===0 && <th>{`Part No`}</th>}  */}
                 <th>{`Type`}</th>
                 <th>{`Rate`}</th>
