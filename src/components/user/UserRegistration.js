@@ -519,7 +519,7 @@ function UserRegistration(props) {
             }
             // const DepartmentObj = departmentList && departmentList.find(item => item.DepartmentId === Data.DepartmentId)
 
-
+            setPrimaryContact(Data.IsPrimaryContact)
             setIsEditFlag(true)
             setIsLoader(false)
             setIsShowAdditionalPermission(Data.IsAdditionalAccess)
@@ -1450,6 +1450,7 @@ function UserRegistration(props) {
       if (isRfqUser) {
         updatedData.VendorId = vendor.value
         updatedData.ReporterId = reporter.value
+        updatedData.IsPrimaryContact = primaryContact
       } else {
         updatedData.Modules = Modules
         updatedData.TechnologyLevels = tempTechnologyLevelArray
@@ -1534,6 +1535,7 @@ function UserRegistration(props) {
       if (props?.RFQUser) {
         userData.VendorId = vendor.value
         userData.ReporterId = reporter.value
+        userData.IsPrimaryContact = primaryContact
       } else {
         userData.Modules = Modules
         userData.TechnologyLevels = tempTechnologyLevelArray

@@ -320,7 +320,7 @@ function NfrSummaryDrawer(props) {
                                 </div>
                             </Col>
                         </Row>
-                        {<Row className="sf-btn-footer no-gutters drawer-sticky-btn justify-content-between">
+                        {!isApprovalDone && sendForApprovalButtonShow && <Row className="sf-btn-footer no-gutters drawer-sticky-btn justify-content-between">
                             <div className="col-sm-12 text-right bluefooter-butn mx-0">
                                 <Fragment>
                                     <button type={'button'} className="mr5 approve-reject-btn"

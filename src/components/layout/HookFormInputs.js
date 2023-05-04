@@ -631,6 +631,8 @@ export const AsyncSearchableSelectHookForm = (field) => {
                   onChange(e)
                 }}
                 menuPlacement="auto"
+                classNamePrefix="multi-select-container"
+                className="multidropdown-container"
                 loadOptions={asyncOptions}
                 onBlur={onBlur}
                 selected={value}
