@@ -3,9 +3,9 @@ import { useForm, Controller } from 'react-hook-form';
 import { useSelector, useDispatch } from 'react-redux';
 import AddOperation from '../../Drawers/AddOperation';
 import { Col, Row, Table } from 'reactstrap';
-import { TextAreaHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs';
+import { SearchableSelectHookForm, TextAreaHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs';
 import NoContentFound from '../../../../common/NoContentFound';
-import { EMPTY_DATA, MASS, ASSEMBLYNAME } from '../../../../../config/constants';
+import { CRMHeads, EMPTY_DATA, MASS, ASSEMBLYNAME } from '../../../../../config/constants';
 import Toaster from '../../../../common/Toaster';
 import { checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected } from '../../../../../helper';
 import { ViewCostingContext } from '../../CostingDetails';
@@ -172,6 +172,17 @@ function OperationCost(props) {
     button.click()
   }
 
+  const onCRMHeadChange = (e, index) => {
+    let tempArr = []
+    let tempData = gridData[index]
+    tempData = {
+      ...tempData,
+      OperationCRMHead: e?.label
+    }
+    tempArr = Object.assign([...gridData], { [index]: tempData })
+    setGridData(tempArr)
+  }
+
   const onRemarkPopUpClose = (index) => {
     var button = document.getElementById(`popUpTriggerss${props.IsAssemblyCalculation}${index}`)
     button.click()
@@ -335,6 +346,7 @@ function OperationCost(props) {
                       initialConfiguration.IsOperationLabourRateConfigure &&
                       <th>{`Labour Quantity`}</th>}
                     <th>{`Net Cost`}</th>
+                    {initialConfiguration.IsShowCRMHead && <th>{`CRM Head`}</th>}
                     <th><div className='pin-btn-container'><span>Action</span><button title={headerPinned ? 'pin' : 'unpin'} onClick={() => setHeaderPinned(!headerPinned)} className='pinned'><div className={`${headerPinned ? '' : 'unpin'}`}></div></button></div></th>
                   </tr>
                 </thead>
@@ -427,6 +439,27 @@ function OperationCost(props) {
                               initialConfiguration.IsOperationLabourRateConfigure &&
                               <td>{item.IsLabourRateExist ? item.LabourQuantity : '-'}</td>}
                             <td><div className='w-fit' id={`operation-cost${index}`}><TooltipCustom disabledIcon={true} id={`operation-cost${index}`} tooltipText={initialConfiguration && initialConfiguration.IsOperationLabourRateConfigure ? "Net Cost = (Rate * Quantity) + (Labour Rate * Labour Quantity)" : "Net Cost = (Rate * Quantity)"} />{netCost(item)}</div></td>
+                            {initialConfiguration.IsShowCRMHead && <td>
+                              <SearchableSelectHookForm
+                                name={`crmHeadOperation${index}`}
+                                type="text"
+                                label="CRM Head"
+                                errors={`${errors.crmHeadOperation}${index}`}
+                                Controller={Controller}
+                                control={control}
+                                register={register}
+                                mandatory={true}
+                                rules={{
+                                  required: true,
+                                }}
+                                placeholder={'Select'}
+                                defaultValue={item.OperationCRMHead ? { label: item.OperationCRMHead, value: index } : ''}
+                                options={CRMHeads}
+                                required={true}
+                                handleChange={(e) => { onCRMHeadChange(e, index) }}
+                                disabled={CostingViewMode}
+                              />
+                            </td>}
                             <td>
                               <div className='action-btn-wrapper'>
                                 {(!CostingViewMode && !IsLocked) && <button title='Edit' className="Edit mb-0 align-middle" type={'button'} onClick={() => editItem(index)} />}

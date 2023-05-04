@@ -11,6 +11,7 @@ import { IdForMultiTechnology } from '../../../../../config/masterData';
 import WarningMessage from '../../../../common/WarningMessage';
 import { MESSAGES } from '../../../../../config/message';
 import { number, percentageLimitValidation, isNumber, checkWhiteSpaces, NoSignNoDecimalMessage } from "../../../../../helper/validation";
+import { CRMHeads } from '../../../../../config/constants';
 
 
 let counter = 0;
@@ -54,6 +55,7 @@ function Rejection(props) {
         let request = partType ? 'multiple technology assembly' : ''
         dispatch(fetchCostingHeadsAPI(request, (res) => { }))
         setValue('RejectionPercentage', rejectionObj?.RejectionApplicability === "Fixed" ? rejectionObj?.RejectionCost : rejectionObj?.RejectionPercentage)
+        setValue('crmHeadRejection', rejectionObj && rejectionObj.RejectionCRMHead && { label: rejectionObj.RejectionCRMHead, value: 1 })
     }, [])
 
     useEffect(() => {
@@ -74,6 +76,7 @@ function Rejection(props) {
                 "RejectionCost": applicability ? rejectionObj.RejectionCost : '',
                 "RejectionTotalCost": applicability ? rejectionObj.RejectionTotalCost : '',
                 "IsSurfaceTreatmentApplicable": true,
+                "RejectionCRMHead": getValues('crmHeadRejection') ? getValues('crmHeadRejection').label : ''
             }
 
             if (!CostingViewMode) {
@@ -304,6 +307,14 @@ function Rejection(props) {
         setApplicability([])
     }
 
+    const handleCrmHeadChange = (e) => {
+        if (e) {
+            setRejectionObj({
+                ...rejectionObj,
+                RejectionCRMHead: e?.label
+            })
+        }
+    }
 
     return (
         <>
@@ -433,6 +444,26 @@ function Rejection(props) {
                     />
                 </Col>
             </Row>
+            {initialConfiguration.IsShowCRMHead && <Col md="2">
+                <SearchableSelectHookForm
+                    name={`crmHeadRejection`}
+                    type="text"
+                    label="CRM Head"
+                    errors={errors.crmHeadRejection}
+                    Controller={Controller}
+                    control={control}
+                    register={register}
+                    mandatory={true}
+                    rules={{
+                        required: false,
+                    }}
+                    placeholder={'Select'}
+                    options={CRMHeads}
+                    required={true}
+                    handleChange={handleCrmHeadChange}
+                    disabled={CostingViewMode}
+                />
+            </Col>}
 
         </>
     );

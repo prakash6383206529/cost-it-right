@@ -12,7 +12,7 @@ import { calculatePercentage, checkForDecimalAndNull, checkForNull, loggedInUser
 import { SearchableSelectHookForm, TextAreaHookForm, TextFieldHookForm } from '../../../layout/HookFormInputs';
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css';
-import { FILE_URL, NFRTypeId, VBCTypeId } from '../../../../config/constants';
+import { CRMHeads, FILE_URL, NFRTypeId, VBCTypeId } from '../../../../config/constants';
 import Toaster from '../../../common/Toaster';
 import { MESSAGES } from '../../../../config/message';
 import DayTime from '../../../common/DayTimeWrapper'
@@ -290,6 +290,8 @@ function TabDiscountOther(props) {
             setDiscountCostApplicability({ label: OtherCostDetails.DiscountApplicability, value: OtherCostDetails.DiscountApplicbilityId })
             setValue('OtherCostApplicability', { label: OtherCostDetails.OtherCostApplicability, value: OtherCostDetails.OtherCostApplicabilityId })
             setValue('DiscountCostApplicability', { label: OtherCostDetails.DiscountApplicability, value: OtherCostDetails.DiscountApplicbilityId })
+            setValue('crmHeadOtherCost', { label: OtherCostDetails.OtherCRMHead, value: 1 })
+            setValue('crmHeadDiscount', { label: OtherCostDetails.DiscountCRMHead, value: 2 })
 
             // BELOW CONDITION UPDATES VALUES IN EDIT OR GET MODE
             const discountValues = {
@@ -532,6 +534,25 @@ function TabDiscountOther(props) {
       errors.PercentageOtherCost = {}
     }
   }
+
+  const onCRMHeadChangeOther = (e) => {
+    if (e) {
+      setDiscountObj({
+        ...discountObj,
+        OtherCRMHead: e?.label
+      })
+    }
+  }
+
+  const onCRMHeadChangeDiscount = (e) => {
+    if (e) {
+      setDiscountObj({
+        ...discountObj,
+        DiscountCRMHead: e?.label
+      })
+    }
+  }
+
   /**
     * @method handleDiscountTypeChange
     * @description  HANDLE OTHER DISCOUNT TYPE CHANGE
@@ -833,7 +854,10 @@ function TabDiscountOther(props) {
           "OtherCostApplicabilityId": otherCostApplicability.value,
           "OtherCostApplicability": otherCostApplicability.label,
           "DiscountApplicbilityId": discountCostApplicability.value,
-          "DiscountApplicability": discountCostApplicability.label
+          "DiscountApplicability": discountCostApplicability.label,
+          "DiscountCRMHead": getValues('crmHeadDiscount') ? getValues('crmHeadDiscount').label : '',
+          "OtherCRMHead": getValues('crmHeadOtherCost') ? getValues('crmHeadOtherCost').label : ''
+
         }
       },
       "Attachements": updatedFiles
@@ -1146,6 +1170,27 @@ function TabDiscountOther(props) {
                   className="form"
                 >
                   <Row>
+                    {initialConfiguration.IsShowCRMHead && <Col md="2">
+                      <SearchableSelectHookForm
+                        name={`crmHeadOtherCost`}
+                        type="text"
+                        label="CRM Head"
+                        errors={errors.crmHeadOtherCost}
+                        Controller={Controller}
+                        control={control}
+                        register={register}
+                        mandatory={true}
+                        rules={{
+                          required: true,
+                        }}
+                        placeholder={'Select'}
+                        options={CRMHeads}
+                        required={true}
+                        handleChange={onCRMHeadChangeOther}
+                        disabled={CostingViewMode}
+                      />
+                    </Col>}
+
                     <Col md="2">
                       <SearchableSelectHookForm
                         label={"Other Cost Type"}
@@ -1163,6 +1208,7 @@ function TabDiscountOther(props) {
                         disabled={CostingViewMode ? true : false}
                       />
                     </Col>
+
                     {
                       otherCostType.value === 'Percentage' &&
                       <Col md="2">
@@ -1260,6 +1306,28 @@ function TabDiscountOther(props) {
                     </Col>
                   </Row>
                   <Row>
+
+                    {initialConfiguration.IsShowCRMHead && <Col md="2">
+                      <SearchableSelectHookForm
+                        name={`crmHeadDiscount`}
+                        type="text"
+                        label="CRM Head"
+                        errors={errors.crmHeadDiscount}
+                        Controller={Controller}
+                        control={control}
+                        register={register}
+                        mandatory={true}
+                        rules={{
+                          required: true,
+                        }}
+                        placeholder={'Select'}
+                        options={CRMHeads}
+                        required={true}
+                        handleChange={onCRMHeadChangeDiscount}
+                        disabled={CostingViewMode}
+                      />
+                    </Col>}
+
                     <Col md="2">
                       <SearchableSelectHookForm
                         label={"Discount Type"}

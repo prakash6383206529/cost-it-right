@@ -3,11 +3,11 @@ import { useForm, Controller } from 'react-hook-form';
 import { useSelector, useDispatch } from 'react-redux';
 import { Col, Row, Table } from 'reactstrap';
 import OperationCost from './OperationCost';
-import { TextFieldHookForm, TextAreaHookForm } from '../../../../layout/HookFormInputs';
+import { TextFieldHookForm, TextAreaHookForm, SearchableSelectHookForm } from '../../../../layout/HookFormInputs';
 import AddProcess from '../../Drawers/AddProcess';
 import { checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected, getConfigurationKey } from '../../../../../helper';
 import NoContentFound from '../../../../common/NoContentFound';
-import { EMPTY_DATA, EMPTY_GUID, MASS, TIME } from '../../../../../config/constants';
+import { CRMHeads, EMPTY_DATA, EMPTY_GUID, MASS, TIME } from '../../../../../config/constants';
 import Toaster from '../../../../common/Toaster';
 import VariableMhrDrawer from '../../Drawers/processCalculatorDrawer/VariableMhrDrawer'
 import { getProcessMachiningCalculation, getProcessDefaultCalculation } from '../../../actions/CostWorking';
@@ -841,6 +841,17 @@ function ProcessCost(props) {
     // }
   }
 
+  const onCRMHeadChange = (e, index) => {
+    let tempArr = []
+    let tempData = gridData[index]
+    tempData = {
+      ...tempData,
+      ProcessCRMHead: e?.label
+    }
+    tempArr = Object.assign([...gridData], { [index]: tempData })
+    setGridData(tempArr)
+  }
+
   const handleQuantityChangeOfGroupProcess = (event, index, list, parentIndex, processName) => {
 
     let tempArr = []
@@ -1331,6 +1342,7 @@ function ProcessCost(props) {
                     <th style={{ width: "160px" }}>{`Parts/Hour`}</th>
                     <th style={{ width: "180px" }}><span>Quantity <TooltipCustom customClass="float-unset" tooltipClass="process-quatity-tooltip" id={`quantity-info`} tooltipText={tooltipText} /></span></th>
                     <th style={{ width: "110px" }} >{`Net Cost`}</th>
+                    {initialConfiguration.IsShowCRMHead && <th style={{ width: "110px" }} >{`CRM Head`}</th>}
                     <th style={{ width: "145px" }}><div className='pin-btn-container'><span>Action</span><button onClick={() => setHeaderPinned(!headerPinned)} className='pinned' title={headerPinned ? 'pin' : 'unpin'}><div className={`${headerPinned ? '' : 'unpin'}`}></div></button></div></th>
                   </tr>
                 </thead>
@@ -1426,6 +1438,27 @@ function ProcessCost(props) {
                                 </>
                               }
                             </td>
+                            {initialConfiguration.IsShowCRMHead && <td>
+                              <SearchableSelectHookForm
+                                name={`crmHeadProcess${index}`}
+                                type="text"
+                                label="CRM Head"
+                                errors={`${errors.crmHeadProcess}${index}`}
+                                Controller={Controller}
+                                control={control}
+                                register={register}
+                                mandatory={true}
+                                rules={{
+                                  required: true,
+                                }}
+                                placeholder={'Select'}
+                                defaultValue={item.ProcessCRMHead ? { label: item.ProcessCRMHead, value: index } : ''}
+                                options={CRMHeads}
+                                required={true}
+                                handleChange={(e) => { onCRMHeadChange(e, index) }}
+                                disabled={CostingViewMode}
+                              />
+                            </td>}
                             <td>
                               <div className='action-btn-wrapper'>
                                 {(!CostingViewMode && !IsLocked) && <button title='Delete' className="Delete" type={'button'} onClick={() => deleteItem(index)} />}

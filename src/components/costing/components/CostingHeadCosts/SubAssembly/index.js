@@ -139,8 +139,10 @@ function AssemblyPart(props) {
       obj.IndirectLaborCostPercentage = data.length > 0 ? data[0].indirectLabourCostPercent : 0
       obj.NetLabourCost = Math.round(sum * 10) / 10
       obj.CostingLabourDetailList = data
+      obj.NetLabourCRMHead = data.length > 0 ? data[0].NetLabourCRMHead : 0
+      obj.IndirectLabourCRMHead = data.length > 0 ? data[0].IndirectLabourCRMHead : 0
+      obj.StaffCRMHead = data.length > 0 ? data[0].StaffCRMHead : 0
       props.setAssemblyLabourCost(obj)
-
       setTotalLabourCost(Number(obj.NetLabourCost) + Number(obj.IndirectLaborCost) + Number(obj.StaffCost))
       let temp = []
       RMCCTabData && RMCCTabData.map((item, index) => {

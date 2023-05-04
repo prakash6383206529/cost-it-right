@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { Row, Col, Container } from 'reactstrap'
 import { Drawer } from '@material-ui/core'
-import { NumberFieldHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs'
+import { NumberFieldHookForm, SearchableSelectHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs'
 import { useForm, Controller } from 'react-hook-form'
 import { useDispatch, useSelector, } from 'react-redux'
 import { number, checkWhiteSpaces, percentageLimitValidation, decimalNumberLimit6, checkForNull, checkForDecimalAndNull } from "../../../../../helper/validation";
@@ -9,7 +9,7 @@ import Toaster from '../../../../common/Toaster'
 import LabourCost from './LabourCost'
 import { getCostingLabourDetails, getLabourDetailsByFilter } from '../../../actions/Costing'
 import DayTime from '../../../../common/DayTimeWrapper'
-import { CBCTypeId, EMPTY_GUID, NCCTypeId, NFRTypeId, VBCTypeId, ZBCTypeId } from '../../../../../config/constants'
+import { CBCTypeId, CRMHeads, EMPTY_GUID, NCCTypeId, NFRTypeId, VBCTypeId, ZBCTypeId } from '../../../../../config/constants'
 import { costingInfoContext } from '../../CostingDetailStepTwo'
 import { ViewCostingContext } from '../../CostingDetails'
 import TooltipCustom from '../../../../common/Tooltip'
@@ -49,6 +49,10 @@ function AddLabourCost(props) {
                     setValue('indirectLabourCost', checkForDecimalAndNull(Data?.IndirectLaborCost, initialConfiguration.NoOfDecimalForPrice))
                     setValue('staffCostPercent', Data?.StaffCostPercentage)
                     setValue('staffCost', checkForDecimalAndNull(Data?.StaffCost, initialConfiguration.NoOfDecimalForPrice))
+
+                    setValue('NetLabourCRMHead', Data?.NetLabourCRMHead && { label: Data?.NetLabourCRMHead, value: 1 })
+                    setValue('IndirectLabourCRMHead', Data?.IndirectLabourCRMHead && { label: Data?.IndirectLabourCRMHead, value: 2 })
+                    setValue('StaffCRMHead', Data?.StaffCRMHead && { label: Data?.StaffCRMHead, value: 3 })
                     setStaffCostState(Number(Data?.StaffCost))
                     setIndirectLabourCostState(Data?.IndirectLaborCost)
                     let temp = []
@@ -77,8 +81,10 @@ function AddLabourCost(props) {
                 setValue('labourRate', Data.LabourRate)
                 setValue('workingHours', Data.WorkingTime)
                 setValue('efficiency', Data.Efficiency)
+
             }
         }))
+
     }, [])
 
 
@@ -297,6 +303,30 @@ function AddLabourCost(props) {
         }
     }
 
+    const handleCrmHeadChangeStaff = (e) => {
+        if (e && tableData.length > 0) {
+            let temp = [...tableData]
+            temp[0].StaffCRMHead = e?.label
+            setTableData(temp)
+        }
+    }
+
+    const handleCrmHeadChangeNetLabour = (e) => {
+        if (e && tableData.length > 0) {
+            let temp = [...tableData]
+            temp[0].NetLabourCRMHead = e?.label
+            setTableData(temp)
+        }
+    }
+
+    const handleCrmHeadChangeIndirectLabour = (e) => {
+        if (e && tableData.length > 0) {
+            let temp = [...tableData]
+            temp[0].IndirectLabourCRMHead = e?.label
+            setTableData(temp)
+        }
+    }
+
     return (
 
         <div>
@@ -466,6 +496,49 @@ function AddLabourCost(props) {
                                 </Row>
                                 {<LabourCost hideAction={CostingViewMode} tableData={tableData} editData={editData} />}
                                 <Row className='mt-4'>
+
+                                    {initialConfiguration.IsShowCRMHead && <Col md="3" className='pr-1'>
+                                        <SearchableSelectHookForm
+                                            name={`NetLabourCRMHead`}
+                                            type="text"
+                                            label="CRM Head Net Labour"
+                                            errors={errors.NetLabourCRMHead}
+                                            Controller={Controller}
+                                            control={control}
+                                            register={register}
+                                            mandatory={true}
+                                            rules={{
+                                                required: false,
+                                            }}
+                                            placeholder={'Select'}
+                                            options={CRMHeads}
+                                            required={true}
+                                            handleChange={handleCrmHeadChangeNetLabour}
+                                            disabled={CostingViewMode}
+                                        />
+                                    </Col>}
+
+                                    {initialConfiguration.IsShowCRMHead && <Col md="3" className='pr-1'>
+                                        <SearchableSelectHookForm
+                                            name={`IndirectLabourCRMHead`}
+                                            type="text"
+                                            label="CRM Head Indirect Labour"
+                                            errors={errors.IndirectLabourCRMHead}
+                                            Controller={Controller}
+                                            control={control}
+                                            register={register}
+                                            mandatory={true}
+                                            rules={{
+                                                required: false,
+                                            }}
+                                            placeholder={'Select'}
+                                            options={CRMHeads}
+                                            required={true}
+                                            handleChange={handleCrmHeadChangeIndirectLabour}
+                                            disabled={CostingViewMode}
+                                        />
+                                    </Col>}
+
                                     <Col md="3" className='pr-1'>
                                         <NumberFieldHookForm
                                             label={`Indirect Labour Cost (%)`}
@@ -491,7 +564,7 @@ function AddLabourCost(props) {
                                         />
                                     </Col>
                                     <Col md="3" className='px-1'>
-                                    <TooltipCustom disabledIcon={true} id={`Indirect-Labour-Cost`} tooltipClass='weight-of-sheet' tooltipText={"Indirect Labour Cost = Total Labour Rate * (Indirect Labour Cost %)"} />
+                                        <TooltipCustom disabledIcon={true} id={`Indirect-Labour-Cost`} tooltipClass='weight-of-sheet' tooltipText={"Indirect Labour Cost = Total Labour Rate * (Indirect Labour Cost %)"} />
                                         <NumberFieldHookForm
                                             label={`Indirect Labour Cost`}
                                             name={'indirectLabourCost'}
@@ -512,6 +585,28 @@ function AddLabourCost(props) {
                                             disabled={true}
                                         />
                                     </Col>
+
+                                    {initialConfiguration.IsShowCRMHead && <Col md="3" className='pr-1'>
+                                        <SearchableSelectHookForm
+                                            name={`StaffCRMHead`}
+                                            type="text"
+                                            label="CRM Head Staff"
+                                            errors={errors.StaffCRMHead}
+                                            Controller={Controller}
+                                            control={control}
+                                            register={register}
+                                            mandatory={true}
+                                            rules={{
+                                                required: false,
+                                            }}
+                                            placeholder={'Select'}
+                                            options={CRMHeads}
+                                            required={true}
+                                            handleChange={handleCrmHeadChangeStaff}
+                                            disabled={CostingViewMode}
+                                        />
+                                    </Col>}
+
                                     <Col md="3" className='px-1'>
                                         <NumberFieldHookForm
                                             label={`Staff Cost (%)`}
@@ -537,11 +632,11 @@ function AddLabourCost(props) {
                                         />
                                     </Col>
                                     <Col md="3" className='pl-1'>
-                                    <TooltipCustom disabledIcon={true} id={`staff-cost`} tooltipClass='weight-of-sheet' tooltipText={"Staff Cost = (Total Labour Cost + Indirect Labour Cost) * (Staff Cost %)"} />
+                                        <TooltipCustom disabledIcon={true} id={`staff-cost`} tooltipClass='weight-of-sheet' tooltipText={"Staff Cost = (Total Labour Cost + Indirect Labour Cost) * (Staff Cost %)"} />
                                         <NumberFieldHookForm
                                             label={`Staff Cost`}
                                             name={'staffCost'}
-                                            id={`staff-cost`} 
+                                            id={`staff-cost`}
                                             Controller={Controller}
                                             control={control}
                                             register={register}
