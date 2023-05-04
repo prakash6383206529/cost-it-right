@@ -342,7 +342,7 @@ class AddBOPImport extends Component {
               }, 500)
             })
             if (!this.state.isViewMode && Data.NetLandedCostConversion === 0) {
-              this.props.getExchangeRateByCurrency(Data.Currency, costingTypeId, DayTime(Data.EffectiveDate).format('YYYY-MM-DD'), costingTypeId === ZBCTypeId ? EMPTY_GUID : vendorName.value, client.value, res => {
+              this.props.getExchangeRateByCurrency(Data.Currency, costingTypeId, DayTime(Data.EffectiveDate).format('YYYY-MM-DD'), costingTypeId === ZBCTypeId ? EMPTY_GUID : vendorName.value, client.value, false, res => {
                 if (Object.keys(res.data.Data).length === 0) {
                   this.setState({ showWarning: true })
                 }

@@ -550,7 +550,7 @@ export function getBOPData(data, callback) {
  * @method getRMDrawerDataList
  * @description GET RM DATALIST IN RM DRAWER IN COSTING VBC
  */
-export function getRMDrawerDataList(data, callback) {
+export function getRMDrawerDataList(data, isNFR, rmNameList, callback) {
   return (dispatch) => {
     const queryParams = `technologyId=${data.TechnologyId}&vendorPlantId=${data.VendorPlantId}&plantId=${data.PlantId}&effectiveDate=${data.EffectiveDate}&vendorId=${data.VendorId}&customerId=${data.CustomerId}&materialId=${data.material_id}&gradeId=${data.grade_id}&costingId=${data.CostingId}&costingTypeId=${data.CostingTypeId}`
     //const queryParams = `${data.VendorId}/${data.TechnologyId}/${data.VendorPlantId}/${data.DestinationPlantId}/${data.EffectiveDate}/${data.material_id}/${data.grade_id}/${data.CostingId}`
@@ -559,7 +559,9 @@ export function getRMDrawerDataList(data, callback) {
       if (response.data.Result || response.status === 204) {
         dispatch({
           type: GET_RM_DRAWER_DATA_LIST,
-          payload: response.status === 204 ? [] : response.data.DataList
+          payload: response.status === 204 ? [] : response.data.DataList,
+          isNFR: isNFR,
+          rmNameList: rmNameList
         })
         callback(response);
       }
@@ -1184,10 +1186,10 @@ export function getDiscountOtherCostTabData(data, callback) {
  * @method getExchangeRateByCurrency
  * @description GET EXCHANGE RATE BY CURRENCY
  */
-export function getExchangeRateByCurrency(currency, costingHeadId, effectiveDate, VendorId, customerId, callback) {
+export function getExchangeRateByCurrency(currency, costingHeadId, effectiveDate, VendorId, customerId, isBudgeting, callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
-    const request = axios.get(`${API.getExchangeRateByCurrency}?currency=${currency}&costingHeadId=${costingHeadId}&effectiveDate=${effectiveDate}&VendorId=${!VendorId ? EMPTY_GUID : VendorId}&customerId=${!customerId ? EMPTY_GUID : customerId}`, config());
+    const request = axios.get(`${API.getExchangeRateByCurrency}?currency=${currency}&costingHeadId=${costingHeadId}&effectiveDate=${effectiveDate}&VendorId=${!VendorId ? EMPTY_GUID : VendorId}&customerId=${!customerId ? EMPTY_GUID : customerId}&isBudgeting=${isBudgeting}`, config());
     request.then((response) => {
       if (response.data.Result) {
         dispatch({

@@ -23,6 +23,8 @@ import TooltipCustom from '../../common/Tooltip'
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { MESSAGES } from '../../../config/message';
 import { getUsersTechnologyLevelAPI } from '../../../actions/auth/AuthActions';
+import WarningMessage from '../../common/WarningMessage'
+import LoaderCustom from '../../common/LoaderCustom';
 
 
 
@@ -78,6 +80,10 @@ function AddNfr(props) {
     const [sendForApprovalButtonDisable, setSendForApprovalButtonDisable] = useState(false)
     const [popupMsg, setPopupMsg] = useState(false)
     const [deletedId, setDeletedId] = useState('')
+    const [editWarning, setEditWarning] = useState(false)
+    const [filterStatus, setFilterStatus] = useState('')
+    const [loader, setLoader] = useState(false)
+    const [isFinalApproverShowButton, setIsFinalApproverShowButton] = useState(true)
 
     const { register, setValue, getValues, control, formState: { errors }, } = useForm({
         mode: 'onChange',
@@ -94,6 +100,7 @@ function AddNfr(props) {
     }
 
     useEffect(() => {
+        setLoader(true)
         let requestObject = {
             nfrId: nfrIdsList?.NfrMasterId,
             partWiseDetailId: nfrIdsList?.NfrPartWiseDetailId,
@@ -149,12 +156,17 @@ function AddNfr(props) {
                 setShouldBeLevel(shouldBelevel)
                 setRowData(newArray)
             }
+            setTimeout(() => {
+                setLoader(false)
+            }, 200);
         }))
         reactLocalStorage.setObject('isFromDiscountObj', false)
         let levelDetailsTemp = ''
         dispatch(getUsersTechnologyLevelAPI(loggedInUserId(), nfrData?.TechnologyId, (res) => {
             levelDetailsTemp = userTechnologyLevelDetails(NFRTypeId, res?.data?.Data?.TechnologyLevels)
             if (levelDetailsTemp?.length === 0) {
+                setFilterStatus("You don't have permission to send NFR for approval.")
+                setEditWarning(true)
                 setSendForApprovalButtonDisable(true)
             } else {
                 let obj = {}
@@ -165,7 +177,11 @@ function AddNfr(props) {
                 obj.approvalTypeId = costingTypeIdToApprovalTypeIdFunction(NFRTypeId)
                 dispatch(checkFinalUser(obj, (res) => {
                     if (res?.data?.Result) {
-                        setSendForApprovalButtonDisable(res?.data?.Data?.IsFinalApprover)
+                        if (res?.data?.Data?.IsFinalApprover) {
+                            setIsFinalApproverShowButton(false)
+                        }
+                        setEditWarning(true)
+                        setFilterStatus("You are a final level user and cannot send NFR for approval.")
                     }
                 }))
             }
@@ -544,6 +560,7 @@ function AddNfr(props) {
     }
     return (
         <>
+            {(loader && <LoaderCustom customClass="pdf-loader" />)}
             {props.showAddNfr && <div>
                 <Row className='mb-2'>
                     <Col md="4">
@@ -781,7 +798,7 @@ function AddNfr(props) {
                                 <div className={"save-icon"}></div>
                                 Save
                             </button>
-                            <button
+                            {isFinalApproverShowButton && <button
                                 className='user-btn'
                                 type='button'
                                 onClick={sendForApproval}
@@ -789,7 +806,10 @@ function AddNfr(props) {
                             >
                                 <div className="send-for-approval"></div>
                                 Send for Approval
-                            </button>
+                            </button>}
+                            <div>
+                                {editWarning && <WarningMessage dClass="mr-3" message={filterStatus} />}
+                            </div>
                             {
                                 showPopup && <PopupMsgWrapper isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${MESSAGES.COSTING_DELETE_ALERT}`} />
                             }

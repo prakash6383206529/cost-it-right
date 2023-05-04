@@ -16,7 +16,7 @@ import { FILE_URL } from '../../../../config/constants';
 import Toaster from '../../../common/Toaster';
 import { MESSAGES } from '../../../../config/message';
 import DayTime from '../../../common/DayTimeWrapper'
-import { ViewCostingContext } from '../CostingDetails';
+import { IsNFR, ViewCostingContext } from '../CostingDetails';
 import { Redirect, useHistory } from "react-router-dom";
 import redcrossImg from '../../../../assests/images/red-cross.png'
 import { debounce } from 'lodash'
@@ -82,6 +82,7 @@ function TabDiscountOther(props) {
   const [totalConditionCost, setTotalConditionCost] = useState(0)
   const [nfrListing, setNfrListing] = useState(false)
   const { subAssemblyTechnologyArray } = useSelector(state => state.subAssembly)
+  const isNFR = useContext(IsNFR);
 
   const fieldValues = useWatch({
     control,
@@ -565,7 +566,7 @@ function TabDiscountOther(props) {
       dispatch(isDiscountDataChange(true))
       setCurrency(newValue)
       setIsInputLader(true)
-      dispatch(getExchangeRateByCurrency(newValue.label, costData.CostingTypeId, DayTime(CostingEffectiveDate).format('YYYY-MM-DD'), costData.VendorId, costData.CustomerId, res => {
+      dispatch(getExchangeRateByCurrency(newValue.label, costData.CostingTypeId, DayTime(CostingEffectiveDate).format('YYYY-MM-DD'), costData.VendorId, costData.CustomerId, false, res => {
         setIsInputLader(false)
         if (Object.keys(res.data.Data).length === 0) {
           setShowWarning(true)
@@ -820,11 +821,11 @@ function TabDiscountOther(props) {
           dispatch(setComponentDiscountOtherItemData({}, () => { }))
           dispatch(saveAssemblyBOPHandlingCharge({}, () => { }))
           dispatch(isDiscountDataChange(false))
-          if (gotoNextValue && !props?.isNFR) {
+          if (gotoNextValue && !isNFR) {
             props.toggle('2')
             history.push('/costing-summary')
           }
-          if (props?.isNFR && gotoNextValue) {
+          if (isNFR && gotoNextValue) {
             reactLocalStorage.setObject('isFromDiscountObj', true)
             setNfrListing(true)
           }

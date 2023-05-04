@@ -3,11 +3,11 @@ import { useDispatch, useSelector } from 'react-redux'
 import { Row, Col, Label, Button, Tooltip } from 'reactstrap'
 import { checkForDecimalAndNull, checkForNull } from '../../../helper/validation'
 import { getFinancialYearSelectList, getPartSelectListWtihRevNo, } from '../actions/Volume'
-import { getCurrencySelectList, getPlantSelectListByType, getVendorWithVendorCodeSelectList } from '../../../actions/Common'
+import { getCurrencySelectList, getPlantSelectListByType } from '../../../actions/Common'
 import Toaster from '../../common/Toaster'
 import { MESSAGES } from '../../../config/message'
-import { getConfigurationKey, loggedInUserId } from '../../../helper/auth'
-import { CBCTypeId, searchCount, SPACEBAR, VBCTypeId, ZBC, ZBCTypeId } from '../../../config/constants'
+import { getConfigurationKey, loggedInUserId, userDetails } from '../../../helper/auth'
+import { BUDGET_ID, CBCTypeId, searchCount, SPACEBAR, VBCTypeId, ZBC, ZBCTypeId } from '../../../config/constants'
 import LoaderCustom from '../../common/LoaderCustom'
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
@@ -23,10 +23,14 @@ import { useState } from 'react'
 import { NumberFieldHookForm, SearchableSelectHookForm } from '../../layout/HookFormInputs'
 import { Controller, useForm } from 'react-hook-form'
 import { createBudget, getApprovedPartCostingPrice, getMasterBudget, getPartCostingHead, updateBudget } from '../actions/Budget'
-import { getExchangeRateByCurrency } from '../../costing/actions/Costing'
+import { checkFinalUser, getExchangeRateByCurrency } from '../../costing/actions/Costing'
 import AddConditionCosting from '../../costing/components/CostingHeadCosts/AdditionalOtherCost/AddConditionCosting'
 import ConditionCosting from '../../costing/components/CostingHeadCosts/AdditionalOtherCost/ConditionCosting'
+import MasterSendForApproval from '../MasterSendForApproval'
+import { userTechnologyDetailByMasterId } from '../../../helper'
+import { getUsersMasterLevelAPI } from '../../../actions/auth/AuthActions'
 import PopupMsgWrapper from '../../common/PopupMsgWrapper'
+import { getVendorWithVendorCodeSelectList } from '../actions/Material'
 
 const gridOptions = {};
 
@@ -72,6 +76,10 @@ function AddBudget(props) {
     const [isConditionCostingOpen, setIsConditionCostingOpen] = useState(false)
     const [conditionTableData, seConditionTableData] = useState([])
     const [totalConditionCost, setTotalConditionCost] = useState(0)
+    const [approveDrawer, setApproveDrawer] = useState(false)
+    const [approvalObj, setApprovalObj] = useState({})
+    const [isFinalApprover, setIsFinalApprover] = useState(false)
+    const [levelDetails, setLevelDetails] = useState({})
     const dispatch = useDispatch();
     const plantSelectList = useSelector(state => state.comman.plantSelectList);
     const financialYearSelectList = useSelector(state => state.volume.financialYearSelectList);
@@ -81,6 +89,7 @@ function AddBudget(props) {
 
     const [showTooltip, setShowTooltip] = useState(false)
     const [viewTooltip, setViewTooltip] = useState(false)
+    const userMasterLevelAPI = useSelector((state) => state.auth.userMasterLevelAPI)
 
     useEffect(() => {
 
@@ -92,9 +101,40 @@ function AddBudget(props) {
             setTableData(res.data.SelectList)
         }))
 
+        let levelDetailsTemp = []
+
+        levelDetailsTemp = userTechnologyDetailByMasterId(costingTypeId, BUDGET_ID, userMasterLevelAPI)
+
+        setLevelDetails(levelDetailsTemp)
+
+        let obj = {
+            TechnologyId: BUDGET_ID,
+            DepartmentId: userDetails().DepartmentId,
+            UserId: loggedInUserId(),
+            Mode: 'master',
+            approvalTypeId: costingTypeId
+        }
+        dispatch(checkFinalUser(obj, res => {
+            if (res.data?.Result) {
+                setIsFinalApprover(res.data?.Data?.IsFinalApprover)
+            }
+        }))
+
         getDetail()
 
+        dispatch(getUsersMasterLevelAPI(loggedInUserId(), BUDGET_ID, (res) => { }))
+
     }, [])
+
+
+    useEffect(() => {
+        if (userMasterLevelAPI) {
+            let levelDetailsTemp = []
+            levelDetailsTemp = userTechnologyDetailByMasterId(costingTypeId, BUDGET_ID, userMasterLevelAPI)
+            setLevelDetails(levelDetailsTemp)
+        }
+
+    }, [userMasterLevelAPI])
 
 
     /**
@@ -163,6 +203,19 @@ function AddBudget(props) {
         else if (costingHeadFlag === CBCTypeId) {
             // props.getClientSelectList(() => { })
         }
+
+        let obj = {
+            TechnologyId: BUDGET_ID,
+            DepartmentId: userDetails().DepartmentId,
+            UserId: loggedInUserId(),
+            Mode: 'master',
+            approvalTypeId: costingHeadFlag
+        }
+        dispatch(checkFinalUser(obj, res => {
+            if (res.data?.Result) {
+                setIsFinalApprover(res.data?.Data?.IsFinalApprover)
+            }
+        }))
     }
 
     /**
@@ -344,9 +397,9 @@ function AddBudget(props) {
         // setValue('currentPrice', total + currentPrice)
 
         setTotalSum((total + currentPrice))
-        setValue('totalSum', (total + currentPrice))
+        setValue('totalSum', checkForDecimalAndNull(total + currentPrice, getConfigurationKey().NoOfDecimalForPrice))
         if (currencyExchangeRate > 1) {
-            setValue('totalSumCurrency', (total + currentPrice) / currencyExchangeRate)
+            setValue('totalSumCurrency', checkForDecimalAndNull((total + currentPrice) / currencyExchangeRate, getConfigurationKey().NoOfDecimalForPrice))
         }
     }
 
@@ -481,7 +534,7 @@ function AddBudget(props) {
             const finalYear = year?.label && year?.label?.slice(0, 4);
             let date = (`${finalYear}-04-01`);
 
-            dispatch(getExchangeRateByCurrency(newValue.label, '', date, '', '', res => {
+            dispatch(getExchangeRateByCurrency(newValue.label, costingTypeId, date, '', '', true, res => {
                 if (res && res.data && res.data.Result) {
                     let Data = res.data.Data;
                     setCurrencyExchangeRate(Data.CurrencyExchangeRate)
@@ -537,6 +590,7 @@ function AddBudget(props) {
                 FinancialYear: DataChanged.FinancialYear,
                 NetPoPrice: values.currentPrice,
                 BudgetedPoPrice: totalSum,
+                BudgetedPoPriceInCurrency: totalSum / currencyExchangeRate,
                 CostingHeadId: costingTypeId,
                 PartId: DataChanged.PartId,
                 RevisionNumber: DataChanged.RevisionNumber,
@@ -561,24 +615,41 @@ function AddBudget(props) {
                 FinancialYear: values.FinancialYear.label,
                 NetPoPrice: values.currentPrice,
                 BudgetedPoPrice: totalSum,
+                BudgetedPoPriceInCurrency: totalSum / currencyExchangeRate,
                 CostingHeadId: costingTypeId,
                 PartId: part.value,
+                PartName: part.label,
                 RevisionNumber: part.RevisionNumber,
                 PlantId: selectedPlants.value,
+                PlantName: selectedPlants.label,
                 VendorId: vendorName.value,
+                VendorName: vendorName.label,
                 CustomerId: client.value,
                 BudgetingPartCostingDetails: temp,
                 CurrencyId: currency.value,
                 Currency: currency.label,
+                ConditionsData: conditionTableData
+
             }
 
-            dispatch(createBudget(formData, (res) => {
-                setSetDisable(false)
-                if (res?.data?.Result) {
-                    Toaster.success(MESSAGES.BUDGET_ADD_SUCCESS)
-                    cancel('submit')
-                }
-            }))
+
+            if (isFinalApprover) {
+                dispatch(createBudget(formData, (res) => {
+                    setSetDisable(false)
+                    if (res?.data?.Result) {
+                        Toaster.success(MESSAGES.BUDGET_ADD_SUCCESS)
+                        cancel('submit')
+                    }
+                }))
+            } else {
+
+                setApprovalObj(formData)
+
+                setTimeout(() => {
+                    setApproveDrawer(true)
+                }, 300);
+
+            }
         }
 
     }, 500)
@@ -681,6 +752,11 @@ function AddBudget(props) {
         setTimeout(() => {
             setTotalConditionCost(sum)
         }, 1000)
+    }
+
+    const closeApprovalDrawer = () => {
+        setApproveDrawer(false)
+        props.hideForm()
     }
 
     const defaultColDef = {
@@ -1121,17 +1197,47 @@ function AddBudget(props) {
                                                         <div className={"cancel-icon"}></div>{" "}
                                                         {"Cancel"}
                                                     </button>
-                                                    <button
-                                                        type="submit"
-                                                        className="user-btn mr5 save-btn"
-                                                        disabled={setDisable}
-                                                    >
-                                                        <div className={"save-icon"}> </div>
-                                                        {isEditFlag ? "Update" : "Save"}
-                                                    </button>
+
+                                                    {!isFinalApprover ?
+                                                        <button type="submit"
+                                                            class="user-btn approval-btn save-btn mr5"
+                                                            disabled={setDisable}
+                                                        >
+                                                            <div className="send-for-approval"></div>
+                                                            {'Send For Approval'}
+                                                        </button>
+                                                        :
+                                                        <button
+                                                            type="submit"
+                                                            className="user-btn mr5 save-btn"
+                                                        //disabled={isViewMode || setDisable || noApprovalCycle}
+                                                        >
+                                                            <div className={"save-icon"}></div>
+                                                            {isEditFlag ? "Update" : "Save"}
+                                                        </button>
+                                                    }
                                                 </div>
                                             </Row>
+
                                         </form></div>
+                                    {
+                                        approveDrawer && (
+                                            <MasterSendForApproval
+                                                isOpen={approveDrawer}
+                                                closeDrawer={closeApprovalDrawer}
+                                                isEditFlag={false}
+                                                masterId={BUDGET_ID}
+                                                type={'Sender'}
+                                                anchor={"right"}
+                                                approvalObj={approvalObj}
+                                                isBulkUpload={false}
+                                                IsImportEntery={false}
+                                                costingTypeId={costingTypeId}
+                                                //costingTypeId={this.state.costingTypeId}
+                                                levelDetails={levelDetails}
+                                            />
+                                        )
+                                    }
                                 </div>
                             </div>
                         </div>}
