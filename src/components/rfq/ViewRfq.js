@@ -686,10 +686,11 @@ function RfqListing(props) {
         partNumberFormatter: partNumberFormatter
     }
 
-    const closeSendForApproval = () => {
-
+    const closeSendForApproval = (e = '', type) => {
         setSendForApproval(false)
-        getDataList()
+        if (type !== "Cancel") {
+            getDataList()
+        }
     }
     const getRowStyle = () => {
         return {
