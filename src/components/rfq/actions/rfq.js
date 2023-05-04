@@ -342,7 +342,7 @@ export function getNfrSelectList(callback) {
 
                     dispatch({
                         type: GET_NFR_SELECT_LIST,
-                        payload: response.status === 204 ? [] : response.data.DataList
+                        payload: response.status === 204 ? [] : response.data.SelectList
                     })
 
                     callback(response);

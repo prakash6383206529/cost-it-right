@@ -97,7 +97,7 @@ function AddNfr(props) {
         let requestObject = {
             nfrId: nfrIdsList?.NfrMasterId,
             partWiseDetailId: nfrIdsList?.NfrPartWiseDetailId,
-            plantId: initialConfiguration?.DefaultPlantId
+            plantId: nfrData?.PlantId ? nfrData?.PlantId : initialConfiguration?.DefaultPlantId
         }
         dispatch(getNFRPartWiseGroupDetail(requestObject, (res) => {
             // setNFRPartWiseGroupDetails(res?.data?.Data)

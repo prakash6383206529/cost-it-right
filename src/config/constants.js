@@ -1031,7 +1031,7 @@ export const API = {
   pushNfrOnSap: `${BASE_URL}/nfr/push-nfr-on-sap`,
   getSapnfrData: `${BASE_URL}/nfr/get-sap-nfr-data`,
   createPFS2Costing: `${BASE_URL}/nfr/create-pfs2-costing`,
-  getNfrSelectList: `${BASE_URL}/rfq/`,
+  getNfrSelectList: `${BASE_URL}/rfq-quotation/select-list-get-nfr`,
 
   //SUB ASSEMBLY
   getSubAssemblyAPI: `${BASE_URL}/sub-assembly/get-sub-assembly`,
@@ -2270,4 +2270,4 @@ export const KEYRFQ = "UAGSqTBCbZ8JqHJl"
 export const IVRFQ = "8vFNmRQEl91nOtrM"
 
 //VERSION 
-export const VERSION = "V2.1.153";
+export const VERSION = "V2.1.157";

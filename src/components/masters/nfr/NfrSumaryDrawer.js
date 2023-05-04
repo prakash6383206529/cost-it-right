@@ -19,6 +19,7 @@ import { AgGridReact } from "ag-grid-react/lib/agGridReact";
 import { AgGridColumn } from "ag-grid-react/lib/agGridColumn";
 import { PaginationWrapper } from "../../common/commonPagination";
 import WarningMessage from "../../common/WarningMessage";
+import Toaster from "../../common/Toaster";
 const gridOptions = {};
 
 function NfrSummaryDrawer(props) {
@@ -40,6 +41,7 @@ function NfrSummaryDrawer(props) {
     const [gridColumnApi, setgridColumnApi] = useState(null);
     const [noData, setNoData] = useState(false)
     const [selectedRowData, setSelectedRowData] = useState([]);
+    const [isDataCome, setIsDataCome] = useState(false);
 
     const dispatch = useDispatch()
 
@@ -89,6 +91,9 @@ function NfrSummaryDrawer(props) {
                 }))
 
             }
+            setTimeout(() => {
+                setIsDataCome(true)
+            }, 200);
         }))
     }, [])
 
@@ -138,6 +143,10 @@ function NfrSummaryDrawer(props) {
         sortable: false,
         checkboxSelection: isFirstColumn
     };
+
+    const isRowSelectable = (rowNode) => {
+        return (!isApprovalDone && sendForApprovalButtonShow) ? true : false
+    }
 
     const onGridReady = (params) => {
         setgridApi(params.api);
@@ -210,6 +219,14 @@ function NfrSummaryDrawer(props) {
         gridApi.paginationSetPageSize(Number(value));
     };
 
+    const approveClick = () => {
+        if (selectedRowData?.length === 0) {
+            Toaster.warning("Please at least one costing to send for approval.")
+            return false
+        }
+        setApprovalDrawer(true)
+    }
+
     return (
         <div>
             <Drawer className="bottom-drawer" anchor={props.anchor} open={props.isOpen}>
@@ -276,7 +293,7 @@ function NfrSummaryDrawer(props) {
                                                 <div className={`ag-theme-material`}>
                                                     {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
                                                     {loader && <LoaderCustom />}
-                                                    <AgGridReact
+                                                    {isDataCome && <AgGridReact
                                                         style={{ height: '100%', width: '100%' }}
                                                         defaultColDef={defaultColDef}
                                                         floatingFilter={true}
@@ -297,23 +314,24 @@ function NfrSummaryDrawer(props) {
                                                         onFilterModified={onFloatingFilterChanged}
                                                         enableBrowserTooltips={true}
                                                         onRowSelected={onRowSelect}
+                                                        isRowSelectable={isRowSelectable}
 
                                                     >
                                                         {/* <AgGridColumn cellClass="has-checkbox" field="Vendor" headerName='Costing Head' cellRenderer={checkBoxRenderer}></AgGridColumn> */}
                                                         {/* <AgGridColumn cellClass="has-checkbox" field="QuotationNumber" headerName='Group Name' cellRenderer={'linkableFormatter'} ></AgGridColumn> */}
-                                                        <AgGridColumn cellClass="has-checkbox" field="VendorName" headerName="Vendor" cellRenderer={'vendorFormatter'}></AgGridColumn>
+                                                        <AgGridColumn field="VendorName" headerName="Vendor" cellRenderer={'vendorFormatter'}></AgGridColumn>
                                                         <AgGridColumn field="PlantName" headerName='Plant' cellRenderer={'plantFormatter'}></AgGridColumn>
                                                         <AgGridColumn field="CostingNumber" headerName='Costing' ></AgGridColumn>
                                                         <AgGridColumn field="NetPOPrice" headerName='Net PO' ></AgGridColumn>
                                                         <AgGridColumn field="CostingId" headerName='Actions' type="rightAligned" cellRenderer={'onAction'}></AgGridColumn>
 
-                                                    </AgGridReact>
+                                                    </AgGridReact>}
 
                                                     {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} globalTake={defaultPageSize} />}
                                                 </div>
-                                                <div className="text-right pb-3">
+                                                {!isApprovalDone && sendForApprovalButtonShow && <div className="text-right pb-3">
                                                     <WarningMessage message="Select one costing to push on SAP." />
-                                                </div>
+                                                </div>}
                                             </div>
                                         </Col>
                                     </Row>
@@ -331,7 +349,7 @@ function NfrSummaryDrawer(props) {
                                     </button>
                                     <button type="button" className="approve-button mr5 approve-hover-btn"
 
-                                        onClick={() => setApprovalDrawer(true)}
+                                        onClick={() => approveClick()}
                                     >
                                         <div className={'save-icon'}></div>
                                         {'Approve'}
