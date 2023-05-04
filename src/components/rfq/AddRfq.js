@@ -176,6 +176,8 @@ function AddRfq(props) {
                     setPartList(convertToPartList(data.PartList))
                     setVendorList(data.VendorList)
                     setValue("remark", data.Remark)
+                    setValue("nfrId", { label: data?.NfrNumber, value: data?.NfrId })
+                    setNfrId({ label: data?.NfrNumber, value: data?.NfrId })
                     setData(data)
                 }
                 setTimeout(() => {
@@ -471,7 +473,7 @@ function AddRfq(props) {
         obj.PartList = temppartArr
         obj.Attachments = files
         obj.IsSent = isSent
-        obj.NfrId = nfrId
+        obj.NfrId = nfrId?.value
         if (dataProps?.isEditFlag) {
             dispatch(updateRfqQuotation(obj, (res) => {
                 if (res?.data?.Result) {
@@ -768,7 +770,7 @@ function AddRfq(props) {
 
         const resultInput = inputValue.slice(0, searchCount)
         if (inputValue?.length >= searchCount && partName !== resultInput) {
-            const res = await getPartSelectListWtihRevNo(resultInput, technology.value)
+            const res = await getPartSelectListWtihRevNo(resultInput, technology.value, nfrId?.value)
             setPartName(resultInput)
             let partDataAPI = res?.data?.DataList
             if (inputValue) {
@@ -950,7 +952,7 @@ function AddRfq(props) {
                                                 control={control}
                                                 rules={{ required: false }}
                                                 register={register}
-                                                defaultValue={vendor.length !== 0 ? vendor : ""}
+                                                defaultValue={nfrId?.length !== 0 ? nfrId : ""}
                                                 options={renderListing("nfrId")}
                                                 mandatory={false}
                                                 handleChange={handleNfrChnage}
