@@ -192,7 +192,7 @@ function MasterCostMovement() {
                             defaultValue={RMSpec}
                             options={renderListing('specification')}
                             mandatory={false}
-                            handleChange={() => { }}
+                            handleChange={handlespecChange}
                             buttonCross={resetData('RawMaterialSpecificationId')}
                             errors={errors.RawMaterialSpecificationId}
                         />
@@ -533,10 +533,10 @@ function MasterCostMovement() {
     const handleRMChange = (newValue) => {
         if (newValue && newValue !== '') {
             setRawMaterial(newValue);
-            setRMGrade(newValue)
             dispatch(getRMGradeSelectListByRawMaterial(
                 newValue.value,
                 (res) => { },
+
             ))
         } else {
             setRawMaterial([])
@@ -547,9 +547,8 @@ function MasterCostMovement() {
         }
     };
     const handleGradeChange = (newValue) => {
-
+        setRMGrade(newValue)
         if (newValue && newValue !== '') {
-            setRMSpec(newValue)
             dispatch(fetchSpecificationDataAPI(newValue.value, (res) => { }))
         } else {
             setRMGrade([])
@@ -557,6 +556,13 @@ function MasterCostMovement() {
             dispatch(fetchSpecificationDataAPI(0, () => { }))
         }
     };
+    const handlespecChange = (newValue) => {
+        if (newValue && newValue !== '') {
+            setRMSpec(newValue)
+        } else {
+            setRMSpec([])
+        }
+    }
     const handleCategoryChange = (newValue) => {
 
         if (newValue && newValue !== '') {
