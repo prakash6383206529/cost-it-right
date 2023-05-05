@@ -679,7 +679,7 @@ function AddRfq(props) {
                     objTemp.PartId = getValues('partNumber')?.value
                     if (index === 2) {
                         objTemp.PartNumber = partNumber?.label
-                        objTemp.VendorListExisting = vendorListFinal.join(',')
+                        objTemp.VendorListExisting = vendorListFinal.join(',') ? vendorListFinal.join(',') : '-'
                     }
                     objTemp.Quantity = 0
 
