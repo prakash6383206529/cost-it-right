@@ -7,8 +7,8 @@ import { Controller, useForm } from "react-hook-form"
 import { useSelector, useDispatch } from "react-redux"
 import { reactLocalStorage } from "reactjs-localstorage"
 import { Col, Row } from "reactstrap"
-import { getPlantSelectListByType } from "../../../actions/Common"
-import { defaultPageSize, EMPTY_DATA, searchCount, ZBC } from "../../../config/constants"
+import { getPlantSelectListByType, getVendorNameByVendorSelectList } from "../../../actions/Common"
+import { defaultPageSize, EMPTY_DATA, searchCount, VBC_VENDOR_TYPE, ZBC } from "../../../config/constants"
 import { MESSAGES } from "../../../config/message"
 import { loggedInUserId } from "../../../helper"
 import { autoCompleteDropdown } from "../../common/CommonFunctions"
@@ -16,7 +16,7 @@ import DayTime from "../../common/DayTimeWrapper"
 import LoaderCustom from "../../common/LoaderCustom"
 import NoContentFound from "../../common/NoContentFound"
 import Toaster from "../../common/Toaster"
-import { checkPartWithTechnology, getCostingSpecificTechnology, getPartCostingVendorSelectList, getPartInfo, getPartSelectListByTechnology } from "../../costing/actions/Costing"
+import { checkPartWithTechnology, getCostingSpecificTechnology, getPartInfo, getPartSelectListByTechnology } from "../../costing/actions/Costing"
 import { AsyncSearchableSelectHookForm, DatePickerHookForm, SearchableSelectHookForm } from "../../layout/HookFormInputs"
 import { getFormGridData, getRevisionNoFromPartId } from "../actions/ReportListing"
 import { PaginationWrapper } from '../../common/commonPagination';
@@ -70,6 +70,7 @@ function CostReportForm(props) {
 
 
     useEffect(() => {
+        dispatch(getPlantSelectListByType(ZBC, () => { }))
         dispatch(getCostingSpecificTechnology(loggedInUserId(), () => { }))
         dispatch(getPartInfo('', () => { }))
         dispatch(getProductGroupSelectList(() => { }))
@@ -263,8 +264,7 @@ function CostReportForm(props) {
                     }
                     if (response.data.Result) {
 
-                        dispatch(getPartCostingVendorSelectList(newValue.value, () => { }))
-                        dispatch(getPlantSelectListByType(ZBC, () => { }))
+
                         dispatch(getRevisionNoFromPartId(newValue.value, (res) => {
                             let Data = res && res.data && res.data.SelectList
                             setRevision(Data)
@@ -319,7 +319,34 @@ function CostReportForm(props) {
         }
 
     }
-
+    const vendorFilterList = async (inputValue) => {
+        if (inputValue && typeof inputValue === 'string' && inputValue.includes(' ')) {
+            inputValue = inputValue.trim();
+        }
+        const resultInput = inputValue.slice(0, searchCount)
+        if (inputValue?.length >= searchCount && vendor !== resultInput) {
+            let res
+            res = await getVendorNameByVendorSelectList(VBC_VENDOR_TYPE, resultInput)
+            setVendor(resultInput)
+            let vendorDataAPI = res?.data?.SelectList
+            if (inputValue) {
+                return autoCompleteDropdown(inputValue, vendorDataAPI, false, [], true)
+            } else {
+                return vendorDataAPI
+            }
+        }
+        else {
+            if (inputValue?.length < searchCount) return false
+            else {
+                let VendorData = reactLocalStorage?.getObject('Data')
+                if (inputValue) {
+                    return autoCompleteDropdown(inputValue, VendorData, false, [], false)
+                } else {
+                    return VendorData
+                }
+            }
+        }
+    };
     /**
 * @Method deleteItemFromTable
 * @description remove data from table on the click of delete icon
@@ -484,11 +511,11 @@ function CostReportForm(props) {
                                 placeholder={"Select"}
                                 Controller={Controller}
                                 control={control}
-                                rules={{ required: true }}
+                                rules={{ required: props.isSaleAndPurchase ? false : true }}
                                 register={register}
                                 defaultValue={part.length !== 0 ? part : ""}
                                 asyncOptions={filterList}
-                                mandatory={true}
+                                mandatory={props.isSaleAndPurchase ? false : true}
                                 //   isLoading={loaderObj}
                                 handleChange={handlePartChange}
                                 errors={errors.Part}
@@ -519,19 +546,23 @@ function CostReportForm(props) {
 
                         {showVendor &&
                             <Col md="3">
-                                <SearchableSelectHookForm
-                                    label={"Vendor"}
-                                    name={"Vendor"}
+                                <AsyncSearchableSelectHookForm
+                                    label={"Vendor (Code)"}
+                                    name={"vendor"}
                                     placeholder={"Select"}
                                     Controller={Controller}
                                     control={control}
+                                    rules={{ required: false }}
                                     register={register}
-                                    defaultValue={vendor.length !== 0 ? vendor : ''}
-                                    options={renderListing('Vendor')}
-                                    mandatory={false}
+                                    defaultValue={vendor.length !== 0 ? vendor : ""}
+                                    options={renderListing("vendor")}
+                                    mandatory={true}
                                     handleChange={handleVendorChange}
+                                    // handleChange={() => { }}
                                     errors={errors.vendor}
-                                    disabled={part.length === 0 ? true : false}
+                                    asyncOptions={vendorFilterList}
+                                    disabled={props.isSaleAndPurchase ? false : (part.length === 0 ? true : false)}
+                                    NoOptionMessage={MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN}
                                 />
                             </Col>
                         }
@@ -550,7 +581,7 @@ function CostReportForm(props) {
                                 mandatory={props.isPlantRequired ? true : false}
                                 handleChange={plantHandleChange}
                                 errors={errors.Plant}
-                                disabled={part.length === 0 ? true : false}
+                                disabled={props.isSaleAndPurchase ? false : (part.length === 0 ? true : false)}
                             />
                         </Col>
 
@@ -569,7 +600,7 @@ function CostReportForm(props) {
                                 mandatory={false}
                                 handleChange={() => { }}
                                 errors={errors.Customer}
-                                disabled={part.length === 0 ? true : false}
+                                disabled={props.isSaleAndPurchase ? false : (part.length === 0 ? true : false)}
                             />
                         </Col>}
 
@@ -643,9 +674,9 @@ function CostReportForm(props) {
                             {customerPoamSummary && <AgGridColumn field="productCategory" headerName="Product Category"></AgGridColumn>}
                             {<AgGridColumn field="PartNo" headerName="Part No."></AgGridColumn>}
                             {!customerPoamSummary && <AgGridColumn field="ShowRevisionNumber" headerName="Revision No."></AgGridColumn>}
-                            {!customerPoamSummary && <AgGridColumn field="Vendor" headerName="Vendor (Code)"></AgGridColumn>}
+                            {(!customerPoamSummary && showVendor) && <AgGridColumn field="Vendor" headerName="Vendor (Code)"></AgGridColumn>}
                             {<AgGridColumn field="Plant" headerName="Plant (Code)"></AgGridColumn>}
-                            {customerPoamSummary && <AgGridColumn field="CustomerName" headerName="Customer (Code)"></AgGridColumn>}
+                            {(!showVendor || customerPoamSummary) && <AgGridColumn field="CustomerName" headerName="Customer (Code)"></AgGridColumn>}
                             {<AgGridColumn field="action" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'buttonFormatter'}></AgGridColumn>}
                         </AgGridReact>
                         {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />}

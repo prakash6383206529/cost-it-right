@@ -97,6 +97,12 @@ export const hideCustomerFromExcel = (data, value) => {
     return excelData
 }
 
+export const hideColumnFromExcel = (data, value) => {
+    let excelData
+    excelData = data && data.filter((item) => item.value !== value)
+    return excelData
+}
+
 export const costingTypeIdToApprovalTypeIdFunction = (value) => {
     let approvalTypeId;
     switch (Number(value)) {
@@ -124,9 +130,3 @@ export const costingTypeIdToApprovalTypeIdFunction = (value) => {
     }
     return approvalTypeId;
 };
-
-export const hideColumnFromExcel = (data, value) => {
-    let excelData
-    excelData = data && data.filter((item) => item.value !== value)
-    return excelData
-}
