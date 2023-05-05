@@ -240,6 +240,7 @@ function AddMoreOperation(props) {
         setUom({ label: addMoreDetailObj.UOM.label, value: addMoreDetailObj.UOM.value })
         setPlant({ label: (addMoreDetailObj.costingTypeId === ZBCTypeId) ? addMoreDetailObj?.plants[0]?.Text : addMoreDetailObj?.destinationPlant.label, value: (addMoreDetailObj.costingTypeId === ZBCTypeId) ? addMoreDetailObj?.plants[0]?.Value : addMoreDetailObj?.destinationPlant.value })
         setValue('customer', { label: addMoreDetailObj.customer.label, value: addMoreDetailObj.customer.value })
+        setClient({ label: addMoreDetailObj.customer.label, value: addMoreDetailObj.customer.value })
 
         if (isEditFlag) {
             setValue('effectiveDate', DayTime(addMoreDetailObj.effectiveDate).$d)
@@ -265,7 +266,7 @@ function AddMoreOperation(props) {
                 //////////
                 setValue('crmHeadLabour', detailObject && detailObject.LabourCRMHead && { label: detailObject.LabourCRMHead, value: 1 })
                 setValue('manPowerCost', detailObject && detailObject.LabourManPowerCost ? checkForDecimalAndNull(detailObject.LabourManPowerCost, initialConfiguration.NoOfDecimalForPrice) : '',)
-                //setValue('crmHeadLabourStaffCost', detailObject && detailObject.PowerCRMHead && { label: detailObject.PowerCRMHead, value: 1 })
+                setValue('crmHeadLabourStaffCost', detailObject && detailObject.LabourStaffCRMHead && { label: detailObject.LabourStaffCRMHead, value: 1 })
                 setValue('staffCost', detailObject && detailObject.LabourStaffCost ? checkForDecimalAndNull(detailObject.LabourStaffCost, initialConfiguration.NoOfDecimalForPrice) : '',)
                 //////////
                 setValue('crmHeadConsumableMaintenanceCost', detailObject && detailObject.ConsumableMaintenanceCRMHead && { label: detailObject.ConsumableMaintenanceCRMHead, value: 1 })
@@ -283,7 +284,7 @@ function AddMoreOperation(props) {
                 setValue('depriciationCost', detailObject && detailObject.DepriciationCost ? checkForDecimalAndNull(detailObject.DepriciationCost, initialConfiguration.NoOfDecimalForPrice) : '',)
                 ///////////
                 setValue('crmHeadOtherOperation', detailObject && detailObject.OtherOperationCRMHead && { label: detailObject.OtherOperationCRMHead, value: 1 })
-                setValue('operationName', detailObject && detailObject.OtherOperationName && { label: detailObject.OtherOperationName, value: detailObject.OtherOperationIdRef })
+                setValue('OtherOperationName', detailObject && detailObject.OtherOperationName && { label: detailObject.OtherOperationName, value: detailObject.OtherOperationIdRef })
                 setValue('rateOperation', detailObject && detailObject.OtherOperationCost ? checkForDecimalAndNull(detailObject.OtherOperationCost, initialConfiguration.NoOfDecimalForPrice) : '',)
                 ///////////
                 setValue('crmHeadStatuaryLicense', detailObject && detailObject.StatuatoryAndLicenseCRMHead && { label: detailObject.StatuatoryAndLicenseCRMHead, value: 1 })
@@ -366,6 +367,7 @@ function AddMoreOperation(props) {
             LabourManPowerRate: values?.labourRate,
             LabourManPowerConsumption: values?.weldingShift,//welding/shift
             LabourManPowerCost: isWelding ? dataToSend?.labourCostWelding : values?.manPowerCost,
+            LabourStaffCRMHead: values?.crmHeadLabourStaffCost?.label,
             LabourStaffCost: values?.staffCost,
 
             ConsumableMaintenanceCRMHead: values?.crmHeadConsumableMaintenanceCost?.label,
@@ -388,8 +390,8 @@ function AddMoreOperation(props) {
 
             OtherOperationCRMHead: values?.crmHeadOtherOperation?.label,
             // OtherOperationName: "string",
-            OtherOperationCode: values?.operationName?.label,
-            OtherOperationIdRef: values?.operationName?.value,
+            OtherOperationCode: values?.OtherOperationName?.label,
+            OtherOperationIdRef: values?.OtherOperationName?.value,
             OtherOperationCost: values?.rateOperation,
 
             StatuatoryAndLicenseCRMHead: values?.crmHeadStatuaryLicense?.label,
@@ -740,7 +742,7 @@ function AddMoreOperation(props) {
                                             options={searchableSelectType('technology')}
                                             required={true}
                                             handleChange={handleTechnology}
-                                            disabled={isViewMode}
+                                            disabled={isViewMode || isEditFlag}
                                         />
                                     </div>
                                     <div className="input-group col-md-3">
@@ -830,7 +832,7 @@ function AddMoreOperation(props) {
                                             required={true}
                                             handleChange={handlePlant}
                                             valueDescription={plant}
-                                            disabled={isViewMode}
+                                            disabled={isViewMode || isEditFlag}
                                         />
                                     </div>
 
@@ -849,7 +851,7 @@ function AddMoreOperation(props) {
                                             mandatory={false}
                                             handleChange={handleVendorChange}
                                             errors={errors.vendorName}
-                                            disabled={isViewMode}
+                                            disabled={(isViewMode || isEditFlag) ? true : false}
                                         />
                                     </div>}
 
@@ -872,7 +874,7 @@ function AddMoreOperation(props) {
                                             required={true}
                                             handleChange={clientHandler}
                                             valueDescription={client}
-                                            disabled={isViewMode}
+                                            disabled={(isViewMode || isEditFlag) ? true : false}
                                         />
                                     </div>}
 
@@ -2109,10 +2111,10 @@ function AddMoreOperation(props) {
 
                                         <Col md="3">
                                             <SearchableSelectHookForm
-                                                name="operationName"
+                                                name="OtherOperationName"
                                                 type="text"
                                                 label="Operation Name"
-                                                errors={errors.operationName}
+                                                errors={errors.OtherOperationName}
                                                 Controller={Controller}
                                                 control={control}
                                                 register={register}
