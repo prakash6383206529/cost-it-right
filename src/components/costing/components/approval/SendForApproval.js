@@ -59,6 +59,7 @@ const SendForApproval = (props) => {
   const [effectiveDate, setEffectiveDate] = useState('')
   const [dataToChange, setDataToChange] = useState([]);
   const [IsLimitCrossed, setIsLimitCrossed] = useState(false);
+  const [tentativeCost, setTentativeCost] = useState(false);
   const [levelDetails, setLevelDetails] = useState('');
   // const [showDate,setDate] = useState(false)
   // const [showDate,setDate] = useState(false)
@@ -407,6 +408,7 @@ const SendForApproval = (props) => {
         SenderRemark: data.remarks,
         LoggedInUserId: userData.LoggedInUserId,
         ApprovalTypeId: costingTypeIdToApprovalTypeIdFunction(viewApprovalData[0].costingTypeId),
+        IsTentativeSaleRate: tentativeCost
         // Quantity: getValues('Quantity'),
         // Attachment: files,
         // IsLimitCrossed: IsLimitCrossed
@@ -633,6 +635,10 @@ const SendForApproval = (props) => {
     setIsRegularize(!isRegularize);
     checkQuantityLimitValue(getValues('Quantity'), !isRegularize)
   };
+
+  const tentativeCheckboxHandler = () => {
+    setTentativeCost(!tentativeCost)
+  }
 
   const reasonField = 'reasonField'
   const dateField = 'dateField'
@@ -954,6 +960,24 @@ const SendForApproval = (props) => {
                         </Col>
                       </>
                       }
+
+                      {initialConfiguration.IsShowTentativeSaleRate && <Col md="6" className="d-flex align-items-center mb-3 ml-1 ">
+                        <span className="d-inline-block">
+                          <label
+                            className={`custom-checkbox mb-0`}
+                            onChange={tentativeCheckboxHandler}>
+                            Tentative Cost
+                            <input
+                              type="checkbox"
+                            />
+                            <span
+                              className=" before-box"
+                              onChange={tentativeCheckboxHandler}
+                            />
+                          </label>
+                        </span>
+                      </Col>}
+
                       <Col md="12">
                         <TextAreaHookForm
                           label="Remarks"
