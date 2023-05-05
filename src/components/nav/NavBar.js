@@ -824,41 +824,41 @@ class SideBar extends Component {
     );
   };
 
-  renderNFR = (module) => {
-    const { topAndLeftMenuData } = this.props
-    return (
-      topAndLeftMenuData &&
-      topAndLeftMenuData.map((el, i) => {
-        if (el.ModuleName === module) {
-          return (
-            <li>
-              <Link
-                key={i}
-                className={`nav-link ${reactLocalStorage.get("ModuleId") === 'NFR' ? 'IsActive' : ''}`}
-                onClick={() => this.setLeftMenu('NFR')}
-                to={{
-                  pathname: "/nfr",
-                  state: {
-                    ModuleId: el.ModuleId,
-                    PageName: "NFR",
-                    PageURL: "/nfr",
-                  },
-                }}
-              >
-                <img
-                  className=""
-                  src={reactLocalStorage.get("ModuleId") === 'NFR' ? activeRFQ : RFQ}
-                  alt={module + " icon"}
-                />
-                <span className="rfq">{'NFR'}</span>
-              </Link>
-            </li>
-          );
-        }
-        return null
-      })
-    );
-  };
+  // renderNFR = (module) => {
+  //   const { topAndLeftMenuData } = this.props
+  //   return (
+  //     topAndLeftMenuData &&
+  //     topAndLeftMenuData.map((el, i) => {
+  //       if (el.ModuleName === module) {
+  //         return (
+  //           <li>
+  //             <Link
+  //               key={i}
+  //               className={`nav-link ${reactLocalStorage.get("ModuleId") === 'NFR' ? 'IsActive' : ''}`}
+  //               onClick={() => this.setLeftMenu('NFR')}
+  //               to={{
+  //                 pathname: "/nfr",
+  //                 state: {
+  //                   ModuleId: el.ModuleId,
+  //                   PageName: "NFR",
+  //                   PageURL: "/nfr",
+  //                 },
+  //               }}
+  //             >
+  //               <img
+  //                 className=""
+  //                 src={reactLocalStorage.get("ModuleId") === 'NFR' ? activeRFQ : RFQ}
+  //                 alt={module + " icon"}
+  //               />
+  //               <span className="rfq">{'NFR'}</span>
+  //             </Link>
+  //           </li>
+  //         );
+  //       }
+  //       return null
+  //     })
+  //   );
+  // };
 
   render() {
     const { userData, topAndLeftMenuData } = this.props;
@@ -940,7 +940,7 @@ class SideBar extends Component {
 
                       return this.renderMenus(item.ModuleName, item.LandingPageURL);
                     })}
-                  {this.renderNFR('RFQ')}
+                  {/* {this.renderNFR('RFQ')} */}
                 </ul>
               </nav>
             </div>
