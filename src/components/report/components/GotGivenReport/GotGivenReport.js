@@ -164,10 +164,10 @@ const GotGivenReport = (props) => {
                                     placeholder={"Select"}
                                     Controller={Controller}
                                     control={control}
-                                    rules={{ required: true }}
+                                    rules={{ required: false }}
                                     register={register}
                                     options={renderListing("Technology")}
-                                    mandatory={true}
+                                    mandatory={false}
                                     handleChange={handleTechnologyChange}
                                     errors={errors.Technology}
                                 />
@@ -181,10 +181,10 @@ const GotGivenReport = (props) => {
                                     placeholder={"Select"}
                                     Controller={Controller}
                                     control={control}
-                                    rules={{ required: true }}
+                                    rules={{ required: false }}
                                     register={register}
                                     asyncOptions={filterList}
-                                    mandatory={true}
+                                    mandatory={false}
                                     //isLoading={loaderObj}
                                     handleChange={handlePartChange}
                                     errors={errors.Part}
@@ -202,10 +202,10 @@ const GotGivenReport = (props) => {
                                     placeholder={"Select"}
                                     Controller={Controller}
                                     control={control}
-                                    rules={{ required: true }}
+                                    rules={{ required: false }}
                                     register={register}
                                     options={renderListing("ProductGroup")}
-                                    mandatory={true}
+                                    mandatory={false}
                                     handleChange={handleProductChange}
                                     errors={errors.Technology}
                                 />
