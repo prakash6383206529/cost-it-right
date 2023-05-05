@@ -368,8 +368,7 @@ class Main extends Component {
                     <Route path="/rfq-listing" component={AuthMiddleware(RfqListing, RFQ)} />
                     <Route path="/nfr" component={NfrTabs} />
                     <Route path="/budgeting" component={AuthMiddleware(BudgetMaster, BUDGETING)} />
-                    <Route path="/got-given-report" component={GotGivenReport} />
-
+                    <Route path="/got-given-summary-details-report" component={GotGivenReport} />
                     {/* <Route path='/simulation-approval-listing' component={SimulationApprovalListing} /> */}
 
                     {/* <Route path="/product-master" component={productMaster} /> */}
