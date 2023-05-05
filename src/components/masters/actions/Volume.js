@@ -398,7 +398,7 @@ export function checkRegularizationLimit(obj, callback) {
   };
 }
 export function getPartSelectListWtihRevNo(partNumber, technologyId, callback) {
-  return axios.get(`${API.getPartSelectListWtihRevNo}?partNumber=${partNumber}&technologyId=${technologyId}`, config()).catch(error => {
+  return axios.get(`${API.getPartSelectListWtihRevNo}?${partNumber ? `&partNumber=${partNumber}` : ''}${technologyId ? `&technologyId=${technologyId}` : ''}`, config()).catch(error => {
     apiErrors(error);
     callback(error);
     return Promise.reject(error)
