@@ -25,7 +25,7 @@ const GotGivenReport = (props) => {
     const [partName, setpartName] = useState('')
     const dispatch = useDispatch()
 
-    const { handleSubmit, control, register, reset, formState: { errors } } = useForm({
+    const { control, register, reset, formState: { errors } } = useForm({
         mode: 'onChange',
         reValidateMode: 'onChange',
     })
