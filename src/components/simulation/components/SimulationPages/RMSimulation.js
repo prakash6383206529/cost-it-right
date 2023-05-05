@@ -182,6 +182,7 @@ function RMSimulation(props) {
             let rmNameString = rmName.join(', ')
             setPopupMessage(`Scrap rate is not changed for some raw material (${rmNameString}). Do you still wish to continue?`)
             setShowPopup(true)
+            setShowTooltip(false)
             return false
         }
         setIsDisable(true)
@@ -473,61 +474,64 @@ function RMSimulation(props) {
                                             </button>
                                         </div>
                                         <div className='d-flex justify-content-end'>
-                                            {
-                                                isbulkUpload &&
-                                                <div className="d-flex justify-content-end bulk-upload-row rm-row" style={{ marginRight: 0 }}>
-                                                    <div className="d-flex align-items-center">
-                                                        <label>Rows with changes:</label>
-                                                        <TextFieldHookForm
-                                                            label=""
-                                                            name={'NoOfCorrectRow'}
-                                                            Controller={Controller}
-                                                            title={titleObj.rowWithChanges}
-                                                            control={control}
-                                                            register={register}
-                                                            rules={{ required: false }}
-                                                            mandatory={false}
-                                                            handleChange={() => { }}
-                                                            defaultValue={''}
-                                                            className=""
-                                                            customClassName={'withBorder mn-height-auto hide-label mb-0'}
-                                                            errors={errors.NoOfCorrectRow}
-                                                            disabled={true}
-                                                        />
-                                                    </div>
-                                                    <div className="d-flex align-items-center">
-                                                        <label>Rows without changes:</label>
-                                                        <TextFieldHookForm
-                                                            label=""
-                                                            name={'NoOfRowsWithoutChange'}
-                                                            Controller={Controller}
-                                                            title={titleObj.rowWithoutChanges}
-                                                            control={control}
-                                                            register={register}
-                                                            rules={{ required: false }}
-                                                            mandatory={false}
-                                                            handleChange={() => { }}
-                                                            defaultValue={''}
-                                                            className=""
-                                                            customClassName={'withBorder mn-height-auto hide-label mb-0'}
-                                                            errors={errors.NoOfRowsWithoutChange}
-                                                            disabled={true}
-                                                        />
-                                                    </div>
-                                                </div>
-                                            }
-                                            {!isImpactedMaster && <div className={`d-flex align-items-center simulation-label-container`}>
-                                                <div className='d-flex pl-3'>
-                                                    <label>Technology: </label>
-                                                    <p className='technology ml-1' title={list[0].TechnologyName}>{list[0].TechnologyName}</p>
-                                                </div>
-                                                {list[0].CostingTypeId !== CBCTypeId && <div className='d-flex pl-3'>
-                                                    <label className='mr-1'>Vendor (Code):</label>
-                                                    <p title={list[0].VendorName}>{list[0].VendorName ? list[0].VendorName : list[0]['Vendor (Code)']}</p>
 
+                                            <div className="d-flex justify-content-end bulk-upload-row rm-row" style={{ marginRight: 0 }}>
+                                                {
+                                                    isbulkUpload && <>
+                                                        <div className="d-flex align-items-center">
+                                                            <label>Rows with changes:</label>
+                                                            <TextFieldHookForm
+                                                                label=""
+                                                                name={'NoOfCorrectRow'}
+                                                                Controller={Controller}
+                                                                title={titleObj.rowWithChanges}
+                                                                control={control}
+                                                                register={register}
+                                                                rules={{ required: false }}
+                                                                mandatory={false}
+                                                                handleChange={() => { }}
+                                                                defaultValue={''}
+                                                                className=""
+                                                                customClassName={'withBorder mn-height-auto hide-label mb-0'}
+                                                                errors={errors.NoOfCorrectRow}
+                                                                disabled={true}
+                                                            />
+                                                        </div>
+                                                        <div className="d-flex align-items-center">
+                                                            <label>Rows without changes:</label>
+                                                            <TextFieldHookForm
+                                                                label=""
+                                                                name={'NoOfRowsWithoutChange'}
+                                                                Controller={Controller}
+                                                                title={titleObj.rowWithoutChanges}
+                                                                control={control}
+                                                                register={register}
+                                                                rules={{ required: false }}
+                                                                mandatory={false}
+                                                                handleChange={() => { }}
+                                                                defaultValue={''}
+                                                                className=""
+                                                                customClassName={'withBorder mn-height-auto hide-label mb-0'}
+                                                                errors={errors.NoOfRowsWithoutChange}
+                                                                disabled={true}
+                                                            />
+                                                        </div>
+                                                    </>}
+                                                {!isImpactedMaster && <div className={`d-flex align-items-center simulation-label-container`}>
+                                                    <div className='d-flex'>
+                                                        <label>Technology: </label>
+                                                        <p className='technology ml-1' title={list[0].TechnologyName}>{list[0].TechnologyName}</p>
+                                                    </div>
+                                                    {list[0].CostingTypeId !== CBCTypeId && <div className='d-flex pl-3'>
+                                                        <label className='mr-1'>Vendor (Code):</label>
+                                                        <p title={list[0].VendorName}>{list[0].VendorName ? list[0].VendorName : list[0]['Vendor (Code)']}</p>
+
+                                                    </div>}
+                                                    <button type="button" className={"apply ml-2"} onClick={cancel} disabled={isDisable}> <div className={'back-icon'}></div>Back</button>
                                                 </div>}
-                                                <button type="button" className={"apply ml-2"} onClick={cancel} disabled={isDisable}> <div className={'back-icon'}></div>Back</button>
-                                            </div>}
+                                            </div>
+
+
                                         </div>
 
                                     </div>
@@ -614,7 +618,6 @@ function RMSimulation(props) {
                                             showYearDropdown
                                             dateFormat="dd/MM/yyyy"
                                             minDate={new Date(maxDate)}
-                                            dropdownMode="select"
                                             placeholderText="Select effective date"
                                             className="withBorder"
                                             autoComplete={"off"}

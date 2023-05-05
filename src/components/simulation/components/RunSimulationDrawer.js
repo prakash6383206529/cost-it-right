@@ -68,6 +68,7 @@ function RunSimulationDrawer(props) {
     const [isCostingNPV, setIsCostingNPV] = useState(false)
     const selectedMasterForSimulation = useSelector(state => state.simulation.selectedMasterForSimulation)
     const selectedTechnologyForSimulation = useSelector(state => state.simulation.selectedTechnologyForSimulation)
+    const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
 
     useEffect(() => {
         dispatch(getSelectListOfSimulationApplicability(() => { }))
@@ -957,7 +958,7 @@ function RunSimulationDrawer(props) {
                                                     </div>
                                                 </Col>
 
-                                                <Col md="12" className={`p-0 pb-3 ${!getConfigurationKey().IsProvisionalSimulation ? 'mb-4 pb-2' : ''}`}>
+                                                <Col md="12" className={`p-0 pb-3`}>
                                                     <div class={`custom-check1 d-inline-block drawer-side-input-other `}>
                                                         {(
                                                             <div className="input-group col-md-12 mb-3 px-0 m-height-auto">
@@ -1130,7 +1131,7 @@ function RunSimulationDrawer(props) {
                                             )
                                             }
 
-                                            {(
+                                            {initialConfiguration?.IsShowNpvCost && (
                                                 <Row>
                                                     <div className="input-group col-md-12 mb-3 px-0 m-height-auto">
                                                         <label

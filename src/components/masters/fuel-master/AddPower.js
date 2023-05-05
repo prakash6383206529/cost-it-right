@@ -1288,6 +1288,9 @@ class AddPower extends Component {
       checkPowerContribution, netContributionValue, isViewMode, setDisable } = this.state;
     const filterList = async (inputValue) => {
       const { vendorFilterList } = this.state
+      if (inputValue && typeof inputValue === 'string' && inputValue.includes(' ')) {
+        inputValue = inputValue.trim();
+      }
       const resultInput = inputValue.slice(0, searchCount)
       if (inputValue?.length >= searchCount && vendorFilterList !== resultInput) {
         let res
@@ -1829,7 +1832,7 @@ class AddPower extends Component {
                                   <div className="d-flex justify-space-between align-items-center inputwith-icon">
                                     <div className="fullinput-icon">
                                       <Field
-                                        label={`Unit Generated/Unit Of fuel `}
+                                        label={`Unit Generated/Unit of fuel `}
                                         name={"UnitGeneratedPerUnitOfFuel"}
                                         type="text"
                                         placeholder={isViewMode ? '-' : 'Enter'}

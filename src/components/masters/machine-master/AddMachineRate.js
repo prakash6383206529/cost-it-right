@@ -1369,6 +1369,9 @@ class AddMachineRate extends Component {
     const { isEditFlag, isOpenMachineType, isOpenProcessDrawer, disableMachineType, IsCopied, isViewFlag, isViewMode, setDisable, lockUOMAndRate, UniqueProcessId, costingTypeId, noApprovalCycle } = this.state;
     const filterList = async (inputValue) => {
       const { vendorFilterList } = this.state
+      if (inputValue && typeof inputValue === 'string' && inputValue.includes(' ')) {
+        inputValue = inputValue.trim();
+      }
       const resultInput = inputValue.slice(0, searchCount)
       if (inputValue?.length >= searchCount && vendorFilterList !== resultInput) {
         // this.setState({ inputLoader: true })
@@ -1942,7 +1945,6 @@ class AddMachineRate extends Component {
                               {!isViewMode && (CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true && !this.state.isFinalApprovar) && initialConfiguration.IsMasterApprovalAppliedConfigure ?
                                 <button type="submit"
                                   class="user-btn approval-btn save-btn mr5"
-
                                   disabled={isViewMode || setDisable || noApprovalCycle}
                                 >
                                   <div className="send-for-approval"></div>

@@ -15,8 +15,8 @@ function Costing(props) {
 
   let history = useHistory();
   const [activeTab, setActiveTab] = useState('1');
-  const [partInfoStepTwo, setPartInfo] = useState({});
-  const [costingData, setCostingData] = useState({});
+  const [partInfoStepTwo, setPartInfo] = useState(props?.location?.state?.isNFR ? props?.location?.state?.partInfoStepTwo : {});
+  const [costingData, setCostingData] = useState(props?.location?.state?.isNFR ? props?.location?.state?.costingData : {});
   const [costingOptionsSelect, setCostingOptionsSelect] = useState({});
 
   /**
@@ -132,6 +132,9 @@ function Costing(props) {
                 costingData={costingData}
                 toggle={toggle}
                 costingOptionsSelect={costingOptionsSelect}
+                nfrData={props?.location?.state}
+                isNFR={props?.location?.state?.isNFR}
+                isViewModeCosting={props?.location?.state?.isViewMode}
               />
             </TabPane>
             <TabPane tabId="2">

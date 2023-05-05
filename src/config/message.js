@@ -354,5 +354,9 @@ export const MESSAGES = {
 
   //ERROR MESSAGES
   PRICE_VALIDATION_MESSAGE: `Maximum length for integer is ${Number(getConfigurationKey().NoOfDecimalForPrice)} and for decimal is ${Number(getConfigurationKey().NoOfDecimalForPrice)}.`,
-  OTHER_VALIDATION_ERROR_MESSAGE: `Maximum length for integer is ${Number(getConfigurationKey().NoOfDecimalForInputOutput)} and for decimal is ${Number(getConfigurationKey().NoOfDecimalForInputOutput)}.`
+  OTHER_VALIDATION_ERROR_MESSAGE: `Maximum length for integer is ${Number(getConfigurationKey().NoOfDecimalForInputOutput)} and for decimal is ${Number(getConfigurationKey().NoOfDecimalForInputOutput)}.`,
+
+  // NFR
+  NFR_APPROVED: 'NFR is approved successfully',
+  NFR_REJECTED: 'NFR is rejected successfully',
 }

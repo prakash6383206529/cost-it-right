@@ -294,10 +294,11 @@ class InterestRateListing extends Component {
     this.setState({ isBulkUpload: true })
   }
 
-  closeBulkUploadDrawer = () => {
-    this.setState({ isBulkUpload: false }, () => {
+  closeBulkUploadDrawer = (event, type) => {
+    this.setState({ isBulkUpload: false })
+    if (type !== 'cancel') {
       this.getTableListData()
-    })
+    }
   }
 
   /**
@@ -418,7 +419,7 @@ class InterestRateListing extends Component {
               onSubmit={handleSubmit(this.onSubmit.bind(this))}
               noValidate
             >
-              {this.state.isLoader && <LoaderCustom />}
+              {this.state.isLoader && <LoaderCustom customClass="loader-center" />}
               <Row className="filter-row-large blue-before">
 
                 <Col md="6" className="search-user-block mb-3">

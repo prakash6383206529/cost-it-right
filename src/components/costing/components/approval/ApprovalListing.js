@@ -85,6 +85,7 @@ function ApprovalListing(props) {
   useEffect(() => {
     if (props.activeTab === "3" || isDashboard) {
       getTableData("", "", "", "", 0, defaultPageSize, true, floatingFilterData)
+      resetState()
     }
     dispatch(isResetClick(false))
     dispatch(agGridStatus("", ""))
@@ -706,6 +707,7 @@ function ApprovalListing(props) {
       costingObj.customerName = item.CustomerName
       costingObj.customerCode = item.CustomerCode
       costingObj.customer = item.Customer
+      costingObj.BasicRate = item.BasicRate
       let date = costingObj.effectiveDate
       if (costingObj.effectiveDate) {
         let variance = Number(item.OldPOPrice && item.OldPOPrice !== '-' ? item.OldPOPrice : 0) - Number(item.NetPOPrice && item.NetPOPrice !== '-' ? item.NetPOPrice : 0)
@@ -902,8 +904,9 @@ function ApprovalListing(props) {
       {
         !showApprovalSumary &&
         <> {
-          (loader) ? <LoaderCustom customClass="center-loader" /> :
-            <div className={` ${!isApproval && 'container-fluid'} approval-listing-page`} id={'approval-go-to-top'}>
+
+          <div className={` ${!isApproval && 'container-fluid'} approval-listing-page ${loader ? 'dashboard-loader' : ''}`} id={'approval-go-to-top'}>
+            {(loader) ? <LoaderCustom customClass={isDashboard ? "dashboard-loader" : "loader-center"} /> : <div>
               {!isDashboard && <ScrollToTop pointProp={"approval-go-to-top"} />}
               <form noValidate>
                 <Row className="pt-4 blue-before">
@@ -980,7 +983,7 @@ function ApprovalListing(props) {
                           <AgGridColumn field="PlantName" cellRenderer='renderPlant' headerName="Plant (Code)"></AgGridColumn>
                           {reactLocalStorage.getObject('cbcCostingPermission') && <AgGridColumn field="Customer" cellRenderer='renderCustomer' headerName="Customer (Code)"></AgGridColumn>}
                           <AgGridColumn field='TechnologyName' headerName="Technology"></AgGridColumn>
-                          <AgGridColumn field="BasicRate" cellRenderer='reasonFormatter' headerName="Basic Price"></AgGridColumn>
+                          {initialConfiguration?.IsBasicRateAndCostingConditionVisible && <AgGridColumn field="BasicRate" cellRenderer='reasonFormatter' headerName="Basic Price"></AgGridColumn>}
                           <AgGridColumn field="OldPOPriceNew" cellRenderer='oldpriceFormatter' headerName="Existing PO Price"></AgGridColumn>
                           <AgGridColumn field="NetPOPriceNew" cellRenderer='priceFormatter' headerName="Revised PO Price"></AgGridColumn>
                           <AgGridColumn field="NCCPartQuantity" headerName="Quantity" cellRenderer={"reasonFormatter"} ></AgGridColumn>
@@ -991,7 +994,7 @@ function ApprovalListing(props) {
                           <AgGridColumn field="CreatedOn" cellRenderer='dateFormatter' headerName="Created On" filter="agDateColumnFilter" filterParams={filterParamsThird}></AgGridColumn>
                           <AgGridColumn field="RequestedBy" headerName="Last Approved/Rejected By" cellRenderer={"lastApprovalFormatter"}></AgGridColumn>
                           <AgGridColumn field="RequestedOn" cellRenderer='requestedOnFormatter' headerName="Requested On" filter="agDateColumnFilter" filterParams={filterParamsSecond}></AgGridColumn>
-                          {!isApproval && <AgGridColumn headerClass="justify-content-center" pinned="right" cellClass="text-center" field="DisplayStatus" tooltipField="TooltipText" cellRenderer='statusFormatter' headerName="Status" floatingFilterComponent="statusFilter" floatingFilterComponentParams={floatingFilterStatus}></AgGridColumn>}
+                          {!isApproval && <AgGridColumn headerClass="justify-content-center" pinned="right" cellClass="text-center" field="Status" tooltipField="TooltipText" cellRenderer='statusFormatter' headerName="Status" floatingFilterComponent="statusFilter" floatingFilterComponentParams={floatingFilterStatus}></AgGridColumn>}
                         </AgGridReact>
 
                         <div className='button-wrapper'>
@@ -1015,7 +1018,8 @@ function ApprovalListing(props) {
                   </div>
                 </Col>
               </Row>
-            </div>
+            </div>}
+          </div>
         }</>
 
         // :

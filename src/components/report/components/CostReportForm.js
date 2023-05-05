@@ -294,7 +294,9 @@ function CostReportForm(props) {
     * @description get data from backend after entering three char
     */
     const filterList = async (inputValue) => {
-
+        if (inputValue && typeof inputValue === 'string' && inputValue.includes(' ')) {
+            inputValue = inputValue.trim();
+        }
         const resultInput = inputValue.slice(0, searchCount)
         if (inputValue?.length >= searchCount && partName !== resultInput) {
             const res = await getPartSelectListByTechnology(technology.value, resultInput);
@@ -398,7 +400,6 @@ function CostReportForm(props) {
                                     showMonthDropdown
                                     showYearDropdown
                                     dateFormat="DD/MM/YYYY"
-                                    dropdownMode="select"
                                     placeholder="Select date"
                                     customClassName="withBorder"
                                     className="withBorder"
@@ -426,7 +427,6 @@ function CostReportForm(props) {
                                     showMonthDropdown
                                     showYearDropdown
                                     dateFormat="DD/MM/YYYY"
-                                    dropdownMode="select"
                                     placeholder="Select date"
                                     customClassName="withBorder"
                                     className="withBorder"

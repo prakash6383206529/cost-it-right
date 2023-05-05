@@ -73,7 +73,7 @@ function AddRfq(props) {
     const [isDisable, setIsDisable] = useState(false)
     const [partNoDisable, setPartNoDisable] = useState(true)
     const [attachmentLoader, setAttachmentLoader] = useState(false)
-    const [partName, setPartName] = useState(false)
+    const [partName, setPartName] = useState('')
     const [technology, setTechnology] = useState({})
     const [submissionDate, setSubmissionDate] = useState('')
     const [visibilityMode, setVisibilityMode] = useState({})
@@ -161,6 +161,7 @@ function AddRfq(props) {
                     setValue("plant", {
                         label: data.PlantName, value: data.PlantId
                     })
+                    setTechnology({ label: data.TechnologyName, value: data.TechnologyId })
                     // setInitialFiles(data?.Attachments)
                     // setValue('SubmissionDate', data?.LastSubmissionDate)
                     setSubmissionDate(data?.LastSubmissionDate)
@@ -555,7 +556,7 @@ function AddRfq(props) {
             return null
         })
 
-        data.PartIdList = temp
+        data.PartIdList = _.uniq(temp)
         data.PlantId = getValues('plant')?.value
         data.VendorId = getValues('vendor')?.value
 
@@ -702,6 +703,8 @@ function AddRfq(props) {
             setValue('partNumber', "")
             setTechnology(newValue)
         }
+        setPartName('')
+        reactLocalStorage.setObject('PartData', [])
     }
 
 
@@ -713,6 +716,9 @@ function AddRfq(props) {
         }))
     }
     const vendorFilterList = async (inputValue) => {
+        if (inputValue && typeof inputValue === 'string' && inputValue.includes(' ')) {
+            inputValue = inputValue.trim();
+        }
         const resultInput = inputValue.slice(0, searchCount)
         if (inputValue?.length >= searchCount && vendor !== resultInput) {
             let res
@@ -958,7 +964,6 @@ function AddRfq(props) {
                                                             showYearDropdown
                                                             minDate={new Date()}
                                                             dateFormat="dd/MM/yyyy"
-                                                            dropdownMode="select"
                                                             placeholderText="Select date"
                                                             className="withBorder"
                                                             autoComplete={"off"}
@@ -1011,7 +1016,6 @@ function AddRfq(props) {
                                                             showYearDropdown
                                                             minDate={new Date()}
                                                             dateFormat="dd/MM/yyyy"
-                                                            dropdownMode="select"
                                                             placeholderText="Select date"
                                                             className="withBorder"
                                                             autoComplete={"off"}
@@ -1280,7 +1284,6 @@ function AddRfq(props) {
                                                                 minDate={new Date()}
                                                                 timeFormat='HH:mm'
                                                                 dateFormat="dd/MM/yyyy HH:mm"
-                                                                dropdownMode="select"
                                                                 placeholderText="Select"
                                                                 className="withBorder"
                                                                 autoComplete={'off'}
@@ -1301,8 +1304,7 @@ function AddRfq(props) {
                                                                 selected={time}
                                                                 showTimeInput
                                                                 timeFormat='HH:mm'
-                                                                showTimeSelectOnly
-                                                                dropdownMode="select"
+                                                                showTimeSelectOnly                                                    
                                                                 placeholderText="Select"
                                                                 onChange={handleChangeTime}
                                                                 disabledKeyboardNavigation
@@ -1451,12 +1453,12 @@ function AddRfq(props) {
                                                 {"Cancel"}
                                             </button>
 
-                                            <button type="button" className="submit-button save-btn mr-2" value="save"
+                                            {!dataProps?.rowData?.IsSent && <button type="button" className="submit-button save-btn mr-2" value="save"
                                                 onClick={(data, e) => handleSubmitClick(data, e, false)}
                                                 disabled={isViewFlag}>
                                                 <div className={"save-icon"}></div>
                                                 {"Save"}
-                                            </button>
+                                            </button>}
 
                                             <button type="button" className="submit-button save-btn" value="send"
                                                 onClick={(data, e) => handleSubmitClick(data, e, true)}

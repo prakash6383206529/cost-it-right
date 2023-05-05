@@ -57,7 +57,7 @@ class BOMUploadDrawer extends Component {
   cancel = () => {
     const { reset } = this.props;
     reset();
-    this.toggleDrawer(true)
+    this.toggleDrawer('', true)
   }
 
   /**
@@ -153,7 +153,7 @@ class BOMUploadDrawer extends Component {
         })
       }
     }
-    this.toggleDrawer(false)
+    this.toggleDrawer('', false)
   }
 
   /**
@@ -182,7 +182,8 @@ class BOMUploadDrawer extends Component {
     }
   }
   cancelHandler = () => {
-    this.setState({ showPopup: true })
+    this.cancel('cancel')
+    // this.setState({ showPopup: true })
   }
   onPopupConfirm = () => {
     this.cancel('cancel')
@@ -224,7 +225,7 @@ class BOMUploadDrawer extends Component {
                     <h3>{`${messageLabel} Upload `}</h3>
                   </div>
                   <div
-                    onClick={(e) => this.toggleDrawer(true)}
+                    onClick={(e) => this.toggleDrawer('', true)}
                     className={'close-button right'}>
                   </div>
                 </Col>

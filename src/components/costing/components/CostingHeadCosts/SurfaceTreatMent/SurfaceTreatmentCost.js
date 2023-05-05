@@ -260,7 +260,7 @@ function SurfaceTreatmentCost(props) {
                                   register={register}
                                   mandatory={false}
                                   rules={{
-                                    validate: item.UOM === "Number" ? { number, checkWhiteSpaces, noDecimal, numberLimit6 } : { number, checkWhiteSpaces, decimalNumberLimit6 },
+                                    validate: { number, checkWhiteSpaces, decimalNumberLimit6 },
                                   }}
                                   defaultValue={item.SurfaceArea}
                                   className=""
@@ -294,7 +294,7 @@ function SurfaceTreatmentCost(props) {
                                       }}
                                       defaultValue={item.LabourQuantity}
                                       className=""
-                                      customClassName={'withBorder error-label surface-treament'}
+                                      customClassName={'withBorder error-label mn-height-auto mb-0 surface-treament'}
                                       handleChange={(e) => {
                                         e.preventDefault()
                                         handleLabourQuantityChange(e, index)

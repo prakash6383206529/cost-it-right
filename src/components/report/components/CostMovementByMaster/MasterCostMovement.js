@@ -382,6 +382,9 @@ function MasterCostMovement() {
 
 
     const vendorFilterList = async (inputValue) => {
+        if (inputValue && typeof inputValue === 'string' && inputValue.includes(' ')) {
+            inputValue = inputValue.trim();
+        }
         const resultInput = inputValue.slice(0, searchCount)
         if (inputValue?.length >= searchCount && vendor !== resultInput) {
             let res
@@ -447,7 +450,6 @@ function MasterCostMovement() {
                                     showMonthDropdown
                                     showYearDropdown
                                     dateFormat="DD/MM/YYYY"
-                                    dropdownMode="select"
                                     placeholder="Select date"
                                     customClassName="withBorder"
                                     className="withBorder"
@@ -475,7 +477,6 @@ function MasterCostMovement() {
                                     showMonthDropdown
                                     showYearDropdown
                                     dateFormat="DD/MM/YYYY"
-                                    dropdownMode="select"
                                     placeholder="Select date"
                                     customClassName="withBorder"
                                     className="withBorder"

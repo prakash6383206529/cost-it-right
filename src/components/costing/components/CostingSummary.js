@@ -328,7 +328,9 @@ function CostingSummary(props) {
   }
 
   const filterList = async (inputValue) => {
-
+    if (inputValue && typeof inputValue === 'string' && inputValue.includes(' ')) {
+      inputValue = inputValue.trim();
+    }
     const resultInput = inputValue.slice(0, searchCount)
     if (inputValue?.length >= searchCount && partName !== resultInput) {
       setInputLoader(true)
@@ -579,7 +581,6 @@ function CostingSummary(props) {
                               showYearDropdown
                               dateFormat="dd/MM/yyyy"
                               //maxDate={new Date()}
-                              dropdownMode="select"
                               placeholderText="-"
                               className="withBorder"
                               autoComplete={'off'}
