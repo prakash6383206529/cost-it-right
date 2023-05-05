@@ -30,6 +30,7 @@ function SalePurchaseProvisionListing(props) {
         let obj = {}
         obj.FromDate = startDate ? DayTime(startDate).format('MM/DD/YYYY') : ''
         obj.ToDate = endDate ? DayTime(endDate).format('MM/DD/YYYY') : ''
+        obj.IsRequestForSalesProvisionReport = props?.isSaleProvision
 
         let sampleArray = []
         tableData && tableData.map((item) => {

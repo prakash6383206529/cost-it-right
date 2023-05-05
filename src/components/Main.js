@@ -362,6 +362,7 @@ class Main extends Component {
                     <Route path="/purchase-provision-report" component={PurchaseProvisionReport} />
                     <Route path="/customer-poam-summary-report" component={CustomerPoamSummaryReport} />
                     <Route path="/headwise-costing-got-given" component={HeadWiseCostingGotGiven} />
+                    <Route path="/master-cost-movement-report" component={MasterCostMovement} />
                     {/*  NEED TO ADD PATH FROM BACKEND */}
                     <Route path="/simulation-insights" component={SimulationInsights} />
                     <Route path="/rfq-listing" component={AuthMiddleware(RfqListing, RFQ)} />
