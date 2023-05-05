@@ -1028,6 +1028,7 @@ export const API = {
   getNFRApprovals: `${BASE_URL}/nfr/get-nfr-approvals`,
   getNFRApprovalSummary: `${BASE_URL}/nfr/get-nfr-approval-summary`,
   approvedCostingByApprover: `${BASE_URL}/nfr/approved-nfr-by-approver`,
+  getRawMaterialByNFRPart: `${BASE_URL}/nfr/get-raw-material-by-nfr-part`,
 
 
   //SUB ASSEMBLY
@@ -1713,6 +1714,7 @@ export const GET_QUOTATION_BY_ID = 'GET_QUOTATION_BY_ID'
 export const GET_QUOTATION_LIST = 'GET_QUOTATION_LIST'
 export const CHECK_RFQ_BULK_UPLOAD = 'CHECK_RFQ_BULK_UPLOAD'
 export const SELECTED_ROW_ARRAY = 'SELECTED_ROW_ARRAY'
+export const GET_NFR_SELECT_LIST = 'GET_NFR_SELECT_LIST'
 
 // NFR
 export const NFR_DETAILS_FOR_DISCOUNT = 'NFR_DETAILS_FOR_DISCOUNT'
