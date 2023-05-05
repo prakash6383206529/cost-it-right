@@ -587,12 +587,7 @@ function MasterCostMovement() {
     };
     const handleBOPChange = (newValue) => {
         if (newValue && newValue !== '') {
-            dispatch(getDrawerBOPData(newValue.value, (res) => {
-                if (res?.data?.Data) {
-                    setBOPData(res?.data?.Data)
-
-                }
-            }))
+            setBOPData(newValue)
         } else {
             setBOPData([])
         }
@@ -650,7 +645,7 @@ function MasterCostMovement() {
             case Number(5):
                 masterData = {
                     "BoughtOutPartCategoryId": Number(BOPCategory.value),
-                    "BoughtOutPartChildId": BOPData.BoughtOutPartId,
+                    "BoughtOutPartChildId": BOPData.value,
 
 
                 }
