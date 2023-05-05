@@ -687,7 +687,6 @@ class AddOperation extends Component {
         return { ...file, ContextId: OperationId }
       })
 
-
       let updateData = {
         EffectiveDate: DayTime(effectiveDate).format('YYYY/MM/DD HH:mm:ss'),
         OperationId: OperationId,
@@ -700,7 +699,8 @@ class AddOperation extends Component {
         Attachements: updatedFiles,
         LoggedInUserId: loggedInUserId(),
         IsForcefulUpdated: true,
-        IsFinancialDataChanged: isDateChange ? true : false
+        IsFinancialDataChanged: isDateChange ? true : false,
+        IsDetailedEntry: false,
       }
       // if (this.state.isEditFlag) {
       // if (dataToChange.UnitOfMeasurementId === UOM.value && dataToChange.Rate === Number(values.Rate) && uploadAttachements) {
@@ -783,7 +783,8 @@ class AddOperation extends Component {
         LoggedInUserId: loggedInUserId(),
         EffectiveDate: DayTime(effectiveDate).format('YYYY/MM/DD HH:mm:ss'),
         VendorPlant: [],
-        CustomerId: costingTypeId === CBCTypeId ? client.value : ''
+        CustomerId: costingTypeId === CBCTypeId ? client.value : '',
+        IsDetailedEntry: false,
       }
 
       if (CheckApprovalApplicableMaster(OPERATIONS_ID) === true && !this.state.isFinalApprovar) {
