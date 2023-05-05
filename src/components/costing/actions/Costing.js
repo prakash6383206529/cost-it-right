@@ -933,7 +933,7 @@ export function getPaymentTermsDataByHeads(data, callback) {
 
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
-    const request = axios.get(`${API.getPaymentTermsDataByHeads}?vendorId=${data?.VendorId}&costingTypeId=${data?.costingTypeId}&plantId=${data?.plantId}&effectiveDate=${data?.effectiveDate}&customerId=${data.customerId}`, config());
+    const request = axios.get(`${API.getPaymentTermsDataByHeads}?vendorId=${data?.VendorId}&costingTypeId=${data?.costingTypeId}&plantId=${data?.plantId}&effectiveDate=${data?.effectiveDate}&customerId=${data.customerId}&rawMaterialGradeId=${data.rawMaterialGradeId}&rawMaterialChildId=${data.rawMaterialChildId}&technologyId=${data.technologyId}`, config());
 
     request.then((response) => {
       callback(response)
