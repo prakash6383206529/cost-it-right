@@ -1768,6 +1768,12 @@ export const SIMULATION_INSIGNTS = 'Simulation Insignts'
 export const COSTING_DETAIL = 'Costing Details'
 export const COST_RATIO_REPORT = 'Cost Ratio'
 export const BUDGETING = 'Budgeting'
+export const SALES_PROVISION_REPORT = 'Sales Provision Report'
+export const PURCHASE_PROVISION_REPORT = 'Purchase Provision Report'
+export const CUSTOMER_POAM_SUMMARY_REPORT = 'Customer Poam Summary Report'
+export const MASTER_MOVEMENT_REPORT = 'Master Movement Report'
+
+
 //export const SIMULATION_HISTORY = 'Simulation History'
 
 export const SHEET_METAL = 'Sheet Metal';
