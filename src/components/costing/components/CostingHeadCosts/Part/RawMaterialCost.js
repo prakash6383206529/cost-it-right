@@ -5,8 +5,8 @@ import AddRM from '../../Drawers/AddRM'
 import { costingInfoContext } from '../../CostingDetailStepTwo'
 import NoContentFound from '../../../../common/NoContentFound'
 import { useDispatch, useSelector } from 'react-redux'
-import { EMPTY_DATA } from '../../../../../config/constants'
-import { TextFieldHookForm, TextAreaHookForm } from '../../../../layout/HookFormInputs'
+import { CRMHeads, EMPTY_DATA } from '../../../../../config/constants'
+import { TextFieldHookForm, TextAreaHookForm, SearchableSelectHookForm } from '../../../../layout/HookFormInputs'
 import Toaster from '../../../../common/Toaster'
 import { calculatePercentage, calculatePercentageValue, checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected, getConfigurationKey, isRMDivisorApplicable } from '../../../../../helper'
 import OpenWeightCalculator from '../../WeightCalculatorDrawer'
@@ -898,6 +898,17 @@ function RawMaterialCost(props) {
     button.click()
   }
 
+  const onCRMHeadChange = (e, index) => {
+    let tempArr = []
+    let tempData = gridData[index]
+    tempData = {
+      ...tempData,
+      RawMaterialCRMHead: e?.label
+    }
+    tempArr = Object.assign([...gridData], { [index]: tempData })
+    setGridData(tempArr)
+  }
+
   const onRemarkPopUpClose = (index) => {
     var button = document.getElementById(`popUpTrigger${index}`)
     setValue(`${rmGridFields}.${index}.remarkPopUp`, gridData[index].Remark)
@@ -1159,6 +1170,7 @@ function RawMaterialCost(props) {
                       <th className='scrap-weight'>Scrap Weight </th>
                       {/* //Add i here for MB+ */}
                       <th className='net-rm-cost'>{`Net RM Cost ${isRMDivisorApplicable(costData.TechnologyName) ? '/(' + RMDivisor + ')' : ''}`}  </th>
+                      {initialConfiguration.IsShowCRMHead && <th>{'CRM Head'}</th>}
                       <th style={{ textAlign: "right" }}>{`Action`}</th>
                     </tr>
                   </thead>
@@ -1275,6 +1287,26 @@ function RawMaterialCost(props) {
                                 </div> {forgingInfoIcon[index] && costData?.TechnologyId === FORGING && <TooltipCustom id={`forging-tooltip${index}`} customClass={"mt-1 ml-2"} tooltipText={`RMC is calculated on the basis of Forging Scrap Rate.`} />}
                               </div>
                             </td>
+                            {initialConfiguration.IsShowCRMHead && <td>
+                              <SearchableSelectHookForm
+                                name={`crmHeadRm${index}`}
+                                type="text"
+                                label="CRM Head"
+                                errors={`${errors.crmHeadRm}${index}`}
+                                Controller={Controller}
+                                control={control}
+                                register={register}
+                                mandatory={true}
+                                rules={{
+                                  required: true,
+                                }}
+                                defaultValue={item.RawMaterialCRMHead ? { label: item.RawMaterialCRMHead, value: index } : ''}
+                                placeholder={'Select'}
+                                options={CRMHeads}
+                                required={true}
+                                handleChange={(e) => { onCRMHeadChange(e, index) }}
+                                disabled={CostingViewMode}
+                              /></td>}
                             <td>
                               <div className='action-btn-wrapper'>
                                 {!CostingViewMode && !IsLocked && (item.IsRMCopied ? (initialConfiguration.IsCopyCostingFinishAndGrossWeightEditable ? true : false) : true) && < button

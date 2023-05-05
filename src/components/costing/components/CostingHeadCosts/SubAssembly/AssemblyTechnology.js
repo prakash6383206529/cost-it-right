@@ -259,6 +259,9 @@ function AssemblyTechnology(props) {
             obj.IndirectLaborCostPercentage = data.length > 0 ? data[0].indirectLabourCostPercent : 0
             obj.NetLabourCost = sum
             obj.CostingLabourDetailList = data
+            obj.NetLabourCRMHead = data.length > 0 ? data[0].NetLabourCRMHead : 0
+            obj.IndirectLabourCRMHead = data.length > 0 ? data[0].IndirectLabourCRMHead : 0
+            obj.StaffCRMHead = data.length > 0 ? data[0].StaffCRMHead : 0
             props.setAssemblyLabourCost(obj)
             dispatch(saveCostingLabourDetails(obj, (res) => {
                 if (res) {

@@ -12,7 +12,7 @@ import {
 import { MESSAGES } from "../../../config/message";
 import { loggedInUserId } from "../../../helper/auth";
 import { Row, Col } from 'reactstrap';
-import { CBCTypeId, FILE_URL, VBCTypeId, VBC_VENDOR_TYPE, ZBCTypeId, searchCount } from "../../../config/constants";
+import { CBCTypeId, CRMHeads, FILE_URL, VBCTypeId, VBC_VENDOR_TYPE, ZBCTypeId, searchCount } from "../../../config/constants";
 import HeaderTitle from "../../common/HeaderTitle";
 import { useDispatch, useSelector } from 'react-redux'
 import { reactLocalStorage } from "reactjs-localstorage";
@@ -487,16 +487,7 @@ function AddMoreOperation(props) {
         }
 
         if (label === 'crmHead') {
-            temp = [
-                { label: "Consumption", value: 1 },
-                { label: "Labour", value: 2 },
-                { label: "Staff Cost", value: 3 },
-                { label: "Manufacturing Expenses", value: 4 },
-                { label: "Repair & Maintanance", value: 5 },
-                { label: "Office Expenses", value: 6 },
-                { label: "S & D", value: 7 },
-                { label: "Amortization", value: 8 },
-            ]
+            temp = CRMHeads
             return temp;
         }
 

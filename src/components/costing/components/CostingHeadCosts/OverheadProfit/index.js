@@ -7,7 +7,7 @@ import { calculatePercentage, checkForDecimalAndNull, checkForNull, CheckIsCosti
 import { fetchModelTypeAPI, getPaymentTermsAppliSelectListKeyValue } from '../../../../../actions/Common';
 import { getOverheadProfitDataByModelType, gridDataAdded, isOverheadProfitDataChange, setOverheadProfitErrors, } from '../../../actions/Costing';
 import { costingInfoContext, netHeadCostContext, SurfaceCostContext } from '../../CostingDetailStepTwo';
-import { CBCTypeId, EMPTY_GUID, NFRTypeId, PART_COST, VBCTypeId } from '../../../../../config/constants';
+import { CBCTypeId, CRMHeads, EMPTY_GUID, NFRTypeId, PART_COST, VBCTypeId } from '../../../../../config/constants';
 import { SelectedCostingDetail, ViewCostingContext } from '../../CostingDetails';
 import Rejection from './Rejection';
 import Icc from './Icc';
@@ -30,8 +30,11 @@ function OverheadProfit(props) {
     const PaymentTermDetail = CostingInterestRateDetail && CostingInterestRateDetail.PaymentTermDetail !== null ? CostingInterestRateDetail.PaymentTermDetail : {}
     const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
 
+
+
     const defaultValues = {
 
+        crmHeadOverhead: CostingOverheadDetail && CostingOverheadDetail.OverheadCRMHead && { label: CostingOverheadDetail.OverheadCRMHead, value: 1 },
         //REJECTION FIELDS
         Applicability: CostingRejectionDetail && CostingRejectionDetail.RejectionApplicability !== null ? { label: CostingRejectionDetail.RejectionApplicability, value: CostingRejectionDetail.RejectionApplicabilityId } : '',
         RejectionPercentage: CostingRejectionDetail && CostingRejectionDetail.RejectionPercentage !== null ? CostingRejectionDetail.RejectionPercentage : '',
@@ -95,6 +98,9 @@ function OverheadProfit(props) {
         //GET FIXED VALUE IN GET API
         if (Object.keys(CostingProfitDetail).length > 0) {
             setProfitValues(CostingProfitDetail, false)
+            setValue('crmHeadProfit', CostingProfitDetail && CostingProfitDetail.ProfitCRMHead && {
+                label: CostingProfitDetail.ProfitCRMHead, value: 1
+            })
         }
 
         setTimeout(() => {
@@ -200,6 +206,7 @@ function OverheadProfit(props) {
                 "OverheadFixedTotalCost": overheadObj && overheadObj.IsOverheadFixedApplicable ? overheadObj.OverheadFixedPercentage : '',
 
                 "IsSurfaceTreatmentApplicable": IsIncludedSurfaceInOverheadProfit,
+                "OverheadCRMHead": overheadObj.OverheadCRMHead ? overheadObj.OverheadCRMHead : ''
             }
 
             let profitTempObj = {
@@ -233,6 +240,7 @@ function OverheadProfit(props) {
                 "ProfitFixedTotalCost": profitObj && profitObj.IsProfitFixedApplicable ? profitObj.ProfitFixedTotalCost : '',
 
                 "IsSurfaceTreatmentApplicable": IsIncludedSurfaceInOverheadProfit,
+                "ProfitCRMHead": profitObj.ProfitCRMHead ? profitObj.ProfitCRMHead : ''
             }
 
             if (!CostingViewMode) {
@@ -1239,6 +1247,24 @@ function OverheadProfit(props) {
         let value = checkForDecimalAndNull(checkForNull(data?.CostingPartDetails?.OverheadCost) + checkForNull(data?.CostingPartDetails?.ProfitCost), initialConfiguration.NoOfDecimalForPrice);
         return value === 0 ? '' : value;
     }
+
+    const onCRMHeadChangeOverhead = (e) => {
+        if (e) {
+            setOverheadObj({
+                ...overheadObj,
+                OverheadCRMHead: e?.label
+            })
+        }
+    }
+
+    const onCRMHeadChangeProfit = (e) => {
+        if (e) {
+            setProfitObj({
+                ...profitObj,
+                ProfitCRMHead: e?.label
+            })
+        }
+    }
     return (
         <>
             <div className="user-page p-0">
@@ -1639,6 +1665,27 @@ function OverheadProfit(props) {
                                 </Row>
                             </Col>
 
+                            {initialConfiguration.IsShowCRMHead && <Col md="2">
+                                <SearchableSelectHookForm
+                                    name={`crmHeadOverhead`}
+                                    type="text"
+                                    label="CRM Head"
+                                    errors={errors.crmHeadOverhead}
+                                    Controller={Controller}
+                                    control={control}
+                                    register={register}
+                                    mandatory={true}
+                                    rules={{
+                                        required: true,
+                                    }}
+                                    placeholder={'Select'}
+                                    options={CRMHeads}
+                                    required={true}
+                                    handleChange={onCRMHeadChangeOverhead}
+                                    disabled={CostingViewMode}
+                                />
+                            </Col>}
+
                             {/* new section from below with heasing */}
                             <Col md="12" className="pt-3">
                                 <div className="left-border">
@@ -1979,6 +2026,27 @@ function OverheadProfit(props) {
                                     }
                                 </Row>
                             </Col>
+
+                            {initialConfiguration.IsShowCRMHead && <Col md="2">
+                                <SearchableSelectHookForm
+                                    name={`crmHeadProfit`}
+                                    type="text"
+                                    label="CRM Head"
+                                    errors={errors.crmHeadProfit}
+                                    Controller={Controller}
+                                    control={control}
+                                    register={register}
+                                    mandatory={true}
+                                    rules={{
+                                        required: true,
+                                    }}
+                                    placeholder={'Select'}
+                                    options={CRMHeads}
+                                    required={true}
+                                    handleChange={onCRMHeadChangeProfit}
+                                    disabled={CostingViewMode}
+                                />
+                            </Col>}
                         </Row>
 
                         {/* THIS IS REJECTION SECTION */}

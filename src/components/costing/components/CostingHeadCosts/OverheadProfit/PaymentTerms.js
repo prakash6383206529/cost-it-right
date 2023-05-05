@@ -1,16 +1,15 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Col, Row, } from 'reactstrap';
-import { TextFieldHookForm } from '../../../../layout/HookFormInputs';
+import { SearchableSelectHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs';
 // import { fetchModelTypeAPI, fetchCostingHeadsAPI, getICCAppliSelectListKeyValue, getPaymentTermsAppliSelectListKeyValue } from '../../../../../actions/Common';
 import { calculatePercentage, checkForDecimalAndNull, checkForNull, decimalAndNumberValidationBoolean, getConfigurationKey } from '../../../../../helper';
 import { getPaymentTermsDataByHeads, gridDataAdded, isOverheadProfitDataChange, setOverheadProfitErrors, } from '../../../actions/Costing';
 import Switch from "react-switch";
-import { CBCTypeId, EMPTY_GUID, NFRTypeId, VBCTypeId, ZBCTypeId } from '../../../../../config/constants';
+import { CBCTypeId, CRMHeads, EMPTY_GUID, NFRTypeId, VBCTypeId, ZBCTypeId } from '../../../../../config/constants';
 import { costingInfoContext, netHeadCostContext } from '../../CostingDetailStepTwo';
 import { ViewCostingContext } from '../../CostingDetails';
 import DayTime from '../../../../common/DayTimeWrapper';
-import { IdForMultiTechnology } from '../../../../../config/masterData';
 import WarningMessage from '../../../../common/WarningMessage';
 import { MESSAGES } from '../../../../../config/message';
 import { number, checkWhiteSpaces, percentageLimitValidation, isNumber, NoSignNoDecimalMessage } from "../../../../../helper/validation";
@@ -43,8 +42,10 @@ function PaymentTerms(props) {
     });
 
     useEffect(() => {
-
-    }, [PaymentTermsFieldValues, PaymentTermsFixedFieldValues, paymentTermsApplicability]);
+        if (PaymentTermDetail) {
+            setValue('crmHeadPayment', PaymentTermDetail.PaymentTermCRMHead ? PaymentTermDetail.PaymentTermCRMHead : '')
+        }
+    }, []);
 
     useEffect(() => {
         setTimeout(() => {
@@ -55,7 +56,8 @@ function PaymentTerms(props) {
                 "RepaymentPeriod": IsPaymentTermsApplicable ? getValues('RepaymentPeriodDays') : '',
                 "InterestRate": IsPaymentTermsApplicable ? getValues('RepaymentPeriodPercentage') : '',
                 "NetCost": IsPaymentTermsApplicable ? tempPaymentTermObj.NetCost : '',
-                "EffectiveDate": ""
+                "EffectiveDate": "",
+                "PaymentTermCRMHead": tempPaymentTermObj.PaymentTermCRMHead ? tempPaymentTermObj.PaymentTermCRMHead : ''
             }
             setValue('NetCost', IsPaymentTermsApplicable ? checkForDecimalAndNull(tempPaymentTermObj.NetCost, initialConfiguration.NoOfDecimalForPrice) : '')
             if (!CostingViewMode) {
@@ -76,6 +78,10 @@ function PaymentTerms(props) {
 
         dispatch(gridDataAdded(true))
         dispatch(isOverheadProfitDataChange(true))
+
+        if (PaymentTermDetail) {
+            setValue('crmHeadPayment', PaymentTermDetail.PaymentTermCRMHead ? PaymentTermDetail.PaymentTermCRMHead : '')
+        }
     }
 
     /**
@@ -304,6 +310,15 @@ function PaymentTerms(props) {
         dispatch(setOverheadProfitErrors({}))
     }
 
+    const handleCrmHeadChange = (e) => {
+        if (e) {
+            setTempPaymentTermObj({
+                ...tempPaymentTermObj,
+                PaymentTermCRMHead: e?.label
+            })
+        }
+    }
+
     return (
         <>
             <Row className="mt-15 pt-15">
@@ -435,6 +450,26 @@ function PaymentTerms(props) {
                             </Col>
                         </>
                     </Row>
+                    {initialConfiguration.IsShowCRMHead && <Col md="2">
+                        <SearchableSelectHookForm
+                            name={`crmHeadPayment`}
+                            type="text"
+                            label="CRM Head"
+                            errors={errors.crmHeadPayment}
+                            Controller={Controller}
+                            control={control}
+                            register={register}
+                            mandatory={true}
+                            rules={{
+                                required: false,
+                            }}
+                            placeholder={'Select'}
+                            options={CRMHeads}
+                            required={true}
+                            handleChange={handleCrmHeadChange}
+                            disabled={CostingViewMode}
+                        />
+                    </Col>}
                 </>
             }
         </>

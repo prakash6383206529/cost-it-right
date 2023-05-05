@@ -991,6 +991,7 @@ export const API = {
   getNFRApprovals: `${BASE_URL}/nfr/get-nfr-approvals`,
   getNFRApprovalSummary: `${BASE_URL}/nfr/get-nfr-approval-summary`,
   approvedCostingByApprover: `${BASE_URL}/nfr/approved-nfr-by-approver`,
+  getGotAndGivenDetails: `${BASE_URL}/reports/get-got-and-given-details`,
 
 
   //SUB ASSEMBLY
@@ -2168,6 +2169,25 @@ export const statusOptions = _.sortBy([
 ], ({ label }) => label.toLowerCase());
 
 
+export const CRMHeads = [
+  { label: "Net Sales", value: 1 },
+  { label: "Consumption", value: 1 },
+  { label: "Labour Cost", value: 2 },
+  { label: "Manufacturing Expenses", value: 4 },
+  { label: "Office Expenses", value: 6 },
+  { label: "Repairs Expenses", value: 6 },
+  { label: "Selling & Distribution Expenses", value: 6 },
+  { label: "Common Expenses", value: 6 },
+  { label: "Staff Cost", value: 3 },
+  { label: "EBIDTA", value: 5 },
+  { label: "Finance Cost", value: 3 },
+  { label: "Depriciation", value: 3 },
+  { label: "PBT", value: 3 },
+  { label: "Amortization", value: 8 },
+
+]
+
+
 //CONSTANTS FOR COSTING HEAD
 export const ZBCTypeId = Number(reactLocalStorage.getObject('CostingHeadsListShortForm')[ZBC])
 export const VBCTypeId = Number(reactLocalStorage.getObject('CostingHeadsListShortForm')[VBC])
@@ -2234,4 +2254,4 @@ export const RAW_MATERIAL_VENDOR_TYPE = Number(reactLocalStorage.getObject('vend
 export const VBC_VENDOR_TYPE = Number(reactLocalStorage.getObject('vendortype')[VENDOR_TYPE_VBC])
 
 //VERSION 
-export const VERSION = "V2.1.147";
+export const VERSION = "V2.1.148";
