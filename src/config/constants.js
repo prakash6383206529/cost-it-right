@@ -1033,6 +1033,8 @@ export const API = {
   getSapnfrData: `${BASE_URL}/nfr/get-sap-nfr-data`,
   createPFS2Costing: `${BASE_URL}/nfr/create-pfs2-costing`,
   getNfrSelectList: `${BASE_URL}/rfq-quotation/select-list-get-nfr`,
+  getRawMaterialByNFRPart: `${BASE_URL}/nfr/get-raw-material-by-nfr-part`,
+
 
   //SUB ASSEMBLY
   getSubAssemblyAPI: `${BASE_URL}/sub-assembly/get-sub-assembly`,
@@ -1721,7 +1723,6 @@ export const GET_QUOTATION_LIST = 'GET_QUOTATION_LIST'
 export const CHECK_RFQ_BULK_UPLOAD = 'CHECK_RFQ_BULK_UPLOAD'
 export const SELECTED_ROW_ARRAY = 'SELECTED_ROW_ARRAY'
 export const GET_NFR_SELECT_LIST = 'GET_NFR_SELECT_LIST'
-
 
 // NFR
 export const NFR_DETAILS_FOR_DISCOUNT = 'NFR_DETAILS_FOR_DISCOUNT'

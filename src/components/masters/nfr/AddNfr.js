@@ -574,7 +574,10 @@ function AddNfr(props) {
         }
         setShowDrawer(true)
     }
-    const closeShowApproval = () => {
+    const closeShowApproval = (type) => {
+        if (type === 'submit') {
+            props?.close(type)
+        }
         setShowDrawer(false)
     }
 

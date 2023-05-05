@@ -256,7 +256,10 @@ function NfrPartsListing(props) {
         setViewRfq(true)
 
     }
-    const close = () => {
+    const close = (type) => {
+        if (type === 'submit') {
+            props?.closeDrawer()
+        }
         setEditPart(false)
     }
     const defaultColDef = {

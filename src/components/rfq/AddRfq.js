@@ -647,33 +647,52 @@ function AddRfq(props) {
             Toaster.warning("Please select part number and SOP date")
             return false
         } else {
-            let tempArrayparts = [...selectedparts, getValues('partNumber')]
-            setSelectedParts(tempArrayparts)
-            let arrTemp = []
-            let partNumber = getValues('partNumber')
-
-            sopObjectTemp && sopObjectTemp.map((item, index) => {
-                let objTemp = {}
-                objTemp.YearName = fiveyearList[index]
-                objTemp.PartNo = partNumber?.label
-                objTemp.PartId = getValues('partNumber')?.value
-                if (index === 2) {
-                    objTemp.PartNumber = partNumber?.label
+            let dataObj = {
+                "PartIdList": [
+                    getValues('partNumber')?.value
+                ],
+                "PlantId": getValues('plant')?.value,
+                "VendorId": null
+            }
+            let vendorList = []
+            let vendorListFinal = []
+            dispatch(checkExistCosting(dataObj, (res) => {
+                if (res?.data?.Result) {
+                    vendorList = [...res?.data?.DataList]
+                    vendorList && vendorList?.map((item) => {
+                        vendorListFinal.push(`${item?.VendorName} (${item?.VendorCode})`)
+                    })
                 }
-                objTemp.Quantity = 0
 
-                arrTemp.push(objTemp)
-                return null
-            })
+                let tempArrayparts = [...selectedparts, getValues('partNumber')]
+                setSelectedParts(tempArrayparts)
+                let arrTemp = []
+                let partNumber = getValues('partNumber')
 
-            let arr = [...partList, ...arrTemp]
+                sopObjectTemp && sopObjectTemp.map((item, index) => {
+                    let objTemp = {}
+                    objTemp.YearName = fiveyearList[index]
+                    objTemp.PartNo = partNumber?.label
+                    objTemp.PartId = getValues('partNumber')?.value
+                    if (index === 2) {
+                        objTemp.PartNumber = partNumber?.label
+                        objTemp.VendorListExisting = vendorListFinal.join(',')
+                    }
+                    objTemp.Quantity = 0
 
-            setPartList(arr)
-            setValue('partNumber', "")
-            setSOPDate('')
-            setValue('SOPDate', "")
-            // setValue('technology', "")
-            setUpdateButtonPartNoTable(false)
+                    arrTemp.push(objTemp)
+                    return null
+                })
+
+                let arr = [...partList, ...arrTemp]
+
+                setPartList(arr)
+                setValue('partNumber', "")
+                setSOPDate('')
+                setValue('SOPDate', "")
+                // setValue('technology', "")
+                setUpdateButtonPartNoTable(false)
+            }))
         }
     }
 
@@ -945,6 +964,25 @@ function AddRfq(props) {
                                                 isLoading={VendorLoaderObj}
                                             />
                                         </Col>
+                                        {/* <Col md="3">
+                                            <SearchableSelectHookForm
+                                                label={"NFR Id"}
+                                                name={"nfrId"}
+                                                placeholder={"Select"}
+                                                Controller={Controller}
+                                                control={control}
+                                                rules={{ required: false }}
+                                                register={register}
+                                                defaultValue={nfrId?.length !== 0 ? nfrId : ""}
+                                                options={renderListing("nfrId")}
+                                                mandatory={false}
+                                                handleChange={handleNfrChnage}
+                                                errors={errors.nfrId}
+                                                disabled={((dataProps?.isViewFlag || isEditAll) ? true : false)
+                                                    || (partList?.length !== 0)}
+                                            // isLoading={VendorLoaderObj}
+                                            />
+                                        </Col> */}
                                         <Col md="3">
                                             <SearchableSelectHookForm
                                                 label={"NFR Id"}
@@ -1141,6 +1179,7 @@ function AddRfq(props) {
                                                                 suppressColumnVirtualisation={true}
                                                             >
                                                                 <AgGridColumn width={"230px"} field="PartNumber" headerName="Part No" cellClass={"colorWhite"} cellRenderer={'partNumberFormatter'}></AgGridColumn>
+                                                                <AgGridColumn width={"230px"} field="VendorListExisting" headerName="Vendor" cellClass={"colorWhite"}></AgGridColumn>
 
                                                                 <AgGridColumn width={"230px"} field="YearName" headerName="Production Year" cellRenderer={'sopFormatter'}></AgGridColumn>
                                                                 <AgGridColumn width={"230px"} field="Quantity" headerName="Annual Forecast Quantity" headerComponent={'quantityHeader'} cellRenderer={'afcFormatter'} editable={EditableCallback} colId="Quantity"></AgGridColumn>
