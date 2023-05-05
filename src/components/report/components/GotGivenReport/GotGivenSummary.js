@@ -68,7 +68,7 @@ function GotGivenSummary(props) {
         const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
 
         return (
-            <button title='Edit' className="Edit mr-1" type={'button'} onClick={() => EditItemDetails(cellValue, rowData)} />
+            <button title='View' className="View mr-1" type={'button'} onClick={() => EditItemDetails(cellValue, rowData)} />
 
         )
     };
