@@ -483,10 +483,10 @@ export function getLabourCost(data, date, callback) {
  * @method getPowerCostUnit
  * @description GET POWER COST UNIT
  */
-export function getPowerCostUnit(plantId, date, callback) {
+export function getPowerCostUnit(obj, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        axios.get(`${API.getPowerCostUnit}?PlantId=${plantId}&EffectiveDate=${DayTime(date).format('YYYY-MM-DDTHH:mm:ss')}`, config())
+        axios.get(`${API.getPowerCostUnit}?plantId=${obj.plantId}&effectiveDate=${DayTime(obj.effectiveDate).format('YYYY-MM-DDTHH:mm:ss')}&costingTypeId=${obj.costingTypeId}&vendorId=${obj.vendorId}&customerId=${obj.customerId}`, config())
             .then((response) => {
                 if (response.data.Result === true) {
                     callback(response);

@@ -805,7 +805,7 @@ export const API = {
   checkAndGetMachineNumber: `${BASE_URL}/masters-machine/check-machine-number-is-unique`,
   getFuelUnitCost: `${BASE_URL}/masters-machine/get-fuel-unit-cost`,
   getLabourCost: `${BASE_URL}/masters-machine/get-labour-cost`,
-  getPowerCostUnit: `${BASE_URL}/masters-machine/get-zbc-power-cost`,
+  getPowerCostUnit: `${BASE_URL}/masters-machine/get-power-cost`,
 
   createMachineDetails: `${BASE_URL}/masters-machine/create-machine-details`,
   updateMachineDetails: `${BASE_URL}/masters-machine/update-machine-Details`,
