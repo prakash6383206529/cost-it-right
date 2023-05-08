@@ -24,6 +24,8 @@ function GotGivenSummary(props) {
     const [variance, setVariance] = useState([]);
     const [selectedPartId, setSelectedPartId] = useState('');
     const [mainGotGivenListing, setMainGotGivenListing] = useState(false);
+    const [nodataFound, setNodataFound] = useState(false);
+    const [isLoader, setIsLoader] = useState(false)
     const dispatch = useDispatch()
     const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
 
@@ -35,10 +37,16 @@ function GotGivenSummary(props) {
         obj.partId = part ? (part.value ? part.value : EMPTY_GUID) : EMPTY_GUID
         obj.productCategoryId = product ? (product.value ? product.value : EMPTY_GUID) : EMPTY_GUID
         obj.isRequestForSummary = true
+        setIsLoader(true)
         dispatch(getGotAndGivenDetails(obj, (res) => {
-            setGotCost(res.data.Data.GotCostingDetails)
-            setGivenCost(res.data.Data.GivenCostingDetails)
-            setVariance(res.data.Data.GotAndGivenVariance)
+            setIsLoader(false)
+            if (res.status === 200) {
+                setGotCost(res.data.Data.GotCostingDetails)
+                setGivenCost(res.data.Data.GivenCostingDetails)
+                setVariance(res.data.Data.GotAndGivenVariance)
+            } else {
+                setNodataFound(true)
+            }
         }))
 
 
@@ -49,6 +57,10 @@ function GotGivenSummary(props) {
         setGridApi(params.api)
         setGridColumnApi(params.columnApi)
         params.api.paginationGoToPage(0);
+
+    };
+    const onGridReadyVariance = (params) => {
+        params.api.sizeColumnsToFit()
 
     };
     const gridOptions = {
@@ -76,7 +88,6 @@ function GotGivenSummary(props) {
 
     const frameworkComponents = {
         customLoadingOverlay: LoaderCustom,
-        customNoRowsOverlay: NoContentFound,
         totalValueRenderer: buttonFormatter
     };
     const onPageSizeChanged = (newPageSize) => {
@@ -121,122 +132,109 @@ function GotGivenSummary(props) {
 
     return (
         <>
-            {!mainGotGivenListing && <div className="container-fluid report-listing-page ag-grid-react">
-                <h1 className="mb-0">Got Given Report
-                </h1>
+            {!mainGotGivenListing && <div className="container-fluid report-listing-page ag-grid-react ">
                 <Row className="pt-4 blue-before ">
                     <Col md="6" lg="6" className="search-user-block mb-3">
                         <div className="d-flex justify-content-end bd-highlight excel-btn w100">
                             <div>
                                 <Row>
-                                    <div className="supplier-back-btn mb-5 mr-2"><button type="button" className={"apply ml-1"} onClick={exitReport}> <div className={'back-icon'}></div>Back</button></div>
+                                    <div className="pr-0 mb-3"><button type="button" className={"apply ml-1"} onClick={exitReport}> <div className={'back-icon'}></div>Back</button></div>
                                 </Row>
                             </div>
                         </div>
                     </Col>
                 </Row>
-                <div className="ag-grid-react">
-                    <div className={`ag-grid-wrapper height-width-wrapper ${gotCost && gotCost?.length <= 0 ? "overlay-contain" : ""}`}>
-                        <div className="ag-grid-header">
-                            <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
-                        </div>
-                        <div
-                            className="ag-theme-material">
-                            <AgGridReact
-                                defaultColDef={defaultColDef}
-                                floatingFilter={true}
-                                domLayout='autoHeight'
-                                rowData={gotCost}
-                                pagination={true}
-                                paginationPageSize={defaultPageSize}
-                                onGridReady={onGridReady}
-                                gridOptions={gridOptions}
-                                loadingOverlayComponent={'customLoadingOverlay'}
-                                noRowsOverlayComponent={'customNoRowsOverlay'}
-                                noRowsOverlayComponentParams={{
-                                    title: EMPTY_DATA,
-                                    imagClass: 'imagClass'
-                                }}
-                                frameworkComponents={frameworkComponents}
-                                suppressRowClickSelection={true}
-                                rowSelection={'multiple'}
-                            >
-                                <AgGridColumn field="TokenNumber" headerName="Model No." cellRenderer={hyphenFormatter}></AgGridColumn>
-                                <AgGridColumn field="PartNumber" headerName="Part No." cellRenderer={hyphenFormatter}></AgGridColumn>
-                                <AgGridColumn field="PartDescription" headerName="Part Description" cellRenderer={hyphenFormatter}></AgGridColumn>
-                                <AgGridColumn field="VendorName" headerName="BAL Sale Rate 01.01.22 (A)" cellRenderer={hyphenFormatter}></AgGridColumn>
-                                <AgGridColumn field="NetPOPrice" headerName="Got Cost" cellRenderer={hyphenFormatter}></AgGridColumn>
-                                <AgGridColumn field="PartId" headerName="Actions" cellRenderer={'totalValueRenderer'}></AgGridColumn>
-                            </AgGridReact>
-                            {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />}
+                {isLoader && <LoaderCustom />}
+                {nodataFound ? <NoContentFound title={EMPTY_DATA} /> : <div className='got-given-summary-container mt-4'>
+
+                    <div className="ag-grid-react -800px">
+                        <div className={`ag-grid-wrapper height-width-wrapper ${gotCost && gotCost?.length <= 0 ? "overlay-contain" : ""}`}>
+                            <div
+                                className="ag-theme-material">
+                                <AgGridReact
+                                    defaultColDef={defaultColDef}
+                                    floatingFilter={true}
+                                    domLayout='autoHeight'
+                                    rowData={gotCost}
+                                    pagination={true}
+                                    paginationPageSize={defaultPageSize}
+                                    onGridReady={onGridReady}
+                                    gridOptions={gridOptions}
+                                    loadingOverlayComponent={'customLoadingOverlay'}
+                                    noRowsOverlayComponent={'customNoRowsOverlay'}
+                                    frameworkComponents={frameworkComponents}
+                                    suppressRowClickSelection={true}
+                                    rowSelection={'multiple'}
+                                >
+                                    <AgGridColumn field="TokenNumber" width={140} headerName="Model No." cellRenderer={hyphenFormatter}></AgGridColumn>
+                                    <AgGridColumn field="PartNumber" width={150} headerName="Part No." cellRenderer={hyphenFormatter}></AgGridColumn>
+                                    <AgGridColumn field="PartDescription" headerName="Part Description" cellRenderer={hyphenFormatter}></AgGridColumn>
+                                    <AgGridColumn field="VendorName" headerName="BAL Sale Rate 01.01.22 (A)" cellRenderer={hyphenFormatter}></AgGridColumn>
+                                    <AgGridColumn field="NetPOPrice" width={131} headerName="Got Cost" cellRenderer={hyphenFormatter}></AgGridColumn>
+                                </AgGridReact>
+                            </div>
                         </div>
                     </div>
-                </div>
 
 
-                <div className="ag-grid-react">
-                    <div className={`ag-grid-wrapper height-width-wrapper ${gotCost && gotCost?.length <= 0 ? "overlay-contain" : ""}`}>
+                    <div className="ag-grid-react">
+                        <div className={`ag-grid-wrapper height-width-wrapper ${gotCost && gotCost?.length <= 0 ? "overlay-contain" : ""}`}>
 
-                        <div
-                            className="ag-theme-material">
-                            <AgGridReact
-                                defaultColDef={defaultColDef}
-                                floatingFilter={true}
-                                domLayout='autoHeight'
-                                // columnDefs={c}
-                                rowData={givenCost}
-                                pagination={true}
-                                paginationPageSize={defaultPageSize}
-                                onGridReady={onGridReady}
-                                gridOptions={gridOptions}
-                                loadingOverlayComponent={'customLoadingOverlay'}
-                                noRowsOverlayComponent={'customNoRowsOverlay'}
-                                noRowsOverlayComponentParams={{
-                                    title: EMPTY_DATA,
-                                    imagClass: 'imagClass'
-                                }}
-                                frameworkComponents={frameworkComponents}
-                                suppressRowClickSelection={true}
-                                rowSelection={'multiple'}
-                            >
+                            <div
+                                className="ag-theme-material">
+                                <AgGridReact
+                                    defaultColDef={defaultColDef}
+                                    floatingFilter={true}
+                                    domLayout='autoHeight'
+                                    // columnDefs={c}
+                                    rowData={givenCost}
+                                    pagination={true}
+                                    paginationPageSize={defaultPageSize}
+                                    onGridReady={onGridReady}
+                                    gridOptions={gridOptions}
+                                    loadingOverlayComponent={'customLoadingOverlay'}
+                                    noRowsOverlayComponent={'customNoRowsOverlay'}
+                                    frameworkComponents={frameworkComponents}
+                                    suppressRowClickSelection={true}
+                                    rowSelection={'multiple'}
+                                >
 
-                                <AgGridColumn field="NetPOPrice" headerName="Given Cost" cellRenderer={decimalFormatter}></AgGridColumn>
+                                    <AgGridColumn width={160} field="NetPOPrice" headerName="Given Cost" cellRenderer={decimalFormatter}></AgGridColumn>
 
-                            </AgGridReact>
+                                </AgGridReact>
+                            </div>
                         </div>
                     </div>
-                </div>
 
 
-                <div className="ag-grid-react">
-                    <div className={`ag-grid-wrapper height-width-wrapper ${gotCost && gotCost?.length <= 0 ? "overlay-contain" : ""}`}>
-                        <div
-                            className="ag-theme-material">
-                            <AgGridReact
-                                defaultColDef={defaultColDef}
-                                floatingFilter={true}
-                                domLayout='autoHeight'
-                                rowData={variance}
-                                pagination={true}
-                                paginationPageSize={defaultPageSize}
-                                onGridReady={onGridReady}
-                                gridOptions={gridOptions}
-                                loadingOverlayComponent={'customLoadingOverlay'}
-                                noRowsOverlayComponent={'customNoRowsOverlay'}
-                                noRowsOverlayComponentParams={{
-                                    title: EMPTY_DATA,
-                                    imagClass: 'imagClass'
-                                }}
-                                frameworkComponents={frameworkComponents}
-                                suppressRowClickSelection={true}
-                                rowSelection={'multiple'}
-                            >
-                                <AgGridColumn field="NetPOPriceDelta" headerName="Variance" cellRenderer={decimalFormatter}></AgGridColumn>
-                                <AgGridColumn field="NetPOPriceDeltaPercentage" headerName="Variance (%)" cellRenderer={decimalFormatter}></AgGridColumn>
-                            </AgGridReact>
+                    <div className="ag-grid-react -600px">
+                        <div className={`ag-grid-wrapper height-width-wrapper ${gotCost && gotCost?.length <= 0 ? "overlay-contain" : ""}`}>
+                            <div
+                                className="ag-theme-material">
+                                <AgGridReact
+                                    defaultColDef={defaultColDef}
+                                    floatingFilter={true}
+                                    domLayout='autoHeight'
+                                    rowData={variance}
+                                    pagination={true}
+                                    paginationPageSize={defaultPageSize}
+                                    onGridReady={onGridReadyVariance}
+                                    gridOptions={gridOptions}
+                                    loadingOverlayComponent={'customLoadingOverlay'}
+                                    noRowsOverlayComponent={'customNoRowsOverlay'}
+                                    frameworkComponents={frameworkComponents}
+                                    suppressRowClickSelection={true}
+                                    rowSelection={'multiple'}
+                                >
+                                    <AgGridColumn field="NetPOPriceDelta" headerName="Variance" cellRenderer={decimalFormatter}></AgGridColumn>
+                                    <AgGridColumn field="NetPOPriceDeltaPercentage" headerName="Variance (%)" cellRenderer={decimalFormatter}></AgGridColumn>
+                                    <AgGridColumn field="PartId" headerName="Actions" cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                                </AgGridReact>
+                            </div>
                         </div>
                     </div>
-                </div>
+                </div>}
+
             </div >}
             {
                 mainGotGivenListing &&
