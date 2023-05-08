@@ -246,7 +246,10 @@ class AddMachineRate extends Component {
       machineType: machineType,
       selectedCustomer: client,
       selectedVedor: vendorName,
-      costingTypeId: costingTypeId
+      costingTypeId: costingTypeId,
+      vendorName: vendorName,
+      client: client
+
     }
     setTimeout(() => {
       this.setState({ selectedPlants: selectedPlants, effectiveDate: effectiveDate })

@@ -138,7 +138,10 @@ class AddMoreDetails extends Component {
       levelDetails: {},
       noApprovalCycle: false,
       selectedCustomer: [],
-      selectedVedor: []
+      selectedVedor: [],
+      costingTypeId: ZBCTypeId,
+      vendorId: null,
+      customerId: null
     }
     this.dropzone = React.createRef();
   }
@@ -218,7 +221,7 @@ class AddMoreDetails extends Component {
   UNSAFE_componentWillReceiveProps(nextProps) {
 
     if (nextProps.data !== this.props.data) {
-      const { fieldsObj, machineType, selectedPlants, selectedTechnology, selectedCustomer, selectedVedor, costingTypeId } = nextProps.data;
+      const { fieldsObj, machineType, selectedPlants, selectedTechnology, selectedCustomer, selectedVedor, costingTypeId, vendorName, client } = nextProps.data;
       if (Object.keys(selectedPlants)?.length > 0) {
         this.handlePlants(selectedPlants)
         if (machineType.value) {
@@ -230,11 +233,13 @@ class AddMoreDetails extends Component {
           this.props.getLabourTypeByMachineTypeSelectList(data, () => { })
         }
       }
-      this.props.change('MachineName', fieldsObj?.MachineName)
-      this.props.change('MachineNumber', fieldsObj?.MachineNumber)
-      this.props.change('TonnageCapacity', fieldsObj?.TonnageCapacity)
-      this.props.change('Description', fieldsObj?.Description)
-      this.props.change('Specification', fieldsObj?.Specification)
+
+      this.setState({ costingTypeId: costingTypeId, vendorId: vendorName.value ? vendorName.value : '', customerId: client.value ? client.value : '' })
+      this.props.change('MachineName', fieldsObj.MachineName)
+      this.props.change('MachineNumber', fieldsObj.MachineNumber)
+      this.props.change('TonnageCapacity', fieldsObj.TonnageCapacity)
+      this.props.change('Description', fieldsObj.Description)
+      this.props.change('Specification', fieldsObj.Specification)
       fieldsObj.EffectiveDate && this.props.change('EffectiveDate', fieldsObj.EffectiveDate)
 
 
@@ -571,7 +576,13 @@ class AddMoreDetails extends Component {
         })
         if (effectiveDate) {
           setTimeout(() => {
-            this.props.getPowerCostUnit(newValue?.value, effectiveDate, res => {
+            let obj = {}
+            obj.plantId = newValue?.value
+            obj.effectiveDate = effectiveDate
+            obj.costingTypeId = this.state.costingTypeId ? this.state.costingTypeId : ''
+            obj.vendorId = this.state.vendorId ? this.state.vendorId : ''
+            obj.customerId = this.state.customerId ? this.state.customerId : ''
+            this.props.getPowerCostUnit(obj, res => {
               let Data = res?.data?.DynamicData;
               if (res && res.data && res.data.Message !== '') {
                 Toaster.warning(res.data.Message)
@@ -825,7 +836,13 @@ class AddMoreDetails extends Component {
 
     if (Object.keys(selectedPlants)?.length > 0) {
       setTimeout(() => {
-        this.props.getPowerCostUnit(selectedPlants?.value, date, res => {
+        let obj = {}
+        obj.plantId = this.state.selectedPlants?.value
+        obj.effectiveDate = date
+        obj.costingTypeId = this.state.costingTypeId ? this.state.costingTypeId : ''
+        obj.vendorId = this.state.vendorId ? this.state.vendorId : ''
+        obj.customerId = this.state.customerId ? this.state.customerId : ''
+        this.props.getPowerCostUnit(obj, res => {
           let Data = res?.data?.DynamicData;
           if (res && res.data && res.data.Message !== '') {
             Toaster.warning(res.data.Message)
@@ -931,10 +948,15 @@ class AddMoreDetails extends Component {
     this.setState({ IsUsesSolarPower: !this.state.IsUsesSolarPower, }, () => {
       const { IsUsesSolarPower, selectedPlants, machineFullValue, effectiveDate } = this.state;
       // if (IsUsesSolarPower) {
-
       if (selectedPlants) {
         setTimeout(() => {
-          this.props.getPowerCostUnit(selectedPlants?.value, effectiveDate, res => {
+          let obj = {}
+          obj.plantId = selectedPlants?.value
+          obj.effectiveDate = effectiveDate
+          obj.costingTypeId = this.state.costingTypeId ? this.state.costingTypeId : ''
+          obj.vendorId = this.state.vendorId ? this.state.vendorId : ''
+          obj.customerId = this.state.customerId ? this.state.customerId : ''
+          this.props.getPowerCostUnit(obj, res => {
             let Data = res.data.DynamicData;
             if (res && res.data && res.data.Message !== '') {
               Toaster.warning(res.data.Message)
@@ -2019,7 +2041,7 @@ class AddMoreDetails extends Component {
       IsFinancialDataChanged: this.state.isDateChange ? true : false,
       IsIncludeMachineCost: IsIncludeMachineRateDepreciation,
       PowerEntryId: powerIdFromAPI,
-      CustomerId: this.state.CostingTypeId === CBCTypeId ? this.state.selectedCustomer.value : "00000000-0000-0000-0000-000000000000",
+      CustomerId: this.state.CostingTypeId === CBCTypeId ? this.state.selectedCustomer.value : null,
       CustomerName: this.state.CostingTypeId === CBCTypeId ? this.state.selectedCustomer.label : "",
       selectedCustomer: this.state.selectedCustomer,
       selectedVedor: this.state.selectedVedor
@@ -2162,7 +2184,7 @@ class AddMoreDetails extends Component {
         FuelEntryId: this.state.FuelEntryId,
         IsIncludeMachineCost: IsIncludeMachineRateDepreciation,
         PowerEntryId: powerIdFromAPI,
-        CustomerId: this.state.CostingTypeId === CBCTypeId ? this.state.selectedCustomer.value : "00000000-0000-0000-0000-000000000000",
+        CustomerId: this.state.CostingTypeId === CBCTypeId ? this.state.selectedCustomer.value : null,
         CustomerName: this.state.CostingTypeId === CBCTypeId ? this.state.selectedCustomer.label : "",
       }
 
