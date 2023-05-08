@@ -194,7 +194,7 @@ function RMDomesticListing(props) {
         if (isPagination === true) {
             setloader(true)
         }
-        dataObj.RawMaterialEntryType = Number(RMDOMESTIC)
+        dataObj.RawMaterialEntryType = Number(ENTRY_TYPE_DOMESTIC)
         if (!props.isMasterSummaryDrawer) {
             dispatch(getAllRMDataList(filterData, skip, take, isPagination, dataObj, false, (res) => {
                 // apply(selectedRowForPagination, selectedRowForPagination.length)
