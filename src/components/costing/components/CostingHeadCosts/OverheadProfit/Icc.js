@@ -498,13 +498,13 @@ function Icc(props) {
                             Controller={Controller}
                             control={control}
                             register={register}
-                            mandatory={true}
+                            mandatory={false}
                             rules={{
                                 required: false,
                             }}
                             placeholder={'Select'}
                             options={CRMHeads}
-                            required={true}
+                            required={false}
                             handleChange={handleCrmHeadChange}
                             disabled={CostingViewMode}
                         />

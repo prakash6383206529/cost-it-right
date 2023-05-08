@@ -448,14 +448,14 @@ function OperationCost(props) {
                                 Controller={Controller}
                                 control={control}
                                 register={register}
-                                mandatory={true}
+                                mandatory={false}
                                 rules={{
-                                  required: true,
+                                  required: false,
                                 }}
                                 placeholder={'Select'}
                                 defaultValue={item.OperationCRMHead ? { label: item.OperationCRMHead, value: index } : ''}
                                 options={CRMHeads}
-                                required={true}
+                                required={false}
                                 handleChange={(e) => { onCRMHeadChange(e, index) }}
                                 disabled={CostingViewMode}
                               />

@@ -1179,13 +1179,13 @@ function TabDiscountOther(props) {
                         Controller={Controller}
                         control={control}
                         register={register}
-                        mandatory={true}
+                        mandatory={false}
                         rules={{
-                          required: true,
+                          required: false,
                         }}
                         placeholder={'Select'}
                         options={CRMHeads}
-                        required={true}
+                        required={false}
                         handleChange={onCRMHeadChangeOther}
                         disabled={CostingViewMode}
                       />
@@ -1316,13 +1316,13 @@ function TabDiscountOther(props) {
                         Controller={Controller}
                         control={control}
                         register={register}
-                        mandatory={true}
+                        mandatory={false}
                         rules={{
-                          required: true,
+                          required: false,
                         }}
                         placeholder={'Select'}
                         options={CRMHeads}
-                        required={true}
+                        required={false}
                         handleChange={onCRMHeadChangeDiscount}
                         disabled={CostingViewMode}
                       />
