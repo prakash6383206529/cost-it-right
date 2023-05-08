@@ -1764,6 +1764,7 @@ export const UNDER_REVISION = 'UnderRevision'
 export const RECEIVED = 'Received'
 export const SUBMITTED = 'Submitted'
 export const SENT = 'Sent'
+export const DRAFTID = 1
 
 // MASTER APPROVAL STATUS ID
 export const APPROVED_STATUS = '3,5'
