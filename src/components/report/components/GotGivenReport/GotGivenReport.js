@@ -150,14 +150,13 @@ const GotGivenReport = (props) => {
 
     return (
         <>
-            {!runGotGivenReport && <div className="container-fluid ag-grid-react">
+            {!runGotGivenReport && <div className="container-fluid ">
 
-                <h1 className="mb-0">Got Given Report</h1>
-                <div className="mt-3">
+                <div className="cost-ratio-report">
                     <form noValidate >
                         <Row>
 
-                            <Col className="col-md-15">
+                            <Col md="3">
                                 <SearchableSelectHookForm
                                     label={"Technology"}
                                     name={"Technology"}
@@ -173,7 +172,7 @@ const GotGivenReport = (props) => {
                                 />
                             </Col>
 
-                            <Col className="col-md-15">
+                            <Col md="3">
 
                                 <AsyncSearchableSelectHookForm
                                     label={"Assembly/Part No."}
@@ -210,13 +209,14 @@ const GotGivenReport = (props) => {
                                     errors={errors.Technology}
                                 />
                             </Col>
-
-                            <button
-                                type="button"
-                                className={"reset-btn pull-left  ml-5 mt-4"}
-                                onClick={() => resetReport()}>
-                                {"RESET"}
-                            </button>
+                            <Col md="3" className="mt-2">
+                                <button
+                                    type="button"
+                                    className={"reset-btn pull-left mt-4"}
+                                    onClick={() => resetReport()}>
+                                    {"RESET"}
+                                </button>
+                            </Col>
                         </Row>
                     </form>
                 </div>
