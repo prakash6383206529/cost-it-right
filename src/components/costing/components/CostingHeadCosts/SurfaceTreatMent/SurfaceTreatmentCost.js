@@ -345,14 +345,14 @@ function SurfaceTreatmentCost(props) {
                                 errors={`${errors.crmHeadSurface}${index}`}
                                 control={control}
                                 register={register}
-                                mandatory={true}
+                                mandatory={false}
                                 rules={{
-                                  required: true,
+                                  required: false,
                                 }}
                                 placeholder={'Select'}
                                 defaultValue={item.SurfaceTreatmentCRMHead ? { label: item.SurfaceTreatmentCRMHead, value: index } : ''}
                                 options={CRMHeads}
-                                required={true}
+                                required={false}
                                 handleChange={(e) => { onCRMHeadChange(e, index) }}
                                 disabled={CostingViewMode}
                               />

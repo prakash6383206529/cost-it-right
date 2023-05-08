@@ -175,6 +175,7 @@ function OverheadProfit(props) {
 
     setTimeout(() => {
 
+
       let tempObj = {
         "OverheadId": overheadObj && overheadObj.OverheadId,
         "OverheadApplicabilityId": overheadObj && overheadObj.OverheadApplicabilityId,
@@ -401,6 +402,7 @@ function OverheadProfit(props) {
       }
     }
   }
+
   /**
   * @method setOverheadValues
   * @description  SET OVERHEAD VALUES IN FIXED, COMBINED, RM, CC AND BOP

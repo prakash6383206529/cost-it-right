@@ -431,14 +431,14 @@ function OperationCostExcludedOverhead(props) {
                                 Controller={Controller}
                                 control={control}
                                 register={register}
-                                mandatory={true}
+                                mandatory={false}
                                 rules={{
-                                  required: true,
+                                  required: false,
                                 }}
                                 placeholder={'Select'}
                                 defaultValue={item.OtherOperationCRMHead ? { label: item.OtherOperationCRMHead, value: index } : ''}
                                 options={CRMHeads}
-                                required={true}
+                                required={false}
                                 handleChange={(e) => { onCRMHeadChange(e, index) }}
                                 disabled={CostingViewMode}
                               />
