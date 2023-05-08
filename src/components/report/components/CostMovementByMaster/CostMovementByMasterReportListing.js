@@ -1,15 +1,18 @@
 
 import { AgGridReact } from 'ag-grid-react';
 import React, { useState, useEffect } from 'react';
-import { EMPTY_DATA, defaultPageSize } from '../../../../config/constants';
+import { EMPTY_DATA, MASTER_MOVEMENT_REPORT, defaultPageSize } from '../../../../config/constants';
 import LoaderCustom from '../../../common/LoaderCustom';
 import NoContentFound from '../../../common/NoContentFound';
 import _ from 'lodash'
 import { useDispatch } from 'react-redux';
 import { getBOPCostMovement, getMachineProcessMovement, getOperationMovement, getRMCostMovement } from '../../actions/ReportListing';
 import { PaginationWrapper } from '../../../common/commonPagination';
-
-
+import ReactExport from 'react-export-excel';
+const ExcelFile = ReactExport.ExcelFile;
+const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
+const gridOptions = {};
 
 function CostMovementByMasterReportListing(props) {
 
@@ -19,6 +22,7 @@ function CostMovementByMasterReportListing(props) {
     const [columnDefs, setColumnDefs] = useState([])
     const [isData, setIsData] = useState(false)
     const [isLoader, setIsLoader] = useState(false)
+    const [headersState, setHeadersState] = useState([]);
     const dispatch = useDispatch();
 
 
@@ -91,8 +95,12 @@ function CostMovementByMasterReportListing(props) {
             case 2:
                 setIsLoader(true)
                 dispatch(getRMCostMovement(formData, res => {
+                    console.log('res: ', res);
                     if (res.status === 200) {
                         setIsData(true)
+                        setRowData(res.data.Data.Data)
+                        setHeadersState(res.data.Data.TableHeads)
+                        setIsLoader(false)
                         mergeCategory(res.data.Data, 'Category')
                     }
                     else {
@@ -107,7 +115,17 @@ function CostMovementByMasterReportListing(props) {
                 dispatch(getBOPCostMovement(formData, res => {
                     if (res.status === 200) {
                         setIsData(true)
-                        mergeCategory(res.data.Data, 'BoughtOutPartCategory')
+                        setRowData(res.data.Data.Data)
+                        setHeadersState(res.data.Data.TableHeads)
+                        let temp = res.data.Data.TableHeads;
+                        let newTemp = []
+                        temp.map((item) => {
+                            item.cellRenderer = dashFormatter
+                            newTemp.push(item)
+                            return null
+                        })
+                        setColumnDefs(newTemp)
+                        setIsLoader(false)
                     }
                     else {
                         setIsData(false)
@@ -119,9 +137,11 @@ function CostMovementByMasterReportListing(props) {
             case 7:
                 setIsLoader(true)
                 dispatch(getOperationMovement(formData, res => {
+                    console.log('res: ', res);
                     if (res.status === 200) {
                         setIsData(true)
                         setRowData(res.data.Data.Data)
+                        setHeadersState(res.data.Data.TableHeads)
                         let temp = res.data.Data.TableHeads;
                         let newTemp = []
                         temp.map((item) => {
@@ -144,6 +164,7 @@ function CostMovementByMasterReportListing(props) {
                     if (res.status === 200) {
                         setIsData(true)
                         setRowData(res.data.Data.Data)
+                        setHeadersState(res.data.Data.TableHeads)
                         let temp = res.data.Data.TableHeads;
                         let newTemp = []
                         temp.map((item) => {
@@ -176,8 +197,6 @@ function CostMovementByMasterReportListing(props) {
         return cellValue ? cellValue : '-';
     }
 
-    const gridOptions = {};
-
     const defaultColDef = {
 
         resizable: true,
@@ -206,11 +225,50 @@ function CostMovementByMasterReportListing(props) {
         customLoadingOverlay: LoaderCustom,
         customNoRowsOverlay: NoContentFound,
     };
+    const renderColumn = () => {
+        return returnExcelColumn(rowData, headersState);
+    };
 
+    const returnExcelColumn = (rowData) => {
+        // Get the stored headers
+        const headers = [...headersState];
 
+        // Map the header names to the corresponding field in rowData
+        const headersMap = {};
+        headers.forEach((header) => {
+            headersMap[header.headerName] = header.field;
+        });
 
+        // Extract data from the response
+        const data = rowData.map((row) => {
+            const obj = {};
+            headers.forEach((header) => {
+                const fieldName = headersMap[header.headerName];
+                obj[header.headerName] = row[fieldName] || '';
+            });
+            return obj;
+        });
+
+        return (
+            <ExcelSheet data={data} name={MASTER_MOVEMENT_REPORT}>
+                {headers.map((header, index) => (
+                    <ExcelColumn key={index} label={header.headerName} value={header.headerName} />
+                ))}
+            </ExcelSheet>
+        );
+    };
+    const resetState = () => {
+        gridOptions?.columnApi?.resetColumnState();
+        gridOptions?.api?.setFilterModel(null);
+    }
     return <div className='p-relative'>
         <div className='w-100 mb-2 d-flex justify-content-end'>
+            <ExcelFile filename={MASTER_MOVEMENT_REPORT} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div></button>}>
+                {renderColumn()}
+            </ExcelFile>
+            <button type="button" className="user-btn mr5" title="Reset Grid" onClick={() => resetState()}>
+                <div className="refresh mr-0"></div>
+            </button>
             <button type="button" className={"apply"} onClick={cancelReport}> <div className={'back-icon'}></div>Back</button>
         </div>
         {isLoader && <LoaderCustom customClass="loader-center" />}

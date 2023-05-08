@@ -116,7 +116,7 @@ function MasterCostMovement() {
                 break;
             case 4:
             case 5:
-                dispatch(getBoughtOutPartSelectList(DayTime(fromDate).format('DD-MM-YYYY'), () => { }))
+                dispatch(getBoughtOutPartSelectList(null, () => { }))
                 dispatch(getBOPCategorySelectList(() => { }))
                 setShowTechnologyField(false)
                 break;
@@ -275,7 +275,7 @@ function MasterCostMovement() {
                 return (<>
                     <Col md="3">
                         <SearchableSelectHookForm
-                            label={'Operation Code'}
+                            label={'Operation (Code)'}
                             name={'OperationId'}
                             placeholder={'Select'}
                             Controller={Controller}
@@ -295,7 +295,7 @@ function MasterCostMovement() {
                 return (<>
                     <Col md="3">
                         <SearchableSelectHookForm
-                            label={'Process'}
+                            label={'Process (Code)'}
                             name={'processCode'}
                             placeholder={'Select'}
                             Controller={Controller}
@@ -511,6 +511,8 @@ function MasterCostMovement() {
                         }
                     }
                     else {
+                        if (item.Value === '0') return false;
+                        console.log('temp: ', temp);
                         temp.push({ label: item.Text, value: item.Value });
                     }
                 }
@@ -621,8 +623,8 @@ function MasterCostMovement() {
     };
     const runReport = () => {
         let fixedData = {
-            "FromDate": DayTime(fromDate).format('DD/MM/YYYY'),
-            "ToDate": DayTime(toDate).format('DD/MM/YYYY'),
+            "FromDate": fromDate,
+            "ToDate": toDate,
             "CostingHeadId": Number(costingHeadType.value),
             "TechnologyId": Number(technology.value),
             "PlantId": plant.value,
@@ -654,7 +656,7 @@ function MasterCostMovement() {
             case Number(7):
                 masterData = {
                     "IsSurfaceTreatmentOperation": isSurfaceTrue,
-                    "OperationCode": operationData.label,
+                    // "OperationCode": operationData.label,
                     "OperationChildId": operationData.value,
                 }
                 break;

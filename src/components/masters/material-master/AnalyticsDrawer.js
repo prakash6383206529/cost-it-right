@@ -274,12 +274,12 @@ function AnalyticsDrawer(props) {
                                         title={ModeId === 1 ? `RM Code : ${rowData?.RawMaterialCode} ` : (ModeId === 2 ? `BOP No. : ${rowData?.BoughtOutPartNumber}` : ModeId === 3 ? `Operation Code : ${rowData?.OperationCode} ` : `Machine No. : ${rowData?.MachineNumber}`)}
                                     />
                                     <RenderGraphList valueChanged={valueChanged} />
-                                    <ExcelFile filename={MASTER_MOVEMENT_REPORT} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div></button>}>
+                                    {showList && <ExcelFile filename={MASTER_MOVEMENT_REPORT} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div></button>}>
                                         {renderColumn()}
-                                    </ExcelFile>
-                                    <button type="button" className="user-btn mr5" title="Reset Grid" onClick={() => resetState()}>
+                                    </ExcelFile>}
+                                    {showList && <button type="button" className="user-btn mr5" title="Reset Grid" onClick={() => resetState()}>
                                         <div className="refresh mr-0"></div>
-                                    </button>
+                                    </button>}
                                     {/* <h7>{ModeId === 1 ? `RM Code : ${rowData?.RawMaterialCode} ` : (ModeId === 2 ? `BOP No. : ${rowData?.BoughtOutPartNumber}` : ModeId === 3 ? `Operation Code : ${rowData?.OperationCode} ` : `Machine No. : ${rowData?.MachineNumber}`)}</h7> */}
                                 </div>
                                 {showList &&
