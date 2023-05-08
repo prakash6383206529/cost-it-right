@@ -44,7 +44,7 @@ function PaymentTerms(props) {
 
     useEffect(() => {
         if (PaymentTermDetail) {
-            setValue('crmHeadPayment', PaymentTermDetail.PaymentTermCRMHead ? PaymentTermDetail.PaymentTermCRMHead : '')
+            setValue('crmHeadPayment', PaymentTermDetail.PaymentTermCRMHead ? { label: PaymentTermDetail.PaymentTermCRMHead, value: 1 } : '')
         }
     }, []);
 
@@ -79,10 +79,6 @@ function PaymentTerms(props) {
 
         dispatch(gridDataAdded(true))
         dispatch(isOverheadProfitDataChange(true))
-
-        if (PaymentTermDetail) {
-            setValue('crmHeadPayment', PaymentTermDetail.PaymentTermCRMHead ? PaymentTermDetail.PaymentTermCRMHead : '')
-        }
     }
 
     /**
@@ -463,13 +459,13 @@ function PaymentTerms(props) {
                             Controller={Controller}
                             control={control}
                             register={register}
-                            mandatory={true}
+                            mandatory={false}
                             rules={{
                                 required: false,
                             }}
                             placeholder={'Select'}
                             options={CRMHeads}
-                            required={true}
+                            required={false}
                             handleChange={handleCrmHeadChange}
                             disabled={CostingViewMode}
                         />

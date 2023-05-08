@@ -287,14 +287,14 @@ function TransportationCost(props) {
                   Controller={Controller}
                   control={control}
                   register={register}
-                  mandatory={true}
+                  mandatory={false}
                   rules={{
-                    required: true,
+                    required: false,
                   }}
                   defaultValue={item.TransportationCRMHead ? { label: item.TransportationCRMHead, value: 1 } : ''}
                   placeholder={'Select'}
                   options={CRMHeads}
-                  required={true}
+                  required={false}
                   handleChange={onCRMHeadChange}
                   disabled={CostingViewMode}
                 />

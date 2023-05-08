@@ -874,14 +874,14 @@ function Tool(props) {
                       Controller={Controller}
                       control={control}
                       register={register}
-                      mandatory={true}
+                      mandatory={false}
                       rules={{
-                        required: true,
+                        required: false,
                       }}
                       //defaultValue={item.RawMaterialCRMHead ? { label: item.RawMaterialCRMHead, value: index } : ''}
                       placeholder={'Select'}
                       options={CRMHeads}
-                      required={true}
+                      required={false}
                       handleChange={onCRMHeadChange}
                       disabled={CostingViewMode}
                     />

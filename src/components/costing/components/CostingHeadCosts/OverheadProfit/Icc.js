@@ -61,10 +61,6 @@ function Icc(props) {
         dispatch(gridDataAdded(true))
         dispatch(isOverheadProfitDataChange(true))
         setInterestRateFixedLimit(false)
-
-        if (ICCApplicabilityDetail) {
-            setValue('crmHeadIcc', ICCApplicabilityDetail.ICCCRMHead ? ICCApplicabilityDetail.ICCCRMHead : '')
-        }
     }
 
 
@@ -118,8 +114,9 @@ function Icc(props) {
     }
 
     useEffect(() => {
+
         if (ICCApplicabilityDetail) {
-            setValue('crmHeadIcc', ICCApplicabilityDetail.ICCCRMHead ? ICCApplicabilityDetail.ICCCRMHead : '')
+            setValue('crmHeadIcc', ICCApplicabilityDetail.ICCCRMHead ? { label: ICCApplicabilityDetail.ICCCRMHead, value: 1 } : '')
         }
 
     }, [])
@@ -494,13 +491,13 @@ function Icc(props) {
                             Controller={Controller}
                             control={control}
                             register={register}
-                            mandatory={true}
+                            mandatory={false}
                             rules={{
                                 required: false,
                             }}
                             placeholder={'Select'}
                             options={CRMHeads}
-                            required={true}
+                            required={false}
                             handleChange={handleCrmHeadChange}
                             disabled={CostingViewMode}
                         />
