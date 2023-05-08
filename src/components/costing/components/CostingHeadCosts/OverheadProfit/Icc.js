@@ -68,10 +68,6 @@ function Icc(props) {
         dispatch(gridDataAdded(true))
         dispatch(isOverheadProfitDataChange(true))
         setInterestRateFixedLimit(false)
-
-        if (ICCApplicabilityDetail) {
-            setValue('crmHeadIcc', ICCApplicabilityDetail.ICCCRMHead ? ICCApplicabilityDetail.ICCCRMHead : '')
-        }
     }
 
 
@@ -125,8 +121,9 @@ function Icc(props) {
     }
 
     useEffect(() => {
+
         if (ICCApplicabilityDetail) {
-            setValue('crmHeadIcc', ICCApplicabilityDetail.ICCCRMHead ? ICCApplicabilityDetail.ICCCRMHead : '')
+            setValue('crmHeadIcc', ICCApplicabilityDetail.ICCCRMHead ? { label: ICCApplicabilityDetail.ICCCRMHead, value: 1 } : '')
         }
 
     }, [])
