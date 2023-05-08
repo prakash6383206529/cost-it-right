@@ -12,6 +12,7 @@ import { ASSEMBLY, CORRUGATED_BOX, MACHINING_GROUP_BULKUPLOAD, PLASTIC_GROUP_BUL
 import { getCostingTechnologySelectList, } from '../actions/Costing'
 import { searchableSelect } from '../../layout/FormInputs';
 import LoaderCustom from '../../common/LoaderCustom';
+import { getConfigurationKey, loggedInUserId } from '../../../helper';
 
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -164,6 +165,8 @@ class CostingBulkUploadDrawer extends Component {
 
         let data = new FormData()
         data.append('file', fileData)
+        data.append('loggedInUserId', loggedInUserId())
+        data.append('IsShowRawMaterialInOverheadProfitAndICC', getConfigurationKey().IsShowRawMaterialInOverheadProfitAndICC)
 
         switch (Number(this.state.Technology.value)) {
             case SHEETMETAL_GROUP_BULKUPLOAD:
