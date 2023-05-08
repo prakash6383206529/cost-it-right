@@ -583,7 +583,7 @@ function TabDiscountOther(props) {
       dispatch(isDiscountDataChange(true))
       setCurrency(newValue)
       setIsInputLader(true)
-      dispatch(getExchangeRateByCurrency(newValue.label, costData.CostingTypeId, DayTime(CostingEffectiveDate).format('YYYY-MM-DD'), costData.VendorId, costData.CustomerId, res => {
+      dispatch(getExchangeRateByCurrency(newValue.label, costData.CostingTypeId, DayTime(CostingEffectiveDate).format('YYYY-MM-DD'), costData.VendorId, costData.CustomerId, false, res => {
         setIsInputLader(false)
         if (Object.keys(res.data.Data).length === 0) {
           setShowWarning(true)
@@ -1147,13 +1147,13 @@ function TabDiscountOther(props) {
                         Controller={Controller}
                         control={control}
                         register={register}
-                        mandatory={true}
+                        mandatory={false}
                         rules={{
-                          required: true,
+                          required: false,
                         }}
                         placeholder={'Select'}
                         options={CRMHeads}
-                        required={true}
+                        required={false}
                         handleChange={onCRMHeadChangeOther}
                         disabled={CostingViewMode}
                       />
@@ -1284,13 +1284,13 @@ function TabDiscountOther(props) {
                         Controller={Controller}
                         control={control}
                         register={register}
-                        mandatory={true}
+                        mandatory={false}
                         rules={{
-                          required: true,
+                          required: false,
                         }}
                         placeholder={'Select'}
                         options={CRMHeads}
-                        required={true}
+                        required={false}
                         handleChange={onCRMHeadChangeDiscount}
                         disabled={CostingViewMode}
                       />

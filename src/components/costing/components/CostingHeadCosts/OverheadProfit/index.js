@@ -1674,13 +1674,13 @@ function OverheadProfit(props) {
                                     Controller={Controller}
                                     control={control}
                                     register={register}
-                                    mandatory={true}
+                                    mandatory={false}
                                     rules={{
-                                        required: true,
+                                        required: false,
                                     }}
                                     placeholder={'Select'}
                                     options={CRMHeads}
-                                    required={true}
+                                    required={false}
                                     handleChange={onCRMHeadChangeOverhead}
                                     disabled={CostingViewMode}
                                 />
@@ -2036,13 +2036,13 @@ function OverheadProfit(props) {
                                     Controller={Controller}
                                     control={control}
                                     register={register}
-                                    mandatory={true}
+                                    mandatory={false}
                                     rules={{
-                                        required: true,
+                                        required: false,
                                     }}
                                     placeholder={'Select'}
                                     options={CRMHeads}
-                                    required={true}
+                                    required={false}
                                     handleChange={onCRMHeadChangeProfit}
                                     disabled={CostingViewMode}
                                 />
