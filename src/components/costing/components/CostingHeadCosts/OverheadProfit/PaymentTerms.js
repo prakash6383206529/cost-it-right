@@ -344,6 +344,26 @@ function PaymentTerms(props) {
             </Row>
             {IsPaymentTermsApplicable &&
                 <>
+                    {initialConfiguration.IsShowCRMHead && <Col md="3">
+                        <SearchableSelectHookForm
+                            name={`crmHeadPayment`}
+                            type="text"
+                            label="CRM Head"
+                            errors={errors.crmHeadPayment}
+                            Controller={Controller}
+                            control={control}
+                            register={register}
+                            mandatory={false}
+                            rules={{
+                                required: false,
+                            }}
+                            placeholder={'Select'}
+                            options={CRMHeads}
+                            required={false}
+                            handleChange={handleCrmHeadChange}
+                            disabled={CostingViewMode}
+                        />
+                    </Col>}
                     <Row className="costing-border-inner-section border-bottom-none m-0">
                         <Col md="3">
                             <span className="head-text">
@@ -450,26 +470,7 @@ function PaymentTerms(props) {
                             </Col>
                         </>
                     </Row>
-                    {initialConfiguration.IsShowCRMHead && <Col md="2">
-                        <SearchableSelectHookForm
-                            name={`crmHeadPayment`}
-                            type="text"
-                            label="CRM Head"
-                            errors={errors.crmHeadPayment}
-                            Controller={Controller}
-                            control={control}
-                            register={register}
-                            mandatory={false}
-                            rules={{
-                                required: false,
-                            }}
-                            placeholder={'Select'}
-                            options={CRMHeads}
-                            required={false}
-                            handleChange={handleCrmHeadChange}
-                            disabled={CostingViewMode}
-                        />
-                    </Col>}
+
                 </>
             }
         </>

@@ -1226,7 +1226,7 @@ function TabDiscountOther(props) {
                           disabled={CostingViewMode || !(otherCostType && otherCostType.value === 'Percentage') ? true : false}
                         />
                       </Col>}
-                    <Col md="4" >
+                    <Col md="2" >
                       <TextFieldHookForm
                         label="Other Cost Description"
                         name={"OtherCostDescription"}
