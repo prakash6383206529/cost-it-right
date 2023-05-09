@@ -360,6 +360,26 @@ function Icc(props) {
 
             {IsInventoryApplicable &&
                 <>
+                    {initialConfiguration.IsShowCRMHead && <Col md="3">
+                        <SearchableSelectHookForm
+                            name={`crmHeadIcc`}
+                            type="text"
+                            label="CRM Head"
+                            errors={errors.crmHeadIcc}
+                            Controller={Controller}
+                            control={control}
+                            register={register}
+                            mandatory={false}
+                            rules={{
+                                required: false,
+                            }}
+                            placeholder={'Select'}
+                            options={CRMHeads}
+                            required={false}
+                            handleChange={handleCrmHeadChange}
+                            disabled={CostingViewMode}
+                        />
+                    </Col>}
                     <Row className="costing-border-inner-section border-bottom-none m-0">
                         <Col md={ICCapplicability?.label?.includes('RM') && !(costData.IsAssemblyPart) && IsShowRmcAndNetWeightToggleForIcc ? '2' : '3'}>
                             <span className="head-text">
@@ -489,26 +509,6 @@ function Icc(props) {
                             </Col>
                         </>
                     </Row>
-                    {initialConfiguration.IsShowCRMHead && <Col md="2">
-                        <SearchableSelectHookForm
-                            name={`crmHeadIcc`}
-                            type="text"
-                            label="CRM Head"
-                            errors={errors.crmHeadIcc}
-                            Controller={Controller}
-                            control={control}
-                            register={register}
-                            mandatory={false}
-                            rules={{
-                                required: false,
-                            }}
-                            placeholder={'Select'}
-                            options={CRMHeads}
-                            required={false}
-                            handleChange={handleCrmHeadChange}
-                            disabled={CostingViewMode}
-                        />
-                    </Col>}
                 </>
             }
         </>

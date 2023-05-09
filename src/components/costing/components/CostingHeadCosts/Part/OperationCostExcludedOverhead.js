@@ -428,6 +428,7 @@ function OperationCostExcludedOverhead(props) {
                                   required: false,
                                 }}
                                 placeholder={'Select'}
+                                customClassName="costing-selectable-dropdown"
                                 defaultValue={item.OtherOperationCRMHead ? { label: item.OtherOperationCRMHead, value: index } : ''}
                                 options={CRMHeads}
                                 required={false}

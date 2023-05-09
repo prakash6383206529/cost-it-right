@@ -1413,6 +1413,7 @@ function RawMaterialCost(props) {
                                 defaultValue={item.RawMaterialCRMHead ? { label: item.RawMaterialCRMHead, value: index } : ''}
                                 placeholder={'Select'}
                                 options={CRMHeads}
+                                customClassName="costing-selectable-dropdown"
                                 required={false}
                                 handleChange={(e) => { onCRMHeadChange(e, index) }}
                                 disabled={CostingViewMode}
