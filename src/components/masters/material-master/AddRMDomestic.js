@@ -1329,6 +1329,8 @@ class AddRMDomestic extends Component {
                               <input
                                 type="radio"
                                 name="costingHead"
+                                className='zero-based'
+                                id='zeroBased'
                                 checked={
                                   costingTypeId === ZBCTypeId ? true : false
                                 }
@@ -1343,6 +1345,8 @@ class AddRMDomestic extends Component {
                               <input
                                 type="radio"
                                 name="costingHead"
+                                className='vendor-based'
+                                id='vendorBased'
                                 checked={
                                   costingTypeId === VBCTypeId ? true : false
                                 }
@@ -1357,6 +1361,8 @@ class AddRMDomestic extends Component {
                               <input
                                 type="radio"
                                 name="costingHead"
+                                className='customer-based'
+                                id='customerBased'
                                 checked={
                                   costingTypeId === CBCTypeId ? true : false
                                 }
