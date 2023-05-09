@@ -852,8 +852,17 @@ function ProcessCost(props) {
       ...tempData,
       ProcessCRMHead: e?.label
     }
-    tempArr = Object.assign([...gridData], { [index]: tempData })
-    setGridData(tempArr)
+    let gridTempArr = Object.assign([...gridData], { [index]: tempData })
+    let apiArr = formatMainArr(gridTempArr)
+
+    tempArr = {
+      ...tabData,
+      CostingProcessCostResponse: apiArr,
+    }
+    setIsFromApi(false)
+    setTabData(tempArr)
+    setGridData(gridTempArr)
+    dispatch(setProcessGroupGrid(formatReducerArray(gridTempArr)))
   }
 
   const handleQuantityChangeOfGroupProcess = (event, index, list, parentIndex, processName) => {
