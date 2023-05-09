@@ -9,27 +9,27 @@ const color7 = "#D6DDEB";
 // graph colors end
 
 // graph colors start
-export const primaryColor = '#256bd1';
-export const secondryColor = '#1adcb3';
-export const graphColor1 = "#007ed6";
-export const graphColor2 = "#e01e84";
-export const graphColor3 = "#8e6cef";
-export const graphColor4 = "#26d7ae";
-export const graphColor5 = "#97d9ff";
-export const graphColor6 = "#52d726";
-export const graphColor7 = "#ffec00";
-export const graphColor8 = "#8399eb";
-export const graphColor9 = "#ff7300";
-export const graphColor10 = "#7cdddd";
-export const graphColor11 = "#ffaf00";
-export const graphColor12 = "#19aa2d";
-export const graphColor13 = "#5fb7d4";
-export const graphColor14 = "#ff0000";
-export const graphColor15 = "#9f9f9f";
-export const graphColor16 = "#c758d0";
+export const primaryColor = '#0072B2';
+export const secondryColor = '#E69F00';
+export const graphColor1 = "#009E73";
+export const graphColor2 = "#D55E00";
+export const graphColor3 = "#CC79A7";
+export const graphColor4 = "#F0E442";
+export const graphColor5 = "#56B4E9";
+export const graphColor6 = "#FFA500";
+export const graphColor7 = "#00CC99";
+export const graphColor8 = "#8A2BE2";
+export const graphColor9 = "#6B8E23";
+export const graphColor10 = "#1E90FF";
+export const graphColor11 = "#8B008B";
+export const graphColor12 = "#32CD32";
+export const graphColor13 = "#BA55D3";
+export const graphColor14 = "#ADFF2F";
+export const graphColor15 = "#9932CC";
+export const graphColor16 = "#FFD700";
 // graph colors end
 
-export const colorArray = ['#007ed6', '#77dd77', '#ff9899', '#e01e84', '#836953', '#89cff0', '#99c5c4', '#bdb0d0', '#9adedb', '#7cdddd', '#aa9499', '#aaf0d1', '#b2fba5', '#b39eb5', '#bee7a5', '#c1c6fc', '#c6a4a4', '#c8ffb0', '#cb99c9', '#cef0cc', '#d8a1c4', '#cfcfc4', '#d6fffe', '#dea5a4', '#deece1', '#dfd8e1', '#e5d9d3', '#e9d1bf', '#ffb7ce', '#f49ac2', '#f4bfff', '#fdfd96', '#ff6961', '#ca9bf7', '#ff964f',]
+export const colorArray = ['#0072B2', '#E69F00', '#009E73', '#D55E00', '#CC79A7', '#9932CC', '#FFD700', '#8B4513', '#00CED1', '#A0522D', '#4682B4', '#CD853F', '#6495ED', '#FF4500', '#2E8B57', '#6A5ACD', '#FF6347','#F0E442', '#56B4E9', '#FFA500', '#00CC99', '#FF7F50', '#8A2BE2', '#6B8E23', '#1E90FF', '#8B008B', '#32CD32', '#BA55D3', '#ADFF2F',  '#5F9EA0', '#DA70D6', '#3CB371', '#9370DB', '#98FB98', '#8B008B', '#48D1CC', '#7FFF00', '#8B0000', '#AFEEEE', '#CD5C5C', '#F08080'];
 
 // graph 1 (Cost Movement by Cost Drivers) dashboard  
 export const options1 = {

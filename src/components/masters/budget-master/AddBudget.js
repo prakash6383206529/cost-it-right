@@ -30,6 +30,7 @@ import MasterSendForApproval from '../MasterSendForApproval'
 import { userTechnologyDetailByMasterId } from '../../../helper'
 import { getUsersMasterLevelAPI } from '../../../actions/auth/AuthActions'
 import PopupMsgWrapper from '../../common/PopupMsgWrapper'
+import { getVendorWithVendorCodeSelectList } from '../actions/Material'
 
 const gridOptions = {};
 
@@ -134,7 +135,6 @@ function AddBudget(props) {
         }
 
     }, [userMasterLevelAPI])
-
 
 
     /**
@@ -397,9 +397,9 @@ function AddBudget(props) {
         // setValue('currentPrice', total + currentPrice)
 
         setTotalSum((total + currentPrice))
-        setValue('totalSum', (total + currentPrice))
+        setValue('totalSum', checkForDecimalAndNull(total + currentPrice, getConfigurationKey().NoOfDecimalForPrice))
         if (currencyExchangeRate > 1) {
-            setValue('totalSumCurrency', (total + currentPrice) / currencyExchangeRate)
+            setValue('totalSumCurrency', checkForDecimalAndNull((total + currentPrice) / currencyExchangeRate, getConfigurationKey().NoOfDecimalForPrice))
         }
     }
 
@@ -628,7 +628,7 @@ function AddBudget(props) {
                 BudgetingPartCostingDetails: temp,
                 CurrencyId: currency.value,
                 Currency: currency.label,
-                conditionTableData: conditionTableData
+                ConditionsData: conditionTableData
 
             }
 

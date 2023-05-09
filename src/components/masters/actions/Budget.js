@@ -18,7 +18,7 @@ import Toaster from '../../common/Toaster'
 export function getBudgetDataList(skip, take, isPagination, obj, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });    
-        const QueryParams = `costingHead=${obj.CostingHead !== undefined ? obj.CostingHead : ""}&financialYear=${obj.FinancialYear !== undefined ? obj.FinancialYear : ""}&netPoPrice=${obj.NetPoPrice !== undefined ? obj.NetPoPrice : ""}&budgetedPoPrice	=${obj.BudgetedPoPrice !== undefined ? obj.BudgetedPoPrice : ""}&partName=${obj.PartName !== undefined ? obj.PartName : ""}&partNumber=${obj.PartNumber !== undefined ? obj.PartNumber : ""}&plantName=${obj.PlantName !== undefined ? obj.PlantName : ""}&plantCode=${obj.PlantCode !== undefined ? obj.PlantCode : ""}&vendorName=${obj.VendorName !== undefined ? obj.VendorName : ""}&vendorCode=${obj.VendorCode !== undefined ? obj.VendorCode : ""}&skip=${skip !== undefined ? skip : ""}&take=${take !== undefined ? take : ""}&customerName=${obj.CustomerName !== undefined ? obj.CustomerName : ''}&customerCodee=${obj?.CustomerCode !== undefined ? obj?.CustomerCode : false}`
+        const QueryParams = `costingHead=${obj.CostingHead !== undefined ? obj.CostingHead : ""}&financialYear=${obj.FinancialYear !== undefined ? obj.FinancialYear : ""}&netPoPrice=${obj.NetPoPrice !== undefined ? obj.NetPoPrice : ""}&budgetedPoPrice	=${obj.BudgetedPoPrice !== undefined ? obj.BudgetedPoPrice : ""}&partName=${obj.PartName !== undefined ? obj.PartName : ""}&partNumber=${obj.PartNumber !== undefined ? obj.PartNumber : ""}&plantName=${obj.PlantName !== undefined ? obj.PlantName : ""}&plantCode=${obj.PlantCode !== undefined ? obj.PlantCode : ""}&vendorName=${obj.VendorName !== undefined ? obj.VendorName : ""}&vendorCode=${obj.VendorCode !== undefined ? obj.VendorCode : ""}&skip=${skip !== undefined ? skip : ""}&take=${take !== undefined ? take : ""}&customerName=${obj.CustomerName !== undefined ? obj.CustomerName : ''}&customerCodee=${obj?.CustomerCode !== undefined ? obj?.CustomerCode : false}&PartId=${obj.PartId !== undefined ? obj.PartId : ""}`
         axios.get(`${API.getBudgetDataList}?${QueryParams}`, config())
             .then((response) => {
                 if (response.data.Result || response.status === 204) {
@@ -174,7 +174,4 @@ export function masterApprovalAPI(data, callback) {
         })
     }
 }
-
-
-
 

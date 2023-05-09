@@ -1947,7 +1947,6 @@ class AddMachineRate extends Component {
                               {!isViewMode && (CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true && !this.state.isFinalApprovar) && initialConfiguration.IsMasterApprovalAppliedConfigure ?
                                 <button type="submit"
                                   class="user-btn approval-btn save-btn mr5"
-
                                   disabled={isViewMode || setDisable || noApprovalCycle}
                                 >
                                   <div className="send-for-approval"></div>

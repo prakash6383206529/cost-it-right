@@ -400,6 +400,8 @@ function MasterSendForApproval(props) {
                 return "Operation"
             case 4:
                 return "Machine"
+            case 5:
+                return "Budgeting"
             default:
                 break;
         }
@@ -499,7 +501,6 @@ function MasterSendForApproval(props) {
                                                             showMonthDropdown
                                                             showYearDropdown
                                                             dateFormat="dd/MM/yyyy"
-                                                            dropdownMode="select"
                                                             placeholderText="-"
                                                             className="withBorder"
                                                             autoComplete={"off"}
@@ -606,7 +607,6 @@ function MasterSendForApproval(props) {
                                                             showMonthDropdown
                                                             showYearDropdown
                                                             dateFormat="dd/MM/yyyy"
-                                                            dropdownMode="select"
                                                             placeholderText="-"
                                                             className="withBorder"
                                                             autoComplete={"off"}
@@ -708,7 +708,6 @@ function MasterSendForApproval(props) {
                                                             showMonthDropdown
                                                             showYearDropdown
                                                             dateFormat="dd/MM/yyyy"
-                                                            dropdownMode="select"
                                                             placeholderText="-"
                                                             className="withBorder"
                                                             autoComplete={"off"}
@@ -752,7 +751,6 @@ function MasterSendForApproval(props) {
                                                             showMonthDropdown
                                                             showYearDropdown
                                                             dateFormat="dd/MM/yyyy"
-                                                            dropdownMode="select"
                                                             placeholderText="-"
                                                             className="withBorder"
                                                             autoComplete={"off"}

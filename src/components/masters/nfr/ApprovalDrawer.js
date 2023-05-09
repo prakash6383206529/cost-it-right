@@ -5,7 +5,7 @@ import { SearchableSelectHookForm, TextAreaHookForm } from '../../layout/HookFor
 import { getConfigurationKey, loggedInUserId, userDetails } from '../../../helper';
 import { Controller, useForm } from 'react-hook-form';
 import NoContentFound from '../../common/NoContentFound';
-import { EMPTY_DATA, EMPTY_GUID, NFRAPPROVALTYPEID } from '../../../config/constants';
+import { EMPTY_DATA, EMPTY_GUID, NFRAPPROVALTYPEID, NFRTypeId } from '../../../config/constants';
 import { useDispatch, useSelector } from 'react-redux';
 import { getAllApprovalDepartment, getAllApprovalUserFilterByDepartment, getReasonSelectList } from '../../costing/actions/Approval';
 import { costingTypeIdToApprovalTypeIdFunction } from '../../common/CommonFunctions';
@@ -13,10 +13,11 @@ import { approvedCostingByApprover, nfrSendToApproverBySender } from './actions/
 import _ from 'lodash';
 import { datalist } from 'react-dom-factories';
 import Toaster from '../../common/Toaster';
+import { MESSAGES } from '../../../config/message';
 
 
 const ApprovalDrawer = (props) => {
-    const { rowData, technologyId, partData, IsFinalLevel, nfrData, type } = props
+    const { rowData, technologyId, partData, nfrData, type, levelDetails, isFinalLevelUser } = props
     const { register, setValue, getValues, control, formState: { errors }, } = useForm({
         mode: 'onChange',
         reValidateMode: 'onChange',
@@ -37,43 +38,29 @@ const ApprovalDrawer = (props) => {
         dispatch(getAllApprovalDepartment((res) => {
             const Data = res?.data?.SelectList
             const departObj = Data && Data.filter(item => item.Value === userData.DepartmentId)
-
-            // setSelectedDepartment({ label: departObj[0]?.Text, value: departObj[0]?.Value })
             setValue('dept', { label: departObj[0]?.Text, value: departObj[0]?.Value })
 
+            const tempDropdownList = []
             let requestObject = {
                 LoggedInUserId: userData.LoggedInUserId,
                 DepartmentId: departObj[0]?.Value,
                 TechnologyId: technologyId,
-                ReasonId: 0, // key only for minda
-                ApprovalTypeId: costingTypeIdToApprovalTypeIdFunction(),
+                ApprovalTypeId: costingTypeIdToApprovalTypeIdFunction(NFRTypeId),
             }
-            // dispatch(getAllApprovalUserFilterByDepartment(requestObject, (res) => {
-            //     let tempDropdownList = []
-            //     if (res.data.DataList.length === 1) {
-            //         return false
-            //     }
-            //     res.data.DataList && res.data.DataList.map((item) => {
-            //         if (item.Value === '0') return false;
-            //         if (item.Value === EMPTY_GUID_0) return false;
-            //         tempDropdownList.push({ label: item.Text, value: item.Value, levelId: item.LevelId, levelName: item.LevelName })
-            //         return null
-            //     })
-            //     const Data = res.data.DataList[1]
-            //     setApprover(Data.Text)
-            //     setSelectedApprover(Data.Value)
-            //     setSelectedApproverLevelId({ levelName: Data.LevelName, levelId: Data.LevelId })
-            //     if (tempDropdownList?.length !== 0) {
-            //         setValue('approver', { label: Data.Text, value: Data.Value })
-            //     } else {
-            //         setShowValidation(true)
-            //     }
-            //     setApprovalDropDown(tempDropdownList)
-            // }))
+            dispatch(getAllApprovalUserFilterByDepartment(requestObject, (res) => {
+                res.data.DataList && res.data.DataList.map((item) => {
+                    if (item.Value === '0') return false;
+                    if (item.Value === EMPTY_GUID) return false;
+                    tempDropdownList.push({ label: item.Text, value: item.Value, levelId: item.LevelId, levelName: item.LevelName })
+                    return null
+                })
+                setApprovalDropDown(tempDropdownList)
+            }))
         }))
 
         let dataListTemp = []
-        let tem = _.map(rowData, 'data')[0]
+        let length = rowData?.length - 1
+        let tem = _.map(rowData, 'data')[length]
         tem && tem?.map(item => {
             if (item?.SelectedCostingVersion) {
                 let obj = {}
@@ -122,8 +109,8 @@ const ApprovalDrawer = (props) => {
         }
     }
 
-    const toggleDrawer = (e) => {
-        props.closeDrawer('', 'Cancel')
+    const toggleDrawer = (type) => {
+        props.closeDrawer(type, 'Cancel')
     }
 
     /**
@@ -169,15 +156,15 @@ const ApprovalDrawer = (props) => {
 
 
     const onSubmit = (data) => {
-        if (IsFinalLevel) {
+        if (isFinalLevelUser) {
             let req = [
                 {
                     "ApprovalProcessSummaryId": nfrData?.ApprovalProcessSummaryId,
                     "ApprovalToken": nfrData?.ApprovalToken,
                     "LoggedInUserId": loggedInUserId(),
-                    "SenderLevelId": userData?.LoggedInLevelId,
+                    "SenderLevelId": levelDetails?.LevelId,
                     "SenderId": userData?.LoggedInUserId,
-                    "SenderLevel": userData?.LoggedInLevel,
+                    "SenderLevel": levelDetails?.Level,
                     "ApproverId": getValues("approver")?.value ? getValues("approver")?.value : '',
                     "ApproverLevelId": getValues("approver")?.levelId ? getValues("approver")?.levelId : '',
                     "ApproverLevel": getValues("approver")?.levelName ? getValues("approver")?.levelName : '',
@@ -192,7 +179,11 @@ const ApprovalDrawer = (props) => {
             ]
             dispatch(approvedCostingByApprover(req, (res) => {
                 if (res?.data?.Result === true) {
-                    Toaster.success("NFR is approved successfully")
+                    if (type === 'Approve') {
+                        Toaster.success(MESSAGES.NFR_APPROVED)
+                    } else {
+                        Toaster.success(MESSAGES.NFR_REJECTED)
+                    }
                     props?.closeDrawer("submit")
                 }
             }))
@@ -224,11 +215,11 @@ const ApprovalDrawer = (props) => {
                 "ApproverLevelId": getValues("approver")?.levelId,
                 "ApproverLevel": getValues("approver")?.levelName,
                 "ApproverId": getValues("approver")?.value,
-                "SenderLevelId": userData?.LoggedInLevelId,
+                "SenderLevelId": levelDetails?.LevelId,
                 "SenderId": userData?.LoggedInUserId,
                 "ApprovalTypeId": NFRAPPROVALTYPEID,
                 "NfrPartWiseGroupDetailsId": tempRowData[0]?.nfrPartWiseGroupDetailsId,
-                "SenderLevel": userData?.LoggedInLevel,
+                "SenderLevel": levelDetails?.Level,
                 "SenderRemark": "string",
                 "LoggedInUserId": loggedInUserId(),
                 "ReasonId": 0,
@@ -255,16 +246,16 @@ const ApprovalDrawer = (props) => {
                         <Row className="drawer-heading ">
                             <Col className='px-0'>
                                 <div className={"header-wrapper left"}>
-                                    <h3>{props.rejectDrawer ? "Reject Costing" : "Send for Approval"}</h3>
+                                    <h3>{props.rejectDrawer ? "Reject Costing" : props?.IsFinalApproved ? "Approve Costing" : "Send for Approval"}</h3>
                                 </div>
                                 <div
-                                    onClick={(e) => toggleDrawer(e)}
+                                    onClick={(e) => toggleDrawer('cancel')}
                                     // disabled={isDisable}
                                     className={"close-button right"}
                                 ></div>
                             </Col>
                         </Row>
-                        {(!props.rejectDrawer && !IsFinalLevel) && <> <Row>
+                        {(!props.rejectDrawer && !isFinalLevelUser) && <> <Row>
                             <Col md={props.hideTable ? 12 : 6}>
                                 <SearchableSelectHookForm
                                     label={`${getConfigurationKey().IsCompanyConfigureOnPlant ? 'Company' : 'Department'}`}
@@ -374,7 +365,7 @@ const ApprovalDrawer = (props) => {
                                 <button
                                     className="cancel-btn mr-2"
                                     type={"button"}
-                                    onClick={toggleDrawer}
+                                    onClick={() => { toggleDrawer('cancel') }}
                                 // className="reset mr15 cancel-btn"
                                 >
                                     <div className={'cancel-icon'}></div>

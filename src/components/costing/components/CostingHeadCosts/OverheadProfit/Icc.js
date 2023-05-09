@@ -165,7 +165,7 @@ function Icc(props) {
                     setTempInventoryObj({
                         ...tempInventoryObj,
                         CostApplicability: checkForNull(NetRawMaterialsCost),
-                        NetICCTotal: checkForNull(headerCosts?.NetRawMaterialsCost + (includeOverHeadProfitIcc ? totalOverHeadAndProfit : 0)) * calculatePercentage(InterestRatePercentage)
+                        NetICCTotal: checkForNull(NetRawMaterialsCost + (includeOverHeadProfitIcc ? totalOverHeadAndProfit : 0)) * calculatePercentage(InterestRatePercentage)
                     })
                     break;
 
@@ -361,7 +361,7 @@ function Icc(props) {
                         </Col>
                         <Col md={ICCapplicability?.label?.includes('RM') && !(costData.IsAssemblyPart) && IsShowRmcAndNetWeightToggleForIcc ? '2' : '3'}>
                             <span className="head-text">
-                                {ICCapplicability.label !== 'Fixed' ? 'Interest Rate (%)' : '`Interest Rate'}
+                                {ICCapplicability.label !== 'Fixed' ? 'Interest Rate (%)' : 'Interest Rate'}
                             </span>
                         </Col>
 

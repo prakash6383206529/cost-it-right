@@ -4399,13 +4399,13 @@ export const FUELLISTING_DOWNLOAD_EXCEl = [
 export const POWERLISTING_DOWNLOAD_EXCEl = [
     { label: "State Name", value: "StateName", },
     { label: "Plant Name", value: "PlantName", },
-    { label: "Net Power Cost Per Unit", value: "NetPowerCostPerUnit", },
+    { label: "Net Power Cost per Unit", value: "NetPowerCostPerUnit", },
     { label: "Effective Date", value: "EffectiveDate" }
 ]
 
 export const POWERLISTING_VENDOR_DOWNLOAD_EXCEL = [
     { label: "Vendor (Code)", value: "VendorName" },
-    { label: "Net Power Cost Per Unit", value: "NetPowerCostPerUnit" },
+    { label: "Net Power Cost per Unit", value: "NetPowerCostPerUnit" },
 ]
 
 export const INTERESTRATE_DOWNLOAD_EXCEl = [
@@ -4430,7 +4430,7 @@ export const LABOUR_DOWNLOAD_EXCEl = [
     { label: "State", value: "State", },
     { label: "Machine Type", value: "MachineType", },
     { label: "Labour Type", value: "LabourType", },
-    { label: "Rate Per Person/Annum", value: "LabourRate", },
+    { label: "Rate per Person/Annum", value: "LabourRate", },
     { label: "Effective Date", value: "EffectiveDate", }
 ]
 
@@ -6339,10 +6339,11 @@ export const tokenStatus = {
     Approved: 'The token is approved.',
     Rejected: 'The token is rejected.',
     Pushed: 'The token is pushed to SAP.',
-    Error: 'The token is approved but getting an error when pushed to SAP.',
+    Error: 'An error occurred while pushing the approved token to SAP.',
     History: 'The token is now old, it has new updated costing.',
     Linked: 'The token is linked to another token.',
-    Provisional: 'The token is provisional, will not go for approval.'
+    Provisional: 'The token is provisional, will not go for approval.',
+    POUpdated: 'PO price updated successfully on SAP.'
 };
 
 export const tokenStatusName = {
@@ -6355,5 +6356,6 @@ export const tokenStatusName = {
     ERROR: 'Error',
     HISTORY: 'History',
     LINKED: 'Linked',
-    PROVISIONAL: 'Provisional'
+    PROVISIONAL: 'Provisional',
+    POUPDATED: 'POUpdated'
 }
