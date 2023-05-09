@@ -43,14 +43,12 @@ function NFRApprovalListing(props) {
     }
 
     useEffect(() => {
-        if (props?.activeTab === '2') {
-            dispatch(getNFRApprovals(res => {
-                if (res?.data?.Result === true) {
-                    setRowData(res?.data?.DataList)
-                }
-            }))
-        }
-    }, [props?.activeTab])
+        dispatch(getNFRApprovals(res => {
+            if (res?.data?.Result === true) {
+                setRowData(res?.data?.DataList)
+            }
+        }))
+    }, [])
 
     /**
     * @method hyphenFormatter

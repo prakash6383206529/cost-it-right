@@ -7,17 +7,16 @@ import { Redirect, useHistory } from 'react-router';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { Col, Row, Table } from 'reactstrap';
 import { getVendorWithVendorCodeSelectList } from '../../../actions/Common';
-import { EMPTY_DATA, EMPTY_GUID, NFR, NFRTypeId, VBCTypeId, searchCount } from '../../../config/constants';
+import { EMPTY_DATA, EMPTY_GUID, NFRTypeId, searchCount, DRAFT, DRAFTID } from '../../../config/constants';
 
 import { autoCompleteDropdown, costingTypeIdToApprovalTypeIdFunction } from '../../common/CommonFunctions';
 import HeaderTitle from '../../common/HeaderTitle';
 import NoContentFound from '../../common/NoContentFound';
 import Toaster from '../../common/Toaster';
-import { AsyncSearchableSelectHookForm, NumberFieldHookForm, SearchableSelectHookForm, TextFieldHookForm } from '../../layout/HookFormInputs';
-import { getNFRPartWiseGroupDetail, nfrDetailsForDiscountAction, saveNFRGroupDetails } from './actions/nfr';
+import { AsyncSearchableSelectHookForm, SearchableSelectHookForm, TextFieldHookForm } from '../../layout/HookFormInputs';
+import { getNFRPartWiseGroupDetail, saveNFRGroupDetails } from './actions/nfr';
 import { checkVendorPlantConfigurable, loggedInUserId, userDetails, userTechnologyLevelDetails } from '../../../helper';
-import { dataLiist } from '../../../config/masterData';
-import { checkFinalUser, createCosting, deleteDraftCosting, getBriefCostingById, storePartNumber } from '../../costing/actions/Costing';
+import { checkFinalUser, createCosting, deleteDraftCosting, getBriefCostingById } from '../../costing/actions/Costing';
 import ApprovalDrawer from './ApprovalDrawer';
 import TooltipCustom from '../../common/Tooltip'
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
@@ -123,7 +122,9 @@ function AddNfr(props) {
                     return {
                         groupName: item.GroupName,
                         data: vendorData,
-                        nfrPartWiseGroupDetailsId: item.NfrPartWiseGroupDetailsId
+                        nfrPartWiseGroupDetailsId: item.NfrPartWiseGroupDetailsId,
+                        status: item.Status,
+                        statusId: item.StatusId
                     };
                 });
 
@@ -213,7 +214,9 @@ function AddNfr(props) {
         })
         const newCosting = {
             groupName: getValues('GroupName'),
-            data: vendorList
+            data: vendorList,
+            status: DRAFT,
+            statusId: 1
         };
         setCallAPI(true)
         setRowData([...rowData, newCosting]);
@@ -541,17 +544,21 @@ function AddNfr(props) {
         if (rowData && rowData[shouldBeLevel - 1]) {
             let dataList = _.map(rowData[shouldBeLevel - 1]?.data, 'SelectedCostingVersion')
             if (dataList.includes(undefined)) {
-                Toaster.warning("Please select all costing to send for approval")
+                // if (dataList.every(value => value === undefined)) {
+                Toaster.warning("Please select at least one costing to send for approval")
                 return false
             }
         }
-        if (selectedCheckBox === false) {
-            Toaster.warning("Please select group estimation")
-            return false
-        }
+        // if (selectedCheckBox === false) {
+        //     Toaster.warning("Please select group estimation")
+        //     return false
+        // }
         setShowDrawer(true)
     }
-    const closeShowApproval = () => {
+    const closeShowApproval = (type) => {
+        if (type === 'submit') {
+            props?.close(type)
+        }
         setShowDrawer(false)
     }
 
@@ -697,6 +704,7 @@ function AddNfr(props) {
                         <thead>
                             <tr>
                                 <th className="table-record">Group Name</th>
+                                <th className="table-record">Status</th>
                                 <th>Vendor</th>
                                 <th>Costing Version</th>
                                 <th className="text-center">Status</th>
@@ -713,7 +721,7 @@ function AddNfr(props) {
                                             {indexInside === 0 && (
                                                 <>
                                                     <td rowSpan={item?.data.length} className="table-record">
-                                                        {!isViewEstimation && (freezeUpperLevels === '' ? true : indexOuter > (freezeUpperLevelsNumbers)) && <label
+                                                        {/* {!isViewEstimation && (freezeUpperLevels === '' ? true : indexOuter > (freezeUpperLevelsNumbers)) && <label
                                                             className={`custom-checkbox`}
                                                             onChange={(e) => onCheckBoxClick(indexOuter)}
                                                         >
@@ -726,8 +734,10 @@ function AddNfr(props) {
                                                                 checked={selectedCheckBox}
                                                                 onChange={(e) => onCheckBoxClick(indexOuter)}
                                                             />
-                                                        </label>}
-                                                        {item?.groupName}</td>
+                                                        </label>} */}
+                                                        {item?.groupName}
+                                                    </td>
+                                                    <td rowSpan={item?.data.length} className="table-record">{indexOuter === 0 && item?.status}</td>
                                                 </>
                                             )}
                                             <td>{dataItem?.label}</td>
@@ -755,13 +765,13 @@ function AddNfr(props) {
                                             </td>
                                             <td>{dataItem?.SelectedCostingVersion?.Price}</td>
                                             <td> <div className='action-btn-wrapper pr-2'>
-                                                {(freezeUpperLevels === '' ? true : indexOuter > (freezeUpperLevelsNumbers)) &&
+                                                {item?.statusId !== DRAFTID &&
                                                     <>
-                                                        {!isViewEstimation && <button className="Add-file" type={"button"} title={"Add Costing"} onClick={() => addDetails(dataItem, indexOuter, indexInside)} />}
+                                                        {!isViewEstimation && item?.statusId !== DRAFTID && <button className="Add-file" type={"button"} title={`${item?.groupName === 'PFS1' ? 'Create PFS1 Costing' : 'Add Costing'}`} onClick={() => addDetails(dataItem, indexOuter, indexInside, item?.groupName === 'PFS1')} />}
                                                     </>}
 
                                                 {!item?.IsNewCosting && item?.Status !== '' && dataItem?.SelectedCostingVersion && (<button className="View" type={"button"} title={"View Costing"} onClick={() => viewDetails(indexInside)} />)}
-                                                {(freezeUpperLevels === '' ? true : indexOuter > (freezeUpperLevelsNumbers)) &&
+                                                {item?.statusId !== DRAFTID &&
                                                     <>
                                                         {!isViewEstimation && !item?.IsNewCosting && dataItem?.SelectedCostingVersion && (<button className="Edit" type={"button"} title={"Edit Costing"} onClick={() => editCosting(indexInside)} />)}
                                                         {!isViewEstimation && !item?.IsNewCosting && dataItem?.SelectedCostingVersion && (<button className="Copy All" title={"Copy Costing"} type={"button"} onClick={() => copyCosting(indexInside)} />)}
@@ -771,7 +781,7 @@ function AddNfr(props) {
                                             </div></td>
                                             {indexInside === 0 && (
                                                 <td rowSpan={item?.data.length} className="table-record">
-                                                    {(freezeUpperLevels === '' ? true : indexOuter > (freezeUpperLevelsNumbers)) &&
+                                                    {item?.statusId !== DRAFTID &&
                                                         <>
                                                             <button className="Edit" type={"button"} title={"Edit Costing"} onClick={() => editRow(item, indexInside)} disabled={isViewEstimation} />
                                                             <button className="Delete All ml-1" title={"Delete Costing"} type={"button"} onClick={() => deleteRow(item, indexInside)} disabled={isViewEstimation} />

@@ -15,7 +15,7 @@ import Dropzone from 'react-dropzone-uploader'
 import 'react-dropzone-uploader/dist/styles.css'
 import Toaster from '../common/Toaster';
 import { MESSAGES } from '../../config/message';
-import { createRfqQuotation, fileDeleteQuotation, fileUploadQuotation, getQuotationById, updateRfqQuotation, getContactPerson, checkExistCosting, setRFQBulkUpload } from './actions/rfq';
+import { createRfqQuotation, fileDeleteQuotation, fileUploadQuotation, getQuotationById, updateRfqQuotation, getContactPerson, checkExistCosting, setRFQBulkUpload, getNfrSelectList } from './actions/rfq';
 import PopupMsgWrapper from '../common/PopupMsgWrapper';
 import LoaderCustom from '../common/LoaderCustom';
 import redcrossImg from '../../assests/images/red-cross.png'
@@ -85,6 +85,7 @@ function AddRfq(props) {
     const dispatch = useDispatch()
     const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
     const checkRFQPartBulkUpload = useSelector((state) => state.rfq.checkRFQPartBulkUpload)
+    const nfrSelectList = useSelector((state) => state.rfq.nfrSelectList)
     // const getReporterListDropDown = useSelector(state => state.comman.getReporterListDropDown)
     const plantList = useSelector(state => state.comman.plantList)
     const [isBulkUpload, setisBulkUpload] = useState(false)
@@ -93,10 +94,12 @@ function AddRfq(props) {
     const [sopdate, setSOPDate] = useState('')
     const [fiveyearList, setFiveyearList] = useState([])
     const [selectedparts, setSelectedParts] = useState([])
+    const [nfrId, setNfrId] = useState('')
 
     useEffect(() => {
         const { vbcVendorGrid } = props;
         dispatch(fetchPlantDataAPI(() => { }))
+        // dispatch(getNfrSelectList(() => { }))
         let tempArr = [];
         vbcVendorGrid && vbcVendorGrid.map(el => {
             tempArr.push(el.VendorId)
@@ -355,6 +358,14 @@ function AddRfq(props) {
             return temp
         }
 
+        if (label === 'nfrId') {
+            nfrSelectList && nfrSelectList.map((item) => {
+                if (item.Value === '0') return false
+                temp.push({ label: item.Text, value: item.Value })
+                return null
+            })
+            return temp
+        }
 
         // if (label === 'partNo') {
         //     partSelectListByTechnology && partSelectListByTechnology.map((item) => {
@@ -639,33 +650,52 @@ function AddRfq(props) {
             Toaster.warning("Please select part number and SOP date")
             return false
         } else {
-            let tempArrayparts = [...selectedparts, getValues('partNumber')]
-            setSelectedParts(tempArrayparts)
-            let arrTemp = []
-            let partNumber = getValues('partNumber')
-
-            sopObjectTemp && sopObjectTemp.map((item, index) => {
-                let objTemp = {}
-                objTemp.YearName = fiveyearList[index]
-                objTemp.PartNo = partNumber?.label
-                objTemp.PartId = getValues('partNumber')?.value
-                if (index === 2) {
-                    objTemp.PartNumber = partNumber?.label
+            let dataObj = {
+                "PartIdList": [
+                    getValues('partNumber')?.value
+                ],
+                "PlantId": getValues('plant')?.value,
+                "VendorId": null
+            }
+            let vendorList = []
+            let vendorListFinal = []
+            dispatch(checkExistCosting(dataObj, (res) => {
+                if (res?.data?.Result) {
+                    vendorList = [...res?.data?.DataList]
+                    vendorList && vendorList?.map((item) => {
+                        vendorListFinal.push(`${item?.VendorName} (${item?.VendorCode})`)
+                    })
                 }
-                objTemp.Quantity = 0
 
-                arrTemp.push(objTemp)
-                return null
-            })
+                let tempArrayparts = [...selectedparts, getValues('partNumber')]
+                setSelectedParts(tempArrayparts)
+                let arrTemp = []
+                let partNumber = getValues('partNumber')
 
-            let arr = [...partList, ...arrTemp]
+                sopObjectTemp && sopObjectTemp.map((item, index) => {
+                    let objTemp = {}
+                    objTemp.YearName = fiveyearList[index]
+                    objTemp.PartNo = partNumber?.label
+                    objTemp.PartId = getValues('partNumber')?.value
+                    if (index === 2) {
+                        objTemp.PartNumber = partNumber?.label
+                        objTemp.VendorListExisting = vendorListFinal.join(',') ? vendorListFinal.join(',') : '-'
+                    }
+                    objTemp.Quantity = 0
 
-            setPartList(arr)
-            setValue('partNumber', "")
-            setSOPDate('')
-            setValue('SOPDate', "")
-            // setValue('technology', "")
-            setUpdateButtonPartNoTable(false)
+                    arrTemp.push(objTemp)
+                    return null
+                })
+
+                let arr = [...partList, ...arrTemp]
+
+                setPartList(arr)
+                setValue('partNumber', "")
+                setSOPDate('')
+                setValue('SOPDate', "")
+                // setValue('technology', "")
+                setUpdateButtonPartNoTable(false)
+            }))
         }
     }
 
@@ -707,6 +737,13 @@ function AddRfq(props) {
         reactLocalStorage.setObject('PartData', [])
     }
 
+    const handleNfrChnage = (newValue) => {
+        if (newValue && newValue !== '') {
+            // setPartNoDisable(false)
+            setValue('partNumber', "")
+            setNfrId(newValue)
+        }
+    }
 
     const handleVendorChange = (data) => {
 
@@ -758,6 +795,7 @@ function AddRfq(props) {
         const resultInput = inputValue.slice(0, searchCount)
         if (inputValue?.length >= searchCount && partName !== resultInput) {
             const res = await getPartSelectListWtihRevNo(resultInput, technology.value)
+            // const res = await getPartSelectListWtihRevNo(resultInput, technology.value, nfrId?.value)
             setPartName(resultInput)
             let partDataAPI = res?.data?.DataList
             if (inputValue) {
@@ -930,6 +968,25 @@ function AddRfq(props) {
                                                 isLoading={VendorLoaderObj}
                                             />
                                         </Col>
+                                        {/* <Col md="3">
+                                            <SearchableSelectHookForm
+                                                label={"NFR Id"}
+                                                name={"nfrId"}
+                                                placeholder={"Select"}
+                                                Controller={Controller}
+                                                control={control}
+                                                rules={{ required: false }}
+                                                register={register}
+                                                defaultValue={nfrId?.length !== 0 ? nfrId : ""}
+                                                options={renderListing("nfrId")}
+                                                mandatory={false}
+                                                handleChange={handleNfrChnage}
+                                                errors={errors.nfrId}
+                                                disabled={((dataProps?.isViewFlag || isEditAll) ? true : false)
+                                                    || (partList?.length !== 0)}
+                                            // isLoading={VendorLoaderObj}
+                                            />
+                                        </Col> */}
                                         <Col md="3">
                                             <SearchableSelectHookForm
                                                 label={"Plant (Code)"}
@@ -1107,6 +1164,7 @@ function AddRfq(props) {
                                                                 suppressColumnVirtualisation={true}
                                                             >
                                                                 <AgGridColumn width={"230px"} field="PartNumber" headerName="Part No" cellClass={"colorWhite"} cellRenderer={'partNumberFormatter'}></AgGridColumn>
+                                                                <AgGridColumn width={"230px"} field="VendorListExisting" headerName="Vendor" cellClass={"colorWhite"}></AgGridColumn>
 
                                                                 <AgGridColumn width={"230px"} field="YearName" headerName="Production Year" cellRenderer={'sopFormatter'}></AgGridColumn>
                                                                 <AgGridColumn width={"230px"} field="Quantity" headerName="Annual Forecast Quantity" headerComponent={'quantityHeader'} cellRenderer={'afcFormatter'} editable={EditableCallback} colId="Quantity"></AgGridColumn>
