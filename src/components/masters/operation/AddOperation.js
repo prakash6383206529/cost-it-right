@@ -1225,7 +1225,7 @@ class AddOperation extends Component {
                     </Row>
 
                     <Row>
-                      <Col md="4" className="mb-5 pb-1 st-operation">
+                      <Col md="8" className="mb-5 pb-1 st-operation">
                         <label
                           className={`custom-checkbox ${this.state.isEditFlag ? "disabled" : ""
                             }`}
@@ -1244,13 +1244,15 @@ class AddOperation extends Component {
                           />
                         </label>
                       </Col>
+                      <Col md="4">
+                        {(!isEditFlag || (isEditFlag && this.state.isDetailEntry)) && < button
+                          type="button"
+                          className={'user-btn '}
+                          disabled={false}
+                          onClick={() => this.moreDetailsToggler()}>
+                          <div className={'plus'}></div>{this.state.isDetailEntry ? (isViewMode ? "VIEW MORE OPERATION DETAILS" : "EDIT MORE OPERATION DETAILS") : "ADD MORE OPERATION DETAILS"}</button>}
+                      </Col>
 
-                      {(!isEditFlag || (isEditFlag && this.state.isDetailEntry)) && < button
-                        type="button"
-                        className={'user-btn '}
-                        disabled={false}
-                        onClick={() => this.moreDetailsToggler()}>
-                        <div className={'plus'}></div>{this.state.isDetailEntry ? (isViewMode ? "VIEW MORE OPERATION DETAILS" : "EDIT MORE OPERATION DETAILS") : "ADD MORE OPERATION DETAILS"}</button>}
                     </Row>
 
                     <Row>
