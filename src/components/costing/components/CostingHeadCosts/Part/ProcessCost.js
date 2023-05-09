@@ -852,8 +852,17 @@ function ProcessCost(props) {
       ...tempData,
       ProcessCRMHead: e?.label
     }
-    tempArr = Object.assign([...gridData], { [index]: tempData })
-    setGridData(tempArr)
+    let gridTempArr = Object.assign([...gridData], { [index]: tempData })
+    let apiArr = formatMainArr(gridTempArr)
+
+    tempArr = {
+      ...tabData,
+      CostingProcessCostResponse: apiArr,
+    }
+    setIsFromApi(false)
+    setTabData(tempArr)
+    setGridData(gridTempArr)
+    dispatch(setProcessGroupGrid(formatReducerArray(gridTempArr)))
   }
 
   const handleQuantityChangeOfGroupProcess = (event, index, list, parentIndex, processName) => {
@@ -1054,7 +1063,7 @@ function ProcessCost(props) {
                       register={register}
                       mandatory={false}
                       rules={{
-                        validate: item.UOM === "Number" ? { number, checkWhiteSpaces, noDecimal, numberLimit6 } : { number, checkWhiteSpaces, decimalNumberLimit6 },
+                        validate: { number, checkWhiteSpaces, decimalNumberLimit6 },
                       }}
                       errors={errors && errors.SingleProcessGridField ? errors.SingleProcessGridField[`${index}${parentIndex}${item.ProcessName}`] && errors.SingleProcessGridField[`${index}${parentIndex}${item.ProcessName}`].Quantity : ''}
                       defaultValue={item.Quantity ? checkForDecimalAndNull(item.Quantity, getConfigurationKey().NoOfDecimalForInputOutput) : '1'}
@@ -1387,7 +1396,7 @@ function ProcessCost(props) {
                                         mandatory={false}
                                         rules={{
                                           required: true,
-                                          validate: item.UOM === "Number" ? { number, checkWhiteSpaces, noDecimal, numberLimit6 } : { number, checkWhiteSpaces, decimalNumberLimit6 },
+                                          validate: { number, checkWhiteSpaces, decimalNumberLimit6 },
                                         }}
                                         errors={errors && errors.ProcessGridFields && errors.ProcessGridFields[index] !== undefined ? errors.ProcessGridFields[index].Quantity : ''}
                                         defaultValue={item.Quantity ? checkForDecimalAndNull(item.Quantity, getConfigurationKey().NoOfDecimalForInputOutput) : '1'}

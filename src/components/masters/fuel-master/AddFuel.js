@@ -1080,7 +1080,6 @@ class AddFuel extends Component {
                                   showMonthDropdown
                                   showYearDropdown
                                   dateFormat="dd/MM/yyyy"
-                                  dropdownMode="select"
                                   placeholderText={isViewMode ? '-' : "Select Date"}
                                   className="withBorder"
                                   autoComplete={"off"}

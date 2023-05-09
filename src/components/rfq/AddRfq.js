@@ -3,7 +3,7 @@ import { useForm, Controller } from "react-hook-form";
 import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, Tooltip, } from 'reactstrap';
 import { AsyncSearchableSelectHookForm, SearchableSelectHookForm, TextAreaHookForm, TextFieldHookForm } from '.././layout/HookFormInputs'
-import { getReporterList, getVendorNameByVendorSelectList, getPlantSelectListByType } from '../.././actions/Common';
+import { getReporterList, getVendorNameByVendorSelectList, getPlantSelectListByType, getVendorWithVendorCodeSelectList, fetchPlantDataAPI, fetchSpecificationDataAPI } from '../.././actions/Common';
 import { getCostingSpecificTechnology, } from '../costing/actions/Costing'
 import { addDays, checkForDecimalAndNull, getConfigurationKey, loggedInUserId } from '../.././helper';
 import { postiveNumber, maxLength10, nonZero, checkForNull } from '../.././helper/validation'
@@ -15,7 +15,7 @@ import Dropzone from 'react-dropzone-uploader'
 import 'react-dropzone-uploader/dist/styles.css'
 import Toaster from '../common/Toaster';
 import { MESSAGES } from '../../config/message';
-import { createRfqQuotation, fileDeleteQuotation, fileUploadQuotation, getQuotationById, updateRfqQuotation, getContactPerson, checkExistCosting, setRFQBulkUpload } from './actions/rfq';
+import { createRfqQuotation, fileDeleteQuotation, fileUploadQuotation, getQuotationById, updateRfqQuotation, getContactPerson, checkExistCosting, setRFQBulkUpload, getNfrSelectList } from './actions/rfq';
 import PopupMsgWrapper from '../common/PopupMsgWrapper';
 import LoaderCustom from '../common/LoaderCustom';
 import redcrossImg from '../../assests/images/red-cross.png'
@@ -31,6 +31,7 @@ import DayTime from '../common/DayTimeWrapper';
 import DatePicker from 'react-datepicker'
 import { label } from 'react-dom-factories';
 import WarningMessage from '../common/WarningMessage';
+import { getRMGradeSelectListByRawMaterial, getRawMaterialNameChild } from '../masters/actions/Material';
 
 const gridOptions = {};
 
@@ -61,6 +62,7 @@ function AddRfq(props) {
     const [gridApi, setGridApi] = useState(null);
     const [gridColumnApi, setGridColumnApi] = useState(null);
     const [partList, setPartList] = useState([])
+    console.log('partList: ', partList);
     const [vendorList, setVendorList] = useState([])
     const [updateButtonPartNoTable, setUpdateButtonPartNoTable] = useState(false)
     const [updateButtonVendorTable, setUpdateButtonVendorTable] = useState(false)
@@ -73,7 +75,7 @@ function AddRfq(props) {
     const [isDisable, setIsDisable] = useState(false)
     const [partNoDisable, setPartNoDisable] = useState(true)
     const [attachmentLoader, setAttachmentLoader] = useState(false)
-    const [partName, setPartName] = useState(false)
+    const [partName, setPartName] = useState('')
     const [technology, setTechnology] = useState({})
     const [submissionDate, setSubmissionDate] = useState('')
     const [visibilityMode, setVisibilityMode] = useState({})
@@ -85,6 +87,7 @@ function AddRfq(props) {
     const dispatch = useDispatch()
     const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
     const checkRFQPartBulkUpload = useSelector((state) => state.rfq.checkRFQPartBulkUpload)
+    const nfrSelectList = useSelector((state) => state.rfq.nfrSelectList)
     // const getReporterListDropDown = useSelector(state => state.comman.getReporterListDropDown)
     const plantSelectList = useSelector(state => state.comman.plantSelectList)
     const [isBulkUpload, setisBulkUpload] = useState(false)
@@ -93,11 +96,20 @@ function AddRfq(props) {
     const [sopdate, setSOPDate] = useState('')
     const [fiveyearList, setFiveyearList] = useState([])
     const [selectedparts, setSelectedParts] = useState([])
+    const [nfrId, setNfrId] = useState('')
+    const [rmName, setRMName] = useState([])
+    const [rmgrade, setRMGrade] = useState([])
+    const [rmspecification, setRMSpecification] = useState([])
+    const rawMaterialNameSelectList = useSelector(state => state.material.rawMaterialNameSelectList);
+    const gradeSelectList = useSelector(state => state.material.gradeSelectList);
+    const rmSpecification = useSelector(state => state.comman.rmSpecification);
 
     useEffect(() => {
         const { vbcVendorGrid } = props;
         dispatch(getPlantSelectListByType(ZBC, () => { }))
-
+        dispatch(getRawMaterialNameChild('', () => { }))
+        dispatch(fetchPlantDataAPI(() => { }))
+        // dispatch(getNfrSelectList(() => { }))
         let tempArr = [];
         vbcVendorGrid && vbcVendorGrid.map(el => {
             tempArr.push(el.VendorId)
@@ -356,6 +368,14 @@ function AddRfq(props) {
             return temp
         }
 
+        if (label === 'nfrId') {
+            nfrSelectList && nfrSelectList.map((item) => {
+                if (item.Value === '0') return false
+                temp.push({ label: item.Text, value: item.Value })
+                return null
+            })
+            return temp
+        }
 
         // if (label === 'partNo') {
         //     partSelectListByTechnology && partSelectListByTechnology.map((item) => {
@@ -557,7 +577,7 @@ function AddRfq(props) {
             return null
         })
 
-        data.PartIdList = temp
+        data.PartIdList = _.uniq(temp)
         data.PlantId = getValues('plant')?.value
         data.VendorId = getValues('vendor')?.value
 
@@ -640,33 +660,60 @@ function AddRfq(props) {
             Toaster.warning("Please select part number and SOP date")
             return false
         } else {
-            let tempArrayparts = [...selectedparts, getValues('partNumber')]
-            setSelectedParts(tempArrayparts)
-            let arrTemp = []
-            let partNumber = getValues('partNumber')
-
-            sopObjectTemp && sopObjectTemp.map((item, index) => {
-                let objTemp = {}
-                objTemp.YearName = fiveyearList[index]
-                objTemp.PartNo = partNumber?.label
-                objTemp.PartId = getValues('partNumber')?.value
-                if (index === 2) {
-                    objTemp.PartNumber = partNumber?.label
+            let dataObj = {
+                "PartIdList": [
+                    getValues('partNumber')?.value
+                ],
+                "PlantId": getValues('plant')?.value,
+                "VendorId": null
+            }
+            let vendorList = []
+            let vendorListFinal = []
+            dispatch(checkExistCosting(dataObj, (res) => {
+                if (res?.data?.Result) {
+                    vendorList = [...res?.data?.DataList]
+                    vendorList && vendorList?.map((item) => {
+                        vendorListFinal.push(`${item?.VendorName} (${item?.VendorCode})`)
+                    })
                 }
-                objTemp.Quantity = 0
 
-                arrTemp.push(objTemp)
-                return null
-            })
+                let tempArrayparts = [...selectedparts, getValues('partNumber')]
+                setSelectedParts(tempArrayparts)
+                let arrTemp = []
+                let partNumber = getValues('partNumber')
 
-            let arr = [...partList, ...arrTemp]
+                sopObjectTemp && sopObjectTemp.map((item, index) => {
+                    let objTemp = {}
+                    objTemp.YearName = fiveyearList[index]
+                    objTemp.PartNo = partNumber?.label
+                    objTemp.PartId = getValues('partNumber')?.value
+                    if (index === 2) {
+                        objTemp.PartNumber = partNumber?.label
+                        objTemp.VendorListExisting = vendorListFinal.join(',') ? vendorListFinal.join(',') : '-'
+                        objTemp.RMName = rmName?.label
+                        objTemp.RMNameId = rmName?.value
+                        objTemp.RMGrade = rmgrade?.label
+                        objTemp.RMGradeId = rmgrade?.value
+                        objTemp.RMSpecification = rmspecification?.label
+                        objTemp.RMSpecificationId = rmspecification?.value
+                    }
+                    objTemp.Quantity = 0
 
-            setPartList(arr)
-            setValue('partNumber', "")
-            setSOPDate('')
-            setValue('SOPDate', "")
-            // setValue('technology', "")
-            setUpdateButtonPartNoTable(false)
+                    arrTemp.push(objTemp)
+                    return null
+                })
+                let arr = [...partList, ...arrTemp]
+
+                setPartList(arr)
+                setValue('partNumber', "")
+                setSOPDate('')
+                setValue('SOPDate', "")
+                setValue('RMName', "")
+                setValue('RMGrade', "")
+                setValue('RMSpecification', "")
+                // setValue('technology', "")
+                setUpdateButtonPartNoTable(false)
+            }))
         }
     }
 
@@ -674,6 +721,9 @@ function AddRfq(props) {
         setUpdateButtonPartNoTable(false)
         setValue('partNumber', "")
         setValue('annualForecastQuantity', "")
+        setValue('RMName', "")
+        setValue('RMGrade', "")
+        setValue('RMSpecification', "")
         setSOPDate('')
         // setValue('technology', "")
     }
@@ -704,8 +754,17 @@ function AddRfq(props) {
             setValue('partNumber', "")
             setTechnology(newValue)
         }
+        setPartName('')
+        reactLocalStorage.setObject('PartData', [])
     }
 
+    const handleNfrChnage = (newValue) => {
+        if (newValue && newValue !== '') {
+            // setPartNoDisable(false)
+            setValue('partNumber', "")
+            setNfrId(newValue)
+        }
+    }
 
     const handleVendorChange = (data) => {
 
@@ -757,6 +816,7 @@ function AddRfq(props) {
         const resultInput = inputValue.slice(0, searchCount)
         if (inputValue?.length >= searchCount && partName !== resultInput) {
             const res = await getPartSelectListWtihRevNo(resultInput, technology.value)
+            // const res = await getPartSelectListWtihRevNo(resultInput, technology.value, nfrId?.value)
             setPartName(resultInput)
             let partDataAPI = res?.data?.DataList
             if (inputValue) {
@@ -873,6 +933,61 @@ function AddRfq(props) {
         setSOPDate(DayTime(value).format('YYYY-MM-DD HH:mm:ss'))
     }
 
+    const renderListingRM = (label) => {
+
+        let opts1 = []
+        if (label === 'rmname') {
+            if (rawMaterialNameSelectList?.length > 0) {
+                let opts = [...rawMaterialNameSelectList]
+                opts1 = [...rawMaterialNameSelectList]
+                opts1 = opts && opts?.map(item => {
+                    item.label = item.Text
+                    item.value = item.Value
+                    return item
+                })
+            }
+        }
+        if (label === 'rmgrade') {
+            if (gradeSelectList?.length > 0) {
+                let opts = [...gradeSelectList]
+                opts1 = [...gradeSelectList]
+                opts1 = opts && opts?.map(item => {
+                    item.label = item.Text
+                    item.value = item.Value
+                    return item
+                })
+            }
+        }
+
+        if (label === 'rmspecification') {
+            if (rmSpecification?.length > 0) {
+                let opts = [...rmSpecification]
+                opts1 = [...rmSpecification]
+                opts1 = opts && opts?.map(item => {
+                    item.label = item.Text
+                    item.value = item.Value
+                    return item
+                })
+            }
+        }
+
+        return opts1
+    }
+
+    const handleRMName = (newValue) => {
+        setRMName({ label: newValue?.label, value: newValue?.value })
+        dispatch(getRMGradeSelectListByRawMaterial(newValue.value, (res) => { }))
+    }
+
+    const handleRMGrade = (newValue) => {
+        setRMGrade({ label: newValue?.label, value: newValue?.value })
+        dispatch(fetchSpecificationDataAPI(newValue.value, (res) => { }))
+    }
+
+    const handleRMSpecification = (newValue) => {
+        setRMSpecification({ label: newValue?.label, value: newValue?.value })
+    }
+
     const EditableCallback = (props) => {
         let value = dataProps?.isAddFlag ? true : dataProps?.isViewFlag ? false : isEditAll ? true : false
         return value
@@ -929,6 +1044,25 @@ function AddRfq(props) {
                                                 isLoading={VendorLoaderObj}
                                             />
                                         </Col>
+                                        {/* <Col md="3">
+                                            <SearchableSelectHookForm
+                                                label={"NFR Id"}
+                                                name={"nfrId"}
+                                                placeholder={"Select"}
+                                                Controller={Controller}
+                                                control={control}
+                                                rules={{ required: false }}
+                                                register={register}
+                                                defaultValue={nfrId?.length !== 0 ? nfrId : ""}
+                                                options={renderListing("nfrId")}
+                                                mandatory={false}
+                                                handleChange={handleNfrChnage}
+                                                errors={errors.nfrId}
+                                                disabled={((dataProps?.isViewFlag || isEditAll) ? true : false)
+                                                    || (partList?.length !== 0)}
+                                            // isLoading={VendorLoaderObj}
+                                            />
+                                        </Col> */}
                                         <Col md="3">
                                             <SearchableSelectHookForm
                                                 label={"Plant (Code)"}
@@ -963,7 +1097,6 @@ function AddRfq(props) {
                                                             showYearDropdown
                                                             minDate={new Date()}
                                                             dateFormat="dd/MM/yyyy"
-                                                            dropdownMode="select"
                                                             placeholderText="Select date"
                                                             className="withBorder"
                                                             autoComplete={"off"}
@@ -1016,7 +1149,6 @@ function AddRfq(props) {
                                                             showYearDropdown
                                                             minDate={new Date()}
                                                             dateFormat="dd/MM/yyyy"
-                                                            dropdownMode="select"
                                                             placeholderText="Select date"
                                                             className="withBorder"
                                                             autoComplete={"off"}
@@ -1030,6 +1162,63 @@ function AddRfq(props) {
                                                     </div>
                                                 </div>
                                             </div>
+                                        </Col>
+                                        <Col md="3">
+                                            <SearchableSelectHookForm
+                                                label="RM Name"
+                                                name={"RMName"}
+                                                placeholder={"Select"}
+                                                Controller={Controller}
+                                                control={control}
+                                                selected={rmName ? rmName : ''}
+                                                rules={{ required: false }}
+                                                register={register}
+                                                customClassName="costing-version"
+                                                // defaultValue={costingOptionsSelectedObject[indexInside] ? costingOptionsSelectedObject[indexInside] : ''}
+                                                options={renderListingRM('rmname')}
+                                                mandatory={false}
+                                                handleChange={(newValue) => handleRMName(newValue)}
+                                                disabled={dataProps?.isAddFlag ? partNoDisable : (dataProps?.isViewFlag || !isEditAll)}
+                                            // errors={`${indexInside} CostingVersion`}
+                                            />
+                                        </Col>
+                                        <Col md="3">
+                                            <SearchableSelectHookForm
+                                                label="RM Grade"
+                                                name={"RMGrade"}
+                                                placeholder={"Select"}
+                                                Controller={Controller}
+                                                control={control}
+                                                selected={rmgrade ? rmgrade : ''}
+                                                rules={{ required: false }}
+                                                register={register}
+                                                customClassName="costing-version"
+                                                // defaultValue={costingOptionsSelectedObject[indexInside] ? costingOptionsSelectedObject[indexInside] : ''}
+                                                options={renderListingRM('rmgrade')}
+                                                mandatory={false}
+                                                handleChange={(newValue) => handleRMGrade(newValue)}
+                                                disabled={dataProps?.isAddFlag ? partNoDisable : (dataProps?.isViewFlag || !isEditAll)}
+                                            // errors={`${indexInside} CostingVersion`}
+                                            />
+                                        </Col>
+                                        <Col md="3">
+                                            <SearchableSelectHookForm
+                                                label="RM Specification"
+                                                name={"RMSpecification"}
+                                                placeholder={"Select"}
+                                                Controller={Controller}
+                                                control={control}
+                                                selected={rmspecification ? rmspecification : ''}
+                                                rules={{ required: false }}
+                                                register={register}
+                                                customClassName="costing-version"
+                                                // defaultValue={costingOptionsSelectedObject[indexInside] ? costingOptionsSelectedObject[indexInside] : ''}
+                                                options={renderListingRM('rmspecification')}
+                                                mandatory={false}
+                                                handleChange={(newValue) => handleRMSpecification(newValue)}
+                                                disabled={dataProps?.isAddFlag ? partNoDisable : (dataProps?.isViewFlag || !isEditAll)}
+                                            // errors={`${indexInside} CostingVersion`}
+                                            />
                                         </Col>
                                         {/* <Col md="3">
                                             <NumberFieldHookForm
@@ -1108,6 +1297,10 @@ function AddRfq(props) {
                                                                 suppressColumnVirtualisation={true}
                                                             >
                                                                 <AgGridColumn width={"230px"} field="PartNumber" headerName="Part No" cellClass={"colorWhite"} cellRenderer={'partNumberFormatter'}></AgGridColumn>
+                                                                <AgGridColumn width={"230px"} field="VendorListExisting" headerName="Vendor" cellClass={"colorWhite"}></AgGridColumn>
+                                                                <AgGridColumn width={"230px"} field="RMName" headerName="RM Name" cellClass={"colorWhite"}></AgGridColumn>
+                                                                <AgGridColumn width={"230px"} field="RMGrade" headerName="RM Grade" cellClass={"colorWhite"}></AgGridColumn>
+                                                                <AgGridColumn width={"230px"} field="RMSpecification" headerName="RM Specification" cellClass={"colorWhite"}></AgGridColumn>
 
                                                                 <AgGridColumn width={"230px"} field="YearName" headerName="Production Year" cellRenderer={'sopFormatter'}></AgGridColumn>
                                                                 <AgGridColumn width={"230px"} field="Quantity" headerName="Annual Forecast Quantity" headerComponent={'quantityHeader'} cellRenderer={'afcFormatter'} editable={EditableCallback} colId="Quantity"></AgGridColumn>
@@ -1285,7 +1478,6 @@ function AddRfq(props) {
                                                                 minDate={new Date()}
                                                                 timeFormat='HH:mm'
                                                                 dateFormat="dd/MM/yyyy HH:mm"
-                                                                dropdownMode="select"
                                                                 placeholderText="Select"
                                                                 className="withBorder"
                                                                 autoComplete={'off'}
@@ -1306,8 +1498,7 @@ function AddRfq(props) {
                                                                 selected={time}
                                                                 showTimeInput
                                                                 timeFormat='HH:mm'
-                                                                showTimeSelectOnly
-                                                                dropdownMode="select"
+                                                                showTimeSelectOnly                                                    
                                                                 placeholderText="Select"
                                                                 onChange={handleChangeTime}
                                                                 disabledKeyboardNavigation
@@ -1456,12 +1647,12 @@ function AddRfq(props) {
                                                 {"Cancel"}
                                             </button>
 
-                                            <button type="button" className="submit-button save-btn mr-2" value="save"
+                                            {!dataProps?.rowData?.IsSent && <button type="button" className="submit-button save-btn mr-2" value="save"
                                                 onClick={(data, e) => handleSubmitClick(data, e, false)}
                                                 disabled={isViewFlag}>
                                                 <div className={"save-icon"}></div>
                                                 {"Save"}
-                                            </button>
+                                            </button>}
 
                                             <button type="button" className="submit-button save-btn" value="send"
                                                 onClick={(data, e) => handleSubmitClick(data, e, true)}

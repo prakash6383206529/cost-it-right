@@ -301,8 +301,7 @@ class AddTaxDetails extends Component {
                         showMonthDropdown
                         showYearDropdown
                         dateFormat="dd/MM/yyyy"
-                        //maxDate={new Date()}
-                        dropdownMode="select"
+                        //maxDate={new Date()}                      
                         placeholderText="Select date"
                         className="withBorder"
                         autoComplete={"off"}

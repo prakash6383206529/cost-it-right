@@ -300,7 +300,7 @@ function AssemblyPart(props) {
         <td width={"0"}>
           <div className='d-flex justify-content-end align-items-center'>
             <div className='d-flex'>
-              {item.PartType === ASSEMBLYNAME && (initialConfiguration.IsShowCostingLabour) && (costData.CostingTypeId === WACTypeId) && <><button
+              {(initialConfiguration.IsShowCostingLabour) && ((item.PartType === ASSEMBLYNAME) || (costData.CostingTypeId === WACTypeId)) && <><button
                 type="button"
                 className={'user-btn add-oprn-btn mr-1'}
                 onClick={labourHandlingDrawer}>

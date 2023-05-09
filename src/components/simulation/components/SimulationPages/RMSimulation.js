@@ -182,6 +182,7 @@ function RMSimulation(props) {
             let rmNameString = rmName.join(', ')
             setPopupMessage(`Scrap rate is not changed for some raw material (${rmNameString}). Do you still wish to continue?`)
             setShowPopup(true)
+            setShowTooltip(false)
             return false
         }
         setIsDisable(true)
@@ -617,7 +618,6 @@ function RMSimulation(props) {
                                             showYearDropdown
                                             dateFormat="dd/MM/yyyy"
                                             minDate={new Date(maxDate)}
-                                            dropdownMode="select"
                                             placeholderText="Select effective date"
                                             className="withBorder"
                                             autoComplete={"off"}

@@ -76,6 +76,7 @@ class App extends Component {
         reactLocalStorage.setObject('vendortype', vendortype)
       }
     })
+    reactLocalStorage.setObject('isFromDiscountObj', false)
   }
 
   /**

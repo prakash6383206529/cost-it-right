@@ -564,6 +564,9 @@ export const API = {
   getRawMaterialCalculationForRubber: `${BASE_URL}/costing/get-raw-material-rubber-calculation-details`,
   saveRawMaterialCalculationForRubber: `${BASE_URL}/costing/save-raw-material-rubber-calculation-details`,
 
+  // YOY
+  getYOYCostList: `${BASE_URL}/rfq-costing/rfq-get-yoy-details`,
+  saveYOYCostList: `${BASE_URL}/rfq-costing/rfq-save-yoy-details`,
 
   // PROCESS COST CALCULATION
   getProcessMachiningCalculation: `${BASE_URL}/costing/get-process-machining-calculation-details`,
@@ -872,6 +875,7 @@ export const API = {
   getMasterBudget: `${BASE_URL}/master-budgeting/get-by-id`,
   updateBudget: `${BASE_URL}/master-budgeting/update`,
   bulkUploadBudgetMaster: `${BASE_URL}/master-budgeting/bulk-upload-for-budgeting`,
+  masterApprovalRequestBySenderBudget: `${BASE_URL}/master-budgeting/master-send-to-approver-by-sender`,
 
   //CLIENT MASTER
   createClient: `${BASE_URL}/client/create-client`,
@@ -992,6 +996,7 @@ export const API = {
   getNFRApprovalSummary: `${BASE_URL}/nfr/get-nfr-approval-summary`,
   approvedCostingByApprover: `${BASE_URL}/nfr/approved-nfr-by-approver`,
   getGotAndGivenDetails: `${BASE_URL}/reports/get-got-and-given-details`,
+  getRawMaterialByNFRPart: `${BASE_URL}/nfr/get-raw-material-by-nfr-part`,
 
 
   //SUB ASSEMBLY
@@ -1006,6 +1011,7 @@ export const API = {
 
   //RFQ
   getQuotationList: `${BASE_URL}/rfq-quotation/get-quotation-list`,
+  getQuotationDetailsByVendor: `${BASE_URL}/rfq-quotation/get-quotation-details-by-vendor`,
   createRfqQuotation: `${BASE_URL}/rfq-quotation/create`,
   updateRfqQuotation: `${BASE_URL}/rfq-quotation/update`,
   getQuotationById: `${BASE_URL}/rfq-quotation/get-quotation-by-id`,
@@ -1016,6 +1022,7 @@ export const API = {
   getQuotationDetailsList: `${BASE_URL}/rfq-quotation/get-quotation-details-list`,
   getCommunicationHistory: `${BASE_URL}/rfq-quotation/get-communication-history`,
   checkExistCosting: `${BASE_URL}/rfq-quotation/rfq-check-exist-costing`,
+  rfqSaveBestCosting: `${BASE_URL}/rfq-costing/rfq-save-best-costing`,
 
 }
 
@@ -1469,9 +1476,14 @@ export const SET_SURFACE_COST_FOR_REJECTION_DATA = 'SET_SURFACE_COST_FOR_REJECTI
 export const SET_OVERHEAD_PROFIT_ERRORS = 'SET_OVERHEAD_PROFIT_ERRORS'
 export const SET_TOOLS_ERRORS = 'SET_TOOLS_ERRORS'
 export const SET_DISCOUNT_ERRORS = 'SET_DISCOUNT_ERRORS'
+
+// YOY
+export const SET_YOY_COST_GRID = 'SET_YOY_COST_GRID'
 export const SET_TOOL_COST_FOR_OVERHEAD_PROFIT = 'SET_TOOL_COST_FOR_OVERHEAD_PROFIT'
 export const SET_NPV_DATA = 'SET_NPV_DATA'
 export const SET_OVERHEAD_PROFIT_ICC = 'SET_OVERHEAD_PROFIT_ICC'
+export const SET_YOY_COST_GRID_FOR_SAVE = 'SET_YOY_COST_GRID_FOR_SAVE'
+export const SET_QUOTATION_ID_FOR_RFQ = 'SET_QUOTATION_ID_FOR_RFQ'
 
 //WEIGHT CALCULATION COSTING RM DRAWER
 export const GET_RAW_MATERIAL_CALCI_INFO = 'GET_RAW_MATERIAL_CALCI_INFO'
@@ -1501,7 +1513,7 @@ export const GET_SIMULATION_LEVEL_BY_TECHNOLOGY = 'GET_SIMULATION_LEVEL_BY_TECHN
 export const GET_MASTER_LEVEL_BY_MASTERID = 'GET_MASTER_LEVEL_BY_MASTERID'
 export const COSTINGS_APPROVAL_DASHBOARD = 'COSTINGS_APPROVAL_DASHBOARD'
 export const AMENDMENTS_APPROVAL_DASHBOARD = 'AMENDMENTS_APPROVAL_DASHBOARD'
-
+export const GRANT_USER_WISE_DATA = 'GRANT_USER_WISE_DATA'
 //ROLE
 export const GET_ROLE_SUCCESS = 'GET_ROLE_SUCCESS'
 export const GET_UNIT_ROLE_DATA_SUCCESS = 'GET_UNIT_ROLE_DATA_SUCCESS'
@@ -1667,6 +1679,8 @@ export const GET_DATA_FROM_REPORT = 'GET_DATA_FROM_REPORT'
 export const GET_QUOTATION_BY_ID = 'GET_QUOTATION_BY_ID'
 export const GET_QUOTATION_LIST = 'GET_QUOTATION_LIST'
 export const CHECK_RFQ_BULK_UPLOAD = 'CHECK_RFQ_BULK_UPLOAD'
+export const SELECTED_ROW_ARRAY = 'SELECTED_ROW_ARRAY'
+export const GET_NFR_SELECT_LIST = 'GET_NFR_SELECT_LIST'
 
 // NFR
 export const NFR_DETAILS_FOR_DISCOUNT = 'NFR_DETAILS_FOR_DISCOUNT'
@@ -1693,6 +1707,7 @@ export const UNDER_REVISION = 'UnderRevision'
 export const RECEIVED = 'Received'
 export const SUBMITTED = 'Submitted'
 export const SENT = 'Sent'
+export const DRAFTID = 1
 
 // MASTER APPROVAL STATUS ID
 export const APPROVED_STATUS = '3,5'
@@ -2234,6 +2249,7 @@ export const BUDGETTYPE = Number(reactLocalStorage.getObject('masterType')[BUDGE
 //AUTOCOMPLETE IN PART AND VENDOR
 export const searchCount = 3
 export const dropdownLimit = 100
+export const APPROVED_BY_SAP = "Approved By SAP"
 
 // KEY AND IVgit
 export const KEY = 'gQUJ79YKYm22Cazw';
@@ -2260,4 +2276,4 @@ export const RAW_MATERIAL_VENDOR_TYPE = Number(reactLocalStorage.getObject('vend
 export const VBC_VENDOR_TYPE = Number(reactLocalStorage.getObject('vendortype')[VENDOR_TYPE_VBC])
 
 //VERSION 
-export const VERSION = "V2.1.149";
+export const VERSION = "V2.1.155";
