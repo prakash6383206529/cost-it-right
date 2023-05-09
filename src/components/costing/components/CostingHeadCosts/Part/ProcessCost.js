@@ -1489,6 +1489,7 @@ function ProcessCost(props) {
                                   required: false,
                                 }}
                                 placeholder={'Select'}
+                                customClassName="costing-selectable-dropdown"
                                 defaultValue={item.ProcessCRMHead ? { label: item.ProcessCRMHead, value: index } : ''}
                                 options={CRMHeads}
                                 required={false}

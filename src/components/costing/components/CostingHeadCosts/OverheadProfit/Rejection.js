@@ -331,6 +331,26 @@ function Rejection(props) {
                         {'Rejection:'}
                     </div>
                 </Col>
+                {initialConfiguration.IsShowCRMHead && <Col md="3">
+                    <SearchableSelectHookForm
+                        name={`crmHeadRejection`}
+                        type="text"
+                        label="CRM Head"
+                        errors={errors.crmHeadRejection}
+                        Controller={Controller}
+                        control={control}
+                        register={register}
+                        mandatory={false}
+                        rules={{
+                            required: false,
+                        }}
+                        placeholder={'Select'}
+                        options={CRMHeads}
+                        required={false}
+                        handleChange={handleCrmHeadChange}
+                        disabled={CostingViewMode}
+                    />
+                </Col>}
             </Row>
             <Row className="costing-border-inner-section border-bottom-none m-0">
                 <Col md="3">
@@ -451,26 +471,7 @@ function Rejection(props) {
                     />
                 </Col>
             </Row>
-            {initialConfiguration.IsShowCRMHead && <Col md="2">
-                <SearchableSelectHookForm
-                    name={`crmHeadRejection`}
-                    type="text"
-                    label="CRM Head"
-                    errors={errors.crmHeadRejection}
-                    Controller={Controller}
-                    control={control}
-                    register={register}
-                    mandatory={false}
-                    rules={{
-                        required: false,
-                    }}
-                    placeholder={'Select'}
-                    options={CRMHeads}
-                    required={false}
-                    handleChange={handleCrmHeadChange}
-                    disabled={CostingViewMode}
-                />
-            </Col>}
+
 
         </>
     );

@@ -460,6 +460,7 @@ function OperationCost(props) {
                                   required: false,
                                 }}
                                 placeholder={'Select'}
+                                customClassName="costing-selectable-dropdown"
                                 defaultValue={item.OperationCRMHead ? { label: item.OperationCRMHead, value: index } : ''}
                                 options={CRMHeads}
                                 required={false}
