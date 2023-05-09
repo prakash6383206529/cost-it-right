@@ -273,13 +273,15 @@ function AnalyticsDrawer(props) {
                                     <HeaderTitle customClass="mb-0"
                                         title={ModeId === 1 ? `RM Code : ${rowData?.RawMaterialCode} ` : (ModeId === 2 ? `BOP No. : ${rowData?.BoughtOutPartNumber}` : ModeId === 3 ? `Operation Code : ${rowData?.OperationCode} ` : `Machine No. : ${rowData?.MachineNumber}`)}
                                     />
-                                    <RenderGraphList valueChanged={valueChanged} />
-                                    {showList && <ExcelFile filename={MASTER_MOVEMENT_REPORT} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div></button>}>
-                                        {renderColumn()}
-                                    </ExcelFile>}
-                                    {showList && <button type="button" className="user-btn mr5" title="Reset Grid" onClick={() => resetState()}>
-                                        <div className="refresh mr-0"></div>
-                                    </button>}
+                                    <div className='d-flex align-items-center'>
+                                        {showList && <ExcelFile filename={MASTER_MOVEMENT_REPORT} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div></button>}>
+                                            {renderColumn()}
+                                        </ExcelFile>}
+                                        {showList && <button type="button" className="user-btn mr5" title="Reset Grid" onClick={() => resetState()}>
+                                            <div className="refresh mr-0"></div>
+                                        </button>}
+                                        <RenderGraphList valueChanged={valueChanged} />
+                                    </div>
                                     {/* <h7>{ModeId === 1 ? `RM Code : ${rowData?.RawMaterialCode} ` : (ModeId === 2 ? `BOP No. : ${rowData?.BoughtOutPartNumber}` : ModeId === 3 ? `Operation Code : ${rowData?.OperationCode} ` : `Machine No. : ${rowData?.MachineNumber}`)}</h7> */}
                                 </div>
                                 {showList &&

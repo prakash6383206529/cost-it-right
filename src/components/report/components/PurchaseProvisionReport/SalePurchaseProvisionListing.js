@@ -209,11 +209,16 @@ function SalePurchaseProvisionListing(props) {
         <>
             <div className={"container-fluid"}>
                 <form noValidate className="form">
-                    <div className='analytics-drawer justify-content-between'>
+                    <div className='d-flex justify-content-between align-items-center'>
                         <div className='d-flex'>
-                            <div>From:454 <span className=''> {DayTime(startDate).format('DD/MM/YYYY')}</span>  </div>
-                            <div className='ml-2'> To: <span className=''> {DayTime(endDate).format('DD/MM/YYYY')}</span>  </div>
+                            <div className='d-flex align-items-center'>From:
+                                <input value={DayTime(startDate).format('DD/MM/YYYY')} className='form-control ml-1' disabled={true} />
+                            </div>
+                            <div className='ml-2 d-flex align-items-center'> To: <input value={DayTime(endDate).format('DD/MM/YYYY')} className='form-control ml-1' disabled={true} />
+                            </div>
+                        </div>
 
+                        <div>
                             <ExcelFile filename={props.isSaleProvision ? SALES_PROVISION_REPORT : PURCHASE_PROVISION_REPORT} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div></button>}>
                                 {renderColumn()}
                             </ExcelFile>
