@@ -3,7 +3,7 @@ import { useForm, Controller } from "react-hook-form";
 import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, Tooltip, } from 'reactstrap';
 import { AsyncSearchableSelectHookForm, SearchableSelectHookForm, TextAreaHookForm, TextFieldHookForm } from '.././layout/HookFormInputs'
-import { getVendorWithVendorCodeSelectList, getReporterList, fetchPlantDataAPI } from '../.././actions/Common';
+import { getVendorWithVendorCodeSelectList, getReporterList, fetchPlantDataAPI, fetchSpecificationDataAPI } from '../.././actions/Common';
 import { getCostingSpecificTechnology, } from '../costing/actions/Costing'
 import { addDays, checkForDecimalAndNull, getConfigurationKey, loggedInUserId } from '../.././helper';
 import { checkForNull } from '../.././helper/validation'
@@ -31,6 +31,7 @@ import DayTime from '../common/DayTimeWrapper';
 import DatePicker from 'react-datepicker'
 import { label } from 'react-dom-factories';
 import WarningMessage from '../common/WarningMessage';
+import { getRMGradeSelectListByRawMaterial, getRawMaterialNameChild } from '../masters/actions/Material';
 
 const gridOptions = {};
 
@@ -61,6 +62,7 @@ function AddRfq(props) {
     const [gridApi, setGridApi] = useState(null);
     const [gridColumnApi, setGridColumnApi] = useState(null);
     const [partList, setPartList] = useState([])
+    console.log('partList: ', partList);
     const [vendorList, setVendorList] = useState([])
     const [updateButtonPartNoTable, setUpdateButtonPartNoTable] = useState(false)
     const [updateButtonVendorTable, setUpdateButtonVendorTable] = useState(false)
@@ -95,9 +97,16 @@ function AddRfq(props) {
     const [fiveyearList, setFiveyearList] = useState([])
     const [selectedparts, setSelectedParts] = useState([])
     const [nfrId, setNfrId] = useState('')
+    const [rmName, setRMName] = useState([])
+    const [rmgrade, setRMGrade] = useState([])
+    const [rmspecification, setRMSpecification] = useState([])
+    const rawMaterialNameSelectList = useSelector(state => state.material.rawMaterialNameSelectList);
+    const gradeSelectList = useSelector(state => state.material.gradeSelectList);
+    const rmSpecification = useSelector(state => state.comman.rmSpecification);
 
     useEffect(() => {
         const { vbcVendorGrid } = props;
+        dispatch(getRawMaterialNameChild('', () => { }))
         dispatch(fetchPlantDataAPI(() => { }))
         // dispatch(getNfrSelectList(() => { }))
         let tempArr = [];
@@ -679,19 +688,27 @@ function AddRfq(props) {
                     if (index === 2) {
                         objTemp.PartNumber = partNumber?.label
                         objTemp.VendorListExisting = vendorListFinal.join(',') ? vendorListFinal.join(',') : '-'
+                        objTemp.RMName = rmName?.label
+                        objTemp.RMNameId = rmName?.value
+                        objTemp.RMGrade = rmgrade?.label
+                        objTemp.RMGradeId = rmgrade?.value
+                        objTemp.RMSpecification = rmspecification?.label
+                        objTemp.RMSpecificationId = rmspecification?.value
                     }
                     objTemp.Quantity = 0
 
                     arrTemp.push(objTemp)
                     return null
                 })
-
                 let arr = [...partList, ...arrTemp]
 
                 setPartList(arr)
                 setValue('partNumber', "")
                 setSOPDate('')
                 setValue('SOPDate', "")
+                setValue('RMName', "")
+                setValue('RMGrade', "")
+                setValue('RMSpecification', "")
                 // setValue('technology', "")
                 setUpdateButtonPartNoTable(false)
             }))
@@ -702,6 +719,9 @@ function AddRfq(props) {
         setUpdateButtonPartNoTable(false)
         setValue('partNumber', "")
         setValue('annualForecastQuantity', "")
+        setValue('RMName', "")
+        setValue('RMGrade', "")
+        setValue('RMSpecification', "")
         setSOPDate('')
         // setValue('technology', "")
     }
@@ -908,6 +928,61 @@ function AddRfq(props) {
         setSOPDate(DayTime(value).format('YYYY-MM-DD HH:mm:ss'))
     }
 
+    const renderListingRM = (label) => {
+
+        let opts1 = []
+        if (label === 'rmname') {
+            if (rawMaterialNameSelectList?.length > 0) {
+                let opts = [...rawMaterialNameSelectList]
+                opts1 = [...rawMaterialNameSelectList]
+                opts1 = opts && opts?.map(item => {
+                    item.label = item.Text
+                    item.value = item.Value
+                    return item
+                })
+            }
+        }
+        if (label === 'rmgrade') {
+            if (gradeSelectList?.length > 0) {
+                let opts = [...gradeSelectList]
+                opts1 = [...gradeSelectList]
+                opts1 = opts && opts?.map(item => {
+                    item.label = item.Text
+                    item.value = item.Value
+                    return item
+                })
+            }
+        }
+
+        if (label === 'rmspecification') {
+            if (rmSpecification?.length > 0) {
+                let opts = [...rmSpecification]
+                opts1 = [...rmSpecification]
+                opts1 = opts && opts?.map(item => {
+                    item.label = item.Text
+                    item.value = item.Value
+                    return item
+                })
+            }
+        }
+
+        return opts1
+    }
+
+    const handleRMName = (newValue) => {
+        setRMName({ label: newValue?.label, value: newValue?.value })
+        dispatch(getRMGradeSelectListByRawMaterial(newValue.value, (res) => { }))
+    }
+
+    const handleRMGrade = (newValue) => {
+        setRMGrade({ label: newValue?.label, value: newValue?.value })
+        dispatch(fetchSpecificationDataAPI(newValue.value, (res) => { }))
+    }
+
+    const handleRMSpecification = (newValue) => {
+        setRMSpecification({ label: newValue?.label, value: newValue?.value })
+    }
+
     const EditableCallback = (props) => {
         let value = dataProps?.isAddFlag ? true : dataProps?.isViewFlag ? false : isEditAll ? true : false
         return value
@@ -1083,6 +1158,63 @@ function AddRfq(props) {
                                                 </div>
                                             </div>
                                         </Col>
+                                        <Col md="3">
+                                            <SearchableSelectHookForm
+                                                label="RM Name"
+                                                name={"RMName"}
+                                                placeholder={"Select"}
+                                                Controller={Controller}
+                                                control={control}
+                                                selected={rmName ? rmName : ''}
+                                                rules={{ required: false }}
+                                                register={register}
+                                                customClassName="costing-version"
+                                                // defaultValue={costingOptionsSelectedObject[indexInside] ? costingOptionsSelectedObject[indexInside] : ''}
+                                                options={renderListingRM('rmname')}
+                                                mandatory={false}
+                                                handleChange={(newValue) => handleRMName(newValue)}
+                                                disabled={dataProps?.isAddFlag ? partNoDisable : (dataProps?.isViewFlag || !isEditAll)}
+                                            // errors={`${indexInside} CostingVersion`}
+                                            />
+                                        </Col>
+                                        <Col md="3">
+                                            <SearchableSelectHookForm
+                                                label="RM Grade"
+                                                name={"RMGrade"}
+                                                placeholder={"Select"}
+                                                Controller={Controller}
+                                                control={control}
+                                                selected={rmgrade ? rmgrade : ''}
+                                                rules={{ required: false }}
+                                                register={register}
+                                                customClassName="costing-version"
+                                                // defaultValue={costingOptionsSelectedObject[indexInside] ? costingOptionsSelectedObject[indexInside] : ''}
+                                                options={renderListingRM('rmgrade')}
+                                                mandatory={false}
+                                                handleChange={(newValue) => handleRMGrade(newValue)}
+                                                disabled={dataProps?.isAddFlag ? partNoDisable : (dataProps?.isViewFlag || !isEditAll)}
+                                            // errors={`${indexInside} CostingVersion`}
+                                            />
+                                        </Col>
+                                        <Col md="3">
+                                            <SearchableSelectHookForm
+                                                label="RM Specification"
+                                                name={"RMSpecification"}
+                                                placeholder={"Select"}
+                                                Controller={Controller}
+                                                control={control}
+                                                selected={rmspecification ? rmspecification : ''}
+                                                rules={{ required: false }}
+                                                register={register}
+                                                customClassName="costing-version"
+                                                // defaultValue={costingOptionsSelectedObject[indexInside] ? costingOptionsSelectedObject[indexInside] : ''}
+                                                options={renderListingRM('rmspecification')}
+                                                mandatory={false}
+                                                handleChange={(newValue) => handleRMSpecification(newValue)}
+                                                disabled={dataProps?.isAddFlag ? partNoDisable : (dataProps?.isViewFlag || !isEditAll)}
+                                            // errors={`${indexInside} CostingVersion`}
+                                            />
+                                        </Col>
                                         {/* <Col md="3">
                                             <NumberFieldHookForm
                                                 label="Annual Forecast Quantity"
@@ -1161,6 +1293,9 @@ function AddRfq(props) {
                                                             >
                                                                 <AgGridColumn width={"230px"} field="PartNumber" headerName="Part No" cellClass={"colorWhite"} cellRenderer={'partNumberFormatter'}></AgGridColumn>
                                                                 <AgGridColumn width={"230px"} field="VendorListExisting" headerName="Vendor" cellClass={"colorWhite"}></AgGridColumn>
+                                                                <AgGridColumn width={"230px"} field="RMName" headerName="RM Name" cellClass={"colorWhite"}></AgGridColumn>
+                                                                <AgGridColumn width={"230px"} field="RMGrade" headerName="RM Grade" cellClass={"colorWhite"}></AgGridColumn>
+                                                                <AgGridColumn width={"230px"} field="RMSpecification" headerName="RM Specification" cellClass={"colorWhite"}></AgGridColumn>
 
                                                                 <AgGridColumn width={"230px"} field="YearName" headerName="Production Year" cellRenderer={'sopFormatter'}></AgGridColumn>
                                                                 <AgGridColumn width={"230px"} field="Quantity" headerName="Annual Forecast Quantity" headerComponent={'quantityHeader'} cellRenderer={'afcFormatter'} editable={EditableCallback} colId="Quantity"></AgGridColumn>
