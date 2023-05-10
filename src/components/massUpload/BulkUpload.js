@@ -24,7 +24,7 @@ import Drawer from '@material-ui/core/Drawer';
 import Downloadxls, { checkLabourRateConfigure, checkRM_Process_OperationConfigurable, checkVendorPlantConfig } from './Downloadxls';
 import DayTime from '../common/DayTimeWrapper'
 import cloudImg from '../../assests/images/uploadcloud.png';
-import { ACTUALVOLUMEBULKUPLOAD, ADDRFQ, BOPDOMESTICBULKUPLOAD, BOPIMPORTBULKUPLOAD, BUDGETBULKUPLOAD, BUDGETEDVOLUMEBULKUPLOAD, CBCTypeId, FUELBULKUPLOAD, INTERESTRATEBULKUPLOAD, LABOURBULKUPLOAD, MACHINEBULKUPLOAD, OPERAIONBULKUPLOAD, PARTCOMPONENTBULKUPLOAD, PRODUCTCOMPONENTBULKUPLOAD, RMDOMESTICBULKUPLOAD, RMIMPORTBULKUPLOAD, RMSPECIFICATION, VBCTypeId, VENDORBULKUPLOAD, ZBCADDMORE, ZBCTypeId } from '../../config/constants';
+import { ACTUALVOLUMEBULKUPLOAD, ADDRFQ, BOPDOMESTICBULKUPLOAD, BOPIMPORTBULKUPLOAD, BUDGETBULKUPLOAD, BUDGETEDVOLUMEBULKUPLOAD, CBCADDMORE, CBCTypeId, FUELBULKUPLOAD, INTERESTRATEBULKUPLOAD, LABOURBULKUPLOAD, MACHINEBULKUPLOAD, OPERAIONBULKUPLOAD, PARTCOMPONENTBULKUPLOAD, PRODUCTCOMPONENTBULKUPLOAD, RMDOMESTICBULKUPLOAD, RMIMPORTBULKUPLOAD, RMSPECIFICATION, VBCADDMORE, VBCTypeId, VENDORBULKUPLOAD, ZBCADDMORE, ZBCTypeId } from '../../config/constants';
 import { AddRFQUpload, BOP_CBC_DOMESTIC, BOP_CBC_IMPORT, BOP_VBC_DOMESTIC, BOP_VBC_IMPORT, BOP_ZBC_DOMESTIC, BOP_ZBC_IMPORT, BUDGET_CBC, BUDGET_VBC, BUDGET_ZBC, CBCInterestRate, CBCOperation, Fuel, Labour, MachineCBC, MachineVBC, MachineZBC, MHRMoreZBC, PartComponent, ProductComponent, RMDomesticCBC, RMDomesticVBC, RMDomesticZBC, RMImportCBC, RMImportVBC, RMImportZBC, RMSpecification, VBCInterestRate, VBCOperation, Vendor, VOLUME_ACTUAL_CBC, VOLUME_ACTUAL_VBC, VOLUME_ACTUAL_ZBC, VOLUME_BUDGETED_CBC, VOLUME_BUDGETED_VBC, VOLUME_BUDGETED_ZBC, ZBCOperation } from '../../config/masterData';
 import { checkForSameFileUpload, userTechnologyDetailByMasterId } from '../../helper';
 import LoaderCustom from '../common/LoaderCustom';
@@ -74,7 +74,7 @@ class BulkUpload extends Component {
 
     commonFunction() {
         let levelDetailsTemp = []
-        levelDetailsTemp = userTechnologyDetailByMasterId(this.state.costingTypeId === Number(ZBCADDMORE) ? ZBCTypeId : this.state.costingTypeId, this.props?.masterId, this.props.userMasterLevelAPI)
+        levelDetailsTemp = userTechnologyDetailByMasterId(this.state.costingTypeId === Number(ZBCADDMORE) ? ZBCTypeId : this.state.costingTypeId === Number(VBCADDMORE) ? VBCTypeId : this.state.costingTypeId === Number(CBCADDMORE) ? CBCTypeId : this.state.costingTypeId, this.props?.masterId, this.props.userMasterLevelAPI)
         this.setState({ levelDetails: levelDetailsTemp })
         if (levelDetailsTemp?.length !== 0) {
             let obj = {
@@ -82,7 +82,7 @@ class BulkUpload extends Component {
                 DepartmentId: userDetails().DepartmentId,
                 UserId: loggedInUserId(),
                 Mode: 'master',
-                approvalTypeId: costingTypeIdToApprovalTypeIdFunction(this.state.costingTypeId === Number(ZBCADDMORE) ? ZBCTypeId : this.state.costingTypeId)
+                approvalTypeId: costingTypeIdToApprovalTypeIdFunction(this.state.costingTypeId === Number(ZBCADDMORE) ? ZBCTypeId : this.state.costingTypeId === Number(VBCADDMORE) ? VBCTypeId : this.state.costingTypeId === Number(CBCADDMORE) ? CBCTypeId : this.state.costingTypeId)
             }
 
             this.props.checkFinalUser(obj, (res) => {
@@ -370,8 +370,6 @@ class BulkUpload extends Component {
                                     fileHeads[i] = 'JaliScrapCost'
                                 } else if ((fileName === 'RM Domestic' || fileName === 'RM Import') && fileHeads[i] === 'ScrapRate/JaliScrapCost') {
                                     fileHeads[i] = 'ScrapRate'
-                                } else if (fileName === 'Machine' && fileHeads[i] === 'PlantCode') {
-                                    fileHeads[i] = 'DestinationPlantCode'
                                 }
                                 obj[fileHeads[i]] = el;
                                 return null;
@@ -450,14 +448,23 @@ class BulkUpload extends Component {
             LoggedInUserId: loggedInUserId(),
             CostingTypeId: costingTypeId
         }
+
         let masterUploadData = {
             Records: fileData,
             LoggedInUserId: loggedInUserId(),
-            IsFinalApprover: IsFinalApprover,
+            IsFinalApprover: !this.props.initialConfiguration.IsMasterApprovalAppliedConfigure ? true : IsFinalApprover,
             CostingTypeId: costingTypeId,
             TypeOfEntry: typeOfEntryId ? typeOfEntryId : 0
         }
+        if (costingTypeId === ZBCADDMORE) {
+            masterUploadData.CostingTypeId = ZBCTypeId
+        } else if (costingTypeId === VBCADDMORE) {
+            masterUploadData.CostingTypeId = VBCTypeId
+        } else if (costingTypeId === CBCADDMORE) {
+            masterUploadData.CostingTypeId = CBCTypeId
+        }
         this.setState({ setDisable: true })
+        console.log('costingTypeId: ', costingTypeId);
 
         if (fileName === 'RM Domestic' || fileName === 'RM Import') {
             this.props.bulkUploadRM(masterUploadData, (res) => {
@@ -511,13 +518,13 @@ class BulkUpload extends Component {
                 this.setState({ setDisable: false })
                 this.responseHandler(res)
             });
-        } else if (fileName === 'Machine' && costingTypeId !== ZBCADDMORE) {
+        } else if (fileName === 'Machine' && (costingTypeId === ZBCTypeId || costingTypeId === VBCTypeId || costingTypeId === CBCTypeId)) {
             this.props.bulkUploadMachine(masterUploadData, (res) => {
                 this.setState({ setDisable: false })
                 this.responseHandler(res)
             });
 
-        } else if (fileName === 'Machine' && costingTypeId === ZBCADDMORE) {
+        } else if (fileName === 'Machine' && (costingTypeId === ZBCADDMORE || costingTypeId === VBCADDMORE || costingTypeId === CBCADDMORE)) {
             this.props.bulkUploadMachineMoreZBC(masterUploadData, (res) => {
                 this.setState({ setDisable: false })
                 this.responseHandler(res)
@@ -686,6 +693,26 @@ class BulkUpload extends Component {
                                                     />{' '}
                                                     <span>ZBC More Details</span>
                                                 </Label>}
+                                            {isMachineMoreTemplate &&
+                                                <Label sm={6} className={'pl0 pr0 radio-box mb-0 pb-0'} check>
+                                                    <input
+                                                        type="radio"
+                                                        name="costingHead"
+                                                        checked={costingTypeId === VBCADDMORE ? true : false}
+                                                        onClick={() => this.onPressHeads(VBCADDMORE)}
+                                                    />{' '}
+                                                    <span>VBC More Details</span>
+                                                </Label>}
+                                            {isMachineMoreTemplate &&
+                                                <Label sm={6} className={'pl0 pr0 radio-box mb-0 pb-0'} check>
+                                                    <input
+                                                        type="radio"
+                                                        name="costingHead"
+                                                        checked={costingTypeId === CBCADDMORE ? true : false}
+                                                        onClick={() => this.onPressHeads(CBCADDMORE)}
+                                                    />{' '}
+                                                    <span>CBC More Details</span>
+                                                </Label>}
                                         </Col>}
 
                                     <div className="input-group mt25 col-md-12 input-withouticon download-btn" >
@@ -785,6 +812,26 @@ class BulkUpload extends Component {
                                             onClick={() => this.onPressHeads(ZBCADDMORE)}
                                         />{' '}
                                         <span>ZBC More Details</span>
+                                    </Label>}
+                                {isMachineMoreTemplate &&
+                                    <Label sm={6} className={'pl0 pr0 radio-box mb-0 pb-0'} check>
+                                        <input
+                                            type="radio"
+                                            name="costingHead"
+                                            checked={costingTypeId === VBCADDMORE ? true : false}
+                                            onClick={() => this.onPressHeads(VBCADDMORE)}
+                                        />{' '}
+                                        <span>VBC More Details</span>
+                                    </Label>}
+                                {isMachineMoreTemplate &&
+                                    <Label sm={6} className={'pl0 pr0 radio-box mb-0 pb-0'} check>
+                                        <input
+                                            type="radio"
+                                            name="costingHead"
+                                            checked={costingTypeId === CBCADDMORE ? true : false}
+                                            onClick={() => this.onPressHeads(CBCADDMORE)}
+                                        />{' '}
+                                        <span>CBC More Details</span>
                                     </Label>}
                             </Col>}
 
