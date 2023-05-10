@@ -305,16 +305,18 @@ function EditPartCost(props) {
             setValue('CostingNumber', {})
             setCostingNumberData({})
             let indexForUpdate = _.findIndex([...gridData, costingNumberData], costingNumberData);
-
             setValue(`${PartCostFields}.${indexForUpdate}.DeltaValue`, 0)
             setValue(`${PartCostFields}.${indexForUpdate}.DeltaSign`, 0)
             setValue(`${PartCostFields}.${indexForUpdate}.SOBPercentage`, 0)
             setValue(`${PartCostFields}.${indexForUpdate}.NetCost`, 0)
 
             if (costData.CostingTypeId === WACTypeId) {
-                if (indexForUpdate) {
+                currentGrid[indexForUpdate].NetCost = checkForNull(currentGrid[indexForUpdate].SettledPrice) * checkForNull(currentGrid[indexForUpdate].SOBPercentage / 100)
+                setGridData(currentGrid)
+                setTimeout(() => {
                     setValue(`${PartCostFields}.${indexForUpdate}.SOBPercentage`, currentGrid[indexForUpdate].SOBPercentage)
-                }
+                    setValue(`${PartCostFields}.${indexForUpdate}.NetCost`, checkForDecimalAndNull(checkForNull(currentGrid[indexForUpdate].SettledPrice) * checkForNull(currentGrid[indexForUpdate].SOBPercentage / 100), initialConfiguration.NoOfDecimalForPrice))
+                }, 300);
             }
         } else {
             Toaster.warning('Please select Costing Number')
