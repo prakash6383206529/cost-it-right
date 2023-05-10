@@ -43,14 +43,12 @@ function NFRApprovalListing(props) {
     }
 
     useEffect(() => {
-        if (props?.activeTab === '2') {
-            dispatch(getNFRApprovals(res => {
-                if (res?.data?.Result === true) {
-                    setRowData(res?.data?.DataList)
-                }
-            }))
-        }
-    }, [props?.activeTab])
+        dispatch(getNFRApprovals(res => {
+            if (res?.data?.Result === true) {
+                setRowData(res?.data?.DataList)
+            }
+        }))
+    }, [])
 
     /**
     * @method hyphenFormatter
@@ -166,6 +164,23 @@ function NFRApprovalListing(props) {
             }}
         />
     }
+    const onFirstDataRendered = () => {
+        if (gridApi) {
+            window.screen.width > 1600 && gridApi.sizeColumnsToFit();
+        }
+    };
+    const resetState = () => {
+        gridOptions?.columnApi?.resetColumnState(null);
+        gridOptions?.api?.setFilterModel(null);
+        window.screen.width >= 1920 && gridApi.sizeColumnsToFit();
+        gridApi.deselectAll()
+    }
+
+    const onPageSizeChanged = (newPageSize) => {
+        gridApi.paginationSetPageSize(Number(newPageSize));
+        window.screen.width >= 1920 && gridApi.sizeColumnsToFit();
+
+    };
 
     return (
         <Fragment>
@@ -175,11 +190,14 @@ function NFRApprovalListing(props) {
 
                     <Row>
                         <Col>
-                            <div className={`ag-grid-react custom-pagination`}>
+                            <div className={`ag-grid-react`}>
 
                                 <div id={'parentId'} className={`ag-grid-wrapper height-width-wrapper min-height-auto p-relative ${rowData.length <= 0 ? 'overlay-contain' : ''} `}>
-                                    <div className="ag-grid-header">
+                                    <div className="ag-grid-header d-flex justify-content-between">
                                         <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
+                                        <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}>
+                                            <div className="refresh mr-0"></div>
+                                        </button>
                                     </div>
                                     <div className="ag-theme-material">
 
@@ -200,6 +218,7 @@ function NFRApprovalListing(props) {
                                                 title: EMPTY_DATA,
                                                 imagClass: "imagClass"
                                             }}
+                                            onFirstDataRendered={onFirstDataRendered}
                                             // frameworkComponents={frameworkComponents}
                                             suppressRowClickSelection={true}
                                             rowSelection={'multiple'}
@@ -221,12 +240,7 @@ function NFRApprovalListing(props) {
                                             <AgGridColumn field='LastApprovedByName' headerName="Last Approved /Rejected By" cellRenderer='hyphenFormatter'></AgGridColumn>
                                             <AgGridColumn headerClass="justify-content-center" pinned="right" cellClass="text-center" field="DisplayStatus" tooltipField="TooltipText" cellRenderer='statusFormatter' headerName="Status"></AgGridColumn>
                                         </AgGridReact>
-                                        <div className='button-wrapper'>
-                                            {<PaginationWrapper gridApi={gridApi} globalTake={defaultPageSize} />}
-                                        </div>
-
-
-
+                                        {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} globalTake={defaultPageSize} />}
                                     </div>
                                 </div>
                             </div>

@@ -272,7 +272,7 @@ function SurfaceTreatmentCost(props) {
                                   register={register}
                                   mandatory={false}
                                   rules={{
-                                    validate: item.UOM === "Number" ? { number, checkWhiteSpaces, noDecimal, numberLimit6 } : { number, checkWhiteSpaces, decimalNumberLimit6 },
+                                    validate: { number, checkWhiteSpaces, decimalNumberLimit6 },
                                   }}
                                   defaultValue={item.SurfaceArea}
                                   className=""
@@ -337,11 +337,11 @@ function SurfaceTreatmentCost(props) {
                             {initialConfiguration &&
                               initialConfiguration.IsOperationLabourRateConfigure && <td>{item.IsLabourRateExist ? item.LabourQuantity : '-'}</td>}
                             <td><div className='w-fit' id={`surface-cost${index}`}><TooltipCustom disabledIcon={true} customClass="header-tooltip" id={`surface-cost${index}`} tooltipText={initialConfiguration && initialConfiguration.IsOperationLabourRateConfigure ? "Net Cost = (Quantity * Rate) + (Labour Rate * Labour Quantity)" : "Net Cost = (Quantity * Rate)"} />{item.SurfaceTreatmentCost ? checkForDecimalAndNull(item.SurfaceTreatmentCost, initialConfiguration.NoOfDecimalForPrice) : 0}</div></td>
-                            {initialConfiguration.IsShowCRMHead && <td>
+                            {initialConfiguration.IsShowCRMHead && <td width={220}>
                               <SearchableSelectHookForm
                                 name={`crmHeadSurface${index}`}
                                 type="text"
-                                label="CRM Head"
+                                label={false}
                                 errors={`${errors.crmHeadSurface}${index}`}
                                 Controller={Controller}
                                 control={control}
@@ -351,6 +351,7 @@ function SurfaceTreatmentCost(props) {
                                   required: false,
                                 }}
                                 placeholder={'Select'}
+                                customClassName={'withBorder error-label mn-height-auto mb-0 surface-treament'}
                                 defaultValue={item.SurfaceTreatmentCRMHead ? { label: item.SurfaceTreatmentCRMHead, value: index } : ''}
                                 options={CRMHeads}
                                 required={false}

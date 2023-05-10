@@ -427,7 +427,6 @@ function CostReportForm(props) {
                                     showMonthDropdown
                                     showYearDropdown
                                     dateFormat="DD/MM/YYYY"
-                                    dropdownMode="select"
                                     placeholder="Select date"
                                     customClassName="withBorder"
                                     className="withBorder"
@@ -455,7 +454,6 @@ function CostReportForm(props) {
                                     showMonthDropdown
                                     showYearDropdown
                                     dateFormat="DD/MM/YYYY"
-                                    dropdownMode="select"
                                     placeholder="Select date"
                                     customClassName="withBorder"
                                     className="withBorder"

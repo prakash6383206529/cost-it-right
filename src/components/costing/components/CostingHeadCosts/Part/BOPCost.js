@@ -599,6 +599,7 @@ function BOPCost(props) {
                                   }}
                                   defaultValue={item.BoughtOutPartCRMHead ? { label: item.BoughtOutPartCRMHead, value: index } : ''}
                                   placeholder={'Select'}
+                                  customClassName="costing-selectable-dropdown"
                                   options={CRMHeads}
                                   required={false}
                                   handleChange={(e) => { onCRMHeadChange(e, index) }}

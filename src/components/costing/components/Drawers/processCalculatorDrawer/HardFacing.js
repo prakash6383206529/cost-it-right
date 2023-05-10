@@ -237,7 +237,7 @@ function HardFacing(props) {
                                     <Row>
                                         <Col md="4">
                                             <NumberFieldHookForm
-                                                label={`Depth Of Cut(mm)`}
+                                                label={`Depth of Cut(mm)`}
                                                 name={'doc'}
                                                 Controller={Controller}
                                                 control={control}

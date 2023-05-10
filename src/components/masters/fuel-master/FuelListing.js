@@ -442,14 +442,14 @@ class FuelListing extends Component {
                                     <AgGridColumn field="VendorName" headerName="Vendor (Code)" cellRenderer={'vendorFormatter'}></AgGridColumn>
                                     <AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'customerFormatter'}></AgGridColumn>
                                     <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateRenderer'}></AgGridColumn>
-                                    <AgGridColumn field="ModifiedDate" headerName="Date Of Modification" cellRenderer={'effectiveDateRenderer'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
+                                    <AgGridColumn field="ModifiedDate" minWidth={170} headerName="Date of Modification" cellRenderer={'effectiveDateRenderer'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
                                     <AgGridColumn field="FuelDetailId" width={300} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
-                                </AgGridReact>
-                                {<PaginationWrapper gridApi={this.gridApi} setPage={this.onPageSizeChanged} />}
+                                </AgGridReact >
+                                {< PaginationWrapper gridApi={this.gridApi} setPage={this.onPageSizeChanged} />}
                             </div>
-                        </div>
-                    </Col>
-                </Row>
+                        </div >
+                    </Col >
+                </Row >
                 {isBulkUpload && <BulkUpload
                     isOpen={isBulkUpload}
                     closeDrawer={this.closeBulkUploadDrawer}

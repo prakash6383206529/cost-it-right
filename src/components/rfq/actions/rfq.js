@@ -7,6 +7,9 @@ import {
     config,
     API_REQUEST,
     CHECK_RFQ_BULK_UPLOAD,
+    SELECTED_ROW_ARRAY,
+    SET_QUOTATION_ID_FOR_RFQ,
+    GET_NFR_SELECT_LIST,
 } from '../../../config/constants';
 import { MESSAGES } from '../../../config/message';
 import { loggedInUserId, userDetails } from '../../../helper';
@@ -278,5 +281,75 @@ export function setRFQBulkUpload(data) {
             type: CHECK_RFQ_BULK_UPLOAD,
             payload: data
         })
+    };
+}
+
+export function getQuotationDetailsByVendor(data, callback) {
+    return (dispatch) => {
+        axios.get(`${API.getQuotationDetailsByVendor}?vendorId=${userDetails().VendorId}&quotationId=${data}`, config())
+            .then((response) => {
+                callback(response)
+            }).catch((error) => {
+                dispatch({ type: API_FAILURE });
+                apiErrors(error);
+            });
+    };
+}
+
+export function setSelectedRow(data) {
+    return (dispatch) => {
+        dispatch({
+            type: SELECTED_ROW_ARRAY,
+            payload: data
+        })
+    }
+}
+
+/**
+ * @method setQuotationIdForRFQ
+ * @description set Quotation Id For RFQ
+ */
+export function setQuotationIdForRFQ(data) {
+    return (dispatch) => {
+        dispatch({
+            type: SET_QUOTATION_ID_FOR_RFQ,
+            payload: data,
+        });
+    }
+};
+
+export function rfqSaveBestCosting(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.rfqSaveBestCosting, data, config());
+        request.then((response) => {
+            if (response.data.Result) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+            callback(error)
+        });
+    };
+}
+
+export function getNfrSelectList(callback) {
+    return (dispatch) => {
+        axios.get(`${API.getNfrSelectList}`, config())
+            .then((response) => {
+
+                if (response.data.Result || response.status === 204) {
+
+                    dispatch({
+                        type: GET_NFR_SELECT_LIST,
+                        payload: response.status === 204 ? [] : response.data.SelectList
+                    })
+
+                    callback(response);
+                }
+            }).catch((error) => {
+                dispatch({ type: API_FAILURE });
+                apiErrors(error);
+            });
     };
 }

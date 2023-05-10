@@ -38,10 +38,19 @@ export default function VolumeReducer(state = initialState, action) {
                 financialYearSelectList: action.payload
             };
         case GET_VOLUME_DATA_LIST:
+            let arr = [];
+            arr = action.payload && action.payload.filter((item) => {
+                item.plantNameWithCode = `${item.PlantName ?? '-'}${item.PlantCode ? ` (${item.PlantCode})` : ''}`
+                item.vendorNameWithCode = `${item.VendorName ?? '-'}${item.VendorCode ? ` (${item.VendorCode})` : ''}`
+                item.customerNameWithCode = `${item.CustomerName ?? '-'}${item.CustomerCode ? ` (${item.CustomerCode})` : ''}`
+                item.partNoWithRevNo = `${item.PartNumber}${item.RevisionNumber ? ` (${item.RevisionNumber})` : ''}`
+                return item
+            }
+            )
             return {
                 ...state,
                 loading: false,
-                volumeDataList: action.payload
+                volumeDataList: arr
             }
         case GET_VOLUME_DATA_LIST_FOR_DOWNLOAD:
             return {

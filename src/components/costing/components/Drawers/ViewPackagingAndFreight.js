@@ -40,15 +40,13 @@ function ViewPackagingAndFreight(props) {
 
         <Col md="12">
           <Table className="table cr-brdr-main" size="sm">
-            <thead>
-              <tr>
+            <tbody>
+            <tr className='thead'>
                 <th>{`${isLogisticsTechnology ? 'Charges' : 'Packaging Description'}`}</th>
                 <th>{`Criteria/Applicability`}</th>
                 <th>{`${isLogisticsTechnology ? 'Freight' : 'Packaging'} Type/Percentage`}</th>
                 <th className="costing-border-right">{`Cost`}</th>
               </tr>
-            </thead>
-            <tbody>
               {packagingData &&
                 packagingData.map((item, index) => {
                   return (
@@ -91,16 +89,14 @@ function ViewPackagingAndFreight(props) {
 
         <Col md="12">
           <Table className="table cr-brdr-main" size="sm">
-            <thead>
-              <tr>
+            <tbody>
+            <tr className='thead'>
                 <th>{`Freight Type`}</th>
                 <th>{`Criteria`}</th>
                 <th>{`Rate`}</th>
                 <th>{`Quantity`}</th>
                 <th className="costing-border-right">{`Cost`}</th>
               </tr>
-            </thead>
-            <tbody>
               {freightData &&
                 freightData.map((item, index) => {
                   return (

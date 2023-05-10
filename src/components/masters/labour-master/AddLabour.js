@@ -1023,7 +1023,7 @@ class AddLabour extends Component {
                     <Row className='sub-form-container'>
                       <Col md="12" className="filter-block">
                         <div className=" flex-fills mb-2 w-100 pl-0">
-                          <h5>{"Rate Per Person:"}</h5>
+                          <h5>{"Rate per Person:"}</h5>
                         </div>
                       </Col>
 
@@ -1075,7 +1075,7 @@ class AddLabour extends Component {
                       <Col md="3">
                         <div className="form-group">
                           <Field
-                            label={`Rate Per Person/Annum (INR)`}
+                            label={`Rate per Person/Annum (INR)`}
                             name={"LabourRate"}
                             type="text"
                             placeholder={isViewMode ? "-" : "Enter"}
@@ -1136,7 +1136,6 @@ class AddLabour extends Component {
                               showMonthDropdown
                               showYearDropdown
                               dateFormat="dd/MM/yyyy"
-                              dropdownMode="select"
                               placeholderText={isViewMode ? '-' : "Select Date"}
                               className="withBorder"
                               autoComplete={"off"}
@@ -1148,10 +1147,10 @@ class AddLabour extends Component {
                             {this.state.errorObj.effectiveDate && this.state.effectiveDate === "" && <div className='text-help'>This field is required.</div>}
                           </div>
                         </div>
-                        
+
                       </Col>
                       <Col md="3">
-                      <div className="btn-mr-rate mt30 pt-1 pr-0 col-auto">
+                        <div className="btn-mr-rate mt30 pt-1 pr-0 col-auto">
                           {this.state.isEditIndex ? (
                             <>
                               <button type="button"
@@ -1195,13 +1194,13 @@ class AddLabour extends Component {
                             <tr>
                               <th>{`Machine Type`}</th>
                               <th>{`Labour Type`}</th>
-                              <th>{`Rate Per Person/Annum(INR)`}</th>
+                              <th>{`Rate per Person/Annum(INR)`}</th>
                               <th>{`Working hours`}</th>
                               <th>{`Efficiency`}</th>
                               <th>{`Effective Date`}</th>
                               <th>{`Action`}</th>
-                            </tr>
-                          </thead>
+                            </tr >
+                          </thead >
                           <tbody>
                             {this.state.gridTable &&
                               this.state.gridTable.map((item, index) => {
@@ -1240,17 +1239,19 @@ class AddLabour extends Component {
                               })}
 
                           </tbody>
-                          {this.state.gridTable.length === 0 && (<tbody className='border'>
-                            <tr>
-                              <td colSpan={"7"}>
-                                <NoContentFound title={EMPTY_DATA} />
-                              </td>
-                            </tr>
-                          </tbody>)}
-                        </Table>
-                      </Col>
-                    </Row>
-                  </div>
+                          {
+                            this.state.gridTable.length === 0 && (<tbody className='border'>
+                              <tr>
+                                <td colSpan={"7"}>
+                                  <NoContentFound title={EMPTY_DATA} />
+                                </td>
+                              </tr>
+                            </tbody>)
+                          }
+                        </Table >
+                      </Col >
+                    </Row >
+                  </div >
 
                   <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
                     <div className="col-sm-12 text-right bluefooter-butn">
@@ -1273,10 +1274,10 @@ class AddLabour extends Component {
                       </button>
                     </div>
                   </Row>
-                </form>
-              </div>
-            </div>
-          </div>
+                </form >
+              </div >
+            </div >
+          </div >
         </div >
         {
           this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.CANCEL_MASTER_ALERT}`} />

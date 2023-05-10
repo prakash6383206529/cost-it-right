@@ -251,8 +251,10 @@ class IndivisualProductListing extends Component {
         this.setState({ isBulkUpload: true })
     }
 
-    closeBulkUploadDrawer = () => {
-        this.getTableListData()
+    closeBulkUploadDrawer = (event, type) => {
+        if (type !== 'cancel') {
+            this.getTableListData()
+        }
         this.setState({ isBulkUpload: false })
     }
 
