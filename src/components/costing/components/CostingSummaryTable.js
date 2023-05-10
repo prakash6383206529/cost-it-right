@@ -1164,7 +1164,7 @@ const CostingSummaryTable = (props) => {
             )}
 
 
-            {<Col md={simulationMode || props.isRfqCosting ? "12" : "8"} className="text-right">
+            {<Col md={simulationMode || props.isRfqCosting ? "12" : "8"} className="text-right d-flex justify-content-end">
 
               {
                 DownloadAccessibility ? <LoaderCustom customClass="pdf-loader" /> :
