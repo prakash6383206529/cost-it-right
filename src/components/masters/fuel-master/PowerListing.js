@@ -390,7 +390,7 @@ class PowerListing extends Component {
 
     return (
 
-      <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""}`}>
+      <div className={`ag-grid-react pt-4 ${DownloadAccessibility ? "show-table-btn" : ""}`}>
         {this.state.isLoader && <LoaderCustom />}
         <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
           <Row>

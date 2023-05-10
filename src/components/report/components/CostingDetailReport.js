@@ -795,7 +795,7 @@ function ReportListing(props) {
             </form>
 
             <div className={`ag-grid-wrapper height-width-wrapper  ${(reportListingDataStateArray && reportListingDataStateArray?.length <= 0) || noData ? "overlay-contain" : ""}`}>
-                {isLoader ? <LoaderCustom customClass={"loader-center"} /> :
+                {isLoader ? <LoaderCustom customClass={"loader-center mt-n2"} /> :
 
                     <div className={`ag-theme-material report-grid mt-2 ${isLoader && "max-loader-height"}`}>
                         {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}

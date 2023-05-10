@@ -1562,7 +1562,7 @@ class AddPower extends Component {
                           </div>
                         </Col>
 
-                        <Col md="auto">
+                        <Col md="3">
                           <div className="d-flex justify-space-between align-items-center inputwith-icon date-filed">
                             <div className="fullinput-icon">
                               <div className="form-group">
@@ -1588,7 +1588,7 @@ class AddPower extends Component {
                           </div>
                         </Col>
 
-                        {!isDetailEntry && < Col md="2">
+                        {!isDetailEntry && < Col md="3">
                           <div className="d-flex justify-space-between align-items-center inputwith-icon">
                             <div className="fullinput-icon">
                               <Field
@@ -1608,24 +1608,24 @@ class AddPower extends Component {
                           </div>
                         </Col>}
 
-
-                        <label
-                          className={`custom-checkbox w-auto ${this.state.isDetailEntry && costingTypeId !== ZBCTypeId ? 'mb-3' : 'mt-4'} ml-4 mb-2 ${costingTypeId === VBCTypeId ? "" : ""
-                            }`}
-                          onChange={this.isDetailEntryChange}
-                        >
-                          Add More Details
-                          <input
-                            type="checkbox"
-                            checked={this.state.isDetailEntry}
-                            disabled={isViewMode || isEditFlag}
-                          />
-                          <span
-                            className=" before-box p-0"
-                            checked={this.state.isDetailEntry}
+                        <Col md="6" className={(costingTypeId === ZBCTypeId || isDetailEntry) ? "" : "mt30 pt-1"}>
+                          <label
+                            className={`custom-checkbox w-auto ${isDetailEntry ? 'mb-3' : ''}`}
                             onChange={this.isDetailEntryChange}
-                          />
-                        </label>
+                          >
+                            Add More Details
+                            <input
+                              type="checkbox"
+                              checked={this.state.isDetailEntry}
+                              disabled={isViewMode || isEditFlag}
+                            />
+                            <span
+                              className=" before-box p-0"
+                              checked={this.state.isDetailEntry}
+                              onChange={this.isDetailEntryChange}
+                            />
+                          </label>
+                        </Col>
                       </Row>
 
 
