@@ -3,7 +3,7 @@ import { useForm, Controller } from "react-hook-form";
 import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, Tooltip, } from 'reactstrap';
 import { AsyncSearchableSelectHookForm, SearchableSelectHookForm, TextAreaHookForm, TextFieldHookForm } from '.././layout/HookFormInputs'
-import { getVendorWithVendorCodeSelectList, getReporterList, fetchPlantDataAPI } from '../.././actions/Common';
+import { getVendorWithVendorCodeSelectList, getReporterList, fetchPlantDataAPI, fetchSpecificationDataAPI } from '../.././actions/Common';
 import { getCostingSpecificTechnology, } from '../costing/actions/Costing'
 import { addDays, checkForDecimalAndNull, getConfigurationKey, loggedInUserId } from '../.././helper';
 import { checkForNull } from '../.././helper/validation'
@@ -15,7 +15,7 @@ import Dropzone from 'react-dropzone-uploader'
 import 'react-dropzone-uploader/dist/styles.css'
 import Toaster from '../common/Toaster';
 import { MESSAGES } from '../../config/message';
-import { createRfqQuotation, fileDeleteQuotation, fileUploadQuotation, getQuotationById, updateRfqQuotation, getContactPerson, checkExistCosting, setRFQBulkUpload } from './actions/rfq';
+import { createRfqQuotation, fileDeleteQuotation, fileUploadQuotation, getQuotationById, updateRfqQuotation, getContactPerson, checkExistCosting, setRFQBulkUpload, getNfrSelectList } from './actions/rfq';
 import PopupMsgWrapper from '../common/PopupMsgWrapper';
 import LoaderCustom from '../common/LoaderCustom';
 import redcrossImg from '../../assests/images/red-cross.png'
@@ -31,6 +31,7 @@ import DayTime from '../common/DayTimeWrapper';
 import DatePicker from 'react-datepicker'
 import { label } from 'react-dom-factories';
 import WarningMessage from '../common/WarningMessage';
+import { getRMGradeSelectListByRawMaterial, getRawMaterialNameChild } from '../masters/actions/Material';
 
 const gridOptions = {};
 
@@ -85,6 +86,7 @@ function AddRfq(props) {
     const dispatch = useDispatch()
     const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
     const checkRFQPartBulkUpload = useSelector((state) => state.rfq.checkRFQPartBulkUpload)
+    const nfrSelectList = useSelector((state) => state.rfq.nfrSelectList)
     // const getReporterListDropDown = useSelector(state => state.comman.getReporterListDropDown)
     const plantList = useSelector(state => state.comman.plantList)
     const [isBulkUpload, setisBulkUpload] = useState(false)
@@ -93,10 +95,19 @@ function AddRfq(props) {
     const [sopdate, setSOPDate] = useState('')
     const [fiveyearList, setFiveyearList] = useState([])
     const [selectedparts, setSelectedParts] = useState([])
+    const [nfrId, setNfrId] = useState('')
+    const [rmName, setRMName] = useState([])
+    const [rmgrade, setRMGrade] = useState([])
+    const [rmspecification, setRMSpecification] = useState([])
+    const rawMaterialNameSelectList = useSelector(state => state.material.rawMaterialNameSelectList);
+    const gradeSelectList = useSelector(state => state.material.gradeSelectList);
+    const rmSpecification = useSelector(state => state.comman.rmSpecification);
 
     useEffect(() => {
         const { vbcVendorGrid } = props;
+        dispatch(getRawMaterialNameChild('', () => { }))
         dispatch(fetchPlantDataAPI(() => { }))
+        // dispatch(getNfrSelectList(() => { }))
         let tempArr = [];
         vbcVendorGrid && vbcVendorGrid.map(el => {
             tempArr.push(el.VendorId)
@@ -123,11 +134,17 @@ function AddRfq(props) {
             item.SOPQuantity.map((ele, ind) => {
                 if (ind !== 2) {
                     ele.PartNo = ele.PartNumber
-                    ele.PartId = item.PartId
+                    ele.PartId = item?.PartId
                     delete ele.PartNumber
                 } else {
                     ele.PartNo = ele.PartNumber
                     ele.PartId = item.PartId
+                    ele.RMName = item?.RMDetailsResponses[0]?.RawMaterialName
+                    ele.RMNameId = item?.RMDetailsResponses[0]?.RawMaterialChildId
+                    ele.RMGrade = item?.RMDetailsResponses[0]?.RawMaterialGrade
+                    ele.RMGradeId = item?.RMDetailsResponses[0]?.RawMaterialGradeId
+                    ele.RMSpecification = item?.RMDetailsResponses[0]?.RawMaterialSpecification
+                    ele.RMSpecificationId = item?.RMDetailsResponses[0]?.RawMaterialSpecificationId
                 }
                 return null
             })
@@ -355,6 +372,14 @@ function AddRfq(props) {
             return temp
         }
 
+        if (label === 'nfrId') {
+            nfrSelectList && nfrSelectList.map((item) => {
+                if (item.Value === '0') return false
+                temp.push({ label: item.Text, value: item.Value })
+                return null
+            })
+            return temp
+        }
 
         // if (label === 'partNo') {
         //     partSelectListByTechnology && partSelectListByTechnology.map((item) => {
@@ -446,17 +471,26 @@ function AddRfq(props) {
         partIdList && partIdList?.map((item) => {
             let temppartObj = {}
             let partListArr = []
+            let partObject = []
             temppartObj.PartId = item
-            list && list.map((item1) => {
+            list && list.map((item1, index) => {
                 let partListObj = {}
                 if (item1?.PartId === item) {
                     partListObj.PartNumber = item1?.PartNo
                     partListObj.YearName = item1?.YearName
                     partListObj.Quantity = item1?.Quantity
                     partListArr.push(partListObj)
+                    if (index === 2) {
+                        partObject = item1
+                    }
                 }
                 return null
             })
+            temppartObj.RMDetails = [{
+                "RawMaterialChildId": partObject?.RMNameId,
+                "RawMaterialGradeId": partObject?.RMGradeId,
+                "RawMaterialSpecificationId": partObject?.RMSpecificationId
+            }]
             temppartObj.SOPQuantityDetails = partListArr
             temppartArr.push(temppartObj)
             return null
@@ -515,7 +549,8 @@ function AddRfq(props) {
 
     const hyphenFormatter = (props) => {
         const cellValue = props?.value;
-        return checkForDecimalAndNull(cellValue, getConfigurationKey().NoOfDecimalForInputOutput)
+        const rowData = props?.data;
+        return cellValue ? cellValue : (rowData?.PartNumber ? '-' : '')
     }
 
     const sopFormatter = (props) => {
@@ -639,33 +674,60 @@ function AddRfq(props) {
             Toaster.warning("Please select part number and SOP date")
             return false
         } else {
-            let tempArrayparts = [...selectedparts, getValues('partNumber')]
-            setSelectedParts(tempArrayparts)
-            let arrTemp = []
-            let partNumber = getValues('partNumber')
-
-            sopObjectTemp && sopObjectTemp.map((item, index) => {
-                let objTemp = {}
-                objTemp.YearName = fiveyearList[index]
-                objTemp.PartNo = partNumber?.label
-                objTemp.PartId = getValues('partNumber')?.value
-                if (index === 2) {
-                    objTemp.PartNumber = partNumber?.label
+            let dataObj = {
+                "PartIdList": [
+                    getValues('partNumber')?.value
+                ],
+                "PlantId": getValues('plant')?.value,
+                "VendorId": null
+            }
+            let vendorList = []
+            let vendorListFinal = []
+            dispatch(checkExistCosting(dataObj, (res) => {
+                if (res?.data?.Result) {
+                    vendorList = [...res?.data?.DataList]
+                    vendorList && vendorList?.map((item) => {
+                        vendorListFinal.push(`${item?.VendorName} (${item?.VendorCode})`)
+                    })
                 }
-                objTemp.Quantity = 0
 
-                arrTemp.push(objTemp)
-                return null
-            })
+                let tempArrayparts = [...selectedparts, getValues('partNumber')]
+                setSelectedParts(tempArrayparts)
+                let arrTemp = []
+                let partNumber = getValues('partNumber')
 
-            let arr = [...partList, ...arrTemp]
+                sopObjectTemp && sopObjectTemp.map((item, index) => {
+                    let objTemp = {}
+                    objTemp.YearName = fiveyearList[index]
+                    objTemp.PartNo = partNumber?.label
+                    objTemp.PartId = getValues('partNumber')?.value
+                    if (index === 2) {
+                        objTemp.PartNumber = partNumber?.label
+                        objTemp.VendorListExisting = vendorListFinal.join(',') ? vendorListFinal.join(',') : '-'
+                        objTemp.RMName = rmName?.label
+                        objTemp.RMNameId = rmName?.value
+                        objTemp.RMGrade = rmgrade?.label
+                        objTemp.RMGradeId = rmgrade?.value
+                        objTemp.RMSpecification = rmspecification?.label
+                        objTemp.RMSpecificationId = rmspecification?.value
+                    }
+                    objTemp.Quantity = 0
 
-            setPartList(arr)
-            setValue('partNumber', "")
-            setSOPDate('')
-            setValue('SOPDate', "")
-            // setValue('technology', "")
-            setUpdateButtonPartNoTable(false)
+                    arrTemp.push(objTemp)
+                    return null
+                })
+                let arr = [...partList, ...arrTemp]
+
+                setPartList(arr)
+                setValue('partNumber', "")
+                setSOPDate('')
+                setValue('SOPDate', "")
+                setValue('RMName', "")
+                setValue('RMGrade', "")
+                setValue('RMSpecification', "")
+                // setValue('technology', "")
+                setUpdateButtonPartNoTable(false)
+            }))
         }
     }
 
@@ -673,6 +735,9 @@ function AddRfq(props) {
         setUpdateButtonPartNoTable(false)
         setValue('partNumber', "")
         setValue('annualForecastQuantity', "")
+        setValue('RMName', "")
+        setValue('RMGrade', "")
+        setValue('RMSpecification', "")
         setSOPDate('')
         // setValue('technology', "")
     }
@@ -707,6 +772,13 @@ function AddRfq(props) {
         reactLocalStorage.setObject('PartData', [])
     }
 
+    const handleNfrChnage = (newValue) => {
+        if (newValue && newValue !== '') {
+            // setPartNoDisable(false)
+            setValue('partNumber', "")
+            setNfrId(newValue)
+        }
+    }
 
     const handleVendorChange = (data) => {
 
@@ -758,6 +830,7 @@ function AddRfq(props) {
         const resultInput = inputValue.slice(0, searchCount)
         if (inputValue?.length >= searchCount && partName !== resultInput) {
             const res = await getPartSelectListWtihRevNo(resultInput, technology.value)
+            // const res = await getPartSelectListWtihRevNo(resultInput, technology.value, nfrId?.value)
             setPartName(resultInput)
             let partDataAPI = res?.data?.DataList
             if (inputValue) {
@@ -874,6 +947,61 @@ function AddRfq(props) {
         setSOPDate(DayTime(value).format('YYYY-MM-DD HH:mm:ss'))
     }
 
+    const renderListingRM = (label) => {
+
+        let opts1 = []
+        if (label === 'rmname') {
+            if (rawMaterialNameSelectList?.length > 0) {
+                let opts = [...rawMaterialNameSelectList]
+                opts1 = [...rawMaterialNameSelectList]
+                opts1 = opts && opts?.map(item => {
+                    item.label = item.Text
+                    item.value = item.Value
+                    return item
+                })
+            }
+        }
+        if (label === 'rmgrade') {
+            if (gradeSelectList?.length > 0) {
+                let opts = [...gradeSelectList]
+                opts1 = [...gradeSelectList]
+                opts1 = opts && opts?.map(item => {
+                    item.label = item.Text
+                    item.value = item.Value
+                    return item
+                })
+            }
+        }
+
+        if (label === 'rmspecification') {
+            if (rmSpecification?.length > 0) {
+                let opts = [...rmSpecification]
+                opts1 = [...rmSpecification]
+                opts1 = opts && opts?.map(item => {
+                    item.label = item.Text
+                    item.value = item.Value
+                    return item
+                })
+            }
+        }
+
+        return opts1
+    }
+
+    const handleRMName = (newValue) => {
+        setRMName({ label: newValue?.label, value: newValue?.value })
+        dispatch(getRMGradeSelectListByRawMaterial(newValue.value, (res) => { }))
+    }
+
+    const handleRMGrade = (newValue) => {
+        setRMGrade({ label: newValue?.label, value: newValue?.value })
+        dispatch(fetchSpecificationDataAPI(newValue.value, (res) => { }))
+    }
+
+    const handleRMSpecification = (newValue) => {
+        setRMSpecification({ label: newValue?.label, value: newValue?.value })
+    }
+
     const EditableCallback = (props) => {
         let value = dataProps?.isAddFlag ? true : dataProps?.isViewFlag ? false : isEditAll ? true : false
         return value
@@ -930,6 +1058,25 @@ function AddRfq(props) {
                                                 isLoading={VendorLoaderObj}
                                             />
                                         </Col>
+                                        {/* <Col md="3">
+                                            <SearchableSelectHookForm
+                                                label={"NFR Id"}
+                                                name={"nfrId"}
+                                                placeholder={"Select"}
+                                                Controller={Controller}
+                                                control={control}
+                                                rules={{ required: false }}
+                                                register={register}
+                                                defaultValue={nfrId?.length !== 0 ? nfrId : ""}
+                                                options={renderListing("nfrId")}
+                                                mandatory={false}
+                                                handleChange={handleNfrChnage}
+                                                errors={errors.nfrId}
+                                                disabled={((dataProps?.isViewFlag || isEditAll) ? true : false)
+                                                    || (partList?.length !== 0)}
+                                            // isLoading={VendorLoaderObj}
+                                            />
+                                        </Col> */}
                                         <Col md="3">
                                             <SearchableSelectHookForm
                                                 label={"Plant (Code)"}
@@ -1030,6 +1177,63 @@ function AddRfq(props) {
                                                 </div>
                                             </div>
                                         </Col>
+                                        <Col md="3">
+                                            <SearchableSelectHookForm
+                                                label="RM Name"
+                                                name={"RMName"}
+                                                placeholder={"Select"}
+                                                Controller={Controller}
+                                                control={control}
+                                                selected={rmName ? rmName : ''}
+                                                rules={{ required: false }}
+                                                register={register}
+                                                customClassName="costing-version"
+                                                // defaultValue={costingOptionsSelectedObject[indexInside] ? costingOptionsSelectedObject[indexInside] : ''}
+                                                options={renderListingRM('rmname')}
+                                                mandatory={false}
+                                                handleChange={(newValue) => handleRMName(newValue)}
+                                                disabled={dataProps?.isAddFlag ? partNoDisable : (dataProps?.isViewFlag || !isEditAll)}
+                                            // errors={`${indexInside} CostingVersion`}
+                                            />
+                                        </Col>
+                                        <Col md="3">
+                                            <SearchableSelectHookForm
+                                                label="RM Grade"
+                                                name={"RMGrade"}
+                                                placeholder={"Select"}
+                                                Controller={Controller}
+                                                control={control}
+                                                selected={rmgrade ? rmgrade : ''}
+                                                rules={{ required: false }}
+                                                register={register}
+                                                customClassName="costing-version"
+                                                // defaultValue={costingOptionsSelectedObject[indexInside] ? costingOptionsSelectedObject[indexInside] : ''}
+                                                options={renderListingRM('rmgrade')}
+                                                mandatory={false}
+                                                handleChange={(newValue) => handleRMGrade(newValue)}
+                                                disabled={dataProps?.isAddFlag ? partNoDisable : (dataProps?.isViewFlag || !isEditAll)}
+                                            // errors={`${indexInside} CostingVersion`}
+                                            />
+                                        </Col>
+                                        <Col md="3">
+                                            <SearchableSelectHookForm
+                                                label="RM Specification"
+                                                name={"RMSpecification"}
+                                                placeholder={"Select"}
+                                                Controller={Controller}
+                                                control={control}
+                                                selected={rmspecification ? rmspecification : ''}
+                                                rules={{ required: false }}
+                                                register={register}
+                                                customClassName="costing-version"
+                                                // defaultValue={costingOptionsSelectedObject[indexInside] ? costingOptionsSelectedObject[indexInside] : ''}
+                                                options={renderListingRM('rmspecification')}
+                                                mandatory={false}
+                                                handleChange={(newValue) => handleRMSpecification(newValue)}
+                                                disabled={dataProps?.isAddFlag ? partNoDisable : (dataProps?.isViewFlag || !isEditAll)}
+                                            // errors={`${indexInside} CostingVersion`}
+                                            />
+                                        </Col>
                                         {/* <Col md="3">
                                             <NumberFieldHookForm
                                                 label="Annual Forecast Quantity"
@@ -1107,10 +1311,14 @@ function AddRfq(props) {
                                                                 suppressColumnVirtualisation={true}
                                                             >
                                                                 <AgGridColumn width={"230px"} field="PartNumber" headerName="Part No" cellClass={"colorWhite"} cellRenderer={'partNumberFormatter'}></AgGridColumn>
+                                                                <AgGridColumn width={"230px"} field="VendorListExisting" headerName="Vendor" cellClass={"colorWhite"} cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                                                                <AgGridColumn width={"230px"} field="RMName" headerName="RM Name" cellClass={"colorWhite"}></AgGridColumn>
+                                                                <AgGridColumn width={"230px"} field="RMGrade" headerName="RM Grade" cellClass={"colorWhite"}></AgGridColumn>
+                                                                <AgGridColumn width={"230px"} field="RMSpecification" headerName="RM Specification" cellClass={"colorWhite"}></AgGridColumn>
 
                                                                 <AgGridColumn width={"230px"} field="YearName" headerName="Production Year" cellRenderer={'sopFormatter'}></AgGridColumn>
                                                                 <AgGridColumn width={"230px"} field="Quantity" headerName="Annual Forecast Quantity" headerComponent={'quantityHeader'} cellRenderer={'afcFormatter'} editable={EditableCallback} colId="Quantity"></AgGridColumn>
-                                                                <AgGridColumn width={"0px"} field="PartId" headerName="Part Id" hide={true} cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                                                                <AgGridColumn width={"0px"} field="PartId" headerName="Part Id" hide={true} ></AgGridColumn>
                                                                 <AgGridColumn width={"190px"} field="PartId" headerName="Action" cellClass={"colorWhite text-right"} floatingFilter={false} type="rightAligned" cellRenderer={'buttonFormatterFirst'}></AgGridColumn>
                                                             </AgGridReact>
 
@@ -1217,7 +1425,7 @@ function AddRfq(props) {
                                                                 <AgGridColumn field="Vendor" headerName="Vendor (Code)" ></AgGridColumn>
 
                                                                 <AgGridColumn width={"270px"} field="ContactPerson" headerName="Point of Contact" ></AgGridColumn>
-                                                                <AgGridColumn width={"270px"} field="VendorId" headerName="Vendor Id" hide={true} cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                                                                <AgGridColumn width={"270px"} field="VendorId" headerName="Vendor Id" hide={true} ></AgGridColumn>
                                                                 <AgGridColumn width={"180px"} field="partId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'buttonFormatterVendorTable'}></AgGridColumn>
                                                             </AgGridReact>
                                                         </div>

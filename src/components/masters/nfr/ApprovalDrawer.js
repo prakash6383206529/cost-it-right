@@ -109,8 +109,8 @@ const ApprovalDrawer = (props) => {
         }
     }
 
-    const toggleDrawer = (e) => {
-        props.closeDrawer('', 'Cancel')
+    const toggleDrawer = (type) => {
+        props.closeDrawer(type, 'Cancel')
     }
 
     /**
@@ -229,7 +229,7 @@ const ApprovalDrawer = (props) => {
             dispatch(nfrSendToApproverBySender(req, (res) => {
                 if (res?.data?.Result) {
                     Toaster.success("Costing has been sent for approval.")
-                    toggleDrawer()
+                    toggleDrawer('submit')
                 }
             }))
         }
@@ -249,7 +249,7 @@ const ApprovalDrawer = (props) => {
                                     <h3>{props.rejectDrawer ? "Reject Costing" : props?.IsFinalApproved ? "Approve Costing" : "Send for Approval"}</h3>
                                 </div>
                                 <div
-                                    onClick={(e) => toggleDrawer(e)}
+                                    onClick={(e) => toggleDrawer('cancel')}
                                     // disabled={isDisable}
                                     className={"close-button right"}
                                 ></div>
@@ -365,7 +365,7 @@ const ApprovalDrawer = (props) => {
                                 <button
                                     className="cancel-btn mr-2"
                                     type={"button"}
-                                    onClick={toggleDrawer}
+                                    onClick={() => { toggleDrawer('cancel') }}
                                 // className="reset mr15 cancel-btn"
                                 >
                                     <div className={'cancel-icon'}></div>
