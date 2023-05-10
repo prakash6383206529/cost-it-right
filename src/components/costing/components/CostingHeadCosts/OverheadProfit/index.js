@@ -1326,7 +1326,26 @@ function OverheadProfit(props) {
                                     {`Overheads ${overheadObj && overheadObj.OverheadApplicability ? '(' + overheadObj.OverheadApplicability + ')' : '-'}`}
                                 </div>
                             </Col>
-
+                            {initialConfiguration.IsShowCRMHead && <Col md="3">
+                                <SearchableSelectHookForm
+                                    name={`crmHeadOverhead`}
+                                    type="text"
+                                    label="CRM Head"
+                                    errors={errors.crmHeadOverhead}
+                                    Controller={Controller}
+                                    control={control}
+                                    register={register}
+                                    mandatory={false}
+                                    rules={{
+                                        required: false,
+                                    }}
+                                    placeholder={'Select'}
+                                    options={CRMHeads}
+                                    required={false}
+                                    handleChange={onCRMHeadChangeOverhead}
+                                    disabled={CostingViewMode}
+                                />
+                            </Col>}
                             <Col md="12">
                                 <Row className="costing-border-inner-section m-0">
                                     <Col md="3">
@@ -1665,12 +1684,19 @@ function OverheadProfit(props) {
                                 </Row>
                             </Col>
 
-                            {initialConfiguration.IsShowCRMHead && <Col md="2">
+
+                            {/* new section from below with heasing */}
+                            <Col md="12" className="pt-3">
+                                <div className="left-border">
+                                    {`Profits ${profitObj && profitObj.ProfitApplicability ? '(' + profitObj.ProfitApplicability + ')' : '-'}`}
+                                </div>
+                            </Col>
+                            {initialConfiguration.IsShowCRMHead && <Col md="3">
                                 <SearchableSelectHookForm
-                                    name={`crmHeadOverhead`}
+                                    name={`crmHeadProfit`}
                                     type="text"
                                     label="CRM Head"
-                                    errors={errors.crmHeadOverhead}
+                                    errors={errors.crmHeadProfit}
                                     Controller={Controller}
                                     control={control}
                                     register={register}
@@ -1681,17 +1707,10 @@ function OverheadProfit(props) {
                                     placeholder={'Select'}
                                     options={CRMHeads}
                                     required={false}
-                                    handleChange={onCRMHeadChangeOverhead}
+                                    handleChange={onCRMHeadChangeProfit}
                                     disabled={CostingViewMode}
                                 />
                             </Col>}
-
-                            {/* new section from below with heasing */}
-                            <Col md="12" className="pt-3">
-                                <div className="left-border">
-                                    {`Profits ${profitObj && profitObj.ProfitApplicability ? '(' + profitObj.ProfitApplicability + ')' : '-'}`}
-                                </div>
-                            </Col>
                             <Col md="12">
                                 <Row className="costing-border-inner-section m-0">
                                     <Col md="3">
@@ -2026,27 +2045,6 @@ function OverheadProfit(props) {
                                     }
                                 </Row>
                             </Col>
-
-                            {initialConfiguration.IsShowCRMHead && <Col md="2">
-                                <SearchableSelectHookForm
-                                    name={`crmHeadProfit`}
-                                    type="text"
-                                    label="CRM Head"
-                                    errors={errors.crmHeadProfit}
-                                    Controller={Controller}
-                                    control={control}
-                                    register={register}
-                                    mandatory={false}
-                                    rules={{
-                                        required: false,
-                                    }}
-                                    placeholder={'Select'}
-                                    options={CRMHeads}
-                                    required={false}
-                                    handleChange={onCRMHeadChangeProfit}
-                                    disabled={CostingViewMode}
-                                />
-                            </Col>}
                         </Row>
 
                         {/* THIS IS REJECTION SECTION */}
