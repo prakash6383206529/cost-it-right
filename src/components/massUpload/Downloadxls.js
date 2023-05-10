@@ -130,7 +130,7 @@ class Downloadxls extends React.Component {
             case 'RM Import':
                 return this.returnExcelColumn(checkRM_Process_OperationConfigurable(RMImportZBC), RMImportZBCTempData);
             case 'Operation':
-                return this.returnExcelColumn(checkLabourRateConfigure(ZBCOperation), ZBCOperationTempData);
+                return this.returnExcelColumn((ZBCOperation), ZBCOperationTempData);
             case 'Machine':
                 return this.returnExcelColumn(checkVendorPlantConfig(MachineZBC), MachineZBCTempData);
             case ZBCADDMORE:
@@ -163,7 +163,7 @@ class Downloadxls extends React.Component {
             case 'RM Import':
                 return this.returnExcelColumn(checkVendorPlantConfig(RMImportVBC), RMImportVBCTempData);
             case 'Operation':
-                return this.returnExcelColumn(checkLabourRateConfigure(VBCOperation), VBCOperationTempData);
+                return this.returnExcelColumn((VBCOperation), VBCOperationTempData);
             case 'Machine':
                 return this.returnExcelColumn(checkVendorPlantConfig(MachineVBC), MachineVBCTempData);
             case 'BOP Domestic':
@@ -193,7 +193,7 @@ class Downloadxls extends React.Component {
             case 'RM Import':
                 return this.returnExcelColumn(checkVendorPlantConfig(RMImportCBC, CBCTypeId), RMImportCBCTempData);
             case 'Operation':
-                return this.returnExcelColumn(checkLabourRateConfigure(CBCOperation, CBCTypeId), CBCOperationTempData);
+                return this.returnExcelColumn((CBCOperation, CBCTypeId), CBCOperationTempData);
             case 'Machine':
                 return this.returnExcelColumn(checkVendorPlantConfig(MachineCBC, CBCTypeId), MachineCBCTempData);
             case 'BOP Domestic':
