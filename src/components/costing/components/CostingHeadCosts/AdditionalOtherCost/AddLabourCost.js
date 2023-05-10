@@ -517,13 +517,13 @@ function AddLabourCost(props) {
                                             Controller={Controller}
                                             control={control}
                                             register={register}
-                                            mandatory={true}
+                                            mandatory={false}
                                             rules={{
                                                 required: false,
                                             }}
                                             placeholder={'Select'}
                                             options={CRMHeads}
-                                            required={true}
+                                            required={false}
                                             handleChange={handleCrmHeadChangeNetLabour}
                                             disabled={CostingViewMode}
                                         />
@@ -538,13 +538,13 @@ function AddLabourCost(props) {
                                             Controller={Controller}
                                             control={control}
                                             register={register}
-                                            mandatory={true}
+                                            mandatory={false}
                                             rules={{
                                                 required: false,
                                             }}
                                             placeholder={'Select'}
                                             options={CRMHeads}
-                                            required={true}
+                                            required={false}
                                             handleChange={handleCrmHeadChangeIndirectLabour}
                                             disabled={CostingViewMode}
                                         />
@@ -606,13 +606,13 @@ function AddLabourCost(props) {
                                             Controller={Controller}
                                             control={control}
                                             register={register}
-                                            mandatory={true}
+                                            mandatory={false}
                                             rules={{
                                                 required: false,
                                             }}
                                             placeholder={'Select'}
                                             options={CRMHeads}
-                                            required={true}
+                                            required={false}
                                             handleChange={handleCrmHeadChangeStaff}
                                             disabled={CostingViewMode}
                                         />
@@ -653,7 +653,7 @@ function AddLabourCost(props) {
                                             register={register}
                                             mandatory={false}
                                             rules={{
-                                                required: true,
+                                                required: false,
                                                 validate: { number, checkWhiteSpaces, decimalNumberLimit6 },
                                             }}
                                             handleChange={() => { }}

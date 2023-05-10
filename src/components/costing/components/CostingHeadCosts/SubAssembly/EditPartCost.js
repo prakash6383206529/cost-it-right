@@ -142,7 +142,7 @@ function EditPartCost(props) {
         props.closeDrawer('')
     };
 
-    const netCostCalculator = (gridIndex) => {
+    const netCostCalculator = (gridIndex, currentGrid = []) => {
 
         // TAKING OBJECT FROM WHOLE ARRAY LIST USING INDEX ON WHICH USER IS EDITING
         let editedObject = gridData[gridIndex]
@@ -150,30 +150,35 @@ function EditPartCost(props) {
         let netCost = 0
 
         // GET RUN TIME EDITED VALUES FROM INPUT FIELD
-        editedObject.SOBPercentage = getValues(`${PartCostFields}.${gridIndex}.SOBPercentage`)
-        editedObject.DeltaValue = getValues(`${PartCostFields}.${gridIndex}.DeltaValue`)
-        editedObject.DeltaSign = getValues(`${PartCostFields}.${gridIndex}.DeltaSign`)
+        if (costData.CostingTypeId === WACTypeId) {
+            editedObject = currentGrid[gridIndex]
+            editedObject.SOBPercentage = getValues(`${PartCostFields}.${gridIndex}.SOBPercentage`)
+        } else {
+            editedObject.SOBPercentage = getValues(`${PartCostFields}.${gridIndex}.SOBPercentage`)
+            editedObject.DeltaValue = getValues(`${PartCostFields}.${gridIndex}.DeltaValue`)
+            editedObject.DeltaSign = getValues(`${PartCostFields}.${gridIndex}.DeltaSign`)
+            let arr = Object.assign([...gridData], { [gridIndex]: editedObject })
+            let sum = calcTotalSOBPercent(arr)
+            if (sum > 100) {
+                Toaster.warning('Total SOB Percent should not be greater than 100');
+                setValue(`${PartCostFields}.${gridIndex}.SOBPercentage`, 0)
+                editedObject.SOBPercentage = 0
+            }
 
-        let arr = Object.assign([...gridData], { [gridIndex]: editedObject })
-        let sum = calcTotalSOBPercent(arr)
-        if (sum > 100) {
-            Toaster.warning('Total SOB Percent should not be greater than 100');
-            setValue(`${PartCostFields}.${gridIndex}.SOBPercentage`, 0)
-            editedObject.SOBPercentage = 0
-        }
+            // RESPECTIVE CALCULATION FOR + and - DELTA SIGN
+            if (editedObject.DeltaSign?.label === '+') {
+                netCost = percentageOfNumber(checkForNull(editedObject.SettledPrice) + checkForNull(editedObject.DeltaValue), checkForNull(editedObject.SOBPercentage))
+                editedObject.NetCost = netCost
+                setValue(`${PartCostFields}.${gridIndex}.NetCost`, checkForDecimalAndNull(netCost, initialConfiguration.NoOfDecimalForPrice))
+            } if (editedObject.DeltaSign?.label === '-') {
+                netCost = percentageOfNumber(checkForNull(editedObject.SettledPrice) - checkForNull(editedObject.DeltaValue), checkForNull(editedObject.SOBPercentage))
+                editedObject.NetCost = netCost
+                setValue(`${PartCostFields}.${gridIndex}.NetCost`, checkForDecimalAndNull(netCost, initialConfiguration.NoOfDecimalForPrice))
+            } if (editedObject.DeltaSign === undefined) {
+                netCost = percentageOfNumber(checkForNull(editedObject.SettledPrice), checkForNull(editedObject.SOBPercentage))
+                editedObject.NetCost = netCost
+            }
 
-        // RESPECTIVE CALCULATION FOR + and - DELTA SIGN
-        if (editedObject.DeltaSign?.label === '+') {
-            netCost = percentageOfNumber(checkForNull(editedObject.SettledPrice) + checkForNull(editedObject.DeltaValue), checkForNull(editedObject.SOBPercentage))
-            editedObject.NetCost = netCost
-            setValue(`${PartCostFields}.${gridIndex}.NetCost`, checkForDecimalAndNull(netCost, initialConfiguration.NoOfDecimalForPrice))
-        } if (editedObject.DeltaSign?.label === '-') {
-            netCost = percentageOfNumber(checkForNull(editedObject.SettledPrice) - checkForNull(editedObject.DeltaValue), checkForNull(editedObject.SOBPercentage))
-            editedObject.NetCost = netCost
-            setValue(`${PartCostFields}.${gridIndex}.NetCost`, checkForDecimalAndNull(netCost, initialConfiguration.NoOfDecimalForPrice))
-        } if (editedObject.DeltaSign === undefined) {
-            netCost = percentageOfNumber(checkForNull(editedObject.SettledPrice), checkForNull(editedObject.SOBPercentage))
-            editedObject.NetCost = netCost
         }
 
         // ASSIGN THE MANIPULAED OBJECT TO THE SAME INDEX IN THE ARRAY LIST
@@ -311,10 +316,16 @@ function EditPartCost(props) {
             setValue(`${PartCostFields}.${indexForUpdate}.SOBPercentage`, 0)
             setValue(`${PartCostFields}.${indexForUpdate}.NetCost`, 0)
 
-            if (costData.CostingTypeId === WACTypeId) {
-                if (indexForUpdate) {
+            if (costData?.CostingTypeId === WACTypeId) {
+                currentGrid[indexForUpdate].NetCost = checkForNull(currentGrid[indexForUpdate].SettledPrice) * checkForNull(currentGrid[indexForUpdate].SOBPercentage / 100)
+                setGridData(currentGrid)
+                setTimeout(() => {
                     setValue(`${PartCostFields}.${indexForUpdate}.SOBPercentage`, currentGrid[indexForUpdate].SOBPercentage)
-                }
+                    setValue(`${PartCostFields}.${indexForUpdate}.NetCost`, checkForDecimalAndNull(checkForNull(currentGrid[indexForUpdate].SettledPrice) * checkForNull(currentGrid[indexForUpdate].SOBPercentage / 100), initialConfiguration.NoOfDecimalForPrice))
+                    setTimeout(() => {
+                        netCostCalculator(indexForUpdate, currentGrid)
+                    }, 300);
+                }, 300);
             }
         } else {
             Toaster.warning('Please select Costing Number')
