@@ -799,7 +799,6 @@ class AddOverhead extends Component {
 
     if (isEditFlag) {
 
-
       if (values.OverheadPercentage === '') {
         values.OverheadPercentage = null
       }
