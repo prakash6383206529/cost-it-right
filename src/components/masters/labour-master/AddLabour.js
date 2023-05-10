@@ -839,7 +839,7 @@ class AddLabour extends Component {
                   onKeyDown={(e) => { this.handleKeyDown(e, this.onSubmit.bind(this)); }}
                 >
                   <div className="add-min-height">
-                    {false && <Row>
+                    {costingTypeId !== CBCTypeId && <Row>
                       <Col md="4" className="switch mb15">
                         <label className="switch-level">
                           <div className={"left-title"}>Employed</div>
