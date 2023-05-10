@@ -187,11 +187,12 @@
       }
 
       &:nth-child(6),
-      &:nth-child(7) {
+      &:nth-child(7),
+      &:nth-child(8) {
         width: 11%;
       }
 
-      &:nth-child(8) {
+      &:nth-child(9) {
         text-align: right;
         width: 7%;
         min-width: 130px;
