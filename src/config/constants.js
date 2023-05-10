@@ -2554,7 +2554,7 @@ export const ZBCTypeIdFull = Number(reactLocalStorage.getObject('CostingHeadsLis
 export const VBCTypeIdFull = Number(reactLocalStorage.getObject('CostingHeadsListFullForm')[VBC])
 export const CBCTypeIdFull = Number(reactLocalStorage.getObject('CostingHeadsListFullForm')[CBC])
 export const NCCTypeIdFull = Number(reactLocalStorage.getObject('CostingHeadsListFullForm')[NCC])
-export const ZBCADDMORE = 0
+export const ZBCADDMORE = 15
 export const VBCADDMORE = 16
 export const CBCADDMORE = 17
 

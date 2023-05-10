@@ -1416,6 +1416,15 @@ export function getRMApprovalList(masterId, skip, take, isPagination, obj, callb
                 default:
                     data = null; // or any default value as per requirement
             }
+            if (response.data.Result || response.status === 204) {
+                //
+                dispatch({
+                    type: GET_RM_APPROVAL_LIST,
+                    payload: response.status === 204 ? [] : data
+                    // payload: JSON.data.DataList
+                })
+                callback(response);
+            }
             dispatch({
                 type: GET_RM_APPROVAL_LIST,
                 payload: data
@@ -1423,7 +1432,6 @@ export function getRMApprovalList(masterId, skip, take, isPagination, obj, callb
             callback(response);
 
         }).catch((error) => {
-
             dispatch({ type: API_FAILURE, });
             callback(error);
             apiErrors(error)

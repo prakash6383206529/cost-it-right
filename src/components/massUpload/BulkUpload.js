@@ -109,7 +109,7 @@ class BulkUpload extends Component {
 
     commonFunction() {
         let levelDetailsTemp = []
-        levelDetailsTemp = userTechnologyDetailByMasterId(this.state.costingTypeId === Number(ZBCADDMORE) ? ZBCTypeId : this.state.costingTypeId, this.props?.masterId, this.props.userMasterLevelAPI)
+        levelDetailsTemp = userTechnologyDetailByMasterId(this.state.costingTypeId === Number(ZBCADDMORE) ? ZBCTypeId : this.state.costingTypeId === Number(VBCADDMORE) ? VBCTypeId : this.state.costingTypeId === Number(CBCADDMORE) ? CBCTypeId : this.state.costingTypeId, this.props?.masterId, this.props.userMasterLevelAPI)
         this.setState({ levelDetails: levelDetailsTemp })
         if (levelDetailsTemp?.length !== 0) {
             let obj = {
@@ -117,7 +117,7 @@ class BulkUpload extends Component {
                 DepartmentId: userDetails().DepartmentId,
                 UserId: loggedInUserId(),
                 Mode: 'master',
-                approvalTypeId: costingTypeIdToApprovalTypeIdFunction(this.state.costingTypeId === Number(ZBCADDMORE) ? ZBCTypeId : this.state.costingTypeId)
+                approvalTypeId: costingTypeIdToApprovalTypeIdFunction(this.state.costingTypeId === Number(ZBCADDMORE) ? ZBCTypeId : this.state.costingTypeId === Number(VBCADDMORE) ? VBCTypeId : this.state.costingTypeId === Number(CBCADDMORE) ? CBCTypeId : this.state.costingTypeId)
             }
 
             this.props.checkFinalUser(obj, (res) => {
@@ -410,8 +410,6 @@ class BulkUpload extends Component {
                                     fileHeads[i] = 'JaliScrapCost'
                                 } else if ((fileName === 'RM Domestic' || fileName === 'RM Import') && fileHeads[i] === 'ScrapRate/JaliScrapCost') {
                                     fileHeads[i] = 'ScrapRate'
-                                } else if (fileName === 'Machine' && fileHeads[i] === 'PlantCode') {
-                                    fileHeads[i] = 'DestinationPlantCode'
                                 }
                                 obj[fileHeads[i]] = el;
                                 return null;
@@ -490,15 +488,23 @@ class BulkUpload extends Component {
             LoggedInUserId: loggedInUserId(),
             CostingTypeId: costingTypeId
         }
+
         let masterUploadData = {
             Records: fileData,
             LoggedInUserId: loggedInUserId(),
-            IsFinalApprover: IsFinalApprover,
+            IsFinalApprover: !this.props.initialConfiguration.IsMasterApprovalAppliedConfigure ? true : IsFinalApprover,
             CostingTypeId: costingTypeId,
             TypeOfEntry: typeOfEntryId ? typeOfEntryId : 0
         }
-        console.log(masterUploadData, "masterUploadData");
+        if (costingTypeId === ZBCADDMORE) {
+            masterUploadData.CostingTypeId = ZBCTypeId
+        } else if (costingTypeId === VBCADDMORE) {
+            masterUploadData.CostingTypeId = VBCTypeId
+        } else if (costingTypeId === CBCADDMORE) {
+            masterUploadData.CostingTypeId = CBCTypeId
+        }
         this.setState({ setDisable: true })
+        console.log('costingTypeId: ', costingTypeId);
 
         if (fileName === 'RM Domestic' || fileName === 'RM Import') {
             this.props.bulkUploadRM(masterUploadData, (res) => {
@@ -553,7 +559,6 @@ class BulkUpload extends Component {
                 this.responseHandler(res)
             });
         } else if (fileName === 'Machine' && (costingTypeId === ZBCTypeId || costingTypeId === VBCTypeId || costingTypeId === CBCTypeId)) {
-            // check here @samrudhi
             this.props.bulkUploadMachine(masterUploadData, (res) => {
                 this.setState({ setDisable: false })
                 this.responseHandler(res)
@@ -728,9 +733,28 @@ class BulkUpload extends Component {
                                                         onClick={() => this.onPressHeads(ZBCADDMORE)}
                                                     />{' '}
                                                     <span>ZBC More Details</span>
-                                                </Label>
-                                            }
-                                        </Col >}
+                                                </Label>}
+                                            {isMachineMoreTemplate &&
+                                                <Label sm={6} className={'pl0 pr0 radio-box mb-0 pb-0'} check>
+                                                    <input
+                                                        type="radio"
+                                                        name="costingHead"
+                                                        checked={costingTypeId === VBCADDMORE ? true : false}
+                                                        onClick={() => this.onPressHeads(VBCADDMORE)}
+                                                    />{' '}
+                                                    <span>VBC More Details</span>
+                                                </Label>}
+                                            {isMachineMoreTemplate &&
+                                                <Label sm={6} className={'pl0 pr0 radio-box mb-0 pb-0'} check>
+                                                    <input
+                                                        type="radio"
+                                                        name="costingHead"
+                                                        checked={costingTypeId === CBCADDMORE ? true : false}
+                                                        onClick={() => this.onPressHeads(CBCADDMORE)}
+                                                    />{' '}
+                                                    <span>CBC More Details</span>
+                                                </Label>}
+                                        </Col>}
 
                                     <div className="input-group mt25 col-md-12 input-withouticon download-btn" >
                                         <Downloadxls
@@ -830,9 +854,28 @@ class BulkUpload extends Component {
                                             onClick={() => this.onPressHeads(ZBCADDMORE)}
                                         />{' '}
                                         <span>ZBC More Details</span>
-                                    </Label>
-                                }
-                            </Col >}
+                                    </Label>}
+                                {isMachineMoreTemplate &&
+                                    <Label sm={6} className={'pl0 pr0 radio-box mb-0 pb-0'} check>
+                                        <input
+                                            type="radio"
+                                            name="costingHead"
+                                            checked={costingTypeId === VBCADDMORE ? true : false}
+                                            onClick={() => this.onPressHeads(VBCADDMORE)}
+                                        />{' '}
+                                        <span>VBC More Details</span>
+                                    </Label>}
+                                {isMachineMoreTemplate &&
+                                    <Label sm={6} className={'pl0 pr0 radio-box mb-0 pb-0'} check>
+                                        <input
+                                            type="radio"
+                                            name="costingHead"
+                                            checked={costingTypeId === CBCADDMORE ? true : false}
+                                            onClick={() => this.onPressHeads(CBCADDMORE)}
+                                        />{' '}
+                                        <span>CBC More Details</span>
+                                    </Label>}
+                            </Col>}
 
                         <div className="input-group mt25 col-md-12 input-withouticon download-btn" >
                             <Downloadxls
