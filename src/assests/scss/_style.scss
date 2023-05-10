@@ -2387,7 +2387,11 @@ input:disabled {
 }
 
 .add-min-height {
-  min-height: calc(100vh - 263px);
+  min-height: calc(100vh - 303px);
+
+  @media screen and (max-width: $middleDesktop) {
+    min-height: calc(100vh - 253px);
+  }
 
   &.mb-3.sm-edit-page {
     min-height: calc(100vh - 332px);

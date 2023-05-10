@@ -639,7 +639,7 @@ class VendorListing extends Component {
                 {this.state.disableDownload && <LoaderCustom message={MESSAGES.DOWNLOADING_MESSAGE} customClass="mt-5" />}
                 {this.state.isLoader && <LoaderCustom customClass={"loader-center"} />}
 
-                <Row className="pb-4 no-filter-row zindex-2">
+                <Row className="pb-4 mb-3 no-filter-row zindex-2">
                     <Col md="3"> <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={'off'} onChange={(e) => this.onFilterTextBoxChanged(e)} /></Col>
                     <Col md="9">
                         <div className="d-flex justify-content-end bd-highlight w100 ">

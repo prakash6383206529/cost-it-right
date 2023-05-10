@@ -366,7 +366,7 @@ class ClientListing extends Component {
                 {this.state.isLoader && <LoaderCustom customClass={"loader-center"} />}
                 < div className="container-fluid" >
                     <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
-                        <Row className="pt-4 no-filter-row">
+                        <Row className="no-filter-row">
                             <Col md="10" className="filter-block"></Col>
                             <Col md="2" className="search-user-block">
                                 <div className="d-flex justify-content-end bd-highlight">
