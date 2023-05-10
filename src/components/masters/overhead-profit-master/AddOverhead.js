@@ -808,8 +808,6 @@ class AddOverhead extends Component {
 
     if (isEditFlag) {
 
-
-
       if (values.OverheadPercentage === '') {
         values.OverheadPercentage = null
       }
@@ -864,6 +862,7 @@ class AddOverhead extends Component {
         RawMaterialName: RawMaterial?.label,
         RawMaterialGradeId: RMGrade?.value,
         RawMaterialGrade: RMGrade?.label,
+        IsFinancialDataChanged: true
       }
       if (isEditFlag) {
         if (DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss') === DayTime(DataToChange?.EffectiveDate).format('YYYY-MM-DD HH:mm:ss')) {
@@ -879,7 +878,6 @@ class AddOverhead extends Component {
           }
         });
       }
-
 
     } else {
 
@@ -908,6 +906,7 @@ class AddOverhead extends Component {
         RawMaterialName: RawMaterial?.label,
         RawMaterialGradeId: RMGrade?.value,
         RawMaterialGrade: RMGrade?.label,
+        IsFinancialDataChanged: false
       }
 
       this.props.createOverhead(formData, (res) => {
