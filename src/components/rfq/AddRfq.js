@@ -62,7 +62,6 @@ function AddRfq(props) {
     const [gridApi, setGridApi] = useState(null);
     const [gridColumnApi, setGridColumnApi] = useState(null);
     const [partList, setPartList] = useState([])
-    console.log('partList: ', partList);
     const [vendorList, setVendorList] = useState([])
     const [updateButtonPartNoTable, setUpdateButtonPartNoTable] = useState(false)
     const [updateButtonVendorTable, setUpdateButtonVendorTable] = useState(false)
@@ -135,11 +134,17 @@ function AddRfq(props) {
             item.SOPQuantity.map((ele, ind) => {
                 if (ind !== 2) {
                     ele.PartNo = ele.PartNumber
-                    ele.PartId = item.PartId
+                    ele.PartId = item?.PartId
                     delete ele.PartNumber
                 } else {
                     ele.PartNo = ele.PartNumber
                     ele.PartId = item.PartId
+                    ele.RMName = item?.RMDetailsResponses[0]?.RawMaterialName
+                    ele.RMNameId = item?.RMDetailsResponses[0]?.RawMaterialChildId
+                    ele.RMGrade = item?.RMDetailsResponses[0]?.RawMaterialGrade
+                    ele.RMGradeId = item?.RMDetailsResponses[0]?.RawMaterialGradeId
+                    ele.RMSpecification = item?.RMDetailsResponses[0]?.RawMaterialSpecification
+                    ele.RMSpecificationId = item?.RMDetailsResponses[0]?.RawMaterialSpecificationId
                 }
                 return null
             })
@@ -466,17 +471,26 @@ function AddRfq(props) {
         partIdList && partIdList?.map((item) => {
             let temppartObj = {}
             let partListArr = []
+            let partObject = []
             temppartObj.PartId = item
-            list && list.map((item1) => {
+            list && list.map((item1, index) => {
                 let partListObj = {}
                 if (item1?.PartId === item) {
                     partListObj.PartNumber = item1?.PartNo
                     partListObj.YearName = item1?.YearName
                     partListObj.Quantity = item1?.Quantity
                     partListArr.push(partListObj)
+                    if (index === 2) {
+                        partObject = item1
+                    }
                 }
                 return null
             })
+            temppartObj.RMDetails = [{
+                "RawMaterialChildId": partObject?.RMNameId,
+                "RawMaterialGradeId": partObject?.RMGradeId,
+                "RawMaterialSpecificationId": partObject?.RMSpecificationId
+            }]
             temppartObj.SOPQuantityDetails = partListArr
             temppartArr.push(temppartObj)
             return null
@@ -535,7 +549,8 @@ function AddRfq(props) {
 
     const hyphenFormatter = (props) => {
         const cellValue = props?.value;
-        return checkForDecimalAndNull(cellValue, getConfigurationKey().NoOfDecimalForInputOutput)
+        const rowData = props?.data;
+        return cellValue ? cellValue : (rowData?.PartNumber ? '-' : '')
     }
 
     const sopFormatter = (props) => {
@@ -1292,14 +1307,14 @@ function AddRfq(props) {
                                                                 suppressColumnVirtualisation={true}
                                                             >
                                                                 <AgGridColumn width={"230px"} field="PartNumber" headerName="Part No" cellClass={"colorWhite"} cellRenderer={'partNumberFormatter'}></AgGridColumn>
-                                                                <AgGridColumn width={"230px"} field="VendorListExisting" headerName="Vendor" cellClass={"colorWhite"}></AgGridColumn>
+                                                                <AgGridColumn width={"230px"} field="VendorListExisting" headerName="Vendor" cellClass={"colorWhite"} cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                                                 <AgGridColumn width={"230px"} field="RMName" headerName="RM Name" cellClass={"colorWhite"}></AgGridColumn>
                                                                 <AgGridColumn width={"230px"} field="RMGrade" headerName="RM Grade" cellClass={"colorWhite"}></AgGridColumn>
                                                                 <AgGridColumn width={"230px"} field="RMSpecification" headerName="RM Specification" cellClass={"colorWhite"}></AgGridColumn>
 
                                                                 <AgGridColumn width={"230px"} field="YearName" headerName="Production Year" cellRenderer={'sopFormatter'}></AgGridColumn>
                                                                 <AgGridColumn width={"230px"} field="Quantity" headerName="Annual Forecast Quantity" headerComponent={'quantityHeader'} cellRenderer={'afcFormatter'} editable={EditableCallback} colId="Quantity"></AgGridColumn>
-                                                                <AgGridColumn width={"0px"} field="PartId" headerName="Part Id" hide={true} cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                                                                <AgGridColumn width={"0px"} field="PartId" headerName="Part Id" hide={true} ></AgGridColumn>
                                                                 <AgGridColumn width={"190px"} field="PartId" headerName="Action" cellClass={"colorWhite text-right"} floatingFilter={false} type="rightAligned" cellRenderer={'buttonFormatterFirst'}></AgGridColumn>
                                                             </AgGridReact>
 
@@ -1406,7 +1421,7 @@ function AddRfq(props) {
                                                                 <AgGridColumn field="Vendor" headerName="Vendor (Code)" ></AgGridColumn>
 
                                                                 <AgGridColumn width={"270px"} field="ContactPerson" headerName="Point of Contact" ></AgGridColumn>
-                                                                <AgGridColumn width={"270px"} field="VendorId" headerName="Vendor Id" hide={true} cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                                                                <AgGridColumn width={"270px"} field="VendorId" headerName="Vendor Id" hide={true} ></AgGridColumn>
                                                                 <AgGridColumn width={"180px"} field="partId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'buttonFormatterVendorTable'}></AgGridColumn>
                                                             </AgGridReact>
                                                         </div>
