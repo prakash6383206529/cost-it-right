@@ -321,7 +321,11 @@ function EditPartCost(props) {
                 setGridData(currentGrid)
                 setTimeout(() => {
                     setValue(`${PartCostFields}.${indexForUpdate}.SOBPercentage`, currentGrid[indexForUpdate].SOBPercentage)
-                }, 300)
+                    setValue(`${PartCostFields}.${indexForUpdate}.NetCost`, checkForDecimalAndNull(checkForNull(currentGrid[indexForUpdate].SettledPrice) * checkForNull(currentGrid[indexForUpdate].SOBPercentage / 100), initialConfiguration.NoOfDecimalForPrice))
+                    setTimeout(() => {
+                        netCostCalculator(indexForUpdate, currentGrid)
+                    }, 300);
+                }, 300);
             }
         } else {
             Toaster.warning('Please select Costing Number')
