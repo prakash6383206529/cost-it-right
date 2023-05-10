@@ -153,6 +153,13 @@ function AddNfr(props) {
                         setValue("GroupName", "")
                         setIsVendorDisabled(true)
                     }
+                    if (newArray[0]?.statusId === DRAFTID) {
+                        setSendForApprovalButtonDisable(false)
+                    } else {
+                        setSendForApprovalButtonDisable(true)
+                        setEditWarning(true)
+                        setFilterStatus("NFR is under approval.")
+                    }
                 }
                 setShouldBeLevel(shouldBelevel)
                 setRowData(newArray)
@@ -180,9 +187,9 @@ function AddNfr(props) {
                     if (res?.data?.Result) {
                         if (res?.data?.Data?.IsFinalApprover) {
                             setIsFinalApproverShowButton(false)
+                            setEditWarning(true)
+                            setFilterStatus("You are a final level user and cannot send NFR for approval.")
                         }
-                        setEditWarning(true)
-                        setFilterStatus("You are a final level user and cannot send NFR for approval.")
                     }
                 }))
             }
@@ -216,8 +223,10 @@ function AddNfr(props) {
             groupName: getValues('GroupName'),
             data: vendorList,
             status: DRAFT,
-            statusId: 1
+            statusId: DRAFTID
         };
+        setSendForApprovalButtonDisable(false)
+        setEditWarning(false)
         setCallAPI(true)
         setRowData([...rowData, newCosting]);
         resetData(true)
@@ -765,13 +774,13 @@ function AddNfr(props) {
                                             </td>
                                             <td>{dataItem?.SelectedCostingVersion?.Price}</td>
                                             <td> <div className='action-btn-wrapper pr-2'>
-                                                {item?.statusId !== DRAFTID &&
+                                                {item?.statusId === DRAFTID &&
                                                     <>
-                                                        {!isViewEstimation && item?.statusId !== DRAFTID && <button className="Add-file" type={"button"} title={`${item?.groupName === 'PFS1' ? 'Create PFS1 Costing' : 'Add Costing'}`} onClick={() => addDetails(dataItem, indexOuter, indexInside, item?.groupName === 'PFS1')} />}
+                                                        {!isViewEstimation && <button className="Add-file" type={"button"} title={`${item?.groupName === 'PFS1' ? 'Create PFS1 Costing' : 'Add Costing'}`} onClick={() => addDetails(dataItem, indexOuter, indexInside, item?.groupName === 'PFS1')} />}
                                                     </>}
 
                                                 {!item?.IsNewCosting && item?.Status !== '' && dataItem?.SelectedCostingVersion && (<button className="View" type={"button"} title={"View Costing"} onClick={() => viewDetails(indexInside)} />)}
-                                                {item?.statusId !== DRAFTID &&
+                                                {item?.statusId === DRAFTID &&
                                                     <>
                                                         {!isViewEstimation && !item?.IsNewCosting && dataItem?.SelectedCostingVersion && (<button className="Edit" type={"button"} title={"Edit Costing"} onClick={() => editCosting(indexInside)} />)}
                                                         {!isViewEstimation && !item?.IsNewCosting && dataItem?.SelectedCostingVersion && (<button className="Copy All" title={"Copy Costing"} type={"button"} onClick={() => copyCosting(indexInside)} />)}
@@ -781,11 +790,8 @@ function AddNfr(props) {
                                             </div></td>
                                             {indexInside === 0 && (
                                                 <td rowSpan={item?.data.length} className="table-record">
-                                                    {item?.statusId !== DRAFTID &&
-                                                        <>
-                                                            <button className="Edit" type={"button"} title={"Edit Costing"} onClick={() => editRow(item, indexInside)} disabled={isViewEstimation} />
-                                                            <button className="Delete All ml-1" title={"Delete Costing"} type={"button"} onClick={() => deleteRow(item, indexInside)} disabled={isViewEstimation} />
-                                                        </>}
+                                                    <button className="Edit" type={"button"} title={"Edit Costing"} onClick={() => editRow(item, indexInside)} disabled={isViewEstimation || item?.statusId !== DRAFTID} />
+                                                    <button className="Delete All ml-1" title={"Delete Costing"} type={"button"} onClick={() => deleteRow(item, indexInside)} disabled={isViewEstimation || item?.statusId !== DRAFTID} />
                                                 </td>
                                             )}
                                         </tr>
