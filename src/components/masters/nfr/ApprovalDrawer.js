@@ -244,7 +244,7 @@ const ApprovalDrawer = (props) => {
             dispatch(nfrSendToApproverBySender(req, (res) => {
                 if (res?.data?.Result) {
                     Toaster.success("Costing has been sent for approval.")
-                    toggleDrawer()
+                    toggleDrawer('submit')
                 }
             }))
         }
