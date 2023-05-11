@@ -192,3 +192,22 @@ export function fetchNfrDetailFromSap(callback) {
         });
     };
 }
+
+/**
+ * @method saveNFRCostingInfo
+ * @description save NFR Costing Info
+ */
+export function saveNFRCostingInfo(data, callback) {
+    return (dispatch) => {
+        const request = axios.get(`${API.saveNFRCostingInfo}?nfrGroupId=${data?.nfrGroupId}&vendorId=${data?.vendorId}&costingId=${data?.costingId}`, config());
+        request.then((response) => {
+            if (response.data.Result || response.status === 204) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE, });
+            callback(error);
+            apiErrors(error);
+        });
+    };
+}

@@ -1017,6 +1017,9 @@ export const API = {
   getSalePurchaseProvisionReport: `${BASE_URL}/reports/get-sale-purchase-provision-report`,
   getPoamSummaryReport: `${BASE_URL}/reports/get-poam-summary-report`,
   getPoamImpactReport: `${BASE_URL}/reports/get-poam-impact-report`,
+
+
+  // NFR
   getAllNfrList: `${BASE_URL}/nfr/get-all-nfr-list`,
   getNfrPartDetails: `${BASE_URL}/nfr/get-nfr-part-details`,
   getRMCostMovement: `${BASE_URL}/reports/get-raw-material-cost-movement`,
@@ -1034,6 +1037,7 @@ export const API = {
   createPFS2Costing: `${BASE_URL}/nfr/create-pfs2-costing`,
   getNfrSelectList: `${BASE_URL}/rfq-quotation/select-list-get-nfr`,
   getRawMaterialByNFRPart: `${BASE_URL}/nfr/get-raw-material-by-nfr-part`,
+  saveNFRCostingInfo: `${BASE_URL}/nfr/save-nfr-costing-info`,
 
 
   //SUB ASSEMBLY
@@ -2274,4 +2278,4 @@ export const KEYRFQ = "UAGSqTBCbZ8JqHJl"
 export const IVRFQ = "8vFNmRQEl91nOtrM"
 
 //VERSION 
-export const VERSION = "V2.1.159";
+export const VERSION = "V2.1.160";
