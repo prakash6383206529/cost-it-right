@@ -4,18 +4,21 @@ import NoContentFound from '../../../common/NoContentFound'
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
-import { EMPTY_DATA, EMPTY_GUID, defaultPageSize } from '../../../../config/constants';
+import { EMPTY_DATA, EMPTY_GUID, GOT_GIVEN_REPORT, defaultPageSize } from '../../../../config/constants';
 import LoaderCustom from '../../../common/LoaderCustom';
-import { PaginationWrapper } from '../../../common/commonPagination';
 import { useDispatch, useSelector } from 'react-redux';
 import { getGotAndGivenDetails } from '../../actions/ReportListing';
 import { checkForDecimalAndNull } from '../../../../helper';
 import GotGivenListing from './GotGivenListing';
+import ReactExport from 'react-export-excel';
+import { GOT_GIVEN_EXCEL_TEMPLATE_SUMMARY } from '../../ExcelTemplate';
+const ExcelFile = ReactExport.ExcelFile;
+const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 function GotGivenSummary(props) {
 
     const { part, product } = props
-
     const simulationInsights = []
     const [gridApi, setGridApi] = useState(null);
     const [gridColumnApi, setGridColumnApi] = useState(null);
@@ -29,9 +32,7 @@ function GotGivenSummary(props) {
     const dispatch = useDispatch()
     const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
 
-
     useEffect(() => {
-
         let obj = {}
         obj.plantId = EMPTY_GUID
         obj.partId = part ? (part.value ? part.value : EMPTY_GUID) : EMPTY_GUID
@@ -48,8 +49,6 @@ function GotGivenSummary(props) {
                 setNodataFound(true)
             }
         }))
-
-
     }, [])
 
 
@@ -59,6 +58,7 @@ function GotGivenSummary(props) {
         params.api.paginationGoToPage(0);
 
     };
+
     const onGridReadyVariance = (params) => {
         params.api.sizeColumnsToFit()
 
@@ -90,15 +90,6 @@ function GotGivenSummary(props) {
         customLoadingOverlay: LoaderCustom,
         totalValueRenderer: buttonFormatter
     };
-    const onPageSizeChanged = (newPageSize) => {
-        gridApi.paginationSetPageSize(Number(newPageSize));
-    };
-    useEffect(() => {
-
-    }, [])
-    const onFilterTextBoxChanged = (e) => {
-        gridApi.setQuickFilter(e.target.value);
-    }
 
     const exitReport = () => {
         props.closeDrawer()
@@ -109,7 +100,6 @@ function GotGivenSummary(props) {
         let value = cell != null ? checkForDecimalAndNull(cell, initialConfiguration.NoOfDecimalForPrice) : '';
         return value
     }
-
 
 
     const EditItemDetails = (value, rowData) => {
@@ -130,17 +120,44 @@ function GotGivenSummary(props) {
         return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? cellValue : '-';
     }
 
+    const renderColumn = () => {
+        return returnExcelColumn(GOT_GIVEN_EXCEL_TEMPLATE_SUMMARY, gotCost)
+    }
+
+    const returnExcelColumn = (data = [], TempData) => {
+        let tempData = [...data]
+        let tempArray = []
+        let givenArray = [...givenCost]
+        let finalGivenArray = []
+        givenArray && givenArray.map((item, index) => {
+            let obj = {}
+            for (let key in item) {
+                obj[`given${key}`] = item[key]
+            }
+            finalGivenArray.push(obj)
+        })
+
+        gotCost.map((item, index) => {
+            let obj = { ...gotCost[index], ...finalGivenArray[index], ...variance[index] }
+            tempArray.push(obj)
+        })
+
+        return (<ExcelSheet data={tempArray} name={GOT_GIVEN_REPORT}>
+            {tempData && tempData.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} />)}
+        </ExcelSheet>);
+    }
+
     return (
         <>
             {!mainGotGivenListing && <div className="container-fluid report-listing-page ag-grid-react ">
                 <Row className="pt-4 blue-before ">
                     <Col md="6" lg="6" className="search-user-block mb-3">
                         <div className="d-flex justify-content-end bd-highlight excel-btn w100">
-                            <div>
-                                <Row>
-                                    <div className="pr-0 mb-3"><button type="button" className={"apply ml-1"} onClick={exitReport}> <div className={'back-icon'}></div>Back</button></div>
-                                </Row>
-                            </div>
+                            <ExcelFile filename={'Got Given Report'} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div></button>}>
+                                {renderColumn()}
+                            </ExcelFile>
+                            <div className="mb-3"><button type="button" className={"apply"} onClick={exitReport}> <div className={'back-icon'}></div>Back</button></div>
+
                         </div>
                     </Col>
                 </Row>
