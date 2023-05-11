@@ -13,7 +13,7 @@ import HeaderTitle from '../../common/HeaderTitle';
 import NoContentFound from '../../common/NoContentFound';
 import Toaster from '../../common/Toaster';
 import { AsyncSearchableSelectHookForm, SearchableSelectHookForm, TextFieldHookForm } from '../../layout/HookFormInputs';
-import { getNFRPartWiseGroupDetail, saveNFRGroupDetails } from './actions/nfr';
+import { getNFRPartWiseGroupDetail, saveNFRCostingInfo, saveNFRGroupDetails } from './actions/nfr';
 import { checkVendorPlantConfigurable, loggedInUserId, userDetails, userTechnologyLevelDetails } from '../../../helper';
 import { dataLiist } from '../../../config/masterData';
 import { checkFinalUser, createCosting, createPFS2Costing, deleteDraftCosting, getBriefCostingById, storePartNumber } from '../../costing/actions/Costing';
@@ -289,6 +289,12 @@ function AddNfr(props) {
             }
             dispatch(createPFS2Costing(dataObj, (res) => {
                 if (res?.data?.Result) {
+                    let obj = {
+                        nfrGroupId: rowData[index1]?.nfrPartWiseGroupDetailsId,
+                        vendorId: data?.value,
+                        costingId: res?.data?.Data?.CostingId,
+                    }
+                    dispatch(saveNFRCostingInfo(obj, (res) => { }))
                     setpartInfoStepTwo({ costingId: res?.data?.Data?.CostingId, PFS2TypeId })
                     setcostingData(res?.data?.Data)
                     dispatch(getBriefCostingById(res?.data?.Data?.CostingId, () => {
@@ -342,6 +348,12 @@ function AddNfr(props) {
             }
             dispatch(createCosting(Data, (res) => {
                 if (res.data?.Result) {
+                    let obj = {
+                        nfrGroupId: rowData[index1]?.nfrPartWiseGroupDetailsId,
+                        vendorId: data?.value,
+                        costingId: res?.data?.Data?.CostingId,
+                    }
+                    dispatch(saveNFRCostingInfo(obj, (res) => { }))
                     setpartInfoStepTwo({ costingId: res.data?.Data?.CostingId, NFRTypeId })
                     setcostingData(res.data?.Data)
                     dispatch(getBriefCostingById(res.data?.Data?.CostingId, () => {
