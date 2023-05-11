@@ -181,8 +181,8 @@ const CostingSummaryTable = (props) => {
     let tempObj = viewCostingData[index]
     let labels = ['RM', 'BOP', 'CC', 'ST', 'O&P', 'P&F', 'TC', 'HUNDI/DIS', 'ANY OTHER COST']
     let dataArray = [];
-    let tempColorArray =[];
-  
+    let tempColorArray = [];
+
     temp = [
       checkForDecimalAndNull(tempObj.netRM, initialConfiguration.NoOfDecimalForPrice),
       checkForDecimalAndNull(tempObj.netBOP, initialConfiguration.NoOfDecimalForPrice),
@@ -194,14 +194,14 @@ const CostingSummaryTable = (props) => {
       checkForDecimalAndNull(tempObj.otherDiscountCost, initialConfiguration.NoOfDecimalForPrice),
       checkForDecimalAndNull(tempObj.anyOtherCost, initialConfiguration.NoOfDecimalForPrice),
     ]
-  
+
     let labelArray = temp.reduce((acc, item, index) => {
       if (item !== 0) {
         acc.push(labels[index]);
       }
       return acc;
     }, []);
-  
+
     labelArray.forEach(item => {
       switch (item) {
         case 'RM':
@@ -244,13 +244,13 @@ const CostingSummaryTable = (props) => {
           break;
       }
     })
-  
+
     setPieChartLabel(labelArray)
     setPieChartDataArray(dataArray);
     setPieChartColor(tempColorArray)
   }
-  
-  
+
+
   useEffect(() => {
     applyPermission(topAndLeftMenuData, selectedTechnology)
   }, [topAndLeftMenuData, selectedTechnology])
@@ -1160,7 +1160,7 @@ const CostingSummaryTable = (props) => {
             )}
 
 
-            {<Col md={simulationMode || props.isRfqCosting ? "12" : "8"} className="text-right">
+            {<Col md={simulationMode || props.isRfqCosting ? "12" : "8"} className="text-right d-flex justify-content-end">
 
               {
                 DownloadAccessibility ? <LoaderCustom customClass="pdf-loader" /> :
@@ -1168,7 +1168,7 @@ const CostingSummaryTable = (props) => {
                     <ExcelFile filename={'Costing Summary'} fileExtension={'.xls'} element={<button type="button" className={'user-btn excel-btn mr5 mb-2'} title="Excel"><img src={ExcelIcon} alt="download" /></button>}>
                       {onBtExport()}
                     </ExcelFile>
-                 {props.isRfqCosting && <button onClick={()=>props?.crossButton()} title='Discard Summary' className='CancelIcon rfq-summary-discard'></button>}
+                    {props.isRfqCosting && <button onClick={() => props?.crossButton()} title='Discard Summary' className='CancelIcon rfq-summary-discard'></button>}
                   </div>
               }
               {!simulationMode && !props.isRfqCosting && !props.isRfqCosting &&
@@ -1310,8 +1310,8 @@ const CostingSummaryTable = (props) => {
                                         </button>
                                       }
                                     </span>
-                                  {(!data?.bestCost === true) &&   <span className="d-flex justify-content-between align-items-center pie-chart-container"><span>{(data?.bestCost === true) ? ' ' : checkForDecimalAndNull(data?.poPrice, initialConfiguration.NoOfDecimalForPrice)} {(data?.bestCost === true) ? ' ' : `(${(data?.effectiveDate && data?.effectiveDate !== '') ? DayTime(data?.effectiveDate).format('DD-MM-YYYY') : "-"})`}</span>{(!pdfHead && !drawerDetailPDF && data.totalCost !== 0 && !simulationDrawer) &&
-                                      <span className={`pie-chart-wrapper ${props.isRfqCosting ? 'mt-1': ''}`}>
+                                    {(!data?.bestCost === true) && <span className="d-flex justify-content-between align-items-center pie-chart-container"><span>{(data?.bestCost === true) ? ' ' : checkForDecimalAndNull(data?.poPrice, initialConfiguration.NoOfDecimalForPrice)} {(data?.bestCost === true) ? ' ' : `(${(data?.effectiveDate && data?.effectiveDate !== '') ? DayTime(data?.effectiveDate).format('DD-MM-YYYY') : "-"})`}</span>{(!pdfHead && !drawerDetailPDF && data.totalCost !== 0 && !simulationDrawer) &&
+                                      <span className={`pie-chart-wrapper ${props.isRfqCosting ? 'mt-1' : ''}`}>
                                         <button type='button' className='pie-chart' onClick={() => viewPieData(index)}></button>
                                         {viewPieChart === index &&
                                           <span className='pie-chart-inner'> <Costratiograph data={pieChartData} options={pieChartOption} />
