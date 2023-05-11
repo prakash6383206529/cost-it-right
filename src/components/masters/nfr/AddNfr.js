@@ -83,6 +83,7 @@ function AddNfr(props) {
     const [filterStatus, setFilterStatus] = useState('')
     const [loader, setLoader] = useState(false)
     const [isFinalApproverShowButton, setIsFinalApproverShowButton] = useState(true)
+    const [allCostingNotSelected, setAllCostingNotSelected] = useState(false)
 
     const { register, setValue, getValues, control, formState: { errors }, } = useForm({
         mode: 'onChange',
@@ -97,6 +98,18 @@ function AddNfr(props) {
             }, 50);
         }
     }
+
+    useEffect(() => {
+        let rowtemp = rowData.filter(element => Number(element?.statusId) === DRAFTID)
+        let dataList = _.map(rowtemp[0]?.data, 'SelectedCostingVersion')
+        if (dataList.includes(undefined)) {
+            // if (dataList.every(value => value === undefined)) {
+            setAllCostingNotSelected(true)
+        } else {
+            setAllCostingNotSelected(false)
+        }
+
+    }, [rowData])
 
     useEffect(() => {
         setLoader(true)
@@ -539,7 +552,9 @@ function AddNfr(props) {
         let newObj = {
             data: temprowDataInside,
             groupName: temprowData[indexOuter]?.groupName,
-            nfrPartWiseGroupDetailsId: temprowData[indexOuter]?.nfrPartWiseGroupDetailsId
+            nfrPartWiseGroupDetailsId: temprowData[indexOuter]?.nfrPartWiseGroupDetailsId,
+            status: temprowData[indexOuter]?.status,
+            statusId: temprowData[indexOuter]?.statusId
         }
         temprowData = Object.assign([...temprowData], { [indexOuter]: newObj })
         setRowData(temprowData)
@@ -550,18 +565,6 @@ function AddNfr(props) {
         setSelectedCheckbox(!temp)
     }
     const sendForApproval = () => {
-        if (rowData && rowData[shouldBeLevel - 1]) {
-            let dataList = _.map(rowData[shouldBeLevel - 1]?.data, 'SelectedCostingVersion')
-            if (dataList.includes(undefined)) {
-                // if (dataList.every(value => value === undefined)) {
-                Toaster.warning("Please select at least one costing to send for approval")
-                return false
-            }
-        }
-        // if (selectedCheckBox === false) {
-        //     Toaster.warning("Please select group estimation")
-        //     return false
-        // }
         setShowDrawer(true)
     }
     const closeShowApproval = (type) => {
@@ -704,7 +707,7 @@ function AddNfr(props) {
                             onClick={() => { resetData(false) }}
                             disabled={(isViewEstimation || isOEQAAdded) ? true : false}
                         >
-                            Reset
+                            {isRowEdited ? "Cancel" : "Reset"}
                         </button>
                     </Col>
                 </Row>
@@ -791,7 +794,7 @@ function AddNfr(props) {
                                             {indexInside === 0 && (
                                                 <td rowSpan={item?.data.length} className="table-record">
                                                     <button className="Edit" type={"button"} title={"Edit Costing"} onClick={() => editRow(item, indexInside)} disabled={isViewEstimation || item?.statusId !== DRAFTID} />
-                                                    <button className="Delete All ml-1" title={"Delete Costing"} type={"button"} onClick={() => deleteRow(item, indexInside)} disabled={isViewEstimation || item?.statusId !== DRAFTID} />
+                                                    {/* <button className="Delete All ml-1" title={"Delete Costing"} type={"button"} onClick={() => deleteRow(item, indexInside)} disabled={isViewEstimation || item?.statusId !== DRAFTID} /> */}
                                                 </td>
                                             )}
                                         </tr>
@@ -818,7 +821,7 @@ function AddNfr(props) {
                                 className='user-btn'
                                 type='button'
                                 onClick={sendForApproval}
-                                disabled={isViewEstimation || sendForApprovalButtonDisable}
+                                disabled={isViewEstimation || sendForApprovalButtonDisable || allCostingNotSelected}
                             >
                                 <div className="send-for-approval"></div>
                                 Send for Approval
