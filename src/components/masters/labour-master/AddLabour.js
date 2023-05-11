@@ -833,30 +833,6 @@ class AddLabour extends Component {
                   onKeyDown={(e) => { this.handleKeyDown(e, this.onSubmit.bind(this)); }}
                 >
                   <div className="add-min-height">
-                    {costingTypeId !== CBCTypeId && <Row>
-                      <Col md="4" className="switch mb15">
-                        <label className="switch-level">
-                          <div className={"left-title"}>Employed</div>
-                          <Switch
-                            onChange={this.onPressEmployeeTerms}
-                            checked={this.state.IsEmployeContractual}
-                            id="normal-switch"
-                            disabled={isEditFlag ? true : false}
-                            background="#4DC771"
-                            onColor="#4DC771"
-                            onHandleColor="#ffffff"
-                            offColor="#4DC771"
-                            uncheckedIcon={false}
-                            checkedIcon={false}
-                            height={20}
-                            width={46}
-                          />
-                          <div className={"right-title"}>Contractual</div>
-                        </label>
-                      </Col>
-
-                    </Row>}
-
                     <Col md="12">
                       <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
                         <input
@@ -901,6 +877,30 @@ class AddLabour extends Component {
                         <span>Customer Based</span>
                       </Label>}
                     </Col>
+
+                    {costingTypeId !== CBCTypeId && <Row>
+                      <Col md="4" className="switch mb15">
+                        <label className="switch-level">
+                          <div className={"left-title"}>Employed</div>
+                          <Switch
+                            onChange={this.onPressEmployeeTerms}
+                            checked={this.state.IsEmployeContractual}
+                            id="normal-switch"
+                            disabled={isEditFlag ? true : false}
+                            background="#4DC771"
+                            onColor="#4DC771"
+                            onHandleColor="#ffffff"
+                            offColor="#4DC771"
+                            uncheckedIcon={false}
+                            checkedIcon={false}
+                            height={20}
+                            width={46}
+                          />
+                          <div className={"right-title"}>Contractual</div>
+                        </label>
+                      </Col>
+
+                    </Row>}
 
                     <Row>
                       <Col md="12" className="filter-block">
