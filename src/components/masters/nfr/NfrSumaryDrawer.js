@@ -7,19 +7,24 @@ import ApprovalWorkFlow from "../../costing/components/approval/ApprovalWorkFlow
 import { Fragment } from "react";
 import ApprovalDrawer from "./ApprovalDrawer";
 import NoContentFound from "../../common/NoContentFound";
-import { EMPTY_DATA, NFRTypeId } from "../../../config/constants";
+import { EMPTY_DATA, NFRTypeId, defaultPageSize } from "../../../config/constants";
 import { useDispatch } from "react-redux";
 import { getNFRApprovalSummary } from "./actions/nfr";
-import { formViewData, loggedInUserId, userDetails, userTechnologyLevelDetails } from "../../../helper";
+import { formViewData, loggedInUserId, searchNocontentFilter, userDetails, userTechnologyLevelDetails } from "../../../helper";
 import { costingTypeIdToApprovalTypeIdFunction } from "../../common/CommonFunctions";
 import { checkFinalUser, getSingleCostingDetails, setCostingViewData } from "../../costing/actions/Costing";
 import { getUsersTechnologyLevelAPI } from "../../../actions/auth/AuthActions";
 import CostingDetailSimulationDrawer from "../../simulation/components/CostingDetailSimulationDrawer";
-
+import { AgGridReact } from "ag-grid-react/lib/agGridReact";
+import { AgGridColumn } from "ag-grid-react/lib/agGridColumn";
+import { PaginationWrapper } from "../../common/commonPagination";
+import WarningMessage from "../../common/WarningMessage";
+import Toaster from "../../common/Toaster";
+const gridOptions = {};
 
 function NfrSummaryDrawer(props) {
     const { rowData } = props
-    const [loader, setLoader] = useState(true)
+    const [loader, setLoader] = useState(false)
     const [approvalLevelStep, setApprovalLevelStep] = useState([])
     const [tableData, setTableData] = useState([])
     const [approvalDrawer, setApprovalDrawer] = useState(false)
@@ -33,11 +38,18 @@ function NfrSummaryDrawer(props) {
     const [isCostingDrawerLoader, setIsCostingDrawerLoader] = useState(false)
     const [viewCostingData, setViewCostingData] = useState({})
     const [isApprovalDone, setIsApprovalDone] = useState(false) // this is for hiding approve and  reject button when costing is approved and  send for futher approval
+    const [gridApi, setgridApi] = useState(null);                      // DONT DELETE THIS STATE , IT IS USED BY AG GRID
+    const [gridColumnApi, setgridColumnApi] = useState(null);
+    const [noData, setNoData] = useState(false)
+    const [selectedRowData, setSelectedRowData] = useState([]);
+    const [isDataCome, setIsDataCome] = useState(false);
+
     const dispatch = useDispatch()
 
     useEffect(() => {
+        setLoader(true)
         dispatch(getNFRApprovalSummary(rowData?.NfrGroupId, loggedInUserId(), (res) => {
-
+            setLoader(false)
             if (res?.data?.Result === true) {
                 setNFRData(res?.data?.Data)
                 setIsApprovalDone(res?.data?.Data?.IsSent)
@@ -80,6 +92,9 @@ function NfrSummaryDrawer(props) {
                 }))
 
             }
+            setTimeout(() => {
+                setIsDataCome(true)
+            }, 200);
         }))
     }, [])
 
@@ -100,7 +115,6 @@ function NfrSummaryDrawer(props) {
     }
 
     const viewCosting = (costingNumber) => {
-        console.log(nfrData?.CostingData, "CostingData");
         setIsCostingDrawerLoader(true)
         dispatch(getSingleCostingDetails(costingNumber, (res) => {
             setIsCostingDrawerLoader(false)
@@ -117,6 +131,103 @@ function NfrSummaryDrawer(props) {
     const closeCostingDrawer = () => {
         setIsOpen(false)
     }
+    const isFirstColumn = (params) => {
+        var displayedColumns = params.columnApi.getAllDisplayedColumns();
+        var thisIsFirstColumn = displayedColumns[0] === params.column;
+
+        return thisIsFirstColumn;
+    }
+
+    const defaultColDef = {
+        resizable: true,
+        filter: true,
+        sortable: false,
+        checkboxSelection: isFirstColumn
+    };
+
+    const isRowSelectable = (rowNode) => {
+        return (!isApprovalDone && sendForApprovalButtonShow) ? true : false
+    }
+
+    const onGridReady = (params) => {
+        setgridApi(params.api);
+        params.api.sizeColumnsToFit();
+        setgridColumnApi(params.columnApi);
+        params.api.paginationGoToPage(0);
+    };
+
+
+
+    const onFloatingFilterChanged = (value) => {
+        rowData.length !== 0 && setNoData(searchNocontentFilter(value, noData))
+    }
+
+
+
+    const onAction = (props) => {
+        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+
+
+        return (
+            <>
+                <button
+                    type="button"
+                    title='View'
+                    className="float-right mb-0 View "
+                    onClick={() => viewCosting(cellValue)}
+                >
+                </button>
+
+            </>
+        )
+    }
+    const vendorFormatter = (props) => {
+        const cellValue = props?.value;
+        const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
+
+        return `${cellValue} (${rowData.VendorCode})`
+    }
+    const plantFormatter = (props) => {
+        const cellValue = props?.value;
+        const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
+
+        return `${cellValue} (${rowData.PlantCode})`
+    }
+    const checkBoxRenderer = (props) => {
+        var selectedRows = gridApi && gridApi?.getSelectedRows();
+    }
+
+    const frameworkComponents = {
+        onAction: onAction,
+        plantFormatter: plantFormatter,
+        vendorFormatter: vendorFormatter,
+        checkBoxRenderer: checkBoxRenderer
+    }
+
+    const onRowSelect = (event) => {
+        var selectedRows = gridApi && gridApi?.getSelectedRows();
+
+
+        if (selectedRows?.length === 0) {
+            setSelectedRowData([])
+        } else {
+            setSelectedRowData(selectedRows[0])
+        }
+
+    }
+    const onPageSizeChanged = (newPageSize) => {
+        var value = document.getElementById('page-size').value;
+        gridApi.paginationSetPageSize(Number(value));
+    };
+
+    const approveClick = () => {
+        if (selectedRowData?.length === 0) {
+            Toaster.warning("Please at least one costing to send for approval.")
+            return false
+        }
+        setApprovalDrawer(true)
+    }
+
     return (
         <div>
             <Drawer className="bottom-drawer" anchor={props.anchor} open={props.isOpen}>
@@ -138,11 +249,11 @@ function NfrSummaryDrawer(props) {
                             <Col>
                                 {nfrData?.ApprovalSteps && <ApprovalWorkFlow approvalLevelStep={nfrData?.ApprovalSteps} approvalNo={nfrData?.ApprovalToken} />}
                             </Col>
-                            <Col md="12">
+                            {/* <Col md="12">
                                 <Table className='table cr-brdr-main'>
                                     <thead>
                                         <tr>
-                                            {/* <th>{"Group Name"}</th> */}
+                                           <th>{"Group Name"}</th> 
                                             <th>{"Vendor"}</th>
                                             <th>{"Plant"}</th>
                                             <th>{"Costing"}</th>
@@ -174,6 +285,58 @@ function NfrSummaryDrawer(props) {
                                         </tr>}
                                     </tbody>
                                 </Table>
+                            </Col> */}
+                            <Col md="12">
+                                <div className={`ag-grid-react container-fluid p-relative`}>
+                                    <Row >
+                                        <Col>
+                                            <div className={`ag-grid-wrapper height-width-wrapper min-height-auto p-relative ${rowData.length <= 0 ? 'overlay-contain' : ''}`}>
+                                                <div className={`ag-theme-material`}>
+                                                    {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
+                                                    {loader && <LoaderCustom />}
+                                                    {isDataCome && <AgGridReact
+                                                        style={{ height: '100%', width: '100%' }}
+                                                        defaultColDef={defaultColDef}
+                                                        floatingFilter={true}
+                                                        domLayout='autoHeight'
+                                                        rowData={nfrData?.CostingData}
+                                                        pagination={true}
+                                                        paginationPageSize={10}
+                                                        onGridReady={onGridReady}
+                                                        gridOptions={gridOptions}
+                                                        noRowsOverlayComponent={'customNoRowsOverlay'}
+                                                        noRowsOverlayComponentParams={{
+                                                            title: EMPTY_DATA,
+                                                            imagClass: 'imagClass'
+                                                        }}
+                                                        frameworkComponents={frameworkComponents}
+                                                        rowSelection={'single'}
+                                                        suppressRowClickSelection={true}
+                                                        onFilterModified={onFloatingFilterChanged}
+                                                        enableBrowserTooltips={true}
+                                                        onRowSelected={onRowSelect}
+                                                        isRowSelectable={isRowSelectable}
+
+                                                    >
+                                                        {/* <AgGridColumn cellClass="has-checkbox" field="Vendor" headerName='Costing Head' cellRenderer={checkBoxRenderer}></AgGridColumn> */}
+                                                        {/* <AgGridColumn cellClass="has-checkbox" field="QuotationNumber" headerName='Group Name' cellRenderer={'linkableFormatter'} ></AgGridColumn> */}
+                                                        <AgGridColumn field="VendorName" headerName="Vendor" cellRenderer={'vendorFormatter'}></AgGridColumn>
+                                                        <AgGridColumn field="PlantName" headerName='Plant' cellRenderer={'plantFormatter'}></AgGridColumn>
+                                                        <AgGridColumn field="CostingNumber" headerName='Costing' ></AgGridColumn>
+                                                        <AgGridColumn field="NetPOPrice" headerName='Net PO' ></AgGridColumn>
+                                                        <AgGridColumn field="CostingId" headerName='Actions' type="rightAligned" cellRenderer={'onAction'}></AgGridColumn>
+
+                                                    </AgGridReact>}
+
+                                                    {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} globalTake={defaultPageSize} />}
+                                                </div>
+                                                {!isApprovalDone && sendForApprovalButtonShow && <div className="text-right pb-3">
+                                                    <WarningMessage message="Select one costing to push on SAP." />
+                                                </div>}
+                                            </div>
+                                        </Col>
+                                    </Row>
+                                </div>
                             </Col>
                         </Row>
                         {!isApprovalDone && sendForApprovalButtonShow && <Row className="sf-btn-footer no-gutters drawer-sticky-btn justify-content-between">
@@ -187,7 +350,7 @@ function NfrSummaryDrawer(props) {
                                     </button>
                                     <button type="button" className="approve-button mr5 approve-hover-btn"
 
-                                        onClick={() => setApprovalDrawer(true)}
+                                        onClick={() => approveClick()}
                                     >
                                         <div className={'save-icon'}></div>
                                         {'Approve'}
