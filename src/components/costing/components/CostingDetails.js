@@ -1307,6 +1307,25 @@ function CostingDetails(props) {
         setValue(`zbcPlantGridFields.${index}.CostingVersion`, '')
       }
 
+
+      if (type === WACTypeId) {
+        let tempData = wacPlantGrid[index]
+        let selectedOptionObj = tempData.CostingOptions.filter((el) => el.CostingId !== Item.CostingId)
+
+        tempData = {
+          ...tempData,
+          CostingOptions: selectedOptionObj,
+          CostingId: Item.CostingId,
+          DisplayStatus: '',
+          Price: '',
+          Status: '',
+        }
+        tempArray = Object.assign([...wacPlantGrid], { [index]: tempData })
+        setWACPlantGrid(tempArray)
+        setValue(`wacPlantGridFields.${index}.CostingVersion`, '')
+      }
+
+
       if (type === VBCTypeId) {
         let tempData = vbcVendorGrid[index]
         let selectedOptionObj = tempData.CostingOptions.filter((el) => el.CostingId !== Item.CostingId,)
@@ -1382,7 +1401,6 @@ function CostingDetails(props) {
         return true;
       })
       setWACPlantGrid(tempArr)
-      setValue(`${wacPlantGridFields}.${index}.ShareOfBusinessPercent`, 0)
     }
 
     if (type === VBCTypeId) {
