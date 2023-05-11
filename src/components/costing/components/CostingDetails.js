@@ -1307,6 +1307,25 @@ function CostingDetails(props) {
         setValue(`zbcPlantGridFields.${index}.CostingVersion`, '')
       }
 
+
+      if (type === WACTypeId) {
+        let tempData = wacPlantGrid[index]
+        let selectedOptionObj = tempData.CostingOptions.filter((el) => el.CostingId !== Item.CostingId)
+
+        tempData = {
+          ...tempData,
+          CostingOptions: selectedOptionObj,
+          CostingId: Item.CostingId,
+          DisplayStatus: '',
+          Price: '',
+          Status: '',
+        }
+        tempArray = Object.assign([...wacPlantGrid], { [index]: tempData })
+        setWACPlantGrid(tempArray)
+        setValue(`wacPlantGridFields.${index}.CostingVersion`, '')
+      }
+
+
       if (type === VBCTypeId) {
         let tempData = vbcVendorGrid[index]
         let selectedOptionObj = tempData.CostingOptions.filter((el) => el.CostingId !== Item.CostingId,)
@@ -1382,7 +1401,6 @@ function CostingDetails(props) {
         return true;
       })
       setWACPlantGrid(tempArr)
-      setValue(`${wacPlantGridFields}.${index}.ShareOfBusinessPercent`, 0)
     }
 
     if (type === VBCTypeId) {
@@ -2591,7 +2609,6 @@ function CostingDetails(props) {
                                   <thead>
                                     <tr>
                                       <th className='vendor'>{`Plant (Code)`}</th>
-                                      <th className="share-of-business">{`SOB (%)`}{SOBAccessibility && zbcPlantGrid.length > 0 && <button className="edit-details-btn ml5" type={"button"} onClick={updateZBCState} />}</th>
                                       <th className="costing-version" >{`Costing Version`}</th>
                                       <th className="text-center costing-status" >{`Status`}</th>
                                       <th className="costing-price">{`Price`}</th>
@@ -2615,36 +2632,6 @@ function CostingDetails(props) {
                                         return (
                                           <tr key={index}>
                                             <td>{`${item.PlantName}`}</td>
-                                            <td className="cr-select-height w-100px">
-                                              <NumberFieldHookForm
-                                                label={""}
-                                                name={`${wacPlantGridFields}.${index}.ShareOfBusinessPercent`}
-                                                Controller={Controller}
-                                                control={control}
-                                                register={register}
-                                                mandatory={false}
-                                                rules={{
-                                                  required: true,
-                                                  pattern: {
-                                                    value: /^\d*\.?\d*$/,
-                                                    message: "Invalid Number.",
-                                                  },
-                                                  max: {
-                                                    value: 100,
-                                                    message: "Should not be greater then 100"
-                                                  }
-                                                }}
-                                                defaultValue={item.ShareOfBusinessPercent}
-                                                className=""
-                                                customClassName={"withBorder"}
-                                                handleChange={(e) => {
-                                                  e.preventDefault();
-                                                  handleZBCSOBChange(e, index);
-                                                }}
-                                                errors={errors && errors.wacPlantGridFields && errors.wacPlantGridFields[index] !== undefined ? errors.wacPlantGridFields[index].ShareOfBusinessPercent : ""}
-                                                disabled={isZBCSOBEnabled ? true : false}
-                                              />
-                                            </td>
                                             <td className="cr-select-height w-100px">
                                               <SearchableSelectHookForm
                                                 label={""}
