@@ -69,6 +69,10 @@ $max: 100;
     min-width: $width;
   }
 
+  .layout-min-height-#{$width} {
+    min-height: $width;
+  }
+
   .custom-width-#{$customWidth} {
     width: $customWidth;
   }
