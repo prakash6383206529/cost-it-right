@@ -4,7 +4,6 @@ import { Col, Row } from 'reactstrap';
 import { SearchableSelectHookForm } from '../../../layout/HookFormInputs'
 import { getCostingTechnologySelectList } from '../../../costing/actions/Costing'
 import { useDispatch, useSelector } from 'react-redux';
-import { getGradeSelectList, getRawMaterialFilterSelectList } from '../../../masters/actions/Material'
 import { AgGridReact } from 'ag-grid-react/lib/agGridReact';
 import LoaderCustom from '../../../common/LoaderCustom'
 import { AgGridColumn } from 'ag-grid-react/lib/agGridColumn';
@@ -13,7 +12,7 @@ import { defaultPageSize, EMPTY_DATA } from '../../../../config/constants'
 import { Costmovementgraph } from '../../../dashboard/CostMovementGraph'
 import { graphColor1, graphColor3, graphColor4, graphColor6 } from '../../../dashboard/ChartsDashboard'
 import { PaginationWrapper } from '../../../common/commonPagination';
-import { getCostingBenchMarkBopReport, getCostingBenchMarkRmReport } from '../../actions/ReportListing';
+import { getCostingBenchMarkBopReport } from '../../actions/ReportListing';
 import DayTime from '../../../common/DayTimeWrapper';
 import { checkForDecimalAndNull } from '../../../../helper';
 
@@ -219,8 +218,6 @@ function InsightsBop(props) {
     useEffect(() => {
         setShowListing(false)
         dispatch(getCostingTechnologySelectList(() => { }))
-        dispatch(getGradeSelectList(() => { }))
-        dispatch(getRawMaterialFilterSelectList(() => { }))
 
         let temp = []
         let vendorTemp = []
@@ -771,65 +768,65 @@ function InsightsBop(props) {
 
                         {showListing && <>
                             <Row>
-                            <Col md="12">
-                                <div className={`ag-grid-react`}>
-                                    <div className={`ag-grid-wrapper rminsights_table  ${rowDataNew && rowDataNew?.length <= 0 ? "overlay-contain" : ""}`}>
-                                        <div className="ag-theme-material">
-                                            <AgGridReact
-                                                style={{ height: '100%', width: '100%' }}
-                                                defaultColDef={defaultColDef}
-                                                columnDefs={tableHeaderColumnDefs}
-                                                domLayout='autoHeight'
-                                                rowData={rowDataNew}
-                                                rowSelection={'single'}
-                                                onSelectionChanged={onSelectionChanged}
-                                                pagination={true}
-                                                paginationPageSize={defaultPageSize}
-                                                onGridReady={onGridReady}
-                                                gridOptions={gridOptions}
-                                                // enableCellTextSelection={true}
-                                                loadingOverlayComponent={'customLoadingOverlay'}
-                                                noRowsOverlayComponent={'customNoRowsOverlay'}
-                                                noRowsOverlayComponentParams={{
-                                                    title: EMPTY_DATA,
-                                                }}
-                                                frameworkComponents={frameworkComponents}
-                                            >
-                                                <AgGridColumn pinned="left" field="Specification" />
-                                                <AgGridColumn pinned="left" width="120" field="Minimum" />
-                                                <AgGridColumn pinned="left" width="120" field="Maximum" />
-                                                <AgGridColumn pinned="left" width="120" field="Average" />
+                                <Col md="12">
+                                    <div className={`ag-grid-react`}>
+                                        <div className={`ag-grid-wrapper rminsights_table  ${rowDataNew && rowDataNew?.length <= 0 ? "overlay-contain" : ""}`}>
+                                            <div className="ag-theme-material">
+                                                <AgGridReact
+                                                    style={{ height: '100%', width: '100%' }}
+                                                    defaultColDef={defaultColDef}
+                                                    columnDefs={tableHeaderColumnDefs}
+                                                    domLayout='autoHeight'
+                                                    rowData={rowDataNew}
+                                                    rowSelection={'single'}
+                                                    onSelectionChanged={onSelectionChanged}
+                                                    pagination={true}
+                                                    paginationPageSize={defaultPageSize}
+                                                    onGridReady={onGridReady}
+                                                    gridOptions={gridOptions}
+                                                    // enableCellTextSelection={true}
+                                                    loadingOverlayComponent={'customLoadingOverlay'}
+                                                    noRowsOverlayComponent={'customNoRowsOverlay'}
+                                                    noRowsOverlayComponentParams={{
+                                                        title: EMPTY_DATA,
+                                                    }}
+                                                    frameworkComponents={frameworkComponents}
+                                                >
+                                                    <AgGridColumn pinned="left" field="Specification" />
+                                                    <AgGridColumn pinned="left" width="120" field="Minimum" />
+                                                    <AgGridColumn pinned="left" width="120" field="Maximum" />
+                                                    <AgGridColumn pinned="left" width="120" field="Average" />
 
-                                                <AgGridColumn headerName="Vendor1" headerClass="justify-content-center" marryChildren={true}>
-                                                    <AgGridColumn width="150" field="Plant1" headerName="Plant 1" />
-                                                    <AgGridColumn width="150" field="Plant2" headerName="Plant 2" />
-                                                </AgGridColumn>
-                                                {/* <AgGridColumn headerName="Vendor2" headerClass="justify-content-center" marryChildren={true}>
+                                                    <AgGridColumn headerName="Vendor1" headerClass="justify-content-center" marryChildren={true}>
+                                                        <AgGridColumn width="150" field="Plant1" headerName="Plant 1" />
+                                                        <AgGridColumn width="150" field="Plant2" headerName="Plant 2" />
+                                                    </AgGridColumn>
+                                                    {/* <AgGridColumn headerName="Vendor2" headerClass="justify-content-center" marryChildren={true}>
                                                     <AgGridColumn width="150" field="Plant3" headerName="Plant 3" />
                                                     <AgGridColumn width="150" field="Plant4" headerName="Plant 4" />
                                                     <AgGridColumn width="150" field="Plant5" headerName="Plant 5" />
                                                 </AgGridColumn> */}
-                                                {/* <AgGridColumn headerName="Vendor3" headerClass="justify-content-center" marryChildren={true}>
+                                                    {/* <AgGridColumn headerName="Vendor3" headerClass="justify-content-center" marryChildren={true}>
                                                     <AgGridColumn width="150" field="Plant6" headerName="Plant 6" />
                                                     <AgGridColumn width="150" field="Plant7" headerName="Plant 7" />
                                                     <AgGridColumn width="150" field="Plant8" headerName="Plant 8" />
                                                 </AgGridColumn> */}
-                                            </AgGridReact>
-                                            {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />}
+                                                </AgGridReact>
+                                                {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />}
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                            </Col>
-                        </Row>
-                        <Row className="mt-4">
-                            <Col md="12">
-                                <Costmovementgraph graphData={data1} graphHeight={60} />
-                            </Col>
-                        </Row>
+                                </Col>
+                            </Row>
+                            <Row className="mt-4">
+                                <Col md="12">
+                                    <Costmovementgraph graphData={data1} graphHeight={60} />
+                                </Col>
+                            </Row>
 
-                    </>}
-            </form>}
-        </div>
+                        </>}
+                    </form>}
+            </div>
         </>
     )
 }
