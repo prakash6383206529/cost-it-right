@@ -1160,55 +1160,59 @@ const CostingSummaryTable = (props) => {
             )}
 
 
-            {<Col md={simulationMode || props.isRfqCosting ? "12" : "8"} className="text-right d-flex justify-content-end">
+            {<Col md={simulationMode || props.isRfqCosting ? "12" : "8"} className="text-right">
+              <div className='d-flex justify-content-end'>
 
-              {
-                DownloadAccessibility ? <LoaderCustom customClass="pdf-loader" /> :
-                  <div className='d-flex justify-content-end'>
-                    <ExcelFile filename={'Costing Summary'} fileExtension={'.xls'} element={<button type="button" className={'user-btn excel-btn mr5 mb-2'} title="Excel"><img src={ExcelIcon} alt="download" /></button>}>
-                      {onBtExport()}
-                    </ExcelFile>
-                    {props.isRfqCosting && <button onClick={() => props?.crossButton()} title='Discard Summary' className='CancelIcon rfq-summary-discard'></button>}
-                  </div>
-              }
-              {!simulationMode && !props.isRfqCosting && !props.isRfqCosting &&
-                <ReactToPrint
-                  bodyClass='mx-2 mt-3 remove-space-border'
-                  documentTitle={`${pdfName}-detailed-costing`}
+
+                {
+                  DownloadAccessibility ? <LoaderCustom customClass="pdf-loader" /> :
+                    <div className='d-flex justify-content-end'>
+                      <ExcelFile filename={'Costing Summary'} fileExtension={'.xls'} element={<button type="button" className={'user-btn excel-btn mr5 mb-2'} title="Excel"><img src={ExcelIcon} alt="download" /></button>}>
+                        {onBtExport()}
+                      </ExcelFile>
+                      {props.isRfqCosting && <button onClick={() => props?.crossButton()} title='Discard Summary' className='CancelIcon rfq-summary-discard'></button>}
+                    </div>
+                }
+                {!simulationMode && !props.isRfqCosting && !props.isRfqCosting &&
+                  <ReactToPrint
+                    bodyClass='mx-2 mt-3 remove-space-border'
+                    documentTitle={`${pdfName}-detailed-costing`}
+                    content={reactToPrintContent}
+                    pageStyle={PDFPageStyle}
+                    onAfterPrint={handleAfterPrintDetail}
+                    onBeforeGetContent={handleOnBeforeGetContentDetail}
+                    trigger={reactToPrintTriggerDetail}
+                  />
+                }
+                {!simulationDrawer && !drawerViewMode && !props.isRfqCosting && <ReactToPrint
+                  bodyClass={`my-3 simple-pdf ${simulationMode ? 'mx-1 simulation-print' : 'mx-2'}`}
+                  documentTitle={`${simulationMode ? 'Compare-costing.pdf' : `${pdfName}-costing`}`}
                   content={reactToPrintContent}
-                  pageStyle={PDFPageStyle}
-                  onAfterPrint={handleAfterPrintDetail}
-                  onBeforeGetContent={handleOnBeforeGetContentDetail}
-                  trigger={reactToPrintTriggerDetail}
-                />
-              }
-              {!simulationDrawer && !drawerViewMode && !props.isRfqCosting && <ReactToPrint
-                bodyClass={`my-3 simple-pdf ${simulationMode ? 'mx-1 simulation-print' : 'mx-2'}`}
-                documentTitle={`${simulationMode ? 'Compare-costing.pdf' : `${pdfName}-costing`}`}
-                content={reactToPrintContent}
-                onAfterPrint={handleAfterPrint}
-                onBeforeGetContent={handleOnBeforeGetContent}
-                trigger={reactToPrintTrigger}
-              />}
-              {
-                !simulationMode && !props.isRfqCosting && <>
+                  onAfterPrint={handleAfterPrint}
+                  onBeforeGetContent={handleOnBeforeGetContent}
+                  trigger={reactToPrintTrigger}
+                />}
+                {
+                  !simulationMode && !props.isRfqCosting && <>
 
-                  {(!viewMode && !isFinalApproverShow) && !props.isRfqCosting && (
-                    <button className="user-btn mr-1 mb-2 approval-btn" disabled={isWarningFlag} onClick={() => checkCostings()}>
-                      <div className="send-for-approval"></div>
-                      {'Send For Approval'}
+                    {(!viewMode && !isFinalApproverShow) && !props.isRfqCosting && (
+                      <button className="user-btn mr-1 mb-2 approval-btn" disabled={isWarningFlag} onClick={() => checkCostings()}>
+                        <div className="send-for-approval"></div>
+                        {'Send For Approval'}
+                      </button>
+                    )}
+                    <button
+                      type="button"
+                      className={'user-btn mb-2 comparison-btn'}
+                      onClick={addComparisonDrawerToggle}
+                    >
+                      <div className="compare-arrows"></div>
+                      Add To Comparison{' '}
                     </button>
-                  )}
-                  <button
-                    type="button"
-                    className={'user-btn mb-2 comparison-btn'}
-                    onClick={addComparisonDrawerToggle}
-                  >
-                    <div className="compare-arrows"></div>
-                    Add To Comparison{' '}
-                  </button>
-                  {(showWarningMsg && !warningMsg) && <WarningMessage dClass={"col-md-12 pr-0 justify-content-end"} message={'Costing for this part/Assembly is not yet done!'} />}
-                </>}
+                  </>}
+              </div>
+              {!simulationMode && !props.isRfqCosting && (showWarningMsg && !warningMsg) && <WarningMessage dClass={"col-md-12 pr-0 justify-content-end"} message={'Costing for this part/Assembly is not yet done!'} />}
+
             </Col>}
           </Row>
           <div ref={componentRef}>
@@ -1225,7 +1229,7 @@ const CostingSummaryTable = (props) => {
                 </>}
 
               <Col md="12">
-                <div className={`${viewCostingData[0]?.technologyId !== LOGISTICS ? '' : 'overflow-y-hidden'} table-responsive`}>
+                <div className={`${viewCostingData[0]?.technologyId !== LOGISTICS ? '' : `overflow-y-hidden ${props?.isRfqCosting ? 'layout-min-height-440px' : ''}`} table-responsive`}>
                   <table className={`table table-bordered costing-summary-table ${approvalMode ? 'costing-approval-summary' : ''}`}>
                     <thead>
                       <tr className="main-row">
@@ -1311,13 +1315,9 @@ const CostingSummaryTable = (props) => {
                                       }
                                     </span>
                                     {(!data?.bestCost === true) && <span className="d-flex justify-content-between align-items-center pie-chart-container"><span>{(data?.bestCost === true) ? ' ' : checkForDecimalAndNull(data?.poPrice, initialConfiguration.NoOfDecimalForPrice)} {(data?.bestCost === true) ? ' ' : `(${(data?.effectiveDate && data?.effectiveDate !== '') ? DayTime(data?.effectiveDate).format('DD-MM-YYYY') : "-"})`}</span>{(!pdfHead && !drawerDetailPDF && data.totalCost !== 0 && !simulationDrawer) &&
-                                      <span className={`pie-chart-wrapper ${props.isRfqCosting ? 'mt-1' : ''}`}>
-                                        <button type='button' className='pie-chart' onClick={() => viewPieData(index)}></button>
-                                        {viewPieChart === index &&
-                                          <span className='pie-chart-inner'> <Costratiograph data={pieChartData} options={pieChartOption} />
-                                            <button type='button' onClick={() => setViewPieChart(null)}><img src={CrossIcon} alt='Discard' />
-                                            </button>
-                                          </span>}
+                                      <span className={`pie-chart-wrapper mt-3`}>
+                                        {viewPieChart === index ? <button type='button' className='CancelIcon' title='Discard' onClick={() => setViewPieChart(null)}></button> : <button title='View Pie Chart' type='button' className='pie-chart' onClick={() => viewPieData(index)}></button>}
+                                        {viewPieChart === index && <span className='pie-chart-inner'> <Costratiograph data={pieChartData} options={pieChartOption} /> </span>}
                                       </span>}
                                     </span>}
                                     {/* USE PART NUMBER KEY HERE */}
