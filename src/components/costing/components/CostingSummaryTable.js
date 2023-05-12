@@ -1222,7 +1222,7 @@ const CostingSummaryTable = (props) => {
                 </>}
 
               <Col md="12">
-                <div className={`${viewCostingData[0]?.technologyId !== LOGISTICS ? '' : 'overflow-y-hidden'} table-responsive`}>
+                <div className={`${viewCostingData[0]?.technologyId !== LOGISTICS ? '' : `overflow-y-hidden ${props?.isRfqCosting ? 'layout-min-height-440px' : ''}`} table-responsive`}>
                   <table className={`table table-bordered costing-summary-table ${approvalMode ? 'costing-approval-summary' : ''}`}>
                     <thead>
                       <tr className="main-row">
@@ -1306,13 +1306,9 @@ const CostingSummaryTable = (props) => {
                                       }
                                     </span>
                                     {(!data?.bestCost === true) && <span className="d-flex justify-content-between align-items-center pie-chart-container"><span>{(data?.bestCost === true) ? ' ' : checkForDecimalAndNull(data?.poPrice, initialConfiguration.NoOfDecimalForPrice)} {(data?.bestCost === true) ? ' ' : `(${(data?.effectiveDate && data?.effectiveDate !== '') ? DayTime(data?.effectiveDate).format('DD-MM-YYYY') : "-"})`}</span>{(!pdfHead && !drawerDetailPDF && data.totalCost !== 0 && !simulationDrawer) &&
-                                      <span className={`pie-chart-wrapper ${props.isRfqCosting ? 'mt-1' : ''}`}>
-                                        <button type='button' className='pie-chart' onClick={() => viewPieData(index)}></button>
-                                        {viewPieChart === index &&
-                                          <span className='pie-chart-inner'> <Costratiograph data={pieChartData} options={pieChartOption} />
-                                            <button type='button' onClick={() => setViewPieChart(null)}><img src={CrossIcon} alt='Discard' />
-                                            </button>
-                                          </span>}
+                                      <span className={`pie-chart-wrapper mt-3`}>
+                                        {viewPieChart === index ? <button type='button' className='CancelIcon' title='Discard' onClick={() => setViewPieChart(null)}></button> : <button title='View Pie Chart' type='button' className='pie-chart' onClick={() => viewPieData(index)}></button>}
+                                        {viewPieChart === index && <span className='pie-chart-inner'> <Costratiograph data={pieChartData} options={pieChartOption} /> </span>}
                                       </span>}
                                     </span>}
                                     {/* USE PART NUMBER KEY HERE */}
