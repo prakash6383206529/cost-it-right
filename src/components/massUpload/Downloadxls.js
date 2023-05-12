@@ -205,7 +205,7 @@ class Downloadxls extends React.Component {
             case 'RM Import':
                 return this.returnExcelColumn(checkVendorPlantConfig(RMImportCBC, CBCTypeId), RMImportCBCTempData);
             case 'Operation':
-                return this.returnExcelColumn((CBCOperation, CBCTypeId), CBCOperationTempData);
+                return this.returnExcelColumn((CBCOperation), CBCOperationTempData);
             case 'Machine':
                 return this.returnExcelColumn(checkVendorPlantConfig(MachineCBC, CBCTypeId), MachineCBCTempData);
             case 'Insert Domestic':
