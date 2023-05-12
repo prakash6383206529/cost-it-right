@@ -1104,7 +1104,9 @@ function TabRMCC(props) {
   const setAssemblyLabourCost = (data) => {
     let tempArrForCosting = reactLocalStorage.getObject('costingArray')
 
-
+    tempArrForCosting[0].CostingPartDetails.NetLabourCRMHead = data.NetLabourCRMHead ? data.NetLabourCRMHead : ''
+    tempArrForCosting[0].CostingPartDetails.IndirectLabourCRMHead = data.IndirectLabourCRMHead ? data.IndirectLabourCRMHead : ''
+    tempArrForCosting[0].CostingPartDetails.StaffCRMHead = data.StaffCRMHead ? data.StaffCRMHead : ''
     tempArrForCosting[0].CostingPartDetails.IndirectLaborCost = data.IndirectLaborCost
     tempArrForCosting[0].CostingPartDetails.IndirectLaborCostPercentage = data.IndirectLaborCostPercentage
     tempArrForCosting[0].CostingPartDetails.StaffCost = data.StaffCost
@@ -1142,6 +1144,10 @@ function TabRMCC(props) {
         newItem.CostingPartDetails.StaffCost = obj?.CostingPartDetails?.StaffCost
         newItem.CostingPartDetails.StaffCostPercentage = obj?.CostingPartDetails?.StaffCostPercentage
         newItem.CostingPartDetails.NetLabourCost = obj?.CostingPartDetails?.NetLabourCost
+
+        newItem.CostingPartDetails.NetLabourCRMHead = obj?.CostingPartDetails?.NetLabourCRMHead
+        newItem.CostingPartDetails.IndirectLabourCRMHead = obj?.CostingPartDetails?.IndirectLabourCRMHead
+        newItem.CostingPartDetails.StaffCRMHead = obj?.CostingPartDetails?.StaffCRMHead
 
       }
       if (item.CostingChildPartDetails.length > 0) {

@@ -51,7 +51,7 @@ function CostingHeaderTabs(props) {
   const CostingViewMode = useContext(ViewCostingContext);
   const netPOPrice = useContext(NetPOPriceContext);
   const CostingEditMode = useContext(EditCostingContext);
-  const partType = IdForMultiTechnology.includes(String(costData?.TechnologyId))
+  const partType = (IdForMultiTechnology.includes(String(costData?.TechnologyId)) || costData.CostingTypeId === WACTypeId)
 
   const costingApprovalStatus = useContext(CostingStatusContext);
 
@@ -406,7 +406,7 @@ function CostingHeaderTabs(props) {
           <Nav tabs className="subtabs cr-subtabs-head">
             {costingData.TechnologyId !== LOGISTICS && <NavItem>
               <NavLink className={classnames({ active: activeTab === '1' })} onClick={() => { toggle('1'); }}>
-                {IdForMultiTechnology.includes(String(costingData?.TechnologyId)) ? 'Part Cost' : 'RM + CC'}
+                {(IdForMultiTechnology.includes(String(costingData?.TechnologyId)) || costData.CostingTypeId === WACTypeId) ? 'Part Cost' : 'RM + CC'}
               </NavLink>
             </NavItem>}
             {costingData.TechnologyId !== LOGISTICS && <NavItem>

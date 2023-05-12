@@ -316,6 +316,9 @@ function AssemblyTechnology(props) {
                 "StaffCost": item.StaffCost,
                 "StaffCostPercentage": item.StaffCostPercentage,
                 "IndirectLaborCostPercentage": item.IndirectLaborCostPercentage,
+                "StaffCRMHead": item?.CostingPartDetails?.StaffCRMHead,
+                "NetLabourCRMHead": item?.CostingPartDetails?.NetLabourCRMHead,
+                "IndirectLabourCRMHead": item?.CostingPartDetails?.IndirectLabourCRMHead,
                 "CostingPartDetails": {
                     "CostingId": item.CostingId,
                     "CostingNumber": item.CostingNumber,
@@ -405,7 +408,11 @@ function AssemblyTechnology(props) {
                                     <br></br>
                                     {`Process Cost/Assembly:  ${subAssemblyTechnologyArray[0]?.CostingPartDetails?.TotalProcessCost ? checkForDecimalAndNull(subAssemblyTechnologyArray[0]?.CostingPartDetails?.TotalProcessCost, initialConfiguration.NoOfDecimalForPrice) : '0'}`}
                                     <br></br>
+                                    { }
+                                    {(initialConfiguration.IsShowCostingLabour) && (costData.CostingTypeId === WACTypeId) && `Labour Cost/Assembly:  ${checkForDecimalAndNull(checkForNull(subAssemblyTechnologyArray[0]?.CostingPartDetails?.StaffCost) + checkForNull(subAssemblyTechnologyArray[0]?.CostingPartDetails?.IndirectLaborCost) + checkForNull(subAssemblyTechnologyArray[0]?.CostingPartDetails?.NetLabourCost), initialConfiguration.NoOfDecimalForPrice)}`}
+                                    {(initialConfiguration.IsShowCostingLabour) && (costData.CostingTypeId === WACTypeId) && <br></br>}
                                     {`Total Child's Part Cost:  ${checkForDecimalAndNull(subAssemblyTechnologyArray[0]?.CostingPartDetails?.NetChildPartsCost, initialConfiguration.NoOfDecimalForPrice)}`}
+
                                 </span>
                             </div> : ''
                         }
