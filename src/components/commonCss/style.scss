@@ -3594,8 +3594,14 @@ body {
     max-width: 280px;
     width: 280px;
 
-    @media screen and (max-width:$miniDesktop) {
-      width: 260px;
+    @media screen and (max-width:$middleDesktop) {
+      width: auto;
+    }
+  }
+
+  .overhead-rejection .cross-btn-container {
+    @media screen and (max-width:$middleDesktop) {
+      width: 240px;
     }
   }
 
@@ -3604,8 +3610,8 @@ body {
       max-width: 280px;
       width: 280px;
 
-      @media screen and (max-width:$miniDesktop) {
-        width: 260px;
+      @media screen and (max-width:$middleDesktop) {
+        width: auto;
       }
     }
 
