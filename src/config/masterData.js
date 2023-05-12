@@ -891,6 +891,7 @@ export const ZBCOperation = [
     { label: 'Technology', value: 'Technology' },
     { label: 'Remark', value: 'Remark' },
     { label: 'EffectiveDate', value: 'EffectiveDate' },
+    { label: 'DetailedEntry', value: 'DetailedEntry' },
     { label: 'VendorPlant', value: 'VendorPlant' },
     { label: 'ForType', value: 'ForType' },
     { label: 'MaterialGasCRMHead', value: 'MaterialGasCRMHead' },
@@ -942,7 +943,6 @@ export const ZBCOperation = [
     { label: 'OtherCostCRMHead', value: 'OtherCostCRMHead' },
     { label: 'OtherCostDescription', value: 'OtherCostDescription' },
     { label: 'OtherCost', value: 'OtherCost' },
-    { label: 'DetailedEntry', value: 'DetailedEntry' },
     { label: 'IncludeInterestRateAndDepriciationInRjectionAndProfit', value: 'IncludeInterestRateAndDepriciationInRjectionAndProfit' },
     { label: 'InterestAndDepriciationCRMHead', value: 'InterestAndDepriciationCRMHead' },
     { label: 'InterestAndDepriciationCost', value: 'InterestAndDepriciationCost' }
@@ -1185,6 +1185,7 @@ export const VBCOperation = [
     { label: 'Remark', value: 'Remark' },
     { label: 'Plant', value: 'Plant' },
     { label: 'EffectiveDate', value: 'EffectiveDate' },
+    { label: 'DetailedEntry', value: 'DetailedEntry' },
     { label: 'VendorPlant', value: 'VendorPlant' },
     { label: 'CustomerId', value: 'CustomerId' },
     { label: 'ForType', value: 'ForType' },
@@ -1238,7 +1239,6 @@ export const VBCOperation = [
     { label: 'OtherCostCRMHead', value: 'OtherCostCRMHead' },
     { label: 'OtherCostDescription', value: 'OtherCostDescription' },
     { label: 'OtherCost', value: 'OtherCost' },
-    { label: 'DetailedEntry', value: 'DetailedEntry' },
     { label: 'IncludeInterestRateAndDepriciationInRjectionAndProfit', value: 'IncludeInterestRateAndDepriciationInRjectionAndProfit' },
     { label: 'InterestAndDepriciationCRMHead', value: 'InterestAndDepriciationCRMHead' },
     { label: 'InterestAndDepriciationCost', value: 'InterestAndDepriciationCost' }
@@ -1493,6 +1493,7 @@ export const CBCOperation = [
     { label: 'Remark', value: 'Remark' },
     { label: 'Plant', value: 'Plant' },
     { label: 'EffectiveDate', value: 'EffectiveDate' },
+    { label: 'DetailedEntry', value: 'DetailedEntry' },
     { label: 'VendorPlant', value: 'VendorPlant' },
     { label: 'ForType', value: 'ForType' },
     { label: 'MaterialGasCRMHead', value: 'MaterialGasCRMHead' },
@@ -1544,7 +1545,6 @@ export const CBCOperation = [
     { label: 'OtherCostCRMHead', value: 'OtherCostCRMHead' },
     { label: 'OtherCostDescription', value: 'OtherCostDescription' },
     { label: 'OtherCost', value: 'OtherCost' },
-    { label: 'DetailedEntry', value: 'DetailedEntry' },
     { label: 'IncludeInterestRateAndDepriciationInRjectionAndProfit', value: 'IncludeInterestRateAndDepriciationInRjectionAndProfit' },
     { label: 'InterestAndDepriciationCRMHead', value: 'InterestAndDepriciationCRMHead' },
     { label: 'InterestAndDepriciationCost', value: 'InterestAndDepriciationCost' }
