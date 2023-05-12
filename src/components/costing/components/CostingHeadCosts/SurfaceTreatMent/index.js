@@ -16,6 +16,7 @@ import { useState } from 'react';
 import { IdForMultiTechnology } from '../../../../../config/masterData';
 import { debounce } from 'lodash';
 import { updateMultiTechnologyTopAndWorkingRowCalculation } from '../../../actions/SubAssembly';
+import { WACTypeId } from '../../../../../config/constants';
 
 function SurfaceTreatment(props) {
   const { surfaceData, transportationData, item } = props;
@@ -42,7 +43,7 @@ function SurfaceTreatment(props) {
   const [surfaceTreatmentData, setSurfacTreatmenteData] = useState({})
   const [surfaceTableData, setSurfacetableData] = useState(item?.CostingPartDetails?.SurfaceTreatmentDetails)
   const [transportObj, setTrasportObj] = useState(item?.CostingPartDetails?.TransportationDetails)
-  const partType = IdForMultiTechnology.includes(String(costData?.TechnologyId))
+  const partType = (IdForMultiTechnology.includes(String(costData?.TechnologyId)) || costData.CostingTypeId === WACTypeId)
 
   const [callDiscountApi, setCallDiscountApi] = useState(false)
   const [errorObjectTransport, setErrorObjectTransport] = useState({})

@@ -15,7 +15,7 @@ import { MESSAGES } from '../../../../config/message';
 import { ViewCostingContext } from '../CostingDetails';
 import LoaderCustom from '../../../common/LoaderCustom';
 import NoContentFound from '../../../common/NoContentFound';
-import { defaultPageSize, EMPTY_DATA } from '../../../../config/constants';
+import { defaultPageSize, EMPTY_DATA, WACTypeId } from '../../../../config/constants';
 import { AgGridReact } from 'ag-grid-react/lib/agGridReact';
 import { AgGridColumn } from 'ag-grid-react/lib/agGridColumn';
 import 'ag-grid-community/dist/styles/ag-grid.css';
@@ -48,7 +48,7 @@ function TabToolCost(props) {
   const [processArray, setProcessArray] = useState([])
   const [operationArray, setOperationArray] = useState([])
   const [gridData, setGridData] = useState([])
-  const partType = IdForMultiTechnology.includes(String(costData?.TechnologyId))
+  const partType = (IdForMultiTechnology.includes(String(costData?.TechnologyId)) || costData.CostingTypeId === WACTypeId)
   const [disableSwitch, setDisableSwitch] = useState(false)
   const { subAssemblyTechnologyArray } = useSelector(state => state.subAssembly)
 

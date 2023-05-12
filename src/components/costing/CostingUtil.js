@@ -125,6 +125,9 @@ export const createToprowObjAndSave = (tabData, surfaceTabData, PackageAndFreigh
       "StaffCost": tabData && tabData.CostingPartDetails.StaffCost,
       "StaffCostPercentage": tabData && tabData.CostingPartDetails.StaffCostPercentage,
       "IndirectLaborCostPercentage": tabData && tabData.CostingPartDetails.IndirectLaborCostPercentage,
+      "StaffCRMHead": tabData && tabData?.CostingPartDetails?.StaffCRMHead,
+      "NetLabourCRMHead": tabData && tabData?.CostingPartDetails?.NetLabourCRMHead,
+      "IndirectLabourCRMHead": tabData && tabData?.CostingPartDetails?.IndirectLabourCRMHead,
       // "SurfaceTreatmentCostPerAssembly": surfaceTabData && surfaceTabData.CostingPartDetails?.SurfaceTreatmentCost,
       // "TransportationCostPerAssembly": surfaceTabData && surfaceTabData.CostingPartDetails?.TransportationCost,
       // "TotalSurfaceTreatmentCostPerAssembly": surfaceTabData && surfaceTabData.CostingPartDetails?.NetSurfaceTreatmentCost,
@@ -302,8 +305,6 @@ export const formatMultiTechnologyUpdate = (tabData, totalCost = 0, surfaceTabDa
     return ''
   })
 
-
-
   let temp = {
     "BOPHandlingCharges": {
       "AssemblyCostingId": tabData?.CostingId,
@@ -342,6 +343,9 @@ export const formatMultiTechnologyUpdate = (tabData, totalCost = 0, surfaceTabDa
       "NetLabourCost": tabData?.NetLabourCost,
       "IndirectLaborCost": tabData?.IndirectLaborCost,
       "StaffCost": tabData?.StaffCost,
+      "StaffCRMHead": tabData?.CostingPartDetails?.StaffCRMHead,
+      "NetLabourCRMHead": tabData?.CostingPartDetails?.NetLabourCRMHead,
+      "IndirectLabourCRMHead": tabData?.CostingPartDetails?.IndirectLabourCRMHead,
       "StaffCostPercentage": tabData?.StaffCostPercentage,
       "IndirectLaborCostPercentage": tabData?.IndirectLaborCostPercentage,
     },

@@ -13,6 +13,7 @@ import { reactLocalStorage } from 'reactjs-localstorage';
 import { IdForMultiTechnology } from '../../../../config/masterData';
 import { number, percentageLimitValidation, checkWhiteSpaces } from "../../../../helper/validation";
 import Toaster from '../../../common/Toaster';
+import { WACTypeId } from '../../../../config/constants';
 
 function AddBOPHandling(props) {
   const { item, isAssemblyTechnology } = props
@@ -26,7 +27,7 @@ function AddBOPHandling(props) {
   const [BOPHandlingType, setBOPHandlingType] = useState({})
   const [BOPCost, setBOPCost] = useState(0);
   const { costingData } = useSelector(state => state.costing)
-  const partType = IdForMultiTechnology.includes(String(costingData?.TechnologyId))
+  const partType = (IdForMultiTechnology.includes(String(costingData?.TechnologyId)) || costingData.CostingTypeId === WACTypeId)
 
   const { register, control, setValue, getValues, formState: { errors } } = useForm({
     mode: 'onChange',

@@ -9,7 +9,7 @@ import Toaster from '../../../../common/Toaster'
 import LabourCost from './LabourCost'
 import { getCostingLabourDetails, getLabourDetailsByFilter } from '../../../actions/Costing'
 import DayTime from '../../../../common/DayTimeWrapper'
-import { CBCTypeId, CRMHeads, EMPTY_GUID, NCCTypeId, NFRTypeId, VBCTypeId, ZBCTypeId } from '../../../../../config/constants'
+import { CBCTypeId, CRMHeads, EMPTY_GUID, NCCTypeId, NFRTypeId, VBCTypeId, WACTypeId, ZBCTypeId } from '../../../../../config/constants'
 import { costingInfoContext } from '../../CostingDetailStepTwo'
 import { ViewCostingContext } from '../../CostingDetails'
 import TooltipCustom from '../../../../common/Tooltip'
@@ -63,6 +63,11 @@ function AddLabourCost(props) {
                         item.staffCost = Data?.StaffCost
                         temp.push(item)
                     })
+                    if (temp && temp.length > 0) {
+                        temp[0].StaffCRMHead = Data?.StaffCRMHead
+                        temp[0].IndirectLabourCRMHead = Data?.IndirectLabourCRMHead
+                        temp[0].NetLabourCRMHead = Data?.NetLabourCRMHead
+                    }
                     setTableData(temp)
                 }
             }
@@ -73,8 +78,8 @@ function AddLabourCost(props) {
         obj.vendorId = costingData.CostingTypeId === VBCTypeId ? item.VendorId : EMPTY_GUID
         obj.customerId = costingData.CostingTypeId === CBCTypeId ? item.CustomerId : EMPTY_GUID
         obj.effectiveDate = DayTime(item.CostingDate).format('DD/MM/YYYY')
-        obj.costingHeadId = costingData.CostingTypeId
-        obj.plantId = (initialConfiguration?.IsDestinationPlantConfigure && (costData.CostingTypeId === VBCTypeId || costData.CostingTypeId === NCCTypeId || costData.CostingTypeId === NFRTypeId)) || costData.CostingTypeId === CBCTypeId ? costData.DestinationPlantId : (costData.CostingTypeId === ZBCTypeId) ? costData.PlantId : EMPTY_GUID
+        obj.costingHeadId = costingData.CostingTypeId === WACTypeId ? ZBCTypeId : costingData.CostingTypeId
+        obj.plantId = (initialConfiguration?.IsDestinationPlantConfigure && (costData.CostingTypeId === VBCTypeId || costData.CostingTypeId === NCCTypeId || costData.CostingTypeId === NFRTypeId)) || costData.CostingTypeId === CBCTypeId ? costData.DestinationPlantId : (costData.CostingTypeId === ZBCTypeId || costData.CostingTypeId === WACTypeId) ? costData.PlantId : EMPTY_GUID
         dispatch(getLabourDetailsByFilter(obj, (res) => {
             if (res) {
                 let Data = res.data.DataList[0]

@@ -10,6 +10,7 @@ import { createToprowObjAndSave, formatMultiTechnologyUpdate } from '../../../Co
 import { ViewCostingContext } from '../../CostingDetails';
 import { IdForMultiTechnology } from '../../../../../config/masterData';
 import { updateMultiTechnologyTopAndWorkingRowCalculation } from '../../../actions/SubAssembly';
+import { WACTypeId } from '../../../../../config/constants';
 
 function AssemblyOverheadProfit(props) {
   const { item } = props;
@@ -26,7 +27,7 @@ function AssemblyOverheadProfit(props) {
   const OverheadProfitTabData = useSelector(state => state.costing.OverheadProfitTabData)
 
   const { subAssemblyTechnologyArray } = useSelector(state => state.subAssembly)
-  const partType = IdForMultiTechnology.includes(String(costData.TechnologyId))
+  const partType = (IdForMultiTechnology.includes(String(costData.TechnologyId)) || costData.CostingTypeId === WACTypeId)
 
   const dispatch = useDispatch()
 
@@ -111,7 +112,7 @@ function AssemblyOverheadProfit(props) {
     }
 
     if (!CostingViewMode && checkIsOverheadProfitChange) {
-      if (!IdForMultiTechnology.includes(String(costData?.TechnologyId))) {
+      if (!IdForMultiTechnology.includes(String(costData?.TechnologyId)) || costData.CostingTypeId === WACTypeId) {
         let assemblyRequestedData = createToprowObjAndSave(tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, netPOPrice, getAssemBOPCharge, 3, CostingEffectiveDate)
 
         dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData, res => { }))

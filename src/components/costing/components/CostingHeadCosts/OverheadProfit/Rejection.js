@@ -11,7 +11,7 @@ import { IdForMultiTechnology } from '../../../../../config/masterData';
 import WarningMessage from '../../../../common/WarningMessage';
 import { MESSAGES } from '../../../../../config/message';
 import { number, percentageLimitValidation, isNumber, checkWhiteSpaces, NoSignNoDecimalMessage } from "../../../../../helper/validation";
-import { CRMHeads } from '../../../../../config/constants';
+import { CRMHeads, WACTypeId } from '../../../../../config/constants';
 
 
 let counter = 0;
@@ -34,7 +34,7 @@ function Rejection(props) {
     const [errorMessage, setErrorMessage] = useState('')
 
     // partType USED FOR MANAGING CONDITION IN CASE OF NORMAL COSTING AND ASSEMBLY TECHNOLOGY COSTING (TRUE FOR ASSEMBLY TECHNOLOGY)
-    const partType = IdForMultiTechnology.includes(String(costData?.TechnologyId))
+    const partType = (IdForMultiTechnology.includes(String(costData?.TechnologyId)) || costData.CostingTypeId === WACTypeId)
 
     const dispatch = useDispatch()
 
