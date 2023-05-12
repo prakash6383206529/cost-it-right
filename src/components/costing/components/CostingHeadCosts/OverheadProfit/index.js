@@ -7,7 +7,7 @@ import { calculatePercentage, checkForDecimalAndNull, checkForNull, CheckIsCosti
 import { fetchModelTypeAPI, getPaymentTermsAppliSelectListKeyValue } from '../../../../../actions/Common';
 import { getOverheadProfitDataByModelType, gridDataAdded, isOverheadProfitDataChange, setOverheadProfitErrors, } from '../../../actions/Costing';
 import { costingInfoContext, netHeadCostContext, SurfaceCostContext } from '../../CostingDetailStepTwo';
-import { CBCTypeId, CRMHeads, EMPTY_GUID, NFRTypeId, PART_COST, VBCTypeId } from '../../../../../config/constants';
+import { CBCTypeId, CRMHeads, EMPTY_GUID, NFRTypeId, PART_COST, VBCTypeId, WACTypeId } from '../../../../../config/constants';
 import { SelectedCostingDetail, ViewCostingContext } from '../../CostingDetails';
 import Rejection from './Rejection';
 import Icc from './Icc';
@@ -77,7 +77,7 @@ function OverheadProfit(props) {
     const [totalToolCost, setTotalToolCost] = useState(0)
 
     // partType USED FOR MANAGING CONDITION IN CASE OF NORMAL COSTING AND ASSEMBLY TECHNOLOGY COSTING (TRUE FOR ASSEMBLY TECHNOLOGY)
-    const partType = IdForMultiTechnology.includes(String(costData?.TechnologyId))
+    const partType = (IdForMultiTechnology.includes(String(costData?.TechnologyId)) || costData.CostingTypeId === WACTypeId)
 
     const [modelType, setModelType] = useState((data?.CostingPartDetails && data?.CostingPartDetails.ModelType !== null) ? { label: data?.CostingPartDetails?.ModelType, value: data?.CostingPartDetails?.ModelTypeId } : [])
 

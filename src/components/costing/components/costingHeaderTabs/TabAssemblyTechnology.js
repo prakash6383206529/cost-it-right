@@ -270,6 +270,10 @@ function TabAssemblyTechnology(props) {
     tempsubAssemblyTechnologyArray[0].CostingPartDetails.IndirectLaborCostPercentage = checkForNull(data.IndirectLaborCostPercentage)
     tempsubAssemblyTechnologyArray[0].CostingPartDetails.TotalLabourCost = checkForNull(data.NetLabourCost) + checkForNull(data.IndirectLaborCost) + checkForNull(data.StaffCost)
 
+    tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetLabourCRMHead = data.NetLabourCRMHead ? data.NetLabourCRMHead : ''
+    tempsubAssemblyTechnologyArray[0].CostingPartDetails.IndirectLabourCRMHead = data.IndirectLabourCRMHead ? data.IndirectLabourCRMHead : ''
+    tempsubAssemblyTechnologyArray[0].CostingPartDetails.StaffCRMHead = data.StaffCRMHead ? data.StaffCRMHead : ''
+
     let costPerPieceTotal = 0
     let CostPerAssemblyBOPTotal = 0
     tempsubAssemblyTechnologyArray[0].CostingChildPartDetails && tempsubAssemblyTechnologyArray[0]?.CostingChildPartDetails.map((item) => {

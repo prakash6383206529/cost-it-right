@@ -5,7 +5,7 @@ import AddOperation from '../../Drawers/AddOperation';
 import { Col, Row, Table } from 'reactstrap';
 import { SearchableSelectHookForm, TextAreaHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs';
 import NoContentFound from '../../../../common/NoContentFound';
-import { CRMHeads, EMPTY_DATA, MASS } from '../../../../../config/constants';
+import { CRMHeads, EMPTY_DATA, MASS, WACTypeId } from '../../../../../config/constants';
 import Toaster from '../../../../common/Toaster';
 import { checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected } from '../../../../../helper';
 import { ViewCostingContext } from '../../CostingDetails';
@@ -53,7 +53,7 @@ function OperationCost(props) {
     }
     if (!CostingViewMode && !IsLocked) {
       // IF TECHNOLOGY IS ASSEMBLY FOR COSTING THIS ILL BE EXECUTED ELSE FOR PART COSTING AND ASSEMBLY COSTING
-      if (IdForMultiTechnology.includes(String(costData?.TechnologyId))) {
+      if (IdForMultiTechnology.includes(String(costData?.TechnologyId)) || (costData.CostingTypeId === WACTypeId)) {
         // FUTURE CONDITION FROM API RESPONCE TO CHECK IF DATA IS CHANGED OR NOT
         // JSON.stringify(gridData) !== JSON.stringify(OldGridData)
 
@@ -211,7 +211,7 @@ function OperationCost(props) {
     totalFinishWeight = tempArr && tempArr.reduce((accummlator, el) => {
       return accummlator + checkForNull(el.OperationCost)
     }, 0)
-    if (IdForMultiTechnology.includes(String(costData?.TechnologyId))) {
+    if (IdForMultiTechnology.includes(String(costData?.TechnologyId)) || (costData.CostingTypeId === WACTypeId)) {
       props.getOperationGrid(tempArr, totalFinishWeight)
     }
   }

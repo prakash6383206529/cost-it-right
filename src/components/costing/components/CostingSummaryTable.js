@@ -16,7 +16,7 @@ import SendForApproval from './approval/SendForApproval'
 import Toaster from '../../common/Toaster'
 import { checkForDecimalAndNull, checkForNull, checkPermission, formViewData, getTechnologyPermission, loggedInUserId, userDetails, allEqual, getConfigurationKey, getCurrencySymbol, highlightCostingSummaryValue, checkVendorPlantConfigurable, userTechnologyLevelDetails } from '../../../helper'
 import Attachament from './Drawers/Attachament'
-import { BOPDOMESTIC, BOPIMPORT, COSTING, DRAFT, FILE_URL, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, VARIANCE, VBC, ZBC, VIEW_COSTING_DATA, VIEW_COSTING_DATA_LOGISTICS, NCC, EMPTY_GUID, CBC, ZBCTypeId, VBCTypeId, NCCTypeId, CBCTypeId, APPROVED, PENDING } from '../../../config/constants'
+import { BOPDOMESTIC, BOPIMPORT, COSTING, DRAFT, FILE_URL, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, VARIANCE, VBC, ZBC, VIEW_COSTING_DATA, VIEW_COSTING_DATA_LOGISTICS, NCC, EMPTY_GUID, CBC, ZBCTypeId, VBCTypeId, NCCTypeId, CBCTypeId, APPROVED, PENDING, WACTypeId } from '../../../config/constants'
 import { useHistory } from "react-router-dom";
 import WarningMessage from '../../common/WarningMessage'
 import DayTime from '../../common/DayTimeWrapper'
@@ -119,7 +119,7 @@ const CostingSummaryTable = (props) => {
     process: false,
     operation: false
   })
-  const partType = IdForMultiTechnology.includes(String(viewCostingData[0]?.technologyId))       //CHECK IF MULTIPLE TECHNOLOGY DATA IN SUMMARY
+  const partType = (IdForMultiTechnology.includes(String(viewCostingData[0]?.technologyId)) || viewCostingData[0]?.costingTypeId === WACTypeId)     //CHECK IF MULTIPLE TECHNOLOGY DATA IN SUMMARY
 
   const componentRef = useRef();
   const onBeforeContentResolve = useRef(null)
@@ -180,8 +180,8 @@ const CostingSummaryTable = (props) => {
     let tempObj = viewCostingData[index]
     let labels = ['RM', 'BOP', 'CC', 'ST', 'O&P', 'P&F', 'TC', 'HUNDI/DIS', 'ANY OTHER COST']
     let dataArray = [];
-    let tempColorArray =[];
-  
+    let tempColorArray = [];
+
     temp = [
       checkForDecimalAndNull(tempObj.netRM, initialConfiguration.NoOfDecimalForPrice),
       checkForDecimalAndNull(tempObj.netBOP, initialConfiguration.NoOfDecimalForPrice),
@@ -193,14 +193,14 @@ const CostingSummaryTable = (props) => {
       checkForDecimalAndNull(tempObj.otherDiscountCost, initialConfiguration.NoOfDecimalForPrice),
       checkForDecimalAndNull(tempObj.anyOtherCost, initialConfiguration.NoOfDecimalForPrice),
     ]
-  
+
     let labelArray = temp.reduce((acc, item, index) => {
       if (item !== 0) {
         acc.push(labels[index]);
       }
       return acc;
     }, []);
-  
+
     labelArray.forEach(item => {
       switch (item) {
         case 'RM':
@@ -243,13 +243,13 @@ const CostingSummaryTable = (props) => {
           break;
       }
     })
-  
+
     setPieChartLabel(labelArray)
     setPieChartDataArray(dataArray);
     setPieChartColor(tempColorArray)
   }
-  
-  
+
+
   useEffect(() => {
     applyPermission(topAndLeftMenuData, selectedTechnology)
   }, [topAndLeftMenuData, selectedTechnology])
@@ -1169,7 +1169,7 @@ const CostingSummaryTable = (props) => {
                     <ExcelFile filename={'Costing Summary'} fileExtension={'.xls'} element={<button type="button" className={'user-btn excel-btn mr5 mb-2'} title="Excel"><img src={ExcelIcon} alt="download" /></button>}>
                       {onBtExport()}
                     </ExcelFile>
-                 {props.isRfqCosting && <button onClick={()=>props?.crossButton()} title='Discard Summary' className='CancelIcon rfq-summary-discard'></button>}
+                    {props.isRfqCosting && <button onClick={() => props?.crossButton()} title='Discard Summary' className='CancelIcon rfq-summary-discard'></button>}
                   </div>
               }
               {!simulationMode && !props.isRfqCosting && !props.isRfqCosting &&
@@ -1311,8 +1311,8 @@ const CostingSummaryTable = (props) => {
                                         </button>
                                       }
                                     </span>
-                                  {(!data?.bestCost === true) &&   <span className="d-flex justify-content-between align-items-center pie-chart-container"><span>{(data?.bestCost === true) ? ' ' : checkForDecimalAndNull(data?.poPrice, initialConfiguration.NoOfDecimalForPrice)} {(data?.bestCost === true) ? ' ' : `(${(data?.effectiveDate && data?.effectiveDate !== '') ? DayTime(data?.effectiveDate).format('DD-MM-YYYY') : "-"})`}</span>{(!pdfHead && !drawerDetailPDF && data.totalCost !== 0 && !simulationDrawer) &&
-                                      <span className={`pie-chart-wrapper ${props.isRfqCosting ? 'mt-1': ''}`}>
+                                    {(!data?.bestCost === true) && <span className="d-flex justify-content-between align-items-center pie-chart-container"><span>{(data?.bestCost === true) ? ' ' : checkForDecimalAndNull(data?.poPrice, initialConfiguration.NoOfDecimalForPrice)} {(data?.bestCost === true) ? ' ' : `(${(data?.effectiveDate && data?.effectiveDate !== '') ? DayTime(data?.effectiveDate).format('DD-MM-YYYY') : "-"})`}</span>{(!pdfHead && !drawerDetailPDF && data.totalCost !== 0 && !simulationDrawer) &&
+                                      <span className={`pie-chart-wrapper ${props.isRfqCosting ? 'mt-1' : ''}`}>
                                         <button type='button' className='pie-chart' onClick={() => viewPieData(index)}></button>
                                         {viewPieChart === index &&
                                           <span className='pie-chart-inner'> <Costratiograph data={pieChartData} options={pieChartOption} />

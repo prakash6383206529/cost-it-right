@@ -4,7 +4,7 @@ import { useForm, Controller, useWatch } from 'react-hook-form';
 import { Col, Row, Table } from 'reactstrap';
 import { SearchableSelectHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs';
 import NoContentFound from '../../../../common/NoContentFound';
-import { CRMHeads, EMPTY_DATA } from '../../../../../config/constants';
+import { CRMHeads, EMPTY_DATA, WACTypeId } from '../../../../../config/constants';
 import Toaster from '../../../../common/Toaster';
 import { calculatePercentage, checkForDecimalAndNull, checkForNull } from '../../../../../helper';
 import AddTool from '../../Drawers/AddTool';
@@ -66,7 +66,7 @@ function Tool(props) {
   const CostingViewMode = useContext(ViewCostingContext);
   const costData = useContext(costingInfoContext);
   const [percentageLimit, setPercentageLimit] = useState(false);
-  const partType = IdForMultiTechnology.includes(String(costingData?.TechnologyId))
+  const partType = (IdForMultiTechnology.includes(String(costingData?.TechnologyId)) || costData.CostingTypeId === WACTypeId)
 
 
   useEffect(() => {

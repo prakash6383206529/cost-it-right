@@ -12,7 +12,7 @@ import { calculatePercentage, checkForDecimalAndNull, checkForNull, loggedInUser
 import { SearchableSelectHookForm, TextAreaHookForm, TextFieldHookForm, NumberFieldHookForm } from '../../../layout/HookFormInputs';
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css';
-import { CRMHeads, FILE_URL } from '../../../../config/constants';
+import { CRMHeads, FILE_URL, WACTypeId } from '../../../../config/constants';
 import Toaster from '../../../common/Toaster';
 import { MESSAGES } from '../../../../config/message';
 import DayTime from '../../../common/DayTimeWrapper'
@@ -73,7 +73,7 @@ function TabDiscountOther(props) {
   const [isOpenandClose, setisOpenandClose] = useState(false)
   const [isConditionCostingOpen, setIsConditionCostingOpen] = useState(false)
   const costingHead = useSelector(state => state.comman.costingHead)
-  const partType = IdForMultiTechnology.includes(String(costData?.TechnologyId))
+  const partType = (IdForMultiTechnology.includes(String(costData?.TechnologyId)) || costData.CostingTypeId === WACTypeId)
   const [showWarning, setShowWarning] = useState(false)
   const [isInputLoader, setIsInputLader] = useState(false)
   const [npvTableData, setNpvTableData] = useState([])

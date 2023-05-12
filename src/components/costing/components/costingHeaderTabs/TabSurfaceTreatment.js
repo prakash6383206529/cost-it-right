@@ -7,7 +7,7 @@ import { costingInfoContext } from '../CostingDetailStepTwo';
 import { checkForNull } from '../../../../helper';
 import PartSurfaceTreatment from '../CostingHeadCosts/SurfaceTreatMent/PartSurfaceTreatment';
 import AssemblySurfaceTreatment from '../CostingHeadCosts/SurfaceTreatMent/AssemblySurfaceTreatment';
-import { LEVEL0 } from '../../../../config/constants';
+import { LEVEL0, WACTypeId } from '../../../../config/constants';
 import { IdForMultiTechnology } from '../../../../config/masterData';
 import { setSubAssemblyTechnologyArray } from '../../actions/SubAssembly';
 import { SelectedCostingDetail, ViewCostingContext } from '../CostingDetails';
@@ -22,7 +22,7 @@ function TabSurfaceTreatment(props) {
   const costData = useContext(costingInfoContext);
   const CostingViewMode = useContext(ViewCostingContext);
   const { subAssemblyTechnologyArray } = useSelector(state => state.subAssembly)
-  const partType = IdForMultiTechnology.includes(String(costData?.TechnologyId))
+  const partType = (IdForMultiTechnology.includes(String(costData?.TechnologyId)) || costData.CostingTypeId === WACTypeId)
   const vbcExistingCosting = useContext(SelectedCostingDetail);
 
   useEffect(() => {
