@@ -13,6 +13,7 @@ import { ViewCostingContext } from '../../CostingDetails'
 import { reactLocalStorage } from 'reactjs-localstorage';
 import TooltipCustom from '../../../../common/Tooltip';
 import { number, checkWhiteSpaces, decimalNumberLimit6, noDecimal, numberLimit6 } from "../../../../../helper/validation";
+import { swappingLogicCommon } from '../../../CostingUtil';
 
 function SurfaceTreatmentCost(props) {
   const { item } = props
@@ -26,6 +27,7 @@ function SurfaceTreatmentCost(props) {
     reValidateMode: 'onChange',
   });
 
+  let dragEnd;
   const dispatch = useDispatch()
 
   const [gridData, setGridData] = useState(surfaceData && surfaceData?.CostingPartDetails?.SurfaceTreatmentDetails)
@@ -210,6 +212,26 @@ function SurfaceTreatmentCost(props) {
     setGridData(tempArr)
   }
 
+  const onMouseLeave = (e) => {
+    dragEnd = e?.target?.title
+
+  }
+
+  const onDragComplete = (e) => {   //SWAPPING ROWS LOGIC FOR PROCESS
+    let dragStart = e?.target?.title
+
+    if (dragEnd && dragStart && (String(dragStart) !== String(dragEnd))) {
+      let finalTemp = swappingLogicCommon(gridData, dragStart, dragEnd, e) //COMMON SWAPPING LOGIC
+      setGridData(finalTemp)
+      finalTemp && finalTemp.map((el, index) => {
+        // Update field values
+        setValue(`crmHeadSurface${index}`, { label: el.SurfaceTreatmentCRMHead, value: index })
+        return null
+      })
+    }
+  }
+
+
   const OperationGridFields = 'OperationGridFields';
 
   /**
@@ -239,7 +261,7 @@ function SurfaceTreatmentCost(props) {
             {/*OPERATION COST GRID */}
 
             <Col md="12">
-              <Table className="cr-brdr-main costing-surface-section" size="sm" >
+              <Table className="cr-brdr-main costing-surface-section" size="sm" onDragOver={onMouseLeave} onDragEnd={onDragComplete} >
                 <thead>
                   <tr>
                     <th>{`Operation Name`}</th>
@@ -261,7 +283,7 @@ function SurfaceTreatmentCost(props) {
                       return (
                         editIndex === index ?
                           <tr key={index}>
-                            <td className='text-overflow'><span title={item.OperationName}>{item.OperationName}</span> </td>
+                            <td className='text-overflow'><span title={item.OperationName + index} draggable={CostingViewMode ? false : true}>{item.OperationName}</span> </td>
                             <td style={{ width: 200 }}>
                               {
                                 <TextFieldHookForm
@@ -350,7 +372,7 @@ function SurfaceTreatmentCost(props) {
                           </tr>
                           :
                           <tr key={index}>
-                            <td className='text-overflow'><span title={item.OperationName}>{item.OperationName}</span></td>
+                            <td className='text-overflow'><span title={item.OperationName + index} draggable={CostingViewMode ? false : true}>{item.OperationName}</span></td>
                             <td style={{ width: 200 }}>{item.SurfaceArea}</td>
                             <td>{item.UOM}</td>
                             <td>{item.RatePerUOM}</td>

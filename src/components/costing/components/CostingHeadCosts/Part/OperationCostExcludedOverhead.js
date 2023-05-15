@@ -15,6 +15,7 @@ import Popup from 'reactjs-popup';
 import TooltipCustom from '../../../../common/Tooltip';
 import { AcceptableOperationUOM, REMARKMAXLENGTH, STRINGMAXLENGTH, TEMPOBJECTOTHEROPERATION } from '../../../../../config/masterData';
 import { number, decimalNumberLimit6, checkWhiteSpaces, noDecimal, numberLimit6 } from "../../../../../helper/validation";
+import { swappingLogicCommon } from '../../../CostingUtil';
 
 let counter = 0;
 function OperationCostExcludedOverhead(props) {
@@ -25,6 +26,7 @@ function OperationCostExcludedOverhead(props) {
     mode: 'onChange',
     reValidateMode: 'onChange',
   });
+  let dragEnd;
 
   const dispatch = useDispatch()
   const [gridData, setGridData] = useState(props.data ? props.data : [])
@@ -285,6 +287,28 @@ function OperationCostExcludedOverhead(props) {
     counter = 0
   }
 
+
+  const onMouseLeave = (e) => {
+    dragEnd = e?.target?.title
+
+  }
+
+  const onDragComplete = (e) => {   //SWAPPING ROWS LOGIC FOR PROCESS
+    let dragStart = e?.target?.title
+
+    if (dragEnd && dragStart && (String(dragStart) !== String(dragEnd))) {
+
+      let finalTemp = swappingLogicCommon(gridData, dragStart, dragEnd, e) //COMMON SWAPPING LOGIC
+      setGridData(finalTemp)
+      finalTemp && finalTemp.map((el, index) => {
+        // Update field values
+        setValue(`crmHeadOtherOperation${index}`, { label: el.OtherOperationCRMHead, value: index })
+        return null
+      })
+    }
+  }
+
+
   const OperationGridFields = 'OperationGridFields';
 
   /**
@@ -314,7 +338,7 @@ function OperationCostExcludedOverhead(props) {
             {/*OPERATION COST GRID */}
 
             <Col md="12">
-              <Table className="table cr-brdr-main costing-operation-cost-section p-relative" size="sm" >
+              <Table className="table cr-brdr-main costing-operation-cost-section p-relative" size="sm" onDragOver={onMouseLeave} onDragEnd={onDragComplete} >
                 <thead className={`${initialConfiguration && initialConfiguration.IsOperationLabourRateConfigure ? 'header-with-labour-rate' : 'header-without-labour-rate'} ${headerPinned ? 'sticky-headers' : ''}`}>
                   <tr>
                     <th>{`Operation Name`}</th>
@@ -340,7 +364,7 @@ function OperationCostExcludedOverhead(props) {
                       return (
                         editIndex === index ?
                           <tr key={index}>
-                            <td className='text-overflow'><span title={item.OtherOperationName}>{item.OtherOperationName}</span> </td>
+                            <td className='text-overflow'><span title={item.OtherOperationName + index} draggable={CostingViewMode ? false : true}>{item.OtherOperationName}</span> </td>
                             <td>{item.OtherOperationCode}</td>
                             <td>{item.UOM}</td>
                             <td>{item.Rate}</td>
@@ -410,7 +434,7 @@ function OperationCostExcludedOverhead(props) {
                           </tr>
                           :
                           <tr key={index}>
-                            <td className='text-overflow'><span title={item.OtherOperationName}>{item.OtherOperationName}</span> </td>
+                            <td className='text-overflow'><span title={item.OtherOperationName + index} draggable={CostingViewMode ? false : true}>{item.OtherOperationName}</span> </td>
                             <td>{item.OtherOperationCode}</td>
                             <td>{item.UOM}</td>
                             <td>{item.Rate}</td>

@@ -16,7 +16,7 @@ import { ViewCostingContext } from '../../CostingDetails';
 import Popup from 'reactjs-popup';
 import OperationCostExcludedOverhead from './OperationCostExcludedOverhead';
 import { MACHINING, REMARKMAXLENGTH, } from '../../../../../config/masterData'
-import { findProcessCost, findProductionPerHour } from '../../../CostingUtil';
+import { findProcessCost, findProductionPerHour, swappingLogicCommon } from '../../../CostingUtil';
 import { debounce } from 'lodash';
 import TooltipCustom from '../../../../common/Tooltip';
 import { number, decimalNumberLimit6, checkWhiteSpaces, noDecimal, numberLimit6 } from "../../../../../helper/validation";
@@ -1191,74 +1191,6 @@ function ProcessCost(props) {
 
     if (dragEnd && dragStart && (String(dragStart) !== String(dragEnd))) {
 
-      const swappingLogicProcess = (groupProcess, processArray) => {
-        dragStart = e?.target?.title?.slice(-1)
-        dragEnd = dragEnd?.slice(-1)
-
-        // Check if dragStart and dragEnd are the same, if so return false
-        if (Number(dragStart) === Number(dragEnd)) {
-          return false
-        }
-
-        // Initialize temporary arrays and variables
-        let temp = []
-        let finalTemp = []
-        let addingIndex = 0
-        let dragStartIndex = 0
-
-        // Loop over the items in processGroupGrid and update the temporary arrays and variables
-        processArray.map((item, index) => {
-          if ((Number(index) !== Number(dragStart))) {
-            // if the item is not the same as dragStart, add it to the temp array
-
-            temp.push(item)
-          } else {
-            // if the item is the same as dragStart, update the dragStartIndex variable
-            dragStartIndex = index
-          }
-
-          if (Number(index) === Number(dragEnd)) {
-            // if the item is the same as dragEnd, update the addingIndex variable
-            addingIndex = index
-          }
-          return null
-        })
-
-        // Check if the item after dragStart is dragEnd, if so return false
-        if (Number(dragStartIndex + 1) === Number(dragEnd)) {
-          return false
-        }
-
-
-        // Loop over the items in temp and update the finalTemp array
-        temp.map((item, index) => {
-          if (addingIndex === index) {
-            // if the index is the same as addingIndex, add the dragStart item to the finalTemp array
-            finalTemp.push(processArray[dragStartIndex])
-          }
-          // add the current item to the finalTemp array
-          finalTemp.push(item)
-          return null
-        })
-
-        // Check if the finalTemp array is the same length as the processGroupGrid array
-        if (finalTemp.length !== processArray.length) {
-          // if not, reset the finalTemp array and loop over the temp array again
-          finalTemp = []
-          temp.map((item, index) => {
-            if (index === temp.length - 1) {
-              // if at the end of the temp array, add the dragStart item to the finalTemp array
-              finalTemp.push(processArray[dragStartIndex])
-            }
-            // add the current item to the finalTemp array
-            finalTemp.push(item)
-            return null
-          })
-        }
-
-        setIsProcessSequenceChanged(true)
-        return finalTemp
-      }
 
       const swappingLogicGroup = (groupProcess, processArray) => {
 
@@ -1385,7 +1317,7 @@ function ProcessCost(props) {
 
       } else if (dragStart && dragEnd && !dragStart?.includes('-group') && !dragEnd?.includes('-group')) {   // LOGIC STARTS FOR NORMAL PROCESS
 
-        let finalTemp = swappingLogicProcess(false, processGroupGrid) //COMMON SWAPPING LOGIC
+        let finalTemp = swappingLogicCommon(processGroupGrid, dragStart, dragEnd, e) //COMMON SWAPPING LOGIC
         setGridDataCommon(finalTemp)
 
         finalTemp && finalTemp.map((el, index) => {
