@@ -843,7 +843,7 @@ function AddMoreOperation(props) {
                                             placeholder={"Select"}
                                             Controller={Controller}
                                             control={control}
-                                            rules={{ required: true }}
+                                            rules={{ required: false }}
                                             register={register}
                                             isMulti={false}
                                             defaultValue={vendor?.length !== 0 ? vendor : ""}
@@ -907,7 +907,7 @@ function AddMoreOperation(props) {
                                                 name={`effectiveDate`}
                                                 label={'Effective Date'}
                                                 handleChange={() => { }}
-                                                rules={{ required: true }}
+                                                rules={{ required: false }}
                                                 Controller={Controller}
                                                 control={control}
                                                 register={register}
@@ -958,13 +958,13 @@ function AddMoreOperation(props) {
                                                     Controller={Controller}
                                                     control={control}
                                                     register={register}
-                                                    mandatory={true}
+                                                    mandatory={false}
                                                     rules={{
-                                                        required: true,
+                                                        required: false,
                                                     }}
                                                     placeholder={'Select'}
                                                     options={searchableSelectType('crmHead')}
-                                                    required={true}
+                                                    required={false}
                                                     handleChange={() => { }}
                                                     disabled={isViewMode}
                                                 />
@@ -978,9 +978,9 @@ function AddMoreOperation(props) {
                                                         Controller={Controller}
                                                         control={control}
                                                         register={register}
-                                                        mandatory={true}
+                                                        mandatory={false}
                                                         rules={{
-                                                            required: true,
+                                                            required: false,
                                                             pattern: {
                                                                 value: /^\d{0,4}(\.\d{0,7})?$/i,
                                                                 message: 'Maximum length for integer is 4 and for decimal is 7',
@@ -1007,13 +1007,13 @@ function AddMoreOperation(props) {
                                                     Controller={Controller}
                                                     control={control}
                                                     register={register}
-                                                    mandatory={true}
+                                                    mandatory={false}
                                                     rules={{
-                                                        required: true,
+                                                        required: false,
                                                     }}
                                                     placeholder={'Select'}
                                                     options={searchableSelectType('crmHead')}
-                                                    required={true}
+                                                    required={false}
                                                     handleChange={() => { }}
                                                     disabled={isViewMode}
                                                 />
@@ -1027,9 +1027,9 @@ function AddMoreOperation(props) {
                                                     Controller={Controller}
                                                     control={control}
                                                     register={register}
-                                                    mandatory={true}
+                                                    mandatory={false}
                                                     rules={{
-                                                        required: true,
+                                                        required: false,
                                                         pattern: {
                                                             value: /^\d{0,4}(\.\d{0,7})?$/i,
                                                             message: 'Maximum length for integer is 4 and for decimal is 7',
@@ -1052,9 +1052,9 @@ function AddMoreOperation(props) {
                                                     Controller={Controller}
                                                     control={control}
                                                     register={register}
-                                                    mandatory={true}
+                                                    mandatory={false}
                                                     rules={{
-                                                        required: true,
+                                                        required: false,
                                                         pattern: {
                                                             value: /^\d{0,4}(\.\d{0,7})?$/i,
                                                             message: 'Maximum length for integer is 4 and for decimal is 7',
@@ -1077,9 +1077,9 @@ function AddMoreOperation(props) {
                                                     Controller={Controller}
                                                     control={control}
                                                     register={register}
-                                                    mandatory={true}
+                                                    mandatory={false}
                                                     rules={{
-                                                        required: true,
+                                                        required: false,
                                                         pattern: {
                                                             value: /^\d{0,4}(\.\d{0,7})?$/i,
                                                             message: 'Maximum length for integer is 4 and for decimal is 7',
@@ -1105,13 +1105,13 @@ function AddMoreOperation(props) {
                                                     Controller={Controller}
                                                     control={control}
                                                     register={register}
-                                                    mandatory={true}
+                                                    mandatory={false}
                                                     rules={{
-                                                        required: true,
+                                                        required: false,
                                                     }}
                                                     placeholder={'Select'}
                                                     options={searchableSelectType('crmHead')}
-                                                    required={true}
+                                                    required={false}
                                                     handleChange={() => { }}
                                                     disabled={isViewMode}
                                                 />
@@ -1124,9 +1124,9 @@ function AddMoreOperation(props) {
                                                     Controller={Controller}
                                                     control={control}
                                                     register={register}
-                                                    mandatory={true}
+                                                    mandatory={false}
                                                     rules={{
-                                                        required: true,
+                                                        required: false,
                                                         pattern: {
                                                             value: /^\d{0,4}(\.\d{0,7})?$/i,
                                                             message: 'Maximum length for integer is 4 and for decimal is 7',
@@ -1149,9 +1149,9 @@ function AddMoreOperation(props) {
                                                     Controller={Controller}
                                                     control={control}
                                                     register={register}
-                                                    mandatory={true}
+                                                    mandatory={false}
                                                     rules={{
-                                                        required: true,
+                                                        required: false,
                                                         pattern: {
                                                             value: /^\d{0,4}(\.\d{0,7})?$/i,
                                                             message: 'Maximum length for integer is 4 and for decimal is 7',
@@ -1174,9 +1174,9 @@ function AddMoreOperation(props) {
                                                     Controller={Controller}
                                                     control={control}
                                                     register={register}
-                                                    mandatory={true}
+                                                    mandatory={false}
                                                     rules={{
-                                                        required: true,
+                                                        required: false,
                                                         pattern: {
                                                             value: /^\d{0,4}(\.\d{0,7})?$/i,
                                                             message: 'Maximum length for integer is 4 and for decimal is 7',
@@ -1223,13 +1223,13 @@ function AddMoreOperation(props) {
                                                 Controller={Controller}
                                                 control={control}
                                                 register={register}
-                                                mandatory={true}
+                                                mandatory={false}
                                                 rules={{
-                                                    required: true,
+                                                    required: false,
                                                 }}
                                                 placeholder={'Select'}
                                                 options={searchableSelectType('crmHead')}
-                                                required={true}
+                                                required={false}
                                                 handleChange={() => { }}
                                                 disabled={isViewMode}
                                             />
@@ -1243,9 +1243,9 @@ function AddMoreOperation(props) {
                                                     Controller={Controller}
                                                     control={control}
                                                     register={register}
-                                                    mandatory={true}
+                                                    mandatory={false}
                                                     rules={{
-                                                        required: true,
+                                                        required: false,
                                                         pattern: {
                                                             value: /^\d{0,4}(\.\d{0,7})?$/i,
                                                             message: 'Maximum length for integer is 4 and for decimal is 7',
@@ -1272,13 +1272,13 @@ function AddMoreOperation(props) {
                                                     Controller={Controller}
                                                     control={control}
                                                     register={register}
-                                                    mandatory={true}
+                                                    mandatory={false}
                                                     rules={{
-                                                        required: true,
+                                                        required: false,
                                                     }}
                                                     placeholder={'Select'}
                                                     options={searchableSelectType('crmHead')}
-                                                    required={true}
+                                                    required={false}
                                                     handleChange={() => { }}
                                                     disabled={isViewMode}
                                                 />
@@ -1292,9 +1292,9 @@ function AddMoreOperation(props) {
                                                     Controller={Controller}
                                                     control={control}
                                                     register={register}
-                                                    mandatory={true}
+                                                    mandatory={false}
                                                     rules={{
-                                                        required: true,
+                                                        required: false,
                                                         pattern: {
                                                             value: /^\d{0,4}(\.\d{0,7})?$/i,
                                                             message: 'Maximum length for integer is 4 and for decimal is 7',
@@ -1317,9 +1317,9 @@ function AddMoreOperation(props) {
                                                     Controller={Controller}
                                                     control={control}
                                                     register={register}
-                                                    mandatory={true}
+                                                    mandatory={false}
                                                     rules={{
-                                                        required: true,
+                                                        required: false,
                                                         pattern: {
                                                             value: /^\d{0,4}(\.\d{0,7})?$/i,
                                                             message: 'Maximum length for integer is 4 and for decimal is 7',
@@ -1342,9 +1342,9 @@ function AddMoreOperation(props) {
                                                     Controller={Controller}
                                                     control={control}
                                                     register={register}
-                                                    mandatory={true}
+                                                    mandatory={false}
                                                     rules={{
-                                                        required: true,
+                                                        required: false,
                                                         pattern: {
                                                             value: /^\d{0,4}(\.\d{0,7})?$/i,
                                                             message: 'Maximum length for integer is 4 and for decimal is 7',
@@ -1393,13 +1393,13 @@ function AddMoreOperation(props) {
                                                     Controller={Controller}
                                                     control={control}
                                                     register={register}
-                                                    mandatory={true}
+                                                    mandatory={false}
                                                     rules={{
-                                                        required: true,
+                                                        required: false,
                                                     }}
                                                     placeholder={'Select'}
                                                     options={searchableSelectType('crmHead')}
-                                                    required={true}
+                                                    required={false}
                                                     handleChange={() => { }}
                                                     disabled={isViewMode}
                                                 />
@@ -1413,9 +1413,9 @@ function AddMoreOperation(props) {
                                                     Controller={Controller}
                                                     control={control}
                                                     register={register}
-                                                    mandatory={true}
+                                                    mandatory={false}
                                                     rules={{
-                                                        required: true,
+                                                        required: false,
                                                         pattern: {
                                                             value: /^\d{0,4}(\.\d{0,7})?$/i,
                                                             message: 'Maximum length for integer is 4 and for decimal is 7',
@@ -1441,13 +1441,13 @@ function AddMoreOperation(props) {
                                                     Controller={Controller}
                                                     control={control}
                                                     register={register}
-                                                    mandatory={true}
+                                                    mandatory={false}
                                                     rules={{
-                                                        required: true,
+                                                        required: false,
                                                     }}
                                                     placeholder={'Select'}
                                                     options={searchableSelectType('crmHead')}
-                                                    required={true}
+                                                    required={false}
                                                     handleChange={() => { }}
                                                     disabled={isViewMode}
                                                 />
@@ -1461,9 +1461,9 @@ function AddMoreOperation(props) {
                                                     Controller={Controller}
                                                     control={control}
                                                     register={register}
-                                                    mandatory={true}
+                                                    mandatory={false}
                                                     rules={{
-                                                        required: true,
+                                                        required: false,
                                                         pattern: {
                                                             value: /^\d{0,4}(\.\d{0,7})?$/i,
                                                             message: 'Maximum length for integer is 4 and for decimal is 7',
@@ -1490,13 +1490,13 @@ function AddMoreOperation(props) {
                                                         Controller={Controller}
                                                         control={control}
                                                         register={register}
-                                                        mandatory={true}
+                                                        mandatory={false}
                                                         rules={{
-                                                            required: true,
+                                                            required: false,
                                                         }}
                                                         placeholder={'Select'}
                                                         options={searchableSelectType('crmHead')}
-                                                        required={true}
+                                                        required={false}
                                                         handleChange={() => { }}
                                                         disabled={isViewMode}
                                                     />
@@ -1510,9 +1510,9 @@ function AddMoreOperation(props) {
                                                         Controller={Controller}
                                                         control={control}
                                                         register={register}
-                                                        mandatory={true}
+                                                        mandatory={false}
                                                         rules={{
-                                                            required: true,
+                                                            required: false,
                                                             pattern: {
                                                                 value: /^\d{0,4}(\.\d{0,7})?$/i,
                                                                 message: 'Maximum length for integer is 4 and for decimal is 7',
@@ -1535,9 +1535,9 @@ function AddMoreOperation(props) {
                                                         Controller={Controller}
                                                         control={control}
                                                         register={register}
-                                                        mandatory={true}
+                                                        mandatory={false}
                                                         rules={{
-                                                            required: true,
+                                                            required: false,
                                                             pattern: {
                                                                 value: /^\d{0,4}(\.\d{0,7})?$/i,
                                                                 message: 'Maximum length for integer is 4 and for decimal is 7',
@@ -1560,9 +1560,9 @@ function AddMoreOperation(props) {
                                                         Controller={Controller}
                                                         control={control}
                                                         register={register}
-                                                        mandatory={true}
+                                                        mandatory={false}
                                                         rules={{
-                                                            required: true,
+                                                            required: false,
                                                             pattern: {
                                                                 value: /^\d{0,4}(\.\d{0,7})?$/i,
                                                                 message: 'Maximum length for integer is 4 and for decimal is 7',
@@ -1610,13 +1610,13 @@ function AddMoreOperation(props) {
                                                 Controller={Controller}
                                                 control={control}
                                                 register={register}
-                                                mandatory={true}
+                                                mandatory={false}
                                                 rules={{
-                                                    required: true,
+                                                    required: false,
                                                 }}
                                                 placeholder={'Select'}
                                                 options={searchableSelectType('crmHead')}
-                                                required={true}
+                                                required={false}
                                                 handleChange={() => { }}
                                                 disabled={isViewMode}
                                             />
@@ -1629,9 +1629,9 @@ function AddMoreOperation(props) {
                                                     Controller={Controller}
                                                     control={control}
                                                     register={register}
-                                                    mandatory={true}
+                                                    mandatory={false}
                                                     rules={{
-                                                        required: true,
+                                                        required: false,
                                                         pattern: {
                                                             value: /^\d{0,4}(\.\d{0,7})?$/i,
                                                             message: 'Maximum length for integer is 4 and for decimal is 7',
@@ -1655,13 +1655,13 @@ function AddMoreOperation(props) {
                                                     Controller={Controller}
                                                     control={control}
                                                     register={register}
-                                                    mandatory={true}
+                                                    mandatory={false}
                                                     rules={{
-                                                        required: true,
+                                                        required: false,
                                                     }}
                                                     placeholder={'Select'}
                                                     options={searchableSelectType('crmHead')}
-                                                    required={true}
+                                                    required={false}
                                                     handleChange={() => { }}
                                                     disabled={isViewMode}
                                                 />
@@ -1675,9 +1675,9 @@ function AddMoreOperation(props) {
                                                     Controller={Controller}
                                                     control={control}
                                                     register={register}
-                                                    mandatory={true}
+                                                    mandatory={false}
                                                     rules={{
-                                                        required: true,
+                                                        required: false,
                                                         pattern: {
                                                             value: /^\d{0,4}(\.\d{0,7})?$/i,
                                                             message: 'Maximum length for integer is 4 and for decimal is 7',
@@ -1702,13 +1702,13 @@ function AddMoreOperation(props) {
                                                     Controller={Controller}
                                                     control={control}
                                                     register={register}
-                                                    mandatory={true}
+                                                    mandatory={false}
                                                     rules={{
-                                                        required: true,
+                                                        required: false,
                                                     }}
                                                     placeholder={'Select'}
                                                     options={searchableSelectType('crmHead')}
-                                                    required={true}
+                                                    required={false}
                                                     handleChange={() => { }}
                                                     disabled={isViewMode}
                                                 />
@@ -1721,9 +1721,9 @@ function AddMoreOperation(props) {
                                                     Controller={Controller}
                                                     control={control}
                                                     register={register}
-                                                    mandatory={true}
+                                                    mandatory={false}
                                                     rules={{
-                                                        required: true,
+                                                        required: false,
                                                         pattern: {
                                                             value: /^\d{0,4}(\.\d{0,7})?$/i,
                                                             message: 'Maximum length for integer is 4 and for decimal is 7',
@@ -1748,13 +1748,13 @@ function AddMoreOperation(props) {
                                                     Controller={Controller}
                                                     control={control}
                                                     register={register}
-                                                    mandatory={true}
+                                                    mandatory={false}
                                                     rules={{
-                                                        required: true,
+                                                        required: false,
                                                     }}
                                                     placeholder={'Select'}
                                                     options={searchableSelectType('crmHead')}
-                                                    required={true}
+                                                    required={false}
                                                     handleChange={() => { }}
                                                     disabled={isViewMode}
                                                 />
@@ -1767,9 +1767,9 @@ function AddMoreOperation(props) {
                                                     Controller={Controller}
                                                     control={control}
                                                     register={register}
-                                                    mandatory={true}
+                                                    mandatory={false}
                                                     rules={{
-                                                        required: true,
+                                                        required: false,
                                                         pattern: {
                                                             value: /^\d{0,4}(\.\d{0,7})?$/i,
                                                             message: 'Maximum length for integer is 4 and for decimal is 7',
@@ -1796,13 +1796,13 @@ function AddMoreOperation(props) {
                                                     Controller={Controller}
                                                     control={control}
                                                     register={register}
-                                                    mandatory={true}
+                                                    mandatory={false}
                                                     rules={{
-                                                        required: true,
+                                                        required: false,
                                                     }}
                                                     placeholder={'Select'}
                                                     options={searchableSelectType('crmHead')}
-                                                    required={true}
+                                                    required={false}
                                                     handleChange={() => { }}
                                                     disabled={isViewMode}
                                                 />
@@ -1816,9 +1816,9 @@ function AddMoreOperation(props) {
                                                     Controller={Controller}
                                                     control={control}
                                                     register={register}
-                                                    mandatory={true}
+                                                    mandatory={false}
                                                     rules={{
-                                                        required: true,
+                                                        required: false,
                                                         pattern: {
                                                             value: /^\d{0,4}(\.\d{0,7})?$/i,
                                                             message: 'Maximum length for integer is 4 and for decimal is 7',
@@ -1843,13 +1843,13 @@ function AddMoreOperation(props) {
                                                     Controller={Controller}
                                                     control={control}
                                                     register={register}
-                                                    mandatory={true}
+                                                    mandatory={false}
                                                     rules={{
-                                                        required: true,
+                                                        required: false,
                                                     }}
                                                     placeholder={'Select'}
                                                     options={searchableSelectType('crmHead')}
-                                                    required={true}
+                                                    required={false}
                                                     handleChange={() => { }}
                                                     disabled={isViewMode}
                                                 />
@@ -1863,9 +1863,9 @@ function AddMoreOperation(props) {
                                                     Controller={Controller}
                                                     control={control}
                                                     register={register}
-                                                    mandatory={true}
+                                                    mandatory={false}
                                                     rules={{
-                                                        required: true,
+                                                        required: false,
                                                         pattern: {
                                                             value: /^\d{0,4}(\.\d{0,7})?$/i,
                                                             message: 'Maximum length for integer is 4 and for decimal is 7',
@@ -1915,13 +1915,13 @@ function AddMoreOperation(props) {
                                                 Controller={Controller}
                                                 control={control}
                                                 register={register}
-                                                mandatory={true}
+                                                mandatory={false}
                                                 rules={{
-                                                    required: true,
+                                                    required: false,
                                                 }}
                                                 placeholder={'Select'}
                                                 options={searchableSelectType('crmHead')}
-                                                required={true}
+                                                required={false}
                                                 handleChange={() => { }}
                                                 disabled={isViewMode}
                                             />
@@ -1935,9 +1935,9 @@ function AddMoreOperation(props) {
                                                     Controller={Controller}
                                                     control={control}
                                                     register={register}
-                                                    mandatory={true}
+                                                    mandatory={false}
                                                     rules={{
-                                                        required: true,
+                                                        required: false,
                                                         pattern: {
                                                             value: /^\d{0,4}(\.\d{0,7})?$/i,
                                                             message: 'Maximum length for integer is 4 and for decimal is 7',
@@ -1962,13 +1962,13 @@ function AddMoreOperation(props) {
                                                     Controller={Controller}
                                                     control={control}
                                                     register={register}
-                                                    mandatory={true}
+                                                    mandatory={false}
                                                     rules={{
-                                                        required: true,
+                                                        required: false,
                                                     }}
                                                     placeholder={'Select'}
                                                     options={searchableSelectType('crmHead')}
-                                                    required={true}
+                                                    required={false}
                                                     handleChange={() => { }}
                                                     disabled={isViewMode}
                                                 />
@@ -1981,9 +1981,9 @@ function AddMoreOperation(props) {
                                                     Controller={Controller}
                                                     control={control}
                                                     register={register}
-                                                    mandatory={true}
+                                                    mandatory={false}
                                                     rules={{
-                                                        required: true,
+                                                        required: false,
                                                         pattern: {
                                                             value: /^\d{0,4}(\.\d{0,7})?$/i,
                                                             message: 'Maximum length for integer is 4 and for decimal is 7',
@@ -2027,13 +2027,13 @@ function AddMoreOperation(props) {
                                                     Controller={Controller}
                                                     control={control}
                                                     register={register}
-                                                    mandatory={true}
+                                                    mandatory={false}
                                                     rules={{
-                                                        required: true,
+                                                        required: false,
                                                     }}
                                                     placeholder={'Select'}
                                                     options={searchableSelectType('crmHead')}
-                                                    required={true}
+                                                    required={false}
                                                     handleChange={() => { }}
                                                     disabled={isViewMode}
                                                 />
@@ -2047,9 +2047,9 @@ function AddMoreOperation(props) {
                                                     Controller={Controller}
                                                     control={control}
                                                     register={register}
-                                                    mandatory={true}
+                                                    mandatory={false}
                                                     rules={{
-                                                        required: true,
+                                                        required: false,
                                                         pattern: {
                                                             value: /^\d{0,4}(\.\d{0,7})?$/i,
                                                             message: 'Maximum length for integer is 4 and for decimal is 7',
@@ -2096,13 +2096,13 @@ function AddMoreOperation(props) {
                                                 Controller={Controller}
                                                 control={control}
                                                 register={register}
-                                                mandatory={true}
+                                                mandatory={false}
                                                 rules={{
-                                                    required: true,
+                                                    required: false,
                                                 }}
                                                 placeholder={'Select'}
                                                 options={searchableSelectType('crmHead')}
-                                                required={true}
+                                                required={false}
                                                 handleChange={() => { }}
                                                 disabled={isViewMode}
                                             />
@@ -2118,13 +2118,13 @@ function AddMoreOperation(props) {
                                                 Controller={Controller}
                                                 control={control}
                                                 register={register}
-                                                mandatory={true}
+                                                mandatory={false}
                                                 rules={{
-                                                    required: true,
+                                                    required: false,
                                                 }}
                                                 placeholder={'Select'}
                                                 options={searchableSelectType('operation')}
-                                                required={true}
+                                                required={false}
                                                 handleChange={() => { }}
                                                 disabled={isViewMode}
                                             />
@@ -2137,9 +2137,9 @@ function AddMoreOperation(props) {
                                                 Controller={Controller}
                                                 control={control}
                                                 register={register}
-                                                mandatory={true}
+                                                mandatory={false}
                                                 rules={{
-                                                    required: true,
+                                                    required: false,
                                                     pattern: {
                                                         value: /^\d{0,4}(\.\d{0,7})?$/i,
                                                         message: 'Maximum length for integer is 4 and for decimal is 7',
@@ -2185,13 +2185,13 @@ function AddMoreOperation(props) {
                                                 Controller={Controller}
                                                 control={control}
                                                 register={register}
-                                                mandatory={true}
+                                                mandatory={false}
                                                 rules={{
-                                                    required: true,
+                                                    required: false,
                                                 }}
                                                 placeholder={'Select'}
                                                 options={searchableSelectType('crmHead')}
-                                                required={true}
+                                                required={false}
                                                 handleChange={() => { }}
                                                 disabled={isViewMode}
                                             />
@@ -2204,9 +2204,9 @@ function AddMoreOperation(props) {
                                                     Controller={Controller}
                                                     control={control}
                                                     register={register}
-                                                    mandatory={true}
+                                                    mandatory={false}
                                                     rules={{
-                                                        required: true,
+                                                        required: false,
                                                         pattern: {
                                                             value: /^\d{0,4}(\.\d{0,7})?$/i,
                                                             message: 'Maximum length for integer is 4 and for decimal is 7',
@@ -2231,13 +2231,13 @@ function AddMoreOperation(props) {
                                                     Controller={Controller}
                                                     control={control}
                                                     register={register}
-                                                    mandatory={true}
+                                                    mandatory={false}
                                                     rules={{
-                                                        required: true,
+                                                        required: false,
                                                     }}
                                                     placeholder={'Select'}
                                                     options={searchableSelectType('crmHead')}
-                                                    required={true}
+                                                    required={false}
                                                     handleChange={() => { }}
                                                     disabled={isViewMode}
                                                 />
@@ -2251,9 +2251,9 @@ function AddMoreOperation(props) {
                                                     Controller={Controller}
                                                     control={control}
                                                     register={register}
-                                                    mandatory={true}
+                                                    mandatory={false}
                                                     rules={{
-                                                        required: true,
+                                                        required: false,
                                                         pattern: {
                                                             value: /^\d{0,4}(\.\d{0,7})?$/i,
                                                             message: 'Maximum length for integer is 4 and for decimal is 7',
@@ -2277,9 +2277,9 @@ function AddMoreOperation(props) {
                                                     Controller={Controller}
                                                     control={control}
                                                     register={register}
-                                                    mandatory={true}
+                                                    mandatory={false}
                                                     rules={{
-                                                        required: true,
+                                                        required: false,
                                                         pattern: {
                                                             value: /^\d{0,4}(\.\d{0,7})?$/i,
                                                             message: 'Maximum length for integer is 4 and for decimal is 7',
@@ -2305,13 +2305,13 @@ function AddMoreOperation(props) {
                                                     Controller={Controller}
                                                     control={control}
                                                     register={register}
-                                                    mandatory={true}
+                                                    mandatory={false}
                                                     rules={{
-                                                        required: true,
+                                                        required: false,
                                                     }}
                                                     placeholder={'Select'}
                                                     options={searchableSelectType('crmHead')}
-                                                    required={true}
+                                                    required={false}
                                                     handleChange={() => { }}
                                                     disabled={isViewMode}
                                                 />
@@ -2324,9 +2324,9 @@ function AddMoreOperation(props) {
                                                     Controller={Controller}
                                                     control={control}
                                                     register={register}
-                                                    mandatory={true}
+                                                    mandatory={false}
                                                     rules={{
-                                                        required: true,
+                                                        required: false,
                                                         pattern: {
                                                             value: /^\d{0,4}(\.\d{0,7})?$/i,
                                                             message: 'Maximum length for integer is 4 and for decimal is 7',
@@ -2349,9 +2349,9 @@ function AddMoreOperation(props) {
                                                     Controller={Controller}
                                                     control={control}
                                                     register={register}
-                                                    mandatory={true}
+                                                    mandatory={false}
                                                     rules={{
-                                                        required: true,
+                                                        required: false,
                                                         pattern: {
                                                             value: /^\d{0,4}(\.\d{0,7})?$/i,
                                                             message: 'Maximum length for integer is 4 and for decimal is 7',
@@ -2375,13 +2375,13 @@ function AddMoreOperation(props) {
                                                     Controller={Controller}
                                                     control={control}
                                                     register={register}
-                                                    mandatory={true}
+                                                    mandatory={false}
                                                     rules={{
-                                                        required: true,
+                                                        required: false,
                                                     }}
                                                     placeholder={'Select'}
                                                     options={searchableSelectType('crmHead')}
-                                                    required={true}
+                                                    required={false}
                                                     handleChange={() => { }}
                                                     disabled={isViewMode}
                                                 />
@@ -2394,9 +2394,9 @@ function AddMoreOperation(props) {
                                                     Controller={Controller}
                                                     control={control}
                                                     register={register}
-                                                    mandatory={true}
+                                                    mandatory={false}
                                                     rules={{
-                                                        required: true,
+                                                        required: false,
                                                         pattern: {
                                                             value: /^\d{0,4}(\.\d{0,7})?$/i,
                                                             message: 'Maximum length for integer is 4 and for decimal is 7',
@@ -2420,9 +2420,9 @@ function AddMoreOperation(props) {
                                                     control={control}
                                                     register={register}
                                                     disableErrorOverflow={true}
-                                                    mandatory={true}
+                                                    mandatory={false}
                                                     rules={{
-                                                        required: true,
+                                                        required: false,
                                                         validate: {
                                                             hashValidation,
                                                             maxLength25,
@@ -2446,13 +2446,13 @@ function AddMoreOperation(props) {
                                                     Controller={Controller}
                                                     control={control}
                                                     register={register}
-                                                    mandatory={true}
+                                                    mandatory={false}
                                                     rules={{
-                                                        required: true,
+                                                        required: false,
                                                     }}
                                                     placeholder={'Select'}
                                                     options={searchableSelectType('crmHead')}
-                                                    required={true}
+                                                    required={false}
                                                     handleChange={() => { }}
                                                     disabled={isViewMode}
                                                 />
@@ -2467,9 +2467,9 @@ function AddMoreOperation(props) {
                                                     control={control}
                                                     register={register}
                                                     disableErrorOverflow={true}
-                                                    mandatory={true}
+                                                    mandatory={false}
                                                     rules={{
-                                                        required: true,
+                                                        required: false,
                                                         validate: {
                                                             hashValidation,
                                                             maxLength25,
@@ -2490,9 +2490,9 @@ function AddMoreOperation(props) {
                                                     Controller={Controller}
                                                     control={control}
                                                     register={register}
-                                                    mandatory={true}
+                                                    mandatory={false}
                                                     rules={{
-                                                        required: true,
+                                                        required: false,
                                                         pattern: {
                                                             value: /^\d{0,4}(\.\d{0,7})?$/i,
                                                             message: 'Maximum length for integer is 4 and for decimal is 7',
@@ -2520,9 +2520,9 @@ function AddMoreOperation(props) {
                                     Controller={Controller}
                                     control={control}
                                     register={register}
-                                    mandatory={true}
+                                    mandatory={false}
                                     rules={{
-                                        required: true,
+                                        required: false,
                                         pattern: {
                                             value: /^\d{0,4}(\.\d{0,7})?$/i,
                                             message: 'Maximum length for integer is 4 and for decimal is 7',
@@ -2553,9 +2553,9 @@ function AddMoreOperation(props) {
                                         control={control}
                                         register={register}
                                         disableErrorOverflow={true}
-                                        mandatory={true}
+                                        mandatory={false}
                                         rules={{
-                                            required: true,
+                                            required: false,
                                             validate: {
                                                 hashValidation,
                                                 checkWhiteSpaces,
