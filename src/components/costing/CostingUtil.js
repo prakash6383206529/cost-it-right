@@ -387,3 +387,24 @@ export const errorCheckObject = (tempObject) => {
   if (tempObject && count !== 0) return true;
 }
 
+
+export const swappingLogicCommon = (givenArray, dragStart, dragEnd, e) => {
+  const start = Number(e?.target?.title?.slice(-1));
+  const end = Number(dragEnd?.slice(-1));
+
+  if (start === end) {
+    return false; // Same start and end, return false
+  }
+
+  const temp = givenArray.slice(); // Create a copy of givenArray
+  const startItem = temp.splice(start, 1)[0]; // Remove start item from temp array
+
+  if (start + 1 === end) {
+    return false; // Item after start is end, return false
+  }
+
+  const insertIndex = end > start ? end - 1 : end; // Adjust insert index based on start and end positions
+  temp.splice(insertIndex, 0, startItem); // Insert start item at insertIndex
+
+  return temp;
+};
