@@ -1295,7 +1295,7 @@ function UserRegistration(props) {
     if (props?.RFQUser || isRfqUser) {
 
       dispatch(updateRfqUser(updatedData, (res) => {
-        if (res.data.Result) {
+        if (res && res.data && res?.data?.Result) {
           Toaster.success(MESSAGES.UPDATE_USER_SUCCESSFULLY)
         }
         cancel();
