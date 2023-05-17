@@ -41,7 +41,7 @@ function PipdReportListing(props) {
             "10/10/2021": '1200',
         },
         {
-            "Name": 'ECS',
+            "Name": '4W lighting',
             "PriceType": 'Price Decrease',
             "1/3/2021": '500',
             "1/4/2021": '800',
@@ -74,7 +74,7 @@ function PipdReportListing(props) {
             "10/10/2021": '1200',
         },
         {
-            "Name": 'LPS',
+            "Name": 'MKL',
             "PriceType": 'Price Decrease',
             "1/3/2021": '500',
             "1/4/2021": '800',
@@ -107,7 +107,7 @@ function PipdReportListing(props) {
             "10/10/2021": '1200',
         },
         {
-            "Name": 'LAS',
+            "Name": 'ONKYO',
             "PriceType": 'Price Decrease',
             "1/3/2021": '500',
             "1/4/2021": '800',
@@ -210,7 +210,7 @@ function PipdReportListing(props) {
                                             rowSelection={'multiple'}
                                             rowClassRules={rowClassRules}
                                         >
-                                            <AgGridColumn field="Name" width="150" headerName="Type" cellClass={"colorWhite"} floatingFilter={true}></AgGridColumn>
+                                            <AgGridColumn field="Name" width="150" headerName="Name" cellClass={"colorWhite"} floatingFilter={true}></AgGridColumn>
                                             <AgGridColumn field="PriceType" headerName="In Cr" floatingFilter={true}></AgGridColumn>
                                             <AgGridColumn headerName="Effective Date" headerClass="justify-content-center" marryChildren={true}>
                                                 <AgGridColumn width="150" field="1/3/2021" headerName="1/3/2021" />
