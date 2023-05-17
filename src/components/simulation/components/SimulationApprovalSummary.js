@@ -886,6 +886,9 @@ function SimulationApprovalSummary(props) {
         setGridApi(params.api)
         setGridColumnApi(params.columnApi)
         params.api.paginationGoToPage(0);
+        if (!bopAssociation) {
+            params.api.sizeColumnsToFit();
+        }
     };
 
 
@@ -905,6 +908,9 @@ function SimulationApprovalSummary(props) {
         setTextFilterSearch('')
         gridOptions?.columnApi?.resetColumnState();
         gridOptions?.api?.setFilterModel(null);
+        if (!bopAssociation) {
+            gridApi.sizeColumnsToFit();
+        }
     }
 
     const frameworkComponents = {
