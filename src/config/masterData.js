@@ -4816,11 +4816,7 @@ export const SimulationDownloadBOP = [
     { label: "Vendor (Code)", value: "VendorName" },
     { label: "ExistingBOPRate", value: "OldBOPRate" },
     { label: "RevisedBOPRate", value: "NewBOPRate" },
-<<<<<<< HEAD
     { label: "Variance (BOP Cost)", value: "BOPNONVariance" },
-=======
-    { label: "Variance (BOP Cost)", value: "BOPVariance" },
->>>>>>> e0060a4f0c (CIR-T1635 | BOP Simulation Without Costing III)
 ]
 
 export const SIMULATIONAPPROVALSUMMARYDOWNLOADRM = [
