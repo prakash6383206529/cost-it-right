@@ -751,6 +751,13 @@ function CostingSimulation(props) {
         return cell != null ? temp : '-';
     }
 
+    const varianceFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        let value = row?.OldBOPRate - row?.NewBOPRate
+        return cell != null ? value : '-';
+    }
+
     const oldSTFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
@@ -1209,7 +1216,8 @@ function CostingSimulation(props) {
         impactPerQuarterFormatter: impactPerQuarterFormatter,
         hyphenFormatter: hyphenFormatter,
         processCostFormatter: processCostFormatter,
-        processFormatter: processFormatter
+        processFormatter: processFormatter,
+        varianceFormatter: varianceFormatter
     };
 
     const isRowSelectable = rowNode => statusForLinkedToken === true ? false : true;
@@ -1360,6 +1368,7 @@ function CostingSimulation(props) {
                                                         {((isBOPDomesticOrImport || showBOPColumn) && !isMultipleMasterSimulation) && bopAssociation && <AgGridColumn width={140} field="BoughtOutPartQuantity" headerName='BOP Quantity' cellRenderer='BOPQuantityFormatter' ></AgGridColumn>}
                                                         {((isBOPDomesticOrImport || showBOPColumn) && !isMultipleMasterSimulation) && <AgGridColumn width={140} field="OldBOPRate" headerName='Existing BOP Rate' cellRenderer={BOPQuantityFormatter} ></AgGridColumn>}
                                                         {((isBOPDomesticOrImport || showBOPColumn) && !isMultipleMasterSimulation) && <AgGridColumn width={140} field="NewBOPRate" headerName='Revised BOP Rate' cellRenderer={BOPQuantityFormatter} ></AgGridColumn>}
+                                                        {!bopAssociation && <AgGridColumn width={140} field="Variance" headerName='Variance' cellRenderer='varianceFormatter' ></AgGridColumn>}
                                                         {(isBOPDomesticOrImport || showBOPColumn) && bopAssociation && <AgGridColumn width={140} field="OldNetBoughtOutPartCost" headerName='Existing Net BOP Cost' cellRenderer='netBOPPartCostFormatter' ></AgGridColumn>}
                                                         {(isBOPDomesticOrImport || showBOPColumn) && bopAssociation && <AgGridColumn width={140} field="NewNetBoughtOutPartCost" headerName='Revised Net BOP Cost' cellRenderer='netBOPPartCostFormatter'></AgGridColumn>}
                                                         {(isBOPDomesticOrImport || showBOPColumn) && bopAssociation && <AgGridColumn width={140} field="NetBoughtOutPartCostVariance" headerName='Variance (BOP Cost)' cellRenderer='BOPVarianceFormatter' ></AgGridColumn>}
