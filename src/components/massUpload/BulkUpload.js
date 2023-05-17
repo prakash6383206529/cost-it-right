@@ -14,7 +14,7 @@ import { overheadBulkUpload, profitBulkUpload } from '../masters/actions/Overhea
 import { operationBulkUpload } from '../masters/actions/OtherOperation';
 import { partComponentBulkUpload, productComponentBulkUpload } from '../masters/actions/Part';
 import { bulkUploadBOP } from '../masters/actions/BoughtOutParts';
-import { bulkUploadVolumeActualZBC, bulkUploadVolumeActualVBC, bulkUploadVolumeBudgetedZBC, bulkUploadVolumeBudgetedCBC, bulkUploadVolumeActualCBC, bulkUploadVolumeBudgetedVBC, } from '../masters/actions/Volume';
+import { bulkUploadVolumeActual, bulkUploadVolumeBudgeted } from '../masters/actions/Volume';
 import { bulkUploadBudgetMaster } from '../masters/actions/Budget'
 import { bulkUploadInterestRateZBC, bulkUploadInterestRateVBC, bulkUploadInterestRateCBC } from '../masters/actions/InterestRateMaster';
 import Toaster from '../common/Toaster';
@@ -508,7 +508,7 @@ class BulkUpload extends Component {
             masterUploadData.CostingTypeId = CBCTypeId
         }
         this.setState({ setDisable: true })
-        console.log('costingTypeId: ', costingTypeId);
+
 
         if (fileName === 'RM Domestic' || fileName === 'RM Import') {
             this.props.bulkUploadRM(masterUploadData, (res) => {
@@ -579,38 +579,14 @@ class BulkUpload extends Component {
                 this.responseHandler(res)
             });
 
-        } else if (fileName === 'Actual Volume' && costingTypeId === ZBCTypeId) {
-            this.props.bulkUploadVolumeActualZBC(uploadData, (res) => {
+        } else if (fileName === 'Actual Volume') {
+            this.props.bulkUploadVolumeActual(uploadData, (res) => {
                 this.setState({ setDisable: false })
                 this.responseHandler(res)
             });
 
-        } else if (fileName === 'Actual Volume' && costingTypeId === VBCTypeId) {
-            this.props.bulkUploadVolumeActualVBC(uploadData, (res) => {
-                this.setState({ setDisable: false })
-                this.responseHandler(res)
-            });
-
-        } else if (fileName === 'Actual Volume' && costingTypeId === CBCTypeId) {
-            this.props.bulkUploadVolumeActualCBC(uploadData, (res) => {
-                this.setState({ setDisable: false })
-                this.responseHandler(res)
-            });
-
-        } else if (fileName === 'Budgeted Volume' && costingTypeId === ZBCTypeId) {
-            this.props.bulkUploadVolumeBudgetedZBC(uploadData, (res) => {
-                this.setState({ setDisable: false })
-                this.responseHandler(res)
-            });
-
-        } else if (fileName === 'Budgeted Volume' && costingTypeId === VBCTypeId) {
-            this.props.bulkUploadVolumeBudgetedVBC(uploadData, (res) => {
-                this.setState({ setDisable: false })
-                this.responseHandler(res)
-            });
-
-        } else if (fileName === 'Budgeted Volume' && costingTypeId === CBCTypeId) {
-            this.props.bulkUploadVolumeBudgetedCBC(uploadData, (res) => {
+        } else if (fileName === 'Budgeted Volume') {
+            this.props.bulkUploadVolumeBudgeted(uploadData, (res) => {
                 this.setState({ setDisable: false })
                 this.responseHandler(res)
             });
@@ -969,16 +945,12 @@ export default connect(mapStateToProps, {
     partComponentBulkUpload,
     productComponentBulkUpload,
     bulkUploadBOP,
-    bulkUploadVolumeActualZBC,
-    bulkUploadVolumeActualVBC,
-    bulkUploadVolumeBudgetedZBC,
-    bulkUploadVolumeBudgetedVBC,
+    bulkUploadVolumeActual,
+    bulkUploadVolumeBudgeted,
     bulkUploadInterestRateZBC,
     bulkUploadInterestRateVBC,
     bulkUploadInterestRateCBC,
     bulkUploadMachine,
-    bulkUploadVolumeActualCBC,
-    bulkUploadVolumeBudgetedCBC,
     bulkUploadBudgetMaster,
     checkRFQBulkUpload,
     getUsersMasterLevelAPI,
