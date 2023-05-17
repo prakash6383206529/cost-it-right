@@ -2374,7 +2374,6 @@ export const BOP_CBC_IMPORT_TempData = [
 export const VOLUME_ACTUAL_ZBC = [
     { label: 'PlantCode', value: 'PlantCode', }, //*
     { label: 'PartNumber', value: 'PartNumber', }, //*
-    { label: 'PartName', value: 'PartName', }, //NOUI
     { label: 'RevisionNumber', value: 'RevisionNumber', },
     { label: 'Year', value: 'Year', }, //*
     { label: 'Month', value: 'Month', }, //NOUI,*
@@ -2385,7 +2384,6 @@ export const VOLUME_ACTUAL_ZBC_TEMPDATA = [
     {
         'PlantCode': 'P1',
         'PartNumber': 'Screw01',
-        'PartName': 'Screw',
         'RevisionNumber': '1',
         'Year': `${DayTime().$y}-${DayTime().$y + 1}`,
         'Month': DayTime().format('MMMM'),
@@ -2398,10 +2396,8 @@ export const VOLUME_ACTUAL_ZBC_TEMPDATA = [
 */
 export const VOLUME_ACTUAL_VBC = [
     { label: 'VendorCode', value: 'VendorCode', }, //*
-    { label: 'DestinationPlant', value: 'DestinationPlant', }, //*
-    { label: 'DestinationPlantCode', value: 'DestinationPlantCode', }, //*
+    { label: 'PlantCode', value: 'PlantCode', }, //*
     { label: 'PartNumber', value: 'PartNumber', }, //*
-    { label: 'PartName', value: 'PartName', }, //NOUI
     { label: 'RevisionNumber', value: 'RevisionNumber', },
     { label: 'Year', value: 'Year', }, //*
     { label: 'Month', value: 'Month', }, //NOUI ,*
@@ -2411,10 +2407,8 @@ export const VOLUME_ACTUAL_VBC = [
 export const VOLUME_ACTUAL_VBC_TEMPDATA = [
     {
         'VendorCode': 'Tata01',
-        'DestinationPlant': 'Manesar',
-        'DestinationPlantCode': 1032,
+        'PlantCode': 1032,
         'PartNumber': 'Screw Jack',
-        'PartName': 'Screw',
         'RevisionNumber': '1',
         'Year': `${DayTime().$y}-${DayTime().$y + 1}`,
         'Month': DayTime().format('MMMM'),
@@ -2426,10 +2420,8 @@ export const VOLUME_ACTUAL_VBC_TEMPDATA = [
 */
 export const VOLUME_ACTUAL_CBC = [
     { label: 'CustomerCode', value: 'CustomerCode', }, //*
-    { label: 'DestinationPlant', value: 'DestinationPlant', }, //*
-    { label: 'DestinationPlantCode', value: 'DestinationPlantCode', }, //*
+    { label: 'PlantCode', value: 'PlantCode', }, //*
     { label: 'PartNumber', value: 'PartNumber', }, //*
-    { label: 'PartName', value: 'PartName', }, //NOUI
     { label: 'RevisionNumber', value: 'RevisionNumber', },
     { label: 'Year', value: 'Year', }, //*
     { label: 'Month', value: 'Month', }, //NOUI ,*
@@ -2439,10 +2431,8 @@ export const VOLUME_ACTUAL_CBC = [
 export const VOLUME_ACTUAL_CBC_TEMPDATA = [
     {
         'CustomerCode': 'C-10008',
-        'DestinationPlant': 'Manesar',
-        'DestinationPlantCode': 1032,
+        'PlantCode': 1032,
         'PartNumber': 'Screw Jack',
-        'PartName': 'Screw',
         'RevisionNumber': '1',
         'Year': `${DayTime().$y}-${DayTime().$y + 1}`,
         'Month': DayTime().format('MMMM'),
@@ -2455,7 +2445,6 @@ export const VOLUME_ACTUAL_CBC_TEMPDATA = [
 export const VOLUME_BUDGETED_ZBC = [
     { label: 'PlantCode', value: 'PlantCode', }, //*
     { label: 'PartNumber', value: 'PartNumber', }, //*
-    { label: 'PartName', value: 'PartName', }, //NOUI
     { label: 'RevisionNumber', value: 'RevisionNumber', },
     { label: 'Year', value: 'Year', }, //*
     { label: 'Month', value: 'Month', }, //NOUI
@@ -2467,7 +2456,6 @@ export const VOLUME_BUDGETED_ZBC_TEMPDATA = [
     {
         'PlantCode': 'Systematix01',
         'PartNumber': 'Screw01',
-        'PartName': 'Screw',
         'RevisionNumber': '1',
         'Year': `${DayTime().$y}-${DayTime().$y + 1}`,
         'Month': DayTime().format('MMMM'),
@@ -2481,10 +2469,8 @@ export const VOLUME_BUDGETED_ZBC_TEMPDATA = [
 */
 export const VOLUME_BUDGETED_VBC = [
     { label: 'VendorCode', value: 'VendorCode', }, //*
-    { label: 'DestinationPlant', value: 'DestinationPlant', }, //*
-    { label: 'DestinationPlantCode', value: 'DestinationPlantCode', }, //*
+    { label: 'PlantCode', value: 'PlantCode', }, //*
     { label: 'PartNumber', value: 'PartNumber', }, //*
-    { label: 'PartName', value: 'PartName', },//NOUI
     { label: 'RevisionNumber', value: 'RevisionNumber', },
     { label: 'Year', value: 'Year', }, //*
     { label: 'Month', value: 'Month', }, //NOUI
@@ -2495,10 +2481,8 @@ export const VOLUME_BUDGETED_VBC = [
 export const VOLUME_BUDGETED_VBC_TEMPDATA = [
     {
         'VendorCode': 'Tata01',
-        'DestinationPlant': 'Manesar',
-        'DestinationPlantCode': "1032",
+        'PlantCode': "1032",
         'PartNumber': 'Screw01',
-        'PartName': 'Screw',
         'RevisionNumber': '1',
         'Year': `${DayTime().$y}-${DayTime().$y + 1}`,
         'Month': DayTime().format('MMMM'),
@@ -2508,10 +2492,8 @@ export const VOLUME_BUDGETED_VBC_TEMPDATA = [
 ]
 export const VOLUME_BUDGETED_CBC = [
     { label: 'CustomerCode', value: 'CustomerCode', }, //*
-    { label: 'DestinationPlant', value: 'DestinationPlant', }, //*
-    { label: 'DestinationPlantCode', value: 'DestinationPlantCode', }, //*
+    { label: 'PlantCode', value: 'PlantCode', }, //*
     { label: 'PartNumber', value: 'PartNumber', }, //*
-    { label: 'PartName', value: 'PartName', },//NOUI
     { label: 'RevisionNumber', value: 'RevisionNumber', },
     { label: 'Year', value: 'Year', }, //*
     { label: 'Month', value: 'Month', }, //NOUI
@@ -2522,10 +2504,8 @@ export const VOLUME_BUDGETED_CBC = [
 export const VOLUME_BUDGETED_CBC_TEMPDATA = [
     {
         'CustomerCode': 'C-10008',
-        'DestinationPlant': 'Manesar',
-        'DestinationPlantCode': "1032",
+        'PlantCode': "1032",
         'PartNumber': 'Screw01',
-        'PartName': 'Screw',
         'RevisionNumber': '1',
         'Year': `${DayTime().$y}-${DayTime().$y + 1}`,
         'Month': DayTime().format('MMMM'),
