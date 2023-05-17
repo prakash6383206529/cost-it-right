@@ -1304,7 +1304,8 @@ function CostingSimulation(props) {
         hyphenFormatter: hyphenFormatter,
         processCostFormatter: processCostFormatter,
         processFormatter: processFormatter,
-        processVarianceFormatter: processVarianceFormatter
+        processVarianceFormatter: processVarianceFormatter,
+        varianceFormatter: varianceFormatter
     };
 
     const isRowSelectable = rowNode => statusForLinkedToken === true ? false : true;
@@ -1517,14 +1518,14 @@ function CostingSimulation(props) {
                                                         {!(isExchangeRate) && <AgGridColumn width={140} field="OldNetFreightPackagingCost" hide={hideDataColumn.hideFreightPackagingCost} cellRenderer='freightPackagingCostFormatter' headerName='Existing Freight & Packaging Cost'></AgGridColumn>}
 
                                                         <AgGridColumn width={120} field="CostingId" headerName='Actions' type="rightAligned" floatingFilter={false} cellRenderer='buttonFormatter' pinned="right"></AgGridColumn>
-                                                    </AgGridReact>}
+                                                    </AgGridReact >}
                                                     {storeTechnology === FORGING && <WarningMessage dClass="float-right" textClass="mt2" message="If RMC is calculated through RM weight calculator then change in scrap rate won't affect the RMC." />}
                                                     {amendmentDetails.SimulationHeadId && <PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />}
-                                                </div>
-                                            </div>
-                                        </Col>
-                                    </Row>
-                                </div>
+                                                </div >
+                                            </div >
+                                        </Col >
+                                    </Row >
+                                </div >
                                 <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer sticky-btn-footer">
                                     <div className="col-sm-12 text-right bluefooter-butn">
 

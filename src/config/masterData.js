@@ -4872,6 +4872,14 @@ export const CostingSimulationDownloadBOP = [
     { label: "RevisedNetFreightAndPackagingCost", value: "NewNetFreightPackagingCost" },
 ]
 
+export const SimulationDownloadBOP = [
+    { label: "Costing Head", value: "CostingHead" },
+    { label: "Vendor (Code)", value: "VendorName" },
+    { label: "ExistingBOPRate", value: "OldBOPRate" },
+    { label: "RevisedBOPRate", value: "NewBOPRate" },
+    { label: "Variance (BOP Cost)", value: "BOPVariance" },
+]
+
 export const SIMULATIONAPPROVALSUMMARYDOWNLOADRM = [
     { label: "Costing Id", value: "CostingNumber" },
     { label: "RawMaterial Name", value: "RMName" },
