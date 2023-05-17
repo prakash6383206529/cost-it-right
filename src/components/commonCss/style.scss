@@ -3144,17 +3144,13 @@ button:disabled,
     margin-left: -4px;
     font-size: 14px;
     box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
+  }
 
-    button {
-      position: absolute;
-      top: -8px;
-      right: -8px;
-      background: none;
-
-      &:focus {
-        border: none !important;
-        box-shadow: none !important;
-      }
+  .CancelIcon,
+  .pie-chart {
+    &:focus {
+      box-shadow: none !important;
+      border: none !important;
     }
   }
 }
@@ -3594,8 +3590,14 @@ body {
     max-width: 280px;
     width: 280px;
 
-    @media screen and (max-width:$miniDesktop) {
-      width: 260px;
+    @media screen and (max-width:$middleDesktop) {
+      width: auto;
+    }
+  }
+
+  .overhead-rejection .cross-btn-container {
+    @media screen and (max-width:$middleDesktop) {
+      width: 240px;
     }
   }
 
@@ -3604,8 +3606,8 @@ body {
       max-width: 280px;
       width: 280px;
 
-      @media screen and (max-width:$miniDesktop) {
-        width: 260px;
+      @media screen and (max-width:$middleDesktop) {
+        width: auto;
       }
     }
 
@@ -3806,6 +3808,10 @@ body {
 .css-26l3qy-menu {
   font-size: 14px;
   z-index: 12 !important;
+}
+
+.select-container__option {
+  font-size: 14px !important;
 }
 
 .costing-details-page,

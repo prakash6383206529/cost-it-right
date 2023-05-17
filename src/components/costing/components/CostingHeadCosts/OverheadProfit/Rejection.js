@@ -358,6 +358,7 @@ function Rejection(props) {
                         register={register}
                         defaultValue={applicability.length !== 0 ? applicability : ''}
                         options={renderListing('Applicability')}
+                        customClassName={'overhead-rejection'}
                         mandatory={false}
                         disabled={CostingViewMode ? true : false}
                         handleChange={handleApplicabilityChange}
