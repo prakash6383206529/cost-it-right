@@ -617,7 +617,7 @@ function CostReportForm(props) {
                                 disabled={props.isSaleAndPurchase ? false : (part.length === 0 ? true : false)}
                             />
                         </Col>}
-                        {<Col md="3">
+                        {props.isCompany && <Col md="3">
                             <SearchableSelectHookForm
                                 label={"Company Name"}
                                 name={"CompanyName"}
