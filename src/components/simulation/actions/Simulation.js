@@ -1366,6 +1366,10 @@ export function getAllSimulatedMultiTechnologyCosting(simulationId, callback) {
     };
 }
 
+/**
+ * @method getAllSimulationBoughtOutPart
+ * @description GET API FOR SIMULATION BOUGHT OUT PART
+ */
 export function getAllSimulationBoughtOutPart(simulationId, callback) {
 
     return (dispatch) => {
@@ -1385,7 +1389,11 @@ export function getAllSimulationBoughtOutPart(simulationId, callback) {
     }
 }
 
-export function setBOPAssociation(value) {
+/**
+ * @method setIsMasterAssociatedWithCosting
+ * @description Is Master Associated With Costing
+ */
+export function setIsMasterAssociatedWithCosting(value) {
     return (dispatch) => {
         dispatch({
             type: SET_BOP_ASSOCIATION,
@@ -1394,6 +1402,10 @@ export function setBOPAssociation(value) {
     }
 }
 
+/**
+ * @method runSimulationOnSelectedBoughtOutPart
+ * @description run Simulation On Selected Bought Out Part
+ */
 export function runSimulationOnSelectedBoughtOutPart(data, callback) {
     return (dispatch) => {
         const request = axios.post(API.runSimulationOnSelectedBoughtOutPart, data, config());
@@ -1409,6 +1421,10 @@ export function runSimulationOnSelectedBoughtOutPart(data, callback) {
     };
 }
 
+/**
+ * @method getAllSimulatedBoughtOutPart
+ * @description get All Simulated Bought Out Part
+ */
 export function getAllSimulatedBoughtOutPart(token, callback) {
     return (dispatch) => {
         const request = axios.get(`${API.getAllSimulatedBoughtOutPart}?simulationId=${token}`, config());

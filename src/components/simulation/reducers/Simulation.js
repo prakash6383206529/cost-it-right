@@ -260,7 +260,7 @@ export default function SimulationReducer(state = initialState, action) {
             return {
                 ...state,
                 loading: false,
-                bopAssociation: action.payload
+                isMasterAssociatedWithCosting: action.payload
             }
         default:
             return state;
