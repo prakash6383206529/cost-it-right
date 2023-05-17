@@ -1222,8 +1222,11 @@ function CostingSimulation(props) {
         params.columnApi.getAllColumns().forEach(function (column) {
             allColumnIds.push(column.colId);
         });
-
-        window.screen.width >= 1921 && gridRef.current.api.sizeColumnsToFit();
+        if (!bopAssociation && isBOPDomesticOrImport) {
+            params.api.sizeColumnsToFit();
+        } else {
+            window.screen.width >= 1921 && gridRef.current.api.sizeColumnsToFit();
+        }
 
     };
 
@@ -1240,7 +1243,11 @@ function CostingSimulation(props) {
         gridOptions?.api?.setFilterModel(null);
         gridApi?.setQuickFilter(null);
         document.getElementById("filter-text-box").value = "";
-        window.screen.width >= 1921 && gridRef.current.api.sizeColumnsToFit();
+        if (!bopAssociation) {
+            gridRef.current.api.sizeColumnsToFit();
+        } else {
+            window.screen.width >= 1921 && gridRef.current.api.sizeColumnsToFit();
+        }
     }
     const errorBoxClass = () => {
         let temp

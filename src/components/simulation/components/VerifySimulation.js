@@ -559,7 +559,11 @@ function VerifySimulation(props) {
         setGridApi(params.api)
         setGridColumnApi(params.columnApi)
         params.api.paginationGoToPage(0);
-        window.screen.width >= 1600 && gridRef.current.api.sizeColumnsToFit();
+        if (!bopAssociation) {
+            params.api.sizeColumnsToFit();
+        } else {
+            window.screen.width >= 1600 && gridRef.current.api.sizeColumnsToFit();
+        }
     };
 
     const onPageSizeChanged = (newPageSize) => {
@@ -575,8 +579,11 @@ function VerifySimulation(props) {
         gridOptions?.api?.setFilterModel(null);
         gridApi.setQuickFilter(null);
         document.getElementById("filter-text-box").value = "";
-        window.screen.width >= 1600 && gridRef.current.api.sizeColumnsToFit();
-
+        if (!bopAssociation && isBOPDomesticOrImport) {
+            gridRef.current.api.sizeColumnsToFit();
+        } else {
+            window.screen.width >= 1600 && gridRef.current.api.sizeColumnsToFit();
+        }
     }
 
     const frameworkComponents = {
