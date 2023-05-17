@@ -215,9 +215,9 @@ function AddMoreOperation(props) {
         let electricityCost = checkForNull(dataToSend.electricityCostWelding)
         let manPowerCost = checkForNull(Number(getValues('manPowerCost')))
         let staffCost = checkForNull(Number(getValues('staffCost')))
-        let waterCost = checkForNull(Number(getValues('waterCost')))
-        let jigStripping = checkForNull(Number(getValues('jigStripping')))
-        let statuatoryLicense = checkForNull(Number(getValues('statuatoryLicense')))
+        let waterCost = checkForNull(Number(getValues('waterCost'))) //used for Additional chemical cost
+        let jigStripping = checkForNull(Number(getValues('jigStripping'))) // used for CEPT CHARGE
+        let statuatoryLicense = checkForNull(Number(getValues('statuatoryLicense'))) //used for Fixed Cost
         let rejnReworkPercent = checkForNull(Number(getValues('rejnReworkPercent'))) / 100
         let profitPercent = checkForNull(Number(getValues('profitPercent'))) / 100
 
@@ -239,9 +239,9 @@ function AddMoreOperation(props) {
         let electricityCost = checkForNull(dataToSend.electricityCostWelding)
         let manPowerCost = checkForNull(Number(getValues('manPowerCost')))
         let staffCost = checkForNull(Number(getValues('staffCost')))
-        let waterCost = checkForNull(Number(getValues('waterCost')))
-        let jigStripping = checkForNull(Number(getValues('jigStripping')))
-        let statuatoryLicense = checkForNull(Number(getValues('statuatoryLicense')))
+        let waterCost = checkForNull(Number(getValues('waterCost'))) //used for Additional chemical cost
+        let jigStripping = checkForNull(Number(getValues('jigStripping'))) // used for CEPT Charge
+        let statuatoryLicense = checkForNull(Number(getValues('statuatoryLicense'))) //used for Fixed Cost
         let rejectionReworkCost = checkForNull(Number(getValues('rejoinReworkCost')))
         let profitCostState = checkForNull(Number(getValues('profitCost')))
 
