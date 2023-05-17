@@ -107,13 +107,13 @@ function RMSimulation(props) {
             if ((item.NewBasicRate !== undefined || item.NewScrapRate !== undefined) && ((item.NewBasicRate !== undefined ? Number(item.NewBasicRate) : Number(item.BasicRate)) !== Number(item.BasicRate) || (item.NewScrapRate !== undefined ? Number(item.NewScrapRate) : Number(item.ScrapRate)) !== Number(item.ScrapRate))) {
                 let tempObj = {}
                 tempObj.CostingHead = item.CostingHead === 'Vendor Based' ? VBC : ZBC
-                tempObj.RawMaterialName = item.RawMaterial
+                tempObj.RawMaterialName = item.RawMaterialName
                 tempObj.MaterialType = item.MaterialType
-                tempObj.RawMaterialGrade = item.RMGrade
-                tempObj.RawMaterialSpecification = item.RMSpec
+                tempObj.RawMaterialGrade = item.RawMaterialGradeName
+                tempObj.RawMaterialSpecification = item.RawMaterialSpecificationName
                 tempObj.RawMaterialCategory = item.Category
-                tempObj.UOM = item.UOM
-                tempObj.OldBasicRate = item.BasicRate
+                tempObj.UOM = item.UnitOfMeasurementName
+                tempObj.OldBasicRate = item.BasicRatePerUOM
                 tempObj.NewBasicRate = item.NewBasicRate ? item.NewBasicRate : item.BasicRate
                 tempObj.OldScrapRate = item.ScrapRate
                 tempObj.NewScrapRate = item.NewScrapRate ? item.NewScrapRate : item.ScrapRate
@@ -247,7 +247,7 @@ function RMSimulation(props) {
     }
 
     const plantFormatter = (props) => {
-        return (isbulkUpload ? props?.value : props?.data.Plant);
+        return (isbulkUpload ? props?.value : props?.data.DestinationPlantName);
     }
     const newBasicRateFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
@@ -258,7 +258,7 @@ function RMSimulation(props) {
                 {
                     isImpactedMaster ?
                         checkForDecimalAndNull(row.NewBasicRate, getConfigurationKey().NoOfDecimalForPrice) :
-                        <span className={`${!isbulkUpload ? 'form-control' : ''}`} >{cell && value ? Number(cell) : Number(row.BasicRate)} </span>
+                        <span className={`${!isbulkUpload ? 'form-control' : ''}`} >{cell && value ? Number(cell) : Number(row.BasicRatePerUOM)} </span>
                 }
 
             </>
@@ -274,7 +274,7 @@ function RMSimulation(props) {
                 {
                     isImpactedMaster ?
                         row.OldBasicRate :
-                        <span>{cell && value ? Number(cell) : Number(row.BasicRate)} </span>
+                        <span>{cell && value ? Number(cell) : Number(row.BasicRatePerUOM)} </span>
                 }
 
             </>
@@ -326,9 +326,9 @@ function RMSimulation(props) {
     const beforeSaveCell = (cell, props) => {
         const cellValue = cell
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        if ((row?.NewBasicRate === undefined || row?.NewBasicRate === '' ? Number(row?.BasicRate) : Number(row?.NewBasicRate)) <
+        if ((row?.NewBasicRate === undefined || row?.NewBasicRate === '' ? Number(row?.BasicRatePerUOM) : Number(row?.NewBasicRate)) <
             (row?.NewScrapRate === undefined || row?.NewScrapRate === '' ? Number(row?.ScrapRate) : Number(row?.NewScrapRate))) {
-            row.NewBasicRate = row?.BasicRate
+            row.NewBasicRate = row?.BasicRatePerUOM
             row.NewScrapRate = row?.ScrapRate
             Toaster.warning('Scrap Rate should be less than Basic Rate')
             return false
@@ -582,16 +582,16 @@ function RMSimulation(props) {
                                                 !isImpactedMaster &&
                                                 <AgGridColumn width={140} field="CostingHead" headerName="Costing Head" editable='false' cellRenderer={'costingHeadFormatter'}></AgGridColumn>
                                             }
-                                            <AgGridColumn width={140} field="RawMaterial" editable='false' headerName="Raw Material"></AgGridColumn>
-                                            <AgGridColumn width={115} field="RMGrade" editable='false' headerName="Grade" ></AgGridColumn>
-                                            <AgGridColumn width={115} field="RMSpec" editable='false' headerName="Spec"></AgGridColumn>
+                                            <AgGridColumn width={140} field="RawMaterialName" editable='false' headerName="Raw Material"></AgGridColumn>
+                                            <AgGridColumn width={115} field="RawMaterialGradeName" editable='false' headerName="Grade" ></AgGridColumn>
+                                            <AgGridColumn width={115} field="RawMaterialSpecificationName" editable='false' headerName="Spec"></AgGridColumn>
                                             <AgGridColumn width={115} field="RawMaterialCode" editable='false' headerName='Code' cellRenderer='hyphenFormatter'></AgGridColumn>
                                             {!isImpactedMaster && <AgGridColumn width={110} field="Category" editable='false' headerName="Category"></AgGridColumn>}
                                             {!isImpactedMaster && <AgGridColumn width={125} field="TechnologyName" editable='false' headerName="Technology" ></AgGridColumn>}
                                             {!isImpactedMaster && list[0].CostingTypeId !== CBCTypeId && <AgGridColumn width={100} field="Vendor (Code)" editable='false' headerName="Vendor (Code)" cellRenderer='vendorFormatter'></AgGridColumn>}
                                             {!isImpactedMaster && list[0].CostingTypeId === CBCTypeId && <AgGridColumn width={100} field="CustomerName" editable='false' headerName="Customer (Code)" cellRenderer='customerFormatter'></AgGridColumn>}
                                             {!isImpactedMaster && <AgGridColumn width={100} field="Plant (Code)" editable='false' headerName="Plant (Code)" cellRenderer='plantFormatter' ></AgGridColumn>}
-                                            <AgGridColumn width={100} field="UOM" editable='false' headerName="UOM"></AgGridColumn>
+                                            <AgGridColumn width={100} field="UnitOfMeasurementName" editable='false' headerName="UOM"></AgGridColumn>
                                             {costingAndPartNo && <AgGridColumn field="CostingNumber" editable='false' headerName="Costing No" minWidth={190}></AgGridColumn>}
                                             {costingAndPartNo && <AgGridColumn field="PartNumber" editable='false' headerName="Part No" minWidth={190}></AgGridColumn>}
                                             <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName={Number(selectedMasterForSimulation?.value) === 2 ? "Basic Rate (Currency)" : "Basic Rate (INR)"} marryChildren={true} >
