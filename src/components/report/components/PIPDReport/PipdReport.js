@@ -30,7 +30,7 @@ function PipdReport() {
     return (
         <>
             {!showRatioListing && <div className="container-fluid ag-grid-react">
-                <CostReportForm isDateMandatory={true} isDataClear={isDataClear} showVendor={true} hideAddtable={true} />
+                <CostReportForm isDateMandatory={true} isDataClear={isDataClear} showVendor={true} hideAddtable={true} isCompany={true} />
                 <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
                     <Col md="12" className="text-right bluefooter-butn mt-3">
                         <div className="d-flex justify-content-end bd-highlight w100 my-2 align-items-center">
