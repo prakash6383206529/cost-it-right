@@ -14,7 +14,7 @@ import { overheadBulkUpload, profitBulkUpload } from '../masters/actions/Overhea
 import { operationBulkUpload } from '../masters/actions/OtherOperation';
 import { partComponentBulkUpload, productComponentBulkUpload } from '../masters/actions/Part';
 import { bulkUploadBOP } from '../masters/actions/BoughtOutParts';
-import { volumeBulkUpload } from '../masters/actions/Volume';
+import { bulkUploadVolumeActual, bulkUploadVolumeBudgeted, volumeBulkUpload } from '../masters/actions/Volume';
 import { bulkUploadBudgetMaster } from '../masters/actions/Budget'
 import { bulkUploadInterestRateZBC, bulkUploadInterestRateVBC, bulkUploadInterestRateCBC } from '../masters/actions/InterestRateMaster';
 import Toaster from '../common/Toaster';
@@ -949,6 +949,7 @@ export default connect(mapStateToProps, {
     bulkUploadInterestRateVBC,
     bulkUploadInterestRateCBC,
     bulkUploadMachine,
+    bulkUploadVolumeBudgeted,
     bulkUploadBudgetMaster,
     checkRFQBulkUpload,
     getUsersMasterLevelAPI,
