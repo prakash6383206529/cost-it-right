@@ -4,7 +4,7 @@ import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import NoContentFound from '../../common/NoContentFound';
 import { EMPTY_DATA, EXCHNAGERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, BOPDOMESTIC, BOPIMPORT, MACHINERATE, OVERHEAD, defaultPageSize, CBCTypeId } from '../../../config/constants';
-import { getAllMultiTechnologyCostings, getAllMultiTechnologyImpactedSimulationCostings, getVerifyBoughtOutPartSimulationList, getVerifyExchangeSimulationList, getVerifyMachineRateSimulationList, getVerifySimulationList, getVerifySurfaceTreatmentSimulationList } from '../actions/Simulation';
+import { getAllMultiTechnologyCostings, getAllMultiTechnologyImpactedSimulationCostings, getAllSimulationBoughtOutPart, getVerifyBoughtOutPartSimulationList, getVerifyExchangeSimulationList, getVerifyMachineRateSimulationList, getVerifySimulationList, getVerifySurfaceTreatmentSimulationList } from '../actions/Simulation';
 import RunSimulationDrawer from './RunSimulationDrawer';
 import CostingSimulation from './CostingSimulation';
 import { checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUserId, searchNocontentFilter } from '../../../helper';
@@ -49,6 +49,7 @@ function VerifySimulation(props) {
     const runSimulationPermission = !((JSON.parse(localStorage.getItem('simulationRunPermission'))).includes(selectedMasterForSimulation?.label))
     const { selectedTechnologyForSimulation } = useSelector(state => state.simulation)
     const { selectedVendorForSimulation } = useSelector(state => state.simulation)
+    const { bopAssociation } = useSelector(state => state.simulation)
 
     const gridRef = useRef();
 
@@ -193,22 +194,40 @@ function VerifySimulation(props) {
                     }))
                     break;
                 case Number(BOPDOMESTIC):
-
-                    dispatch(getVerifyBoughtOutPartSimulationList(props.token, (res) => {
-                        if (res.data.Result) {
-                            const data = res.data.Data
-                            if (data.simulationBoughtOutPartImpactedCostings.length === 0) {
-                                Toaster.warning('No approved costing exist for this bought out part.')
-                                setHideRunButton(true)
-                                return false
+                    if (bopAssociation) {
+                        dispatch(getVerifyBoughtOutPartSimulationList(props.token, (res) => {
+                            if (res.data.Result) {
+                                const data = res.data.Data
+                                if (data.simulationBoughtOutPartImpactedCostings.length === 0) {
+                                    Toaster.warning('No approved costing exist for this bought out part.')
+                                    setHideRunButton(true)
+                                    return false
+                                }
+                                setTokenNo(data.TokenNumber)
+                                setSimualtionId(data.SimulationId)
+                                setSimulationTechnologyId(data.SimulationtechnologyId)
+                                setHideRunButton(false)
+                                setEffectiveDate(data.EffectiveDate)
                             }
-                            setTokenNo(data.TokenNumber)
-                            setSimualtionId(data.SimulationId)
-                            setSimulationTechnologyId(data.SimulationtechnologyId)
-                            setHideRunButton(false)
-                            setEffectiveDate(data.EffectiveDate)
-                        }
-                    }))
+                        }))
+                    } else {
+                        dispatch(getAllSimulationBoughtOutPart(props.token, (res) => {
+                            if (res.data.Result) {
+                                const data = res.data.Data
+                                if (data.SimulationBoughtOutPart.length === 0) {
+                                    Toaster.warning('No approved costing exist for this bought out part.')
+                                    setHideRunButton(true)
+                                    return false
+                                }
+                                setTokenNo(data.TokenNumber)
+                                setSimualtionId(data.SimulationId)
+                                setSimulationTechnologyId(data.SimulationTechnologyId)
+                                setHideRunButton(false)
+                                setEffectiveDate(data.EffectiveDate)
+                            }
+
+                        }))
+                    }
                     break;
                 case Number(BOPIMPORT):
 
@@ -291,10 +310,17 @@ function VerifySimulation(props) {
     }
 
     const newBRFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        const classGreen = (row?.NewBasicRate > row?.OldBasicRate) ? 'red-value form-control' : (row?.NewBasicRate < row?.OldBasicRate) ? 'green-value form-control' : 'form-class'
-        return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : '-'
+        let data = ''
+        let classGreen = ''
+        if (bopAssociation) {
+            data = (row?.NewBoughtOutPartRate ? row?.NewBoughtOutPartRate : '-')
+            classGreen = (row?.NewBoughtOutPartRate > row?.OldBoughtOutPartRate) ? 'red-value form-control' : (row?.NewBoughtOutPartRate < row?.OldBoughtOutPartRate) ? 'green-value form-control' : 'form-class'
+        } else {
+            data = row?.NewBOPRate ? row?.NewBOPRate : '-'
+            classGreen = (row?.NewBasicRate > row?.OldBasicRate) ? 'red-value form-control' : (row?.NewBasicRate < row?.OldBasicRate) ? 'green-value form-control' : 'form-class'
+        }
+        return data != null ? <span className={classGreen}>{checkForDecimalAndNull(data, getConfigurationKey().NoOfDecimalForPrice)}</span> : '-'
     }
 
     const newSRFormatter = (props) => {
@@ -356,6 +382,16 @@ function VerifySimulation(props) {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         const classGreen = (row?.NewExchangeRate > row?.OldExchangeRate) ? 'red-value form-control' : (row?.NewExchangeRate < row?.OldExchangeRate) ? 'green-value form-control' : 'form-class'
         return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : '-'
+    }
+
+    const bopNumberFormatter = (props) => {
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        return bopAssociation ? (row?.BoughtOutPartCode ? row?.BoughtOutPartCode : '-') : (row?.BoughtOutPartNumber ? row?.BoughtOutPartNumber : '-')
+    }
+
+    const existingBasicFormatter = (props) => {
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        return bopAssociation ? (row?.OldBoughtOutPartRate ? row?.OldBoughtOutPartRate : '-') : (row?.OldBOPRate ? row?.OldBOPRate : '-')
     }
 
     const onRowSelect = () => {
@@ -552,7 +588,9 @@ function VerifySimulation(props) {
         poPriceFormatter: poPriceFormatter,
         newExchangeRateFormatter: newExchangeRateFormatter,
         renderPart: renderPart,
-        renderCustomer: renderCustomer
+        renderCustomer: renderCustomer,
+        bopNumberFormatter: bopNumberFormatter,
+        existingBasicFormatter: existingBasicFormatter,
     };
 
     return (
@@ -617,27 +655,27 @@ function VerifySimulation(props) {
 
                                         >
                                             <AgGridColumn field="CostingId" hide ></AgGridColumn>
-                                            <AgGridColumn width={185} field="CostingNumber" headerName="Costing Number"></AgGridColumn>
-                                            <AgGridColumn width={110} field="PartNo" headerName="Part No." cellRenderer='renderPart'></AgGridColumn>
-                                            <AgGridColumn width={120} field="PartName" cellRenderer='descriptionFormatter' headerName="Part Name"></AgGridColumn>
-                                            <AgGridColumn width={130} field="RevisionNumber" cellRenderer='revisionFormatter' headerName="Revision No."></AgGridColumn>
+                                            {bopAssociation && <AgGridColumn width={185} field="CostingNumber" headerName="Costing Number"></AgGridColumn>}
+                                            {bopAssociation && <AgGridColumn width={110} field="PartNo" headerName="Part No." cellRenderer='renderPart'></AgGridColumn>}
+                                            {bopAssociation && <AgGridColumn width={120} field="PartName" cellRenderer='descriptionFormatter' headerName="Part Name"></AgGridColumn>}
+                                            {bopAssociation && <AgGridColumn width={130} field="RevisionNumber" cellRenderer='revisionFormatter' headerName="Revision No."></AgGridColumn>}
                                             {isRMDomesticOrRMImport === true && <AgGridColumn width={120} field="RMName" headerName="RM Name" ></AgGridColumn>}
                                             {isRMDomesticOrRMImport === true && <AgGridColumn width={120} field="RMGrade" headerName="Grade" ></AgGridColumn>}
                                             {isMachineRate && <AgGridColumn width={145} field="ProcessName" headerName="Process Name"></AgGridColumn>}
                                             {isMachineRate && <AgGridColumn width={150} field="MachineNumber" headerName="Machine Number"></AgGridColumn>}
-                                            {isBOPDomesticOrImport === true && <AgGridColumn width={130} field="BoughtOutPartCode" headerName="BOP Number"></AgGridColumn>}
+                                            {isBOPDomesticOrImport === true && <AgGridColumn width={130} field="BoughtOutPartCode" headerName="BOP Number" cellRenderer={"bopNumberFormatter"}></AgGridColumn>}
                                             {isBOPDomesticOrImport === true && <AgGridColumn width={130} field="BoughtOutPartName" headerName="BOP Name"></AgGridColumn>}
                                             {isSurfaceTreatmentOrOperation === true && <AgGridColumn width={185} field="OperationName" headerName="Operation Name"></AgGridColumn>}
                                             {isSurfaceTreatmentOrOperation === true && <AgGridColumn width={185} field="OperationCode" headerName="Operation Code"></AgGridColumn>}
                                             {!isMultiTechnology && verifyList && verifyList[0]?.CostingTypeId !== CBCTypeId && <AgGridColumn width={140} field="VendorName" cellRenderer='renderVendor' headerName="Vendor (Code)"></AgGridColumn>}
                                             {!isMultiTechnology && verifyList && verifyList[0]?.CostingTypeId === CBCTypeId && <AgGridColumn width={140} field="CustomerName" cellRenderer='renderCustomer' headerName="Customer (Code)"></AgGridColumn>}
                                             <AgGridColumn width={120} field="PlantName" cellRenderer='renderPlant' headerName="Plant (Code)"></AgGridColumn>
-                                            <AgGridColumn width={130} field="POPrice" headerName="Existing PO Price" cellRenderer='poPriceFormatter'></AgGridColumn>
+                                            {bopAssociation && <AgGridColumn width={130} field="POPrice" headerName="Existing PO Price" cellRenderer='poPriceFormatter'></AgGridColumn>}
 
                                             {isSurfaceTreatmentOrOperation === true && <AgGridColumn width={185} field="OldOperationRate" headerName="Existing Rate"></AgGridColumn>}
                                             {isSurfaceTreatmentOrOperation === true && <AgGridColumn width={185} field="NewOperationRate" headerName="Revised Rate"></AgGridColumn>}
 
-                                            {isBOPDomesticOrImport === true && <AgGridColumn width={145} field="OldBoughtOutPartRate" headerName="Existing Basic Rate"></AgGridColumn>}
+                                            {isBOPDomesticOrImport === true && <AgGridColumn width={145} field="OldBoughtOutPartRate" headerName="Existing Basic Rate" cellRenderer={existingBasicFormatter}></AgGridColumn>}
                                             {isBOPDomesticOrImport === true && <AgGridColumn width={150} field="NewBoughtOutPartRate" cellRenderer='newBRFormatter' headerName="Revised Basic Rate"></AgGridColumn>}
 
                                             {isMachineRate && <AgGridColumn width={145} field="OldMachineRate" headerName="Existing Machine Rate"></AgGridColumn>}

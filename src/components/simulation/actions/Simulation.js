@@ -49,6 +49,7 @@ import {
     GET_SIMULATION_APPROVAL_LIST_DRAFT,
     SET_SELECTED_VENDOR_SIMULATION,
     GET_ALL_MULTI_TECHNOLOGY_COSTING,
+    SET_BOP_ASSOCIATION,
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
 import Toaster from '../../common/Toaster';
@@ -1363,4 +1364,77 @@ export function getAllSimulatedMultiTechnologyCosting(simulationId, callback) {
             apiErrors(error);
         });
     };
+}
+
+export function getAllSimulationBoughtOutPart(simulationId, callback) {
+
+    return (dispatch) => {
+        const request = axios.get(`${API.getAllSimulationBoughtOutPart}?simulationId=${simulationId}`, config());
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_VERIFY_SIMULATION_LIST,
+                    payload: response.data.Data.SimulationBoughtOutPart
+                })
+                callback(response)
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        })
+    }
+}
+
+export function setBOPAssociation(value) {
+    return (dispatch) => {
+        dispatch({
+            type: SET_BOP_ASSOCIATION,
+            payload: value,
+        });
+    }
+}
+
+export function runSimulationOnSelectedBoughtOutPart(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.runSimulationOnSelectedBoughtOutPart, data, config());
+        request.then((response) => {
+            if (response.data.Result) {
+                callback(response);
+            }
+        }).catch((error) => {
+            callback(error);
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    };
+}
+
+export function getAllSimulatedBoughtOutPart(token, callback) {
+    return (dispatch) => {
+        const request = axios.get(`${API.getAllSimulatedBoughtOutPart}?simulationId=${token}`, config());
+        request.then((response) => {
+            if (response.data.Result || response.status === 204) {
+                let tempData = {
+                    IsBoughtOutPartSimulation: response.status === 204 ? false : response?.data?.Data?.IsBoughtOutPartSimulation,
+                    IsExchangeRateSimulation: response.status === 204 ? false : response?.data?.Data?.IsExchangeRateSimulation,
+                    IsOperationSimulation: response.status === 204 ? false : response?.data?.Data?.IsOperationSimulation,
+                    IsRawMaterialSimulation: response.status === 204 ? false : response?.data?.Data?.IsRawMaterialSimulation,
+                    IsSurfaceTreatmentSimulation: response.status === 204 ? false : response?.data?.Data?.IsSurfaceTreatmentSimulation,
+                    IsMachineProcessSimulation: response.status === 204 ? false : response?.data?.Data?.IsMachineProcessSimulation
+                }
+                dispatch({
+                    type: GET_VALUE_TO_SHOW_COSTING_SIMULATION,
+                    payload: tempData
+                })
+                dispatch({
+                    type: GET_COSTING_SIMULATION_LIST,
+                    payload: response.status === 204 ? [] : response.data.Data.SimulatedCostingList
+                })
+                callback(response)
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        })
+    }
 }
