@@ -1019,8 +1019,7 @@ class AddProfit extends Component {
                                   component={searchableSelect}
                                   placeholder={"Select"}
                                   options={this.renderListing("material")}
-                                  validate={this.state.RawMaterial == null || this.state.RawMaterial.length === 0 ? [required] : []}
-                                  required={true}
+                                  required={false}
                                   handleChangeDescription={this.handleRMChange}
                                   valueDescription={this.state.RawMaterial}
                                   className="fullinput-icon"
@@ -1039,8 +1038,7 @@ class AddProfit extends Component {
                                     component={searchableSelect}
                                     placeholder={"Select"}
                                     options={this.renderListing("grade")}
-                                    validate={this.state.RMGrade == null || this.state.RMGrade.length === 0 ? [required] : []}
-                                    required={true}
+                                    required={false}
                                     handleChangeDescription={this.handleGradeChange}
                                     valueDescription={this.state.RMGrade}
                                     disabled={isEditFlag || isViewMode}
