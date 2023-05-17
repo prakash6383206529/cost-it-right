@@ -782,7 +782,7 @@ function VerifySimulation(props) {
 
 
                                             {isOverHeadProfit === true && <AgGridColumn width={120} field="OverheadName" headerName="Overhead Name" ></AgGridColumn>}
-                                        </AgGridReact >}
+                                        </AgGridReact>}
                                         {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />}
                                     </div >
                                 </div >
