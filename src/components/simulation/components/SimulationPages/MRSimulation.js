@@ -461,7 +461,7 @@ function MRSimulation(props) {
                                                 {!isImpactedMaster && <div className={`d-flex align-items-center simulation-label-container`}>
                                                     <div className='d-flex pl-3'>
                                                         <label>Technology: </label>
-                                                        <p className='technology ml-1' title={list[0].Technologies}>{list[0].Technologies}</p>
+                                                        <p className='technology ml-1' title={list[0].Technology}>{list[0].Technology}</p>
                                                     </div>
                                                     {list[0].CostingTypeId !== CBCTypeId && <div className='d-flex pl-3'>
                                                         <label className='mr-1'>Vendor (Code):</label>
@@ -498,7 +498,7 @@ function MRSimulation(props) {
                                                 rowSelection={'multiple'}
                                                 onCellValueChanged={onCellValueChanged}
                                             >
-                                                {!isImpactedMaster && <AgGridColumn field="Technologies" editable='false' headerName="Technology" minWidth={190}></AgGridColumn>}
+                                                {!isImpactedMaster && <AgGridColumn field="Technology" editable='false' headerName="Technology" minWidth={190}></AgGridColumn>}
                                                 {costingAndPartNo && <AgGridColumn field="CostingNumber" editable='false' headerName="Costing No" minWidth={190}></AgGridColumn>}
                                                 {costingAndPartNo && <AgGridColumn field="PartNo" editable='false' headerName="Part No" minWidth={190}></AgGridColumn>}
                                                 <AgGridColumn field="MachineName" editable='false' headerName="Machine Name" minWidth={140}></AgGridColumn>
@@ -509,7 +509,7 @@ function MRSimulation(props) {
                                                 {
                                                     !isImpactedMaster &&
                                                     <>
-                                                        <AgGridColumn field="Plants" editable='false' headerName="Plant (Code)" minWidth={190} cellRenderer='plantFormatter'></AgGridColumn>
+                                                        <AgGridColumn field="Plant" editable='false' headerName="Plant (Code)" minWidth={190} cellRenderer='plantFormatter'></AgGridColumn>
 
                                                     </>
                                                 }
