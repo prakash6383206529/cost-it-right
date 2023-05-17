@@ -218,6 +218,7 @@ class AddOperation extends Component {
       temp.push({ label: "Welding", value: 1 })
       temp.push({ label: "Surface Treatment", value: 2 })
       temp.push({ label: "Other Operation", value: 3 })
+      temp.push({ label: "Ni Cr Plating", value: 4 })
       return temp;
     }
   }
@@ -476,10 +477,10 @@ class AddOperation extends Component {
     this.setState({ operationName: e.target.value })
     this.props.checkAndGetOperationCode(this.state.operationCode, e.target.value, res => {
       if (res && res.data && res.data.Result === false) {
-        this.props.change('OperationCode', res.data.DynamicData.OperationCode ? res.data.DynamicData.OperationCode : '')
+        this.props.change('OperationCode', res.data.Identity ? res.data.Identity : '')
       } else {
-        this.setState({ isDisableCode: res.data.DynamicData.IsExist }, () => {
-          this.props.change('OperationCode', res.data.DynamicData.OperationCode ? res.data.DynamicData.OperationCode : '')
+        this.setState({ isDisableCode: !res.data.Result }, () => {
+          this.props.change('OperationCode', res.data.Identity ? res.data.Identity : '')
         })
       }
     })
@@ -826,6 +827,7 @@ class AddOperation extends Component {
       obj.operationType = this.state.operationType
       obj.technology = this.state.selectedTechnology
       obj.operationName = filedObj.OperationName
+      obj.operationCode = filedObj.OperationCode
       obj.description = filedObj.Description
       obj.plants = this.state.selectedPlants
       obj.UOM = this.state.UOM
@@ -836,8 +838,12 @@ class AddOperation extends Component {
       obj.customer = this.state.client
       obj.isSurfaceTreatment = isSurfaceTreatment
       obj.OperationId = OperationId
+      if (String(this.state.operationType.label) === "Ni Cr Plating") {
+        obj.useWatchArray = ['wireRate', 'consumptionWire', 'gasRate', 'consumptionGas', 'electricityRate', 'consumptionPower', 'manPowerCost', 'staffCost', 'maintenanceCost', 'consumablesCost', 'waterCost', 'jigStripping', 'statuatoryLicense', 'rejnReworkPercent', 'profitPercent']
+      } else {
+        obj.useWatchArray = String(this.state.operationType.label) === "Welding" ? ['wireRate', 'consumptionWire', 'gasRate', 'consumptionGas', 'electricityRate', 'consumptionPower', 'labourRate', 'weldingShift', 'machineConsumableCost', 'welderCost', 'interestDepriciationCost', 'otherCostWelding'] : ['gasCost', 'electricityCost', 'manPowerCost', 'staffCost', 'maintenanceCost', 'consumablesCost', 'waterCost', 'jigStripping', 'interestCost', 'depriciationCost', 'rateOperation', 'statuatoryLicense', 'rejnReworkPercent', 'profitPercent', 'otherCost']
+      }
       this.setState({ addMoreDetails: true, addMoreDetailObj: obj })
-
     } else {
       Toaster.warning('Please enter mandatory details')
     }
