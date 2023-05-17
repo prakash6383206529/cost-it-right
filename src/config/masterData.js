@@ -4969,6 +4969,18 @@ export const SIMULATIONAPPROVALSUMMARYDOWNLOADBOP = [
     { label: "Impact/Quarter (w.r.t. Budgeted Price)", value: "BudgetedPriceImpactPerQuarter" },
 ]
 
+export const SIMULATIONAPPROVALSUMMARYDOWNLOADBOPWITHOUTCOSTING = [
+    { label: "Part No", value: "PartNo" },
+    { label: "Part Name", value: "PartName" },
+    { label: "BOP Name", value: "BoughtOutPartName" },
+    { label: "BOP Number", value: "BoughtOutPartNumber" },
+    { label: "Vendor (Code)", value: "VendorName" },
+    { label: "Plant (Code)", value: "PlantName" },
+    { label: "Existing BOP Cost", value: "OldNetBoughtOutPartCost" },
+    { label: "Revised BOP Cost", value: "NewNetBoughtOutPartCost" },
+    { label: "Variance (BOP Cost)", value: "NetBoughtOutPartCostVariance" },
+]
+
 export const BOP_DOMESTIC_DOWNLOAD_EXCEl = [
     { label: "Costing Head", value: "CostingHead", },
     { label: "BOP Part No.", value: "BoughtOutPartNumber", },
@@ -7114,3 +7126,11 @@ export const typePercentageAndFixed = [
     { label: 'Fixed', value: 'Fixed' },
     { label: 'Percentage', value: 'Percentage' },
 ];
+
+export const associationDropdownList = [
+    { label: 'Associated', value: 'Associated' },
+    { label: 'Non Associated', value: 'Non Associated' },
+]
+
+export const NON_ASSOCIATED = "Non Associated"
+export const ASSOCIATED = "Associated"

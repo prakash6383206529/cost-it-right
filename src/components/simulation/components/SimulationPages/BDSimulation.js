@@ -56,12 +56,10 @@ function BDSimulation(props) {
         mode: 'onChange',
         reValidateMode: 'onChange',
     })
-    const { isMasterAssociatedWithCosting } = useSelector(state => state.simulation)
-
 
     const dispatch = useDispatch()
 
-    const { selectedMasterForSimulation, selectedTechnologyForSimulation } = useSelector(state => state.simulation)
+    const { selectedMasterForSimulation, selectedTechnologyForSimulation, isMasterAssociatedWithCosting } = useSelector(state => state.simulation)
 
     useEffect(() => {
         list && list?.map(item => {
@@ -148,6 +146,7 @@ function BDSimulation(props) {
         obj.SimulationBoughtOutPart = tempArr
         obj.EffectiveDate = DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss')
         obj.SimulationHeadId = list[0].CostingTypeId
+        obj.IsSimulationWithOutCosting = !isMasterAssociatedWithCosting
 
         dispatch(runVerifyBoughtOutPartSimulation(obj, res => {
             setIsDisable(false)

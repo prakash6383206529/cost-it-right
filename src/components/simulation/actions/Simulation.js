@@ -53,6 +53,7 @@ import {
     GET_SIMULATION_APPROVAL_LIST_DRAFT,
     SET_SELECTED_VENDOR_SIMULATION,
     GET_ALL_MULTI_TECHNOLOGY_COSTING,
+    SET_BOP_ASSOCIATION,
 } from '../../../config/constants';
 import { MESSAGES } from '../../../config/message';
 import { apiErrors } from '../../../helper/util';
@@ -1609,6 +1610,95 @@ export function uploadSimulationAttachmentByCategoryAll(selectedFiles, callback)
         }).catch((error) => {
             dispatch({ type: API_FAILURE })
             apiErrors(error)
+        })
+    }
+}
+
+/**
+ * @method getAllSimulationBoughtOutPart
+ * @description GET API FOR SIMULATION BOUGHT OUT PART
+ */
+export function getAllSimulationBoughtOutPart(simulationId, callback) {
+
+    return (dispatch) => {
+        const request = axios.get(`${API.getAllSimulationBoughtOutPart}?simulationId=${simulationId}`, config());
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_VERIFY_SIMULATION_LIST,
+                    payload: response.data.Data.SimulationBoughtOutPart
+                })
+                callback(response)
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        })
+    }
+}
+
+/**
+ * @method setIsMasterAssociatedWithCosting
+ * @description Is Master Associated With Costing
+ */
+export function setIsMasterAssociatedWithCosting(value) {
+    return (dispatch) => {
+        dispatch({
+            type: SET_BOP_ASSOCIATION,
+            payload: value,
+        });
+    }
+}
+
+/**
+ * @method runSimulationOnSelectedBoughtOutPart
+ * @description run Simulation On Selected Bought Out Part
+ */
+export function runSimulationOnSelectedBoughtOutPart(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.runSimulationOnSelectedBoughtOutPart, data, config());
+        request.then((response) => {
+            if (response.data.Result) {
+                callback(response);
+            }
+        }).catch((error) => {
+            callback(error);
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method getAllSimulatedBoughtOutPart
+ * @description get All Simulated Bought Out Part
+ */
+export function getAllSimulatedBoughtOutPart(token, callback) {
+    return (dispatch) => {
+        const request = axios.get(`${API.getAllSimulatedBoughtOutPart}?simulationId=${token}`, config());
+        request.then((response) => {
+            if (response.data.Result || response.status === 204) {
+                let tempData = {
+                    IsBoughtOutPartSimulation: response.status === 204 ? false : response?.data?.Data?.IsBoughtOutPartSimulation,
+                    IsExchangeRateSimulation: response.status === 204 ? false : response?.data?.Data?.IsExchangeRateSimulation,
+                    IsOperationSimulation: response.status === 204 ? false : response?.data?.Data?.IsOperationSimulation,
+                    IsRawMaterialSimulation: response.status === 204 ? false : response?.data?.Data?.IsRawMaterialSimulation,
+                    IsSurfaceTreatmentSimulation: response.status === 204 ? false : response?.data?.Data?.IsSurfaceTreatmentSimulation,
+                    IsMachineProcessSimulation: response.status === 204 ? false : response?.data?.Data?.IsMachineProcessSimulation
+                }
+                dispatch({
+                    type: GET_VALUE_TO_SHOW_COSTING_SIMULATION,
+                    payload: tempData
+                })
+                dispatch({
+                    type: GET_COSTING_SIMULATION_LIST,
+                    payload: response.status === 204 ? [] : response.data.Data.SimulatedCostingList
+                })
+                callback(response)
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
         })
     }
 }

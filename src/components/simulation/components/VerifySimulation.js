@@ -4,7 +4,7 @@ import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import NoContentFound from '../../common/NoContentFound';
 import { EMPTY_DATA, EXCHNAGERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, BOPDOMESTIC, BOPIMPORT, MACHINERATE, OVERHEAD, defaultPageSize, COMBINED_PROCESS, CBCTypeId } from '../../../config/constants';
-import { getAllMultiTechnologyCostings, getAllMultiTechnologyImpactedSimulationCostings, getVerifyBoughtOutPartSimulationList, getverifyCombinedProcessSimulationList, getVerifyExchangeSimulationList, getVerifyMachineRateSimulationList, getVerifySimulationList, getVerifySurfaceTreatmentSimulationList } from '../actions/Simulation';
+import { getAllMultiTechnologyCostings, getAllMultiTechnologyImpactedSimulationCostings, getAllSimulationBoughtOutPart, getVerifyBoughtOutPartSimulationList, getverifyCombinedProcessSimulationList, getVerifyExchangeSimulationList, getVerifyMachineRateSimulationList, getVerifySimulationList, getVerifySurfaceTreatmentSimulationList } from '../actions/Simulation';
 import RunSimulationDrawer from './RunSimulationDrawer';
 import CostingSimulation from './CostingSimulation';
 import { checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUserId, searchNocontentFilter } from '../../../helper';
@@ -49,6 +49,7 @@ function VerifySimulation(props) {
     const runSimulationPermission = !((JSON.parse(localStorage.getItem('simulationRunPermission'))).includes(selectedMasterForSimulation?.label))
     const { selectedTechnologyForSimulation } = useSelector(state => state.simulation)
     const { selectedVendorForSimulation } = useSelector(state => state.simulation)
+    const { isMasterAssociatedWithCosting } = useSelector(state => state.simulation)
 
     const gridRef = useRef();
 
@@ -193,40 +194,76 @@ function VerifySimulation(props) {
                     }))
                     break;
                 case Number(BOPDOMESTIC):
-
-                    dispatch(getVerifyBoughtOutPartSimulationList(props.token, (res) => {
-                        if (res.data.Result) {
-                            const data = res.data.Data
-                            if (data.simulationBoughtOutPartImpactedCostings.length === 0) {
-                                Toaster.warning('No approved costing exist for this bought out part.')
-                                setHideRunButton(true)
-                                return false
+                    if (isMasterAssociatedWithCosting) {
+                        dispatch(getVerifyBoughtOutPartSimulationList(props.token, (res) => {
+                            if (res.data.Result) {
+                                const data = res.data.Data
+                                if (data.simulationBoughtOutPartImpactedCostings.length === 0) {
+                                    Toaster.warning('No approved costing exist for this bought out part.')
+                                    setHideRunButton(true)
+                                    return false
+                                }
+                                setTokenNo(data.TokenNumber)
+                                setSimualtionId(data.SimulationId)
+                                setSimulationTechnologyId(data.SimulationtechnologyId)
+                                setHideRunButton(false)
+                                setEffectiveDate(data.EffectiveDate)
                             }
-                            setTokenNo(data.TokenNumber)
-                            setSimualtionId(data.SimulationId)
-                            setSimulationTechnologyId(data.SimulationtechnologyId)
-                            setHideRunButton(false)
-                            setEffectiveDate(data.EffectiveDate)
-                        }
-                    }))
+                        }))
+                    } else {
+                        dispatch(getAllSimulationBoughtOutPart(props.token, (res) => {
+                            if (res.data.Result) {
+                                const data = res.data.Data
+                                if (data.SimulationBoughtOutPart.length === 0) {
+                                    Toaster.warning('No approved bought out part.')
+                                    setHideRunButton(true)
+                                    return false
+                                }
+                                setTokenNo(data.TokenNumber)
+                                setSimualtionId(data.SimulationId)
+                                setSimulationTechnologyId(data.SimulationTechnologyId)
+                                setHideRunButton(false)
+                                setEffectiveDate(data.EffectiveDate)
+                            }
+                        }))
+                    }
                     break;
                 case Number(BOPIMPORT):
 
-                    dispatch(getVerifyBoughtOutPartSimulationList(props.token, (res) => {
-                        if (res.data.Result) {
-                            const data = res.data.Data
-                            if (data.simulationBoughtOutPartImpactedCostings.length === 0) {
-                                Toaster.warning('No approved costing exist for this bought out part.')
-                                setHideRunButton(true)
-                                return false
+                    if (isMasterAssociatedWithCosting) {
+                        dispatch(getVerifyBoughtOutPartSimulationList(props.token, (res) => {
+                            if (res.data.Result) {
+                                const data = res.data.Data
+                                if (data.simulationBoughtOutPartImpactedCostings.length === 0) {
+                                    Toaster.warning('No approved costing exist for this bought out part.')
+                                    setHideRunButton(true)
+                                    return false
+                                }
+                                setTokenNo(data.TokenNumber)
+                                setSimualtionId(data.SimulationId)
+                                setSimulationTechnologyId(data.SimulationtechnologyId)
+                                setHideRunButton(false)
+                                setEffectiveDate(data.EffectiveDate)
                             }
-                            setTokenNo(data.TokenNumber)
-                            setSimualtionId(data.SimulationId)
-                            setSimulationTechnologyId(data.SimulationtechnologyId)
-                            setHideRunButton(false)
-                            setEffectiveDate(data.EffectiveDate)
-                        }
-                    }))
+                        }))
+                    } else {
+                        dispatch(getAllSimulationBoughtOutPart(props.token, (res) => {
+                            if (res.data.Result) {
+                                const data = res.data.Data
+                                if (data.SimulationBoughtOutPart.length === 0) {
+                                    Toaster.warning('No approved bought out part.')
+                                    setHideRunButton(true)
+                                    return false
+                                }
+                                setTokenNo(data.TokenNumber)
+                                setSimualtionId(data.SimulationId)
+                                setSimulationTechnologyId(data.SimulationTechnologyId)
+                                setHideRunButton(false)
+                                setEffectiveDate(data.EffectiveDate)
+                            }
+
+                        }))
+                    }
                     break;
                 // case Number(BOPIMPORT):
 
@@ -311,8 +348,16 @@ function VerifySimulation(props) {
     const newBRFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        const classGreen = (row?.NewBasicRate > row?.OldBasicRate) ? 'red-value form-control' : (row?.NewBasicRate < row?.OldBasicRate) ? 'green-value form-control' : 'form-class'
-        return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : '-'
+        let data = ''
+        let classGreen = ''
+        if (isMasterAssociatedWithCosting) {
+            data = (row?.NewBoughtOutPartRate ? row?.NewBoughtOutPartRate : '-')
+            classGreen = (row?.NewBoughtOutPartRate > row?.OldBoughtOutPartRate) ? 'red-value form-control' : (row?.NewBoughtOutPartRate < row?.OldBoughtOutPartRate) ? 'green-value form-control' : 'form-class'
+        } else {
+            data = row?.NewBOPRate ? row?.NewBOPRate : '-'
+            classGreen = (row?.NewBasicRate > row?.OldBasicRate) ? 'red-value form-control' : (row?.NewBasicRate < row?.OldBasicRate) ? 'green-value form-control' : 'form-class'
+        }
+        return data != null ? <span className={classGreen}>{checkForDecimalAndNull(data, getConfigurationKey().NoOfDecimalForPrice)}</span> : '-'
     }
 
     const newSRFormatter = (props) => {
@@ -384,8 +429,13 @@ function VerifySimulation(props) {
     }
 
     const decimalFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        return checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        return isMasterAssociatedWithCosting ? (row?.BoughtOutPartCode ? row?.BoughtOutPartCode : '-') : (row?.BoughtOutPartNumber ? row?.BoughtOutPartNumber : '-')
+    }
+
+    const existingBasicFormatter = (props) => {
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        return isMasterAssociatedWithCosting ? (row?.OldBoughtOutPartRate ? row?.OldBoughtOutPartRate : '-') : (row?.OldBOPRate ? row?.OldBOPRate : '-')
     }
 
     const onRowSelect = () => {
@@ -559,7 +609,7 @@ function VerifySimulation(props) {
         setGridApi(params.api)
         setGridColumnApi(params.columnApi)
         params.api.paginationGoToPage(0);
-        if (!bopAssociation) {
+        if (!isMasterAssociatedWithCosting) {
             params.api.sizeColumnsToFit();
         } else {
             window.screen.width >= 1600 && gridRef.current.api.sizeColumnsToFit();
@@ -579,7 +629,7 @@ function VerifySimulation(props) {
         gridOptions?.api?.setFilterModel(null);
         gridApi.setQuickFilter(null);
         document.getElementById("filter-text-box").value = "";
-        if (!bopAssociation && isBOPDomesticOrImport) {
+        if (!isMasterAssociatedWithCosting && isBOPDomesticOrImport) {
             gridRef.current.api.sizeColumnsToFit();
         } else {
             window.screen.width >= 1600 && gridRef.current.api.sizeColumnsToFit();
@@ -666,10 +716,10 @@ function VerifySimulation(props) {
 
                                         >
                                             <AgGridColumn field="CostingId" hide ></AgGridColumn>
-                                            <AgGridColumn width={185} field="CostingNumber" headerName="Costing Number"></AgGridColumn>
-                                            <AgGridColumn width={110} field="PartNo" headerName="Part No." cellRenderer='renderPart'></AgGridColumn>
-                                            <AgGridColumn width={120} field="PartName" cellRenderer='descriptionFormatter' headerName="Part Name"></AgGridColumn>
-                                            <AgGridColumn width={130} field="RevisionNumber" cellRenderer='revisionFormatter' headerName="Revision No."></AgGridColumn>
+                                            {isMasterAssociatedWithCosting && <AgGridColumn width={185} field="CostingNumber" headerName="Costing Number"></AgGridColumn>}
+                                            {isMasterAssociatedWithCosting && <AgGridColumn width={110} field="PartNo" headerName="Part No." cellRenderer='renderPart'></AgGridColumn>}
+                                            {isMasterAssociatedWithCosting && <AgGridColumn width={120} field="PartName" cellRenderer='descriptionFormatter' headerName="Part Name"></AgGridColumn>}
+                                            {isMasterAssociatedWithCosting && <AgGridColumn width={130} field="RevisionNumber" cellRenderer='revisionFormatter' headerName="Revision No."></AgGridColumn>}
                                             {isRMDomesticOrRMImport === true && <AgGridColumn width={120} field="RMName" headerName="RM Name" ></AgGridColumn>}
                                             {isRMDomesticOrRMImport === true && <AgGridColumn width={120} field="RMGrade" headerName="Grade" ></AgGridColumn>}
                                             {isMachineRate && <AgGridColumn width={145} field="ProcessName" headerName="Process Name"></AgGridColumn>}
@@ -681,7 +731,7 @@ function VerifySimulation(props) {
                                             {!isMultiTechnology && verifyList && verifyList[0]?.CostingHeadId !== CBCTypeId && <AgGridColumn width={140} field="VendorName" cellRenderer='renderVendor' headerName="Vendor (Code)"></AgGridColumn>}
                                             {!isMultiTechnology && verifyList && verifyList[0]?.CostingHeadId === CBCTypeId && <AgGridColumn width={140} field="CustomerName" cellRenderer='renderCustomer' headerName="Customer (Code)"></AgGridColumn>}
                                             <AgGridColumn width={120} field="PlantName" cellRenderer='renderPlant' headerName="Plant (Code)"></AgGridColumn>
-                                            <AgGridColumn width={130} field="POPrice" headerName="Existing PO Price" cellRenderer='poPriceFormatter'></AgGridColumn>
+                                            {isMasterAssociatedWithCosting && <AgGridColumn width={130} field="POPrice" headerName="Existing PO Price" cellRenderer='poPriceFormatter'></AgGridColumn>}
 
                                             {isSurfaceTreatmentOrOperation === true && <AgGridColumn width={185} field="OldOperationRate" headerName="Existing Rate"></AgGridColumn>}
                                             {isSurfaceTreatmentOrOperation === true && <AgGridColumn width={185} field="NewOperationRate" headerName="Revised Rate"></AgGridColumn>}
@@ -717,11 +767,11 @@ function VerifySimulation(props) {
 
 
                                             {isOverHeadProfit === true && <AgGridColumn width={120} field="OverheadName" headerName="Overhead Name" ></AgGridColumn>}
-                                        </AgGridReact>}
+                                        </AgGridReact >}
                                         {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />}
-                                    </div>
-                                </div>
-                            </div>
+                                    </div >
+                                </div >
+                            </div >
                         </Col >
                     </Row >
                     <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer sticky-btn-footer">
