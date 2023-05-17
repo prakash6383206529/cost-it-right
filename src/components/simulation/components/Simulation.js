@@ -141,6 +141,10 @@ function Simulation(props) {
         setValue('token', '')
         setIsTechnologyDisable(false)
         dispatch(setMasterForSimulation(value))
+        dispatch(setTechnologyForSimulation(''))
+        dispatch(setIsMasterAssociatedWithCosting(''))
+        setAssociation('')
+        setValue('Association', '')
         if (value !== '' && (Object.keys(getValues('Technology')).length > 0 || !getTechnologyForSimulation.includes(value.value))) {
             setSelectionForListingMasterAPI('Master')
             setShowTokenDropdown(true)
@@ -177,6 +181,7 @@ function Simulation(props) {
         dispatch(setIsMasterAssociatedWithCosting(value?.value === ASSOCIATED))
         setTimeout(() => {
             setAssociation(value)
+            dispatch(setIsMasterAssociatedWithCosting(value?.value === ASSOCIATED))
             if (value?.value === NON_ASSOCIATED) {
                 setShowMasterList(true)
                 setSelectionForListingMasterAPI('Master')
@@ -220,6 +225,7 @@ function Simulation(props) {
                 }
             }, 100);
         }
+        dispatch(setIsMasterAssociatedWithCosting(true))
     }
 
     const handleVendorChange = (value) => {
@@ -367,7 +373,7 @@ function Simulation(props) {
                 case BOPDOMESTIC:
                     return (<BOPDomesticListing isSimulation={true} isMasterSummaryDrawer={masterSummaryDrawerState ? props.isMasterSummaryDrawer : false} technology={technology.value} objectForMultipleSimulation={obj} apply={editTable} selectionForListingMasterAPI={selectionForListingMasterAPI} changeSetLoader={changeSetLoader} changeTokenCheckBox={changeTokenCheckBox} isReset={isReset} ListFor='simulation' />)
                 case BOPIMPORT:
-                    return (<BOPImportListing isSimulation={true} isMasterSummaryDrawer={masterSummaryDrawerState ? props.isMasterSummaryDrawer : false} technology={technology.value} objectForMultipleSimulation={obj} apply={editTable} selectionForListingMasterAPI={selectionForListingMasterAPI} changeSetLoader={changeSetLoader} changeTokenCheckBox={changeTokenCheckBox} isReset={isReset} ListFor='simulation' />)
+                    return (<BOPImportListing isSimulation={true} isMasterSummaryDrawer={masterSummaryDrawerState ? props.isMasterSummaryDrawer : false} technology={technology.value} objectForMultipleSimulation={obj} apply={editTable} selectionForListingMasterAPI={selectionForListingMasterAPI} changeSetLoader={changeSetLoader} changeTokenCheckBox={changeTokenCheckBox} isReset={isReset} ListFor={association?.value === ASSOCIATED ? 'simulation' : 'master'} isBOPAssociated={association?.value === ASSOCIATED ? true : false} />)
                 case EXCHNAGERATE:
                     return (<ExchangeRateListing isSimulation={true} technology={technology.value} apply={editTable} tokenArray={tokenForSimulation} objectForMultipleSimulation={obj} selectionForListingMasterAPI={selectionForListingMasterAPI} changeSetLoader={changeSetLoader} changeTokenCheckBox={changeTokenCheckBox} />)
                 case OPERATIONS:
@@ -1073,7 +1079,7 @@ function Simulation(props) {
                                         />
                                     </div>
                                 </div>
-                                {(String(master?.value) === BOPDOMESTIC || String(master?.value) === BOPIMPORT) &&
+                                {(String(selectedMasterForSimulation?.value) === BOPDOMESTIC || String(selectedMasterForSimulation?.value) === BOPIMPORT) &&
                                     <div className="d-inline-flex justify-content-start align-items-center mr-3">
                                         <div className="flex-fills label">Association:</div>
                                         <div className="flex-fills hide-label pl-0">

@@ -6,7 +6,7 @@ import { Controller, useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 //import CostingSimulation from './CostingSimulation';
 import { DatePickerHookForm } from '../../layout/HookFormInputs';
-import { runSimulationOnSelectedCosting, getSelectListOfSimulationApplicability, runSimulationOnSelectedExchangeCosting, runSimulationOnSelectedSurfaceTreatmentCosting, runSimulationOnSelectedMachineRateCosting, runSimulationOnSelectedBoughtOutPartCosting, runSimulationOnSelectedAssemblyTechnologyCosting } from '../actions/Simulation';
+import { runSimulationOnSelectedCosting, getSelectListOfSimulationApplicability, runSimulationOnSelectedExchangeCosting, runSimulationOnSelectedSurfaceTreatmentCosting, runSimulationOnSelectedMachineRateCosting, runSimulationOnSelectedBoughtOutPartCosting, runSimulationOnSelectedAssemblyTechnologyCosting, runSimulationOnSelectedBoughtOutPart } from '../actions/Simulation';
 import DayTime from '../../common/DayTimeWrapper'
 import { EXCHNAGERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, MACHINERATE, BOPDOMESTIC, BOPIMPORT, SIMULATION } from '../../../config/constants';
 //import { SearchableSelectHookForm } from '../../layout/HookFormInputs';
@@ -70,6 +70,7 @@ function RunSimulationDrawer(props) {
     const selectedMasterForSimulation = useSelector(state => state.simulation.selectedMasterForSimulation)
     const selectedTechnologyForSimulation = useSelector(state => state.simulation.selectedTechnologyForSimulation)
     const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
+    const { isMasterAssociatedWithCosting } = useSelector(state => state.simulation)
 
     useEffect(() => {
         dispatch(getSelectListOfSimulationApplicability(() => { }))
@@ -346,9 +347,15 @@ function RunSimulationDrawer(props) {
                     }))
                     break;
                 case Number(BOPDOMESTIC):
-                    dispatch(runSimulationOnSelectedBoughtOutPartCosting({ ...objs, EffectiveDate: DayTime(date !== null ? date : "").format('YYYY/MM/DD HH:mm'), IsProvisional: provisionalCheck, SimulationApplicability: temp }, (res) => {
-                        checkForResponse(res)
-                    }))
+                    if (isMasterAssociatedWithCosting) {
+                        dispatch(runSimulationOnSelectedBoughtOutPartCosting({ ...objs, EffectiveDate: DayTime(date !== null ? date : "").format('YYYY/MM/DD HH:mm'), IsProvisional: provisionalCheck, SimulationApplicability: temp }, (res) => {
+                            checkForResponse(res)
+                        }))
+                    } else {
+                        dispatch(runSimulationOnSelectedBoughtOutPart({ ...objs, EffectiveDate: DayTime(date !== null ? date : "").format('YYYY/MM/DD HH:mm'), IsProvisional: provisionalCheck, SimulationApplicability: temp }, (res) => {
+                            checkForResponse(res)
+                        }))
+                    }
                     break;
                 case Number(BOPIMPORT):
                     dispatch(runSimulationOnSelectedBoughtOutPartCosting({ ...objs, EffectiveDate: DayTime(date !== null ? date : "").format('YYYY/MM/DD HH:mm'), IsProvisional: provisionalCheck, SimulationApplicability: temp }, (res) => {

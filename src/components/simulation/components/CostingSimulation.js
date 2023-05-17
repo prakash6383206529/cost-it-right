@@ -307,14 +307,16 @@ function CostingSimulation(props) {
             })
 
             let uniqeArray = []
-            const map = new Map();
-            for (const item of tempArrayCosting) {
-                if (!map.has(item.CostingNumber)) {                          // ENTERS "IF", IF MAP DO NOT HAVE COSTING NUMBER IN IT 
-                    map.set(item.CostingNumber, true);                       // SET COSTING (NUMBER, TRUE) IN MAP 
-                    uniqeArray.push(item);                                   //  ALSO PUSH ITEM IN ARRAY WHICH BECOMES UNIQUE FROM COSTING NUMBER
+            if (isMasterAssociatedWithCosting) {
+                const map = new Map();
+                for (const item of tempArrayCosting) {
+                    if (!map.has(item.CostingNumber)) {                          // ENTERS "IF", IF MAP DO NOT HAVE COSTING NUMBER IN IT 
+                        map.set(item.CostingNumber, true);                       // SET COSTING (NUMBER, TRUE) IN MAP 
+                        uniqeArray.push(item);                                   //  ALSO PUSH ITEM IN ARRAY WHICH BECOMES UNIQUE FROM COSTING NUMBER
+                    }
                 }
             }
-
+            let simulationList = isMasterAssociatedWithCosting ? Data?.SimulatedCostingList : Data?.SimulationBoughtOutPart
             setTokenNo(tokenNo)
             setAPIData(tempArrayCosting)
             setCostingArr(tempArrayCosting)
@@ -339,7 +341,7 @@ function CostingSimulation(props) {
             setTableData(list)
 
             //DOWNLOAD
-            let downloadList = getListMultipleAndAssembly(Data.SimulatedCostingList, false)
+            let downloadList = getListMultipleAndAssembly(simulationList, false)
             setDownloadList(downloadList)
 
         } else {
@@ -377,9 +379,15 @@ function CostingSimulation(props) {
                     break;
                 case Number(BOPDOMESTIC):
                 case Number(BOPIMPORT):
-                    dispatch(getCostingBoughtOutPartSimulationList(simulationId, (res) => {
-                        setCommonStateForList(res)
-                    }))
+                    if (isMasterAssociatedWithCosting) {
+                        dispatch(getCostingBoughtOutPartSimulationList(simulationId, (res) => {
+                            setCommonStateForList(res)
+                        }))
+                    } else {
+                        dispatch(getAllSimulatedBoughtOutPart(simulationId, (res) => {
+                            setCommonStateForList(res)
+                        }))
+                    }
                     break;
                 case Number(EXCHNAGERATE):
                     dispatch(getExchangeCostingSimulationList(simulationId, (res) => {
@@ -1090,6 +1098,9 @@ function CostingSimulation(props) {
             arrayOFCorrectObjIndividual = arrayOFCorrectObjIndividual.concat(temp);
             return null
         })
+        if (!isMasterAssociatedWithCosting) {
+            arrayOFCorrectObjIndividual = [...selectedRowData]
+        }
         let finalGrid = [], isTokenAPI = false
         if (showBOPColumn === true || showRMColumn === true || showOperationColumn === true || showSurfaceTreatmentColumn === true ||
             showExchangeRateColumn === true || showMachineRateColumn === true) {
@@ -1139,7 +1150,7 @@ function CostingSimulation(props) {
                     return returnExcelColumn(isTokenAPI ? finalGrid : CostingSimulationDownloadOperation, selectedRowData?.length > 0 ? arrayOFCorrectObjIndividual : downloadList && downloadList?.length > 0 ? downloadList : [])
                 case Number(BOPDOMESTIC):
                 case Number(BOPIMPORT):
-                    return returnExcelColumn(isTokenAPI ? finalGrid : CostingSimulationDownloadBOP, selectedRowData?.length > 0 ? arrayOFCorrectObjIndividual : downloadList && downloadList?.length > 0 ? downloadList : [])
+                    return returnExcelColumn(isTokenAPI ? finalGrid : (isMasterAssociatedWithCosting ? CostingSimulationDownloadBOP : SimulationDownloadBOP), selectedRowData?.length > 0 ? arrayOFCorrectObjIndividual : downloadList && downloadList?.length > 0 ? downloadList : [])
                 case Number(EXCHNAGERATE):
                     return returnExcelColumn(isTokenAPI ? finalGrid : EXCHANGESIMULATIONDOWNLOAD, selectedRowData.length > 0 ? selectedRowData : downloadList && downloadList.length > 0 ? downloadList : [])
                 case Number(MACHINERATE):
@@ -1180,7 +1191,7 @@ function CostingSimulation(props) {
         params.columnApi.getAllColumns().forEach(function (column) {
             allColumnIds.push(column.colId);
         });
-        if (!bopAssociation && isBOPDomesticOrImport) {
+        if (!isMasterAssociatedWithCosting && isBOPDomesticOrImport) {
             params.api.sizeColumnsToFit();
         } else {
             window.screen.width >= 1921 && gridRef.current.api.sizeColumnsToFit();
@@ -1201,7 +1212,7 @@ function CostingSimulation(props) {
         gridOptions?.api?.setFilterModel(null);
         gridApi?.setQuickFilter(null);
         document.getElementById("filter-text-box").value = "";
-        if (!bopAssociation) {
+        if (!isMasterAssociatedWithCosting) {
             gridRef.current.api.sizeColumnsToFit();
         } else {
             window.screen.width >= 1921 && gridRef.current.api.sizeColumnsToFit();
