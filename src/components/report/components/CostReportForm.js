@@ -624,7 +624,7 @@ function CostReportForm(props) {
 
                         </Col>}
 
-                        <Col md="3" className="mt-4 pt-1">
+                        {!props.hideAddtable && <><Col md="3" className="mt-4 pt-1">
                             <button
                                 type="submit"
                                 className={"user-btn  pull-left mt-1"}
@@ -640,14 +640,15 @@ function CostReportForm(props) {
                                 Reset
                             </button>
                         </Col>
-                        <Col md={customerPoamSummary ? 4 : 6} className="mt-4 pt-2 text-right">
-                            <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}>
-                                <div className="refresh mr-0"></div>
-                            </button>
-                        </Col>
+                            <Col md={customerPoamSummary ? 4 : 6} className="mt-4 pt-2 text-right">
+                                <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}>
+                                    <div className="refresh mr-0"></div>
+                                </button>
+                            </Col>
+                        </>}
                     </Row>}
                 </form>
-                <div className={`ag-grid-wrapper height-width-wrapper ${(gridData && gridData?.length <= 0) ? "overlay-contain" : ""}`}>
+                {!props.hideAddtable && <div className={`ag-grid-wrapper height-width-wrapper ${(gridData && gridData?.length <= 0) ? "overlay-contain" : ""}`}>
                     < div className={`ag-theme-material `}>
                         <AgGridReact
                             defaultColDef={defaultColDef}
@@ -681,7 +682,7 @@ function CostReportForm(props) {
                         </AgGridReact>
                         {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />}
                     </div>
-                </div>
+                </div>}
             </div>
         </>
     )

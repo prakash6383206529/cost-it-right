@@ -210,3 +210,20 @@
     }
 
 }
+
+.pipd-report-grid {
+    .ag-theme-material {
+        @for $i from 1 through 7 {
+
+            [row-id~="#{($i * 3) - 1}"] {
+                [col-id="Name"] {
+                    border-bottom: 1px solid $agGridBorder !important;
+                }
+            }
+        }
+    }
+}
+
+.highlight-row {
+    font-weight: 600 !important;
+}
