@@ -5,8 +5,8 @@ import { useForm, Controller, useWatch } from "react-hook-form";
 import Toaster from "../../common/Toaster";
 import { Loader } from "../../common/Loader";
 import {
-    minLength10, maxLength12, required,
-    checkWhiteSpaces, postiveNumber, maxLength25, hashValidation, number, checkForNull, checkForDecimalAndNull
+    maxLength12, required,
+    checkWhiteSpaces, maxLength25, hashValidation, checkForNull, checkForDecimalAndNull
 } from "../../../helper/validation";
 
 import { MESSAGES } from "../../../config/message";
@@ -44,6 +44,8 @@ function AddMoreOperation(props) {
     const [isOtherCostOpen, setIsOtherCostOpen] = useState(false);
     const [includeInterestInRejection, setIncludeInterestInRejection] = useState(false);
     const [isWelding, setIsWelding] = useState(false)
+    const [isPlating, setIsPlating] = useState(false)
+    const [other, setIsOther] = useState(false)
     const [attachmentLoader, setAttachmentLoader] = useState(false)
     const [client, setClient] = useState([])
     const [plant, setPlant] = useState([])
@@ -91,7 +93,7 @@ function AddMoreOperation(props) {
 
     const fieldValues = useWatch({
         control,
-        name: String(addMoreDetailObj?.operationType?.label) === "Welding" ? ['wireRate', 'consumptionWire', 'gasRate', 'consumptionGas', 'electricityRate', 'consumptionPower', 'labourRate', 'weldingShift', 'machineConsumableCost', 'welderCost', 'interestDepriciationCost', 'otherCostWelding'] : ['gasCost', 'electricityCost', 'manPowerCost', 'staffCost', 'maintenanceCost', 'consumablesCost', 'waterCost', 'jigStripping', 'interestCost', 'depriciationCost', 'rateOperation', 'statuatoryLicense', 'rejnReworkPercent', 'profitPercent', 'otherCost']
+        name: addMoreDetailObj?.useWatchArray
     })
 
     useEffect(() => {
@@ -100,9 +102,14 @@ function AddMoreOperation(props) {
             setPowerCostWelding()
             setLabourCostWelding()
             setNetCostWelding()
-        } else {
+        } else if (other) {
             setRejectionReworkAndProfitCost()
             setNetCost()
+        } else {
+            setMaterialCostWelding()
+            setPowerCostWelding()
+            setRejectionReworkAndProfitCostPlating()
+            setNetCostPlating()
         }
 
     }, [fieldValues, includeInterestInRejection])
@@ -200,6 +207,49 @@ function AddMoreOperation(props) {
         setValue('profitCost', checkForDecimalAndNull(profitCost, initialConfiguration.NoOfDecimalForPrice))
     }
 
+
+    const setRejectionReworkAndProfitCostPlating = () => {
+
+        let wireCost = checkForNull(dataToSend.wireCostWelding)
+        let gasCost = checkForNull(dataToSend.gasCostWelding)
+        let electricityCost = checkForNull(dataToSend.electricityCostWelding)
+        let manPowerCost = checkForNull(Number(getValues('manPowerCost')))
+        let staffCost = checkForNull(Number(getValues('staffCost')))
+        let waterCost = checkForNull(Number(getValues('waterCost')))
+        let jigStripping = checkForNull(Number(getValues('jigStripping')))
+        let statuatoryLicense = checkForNull(Number(getValues('statuatoryLicense')))
+        let rejnReworkPercent = checkForNull(Number(getValues('rejnReworkPercent'))) / 100
+        let profitPercent = checkForNull(Number(getValues('profitPercent'))) / 100
+
+        let netCost = (wireCost - gasCost + electricityCost + manPowerCost + staffCost + waterCost + jigStripping + statuatoryLicense)
+        let rejectionReworkCost = netCost * rejnReworkPercent
+        let profitCost = netCost * profitPercent
+
+        setDataToSend(prevState => ({ ...prevState, rejectionReworkCostState: rejectionReworkCost, profitCostState: profitCost }))
+        setValue('rejoinReworkCost', checkForDecimalAndNull(rejectionReworkCost, initialConfiguration.NoOfDecimalForPrice))
+        setValue('profitCost', checkForDecimalAndNull(profitCost, initialConfiguration.NoOfDecimalForPrice))
+
+        setNetCostPlating()
+    }
+
+    const setNetCostPlating = () => {
+
+        let wireCost = checkForNull(dataToSend.wireCostWelding)
+        let gasCost = checkForNull(dataToSend.gasCostWelding)
+        let electricityCost = checkForNull(dataToSend.electricityCostWelding)
+        let manPowerCost = checkForNull(Number(getValues('manPowerCost')))
+        let staffCost = checkForNull(Number(getValues('staffCost')))
+        let waterCost = checkForNull(Number(getValues('waterCost')))
+        let jigStripping = checkForNull(Number(getValues('jigStripping')))
+        let statuatoryLicense = checkForNull(Number(getValues('statuatoryLicense')))
+        let rejectionReworkCost = checkForNull(Number(getValues('rejoinReworkCost')))
+        let profitCostState = checkForNull(Number(getValues('profitCost')))
+
+        let netCost = (wireCost - gasCost + electricityCost + manPowerCost + staffCost + waterCost + jigStripping + statuatoryLicense + rejectionReworkCost + profitCostState)
+        setDataToSend(prevState => ({ ...prevState, netCost: netCost }))
+        setValue('netCost', checkForDecimalAndNull(netCost, initialConfiguration.NoOfDecimalForPrice))
+    }
+
     const setNetCost = () => {
 
         let gasCost = checkForNull(Number(getValues('gasCost')))
@@ -228,9 +278,14 @@ function AddMoreOperation(props) {
 
         if (String(props?.addMoreDetailObj?.operationType?.label) === "Welding") {
             setIsWelding(true)
+        } else if (String(props?.addMoreDetailObj?.operationType?.label) === "Ni Cr Plating") {
+            setIsPlating(true)
+        } else {
+            setIsOther(true)
         }
 
         setValue('operationType', addMoreDetailObj?.operationType)
+        setValue('operationCode', addMoreDetailObj?.operationCode)
         setValue('technology', { label: addMoreDetailObj.technology[0].Text, value: addMoreDetailObj.technology[0].Value })
         setValue('operationName', addMoreDetailObj.operationName)
         setValue('description', addMoreDetailObj.description)
@@ -348,20 +403,20 @@ function AddMoreOperation(props) {
             CustomerId: addMoreDetailObj?.costingTypeId === CBCTypeId ? client.value : null,
 
             ForType: values?.operationType?.label,
-            MaterialGasCRMHead: isWelding ? values?.crmHeadGasRate?.label : values?.crmHeadMaterialCost?.label,
+            MaterialGasCRMHead: (isWelding || isPlating) ? values?.crmHeadGasRate?.label : values?.crmHeadMaterialCost?.label,
 
             MaterialGasRate: values?.gasRate,//welding
             MaterialGasConsumption: values?.consumptionGas,//welding
-            MaterialGasCost: isWelding ? dataToSend?.gasCostWelding : values?.gasCost,
+            MaterialGasCost: (isWelding || isPlating) ? dataToSend?.gasCostWelding : values?.gasCost,
             MaterialWireCRMHead: values?.crmHeadWireRate?.label,//welding
             MaterialWireRate: values?.wireRate,//welding
             MaterialWireConsumption: values?.consumptionWire,//welding
             MaterialWireCost: dataToSend?.wireCostWelding,//welding  
 
-            PowerCRMHead: isWelding ? values?.crmHeadPowerWelding?.label : values?.crmHeadPower?.label,
+            PowerCRMHead: (isWelding || isPlating) ? values?.crmHeadPowerWelding?.label : values?.crmHeadPower?.label,
             PowerElectricityRate: values?.electricityRate,//welding
             PowerElectricityConsumption: values?.consumptionPower,//welding
-            PowerElectricityCost: isWelding ? dataToSend?.electricityCostWelding : values?.electricityCost,
+            PowerElectricityCost: (isWelding || isPlating) ? dataToSend?.electricityCostWelding : values?.electricityCost,
 
             LabourCRMHead: isWelding ? values?.crmHeadLabourWelding?.label : values?.crmHeadLabour?.label,
             LabourManPowerRate: values?.labourRate,
@@ -684,6 +739,36 @@ function AddMoreOperation(props) {
         )
     }
 
+    const getLabel = (value) => {
+        let label;
+        switch (value) {
+            case 'wireRate':
+                label = isWelding ? `Wire Rate` : `Ni Rate`
+                break;
+            case 'wireCost':
+                label = isWelding ? `Wire Cost` : `Cost`
+                break;
+            case 'gasRate':
+                label = isWelding ? `Gas Rate` : `Ni Scrap Rate`
+                break;
+            case 'consumablesCost':
+                label = other ? `Consumables Cost` : `Office Exp`
+                break;
+            case 'waterCost':
+                label = other ? `Water Cost` : `Additional Chemical Cost`
+                break;
+            case 'jigStripping':
+                label = other ? `Jig Stripping` : `CETP Charge`
+                break;
+            case 'statuatoryLicense':
+                label = other ? `Statuatory & License` : `Fixed Cost`
+                break;
+            default:
+                label = ''
+        }
+        return label
+    }
+
     return (
         <div className="container-fluid">
             {isLoader && <Loader />}
@@ -777,12 +862,14 @@ function AddMoreOperation(props) {
                                             disableErrorOverflow={true}
                                             rules={{
                                                 required: false,
-                                                validate: { number, postiveNumber, minLength10, maxLength12 }
+                                                validate: {
+                                                    maxLength12
+                                                }
                                             }}
                                             handleChange={() => { }}
                                             placeholder={'Enter'}
                                             customClassName={'withBorder'}
-                                            disabled={isViewMode}
+                                            disabled={true}
                                         />
                                     </div>
 
@@ -948,7 +1035,7 @@ function AddMoreOperation(props) {
                                     isMaterialCostOpen &&
                                     <div className="accordian-content form-group row mx-0 w-100">
 
-                                        {!isWelding &&
+                                        {other &&
                                             <><Col md="3">
                                                 <SearchableSelectHookForm
                                                     name="crmHeadMaterialCost"
@@ -997,7 +1084,7 @@ function AddMoreOperation(props) {
                                                 </Col>
                                             </>}
 
-                                        {isWelding && <>
+                                        {(isWelding || isPlating) && <>
                                             <Col md="3">
                                                 <SearchableSelectHookForm
                                                     name="crmHeadWireRate"
@@ -1022,7 +1109,7 @@ function AddMoreOperation(props) {
                                             <Col md="3">
 
                                                 <NumberFieldHookForm
-                                                    label={`Wire Rate`}
+                                                    label={getLabel('wireRate')}
                                                     name={'wireRate'}
                                                     Controller={Controller}
                                                     control={control}
@@ -1072,7 +1159,7 @@ function AddMoreOperation(props) {
 
                                             <Col md="3">
                                                 <NumberFieldHookForm
-                                                    label={`Wire Cost`}
+                                                    label={getLabel('wireCost')}
                                                     name={'wireCost'}
                                                     Controller={Controller}
                                                     control={control}
@@ -1119,7 +1206,7 @@ function AddMoreOperation(props) {
                                             <Col md="3">
 
                                                 <NumberFieldHookForm
-                                                    label={`Gas Rate`}
+                                                    label={getLabel('gasRate')}
                                                     name={'gasRate'}
                                                     Controller={Controller}
                                                     control={control}
@@ -1214,7 +1301,7 @@ function AddMoreOperation(props) {
                                     isPowerCostOpen &&
                                     <div className="accordian-content form-group row mx-0 w-100">
 
-                                        {!isWelding && <><Col md="3">
+                                        {other && <><Col md="3">
                                             <SearchableSelectHookForm
                                                 name="crmHeadPower"
                                                 type="text"
@@ -1261,7 +1348,7 @@ function AddMoreOperation(props) {
 
                                             </Col></>}
 
-                                        {isWelding && <>
+                                        {(isWelding || isPlating) && <>
 
                                             <Col md="3">
                                                 <SearchableSelectHookForm
@@ -1359,11 +1446,9 @@ function AddMoreOperation(props) {
                                                 />
                                             </Col>
                                         </>}
-
                                     </div>
                                 }
                             </Row>
-
 
 
 
@@ -1383,7 +1468,7 @@ function AddMoreOperation(props) {
                                     isLabourCostOpen &&
                                     <div className="accordian-content form-group row mx-0 w-100">
 
-                                        {!isWelding && <>
+                                        {(other || isPlating) && <>
                                             <Col md="3">
                                                 <SearchableSelectHookForm
                                                     name="crmHeadLabour"
@@ -1601,7 +1686,7 @@ function AddMoreOperation(props) {
                                     isConsumablesCostOpen &&
                                     <div className="accordian-content form-group row mx-0 w-100">
 
-                                        {!isWelding && <><Col md="3">
+                                        {(other || isPlating) && <><Col md="3">
                                             <SearchableSelectHookForm
                                                 name="crmHeadConsumableMaintenanceCost"
                                                 type="text"
@@ -1670,7 +1755,7 @@ function AddMoreOperation(props) {
                                             <Col md="3">
 
                                                 <NumberFieldHookForm
-                                                    label={`Consumables Cost`}
+                                                    label={getLabel('consumablesCost')}
                                                     name={'consumablesCost'}
                                                     Controller={Controller}
                                                     control={control}
@@ -1716,7 +1801,7 @@ function AddMoreOperation(props) {
                                             </Col>
                                             <Col md="3">
                                                 <NumberFieldHookForm
-                                                    label={`Water Cost`}
+                                                    label={getLabel('waterCost')}
                                                     name={'waterCost'}
                                                     Controller={Controller}
                                                     control={control}
@@ -1762,7 +1847,7 @@ function AddMoreOperation(props) {
                                             <Col md="3">
 
                                                 <NumberFieldHookForm
-                                                    label={`Jig Stripping`}
+                                                    label={getLabel(`jigStripping`)}
                                                     name={'jigStripping'}
                                                     Controller={Controller}
                                                     control={control}
@@ -1889,9 +1974,8 @@ function AddMoreOperation(props) {
 
 
 
-
                             {/*  INTEREST AND DEPRICIATION VALUE */}
-                            <Row className="mb-3 accordian-container">
+                            {!isPlating && <Row className="mb-3 accordian-container">
                                 <Col md="6">
                                     <HeaderTitle
                                         title={'Interest and Depriciation:'}
@@ -1906,7 +1990,7 @@ function AddMoreOperation(props) {
                                     isInterestCostOpen &&
                                     <div className="accordian-content form-group row mx-0 w-100">
 
-                                        {!isWelding && <> <Col md="3">
+                                        {other && <> <Col md="3">
                                             <SearchableSelectHookForm
                                                 name="crmHeadInterest"
                                                 type="text"
@@ -2067,12 +2151,12 @@ function AddMoreOperation(props) {
                                         }
                                     </div>
                                 }
-                            </Row>
+                            </Row>}
 
 
 
                             {/*  OTHER OPERATION VALUE */}
-                            {!isWelding && <> <Row className="mb-3 accordian-container">
+                            {other && <> <Row className="mb-3 accordian-container">
                                 <Col md="6">
                                     <HeaderTitle
                                         title={'Other Operation:'}
@@ -2176,267 +2260,270 @@ function AddMoreOperation(props) {
                                     isOtherCostOpen &&
                                     <div className="accordian-content form-group row mx-0 w-100">
 
-                                        {!isWelding && <><Col md="3">
-                                            <SearchableSelectHookForm
-                                                name="crmHeadStatuaryLicense"
-                                                type="text"
-                                                label="CRM Head"
-                                                errors={errors.crmHeadStatuaryLicense}
-                                                Controller={Controller}
-                                                control={control}
-                                                register={register}
-                                                mandatory={false}
-                                                rules={{
-                                                    required: false,
-                                                }}
-                                                placeholder={'Select'}
-                                                options={searchableSelectType('crmHead')}
-                                                required={false}
-                                                handleChange={() => { }}
-                                                disabled={isViewMode}
-                                            />
+                                        {(other || isPlating) &&
+                                            <>
+                                                <Col md="3">
+                                                    <SearchableSelectHookForm
+                                                        name="crmHeadStatuaryLicense"
+                                                        type="text"
+                                                        label="CRM Head"
+                                                        errors={errors.crmHeadStatuaryLicense}
+                                                        Controller={Controller}
+                                                        control={control}
+                                                        register={register}
+                                                        mandatory={false}
+                                                        rules={{
+                                                            required: false,
+                                                        }}
+                                                        placeholder={'Select'}
+                                                        options={searchableSelectType('crmHead')}
+                                                        required={false}
+                                                        handleChange={() => { }}
+                                                        disabled={isViewMode}
+                                                    />
 
-                                        </Col>
-                                            <Col md="3">
-                                                <NumberFieldHookForm
-                                                    label={`Statuatory & License`}
-                                                    name={'statuatoryLicense'}
-                                                    Controller={Controller}
-                                                    control={control}
-                                                    register={register}
-                                                    mandatory={false}
-                                                    rules={{
-                                                        required: false,
-                                                        pattern: {
-                                                            value: /^\d{0,4}(\.\d{0,7})?$/i,
-                                                            message: 'Maximum length for integer is 4 and for decimal is 7',
-                                                        },
-                                                    }}
-                                                    handleChange={() => { }}
-                                                    defaultValue={''}
-                                                    className=""
-                                                    customClassName={'withBorder'}
-                                                    errors={errors.statuatoryLicense}
-                                                    disabled={isViewMode ? true : false}
-                                                />
-                                            </Col>
-
-
-                                            <Col md="3">
-                                                <SearchableSelectHookForm
-                                                    name="crmHeadRejoinRework"
-                                                    type="text"
-                                                    label="CRM Head"
-                                                    errors={errors.crmHeadRejoinRework}
-                                                    Controller={Controller}
-                                                    control={control}
-                                                    register={register}
-                                                    mandatory={false}
-                                                    rules={{
-                                                        required: false,
-                                                    }}
-                                                    placeholder={'Select'}
-                                                    options={searchableSelectType('crmHead')}
-                                                    required={false}
-                                                    handleChange={() => { }}
-                                                    disabled={isViewMode}
-                                                />
-
-                                            </Col>
-                                            <Col md="3">
-
-                                                <NumberFieldHookForm
-                                                    label={`Rejection & Rework %`}
-                                                    name={'rejnReworkPercent'}
-                                                    Controller={Controller}
-                                                    control={control}
-                                                    register={register}
-                                                    mandatory={false}
-                                                    rules={{
-                                                        required: false,
-                                                        pattern: {
-                                                            value: /^\d{0,4}(\.\d{0,7})?$/i,
-                                                            message: 'Maximum length for integer is 4 and for decimal is 7',
-                                                        },
-                                                    }}
-                                                    handleChange={() => { }}
-                                                    defaultValue={''}
-                                                    className=""
-                                                    customClassName={'withBorder'}
-                                                    errors={errors.rejnReworkPercent}
-                                                    disabled={isViewMode ? true : false}
-                                                />
-
-                                            </Col>
+                                                </Col>
+                                                <Col md="3">
+                                                    <NumberFieldHookForm
+                                                        label={getLabel(`statuatoryLicense`)}
+                                                        name={'statuatoryLicense'}
+                                                        Controller={Controller}
+                                                        control={control}
+                                                        register={register}
+                                                        mandatory={false}
+                                                        rules={{
+                                                            required: false,
+                                                            pattern: {
+                                                                value: /^\d{0,4}(\.\d{0,7})?$/i,
+                                                                message: 'Maximum length for integer is 4 and for decimal is 7',
+                                                            },
+                                                        }}
+                                                        handleChange={() => { }}
+                                                        defaultValue={''}
+                                                        className=""
+                                                        customClassName={'withBorder'}
+                                                        errors={errors.statuatoryLicense}
+                                                        disabled={isViewMode ? true : false}
+                                                    />
+                                                </Col>
 
 
-                                            <Col md="3">
-                                                <NumberFieldHookForm
-                                                    label={`Rejection & Rework Cost`}
-                                                    name={'rejoinReworkCost'}
-                                                    Controller={Controller}
-                                                    control={control}
-                                                    register={register}
-                                                    mandatory={false}
-                                                    rules={{
-                                                        required: false,
-                                                        pattern: {
-                                                            value: /^\d{0,4}(\.\d{0,7})?$/i,
-                                                            message: 'Maximum length for integer is 4 and for decimal is 7',
-                                                        },
-                                                    }}
-                                                    handleChange={() => { }}
-                                                    defaultValue={''}
-                                                    className=""
-                                                    customClassName={'withBorder'}
-                                                    errors={errors.rejoinReworkCost}
-                                                    disabled={true}
-                                                />
+                                                <Col md="3">
+                                                    <SearchableSelectHookForm
+                                                        name="crmHeadRejoinRework"
+                                                        type="text"
+                                                        label="CRM Head"
+                                                        errors={errors.crmHeadRejoinRework}
+                                                        Controller={Controller}
+                                                        control={control}
+                                                        register={register}
+                                                        mandatory={false}
+                                                        rules={{
+                                                            required: false,
+                                                        }}
+                                                        placeholder={'Select'}
+                                                        options={searchableSelectType('crmHead')}
+                                                        required={false}
+                                                        handleChange={() => { }}
+                                                        disabled={isViewMode}
+                                                    />
 
-                                            </Col>
+                                                </Col>
+                                                <Col md="3">
 
+                                                    <NumberFieldHookForm
+                                                        label={`Rejection & Rework %`}
+                                                        name={'rejnReworkPercent'}
+                                                        Controller={Controller}
+                                                        control={control}
+                                                        register={register}
+                                                        mandatory={false}
+                                                        rules={{
+                                                            required: false,
+                                                            pattern: {
+                                                                value: /^\d{0,4}(\.\d{0,7})?$/i,
+                                                                message: 'Maximum length for integer is 4 and for decimal is 7',
+                                                            },
+                                                        }}
+                                                        handleChange={() => { }}
+                                                        defaultValue={''}
+                                                        className=""
+                                                        customClassName={'withBorder'}
+                                                        errors={errors.rejnReworkPercent}
+                                                        disabled={isViewMode ? true : false}
+                                                    />
 
-                                            <Col md="3">
-                                                <SearchableSelectHookForm
-                                                    name="crmHeadProfit"
-                                                    type="text"
-                                                    label="CRM Head"
-                                                    errors={errors.crmHeadProfit}
-                                                    Controller={Controller}
-                                                    control={control}
-                                                    register={register}
-                                                    mandatory={false}
-                                                    rules={{
-                                                        required: false,
-                                                    }}
-                                                    placeholder={'Select'}
-                                                    options={searchableSelectType('crmHead')}
-                                                    required={false}
-                                                    handleChange={() => { }}
-                                                    disabled={isViewMode}
-                                                />
-
-                                            </Col>
-                                            <Col md="3">
-                                                <NumberFieldHookForm
-                                                    label={`Profit %`}
-                                                    name={'profitPercent'}
-                                                    Controller={Controller}
-                                                    control={control}
-                                                    register={register}
-                                                    mandatory={false}
-                                                    rules={{
-                                                        required: false,
-                                                        pattern: {
-                                                            value: /^\d{0,4}(\.\d{0,7})?$/i,
-                                                            message: 'Maximum length for integer is 4 and for decimal is 7',
-                                                        },
-                                                    }}
-                                                    handleChange={() => { }}
-                                                    defaultValue={''}
-                                                    className=""
-                                                    customClassName={'withBorder'}
-                                                    errors={errors.profitPercent}
-                                                    disabled={isViewMode ? true : false}
-                                                />
-                                            </Col>
+                                                </Col>
 
 
-                                            <Col md="3">
-                                                <NumberFieldHookForm
-                                                    label={`Profit Cost`}
-                                                    name={'profitCost'}
-                                                    Controller={Controller}
-                                                    control={control}
-                                                    register={register}
-                                                    mandatory={false}
-                                                    rules={{
-                                                        required: false,
-                                                        pattern: {
-                                                            value: /^\d{0,4}(\.\d{0,7})?$/i,
-                                                            message: 'Maximum length for integer is 4 and for decimal is 7',
-                                                        },
-                                                    }}
-                                                    handleChange={() => { }}
-                                                    defaultValue={''}
-                                                    className=""
-                                                    customClassName={'withBorder'}
-                                                    errors={errors.profitCost}
-                                                    disabled={true}
-                                                />
-                                            </Col>
+                                                <Col md="3">
+                                                    <NumberFieldHookForm
+                                                        label={`Rejection & Rework Cost`}
+                                                        name={'rejoinReworkCost'}
+                                                        Controller={Controller}
+                                                        control={control}
+                                                        register={register}
+                                                        mandatory={false}
+                                                        rules={{
+                                                            required: false,
+                                                            pattern: {
+                                                                value: /^\d{0,4}(\.\d{0,7})?$/i,
+                                                                message: 'Maximum length for integer is 4 and for decimal is 7',
+                                                            },
+                                                        }}
+                                                        handleChange={() => { }}
+                                                        defaultValue={''}
+                                                        className=""
+                                                        customClassName={'withBorder'}
+                                                        errors={errors.rejoinReworkCost}
+                                                        disabled={true}
+                                                    />
 
-                                            <Col md="3">
-                                                <SearchableSelectHookForm
-                                                    name="crmHeadOtherCost"
-                                                    type="text"
-                                                    label="CRM Head"
-                                                    errors={errors.crmHeadOtherCost}
-                                                    Controller={Controller}
-                                                    control={control}
-                                                    register={register}
-                                                    mandatory={false}
-                                                    rules={{
-                                                        required: false,
-                                                    }}
-                                                    placeholder={'Select'}
-                                                    options={searchableSelectType('crmHead')}
-                                                    required={false}
-                                                    handleChange={() => { }}
-                                                    disabled={isViewMode}
-                                                />
+                                                </Col>
 
-                                            </Col>
-                                            <Col md="3">
-                                                <NumberFieldHookForm
-                                                    label={`Other Cost`}
-                                                    name={'otherCost'}
-                                                    Controller={Controller}
-                                                    control={control}
-                                                    register={register}
-                                                    mandatory={false}
-                                                    rules={{
-                                                        required: false,
-                                                        pattern: {
-                                                            value: /^\d{0,4}(\.\d{0,7})?$/i,
-                                                            message: 'Maximum length for integer is 4 and for decimal is 7',
-                                                        },
-                                                    }}
-                                                    handleChange={() => { }}
-                                                    defaultValue={''}
-                                                    className=""
-                                                    customClassName={'withBorder'}
-                                                    errors={errors.otherCost}
-                                                    disabled={isViewMode ? true : false}
-                                                />
-                                            </Col>
 
-                                            <Col md="3">
-                                                <TextFieldHookForm
-                                                    label="Other Cost Description"
-                                                    name={"otherCostDescription"}
-                                                    errors={errors.otherCostDescription}
-                                                    Controller={Controller}
-                                                    control={control}
-                                                    register={register}
-                                                    disableErrorOverflow={true}
-                                                    mandatory={false}
-                                                    rules={{
-                                                        required: false,
-                                                        validate: {
-                                                            hashValidation,
-                                                            maxLength25,
-                                                            checkWhiteSpaces,
-                                                        }
-                                                    }}
-                                                    handleChange={() => { }}
-                                                    placeholder={'Enter'}
-                                                    customClassName={'withBorder'}
-                                                    disabled={isViewMode}
-                                                />
-                                            </Col></>}
+                                                <Col md="3">
+                                                    <SearchableSelectHookForm
+                                                        name="crmHeadProfit"
+                                                        type="text"
+                                                        label="CRM Head"
+                                                        errors={errors.crmHeadProfit}
+                                                        Controller={Controller}
+                                                        control={control}
+                                                        register={register}
+                                                        mandatory={false}
+                                                        rules={{
+                                                            required: false,
+                                                        }}
+                                                        placeholder={'Select'}
+                                                        options={searchableSelectType('crmHead')}
+                                                        required={false}
+                                                        handleChange={() => { }}
+                                                        disabled={isViewMode}
+                                                    />
 
-                                        {isWelding && <>
+                                                </Col>
+                                                <Col md="3">
+                                                    <NumberFieldHookForm
+                                                        label={`Profit %`}
+                                                        name={'profitPercent'}
+                                                        Controller={Controller}
+                                                        control={control}
+                                                        register={register}
+                                                        mandatory={false}
+                                                        rules={{
+                                                            required: false,
+                                                            pattern: {
+                                                                value: /^\d{0,4}(\.\d{0,7})?$/i,
+                                                                message: 'Maximum length for integer is 4 and for decimal is 7',
+                                                            },
+                                                        }}
+                                                        handleChange={() => { }}
+                                                        defaultValue={''}
+                                                        className=""
+                                                        customClassName={'withBorder'}
+                                                        errors={errors.profitPercent}
+                                                        disabled={isViewMode ? true : false}
+                                                    />
+                                                </Col>
+
+
+                                                <Col md="3">
+                                                    <NumberFieldHookForm
+                                                        label={`Profit Cost`}
+                                                        name={'profitCost'}
+                                                        Controller={Controller}
+                                                        control={control}
+                                                        register={register}
+                                                        mandatory={false}
+                                                        rules={{
+                                                            required: false,
+                                                            pattern: {
+                                                                value: /^\d{0,4}(\.\d{0,7})?$/i,
+                                                                message: 'Maximum length for integer is 4 and for decimal is 7',
+                                                            },
+                                                        }}
+                                                        handleChange={() => { }}
+                                                        defaultValue={''}
+                                                        className=""
+                                                        customClassName={'withBorder'}
+                                                        errors={errors.profitCost}
+                                                        disabled={true}
+                                                    />
+                                                </Col>
+
+                                                {other && <><Col md="3">
+                                                    <SearchableSelectHookForm
+                                                        name="crmHeadOtherCost"
+                                                        type="text"
+                                                        label="CRM Head"
+                                                        errors={errors.crmHeadOtherCost}
+                                                        Controller={Controller}
+                                                        control={control}
+                                                        register={register}
+                                                        mandatory={false}
+                                                        rules={{
+                                                            required: false,
+                                                        }}
+                                                        placeholder={'Select'}
+                                                        options={searchableSelectType('crmHead')}
+                                                        required={false}
+                                                        handleChange={() => { }}
+                                                        disabled={isViewMode}
+                                                    />
+
+                                                </Col>
+                                                    <Col md="3">
+                                                        <NumberFieldHookForm
+                                                            label={`Other Cost`}
+                                                            name={'otherCost'}
+                                                            Controller={Controller}
+                                                            control={control}
+                                                            register={register}
+                                                            mandatory={false}
+                                                            rules={{
+                                                                required: false,
+                                                                pattern: {
+                                                                    value: /^\d{0,4}(\.\d{0,7})?$/i,
+                                                                    message: 'Maximum length for integer is 4 and for decimal is 7',
+                                                                },
+                                                            }}
+                                                            handleChange={() => { }}
+                                                            defaultValue={''}
+                                                            className=""
+                                                            customClassName={'withBorder'}
+                                                            errors={errors.otherCost}
+                                                            disabled={isViewMode ? true : false}
+                                                        />
+                                                    </Col>
+
+                                                    <Col md="3">
+                                                        <TextFieldHookForm
+                                                            label="Other Cost Description"
+                                                            name={"otherCostDescription"}
+                                                            errors={errors.otherCostDescription}
+                                                            Controller={Controller}
+                                                            control={control}
+                                                            register={register}
+                                                            disableErrorOverflow={true}
+                                                            mandatory={false}
+                                                            rules={{
+                                                                required: false,
+                                                                validate: {
+                                                                    hashValidation,
+                                                                    maxLength25,
+                                                                    checkWhiteSpaces,
+                                                                }
+                                                            }}
+                                                            handleChange={() => { }}
+                                                            placeholder={'Enter'}
+                                                            customClassName={'withBorder'}
+                                                            disabled={isViewMode}
+                                                        />
+                                                    </Col> </>}
+                                            </>}
+
+                                        {(isWelding || false) && <>
                                             <Col md="3">
                                                 <SearchableSelectHookForm
                                                     name="crmHeadAdditionalOtherCostWelding"
@@ -2656,7 +2743,6 @@ function AddMoreOperation(props) {
                     </div>
                 </div>
             </div>
-
 
         </div>
     );
