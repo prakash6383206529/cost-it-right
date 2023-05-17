@@ -153,6 +153,12 @@ function CostReportForm(props) {
         setValue('Plant', '')
     }
 
+    const CompanyName = [
+        { Text: '4W lighting', Value: '1' },
+        { Text: 'MKL', Value: '2' },
+        { Text: 'ONKYO', Value: '3' },
+    ]
+
     /**
     * @Method renderListing
     * @description Dropdown data list
@@ -203,6 +209,14 @@ function CostReportForm(props) {
 
         if (label === 'ProductGroup') {
             productGroupSelectList && productGroupSelectList.map(item => {
+                if (item.Value === '0') return false;
+                temp.push({ label: item.Text, value: item.Value })
+                return null;
+            })
+            return temp;
+        }
+        if (label === 'Company') {
+            CompanyName && CompanyName.map(item => {
                 if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
                 return null;
@@ -601,6 +615,23 @@ function CostReportForm(props) {
                                 handleChange={() => { }}
                                 errors={errors.Customer}
                                 disabled={props.isSaleAndPurchase ? false : (part.length === 0 ? true : false)}
+                            />
+                        </Col>}
+                        {<Col md="3">
+                            <SearchableSelectHookForm
+                                label={"Company Name"}
+                                name={"CompanyName"}
+                                placeholder={"Select"}
+                                Controller={Controller}
+                                control={control}
+                                rules={{ required: false }}
+                                register={register}
+                                // defaultValue={customer.length !== 0 ? customer : ""}
+                                options={renderListing("Company")}
+                                mandatory={false}
+                                handleChange={() => { }}
+                                errors={errors.Customer}
+                                disabled={false}
                             />
                         </Col>}
 
