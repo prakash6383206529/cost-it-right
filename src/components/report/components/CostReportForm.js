@@ -153,6 +153,12 @@ function CostReportForm(props) {
         setValue('Plant', '')
     }
 
+    const CompanyName = [
+        { Text: '4W lighting', Value: '1' },
+        { Text: 'MKL', Value: '2' },
+        { Text: 'ONKYO', Value: '3' },
+    ]
+
     /**
     * @Method renderListing
     * @description Dropdown data list
@@ -203,6 +209,14 @@ function CostReportForm(props) {
 
         if (label === 'ProductGroup') {
             productGroupSelectList && productGroupSelectList.map(item => {
+                if (item.Value === '0') return false;
+                temp.push({ label: item.Text, value: item.Value })
+                return null;
+            })
+            return temp;
+        }
+        if (label === 'Company') {
+            CompanyName && CompanyName.map(item => {
                 if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
                 return null;
@@ -605,6 +619,23 @@ function CostReportForm(props) {
                                 disabled={props.isSaleAndPurchase ? false : (part.length === 0 ? true : false)}
                             />
                         </Col>}
+                        {props.isCompany && <Col md="3">
+                            <SearchableSelectHookForm
+                                label={"Company Name"}
+                                name={"CompanyName"}
+                                placeholder={"Select"}
+                                Controller={Controller}
+                                control={control}
+                                rules={{ required: false }}
+                                register={register}
+                                // defaultValue={customer.length !== 0 ? customer : ""}
+                                options={renderListing("Company")}
+                                mandatory={false}
+                                handleChange={() => { }}
+                                errors={errors.Customer}
+                                disabled={false}
+                            />
+                        </Col>}
 
 
                         {customerPoamSummary && <Col md="2" className="d-flex align-items-center">
@@ -626,7 +657,7 @@ function CostReportForm(props) {
 
                         </Col>}
 
-                        <Col md="3" className="mt-4 pt-1">
+                        {!props.hideAddtable && <><Col md="3" className="mt-4 pt-1">
                             <button
                                 type="submit"
                                 className={"user-btn  pull-left mt-1"}
@@ -642,14 +673,15 @@ function CostReportForm(props) {
                                 Reset
                             </button>
                         </Col>
-                        <Col md={customerPoamSummary ? 4 : 6} className="mt-4 pt-2 text-right">
-                            <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}>
-                                <div className="refresh mr-0"></div>
-                            </button>
-                        </Col>
+                            <Col md={customerPoamSummary ? 4 : 6} className="mt-4 pt-2 text-right">
+                                <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}>
+                                    <div className="refresh mr-0"></div>
+                                </button>
+                            </Col>
+                        </>}
                     </Row>}
                 </form>
-                <div className={`ag-grid-wrapper height-width-wrapper ${(gridData && gridData?.length <= 0) ? "overlay-contain" : ""}`}>
+                {!props.hideAddtable && <div className={`ag-grid-wrapper height-width-wrapper ${(gridData && gridData?.length <= 0) ? "overlay-contain" : ""}`}>
                     < div className={`ag-theme-material `}>
                         <AgGridReact
                             defaultColDef={defaultColDef}
@@ -683,7 +715,7 @@ function CostReportForm(props) {
                         </AgGridReact>
                         {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />}
                     </div>
-                </div>
+                </div>}
             </div>
         </>
     )
