@@ -747,6 +747,13 @@ function CostingSimulation(props) {
         return cell != null ? temp : '-';
     }
 
+    const varianceFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        let value = row?.OldBOPRate - row?.NewBOPRate
+        return cell != null ? value : '-';
+    }
+
     const oldSTFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
@@ -1251,7 +1258,8 @@ function CostingSimulation(props) {
         impactPerQuarterFormatter: impactPerQuarterFormatter,
         hyphenFormatter: hyphenFormatter,
         processCostFormatter: processCostFormatter,
-        processFormatter: processFormatter
+        processFormatter: processFormatter,
+        varianceFormatter: varianceFormatter
     };
 
     const isRowSelectable = rowNode => statusForLinkedToken === true ? false : true;
