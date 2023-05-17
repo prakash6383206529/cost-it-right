@@ -154,6 +154,12 @@ function CostReportForm(props) {
         setValue('Plant', '')
     }
 
+    const CompanyName = [
+        { Text: '4W lighting', Value: '1' },
+        { Text: 'MKL', Value: '2' },
+        { Text: 'ONKYO', Value: '3' },
+    ]
+
     /**
     * @Method renderListing
     * @description Dropdown data list
@@ -204,6 +210,14 @@ function CostReportForm(props) {
 
         if (label === 'ProductGroup') {
             productGroupSelectList && productGroupSelectList.map(item => {
+                if (item.Value === '0') return false;
+                temp.push({ label: item.Text, value: item.Value })
+                return null;
+            })
+            return temp;
+        }
+        if (label === 'Company') {
+            CompanyName && CompanyName.map(item => {
                 if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
                 return null;
