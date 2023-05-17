@@ -1447,13 +1447,13 @@ function CostingDetails(props) {
   const backToFirstStep = () => {
     if (props?.nfrData?.isNFR) {
       // CODE FIR BACK BUTTON
-      setNFRListing(true)
       dispatch(isDataChange(false))
       dispatch(setRMCCData([], () => { }))                            //THIS WILL CLEAR RM CC REDUCER
       dispatch(setCostingDataList('setHeaderCostRMCCTab', [], () => { }))
       dispatch(emptyCostingData())
       dispatch(setRMCCBOPCostData([], () => { }))
-
+      reactLocalStorage.setObject('isFromDiscountObj', true)
+      setNFRListing(true)
     } else {
       setIsLoader(true)
       dispatch(getBriefCostingById('', (res) => { }))

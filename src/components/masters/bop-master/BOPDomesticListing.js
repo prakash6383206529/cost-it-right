@@ -123,7 +123,8 @@ class BOPDomesticListing extends Component {
             vendor_id: vendorId,
             plant_id: plantId,
             ListFor: this.props.ListFor,
-            StatusId: statusString
+            StatusId: statusString,
+            IsBOPAssociated: this.props?.isBOPAssociated
         }
         const { isMasterSummaryDrawer } = this.props
 
