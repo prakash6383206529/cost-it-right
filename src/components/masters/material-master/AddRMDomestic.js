@@ -1033,9 +1033,9 @@ class AddRMDomestic extends Component {
       return false
     }
 
-    if ((Number(fieldsObj.BasicRate) < Number(fieldsObj.ScrapRate)) || (fieldsObj.JaliScrapCost ? ((Number(fieldsObj.JaliScrapCost) + Number(checkForNull(fieldsObj.CircleScrapCost))) > Number(fieldsObj.BasicRate)) : false) || (fieldsObj.ForgingScrap ? ((Number(fieldsObj.ForgingScrap) + Number(checkForNull(fieldsObj.MachiningScrap))) > Number(fieldsObj.BasicRate)) : false)) {
+    if ((Number(fieldsObj.BasicRate) <= Number(fieldsObj.ScrapRate)) || (Number(fieldsObj.BasicRate) <= Number(fieldsObj.JaliScrapCost)) || (Number(fieldsObj.BasicRate) <= Number(fieldsObj.CircleScrapCost)) || (Number(fieldsObj.BasicRate) <= Number(fieldsObj.ForgingScrap)) || (Number(fieldsObj.BasicRate) <= Number(fieldsObj.MachiningScrap))) {
       this.setState({ setDisable: false })
-      Toaster.warning("Scrap rate should not be greater than basic rate")
+      Toaster.warning("Scrap rate/cost should not be greater than or equal to the basic rate.")
       return false
     }
     this.setState({ isVendorNameNotSelected: false })
