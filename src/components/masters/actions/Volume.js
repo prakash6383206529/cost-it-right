@@ -172,33 +172,12 @@ export function getFinancialYearSelectList(callback) {
 }
 
 /**
- * @method bulkUploadVolumeActual
+ * @method volumeBulkUpload
  * @description BULK UPLOAD FOR ACTUAL VOLUME ZBC
  */
-export function bulkUploadVolumeActual(data, callback) {
+export function volumeBulkUpload(data, callback) {
   return (dispatch) => {
-    const request = axios.post(API.bulkUploadVolumeActual, data, config())
-    request
-      .then((response) => {
-        if (response.status === 200) {
-          callback(response)
-        }
-      })
-      .catch((error) => {
-        dispatch({ type: API_FAILURE })
-        apiErrors(error)
-        callback(error);
-      })
-  }
-}
-
-/**
- * @method bulkUploadVolumeBudgeted
- * @description BULK UPLOAD FOR BUDGETED VOLUME ZBC
- */
-export function bulkUploadVolumeBudgeted(data, callback) {
-  return (dispatch) => {
-    const request = axios.post(API.bulkUploadVolumeBudgeted, data, config())
+    const request = axios.post(API.volumeBulkUpload, data, config())
     request
       .then((response) => {
         if (response.status === 200) {
