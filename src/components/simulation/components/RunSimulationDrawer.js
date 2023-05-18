@@ -69,7 +69,7 @@ function RunSimulationDrawer(props) {
     const selectedMasterForSimulation = useSelector(state => state.simulation.selectedMasterForSimulation)
     const selectedTechnologyForSimulation = useSelector(state => state.simulation.selectedTechnologyForSimulation)
     const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
-    const { bopAssociation } = useSelector(state => state.simulation)
+    const { isMasterAssociatedWithCosting } = useSelector(state => state.simulation)
 
     useEffect(() => {
         dispatch(getSelectListOfSimulationApplicability(() => { }))
@@ -347,7 +347,7 @@ function RunSimulationDrawer(props) {
                     }))
                     break;
                 case Number(BOPDOMESTIC):
-                    if (bopAssociation) {
+                    if (isMasterAssociatedWithCosting) {
                         dispatch(runSimulationOnSelectedBoughtOutPartCosting({ ...objs, EffectiveDate: DayTime(date !== null ? date : "").format('YYYY/MM/DD HH:mm'), IsProvisional: provisionalCheck, SimulationApplicability: temp }, (res) => {
                             checkForResponse(res)
                         }))

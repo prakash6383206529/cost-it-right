@@ -111,7 +111,7 @@ function SimulationApprovalSummary(props) {
     const isMultiTechnology = (checkForNull(simulationDetail?.SimulationTechnologyId) === ASSEMBLY_TECHNOLOGY_MASTER) ? true : false
 
     const simulationAssemblyListSummary = useSelector((state) => state.simulation.simulationAssemblyListSummary)
-    const { bopAssociation } = useSelector(state => state.simulation)
+    const { isMasterAssociatedWithCosting } = useSelector(state => state.simulation)
 
     const dispatch = useDispatch()
 
@@ -463,7 +463,7 @@ function SimulationApprovalSummary(props) {
                     return returnExcelColumn(isTokenAPI ? finalGrid : SIMULATIONAPPROVALSUMMARYDOWNLOADOPERATION, downloadGrid.length > 0 ? downloadGrid : [])
                 case BOPDOMESTIC:
                 case BOPIMPORT:
-                    return returnExcelColumn(isTokenAPI ? finalGrid : (bopAssociation ? SIMULATIONAPPROVALSUMMARYDOWNLOADBOP : SIMULATIONAPPROVALSUMMARYDOWNLOADBOPWITHOUTCOSTING), downloadGrid.length > 0 ? downloadGrid : [])
+                    return returnExcelColumn(isTokenAPI ? finalGrid : (isMasterAssociatedWithCosting ? SIMULATIONAPPROVALSUMMARYDOWNLOADBOP : SIMULATIONAPPROVALSUMMARYDOWNLOADBOPWITHOUTCOSTING), downloadGrid.length > 0 ? downloadGrid : [])
                 case MACHINERATE:
                     return returnExcelColumn(isTokenAPI ? finalGrid : SIMULATIONAPPROVALSUMMARYDOWNLOADMR, downloadGrid.length > 0 ? downloadGrid : [])
                 default:
@@ -844,7 +844,7 @@ function SimulationApprovalSummary(props) {
         setGridApi(params.api)
         setGridColumnApi(params.columnApi)
         params.api.paginationGoToPage(0);
-        if (!bopAssociation) {
+        if (!isMasterAssociatedWithCosting) {
             params.api.sizeColumnsToFit();
         }
     };
@@ -866,7 +866,7 @@ function SimulationApprovalSummary(props) {
         setTextFilterSearch('')
         gridOptions?.columnApi?.resetColumnState();
         gridOptions?.api?.setFilterModel(null);
-        if (!bopAssociation) {
+        if (!isMasterAssociatedWithCosting) {
             gridApi.sizeColumnsToFit();
         }
     }
@@ -992,7 +992,7 @@ function SimulationApprovalSummary(props) {
                                     <thead>
                                         <tr>
                                             <th>Token No:</th>
-                                            {bopAssociation && <th>Technology:</th>}
+                                            {isMasterAssociatedWithCosting && <th>Technology:</th>}
                                             <th>Parts Supplied:</th>
                                             <th>Department Code:</th>
                                             {String(SimulationTechnologyId) !== EXCHNAGERATE && <th>Costing Head:</th>}
@@ -1002,14 +1002,14 @@ function SimulationApprovalSummary(props) {
                                             <th>Reason:</th>
                                             <th>Master:</th>
                                             <th>Effective Date:</th>
-                                            {bopAssociation && <th>Impact/Quarter (w.r.t. Existing):</th>}
-                                            {bopAssociation && <th>Impact/Quarter (w.r.t. Budgeted Price):</th>}
+                                            {isMasterAssociatedWithCosting && <th>Impact/Quarter (w.r.t. Existing):</th>}
+                                            {isMasterAssociatedWithCosting && <th>Impact/Quarter (w.r.t. Budgeted Price):</th>}
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <tr>
                                             <td>{simulationDetail && simulationDetail.AmendmentDetails?.TokenNumber}</td>
-                                            {bopAssociation && <td>{simulationDetail && simulationDetail.AmendmentDetails?.Technology}</td>}
+                                            {isMasterAssociatedWithCosting && <td>{simulationDetail && simulationDetail.AmendmentDetails?.Technology}</td>}
                                             <td>{simulationDetail && simulationDetail.AmendmentDetails?.PartsSupplied}</td>
                                             <td>{simulationDetail && simulationDetail.DepartmentCode ? simulationDetail.DepartmentCode : '-'}</td>
                                             {String(SimulationTechnologyId) !== EXCHNAGERATE && <td>{simulationDetail && simulationDetail.AmendmentDetails?.CostingHead}</td>}
@@ -1019,8 +1019,8 @@ function SimulationApprovalSummary(props) {
                                             <td>{simulationDetail && simulationDetail.AmendmentDetails?.Reason}</td>
                                             <td>{simulationDetail && simulationDetail.AmendmentDetails?.SimulationTechnology}</td>
                                             <td>{simulationDetail && DayTime(simulationDetail.AmendmentDetails?.EffectiveDate).format('DD/MM/YYYY')}</td>
-                                            {bopAssociation && <td>{simulationDetail && (simulationDetail?.TotalImpactPerQuarter ? checkForDecimalAndNull(simulationDetail?.TotalImpactPerQuarter, getConfigurationKey().NoOfDecimalForPrice) : '-')}</td>}
-                                            {bopAssociation && <td>{simulationDetail && (simulationDetail?.TotalBudgetedPriceImpactPerQuarter ? checkForDecimalAndNull(simulationDetail?.TotalBudgetedPriceImpactPerQuarter, getConfigurationKey().NoOfDecimalForPrice) : '-')}</td>}
+                                            {isMasterAssociatedWithCosting && <td>{simulationDetail && (simulationDetail?.TotalImpactPerQuarter ? checkForDecimalAndNull(simulationDetail?.TotalImpactPerQuarter, getConfigurationKey().NoOfDecimalForPrice) : '-')}</td>}
+                                            {isMasterAssociatedWithCosting && <td>{simulationDetail && (simulationDetail?.TotalBudgetedPriceImpactPerQuarter ? checkForDecimalAndNull(simulationDetail?.TotalBudgetedPriceImpactPerQuarter, getConfigurationKey().NoOfDecimalForPrice) : '-')}</td>}
                                         </tr>
                                     </tbody>
                                 </Table>
@@ -1056,7 +1056,7 @@ function SimulationApprovalSummary(props) {
                         </Row>
 
                         {/* FG wise Impact section start */}
-                        {bopAssociation && <>
+                        {isMasterAssociatedWithCosting && <>
                             <Row className='mt-2'>
                                 <Col md="10">
                                     <div className="left-border">{'FG wise Impact:'}</div>
@@ -1157,7 +1157,7 @@ function SimulationApprovalSummary(props) {
                                                                 onFilterModified={onFloatingFilterChanged}
                                                             >
                                                                 <AgGridColumn width={140} field="SimulationCostingId" hide='true'></AgGridColumn>
-                                                                {bopAssociation && <AgGridColumn width={160} field="CostingNumber" headerName="Costing Id"></AgGridColumn>}
+                                                                {isMasterAssociatedWithCosting && <AgGridColumn width={160} field="CostingNumber" headerName="Costing Id"></AgGridColumn>}
 
 
                                                                 {(isRMDomesticOrRMImport || keysForDownloadSummary.IsRawMaterialSimulation) && <AgGridColumn width={192} field="RMName" headerName="RM-Grade" cellRenderer='rawMaterailFormat' ></AgGridColumn>}
@@ -1167,12 +1167,12 @@ function SimulationApprovalSummary(props) {
 
                                                                 <AgGridColumn width={136} field="PartNo" headerName="Part No."></AgGridColumn>
                                                                 <AgGridColumn width={160} field="PartName" headerName='Part Name'></AgGridColumn>
-                                                                {bopAssociation && <AgGridColumn width={150} field="ECNNumber" headerName='ECN No.' cellRenderer='ecnFormatter'></AgGridColumn>}
-                                                                {bopAssociation && <AgGridColumn width={150} field="RevisionNumber" headerName='Revision No.' cellRenderer='revisionFormatter'></AgGridColumn>}
+                                                                {isMasterAssociatedWithCosting && <AgGridColumn width={150} field="ECNNumber" headerName='ECN No.' cellRenderer='ecnFormatter'></AgGridColumn>}
+                                                                {isMasterAssociatedWithCosting && <AgGridColumn width={150} field="RevisionNumber" headerName='Revision No.' cellRenderer='revisionFormatter'></AgGridColumn>}
                                                                 {costingList[0]?.CostingHeadId !== CBCTypeId && <AgGridColumn width={150} field="VendorName" headerName="Vendor (Code)"></AgGridColumn>}
                                                                 {costingList[0]?.CostingHeadId === CBCTypeId && <AgGridColumn width={150} field="CustomerName" headerName="Customer (Code)"></AgGridColumn>}
                                                                 {String(SimulationTechnologyId) !== EXCHNAGERATE && <AgGridColumn width={150} field="PlantName" headerName='Plant (Code)' cellRenderer={'plantFormatter'} ></AgGridColumn>}
-                                                                {bopAssociation && <AgGridColumn width={140} field="BudgetedPrice" headerName='Budgeted Price' cellRenderer='impactPerQuarterFormatter'></AgGridColumn>}
+                                                                {isMasterAssociatedWithCosting && <AgGridColumn width={140} field="BudgetedPrice" headerName='Budgeted Price' cellRenderer='impactPerQuarterFormatter'></AgGridColumn>}
 
                                                                 {(isOperation || isSurfaceTreatment || keysForDownloadSummary.IsSurfaceTreatmentSimulation || keysForDownloadSummary.IsOperationSimulation) && <AgGridColumn width={140} field="OperationName" headerName="Operation Name" cellRenderer='operationNameFormatter'></AgGridColumn>}
                                                                 {(isOperation || isSurfaceTreatment || keysForDownloadSummary.IsSurfaceTreatmentSimulation || keysForDownloadSummary.IsOperationSimulation) && <AgGridColumn width={140} field="OperationCode" headerName="Operation Code" cellRenderer='operationCodeFormatter'></AgGridColumn>}
@@ -1185,11 +1185,11 @@ function SimulationApprovalSummary(props) {
                                                                 {(isOperation || keysForDownloadSummary.IsOperationSimulation) && <AgGridColumn width={140} field="NewOperationCost" headerName="Revised Operation Cost" cellRenderer='newOperationFormatter'></AgGridColumn>}
                                                                 {(isOperation || keysForDownloadSummary.IsOperationSimulation) && <AgGridColumn width={140} field="OperationCostVariance" headerName="Variance (Oper. Cost)" cellRenderer='OPVarianceFormatter'></AgGridColumn>}
 
-                                                                {bopAssociation && <AgGridColumn width={140} field="OldPOPrice" cellRenderer='oldPOFormatter' headerName={String(SimulationTechnologyId) === EXCHNAGERATE ? 'PO Price' : "Existing PO Price"}></AgGridColumn>}
+                                                                {isMasterAssociatedWithCosting && <AgGridColumn width={140} field="OldPOPrice" cellRenderer='oldPOFormatter' headerName={String(SimulationTechnologyId) === EXCHNAGERATE ? 'PO Price' : "Existing PO Price"}></AgGridColumn>}
 
-                                                                {String(SimulationTechnologyId) !== EXCHNAGERATE && bopAssociation && <AgGridColumn width={140} field="NewPOPrice" cellRenderer='newPOFormatter' headerName="Revised PO Price"></AgGridColumn>}
-                                                                {String(SimulationTechnologyId) !== EXCHNAGERATE && bopAssociation && <AgGridColumn width={140} field="POVariance" headerName="Variance (w.r.t. Existing)" cellRenderer='POVarianceFormatter' ></AgGridColumn>}
-                                                                {String(SimulationTechnologyId) !== EXCHNAGERATE && bopAssociation && <AgGridColumn width={140} field="BudgetedPriceVariance" headerName='Variance (w.r.t. Budgeted)' cellRenderer='impactPerQuarterFormatter'></AgGridColumn>}
+                                                                {String(SimulationTechnologyId) !== EXCHNAGERATE && isMasterAssociatedWithCosting && <AgGridColumn width={140} field="NewPOPrice" cellRenderer='newPOFormatter' headerName="Revised PO Price"></AgGridColumn>}
+                                                                {String(SimulationTechnologyId) !== EXCHNAGERATE && isMasterAssociatedWithCosting && <AgGridColumn width={140} field="POVariance" headerName="Variance (w.r.t. Existing)" cellRenderer='POVarianceFormatter' ></AgGridColumn>}
+                                                                {String(SimulationTechnologyId) !== EXCHNAGERATE && isMasterAssociatedWithCosting && <AgGridColumn width={140} field="BudgetedPriceVariance" headerName='Variance (w.r.t. Budgeted)' cellRenderer='impactPerQuarterFormatter'></AgGridColumn>}
                                                                 {(isRMDomesticOrRMImport || keysForDownloadSummary.IsRawMaterialSimulation) && <AgGridColumn width={140} field="OldNetRawMaterialsCost" cellRenderer='oldRMFormatter' headerName="Existing RM Cost/pc" ></AgGridColumn>}
                                                                 {(isRMDomesticOrRMImport || keysForDownloadSummary.IsRawMaterialSimulation) && <AgGridColumn width={140} field="NewNetRawMaterialsCost" cellRenderer='newRMFormatter' headerName="Revised RM Cost/pc" ></AgGridColumn>}
                                                                 {(isRMDomesticOrRMImport || keysForDownloadSummary.IsRawMaterialSimulation) && <AgGridColumn width={140} field="RMVariance" headerName="Variance (RM Cost)" cellRenderer='varianceFormatter' ></AgGridColumn>}
@@ -1202,9 +1202,9 @@ function SimulationApprovalSummary(props) {
                                                                 {(isExchangeRate || keysForDownloadSummary.IsExchangeRateSimulation) && <AgGridColumn width={140} field="NewExchangeRate" cellRenderer='newERFormatter' headerName="Revised Exchange Rate" ></AgGridColumn>}
                                                                 {(isExchangeRate || keysForDownloadSummary.IsExchangeRateSimulation) && <AgGridColumn width={140} field="Variance" headerName="Variance (ER Cost)" cellRenderer='varianceFormatter' ></AgGridColumn>}
 
-                                                                {(isBOPDomesticOrImport || keysForDownloadSummary.IsBoughtOutPartSimulation) && bopAssociation && <AgGridColumn width={140} field="BoughtOutPartName" headerName="Bought Out Part Name" cellRenderer='bopNameFormatter'></AgGridColumn>}
-                                                                {(isBOPDomesticOrImport || keysForDownloadSummary.IsBoughtOutPartSimulation) && bopAssociation && <AgGridColumn width={140} field="BoughtOutPartNumber" headerName="Bought Out Part Number" cellRenderer='bopNumberFormatter'></AgGridColumn>}
-                                                                {(isBOPDomesticOrImport || keysForDownloadSummary.IsBoughtOutPartSimulation) && <AgGridColumn width={140} field="OldNetBoughtOutPartCost" headerName={`Existing BOP ${bopAssociation ? 'Cost' : 'Rate'}`} cellRenderer='oldBOPFormatter' ></AgGridColumn>}
+                                                                {(isBOPDomesticOrImport || keysForDownloadSummary.IsBoughtOutPartSimulation) && isMasterAssociatedWithCosting && <AgGridColumn width={140} field="BoughtOutPartName" headerName="Bought Out Part Name" cellRenderer='bopNameFormatter'></AgGridColumn>}
+                                                                {(isBOPDomesticOrImport || keysForDownloadSummary.IsBoughtOutPartSimulation) && isMasterAssociatedWithCosting && <AgGridColumn width={140} field="BoughtOutPartNumber" headerName="Bought Out Part Number" cellRenderer='bopNumberFormatter'></AgGridColumn>}
+                                                                {(isBOPDomesticOrImport || keysForDownloadSummary.IsBoughtOutPartSimulation) && <AgGridColumn width={140} field="OldNetBoughtOutPartCost" headerName={`Existing BOP ${isMasterAssociatedWithCosting ? 'Cost' : 'Rate'}`} cellRenderer='oldBOPFormatter' ></AgGridColumn>}
                                                                 {(isBOPDomesticOrImport || keysForDownloadSummary.IsBoughtOutPartSimulation) && <AgGridColumn width={140} field="NewNetBoughtOutPartCost" headerName="Revised BOP Cost" cellRenderer='newBOPFormatter'></AgGridColumn>}
                                                                 {(isBOPDomesticOrImport || keysForDownloadSummary.IsBoughtOutPartSimulation) && <AgGridColumn width={140} field="NetBoughtOutPartCostVariance" headerName="Variance (BOP Cost)" cellRenderer='BOPVarianceFormatter' ></AgGridColumn>}
 
@@ -1219,10 +1219,10 @@ function SimulationApprovalSummary(props) {
                                                                 {(keysForDownloadSummary?.IsBoughtOutPartSimulation || keysForDownloadSummary?.IsSurfaceTreatmentSimulation || keysForDownloadSummary?.IsOperationSimulation ||
                                                                     keysForDownloadSummary?.IsRawMaterialSimulation || keysForDownloadSummary?.IsExchangeRateSimulation || keysForDownloadSummary?.IsMachineProcessSimulation) &&
                                                                     < AgGridColumn width={140} field="DraftPOPrice" headerName="Draft PO Price" ></AgGridColumn>}
-                                                                {bopAssociation && < AgGridColumn width={140} field="ImpactPerQuarter" headerName="Impact/Quarter (w.r.t. Existing)" cellRenderer='impactPerQuarterFormatter'></AgGridColumn>}
-                                                                {bopAssociation && <AgGridColumn width={140} field="BudgetedPriceImpactPerQuarter" headerName='Impact/Quarter (w.r.t. Budgeted Price)' cellRenderer='impactPerQuarterFormatter'></AgGridColumn>}
+                                                                {isMasterAssociatedWithCosting && < AgGridColumn width={140} field="ImpactPerQuarter" headerName="Impact/Quarter (w.r.t. Existing)" cellRenderer='impactPerQuarterFormatter'></AgGridColumn>}
+                                                                {isMasterAssociatedWithCosting && <AgGridColumn width={140} field="BudgetedPriceImpactPerQuarter" headerName='Impact/Quarter (w.r.t. Budgeted Price)' cellRenderer='impactPerQuarterFormatter'></AgGridColumn>}
 
-                                                                {bopAssociation && <AgGridColumn width={140} field="SimulationCostingId" pinned="right" cellRenderer='buttonFormatter' floatingFilter={false} headerName="Actions" type="rightAligned"></AgGridColumn>}
+                                                                {isMasterAssociatedWithCosting && <AgGridColumn width={140} field="SimulationCostingId" pinned="right" cellRenderer='buttonFormatter' floatingFilter={false} headerName="Actions" type="rightAligned"></AgGridColumn>}
                                                                 {/* <AgGridColumn field="Status" headerName='Status' cellRenderer='statusFormatter'></AgGridColumn>
                                                                 <AgGridColumn field="SimulationId" headerName='Actions'   type="rightAligned" cellRenderer='buttonFormatter'></AgGridColumn> */}
 
@@ -1266,7 +1266,7 @@ function SimulationApprovalSummary(props) {
                                 />}
                             </div>
                         </>}
-                        {bopAssociation && <>
+                        {isMasterAssociatedWithCosting && <>
                             <Row className="mt-2">
                                 <Col md="10">
                                     <div id="compare-costing" className="left-border">{'Compare Costing:'}</div>

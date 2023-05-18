@@ -4,7 +4,7 @@ import RMDomesticListing from '../../masters/material-master/RMDomesticListing';
 import RMImportListing from '../../masters/material-master/RMImportListing';
 import { Row, Col } from 'reactstrap'
 import { Controller, useForm } from 'react-hook-form';
-import { getMasterSelectListSimulation, getTokenSelectListAPI, setSelectedRowForPagination, setMasterForSimulation, setTechnologyForSimulation, setTokenCheckBoxValue, setTokenForSimulation, getSelectListOfMasters, setVendorForSimulation, setBOPAssociation } from '../actions/Simulation';
+import { getMasterSelectListSimulation, getTokenSelectListAPI, setSelectedRowForPagination, setMasterForSimulation, setTechnologyForSimulation, setTokenCheckBoxValue, setTokenForSimulation, getSelectListOfMasters, setVendorForSimulation, setIsMasterAssociatedWithCosting } from '../actions/Simulation';
 import { useDispatch, useSelector } from 'react-redux';
 import SimulationUploadDrawer from './SimulationUploadDrawer';
 import { BOPDOMESTIC, BOPIMPORT, EXCHNAGERATE, MACHINERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, RM_MASTER_ID, searchCount, VBC_VENDOR_TYPE } from '../../../config/constants';
@@ -131,6 +131,10 @@ function Simulation(props) {
         setValue('token', '')
         setIsTechnologyDisable(false)
         dispatch(setMasterForSimulation(value))
+        dispatch(setTechnologyForSimulation(''))
+        dispatch(setIsMasterAssociatedWithCosting(''))
+        setAssociation('')
+        setValue('Association', '')
         if (value !== '' && (Object.keys(getValues('Technology')).length > 0 || !getTechnologyForSimulation.includes(value.value))) {
             setSelectionForListingMasterAPI('Master')
             setShowTokenDropdown(true)
@@ -157,13 +161,14 @@ function Simulation(props) {
         setShowMasterList(false)
         setTimeout(() => {
             setAssociation(value)
-            dispatch(setBOPAssociation(value?.value === ASSOCIATED))
+            dispatch(setIsMasterAssociatedWithCosting(value?.value === ASSOCIATED))
             if (value?.value === NON_ASSOCIATED) {
                 setShowMasterList(true)
                 setSelectionForListingMasterAPI('Master')
                 setmasterSummaryDrawerState(false)
                 dispatch(setTokenForSimulation([]))
                 setEditWarning(true);
+                setShowTokenDropdown(false)
             }
         }, 200);
     }
@@ -200,7 +205,7 @@ function Simulation(props) {
                 }
             }, 100);
         }
-        dispatch(setBOPAssociation(true))
+        dispatch(setIsMasterAssociatedWithCosting(true))
     }
 
     const handleVendorChange = (value) => {
@@ -348,7 +353,7 @@ function Simulation(props) {
                 case BOPDOMESTIC:
                     return (<BOPDomesticListing isSimulation={true} isMasterSummaryDrawer={masterSummaryDrawerState ? props.isMasterSummaryDrawer : false} technology={technology.value} objectForMultipleSimulation={obj} apply={editTable} selectionForListingMasterAPI={selectionForListingMasterAPI} changeSetLoader={changeSetLoader} changeTokenCheckBox={changeTokenCheckBox} isReset={isReset} ListFor={association?.value === ASSOCIATED ? 'simulation' : 'master'} isBOPAssociated={association?.value === ASSOCIATED ? true : false} />)
                 case BOPIMPORT:
-                    return (<BOPImportListing isSimulation={true} isMasterSummaryDrawer={masterSummaryDrawerState ? props.isMasterSummaryDrawer : false} technology={technology.value} objectForMultipleSimulation={obj} apply={editTable} selectionForListingMasterAPI={selectionForListingMasterAPI} changeSetLoader={changeSetLoader} changeTokenCheckBox={changeTokenCheckBox} isReset={isReset} ListFor='simulation' />)
+                    return (<BOPImportListing isSimulation={true} isMasterSummaryDrawer={masterSummaryDrawerState ? props.isMasterSummaryDrawer : false} technology={technology.value} objectForMultipleSimulation={obj} apply={editTable} selectionForListingMasterAPI={selectionForListingMasterAPI} changeSetLoader={changeSetLoader} changeTokenCheckBox={changeTokenCheckBox} isReset={isReset} ListFor={association?.value === ASSOCIATED ? 'simulation' : 'master'} isBOPAssociated={association?.value === ASSOCIATED ? true : false} />)
                 case EXCHNAGERATE:
                     return (<ExchangeRateListing isSimulation={true} technology={technology.value} apply={editTable} tokenArray={tokenForSimulation} objectForMultipleSimulation={obj} selectionForListingMasterAPI={selectionForListingMasterAPI} changeSetLoader={changeSetLoader} changeTokenCheckBox={changeTokenCheckBox} />)
                 case OPERATIONS:
@@ -1009,7 +1014,7 @@ function Simulation(props) {
                                         />
                                     </div>
                                 </div>
-                                {String(selectedMasterForSimulation?.value) === BOPDOMESTIC &&
+                                {(String(selectedMasterForSimulation?.value) === BOPDOMESTIC || String(selectedMasterForSimulation?.value) === BOPIMPORT) &&
                                     <div className="d-inline-flex justify-content-start align-items-center mr-3">
                                         <div className="flex-fills label">Association:</div>
                                         <div className="flex-fills hide-label pl-0">
@@ -1030,7 +1035,7 @@ function Simulation(props) {
                                         </div>
                                     </div>
                                 }
-                                {(String(selectedMasterForSimulation?.value) !== BOPDOMESTIC ? true :
+                                {((String(selectedMasterForSimulation?.value) !== BOPDOMESTIC && String(selectedMasterForSimulation?.value) !== BOPIMPORT) ? true :
                                     (association !== '' && association?.value !== NON_ASSOCIATED)) &&
                                     getTechnologyForSimulation.includes(master.value) &&
                                     <div className="d-inline-flex justify-content-start align-items-center mr-3">
