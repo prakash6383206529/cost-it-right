@@ -128,7 +128,7 @@ function TabDiscountOther(props) {
 
 
   useEffect(() => {
-    if (RMCCTabData && RMCCTabData[0]?.CostingId) {
+    if (RMCCTabData && RMCCTabData[0]?.CostingId && props.activeTab === '6') {
       let npvSum = 0
       if (initialConfiguration?.IsShowNpvCost) {
         dispatch(getNpvDetails(RMCCTabData && RMCCTabData[0]?.CostingId, (res) => {
@@ -169,9 +169,9 @@ function TabDiscountOther(props) {
           }
         }))
       }
-
     }
-  }, [RMCCTabData])
+  }, [RMCCTabData, props.activeTab])
+
 
   useEffect(() => {
     if (CostingDataList && CostingDataList.length > 0) {
