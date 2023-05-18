@@ -360,6 +360,13 @@ function VerifySimulation(props) {
         return data != null ? <span className={classGreen}>{checkForDecimalAndNull(data, getConfigurationKey().NoOfDecimalForPrice)}</span> : '-'
     }
 
+    const newRMBasicRateFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const classGreen = (row?.NewBasicRate > row?.OldBasicRate) ? 'red-value form-control' : (row?.NewBasicRate < row?.OldBasicRate) ? 'green-value form-control' : 'form-class'
+        return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : '-'
+    }
+
     const newSRFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
@@ -419,6 +426,11 @@ function VerifySimulation(props) {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         const classGreen = (row?.NewExchangeRate > row?.OldExchangeRate) ? 'red-value form-control' : (row?.NewExchangeRate < row?.OldExchangeRate) ? 'green-value form-control' : 'form-class'
         return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : '-'
+    }
+
+    const bopNumberFormatter = (props) => {
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        return isMasterAssociatedWithCosting ? (row?.BoughtOutPartCode ? row?.BoughtOutPartCode : '-') : (row?.BoughtOutPartNumber ? row?.BoughtOutPartNumber : '-')
     }
 
     const newCCFormatter = (props) => {
@@ -652,7 +664,10 @@ function VerifySimulation(props) {
         decimalFormatter: decimalFormatter,
         newCCFormatter: newCCFormatter,
         renderPart: renderPart,
-        renderCustomer: renderCustomer
+        renderCustomer: renderCustomer,
+        bopNumberFormatter: bopNumberFormatter,
+        existingBasicFormatter: existingBasicFormatter,
+        newRMBasicRateFormatter: newRMBasicRateFormatter
     };
     return (
         <>
@@ -724,7 +739,7 @@ function VerifySimulation(props) {
                                             {isRMDomesticOrRMImport === true && <AgGridColumn width={120} field="RMGrade" headerName="Grade" ></AgGridColumn>}
                                             {isMachineRate && <AgGridColumn width={145} field="ProcessName" headerName="Process Name"></AgGridColumn>}
                                             {isMachineRate && <AgGridColumn width={150} field="MachineNumber" headerName="Machine Number"></AgGridColumn>}
-                                            {isBOPDomesticOrImport === true && <AgGridColumn width={130} field="BoughtOutPartCode" headerName="BOP Number"></AgGridColumn>}
+                                            {isBOPDomesticOrImport === true && <AgGridColumn width={130} field="BoughtOutPartCode" headerName="BOP Number" cellRenderer={"bopNumberFormatter"}></AgGridColumn>}
                                             {isBOPDomesticOrImport === true && <AgGridColumn width={130} field="BoughtOutPartName" headerName="BOP Name"></AgGridColumn>}
                                             {isSurfaceTreatmentOrOperation === true && <AgGridColumn width={185} field="OperationName" headerName="Operation Name"></AgGridColumn>}
                                             {isSurfaceTreatmentOrOperation === true && <AgGridColumn width={185} field="OperationCode" headerName="Operation Code"></AgGridColumn>}
@@ -744,7 +759,7 @@ function VerifySimulation(props) {
 
 
                                             {isRMDomesticOrRMImport === true && <AgGridColumn width={145} field="OldBasicRate" headerName="Existing Basic Rate"></AgGridColumn>}
-                                            {isRMDomesticOrRMImport === true && <AgGridColumn width={150} field="NewBasicRate" cellRenderer='newBRFormatter' headerName="Revised Basic Rate"></AgGridColumn>}
+                                            {isRMDomesticOrRMImport === true && <AgGridColumn width={150} field="NewBasicRate" cellRenderer='newRMBasicRateFormatter' headerName="Revised Basic Rate"></AgGridColumn>}
                                             {isRMDomesticOrRMImport === true && <AgGridColumn width={145} field="OldScrapRate" headerName="Existing Scrap Rate"></AgGridColumn>}
                                             {isRMDomesticOrRMImport === true && <AgGridColumn width={150} field="NewScrapRate" cellRenderer='newSRFormatter' headerName="Revised Scrap Rate" ></AgGridColumn>}
                                             {isRMDomesticOrRMImport === true && <AgGridColumn field="RawMaterialId" hide ></AgGridColumn>}
