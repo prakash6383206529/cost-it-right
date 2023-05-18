@@ -2,9 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { Col, Row } from 'reactstrap';
 import { SearchableSelectHookForm } from '../../../layout/HookFormInputs'
-import { getCostingTechnologySelectList } from '../../../costing/actions/Costing'
 import { useDispatch, useSelector } from 'react-redux';
-import { getGradeSelectList, getRawMaterialFilterSelectList } from '../../../masters/actions/Material'
 import { AgGridReact } from 'ag-grid-react/lib/agGridReact';
 import LoaderCustom from '../../../common/LoaderCustom'
 import { AgGridColumn } from 'ag-grid-react/lib/agGridColumn';
@@ -421,10 +419,6 @@ function Insights(props) {
 
     useEffect(() => {
         setShowListing(false)
-        dispatch(getCostingTechnologySelectList(() => { }))
-        dispatch(getGradeSelectList(() => { }))
-        dispatch(getRawMaterialFilterSelectList(() => { }))
-
         let temp = []
         let vendorTemp = []
         let uniqueVendors = []
