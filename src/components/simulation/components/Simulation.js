@@ -73,6 +73,7 @@ function Simulation(props) {
     const [vendorName, setVendorName] = useState({})
     const [association, setAssociation] = useState('')
     const partType = (checkForNull(selectedMasterForSimulation?.value) === ASSEMBLY_TECHNOLOGY_MASTER) ? true : false
+    const { isMasterAssociatedWithCosting } = useSelector(state => state.simulation)
 
     const dispatch = useDispatch()
     const vendorSelectList = useSelector(state => state.comman.vendorWithVendorCodeSelectList)
@@ -90,7 +91,9 @@ function Simulation(props) {
             setValue('Technology', { label: selectedTechnologyForSimulation?.label, value: selectedTechnologyForSimulation?.value })
             setValue('Masters', { label: selectedMasterForSimulation?.label, value: selectedMasterForSimulation?.value })
             setValue('token', { label: tokenForSimulation?.label, value: tokenForSimulation?.value })
-
+            let value = isMasterAssociatedWithCosting ? ASSOCIATED : NON_ASSOCIATED
+            setValue('Association', { label: value, value: value })
+            setAssociation({ label: value, value: value })
             setMaster({ label: selectedMasterForSimulation?.label, value: selectedMasterForSimulation?.value })
             setTechnology({ label: selectedTechnologyForSimulation?.label, value: selectedTechnologyForSimulation?.value })
             setEditWarning(applyEditCondSimulation(getValues('Masters').value))
