@@ -14,7 +14,7 @@ import { overheadBulkUpload, profitBulkUpload } from '../masters/actions/Overhea
 import { operationBulkUpload } from '../masters/actions/OtherOperation';
 import { partComponentBulkUpload, productComponentBulkUpload } from '../masters/actions/Part';
 import { bulkUploadBOP } from '../masters/actions/BoughtOutParts';
-import { bulkUploadVolumeActual, bulkUploadVolumeBudgeted } from '../masters/actions/Volume';
+import { volumeBulkUpload } from '../masters/actions/Volume';
 import { bulkUploadBudgetMaster } from '../masters/actions/Budget'
 import { bulkUploadInterestRateZBC, bulkUploadInterestRateVBC, bulkUploadInterestRateCBC } from '../masters/actions/InterestRateMaster';
 import Toaster from '../common/Toaster';
@@ -24,7 +24,7 @@ import Drawer from '@material-ui/core/Drawer';
 import Downloadxls, { checkLabourRateConfigure, checkRM_Process_OperationConfigurable, checkVendorPlantConfig } from './Downloadxls';
 import DayTime from '../common/DayTimeWrapper'
 import cloudImg from '../../assests/images/uploadcloud.png';
-import { ACTUALVOLUMEBULKUPLOAD, ADDRFQ, BOP_MASTER_ID, BUDGETBULKUPLOAD, BUDGETEDVOLUMEBULKUPLOAD, CBCTypeId, CBCADDMORE, FUELBULKUPLOAD, INSERTDOMESTICBULKUPLOAD, INSERTIMPORTBULKUPLOAD, INTERESTRATEBULKUPLOAD, LABOURBULKUPLOAD, MACHINEBULKUPLOAD, MACHINE_MASTER_ID, OPERAIONBULKUPLOAD, OPERATIONS_ID, PARTCOMPONENTBULKUPLOAD, PRODUCTCOMPONENTBULKUPLOAD, VBCADDMORE, RMDOMESTICBULKUPLOAD, RMIMPORTBULKUPLOAD, RMSPECIFICATION, RM_MASTER_ID, VBCTypeId, VENDORBULKUPLOAD, ZBCADDMORE, ZBCTypeId } from '../../config/constants';
+import { ACTUALVOLUMEBULKUPLOAD, ADDRFQ, BOP_MASTER_ID, BUDGETBULKUPLOAD, BUDGETEDVOLUMEBULKUPLOAD, CBCTypeId, CBCADDMORE, FUELBULKUPLOAD, INSERTDOMESTICBULKUPLOAD, INSERTIMPORTBULKUPLOAD, INTERESTRATEBULKUPLOAD, LABOURBULKUPLOAD, MACHINEBULKUPLOAD, MACHINE_MASTER_ID, OPERAIONBULKUPLOAD, OPERATIONS_ID, PARTCOMPONENTBULKUPLOAD, PRODUCTCOMPONENTBULKUPLOAD, VBCADDMORE, RMDOMESTICBULKUPLOAD, RMIMPORTBULKUPLOAD, RMSPECIFICATION, RM_MASTER_ID, VBCTypeId, VENDORBULKUPLOAD, ZBCADDMORE, ZBCTypeId, ENTRY_TYPE_IMPORT } from '../../config/constants';
 import { AddRFQUpload, BOP_CBC_DOMESTIC, BOP_CBC_IMPORT, BOP_VBC_DOMESTIC, BOP_VBC_IMPORT, BOP_ZBC_DOMESTIC, BOP_ZBC_IMPORT, BUDGET_CBC, BUDGET_VBC, BUDGET_ZBC, CBCInterestRate, CBCOperation, Fuel, Labour, MachineCBC, MachineVBC, MachineZBC, MHRMoreZBC, PartComponent, ProductComponent, RMDomesticCBC, RMDomesticVBC, RMDomesticZBC, RMImportCBC, RMImportVBC, RMImportZBC, RMSpecification, VBCInterestRate, VBCOperation, Vendor, VOLUME_ACTUAL_CBC, VOLUME_ACTUAL_VBC, VOLUME_ACTUAL_ZBC, VOLUME_BUDGETED_CBC, VOLUME_BUDGETED_VBC, VOLUME_BUDGETED_ZBC, ZBCOperation } from '../../config/masterData';
 import { CheckApprovalApplicableMaster, checkForSameFileUpload, userTechnologyDetailByMasterId } from '../../helper';
 import LoaderCustom from '../common/LoaderCustom';
@@ -35,6 +35,7 @@ import { reactLocalStorage } from 'reactjs-localstorage';
 import { getUsersMasterLevelAPI } from '../../actions/auth/AuthActions';
 import { checkFinalUser } from '../../components/costing/actions/Costing';
 import { costingTypeIdToApprovalTypeIdFunction } from '../common/CommonFunctions';
+import { ENTRY_TYPE_DOMESTIC } from '../../config/constants';
 
 class BulkUpload extends Component {
     constructor(props) {
@@ -528,7 +529,11 @@ class BulkUpload extends Component {
             masterUploadData.CostingTypeId = CBCTypeId
         }
         this.setState({ setDisable: true })
-
+        if (fileName === 'Actual Volume') {
+            uploadData.TypeOfEntry = ENTRY_TYPE_DOMESTIC
+        } else if (fileName === 'Budgeted Volume') {
+            uploadData.TypeOfEntry = ENTRY_TYPE_IMPORT
+        }
 
         if (fileName === 'RM Domestic' || fileName === 'RM Import') {
             this.props.bulkUploadRM(masterUploadData, (res) => {
@@ -639,7 +644,7 @@ class BulkUpload extends Component {
                 this.responseHandler(res)
             });
 
-        } else if (fileName === 'Budgeted Volume') {
+        } else if (fileName === 'Budgeted Volume' || fileName === 'Budgeted Volume') {
             this.props.bulkUploadVolumeBudgeted(uploadData, (res) => {
                 this.setState({ setDisable: false })
                 this.responseHandler(res)
@@ -998,8 +1003,7 @@ export default connect(mapStateToProps, {
     partComponentBulkUpload,
     productComponentBulkUpload,
     bulkUploadBOP,
-    bulkUploadVolumeActual,
-    bulkUploadVolumeBudgeted,
+    volumeBulkUpload,
     bulkUploadInterestRateZBC,
     bulkUploadInterestRateVBC,
     bulkUploadInterestRateCBC,
