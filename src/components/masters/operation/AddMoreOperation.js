@@ -51,11 +51,10 @@ function AddMoreOperation(props) {
     const [plant, setPlant] = useState([])
     const [uom, setUom] = useState([])
     const [files, setFiles] = useState([])
-    const [initialFiles, setInitialFiles] = useState([])
     const [vendor, setVendor] = useState([])
     const [dataToSend, setDataToSend] = useState({})
-    const [uploadAttachments, setUploadAttachments] = useState(false);
     const [disable, setDisable] = useState(true);
+    const [IsOpen, setIsOpen] = useState(false);
     const dropzone = useRef(null);
     const dispatch = useDispatch();
     const operationSelectList = useSelector(state => state.otherOperation.operationSelectList)
@@ -660,9 +659,7 @@ function AddMoreOperation(props) {
             setAttachmentLoader(false)
         }
     }
-
     const handleChangeStatus = ({ meta, file }, status) => {
-        setUploadAttachments(false);
         setDisable(true);
         setAttachmentLoader(true);
 
@@ -672,38 +669,46 @@ function AddMoreOperation(props) {
                 (item) => item.OriginalFileName !== removedFileName
             );
             setFiles(tempArr);
+            setIsOpen(!IsOpen)
         }
 
-        if (status === "done") {
-            const data = new FormData();
-            data.append("file", file);
+        if (status === 'done') {
+            let data = new FormData()
+            data.append('file', file)
             dispatch(fileUploadOperation(data, (res) => {
-                setDisableFalseFunction();
-                const Data = res.data[0];
-                const attachmentFileArray = [...files, Data];
-                setFiles(attachmentFileArray);
+                setDisableFalseFunction()
+                if ('response' in res) {
+                    status = res && res?.response?.status
+                    dropzone.current.files.pop()
+                }
+                else {
+                    let Data = res.data[0]
+                    files.push(Data)
+                    setFiles(files)
+                    setAttachmentLoader(false)
+                    setTimeout(() => {
+                        setIsOpen(!IsOpen)
+                    }, 500);
+                }
             }))
         }
 
-        if (status === "rejected_file_type") {
-            setDisableFalseFunction();
-            Toaster.warning("Allowed only xls, doc, jpeg, pdf files.");
-        } else if (status === "error_file_size") {
-            setDisableFalseFunction();
-            dropzone.current.files.pop();
-            Toaster.warning("File size greater than 2 mb not allowed");
-        } else if (
-            status === "error_validation" ||
-            status === "error_upload_params" ||
-            status === "exception_upload" ||
-            status === "aborted" ||
-            status === "error_upload"
-        ) {
-            setDisableFalseFunction();
-            dropzone.current.files.pop();
-            Toaster.warning("Something went wrong");
+        if (status === 'rejected_file_type') {
+            Toaster.warning('Allowed only xls, doc, jpeg, pdf files.')
+        } else if (status === 'error_file_size') {
+            setDisableFalseFunction()
+            setAttachmentLoader(false)
+            dropzone.current.files.pop()
+            Toaster.warning("File size greater than 20 mb not allowed")
+        } else if (status === 'error_validation'
+            || status === 'error_upload_params' || status === 'exception_upload'
+            || status === 'aborted' || status === 'error_upload') {
+            setDisableFalseFunction()
+            setAttachmentLoader(false)
+            dropzone.current.files.pop()
+            Toaster.warning("Something went wrong")
         }
-    };
+    }
 
 
     const deleteFile = (FileId, OriginalFileName) => {
@@ -717,11 +722,13 @@ function AddMoreOperation(props) {
                 Toaster.success('File deleted successfully.')
                 let tempArr = files.filter(item => item.FileId !== FileId)
                 setFiles(tempArr)
+                setIsOpen(!IsOpen)
             }))
         }
         if (FileId == null) {
             let tempArr = files.filter(item => item.FileName !== OriginalFileName)
             setFiles(tempArr)
+            setIsOpen(!IsOpen)
         }
 
         // ********** DELETE FILES THE DROPZONE'S PERSONAL DATA STORE **********
