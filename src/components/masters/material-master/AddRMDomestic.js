@@ -455,12 +455,9 @@ class AddRMDomestic extends Component {
       } else {
         this.setState({ IsFinancialDataChanged: true })
       }
-
     } else if (this.state.isEditFlag) {
       this.setState({ IsFinancialDataChanged: true })
-
     }
-
 
     this.props.change('NetLandedCost', checkForDecimalAndNull(netCost, initialConfiguration.NoOfDecimalForPrice))
     this.setState({ netLandedCost: netCost })
