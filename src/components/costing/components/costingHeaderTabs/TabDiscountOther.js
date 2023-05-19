@@ -173,6 +173,11 @@ function TabDiscountOther(props) {
         }))
       }
     }
+
+    return () => {
+      setNpvTableData([])
+      seConditionTableData([])
+    }
   }, [RMCCTabData, props.activeTab])
 
 
