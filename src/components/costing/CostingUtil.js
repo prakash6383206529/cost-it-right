@@ -396,6 +396,10 @@ export const swappingLogicCommon = (givenArray, dragStart, dragEnd, e) => {
   const start = Number(e?.target?.title?.slice(-1));
   const end = Number(dragEnd?.slice(-1));
 
+  if (Number(start) < Number(end)) {
+    return givenArray
+  }
+
   if (start === end) {
     return false; // Same start and end, return false
   }
