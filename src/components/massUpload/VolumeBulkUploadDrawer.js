@@ -2,9 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import ReactExport from 'react-export-excel';
 import { reduxForm } from "redux-form";
-import { Container, Row, Col, } from 'reactstrap';
-import Drawer from '@material-ui/core/Drawer';
-import Dropzone from 'react-dropzone-uploader'
+import { Row, Col, } from 'reactstrap';
 import LoaderCustom from '../common/LoaderCustom';
 import Toaster from '../common/Toaster';
 import { bulkUploadVolume } from '../masters/actions/Volume';
@@ -15,6 +13,7 @@ import PopupMsgWrapper from '../common/PopupMsgWrapper';
 import { MESSAGES } from '../../config/message';
 import WarningMessage from '../common/WarningMessage';
 import { ExcelRenderer } from 'react-excel-renderer';
+import cloudImg from '../../assests/images/uploadcloud.png';
 
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -195,40 +194,21 @@ class VolumeBulkUploadDrawer extends Component {
                                 {this.state.fileName}
                             </div>
                         ) : (
-                            <Dropzone
-                                onChangeStatus={this.handleChangeStatus}
-                                PreviewComponent={this.Preview}
-                                onChange={this.fileHandler}
-                                accept="image/jpeg,image/jpg,image/png,image/PNG,.xls,.doc,.pdf,.xlsx"
-                                initialFiles={this.state.initialFiles}
-                                maxFiles={1}
-                                maxSizeBytes={2000000}
-                                inputContent={(files, extra) =>
-                                    extra.reject ? (
-                                        "Image, audio and video files only"
-                                    ) : (<div className="text-center">
-                                        <i className="text-primary fa fa-cloud-upload"></i>
-                                        <span className="d-block">
-                                            Drag and Drop or{" "}
-                                            <span className="text-primary">
-                                                Browse
-                                            </span>
-                                            <br />
-                                            file to upload
-                                        </span>
-                                    </div>)
-                                }
-
-                                styles={{
-                                    dropzoneReject: {
-                                        borderColor: "red",
-                                        backgroundColor: "#DAA",
-                                    },
-                                    inputLabel: (files, extra) =>
-                                        extra.reject ? { color: "red" } : {},
-                                }}
-                                classNames="draper-drop"
-                            />
+                            <div className="input-group mt25 col-md-12 input-withouticon " >
+                                <div className="file-uploadsection">
+                                    {this.state.bulkUploadLoader && <LoaderCustom customClass="attachment-loader" />}
+                                    <label>Drag a file here or<span className="blue-text">Browse</span> for a file to upload <img alt={''} src={cloudImg} ></img> </label>
+                                    <input
+                                        ref={this.fileUploadRef}
+                                        type="file"
+                                        name="File"
+                                        onChange={this.fileHandler}
+                                        onClick={(event) => { event.target.value = [] }}
+                                        //accept="xls/*"
+                                        className="" placeholder="bbb" />
+                                    <p> {this.state.uploadfileName}</p>
+                                </div>
+                            </div>
                         )}
                         {this.state.attachmentLoader && <LoaderCustom customClass="attachment-loader" />}
                     </Col>

@@ -73,7 +73,6 @@ function Simulation(props) {
     const [vendorName, setVendorName] = useState({})
     const [association, setAssociation] = useState('')
     const partType = (checkForNull(selectedMasterForSimulation?.value) === ASSEMBLY_TECHNOLOGY_MASTER) ? true : false
-    const { isMasterAssociatedWithCosting } = useSelector(state => state.simulation)
 
     const dispatch = useDispatch()
     const vendorSelectList = useSelector(state => state.comman.vendorWithVendorCodeSelectList)
