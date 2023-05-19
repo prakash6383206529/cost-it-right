@@ -1964,6 +1964,8 @@ export const VIEW_COSTING_DATA = {
   anyOtherCostPercent: 'Any Other Cost Value',
   anyOtherCost: 'Any Other Cost',
   BasicRate: 'Basic Rate',
+  npvCost: 'NPV Cost',
+  conditionCost: 'Costing Condition',
   nPOPrice: 'Net PO Price (INR)',
   currencyTitle: 'Currency',
   currencyRate: 'Currency Rate',
