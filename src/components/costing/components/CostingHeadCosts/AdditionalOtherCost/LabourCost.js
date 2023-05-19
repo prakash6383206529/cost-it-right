@@ -29,6 +29,8 @@ function LabourCost(props) {
                         <thead>
                             <tr>
                                 <th>{`Description`}</th>
+                                <th>{`No. of Labour`}</th>
+                                <th>{`Absentism %`}</th>
                                 <th>{`Labour Rate (Rs/Shift)`}</th>
                                 {<th>{`Working Time`}</th>}
                                 {<th>{`Efficiency`}</th>}
@@ -71,7 +73,7 @@ function LabourCost(props) {
 
                         <tfoot>
                             <tr className='table-footer'>
-                                <td colSpan={"5"} className="text-right">{'Total Cost:'}</td>
+                                <td colSpan={"8"} className="text-right">{'Total Cost:'}</td>
                                 <td colSpan={"2"}>{totalCost}</td>
                             </tr>
                         </tfoot>
