@@ -1708,6 +1708,9 @@ const CostingSummaryTable = (props) => {
                                     <span className="d-inline-block w-50">
                                       {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.aValue.applicability : '')}
                                     </span>{' '}
+                                    <span className="d-inline-block w-50">
+                                      {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.aValue.percentage : '')}
+                                    </span>
                                     &nbsp;{' '}
                                     <span className="d-inline-block w-50">
                                       {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.aValue.value : '')}
@@ -1716,6 +1719,9 @@ const CostingSummaryTable = (props) => {
                                   <div className={`d-flex ${isApproval && viewCostingData?.length > 1 && highlightCostingSummaryValue(viewCostingData[0]?.overheadOn.overheadValue, viewCostingData[1]?.overheadOn.overheadValue)}`}>
                                     <span className="d-inline-block w-50 small-grey-text">
                                       {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.overheadOn.overheadTitle : '')}
+                                    </span>{' '}
+                                    <span className="d-inline-block w-50 small-grey-text">
+                                      {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.overheadOn.overheadPercentage : '')}
                                     </span>{' '}
                                     &nbsp;{' '}
                                     <span className="d-inline-block w-50 small-grey-text">
@@ -1726,6 +1732,9 @@ const CostingSummaryTable = (props) => {
                                     <span className="d-inline-block w-50 small-grey-text">
                                       {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.profitOn.profitTitle : '')}
                                     </span>{' '}
+                                    <span className="d-inline-block w-50 small-grey-text">
+                                      {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.profitOn.profitPercentage : '')}
+                                    </span>{' '}
                                     &nbsp;{' '}
                                     <span className="d-inline-block w-50 small-grey-text">
                                       {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? <span title={checkForDecimalAndNull(data?.profitOn.profitValue, initialConfiguration.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.profitOn.profitValue, initialConfiguration.NoOfDecimalForPrice)}</span> : '')}
@@ -1734,6 +1743,9 @@ const CostingSummaryTable = (props) => {
                                   <div className={`d-flex ${isApproval && viewCostingData?.length > 1 && highlightCostingSummaryValue(viewCostingData[0]?.rejectionOn.rejectionValue, viewCostingData[1]?.rejectionOn.rejectionValue)}`}>
                                     <span className="d-inline-block w-50 small-grey-text">
                                       {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.rejectionOn.rejectionTitle : '')}
+                                    </span>{' '}
+                                    <span className="d-inline-block w-50 small-grey-text">
+                                      {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.rejectionOn.rejectionPercentage : '')}
                                     </span>{' '}
                                     &nbsp;{' '}
                                     <span className="d-inline-block w-50 small-grey-text">
@@ -1744,6 +1756,9 @@ const CostingSummaryTable = (props) => {
                                     <span className="d-inline-block w-50 small-grey-text">
                                       {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.iccOn.iccTitle : '')}
                                     </span>{' '}
+                                    <span className="d-inline-block w-50 small-grey-text">
+                                      {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.iccOn.iccPercentage : '')}
+                                    </span>{' '}
                                     &nbsp;{' '}
                                     <span className="d-inline-block w-50 small-grey-text">
                                       {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? <span title={checkForDecimalAndNull(data?.iccOn.iccValue, initialConfiguration.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.iccOn.iccValue, initialConfiguration.NoOfDecimalForPrice)}</span> : '')}
@@ -1752,6 +1767,9 @@ const CostingSummaryTable = (props) => {
                                   <div className={`d-flex ${isApproval && viewCostingData?.length > 1 && highlightCostingSummaryValue(viewCostingData[0]?.paymentTerms.paymentValue, viewCostingData[1]?.paymentTerms.paymentValue)}`}>
                                     <span className="d-inline-block w-50 small-grey-text">
                                       {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.paymentTerms.paymentTitle : '')}
+                                    </span>{' '}
+                                    <span className="d-inline-block w-50 small-grey-text">
+                                      {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.paymentTerms.paymentPercentage : '')}
                                     </span>{' '}
                                     &nbsp;{' '}
                                     <span className="d-inline-block w-50 small-grey-text">
