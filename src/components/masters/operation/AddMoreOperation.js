@@ -2674,7 +2674,7 @@ function AddMoreOperation(props) {
                                             PreviewComponent={Preview}
                                             disabled={isViewMode}
                                             accept="image/jpeg,image/jpg,image/png,image/PNG,.xls,.doc,.pdf,.xlsx"
-                                            initialFiles={initialFiles}
+                                            initialFiles={[]}
                                             maxFiles={3}
                                             maxSizeBytes={2000000}
                                             inputContent={(files, extra) => (extra.reject ? 'Image, audio and video files only' : (<div className="text-center">
