@@ -137,14 +137,55 @@ function AddLabourCost(props) {
     const handleCycleTime = (e) => {
         if (e?.target?.value) {
             let labourCost
+
+            let noOfLabour = Number(checkForNull(getValues('noOfLabour')))
+            let absentism = Number(checkForNull(getValues('absentism'))) / 100
             let labourRate = Number(getValues('labourRate'))
             let workingHours = Number(getValues('workingHours'))
             let efficiency = Number(getValues('efficiency'))
             efficiency = efficiency / 100
             let cycleTime = Number(e?.target?.value)
-            labourCost = labourRate / (workingHours * (efficiency / cycleTime))
+            labourCost = noOfLabour * absentism * labourRate / (workingHours * (efficiency / cycleTime))
             setTotalCost(labourCost)
             setValue('labourCost', checkForDecimalAndNull(labourCost, initialConfiguration.NoOfDecimalForPrice))
+        }
+    }
+
+    const handleNoOfLabour = (e) => {
+
+        let labourCost
+        let noOfLabour = Number(checkForNull(e?.target?.value))
+        let absentism = Number(checkForNull(getValues('absentism'))) / 100
+        let labourRate = Number(getValues('labourRate'))
+        let workingHours = Number(getValues('workingHours'))
+        let efficiency = Number(getValues('efficiency'))
+        efficiency = efficiency / 100
+        let cycleTime = Number(checkForNull(getValues('cycleTime')))
+        labourCost = noOfLabour * absentism * labourRate / (workingHours * (efficiency / cycleTime))
+        setTotalCost(labourCost)
+        setValue('labourCost', checkForDecimalAndNull(labourCost, initialConfiguration.NoOfDecimalForPrice))
+    }
+
+    const handleAbsentismChange = (e) => {
+        if (e?.target?.value <= 100) {
+            let labourCost
+            let noOfLabour = Number(checkForNull(getValues('noOfLabour')))
+            let absentism = Number(checkForNull(e?.target?.value)) / 100
+            let labourRate = Number(getValues('labourRate'))
+            let workingHours = Number(getValues('workingHours'))
+            let efficiency = Number(getValues('efficiency'))
+            efficiency = efficiency / 100
+            let cycleTime = Number(checkForNull(getValues('cycleTime')))
+            labourCost = noOfLabour * absentism * labourRate / (workingHours * (efficiency / cycleTime))
+            setTotalCost(labourCost)
+            setValue('labourCost', checkForDecimalAndNull(labourCost, initialConfiguration.NoOfDecimalForPrice))
+        } else {
+            Toaster.warning('Percentage cannot be greater than 100')
+            setTimeout(() => {
+                setValue('absentism', 0)
+            }, 200);
+            handleAbsentismChange({ target: { value: 0 } })
+            return false
         }
     }
 
@@ -188,7 +229,7 @@ function AddLabourCost(props) {
 
 
         // If all mandatory fields are filled out, create a new object with the data and add it to the table.
-        if (getValues('cycleTime') && getValues('labourCost') && getValues('description')) {
+        if (getValues('cycleTime') && getValues('labourCost') && getValues('description') && getValues('absentism') && getValues('noOfLabour')) {
             let obj = {}
             obj.Description = getValues('description') ? getValues('description') : ''
             obj.LabourRate = getValues('labourRate') ? getValues('labourRate') : ''
@@ -196,6 +237,9 @@ function AddLabourCost(props) {
             obj.Efficiency = getValues('efficiency') ? getValues('efficiency') : ''
             obj.CycleTime = getValues('cycleTime') ? getValues('cycleTime') : ''
             obj.LabourCost = totalCost ? totalCost : ''
+
+            obj.Absentism = getValues('absentism') ? getValues('absentism') : ''
+            obj.NoofLabour = getValues('noOfLabour') ? getValues('noOfLabour') : ''
 
             // If we're in edit mode, update the existing row with the new data.
             // Otherwise, add the new row to the end of the table.
@@ -254,6 +298,8 @@ function AddLabourCost(props) {
         setValue('efficiency', '')
         setValue('cycleTime', '')
         setValue('labourCost', '')
+        setValue('absentism', '')
+        setValue('noOfLabour', '')
         setDisableTotalCost(true)
         setTotalCost('')
     }
@@ -298,6 +344,8 @@ function AddLabourCost(props) {
             setValue('efficiency', Data.Efficiency)
             setValue('cycleTime', Data.CycleTime)
             setValue('labourCost', checkForDecimalAndNull(Data.LabourCost, initialConfiguration.NoOfDecimalForPrice))
+            setValue('absentism', Data.Absentism)
+            setValue('noOfLabour', Data.NoofLabour)
 
             setTotalCost(Data.LabourCost)
             if (Data.ConditionType === 'Fixed') {
@@ -373,6 +421,55 @@ function AddLabourCost(props) {
                                             disabled={CostingViewMode}
                                         />
                                     </Col>
+
+
+
+
+                                    <Col md="3" className='px-1'>
+                                        <NumberFieldHookForm
+                                            label={`No. of Labour`}
+                                            name={'noOfLabour'}
+                                            Controller={Controller}
+                                            control={control}
+                                            register={register}
+                                            mandatory={false}
+                                            rules={{
+                                                required: true,
+                                                validate: { number, checkWhiteSpaces, decimalNumberLimit6 },
+                                            }}
+                                            defaultValue={''}
+                                            className=""
+                                            customClassName={'withBorder'}
+                                            errors={errors.noOfLabour}
+                                            handleChange={handleNoOfLabour}
+                                        //disabled={true}
+                                        />
+                                    </Col>
+
+                                    <Col md="3" className='px-1'>
+                                        <NumberFieldHookForm
+                                            label={`Absentism %`}
+                                            name={'absentism'}
+                                            Controller={Controller}
+                                            control={control}
+                                            register={register}
+                                            mandatory={false}
+                                            rules={{
+                                                required: true,
+                                                validate: { number, checkWhiteSpaces, decimalNumberLimit6 },
+                                            }}
+                                            defaultValue={''}
+                                            className=""
+                                            customClassName={'withBorder'}
+                                            handleChange={handleAbsentismChange}
+                                            errors={errors.absentism}
+                                        //disabled={true}
+                                        />
+                                    </Col>
+
+
+
+
                                     <Col md="3" className='px-1'>
                                         <NumberFieldHookForm
                                             label={`Labour Rate (Rs/Shift)`}
@@ -390,7 +487,7 @@ function AddLabourCost(props) {
                                             className=""
                                             customClassName={'withBorder'}
                                             errors={errors.Cost}
-                                            disabled={true}
+                                        //disabled={true}
                                         />
                                     </Col>
 
@@ -413,7 +510,7 @@ function AddLabourCost(props) {
                                             className=""
                                             customClassName={'withBorder'}
                                             errors={errors.workingHours}
-                                            disabled={true}
+                                        //disabled={true}
                                         />
                                     </Col>
                                     <Col md="3" className='pl-1'>
@@ -433,7 +530,7 @@ function AddLabourCost(props) {
                                             className=""
                                             customClassName={'withBorder'}
                                             errors={errors.efficiency}
-                                            disabled={true}
+                                        //disabled={true}
                                         />
                                     </Col>
 
@@ -480,7 +577,7 @@ function AddLabourCost(props) {
                                             disabled={CostingViewMode || disableTotalCost}
                                         />
                                     </Col>
-                                    <Col md="3" className="mt-4 pt-2">
+                                    <Col md="3" className="mt-1 pt-2 mb-3">
 
                                         {!CostingViewMode && < button
                                             type="button"
