@@ -18,7 +18,7 @@ import { volumeBulkUpload } from '../masters/actions/Volume';
 import { bulkUploadBudgetMaster } from '../masters/actions/Budget'
 import { bulkUploadInterestRateZBC, bulkUploadInterestRateVBC, bulkUploadInterestRateCBC } from '../masters/actions/InterestRateMaster';
 import Toaster from '../common/Toaster';
-import { loggedInUserId, userDetails } from "../../helper/auth";
+import { getConfigurationKey, loggedInUserId, userDetails } from "../../helper/auth";
 import { ExcelRenderer } from 'react-excel-renderer';
 import Drawer from '@material-ui/core/Drawer';
 import Downloadxls, { checkLabourRateConfigure, checkRM_Process_OperationConfigurable, checkVendorPlantConfig } from './Downloadxls';
@@ -102,7 +102,8 @@ class BulkUpload extends Component {
      * @description called after render the component
     */
     componentDidUpdate(prevProps, prevState) {
-        if ((prevState?.costingTypeId !== this.state.costingTypeId) && this.props.initialConfiguration.IsMasterApprovalAppliedConfigure) {
+        let isApproval = getConfigurationKey().ApprovalMasterArrayList.includes(this.props?.masterId)
+        if ((prevState?.costingTypeId !== this.state.costingTypeId) && this.props.initialConfiguration.IsMasterApprovalAppliedConfigure && (isApproval)) {
             this.commonFunction()
         }
     }
