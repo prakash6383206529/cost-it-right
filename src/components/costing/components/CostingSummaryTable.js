@@ -1125,7 +1125,8 @@ const CostingSummaryTable = (props) => {
         label: '',
         data: pieChartDataArray,
         backgroundColor: pieChartColor,
-        borderWidth: 1,
+        borderWidth: 0.5,
+        hoverOffset: 10
       },
     ],
 
@@ -1138,11 +1139,16 @@ const CostingSummaryTable = (props) => {
         labels: {
           boxWidth: 15,
           borderWidth: 1,
-          padding: 8,
-          color: '#000'
-        }
+          color: '#000',
+        },
+
       },
     },
+    layout: {
+      padding: {
+        top: 15
+      }
+    }
   }
 
   const PDFPageStyle = "@page { size: A4 landscape; }";
