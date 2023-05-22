@@ -1187,7 +1187,7 @@ function RawMaterialCost(props) {
                   <div className={'plus'}></div>RM
                 </button>
               }
-              {((costData?.TechnologyId === Ferrous_Casting) && gridData.length !== 0) && <button
+              {((costData?.TechnologyId === Ferrous_Casting) && gridData?.length !== 0) && <button
                 className="secondary-btn"
                 type={'button'}
                 onClick={() => toggleWeightCalculator(0)}
