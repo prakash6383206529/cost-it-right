@@ -1985,7 +1985,7 @@ function AddMoreOperation(props) {
                             {!isPlating && <Row className="mb-3 accordian-container">
                                 <Col md="6">
                                     <HeaderTitle
-                                        title={'Interest and Depriciation:'}
+                                        title={'Interest and Depreciation:'}
                                         customClass={'Personal-Details'} />
                                 </Col>
                                 <Col md="6">
@@ -2067,7 +2067,7 @@ function AddMoreOperation(props) {
                                             </Col>
                                             <Col md="3">
                                                 <NumberFieldHookForm
-                                                    label={`Depriciation Cost`}
+                                                    label={`Depreciation Cost`}
                                                     name={'depriciationCost'}
                                                     Controller={Controller}
                                                     control={control}
@@ -2094,7 +2094,7 @@ function AddMoreOperation(props) {
                                                 className={`custom-checkbox w-auto ml-4 mt-4 `}
                                                 onChange={includeInterestRateinRejection}
                                             >
-                                                Include Interest rate & Depriciation in Rejection & Profit
+                                                Include Interest rate & Depreciation in Rejection & Profit
                                                 <input
                                                     type="checkbox"
                                                     checked={includeInterestInRejection}
@@ -2133,7 +2133,7 @@ function AddMoreOperation(props) {
 
                                             <Col md="3">
                                                 <NumberFieldHookForm
-                                                    label={`Interest And depriciation Cost`}
+                                                    label={`Interest And depreciation Cost`}
                                                     name={'interestDepriciationCost'}
                                                     Controller={Controller}
                                                     control={control}
