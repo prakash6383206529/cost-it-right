@@ -717,12 +717,12 @@ function AddRfq(props) {
                     if (index === 2) {
                         objTemp.PartNumber = partNumber?.label
                         objTemp.VendorListExisting = vendorListFinal.join(',') ? vendorListFinal.join(',') : '-'
-                        objTemp.RMName = rmName?.label
-                        objTemp.RMNameId = rmName?.value
-                        objTemp.RMGrade = rmgrade?.label
-                        objTemp.RMGradeId = rmgrade?.value
-                        objTemp.RMSpecification = rmspecification?.label
-                        objTemp.RMSpecificationId = rmspecification?.value
+                        objTemp.RMName = rmName?.label ? rmName?.label : '-'
+                        objTemp.RMNameId = rmName?.value ? rmName?.value : '-'
+                        objTemp.RMGrade = rmgrade?.label ? rmgrade?.label : '-'
+                        objTemp.RMGradeId = rmgrade?.value ? rmgrade?.value : '-'
+                        objTemp.RMSpecification = rmspecification?.label ? rmspecification?.label : '-'
+                        objTemp.RMSpecificationId = rmspecification?.value ? rmspecification?.value : '-'
                     }
                     objTemp.Quantity = 0
 
