@@ -157,6 +157,8 @@ class Downloadxls extends React.Component {
                 return this.returnExcelColumn(ZBCInterestRate, ZBCInterestRateTempData);
             case 'Budget':
                 return this.returnExcelColumn(BUDGET_ZBC, BUDGET_ZBC_TEMPDATA);
+            case 'Labour':
+                return this.returnExcelColumn(Labour, LabourTempData);
             default:
                 return 'foo';
         }
@@ -190,6 +192,8 @@ class Downloadxls extends React.Component {
                 return this.returnExcelColumn(VBCInterestRate, VBCInterestRateTempData);
             case 'Budget':
                 return this.returnExcelColumn(BUDGET_VBC, BUDGET_VBC_TEMPDATA);
+            case 'Labour':
+                return this.returnExcelColumn(Labour, LabourTempData);
             default:
                 return 'foo';
         }
@@ -222,6 +226,8 @@ class Downloadxls extends React.Component {
                 return this.returnExcelColumn(CBCInterestRate, CBCInterestRateTempData);
             case 'Budget':
                 return this.returnExcelColumn(BUDGET_CBC, BUDGET_CBC_TEMPDATA);
+            case 'Labour':
+                return this.returnExcelColumn(Labour, LabourTempData);
             default:
                 return 'foo';
         }
