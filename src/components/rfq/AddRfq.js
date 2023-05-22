@@ -953,22 +953,24 @@ function AddRfq(props) {
         if (label === 'rmname') {
             if (rawMaterialNameSelectList?.length > 0) {
                 let opts = [...rawMaterialNameSelectList]
-                opts1 = [...rawMaterialNameSelectList]
-                opts1 = opts && opts?.map(item => {
+                opts && opts?.map(item => {
+                    if (item.Value === '0') return false
                     item.label = item.Text
                     item.value = item.Value
-                    return item
+                    opts1.push(item)
+                    return null
                 })
             }
         }
         if (label === 'rmgrade') {
             if (gradeSelectList?.length > 0) {
                 let opts = [...gradeSelectList]
-                opts1 = [...gradeSelectList]
-                opts1 = opts && opts?.map(item => {
+                opts && opts?.map(item => {
+                    if (item.Value === '0') return false
                     item.label = item.Text
                     item.value = item.Value
-                    return item
+                    opts1.push(item)
+                    return null
                 })
             }
         }
@@ -976,11 +978,12 @@ function AddRfq(props) {
         if (label === 'rmspecification') {
             if (rmSpecification?.length > 0) {
                 let opts = [...rmSpecification]
-                opts1 = [...rmSpecification]
-                opts1 = opts && opts?.map(item => {
+                opts && opts?.map(item => {
+                    if (item.Value === '0') return false
                     item.label = item.Text
                     item.value = item.Value
-                    return item
+                    opts1.push(item)
+                    return null
                 })
             }
         }

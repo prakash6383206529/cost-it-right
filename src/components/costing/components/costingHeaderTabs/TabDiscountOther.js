@@ -33,7 +33,6 @@ import AddNpvCost from '../CostingHeadCosts/AdditionalOtherCost/AddNpvCost';
 import ConditionCosting from '../CostingHeadCosts/AdditionalOtherCost/ConditionCosting';
 import AddConditionCosting from '../CostingHeadCosts/AdditionalOtherCost/AddConditionCosting';
 import { reactLocalStorage } from 'reactjs-localstorage';
-
 let counter = 0;
 function TabDiscountOther(props) {
   // ********* INITIALIZE REF FOR DROPZONE ********
@@ -129,7 +128,7 @@ function TabDiscountOther(props) {
 
 
   useEffect(() => {
-    if (RMCCTabData && RMCCTabData[0]?.CostingId) {
+    if (RMCCTabData && RMCCTabData[0]?.CostingId && props.activeTab === '6') {
       let npvSum = 0
       if (initialConfiguration?.IsShowNpvCost) {
         dispatch(getNpvDetails(RMCCTabData && RMCCTabData[0]?.CostingId, (res) => {
@@ -170,9 +169,14 @@ function TabDiscountOther(props) {
           }
         }))
       }
-
     }
-  }, [RMCCTabData])
+
+    return () => {
+      setNpvTableData([])
+      seConditionTableData([])
+    }
+  }, [RMCCTabData, props.activeTab])
+
 
   useEffect(() => {
     if (CostingDataList && CostingDataList.length > 0) {
@@ -998,7 +1002,7 @@ function TabDiscountOther(props) {
           <Row>
             <Col md="12">
               <div className="shadow-lgg login-formg">
-                <div className='tab-disount-total-cost'><span>Total Cost:</span> <p className='disabled-input-data'>{`${totalCost && totalCost !== undefined ? checkForDecimalAndNull(totalCost, initialConfiguration.NoOfDecimalForPrice) : 0}`}</p></div>
+                <div className='tab-disount-total-cost'><span >Total Cost:</span><TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'total-cost-tab-discount'} tooltipText={'Total Cost = Net RM BOP CC + SurfaceTreatment Cost + Overheads&Profit Cost + Packaging&Freight Cost + Tool Cost'} /> <p id={'total-cost-tab-discount'} className='disabled-input-data'>{`${totalCost && totalCost !== undefined ? checkForDecimalAndNull(totalCost, initialConfiguration.NoOfDecimalForPrice) : 0}`}</p></div>
                 <form
                   noValidate
                   className="form"

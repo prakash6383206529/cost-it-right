@@ -25,7 +25,7 @@ import AddVendorDrawer from '../supplier-master/AddVendorDrawer'
 import Dropzone from 'react-dropzone-uploader'
 import 'react-dropzone-uploader/dist/styles.css'
 import 'react-datepicker/dist/react-datepicker.css'
-import { FILE_URL, ZBC, RM_MASTER_ID, EMPTY_GUID, SPACEBAR, ZBCTypeId, VBCTypeId, CBCTypeId, searchCount } from '../../../config/constants'
+import { FILE_URL, ZBC, RM_MASTER_ID, EMPTY_GUID, SPACEBAR, ZBCTypeId, VBCTypeId, CBCTypeId, searchCount, SHEET_METAL } from '../../../config/constants'
 import DayTime from '../../common/DayTimeWrapper'
 import TooltipCustom from '../../common/Tooltip';
 import LoaderCustom from '../../common/LoaderCustom';
@@ -448,8 +448,12 @@ class AddRMDomestic extends Component {
     const netCost = checkForNull(Number(fieldsObj.BasicRate ? fieldsObj.BasicRate : 0) + Number(fieldsObj.FrieghtCharge ? fieldsObj.FrieghtCharge : 0) + Number(fieldsObj.ShearingCost ? fieldsObj.ShearingCost : 0))
 
     if (this.state.isEditFlag && Number(netCost) === Number(this.state.DataToChange?.NetLandedCost) && Number(fieldsObj.ScrapRate) === Number(this.state.DataToChange?.ScrapRate)) {
+      if (String(this.state.Technology.label) === String(SHEET_METAL) && Number(fieldsObj.JaliScrapCost) === Number(this.state.DataToChange.ScrapRate) && checkForNull(Number(fieldsObj.CircleScrapCost)) === Number(this.state.DataToChange.JaliScrapCost)) {
+        this.setState({ IsFinancialDataChanged: false })
+      } else {
+        this.setState({ IsFinancialDataChanged: true })
+      }
 
-      this.setState({ IsFinancialDataChanged: false })
     } else if (this.state.isEditFlag) {
       this.setState({ IsFinancialDataChanged: true })
 
@@ -1033,9 +1037,9 @@ class AddRMDomestic extends Component {
       return false
     }
 
-    if ((Number(fieldsObj.BasicRate) < Number(fieldsObj.ScrapRate)) || (fieldsObj.JaliScrapCost ? ((Number(fieldsObj.JaliScrapCost) + Number(checkForNull(fieldsObj.CircleScrapCost))) > Number(fieldsObj.BasicRate)) : false) || (fieldsObj.ForgingScrap ? ((Number(fieldsObj.ForgingScrap) + Number(checkForNull(fieldsObj.MachiningScrap))) > Number(fieldsObj.BasicRate)) : false)) {
+    if ((Number(fieldsObj.BasicRate) <= Number(fieldsObj.ScrapRate)) || (Number(fieldsObj.BasicRate) <= Number(fieldsObj.JaliScrapCost)) || (Number(fieldsObj.BasicRate) <= Number(fieldsObj.CircleScrapCost)) || (Number(fieldsObj.BasicRate) <= Number(fieldsObj.ForgingScrap)) || (Number(fieldsObj.BasicRate) <= Number(fieldsObj.MachiningScrap))) {
       this.setState({ setDisable: false })
-      Toaster.warning("Scrap rate should not be greater than basic rate")
+      Toaster.warning("Scrap rate/cost should not be greater than or equal to the basic rate.")
       return false
     }
     this.setState({ isVendorNameNotSelected: false })
