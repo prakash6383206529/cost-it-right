@@ -2133,7 +2133,7 @@ function AddMoreOperation(props) {
 
                                             <Col md="3">
                                                 <NumberFieldHookForm
-                                                    label={`Interest And depreciation Cost`}
+                                                    label={`Interest And Depreciation Cost`}
                                                     name={'interestDepriciationCost'}
                                                     Controller={Controller}
                                                     control={control}
