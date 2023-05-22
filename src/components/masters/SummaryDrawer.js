@@ -61,25 +61,25 @@ function SummaryDrawer(props) {
             setApprovalDetails({ IsSent: Data.IsSent, IsFinalLevelButtonShow: Data.IsFinalLevelButtonShow, ApprovalProcessId: Data.ApprovalProcessId, MasterApprovalProcessSummaryId: Data.ApprovalProcessSummaryId, Token: Data.Token, MasterId: Data.MasterId })
             setLoader(false)
             if (Number(props.masterId) === RM_MASTER_ID) {
-                CostingTypeId = Data.ImpactedMasterDataList[0]?.CostingTypeId
-                setFiles(Data.ImpactedMasterDataList[0].Files)
-                Data.ImpactedMasterDataList?.length > 0 ? setIsDataInMaster(true) : setIsDataInMaster(false);
+                CostingTypeId = Data.ImpactedMasterDataList.RawMaterialListResponse[0]?.CostingTypeId
+                setFiles(Data.ImpactedMasterDataList.RawMaterialListResponse[0].Files)
+                Data.ImpactedMasterDataList?.RawMaterialListResponse.length > 0 ? setIsDataInMaster(true) : setIsDataInMaster(false);
             } else if (Number(props.masterId) === BOP_MASTER_ID) {
-                CostingTypeId = Data.ImpactedMasterDataListBOP[0]?.CostingTypeId
-                setFiles(Data.ImpactedMasterDataListBOP[0].Files)
-                Data.ImpactedMasterDataListBOP?.length > 0 ? setIsDataInMaster(true) : setIsDataInMaster(false);
+                CostingTypeId = Data.ImpactedMasterDataList.BOPDomesticListResponse[0]?.CostingTypeId
+                setFiles(Data.ImpactedMasterDataList.BOPDomesticListResponse[0].Files)
+                Data.ImpactedMasterDataList?.length > 0 ? setIsDataInMaster(true) : setIsDataInMaster(false);
             } else if (Number(props.masterId) === OPERATIONS_ID) {
-                CostingTypeId = Data.ImpactedMasterDataListOperation[0]?.CostingTypeId
-                setFiles(Data.ImpactedMasterDataListOperation[0].Files)
-                Data.ImpactedMasterDataListOperation?.length > 0 ? setIsDataInMaster(true) : setIsDataInMaster(false);
+                CostingTypeId = Data.ImpactedMasterDataList.OperationListResponse[0]?.CostingTypeId
+                setFiles(Data.ImpactedMasterDataList.OperationListResponse[0].Files)
+                Data.ImpactedMasterDataList?.length > 0 ? setIsDataInMaster(true) : setIsDataInMaster(false);
             } else if (Number(props.masterId) === MACHINE_MASTER_ID) {
-                CostingTypeId = Data.ImpactedMasterDataListMachine[0]?.CostingTypeId
-                setFiles(Data.ImpactedMasterDataListMachine[0].Files)
-                Data.ImpactedMasterDataListMachine?.length > 0 ? setIsDataInMaster(true) : setIsDataInMaster(false);
+                CostingTypeId = Data.ImpactedMasterDataList.MachineListResponse[0]?.CostingTypeId
+                setFiles(Data.ImpactedMasterDataList.MachineListResponse[0].Files)
+                Data.ImpactedMasterDataList?.length > 0 ? setIsDataInMaster(true) : setIsDataInMaster(false);
             } else if (Number(props.masterId) === BUDGET_ID) {
-                CostingTypeId = Data.ImpactedMasterDataListBudgeting[0]?.CostingHeadId
-                setFiles(Data.ImpactedMasterDataListBudgeting[0].Files)
-                Data.ImpactedMasterDataListBudgeting?.length > 0 ? setIsDataInMaster(true) : setIsDataInMaster(false);
+                CostingTypeId = Data.ImpactedMasterDataList.BudgetListResponse[0]?.CostingHeadId
+                setFiles(Data.ImpactedMasterDataList.BudgetingListResponse[0].Files)
+                Data.ImpactedMasterDataList?.length > 0 ? setIsDataInMaster(true) : setIsDataInMaster(false);
             }
             setCostingTypeId(CostingTypeId)
             Data.NumberOfMaster > 0 ? setIsDataInMaster(true) : setIsDataInMaster(false);
