@@ -28,6 +28,7 @@ function Icc(props) {
 
     const [InventoryObj, setInventoryObj] = useState(ICCApplicabilityDetail)
     const [tempInventoryObj, setTempInventoryObj] = useState(ICCApplicabilityDetail)
+    const [isPartApplicability, setIsPartApplicability] = useState(false)
 
     const [IsInventoryApplicable, setIsInventoryApplicable] = useState(CostingInterestRateDetail && CostingInterestRateDetail.IsInventoryCarringCost ? true : false)
     const [ICCapplicability, setICCapplicability] = useState(ICCApplicabilityDetail !== undefined ? { label: ICCApplicabilityDetail.ICCApplicability, value: ICCApplicabilityDetail.ICCApplicability } : {})
@@ -46,6 +47,12 @@ function Icc(props) {
         control,
         name: ['InterestRatePercentage',],
     });
+
+    useEffect(() => {
+        if (ICCapplicability && ICCapplicability.label === 'Part Cost') {
+            setIsPartApplicability(true)
+        }
+    }, [ICCapplicability])
 
 
     /**
@@ -142,7 +149,7 @@ function Icc(props) {
         if (headerCosts !== undefined && Text !== '' && !CostingViewMode) {
 
             let NetRawMaterialsCost;
-            if (isNetWeight && !(costData.IsAssemblyPart)) {
+            if (isNetWeight && !(costData.IsAssemblyPart) && !(isPartApplicability)) {
                 let rmValue = reactLocalStorage.getObject('costingArray')
                 let newRmCost = (Array.isArray(rmValue) && rmValue[0]?.CostingPartDetails?.CostingRawMaterialsCost[0]?.RMRate) * (Array.isArray(rmValue) && rmValue[0]?.CostingPartDetails?.CostingRawMaterialsCost[0]?.FinishWeight)
                 NetRawMaterialsCost = newRmCost + (includeOverHeadProfitIcc ? totalOverHeadAndProfit : 0)
