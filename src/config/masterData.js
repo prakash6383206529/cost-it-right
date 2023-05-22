@@ -1844,6 +1844,9 @@ export const ProfitTempData = [
 * @desc USED IN EXCEL HEADER FOR BULK UPLOAD
 */
 export const Labour = [
+
+    { label: 'CustomerName', value: 'CustomerName', }, //*
+    { label: 'CustomerCode', value: 'CustomerCode', }, //*
     { label: 'EmploymentTerms', value: 'EmploymentTerms', }, //*
     { label: 'VendorName', value: 'VendorName', },
     { label: 'VendorCode', value: 'VendorCode', }, //*
@@ -1853,9 +1856,12 @@ export const Labour = [
     { label: 'LabourType', value: 'LabourType', }, //*
     { label: 'RatePerPersonPerAnnum', value: 'RatePerPersonPerAnnum', }, //*
     { label: 'EffectiveDate', value: 'EffectiveDate', },
+    { label: 'ProductNumber', value: 'ProductNumber', },
 ]
 export const LabourTempData = [
     {
+        "CustomerName": 'Honda',
+        "CustomerCode": 'C-10008',
         'EmploymentTerms': 'Contractual',
         'VendorName': 'Tata Steel',
         'VendorCode': 'VC123',
@@ -1865,8 +1871,11 @@ export const LabourTempData = [
         'LabourType': 'Skilled',
         'RatePerPersonPerAnnum': 2000000,
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
+        "ProductNumber": 'Silencer'
     },
     {
+        "CustomerName": 'Honda',
+        "CustomerCode": 'C-10008',
         'EmploymentTerms': 'Employed',
         'VendorName': 'Reliance',
         'VendorCode': 'VC124',
@@ -1874,8 +1883,9 @@ export const LabourTempData = [
         'PlantCode': 'Plant02',
         'MachineType': 'Grinder',
         'LabourType': 'Semi-Skilled',
-        'RatePerPerson/Annum': 300000,
+        'RatePerPersonPerAnnum': 300000,
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
+        "ProductNumber": 'Silencer'
     }
 ]
 export const Volume = [

@@ -561,7 +561,7 @@ class LabourListing extends Component {
               closeDrawer={this.closeBulkUploadDrawer}
               isEditFlag={false}
               fileName={'Labour'}
-              isZBCVBCTemplate={false}
+              isZBCVBCTemplate={true}
               messageLabel={'Labour'}
               anchor={'right'}
             />
