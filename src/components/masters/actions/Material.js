@@ -1571,24 +1571,24 @@ export function getMasterApprovalSummary(tokenNo, approvalProcessId, masterId, c
                     if (Number(masterId) === RM_MASTER_ID) {
                         dispatch({
                             type: GET_RM_DOMESTIC_LIST,
-                            payload: response.data.Data.ImpactedMasterDataList,
+                            payload: response.data.Data.ImpactedMasterDataList.RawMaterialListResponse,
                         })
                         callback(response)
                     }
                     else if (Number(masterId) === BOP_MASTER_ID) {
                         dispatch({
                             type: GET_BOP_DOMESTIC_DATA_LIST,
-                            payload: response.data.Data.ImpactedMasterDataListBOP,
+                            payload: response.data.Data.ImpactedMasterDataList.BOPDomesticListResponse,
                         })
                         callback(response)
                     } else if (Number(masterId) === OPERATIONS_ID) {
                         dispatch({
                             type: GET_OPERATION_COMBINED_DATA_LIST,
-                            payload: response.data.Data.ImpactedMasterDataListOperation,
+                            payload: response.data.Data.ImpactedMasterDataList.OperationListResponse,
                         })
                         callback(response)
                     } else if (Number(masterId) === MACHINE_MASTER_ID) {
-                        const value = response.data.Data.ImpactedMasterDataListMachine.filter((item) => item.EffectiveDateNew = item.EffectiveDate)
+                        const value = response.data.Data.ImpactedMasterDataList.MachineListResponse.filter((item) => item.EffectiveDateNew = item.EffectiveDate)
 
                         dispatch({
                             type: GET_MACHINE_DATALIST_SUCCESS,
@@ -1598,7 +1598,7 @@ export function getMasterApprovalSummary(tokenNo, approvalProcessId, masterId, c
                     } else if (Number(masterId) === BUDGET_ID) {
                         dispatch({
                             type: GET_VOLUME_DATA_LIST,
-                            payload: response.data.Data.ImpactedMasterDataListBudgeting,
+                            payload: response.data.Data.ImpactedMasterDataList.BudgetingListResponse,
                         })
                         callback(response)
                     }
