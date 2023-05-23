@@ -810,7 +810,6 @@ class AddBOPImport extends Component {
       UOM: {},
     })
     this.props.getBOPImportById('', res => { })
-    this.getDetails()
     this.props.hideForm(type)
   }
   cancelHandler = () => {
@@ -845,8 +844,8 @@ class AddBOPImport extends Component {
     let updatedFiles = files.map((file) => {
       return { ...file, ContextId: BOPID }
     })
-    //check here @samrudhi
     const formData = {
+      IsSendForApproval: this.state.IsSendForApproval,
       BoughtOutPartId: BOPID,
       Currency: currency.label,
       CostingTypeId: costingTypeId,
@@ -880,36 +879,9 @@ class AddBOPImport extends Component {
     if ((isEditFlag && this.state.isFinalApprovar) || (isEditFlag && CheckApprovalApplicableMaster(BOP_MASTER_ID) !== true)) {
 
       this.setState({ setDisable: true })
-      let updatedFiles = files.map((file) => {
-        return { ...file, ContextId: BOPID }
-      })
-      let requestData = {
-        EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
-        Currency: currency.label,
-        BoughtOutPartId: BOPID,
-        Source: values.Source,
-        SourceLocation: sourceLocation.value ? sourceLocation.value : '',
-        BasicRate: values.BasicRate,
-        NetLandedCost: this.state.netLandedcost,
-        Remark: values.Remark,
-        LoggedInUserId: loggedInUserId(),
-        Plant: costingTypeId !== VBCTypeId ? [plantArray] : [],
-        VendorPlant: [],
-        Attachements: updatedFiles,
-        UnitOfMeasurementId: UOM.value,
-        NetLandedCostConversion: netLandedConverionCost,
-        IsForcefulUpdated: isDateChange ? false : isSourceChange ? false : true,
-        NumberOfPieces: values.NumberOfPieces,
-        IsFinancialDataChanged: isDateChange ? true : false,
-        CustomerId: client.value,
-        BoughtOutPartIncoTermId: incoTerm.value,
-        BoughtOutPartPaymentTermId: paymentTerm.value,
-        EntryType: Number(ENTRY_TYPE_IMPORT),
-        IsClientVendorBOP: isClientVendorBOP
-      }
       if (IsFinancialDataChanged) {
         if (isDateChange && (DayTime(oldDate).format("DD/MM/YYYY") !== DayTime(effectiveDate).format("DD/MM/YYYY"))) {
-          this.props.updateBOP(requestData, (res) => {
+          this.props.updateBOP(formData, (res) => {
             this.setState({ setDisable: false })
             if (res?.data?.Result) {
               Toaster.success(MESSAGES.UPDATE_BOP_SUCESS);
@@ -937,7 +909,7 @@ class AddBOPImport extends Component {
         }
         else {
           // if (isSourceChange) {
-          this.props.updateBOP(requestData, (res) => {
+          this.props.updateBOP(formData, (res) => {
             this.setState({ setDisable: false })
             if (res?.data?.Result) {
               Toaster.success(MESSAGES.UPDATE_BOP_SUCESS);
@@ -956,38 +928,6 @@ class AddBOPImport extends Component {
         formData.IsSendForApproval = false
       }
       // this.setState({ setDisable: true })
-      const formData = {
-        IsSendForApproval: this.state.IsSendForApproval,
-        BoughtOutPartId: BOPID,
-        Currency: currency.label,
-        CostingTypeId: costingTypeId,
-        BoughtOutPartNumber: values.BoughtOutPartNumber,
-        BoughtOutPartName: values.BoughtOutPartName,
-        CategoryId: BOPCategory.value,
-        Specification: values.Specification,
-        Vendor: vendorName.value,
-        Source: values.Source,
-        SourceLocation: sourceLocation.value,
-        EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD'),
-        BasicRate: values.BasicRate,
-        NumberOfPieces: values.NumberOfPieces,
-        NetLandedCost: this.state.netLandedcost,
-        Remark: values.Remark,
-        IsActive: true,
-        LoggedInUserId: loggedInUserId(),
-        Plant: [plantArray],
-        DestinationPlantId: (costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? selectedPlants.value : (costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant) ? selectedPlants.value : userDetailsBop.Plants[0].PlantId,
-        Attachements: files,
-        UnitOfMeasurementId: UOM.value,
-        VendorPlant: [],
-        NetLandedCostConversion: netLandedConverionCost,
-        IsFinancialDataChanged: isDateChange ? true : false,
-        CustomerId: client.value,
-        BoughtOutPartIncoTermId: incoTerm.value,
-        BoughtOutPartPaymentTermId: paymentTerm.value,
-        EntryType: Number(ENTRY_TYPE_IMPORT),
-        IsClientVendorBOP: isClientVendorBOP
-      }
 
       if (CheckApprovalApplicableMaster(BOP_MASTER_ID) === true && !this.state.isFinalApprovar) {
         if (IsFinancialDataChanged) {

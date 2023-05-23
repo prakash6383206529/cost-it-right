@@ -470,12 +470,13 @@ class AddOverhead extends Component {
         const { RawMaterial } = this.state
         this.props.getRMGradeSelectListByRawMaterial(
           RawMaterial.value,
+          false,
           (res) => { },
         )
       })
     } else {
       this.setState({ RMGrade: [], RMSpec: [], RawMaterial: [] })
-      this.props.getRMGradeSelectListByRawMaterial('', (res) => { })
+      this.props.getRMGradeSelectListByRawMaterial('', false, (res) => { })
       this.props.fetchSpecificationDataAPI(0, () => { })
     }
   }
@@ -773,7 +774,7 @@ class AddOverhead extends Component {
   */
   onSubmit = debounce((values) => {
     const { client, costingTypeId, ModelType, vendorName, overheadAppli, selectedPlants, remarks, OverheadID, RMGrade,
-      isRM, isCC, isBOP, isOverheadPercent, singlePlantSelected, isEditFlag, files, effectiveDate, DataToChange, DropdownNotChanged, uploadAttachements, RawMaterial } = this.state;
+      isRM, isCC, isBOP, isOverheadPercent, singlePlantSelected, isEditFlag, files, effectiveDate, DataToChange, DropdownNotChanged, uploadAttachements, RawMaterial, isDataChanged } = this.state;
     const userDetailsOverhead = JSON.parse(localStorage.getItem('userDetail'))
     let plantArray = []
     if (costingTypeId === VBCTypeId) {
@@ -860,6 +861,7 @@ class AddOverhead extends Component {
         RawMaterialName: RawMaterial?.label,
         RawMaterialGradeId: RMGrade?.value,
         RawMaterialGrade: RMGrade?.label,
+        IsFinancialDataChanged: isDataChanged
       }
       if (isEditFlag) {
         if (DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss') === DayTime(DataToChange?.EffectiveDate).format('YYYY-MM-DD HH:mm:ss')) {
@@ -903,6 +905,7 @@ class AddOverhead extends Component {
         RawMaterialName: RawMaterial?.label,
         RawMaterialGradeId: RMGrade?.value,
         RawMaterialGrade: RMGrade?.label,
+        IsFinancialDataChanged: isDataChanged
       }
 
       this.props.createOverhead(formData, (res) => {

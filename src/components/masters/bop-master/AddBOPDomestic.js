@@ -662,9 +662,6 @@ class AddBOPDomestic extends Component {
       UOM: [],
     })
     this.props.hideForm(type)
-    if (type === 'submit') {
-      this.getDetails()
-    }
   }
   cancelHandler = () => {
     this.setState({ showPopup: true })
@@ -697,12 +694,12 @@ class AddBOPDomestic extends Component {
     if (selectedPlants.length === 0 && costingTypeId === ZBCTypeId) {
       return false;
     }
-    // if (isEditFlag && this.state.isFinalApprovar) {
-    //check here @samrudhi
     let updatedFiles = files.map((file) => {
       return { ...file, ContextId: BOPID }
     })
+    // if (isEditFlag && this.state.isFinalApprovar) {
     const formData = {
+      IsSendForApproval: this.state.IsSendForApproval,
       IsFinancialDataChanged: isDateChange ? true : false,
       BoughtOutPartId: BOPID,
       CostingTypeId: costingTypeId,
@@ -732,33 +729,9 @@ class AddBOPDomestic extends Component {
     }
     if ((isEditFlag && this.state.isFinalApprovar) || (isEditFlag && CheckApprovalApplicableMaster(BOP_MASTER_ID) !== true)) {
 
-      let updatedFiles = files.map((file) => {
-        return { ...file, ContextId: BOPID }
-      })
-      let requestData = {
-        EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
-        BoughtOutPartId: BOPID,
-        Source: values.Source,
-        SourceLocation: sourceLocation.value ? sourceLocation.value : '',
-        BasicRate: values.BasicRate,
-        NetLandedCost: this.state.NetLandedCost,
-        Remark: values.Remark,
-        LoggedInUserId: loggedInUserId(),
-        Plant: selectedPlants !== undefined ? [{ PlantName: selectedPlants.label, PlantId: selectedPlants.value, PlantCode: '' }] : {},
-        Attachements: updatedFiles,
-        UnitOfMeasurementId: UOM.value,
-        IsForcefulUpdated: isDateChange ? false : isSourceChange ? false : true,
-        NumberOfPieces: values.NumberOfPieces,
-        VendorPlant: [],
-        IsFinancialDataChanged: isDateChange ? true : false,
-        CustomerId: client.value,
-        EntryType: Number(ENTRY_TYPE_DOMESTIC),
-        IsClientVendorBOP: isClientVendorBOP
-      }
-
       if (IsFinancialDataChanged) {
         if (isDateChange && (DayTime(oldDate).format("DD/MM/YYYY") !== DayTime(effectiveDate).format("DD/MM/YYYY"))) {
-          this.props.updateBOP(requestData, (res) => {
+          this.props.updateBOP(formData, (res) => {
             this.setState({ setDisable: false })
             if (res?.data?.Result) {
               Toaster.success(MESSAGES.UPDATE_BOP_SUCESS);
@@ -780,7 +753,7 @@ class AddBOPDomestic extends Component {
           return false;
         }
         else {
-          this.props.updateBOP(requestData, (res) => {
+          this.props.updateBOP(formData, (res) => {
             this.setState({ setDisable: false })
             if (res?.data?.Result) {
               Toaster.success(MESSAGES.UPDATE_BOP_SUCESS);
@@ -799,35 +772,6 @@ class AddBOPDomestic extends Component {
         formData.IsSendForApproval = false
       }
       // this.setState({ setDisable: true })
-      const formData = {
-        IsSendForApproval: this.state.IsSendForApproval,
-        IsFinancialDataChanged: isDateChange ? true : false,
-        BoughtOutPartId: BOPID,
-        CostingTypeId: costingTypeId,
-        BoughtOutPartNumber: values.BoughtOutPartNumber,
-        BoughtOutPartName: values.BoughtOutPartName,
-        CategoryId: BOPCategory.value,
-        Specification: values.Specification,
-        UnitOfMeasurementId: UOM.value,
-        Vendor: vendorName.value,
-        Source: values.Source,
-        SourceLocation: sourceLocation.value,
-        EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD'),
-        BasicRate: values.BasicRate,
-        NumberOfPieces: values.NumberOfPieces,
-        NetLandedCost: this.state.NetLandedCost,
-        Remark: values.Remark,
-        IsActive: true,
-        LoggedInUserId: loggedInUserId(),
-        Plant: [plantArray],
-        VendorPlant: [],
-        DestinationPlantId: (costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? selectedPlants.value : (costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant) ? selectedPlants.value : userDetailsBop.Plants[0].PlantId,
-        Attachements: files,
-        CustomerId: client.value,
-        EntryType: Number(ENTRY_TYPE_DOMESTIC),
-        CategoryName: BOPCategory.label,
-        IsClientVendorBOP: isClientVendorBOP
-      }
 
       if (CheckApprovalApplicableMaster(BOP_MASTER_ID) === true && !this.state.isFinalApprovar) {
         if (IsFinancialDataChanged) {

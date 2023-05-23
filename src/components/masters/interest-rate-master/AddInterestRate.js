@@ -326,12 +326,13 @@ class AddInterestRate extends Component {
         const { RawMaterial } = this.state
         this.props.getRMGradeSelectListByRawMaterial(
           RawMaterial.value,
+          false,
           (res) => { },
         )
       })
     } else {
       this.setState({ RMGrade: [], RMSpec: [], RawMaterial: [] })
-      this.props.getRMGradeSelectListByRawMaterial('', (res) => { })
+      this.props.getRMGradeSelectListByRawMaterial('', false, (res) => { })
       this.props.fetchSpecificationDataAPI(0, () => { })
     }
   }

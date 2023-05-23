@@ -236,7 +236,7 @@ class AddRMImport extends Component {
     if (newValue && newValue !== '') {
       this.setState({ RawMaterial: newValue, RMGrade: [], isDropDownChanged: true }, () => {
         const { RawMaterial } = this.state;
-        this.props.getRMGradeSelectListByRawMaterial(RawMaterial.value, res => { })
+        this.props.getRMGradeSelectListByRawMaterial(RawMaterial.value, false, res => { })
       });
     } else {
       this.setState({ RMGrade: [], RMSpec: [], RawMaterial: [], });
@@ -646,7 +646,7 @@ class AddRMImport extends Component {
       /* FOR SHOWING RM ,GRADE AND SPECIFICATION SELECTED IN RM SPECIFICATION DRAWER*/
       this.props.getRawMaterialNameChild(() => {
         if (Object.keys(data).length > 0) {
-          this.props.getRMGradeSelectListByRawMaterial(data.RawMaterialId, (res) => {
+          this.props.getRMGradeSelectListByRawMaterial(data.RawMaterialId, false, (res) => {
             this.props.fetchSpecificationDataAPI(data.GradeId, (res) => {
               const { rawMaterialNameSelectList, gradeSelectList, rmSpecification } = this.props
               const materialNameObj = rawMaterialNameSelectList && rawMaterialNameSelectList.find((item) => item.Value === data.RawMaterialId,)
@@ -676,7 +676,7 @@ class AddRMImport extends Component {
   closeGradeDrawer = (e = '') => {
     this.setState({ isOpenGrade: false }, () => {
       const { RawMaterial } = this.state;
-      this.props.getRMGradeSelectListByRawMaterial(RawMaterial.value, res => { });
+      this.props.getRMGradeSelectListByRawMaterial(RawMaterial.value, false, res => { });
     })
   }
 
@@ -1069,61 +1069,65 @@ class AddRMImport extends Component {
       })
     }
     let sourceLocationValue = (costingTypeId !== VBCTypeId && !HasDifferentSource ? '' : sourceLocation.value)
-
+    let updatedFiles = files.map((file) => {
+      return { ...file, ContextId: RawMaterialID }
+    })
+    const formData = {
+      RawMaterialId: RawMaterialID,
+      IsFinancialDataChanged: isDateChange ? true : false,
+      CostingTypeId: costingTypeId,
+      RawMaterial: RawMaterial.value,
+      RMGrade: RMGrade.value,
+      RMSpec: RMSpec.value,
+      Category: Category.value,
+      TechnologyId: Technology.value,// NEED TO UNCOMMENT AFTER KEY ADDED IN BACKEND
+      Vendor: (costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? vendorName.value : "",
+      HasDifferentSource: HasDifferentSource,
+      Source: (costingTypeId !== VBCTypeId && !HasDifferentSource) ? '' : values.Source,
+      SourceLocation: (costingTypeId !== VBCTypeId && !HasDifferentSource) ? '' : sourceLocation.value,
+      UOM: UOM.value,
+      BasicRatePerUOM: values.BasicRate,
+      ScrapRate: showExtraCost ? values.JaliScrapCost : showForgingMachiningScrapCost ? values.ForgingScrap : values.ScrapRate,
+      ScrapRateInINR: currency === INR ? (showExtraCost ? values.JaliScrapCost : showForgingMachiningScrapCost ? values.ForgingScrap : values.ScrapRate) : ((showExtraCost ? values.JaliScrapCost : showForgingMachiningScrapCost ? values.ForgingScrap : values.ScrapRate) * currencyValue),
+      NetLandedCost: netCost,
+      Remark: remarks,
+      LoggedInUserId: loggedInUserId(),
+      Plant: costingTypeId === CBCTypeId ? cbcPlantArray : plantArray,
+      VendorCode: (costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? VendorCode : '',
+      Attachements: isEditFlag ? updatedFiles : files,
+      Currency: currency.label,
+      EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
+      NetLandedCostConversion: netCurrencyCost,
+      RMFreightCost: values.FreightCharge,
+      RMShearingCost: values.ShearingCost,
+      CutOffPrice: values.cutOffPrice,
+      CutOffPriceInINR: (values.cutOffPrice * currencyValue),
+      IsCutOffApplicable: values.cutOffPrice < netCost ? true : false,
+      RawMaterialCode: values.Code,
+      IsSendForApproval: false,
+      VendorPlant: [],
+      CustomerId: client.value,
+      MachiningScrapRate: values.MachiningScrap,
+      MachiningScrapRateInINR: currency === INR ? values.MachiningScrap : values.MachiningScrap * currencyValue,
+      JaliScrapCost: values.CircleScrapCost ? values.CircleScrapCost : '',// THIS KEY FOR CIRCLE SCRAP COST
+      RawMaterialEntryType: Number(ENTRY_TYPE_IMPORT)
+    }
     if ((isEditFlag && this.state.isFinalApprovar) || (isEditFlag && CheckApprovalApplicableMaster(RM_MASTER_ID) !== true)) {
-
-      let updatedFiles = files.map((file) => {
-        return { ...file, ContextId: RawMaterialID }
-      })
-      let requestData = {
-        RawMaterialId: RawMaterialID,
-        CostingTypeId: costingTypeId,
-        HasDifferentSource: HasDifferentSource,
-        Source: (costingTypeId !== VBCTypeId && !HasDifferentSource) ? '' : values.Source,
-        SourceLocation: (costingTypeId !== VBCTypeId && !HasDifferentSource) ? '' : sourceLocation.value,
-        Remark: remarks,
-        BasicRatePerUOM: values.BasicRate,
-        ScrapRate: showExtraCost ? values.JaliScrapCost : showForgingMachiningScrapCost ? values.ForgingScrap : values.ScrapRate,
-        ScrapRateInINR: currency === INR ? (showExtraCost ? values.JaliScrapCost : showForgingMachiningScrapCost ? values.ForgingScrap : values.ScrapRate) : ((showExtraCost ? values.JaliScrapCost : showForgingMachiningScrapCost ? values.ForgingScrap : values.ScrapRate) * currencyValue),
-        NetLandedCost: netCost,
-        LoggedInUserId: loggedInUserId(),
-        EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD'),
-        Attachements: updatedFiles,
-        NetLandedCostConversion: netCurrencyCost,
-        RMFreightCost: values.FreightCharge,
-        RMShearingCost: values.ShearingCost,
-        IsConvertIntoCopy: isDateChange ? true : false,
-        IsForcefulUpdated: isDateChange ? false : isSourceChange ? false : true,
-        CutOffPrice: values.cutOffPrice,
-        CutOffPriceInINR: (values.cutOffPrice * currencyValue),
-        IsCutOffApplicable: values.cutOffPrice < netCost ? true : false,
-        RawMaterialCode: values.Code,
-        JaliScrapCost: values.CircleScrapCost ? values.CircleScrapCost : '', // THIS KEY FOR CIRCLE SCRAP COST
-        IsFinancialDataChanged: isDateChange ? true : false,
-        VendorPlant: [],
-        CustomerId: client.value,
-        MachiningScrapRate: values.MachiningScrap,
-        MachiningScrapRateInINR: currency === INR ? values.MachiningScrap : values.MachiningScrap * currencyValue,
-        JaliScrapCost: values.CircleScrapCost ? values.CircleScrapCost : '',// THIS KEY FOR CIRCLE SCRAP COST
-        RawMaterialEntryType: Number(ENTRY_TYPE_IMPORT)
-      }
-      //DONT DELETE COMMENTED CODE BELOW
 
       if (IsFinancialDataChanged) {
 
         if (isDateChange && (DayTime(oldDate).format("DD/MM/YYYY") !== DayTime(effectiveDate).format("DD/MM/YYYY"))) {
-          this.props.updateRMAPI(requestData, (res) => {
+          this.props.updateRMAPI(formData, (res) => {
             this.setState({ setDisable: false })
             if (res?.data?.Result) {
               Toaster.success(MESSAGES.RAW_MATERIAL_DETAILS_UPDATE_SUCCESS)
               this.clearForm('submit')
             }
           })
-          this.setState({ updatedObj: requestData })
+          this.setState({ updatedObj: formData })
           return
 
         } else {
-
           this.setState({ setDisable: false })
           Toaster.warning('Please update the effective date')
           return false
@@ -1140,7 +1144,7 @@ class AddRMImport extends Component {
           return false
         }
         else {
-          this.props.updateRMAPI(requestData, (res) => {
+          this.props.updateRMAPI(formData, (res) => {
             this.setState({ setDisable: false })
             if (res?.data?.Result) {
               Toaster.success(MESSAGES.RAW_MATERIAL_DETAILS_UPDATE_SUCCESS)
@@ -1156,48 +1160,6 @@ class AddRMImport extends Component {
     } else {
 
       // this.setState({ setDisable: true })
-      const formData = {
-        RawMaterialId: RawMaterialID,
-        IsFinancialDataChanged: isDateChange ? true : false,
-        CostingTypeId: costingTypeId,
-        RawMaterial: RawMaterial.value,
-        RMGrade: RMGrade.value,
-        RMSpec: RMSpec.value,
-        Category: Category.value,
-        TechnologyId: Technology.value,// NEED TO UNCOMMENT AFTER KEY ADDED IN BACKEND
-        Vendor: (costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? vendorName.value : "",
-        HasDifferentSource: HasDifferentSource,
-        Source: (costingTypeId !== VBCTypeId && !HasDifferentSource) ? '' : values.Source,
-        SourceLocation: (costingTypeId !== VBCTypeId && !HasDifferentSource) ? '' : sourceLocation.value,
-        UOM: UOM.value,
-        BasicRatePerUOM: values.BasicRate,
-        ScrapRate: showExtraCost ? values.JaliScrapCost : showForgingMachiningScrapCost ? values.ForgingScrap : values.ScrapRate,
-        ScrapRateInINR: currency === INR ? (showExtraCost ? values.JaliScrapCost : showForgingMachiningScrapCost ? values.ForgingScrap : values.ScrapRate) : ((showExtraCost ? values.JaliScrapCost : showForgingMachiningScrapCost ? values.ForgingScrap : values.ScrapRate) * currencyValue),
-        NetLandedCost: netCost,
-        Remark: remarks,
-        LoggedInUserId: loggedInUserId(),
-        Plant: costingTypeId === CBCTypeId ? cbcPlantArray : plantArray,
-        VendorCode: (costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? VendorCode : '',
-        Attachements: files,
-        Currency: currency.label,
-        EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD'),
-        NetLandedCostConversion: netCurrencyCost,
-        RMFreightCost: values.FreightCharge,
-        RMShearingCost: values.ShearingCost,
-        CutOffPrice: values.cutOffPrice,
-        CutOffPriceInINR: (values.cutOffPrice * currencyValue),
-        IsCutOffApplicable: values.cutOffPrice < netCost ? true : false,
-        RawMaterialCode: values.Code,
-        JaliScrapCost: values.CircleScrapCost ? values.CircleScrapCost : '', // THIS KEY FOR CIRCLE SCRAP COST
-        // RawMaterialCode: values.Code
-        IsSendForApproval: false,
-        VendorPlant: [],
-        CustomerId: client.value,
-        MachiningScrapRate: values.MachiningScrap,
-        MachiningScrapRateInINR: currency === INR ? values.MachiningScrap : values.MachiningScrap * currencyValue,
-        JaliScrapCost: values.CircleScrapCost ? values.CircleScrapCost : '',// THIS KEY FOR CIRCLE SCRAP COST
-        RawMaterialEntryType: Number(ENTRY_TYPE_IMPORT)
-      }
       // let obj
       // if(CheckApprovalApplicableMaster(RM_MASTER_ID) === true){
       //   obj = {...formData,IsSendForApproval:true}
@@ -1247,14 +1209,10 @@ class AddRMImport extends Component {
               return false
             }
           }
-
           this.setState({ approveDrawer: true, approvalObj: { ...formData, IsSendForApproval: true } })
-
         }
 
-
       } else {
-
         this.props.createRM(formData, (res) => {
           this.setState({ setDisable: false })
           if (res?.data?.Result) {
@@ -1320,7 +1278,6 @@ class AddRMImport extends Component {
         }
       }
     };
-
     return (
       <>
         <div className="container-fluid">

@@ -246,7 +246,6 @@ export const API = {
   deleteRMSpecificationAPI: `${BASE_URL}/masters-raw-material/delete-material-specification`,
   getRMCategoryAPI: `${BASE_URL}/masters-raw-material/get-raw-material-category`,
   getRMTypeSelectListAPI: `${BASE_URL}/configuration-raw-material /select-list-get-material-type`,
-  getGradeSelectList: `${BASE_URL}/masters-raw-material/select-list-raw-material-grade`,
   getGradeByRMTypeSelectListAPI: `${BASE_URL}/configuration-raw-material /select-list-get-raw-material-grade`,
   getRMGradeSelectListByRawMaterial: `${BASE_URL}/masters-raw-material/select-list-raw-material-grade`,
   bulkUploadRMSpecification: `${BASE_URL}/masters-raw-material/bulk-upload-for-raw-material-spec-json`,
