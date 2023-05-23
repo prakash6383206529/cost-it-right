@@ -1964,6 +1964,8 @@ export const VIEW_COSTING_DATA = {
   anyOtherCostPercent: 'Any Other Cost Value',
   anyOtherCost: 'Any Other Cost',
   BasicRate: 'Basic Rate',
+  npvCost: 'NPV Cost',
+  conditionCost: 'Costing Condition',
   nPOPrice: 'Net PO Price (INR)',
   currencyTitle: 'Currency',
   currencyRate: 'Currency Rate',
@@ -2259,4 +2261,4 @@ export const KEYRFQ = "UAGSqTBCbZ8JqHJl"
 export const IVRFQ = "8vFNmRQEl91nOtrM"
 
 //VERSION 
-export const VERSION = "V2.1.161";
+export const VERSION = "V2.1.162";

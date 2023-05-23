@@ -553,7 +553,7 @@ function MasterSendForApproval(props) {
                                             !isBulkUpload && (masterId) === Number('2') &&
                                             <>
                                                 <div className="input-group form-group col-md-12">
-                                                    <label>Effective Date<span className="asterisk-required">*</span></label>
+                                                    <label className='height-0'>Effective Date<span className="asterisk-required">*</span></label>
                                                     <div className="inputbox date-section">
                                                         <DatePicker
                                                             name="EffectiveDate"
@@ -654,7 +654,7 @@ function MasterSendForApproval(props) {
                                             !isBulkUpload && masterId === Number('3') &&
                                             <>
                                                 <div className="input-group form-group col-md-12">
-                                                    <label>Effective Date<span className="asterisk-required">*</span></label>
+                                                    <label className='height-0'>Effective Date<span className="asterisk-required">*</span></label>
                                                     <div className="inputbox date-section">
                                                         <DatePicker
                                                             name="EffectiveDate"
@@ -697,7 +697,7 @@ function MasterSendForApproval(props) {
                                             !isBulkUpload && masterId === Number('4') &&
                                             <>
                                                 <div className="input-group form-group col-md-12">
-                                                    <label>Effective Date<span className="asterisk-required">*</span></label>
+                                                    <label className='height-0'>Effective Date<span className="asterisk-required">*</span></label>
                                                     <div className="inputbox date-section">
                                                         <DatePicker
                                                             name="EffectiveDate"
