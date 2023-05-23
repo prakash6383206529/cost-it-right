@@ -331,7 +331,7 @@ class UOMMaster extends Component {
     return (
       <>
         <div className={`ag-grid-react container-fluid ${DownloadAccessibility ? "show-table-btn no-tab-page" : ""}`} id='go-to-top'>
-          {this.state.isLoader && <LoaderCustom />}
+          {this.state.isLoader && <LoaderCustom customClass={"loader-center"} />}
           <ScrollToTop pointProp="go-to-top" />
           <Row className="no-filter-row">
             {AddAccessibility && (
