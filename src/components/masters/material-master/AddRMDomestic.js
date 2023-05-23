@@ -150,7 +150,7 @@ class AddRMDomestic extends Component {
   UNSAFE_componentWillMount() {
     if (!(this.props.data.isEditFlag || this.state.isViewFlag)) {
       this.props.getUOMSelectList(() => { })
-      this.props.getRMGradeSelectListByRawMaterial('', (res) => { })
+      this.props.getRMGradeSelectListByRawMaterial('', false, (res) => { })
     }
   }
 
@@ -233,12 +233,13 @@ class AddRMDomestic extends Component {
         const { RawMaterial } = this.state
         this.props.getRMGradeSelectListByRawMaterial(
           RawMaterial.value,
+          false,
           (res) => { },
         )
       })
     } else {
       this.setState({ RMGrade: [], RMSpec: [], RawMaterial: [] })
-      this.props.getRMGradeSelectListByRawMaterial('', (res) => { })
+      this.props.getRMGradeSelectListByRawMaterial('', false, (res) => { })
       this.props.fetchSpecificationDataAPI(0, () => { })
     }
   }
@@ -604,7 +605,7 @@ class AddRMDomestic extends Component {
       this.props.getRawMaterialNameChild(() => {
 
         if (Object.keys(data).length > 0) {
-          this.props.getRMGradeSelectListByRawMaterial(data.RawMaterialId, (res) => {
+          this.props.getRMGradeSelectListByRawMaterial(data.RawMaterialId, false, (res) => {
             this.props.fetchSpecificationDataAPI(data.GradeId, (res) => {
               const { rawMaterialNameSelectList, gradeSelectList, rmSpecification } = this.props
               const materialNameObj = rawMaterialNameSelectList && rawMaterialNameSelectList.find((item) => item.Value === data.RawMaterialId,)
@@ -636,6 +637,7 @@ class AddRMDomestic extends Component {
       const { RawMaterial } = this.state
       this.props.getRMGradeSelectListByRawMaterial(
         RawMaterial.value,
+        false,
         (res) => { },
       )
     })
@@ -1062,40 +1064,49 @@ class AddRMDomestic extends Component {
       })
     }
     let sourceLocationValue = (costingTypeId !== VBCTypeId && !HasDifferentSource ? '' : sourceLocation.value)
+    let updatedFiles = files.map((file) => {
+      return { ...file, ContextId: RawMaterialID }
+    })
+    let formData = {}
+    // const formData = {
+    formData.RawMaterialId = RawMaterialID
+    formData.IsFinancialDataChanged = isDateChange ? true : false
+    formData.CostingTypeId = costingTypeId
+    formData.RawMaterial = RawMaterial.value
+    formData.RMGrade = RMGrade.value
+    formData.RMSpec = RMSpec.value
+    formData.Category = Category.value
+    formData.TechnologyId = Technology.value
+    formData.Vendor = (costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? vendorName.value : ''
+    formData.HasDifferentSource = HasDifferentSource
+    formData.Source = costingTypeId !== VBCTypeId && !HasDifferentSource ? '' : values.Source
+    formData.SourceLocation = costingTypeId !== VBCTypeId && !HasDifferentSource ? '' : sourceLocation.value
+    formData.UOM = UOM.value
+    formData.BasicRatePerUOM = values.BasicRate
+    formData.RMFreightCost = values.FrieghtCharge
+    formData.RMShearingCost = values.ShearingCost
+    formData.ScrapRate = showExtraCost ? values.JaliScrapCost : showForgingMachiningScrapCost ? values.ForgingScrap : values.ScrapRate
+    formData.NetLandedCost = netLandedCost
+    formData.EffectiveDate = DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss')
+    formData.Remark = remarks
+    formData.LoggedInUserId = loggedInUserId()
+    formData.Plant = costingTypeId === CBCTypeId ? cbcPlantArray : plantArray
+    formData.VendorCode = (costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? VendorCode : ''
+    formData.VendorPlant = []
+    formData.Attachements = isEditFlag ? updatedFiles : files
+    formData.CutOffPrice = values.cutOffPrice
+    formData.IsCutOffApplicable = values.cutOffPrice < values.NetLandedCost ? true : false
+    formData.RawMaterialCode = values.Code
+    formData.CustomerId = costingTypeId === CBCTypeId ? client.value : ''
+    formData.MachiningScrapRate = values.MachiningScrap
+    formData.JaliScrapCost = values.CircleScrapCost ? values.CircleScrapCost : '' // THIS KEY FOR CIRCLE SCRAP COST
+    formData.RawMaterialEntryType = Number(ENTRY_TYPE_DOMESTIC)
     if ((isEditFlag && this.state.isFinalApprovar) || (isEditFlag && CheckApprovalApplicableMaster(RM_MASTER_ID) !== true)) {
       //this.setState({ updatedObj: requestData })
-      let updatedFiles = files.map((file) => {
-        return { ...file, ContextId: RawMaterialID }
-      })
-      let requestData = {
-        RawMaterialId: RawMaterialID,
-        CostingTypeId: costingTypeId,
-        HasDifferentSource: HasDifferentSource,
-        Source: costingTypeId !== VBCTypeId && !HasDifferentSource ? '' : values.Source,
-        SourceLocation: costingTypeId !== VBCTypeId && !HasDifferentSource ? '' : sourceLocation.value,
-        Remark: remarks,
-        BasicRatePerUOM: values.BasicRate,
-        RMFreightCost: values.FrieghtCharge,
-        RMShearingCost: values.ShearingCost,
-        ScrapRate: showExtraCost ? values.JaliScrapCost : showForgingMachiningScrapCost ? values.ForgingScrap : values.ScrapRate,
-        NetLandedCost: netLandedCost,
-        LoggedInUserId: loggedInUserId(),
-        EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
-        Attachements: updatedFiles,
-        IsConvertIntoCopy: isDateChange ? true : false,
-        IsForcefulUpdated: isDateChange ? false : isSourceChange ? false : true,
-        CutOffPrice: values.cutOffPrice,
-        IsCutOffApplicable: values.cutOffPrice < values.NetLandedCost ? true : false,
-        RawMaterialCode: values.Code,
-        IsFinancialDataChanged: isDateChange ? true : false,
-        VendorPlant: [],
-        MachiningScrapRate: values.MachiningScrap,
-        JaliScrapCost: values.CircleScrapCost ? values.CircleScrapCost : '',// THIS KEY FOR CIRCLE SCRAP COST
-        RawMaterialEntryType: Number(ENTRY_TYPE_DOMESTIC)
-      }
+
       if (IsFinancialDataChanged) {
         if ((isDateChange) && (DayTime(oldDate).format("DD/MM/YYYY") !== DayTime(effectiveDate).format("DD/MM/YYYY"))) {
-          this.props.updateRMAPI(requestData, (res) => {
+          this.props.updateRMAPI(formData, (res) => {
             this.setState({ setDisable: false })
             if (res?.data?.Result) {
               Toaster.success(MESSAGES.RAW_MATERIAL_DETAILS_UPDATE_SUCCESS)
@@ -1103,7 +1114,7 @@ class AddRMDomestic extends Component {
 
             }
           })
-          this.setState({ updatedObj: requestData })
+          this.setState({ updatedObj: formData })
           return
 
         } else {
@@ -1125,7 +1136,7 @@ class AddRMDomestic extends Component {
         }
         else {
 
-          this.props.updateRMAPI(requestData, (res) => {
+          this.props.updateRMAPI(formData, (res) => {
             this.setState({ setDisable: false })
             if (res?.data?.Result) {
               Toaster.success(MESSAGES.RAW_MATERIAL_DETAILS_UPDATE_SUCCESS)
@@ -1133,49 +1144,12 @@ class AddRMDomestic extends Component {
             }
           })
           return false
-
         }
-
       }
-
     }
 
     else {
       // this.setState({ setDisable: true })
-      let formData = {}
-      // const formData = {
-      formData.RawMaterialId = RawMaterialID
-      formData.IsFinancialDataChanged = isDateChange ? true : false
-      formData.CostingTypeId = costingTypeId
-      formData.RawMaterial = RawMaterial.value
-      formData.RMGrade = RMGrade.value
-      formData.RMSpec = RMSpec.value
-      formData.Category = Category.value
-      formData.TechnologyId = Technology.value
-      formData.Vendor = (costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? vendorName.value : ''
-      formData.HasDifferentSource = HasDifferentSource
-      formData.Source = costingTypeId !== VBCTypeId && !HasDifferentSource ? '' : values.Source
-      formData.SourceLocation = costingTypeId !== VBCTypeId && !HasDifferentSource ? '' : sourceLocation.value
-      formData.UOM = UOM.value
-      formData.BasicRatePerUOM = values.BasicRate
-      formData.RMFreightCost = values.FrieghtCharge
-      formData.RMShearingCost = values.ShearingCost
-      formData.ScrapRate = showExtraCost ? values.JaliScrapCost : showForgingMachiningScrapCost ? values.ForgingScrap : values.ScrapRate
-      formData.NetLandedCost = netLandedCost
-      formData.EffectiveDate = DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss')
-      formData.Remark = remarks
-      formData.LoggedInUserId = loggedInUserId()
-      formData.Plant = costingTypeId === CBCTypeId ? cbcPlantArray : plantArray
-      formData.VendorCode = (costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? VendorCode : ''
-      formData.VendorPlant = []
-      formData.Attachements = files
-      formData.CutOffPrice = values.cutOffPrice
-      formData.IsCutOffApplicable = false
-      formData.RawMaterialCode = values.Code
-      formData.CustomerId = costingTypeId === CBCTypeId ? client.value : ''
-      formData.MachiningScrapRate = values.MachiningScrap
-      formData.JaliScrapCost = values.CircleScrapCost ? values.CircleScrapCost : '' // THIS KEY FOR CIRCLE SCRAP COST
-      formData.RawMaterialEntryType = Number(ENTRY_TYPE_DOMESTIC)
       if (CheckApprovalApplicableMaster(RM_MASTER_ID) === true && !this.state.isFinalApprovar) {
         formData.NetLandedCostConversion = 0
         formData.Currency = "INR"

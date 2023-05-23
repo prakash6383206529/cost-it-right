@@ -1026,7 +1026,7 @@ function AddRfq(props) {
 
     const handleRMName = (newValue) => {
         setRMName({ label: newValue?.label, value: newValue?.value })
-        dispatch(getRMGradeSelectListByRawMaterial(newValue.value, (res) => { }))
+        dispatch(getRMGradeSelectListByRawMaterial(newValue.value, false, (res) => { }))
     }
 
     const handleRMGrade = (newValue) => {

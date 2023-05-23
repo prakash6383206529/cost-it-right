@@ -109,7 +109,7 @@ function MasterCostMovement() {
         switch (Number(event.value)) {
             case 2:
             case 1:
-                dispatch(getRMGradeSelectListByRawMaterial('', () => { }))
+                dispatch(getRMGradeSelectListByRawMaterial('', true, () => { }))
                 dispatch(getRawMaterialNameChild(() => { }))
                 dispatch(getRawMaterialCategory(() => { }))
                 setShowTechnologyField(true)
@@ -512,7 +512,6 @@ function MasterCostMovement() {
                     }
                     else {
                         if (item.Value === '0') return false;
-                        console.log('temp: ', temp);
                         temp.push({ label: item.Text, value: item.Value });
                     }
                 }
@@ -537,6 +536,7 @@ function MasterCostMovement() {
             setRawMaterial(newValue);
             dispatch(getRMGradeSelectListByRawMaterial(
                 newValue.value,
+                true,
                 (res) => { },
 
             ))
@@ -544,7 +544,7 @@ function MasterCostMovement() {
             setRawMaterial([])
             setRMGrade([])
             setRMSpec([])
-            dispatch(getRMGradeSelectListByRawMaterial('', (res) => { }))
+            dispatch(getRMGradeSelectListByRawMaterial('', true, (res) => { }))
             dispatch(fetchSpecificationDataAPI(0, () => { }))
         }
     };

@@ -77,11 +77,11 @@ class Association extends Component {
             this.setState({ RawMaterial: newValue, RMGrade: [], isDropDownChanged: true }, () => {
                 const { RawMaterial } = this.state;
 
-                this.props.getRMGradeSelectListByRawMaterial(RawMaterial.value, res => { });
+                this.props.getRMGradeSelectListByRawMaterial(RawMaterial.value, false, res => { });
             });
         } else {
             this.setState({ RawMaterial: [], RMGrade: [], });
-            this.props.getRMGradeSelectListByRawMaterial(0, res => { });
+            this.props.getRMGradeSelectListByRawMaterial(0, false, res => { });
         }
     }
 

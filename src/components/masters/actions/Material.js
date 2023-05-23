@@ -474,10 +474,10 @@ export function deleteRMSpecificationAPI(ID, callback) {
  * @method getRMGradeSelectListByRawMaterial
  * @description Used to Grade List By Raw Material Id
  */
-export function getRMGradeSelectListByRawMaterial(Id, callback) {
+export function getRMGradeSelectListByRawMaterial(Id, isRequestForReport, callback) {
     return (dispatch) => {
         if (Id !== '') {
-            const queryParams = `&id=${Id}`
+            const queryParams = `&id=${Id}&isRequestForReport=${isRequestForReport}`
             const request = axios.get(`${API.getRMGradeSelectListByRawMaterial}?${queryParams}`, config());
             request.then((response) => {
                 if (response.data.Result) {
@@ -513,30 +513,6 @@ export function getRMTypeSelectListAPI(callback) {
             if (response.data.Result) {
                 dispatch({
                     type: GET_RMTYPE_SELECTLIST_SUCCESS,
-                    payload: response.data.SelectList,
-                });
-                callback(response);
-            }
-        }).catch((error) => {
-            dispatch({ type: API_FAILURE, });
-            callback(error);
-            apiErrors(error);
-        });
-    };
-}
-
-/**
- * @method getGradeSelectList
- * @description Used to Get Grade List 
- */
-export function getGradeSelectList(callback) {
-    return (dispatch) => {
-        //dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getGradeSelectList}`, config());
-        request.then((response) => {
-            if (response.data.Result) {
-                dispatch({
-                    type: GET_GRADE_SELECTLIST_SUCCESS,
                     payload: response.data.SelectList,
                 });
                 callback(response);

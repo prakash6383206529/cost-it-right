@@ -769,7 +769,6 @@ class AddBOPImport extends Component {
       UOM: {},
     })
     this.props.getBOPImportById('', res => { })
-    this.getDetails()
     this.props.hideForm(type)
   }
   cancelHandler = () => {
@@ -887,38 +886,7 @@ class AddBOPImport extends Component {
         formData.IsSendForApproval = false
       }
       // this.setState({ setDisable: true })
-      const formData = {
-        IsSendForApproval: this.state.IsSendForApproval,
-        BoughtOutPartId: BOPID,
-        Currency: currency.label,
-        CostingTypeId: costingTypeId,
-        BoughtOutPartNumber: values.BoughtOutPartNumber,
-        BoughtOutPartName: values.BoughtOutPartName,
-        CategoryId: BOPCategory.value,
-        Specification: values.Specification,
-        Vendor: vendorName.value,
-        Source: values.Source,
-        SourceLocation: sourceLocation.value,
-        EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
-        BasicRate: values.BasicRate,
-        NumberOfPieces: 1,
-        NetLandedCost: this.state.netLandedcost,
-        Remark: values.Remark,
-        IsActive: true,
-        LoggedInUserId: loggedInUserId(),
-        Plant: [plantArray],
-        DestinationPlantId: (costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? selectedPlants.value : (costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant) ? selectedPlants.value : userDetailsBop.Plants[0].PlantId,
-        Attachements: files,
-        UnitOfMeasurementId: UOM.value,
-        VendorPlant: [],
-        NetLandedCostConversion: netLandedConverionCost,
-        IsFinancialDataChanged: isDateChange ? true : false,
-        CustomerId: client.value,
-        BoughtOutPartIncoTermId: incoTerm.value,
-        BoughtOutPartPaymentTermId: paymentTerm.value,
-        EntryType: Number(ENTRY_TYPE_IMPORT),
-        IsClientVendorBOP: isClientVendorBOP
-      }
+
 
       if (CheckApprovalApplicableMaster(BOP_MASTER_ID) === true && !this.state.isFinalApprovar) {
         if (IsFinancialDataChanged) {
