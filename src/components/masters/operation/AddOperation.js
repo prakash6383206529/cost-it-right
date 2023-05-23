@@ -653,8 +653,6 @@ class AddOperation extends Component {
     }
     this.setState({ isVendorNameNotSelected: false })
 
-
-
     let technologyArray = [];
     selectedTechnology && selectedTechnology.map((item) => {
       technologyArray.push({ Technology: item.Text, TechnologyId: item.Value })
@@ -681,29 +679,36 @@ class AddOperation extends Component {
     }
     /** Update existing detail of supplier master **/
     // if (this.state.isEditFlag && this.state.isFinalApprovar) {
-
+    let updatedFiles = files.map((file) => {
+      return { ...file, ContextId: OperationId }
+    })
+    let formData = {
+      IsFinancialDataChanged: isDateChange ? true : false,
+      IsSendForApproval: this.state.IsSendForApproval,
+      OperationId: OperationId,
+      CostingTypeId: costingTypeId,
+      OperationName: values.OperationName,
+      OperationCode: values.OperationCode,
+      Description: values.Description,
+      VendorId: costingTypeId === VBCTypeId ? vendorName.value : userDetail?.ZBCSupplierInfo.VendorId,
+      VendorCode: costingTypeId === VBCTypeId ? getVendorCode(vendorName.label) : userDetail?.ZBCSupplierInfo.VendorNameWithCode,
+      UnitOfMeasurementId: UOM.value,
+      IsSurfaceTreatmentOperation: isSurfaceTreatment,
+      //SurfaceTreatmentCharges: values.SurfaceTreatmentCharges,
+      Rate: values.Rate,
+      LabourRatePerUOM: initialConfiguration && initialConfiguration.IsOperationLabourRateConfigure ? values.LabourRatePerUOM : '',
+      Technology: technologyArray,
+      Remark: remarks,
+      plant: costingTypeId === CBCTypeId ? cbcPlantArray : plantArray,
+      Attachements: isEditFlag ? updatedFiles : files,
+      LoggedInUserId: loggedInUserId(),
+      EffectiveDate: DayTime(effectiveDate).format('YYYY/MM/DD HH:mm:ss'),
+      VendorPlant: [],
+      CustomerId: costingTypeId === CBCTypeId ? client.value : '',
+      IsDetailedEntry: false,
+    }
     if ((isEditFlag && this.state.isFinalApprovar) || (isEditFlag && CheckApprovalApplicableMaster(OPERATIONS_ID) !== true)) {
 
-      let updatedFiles = files.map((file) => {
-        return { ...file, ContextId: OperationId }
-      })
-
-      let updateData = {
-        EffectiveDate: DayTime(effectiveDate).format('YYYY/MM/DD HH:mm:ss'),
-        OperationId: OperationId,
-        UnitOfMeasurementId: UOM.value,
-        Rate: values.Rate,
-        VendorPlant: [],
-        Technology: technologyArray,
-        Description: values.Description,
-        Remark: remarks,
-        Attachements: updatedFiles,
-        LoggedInUserId: loggedInUserId(),
-        IsForcefulUpdated: true,
-        IsFinancialDataChanged: isDateChange ? true : false,
-        IsDetailedEntry: false,
-        ForType: (this.state.operationType?.label) ? (this.state.operationType?.label) : ''
-      }
       // if (this.state.isEditFlag) {
       // if (dataToChange.UnitOfMeasurementId === UOM.value && dataToChange.Rate === Number(values.Rate) && uploadAttachements) {
       //   this.cancel()
@@ -713,7 +718,7 @@ class AddOperation extends Component {
       if (IsFinancialDataChanged) {
 
         if (isDateChange && (DayTime(oldDate).format("DD/MM/YYYY") !== DayTime(effectiveDate).format("DD/MM/YYYY"))) {
-          this.props.updateOperationAPI(updateData, (res) => {
+          this.props.updateOperationAPI(formData, (res) => {
             this.setState({ setDisable: false })
             if (res?.data?.Result) {
               Toaster.success(MESSAGES.OPERATION_UPDATE_SUCCESS);
@@ -727,7 +732,6 @@ class AddOperation extends Component {
           Toaster.warning('Please update the effective date')
           return false
         }
-
       }
       else {
 
@@ -737,7 +741,7 @@ class AddOperation extends Component {
           return false
         }
         else {
-          this.props.updateOperationAPI(updateData, (res) => {
+          this.props.updateOperationAPI(formData, (res) => {
             this.setState({ setDisable: false })
             if (res?.data?.Result) {
               Toaster.success(MESSAGES.OPERATION_UPDATE_SUCCESS);
@@ -745,10 +749,8 @@ class AddOperation extends Component {
             }
           });
         }
-
       }
     } else {/** Add new detail for creating operation master **/
-
 
       if (CheckApprovalApplicableMaster(OPERATIONS_ID) === true && !this.state.isFinalApprovar) {
         if (Number(DataToChange.Rate) === Number(values.Rate) && DataToChange.Remark === values.Remark && UOM.value === oldUOM.value
@@ -761,34 +763,7 @@ class AddOperation extends Component {
         this.setState({ IsSendForApproval: false })
       }
 
-
       this.setState({ setDisable: true })
-      let formData = {
-        IsFinancialDataChanged: isDateChange ? true : false,
-        IsSendForApproval: this.state.IsSendForApproval,
-        OperationId: OperationId,
-        CostingTypeId: costingTypeId,
-        OperationName: values.OperationName,
-        OperationCode: values.OperationCode,
-        Description: values.Description,
-        VendorId: costingTypeId === VBCTypeId ? vendorName.value : userDetail?.ZBCSupplierInfo.VendorId,
-        VendorCode: costingTypeId === VBCTypeId ? getVendorCode(vendorName.label) : userDetail?.ZBCSupplierInfo.VendorNameWithCode,
-        UnitOfMeasurementId: UOM.value,
-        IsSurfaceTreatmentOperation: isSurfaceTreatment,
-        //SurfaceTreatmentCharges: values.SurfaceTreatmentCharges,
-        Rate: values.Rate,
-        LabourRatePerUOM: initialConfiguration && initialConfiguration.IsOperationLabourRateConfigure ? values.LabourRatePerUOM : '',
-        Technology: technologyArray,
-        Remark: remarks,
-        plant: costingTypeId === CBCTypeId ? cbcPlantArray : plantArray,
-        Attachements: files,
-        LoggedInUserId: loggedInUserId(),
-        EffectiveDate: DayTime(effectiveDate).format('YYYY/MM/DD HH:mm:ss'),
-        VendorPlant: [],
-        CustomerId: costingTypeId === CBCTypeId ? client.value : '',
-        IsDetailedEntry: false,
-        ForType: (this.state.operationType?.label) ? (this.state.operationType?.label) : ''
-      }
 
       if (CheckApprovalApplicableMaster(OPERATIONS_ID) === true && !this.state.isFinalApprovar) {
 
@@ -806,18 +781,13 @@ class AddOperation extends Component {
             return false
           }
         }
-
-
         if (Number(DataToChange.Rate) === Number(values.Rate) && DataToChange.Remark === values.Remark && UOM.value === oldUOM.value && DataToChange.Description === values.Description && (JSON.stringify(files) === JSON.stringify(DataToChange.Attachements))) {
           this.cancel('submit')
           return false
         } else {
           this.setState({ approveDrawer: true, approvalObj: formData })
         }
-
-
       } else {
-
         this.props.createOperationsAPI(formData, (res) => {
           this.setState({ setDisable: false })
           if (res.data.Result) {
