@@ -2188,6 +2188,7 @@ class AddMoreDetails extends Component {
         PowerEntryId: powerIdFromAPI,
         CustomerId: this.state.CostingTypeId === CBCTypeId ? this.state.selectedCustomer.value : null,
         CustomerName: this.state.CostingTypeId === CBCTypeId ? this.state.selectedCustomer.label : "",
+        selectedCustomer: this.state.selectedCustomer ? this.state.selectedCustomer : ''
       }
 
       let obj = {}

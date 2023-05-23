@@ -1308,7 +1308,7 @@ class AddMachineRate extends Component {
       this.props.change('TonnageCapacity', data.TonnageCapacity)
       this.props.change('Specification', data.Specification)
       const vendorObj = vendorWithVendorCodeSelectList && vendorWithVendorCodeSelectList.find(item => item.Value === data.VendorId)
-      const plantObj = data.IsVendor === false && plantSelectList && plantSelectList.find(item => item.PlantId === data.Plant[0].PlantId)
+      const plantObj = data.IsVendor === false && plantSelectList && plantSelectList.find(item => item.PlantId === data.Plant[0]?.PlantId)
 
       const machineTypeObj = machineTypeSelectList && machineTypeSelectList.find(item => item.Value === data.MachineTypeId)
 
@@ -1555,7 +1555,7 @@ class AddMachineRate extends Component {
                               required={true}
                               handleChangeDescription={this.handleClient}
                               valueDescription={this.state.client}
-                              disabled={isEditFlag ? true : false}
+                              disabled={(isEditFlag || isViewMode || isViewFlag) ? true : false}
                             />
                           </Col>
                         )}
