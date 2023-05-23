@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Col, Row, } from 'reactstrap';
-import { SearchableSelectHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs';
+import { SearchableSelectHookForm, TextAreaHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs';
 import { calculatePercentage, checkForDecimalAndNull, checkForNull, decimalAndNumberValidationBoolean, getConfigurationKey, } from '../../../../../helper';
 import { getInventoryDataByHeads, gridDataAdded, isOverheadProfitDataChange, setOverheadProfitErrors, } from '../../../actions/Costing';
 import { ViewCostingContext } from '../../CostingDetails';
@@ -13,6 +13,9 @@ import { MESSAGES } from '../../../../../config/message';
 import WarningMessage from '../../../../common/WarningMessage';
 import { number, percentageLimitValidation, checkWhiteSpaces, NoSignNoDecimalMessage, isNumber } from "../../../../../helper/validation";
 import { reactLocalStorage } from 'reactjs-localstorage';
+import Popup from 'reactjs-popup';
+import { REMARKMAXLENGTH } from '../../../../../config/masterData';
+import Toaster from '../../../../common/Toaster';
 
 let counter = 0;
 function Icc(props) {
@@ -124,6 +127,7 @@ function Icc(props) {
 
         if (ICCApplicabilityDetail) {
             setValue('crmHeadIcc', ICCApplicabilityDetail.ICCCRMHead ? { label: ICCApplicabilityDetail.ICCCRMHead, value: 1 } : '')
+            setValue('iccRemark', ICCApplicabilityDetail.Remark ? ICCApplicabilityDetail.Remark : '')
         }
 
     }, [])
@@ -293,7 +297,8 @@ function Icc(props) {
                 "NetCost": IsInventoryApplicable ? tempInventoryObj.NetICCTotal : '',
                 "EffectiveDate": "",
                 "IsICCCalculationOnNetWeight": isNetWeight,
-                "ICCCRMHead": tempInventoryObj.ICCCRMHead ? tempInventoryObj.ICCCRMHead : ''
+                "ICCCRMHead": tempInventoryObj.ICCCRMHead ? tempInventoryObj.ICCCRMHead : '',
+                "Remark": tempInventoryObj.Remark ? tempInventoryObj.Remark : ''
             }
             setValue('CostApplicability', IsInventoryApplicable ? checkForDecimalAndNull(tempInventoryObj.CostApplicability, initialConfiguration.NoOfDecimalForPrice) : '')
             if (!CostingViewMode) {
@@ -332,6 +337,34 @@ function Icc(props) {
             })
         }
 
+    }
+
+    const onRemarkPopUpClickIcc = () => {
+
+        if (errors.iccRemark !== undefined) {
+            return false
+        }
+
+        setTempInventoryObj({
+            ...tempInventoryObj,
+            Remark: getValues('iccRemark')
+        })
+
+
+        if (getValues(`iccRemark`)) {
+            Toaster.success('Remark saved successfully')
+        }
+        var button = document.getElementById(`popUpTriggerIcc`)
+        button.click()
+    }
+
+    const onRemarkPopUpCloseIcc = () => {
+        let button = document.getElementById(`popUpTriggerIcc`)
+        setValue(`iccRemark`, tempInventoryObj.Remark)
+        if (errors.iccRemark) {
+            delete errors.iccRemark;
+        }
+        button.click()
     }
 
     return (
@@ -380,6 +413,41 @@ function Icc(props) {
                             disabled={CostingViewMode}
                         />
                     </Col>}
+
+
+                    {<Col md="5">
+
+                        <Popup className='rm-popup' trigger={<button id={`popUpTriggerIcc`} title="Remark" className="Comment-box" type={'button'} />}
+                            position="top right">
+                            <TextAreaHookForm
+                                label="Remark:"
+                                name={`iccRemark`}
+                                Controller={Controller}
+                                control={control}
+                                register={register}
+                                mandatory={false}
+                                rules={{
+                                    maxLength: REMARKMAXLENGTH
+                                }}
+                                handleChange={() => { }}
+                                className=""
+                                customClassName={"withBorder"}
+                                errors={errors.iccRemark}
+                                disabled={CostingViewMode}
+                                hidden={false}
+                            />
+                            <Row>
+                                <Col md="12" className='remark-btn-container'>
+                                    <button className='submit-button mr-2' disabled={(CostingViewMode) ? true : false} onClick={() => onRemarkPopUpClickIcc()} > <div className='save-icon'></div> </button>
+                                    <button className='reset' onClick={() => onRemarkPopUpCloseIcc()} > <div className='cancel-icon'></div></button>
+                                </Col>
+                            </Row>
+                        </Popup>
+                    </Col>
+
+                    }
+
+
                     <Row className="costing-border-inner-section border-bottom-none m-0">
                         <Col md={ICCapplicability?.label?.includes('RM') && !(costData.IsAssemblyPart) && IsShowRmcAndNetWeightToggleForIcc ? '2' : '3'}>
                             <span className="head-text">
