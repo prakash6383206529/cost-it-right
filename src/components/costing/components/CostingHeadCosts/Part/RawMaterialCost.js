@@ -187,100 +187,75 @@ function RawMaterialCost(props) {
    * @description HIDE RM DRAWER
    */
   const closeDrawer = (e = '', rowData = {}) => {
-    if (isNFR) {
-      if (Object.keys(rowData).length > 0) {
-        if (isMultipleRMAllow(costData?.TechnologyId)) {
-          let tempRowData = [...rowData]
-          // DEBUG FROM HERE ADD RM THEN CHECK IN ARR RM DRAWER
-        } else {
-          let tempRowData = { ...rowData }
-          let filterData = dataFromAPI?.filter(ele => ele.RMName === rowData.RawMaterial)
-          tempRowData.RMName = `${tempRowData.RawMaterial} - ${tempRowData.RMGrade}`
-          tempRowData.RMRate = (tempRowData.EntryType === 'Domestic') ? tempRowData.NetLandedCost : tempRowData.NetLandedCostConversion
-          tempRowData.GrossWeight = filterData[0]?.GrossWeight
-          tempRowData.FinishWeight = filterData[0]?.NetWeight
-
-          const scrapWeight = checkForNull(tempRowData.GrossWeight) - checkForNull(tempRowData.FinishWeight);
-          const ScrapCost = tempRowData.FinishWeight !== 0 ? scrapWeight * checkForNull(tempRowData.ScrapRate) : 0;
-          const NetLandedCost = (tempRowData.GrossWeight * tempRowData.RMRate) - ScrapCost;
-
-          tempRowData.ScrapWeight = scrapWeight
-          tempRowData.NetLandedCost = NetLandedCost
-
-          setGridData([...gridData, tempRowData])
-        }
-      }
-    } else {
-      if (Object.keys(rowData).length > 0 && IsApplyMasterBatch === false) {
-        let tempArray = []
-        if (isMultipleRMAllow(costData?.TechnologyId)) {
-          let rowArray = rowData && rowData.map(el => {
-            return {
-              RMName: `${el.RawMaterial} - ${el.RMGrade}`,
-              RMRate: (el.EntryType === 'Domestic') ? el.NetLandedCost : el.NetLandedCostConversion,
-              MaterialType: el.MaterialType,
-              RMGrade: el.RMGrade,
-              Density: el.Density,
-              UOM: el.UOM,
-              UOMId: el.UOMId,
-              ScrapRate: el.ScrapRate,
-              FinishWeight: '',
-              GrossWeight: '',
-              NetLandedCost: '',
-              RawMaterialId: el.RawMaterialId,
-              RawMaterialCategory: el.Category,
-              CutOffPrice: el.CutOffPrice,
-              IsCutOffApplicable: el.IsCutOffApplicable,
-              MachiningScrapRate: el.MachiningScrapRate
-            }
-          })
-
-          setGridData([...gridData, ...rowArray])
-          tempArray = [...gridData, ...rowArray]
-          selectedIds([...gridData, ...rowArray])
-        } else {
-          let tempObj = {
-            RMName: `${rowData.RawMaterial} - ${rowData.RMGrade}`,
-            RMRate: (rowData.EntryType === 'Domestic') ? rowData.NetLandedCost : rowData.NetLandedCostConversion,
-            MaterialType: rowData.MaterialType,
-            RMGrade: rowData.RMGrade,
-            Density: rowData.Density,
-            UOM: rowData.UOM,
-            UOMId: rowData.UOMId,
-            ScrapRate: rowData.ScrapRate,
+    if (Object.keys(rowData).length > 0 && IsApplyMasterBatch === false) {
+      let tempArray = []
+      if (isMultipleRMAllow(costData?.TechnologyId)) {
+        let rowArray = rowData && rowData.map(el => {
+          return {
+            RMName: `${el.RawMaterial} - ${el.RMGrade}`,
+            RMRate: (el.EntryType === 'Domestic') ? el.NetLandedCost : el.NetLandedCostConversion,
+            MaterialType: el.MaterialType,
+            RMGrade: el.RMGrade,
+            Density: el.Density,
+            UOM: el.UOM,
+            UOMId: el.UOMId,
+            ScrapRate: el.ScrapRate,
             FinishWeight: '',
             GrossWeight: '',
             NetLandedCost: '',
-            RawMaterialId: rowData.RawMaterialId,
-            RawMaterialCategory: rowData.Category,
-            CutOffPrice: rowData.CutOffPrice,
-            IsCutOffApplicable: rowData.IsCutOffApplicable,
-            MachiningScrapRate: rowData.MachiningScrapRate
+            RawMaterialId: el.RawMaterialId,
+            RawMaterialCategory: el.Category,
+            CutOffPrice: el.CutOffPrice,
+            IsCutOffApplicable: el.IsCutOffApplicable,
+            MachiningScrapRate: el.MachiningScrapRate
           }
-          setGridData([...gridData, tempObj])
-          tempArray = [...gridData, tempObj]
+        })
+
+        setGridData([...gridData, ...rowArray])
+        tempArray = [...gridData, ...rowArray]
+        selectedIds([...gridData, ...rowArray])
+      } else {
+        let tempObj = {
+          RMName: `${rowData.RawMaterial} - ${rowData.RMGrade}`,
+          RMRate: (rowData.EntryType === 'Domestic') ? rowData.NetLandedCost : rowData.NetLandedCostConversion,
+          MaterialType: rowData.MaterialType,
+          RMGrade: rowData.RMGrade,
+          Density: rowData.Density,
+          UOM: rowData.UOM,
+          UOMId: rowData.UOMId,
+          ScrapRate: rowData.ScrapRate,
+          FinishWeight: '',
+          GrossWeight: '',
+          NetLandedCost: '',
+          RawMaterialId: rowData.RawMaterialId,
+          RawMaterialCategory: rowData.Category,
+          CutOffPrice: rowData.CutOffPrice,
+          IsCutOffApplicable: rowData.IsCutOffApplicable,
+          MachiningScrapRate: rowData.MachiningScrapRate
         }
-        dispatch(gridDataAdded(true))
-        if (!confirmPopup) {
-          tempArray && tempArray.map((item, index) => {
-            setValue(`${rmGridFields}.${index}.GrossWeight`, checkForDecimalAndNull(item.GrossWeight, getConfigurationKey().NoOfDecimalForInputOutput))     //COMMENT
-            setValue(`${rmGridFields}.${index}.FinishWeight`, checkForDecimalAndNull(item.FinishWeight, getConfigurationKey().NoOfDecimalForInputOutput))
-            setValue(`${rmGridFields}.${index}.ScrapRecoveryPercentage`, checkForDecimalAndNull(item.ScrapRecoveryPercentage, getConfigurationKey().NoOfDecimalForInputOutput))
-            setValue(`${rmGridFields}.${index}.BurningLossWeight`, checkForDecimalAndNull(item.BurningValue, getConfigurationKey().NoOfDecimalForInputOutput))
-            setValue(`${rmGridFields}.${index}.ScrapWeight`, checkForDecimalAndNull(item.ScrapWeight, getConfigurationKey().NoOfDecimalForInputOutput))
-            return null
-          })
-        }
+        setGridData([...gridData, tempObj])
+        tempArray = [...gridData, tempObj]
       }
-      if (rowData && rowData.length > 0 && IsApplyMasterBatch) {
-        setValue('MBName', rowData && rowData[0].RawMaterial !== undefined ? rowData[0].RawMaterial : '')
-        setValue('MBId', rowData && rowData[0].RawMaterialId !== undefined ? rowData[0].RawMaterialId : '')
-        setValue('MBPrice', rowData && (rowData[0].EntryType === 'Domestic') ? rowData[0].NetLandedCost : rowData[0].NetLandedCostConversion)
+      dispatch(gridDataAdded(true))
+      if (!confirmPopup) {
+        tempArray && tempArray.map((item, index) => {
+          setValue(`${rmGridFields}.${index}.GrossWeight`, checkForDecimalAndNull(item.GrossWeight, getConfigurationKey().NoOfDecimalForInputOutput))     //COMMENT
+          setValue(`${rmGridFields}.${index}.FinishWeight`, checkForDecimalAndNull(item.FinishWeight, getConfigurationKey().NoOfDecimalForInputOutput))
+          setValue(`${rmGridFields}.${index}.ScrapRecoveryPercentage`, checkForDecimalAndNull(item.ScrapRecoveryPercentage, getConfigurationKey().NoOfDecimalForInputOutput))
+          setValue(`${rmGridFields}.${index}.BurningLossWeight`, checkForDecimalAndNull(item.BurningValue, getConfigurationKey().NoOfDecimalForInputOutput))
+          setValue(`${rmGridFields}.${index}.ScrapWeight`, checkForDecimalAndNull(item.ScrapWeight, getConfigurationKey().NoOfDecimalForInputOutput))
+          return null
+        })
       }
+    }
+
+    if (rowData && rowData.length > 0 && IsApplyMasterBatch) {
+      setValue('MBName', rowData && rowData[0].RawMaterial !== undefined ? rowData[0].RawMaterial : '')
+      setValue('MBId', rowData && rowData[0].RawMaterialId !== undefined ? rowData[0].RawMaterialId : '')
+      setValue('MBPrice', rowData && (rowData[0].EntryType === 'Domestic') ? rowData[0].NetLandedCost : rowData[0].NetLandedCostConversion)
     }
     setDrawerOpen(false)
   }
-
   const setCalculatorData = (res, index) => {
     let tempArr = []
     let tempData = gridData[index]
