@@ -6986,4 +6986,4 @@ export const associationDropdownList = [
 ]
 
 export const NON_ASSOCIATED = "Non Associated"
-export const ASSOCIATED = "'Associated'"
+export const ASSOCIATED = "Associated"
