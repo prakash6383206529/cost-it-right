@@ -1,17 +1,20 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Col, Row, } from 'reactstrap';
-import { SearchableSelectHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs';
+import { SearchableSelectHookForm, TextAreaHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs';
 import { calculatePercentage, checkForDecimalAndNull, checkForNull, decimalAndNumberValidationBoolean } from '../../../../../helper';
 import { fetchCostingHeadsAPI } from '../../../../../actions/Common';
 import { costingInfoContext, netHeadCostContext, } from '../../CostingDetailStepTwo';
 import { ViewCostingContext } from '../../CostingDetails';
 import { isOverheadProfitDataChange, setOverheadProfitErrors } from '../../../actions/Costing';
-import { IdForMultiTechnology } from '../../../../../config/masterData';
+import { IdForMultiTechnology, REMARKMAXLENGTH } from '../../../../../config/masterData';
 import WarningMessage from '../../../../common/WarningMessage';
 import { MESSAGES } from '../../../../../config/message';
 import { number, percentageLimitValidation, isNumber, checkWhiteSpaces, NoSignNoDecimalMessage } from "../../../../../helper/validation";
-import { CRMHeads } from '../../../../../config/constants';
+import { CRMHeads, WACTypeId } from '../../../../../config/constants';
+import Popup from 'reactjs-popup';
+import Toaster from '../../../../common/Toaster';
+
 
 let counter = 0;
 function Rejection(props) {
@@ -55,6 +58,7 @@ function Rejection(props) {
         dispatch(fetchCostingHeadsAPI(request, (res) => { }))
         setValue('RejectionPercentage', rejectionObj?.RejectionApplicability === "Fixed" ? rejectionObj?.RejectionCost : rejectionObj?.RejectionPercentage)
         setValue('crmHeadRejection', rejectionObj && rejectionObj.RejectionCRMHead && { label: rejectionObj.RejectionCRMHead, value: 1 })
+        setValue('rejectionRemark', rejectionObj && rejectionObj.Remark ? rejectionObj.Remark : '')
     }, [])
 
     useEffect(() => {
@@ -75,7 +79,8 @@ function Rejection(props) {
                 "RejectionCost": applicability ? rejectionObj.RejectionCost : '',
                 "RejectionTotalCost": applicability ? rejectionObj.RejectionTotalCost : '',
                 "IsSurfaceTreatmentApplicable": true,
-                "RejectionCRMHead": getValues('crmHeadRejection') ? getValues('crmHeadRejection').label : ''
+                "RejectionCRMHead": getValues('crmHeadRejection') ? getValues('crmHeadRejection').label : '',
+                "Remark": rejectionObj.Remark ? rejectionObj.Remark : ''
             }
 
             if (!CostingViewMode) {
@@ -323,6 +328,33 @@ function Rejection(props) {
         }
     }
 
+    const onRemarkPopUpClickRejection = () => {
+
+        if (errors.rejectionRemark !== undefined) {
+            return false
+        }
+
+        setRejectionObj({
+            ...rejectionObj,
+            Remark: getValues('rejectionRemark')
+        })
+
+        if (getValues(`rejectionRemark`)) {
+            Toaster.success('Remark saved successfully')
+        }
+        var button = document.getElementById(`popUpTriggerRejection`)
+        button.click()
+    }
+
+    const onRemarkPopUpCloseRejection = () => {
+        let button = document.getElementById(`popUpTriggerRejection`)
+        setValue(`rejectionRemark`, rejectionObj.Remark)
+        if (errors.rejectionRemark) {
+            delete errors.rejectionRemark;
+        }
+        button.click()
+    }
+
     return (
         <>
             <Row>
@@ -351,6 +383,38 @@ function Rejection(props) {
                         disabled={CostingViewMode}
                     />
                 </Col>}
+
+                {
+                    <Popup className='rm-popup' trigger={<button id={`popUpTriggerRejection`} title="Remark" className="Comment-box" type={'button'} />}
+                        position="top right">
+                        <TextAreaHookForm
+                            label="Remark:"
+                            name={`rejectionRemark`}
+                            Controller={Controller}
+                            control={control}
+                            register={register}
+                            mandatory={false}
+                            rules={{
+                                maxLength: REMARKMAXLENGTH
+                            }}
+                            handleChange={() => { }}
+                            className=""
+                            customClassName={"withBorder"}
+                            errors={errors.rejectionRemark}
+                            disabled={CostingViewMode}
+                            hidden={false}
+                        />
+                        <Row>
+                            <Col md="12" className='remark-btn-container'>
+                                <button className='submit-button mr-2' disabled={(CostingViewMode) ? true : false} onClick={() => onRemarkPopUpClickRejection()} > <div className='save-icon'></div> </button>
+                                <button className='reset' onClick={() => onRemarkPopUpCloseRejection()} > <div className='cancel-icon'></div></button>
+                            </Col>
+                        </Row>
+                    </Popup>
+
+                }
+
+
             </Row>
             <Row className="costing-border-inner-section border-bottom-none m-0">
                 <Col md="3">

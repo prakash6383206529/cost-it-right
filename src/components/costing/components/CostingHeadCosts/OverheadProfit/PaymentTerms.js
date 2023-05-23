@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Col, Row, } from 'reactstrap';
-import { SearchableSelectHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs';
+import { SearchableSelectHookForm, TextAreaHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs';
 // import { fetchModelTypeAPI, fetchCostingHeadsAPI, getICCAppliSelectListKeyValue, getPaymentTermsAppliSelectListKeyValue } from '../../../../../actions/Common';
 import { calculatePercentage, checkForDecimalAndNull, checkForNull, decimalAndNumberValidationBoolean, getConfigurationKey } from '../../../../../helper';
 import { getPaymentTermsDataByHeads, gridDataAdded, isOverheadProfitDataChange, setOverheadProfitErrors, } from '../../../actions/Costing';
@@ -13,6 +13,9 @@ import DayTime from '../../../../common/DayTimeWrapper';
 import WarningMessage from '../../../../common/WarningMessage';
 import { MESSAGES } from '../../../../../config/message';
 import { number, checkWhiteSpaces, percentageLimitValidation, isNumber, NoSignNoDecimalMessage } from "../../../../../helper/validation";
+import Popup from 'reactjs-popup';
+import { REMARKMAXLENGTH } from '../../../../../config/masterData';
+import Toaster from '../../../../common/Toaster';
 
 let counter = 0;
 function PaymentTerms(props) {
@@ -45,6 +48,7 @@ function PaymentTerms(props) {
     useEffect(() => {
         if (PaymentTermDetail) {
             setValue('crmHeadPayment', PaymentTermDetail.PaymentTermCRMHead ? { label: PaymentTermDetail.PaymentTermCRMHead, value: 1 } : '')
+            setValue('paymentRemark', PaymentTermDetail.Remark ? PaymentTermDetail.Remark : '')
         }
     }, []);
 
@@ -58,7 +62,8 @@ function PaymentTerms(props) {
                 "InterestRate": IsPaymentTermsApplicable ? paymentTermsApplicability.label !== 'Fixed' ? getValues('RepaymentPeriodPercentage') : (getValues('RepaymentPeriodFixed')) : '',
                 "NetCost": IsPaymentTermsApplicable ? tempPaymentTermObj.NetCost : '',
                 "EffectiveDate": "",
-                "PaymentTermCRMHead": tempPaymentTermObj.PaymentTermCRMHead ? tempPaymentTermObj.PaymentTermCRMHead : ''
+                "PaymentTermCRMHead": tempPaymentTermObj.PaymentTermCRMHead ? tempPaymentTermObj.PaymentTermCRMHead : '',
+                "Remark": tempPaymentTermObj.Remark ? tempPaymentTermObj.Remark : ''
             }
             setValue('NetCost', IsPaymentTermsApplicable ? checkForDecimalAndNull(tempPaymentTermObj.NetCost, initialConfiguration.NoOfDecimalForPrice) : '')
             if (!CostingViewMode) {
@@ -74,11 +79,12 @@ function PaymentTerms(props) {
      */
     const onPressPaymentTerms = (value) => {
         setIsPaymentTermsApplicable(!IsPaymentTermsApplicable)
-
         callPaymentTermAPI(value)
-
         dispatch(gridDataAdded(true))
         dispatch(isOverheadProfitDataChange(true))
+        if (PaymentTermDetail) {
+            setValue('paymentRemark', PaymentTermDetail.Remark ? PaymentTermDetail.Remark : '')
+        }
     }
 
     /**
@@ -318,6 +324,35 @@ function PaymentTerms(props) {
         }
     }
 
+
+    const onRemarkPopUpClickPayment = () => {
+
+        if (errors.paymentRemark !== undefined) {
+            return false
+        }
+
+        setTempPaymentTermObj({
+            ...tempPaymentTermObj,
+            Remark: getValues('paymentRemark')
+        })
+
+
+        if (getValues(`paymentRemark`)) {
+            Toaster.success('Remark saved successfully')
+        }
+        var button = document.getElementById(`popUpTriggerPayment`)
+        button.click()
+    }
+
+    const onRemarkPopUpClosePayment = () => {
+        let button = document.getElementById(`popUpTriggerPayment`)
+        setValue(`paymentRemark`, tempPaymentTermObj.Remark)
+        if (errors.paymentRemark) {
+            delete errors.paymentRemark;
+        }
+        button.click()
+    }
+
     return (
         <>
             <Row className="mt-15 pt-15">
@@ -363,6 +398,40 @@ function PaymentTerms(props) {
                             disabled={CostingViewMode}
                         />
                     </Col>}
+
+
+                    {
+
+                        <Popup className='rm-popup ml=5' trigger={<button id={`popUpTriggerPayment`} title="Remark" className="Comment-box" type={'button'} />}
+                            position="top right">
+                            <TextAreaHookForm
+                                label="Remark:"
+                                name={`paymentRemark`}
+                                Controller={Controller}
+                                control={control}
+                                register={register}
+                                mandatory={false}
+                                rules={{
+                                    maxLength: REMARKMAXLENGTH
+                                }}
+                                handleChange={() => { }}
+                                className=""
+                                customClassName={"withBorder"}
+                                errors={errors.paymentRemark}
+                                disabled={CostingViewMode}
+                                hidden={false}
+                            />
+                            <Row>
+                                <Col md="12" className='remark-btn-container'>
+                                    <button className='submit-button mr-2' disabled={(CostingViewMode) ? true : false} onClick={() => onRemarkPopUpClickPayment()} > <div className='save-icon'></div> </button>
+                                    <button className='reset' onClick={() => onRemarkPopUpClosePayment()} > <div className='cancel-icon'></div></button>
+                                </Col>
+                            </Row>
+                        </Popup>
+
+                    }
+
+
                     <Row className="costing-border-inner-section border-bottom-none m-0">
                         <Col md="3">
                             <span className="head-text">
