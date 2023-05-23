@@ -278,11 +278,15 @@ class AddMachineRate extends Component {
       vendorName: data.selectedVedor
     })
 
+    setTimeout(() => {
+      this.setState({ vendorName: data.selectedVedor })
+    }, 300);
 
     this.props.change('MachineName', data && data.fieldsObj && data.fieldsObj.MachineName)
     this.props.change('MachineNumber', data && data.fieldsObj && data.fieldsObj.MachineNumber)
     this.props.change('TonnageCapacity', data && data.fieldsObj && data.fieldsObj.TonnageCapacity)
     this.props.change('Specification', data && data.fieldsObj && data.fieldsObj.Specification)
+    this.props.change('vendorName', data && data.selectedVedor)
     setTimeout(() => {
       this.setState({ selectedPlants: data.selectedPlants })
       this.props.change('EffectiveDate', DayTime(data.EffectiveDate).isValid() ? DayTime(data.EffectiveDate) : '')
@@ -2038,7 +2042,7 @@ class AddMachineRate extends Component {
 */
 function mapStateToProps(state) {
   const { comman, machine, auth, costing, client, supplier } = state;
-  const fieldsObj = selector(state, 'MachineNumber', 'MachineName', 'TonnageCapacity', 'MachineRate', 'Description', 'EffectiveDate', 'Specification');
+  const fieldsObj = selector(state, 'MachineNumber', 'MachineName', 'TonnageCapacity', 'MachineRate', 'Description', 'EffectiveDate', 'Specification', 'vendorName');
 
   const { plantList, plantSelectList, filterPlantList, UOMSelectList, } = comman;
   const { machineTypeSelectList, processSelectList, machineData, loading, processGroupApiData } = machine;
