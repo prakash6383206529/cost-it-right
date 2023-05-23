@@ -1717,67 +1717,61 @@ const CostingSummaryTable = (props) => {
                                     <span className="d-inline-block w-50">
                                       {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.aValue.percentage : '')}
                                     </span>
-                                    &nbsp;{' '}
                                     <span className="d-inline-block w-50">
                                       {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.aValue.value : '')}
                                     </span>
                                   </div>
-                                  <div className={`d-flex ${isApproval && viewCostingData?.length > 1 && highlightCostingSummaryValue(viewCostingData[0]?.overheadOn.overheadValue, viewCostingData[1]?.overheadOn.overheadValue)}`}>
+                                  <div style={pdfHead ? { marginTop: '-4px' } : {}} className={`d-flex ${isApproval && viewCostingData?.length > 1 && highlightCostingSummaryValue(viewCostingData[0]?.overheadOn.overheadValue, viewCostingData[1]?.overheadOn.overheadValue)}`}>
                                     <span className="d-inline-block w-50 small-grey-text">
                                       {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.overheadOn.overheadTitle : '')}
                                     </span>{' '}
                                     <span className="d-inline-block w-50 small-grey-text">
                                       {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.overheadOn.overheadPercentage : '')}
                                     </span>{' '}
-                                    &nbsp;{' '}
                                     <span className="d-inline-block w-50 small-grey-text">
                                       {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? <span title={checkForDecimalAndNull(data?.overheadOn.overheadValue, initialConfiguration.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.overheadOn.overheadValue, initialConfiguration.NoOfDecimalForPrice)}</span> : '')}
                                     </span>
                                   </div>
-                                  <div className={`d-flex ${isApproval && viewCostingData?.length > 1 && highlightCostingSummaryValue(viewCostingData[0]?.profitOn.profitValue, viewCostingData[1]?.profitOn.profitValue)}`}>
+                                  <div style={pdfHead ? { marginTop: '-3px' } : {}} className={`d-flex ${isApproval && viewCostingData?.length > 1 && highlightCostingSummaryValue(viewCostingData[0]?.profitOn.profitValue, viewCostingData[1]?.profitOn.profitValue)}`}>
                                     <span className="d-inline-block w-50 small-grey-text">
                                       {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.profitOn.profitTitle : '')}
                                     </span>{' '}
                                     <span className="d-inline-block w-50 small-grey-text">
                                       {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.profitOn.profitPercentage : '')}
                                     </span>{' '}
-                                    &nbsp;{' '}
                                     <span className="d-inline-block w-50 small-grey-text">
                                       {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? <span title={checkForDecimalAndNull(data?.profitOn.profitValue, initialConfiguration.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.profitOn.profitValue, initialConfiguration.NoOfDecimalForPrice)}</span> : '')}
                                     </span>
                                   </div>
-                                  <div className={`d-flex ${isApproval && viewCostingData?.length > 1 && highlightCostingSummaryValue(viewCostingData[0]?.rejectionOn.rejectionValue, viewCostingData[1]?.rejectionOn.rejectionValue)}`}>
+                                  <div style={pdfHead ? { marginTop: '-2px' } : {}} className={`d-flex ${isApproval && viewCostingData?.length > 1 && highlightCostingSummaryValue(viewCostingData[0]?.rejectionOn.rejectionValue, viewCostingData[1]?.rejectionOn.rejectionValue)}`}>
                                     <span className="d-inline-block w-50 small-grey-text">
                                       {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.rejectionOn.rejectionTitle : '')}
                                     </span>{' '}
                                     <span className="d-inline-block w-50 small-grey-text">
                                       {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.rejectionOn.rejectionPercentage : '')}
                                     </span>{' '}
-                                    &nbsp;{' '}
                                     <span className="d-inline-block w-50 small-grey-text">
                                       {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? <span title={checkForDecimalAndNull(data?.rejectionOn.rejectionValue, initialConfiguration.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.rejectionOn.rejectionValue, initialConfiguration.NoOfDecimalForPrice)}</span> : '')}
                                     </span>
                                   </div>
-                                  <div className={`d-flex ${isApproval && viewCostingData?.length > 1 && highlightCostingSummaryValue(viewCostingData[0]?.iccOn.iccValue, viewCostingData[1]?.iccOn.iccValue)}`}>
+                                  <div style={pdfHead ? { marginTop: '-1px' } : {}} className={`d-flex  ${isApproval && viewCostingData?.length > 1 && highlightCostingSummaryValue(viewCostingData[0]?.iccOn.iccValue, viewCostingData[1]?.iccOn.iccValue)}`}>
                                     <span className="d-inline-block w-50 small-grey-text">
                                       {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.iccOn.iccTitle : '')}
                                     </span>{' '}
                                     <span className="d-inline-block w-50 small-grey-text">
                                       {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.iccOn.iccPercentage : '')}
                                     </span>{' '}
-                                    &nbsp;{' '}
                                     <span className="d-inline-block w-50 small-grey-text">
                                       {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? <span title={checkForDecimalAndNull(data?.iccOn.iccValue, initialConfiguration.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.iccOn.iccValue, initialConfiguration.NoOfDecimalForPrice)}</span> : '')}
                                     </span>
                                   </div>
-                                  <div className={`d-flex ${isApproval && viewCostingData?.length > 1 && highlightCostingSummaryValue(viewCostingData[0]?.paymentTerms.paymentValue, viewCostingData[1]?.paymentTerms.paymentValue)}`}>
+                                  <div style={pdfHead ? { marginTop: '-1px' } : {}} className={`d-flex ${isApproval && viewCostingData?.length > 1 && highlightCostingSummaryValue(viewCostingData[0]?.paymentTerms.paymentValue, viewCostingData[1]?.paymentTerms.paymentValue)}`}>
                                     <span className="d-inline-block w-50 small-grey-text">
                                       {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.paymentTerms.paymentTitle : '')}
                                     </span>{' '}
                                     <span className="d-inline-block w-50 small-grey-text">
                                       {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.paymentTerms.paymentPercentage : '')}
                                     </span>{' '}
-                                    &nbsp;{' '}
                                     <span className="d-inline-block w-50 small-grey-text">
                                       {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? <span title={checkForDecimalAndNull(data?.paymentTerms.paymentValue, initialConfiguration.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.paymentTerms.paymentValue, initialConfiguration.NoOfDecimalForPrice)}</span> : '')}
                                     </span>
