@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import { useForm, Controller, useWatch, } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import { Col, Row, } from 'reactstrap';
-import { SearchableSelectHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs';
+import { SearchableSelectHookForm, TextAreaHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs';
 import { calculatePercentage, checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected, getConfigurationKey, } from '../../../../../helper';
 import { fetchModelTypeAPI, getPaymentTermsAppliSelectListKeyValue } from '../../../../../actions/Common';
 import { getOverheadProfitDataByModelType, gridDataAdded, isOverheadProfitDataChange, setOverheadProfitErrors, } from '../../../actions/Costing';
@@ -13,10 +13,12 @@ import Rejection from './Rejection';
 import Icc from './Icc';
 import PaymentTerms from './PaymentTerms';
 import { Link } from 'react-scroll'
-import { IdForMultiTechnology } from '../../../../../config/masterData';
+import { IdForMultiTechnology, REMARKMAXLENGTH } from '../../../../../config/masterData';
 import _, { debounce } from 'lodash';
 import { number, checkWhiteSpaces, decimalNumberLimit6 } from "../../../../../helper/validation";
 import TooltipCustom from '../../../../common/Tooltip';
+import Popup from 'reactjs-popup';
+import Toaster from '../../../../common/Toaster';
 
 let counter = 0;
 function OverheadProfit(props) {
@@ -30,10 +32,8 @@ function OverheadProfit(props) {
     const PaymentTermDetail = CostingInterestRateDetail && CostingInterestRateDetail.PaymentTermDetail !== null ? CostingInterestRateDetail.PaymentTermDetail : {}
     const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
 
-
-
     const defaultValues = {
-
+        overHeadRemark: CostingOverheadDetail.Remark ? CostingOverheadDetail.Remark : '',
         crmHeadOverhead: CostingOverheadDetail && CostingOverheadDetail.OverheadCRMHead && { label: CostingOverheadDetail.OverheadCRMHead, value: 1 },
         //REJECTION FIELDS
         Applicability: CostingRejectionDetail && CostingRejectionDetail.RejectionApplicability !== null ? { label: CostingRejectionDetail.RejectionApplicability, value: CostingRejectionDetail.RejectionApplicabilityId } : '',
@@ -101,6 +101,7 @@ function OverheadProfit(props) {
             setValue('crmHeadProfit', CostingProfitDetail && CostingProfitDetail.ProfitCRMHead && {
                 label: CostingProfitDetail.ProfitCRMHead, value: 1
             })
+            setValue('profitRemark', CostingProfitDetail && CostingProfitDetail.Remark ? CostingProfitDetail.Remark : '')
         }
 
         setTimeout(() => {
@@ -206,7 +207,8 @@ function OverheadProfit(props) {
                 "OverheadFixedTotalCost": overheadObj && overheadObj.IsOverheadFixedApplicable ? overheadObj.OverheadFixedPercentage : '',
 
                 "IsSurfaceTreatmentApplicable": IsIncludedSurfaceInOverheadProfit,
-                "OverheadCRMHead": overheadObj.OverheadCRMHead ? overheadObj.OverheadCRMHead : ''
+                "OverheadCRMHead": overheadObj.OverheadCRMHead ? overheadObj.OverheadCRMHead : '',
+                "Remark": overheadObj.Remark ? overheadObj.Remark : ''
             }
 
             let profitTempObj = {
@@ -240,7 +242,8 @@ function OverheadProfit(props) {
                 "ProfitFixedTotalCost": profitObj && profitObj.IsProfitFixedApplicable ? profitObj.ProfitFixedTotalCost : '',
 
                 "IsSurfaceTreatmentApplicable": IsIncludedSurfaceInOverheadProfit,
-                "ProfitCRMHead": profitObj.ProfitCRMHead ? profitObj.ProfitCRMHead : ''
+                "ProfitCRMHead": profitObj.ProfitCRMHead ? profitObj.ProfitCRMHead : '',
+                "Remark": profitObj.Remark ? profitObj.Remark : ''
             }
 
             if (!CostingViewMode) {
@@ -1265,6 +1268,61 @@ function OverheadProfit(props) {
             })
         }
     }
+
+    const onRemarkPopUpClickOverHead = () => {
+
+        if (errors.overHeadRemark !== undefined) {
+            return false
+        }
+
+        setOverheadObj({
+            ...overheadObj,
+            Remark: getValues('overHeadRemark')
+        })
+
+        if (getValues(`overHeadRemark`)) {
+            Toaster.success('Remark saved successfully')
+        }
+        var button = document.getElementById(`popUpTriggerOverHead`)
+        button.click()
+    }
+
+    const onRemarkPopUpCloseOverHead = () => {
+        let button = document.getElementById(`popUpTriggerOverHead`)
+        setValue(`overHeadRemark`, overheadObj.Remark)
+        if (errors.overHeadRemark) {
+            delete errors.overHeadRemark;
+        }
+        button.click()
+    }
+
+    const onRemarkPopUpClickProfit = () => {
+
+        if (errors.profitRemark !== undefined) {
+            return false
+        }
+
+        setProfitObj({
+            ...profitObj,
+            Remark: getValues('profitRemark')
+        })
+
+        if (getValues(`profitRemark`)) {
+            Toaster.success('Remark saved successfully')
+        }
+        var button = document.getElementById(`popUpTriggerProfit`)
+        button.click()
+    }
+
+    const onRemarkPopUpCloseProfit = () => {
+        let button = document.getElementById(`popUpTriggerProfit`)
+        setValue(`profitRemark`, profitObj.Remark)
+        if (errors.profitRemark) {
+            delete errors.profitRemark;
+        }
+        button.click()
+    }
+
     return (
         <>
             <div className="user-page p-0">
@@ -1326,6 +1384,7 @@ function OverheadProfit(props) {
                                     {`Overheads ${overheadObj && overheadObj.OverheadApplicability ? '(' + overheadObj.OverheadApplicability + ')' : '-'}`}
                                 </div>
                             </Col>
+
                             {initialConfiguration.IsShowCRMHead && <Col md="3">
                                 <SearchableSelectHookForm
                                     name={`crmHeadOverhead`}
@@ -1346,6 +1405,39 @@ function OverheadProfit(props) {
                                     disabled={CostingViewMode}
                                 />
                             </Col>}
+
+                            {
+
+                                <Popup className='rm-popup' trigger={<button id={`popUpTriggerOverHead`} title="Remark" className="Comment-box" type={'button'} />}
+                                    position="top right">
+                                    <TextAreaHookForm
+                                        label="Remark:"
+                                        name={`overHeadRemark`}
+                                        Controller={Controller}
+                                        control={control}
+                                        register={register}
+                                        mandatory={false}
+                                        rules={{
+                                            maxLength: REMARKMAXLENGTH
+                                        }}
+                                        handleChange={() => { }}
+                                        className=""
+                                        customClassName={"withBorder"}
+                                        errors={errors.overHeadRemark}
+                                        disabled={CostingViewMode}
+                                        hidden={false}
+                                    />
+                                    <Row>
+                                        <Col md="12" className='remark-btn-container'>
+                                            <button className='submit-button mr-2' disabled={(CostingViewMode) ? true : false} onClick={() => onRemarkPopUpClickOverHead()} > <div className='save-icon'></div> </button>
+                                            <button className='reset' onClick={() => onRemarkPopUpCloseOverHead()} > <div className='cancel-icon'></div></button>
+                                        </Col>
+                                    </Row>
+                                </Popup>
+
+                            }
+
+
                             <Col md="12">
                                 <Row className="costing-border-inner-section m-0">
                                     <Col md="3">
@@ -1711,6 +1803,36 @@ function OverheadProfit(props) {
                                     disabled={CostingViewMode}
                                 />
                             </Col>}
+
+                            {
+                                <Popup className='rm-popup' trigger={<button id={`popUpTriggerProfit`} title="Remark" className="Comment-box" type={'button'} />}
+                                    position="top right">
+                                    <TextAreaHookForm
+                                        label="Remark:"
+                                        name={`profitRemark`}
+                                        Controller={Controller}
+                                        control={control}
+                                        register={register}
+                                        mandatory={false}
+                                        rules={{
+                                            maxLength: REMARKMAXLENGTH
+                                        }}
+                                        handleChange={() => { }}
+                                        className=""
+                                        customClassName={"withBorder"}
+                                        errors={errors.profitRemark}
+                                        disabled={CostingViewMode}
+                                        hidden={false}
+                                    />
+                                    <Row>
+                                        <Col md="12" className='remark-btn-container'>
+                                            <button className='submit-button mr-2' disabled={(CostingViewMode) ? true : false} onClick={() => onRemarkPopUpClickProfit()} > <div className='save-icon'></div> </button>
+                                            <button className='reset' onClick={() => onRemarkPopUpCloseProfit()} > <div className='cancel-icon'></div></button>
+                                        </Col>
+                                    </Row>
+                                </Popup>
+                            }
+
                             <Col md="12">
                                 <Row className="costing-border-inner-section m-0">
                                     <Col md="3">
