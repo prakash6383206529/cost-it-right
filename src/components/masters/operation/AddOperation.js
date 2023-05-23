@@ -702,6 +702,7 @@ class AddOperation extends Component {
         IsForcefulUpdated: true,
         IsFinancialDataChanged: isDateChange ? true : false,
         IsDetailedEntry: false,
+        ForType: (this.state.operationType?.label) ? (this.state.operationType?.label) : ''
       }
       // if (this.state.isEditFlag) {
       // if (dataToChange.UnitOfMeasurementId === UOM.value && dataToChange.Rate === Number(values.Rate) && uploadAttachements) {
@@ -786,6 +787,7 @@ class AddOperation extends Component {
         VendorPlant: [],
         CustomerId: costingTypeId === CBCTypeId ? client.value : '',
         IsDetailedEntry: false,
+        ForType: (this.state.operationType?.label) ? (this.state.operationType?.label) : ''
       }
 
       if (CheckApprovalApplicableMaster(OPERATIONS_ID) === true && !this.state.isFinalApprovar) {
