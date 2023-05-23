@@ -57,6 +57,7 @@ function ApprovalSummary(props) {
   const [nccPartQuantity, setNccPartQuantity] = useState("")
   const [IsRegularized, setIsRegularized] = useState("")
   const [costingTypeId, setCostingTypeId] = useState("")
+  const [approvalTypeId, setApprovalTypeId] = useState("")
   const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
 
   const headerName = ['Revision No.', 'Name', 'Existing Cost/Pc', 'Revised Cost/Pc', 'Quantity', 'Impact/Pc', 'Volume/Year', 'Impact/Quarter', 'Impact/Year']
@@ -118,8 +119,9 @@ function ApprovalSummary(props) {
 
       const { PartDetails, ApprovalDetails, ApprovalLevelStep, DepartmentId, Technology, ApprovalProcessId,
         ApprovalProcessSummaryId, ApprovalNumber, IsSent, IsFinalLevelButtonShow, IsPushedButtonShow,
-        CostingId, PartId, LastCostingId, VendorId, IsRegularizationLimitCrossed, CostingHead, NCCPartQuantity, IsRegularized, CostingTypeId } = res?.data?.Data?.Costings[0];
-      setCostingTypeId(CostingTypeId)
+        CostingId, PartId, LastCostingId, DecimalOption, VendorId, IsRegularizationLimitCrossed, CostingHead, NCCPartQuantity, IsRegularized, ApprovalTypeId, CostingTypeId } = res?.data?.Data?.Costings[0];
+      setApprovalTypeId(ApprovalTypeId)
+      setCostingTypeId(ApprovalTypeId)
       setNccPartQuantity(NCCPartQuantity)
       setIsRegularized(IsRegularized)
       setCostingHead(CostingHead)
@@ -152,7 +154,7 @@ function ApprovalSummary(props) {
         UserId: loggedInUserId(),
         TechnologyId: technologyId,
         Mode: 'costing',
-        approvalTypeId: costingTypeIdToApprovalTypeIdFunction(CostingTypeId)
+        approvalTypeId: costingTypeIdToApprovalTypeIdFunction(ApprovalTypeId)
       }
       dispatch(checkFinalUser(obj, res => {
         if (res && res.data && res.data.Result) {
@@ -601,6 +603,7 @@ function ApprovalSummary(props) {
           IsPushDrawer={showPushDrawer}
           dataSend={[approvalDetails, partDetail]}
           costingTypeId={costingTypeId}
+          approvalTypeId={approvalTypeId}
           TechnologyId={approvalData?.TechnologyId}
         />
       )}
@@ -617,6 +620,7 @@ function ApprovalSummary(props) {
           IsPushDrawer={showPushDrawer}
           dataSend={[approvalDetails, partDetail]}
           costingTypeId={costingTypeId}
+          approvalTypeId={approvalTypeId}
         />
       )}
       {pushButton && (

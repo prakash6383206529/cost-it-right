@@ -704,12 +704,12 @@ function AddRfq(props) {
                     if (index === 2) {
                         objTemp.PartNumber = partNumber?.label
                         objTemp.VendorListExisting = vendorListFinal.join(',') ? vendorListFinal.join(',') : '-'
-                        objTemp.RMName = rmName?.label
-                        objTemp.RMNameId = rmName?.value
-                        objTemp.RMGrade = rmgrade?.label
-                        objTemp.RMGradeId = rmgrade?.value
-                        objTemp.RMSpecification = rmspecification?.label
-                        objTemp.RMSpecificationId = rmspecification?.value
+                        objTemp.RMName = rmName?.label ? rmName?.label : '-'
+                        objTemp.RMNameId = rmName?.value ? rmName?.value : '-'
+                        objTemp.RMGrade = rmgrade?.label ? rmgrade?.label : '-'
+                        objTemp.RMGradeId = rmgrade?.value ? rmgrade?.value : '-'
+                        objTemp.RMSpecification = rmspecification?.label ? rmspecification?.label : '-'
+                        objTemp.RMSpecificationId = rmspecification?.value ? rmspecification?.value : '-'
                     }
                     objTemp.Quantity = 0
 
@@ -727,6 +727,9 @@ function AddRfq(props) {
                 setValue('RMSpecification', "")
                 // setValue('technology', "")
                 setUpdateButtonPartNoTable(false)
+                setRMName('')
+                setRMGrade('')
+                setRMSpecification('')
             }))
         }
     }
@@ -1314,7 +1317,7 @@ function AddRfq(props) {
                                                                 suppressColumnVirtualisation={true}
                                                             >
                                                                 <AgGridColumn width={"230px"} field="PartNumber" headerName="Part No" cellClass={"colorWhite"} cellRenderer={'partNumberFormatter'}></AgGridColumn>
-                                                                <AgGridColumn width={"230px"} field="VendorListExisting" headerName="Vendor" cellClass={"colorWhite"} cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                                                                <AgGridColumn width={"230px"} field="VendorListExisting" headerName="Existing Vendor" cellClass={"colorWhite"} cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                                                 <AgGridColumn width={"230px"} field="RMName" headerName="RM Name" cellClass={"colorWhite"}></AgGridColumn>
                                                                 <AgGridColumn width={"230px"} field="RMGrade" headerName="RM Grade" cellClass={"colorWhite"}></AgGridColumn>
                                                                 <AgGridColumn width={"230px"} field="RMSpecification" headerName="RM Specification" cellClass={"colorWhite"}></AgGridColumn>
