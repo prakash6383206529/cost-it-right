@@ -376,7 +376,7 @@ class AddMoreDetails extends Component {
           if (machineType.value) {
             const data = {
               machineTypeId: machineType?.value,
-              plantId: Data.Plant[0].PlantId,
+              plantId: Data.costingTypeId !== ZBCTypeId ? Data.DestinationPlantId : Data.Plant[0].PlantId,
               effectiveDate: effectiveDate
             }
             this.props.getLabourTypeByMachineTypeSelectList(data, () => { })
@@ -421,7 +421,7 @@ class AddMoreDetails extends Component {
               isLoader: false,
               IsPurchased: Data.OwnershipIsPurchased,
               selectedTechnology: [{ label: Data.Technology && Data.Technology[0].Technology, value: Data.Technology && Data.Technology[0].TechnologyId }],
-              selectedPlants: { label: Data.Plant[0].PlantName, value: Data.Plant[0].PlantId },
+              selectedPlants: Data.costingTypeId !== ZBCTypeId ? { label: Data.DestinationPlantName, value: Data.DestinationPlantId } : { label: Data.Plant[0].PlantName, value: Data.Plant[0].PlantId },
               machineType: machineTypeObj && machineTypeObj !== undefined ? { label: machineTypeObj.Text, value: machineTypeObj.Value } : [],
               shiftType: shiftObj && shiftObj !== undefined ? { label: shiftObj.Text, value: shiftObj.Value } : [],
               depreciationType: depreciationObj && depreciationObj !== undefined ? { label: depreciationObj.Text, value: depreciationObj.Value } : [],
@@ -445,6 +445,7 @@ class AddMoreDetails extends Component {
               machineFullValue: { FuelCostPerUnit: Data?.FuelCostPerUnit, PowerCostPerUnit: Data?.PowerCostPerUnit },
               IsIncludeMachineRateDepreciation: Data?.IsIncludeMachineCost
             }, () => this.props.change('MachineRate', (this.state.isProcessGroup && !this.state.isViewMode) ? Data.MachineProcessRates[0].MachineRate : ''))
+            this.props.change('NumberOfWorkingHoursPerYear', Data.NumberOfWorkingHoursPerYear ? Data.NumberOfWorkingHoursPerYear : '')
           }, 2000)
         }
       })
