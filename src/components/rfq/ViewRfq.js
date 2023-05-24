@@ -423,13 +423,15 @@ function RfqListing(props) {
         setShowPopup(false)
     }
 
-    const closeUserDetails = () => {
+    const closeUserDetails = (e = '', type) => {
         setIsOpen(false)
-        setloader(true)
-        setTimeout(() => {
-            dispatch(setCostingViewData([...multipleCostingDetails]))
-            setloader(false)
-        }, 200);
+        if (type !== false) {
+            setloader(true)
+            setTimeout(() => {
+                dispatch(setCostingViewData([...multipleCostingDetails]))
+                setloader(false)
+            }, 200);
+        }
     }
 
     const viewCostingDetail = (rowData) => {
@@ -494,12 +496,14 @@ function RfqListing(props) {
         )
     };
 
-    const closeDrawer = () => {
+
+    const closeDrawer = (e = '', type) => {
         setAddRfqData({})
         setAddRfq(false)
         setRejectDrawer(false)
-        getDataList()
-
+        if (type !== 'cancel') {
+            getDataList()
+        }
     }
 
     const closeRemarkDrawer = (type) => {
@@ -913,10 +917,7 @@ function RfqListing(props) {
                         isEditFlag={isEdit}
                         closeDrawer={closeDrawer}
                     />
-
                 }
-
-
 
                 {
                     <div id='rfq-compare-drawer'>
