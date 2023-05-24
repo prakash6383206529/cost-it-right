@@ -698,7 +698,7 @@ function PipdReportListing(props) {
                                             floatingFilter={true}
                                             rowData={gridData}
                                             pagination={true}
-                                            paginationPageSize={12}
+                                            paginationPageSize={gridData.length}
                                             onGridReady={onGridReady}
                                             gridOptions={gridOptions}
 
@@ -725,7 +725,7 @@ function PipdReportListing(props) {
                                             <AgGridColumn width="150" field="Total" headerName="Total" />
 
                                         </AgGridReact>
-                                        <PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />
+                                        {/* <PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} /> */}
                                     </div>
                                 </div>
                             </div>
