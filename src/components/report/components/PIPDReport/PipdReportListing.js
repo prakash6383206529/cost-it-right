@@ -712,7 +712,7 @@ function PipdReportListing(props) {
                                             rowClassRules={rowClassRules}
                                         >
                                             <AgGridColumn field="Name" width="150" headerName="Name" cellClass={"colorWhite"} floatingFilter={true}></AgGridColumn>
-                                            <AgGridColumn field="PriceType" headerName="In Cr" floatingFilter={true}></AgGridColumn>
+                                            <AgGridColumn field="PriceType" headerName="In Lakh" floatingFilter={true}></AgGridColumn>
                                             <AgGridColumn headerName="Effective Date" headerClass="justify-content-center" marryChildren={true}>
                                                 <AgGridColumn width="150" field="1/3/2022" headerName="1/3/2022" />
                                                 <AgGridColumn width="150" field="1/4/2022" headerName="1/4/2022" />
