@@ -3585,7 +3585,7 @@ body {
 .overhead-profit-tab-costing {
   .form-control[disabled] {
     max-width: 280px;
-    width: 280px;
+    width: auto;
 
     @media screen and (max-width:$middleDesktop) {
       width: auto;
@@ -3601,7 +3601,7 @@ body {
   .form-group.inputbox.withBorder {
     input.form-control {
       max-width: 280px;
-      width: 280px;
+      width: auto;
 
       @media screen and (max-width:$middleDesktop) {
         width: auto;

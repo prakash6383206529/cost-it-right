@@ -399,145 +399,150 @@ function PaymentTerms(props) {
                         />
                     </Col>}
 
+                    <Row className='mb-4'>
+                        <Col md="11" className='first-section'>
+                            <Row className="costing-border-inner-section border-bottom-none m-0">
+                                <Col md="3">
+                                    <span className="head-text">
+                                        Applicability
+                                    </span>
+                                </Col>
+                                {paymentTermsApplicability.label !== 'Fixed' && <Col md="3">
+                                    <span className="head-text">
+                                        Repayment Period(No. of Days)
+                                    </span>
+                                </Col>}
+                                <Col md="3">
+                                    <span className="head-text">
+                                        {paymentTermsApplicability.label !== 'Fixed' ? 'Interest Rate (%)' : 'Interest Rate'}
+                                    </span>
+                                </Col>
 
-                    {
-
-                        <Popup className='rm-popup ml=5' trigger={<button id={`popUpTriggerPayment`} title="Remark" className="Comment-box" type={'button'} />}
-                            position="top right">
-                            <TextAreaHookForm
-                                label="Remark:"
-                                name={`paymentRemark`}
-                                Controller={Controller}
-                                control={control}
-                                register={register}
-                                mandatory={false}
-                                rules={{
-                                    maxLength: REMARKMAXLENGTH
-                                }}
-                                handleChange={() => { }}
-                                className=""
-                                customClassName={"withBorder"}
-                                errors={errors.paymentRemark}
-                                disabled={CostingViewMode}
-                                hidden={false}
-                            />
-                            <Row>
-                                <Col md="12" className='remark-btn-container'>
-                                    <button className='submit-button mr-2' disabled={(CostingViewMode) ? true : false} onClick={() => onRemarkPopUpClickPayment()} > <div className='save-icon'></div> </button>
-                                    <button className='reset' onClick={() => onRemarkPopUpClosePayment()} > <div className='cancel-icon'></div></button>
+                                <Col md={paymentTermsApplicability.label === 'Fixed' ? '6' : '3'}>
+                                    <span className="head-text">
+                                        Cost
+                                    </span>
                                 </Col>
                             </Row>
-                        </Popup>
-
-                    }
-
-
-                    <Row className="costing-border-inner-section border-bottom-none m-0">
-                        <Col md="3">
-                            <span className="head-text">
-                                Applicability
-                            </span>
-                        </Col>
-                        {paymentTermsApplicability.label !== 'Fixed' && <Col md="3">
-                            <span className="head-text">
-                                Repayment Period(No. of Days)
-                            </span>
-                        </Col>}
-                        <Col md="3">
-                            <span className="head-text">
-                                {paymentTermsApplicability.label !== 'Fixed' ? 'Interest Rate (%)' : 'Interest Rate'}
-                            </span>
-                        </Col>
-
-                        <Col md={paymentTermsApplicability.label === 'Fixed' ? '6' : '3'}>
-                            <span className="head-text">
-                                Cost
-                            </span>
-                        </Col>
-                    </Row>
-                    <Row className="costing-border costing-border-with-labels px-2 pt-3 m-0 overhead-profit-tab-costing mb-4">
-                        <>
-                            <Col md="3">
-                                <label className="col-label">
-                                    {paymentTermsApplicability.label}
-                                </label>
-                            </Col>
-                            {paymentTermsApplicability.label !== 'Fixed' && <Col md="3">
-                                <TextFieldHookForm
-                                    label={false}
-                                    name={'RepaymentPeriodDays'}
-                                    Controller={Controller}
-                                    control={control}
-                                    register={register}
-                                    mandatory={false}
-                                    handleChange={() => { dispatch(isOverheadProfitDataChange(true)) }}
-                                    defaultValue={''}
-                                    className=""
-                                    customClassName={'withBorder'}
-                                    errors={errors.RepaymentPeriodDays}
-                                    disabled={paymentTermsApplicability.label !== 'Fixed' ? true : false}
-                                />
-                            </Col>}
-                            <Col md="3">
-                                {paymentTermsApplicability.label !== 'Fixed' ?
-                                    <TextFieldHookForm
-                                        label={false}
-                                        name={'RepaymentPeriodPercentage'}
-                                        Controller={Controller}
-                                        control={control}
-                                        register={register}
-                                        mandatory={false}
-                                        rules={{
-                                            required: false,
-                                            validate: { number, checkWhiteSpaces, percentageLimitValidation },
-                                            max: {
-                                                value: 100,
-                                                message: 'Percentage cannot be greater than 100'
-                                            },
-                                        }}
-                                        handleChange={() => { dispatch(isOverheadProfitDataChange(true)) }}
-                                        defaultValue={''}
-                                        className=""
-                                        customClassName={'withBorder'}
-                                        errors={errors.RepaymentPeriodPercentage}
-                                        disabled={CostingViewMode ? true : false}
-                                    />
-                                    :
-                                    <div className='p-relative error-wrapper'>
+                            <Row className="costing-border costing-border-with-labels px-2 pt-3 m-0 overhead-profit-tab-costing">
+                                <>
+                                    <Col md="3">
+                                        <label className="col-label">
+                                            {paymentTermsApplicability.label}
+                                        </label>
+                                    </Col>
+                                    {paymentTermsApplicability.label !== 'Fixed' && <Col md="3">
                                         <TextFieldHookForm
                                             label={false}
-                                            name={'RepaymentPeriodPercentage'}
+                                            name={'RepaymentPeriodDays'}
                                             Controller={Controller}
                                             control={control}
                                             register={register}
                                             mandatory={false}
-                                            handleChange={(e) => handleChangeInterestRateFixedLimit(e)}
+                                            handleChange={() => { dispatch(isOverheadProfitDataChange(true)) }}
                                             defaultValue={''}
                                             className=""
                                             customClassName={'withBorder'}
-                                            disabled={CostingViewMode || paymentTermsApplicability.label !== 'Fixed' ? true : false}
+                                            errors={errors.RepaymentPeriodDays}
+                                            disabled={paymentTermsApplicability.label !== 'Fixed' ? true : false}
                                         />
-                                        {paymentTermsApplicability.label === 'Fixed' && InterestRateFixedLimit && <WarningMessage dClass={"error-message fixed-error"} message={errorMessage} />}           {/* //MANUAL CSS FOR ERROR VALIDATION MESSAGE */}
-                                    </div>}
-                            </Col>
-                            <Col md={paymentTermsApplicability.label === 'Fixed' ? '6' : '3'}>
-                                <TextFieldHookForm
-                                    label={false}
-                                    name={'RepaymentPeriodCost'}
-                                    Controller={Controller}
-                                    control={control}
-                                    register={register}
-                                    mandatory={false}
-                                    handleChange={() => { }}
-                                    defaultValue={''}
-                                    className=""
-                                    customClassName={'withBorder'}
-                                    errors={errors.RepaymentPeriodCost}
-                                    disabled={true}
-                                />
-                            </Col>
-                        </>
+                                    </Col>}
+                                    <Col md="3">
+                                        {paymentTermsApplicability.label !== 'Fixed' ?
+                                            <TextFieldHookForm
+                                                label={false}
+                                                name={'RepaymentPeriodPercentage'}
+                                                Controller={Controller}
+                                                control={control}
+                                                register={register}
+                                                mandatory={false}
+                                                rules={{
+                                                    required: false,
+                                                    validate: { number, checkWhiteSpaces, percentageLimitValidation },
+                                                    max: {
+                                                        value: 100,
+                                                        message: 'Percentage cannot be greater than 100'
+                                                    },
+                                                }}
+                                                handleChange={() => { dispatch(isOverheadProfitDataChange(true)) }}
+                                                defaultValue={''}
+                                                className=""
+                                                customClassName={'withBorder'}
+                                                errors={errors.RepaymentPeriodPercentage}
+                                                disabled={CostingViewMode ? true : false}
+                                            />
+                                            :
+                                            <div className='p-relative error-wrapper'>
+                                                <TextFieldHookForm
+                                                    label={false}
+                                                    name={'RepaymentPeriodPercentage'}
+                                                    Controller={Controller}
+                                                    control={control}
+                                                    register={register}
+                                                    mandatory={false}
+                                                    handleChange={(e) => handleChangeInterestRateFixedLimit(e)}
+                                                    defaultValue={''}
+                                                    className=""
+                                                    customClassName={'withBorder'}
+                                                    disabled={CostingViewMode || paymentTermsApplicability.label !== 'Fixed' ? true : false}
+                                                />
+                                                {paymentTermsApplicability.label === 'Fixed' && InterestRateFixedLimit && <WarningMessage dClass={"error-message fixed-error"} message={errorMessage} />}           {/* //MANUAL CSS FOR ERROR VALIDATION MESSAGE */}
+                                            </div>}
+                                    </Col>
+                                    <Col md={paymentTermsApplicability.label === 'Fixed' ? '6' : '3'}>
+                                        <TextFieldHookForm
+                                            label={false}
+                                            name={'RepaymentPeriodCost'}
+                                            Controller={Controller}
+                                            control={control}
+                                            register={register}
+                                            mandatory={false}
+                                            handleChange={() => { }}
+                                            defaultValue={''}
+                                            className=""
+                                            customClassName={'withBorder'}
+                                            errors={errors.RepaymentPeriodCost}
+                                            disabled={true}
+                                        />
+                                    </Col>
+                                </>
+                            </Row>
+                        </Col>
+                        <Col md="1" className='second-section pr-2'>
+                            <div className='costing-border-inner-section'>
+                                <Col md="12" className='text-center'>Remark</Col>
+                                <Col md="12">
+                                    <Popup trigger={<button id={`popUpTriggerPayment`} title="Remark" className="Comment-box" type={'button'} />}
+                                        position="top center">
+                                        <TextAreaHookForm
+                                            label="Remark:"
+                                            name={`paymentRemark`}
+                                            Controller={Controller}
+                                            control={control}
+                                            register={register}
+                                            mandatory={false}
+                                            rules={{
+                                                maxLength: REMARKMAXLENGTH
+                                            }}
+                                            handleChange={() => { }}
+                                            className=""
+                                            customClassName={"withBorder"}
+                                            errors={errors.paymentRemark}
+                                            disabled={CostingViewMode}
+                                            hidden={false}
+                                        />
+                                        <Row>
+                                            <Col md="12" className='remark-btn-container'>
+                                                <button className='submit-button mr-2' disabled={(CostingViewMode) ? true : false} onClick={() => onRemarkPopUpClickPayment()} > <div className='save-icon'></div> </button>
+                                                <button className='reset' onClick={() => onRemarkPopUpClosePayment()} > <div className='cancel-icon'></div></button>
+                                            </Col>
+                                        </Row>
+                                    </Popup>
+                                </Col>
+                            </div>
+                        </Col>
                     </Row>
+
 
                 </>
             }
