@@ -403,7 +403,7 @@ class AddVolume extends Component {
 
   deleteItem = (ID) => {
     const { tableData } = this.state;
-    this.setState({ isLoader: true })
+    this.setState({ isLoader: true, showTooltip: false })
     let tempData = tableData.filter((item, i) => {
       if (item.VolumeApprovedDetailId === ID) {
         item.BudgetedQuantity = 0
