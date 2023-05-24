@@ -69,7 +69,6 @@ class AddOverhead extends Component {
       setDisable: false,
       inputLoader: false,
       minEffectiveDate: '',
-      isDataChanged: this.props.data.isEditFlag,
       attachmentLoader: false,
       showErrorOnFocus: false,
       showPopup: false,
@@ -77,6 +76,7 @@ class AddOverhead extends Component {
       vendorFilterList: [],
       RawMaterial: [],
       RMGrade: [],
+      IsFinancialDataChanged: true,
     }
   }
 
@@ -140,10 +140,10 @@ class AddOverhead extends Component {
       this.setState({ ModelType: [], })
     }
     if (this.state.ModelType.value === Number(newValue.value)) {
-      this.setState({ isDataChanged: true, DropdownNotChanged: true })
+      this.setState({ DropdownNotChanged: true, IsFinancialDataChanged: false, })
     }
     else {
-      this.setState({ isDataChanged: false, DropdownNotChanged: false })
+      this.setState({ DropdownNotChanged: false, IsFinancialDataChanged: true })
     }
   };
 
@@ -201,6 +201,7 @@ class AddOverhead extends Component {
 
 
             this.setState({
+              IsFinancialDataChanged: false,
               isEditFlag: true,
               // isLoader: false,
               // IsVendor: Data.IsClient ? Data.IsClient : Data.IsVendor,
@@ -386,10 +387,10 @@ class AddOverhead extends Component {
       })
     }
     if (this.state.overheadAppli.value === newValue.value) {
-      this.setState({ isDataChanged: true, DropdownNotChanged: true })
+      this.setState({ DropdownNotChanged: true, IsFinancialDataChanged: false })
     }
     else {
-      this.setState({ isDataChanged: false, DropdownNotChanged: false })
+      this.setState({ DropdownNotChanged: false, IsFinancialDataChanged: true })
     }
   };
 
@@ -402,12 +403,10 @@ class AddOverhead extends Component {
       if (String(newValue) === String(this.state.DataToChange.OverheadPercentage) &&
         String(this.state.overheadAppli.label) === String(this.state.DataToChange.OverheadApplicabilityType) &&
         String(this.state.ModelType.label) === String(this.state.DataToChange.ModelType)) {
-        this.setState({ isDataChanged: true })
+        this.setState({ IsFinancialDataChanged: false })
       } else {
-        this.setState({ isDataChanged: false })
-
+        this.setState({ IsFinancialDataChanged: true })
       }
-
     }
   };
 
@@ -420,12 +419,10 @@ class AddOverhead extends Component {
       if (String(newValue) === String(this.state.DataToChange.OverheadRMPercentage) &&
         String(this.state.overheadAppli.label) === String(this.state.DataToChange.OverheadApplicabilityType) &&
         String(this.state.ModelType.label) === String(this.state.DataToChange.ModelType)) {
-        this.setState({ isDataChanged: true })
+        this.setState({ IsFinancialDataChanged: false })
       } else {
-        this.setState({ isDataChanged: false })
-
+        this.setState({ IsFinancialDataChanged: true })
       }
-
     }
   };
 
@@ -438,12 +435,10 @@ class AddOverhead extends Component {
       if (String(newValue) === String(this.state.DataToChange.OverheadMachiningCCPercentage) &&
         String(this.state.overheadAppli.label) === String(this.state.DataToChange.OverheadApplicabilityType) &&
         String(this.state.ModelType.label) === String(this.state.DataToChange.ModelType)) {
-        this.setState({ isDataChanged: true })
+        this.setState({ IsFinancialDataChanged: false })
       } else {
-        this.setState({ isDataChanged: false })
-
+        this.setState({ IsFinancialDataChanged: true })
       }
-
     }
   };
 
@@ -456,12 +451,10 @@ class AddOverhead extends Component {
       if (String(newValue) === String(this.state.DataToChange.OverheadBOPPercentage) &&
         String(this.state.overheadAppli.label) === String(this.state.DataToChange.OverheadApplicabilityType) &&
         String(this.state.ModelType.label) === String(this.state.DataToChange.ModelType)) {
-        this.setState({ isDataChanged: true })
+        this.setState({ IsFinancialDataChanged: false })
       } else {
-        this.setState({ isDataChanged: false })
-
+        this.setState({ IsFinancialDataChanged: true })
       }
-
     }
   };
   /**
@@ -778,7 +771,7 @@ class AddOverhead extends Component {
   */
   onSubmit = debounce((values) => {
     const { client, costingTypeId, ModelType, vendorName, overheadAppli, selectedPlants, remarks, OverheadID, RMGrade,
-      isRM, isCC, isBOP, isOverheadPercent, singlePlantSelected, isEditFlag, files, effectiveDate, DataToChange, DropdownNotChanged, uploadAttachements, RawMaterial, isDataChanged } = this.state;
+      isRM, isCC, isBOP, isOverheadPercent, singlePlantSelected, isEditFlag, files, effectiveDate, DataToChange, DropdownNotChanged, uploadAttachements, RawMaterial, IsFinancialDataChanged } = this.state;
     const userDetailsOverhead = JSON.parse(localStorage.getItem('userDetail'))
     let plantArray = []
     if (costingTypeId === VBCTypeId) {
@@ -866,26 +859,23 @@ class AddOverhead extends Component {
         RawMaterialName: RawMaterial?.label,
         RawMaterialGradeId: RMGrade?.value,
         RawMaterialGrade: RMGrade?.label,
-        IsFinancialDataChanged: isDataChanged
+        IsFinancialDataChanged: IsFinancialDataChanged
       }
-      if (isEditFlag) {
+      if (isEditFlag && IsFinancialDataChanged) {
         if (DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss') === DayTime(DataToChange?.EffectiveDate).format('YYYY-MM-DD HH:mm:ss')) {
           Toaster.warning('Please update the effective date')
           this.setState({ setDisable: false })
           return false
         }
-        this.props.updateOverhead(requestData, (res) => {
-          this.setState({ setDisable: false })
-          if (res?.data?.Result) {
-            Toaster.success(MESSAGES.OVERHEAD_UPDATE_SUCCESS);
-            this.cancel('submit')
-          }
-        });
       }
-
-
+      this.props.updateOverhead(requestData, (res) => {
+        this.setState({ setDisable: false })
+        if (res?.data?.Result) {
+          Toaster.success(MESSAGES.OVERHEAD_UPDATE_SUCCESS);
+          this.cancel('submit')
+        }
+      });
     } else {
-
       this.setState({ setDisable: true })
       const formData = {
         EAttachementEntityName: 0,
@@ -911,7 +901,7 @@ class AddOverhead extends Component {
         RawMaterialName: RawMaterial?.label,
         RawMaterialGradeId: RMGrade?.value,
         RawMaterialGrade: RMGrade?.label,
-        IsFinancialDataChanged: isDataChanged
+        IsFinancialDataChanged: IsFinancialDataChanged
       }
 
       this.props.createOverhead(formData, (res) => {
@@ -937,7 +927,7 @@ class AddOverhead extends Component {
   render() {
     const { handleSubmit, } = this.props;
     const { isRM, isCC, isBOP, isOverheadPercent, isEditFlag,
-      isHideOverhead, isHideBOP, isHideRM, isHideCC, isViewMode, setDisable, isDataChanged, costingTypeId } = this.state;
+      isHideOverhead, isHideBOP, isHideRM, isHideCC, isViewMode, setDisable, isDataChanged, costingTypeId, IsFinancialDataChanged } = this.state;
     const filterList = async (inputValue) => {
       const { vendorFilterList } = this.state
       const resultInput = inputValue.slice(0, searchCount)
@@ -1300,8 +1290,8 @@ class AddOverhead extends Component {
                               }}
                               component={renderDatePicker}
                               className="form-control"
-                              disabled={isViewMode || isDataChanged}
-                              placeholder={isViewMode || isDataChanged ? '-' : "Select Date"}
+                              disabled={isViewMode || !IsFinancialDataChanged}
+                              placeholder={isViewMode || !IsFinancialDataChanged ? '-' : "Select Date"}
                             />
                           </div>
                         </Col>

@@ -139,10 +139,10 @@ class AddProfit extends Component {
       this.setState({ ModelType: [], })
     }
     if (this.state.ModelType.value === Number(newValue.value)) {
-      this.setState({ isDataChanged: true, DropdownNotChanged: true })
+      this.setState({ DropdownNotChanged: true, IsFinancialDataChanged: false, })
     }
     else {
-      this.setState({ isDataChanged: false, DropdownNotChanged: false })
+      this.setState({ DropdownNotChanged: false, IsFinancialDataChanged: true })
     }
   };
 
@@ -189,6 +189,7 @@ class AddProfit extends Component {
             // }
 
             this.setState({
+              IsFinancialDataChanged: false,
               isEditFlag: true,
               // isLoader: false,
               costingTypeId: Data.CostingTypeId,
@@ -389,10 +390,10 @@ class AddProfit extends Component {
       })
     }
     if (this.state.profitAppli.value === newValue.value) {
-      this.setState({ isDataChanged: true, DropdownNotChanged: true })
+      this.setState({ DropdownNotChanged: true, IsFinancialDataChanged: false })
     }
     else {
-      this.setState({ isDataChanged: false, DropdownNotChanged: false })
+      this.setState({ DropdownNotChanged: false, IsFinancialDataChanged: true })
     }
   };
 
@@ -405,9 +406,9 @@ class AddProfit extends Component {
       if (String(newValue) === String(this.state.DataToChange.ProfitPercentage) &&
         String(this.state.profitAppli.label) === String(this.state.DataToChange.ProfitApplicabilityType) &&
         String(this.state.ModelType.label) === String(this.state.DataToChange.ModelType)) {
-        this.setState({ isDataChanged: true })
+        this.setState({ IsFinancialDataChanged: false })
       } else {
-        this.setState({ isDataChanged: false })
+        this.setState({ IsFinancialDataChanged: true })
 
       }
 
@@ -423,9 +424,9 @@ class AddProfit extends Component {
       if (String(newValue) === String(this.state.DataToChange.ProfitRMPercentage) &&
         String(this.state.profitAppli.label) === String(this.state.DataToChange.ProfitApplicabilityType) &&
         String(this.state.ModelType.label) === String(this.state.DataToChange.ModelType)) {
-        this.setState({ isDataChanged: true })
+        this.setState({ IsFinancialDataChanged: false })
       } else {
-        this.setState({ isDataChanged: false })
+        this.setState({ IsFinancialDataChanged: true })
 
       }
 
@@ -441,9 +442,9 @@ class AddProfit extends Component {
       if (String(newValue) === String(this.state.DataToChange.ProfitMachiningCCPercentage) &&
         String(this.state.profitAppli.label) === String(this.state.DataToChange.ProfitApplicabilityType) &&
         String(this.state.ModelType.label) === String(this.state.DataToChange.ModelType)) {
-        this.setState({ isDataChanged: true })
+        this.setState({ IsFinancialDataChanged: false })
       } else {
-        this.setState({ isDataChanged: false })
+        this.setState({ IsFinancialDataChanged: true })
 
       }
 
@@ -459,9 +460,9 @@ class AddProfit extends Component {
       if (String(newValue) === String(this.state.DataToChange.ProfitBOPPercentage) &&
         String(this.state.profitAppli.label) === String(this.state.DataToChange.ProfitApplicabilityType) &&
         String(this.state.ModelType.label) === String(this.state.DataToChange.ModelType)) {
-        this.setState({ isDataChanged: true })
+        this.setState({ IsFinancialDataChanged: false })
       } else {
-        this.setState({ isDataChanged: false })
+        this.setState({ IsFinancialDataChanged: true })
 
       }
 
@@ -751,7 +752,7 @@ class AddProfit extends Component {
   */
   onSubmit = debounce((values) => {
     const { ModelType, costingTypeId, vendorName, client, selectedPlants, profitAppli, remarks, ProfitID,
-      isRM, isCC, isBOP, isProfitPercent, isEditFlag, files, singlePlantSelected, effectiveDate, DataToChange, DropdownNotChanged, uploadAttachements, RawMaterial, RMGrade } = this.state;
+      isRM, isCC, isBOP, isProfitPercent, isEditFlag, files, singlePlantSelected, effectiveDate, DataToChange, DropdownNotChanged, uploadAttachements, RawMaterial, RMGrade, IsFinancialDataChanged } = this.state;
     const userDetailsProfit = JSON.parse(localStorage.getItem('userDetail'))
     let plantArray = []
     if (costingTypeId === VBCTypeId) {
@@ -839,22 +840,22 @@ class AddProfit extends Component {
         RawMaterialName: RawMaterial?.label,
         RawMaterialGradeId: RMGrade?.value,
         RawMaterialGrade: RMGrade?.label,
+        IsFinancialDataChanged: IsFinancialDataChanged
       }
-      if (isEditFlag) {
+      if (isEditFlag && IsFinancialDataChanged) {
         if (DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss') === DayTime(DataToChange?.EffectiveDate).format('YYYY-MM-DD HH:mm:ss')) {
           Toaster.warning('Please update the effective date')
           this.setState({ setDisable: false })
           return false
         }
-        this.props.updateProfit(requestData, (res) => {
-          this.setState({ setDisable: false })
-          if (res?.data?.Result) {
-            Toaster.success(MESSAGES.PROFIT_UPDATE_SUCCESS);
-            this.cancel('submit')
-          }
-        });
       }
-
+      this.props.updateProfit(requestData, (res) => {
+        this.setState({ setDisable: false })
+        if (res?.data?.Result) {
+          Toaster.success(MESSAGES.PROFIT_UPDATE_SUCCESS);
+          this.cancel('submit')
+        }
+      });
 
     } else {
       this.setState({ setDisable: true })
@@ -881,6 +882,7 @@ class AddProfit extends Component {
         RawMaterialName: RawMaterial?.label,
         RawMaterialGradeId: RMGrade?.value,
         RawMaterialGrade: RMGrade?.label,
+        IsFinancialDataChanged: IsFinancialDataChanged
       }
 
       this.props.createProfit(formData, (res) => {
@@ -906,7 +908,7 @@ class AddProfit extends Component {
   render() {
     const { handleSubmit, } = this.props;
     const { isRM, isCC, isBOP, isProfitPercent, costingTypeId, isEditFlag,
-      isHideProfit, isHideBOP, isHideRM, isHideCC, isViewMode, setDisable, isDataChanged } = this.state;
+      isHideProfit, isHideBOP, isHideRM, isHideCC, isViewMode, setDisable, IsFinancialDataChanged } = this.state;
     const filterList = async (inputValue) => {
       const { vendorFilterList } = this.state
       const resultInput = inputValue.slice(0, searchCount)
@@ -1272,8 +1274,8 @@ class AddProfit extends Component {
                               }}
                               component={renderDatePicker}
                               className="form-control"
-                              disabled={isViewMode || isDataChanged}
-                              placeholder={isViewMode || isDataChanged ? '-' : 'Enter'}
+                              disabled={isViewMode || !IsFinancialDataChanged}
+                              placeholder={isViewMode || !IsFinancialDataChanged ? '-' : "Select Date"}
                             />
                           </div>
                         </Col>
