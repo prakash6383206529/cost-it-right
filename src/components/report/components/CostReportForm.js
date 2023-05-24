@@ -301,6 +301,7 @@ function CostReportForm(props) {
 
     const plantHandleChange = (value) => {
         setPlant(value)
+        dispatch(getFormGridData({ ...costReportFormData, isPlant: true, isCompany: false }))
     }
 
     /**
@@ -597,7 +598,7 @@ function CostReportForm(props) {
                                 mandatory={props.isPlantRequired ? true : false}
                                 handleChange={plantHandleChange}
                                 errors={errors.Plant}
-                                disabled={props.isSaleAndPurchase ? false : (part.length === 0 ? true : false)}
+                                disabled={props.isSaleAndPurchase || props.isCompany ? false : (part.length === 0 ? true : false)}
                             />
                         </Col>
 
@@ -631,7 +632,7 @@ function CostReportForm(props) {
                                 // defaultValue={customer.length !== 0 ? customer : ""}
                                 options={renderListing("Company")}
                                 mandatory={false}
-                                handleChange={() => { }}
+                                handleChange={() => { dispatch(getFormGridData({ ...costReportFormData, isPlant: false, isCompany: true })) }}
                                 errors={errors.Customer}
                                 disabled={false}
                             />
