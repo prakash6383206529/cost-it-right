@@ -578,7 +578,7 @@ function PipdReportListing(props) {
     const onGridReady = (params) => {
         params.api.paginationGoToPage(0);
         setGridApi(params.api)
-
+        window.screen.width >= 1440 && params.api.sizeColumnsToFit();
         setgridColumnApi(params.columnApi);
     };
     const cancelReport = () => {
