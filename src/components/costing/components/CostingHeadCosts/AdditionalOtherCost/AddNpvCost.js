@@ -71,6 +71,10 @@ function AddNpvCost(props) {
     }
 
     const handleNpvChange = (value) => {
+        setValue('NpvPercentage', '')
+        setValue('Quantity', '')
+        setValue('Total', '')
+        setTotalCost('')
         setDisableAllFields(false)
         setDisableTotalCost(false)
         setDisableNpvPercentage(false)
@@ -423,9 +427,8 @@ function AddNpvCost(props) {
                                             />
                                         </Col>
                                         <ConditionCosting hideAction={true} tableData={conditionTableData} />
-
-
                                     </div>}
+
                                 {costingSummary && props?.isRfqCosting &&
                                     <div className={'mt25 pb-15'}>
                                         <Col md="12" className={'mt25 pb-15'}>
