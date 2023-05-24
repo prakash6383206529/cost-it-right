@@ -95,7 +95,6 @@ function CostMovementByMasterReportListing(props) {
             case 2:
                 setIsLoader(true)
                 dispatch(getRMCostMovement(formData, res => {
-                    console.log('res: ', res);
                     if (res.status === 200) {
                         setIsData(true)
                         setRowData(res.data.Data.Data)
@@ -137,7 +136,6 @@ function CostMovementByMasterReportListing(props) {
             case 7:
                 setIsLoader(true)
                 dispatch(getOperationMovement(formData, res => {
-                    console.log('res: ', res);
                     if (res.status === 200) {
                         setIsData(true)
                         setRowData(res.data.Data.Data)
