@@ -159,6 +159,12 @@ function CostReportForm(props) {
         { Text: 'MKL', Value: '2' },
         { Text: 'ONKYO', Value: '3' },
     ]
+    const DUMMY_PLANT = [
+        { Text: '1031', Value: '1' },
+        { Text: '1032', Value: '2' },
+        { Text: '1035', Value: '3' },
+        { Text: '1036', Value: '3' },
+    ]
 
     /**
     * @Method renderListing
@@ -183,11 +189,20 @@ function CostReportForm(props) {
             return temp
         }
         if (label === 'Plant') {
-            DestinationplantSelectList && DestinationplantSelectList.map((item) => {
-                if (item.PlantId === '0') return false
-                temp.push({ label: item.PlantNameCode, value: item.PlantId })
-                return null
-            })
+            if (props.isCompany) {
+                DUMMY_PLANT && DUMMY_PLANT.map((item) => {
+                    if (item.Value === '0') return false
+                    temp.push({ label: item.Text, value: item.Value })
+                    return null
+                })
+            } else {
+                DestinationplantSelectList && DestinationplantSelectList.map((item) => {
+                    if (item.PlantId === '0') return false
+                    temp.push({ label: item.PlantNameCode, value: item.PlantId })
+                    return null
+                })
+            }
+
             return temp
         }
         if (label === 'Revision') {
