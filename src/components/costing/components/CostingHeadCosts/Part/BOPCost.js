@@ -569,6 +569,28 @@ function BOPCost(props) {
                                 }
                               </td>
                               <td><div className='w-fit' id={`bop-cost${index}`}><TooltipCustom disabledIcon={true} id={`bop-cost${index}`} tooltipText="Net BOP Cost = (BOP Cost * Quantity)" />{item.NetBoughtOutPartCost !== undefined ? checkForDecimalAndNull(item.NetBoughtOutPartCost, initialConfiguration.NoOfDecimalForPrice) : 0}</div></td>
+                              {initialConfiguration.IsShowCRMHead && <td>
+                                <SearchableSelectHookForm
+                                  name={`crmHeadBop${index}`}
+                                  type="text"
+                                  label="CRM Head"
+                                  errors={`${errors.crmHeadBop}${index}`}
+                                  Controller={Controller}
+                                  control={control}
+                                  register={register}
+                                  mandatory={false}
+                                  rules={{
+                                    required: false,
+                                  }}
+                                  defaultValue={item.BoughtOutPartCRMHead ? { label: item.BoughtOutPartCRMHead, value: index } : ''}
+                                  placeholder={'Select'}
+                                  customClassName="costing-selectable-dropdown"
+                                  options={CRMHeads}
+                                  required={false}
+                                  handleChange={(e) => { onCRMHeadChange(e, index) }}
+                                  disabled={CostingViewMode}
+                                />
+                              </td>}
                               <td>
                                 <div className='action-btn-wrapper'>
                                   {!CostingViewMode && !IsLocked && <button title='Save' className="SaveIcon" type={'button'} onClick={() => SaveItem(index)} />}
