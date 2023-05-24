@@ -446,6 +446,28 @@ function OperationCost(props) {
                                 }
                               </td>}
                             <td>{netCost(item)}</td>
+                            {initialConfiguration.IsShowCRMHead && <td>
+                              <SearchableSelectHookForm
+                                name={`crmHeadOperation${index}`}
+                                type="text"
+                                label="CRM Head"
+                                errors={`${errors.crmHeadOperation}${index}`}
+                                Controller={Controller}
+                                control={control}
+                                register={register}
+                                mandatory={false}
+                                rules={{
+                                  required: false,
+                                }}
+                                placeholder={'Select'}
+                                customClassName="costing-selectable-dropdown"
+                                defaultValue={item.OperationCRMHead ? { label: item.OperationCRMHead, value: index } : ''}
+                                options={CRMHeads}
+                                required={false}
+                                handleChange={(e) => { onCRMHeadChange(e, index) }}
+                                disabled={CostingViewMode}
+                              />
+                            </td>}
                             <td>
                               <div className='action-btn-wrapper'>
                                 <button title='Save' className="SaveIcon mb-0 align-middle" type={'button'} onClick={() => SaveItem(index)} />
