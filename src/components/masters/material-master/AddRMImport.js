@@ -593,7 +593,6 @@ class AddRMImport extends Component {
       'RawMaterialGradeId',
       'RawMaterialSpecificationId',
       'CategoryId',
-      'Code',
       'Currency',
       'SourceSupplierPlantId',
       'DestinationPlant',
