@@ -322,9 +322,6 @@ function AddNfr(props) {
             let list = dataa?.data && dataa?.data[index]
             const userDetail = userDetails()
             let tempData = viewCostingData[0]
-            if (callAPI) {
-                saveEstimation()
-            }
             const Data = {
                 PartId: nfrData?.PartId,
                 PartTypeId: nfrPartDetail?.PartTypeId,
@@ -361,21 +358,56 @@ function AddNfr(props) {
                 CustomerName: '',
                 Customer: ''
             }
-            dispatch(createCosting(Data, (res) => {
-                if (res.data?.Result) {
-                    let obj = {
-                        nfrGroupId: rowData[index1]?.nfrPartWiseGroupDetailsId,
-                        vendorId: data?.value,
-                        costingId: res?.data?.Data?.CostingId,
-                    }
-                    dispatch(saveNFRCostingInfo(obj, (res) => { }))
-                    setpartInfoStepTwo({ costingId: res.data?.Data?.CostingId, NFRTypeId })
-                    setcostingData(res.data?.Data)
-                    dispatch(getBriefCostingById(res.data?.Data?.CostingId, () => {
-                        setIsAddDetails(true)
-                    }))
+            if (callAPI) {
+                let length = rowData?.length - 1
+                let requestObject = {
+                    GroupName: rowData[length]?.groupName,
+                    NfrId: nfrIdsList?.NfrMasterId,
+                    PlantId: initialConfiguration?.DefaultPlantId,
+                    NfrPartWiseDetailId: nfrIdsList?.NfrPartWiseDetailId,
+                    LoggedInUserId: loggedInUserId(),
+                    vendorList: _.map(rowData[length]?.data, 'value')
                 }
-            }))
+                dispatch(saveNFRGroupDetails(requestObject, (response) => {
+                    if (response?.data?.Result === true) {
+                        Toaster.success("Group details saved successfully")
+
+                        dispatch(createCosting(Data, (res) => {
+                            if (res.data?.Result) {
+                                let obj = {
+                                    nfrGroupId: response?.data?.Identity,
+                                    vendorId: data?.value,
+                                    costingId: res?.data?.Data?.CostingId,
+                                }
+                                dispatch(saveNFRCostingInfo(obj, (res) => { }))
+                                setpartInfoStepTwo({ costingId: res.data?.Data?.CostingId, NFRTypeId })
+                                setcostingData(res.data?.Data)
+                                dispatch(getBriefCostingById(res.data?.Data?.CostingId, () => {
+                                    setIsAddDetails(true)
+                                }))
+                            }
+                        }))
+                    }
+                }))
+            } else {
+
+                dispatch(createCosting(Data, (res) => {
+                    if (res.data?.Result) {
+                        let obj = {
+                            nfrGroupId: rowData[index1]?.nfrPartWiseGroupDetailsId,
+                            vendorId: data?.value,
+                            costingId: res?.data?.Data?.CostingId,
+                        }
+                        dispatch(saveNFRCostingInfo(obj, (res) => { }))
+                        setpartInfoStepTwo({ costingId: res.data?.Data?.CostingId, NFRTypeId })
+                        setcostingData(res.data?.Data)
+                        dispatch(getBriefCostingById(res.data?.Data?.CostingId, () => {
+                            setIsAddDetails(true)
+                        }))
+                    }
+                }))
+            }
+
         }
     }, 500);
 
@@ -587,7 +619,10 @@ function AddNfr(props) {
         }
 
         temprowDataInside = Object.assign([...temprowDataInside], { [indexInside]: tempData })
-        if (_.map(temprowDataInside, 'SelectedCostingVersion')?.includes(undefined)) {
+        let tempSelectedCostingList = _.map(temprowDataInside, 'SelectedCostingVersion')
+        const allStatusDraft = _.map(tempSelectedCostingList, 'StatusId').every(item => item === DRAFTID);
+
+        if (tempSelectedCostingList?.includes(undefined) && allStatusDraft) {
             setEditWarning(true)
             setFilterStatus('Select all costings to send for approval')
         } else {
