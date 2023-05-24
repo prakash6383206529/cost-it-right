@@ -290,6 +290,7 @@ function AddMoreOperation(props) {
         setValue('description', addMoreDetailObj.description)
         setValue('plant', { label: (addMoreDetailObj.costingTypeId === ZBCTypeId) ? addMoreDetailObj?.plants[0]?.Text : addMoreDetailObj?.destinationPlant.label, value: (addMoreDetailObj.costingTypeId === ZBCTypeId) ? addMoreDetailObj?.plants[0]?.Value : addMoreDetailObj?.destinationPlant.value })
         setValue('vendorName', { label: addMoreDetailObj?.vendor?.label, value: addMoreDetailObj?.vendor?.value })
+        setVendor({ label: addMoreDetailObj?.vendor?.label, value: addMoreDetailObj?.vendor?.value })
         setValue('uom', { label: addMoreDetailObj.UOM.label, value: addMoreDetailObj.UOM.value })
         setUom({ label: addMoreDetailObj.UOM.label, value: addMoreDetailObj.UOM.value })
         setPlant({ label: (addMoreDetailObj.costingTypeId === ZBCTypeId) ? addMoreDetailObj?.plants[0]?.Text : addMoreDetailObj?.destinationPlant.label, value: (addMoreDetailObj.costingTypeId === ZBCTypeId) ? addMoreDetailObj?.plants[0]?.Value : addMoreDetailObj?.destinationPlant.value })

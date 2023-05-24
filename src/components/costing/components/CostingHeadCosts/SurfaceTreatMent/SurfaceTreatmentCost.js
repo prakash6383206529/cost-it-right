@@ -341,6 +341,28 @@ function SurfaceTreatmentCost(props) {
                                 }
                               </td>}
                             <td>{item.SurfaceTreatmentCost ? checkForDecimalAndNull(item.SurfaceTreatmentCost, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
+                            {initialConfiguration.IsShowCRMHead && <td width={220}>
+                              <SearchableSelectHookForm
+                                name={`crmHeadSurface${index}`}
+                                type="text"
+                                label={false}
+                                errors={`${errors.crmHeadSurface}${index}`}
+                                Controller={Controller}
+                                control={control}
+                                register={register}
+                                mandatory={false}
+                                rules={{
+                                  required: false,
+                                }}
+                                placeholder={'Select'}
+                                customClassName={'withBorder error-label mn-height-auto mb-0 surface-treament'}
+                                defaultValue={item.SurfaceTreatmentCRMHead ? { label: item.SurfaceTreatmentCRMHead, value: index } : ''}
+                                options={CRMHeads}
+                                required={false}
+                                handleChange={(e) => { onCRMHeadChange(e, index) }}
+                                disabled={CostingViewMode}
+                              />
+                            </td>}
                             <td>
                               <div className='action-btn-wrapper'>
                                 <button title='Save' className="SaveIcon" type={'button'} disabled={CostingViewMode ? true : false} onClick={() => SaveItem(index)} />
