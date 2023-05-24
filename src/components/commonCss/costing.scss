@@ -544,3 +544,28 @@
   height: 32px;
   margin: 0;
 }
+
+.first-section {
+  padding-right: 0 !important;
+}
+
+.second-section {
+  padding: 0;
+
+  .costing-border-inner-section {
+    border-left: none !important;
+    height: 100%;
+
+    .col-md-12 {
+      margin-bottom: 1px;
+      text-align: right;
+
+      &:last-child {
+        height: calc(100% - 45px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+    }
+  }
+}
