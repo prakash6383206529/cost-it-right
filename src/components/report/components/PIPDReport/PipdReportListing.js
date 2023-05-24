@@ -599,7 +599,7 @@ function PipdReportListing(props) {
     };
     const rowClassRules = {
         'highlight-row': (params) => {
-            return params.data.PriceType === 'Net Price';
+            return params.data.PriceType === 'Net';
         },
     };
     const frameworkComponents = {
