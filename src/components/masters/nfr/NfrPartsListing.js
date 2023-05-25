@@ -113,6 +113,7 @@ function NfrPartsListing(props) {
             },
             objForpart: {
                 NfrPartStatusId: rowData?.NfrPartStatusId, PartNumber: rowData?.PartNumber, PartName: rowData?.PartName
+                , PartId: rowData?.PartId, PartType: rowData?.PartType, TechnologyId: rowData?.TechnologyId
             }
         }
         dispatch(nfrDetailsForDiscountAction(obj))
