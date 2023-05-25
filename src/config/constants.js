@@ -1742,6 +1742,7 @@ export const RECEIVED = 'Received'
 export const SUBMITTED = 'Submitted'
 export const SENT = 'Sent'
 export const DRAFTID = 1
+export const REJECTEDID = 4
 
 // MASTER APPROVAL STATUS ID
 export const APPROVED_STATUS = '3,5'
