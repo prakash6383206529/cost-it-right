@@ -123,15 +123,6 @@ function RawMaterialCost(props) {
   }, [dataFromAPI])
 
   useEffect(() => {
-    if (isNFR) {
-      gridData && gridData?.map((item, index) => {
-        setValue(`${rmGridFields}.${index}.GrossWeight`, item?.GrossWeight)
-        setValue(`${rmGridFields}.${index}.FinishWeight`, item?.FinishWeight)
-      })
-    }
-  }, [gridData])
-
-  useEffect(() => {
     setTimeout(() => {
       const Params = {
         index: props.index,
