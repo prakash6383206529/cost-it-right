@@ -7,7 +7,7 @@ import { Redirect, useHistory } from 'react-router';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { Col, Row, Table } from 'reactstrap';
 import { getVendorWithVendorCodeSelectList } from '../../../actions/Common';
-import { EMPTY_DATA, EMPTY_GUID, NFRTypeId, searchCount, DRAFT, DRAFTID } from '../../../config/constants';
+import { EMPTY_DATA, EMPTY_GUID, NFRTypeId, searchCount, DRAFT, DRAFTID, REJECTEDID } from '../../../config/constants';
 
 import { autoCompleteDropdown, costingTypeIdToApprovalTypeIdFunction } from '../../common/CommonFunctions';
 import HeaderTitle from '../../common/HeaderTitle';
@@ -166,7 +166,9 @@ function AddNfr(props) {
                         setValue("GroupName", "")
                         setIsVendorDisabled(true)
                     }
-                    if (newArray[0]?.statusId === DRAFTID) {
+                    if (newArray[0]?.statusId === DRAFTID || newArray[0]?.statusId === REJECTEDID) {
+                        setEditWarning(true)
+                        setFilterStatus('Select all costings to send for approval')
                         setSendForApprovalButtonDisable(false)
                     } else {
                         setSendForApprovalButtonDisable(true)
@@ -549,6 +551,16 @@ function AddNfr(props) {
         }
 
         temprowDataInside = Object.assign([...temprowDataInside], { [indexInside]: tempData })
+        let tempSelectedCostingList = _.map(temprowDataInside, 'SelectedCostingVersion')
+        const allStatusDraft = _.map(tempSelectedCostingList, 'StatusId').every(item => item === DRAFTID);
+
+        if (tempSelectedCostingList?.includes(undefined) && allStatusDraft) {
+            setEditWarning(true)
+            setFilterStatus('Select all costings to send for approval')
+        } else {
+            setEditWarning(false)
+            setFilterStatus('')
+        }
         let newObj = {
             data: temprowDataInside,
             groupName: temprowData[indexOuter]?.groupName,
@@ -777,19 +789,17 @@ function AddNfr(props) {
                                             </td>
                                             <td>{dataItem?.SelectedCostingVersion?.Price}</td>
                                             <td> <div className='action-btn-wrapper pr-2'>
-                                                {item?.statusId === DRAFTID &&
-                                                    <>
-                                                        {!isViewEstimation && <button className="Add-file" type={"button"} title={`${item?.groupName === 'PFS1' ? 'Create PFS1 Costing' : 'Add Costing'}`} onClick={() => addDetails(dataItem, indexOuter, indexInside, item?.groupName === 'PFS1')} />}
-                                                    </>}
+                                                {(item?.statusId === DRAFTID || item?.statusId === REJECTEDID) && <>
+                                                    {!isViewEstimation && <button className="Add-file" type={"button"} title={`${item?.groupName === 'PFS1' ? 'Create PFS1 Costing' : 'Add Costing'}`} onClick={() => addDetails(dataItem, indexOuter, indexInside, item?.groupName === 'PFS1')} />}
+                                                </>}
 
                                                 {!item?.IsNewCosting && item?.Status !== '' && dataItem?.SelectedCostingVersion && (<button className="View" type={"button"} title={"View Costing"} onClick={() => viewDetails(indexInside)} />)}
-                                                {item?.statusId === DRAFTID &&
-                                                    <>
-                                                        {!isViewEstimation && !item?.IsNewCosting && dataItem?.SelectedCostingVersion && (<button className="Edit" type={"button"} title={"Edit Costing"} onClick={() => editCosting(indexInside)} />)}
-                                                        {!isViewEstimation && !item?.IsNewCosting && dataItem?.SelectedCostingVersion && (<button className="Copy All" title={"Copy Costing"} type={"button"} onClick={() => copyCosting(indexInside)} />)}
-                                                        {!isViewEstimation && !item?.IsNewCosting && dataItem?.SelectedCostingVersion && (<button className="Delete All" title={"Delete Costing"} type={"button"} onClick={() => deleteItem(dataItem, indexInside, indexOuter)} />)}
-                                                        {!isViewEstimation && item?.CostingOptions?.length === 0 && dataItem?.SelectedCostingVersion && <button title='Discard' className="CancelIcon" type={'button'} onClick={() => deleteRowItem(indexInside)} />}
-                                                    </>}
+                                                {(item?.statusId === DRAFTID) && <>
+                                                    {!isViewEstimation && !item?.IsNewCosting && dataItem?.SelectedCostingVersion && (<button className="Edit" type={"button"} title={"Edit Costing"} onClick={() => editCosting(indexInside)} />)}
+                                                    {!isViewEstimation && !item?.IsNewCosting && dataItem?.SelectedCostingVersion && (<button className="Copy All" title={"Copy Costing"} type={"button"} onClick={() => copyCosting(indexInside)} />)}
+                                                    {!isViewEstimation && !item?.IsNewCosting && dataItem?.SelectedCostingVersion && (<button className="Delete All" title={"Delete Costing"} type={"button"} onClick={() => deleteItem(dataItem, indexInside, indexOuter)} />)}
+                                                    {!isViewEstimation && item?.CostingOptions?.length === 0 && dataItem?.SelectedCostingVersion && <button title='Discard' className="CancelIcon" type={'button'} onClick={() => deleteRowItem(indexInside)} />}
+                                                </>}
                                             </div></td>
                                             {indexInside === 0 && (
                                                 <td rowSpan={item?.data.length} className="table-record">
