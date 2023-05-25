@@ -53,9 +53,14 @@ function AddConditionCosting(props) {
         }
 
     }, [])
-
+    const onConditionChange = (e) => {
+        setValue('Type', '')
+        setValue('Percentage', '')
+        setValue('Cost', '')
+    }
 
     const onTypeChange = (e) => {
+        setValue('Cost', '')
         if (e?.label) {
             setType(e?.label)
             if (e?.label === 'Fixed') {
@@ -239,11 +244,11 @@ function AddConditionCosting(props) {
                                             register={register}
                                             mandatory={true}
                                             options={conditionDropdown}
-                                            handleChange={() => { }}
+                                            handleChange={onConditionChange}
                                             defaultValue={''}
                                             className=""
                                             customClassName={'withBorder'}
-                                            errors={errors.LossOfType}
+                                            errors={errors.Condition}
                                             disabled={props.CostingViewMode}
                                         />
                                     </Col>
