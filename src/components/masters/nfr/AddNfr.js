@@ -117,7 +117,7 @@ function AddNfr(props) {
         let requestObject = {
             nfrId: nfrIdsList?.NfrMasterId,
             partWiseDetailId: nfrIdsList?.NfrPartWiseDetailId,
-            plantId: nfrData?.PlantId ? nfrData?.PlantId : initialConfiguration?.DefaultPlantId
+            plantId: nfrData?.PlantId ? nfrData?.PlantId : nfrPartDetail?.PlantId
         }
         dispatch(getNFRPartWiseGroupDetail(requestObject, (res) => {
             // setNFRPartWiseGroupDetails(res?.data?.Data)
@@ -336,12 +336,12 @@ function AddNfr(props) {
                 // VendorPlantCode: tempData.vendorPlantCode,
                 VendorName: list?.vendorName,
                 VendorCode: list?.vendorCode,
-                PlantId: initialConfiguration?.DefaultPlantId,
-                PlantName: initialConfiguration?.DefaultPlantName,
-                PlantCode: initialConfiguration?.DefaultPlantCode,
-                DestinationPlantId: initialConfiguration?.DefaultPlantId,
-                DestinationPlantName: initialConfiguration?.DefaultPlantName,
-                DestinationPlantCode: initialConfiguration?.DefaultPlantCode,
+                PlantId: nfrPartDetail?.PlantId,
+                PlantName: nfrPartDetail?.PlantName,
+                PlantCode: nfrPartDetail?.PlantCode,
+                DestinationPlantId: nfrPartDetail?.PlantId,
+                DestinationPlantName: nfrPartDetail?.PlantName,
+                DestinationPlantCode: nfrPartDetail?.PlantCode,
                 UserId: loggedInUserId(),
                 LoggedInUserId: loggedInUserId(),
                 ShareOfBusinessPercent: 0,
@@ -363,7 +363,7 @@ function AddNfr(props) {
                 let requestObject = {
                     GroupName: rowData[length]?.groupName,
                     NfrId: nfrIdsList?.NfrMasterId,
-                    PlantId: initialConfiguration?.DefaultPlantId,
+                    PlantId: nfrPartDetail?.PlantId,
                     NfrPartWiseDetailId: nfrIdsList?.NfrPartWiseDetailId,
                     LoggedInUserId: loggedInUserId(),
                     vendorList: _.map(rowData[length]?.data, 'value')
@@ -517,7 +517,7 @@ function AddNfr(props) {
         let requestObject = {
             GroupName: rowData[length]?.groupName,
             NfrId: nfrIdsList?.NfrMasterId,
-            PlantId: initialConfiguration?.DefaultPlantId,
+            PlantId: nfrPartDetail?.PlantId,
             NfrPartWiseDetailId: nfrIdsList?.NfrPartWiseDetailId,
             LoggedInUserId: loggedInUserId(),
             vendorList: _.map(rowData[length]?.data, 'value')
