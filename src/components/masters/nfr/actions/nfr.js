@@ -211,3 +211,40 @@ export function saveNFRCostingInfo(data, callback) {
         });
     };
 }
+
+/**
+ * @method saveOutsourcingData
+ * @description save Outsourcing Data
+ */
+export function saveOutsourcingData(requestData, callback) {
+    return (dispatch) => {
+        axios.post(API.saveOutsourcingData, requestData, config())
+            .then((response) => {
+                if (response && response.status === 200) {
+                    callback(response);
+                }
+            }).catch((error) => {
+                apiErrors(error);
+                callback(error);
+            });
+    };
+}
+
+/**
+ * @method getNFRCostingOutsourcingDetails
+ * @description getNFRCostingOutsourcingDetails
+ */
+export function getNFRCostingOutsourcingDetails(baseCostingId, callback) {
+    return (dispatch) => {
+        const request = axios.get(`${API.getNFRCostingOutsourcingDetails}/${baseCostingId}`, config());
+        request.then((response) => {
+            if (response.data.Result || response.status === 204) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE, });
+            callback(error);
+            apiErrors(error);
+        });
+    };
+}

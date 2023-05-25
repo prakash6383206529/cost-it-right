@@ -832,7 +832,9 @@ function TabDiscountOther(props) {
           "OtherCostApplicabilityId": otherCostApplicability.value,
           "OtherCostApplicability": otherCostApplicability.label,
           "DiscountApplicbilityId": discountCostApplicability.value,
-          "DiscountApplicability": discountCostApplicability.label
+          "DiscountApplicability": discountCostApplicability.label,
+          "SANumber": getValues('SANumber'),
+          "LineNumber": getValues('LineNumber'),
         }
       },
       "Attachements": updatedFiles

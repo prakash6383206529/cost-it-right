@@ -1038,6 +1038,8 @@ export const API = {
   getNfrSelectList: `${BASE_URL}/rfq-quotation/select-list-get-nfr`,
   getRawMaterialByNFRPart: `${BASE_URL}/nfr/get-raw-material-by-nfr-part`,
   saveNFRCostingInfo: `${BASE_URL}/nfr/save-nfr-costing-info`,
+  saveOutsourcingData: `${BASE_URL}/nfr/save-nfr-costing-outsorcing-details`,
+  getNFRCostingOutsourcingDetails: `${BASE_URL}/nfr/get-nfr-costing-outsorcing-details`,
 
 
   //SUB ASSEMBLY
@@ -2279,4 +2281,4 @@ export const KEYRFQ = "UAGSqTBCbZ8JqHJl"
 export const IVRFQ = "8vFNmRQEl91nOtrM"
 
 //VERSION 
-export const VERSION = "V2.1.165";
+export const VERSION = "V2.1.167";
