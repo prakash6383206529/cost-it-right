@@ -103,7 +103,7 @@ function AddNfr(props) {
     useEffect(() => {
         let rowtemp = rowData.filter(element => Number(element?.statusId) === DRAFTID)
         let dataList = _.map(rowtemp[0]?.data, 'SelectedCostingVersion')
-        if (dataList.includes(undefined)) {
+        if (dataList?.length === 0 || dataList.includes(undefined)) {
             // if (dataList.every(value => value === undefined)) {
             setAllCostingNotSelected(true)
         } else {
@@ -622,12 +622,18 @@ function AddNfr(props) {
         let tempSelectedCostingList = _.map(temprowDataInside, 'SelectedCostingVersion')
         const allStatusDraft = _.map(tempSelectedCostingList, 'StatusId').every(item => item === DRAFTID);
 
-        if (tempSelectedCostingList?.includes(undefined) && allStatusDraft) {
+        if (tempSelectedCostingList?.includes(undefined)) {
             setEditWarning(true)
             setFilterStatus('Select all costings to send for approval')
-        } else {
+            setSendForApprovalButtonDisable(true)
+        } else if (allStatusDraft) {
             setEditWarning(false)
             setFilterStatus('')
+            setSendForApprovalButtonDisable(false)
+        } else {
+            setEditWarning(true)
+            setFilterStatus('Please select draft costing to send for approval')
+            setSendForApprovalButtonDisable(true)
         }
 
         let newObj = {
