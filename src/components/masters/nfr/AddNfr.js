@@ -14,7 +14,7 @@ import NoContentFound from '../../common/NoContentFound';
 import Toaster from '../../common/Toaster';
 import { AsyncSearchableSelectHookForm, SearchableSelectHookForm, TextFieldHookForm } from '../../layout/HookFormInputs';
 import { getNFRPartWiseGroupDetail, saveNFRCostingInfo, saveNFRGroupDetails } from './actions/nfr';
-import { checkVendorPlantConfigurable, loggedInUserId, userDetails, userTechnologyLevelDetails } from '../../../helper';
+import { checkForNull, checkVendorPlantConfigurable, loggedInUserId, userDetails, userTechnologyLevelDetails } from '../../../helper';
 import { dataLiist } from '../../../config/masterData';
 import { checkFinalUser, createCosting, createPFS2Costing, deleteDraftCosting, getBriefCostingById, storePartNumber } from '../../costing/actions/Costing';
 import ApprovalDrawer from './ApprovalDrawer';
@@ -24,6 +24,7 @@ import { MESSAGES } from '../../../config/message';
 import { getUsersTechnologyLevelAPI } from '../../../actions/auth/AuthActions';
 import WarningMessage from '../../common/WarningMessage'
 import LoaderCustom from '../../common/LoaderCustom';
+import OutsourcingDrawer from './OutsourcingDrawer';
 
 
 
@@ -66,6 +67,8 @@ function AddNfr(props) {
     const [isOEQAAdded, setIsOEQAAdded] = useState(false);
     const [callAPI, setCallAPI] = useState(false);
     const [latestRow, setlatestRow] = useState('');
+    const [showOutsourcingDrawer, setShowOutsourcingDrawer] = useState('');
+    const [OutsourcingCostingData, setOutsourcingCostingData] = useState({});
 
     const [isVendorDisabled, setIsVendorDisabled] = useState(false);
     const [shouldBeLevel, setShouldBeLevel] = useState(0);
@@ -112,7 +115,7 @@ function AddNfr(props) {
 
     }, [rowData])
 
-    useEffect(() => {
+    const getDetails = () => {
         setLoader(true)
         let requestObject = {
             nfrId: nfrIdsList?.NfrMasterId,
@@ -120,7 +123,6 @@ function AddNfr(props) {
             plantId: nfrData?.PlantId ? nfrData?.PlantId : nfrPartDetail?.PlantId
         }
         dispatch(getNFRPartWiseGroupDetail(requestObject, (res) => {
-            // setNFRPartWiseGroupDetails(res?.data?.Data)
             if (res?.data?.Result) {
                 const newArray = res?.data?.Data?.groupWiseResponse?.map((item) => {
                     const vendorData = item.VendorList.map((vendor) => {
@@ -220,7 +222,10 @@ function AddNfr(props) {
             setLevelDetails(levelDetailsTemp)
 
         }))
+    }
 
+    useEffect(() => {
+        getDetails()
     }, [])
 
     // Sets the initial values of the form fields based on the nfrData prop.
@@ -664,6 +669,21 @@ function AddNfr(props) {
     const onBackButton = () => {
         props?.close()
     }
+
+    const formToggle = (data) => {
+        setOutsourcingCostingData(data)
+        setTimeout(() => {
+            setShowOutsourcingDrawer(true)
+        }, 300);
+    }
+
+    const closeOutsourcingDrawer = (type) => {
+        if (type === 'submit') {
+            getDetails()
+        }
+        setShowOutsourcingDrawer(false)
+    }
+
     return (
         <>
             {(loader && <LoaderCustom customClass="pdf-loader" />)}
@@ -808,6 +828,7 @@ function AddNfr(props) {
                                 <th>Costing Version</th>
                                 <th className="text-center">Status</th>
                                 <th>PO Price</th>
+                                <th>Outsourcing Cost</th>
                                 <th className='text-right'>Action</th>
                                 <th className="table-record">Row Action</th>
                             </tr>
@@ -863,6 +884,17 @@ function AddNfr(props) {
                                                 </div>
                                             </td>
                                             <td>{dataItem?.SelectedCostingVersion?.Price}</td>
+                                            <td>{checkForNull(dataItem?.SelectedCostingVersion?.OutsourcingCost)}
+                                                <button
+                                                    type="button"
+                                                    className={"user-btn mr5"}
+                                                    onClick={() => { formToggle(dataItem?.SelectedCostingVersion) }}
+                                                    title="Add"
+                                                >
+                                                    <div className={"plus mr-0"}></div>
+                                                    {/* ADD */}
+                                                </button>
+                                            </td>
                                             <td> <div className='action-btn-wrapper pr-2'>
                                                 {(item?.statusId === DRAFTID || item?.statusId === REJECTEDID) &&
                                                     <>
@@ -941,6 +973,13 @@ function AddNfr(props) {
                     levelDetails={levelDetails}
                 />
             }
+            {showOutsourcingDrawer &&
+                <OutsourcingDrawer
+                    isOpen={showOutsourcingDrawer}
+                    closeDrawer={closeOutsourcingDrawer}
+                    anchor={'right'}
+                    CostingId={OutsourcingCostingData?.CostingId}
+                />}
         </>
     );
 }
