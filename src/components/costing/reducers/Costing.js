@@ -406,28 +406,35 @@ export default function costingReducer(state = initialState, action) {
         ComponentItemDiscountData: action.payload
       }
     case GET_RM_DRAWER_DATA_LIST:
-      let isNFR = action?.isNFR
-      let list = []
-      let rmNameList = action?.rmNameList
+      // let isNFR = action?.isNFR
+      // let list = []
+      // let rmNameList = action?.rmNameList
+      // let temp = [...action.payload]
+      // let arrayRM = temp && temp.map((item) => {
+      //   item.NetLandedCostCombine = item.EntryType === IMPORT ? item.NetLandedCostConversion : item.NetLandedCost
+      //   item.NetLandedCostCurrency = item.EntryType === IMPORT ? item.NetLandedCost : '-'
+      //   return item
+      // })
+      // if (isNFR) {
+      //   arrayRM && arrayRM?.filter(element => {
+      //     if (rmNameList?.includes(element?.RawMaterial)) {
+      //       list.push(element)
+      //     }
+      //   })
+      // } else {
+      //   list = [...arrayRM]
+      // }
       let temp = [...action.payload]
       let arrayRM = temp && temp.map((item) => {
         item.NetLandedCostCombine = item.EntryType === IMPORT ? item.NetLandedCostConversion : item.NetLandedCost
         item.NetLandedCostCurrency = item.EntryType === IMPORT ? item.NetLandedCost : '-'
         return item
       })
-      if (isNFR) {
-        arrayRM && arrayRM?.filter(element => {
-          if (rmNameList?.includes(element?.RawMaterial)) {
-            list.push(element)
-          }
-        })
-      } else {
-        list = [...arrayRM]
-      }
+
       return {
         ...state,
         loading: false,
-        rmDrawerList: list
+        rmDrawerList: arrayRM
       }
     case GET_PROCESS_DRAWER_DATA_LIST:
       return {
