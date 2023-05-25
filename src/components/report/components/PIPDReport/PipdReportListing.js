@@ -15,7 +15,7 @@ function PipdReportListing(props) {
     const [gridApi, setGridApi] = useState(null);
     const [gridColumnApi, setgridColumnApi] = useState(null);
     const [noRecordFound, setNoRecordFound] = useState(false);
-    const [isLoader, setIsLoader] = useState(false);
+    const [isLoader, setIsLoader] = useState(true);
     const costReportFormData = useSelector(state => state.report.costReportFormGridData)
 
     const startDate = costReportFormData && costReportFormData.fromDate
@@ -30,6 +30,9 @@ function PipdReportListing(props) {
 
     };
 
+    setTimeout(() => {
+        setIsLoader(false)
+    }, 800);
 
     const PIPDDataCompany = [
 
