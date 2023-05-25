@@ -32,7 +32,7 @@ function NfrSummaryDrawer(props) {
     const [nfrData, setNFRData] = useState({})
     const [finalLevelUser, setFinalLevelUser] = useState(true)
     const [levelDetails, setLevelDetails] = useState({})
-    const [sendForApprovalButtonShow, setSendForApprovalButtonShow] = useState(true)
+    const [sendForApprovalButtonShow, setSendForApprovalButtonShow] = useState(false)
     const [isFinalLevelUser, setIsFinalLevelUser] = useState(false)
     const [isOpen, setIsOpen] = useState(false)
     const [isCostingDrawerLoader, setIsCostingDrawerLoader] = useState(false)
