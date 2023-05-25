@@ -74,6 +74,9 @@ function NfrSummaryDrawer(props) {
                     levelDetailsTemp = userTechnologyLevelDetails(NFRTypeId, res?.data?.Data?.TechnologyLevels)
                     if (Number(levelDetailsTemp?.length) === 0) {
                         setSendForApprovalButtonShow(false)
+                        setTimeout(() => {
+                            setIsDataCome(true)
+                        }, 100);
                     } else {
                         let obj = {}
                         obj.DepartmentId = userDetails().DepartmentId
@@ -85,6 +88,9 @@ function NfrSummaryDrawer(props) {
                             if (res?.data?.Result) {
                                 setSendForApprovalButtonShow(true)
                                 setIsFinalLevelUser(res?.data?.Data?.IsFinalApprover)
+                                setTimeout(() => {
+                                    setIsDataCome(true)
+                                }, 100);
                             }
                         }))
                     }
@@ -92,9 +98,6 @@ function NfrSummaryDrawer(props) {
                 }))
 
             }
-            setTimeout(() => {
-                setIsDataCome(true)
-            }, 200);
         }))
     }, [])
 
