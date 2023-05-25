@@ -39,6 +39,7 @@ export const CUSTOMER_POAM_EXCEL_TEMPLATE = [
 //MASTER MOVEMENT EXCEL TEMPLATE
 
 export const RM_DOMESTIC_TEMPLATE = [
+    { label: 'RM Code', value: 'MasterCode' },
     { label: 'Basic Rate', value: 'BasicRatePerUOM', },
     { label: 'Freight Cost', value: 'RMFreightCost', },
     { label: 'Shearing Cost', value: 'RMShearingCost', },
@@ -47,6 +48,7 @@ export const RM_DOMESTIC_TEMPLATE = [
     { label: 'Effective Date', value: 'EffectiveDate', }
 ]
 export const RM_IMPORT_TEMPLATE = [
+    { label: 'RM Code', value: 'MasterCode' },
     { label: 'Basic Rate', value: 'BasicRatePerUOM', },
     { label: 'Freight Cost', value: 'RMFreightCost', },
     { label: 'Shearing Cost', value: 'RMShearingCost', },
@@ -56,19 +58,28 @@ export const RM_IMPORT_TEMPLATE = [
     { label: 'Effective Date', value: 'EffectiveDate', }
 ]
 export const BOP_DOMESTIC_TEMPLATE = [
+    { label: 'BOP No.', value: 'MasterCode', },
     { label: 'Basic Rate', value: 'BasicRatePerUOM', },
     { label: 'UOM', value: 'UnitOfMeasurement', },
     { label: 'Net Landed (Total)', value: 'NetLandedCost', },
     { label: 'Effective Date', value: 'EffectiveDate', }
 ]
 export const BOP_IMPORT_TEMPLATE = [
+    { label: 'BOP No.', value: 'MasterCode', },
     { label: 'Basic Rate', value: 'BasicRatePerUOM', },
     { label: 'UOM', value: 'UnitOfMeasurement', },
     { label: 'Net Landed (Currency)', value: 'NetLandedCost', },
     { label: 'Net Landed Total (INR)', value: 'NetLandedCostCurrency', },
     { label: 'Effective Date', value: 'EffectiveDate', }
 ]
-export const MACHINE_OPERATION_TEMPLATE = [
+export const MACHINE_TEMPLATE = [
+    { label: 'Machine No', value: 'MasterCode', },
+    { label: 'UOM', value: 'UnitOfMeasurement', },
+    { label: 'Net Landed (Total)', value: 'NetLandedCost', },
+    { label: 'Effective Date', value: 'EffectiveDate', }
+]
+export const OPERATION_TEMPLATE = [
+    { label: 'Operation Code', value: 'MasterCode', },
     { label: 'UOM', value: 'UnitOfMeasurement', },
     { label: 'Net Landed (Total)', value: 'NetLandedCost', },
     { label: 'Effective Date', value: 'EffectiveDate', }
