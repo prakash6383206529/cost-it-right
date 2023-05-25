@@ -551,7 +551,10 @@ function AddNfr(props) {
         }
 
         temprowDataInside = Object.assign([...temprowDataInside], { [indexInside]: tempData })
-        if (_.map(temprowDataInside, 'SelectedCostingVersion')?.includes(undefined)) {
+        let tempSelectedCostingList = _.map(temprowDataInside, 'SelectedCostingVersion')
+        const allStatusDraft = _.map(tempSelectedCostingList, 'StatusId').every(item => item === DRAFTID);
+
+        if (tempSelectedCostingList?.includes(undefined) && allStatusDraft) {
             setEditWarning(true)
             setFilterStatus('Select all costings to send for approval')
         } else {
