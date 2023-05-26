@@ -884,16 +884,16 @@ function AddNfr(props) {
                                                 </div>
                                             </td>
                                             <td>{dataItem?.SelectedCostingVersion?.Price}</td>
-                                            <td>{checkForNull(dataItem?.SelectedCostingVersion?.OutsourcingCost)}
+                                            <td><div className='out-sourcing-wrapper'>
+                                                {checkForNull(dataItem?.SelectedCostingVersion?.OutsourcingCost)}
                                                 <button
                                                     type="button"
-                                                    className={"user-btn mr5"}
+                                                    className={"add-out-sourcing"}
                                                     onClick={() => { formToggle(dataItem?.SelectedCostingVersion) }}
                                                     title="Add"
                                                 >
-                                                    <div className={"plus mr-0"}></div>
-                                                    {/* ADD */}
                                                 </button>
+                                            </div>
                                             </td>
                                             <td> <div className='action-btn-wrapper pr-2'>
                                                 {(item?.statusId === DRAFTID || item?.statusId === REJECTEDID) &&

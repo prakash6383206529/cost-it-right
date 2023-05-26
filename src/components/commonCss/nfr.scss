@@ -118,3 +118,19 @@
     }
 
 }
+
+.out-sourcing-wrapper {
+    display: flex;
+    align-items: center;
+    grid-gap: 5px;
+}
+
+.out-sourcing-table {
+    .table-footer {
+        .text-right {
+            button {
+                display: none;
+            }
+        }
+    }
+}

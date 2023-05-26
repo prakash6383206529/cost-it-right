@@ -169,10 +169,17 @@ function OutsourcingDrawer(props) {
     return outputArray
   }
 
-  /**
-  * @method render
-  * @description Renders the component
-  */
+  const editItemDetails = (index) => {
+    setIsEdit(true)
+    setDescription(gridData[index].Description.label)
+    setValue("Cost", gridData[index].Cost)
+
+  }
+  const deleteItem = (index) => {
+    let list = [...gridData]
+    list.splice(index, 1)
+    setgridData(list)
+  }
   return (
     <div>
       <Drawer
@@ -181,7 +188,7 @@ function OutsourcingDrawer(props) {
       // onClose={(e) => toggleDrawer(e)}
       >
         <Container>
-          <div className={"drawer-wrapper"}>
+          <div className={"drawer-wrapper layout-min-width-640px"}>
             <Row className="drawer-heading">
               <Col>
                 <div className={"header-wrapper left"}>
@@ -196,7 +203,7 @@ function OutsourcingDrawer(props) {
 
             <form onSubmit={handleSubmit(onSubmit)}>
               <Row className="pl-3">
-                <Col md="6">
+                <Col md="4">
                   <SearchableSelectHookForm
                     label={"Description"}
                     name={"Description"}
@@ -211,7 +218,7 @@ function OutsourcingDrawer(props) {
                     errors={errors.Plant}
                   />
                 </Col>
-                <Col md="6">
+                <Col md="4">
                   <TextFieldHookForm
                     label={`Cost`}
                     name={'Cost'}
@@ -233,7 +240,7 @@ function OutsourcingDrawer(props) {
                   />
                 </Col>
 
-                <Col md="6">
+                <Col md="4" className='pt-1'>
                   {isEdit ? (
                     <>
                       <button type="button" className={"btn btn-primary mt30 pull-left mr5"} onClick={updateRow}>Update</button>
@@ -270,41 +277,41 @@ function OutsourcingDrawer(props) {
 
 
                 <Col md="12">
-                  <Table className="table border" size="sm">
+                  <Table className="table border out-sourcing-table" size="sm">
                     <thead>
                       <tr>
                         <th>{`Description`}</th>
                         <th>{`Cost`}</th>
-                        {/* <th>{`Action`}</th> */}
+                        <th className='text-right'>{`Action`}</th>
                       </tr>
                     </thead>
                     <tbody>
                       {gridData && gridData.map((item, index) => {
                         return (
-                          <tr key={index}>
+                          <tr key={index} className={item.Description.label === "Total" ? "table-footer" : ""}>
                             <td>{item?.Description?.label}</td>
                             <td>{checkForDecimalAndNull(item?.Cost, initialConfiguration.NoOfDecimalForPrice)}</td>
 
-                            {/* <td>
-                                <button
-                                  className="Edit mr-2"
-                                  title='Edit'
-                                  type={"button"}
-                                  disabled={isViewMode || item?.IsAssociated}
-                                  onClick={() =>
-                                    this.editItemDetails(index)
-                                  }
-                                />
-                                <button
-                                  className="Delete"
-                                  title='Delete'
-                                  type={"button"}
-                                  disabled={isViewMode || item?.IsAssociated || isGridEdit}
-                                  onClick={() =>
-                                    this.deleteItem(index)
-                                  }
-                                />
-                              </td> */}
+                            <td className='text-right'>
+                              <button
+                                className="Edit mr-2"
+                                title='Edit'
+                                type={"button"}
+                                disabled={false}
+                                onClick={() =>
+                                  editItemDetails(index)
+                                }
+                              />
+                              <button
+                                className="Delete"
+                                title='Delete'
+                                type={"button"}
+                                disabled={false}
+                                onClick={() =>
+                                  deleteItem(index)
+                                }
+                              />
+                            </td>
                           </tr>
                         );
                       })}
@@ -335,7 +342,7 @@ function OutsourcingDrawer(props) {
                   </button>
 
                   <button type="submit" className="submit-button save-btn">
-                    <div class="plus"></div>
+                    <div class="save-icon"></div>
                     {"Save"}
                   </button>
                 </div>
