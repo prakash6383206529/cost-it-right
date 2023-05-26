@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Container, Row, Col, Table } from 'reactstrap';
 import Drawer from '@material-ui/core/Drawer';
 import { SearchableSelectHookForm, TextFieldHookForm, } from '../../layout/HookFormInputs';
-import { EMPTY_DATA, ZBC } from '../../../config/constants';
+import { EMPTY_DATA } from '../../../config/constants';
 import { checkForDecimalAndNull, checkWhiteSpaces, number, decimalNumberLimit6, loggedInUserId } from '../../../helper';
 import NoContentFound from '../../common/NoContentFound';
 import Toaster from '../../common/Toaster';
@@ -12,12 +12,9 @@ import { getNFRCostingOutsourcingDetails, saveOutsourcingData } from './actions/
 
 function OutsourcingDrawer(props) {
 
-  const { register, handleSubmit, formState: { errors }, control, reset, getValues, setValue } = useForm();
-  // const { register, handleSubmit, control, setValue, getValues, reset, formState: { errors }, } = useForm({
-  //   mode: 'onChange',
-  //   reValidateMode: 'onChange',
-  // });
+  const { register, handleSubmit, formState: { errors }, control, getValues, setValue } = useForm();
 
+  const { viewMode } = props
   const [description, setDescription] = useState('');
   const [isEdit, setIsEdit] = useState(false);
   const [gridData, setgridData] = useState([]);
@@ -39,25 +36,27 @@ function OutsourcingDrawer(props) {
   useEffect(() => {
     if (props?.CostingId) {
       dispatch(getNFRCostingOutsourcingDetails(props?.CostingId, (res) => {
-        let data = res?.data?.Data
-        const mappedArray = data.NFRCostingOutsourcingDetails.map(detail => ({
-          Description: {
-            label: detail.OutsourcingName,
-            value: detail.OutsourcingName
-          },
-          Cost: detail.OutsourcingRate
-        }));
+        if (res?.data?.Data > 0 || res?.status === 200) {
+          let data = res?.data?.Data
+          const mappedArray = data.NFRCostingOutsourcingDetails.map(detail => ({
+            Description: {
+              label: detail.OutsourcingName,
+              value: detail.OutsourcingName
+            },
+            Cost: detail.OutsourcingRate
+          }));
 
-        const totalCost = {
-          Description: {
-            label: "Total",
-            value: "Total"
-          },
-          Cost: data.OutsourcingCost
-        };
+          const totalCost = {
+            Description: {
+              label: "Total",
+              value: "Total"
+            },
+            Cost: data.OutsourcingCost
+          };
 
-        mappedArray.push(totalCost);
-        setgridData(mappedArray)
+          mappedArray.push(totalCost);
+          setgridData(mappedArray)
+        }
       }))
     }
   }, []);
@@ -109,9 +108,8 @@ function OutsourcingDrawer(props) {
       NFRCostingOutsourcingDetails: datalist
     }
     dispatch(saveOutsourcingData(req, (res) => {
-
+      props.closeDrawer('submit')
     }))
-    props.closeDrawer('submit')
   }
 
   const resetValues = () => {
@@ -123,7 +121,7 @@ function OutsourcingDrawer(props) {
   const calculateSumOfValues = (data) => {
     let sum = 0;
     for (let i = 0; i < data.length; i++) {
-      sum += parseInt(data[i].Cost);
+      sum += Number(data[i].Cost);
     }
     return sum;
   }
@@ -134,10 +132,32 @@ function OutsourcingDrawer(props) {
       return false
     }
     let list = [...gridData]
-    list.pop();
+    if (list?.length === 6) {
+      Toaster.warning("Maximum 5 rows can be added")
+      return false
+    }
     let obj = {}
     obj.Description = description
-    obj.Cost = getValues("Cost")
+    obj.Cost = Number(getValues("Cost"))
+    if (list?.length > 0) {
+      list.pop();
+
+      const label_to_check = obj.Description.label;
+
+      let is_present = false;
+      for (let i = 0; i < list.length; i++) {
+        const obj = list[i];
+        if (obj.Description.label === label_to_check) {
+          is_present = true;
+          break;
+        }
+      }
+
+      if (is_present) {
+        Toaster.warning("Data already exists")
+        return false
+      }
+    }
     list.push(obj)
     let total = {
       Description: { label: "Total", value: "Total" },
@@ -149,13 +169,22 @@ function OutsourcingDrawer(props) {
     resetValues()
   }
 
-  const updateRow = (index) => {
+  const updateRow = () => {
     let list = [...gridData]
-    let obj = {}
-    obj.Description = description
-    obj.Cost = getValues("Cost")
-    list.push(obj)
-    setgridData(list)
+    list.pop();
+    let editIndex = list?.findIndex(ele => ele?.Description === description)
+    let obj = { ...list[editIndex] }
+    obj.Cost = Number(getValues("Cost"))
+    let dataList = Object.assign([...list], { [editIndex]: obj })
+    let totalCost = calculateSumOfValues(dataList)
+    setTotalCost(totalCost)
+    let total = {
+      Description: { label: "Total", value: "Total" },
+      Cost: totalCost
+    }
+    dataList.push(total)
+    setIsEdit(false)
+    setgridData(dataList)
     resetValues()
   }
 
@@ -170,16 +199,20 @@ function OutsourcingDrawer(props) {
   }
 
   const editItemDetails = (index) => {
+    let obj = gridData[index]
     setIsEdit(true)
-    setDescription(gridData[index].Description.label)
-    setValue("Cost", gridData[index].Cost)
-
+    setDescription(obj.Description)
+    setValue("Description", obj.Description)
+    setValue("Cost", obj.Cost)
   }
+
   const deleteItem = (index) => {
     let list = [...gridData]
     list.splice(index, 1)
     setgridData(list)
+    resetValues()
   }
+
   return (
     <div>
       <Drawer
@@ -216,6 +249,7 @@ function OutsourcingDrawer(props) {
                     mandatory={false}
                     handleChange={handleDescriptionChange}
                     errors={errors.Plant}
+                    disabled={viewMode}
                   />
                 </Col>
                 <Col md="4">
@@ -236,19 +270,26 @@ function OutsourcingDrawer(props) {
                     className=""
                     customClassName={'withBorder'}
                     errors={errors.Cost}
-                    disabled={false}
+                    disabled={viewMode}
                   />
                 </Col>
 
                 <Col md="4" className='pt-1'>
                   {isEdit ? (
                     <>
-                      <button type="button" className={"btn btn-primary mt30 pull-left mr5"} onClick={updateRow}>Update</button>
+                      <button
+                        type="button"
+                        className={"btn btn-primary mt30 pull-left mr5"}
+                        onClick={updateRow}
+                        disabled={viewMode}
+                      >
+                        Update
+                      </button>
                       <button
                         type="button"
                         className={"mr15 ml-1 mt30 add-cancel-btn cancel-btn"}
-                        disabled={false}
                         onClick={() => resetValues()}
+                        disabled={viewMode}
                       >
                         <div className={"cancel-icon"}></div>Cancel
                       </button>
@@ -258,7 +299,7 @@ function OutsourcingDrawer(props) {
                       <button
                         type="button"
                         className={"user-btn mt30 pull-left"}
-                        disabled={false}
+                        disabled={viewMode}
                         onClick={addRow}
                       >
                         <div className={"plus"}></div>ADD
@@ -266,7 +307,7 @@ function OutsourcingDrawer(props) {
                       <button
                         type="button"
                         className={"mr15 ml-1 mt30 reset-btn"}
-                        disabled={false}
+                        disabled={viewMode}
                         onClick={() => resetValues()}
                       >
                         Reset
@@ -297,7 +338,7 @@ function OutsourcingDrawer(props) {
                                 className="Edit mr-2"
                                 title='Edit'
                                 type={"button"}
-                                disabled={false}
+                                disabled={viewMode}
                                 onClick={() =>
                                   editItemDetails(index)
                                 }
@@ -306,7 +347,7 @@ function OutsourcingDrawer(props) {
                                 className="Delete"
                                 title='Delete'
                                 type={"button"}
-                                disabled={false}
+                                disabled={viewMode}
                                 onClick={() =>
                                   deleteItem(index)
                                 }
@@ -341,7 +382,11 @@ function OutsourcingDrawer(props) {
                     {"Cancel"}
                   </button>
 
-                  <button type="submit" className="submit-button save-btn">
+                  <button
+                    type="submit"
+                    className="submit-button save-btn"
+                    disabled={viewMode}
+                  >
                     <div class="save-icon"></div>
                     {"Save"}
                   </button>

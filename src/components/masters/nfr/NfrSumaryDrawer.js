@@ -20,6 +20,7 @@ import { AgGridColumn } from "ag-grid-react/lib/agGridColumn";
 import { PaginationWrapper } from "../../common/commonPagination";
 import WarningMessage from "../../common/WarningMessage";
 import Toaster from "../../common/Toaster";
+import OutsourcingDrawer from "./OutsourcingDrawer";
 const gridOptions = {};
 
 function NfrSummaryDrawer(props) {
@@ -42,6 +43,8 @@ function NfrSummaryDrawer(props) {
     const [noData, setNoData] = useState(false)
     const [selectedRowData, setSelectedRowData] = useState([]);
     const [isDataCome, setIsDataCome] = useState(false);
+    const [showOutsourcingDrawer, setShowOutsourcingDrawer] = useState('');
+    const [OutsourcingCostingData, setOutsourcingCostingData] = useState({});
 
     const dispatch = useDispatch()
 
@@ -199,11 +202,39 @@ function NfrSummaryDrawer(props) {
         var selectedRows = gridApi && gridApi?.getSelectedRows();
     }
 
+    const viewOutsourcing = (data) => {
+        setOutsourcingCostingData(data)
+        setTimeout(() => {
+            setShowOutsourcingDrawer(true)
+        }, 300);
+
+    }
+
+    const outsourcingFormatter = (props) => {
+        const cellValue = props?.value;
+        const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
+
+        return cellValue ?
+            (
+                <div>
+                    <button
+                        type="button"
+                        title='View'
+                        className="float-right mb-0 View "
+                        onClick={() => viewOutsourcing(rowData)}
+                    >
+                    </button>
+                    {cellValue}
+                </div>
+            ) : '-'
+    }
+
     const frameworkComponents = {
         onAction: onAction,
         plantFormatter: plantFormatter,
         vendorFormatter: vendorFormatter,
-        checkBoxRenderer: checkBoxRenderer
+        checkBoxRenderer: checkBoxRenderer,
+        outsourcingFormatter: outsourcingFormatter
     }
 
     const onRowSelect = (event) => {
@@ -228,6 +259,10 @@ function NfrSummaryDrawer(props) {
             return false
         }
         setApprovalDrawer(true)
+    }
+
+    const closeOutsourcingDrawer = (type) => {
+        setShowOutsourcingDrawer(false)
     }
 
     return (
@@ -326,6 +361,7 @@ function NfrSummaryDrawer(props) {
                                                         <AgGridColumn field="PlantName" headerName='Plant' cellRenderer={'plantFormatter'}></AgGridColumn>
                                                         <AgGridColumn field="CostingNumber" headerName='Costing' ></AgGridColumn>
                                                         <AgGridColumn field="NetPOPrice" headerName='Net PO' ></AgGridColumn>
+                                                        <AgGridColumn field="OutsourcingCost" headerName='Outsourcing Cost' cellRenderer={'outsourcingFormatter'}></AgGridColumn>
                                                         <AgGridColumn field="CostingId" headerName='Actions' type="rightAligned" cellRenderer={'onAction'}></AgGridColumn>
 
                                                     </AgGridReact>}
@@ -373,6 +409,14 @@ function NfrSummaryDrawer(props) {
                     isSimulation={false}
                     simulationDrawer={false}
                     isReportLoader={isCostingDrawerLoader}
+                />}
+            {showOutsourcingDrawer &&
+                <OutsourcingDrawer
+                    isOpen={showOutsourcingDrawer}
+                    closeDrawer={closeOutsourcingDrawer}
+                    anchor={'right'}
+                    CostingId={OutsourcingCostingData?.CostingId}
+                    viewMode={true}
                 />}
             {approvalDrawer && sendForApprovalButtonShow && <ApprovalDrawer isOpen={approvalDrawer} anchor="right" closeDrawer={closeDrawer} hideTable={true} nfrData={nfrData} type='Approve' isFinalLevelUser={isFinalLevelUser} pushData={selectedRowData} />}
             {rejectDrawer && sendForApprovalButtonShow && <ApprovalDrawer isOpen={rejectDrawer} anchor="right" closeDrawer={closeDrawer} hideTable={true} nfrData={nfrData} rejectDrawer={true} isFinalLevelUser={isFinalLevelUser} pushData={selectedRowData} />}
