@@ -313,7 +313,7 @@ function SupplierContributionReport(props) {
                             labelSecond = labelSecond - 30
                         }
 
-                        if (chart.data.labels[i].length > 19) {
+                        if (chart.data.labels[i].length > 25) {
                             labelSecond = labelSecond + 50
                         }
 
