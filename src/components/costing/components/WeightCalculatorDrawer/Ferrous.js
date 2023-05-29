@@ -110,7 +110,7 @@ function Ferrous(props) {
             sum = sum + checkForNull(getValues(`rmGridFields.${index}.Percentage`))
             return null
         })
-        return sum;
+        return checkForDecimalAndNull(sum, getConfigurationKey().NoOfDecimalForInputOutput);
     }
 
     const percentageChange = (e) => {
