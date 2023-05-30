@@ -142,7 +142,8 @@ function AddNfr(props) {
                         data: vendorData,
                         nfrPartWiseGroupDetailsId: item.NfrPartWiseGroupDetailsId,
                         status: item.Status,
-                        statusId: item.StatusId
+                        statusId: item.StatusId,
+                        isRejectedBySAP: item.IsRejectedBySAP,
                     };
                 });
 
@@ -158,7 +159,7 @@ function AddNfr(props) {
                     shouldBelevel = 1
                 } else {
                     let index = newArray?.length - 1
-                    if (newArray[index]?.isRejectedBySAP === true) {                // NOT REJECTED         first level
+                    if (newArray[0]?.isRejectedBySAP === true) {                // NOT REJECTED         first level
                         // if (!newArray[index]?.isRejectedBySAP) {
                         shouldBelevel = newArray?.length + 1
                         setFreezeUpperLevels(true)
@@ -258,7 +259,8 @@ function AddNfr(props) {
             groupName: getValues('GroupName'),
             data: vendorList,
             status: DRAFT,
-            statusId: DRAFTID
+            statusId: DRAFTID,
+            isRejectedBySAP: false,
         };
         setSendForApprovalButtonDisable(false)
         setEditWarning(false)
@@ -652,7 +654,8 @@ function AddNfr(props) {
             groupName: temprowData[indexOuter]?.groupName,
             nfrPartWiseGroupDetailsId: temprowData[indexOuter]?.nfrPartWiseGroupDetailsId,
             status: temprowData[indexOuter]?.status,
-            statusId: temprowData[indexOuter]?.statusId
+            statusId: temprowData[indexOuter]?.statusId,
+            isRejectedBySAP: temprowData[indexOuter]?.isRejectedBySAP,
         }
         temprowData = Object.assign([...temprowData], { [indexOuter]: newObj })
         setRowData(temprowData)
@@ -898,19 +901,20 @@ function AddNfr(props) {
                                                     type="button"
                                                     className={"add-out-sourcing"}
                                                     onClick={() => { formToggle(dataItem?.SelectedCostingVersion, indexOuter, indexInside) }}
+                                                    disabled={(item?.isRejectedBySAP === true) ? true : false}
                                                     title="Add"
                                                 >
                                                 </button>}
                                             </div>
                                             </td>
                                             <td> <div className='action-btn-wrapper pr-2'>
-                                                {(item?.statusId === DRAFTID || item?.statusId === REJECTEDID) &&
+                                                {(item?.isRejectedBySAP === false) &&
                                                     <>
                                                         {!isViewEstimation && <button className="Add-file" type={"button"} title={`${item?.groupName === 'PFS1' ? 'Create PFS1 Costing' : 'Add Costing'}`} onClick={() => addDetails(dataItem, indexOuter, indexInside, item?.groupName === 'PFS1')} />}
                                                     </>}
 
                                                 {!item?.IsNewCosting && item?.Status !== '' && dataItem?.SelectedCostingVersion && (<button className="View" type={"button"} title={"View Costing"} onClick={() => viewDetails(indexInside)} />)}
-                                                {(item?.statusId === DRAFTID) &&
+                                                {(item?.isRejectedBySAP === false) &&
                                                     <>
                                                         {!isViewEstimation && !item?.IsNewCosting && dataItem?.SelectedCostingVersion && (<button className="Edit" type={"button"} title={"Edit Costing"} onClick={() => editCosting(indexInside)} />)}
                                                         {!isViewEstimation && !item?.IsNewCosting && dataItem?.SelectedCostingVersion && (<button className="Copy All" title={"Copy Costing"} type={"button"} onClick={() => copyCosting(indexInside)} />)}
@@ -920,7 +924,7 @@ function AddNfr(props) {
                                             </div></td>
                                             {indexInside === 0 && (
                                                 <td rowSpan={item?.data.length} className="table-record">
-                                                    <button className="Edit" type={"button"} title={"Edit Costing"} onClick={() => editRow(item, indexInside)} disabled={isViewEstimation || item?.statusId !== DRAFTID} />
+                                                    <button className="Edit" type={"button"} title={"Edit Costing"} onClick={() => editRow(item, indexInside)} disabled={isViewEstimation || (item?.isRejectedBySAP === true ? true : false)} />
                                                     {/* <button className="Delete All ml-1" title={"Delete Costing"} type={"button"} onClick={() => deleteRow(item, indexInside)} disabled={isViewEstimation || item?.statusId !== DRAFTID} /> */}
                                                 </td>
                                             )}
