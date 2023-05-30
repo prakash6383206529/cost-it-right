@@ -10,6 +10,7 @@ import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import { EMPTY_DATA, defaultPageSize } from '../../../config/constants';
 import { hyphenFormatter } from '../masterUtil';
 import { PaginationWrapper, onPageSizeChanged } from '../../common/commonPagination';
+import NoContentFound from '../../common/NoContentFound';
 
 const gridOptions = {};
 function RMDrawer(props) {
@@ -50,7 +51,8 @@ function RMDrawer(props) {
 
     const frameworkComponents = {
         hyphenFormatter: hyphenFormatter,
-        dateFormater: dateFormater
+        dateFormater: dateFormater,
+        customNoRowsOverlay: NoContentFound
     }
 
     return (
@@ -69,55 +71,51 @@ function RMDrawer(props) {
                                 ></div>
                             </Col>
                         </Row>
-                        <button type="button" className="user-btn mr-2" title="Reset Grid" onClick={() => resetState()}>
-                            <div className="refresh mr-0"></div>
-                        </button>
-                        <div className={`ag-grid-react`}>
-                            <div className="ag-theme-material p-relative">
-                                <AgGridReact
-                                    style={{ height: '100%', width: '100%' }}
-                                    defaultColDef={defaultColDef}
-                                    floatingFilter={true}
-                                    domLayout='autoHeight'
-                                    // columnDefs={c}
-                                    rowData={rowData}
-                                    pagination={true}
-                                    paginationPageSize={defaultPageSize}
-                                    onGridReady={onGridReady}
-                                    gridOptions={gridOptions}
-                                    loadingOverlayComponent={'customLoadingOverlay'}
-                                    noRowsOverlayComponent={'customNoRowsOverlay'}
-                                    noRowsOverlayComponentParams={{
-                                        title: EMPTY_DATA,
-                                        imagClass: "imagClass"
-                                    }}
-                                    suppressRowClickSelection={true}
-                                    frameworkComponents={frameworkComponents}
-                                // onFilterModified={onFloatingFilterChanged}
-                                >
-                                    <AgGridColumn field="RawMaterialCode" headerName="Raw Material Code"></AgGridColumn>
-                                    <AgGridColumn field="RmUom" headerName="UOM"></AgGridColumn>
-                                    <AgGridColumn field="GrossWeight" headerName="Gross Weight"></AgGridColumn>
-                                    <AgGridColumn field="NetWeight" headerName="Net Weight"></AgGridColumn>
-                                    <AgGridColumn field="NfrPartWiseDetailIdRef" hide></AgGridColumn>
-                                </AgGridReact>
-                                {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />}
-                            </div>
-                        </div>
 
-                        <div className="text-right px-0">
-                            <button
-                                type="button"
-                                className="reset mr15 cancel-btn"
-                                onClick={(e) => closeDrawer('close')}
-                            >
-                                <div className={'cancel-icon'}></div>
-                                {'Cancel'}
-                            </button>
-                        </div>
+                        <Row>
+                            <Col md="12">
+                                <button type="button" className="user-btn mb-2" title="Reset Grid" onClick={() => resetState()}>
+                                    <div className="refresh mr-0"></div>
+                                </button>
+                            </Col>
+                            <Col md="12">
+                                <div className={`ag-grid-react `}>
+                                    <div className={`ag-theme-material p-relative ${rowData && rowData.length <= 0 ? "overlay-contain" : ""}`} >
+                                        <AgGridReact
+                                            style={{ height: '100%', width: '100%' }}
+                                            defaultColDef={defaultColDef}
+                                            floatingFilter={true}
+                                            domLayout='autoHeight'
+                                            // columnDefs={c}
+                                            rowData={rowData}
+                                            pagination={true}
+                                            paginationPageSize={defaultPageSize}
+                                            onGridReady={onGridReady}
+                                            gridOptions={gridOptions}
+                                            loadingOverlayComponent={'customLoadingOverlay'}
+                                            noRowsOverlayComponent={'customNoRowsOverlay'}
+                                            noRowsOverlayComponentParams={{
+                                                title: EMPTY_DATA,
+                                                imagClass: "imagClass"
+                                            }}
+                                            suppressRowClickSelection={true}
+                                            frameworkComponents={frameworkComponents}
+                                        // onFilterModified={onFloatingFilterChanged}
+                                        >
+                                            <AgGridColumn field="RawMaterialCode" headerName="Raw Material Code"></AgGridColumn>
+                                            <AgGridColumn field="RmUom" headerName="UOM"></AgGridColumn>
+                                            <AgGridColumn field="GrossWeight" headerName="Gross Weight"></AgGridColumn>
+                                            <AgGridColumn field="NetWeight" headerName="Net Weight"></AgGridColumn>
+                                            <AgGridColumn field="NfrPartWiseDetailIdRef" hide></AgGridColumn>
+                                        </AgGridReact>
+                                        {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />}
+                                    </div>
+                                </div>
+                            </Col>
+                        </Row>
                     </div>
                 </div>
-            </Drawer>
+            </Drawer >
         </>
     )
 }
