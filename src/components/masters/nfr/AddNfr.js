@@ -69,6 +69,8 @@ function AddNfr(props) {
     const [latestRow, setlatestRow] = useState('');
     const [showOutsourcingDrawer, setShowOutsourcingDrawer] = useState('');
     const [OutsourcingCostingData, setOutsourcingCostingData] = useState({});
+    const [indexOuter, setIndexOuter] = useState('');
+    const [indexInside, setIndexInside] = useState('');
 
     const [isVendorDisabled, setIsVendorDisabled] = useState(false);
     const [shouldBeLevel, setShouldBeLevel] = useState(0);
@@ -187,6 +189,10 @@ function AddNfr(props) {
                     pfsArray[0].SelectedCostingVersion = pfsArray[0]?.data[0]?.CostingOptions[0]
                     tempArrForCosting = Object.assign([...newArray], { [pfsIndex]: pfsArray[0] })
                     setlatestRow(tempArrForCosting?.length - 1)
+                }
+                if (indexOuter !== '' || indexInside !== '') {
+                    let temp = tempArrForCosting[indexOuter].data[indexInside]?.CostingOptions
+                    tempArrForCosting[indexOuter].data[indexInside].SelectedCostingVersion = temp?.filter(element => element?.CostingId === OutsourcingCostingData?.CostingId)[0]
                 }
                 setRowData(tempArrForCosting)
             }
@@ -670,7 +676,9 @@ function AddNfr(props) {
         props?.close()
     }
 
-    const formToggle = (data) => {
+    const formToggle = (data, indexOuter, indexInside) => {
+        setIndexOuter(indexOuter)
+        setIndexInside(indexInside)
         setOutsourcingCostingData(data)
         setTimeout(() => {
             setShowOutsourcingDrawer(true)
@@ -886,13 +894,13 @@ function AddNfr(props) {
                                             <td>{dataItem?.SelectedCostingVersion?.Price}</td>
                                             <td><div className='out-sourcing-wrapper'>
                                                 {checkForNull(dataItem?.SelectedCostingVersion?.OutsourcingCost)}
-                                                <button
+                                                {dataItem?.SelectedCostingVersion && <button
                                                     type="button"
                                                     className={"add-out-sourcing"}
-                                                    onClick={() => { formToggle(dataItem?.SelectedCostingVersion) }}
+                                                    onClick={() => { formToggle(dataItem?.SelectedCostingVersion, indexOuter, indexInside) }}
                                                     title="Add"
                                                 >
-                                                </button>
+                                                </button>}
                                             </div>
                                             </td>
                                             <td> <div className='action-btn-wrapper pr-2'>
