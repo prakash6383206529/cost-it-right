@@ -28,7 +28,7 @@ import { getRMFromNFR } from '../../../../masters/nfr/actions/nfr'
 let counter = 0;
 let timerId = 0
 function RawMaterialCost(props) {
-  const { item } = props;
+  const { item, rawMaterialCalculatorId } = props;
   const IsLocked = (item.IsLocked ? item.IsLocked : false) || (item.IsPartLocked ? item.IsPartLocked : false)
   const { register, handleSubmit, control, setValue, getValues, formState: { errors }, reset } = useForm({
     mode: 'onChange',
@@ -350,7 +350,7 @@ function RawMaterialCost(props) {
         }))
         break;
       case Ferrous_Casting:
-        dispatch(getRawMaterialCalculationForFerrous(item.CostingId, tempData.RawMaterialId, gridData[0].WeightCalculationId ? gridData[0].WeightCalculationId : tempData.RawMaterialCalculatorId, res => {
+        dispatch(getRawMaterialCalculationForFerrous(item.CostingId, tempData.RawMaterialId, rawMaterialCalculatorId, res => {
           setCalculatorData(res, index)
         }))
         break;
