@@ -5213,17 +5213,17 @@ export const MRGridForTokenSummary = [
     { label: "Variance (Proc. Cost)", value: "NetProcessCostVariance" },
 ]
 
-export const RMImpactedDownloadArray = ["RawMaterial", "RMGrade", "RMSpec", "RawMaterialCode", "Category", "UOM", "TechnologyName", "Vendor", "ExistingBasicRate", "RevisedBasicRate", "ExistingScrapRate", "RevisedScrapRate", "EffectiveDate"]
+export const RMImpactedDownloadArray = ["RawMaterial", "RMGrade", "RMSpec", "RawMaterialCode", "Category", "UOM", "TechnologyName", "Vendor", "ExistingBasicRate", "RevisedBasicRate", "ExistingScrapRate", "RevisedScrapRate", "CurrentEffectiveDate"]
 
-export const OperationImpactDownloadArray = ["OperationName", "OperationCode", "UOM", "ExistingOperationRate", "RevisedOperationRate", "EffectiveDate",]
+export const OperationImpactDownloadArray = ["OperationName", "OperationCode", "UOM", "ExistingOperationRate", "RevisedOperationRate", "CurrentEffectiveDate",]
 
-export const STOperationImpactDownloadArray = ["STOperationName", "OperationCode", "UOM", "ExistingOperationRate", "RevisedOperationRate", "EffectiveDate",]
+export const STOperationImpactDownloadArray = ["STOperationName", "OperationCode", "UOM", "ExistingOperationRate", "RevisedOperationRate", "CurrentEffectiveDate",]
 
-export const BOPImpactDownloadArray = ["BoughtOutPartNumber", "BoughtOutPartName", "Category", "Vendor", "ExistingBOPRate", "RevisedBOPRate", "EffectiveDate",]
+export const BOPImpactDownloadArray = ["BoughtOutPartNumber", "BoughtOutPartName", "Category", "Vendor", "ExistingBOPRate", "RevisedBOPRate", "CurrentEffectiveDate",]
 
-export const ERImpactDownloadArray = ["Currency", "BankRate", "BankCommissionPercentage", "CustomRate", "CurrencyExchangeRate", "ExistingExchangeRate", "RevisedExchangeRate", "EffectiveDate",]
+export const ERImpactDownloadArray = ["Currency", "BankRate", "BankCommissionPercentage", "CustomRate", "CurrencyExchangeRate", "ExistingExchangeRate", "RevisedExchangeRate", "CurrentEffectiveDate",]
 
-export const MachineImpactDownloadArray = ['MachineName', 'MachineNumber', 'MachineTypeName', 'ProcessName', 'ProcessCode', 'UOM', 'Vendor', 'ExistingMachineRate', 'RevisedMachineRate', 'EffectiveDate']
+export const MachineImpactDownloadArray = ['MachineName', 'MachineNumber', 'MachineTypeName', 'ProcessName', 'ProcessCode', 'UOM', 'Vendor', 'ExistingMachineRate', 'RevisedMachineRate', 'CurrentEffectiveDate']
 
 export const CPImpactDownloadArray = ["CostingNumber", "PartNumber", "ExistingNetCC", "RevisedNetCC", "ExistingPOPrice", "RevisedPOPrice", "EffectiveDate"]
 

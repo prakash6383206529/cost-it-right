@@ -589,7 +589,7 @@ function RMSimulation(props) {
                                                 <AgGridColumn width={120} field="NewNetLandedCost" editable='false' valueGetter='data.NewBasicRate + data.RMFreightCost+data.RMShearingCost' cellRenderer={'NewcostFormatter'} headerName="New" colId='NewNetLandedCost'></AgGridColumn>
                                             </AgGridColumn>
                                             }
-                                            <AgGridColumn width={140} field="EffectiveDate" editable='false' cellRenderer={'effectiveDateFormatter'} headerName={props.isImpactedMaster ? "Current RM Effective date" : "Effective Date"} ></AgGridColumn>
+                                            <AgGridColumn width={140} field="EffectiveDate" editable='false' cellRenderer={'effectiveDateFormatter'} headerName={props.isImpactedMaster && !props.lastRevision ? "Current Effective date" : "Effective Date"} ></AgGridColumn>
                                             <AgGridColumn field="RawMaterialId" hide></AgGridColumn>
 
                                         </AgGridReact>}
