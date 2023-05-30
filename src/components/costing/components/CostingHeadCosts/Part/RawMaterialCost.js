@@ -286,7 +286,7 @@ function RawMaterialCost(props) {
         }))
         break;
       case Ferrous_Casting:
-        dispatch(getRawMaterialCalculationForFerrous(item.CostingId, tempData.RawMaterialId, gridData[0].WeightCalculationId ? gridData[0].WeightCalculationId : tempData.RawMaterialCalculatorId, res => {
+        dispatch(getRawMaterialCalculationForFerrous(item.CostingId, tempData.RawMaterialId, rawMaterialCalculatorId, res => {
           setCalculatorData(res, index)
         }))
         break;
