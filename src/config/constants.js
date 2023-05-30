@@ -1040,6 +1040,7 @@ export const API = {
   saveNFRCostingInfo: `${BASE_URL}/nfr/save-nfr-costing-info`,
   saveOutsourcingData: `${BASE_URL}/nfr/save-nfr-costing-outsorcing-details`,
   getNFRCostingOutsourcingDetails: `${BASE_URL}/nfr/get-nfr-costing-outsorcing-details`,
+  getRMFromNFR: `${BASE_URL}/nfr/get-nfr-part-wise-raw-materials`,
 
 
   //SUB ASSEMBLY
@@ -2281,4 +2282,4 @@ export const KEYRFQ = "UAGSqTBCbZ8JqHJl"
 export const IVRFQ = "8vFNmRQEl91nOtrM"
 
 //VERSION 
-export const VERSION = "V2.1.167";
+export const VERSION = "V2.1.169";

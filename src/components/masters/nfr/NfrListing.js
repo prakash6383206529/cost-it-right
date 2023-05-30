@@ -199,7 +199,7 @@ function NfrListing(props) {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         let tempStatus = '-'
-        tempStatus = row?.Status
+        tempStatus = row?.DisplayStatus
 
         return <div className={cell}>{tempStatus}</div>
     }
@@ -350,6 +350,7 @@ function NfrListing(props) {
                                                 {/* <AgGridColumn cellClass="has-checkbox" field="QuotationNumber" headerName='RFQ No.' cellRenderer={'linkableFormatter'} ></AgGridColumn> */}
                                                 <AgGridColumn field="NfrNumber" headerName="NFR Id" width={150} cellRenderer={hyphenFormatter}></AgGridColumn>
                                                 <AgGridColumn field="ProductCode" headerName='Product Code' maxWidth={150} cellRenderer={hyphenFormatter}></AgGridColumn>
+                                                <AgGridColumn field="NfrRefNumber" headerName='Nfr Ref. Number' maxWidth={150} cellRenderer={hyphenFormatter}></AgGridColumn>
                                                 <AgGridColumn field="NfrVersion" headerName='Version/Revision' cellRenderer={hyphenFormatter}></AgGridColumn>
                                                 <AgGridColumn field="NumberOfParts" headerName='No. of Parts' cellRenderer={hyphenFormatter}></AgGridColumn>
                                                 <AgGridColumn field="SimulatedOn" headerName='Simulated On' cellRenderer={dateFormater}></AgGridColumn>
