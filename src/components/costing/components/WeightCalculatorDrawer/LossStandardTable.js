@@ -265,7 +265,7 @@ function LossStandardTable(props) {
       return false
     }
 
-    if (LossWeight === 0 || LossOfType === '') {
+    if (LossWeight === 0 || LossOfType === '' || LossOfType === undefined) {
       Toaster.warning("Please add data first.")
       return false;
     }
