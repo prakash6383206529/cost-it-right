@@ -302,18 +302,18 @@ function SupplierContributionReport(props) {
                         line = forLeftLine
                         labelSecond = forLeftLabel
 
-                        if (chart.data.labels[i].length < 13) {
+                        if (chart.data.labels[i].length < 20) {
                             labelSecond = labelSecond + 30
                         }
                     } else {
                         line = forRightLine
                         labelSecond = forRightLabel
 
-                        if (chart.data.labels[i].length < 13) {
+                        if (chart.data.labels[i].length < 15) {
                             labelSecond = labelSecond - 30
                         }
 
-                        if (chart.data.labels[i].length > 19) {
+                        if (chart.data.labels[i].length > 25) {
                             labelSecond = labelSecond + 50
                         }
 
