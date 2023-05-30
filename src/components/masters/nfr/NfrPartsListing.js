@@ -21,6 +21,7 @@ import AddNfr from './AddNfr';
 import DrawerTechnologyUpdate from './DrawerTechnologyUpdate';
 import { ASSEMBLY } from '../../../config/masterData';
 import Toaster from '../../common/Toaster';
+import RMDrawer from './RMDrawer';
 const gridOptions = {};
 
 
@@ -48,6 +49,7 @@ function NfrPartsListing(props) {
     const [nfrIdsList, setNFRIdsList] = useState(props?.isFromDiscount ? nfrDetailsForDiscount?.objectFordisc : {})
     const [isViewMode, setIsViewMode] = useState(false)
     const [showDrawer, setShowDrawer] = useState(false)
+    const [rmDrawer, setRMDrawer] = useState(false)
     const [rowDataFortechnologyUpdate, setRowDataFortechnologyUpdate] = useState({})
     const { topAndLeftMenuData } = useSelector(state => state.auth);
 
@@ -119,6 +121,13 @@ function NfrPartsListing(props) {
         dispatch(nfrDetailsForDiscountAction(obj))
     }
 
+    const viewRM = (rowData) => {
+        setNFRIdsList({ NfrMasterId: rowData?.NfrMasterId, NfrPartWiseDetailId: rowData?.NfrPartWiseDetailId })
+        setTimeout(() => {
+            setRMDrawer(true)
+        }, 300);
+    }
+
     const associatePartWithTechnology = (value, rowData, viewMode) => {
         setRowDataFortechnologyUpdate(rowData)
         setShowDrawer(true)
@@ -139,6 +148,7 @@ function NfrPartsListing(props) {
 
         return (
             <>
+                {<button title='View RM' className="View mr-1" type={'button'} onClick={() => viewRM(rowData)} />}
                 {<button title='View' className="View mr-1" type={'button'} onClick={() => editPartHandler(cellValue, rowData, true)} />}
                 <button title='Edit' className="Edit mr-1" type={'button'} onClick={() => editPartHandler(cellValue, rowData, false)} />
                 <button title='Associate part with technology' className="create-rfq mr-1" type={'button'} onClick={() => associatePartWithTechnology(cellValue, rowData, false)} />
@@ -216,6 +226,10 @@ function NfrPartsListing(props) {
             getDataList()
         }
         setShowDrawer(false)
+    }
+
+    const closeRMDrawer = (e = '') => {
+        setRMDrawer(false)
     }
 
     const onFloatingFilterChanged = (value) => {
@@ -385,6 +399,14 @@ function NfrPartsListing(props) {
                     closeDrawer={closeTechnologyUpdateDrawer}
                     anchor={'right'}
                     rowDataFortechnologyUpdate={rowDataFortechnologyUpdate}
+                />
+            }
+            {rmDrawer &&
+                <RMDrawer
+                    isOpen={rmDrawer}
+                    closeDrawer={closeRMDrawer}
+                    anchor={'right'}
+                    NfrPartWiseDetailId={nfrIdsList?.NfrPartWiseDetailId}
                 />
             }
 

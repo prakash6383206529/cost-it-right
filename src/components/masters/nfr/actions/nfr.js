@@ -99,9 +99,9 @@ export function nfrSendToApproverBySender(requestData, callback) {
  * @method getNFRApprovals
  * @description get NFR Approvals
  */
-export function getNFRApprovals(callback) {
+export function getNFRApprovals(userId, callback) {
     return (dispatch) => {
-        const request = axios.get(`${API.getNFRApprovals}`, config());
+        const request = axios.get(`${API.getNFRApprovals}?loggedInUserId=${userId}`, config());
         request.then((response) => {
             if (response.data.Result || response.status === 204) {
                 callback(response);
@@ -256,6 +256,25 @@ export function getNFRCostingOutsourcingDetails(baseCostingId, callback) {
 export function getRMFromNFR(data, callback) {
     return (dispatch) => {
         const request = axios.get(`${API.getRMFromNFR}?technologyId=${data?.technologyId}&nfrId=${data?.nfrId}&partId=${data?.partId}&vendorId=${data?.vendorId}&plantId=${data?.plantId}&costingId=${data?.costingId}&effectiveDate=${data?.effectiveDate}`, config());
+        request.then((response) => {
+            if (response?.data?.Result || response?.status === 204) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE, });
+            callback(error);
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+* @method getRawMaterialByNFRPart
+ * @description getRawMaterialByNFRPart
+ */
+export function getRawMaterialByNFRPart(nfrPartWiseDetailId, callback) {
+    return (dispatch) => {
+        const request = axios.get(`${API.getRawMaterialByNFRPart}?nfrPartWiseDetailId=${nfrPartWiseDetailId}`, config());
         request.then((response) => {
             if (response?.data?.Result || response?.status === 204) {
                 callback(response);
