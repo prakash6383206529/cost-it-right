@@ -31,6 +31,7 @@ function PartCompoment(props) {
   const [IsOpen, setIsOpen] = useState(false);
   const [totalFinishWeight, setTotalFinishWeight] = useState(0);
   const [Count, setCount] = useState(0);
+  const [rawMaterialCalculatorId, setRawMaterialCalculatorId] = useState('');
   const { CostingEffectiveDate, partNumberAssembly, partNumberArrayAPICall, bomLevel, assemblyNumber } = useSelector(state => state.costing)
   const { ComponentItemData, RMCCTabData, checkIsDataChange, DiscountCostData, OverheadProfitTabData, SurfaceTabData, ToolTabData, PackageAndFreightTabData, getAssemBOPCharge } = useSelector(state => state.costing)
 
@@ -83,6 +84,7 @@ function PartCompoment(props) {
         dispatch(getRMCCTabData(data, false, (res) => {
           if (res && res.data && res.data.Result) {
             let Data = res.data.DataList[0]?.CostingPartDetails;
+            setRawMaterialCalculatorId(Data.RawMaterialCalculatorId)
             dispatch(setProcessGroupGrid(Data.CostingConversionCost.CostingProcessCostResponse))
             // dispatch(setAllCostingInArray(Data))
             props.setPartDetails(BOMLevel, PartNumber, Data, item)
