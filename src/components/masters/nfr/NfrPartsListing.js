@@ -148,7 +148,7 @@ function NfrPartsListing(props) {
 
         return (
             <>
-                {<button title='View RM' className="View mr-1" type={'button'} onClick={() => viewRM(rowData)} />}
+                {<button title='View RM' className="view-masters mr-1" type={'button'} onClick={() => viewRM(rowData)} />}
                 {<button title='View' className="View mr-1" type={'button'} onClick={() => editPartHandler(cellValue, rowData, true)} />}
                 <button title='Edit' className="Edit mr-1" type={'button'} onClick={() => editPartHandler(cellValue, rowData, false)} />
                 <button title='Associate part with technology' className="create-rfq mr-1" type={'button'} onClick={() => associatePartWithTechnology(cellValue, rowData, false)} />
