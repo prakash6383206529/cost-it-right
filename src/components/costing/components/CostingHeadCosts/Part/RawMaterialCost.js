@@ -832,7 +832,7 @@ function RawMaterialCost(props) {
         gridData && gridData.map((item, index) => {
           item.FinishWeight = weightData.CostingFerrousCalculationRawMaterials[index].FinishWeight ? weightData.CostingFerrousCalculationRawMaterials[index].FinishWeight : 0
           item.GrossWeight = weightData.CostingFerrousCalculationRawMaterials[index].GrossWeight ? weightData.CostingFerrousCalculationRawMaterials[index].GrossWeight : 0
-          item.NetLandedCost = weightData.RawMaterialCost
+          item.NetLandedCost = index === 0 ? weightData.RawMaterialCost : 0
           item.WeightCalculatorRequest = weightData
           item.WeightCalculationId = weightData.WeightCalculationId
           item.RawMaterialCalculatorId = weightData.WeightCalculationId
@@ -1231,6 +1231,7 @@ function RawMaterialCost(props) {
                   <tbody className='rm-table-body'>
                     {gridData &&
                       gridData.map((item, index) => {
+                        console.log('item: ', item);
                         return (
                           <tr key={index} className=''>
                             <td className='text-overflow'><span title={item.RMName}>{item.RMName}</span></td>
@@ -1338,7 +1339,9 @@ function RawMaterialCost(props) {
                             <td>
                               <div className='d-flex'>
                                 <div className='w-fit' id={`net-rm-cost${index}`}><TooltipCustom disabledIcon={true} tooltipClass="net-rm-cost" id={`net-rm-cost${index}`} tooltipText="Net RM Cost = (RM Rate * Gross Weight) - (Scrap Weight * Scrap Rate)" />{item?.NetLandedCost !== undefined ? checkForDecimalAndNull(item.NetLandedCost, initialConfiguration.NoOfDecimalForPrice) : ''}
-                                </div> {forgingInfoIcon[index] && costData?.TechnologyId === FORGING && <TooltipCustom id={`forging-tooltip${index}`} customClass={"mt-1 ml-2"} tooltipText={`RMC is calculated on the basis of Forging Scrap Rate.`} />}
+                                </div>
+                                {forgingInfoIcon[index] && costData?.TechnologyId === FORGING && <TooltipCustom id={`forging-tooltip${index}`} customClass={"mt-1 ml-2"} tooltipText={`RMC is calculated on the basis of Forging Scrap Rate.`} />}
+                                {index === 0 && (item.RawMaterialCalculatorId !== '' && item?.RawMaterialCalculatorId > 0) && costData?.TechnologyId === Ferrous_Casting && <TooltipCustom id={`forging-tooltip${index}`} customClass={"mt-1 ml-2"} tooltipText={`This is RMC of all RM present in alloy.`} />}
                               </div>
                             </td>
                             <td>
