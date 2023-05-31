@@ -1299,13 +1299,13 @@ function AddRfq(props) {
                                     </Row>
                                     <div>
                                         {showTooltip && <Tooltip className="rfq-tooltip-left" placement={"top"} isOpen={viewTooltip} toggle={tooltipToggle} target={"quantity-tooltip"} >{"To add the quantity please double click on the field."}</Tooltip>}
-                                        {!loader ? <div className={`ag-grid-react ${!state ? "layout-min-height-300px" : ""}`}>
+                                        {!loader ? <div className={`ag-grid-react`}>
                                             <Row>
                                                 <Col>
                                                     <div className={`ag-grid-wrapper height-width-wrapper ${partList && partList.length <= 0 ? "overlay-contain border" : ""} `}>
 
-                                                        <div className={`ag-theme-material `}>
-                                                            {!state ? <LoaderCustom customClass={!state ? 'mt-3' : ''} /> :
+                                                        <div className={`ag-theme-material ${!state ? "custom-min-height-208px" : ''}`}>
+                                                            {!state ? <LoaderCustom customClass={""} /> :
                                                                 <AgGridReact
                                                                     defaultColDef={defaultColDef}
                                                                     //floatingFilter={true}
