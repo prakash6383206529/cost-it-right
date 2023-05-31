@@ -187,16 +187,16 @@ function MasterSendForApproval(props) {
                 case 1:                        // CASE 1 FOR RAW MATERIAL
                     if (isBulkUpload) {
                         approvalData && approvalData.map(item => {
-                            tempArray.push({ RawMaterialId: item.RawMaterialId, IsImportEntery: item.EnteryType === 'Domestic' ? false : true, RawMaterialRequest: {}, CostingTypeId: item.CostingTypeId })
+                            approvalObj.RawMaterialId = item.RawMaterialId
+                            approvalObj.CostingTypeId = item.CostingTypeId
                             return null
                         })
                     } else {
-                        tempArray.push({ RawMaterialId: EMPTY_GUID, IsImportEntery: IsImportEntery, RawMaterialRequest: approvalObj })
+                        approvalObj.RawMaterialId = EMPTY_GUID
                     }
                     senderObj.MasterCreateRequest = {
                         CreateRawMaterial: approvalObj
                     }
-                    // senderObj.EntityList = tempArray
                     senderObj.ApprovalMasterId = RMTYPE
 
                     //THIS CONDITION IS FOR SIMULATION SEND FOR APPROVAL
@@ -213,15 +213,10 @@ function MasterSendForApproval(props) {
 
                 case 2:  //CASE 2 FOR BOP
 
-                    if (isBulkUpload) {
-                        approvalData && approvalData.map(item => {
-                            tempArray.push({ BoughtOutPartId: item.BoughtOutPartId, IsImportEntery: item.EnteryType === 'Domestic' ? false : true, BoughtoutPartRequest: {}, CostingTypeId: item.CostingTypeId })
-                            return null
-                        })
-                    } else {
-                        tempArray.push({ BoughtPartId: EMPTY_GUID, IsImportEntery: IsImportEntery, BoughtoutPartRequest: approvalObj })
+                    approvalObj.BoughtOutPartId = isBulkUpload ? approvalData && approvalData.map(item => item.BoughtOutPartId) : EMPTY_GUID;
+                    senderObj.MasterCreateRequest = {
+                        CreateBoughtOutPart: approvalObj
                     }
-                    senderObj.EntityList = tempArray
                     senderObj.ApprovalMasterId = BOPTYPE
 
                     //THIS CONDITION IS FOR SIMULATION SEND FOR APPROVAL
@@ -239,13 +234,16 @@ function MasterSendForApproval(props) {
 
                     if (isBulkUpload) {
                         approvalData && approvalData.map(item => {
-                            tempArray.push({ OperationId: item.OperationId, IsImportEntery: item.EnteryType === 'Domestic' ? false : true, OperationRequest: {}, CostingTypeId: item.CostingTypeId })
+                            approvalObj.OperationId = item.OperationId
+                            approvalObj.CostingTypeId = item.CostingTypeId
                             return null
                         })
                     } else {
-                        tempArray.push({ OperationId: EMPTY_GUID, IsImportEntery: IsImportEntery ?? false, OperationRequest: approvalObj })
+                        approvalObj.OperationId = EMPTY_GUID
                     }
-                    senderObj.EntityList = tempArray
+                    senderObj.MasterCreateRequest = {
+                        CreateOperationRequest: approvalObj
+                    }
                     senderObj.ApprovalMasterId = OPERATIONTYPE
 
                     //THIS CONDITION IS FOR SIMULATION SEND FOR APPROVAL
