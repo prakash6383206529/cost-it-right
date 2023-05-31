@@ -71,6 +71,12 @@
 
 }
 
+.view-masters {
+    @include icons("../../assests/images/view-master.png", $shadowColor: #0cbeeb, $borderColor: #bbe8f9);
+    @include extra-icon-styles;
+    border-radius: 3px
+}
+
 .pie-chart {
     @include icons("../../assests/images/pie-chart.svg");
 
