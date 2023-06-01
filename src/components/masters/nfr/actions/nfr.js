@@ -199,7 +199,7 @@ export function fetchNfrDetailFromSap(callback) {
  */
 export function saveNFRCostingInfo(data, callback) {
     return (dispatch) => {
-        const request = axios.get(`${API.saveNFRCostingInfo}?nfrGroupId=${data?.nfrGroupId}&vendorId=${data?.vendorId}&costingId=${data?.costingId}`, config());
+        const request = axios.get(`${API.saveNFRCostingInfo}?nfrGroupId=${data?.nfrGroupId}&vendorId=${data?.vendorId}&costingId=${data?.costingId}&loggedInUserId=${data?.loggedInUserId}`, config());
         request.then((response) => {
             if (response.data.Result || response.status === 204) {
                 callback(response);
