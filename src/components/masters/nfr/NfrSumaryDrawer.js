@@ -50,7 +50,7 @@ function NfrSummaryDrawer(props) {
 
     useEffect(() => {
         setLoader(true)
-        dispatch(getNFRApprovalSummary(rowData?.NfrGroupId, loggedInUserId(), (res) => {
+        dispatch(getNFRApprovalSummary(rowData?.ApprovalProcessId, loggedInUserId(), (res) => {
             setLoader(false)
             if (res?.data?.Result === true) {
                 setNFRData(res?.data?.Data)
