@@ -219,6 +219,7 @@ const ApprovalDrawer = (props) => {
                         "Reason": "string",
                         "FinancialYear": "string",
                         "IsFinalApproved": false,
+                        "NfrPartWiseGroupDetailsId": item?.NfrPartWiseGroupDetailsId
                     }
                     arrayOfObj.push(obj)
                 }
