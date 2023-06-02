@@ -4403,6 +4403,7 @@ class AddMoreDetails extends Component {
               isBulkUpload={false}
               IsImportEntery={false}
               costingTypeId={this.state.CostingTypeId}
+              levelDetails={this.state.levelDetails}
             />
           )
         }
