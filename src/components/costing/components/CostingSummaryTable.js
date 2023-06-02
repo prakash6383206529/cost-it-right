@@ -2073,7 +2073,7 @@ const CostingSummaryTable = (props) => {
                                 {data?.CostingHeading === VARIANCE && (isApproval ? viewCostingData?.length > 0 && viewCostingData[0]?.nPOPrice > viewCostingData[1]?.nPOPrice ? <span className='positive-sign'>+</span> : '' : '')}
                                 <span title={data?.nPOPrice}><span className='currency-symbol'>{getCurrencySymbol(getConfigurationKey().BaseCurrency)}</span>{checkForDecimalAndNull(data?.nPOPrice, initialConfiguration.NoOfDecimalForPrice)}</span>
                                 {
-                                  (data?.CostingHeading !== VARIANCE) && (!pdfHead && !drawerDetailPDF) &&
+                                  (data?.CostingHeading !== VARIANCE) && (!pdfHead && !drawerDetailPDF) && (initialConfiguration?.IsBasicRateAndCostingConditionVisible || initialConfiguration?.IsShowNpvCost) &&
                                   <button
                                     type="button"
                                     title='View'
