@@ -2003,8 +2003,8 @@ class AddMoreDetails extends Component {
       DepreciationType: this.state.depreciationType ? this.state.depreciationType.value : '',
       DepreciationRatePercentage: values.DepreciationRatePercentage,
       LifeOfAssetPerYear: values.LifeOfAssetPerYear,
-      CastOfScrap: values.CastOfScrap,
-      DateOfPurchase: DateOfPurchase,
+      CostOfScrap: values.CastOfScrap,
+      DateOfPurchase: DayTime(DateOfPurchase).format('YYYY-MM-DD HH:mm:ss'),
       DepreciationAmount: machineFullValue.depreciationAmount,
       WorkingShift: this.state.shiftType ? this.state.shiftType.value : '',
       WorkingHoursPerShift: values.WorkingHoursPerShift,
@@ -2159,8 +2159,8 @@ class AddMoreDetails extends Component {
         DepreciationType: this.state.depreciationType ? this.state.depreciationType.value : '',
         DepreciationRatePercentage: values.DepreciationRatePercentage,
         LifeOfAssetPerYear: values.LifeOfAssetPerYear,
-        CastOfScrap: values.CastOfScrap,
-        DateOfPurchase: DateOfPurchase,
+        CostOfScrap: values.CastOfScrap,
+        DateOfPurchase: DayTime(DateOfPurchase).format('YYYY-MM-DD HH:mm:ss'),
         DepreciationAmount: machineFullValue.depreciationAmount,
         WorkingShift: this.state.shiftType ? this.state.shiftType.value : '',
         WorkingHoursPerShift: values.WorkingHoursPerShift,
@@ -4440,6 +4440,7 @@ function mapStateToProps(state) {
   const { vendorListByVendorType } = material;
   const { fuelDataByPlant } = fuel;
   const { initialConfiguration, userMasterLevelAPI } = auth;
+
   let initialValues = {};
   if (machineData && machineData !== undefined) {
     initialValues = {
@@ -4467,7 +4468,7 @@ function mapStateToProps(state) {
       NumberOfWorkingHoursPerYear: machineData.NumberOfWorkingHoursPerYear,
       DepreciationRatePercentage: machineData.DepreciationRatePercentage,
       LifeOfAssetPerYear: machineData.LifeOfAssetPerYear,
-      CastOfScrap: machineData.CastOfScrap,
+      CastOfScrap: machineData.CostOfScrap,
       DepreciationAmount: machineData.DepreciationAmount,
       AnnualMaintancePercentage: machineData.AnnualMaintancePercentage,
       AnnualMaintanceAmount: machineData.AnnualMaintanceAmount,
