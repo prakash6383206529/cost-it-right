@@ -69,7 +69,9 @@ class BulkUpload extends Component {
                 }, 100);
             })
         } else if (!this.props.initialConfiguration.IsMasterApprovalAppliedConfigure) {
-            this.setState({ noApprovalCycle: false })
+            this.setState({ noApprovalCycle: false, })
+        } else {
+            this.setState({ IsFinalApprover: true })
         }
         if (this.props?.masterId === BOP_MASTER_ID && this.props.initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(BOP_MASTER_ID) === true) {
             this.props.getUsersMasterLevelAPI(loggedInUserId(), this.props?.masterId, (res) => {
@@ -78,7 +80,9 @@ class BulkUpload extends Component {
                 }, 100);
             })
         } else if (!this.props.initialConfiguration.IsMasterApprovalAppliedConfigure) {
-            this.setState({ noApprovalCycle: false })
+            this.setState({ noApprovalCycle: false, IsFinalApprover: true })
+        } else {
+            this.setState({ IsFinalApprover: true })
         }
         if (this.props?.masterId === OPERATIONS_ID && this.props.initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(OPERATIONS_ID) === true) {
             this.props.getUsersMasterLevelAPI(loggedInUserId(), this.props?.masterId, (res) => {
@@ -87,7 +91,9 @@ class BulkUpload extends Component {
                 }, 100);
             })
         } else if (!this.props.initialConfiguration.IsMasterApprovalAppliedConfigure) {
-            this.setState({ noApprovalCycle: false })
+            this.setState({ noApprovalCycle: false, IsFinalApprover: true })
+        } else {
+            this.setState({ IsFinalApprover: true })
         }
         if (this.props?.masterId === MACHINE_MASTER_ID && this.props.initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true) {
             this.props.getUsersMasterLevelAPI(loggedInUserId(), this.props?.masterId, (res) => {
@@ -96,7 +102,9 @@ class BulkUpload extends Component {
                 }, 100);
             })
         } else if (!this.props.initialConfiguration.IsMasterApprovalAppliedConfigure) {
-            this.setState({ noApprovalCycle: false })
+            this.setState({ noApprovalCycle: false, IsFinalApprover: true })
+        } else {
+            this.setState({ IsFinalApprover: true })
         }
     }
 
@@ -492,6 +500,7 @@ class BulkUpload extends Component {
             IsFinalApprover: IsFinalApprover,
             CostingTypeId: costingTypeId
         }
+        console.log(masterUploadData, "masterUploadData");
         this.setState({ setDisable: true })
 
         if (fileName === 'RM Domestic' && costingTypeId === ZBCTypeId) {
