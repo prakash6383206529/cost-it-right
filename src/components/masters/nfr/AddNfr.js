@@ -72,7 +72,6 @@ function AddNfr(props) {
     const [indexOuter, setIndexOuter] = useState('');
     const [indexInside, setIndexInside] = useState('');
 
-    const [isVendorDisabled, setIsVendorDisabled] = useState(false);
     const [costingObj, setCostingObj] = useState({
         item: {},
         index: []
@@ -88,6 +87,8 @@ function AddNfr(props) {
     const [isFinalApproverShowButton, setIsFinalApproverShowButton] = useState(true)
     const [allCostingNotSelected, setAllCostingNotSelected] = useState(false)
     const [existingGroupNameVersion, setExistingGroupNameVersion] = useState('')
+    const [topGroupNotAdded, setTopGroupNotAdded] = useState(false)
+    const [disableSaveButton, setDisableSaveButton] = useState(false)
 
     const { register, setValue, getValues, control, formState: { errors }, } = useForm({
         mode: 'onChange',
@@ -112,7 +113,13 @@ function AddNfr(props) {
         } else {
             setAllCostingNotSelected(false)
         }
-
+        if (_.map(rowData, 'groupName')?.includes(existingGroupNameVersion)) {
+            setTopGroupNotAdded(false)
+            setDisableSaveButton(false)
+        } else {
+            setTopGroupNotAdded(true)
+            setDisableSaveButton(true)
+        }
     }, [rowData])
 
     const getDetails = () => {
@@ -147,27 +154,29 @@ function AddNfr(props) {
                         isShowCreateCostingButton: item.IsShowCreateCostingButton,
                     };
                 });
-
                 setValue('Plant', `${res?.data?.Data?.PlantName} (${res?.data?.Data?.PlantCode})`);
-                setExistingGroupNameVersion(res?.data?.Data?.NfrVersion)
-                if (!_.map(newArray, 'groupName')?.includes(res?.data?.Data?.NfrVersion)) {
-                    setValue("GroupName", res?.data?.Data?.NfrVersion)
+                let nfrVersion = res?.data?.Data?.NfrVersion
+                setExistingGroupNameVersion(nfrVersion)
+                if (!_.map(newArray, 'groupName')?.includes(nfrVersion)) {
+                    setValue("GroupName", nfrVersion)
                 }
 
-                setExistingGroupNameVersion(res?.data?.Data?.NfrVersion)
+                setExistingGroupNameVersion(nfrVersion)
                 setNFRPartDetail(res?.data?.Data)
                 if (newArray?.length === 0) {
                     setCallAPI(true)
                 }
 
                 if (newArray?.length === 0) {
-                    setIsVendorDisabled(false)
                     // setValue("GroupName", "OEQA 1")
                 } else {
-                    if (newArray[0]?.isRejectedBySAP === true) {                // NOT REJECTED         first level
-                        setIsVendorDisabled(false)
-                    } else {
-                        setIsVendorDisabled(true)
+                    if (newArray?.length > 0) {
+                        let filterdata = newArray?.filter(element => element?.groupName === nfrVersion)
+                        if ((filterdata && filterdata[0]?.isRowActionEditable === false) || filterdata?.length === 0) {
+                            setDisableSaveButton(true)
+                        } else {
+                            setDisableSaveButton(false)
+                        }
                     }
                     if (newArray[0]?.statusId === DRAFTID || newArray[0]?.statusId === REJECTEDID) {
                         setEditWarning(true)
@@ -179,18 +188,16 @@ function AddNfr(props) {
                         setFilterStatus("NFR is under approval.")
                     }
                 }
-                let pfsIndex = newArray?.findIndex(element => element?.groupName === 'PFS1')
-                let pfsArray = newArray?.filter(element => element?.groupName === 'PFS1')
                 let tempArrForCosting = [...newArray]
-                if (pfsArray?.length > 0) {
-                    pfsArray[0].SelectedCostingVersion = pfsArray[0]?.data[0]?.CostingOptions[0]
-                    tempArrForCosting = Object.assign([...newArray], { [pfsIndex]: pfsArray[0] })
-                    setlatestRow(tempArrForCosting?.length - 1)
-                }
-                if (indexOuter !== '' || indexInside !== '') {
-                    let temp = tempArrForCosting[indexOuter].data[indexInside]?.CostingOptions
-                    tempArrForCosting[indexOuter].data[indexInside].SelectedCostingVersion = temp?.filter(element => element?.CostingId === OutsourcingCostingData?.CostingId)[0]
-                }
+                // if (pfsArray?.length > 0) {
+                //     pfsArray[0].SelectedCostingVersion = pfsArray[0]?.data[0]?.CostingOptions[0]
+                //     tempArrForCosting = Object.assign([...newArray], { [pfsIndex]: pfsArray[0] })
+                //     setlatestRow(tempArrForCosting?.length - 1)
+                // }
+                // if (indexOuter !== '' || indexInside !== '') {
+                //     let temp = tempArrForCosting[indexOuter].data[indexInside]?.CostingOptions
+                //     tempArrForCosting[indexOuter].data[indexInside].SelectedCostingVersion = temp?.filter(element => element?.CostingId === OutsourcingCostingData?.CostingId)[0]
+                // }
                 setRowData(tempArrForCosting)
             }
             setTimeout(() => {
@@ -263,7 +270,7 @@ function AddNfr(props) {
         setSendForApprovalButtonDisable(false)
         setEditWarning(false)
         setCallAPI(true)
-        setRowData([...rowData, newCosting]);
+        setRowData([newCosting, ...rowData]);
         resetData(true)
         setIsOEQAAdded(true)
     };
@@ -404,25 +411,70 @@ function AddNfr(props) {
             //     }))
             // } else {
 
-            dispatch(createCosting(Data, (responseCreate) => {
-                if (responseCreate.data?.Result) {
+            // dispatch(createCosting(Data, (responseCreate) => {
+            //     if (responseCreate.data?.Result) {
 
-                    let length = rowData?.length - 1
-                    let requestObject = {
-                        GroupName: rowData[length]?.groupName,
-                        NfrId: nfrIdsList?.NfrMasterId,
-                        PlantId: nfrPartDetail?.PlantId,
-                        NfrPartWiseDetailId: nfrIdsList?.NfrPartWiseDetailId,
-                        LoggedInUserId: loggedInUserId(),
-                        vendorList: _.map(rowData[length]?.data, 'value')
-                    }
-                    dispatch(saveNFRGroupDetails(requestObject, (res) => {
-                        let requestObject1 = {
-                            nfrId: nfrIdsList?.NfrMasterId,
-                            partWiseDetailId: nfrIdsList?.NfrPartWiseDetailId,
-                            plantId: nfrData?.PlantId ? nfrData?.PlantId : nfrPartDetail?.PlantId
-                        }
-                        dispatch(getNFRPartWiseGroupDetail(requestObject1, (res) => {
+            //         let filterRow = rowData?.filter(ele => ele.groupName === existingGroupNameVersion)
+            //         let requestObject = {
+            //             GroupName: filterRow[0]?.groupName,
+            //             NfrId: nfrIdsList?.NfrMasterId,
+            //             PlantId: nfrPartDetail?.PlantId,
+            //             NfrPartWiseDetailId: nfrIdsList?.NfrPartWiseDetailId,
+            //             LoggedInUserId: loggedInUserId(),
+            //             vendorList: _.map(filterRow[0]?.data, 'value')
+            //         }
+            //         dispatch(saveNFRGroupDetails(requestObject, (res) => {
+            //             let requestObject1 = {
+            //                 nfrId: nfrIdsList?.NfrMasterId,
+            //                 partWiseDetailId: nfrIdsList?.NfrPartWiseDetailId,
+            //                 plantId: nfrData?.PlantId ? nfrData?.PlantId : nfrPartDetail?.PlantId
+            //             }
+            //             dispatch(getNFRPartWiseGroupDetail(requestObject1, (res) => {
+            //                 let obj = {
+            //                     nfrGroupId: res?.data?.Data?.groupWiseResponse[index1]?.VendorList[index]?.NfrPartWiseGroupDetailsId,
+            //                     vendorId: data?.value,
+            //                     costingId: responseCreate?.data?.Data?.CostingId,
+            //                     loggedInUserId: loggedInUserId()
+            //                 }
+            //                 dispatch(saveNFRCostingInfo(obj, (res) => {
+            //                     setpartInfoStepTwo({ costingId: responseCreate.data?.Data?.CostingId, NFRTypeId })
+            //                     setcostingData(responseCreate.data?.Data)
+            //                     dispatch(getBriefCostingById(responseCreate.data?.Data?.CostingId, () => {
+            //                         setIsAddDetails(true)
+            //                     }))
+            //                 }))
+            //             }))
+            //         }))
+            //     }
+            // }))
+            // }
+
+
+
+
+
+
+
+
+            let filterRow = rowData?.filter(ele => ele.groupName === existingGroupNameVersion)
+            let requestObject = {
+                GroupName: filterRow[0]?.groupName,
+                NfrId: nfrIdsList?.NfrMasterId,
+                PlantId: nfrPartDetail?.PlantId,
+                NfrPartWiseDetailId: nfrIdsList?.NfrPartWiseDetailId,
+                LoggedInUserId: loggedInUserId(),
+                vendorList: _.map(filterRow[0]?.data, 'value')
+            }
+            dispatch(saveNFRGroupDetails(requestObject, (res) => {
+                let requestObject1 = {
+                    nfrId: nfrIdsList?.NfrMasterId,
+                    partWiseDetailId: nfrIdsList?.NfrPartWiseDetailId,
+                    plantId: nfrData?.PlantId ? nfrData?.PlantId : nfrPartDetail?.PlantId
+                }
+                dispatch(getNFRPartWiseGroupDetail(requestObject1, (res) => {
+
+                    dispatch(createCosting(Data, (responseCreate) => {
+                        if (responseCreate.data?.Result) {
                             let obj = {
                                 nfrGroupId: res?.data?.Data?.groupWiseResponse[index1]?.VendorList[index]?.NfrPartWiseGroupDetailsId,
                                 vendorId: data?.value,
@@ -436,12 +488,10 @@ function AddNfr(props) {
                                     setIsAddDetails(true)
                                 }))
                             }))
-                        }))
+                        }
                     }))
-                }
+                }))
             }))
-            // }
-
         }
     }, 500);
 
@@ -526,22 +576,20 @@ function AddNfr(props) {
         setValue('GroupName', item?.groupName)
         setIsRowEdited(true)
         setIsOEQAAdded(false)
-
-        setIsVendorDisabled(false)              // enable vendor
     }
     const deleteRow = (item) => {
         setPopupMsg(true)
         setDeletedId(item)
     }
     const saveEstimation = () => {
-        let length = rowData?.length - 1
+        let filterRow = rowData?.filter(ele => ele.groupName === existingGroupNameVersion)
         let requestObject = {
-            GroupName: rowData[length]?.groupName,
+            GroupName: filterRow[0]?.groupName,
             NfrId: nfrIdsList?.NfrMasterId,
             PlantId: nfrPartDetail?.PlantId,
             NfrPartWiseDetailId: nfrIdsList?.NfrPartWiseDetailId,
             LoggedInUserId: loggedInUserId(),
-            vendorList: _.map(rowData[length]?.data, 'value')
+            vendorList: _.map(filterRow[0]?.data, 'value')
         }
         dispatch(saveNFRGroupDetails(requestObject, (res) => {
             if (res?.data?.Result === true) {
@@ -825,7 +873,7 @@ function AddNfr(props) {
                             mandatory={true}
                             handleChange={handleVendorChange}
                             errors={errors.vendorName}
-                            disabled={(isViewEstimation || isVendorDisabled || isOEQAAdded) ? true : false}
+                            disabled={(isViewEstimation || isOEQAAdded) ? true : false}
                         />
                     </Col>
                     <Col md="3" className="mt-4 pt-1">
@@ -897,7 +945,7 @@ function AddNfr(props) {
                                                         </label>} */}
                                                         {item?.groupName}
                                                     </td>
-                                                    <td rowSpan={item?.data.length} className="table-record">{indexOuter === 0 && item?.status}</td>
+                                                    <td rowSpan={item?.data.length} className="table-record">{item?.status}</td>
                                                 </>
                                             )}
                                             <td>{dataItem?.label}</td>
@@ -930,7 +978,7 @@ function AddNfr(props) {
                                                     type="button"
                                                     className={"add-out-sourcing"}
                                                     onClick={() => { formToggle(dataItem?.SelectedCostingVersion, indexOuter, indexInside) }}
-                                                    disabled={(item?.isRejectedBySAP === true) ? true : false}
+                                                    disabled={!item?.isRowActionEditable}
                                                     title="Add"
                                                 >
                                                 </button>}
@@ -939,11 +987,11 @@ function AddNfr(props) {
                                             <td> <div className='action-btn-wrapper pr-2'>
                                                 {(item?.isRejectedBySAP === false) &&
                                                     <>
-                                                        {!isViewEstimation && item?.isShowCreateCostingButton && <button className="Add-file" type={"button"} title={`${item?.groupName === 'PFS1' ? 'Create PFS1 Costing' : 'Add Costing'}`} onClick={() => addDetails(dataItem, indexOuter, indexInside, item?.groupName === 'PFS1')} />}
+                                                        {!isViewEstimation && item?.isShowCreateCostingButton && <button className="Add-file" type={"button"} title={`${item?.groupName === 'PFS2' ? 'Create PFS2 Costing' : 'Add Costing'}`} onClick={() => addDetails(dataItem, indexOuter, indexInside, item?.groupName === 'PFS2')} />}
                                                     </>}
 
                                                 {!item?.IsNewCosting && item?.Status !== '' && dataItem?.SelectedCostingVersion && (<button className="View" type={"button"} title={"View Costing"} onClick={() => viewDetails(indexInside)} />)}
-                                                {(item?.isRejectedBySAP === false) &&
+                                                {(item?.isRowActionEditable === true && dataItem?.SelectedCostingVersion?.StatusId === DRAFTID) &&
                                                     <>
                                                         {!isViewEstimation && !item?.IsNewCosting && dataItem?.SelectedCostingVersion && (<button className="Edit" type={"button"} title={"Edit Costing"} onClick={() => editCosting(indexInside)} />)}
                                                         {!isViewEstimation && !item?.IsNewCosting && dataItem?.SelectedCostingVersion && (<button className="Copy All" title={"Copy Costing"} type={"button"} onClick={() => copyCosting(indexInside)} />)}
@@ -972,7 +1020,7 @@ function AddNfr(props) {
                                 type="button"
                                 className="user-btn mr5 save-btn"
                                 onClick={() => saveEstimation()}
-                                disabled={isViewEstimation}
+                                disabled={isViewEstimation || disableSaveButton}
                             >
                                 <div className={"save-icon"}></div>
                                 Save
@@ -981,7 +1029,7 @@ function AddNfr(props) {
                                 className='user-btn'
                                 type='button'
                                 onClick={sendForApproval}
-                                disabled={isViewEstimation || sendForApprovalButtonDisable || allCostingNotSelected}
+                                disabled={isViewEstimation || sendForApprovalButtonDisable || allCostingNotSelected || topGroupNotAdded}
                             >
                                 <div className="send-for-approval"></div>
                                 Send for Approval
