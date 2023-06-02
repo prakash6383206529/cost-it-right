@@ -208,7 +208,15 @@ function OutsourcingDrawer(props) {
 
   const deleteItem = (index) => {
     let list = [...gridData]
+    list.pop();
     list.splice(index, 1)
+    let totalCost = calculateSumOfValues(list)
+    setTotalCost(totalCost)
+    let total = {
+      Description: { label: "Total", value: "Total" },
+      Cost: totalCost
+    }
+    list.push(total)
     setgridData(list)
     resetValues()
   }
@@ -287,7 +295,7 @@ function OutsourcingDrawer(props) {
                       </button>
                       <button
                         type="button"
-                        className={"mr15 ml-1 mt30 add-cancel-btn cancel-btn"}
+                        className={" ml-1 mt30 add-cancel-btn cancel-btn"}
                         onClick={() => resetValues()}
                         disabled={viewMode}
                       >
@@ -306,7 +314,7 @@ function OutsourcingDrawer(props) {
                       </button>
                       <button
                         type="button"
-                        className={"mr15 ml-1 mt30 reset-btn"}
+                        className={"ml-1 mt30 reset-btn"}
                         disabled={viewMode}
                         onClick={() => resetValues()}
                       >
