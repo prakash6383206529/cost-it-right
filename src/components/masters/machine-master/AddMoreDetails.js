@@ -2194,16 +2194,12 @@ class AddMoreDetails extends Component {
       }
 
 
-      let obj = {}
       let finalObj = {
-
+        ...formData,
         MachineProcessRates: processGrid,
         EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
         MachineId: MachineID,
         IsVendor: false,
-        MachineZBCRequest: formData,
-        MachineVBCRequest: obj,
-
       }
 
       if (CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true && !this.state.isFinalApprovar) {
@@ -4056,6 +4052,7 @@ class AddMoreDetails extends Component {
               closeDrawer={this.closeApprovalDrawer}
               isEditFlag={false}
               masterId={MACHINE_MASTER_ID}
+              detailEntry={true}
               type={'Sender'}
               anchor={"right"}
               approvalObj={this.state.approvalObj}
