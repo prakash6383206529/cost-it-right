@@ -200,8 +200,8 @@ function NfrListing(props) {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         let tempStatus = '-'
         tempStatus = row?.DisplayStatus
-
-        return <div className={cell}>{tempStatus}</div>
+        let displayCount = `${row?.ApprovalPartCount}/${row?.NumberOfParts}`
+        return <div className={cell}>{`${tempStatus} ${displayCount}`}</div>
     }
 
     const dateFormater = (props) => {
@@ -285,6 +285,7 @@ function NfrListing(props) {
         setSapLoader(true)
         dispatch(fetchNfrDetailFromSap(res => {
             setSapLoader(false)
+            getDataList()
             if (res && res.data && res.data.Result) {
                 Toaster.success('Data has been pulled successfully')
             }

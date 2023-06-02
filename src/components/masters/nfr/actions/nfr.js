@@ -118,9 +118,9 @@ export function getNFRApprovals(userId, callback) {
  * @method getNFRApprovalSummary
  * @description get NFR Approval Summary
  */
-export function getNFRApprovalSummary(nfrGroupId, loggedInUserId, callback) {
+export function getNFRApprovalSummary(approvalProcessId, loggedInUserId, callback) {
     return (dispatch) => {
-        const request = axios.get(`${API.getNFRApprovalSummary}/${nfrGroupId}/${loggedInUserId}`, config());
+        const request = axios.get(`${API.getNFRApprovalSummary}/${approvalProcessId}/${loggedInUserId}`, config());
         request.then((response) => {
             if (response.data.Result || response.status === 204) {
                 callback(response);
@@ -199,7 +199,7 @@ export function fetchNfrDetailFromSap(callback) {
  */
 export function saveNFRCostingInfo(data, callback) {
     return (dispatch) => {
-        const request = axios.get(`${API.saveNFRCostingInfo}?nfrGroupId=${data?.nfrGroupId}&vendorId=${data?.vendorId}&costingId=${data?.costingId}`, config());
+        const request = axios.get(`${API.saveNFRCostingInfo}?nfrGroupId=${data?.nfrGroupId}&vendorId=${data?.vendorId}&costingId=${data?.costingId}&loggedInUserId=${data?.loggedInUserId}`, config());
         request.then((response) => {
             if (response.data.Result || response.status === 204) {
                 callback(response);
