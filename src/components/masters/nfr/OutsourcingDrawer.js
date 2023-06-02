@@ -45,16 +45,7 @@ function OutsourcingDrawer(props) {
             },
             Cost: detail.OutsourcingRate
           }));
-
-          const totalCost = {
-            Description: {
-              label: "Total",
-              value: "Total"
-            },
-            Cost: data.OutsourcingCost
-          };
-
-          mappedArray.push(totalCost);
+          setTotalCost(data?.OutsourcingCost)
           setgridData(mappedArray)
         }
       }))
@@ -99,7 +90,6 @@ function OutsourcingDrawer(props) {
 
   const onSubmit = data => {
     let list = [...gridData]
-    list.pop()
     let datalist = mapGrid(list)
     let req = {
       BaseCostingId: props?.CostingId,
@@ -140,7 +130,6 @@ function OutsourcingDrawer(props) {
     obj.Description = description
     obj.Cost = Number(getValues("Cost"))
     if (list?.length > 0) {
-      list.pop();
 
       const label_to_check = obj.Description.label;
 
@@ -159,30 +148,20 @@ function OutsourcingDrawer(props) {
       }
     }
     list.push(obj)
-    let total = {
-      Description: { label: "Total", value: "Total" },
-      Cost: calculateSumOfValues(list)
-    }
     setTotalCost(calculateSumOfValues(list))
-    list.push(total)
     setgridData(list)
     resetValues()
   }
 
   const updateRow = () => {
     let list = [...gridData]
-    list.pop();
     let editIndex = list?.findIndex(ele => ele?.Description === description)
     let obj = { ...list[editIndex] }
     obj.Cost = Number(getValues("Cost"))
     let dataList = Object.assign([...list], { [editIndex]: obj })
     let totalCost = calculateSumOfValues(dataList)
     setTotalCost(totalCost)
-    let total = {
-      Description: { label: "Total", value: "Total" },
-      Cost: totalCost
-    }
-    dataList.push(total)
+
     setIsEdit(false)
     setgridData(dataList)
     resetValues()
@@ -209,6 +188,8 @@ function OutsourcingDrawer(props) {
   const deleteItem = (index) => {
     let list = [...gridData]
     list.splice(index, 1)
+    let totalCost = calculateSumOfValues(list)
+    setTotalCost(totalCost)
     setgridData(list)
     resetValues()
   }
@@ -274,7 +255,7 @@ function OutsourcingDrawer(props) {
                   />
                 </Col>
 
-                <Col md="4" className='pt-1'>
+                <Col md="4" className='pt-1 pr-0'>
                   {isEdit ? (
                     <>
                       <button
@@ -287,7 +268,7 @@ function OutsourcingDrawer(props) {
                       </button>
                       <button
                         type="button"
-                        className={"mr15 ml-1 mt30 add-cancel-btn cancel-btn"}
+                        className={"ml-1 mt30 add-cancel-btn cancel-btn"}
                         onClick={() => resetValues()}
                         disabled={viewMode}
                       >
@@ -306,7 +287,7 @@ function OutsourcingDrawer(props) {
                       </button>
                       <button
                         type="button"
-                        className={"mr15 ml-1 mt30 reset-btn"}
+                        className={" ml-1 mt30 reset-btn"}
                         disabled={viewMode}
                         onClick={() => resetValues()}
                       >
@@ -329,7 +310,7 @@ function OutsourcingDrawer(props) {
                     <tbody>
                       {gridData && gridData.map((item, index) => {
                         return (
-                          <tr key={index} className={item.Description.label === "Total" ? "table-footer" : ""}>
+                          <tr key={index}>
                             <td>{item?.Description?.label}</td>
                             <td>{checkForDecimalAndNull(item?.Cost, initialConfiguration.NoOfDecimalForPrice)}</td>
 
@@ -356,15 +337,19 @@ function OutsourcingDrawer(props) {
                           </tr>
                         );
                       })}
-                    </tbody>
 
-                    {gridData.length === 0 && (
-                      <tbody className='border'>
-                        <tr>
-                          <td colSpan={"4"}> <NoContentFound title={EMPTY_DATA} /></td>
-                        </tr>
-                      </tbody>
-                    )}
+                      {gridData.length === 0 ? <tr>
+                        <td colSpan={"4"}> <NoContentFound title={EMPTY_DATA} /></td>
+                      </tr> : <tr className='table-footer'>
+                        <td>
+                          Total
+                        </td>
+                        <td colSpan={"2"}>
+                          <div className="total-cost">{checkForDecimalAndNull(totalCost, initialConfiguration.NoOfDecimalForPrice)}</div>
+                        </td>
+                      </tr>
+                      }
+                    </tbody>
                   </Table>
                 </Col>
 
