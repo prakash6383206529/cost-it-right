@@ -266,7 +266,19 @@ function MasterSendForApproval(props) {
                     } else {
                         tempArray.push({ MachineId: EMPTY_GUID, IsImportEntery: IsImportEntery, MachineRequest: approvalObj })
                     }
-                    senderObj.EntityList = tempArray
+
+
+                    if (props.detailEntry) {
+                        senderObj.MasterCreateRequest = {
+                            MachineDetailsRequest: approvalObj,
+                            IsDetailedEntry: true
+                        }
+                    } else {
+                        senderObj.MasterCreateRequest = {
+                            MachineBasicRequest: approvalObj,
+                            IsDetailedEntry: false
+                        }
+                    }
                     senderObj.ApprovalMasterId = MACHINETYPE
 
                     //THIS CONDITION IS FOR SIMULATION SEND FOR APPROVAL
