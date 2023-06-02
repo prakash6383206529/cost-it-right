@@ -3512,7 +3512,7 @@ class AddMoreDetails extends Component {
                         </Col>
                         {
                           isLabourOpen && <div className="accordian-content row mx-0 w-100">
-                            <Col md="3">
+                            <Col md="3" className='p-relative'>
                               <Field
                                 name="LabourTypeIds"
                                 type="text"
@@ -3545,7 +3545,7 @@ class AddMoreDetails extends Component {
                                 customClassName="withBorder"
                               />
                             </Col>
-                            <Col md="2">
+                            <Col md="2" className='p-relative'>
                               <Field
                                 label={`No. of People`}
                                 name={"NumberOfLabour"}
