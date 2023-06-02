@@ -1992,6 +1992,293 @@ export const VIEW_COSTING_DATA = {
   // approvalButton: '',
 }
 
+
+export const VIEW_COSTING_DATA_TEMPLATE = [
+  {
+    label: 'VBC/ZBC/NCC/CBC',
+    value: 'costingHeadCheck'
+  },
+  {
+    label: 'Costing Version',
+    value: 'costingVersion'
+  },
+  {
+    label: 'PO Price (Effective from)',
+    value: 'PoPriceWithDate'
+  },
+  {
+    label: 'Part Number',
+    value: 'partNumber'
+  },
+  {
+    label: 'Part Name',
+    value: 'partName'
+  },
+  {
+    label: 'Revision Number',
+    value: 'RevisionNumber'
+  },
+  {
+    label: 'Vendor (Code)',
+    value: 'vendorExcel'
+  },
+  {
+    label: 'Customer (Code)',
+    value: 'customer'
+  },
+  {
+    label: 'Plant (Code)',
+    value: 'plantExcel'
+  },
+  {
+    label: 'Status',
+    value: 'status'
+  },
+  {
+    label: 'RM-Grade',
+    value: 'rm'
+  },
+  {
+    label: 'RM Rate',
+    value: 'rmRate'
+  },
+  {
+    label: 'Scrap Rate',
+    value: 'scrapRate'
+  },
+  {
+    label: 'Gross Weight',
+    value: 'gWeight'
+  },
+  {
+    label: 'Finish Weight',
+    value: 'fWeight'
+  },
+  {
+    label: 'Burning Loss Weight',
+    value: 'BurningLossWeight'
+  },
+  {
+    label: 'Scrap Weight',
+    value: 'ScrapWeight'
+  },
+  {
+    label: 'Net RM Cost',
+    value: 'netRM'
+  },
+  {
+    label: 'Net BOP Cost',
+    value: 'netBOP'
+  },
+  {
+    label: 'Part Cost/Pc',
+    value: 'netChildPartsCost'
+  },
+  {
+    label: 'BOP Cost/Assembly',
+    value: 'netBoughtOutPartCost'
+  },
+  {
+    label: 'Process Cost/Assembly',
+    value: 'netProcessCost'
+  },
+  {
+    label: 'Operation Cost/Assembly',
+    value: 'netOperationCost'
+  },
+  {
+    label: 'Cost/Assembly',
+    value: 'nTotalRMBOPCC'
+  },
+  {
+    label: 'Process Cost',
+    value: 'pCost'
+  },
+  {
+    label: 'Operation Cost',
+    value: 'oCost'
+  },
+  {
+    label: 'Other Operation Cost',
+    value: 'netOtherOperationCost'
+  },
+  {
+    label: 'Net Conversion Cost',
+    value: 'nConvCost'
+  },
+  {
+    label: 'Surface Treatment',
+    value: 'sTreatment'
+  },
+  {
+    label: 'Extra Surface Treatment Cost',
+    value: 'tCost'
+  },
+  {
+    label: 'Net Surface Treatment Cost',
+    value: 'netSurfaceTreatmentCost'
+  },
+  {
+    label: 'Model Type For Overhead/Profit',
+    value: 'modelType'
+  },
+  {
+    label: 'Overhead Applicability',
+    value: 'overHeadApplicablity'
+  },
+  {
+    label: 'Overhead Value',
+    value: 'overHeadApplicablityValue'
+  },
+  {
+    label: 'Profit Applicability',
+    value: 'ProfitApplicablity'
+  },
+  {
+    label: 'Profit Value',
+    value: 'ProfitApplicablityValue'
+
+
+  },
+  {
+    label: 'Rejection Applicability',
+    value: 'rejectionApplicablity'
+  },
+  {
+    label: 'Rejection Value',
+    value: 'rejectionApplicablityValue'
+  },
+  {
+    label: 'ICC Applicability',
+    value: 'iccApplicablity'
+  },
+  {
+    label: 'ICC Value',
+    value: 'iccApplicablityValue'
+  },
+  {
+    label: 'Payment Applicability',
+    value: 'paymentApplicablity'
+  },
+  {
+    label: 'Payment Value',
+    value: 'paymentcApplicablityValue'
+  },
+  {
+    label: 'Net Overhead Profits',
+    value: 'nOverheadProfit'
+  },
+  {
+    label: 'Packaging Cost',
+    value: 'packagingCost'
+  },
+  {
+    label: 'Freight',
+    value: 'freight'
+  },
+  {
+    label: 'Net Packaging and Freight',
+    value: 'nPackagingAndFreight'
+  },
+  {
+    label: 'Tool Maintenance Cost Applicability',
+    value: 'toolMaintenanceCostApplicablity'
+  },
+  {
+    label: 'Tool Maintenance Cost Value',
+    value: 'toolMaintenanceCost'
+  },
+  {
+    label: 'Tool Price',
+    value: 'toolPrice'
+  },
+  {
+    label: 'Amortization Quantity',
+    value: 'amortizationQty'
+  },
+  {
+    label: 'Tool Amortization Cost',
+    value: 'toolAmortizationCost'
+  },
+  {
+    label: 'Net Tool Cost',
+    value: 'totalToolCost'
+  },
+  {
+    label: 'Hundi/Discount Type',
+    value: 'otherDiscountType'
+  },
+  {
+    label: 'Hundi/Discount Applicability',
+    value: 'otherDiscountApplicablity'
+  },
+  {
+    label: 'Hundi/Discount Value',
+    value: 'otherDiscountValuePercent'
+  },
+  {
+    label: 'Hundi/Discount Cost',
+    value: 'otherDiscountCost'
+  },
+  {
+    label: 'Any Other Cost Type',
+    value: 'anyOtherCostType'
+  },
+  {
+    label: 'Any Other Cost Applicability',
+    value: 'anyOtherCostApplicablity'
+  },
+  {
+    label: 'Any Other Cost Value',
+    value: 'anyOtherCostPercent'
+  },
+  {
+    label: 'Any Other Cost',
+    value: 'anyOtherCost'
+  },
+  {
+    label: 'Basic Rate',
+    value: 'BasicRate'
+  },
+  {
+    label: 'NPV Cost',
+    value: 'npvCost'
+  },
+  {
+    label: 'Costing Condition',
+    value: 'conditionCost'
+  },
+  {
+    label: 'Net PO Price (INR)',
+    value: 'nPOPrice'
+  },
+  {
+    label: 'Currency',
+    value: 'currencyTitle'
+  },
+  {
+    label: 'Currency Rate',
+    value: 'currencyRate'
+  },
+  {
+    label: 'Net PO Price (In Currency)',
+    value: 'nPoPriceCurrency'
+  },
+  {
+    label: 'Quantity',
+    value: 'NCCPartQuantity'
+  },
+  {
+    label: 'Is Regularized',
+    value: 'IsRegularized'
+  },
+  {
+    label: 'Remarks',
+    value: 'remark'
+  }
+];
+
+
 export const VIEW_COSTING_DATA_LOGISTICS = {
   costingHeadCheck: 'ZBC v/s VBC v/s NCC v/s CBC',
   costingVersion: 'Costing Version',
