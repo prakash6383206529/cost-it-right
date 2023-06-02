@@ -313,19 +313,18 @@ class Downloadxls extends React.Component {
                         </ExcelFile>}
                     {/* ZBC_MACHINE_MORE THIS IS ADDITIONAL CONDITION ONLY FOR MACHINE MORE DETAIL FROM MACHINE MASTER */}
                     {(costingTypeId === ZBCADDMORE || costingTypeId === VBCADDMORE || costingTypeId === CBCADDMORE) &&
-                        <ExcelFile filename={`MACHINE_MORE`} fileExtension={'.xls'} element={<button type="button" className={'btn btn-primary pull-right w-100'}><div class="download"></div> Download More DETAIL</button>}>
+                        <ExcelFile filename={costingTypeId === ZBCADDMORE ? "ZBC Add more details" : (costingTypeId === VBCADDMORE ? "VBC Add more details" : "CBC Add more details")} fileExtension={'.xls'} element={<button type="button" className={'btn btn-primary pull-right w-100'}><div class="download"></div> Download More DETAIL</button>}>
                             {fileName ? this.renderZBCSwitch(costingTypeId) : ''}
-
-                        </ExcelFile>}
+                        </ExcelFile >}
                 </>
             );
         }
 
         // DISPLAY DOWNLOAD FILE BUTTON EXCEPT ZBC AND VBC TEMPLATES
         return (
-            <ExcelFile filename={fileName} fileExtension={'.xls'} element={<button type="button" className={'btn btn-primary pull-right w-100'}><div class="download"></div> Download File</button>}>
+            <ExcelFile filename={fileName} fileExtension={'.xls'} element={< button type="button" className={'btn btn-primary pull-right w-100'} > <div class="download"></div> Download File</button>}>
                 {fileName ? this.renderSwitch(fileName) : ''}
-            </ExcelFile>
+            </ExcelFile >
         );
     }
 }
