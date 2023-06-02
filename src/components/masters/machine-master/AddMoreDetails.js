@@ -2243,16 +2243,13 @@ class AddMoreDetails extends Component {
         PowerCRMHead: crmHeads.PowerCRMHead ? crmHeads.PowerCRMHead : '',
         FuelCRMHead: crmHeads.FuelCRMHead ? crmHeads.FuelCRMHead : ''
       }
-      let obj = {}
-      let finalObj = {
 
+      let finalObj = {
+        ...formData,
         MachineProcessRates: processGrid,
         EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
         MachineId: MachineID,
         IsVendor: false,
-        MachineZBCRequest: formData,
-        MachineVBCRequest: obj,
-
       }
 
       if (CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true && !this.state.isFinalApprovar) {
@@ -4396,6 +4393,7 @@ class AddMoreDetails extends Component {
               closeDrawer={this.closeApprovalDrawer}
               isEditFlag={false}
               masterId={MACHINE_MASTER_ID}
+              detailEntry={true}
               type={'Sender'}
               anchor={"right"}
               approvalObj={this.state.approvalObj}

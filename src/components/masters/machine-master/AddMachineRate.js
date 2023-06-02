@@ -1208,16 +1208,12 @@ class AddMachineRate extends Component {
         CustomerId: costingTypeId === CBCTypeId ? client.value : ''
       }
 
-      let obj = {}
       let finalObj = {
-
+        ...formData,
         MachineProcessRates: processGrid,
         EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
         MachineId: MachineID,
         CostingTypeId: costingTypeId,
-        MachineZBCRequest: costingTypeId === VBCTypeId ? obj : formData,
-        MachineVBCRequest: costingTypeId === VBCTypeId ? formData : obj,
-
       }
 
       if (CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true && !this.state.isFinalApprovar) {
@@ -2014,6 +2010,7 @@ class AddMachineRate extends Component {
               closeDrawer={this.closeApprovalDrawer}
               isEditFlag={false}
               masterId={MACHINE_MASTER_ID}
+              detailEntry={false}
               type={'Sender'}
               anchor={"right"}
               approvalObj={this.state.approvalObj}

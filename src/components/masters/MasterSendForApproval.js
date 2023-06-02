@@ -267,7 +267,16 @@ function MasterSendForApproval(props) {
                     } else {
                         tempArray.push({ MachineId: EMPTY_GUID, IsImportEntery: IsImportEntery, MachineRequest: approvalObj })
                     }
-                    senderObj.EntityList = tempArray
+
+                    if (props.detailEntry) {
+                        senderObj.MasterCreateRequest = {
+                            MachineDetailsRequest: approvalObj
+                        }
+                    } else {
+                        senderObj.MasterCreateRequest = {
+                            MachineBasicRequest: approvalObj
+                        }
+                    }
                     senderObj.ApprovalMasterId = MACHINETYPE
                     dispatch(masterApprovalAPI(senderObj, res => {
                         setIsDisable(false)
