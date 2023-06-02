@@ -2883,7 +2883,7 @@ export const MHRMoreZBCTempData = [
         "Fuel": "CNG",
         "ConsumptionPerAnnum": 85,
         "UtilizingFactor": 0,
-        "PowerRatingKW": "Power Rating KW",
+        "PowerRatingKW": "100",
         "UsesSolarPower": "NO",
         "LabourType": "Skilled",
         "NoOfPeople": 5,
