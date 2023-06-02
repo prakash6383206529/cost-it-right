@@ -163,7 +163,7 @@ class AddMoreDetails extends Component {
     if (!this.props?.editDetails?.isEditFlag) {
       this.props.change('EquityPercentage', 100)
     }
-    if (initialConfiguration.IsMasterApprovalAppliedConfigure) {
+    if (initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true) {
       this.props.getUsersMasterLevelAPI(loggedInUserId(), MACHINE_MASTER_ID, (res) => {
         setTimeout(() => {
           this.commonFunction()
@@ -1006,7 +1006,7 @@ class AddMoreDetails extends Component {
       this.powerCost()
       this.handleLabourCalculation()
     }
-    if ((prevState?.costingTypeId !== this.state.costingTypeId) && initialConfiguration.IsMasterApprovalAppliedConfigure) {
+    if ((prevState?.costingTypeId !== this.state.costingTypeId) && initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true) {
       this.commonFunction()
     }
   }

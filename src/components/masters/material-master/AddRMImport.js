@@ -160,7 +160,7 @@ class AddRMImport extends Component {
       this.props.getPlantSelectListByType(ZBC, () => { })
       this.props.getClientSelectList(() => { })
     }
-    if (!this.state.isViewFlag && initialConfiguration.IsMasterApprovalAppliedConfigure) {
+    if (!this.state.isViewFlag && initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(RM_MASTER_ID) === true) {
       // let obj = {
       //   TechnologyId: RM_MASTER_ID,
       //   DepartmentId: userDetails().DepartmentId,
@@ -218,7 +218,7 @@ class AddRMImport extends Component {
 
         this.handleNetCost()
       }
-      if ((prevState?.costingTypeId !== this.state.costingTypeId) && initialConfiguration.IsMasterApprovalAppliedConfigure) {
+      if ((prevState?.costingTypeId !== this.state.costingTypeId) && initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(RM_MASTER_ID) === true) {
         this.commonFunction()
       }
 
@@ -558,7 +558,9 @@ class AddRMImport extends Component {
             }, () => {
               setTimeout(() => {
                 this.setState({ isLoader: false, isCallCalculation: false })
-                this.commonFunction()
+                if (this.props.initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(RM_MASTER_ID) === true) {
+                  this.commonFunction()
+                }
               }, 500)
             })
             // ********** ADD ATTACHMENTS FROM API INTO THE DROPZONE'S PERSONAL DATA STORE **********

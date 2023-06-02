@@ -110,7 +110,7 @@ class AddOperation extends Component {
       this.props.getPlantSelectListByType(ZBC, () => { })
       this.props.getClientSelectList(() => { })
     }
-    if (!this.state.isViewMode && initialConfiguration.IsMasterApprovalAppliedConfigure) {
+    if (!this.state.isViewMode && initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(OPERATIONS_ID) === true) {
       this.props.getUsersMasterLevelAPI(loggedInUserId(), OPERATIONS_ID, (res) => {
         setTimeout(() => {
           this.commonFunction()
@@ -152,7 +152,7 @@ class AddOperation extends Component {
       if (filedObj && filedObj !== undefined && filedObj.length > 4) {
       }
     }
-    if ((prevState?.costingTypeId !== this.state.costingTypeId) && initialConfiguration.IsMasterApprovalAppliedConfigure) {
+    if ((prevState?.costingTypeId !== this.state.costingTypeId) && initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(OPERATIONS_ID) === true) {
       this.commonFunction()
     }
   }
