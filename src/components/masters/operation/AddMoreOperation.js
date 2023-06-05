@@ -793,6 +793,10 @@ function AddMoreOperation(props) {
         return label
     }
 
+    const getAccordianClassName = (value) => {
+        return `accordian-content form-group row mx-0 w-100 ${value ? '' : 'd-none'}`
+    }
+
     return (
         <div className="container-fluid">
             {isLoader && <Loader />}
@@ -1057,8 +1061,7 @@ function AddMoreOperation(props) {
                                     </div>
                                 </Col>
                                 {
-                                    isMaterialCostOpen &&
-                                    <div className="accordian-content form-group row mx-0 w-100">
+                                    <div className={getAccordianClassName(isMaterialCostOpen)}>
 
                                         {other &&
                                             <><Col md="3">
@@ -1323,8 +1326,7 @@ function AddMoreOperation(props) {
                                     </div>
                                 </Col>
                                 {
-                                    isPowerCostOpen &&
-                                    <div className="accordian-content form-group row mx-0 w-100">
+                                    <div className={getAccordianClassName(isPowerCostOpen)}>
 
                                         {other && <><Col md="3">
                                             <SearchableSelectHookForm
@@ -1490,8 +1492,7 @@ function AddMoreOperation(props) {
                                     </div>
                                 </Col>
                                 {
-                                    isLabourCostOpen &&
-                                    <div className="accordian-content form-group row mx-0 w-100">
+                                    <div className={getAccordianClassName(isLabourCostOpen)}>
 
                                         {(other || isPlating) && <>
                                             <Col md="3">
@@ -1708,8 +1709,7 @@ function AddMoreOperation(props) {
                                     </div>
                                 </Col>
                                 {
-                                    isConsumablesCostOpen &&
-                                    <div className="accordian-content form-group row mx-0 w-100">
+                                    <div className={getAccordianClassName(isConsumablesCostOpen)}>
 
                                         {(other || isPlating) && <><Col md="3">
                                             <SearchableSelectHookForm
@@ -2011,9 +2011,8 @@ function AddMoreOperation(props) {
                                         <button className="btn btn-small-primary-circle ml-1" onClick={interestCostToggle} type="button">{isInterestCostOpen ? <i className="fa fa-minus"></i> : <i className="fa fa-plus"></i>}</button>
                                     </div>
                                 </Col>
-                                {
-                                    isInterestCostOpen &&
-                                    <div className="accordian-content form-group row mx-0 w-100">
+                                {true &&
+                                    <div className={getAccordianClassName(isInterestCostOpen)}>
 
                                         {other && <> <Col md="3">
                                             <SearchableSelectHookForm
@@ -2192,9 +2191,8 @@ function AddMoreOperation(props) {
                                         <button className="btn btn-small-primary-circle ml-1" onClick={operationCostToggle} type="button">{isOtherOperationCostOpen ? <i className="fa fa-minus"></i> : <i className="fa fa-plus"></i>}</button>
                                     </div>
                                 </Col>
-                                {
-                                    isOtherOperationCostOpen &&
-                                    <div className="accordian-content form-group row mx-0 w-100">
+                                {true &&
+                                    <div className={getAccordianClassName(isOtherOperationCostOpen)}>
 
                                         <Col md="3">
                                             <SearchableSelectHookForm
@@ -2281,9 +2279,8 @@ function AddMoreOperation(props) {
                                         <button className="btn btn-small-primary-circle ml-1" onClick={otherCostToggle} type="button">{isOtherCostOpen ? <i className="fa fa-minus"></i> : <i className="fa fa-plus"></i>}</button>
                                     </div>
                                 </Col>
-                                {
-                                    isOtherCostOpen &&
-                                    <div className="accordian-content form-group row mx-0 w-100">
+                                {true &&
+                                    <div className={getAccordianClassName(isOtherCostOpen)}>
 
                                         {(other || isPlating) &&
                                             <>
