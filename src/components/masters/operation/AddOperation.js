@@ -53,6 +53,7 @@ class AddOperation extends Component {
       DataToChange: [],
       costingTypeId: ZBCTypeId,
       isSurfaceTreatment: false,
+      isSurfaceTreatmentSelected: false,
       remarks: '',
       files: [],
       isVisible: false,
@@ -331,9 +332,9 @@ class AddOperation extends Component {
     if (newValue && newValue !== '') {
       this.setState({ operationType: newValue, })
       if (String(newValue.label) === 'Surface Treatment') {
-        this.setState({ isSurfaceTreatment: true })
+        this.setState({ isSurfaceTreatment: true, isSurfaceTreatmentSelected: true })
       } else {
-        this.setState({ isSurfaceTreatment: false })
+        this.setState({ isSurfaceTreatment: false, isSurfaceTreatmentSelected: false })
       }
     } else {
       this.setState({ operationType: [] })
@@ -1219,7 +1220,7 @@ class AddOperation extends Component {
                           <input
                             type="checkbox"
                             checked={this.state.isSurfaceTreatment}
-                            disabled={isEditFlag ? true : false}
+                            disabled={(isEditFlag || this.state.isSurfaceTreatmentSelected) ? true : false}
                           />
                           <span
                             className=" before-box"
