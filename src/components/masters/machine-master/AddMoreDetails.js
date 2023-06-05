@@ -2681,11 +2681,12 @@ class AddMoreDetails extends Component {
                             customClassName="withBorder"
                           />
                         </Col>
-                        <Col md="3"> <TooltipCustom tooltipClass={'machine-tooltip'} id="total-cost" tooltipText={"Total Cost = (Machine Cost + Accessories Cost + Installation Charges)"} />
+                        <Col md="3"> <TooltipCustom disabledIcon={true} tooltipClass={'machine-tooltip'} id="total-cost" tooltipText={"Total Cost = (Machine Cost + Accessories Cost + Installation Charges)"} />
                           <Field
                             label={`Total Cost(INR)`}
                             name={this.props.fieldsObj.TotalCost === 0 ? '' : "TotalCost"}
                             type="text"
+                            id="total-cost"
                             placeholder={'-'}
                             validate={[]}
                             component={renderTextInputField}
@@ -2766,9 +2767,11 @@ class AddMoreDetails extends Component {
                               />
                             </Col>
                             <Col md="4">
+                              <TooltipCustom disabledIcon={true} tooltipClass={'machine-tooltip'} id="EquityPercentage" tooltipText={"Equity (Owned) (%) = 100 - (Loan %)"} />
                               <Field
                                 label={`Equity (Owned) (%)`}
                                 name={"EquityPercentage"}
+                                id="EquityPercentage"
                                 type="text"
                                 placeholder={'-'}
                                 validate={[positiveAndDecimalNumber, maxLength10, decimalLengthThree]}
@@ -2795,10 +2798,12 @@ class AddMoreDetails extends Component {
                               />
                             </Col>
                             <Col md="4">
+                              <TooltipCustom disabledIcon={true} tooltipClass={'machine-tooltip'} id="LoanValue" tooltipText={"Loan Value = (Loan %) * Total Cost"} />
                               <Field
                                 label={`Loan Value`}
                                 name={this.props.fieldsObj.LoanValue === 0 ? '-' : "LoanValue"}
                                 type="text"
+                                id="LoanValue"
                                 placeholder={'-'}
                                 validate={[number]}
                                 component={renderTextInputField}
@@ -2809,10 +2814,12 @@ class AddMoreDetails extends Component {
                               />
                             </Col>
                             <Col md="4">
+                              <TooltipCustom disabledIcon={true} tooltipClass={'machine-tooltip'} id="EquityValue" tooltipText={"Equity Value = (Equity %) * Total Cost"} />
                               <Field
                                 label={`Equity Value`}
                                 name={this.props.fieldsObj.EquityValue === 0 ? '-' : "EquityValue"}
                                 type="text"
+                                id="EquityValue"
                                 placeholder={'-'}
                                 validate={[number]}
                                 component={renderTextInputField}
@@ -2825,11 +2832,13 @@ class AddMoreDetails extends Component {
 
 
                             <Col md="4">
+                              <TooltipCustom disabledIcon={true} tooltipClass={'machine-tooltip'} id="RateOfInterestValue" width={'250px'} tooltipText={"Interest Value = (Loan %) * Total Cost * (Rate of Interest %)"} />
                               <Field
                                 label={`Interest Value`}
                                 name={this.props.fieldsObj.RateOfInterestValue === 0 ? '-' : "RateOfInterestValue"}
                                 type="text"
                                 placeholder={'-'}
+                                id="RateOfInterestValue"
                                 validate={[number]}
                                 component={renderTextInputField}
                                 //required={true}
@@ -2926,10 +2935,12 @@ class AddMoreDetails extends Component {
                               </div>
                             </Col>
                             <Col md="3">
+                              <TooltipCustom disabledIcon={true} id="NumberOfWorkingHoursPerYear" width={'340px'} tooltipText={'No. of Working Hrs/Annum = No. of Shifts * Working Hr/Shift * No. of Working days/Annum * (Availability %)'} />
                               <Field
                                 label={`No. of Working Hrs/Annum`}
                                 name={this.props.fieldsObj.NumberOfWorkingHoursPerYear === 0 ? '-' : "NumberOfWorkingHoursPerYear"}
                                 type="text"
+                                id="NumberOfWorkingHoursPerYear"
                                 placeholder={'-'}
                                 // validate={[required]}
                                 component={renderTextInputField}
@@ -3047,10 +3058,12 @@ class AddMoreDetails extends Component {
                               </div>
                             </Col>
                             <Col md="3">
+                              <TooltipCustom disabledIcon={true} id="DepreciationAmount" width={'340px'} tooltipText={`Depreciation Amount = Total Cost - Cost of Scrap / ${this.state.depreciationType && this.state.depreciationType.value === SLM ? 'Life of Asset(Years)' : '(Depreciation Rate %) * Day of Purchase / 365'}`} />
                               <Field
                                 label={`Depreciation Amount(INR)`}
                                 name={this.props.fieldsObj.DepreciationAmount === 0 ? '-' : "DepreciationAmount"}
                                 type="text"
+                                id="DepreciationAmount"
                                 placeholder={'-'}
                                 // validate={[required]}
                                 component={renderText}
@@ -3114,9 +3127,11 @@ class AddMoreDetails extends Component {
                                 />
                               </Col>}
                             <Col md="3">
+                              {this.state.IsAnnualMaintenanceFixed && <TooltipCustom disabledIcon={true} width={"250px"} id="AnnualMaintanceAmount" tooltipText={`Annual Maintenance Amount = ((Machine Cost + Accessories Cost) * % / 100)`} />}
                               <Field
                                 label={`Annual Maintenance Amount(INR)`}
                                 name={"AnnualMaintanceAmount"}
+                                id="AnnualMaintanceAmount"
                                 type="text"
                                 placeholder={this.state.IsAnnualMaintenanceFixed ? '-' : (disableAllForm) ? '-' : 'Enter'}
                                 validate={[positiveAndDecimalNumber, maxLength10, decimalLengthFour]}
@@ -3163,9 +3178,12 @@ class AddMoreDetails extends Component {
                                 />
                               </Col>}
                             <Col md="3">
+                              {this.state.IsAnnualConsumableFixed && <TooltipCustom disabledIcon={true} width={"250px"} id="AnnualConsumableAmount" tooltipText={`Annual Consumable Amount = ((Machine Cost + Accessories Cost) * % / 100)`} />}
+
                               <Field
                                 label={`Annual Consumable Amount(INR)`}
                                 name={"AnnualConsumableAmount"}
+                                id="AnnualConsumableAmount"
                                 type="text"
                                 placeholder={this.state.IsAnnualConsumableFixed ? '-' : (disableAllForm) ? '-' : 'Enter'}
                                 validate={[positiveAndDecimalNumber, maxLength10, decimalLengthFour]}
@@ -3213,9 +3231,11 @@ class AddMoreDetails extends Component {
                                 />
                               </Col>}
                             <Col md="3">
+                              {this.state.IsInsuranceFixed && <TooltipCustom disabledIcon={true} width={"250px"} id="AnnualInsuranceAmount" tooltipText={`Insurance Amount = ((Machine Cost + Accessories Cost) * % / 100)`} />}
                               <Field
                                 label={`Insurance Amount(INR)`}
                                 name={"AnnualInsuranceAmount"}
+                                id="AnnualInsuranceAmount"
                                 type="text"
                                 placeholder={this.state.IsInsuranceFixed ? '-' : (disableAllForm) ? '-' : 'Enter'}
                                 validate={[positiveAndDecimalNumber, maxLength10, decimalLengthFour, number]}
@@ -3255,10 +3275,13 @@ class AddMoreDetails extends Component {
                               />
                             </Col>
                             <Col md="3">
+                              <TooltipCustom disabledIcon={true} width={"250px"} id="AnnualAreaCost" tooltipText={`Annual Area Cost = Building Cost * Machine Floor Area`} />
+
                               <Field
                                 label={`Annual Area Cost(INR)`}
                                 name={this.props.fieldsObj.AnnualAreaCost === 0 ? '-' : "AnnualAreaCost"}
                                 type="text"
+                                id="AnnualAreaCost"
                                 placeholder={'-'}
                                 // validate={[number, postiveNumber]}
                                 component={renderTextInputField}
@@ -3283,10 +3306,13 @@ class AddMoreDetails extends Component {
                               />
                             </Col>
                             <Col md="3">
+                              <TooltipCustom disabledIcon={true} width={"300px"} id="TotalMachineCostPerAnnum" tooltipText={`Total Machine Cost = Annual Maintenance Amount + Annual Consumable Amount + Annual Insurance Amount + Other Yearly Cost`} />
+
                               <Field
                                 label={`Total Machine Cost/Annum(INR)`}
                                 name={this.props.fieldsObj.TotalMachineCostPerAnnum === 0 ? '-' : "TotalMachineCostPerAnnum"}
                                 type="text"
+                                id="TotalMachineCostPerAnnum"
                                 placeholder={'-'}
                                 //validate={[required]}
                                 component={renderTextInputField}
@@ -3464,11 +3490,14 @@ class AddMoreDetails extends Component {
                                 />
                               </Col>
                               <Col md="3">
+                                <TooltipCustom disabledIcon={true} id="TotalPowerCostPerHour" tooltipText={'Power Cost/Hour = (Efficiency %) * Power Rating * Cost/Unit'} />
+
                                 <Field
                                   label={`Power Cost/Hour(INR)`}
                                   name={this.props.fieldsObj.TotalPowerCostPerHour === 0 ? '-' : "TotalPowerCostPerHour"}
                                   type="text"
                                   placeholder={'-'}
+                                  id="TotalPowerCostPerHour"
                                   //validate={[required]}
                                   component={renderTextInputField}
                                   //required={true}
@@ -3510,7 +3539,7 @@ class AddMoreDetails extends Component {
                         </Col>
                         {
                           isLabourOpen && <div className="accordian-content row mx-0 w-100">
-                            <Col md="3">
+                            <Col md="3" className='p-relative'>
                               <Field
                                 name="LabourTypeIds"
                                 type="text"
@@ -3543,7 +3572,7 @@ class AddMoreDetails extends Component {
                                 customClassName="withBorder"
                               />
                             </Col>
-                            <Col md="2">
+                            <Col md="2" className='p-relative'>
                               <Field
                                 label={`No. of People`}
                                 name={"NumberOfLabour"}
