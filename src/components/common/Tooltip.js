@@ -4,7 +4,6 @@ import { Tooltip } from 'reactstrap';
 
 const TooltipCustom = (props) => {
     const { tooltipText, customClass, tooltipClass, id, disabledIcon, placement, width } = props;
-    console.log('width: ', width);
     const [tooltipOpen, setTooltipOpen] = useState(false);
     const toggle = () => setTooltipOpen(!tooltipOpen);
 
