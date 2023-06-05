@@ -317,6 +317,12 @@ class AddOperation extends Component {
   handleUOM = (newValue) => {
     if (newValue && newValue !== '') {
       this.setState({ UOM: newValue, })
+      if (String(newValue.label) === String(this.state.DataToChange.UnitOfMeasurement)) {
+        this.setState({ IsFinancialDataChanged: false })
+      } else {
+        this.setState({ IsFinancialDataChanged: true })
+      }
+
     } else {
       this.setState({ UOM: [] })
     }
@@ -681,6 +687,7 @@ class AddOperation extends Component {
     let updatedFiles = files.map((file) => {
       return { ...file, ContextId: OperationId }
     })
+
     let formData = {
       IsFinancialDataChanged: isDateChange ? true : false,
       IsSendForApproval: this.state.IsSendForApproval,
