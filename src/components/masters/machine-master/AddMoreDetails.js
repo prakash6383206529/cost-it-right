@@ -3494,7 +3494,7 @@ class AddMoreDetails extends Component {
                                 />
                               </Col>
                               <Col md="3">
-                                <TooltipCustom disabledIcon={true} id="TotalPowerCostPerHour" tooltipText={'Power Cost/Hour = (Efficiency %) * Power Rating * Cost/Unit'} />
+                                <TooltipCustom disabledIcon={true} id="TotalPowerCostPerHour" width={"240px"} tooltipText={'Power Cost/Hour = (Efficiency %) * Power Rating * Cost/Unit'} />
 
                                 <Field
                                   label={`Power Cost/Hour(INR)`}
@@ -3594,10 +3594,12 @@ class AddMoreDetails extends Component {
                               {this.state.errorObj.peopleCount && (this.props.fieldsObj.NumberOfLabour === undefined || Number(this.props.fieldsObj.NumberOfLabour) === 0) && <div className='text-help p-absolute'>This field is required.</div>}
                             </Col>
                             <Col md="2">
+                              <TooltipCustom disabledIcon={true} id="LabourCost" tooltipText={`Total Cost = Cost/Annum * No. of People`} />
                               <Field
                                 label={`Total Cost(INR)`}
                                 name={this.props.fieldsObj.LabourCost === 0 ? '-' : "LabourCost"}
                                 type="text"
+                                id="LabourCost"
                                 placeholder={'-'}
                                 component={renderText}
                                 //required={true}
