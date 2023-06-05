@@ -103,7 +103,6 @@ function AddMoreOperation(props) {
             setNetCostWelding()
         } else if (other) {
             setRejectionReworkAndProfitCost()
-            setNetCost()
         } else {
             setMaterialCostWelding()
             setPowerCostWelding()
@@ -204,6 +203,13 @@ function AddMoreOperation(props) {
         setDataToSend(prevState => ({ ...prevState, rejectionReworkCostState: rejectionReworkCost, profitCostState: profitCost }))
         setValue('rejoinReworkCost', checkForDecimalAndNull(rejectionReworkCost, initialConfiguration.NoOfDecimalForPrice))
         setValue('profitCost', checkForDecimalAndNull(profitCost, initialConfiguration.NoOfDecimalForPrice))
+
+        //SETTING NET COST NOW
+        let profitCostState = checkForNull(profitCost)
+        let otherCost = checkForNull(Number(getValues('otherCost')))
+        let totalCost = gasCost + electricityCost + manPowerCost + staffCost + maintenanceCost + consumablesCost + waterCost + jigStripping + interestCost + depriciationCost + statuatoryLicense + rateOperation + rejectionReworkCost + profitCostState + otherCost
+        setDataToSend(prevState => ({ ...prevState, netCost: totalCost }))
+        setValue('netCost', checkForDecimalAndNull(totalCost, initialConfiguration.NoOfDecimalForPrice))
     }
 
 
@@ -247,29 +253,6 @@ function AddMoreOperation(props) {
         let netCost = (wireCost - gasCost + electricityCost + manPowerCost + staffCost + waterCost + jigStripping + statuatoryLicense + rejectionReworkCost + profitCostState)
         setDataToSend(prevState => ({ ...prevState, netCost: netCost }))
         setValue('netCost', checkForDecimalAndNull(netCost, initialConfiguration.NoOfDecimalForPrice))
-    }
-
-    const setNetCost = () => {
-
-        let gasCost = checkForNull(Number(getValues('gasCost')))
-        let electricityCost = checkForNull(Number(getValues('electricityCost')))
-        let manPowerCost = checkForNull(Number(getValues('manPowerCost')))
-        let staffCost = checkForNull(Number(getValues('staffCost')))
-        let maintenanceCost = checkForNull(Number(getValues('maintenanceCost')))
-        let consumablesCost = checkForNull(Number(getValues('consumablesCost')))
-        let waterCost = checkForNull(Number(getValues('waterCost')))
-        let jigStripping = checkForNull(Number(getValues('jigStripping')))
-        let interestCost = checkForNull(Number(getValues('interestCost')))
-        let depriciationCost = checkForNull(Number(getValues('depriciationCost')))
-        let statuatoryLicense = checkForNull(Number(getValues('statuatoryLicense')))
-        let rateOperation = checkForNull(Number(getValues('rateOperation')))
-        let rejectionReworkCost = checkForNull(dataToSend.rejectionReworkCostState)
-        let profitCostState = checkForNull(dataToSend.profitCostState)
-        let otherCost = checkForNull(Number(getValues('otherCost')))
-
-        let totalCost = gasCost + electricityCost + manPowerCost + staffCost + maintenanceCost + consumablesCost + waterCost + jigStripping + interestCost + depriciationCost + statuatoryLicense + rateOperation + rejectionReworkCost + profitCostState + otherCost
-        setDataToSend(prevState => ({ ...prevState, netCost: totalCost }))
-        setValue('netCost', checkForDecimalAndNull(totalCost, initialConfiguration.NoOfDecimalForPrice))
     }
 
 
