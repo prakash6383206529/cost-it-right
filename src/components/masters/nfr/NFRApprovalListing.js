@@ -135,9 +135,8 @@ function NFRApprovalListing(props) {
     }
 
     const statusFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        return <div className={cell}>{row.DisplayStatus}</div>
+        return <div className={row?.Status}>{row.DisplayStatus}</div>
     }
 
     const frameworkComponents = {
