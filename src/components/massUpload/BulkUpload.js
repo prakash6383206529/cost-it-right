@@ -70,6 +70,8 @@ class BulkUpload extends Component {
             })
         } else if (!this.props.initialConfiguration.IsMasterApprovalAppliedConfigure) {
             this.setState({ noApprovalCycle: false })
+        } else {
+            this.setState({ IsFinalApprover: true })
         }
         if (this.props?.masterId === BOP_MASTER_ID && this.props.initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(BOP_MASTER_ID) === true) {
             this.props.getUsersMasterLevelAPI(loggedInUserId(), this.props?.masterId, (res) => {
@@ -79,6 +81,8 @@ class BulkUpload extends Component {
             })
         } else if (!this.props.initialConfiguration.IsMasterApprovalAppliedConfigure) {
             this.setState({ noApprovalCycle: false })
+        } else {
+            this.setState({ IsFinalApprover: true })
         }
         if (this.props?.masterId === OPERATIONS_ID && this.props.initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(OPERATIONS_ID) === true) {
             this.props.getUsersMasterLevelAPI(loggedInUserId(), this.props?.masterId, (res) => {
@@ -88,6 +92,8 @@ class BulkUpload extends Component {
             })
         } else if (!this.props.initialConfiguration.IsMasterApprovalAppliedConfigure) {
             this.setState({ noApprovalCycle: false })
+        } else {
+            this.setState({ IsFinalApprover: true })
         }
         if (this.props?.masterId === MACHINE_MASTER_ID && this.props.initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true) {
             this.props.getUsersMasterLevelAPI(loggedInUserId(), this.props?.masterId, (res) => {
@@ -97,6 +103,8 @@ class BulkUpload extends Component {
             })
         } else if (!this.props.initialConfiguration.IsMasterApprovalAppliedConfigure) {
             this.setState({ noApprovalCycle: false })
+        } else {
+            this.setState({ IsFinalApprover: true })
         }
     }
 
