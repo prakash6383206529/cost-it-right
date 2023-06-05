@@ -1737,6 +1737,9 @@ const CostingSummaryTable = (props) => {
                                         </span>{' '}
                                         &nbsp;{' '}
                                         <span className="d-inline-block w-50">
+                                          {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.aValue.percentage : '')}
+                                        </span>
+                                        <span className="d-inline-block w-50">
                                           {data?.CostingHeading !== VARIANCE ? data?.aValue.value : ''}
                                         </span>
                                       </div>
