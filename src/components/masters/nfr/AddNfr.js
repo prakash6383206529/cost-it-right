@@ -7,7 +7,7 @@ import { Redirect, useHistory } from 'react-router';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { Col, Row, Table } from 'reactstrap';
 import { getVendorWithVendorCodeSelectList } from '../../../actions/Common';
-import { EMPTY_DATA, EMPTY_GUID, NFR, NFRTypeId, VBCTypeId, searchCount, PFS2TypeId, DRAFT, DRAFTID, REJECTEDID } from '../../../config/constants';
+import { EMPTY_DATA, EMPTY_GUID, NFR, NFRTypeId, VBCTypeId, searchCount, PFS2TypeId, DRAFT, DRAFTID, REJECTEDID, PFS2 } from '../../../config/constants';
 import { autoCompleteDropdown, costingTypeIdToApprovalTypeIdFunction } from '../../common/CommonFunctions';
 import HeaderTitle from '../../common/HeaderTitle';
 import NoContentFound from '../../common/NoContentFound';
@@ -183,9 +183,9 @@ function AddNfr(props) {
                         setFilterStatus('Select all costings to send for approval')
                         setSendForApprovalButtonDisable(false)
                     } else {
-                        setSendForApprovalButtonDisable(true)
-                        setEditWarning(true)
-                        setFilterStatus("NFR is under approval.")
+                        // setSendForApprovalButtonDisable(true)
+                        // setEditWarning(true)
+                        // setFilterStatus("NFR is under approval.")
                     }
                 }
                 let tempArrForCosting = [...newArray]
@@ -213,21 +213,21 @@ function AddNfr(props) {
                 setEditWarning(true)
                 setSendForApprovalButtonDisable(true)
             } else {
-                let obj = {}
-                obj.DepartmentId = userDetails().DepartmentId
-                obj.UserId = loggedInUserId()
-                obj.TechnologyId = nfrData?.TechnologyId
-                obj.Mode = 'costing'
-                obj.approvalTypeId = costingTypeIdToApprovalTypeIdFunction(NFRTypeId)
-                dispatch(checkFinalUser(obj, (res) => {
-                    if (res?.data?.Result) {
-                        if (res?.data?.Data?.IsFinalApprover) {
-                            setIsFinalApproverShowButton(false)
-                            setEditWarning(true)
-                            setFilterStatus("You are a final level user and cannot send NFR for approval.")
-                        }
-                    }
-                }))
+                // let obj = {}
+                // obj.DepartmentId = userDetails().DepartmentId
+                // obj.UserId = loggedInUserId()
+                // obj.TechnologyId = nfrData?.TechnologyId
+                // obj.Mode = 'costing'
+                // obj.approvalTypeId = costingTypeIdToApprovalTypeIdFunction(NFRTypeId)
+                // dispatch(checkFinalUser(obj, (res) => {
+                //     if (res?.data?.Result) {
+                //         if (res?.data?.Data?.IsFinalApprover) {
+                //             setIsFinalApproverShowButton(false)
+                //             setEditWarning(true)
+                //             setFilterStatus("You are a final level user and cannot send NFR for approval.")
+                //         }
+                //     }
+                // }))
             }
             setLevelDetails(levelDetailsTemp)
 
@@ -987,15 +987,17 @@ function AddNfr(props) {
                                             <td> <div className='action-btn-wrapper pr-2'>
                                                 {(item?.isRejectedBySAP === false) &&
                                                     <>
-                                                        {!isViewEstimation && item?.isShowCreateCostingButton && <button className="Add-file" type={"button"} title={`${item?.groupName === 'PFS2' ? 'Create PFS2 Costing' : 'Add Costing'}`} onClick={() => addDetails(dataItem, indexOuter, indexInside, item?.groupName === 'PFS2')} />}
+                                                        {!isViewEstimation && item?.isShowCreateCostingButton &&  item?.groupName !== PFS2&& <button className="Add-file" type={"button"} title={`${item?.groupName === 'PFS2' ? 'Create PFS2 Costing' : 'Add Costing'}`} onClick={() => addDetails(dataItem, indexOuter, indexInside, item?.groupName === 'PFS2')} />}
                                                     </>}
 
-                                                {!item?.IsNewCosting && item?.Status !== '' && dataItem?.SelectedCostingVersion && (<button className="View" type={"button"} title={"View Costing"} onClick={() => viewDetails(indexInside)} />)}
-                                                {(item?.isRowActionEditable === true && dataItem?.SelectedCostingVersion?.StatusId === DRAFTID) &&
+                                      { item?.Status !== '' && dataItem?.SelectedCostingVersion && (<button className="View" type={"button"} title={"View Costing"} onClick={() => viewDetails(indexInside)} />)}
+                                   
+                                                {(item?.isShowCreateCostingButton === true && dataItem?.SelectedCostingVersion&& dataItem?.SelectedCostingVersion?.StatusId === DRAFTID) &&
                                                     <>
-                                                        {!isViewEstimation && !item?.IsNewCosting && dataItem?.SelectedCostingVersion && (<button className="Edit" type={"button"} title={"Edit Costing"} onClick={() => editCosting(indexInside)} />)}
-                                                        {!isViewEstimation && !item?.IsNewCosting && dataItem?.SelectedCostingVersion && (<button className="Copy All" title={"Copy Costing"} type={"button"} onClick={() => copyCosting(indexInside)} />)}
-                                                        {!isViewEstimation && !item?.IsNewCosting && dataItem?.SelectedCostingVersion && (<button className="Delete All" title={"Delete Costing"} type={"button"} onClick={() => deleteItem(dataItem, indexInside, indexOuter)} />)}
+                                                    
+                                                        {!isViewEstimation  && dataItem?.SelectedCostingVersion && (<button className="Edit" type={"button"} title={"Edit Costing"} onClick={() => editCosting(indexInside)} />)}
+                                                        {!isViewEstimation  && dataItem?.SelectedCostingVersion && (<button className="Copy All" title={"Copy Costing"} type={"button"} onClick={() => copyCosting(indexInside)} />)}
+                                                        {!isViewEstimation  && dataItem?.SelectedCostingVersion && (<button className="Delete All" title={"Delete Costing"} type={"button"} onClick={() => deleteItem(dataItem, indexInside, indexOuter)} />)}
                                                         {!isViewEstimation && item?.CostingOptions?.length === 0 && dataItem?.SelectedCostingVersion && <button title='Discard' className="CancelIcon" type={'button'} onClick={() => deleteRowItem(indexInside)} />}
                                                     </>}
                                             </div></td>

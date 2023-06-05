@@ -14,6 +14,8 @@ import _ from 'lodash';
 import { datalist } from 'react-dom-factories';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
+import { checkFinalUser } from '../../costing/actions/Costing';
+import WarningMessage from '../../common/WarningMessage';
 
 
 const ApprovalDrawer = (props) => {
@@ -32,6 +34,9 @@ const ApprovalDrawer = (props) => {
     const [approver, setApprover] = useState('')
     const [selectedApprover, setSelectedApprover] = useState('')
     const [selectedApproverLevelId, setSelectedApproverLevelId] = useState('')
+    const [isDisable, setIsDisable] = useState('')
+    const [editWarning, setEditWarning] = useState(false)
+    const [filterStatus, setFilterStatus] = useState('')
 
     useEffect(() => {
         dispatch(getReasonSelectList((res) => { }))
@@ -56,6 +61,28 @@ const ApprovalDrawer = (props) => {
                 })
                 setApprovalDropDown(tempDropdownList)
             }))
+        }))
+
+        let obj = {}
+        obj.DepartmentId = userDetails().DepartmentId
+        obj.UserId = loggedInUserId()
+        obj.TechnologyId = nfrData?.TechnologyId
+        obj.Mode = 'costing'
+        obj.approvalTypeId = costingTypeIdToApprovalTypeIdFunction(NFRTypeId)
+        dispatch(checkFinalUser(obj, (res) => {
+            if (res?.data?.Result) {
+                if (res?.data?.Data?.IsFinalApprover) {
+                    if (res?.data?.Data?.IsFinalApprover) {
+                        setIsDisable(true)
+                        setEditWarning(true)
+                        setFilterStatus("You are a final level user and cannot send NFR for approval.")
+                    } else {
+                        setIsDisable(false)
+                        setEditWarning(false)
+                        setFilterStatus("")
+                    }
+                }
+            }
         }))
 
         let dataListTemp = []
@@ -142,6 +169,25 @@ const ApprovalDrawer = (props) => {
                     //   setShowValidation(true)
                 }
                 setApprovalDropDown(tempDropdownList)
+                let obj = {}
+                obj.DepartmentId = userDetails().DepartmentId
+                obj.UserId = loggedInUserId()
+                obj.TechnologyId = nfrData?.TechnologyId
+                obj.Mode = 'costing'
+                obj.approvalTypeId = costingTypeIdToApprovalTypeIdFunction(NFRTypeId)
+                dispatch(checkFinalUser(obj, (res) => {
+                    if (res?.data?.Result) {
+                        if (res?.data?.Data?.IsFinalApprover) {
+                            setIsDisable(true)
+                            setEditWarning(true)
+                            setFilterStatus("You are a final level user and cannot send NFR for approval.")
+                        } else {
+                            setIsDisable(false)
+                            setEditWarning(false)
+                            setFilterStatus("")
+                        }
+                    }
+                }))
             }))
             //   setSelectedDepartment(newValue)
         } else {
@@ -233,7 +279,7 @@ const ApprovalDrawer = (props) => {
                 "ApproverId": getValues("approver")?.value,
                 "SenderLevelId": levelDetails?.LevelId,
                 "SenderId": userData?.LoggedInUserId,
-                "ApprovalTypeId": costingTypeIdToApprovalTypeIdFunction(tempRowData[0]?.data[0]?.SelectedCostingVersion?.CostingTypeId),
+                "ApprovalTypeId": NFRTypeId,
                 "NfrPartWiseGroupDetailsId": tempRowData[0]?.nfrPartWiseGroupDetailsId,
                 "SenderLevel": levelDetails?.Level,
                 "SenderRemark": "string",
@@ -393,7 +439,7 @@ const ApprovalDrawer = (props) => {
                                     className="btn btn-primary save-btn"
                                     type="button"
                                     // className="submit-button save-btn"
-                                    // disabled={isDisable}
+                                    disabled={isDisable}
                                     onClick={onSubmit}
                                 >
                                     <div className={'save-icon'}></div>
@@ -401,6 +447,9 @@ const ApprovalDrawer = (props) => {
                                 </button>
                             </Col>
                         </Row>
+                        <div>
+                            {editWarning && <WarningMessage dClass="mr-3" message={filterStatus} />}
+                        </div>
                     </div>
                 </div>
             </Drawer>
