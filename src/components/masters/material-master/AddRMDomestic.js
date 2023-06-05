@@ -174,7 +174,7 @@ class AddRMDomestic extends Component {
       this.props.getPlantSelectListByType(ZBC, () => { })
       this.props.getClientSelectList(() => { })
     }
-    if (!this.state.isViewFlag && initialConfiguration.IsMasterApprovalAppliedConfigure) {
+    if (!this.state.isViewFlag && initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(RM_MASTER_ID) === true) {
       this.props.getUsersMasterLevelAPI(loggedInUserId(), RM_MASTER_ID, (res) => {
         setTimeout(() => {
           this.commonFunction()
@@ -188,7 +188,7 @@ class AddRMDomestic extends Component {
     if (this.props.fieldsObj !== prevProps.fieldsObj) {
       this.calculateNetCost()
     }
-    if ((prevState?.costingTypeId !== this.state.costingTypeId) && initialConfiguration.IsMasterApprovalAppliedConfigure) {
+    if ((prevState?.costingTypeId !== this.state.costingTypeId) && initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(RM_MASTER_ID) === true) {
       this.commonFunction()
     }
   }
