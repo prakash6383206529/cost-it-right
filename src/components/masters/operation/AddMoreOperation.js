@@ -2352,6 +2352,10 @@ function AddMoreOperation(props) {
                                                                 value: /^\d{0,4}(\.\d{0,7})?$/i,
                                                                 message: 'Maximum length for integer is 4 and for decimal is 7',
                                                             },
+                                                            max: {
+                                                                value: 100,
+                                                                message: 'Percentage should be less than 100'
+                                                            },
                                                         }}
                                                         handleChange={() => { }}
                                                         defaultValue={''}
@@ -2424,6 +2428,10 @@ function AddMoreOperation(props) {
                                                             pattern: {
                                                                 value: /^\d{0,4}(\.\d{0,7})?$/i,
                                                                 message: 'Maximum length for integer is 4 and for decimal is 7',
+                                                            },
+                                                            max: {
+                                                                value: 100,
+                                                                message: 'Percentage should be less than 100'
                                                             },
                                                         }}
                                                         handleChange={() => { }}
