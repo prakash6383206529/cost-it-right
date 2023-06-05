@@ -69,7 +69,7 @@ class BulkUpload extends Component {
                 }, 100);
             })
         } else if (!this.props.initialConfiguration.IsMasterApprovalAppliedConfigure) {
-            this.setState({ noApprovalCycle: false, })
+            this.setState({ noApprovalCycle: false })
         } else {
             this.setState({ IsFinalApprover: true })
         }
@@ -80,7 +80,7 @@ class BulkUpload extends Component {
                 }, 100);
             })
         } else if (!this.props.initialConfiguration.IsMasterApprovalAppliedConfigure) {
-            this.setState({ noApprovalCycle: false, IsFinalApprover: true })
+            this.setState({ noApprovalCycle: false })
         } else {
             this.setState({ IsFinalApprover: true })
         }
@@ -91,7 +91,7 @@ class BulkUpload extends Component {
                 }, 100);
             })
         } else if (!this.props.initialConfiguration.IsMasterApprovalAppliedConfigure) {
-            this.setState({ noApprovalCycle: false, IsFinalApprover: true })
+            this.setState({ noApprovalCycle: false })
         } else {
             this.setState({ IsFinalApprover: true })
         }
@@ -102,7 +102,7 @@ class BulkUpload extends Component {
                 }, 100);
             })
         } else if (!this.props.initialConfiguration.IsMasterApprovalAppliedConfigure) {
-            this.setState({ noApprovalCycle: false, IsFinalApprover: true })
+            this.setState({ noApprovalCycle: false })
         } else {
             this.setState({ IsFinalApprover: true })
         }
