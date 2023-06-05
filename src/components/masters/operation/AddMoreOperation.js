@@ -285,7 +285,16 @@ function AddMoreOperation(props) {
 
         setValue('operationType', addMoreDetailObj?.operationType)
         setValue('operationCode', addMoreDetailObj?.operationCode)
-        setValue('technology', { label: addMoreDetailObj.technology[0].Text, value: addMoreDetailObj.technology[0].Value })
+
+        let technologyTemp = []
+        addMoreDetailObj && addMoreDetailObj.technology && addMoreDetailObj.technology.map((item, index) => {
+            let obj = {}
+            obj.label = item.Text
+            obj.value = item.Value
+            technologyTemp.push(obj)
+        })
+
+        setValue('technology', technologyTemp)
         setValue('operationName', addMoreDetailObj.operationName)
         setValue('description', addMoreDetailObj.description)
         setValue('plant', { label: (addMoreDetailObj.costingTypeId === ZBCTypeId) ? addMoreDetailObj?.plants[0]?.Text : addMoreDetailObj?.destinationPlant.label, value: (addMoreDetailObj.costingTypeId === ZBCTypeId) ? addMoreDetailObj?.plants[0]?.Value : addMoreDetailObj?.destinationPlant.value })
@@ -376,8 +385,15 @@ function AddMoreOperation(props) {
 
     const onSubmit = (values) => {
 
-        let technologyArray = [{ Technology: values?.technology.label, TechnologyId: values?.technology.value }]
+        let technologyArray = []
         let plantArray = [{ PlantName: plant.label, PlantId: plant.value, PlantCode: '', }]
+
+        values && values.technology && values.technology.map((item, index) => {
+            let obj = {}
+            obj.Technology = item.Label
+            obj.TechnologyId = item.value
+            technologyArray.push(obj)
+        })
 
         let formData = {
             IsFinancialDataChanged: false,
@@ -831,6 +847,7 @@ function AddMoreOperation(props) {
                                             rules={{
                                                 required: true,
                                             }}
+                                            isMulti={true}
                                             placeholder={'Select'}
                                             options={searchableSelectType('technology')}
                                             required={true}
