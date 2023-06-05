@@ -476,7 +476,7 @@ class AddOperation extends Component {
   }
 
 
-  checkUniqCodeByName = (e) => {
+  checkUniqCodeByName = debounce((e) => {
     this.setState({ operationName: e.target.value })
     this.props.checkAndGetOperationCode(this.state.operationCode, e.target.value, res => {
       if (res && res.data && res.data.Result === false) {
@@ -487,7 +487,7 @@ class AddOperation extends Component {
         })
       }
     })
-  }
+  }, 600)
 
   /**
   * @method setDisableFalseFunction
@@ -1008,7 +1008,7 @@ class AddOperation extends Component {
                           type="text"
                           placeholder={isEditFlag ? '-' : "Select"}
                           validate={[required, acceptAllExceptSingleSpecialCharacter, maxLength80, checkWhiteSpaces]}
-                          onBlur={this.checkUniqCodeByName}
+                          onChange={this.checkUniqCodeByName}
                           component={renderText}
                           required={true}
                           disabled={isEditFlag ? true : false}
