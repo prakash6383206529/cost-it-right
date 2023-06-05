@@ -503,92 +503,30 @@ function RawMaterialCost(props) {
   }
 
   useEffect((item) => {
-    const delay = 700; // Delay of 500 milliseconds
-    const timer = setTimeout(() => {
-      let index = inputValue?.index
-      let event = inputValue?.event
-      let tempArr = []
-      let tempData = gridData[index]
-      setEditCalculation(false)
-      setForgingInfoIcon({ ...forgingInfoIcon, [index]: true })
-      let finishValue = event
+    if (inputValue !== '') {
+      const delay = 700; // Delay of 500 milliseconds
+      const timer = setTimeout(() => {
+        let index = inputValue?.index
+        let event = inputValue?.event
+        let tempArr = []
+        let tempData = gridData[index]
+        setEditCalculation(false)
+        setForgingInfoIcon({ ...forgingInfoIcon, [index]: true })
+        let finishValue = event
 
-      if (checkForNull(finishValue) <= 0) {
-        // const FinishWeight = checkForNull(finishValue);
-        const FinishWeight = 0;
-        const GrossWeight = tempData?.GrossWeight !== undefined ? checkForNull(tempData?.GrossWeight) : 0;
-        // let scrapWeight = checkForNull(GrossWeight - FinishWeight);
-        let scrapWeight = 0;
-        // ternary condition
-        const ScrapCost = FinishWeight !== 0 ? scrapWeight * checkForNull(tempData?.ScrapRate) : 0;
-        const CutOffRMC = tempData?.IsCutOffApplicable ? (GrossWeight * checkForNull(tempData?.CutOffPrice)) - ScrapCost : 0;
-        if (tempData?.IsCutOffApplicable && checkCutOffNegative(CutOffRMC, index)) {
-          return false
-        }
-        const NetLandedCost = (GrossWeight * tempData?.RMRate) - ScrapCost;
-        tempData = {
-          ...tempData,
-          FinishWeight: FinishWeight ? FinishWeight : 0,
-          NetLandedCost: isRMDivisorApplicable(costData.TechnologyName) ? checkForDecimalAndNull(NetLandedCost / RMDivisor, initialConfiguration.NoOfDecimalForPrice) : NetLandedCost,
-          WeightCalculatorRequest: {},
-          WeightCalculationId: "00000000-0000-0000-0000-000000000000",
-          IsCalculatedEntry: false,
-          RawMaterialCalculatorId: null,
-          CutOffRMC: CutOffRMC,
-          ScrapWeight: scrapWeight,
-          ScrapRecoveryPercentage: 0,
-        }
-        tempArr = Object.assign([...gridData], { [index]: tempData })
-
-        if (IsApplyMasterBatch) {
-
-          const RMRate = calculatePercentageValue(tempData?.RMRate, (100 - getValues('MBPercentage')));
-          const RMRatePlusMasterBatch = (RMRate + checkForNull(getValues('RMTotal'))) * GrossWeight;
-          const ScrapRate = (tempData?.ScrapRate * scrapWeight)
-          const NetLandedCost = RMRatePlusMasterBatch - ScrapRate;
-
-          tempData = {
-            ...tempData,
-            GrossWeight: GrossWeight ? GrossWeight : 0,
-            NetLandedCost: isRMDivisorApplicable(costData.TechnologyName) ? checkForDecimalAndNull(NetLandedCost / RMDivisor, initialConfiguration.NoOfDecimalForPrice) : NetLandedCost,
-            WeightCalculatorRequest: {},
-            WeightCalculationId: "00000000-0000-0000-0000-000000000000",
-            IsCalculatedEntry: false,
-            CutOffRMC: CutOffRMC,
-            ScrapWeight: scrapWeight,
-            ScrapRecoveryPercentage: 0,
-          }
-          tempArr = Object.assign([...gridData], { [index]: tempData })
-        }
-        dispatch(setRMCutOff({ IsCutOffApplicable: tempData?.IsCutOffApplicable, CutOffRMC: CutOffRMC }))
-        setGridData(tempArr)
-        setValue(`${rmGridFields}.${index}.FinishWeight`, FinishWeight)
-        setValue(`${rmGridFields}.${index}.ScrapRecoveryPercentage`, 0)
-        //Toaster.warning('Please enter valid weight.')
-
-      } else {
-        let FinishWeight = checkForNull(finishValue);
-        const GrossWeight = tempData?.GrossWeight !== undefined ? checkForNull(tempData?.GrossWeight) : 0;
-
-        if (IsFinishWeightValid(GrossWeight, FinishWeight)) {
-
-          let scrapWeight = checkForNull(GrossWeight - FinishWeight);
-          // Recovered scrap weight calculate
-          let recoveredScrapWeight;
-          if (isScrapRecoveryPercentageApplied && tempData?.ScrapRecoveryPercentage !== undefined && tempData?.ScrapRecoveryPercentage !== 0) {
-            const ScrapRecoveryPercentage = checkForNull(tempData?.ScrapRecoveryPercentage);
-            recoveredScrapWeight = scrapWeight * calculatePercentage(ScrapRecoveryPercentage);
-            scrapWeight = recoveredScrapWeight
-          }
-
+        if (checkForNull(finishValue) <= 0) {
+          // const FinishWeight = checkForNull(finishValue);
+          const FinishWeight = 0;
+          const GrossWeight = tempData?.GrossWeight !== undefined ? checkForNull(tempData?.GrossWeight) : 0;
+          // let scrapWeight = checkForNull(GrossWeight - FinishWeight);
+          let scrapWeight = 0;
           // ternary condition
           const ScrapCost = FinishWeight !== 0 ? scrapWeight * checkForNull(tempData?.ScrapRate) : 0;
-          const CutOffRMC = tempData?.IsCutOffApplicable ? ((GrossWeight * checkForNull(tempData?.CutOffPrice)) - ScrapCost) : 0;
+          const CutOffRMC = tempData?.IsCutOffApplicable ? (GrossWeight * checkForNull(tempData?.CutOffPrice)) - ScrapCost : 0;
           if (tempData?.IsCutOffApplicable && checkCutOffNegative(CutOffRMC, index)) {
             return false
           }
           const NetLandedCost = (GrossWeight * tempData?.RMRate) - ScrapCost;
-
           tempData = {
             ...tempData,
             FinishWeight: FinishWeight ? FinishWeight : 0,
@@ -596,8 +534,10 @@ function RawMaterialCost(props) {
             WeightCalculatorRequest: {},
             WeightCalculationId: "00000000-0000-0000-0000-000000000000",
             IsCalculatedEntry: false,
+            RawMaterialCalculatorId: null,
             CutOffRMC: CutOffRMC,
             ScrapWeight: scrapWeight,
+            ScrapRecoveryPercentage: 0,
           }
           tempArr = Object.assign([...gridData], { [index]: tempData })
 
@@ -617,81 +557,143 @@ function RawMaterialCost(props) {
               IsCalculatedEntry: false,
               CutOffRMC: CutOffRMC,
               ScrapWeight: scrapWeight,
-            }
-            tempArr = Object.assign([...gridData], { [index]: tempData })
-          }
-          dispatch(setRMCutOff({ IsCutOffApplicable: tempData?.IsCutOffApplicable, CutOffRMC: CutOffRMC }))
-          setGridData(tempArr)
-          setValue(`${rmGridFields}.${index}.FinishWeight`, FinishWeight)
-
-        } else {
-
-          FinishWeight = 0           //Finish weight will be zero when Finish weight > Gross Weight
-
-          // let scrapWeight = checkForNull(GrossWeight - FinishWeight);
-
-          let scrapWeight = 0;
-
-          const ScrapCost = FinishWeight !== 0 ? scrapWeight * tempData?.ScrapRate : 0;
-          const CutOffRMC = tempData?.IsCutOffApplicable ? (GrossWeight * checkForNull(tempData?.CutOffPrice)) - ScrapCost : 0;
-          if (tempData?.IsCutOffApplicable && checkCutOffNegative(CutOffRMC, index)) {
-            return false
-          }
-          const NetLandedCost = (GrossWeight * tempData?.RMRate) - 0;
-
-          tempData = {
-            ...tempData,
-            FinishWeight: 0,
-            NetLandedCost: isRMDivisorApplicable(costData.TechnologyName) ? checkForDecimalAndNull(NetLandedCost / RMDivisor, initialConfiguration.NoOfDecimalForPrice) : NetLandedCost,
-            WeightCalculatorRequest: {},
-            CutOffRMC: CutOffRMC,
-            ScrapWeight: scrapWeight,
-            ScrapRecoveryPercentage: 0,
-          }
-          tempArr = Object.assign([...gridData], { [index]: tempData })
-
-          if (IsApplyMasterBatch) {
-
-            const RMRate = calculatePercentageValue(tempData?.RMRate, (100 - getValues('MBPercentage')));
-            const RMRatePlusMasterBatch = (RMRate + checkForNull(getValues('RMTotal'))) * GrossWeight;
-            const ScrapRate = (tempData?.ScrapRate * (GrossWeight - FinishWeight))
-            const NetLandedCost = RMRatePlusMasterBatch - ScrapRate;
-
-            tempData = {
-              ...tempData,
-              GrossWeight: GrossWeight ? GrossWeight : 0,
-              NetLandedCost: isRMDivisorApplicable(costData.TechnologyName) ? checkForDecimalAndNull(NetLandedCost / RMDivisor, initialConfiguration.NoOfDecimalForPrice) : NetLandedCost,
-              WeightCalculatorRequest: {},
-              WeightCalculationId: "00000000-0000-0000-0000-000000000000",
-              IsCalculatedEntry: false,
-              CutOffRMC: CutOffRMC,
-              ScrapWeight: scrapWeight,
               ScrapRecoveryPercentage: 0,
             }
             tempArr = Object.assign([...gridData], { [index]: tempData })
           }
           dispatch(setRMCutOff({ IsCutOffApplicable: tempData?.IsCutOffApplicable, CutOffRMC: CutOffRMC }))
           setGridData(tempArr)
-          Toaster.warning('Finish weight should not be greater then gross weight.')
-          setTimeout(() => {
-            setValue(`${rmGridFields}.${index}.FinishWeight`, 0)
-            setValue(`${rmGridFields}.${index}.ScrapRecoveryPercentage`, 0)
+          setValue(`${rmGridFields}.${index}.FinishWeight`, FinishWeight)
+          setValue(`${rmGridFields}.${index}.ScrapRecoveryPercentage`, 0)
+          //Toaster.warning('Please enter valid weight.')
 
-          }, 200)
+        } else {
+          let FinishWeight = checkForNull(finishValue);
+          const GrossWeight = tempData?.GrossWeight !== undefined ? checkForNull(tempData?.GrossWeight) : 0;
 
+          if (IsFinishWeightValid(GrossWeight, FinishWeight)) {
+
+            let scrapWeight = checkForNull(GrossWeight - FinishWeight);
+            // Recovered scrap weight calculate
+            let recoveredScrapWeight;
+            if (isScrapRecoveryPercentageApplied && tempData?.ScrapRecoveryPercentage !== undefined && tempData?.ScrapRecoveryPercentage !== 0) {
+              const ScrapRecoveryPercentage = checkForNull(tempData?.ScrapRecoveryPercentage);
+              recoveredScrapWeight = scrapWeight * calculatePercentage(ScrapRecoveryPercentage);
+              scrapWeight = recoveredScrapWeight
+            }
+
+            // ternary condition
+            const ScrapCost = FinishWeight !== 0 ? scrapWeight * checkForNull(tempData?.ScrapRate) : 0;
+            const CutOffRMC = tempData?.IsCutOffApplicable ? ((GrossWeight * checkForNull(tempData?.CutOffPrice)) - ScrapCost) : 0;
+            if (tempData?.IsCutOffApplicable && checkCutOffNegative(CutOffRMC, index)) {
+              return false
+            }
+            const NetLandedCost = (GrossWeight * tempData?.RMRate) - ScrapCost;
+
+            tempData = {
+              ...tempData,
+              FinishWeight: FinishWeight ? FinishWeight : 0,
+              NetLandedCost: isRMDivisorApplicable(costData.TechnologyName) ? checkForDecimalAndNull(NetLandedCost / RMDivisor, initialConfiguration.NoOfDecimalForPrice) : NetLandedCost,
+              WeightCalculatorRequest: {},
+              WeightCalculationId: "00000000-0000-0000-0000-000000000000",
+              IsCalculatedEntry: false,
+              CutOffRMC: CutOffRMC,
+              ScrapWeight: scrapWeight,
+            }
+            tempArr = Object.assign([...gridData], { [index]: tempData })
+
+            if (IsApplyMasterBatch) {
+
+              const RMRate = calculatePercentageValue(tempData?.RMRate, (100 - getValues('MBPercentage')));
+              const RMRatePlusMasterBatch = (RMRate + checkForNull(getValues('RMTotal'))) * GrossWeight;
+              const ScrapRate = (tempData?.ScrapRate * scrapWeight)
+              const NetLandedCost = RMRatePlusMasterBatch - ScrapRate;
+
+              tempData = {
+                ...tempData,
+                GrossWeight: GrossWeight ? GrossWeight : 0,
+                NetLandedCost: isRMDivisorApplicable(costData.TechnologyName) ? checkForDecimalAndNull(NetLandedCost / RMDivisor, initialConfiguration.NoOfDecimalForPrice) : NetLandedCost,
+                WeightCalculatorRequest: {},
+                WeightCalculationId: "00000000-0000-0000-0000-000000000000",
+                IsCalculatedEntry: false,
+                CutOffRMC: CutOffRMC,
+                ScrapWeight: scrapWeight,
+              }
+              tempArr = Object.assign([...gridData], { [index]: tempData })
+            }
+            dispatch(setRMCutOff({ IsCutOffApplicable: tempData?.IsCutOffApplicable, CutOffRMC: CutOffRMC }))
+            setGridData(tempArr)
+            setValue(`${rmGridFields}.${index}.FinishWeight`, FinishWeight)
+
+          } else {
+
+            FinishWeight = 0           //Finish weight will be zero when Finish weight > Gross Weight
+
+            // let scrapWeight = checkForNull(GrossWeight - FinishWeight);
+
+            let scrapWeight = 0;
+
+            const ScrapCost = FinishWeight !== 0 ? scrapWeight * tempData?.ScrapRate : 0;
+            const CutOffRMC = tempData?.IsCutOffApplicable ? (GrossWeight * checkForNull(tempData?.CutOffPrice)) - ScrapCost : 0;
+            if (tempData?.IsCutOffApplicable && checkCutOffNegative(CutOffRMC, index)) {
+              return false
+            }
+            const NetLandedCost = (GrossWeight * tempData?.RMRate) - 0;
+
+            tempData = {
+              ...tempData,
+              FinishWeight: 0,
+              NetLandedCost: isRMDivisorApplicable(costData.TechnologyName) ? checkForDecimalAndNull(NetLandedCost / RMDivisor, initialConfiguration.NoOfDecimalForPrice) : NetLandedCost,
+              WeightCalculatorRequest: {},
+              CutOffRMC: CutOffRMC,
+              ScrapWeight: scrapWeight,
+              ScrapRecoveryPercentage: 0,
+            }
+            tempArr = Object.assign([...gridData], { [index]: tempData })
+
+            if (IsApplyMasterBatch) {
+
+              const RMRate = calculatePercentageValue(tempData?.RMRate, (100 - getValues('MBPercentage')));
+              const RMRatePlusMasterBatch = (RMRate + checkForNull(getValues('RMTotal'))) * GrossWeight;
+              const ScrapRate = (tempData?.ScrapRate * (GrossWeight - FinishWeight))
+              const NetLandedCost = RMRatePlusMasterBatch - ScrapRate;
+
+              tempData = {
+                ...tempData,
+                GrossWeight: GrossWeight ? GrossWeight : 0,
+                NetLandedCost: isRMDivisorApplicable(costData.TechnologyName) ? checkForDecimalAndNull(NetLandedCost / RMDivisor, initialConfiguration.NoOfDecimalForPrice) : NetLandedCost,
+                WeightCalculatorRequest: {},
+                WeightCalculationId: "00000000-0000-0000-0000-000000000000",
+                IsCalculatedEntry: false,
+                CutOffRMC: CutOffRMC,
+                ScrapWeight: scrapWeight,
+                ScrapRecoveryPercentage: 0,
+              }
+              tempArr = Object.assign([...gridData], { [index]: tempData })
+            }
+            dispatch(setRMCutOff({ IsCutOffApplicable: tempData?.IsCutOffApplicable, CutOffRMC: CutOffRMC }))
+            setGridData(tempArr)
+            Toaster.warning('Finish weight should not be greater then gross weight.')
+            setTimeout(() => {
+              setValue(`${rmGridFields}.${index}.FinishWeight`, 0)
+              setValue(`${rmGridFields}.${index}.ScrapRecoveryPercentage`, 0)
+
+            }, 200)
+
+          }
         }
-      }
-      for (let i = 0; i < gridData.length; i++) {
-        if (forgingInfoIcon[i] === undefined) {
-          forgingInfoIcon[i] = false
+        for (let i = 0; i < gridData.length; i++) {
+          if (forgingInfoIcon[i] === undefined) {
+            forgingInfoIcon[i] = false
+          }
         }
-      }
-      forgingInfoIcon[index] = true
-      setForgingInfoIcon(forgingInfoIcon)
-    }, delay);
-    return () => {
-      clearTimeout(timer);
-    };
+        forgingInfoIcon[index] = true
+        setForgingInfoIcon(forgingInfoIcon)
+      }, delay);
+      return () => {
+        clearTimeout(timer);
+      };
+    }
   }, [inputValue])
 
   const handleFinishWeightChange = (event, index) => {
