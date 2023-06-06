@@ -157,6 +157,8 @@ class AddExchangeRate extends Component {
         if (res && res.data && res.data.Data) {
           let Data = res.data.Data;
           this.setState({ DataToChange: Data })
+          this.props.change('EffectiveDate', DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
+          this.props.change('CurrencyExchangeRate', Data.CurrencyExchangeRate)
           setTimeout(() => {
             this.setState({ minEffectiveDate: Data.EffectiveDate })
             this.setState({
@@ -613,7 +615,6 @@ class AddExchangeRate extends Component {
                             changeHandler={(e) => {
                             }}
                             component={renderDatePicker}
-                            dropdownMode="select"
                             disabled={isViewMode || (!this.state.isFinancialDataChange && isEditFlag)}
                             placeholderText={isViewMode || (!this.state.isFinancialDataChange && isEditFlag) ? '-' : "Select Date"}
                           />
@@ -688,7 +689,6 @@ function mapStateToProps(state) {
   let initialValues = {};
   if (exchangeRateData && exchangeRateData !== undefined) {
     initialValues = {
-      CurrencyExchangeRate: exchangeRateData.CurrencyExchangeRate ? exchangeRateData.CurrencyExchangeRate : '',
       BankRate: exchangeRateData.BankRate ? exchangeRateData.BankRate : '',
       BankCommissionPercentage: exchangeRateData.BankCommissionPercentage ? exchangeRateData.BankCommissionPercentage : '',
       CustomRate: exchangeRateData.CustomRate ? exchangeRateData.CustomRate : '',
@@ -698,7 +698,6 @@ function mapStateToProps(state) {
 
     }
   }
-
   return { exchangeRateData, currencySelectList, filedObj, initialValues, clientSelectList }
 }
 

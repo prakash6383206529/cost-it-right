@@ -9,6 +9,7 @@ import {
     CHECK_RFQ_BULK_UPLOAD,
     SELECTED_ROW_ARRAY,
     SET_QUOTATION_ID_FOR_RFQ,
+    GET_NFR_SELECT_LIST,
 } from '../../../config/constants';
 import { MESSAGES } from '../../../config/message';
 import { loggedInUserId, userDetails } from '../../../helper';
@@ -296,7 +297,6 @@ export function getQuotationDetailsByVendor(data, callback) {
 }
 
 export function setSelectedRow(data) {
-    console.log('data: ', data);
     return (dispatch) => {
         dispatch({
             type: SELECTED_ROW_ARRAY,
@@ -317,3 +317,39 @@ export function setQuotationIdForRFQ(data) {
         });
     }
 };
+
+export function rfqSaveBestCosting(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.rfqSaveBestCosting, data, config());
+        request.then((response) => {
+            if (response.data.Result) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+            callback(error)
+        });
+    };
+}
+
+export function getNfrSelectList(callback) {
+    return (dispatch) => {
+        axios.get(`${API.getNfrSelectList}`, config())
+            .then((response) => {
+
+                if (response.data.Result || response.status === 204) {
+
+                    dispatch({
+                        type: GET_NFR_SELECT_LIST,
+                        payload: response.status === 204 ? [] : response.data.SelectList
+                    })
+
+                    callback(response);
+                }
+            }).catch((error) => {
+                dispatch({ type: API_FAILURE });
+                apiErrors(error);
+            });
+    };
+}

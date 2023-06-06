@@ -302,18 +302,18 @@ function SupplierContributionReport(props) {
                         line = forLeftLine
                         labelSecond = forLeftLabel
 
-                        if (chart.data.labels[i].length < 13) {
+                        if (chart.data.labels[i].length < 20) {
                             labelSecond = labelSecond + 30
                         }
                     } else {
                         line = forRightLine
                         labelSecond = forRightLabel
 
-                        if (chart.data.labels[i].length < 13) {
+                        if (chart.data.labels[i].length < 15) {
                             labelSecond = labelSecond - 30
                         }
 
-                        if (chart.data.labels[i].length > 19) {
+                        if (chart.data.labels[i].length > 25) {
                             labelSecond = labelSecond + 50
                         }
 
@@ -385,7 +385,6 @@ function SupplierContributionReport(props) {
                                     showMonthDropdown
                                     showYearDropdown
                                     dateFormat="DD/MM/YYYY"
-                                    dropdownMode="select"
                                     maxDate={maxDate}
                                     placeholder="Select date"
                                     customClassName="withBorder"
@@ -415,7 +414,6 @@ function SupplierContributionReport(props) {
                                     showYearDropdown
                                     dateFormat="DD/MM/YYYY"
                                     minDate={minDate}
-                                    dropdownMode="select"
                                     placeholder="Select date"
                                     customClassName="withBorder"
                                     className="withBorder"

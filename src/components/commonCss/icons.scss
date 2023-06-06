@@ -71,6 +71,12 @@
 
 }
 
+.view-masters {
+    @include icons("../../assests/images/view-master.png", $shadowColor: #0cbeeb, $borderColor: #bbe8f9);
+    @include extra-icon-styles;
+    border-radius: 3px
+}
+
 .pie-chart {
     @include icons("../../assests/images/pie-chart.svg");
 
@@ -80,6 +86,11 @@
     @include icons("../../assests/images/process-add.svg", $shadowColor: #0cbeeb, $borderColor: #bbe8f9);
     border-radius: 4px;
 
+}
+
+.add-out-sourcing {
+    @include icons("../../assests/images/process-add.svg", 20px, 20px, $shadowColor: #0cbeeb, $borderColor: #bbe8f9);
+    border-radius: 4px;
 }
 
 .hirarchy-btn {
@@ -333,6 +344,11 @@
 
 .Add-file {
     @include icons("../../assests/images/add-file4.svg", $shadowColor: #7959f6, $borderColor: #e4defd);
+    @include extra-icon-styles;
+}
+
+.create-rfq {
+    @include icons("../../assests/images/create-rfq.svg", $shadowColor: #f8a000, $borderColor: #feeccc);
     @include extra-icon-styles;
 }
 

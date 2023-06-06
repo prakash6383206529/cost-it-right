@@ -54,11 +54,11 @@ function NfrTabs(props) {
                     </Nav>
                     <TabContent activeTab={activeTab}>
                         <TabPane tabId="1">
-                            <NfrListing isFromDiscount={isFromDiscount} changeIsFromDiscount={changeIsFromDiscount} />
+                            {activeTab === '1' && <NfrListing isFromDiscount={isFromDiscount} changeIsFromDiscount={changeIsFromDiscount} />}
                         </TabPane>
 
                         <TabPane tabId="2">
-                            <NFRApprovalListing activeTab={activeTab} />
+                            {activeTab === '2' && <NFRApprovalListing />}
                         </TabPane>
                     </TabContent>
                 </div>

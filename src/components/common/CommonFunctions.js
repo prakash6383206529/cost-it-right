@@ -1,6 +1,6 @@
 import { reactLocalStorage } from "reactjs-localstorage";
 import _ from 'lodash';
-import { CBCAPPROVALTYPEID, CBCTypeId, dropdownLimit, NCCAPPROVALTYPEID, NCCTypeId, NFRAPPROVALTYPEID, NFRTypeId, VBCAPPROVALTYPEID, VBCTypeId, ZBCAPPROVALTYPEID, ZBCTypeId } from "../../config/constants";
+import { CBCAPPROVALTYPEID, CBCTypeId, dropdownLimit, NCCAPPROVALTYPEID, NCCTypeId, NFRAPPROVALTYPEID, NFRTypeId, PFS2APPROVALTYPEID, PFS2APPROVALTYPEIDFULL, PFS2TypeId, VBCAPPROVALTYPEID, VBCTypeId, ZBCAPPROVALTYPEID, ZBCTypeId } from "../../config/constants";
 
 // COMMON FILTER FUNCTION FOR AUTOCOMPLETE DROPDOWN
 const commonFilterFunction = (inputValue, dropdownArray, filterByName, selectedParts = false) => {
@@ -114,6 +114,9 @@ export const costingTypeIdToApprovalTypeIdFunction = (value) => {
             break;
         case NFRTypeId:
             approvalTypeId = NFRAPPROVALTYPEID;
+            break;
+        case PFS2TypeId:
+            approvalTypeId = PFS2APPROVALTYPEID;
             break;
         default:
             approvalTypeId = null; // or any default value you prefer

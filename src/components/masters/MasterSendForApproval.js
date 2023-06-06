@@ -19,6 +19,7 @@ import { EMPTY_GUID } from '../../config/constants';
 import { getUsersMasterLevelAPI } from '../../actions/auth/AuthActions';
 import { REMARKMAXLENGTH } from '../../config/masterData';
 import { costingTypeIdToApprovalTypeIdFunction } from '../common/CommonFunctions';
+import { masterApprovalRequestBySenderBudget } from './actions/Budget';
 
 function MasterSendForApproval(props) {
     const { type, IsFinalLevel, IsPushDrawer, reasonId, masterId, approvalObj, isBulkUpload, IsImportEntery, approvalDetails, IsFinalLevelButtonShow, approvalData, levelDetails } = props
@@ -275,7 +276,24 @@ function MasterSendForApproval(props) {
                     }))
                     break;
 
+                case 5:  //CASE 5 FOR BUDGET MASTER
 
+
+                    tempArray.push({
+                        BudgetingId: 0,
+                        BudgetingRequest: approvalObj,
+                    })
+
+                    senderObj.EntityList = tempArray
+                    //THIS CONDITION IS FOR SIMULATION SEND FOR APPROVAL
+                    dispatch(masterApprovalRequestBySenderBudget(senderObj, res => {
+                        setIsDisable(false)
+                        if (res?.data?.Result) {
+                            Toaster.success('Budget has been sent for approval.')
+                            props.closeDrawer('', 'submit')
+                        }
+                    }))
+                    break;
                 default:
                     break;
             }
@@ -337,6 +355,8 @@ function MasterSendForApproval(props) {
                 return "Operation"
             case 4:
                 return "Machine"
+            case 5:
+                return "Budgeting"
             default:
                 break;
         }
@@ -436,7 +456,6 @@ function MasterSendForApproval(props) {
                                                             showMonthDropdown
                                                             showYearDropdown
                                                             dateFormat="dd/MM/yyyy"
-                                                            dropdownMode="select"
                                                             placeholderText="-"
                                                             className="withBorder"
                                                             autoComplete={"off"}
@@ -543,7 +562,6 @@ function MasterSendForApproval(props) {
                                                             showMonthDropdown
                                                             showYearDropdown
                                                             dateFormat="dd/MM/yyyy"
-                                                            dropdownMode="select"
                                                             placeholderText="-"
                                                             className="withBorder"
                                                             autoComplete={"off"}
@@ -645,7 +663,6 @@ function MasterSendForApproval(props) {
                                                             showMonthDropdown
                                                             showYearDropdown
                                                             dateFormat="dd/MM/yyyy"
-                                                            dropdownMode="select"
                                                             placeholderText="-"
                                                             className="withBorder"
                                                             autoComplete={"off"}
@@ -689,7 +706,6 @@ function MasterSendForApproval(props) {
                                                             showMonthDropdown
                                                             showYearDropdown
                                                             dateFormat="dd/MM/yyyy"
-                                                            dropdownMode="select"
                                                             placeholderText="-"
                                                             className="withBorder"
                                                             autoComplete={"off"}

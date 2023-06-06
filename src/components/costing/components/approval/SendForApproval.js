@@ -26,11 +26,12 @@ import LoaderCustom from '../../../common/LoaderCustom'
 import TooltipCustom from '../../../common/Tooltip'
 import { getUsersTechnologyLevelAPI } from '../../../../actions/auth/AuthActions'
 import { costingTypeIdToApprovalTypeIdFunction } from '../../../common/CommonFunctions'
+import { rfqSaveBestCosting } from '../../../rfq/actions/rfq'
 
 
 const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
 const SendForApproval = (props) => {
-  const { isApprovalisting } = props
+  const { isApprovalisting, selectedRows } = props
   const dispatch = useDispatch()
   const { register, handleSubmit, control, setValue, getValues, formState: { errors } } = useForm({
     mode: 'onChange',
@@ -68,6 +69,7 @@ const SendForApproval = (props) => {
   // const [showDate,setDate] = useState(false)
   // const [showDate,setDate] = useState(false)
   const userData = userDetails()
+  const viewCostingData = useSelector((state) => state.costing.viewCostingDetailData)
 
   useEffect(() => {
     let obj = {}
@@ -322,6 +324,38 @@ const SendForApproval = (props) => {
     }
 
     if (props?.isRfq) {
+      let tempData = { ...viewCostingData[viewCostingData?.length - 1] }
+      let data = {
+        "QuotationPartId": selectedRows[0]?.QuotationPartId,
+        "NetRawMaterialsCost": tempData?.netRM,
+        "NetBoughtOutPartCost": tempData?.netBoughtOutPartCost,
+        "NetConversionCost": tempData?.netConversionCostView,
+        "NetProcessCost": tempData?.netProcessCost,
+        "NetOperationCost": tempData?.netOperationCost,
+        "NetOtherOperationCost": tempData?.netOtherOperationCost,
+        "NetTotalRMBOPCC": tempData?.nTotalRMBOPCC,
+        "NetSurfaceTreatmentCost": tempData?.netSurfaceTreatmentCost,
+        "OverheadCost": 0,
+        "ProfitCost": 0,
+        "RejectionCost": tempData?.netRejectionCostView,
+        "ICCCost": 0,
+        "PaymentTermCost": 0,
+        "NetOverheadAndProfitCost": tempData?.nOverheadProfit,
+        "PackagingCost": 0,
+        "FreightCost": 0,
+        "NetFreightPackagingCost": tempData?.nPackagingAndFreight,
+        "NetToolCost": tempData?.totalToolCost,
+        "DiscountCost": tempData?.otherDiscountCost,
+        "OtherCost": tempData?.anyOtherCost,
+        "BasicRate": tempData?.BasicRate,
+        "NetPOPrice": tempData?.nPOPrice,
+        "NetPOPriceOtherCurrency": tempData?.nPoPriceCurrency
+      }
+
+      dispatch(rfqSaveBestCosting(data, res => {
+
+      }))
+
       let temp = []
 
       viewApprovalData.map((data) => {
@@ -751,7 +785,6 @@ const SendForApproval = (props) => {
                                     showYearDropdown
                                     dateFormat="DD/MM/YYYY"
                                     //maxDate={new Date()}
-                                    dropdownMode="select"
                                     placeholderText="Select date"
                                     customClassName="withBorder"
                                     className="withBorder"

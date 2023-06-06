@@ -1,7 +1,6 @@
 import React from "react";
 import Select, { createFilter } from "react-select";
 import "./formInputs.scss";
-import ReactDatePicker from 'react-datepicker'
 import AsyncSelect from 'react-select/async';
 import LoaderCustom from "../common/LoaderCustom";
 import { SPACEBAR } from "../../config/constants";
@@ -462,7 +461,7 @@ export const DatePickerHookForm = (field) => {
           render={({ field: { onChange, onBlur, value, name } }) => (
 
             // return (
-            <ReactDatePicker
+            <DatePicker
               {...field}
               {...register}
               name={name}
@@ -630,6 +629,8 @@ export const AsyncSearchableSelectHookForm = (field) => {
                   onChange(e)
                 }}
                 menuPlacement="auto"
+                classNamePrefix="multi-select-container"
+                className="multidropdown-container"
                 loadOptions={asyncOptions}
                 onBlur={onBlur}
                 selected={value}

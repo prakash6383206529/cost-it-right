@@ -126,7 +126,7 @@ class AddBOPDomestic extends Component {
       if (!(this.props.data.isEditFlag || this.props.data.isViewMode)) {
         this.props.getClientSelectList(() => { })
       }
-      if (!this.state.isViewMode && initialConfiguration.IsMasterApprovalAppliedConfigure) {
+      if (!this.state.isViewMode && initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(BOP_MASTER_ID) === true) {
         this.props.getUsersMasterLevelAPI(loggedInUserId(), BOP_MASTER_ID, (res) => {
           setTimeout(() => {
             this.commonFunction()
@@ -167,7 +167,7 @@ class AddBOPDomestic extends Component {
     if (this.props.fieldsObj !== prevProps.fieldsObj) {
       this.handleCalculation()
     }
-    if ((prevState?.costingTypeId !== this.state.costingTypeId) && initialConfiguration.IsMasterApprovalAppliedConfigure) {
+    if ((prevState?.costingTypeId !== this.state.costingTypeId) && initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(BOP_MASTER_ID) === true) {
       this.commonFunction()
     }
   }
@@ -944,6 +944,8 @@ class AddBOPDomestic extends Component {
                               <input
                                 type="radio"
                                 name="costingHead"
+                                className='zero-based'
+                                id="zeroBased"
                                 checked={
                                   costingTypeId === ZBCTypeId ? true : false
                                 }
@@ -958,6 +960,8 @@ class AddBOPDomestic extends Component {
                               <input
                                 type="radio"
                                 name="costingHead"
+                                className='vendor-based'
+                                id="vendorBased"
                                 checked={
                                   costingTypeId === VBCTypeId ? true : false
                                 }
@@ -972,6 +976,8 @@ class AddBOPDomestic extends Component {
                               <input
                                 type="radio"
                                 name="costingHead"
+                                className='customer-based'
+                                id="customerBased"
                                 checked={
                                   costingTypeId === CBCTypeId ? true : false
                                 }

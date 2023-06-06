@@ -7,7 +7,7 @@ import ApprovalWorkFlow from "../../costing/components/approval/ApprovalWorkFlow
 import { Fragment } from "react";
 import ApprovalDrawer from "./ApprovalDrawer";
 import NoContentFound from "../../common/NoContentFound";
-import { EMPTY_DATA, NFRTypeId } from "../../../config/constants";
+import { EMPTY_DATA, NFRTypeId, defaultPageSize } from "../../../config/constants";
 import { useDispatch } from "react-redux";
 import { getNFRApprovalSummary } from "./actions/nfr";
 import { formViewData, loggedInUserId, searchNocontentFilter, userDetails, userTechnologyLevelDetails } from "../../../helper";
@@ -19,11 +19,13 @@ import { AgGridReact } from "ag-grid-react/lib/agGridReact";
 import { AgGridColumn } from "ag-grid-react/lib/agGridColumn";
 import { PaginationWrapper } from "../../common/commonPagination";
 import WarningMessage from "../../common/WarningMessage";
+import Toaster from "../../common/Toaster";
+import OutsourcingDrawer from "./OutsourcingDrawer";
 const gridOptions = {};
 
 function NfrSummaryDrawer(props) {
     const { rowData } = props
-    const [loader, setLoader] = useState(true)
+    const [loader, setLoader] = useState(false)
     const [approvalLevelStep, setApprovalLevelStep] = useState([])
     const [tableData, setTableData] = useState([])
     const [approvalDrawer, setApprovalDrawer] = useState(false)
@@ -31,7 +33,7 @@ function NfrSummaryDrawer(props) {
     const [nfrData, setNFRData] = useState({})
     const [finalLevelUser, setFinalLevelUser] = useState(true)
     const [levelDetails, setLevelDetails] = useState({})
-    const [sendForApprovalButtonShow, setSendForApprovalButtonShow] = useState(true)
+    const [sendForApprovalButtonShow, setSendForApprovalButtonShow] = useState(false)
     const [isFinalLevelUser, setIsFinalLevelUser] = useState(false)
     const [isOpen, setIsOpen] = useState(false)
     const [isCostingDrawerLoader, setIsCostingDrawerLoader] = useState(false)
@@ -40,12 +42,16 @@ function NfrSummaryDrawer(props) {
     const [gridColumnApi, setgridColumnApi] = useState(null);
     const [noData, setNoData] = useState(false)
     const [selectedRowData, setSelectedRowData] = useState([]);
+    const [isDataCome, setIsDataCome] = useState(false);
+    const [showOutsourcingDrawer, setShowOutsourcingDrawer] = useState('');
+    const [OutsourcingCostingData, setOutsourcingCostingData] = useState({});
 
     const dispatch = useDispatch()
 
     useEffect(() => {
-        dispatch(getNFRApprovalSummary(rowData?.NfrGroupId, loggedInUserId(), (res) => {
-
+        setLoader(true)
+        dispatch(getNFRApprovalSummary(rowData?.ApprovalProcessId, loggedInUserId(), (res) => {
+            setLoader(false)
             if (res?.data?.Result === true) {
                 setNFRData(res?.data?.Data)
                 setIsApprovalDone(res?.data?.Data?.IsSent)
@@ -70,6 +76,9 @@ function NfrSummaryDrawer(props) {
                     levelDetailsTemp = userTechnologyLevelDetails(NFRTypeId, res?.data?.Data?.TechnologyLevels)
                     if (Number(levelDetailsTemp?.length) === 0) {
                         setSendForApprovalButtonShow(false)
+                        setTimeout(() => {
+                            setIsDataCome(true)
+                        }, 100);
                     } else {
                         let obj = {}
                         obj.DepartmentId = userDetails().DepartmentId
@@ -81,6 +90,9 @@ function NfrSummaryDrawer(props) {
                             if (res?.data?.Result) {
                                 setSendForApprovalButtonShow(true)
                                 setIsFinalLevelUser(res?.data?.Data?.IsFinalApprover)
+                                setTimeout(() => {
+                                    setIsDataCome(true)
+                                }, 100);
                             }
                         }))
                     }
@@ -108,7 +120,6 @@ function NfrSummaryDrawer(props) {
     }
 
     const viewCosting = (costingNumber) => {
-        console.log(nfrData?.CostingData, "CostingData");
         setIsCostingDrawerLoader(true)
         dispatch(getSingleCostingDetails(costingNumber, (res) => {
             setIsCostingDrawerLoader(false)
@@ -138,6 +149,10 @@ function NfrSummaryDrawer(props) {
         sortable: false,
         checkboxSelection: isFirstColumn
     };
+
+    const isRowSelectable = (rowNode) => {
+        return (!isApprovalDone && sendForApprovalButtonShow) ? true : false
+    }
 
     const onGridReady = (params) => {
         setgridApi(params.api);
@@ -173,9 +188,7 @@ function NfrSummaryDrawer(props) {
     }
     const vendorFormatter = (props) => {
         const cellValue = props?.value;
-        console.log('cellValue: ', cellValue);
         const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
-        console.log('rowData: ', rowData);
 
         return `${cellValue} (${rowData.VendorCode})`
     }
@@ -189,11 +202,39 @@ function NfrSummaryDrawer(props) {
         var selectedRows = gridApi && gridApi?.getSelectedRows();
     }
 
+    const viewOutsourcing = (data) => {
+        setOutsourcingCostingData(data)
+        setTimeout(() => {
+            setShowOutsourcingDrawer(true)
+        }, 300);
+
+    }
+
+    const outsourcingFormatter = (props) => {
+        const cellValue = props?.value;
+        const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
+
+        return cellValue ?
+            (
+                <div>
+                    <button
+                        type="button"
+                        title='View'
+                        className="float-right mb-0 View "
+                        onClick={() => viewOutsourcing(rowData)}
+                    >
+                    </button>
+                    {cellValue}
+                </div>
+            ) : '-'
+    }
+
     const frameworkComponents = {
         onAction: onAction,
         plantFormatter: plantFormatter,
         vendorFormatter: vendorFormatter,
-        checkBoxRenderer: checkBoxRenderer
+        checkBoxRenderer: checkBoxRenderer,
+        outsourcingFormatter: outsourcingFormatter
     }
 
     const onRowSelect = (event) => {
@@ -207,7 +248,22 @@ function NfrSummaryDrawer(props) {
         }
 
     }
+    const onPageSizeChanged = (newPageSize) => {
+        var value = document.getElementById('page-size').value;
+        gridApi.paginationSetPageSize(Number(value));
+    };
 
+    const approveClick = () => {
+        if (selectedRowData?.length === 0) {
+            Toaster.warning("Please at least one costing to send for approval.")
+            return false
+        }
+        setApprovalDrawer(true)
+    }
+
+    const closeOutsourcingDrawer = (type) => {
+        setShowOutsourcingDrawer(false)
+    }
 
     return (
         <div>
@@ -268,14 +324,14 @@ function NfrSummaryDrawer(props) {
                                 </Table>
                             </Col> */}
                             <Col md="12">
-                                <div className={`ag-grid-react container-fluid p-relative`} id='go-to-top'>
-
+                                <div className={`ag-grid-react container-fluid p-relative`}>
                                     <Row >
                                         <Col>
                                             <div className={`ag-grid-wrapper height-width-wrapper min-height-auto p-relative ${rowData.length <= 0 ? 'overlay-contain' : ''}`}>
-                                                <div className={`ag-theme-material ${(loader) && "max-loader-height"}`}>
+                                                <div className={`ag-theme-material`}>
                                                     {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
-                                                    <AgGridReact
+                                                    {loader && <LoaderCustom />}
+                                                    {isDataCome && <AgGridReact
                                                         style={{ height: '100%', width: '100%' }}
                                                         defaultColDef={defaultColDef}
                                                         floatingFilter={true}
@@ -296,22 +352,25 @@ function NfrSummaryDrawer(props) {
                                                         onFilterModified={onFloatingFilterChanged}
                                                         enableBrowserTooltips={true}
                                                         onRowSelected={onRowSelect}
+                                                        isRowSelectable={isRowSelectable}
 
                                                     >
                                                         {/* <AgGridColumn cellClass="has-checkbox" field="Vendor" headerName='Costing Head' cellRenderer={checkBoxRenderer}></AgGridColumn> */}
                                                         {/* <AgGridColumn cellClass="has-checkbox" field="QuotationNumber" headerName='Group Name' cellRenderer={'linkableFormatter'} ></AgGridColumn> */}
-                                                        <AgGridColumn cellClass="has-checkbox" field="VendorName" headerName="Vendor" cellRenderer={'vendorFormatter'}></AgGridColumn>
+                                                        <AgGridColumn field="VendorName" headerName="Vendor" cellRenderer={'vendorFormatter'}></AgGridColumn>
                                                         <AgGridColumn field="PlantName" headerName='Plant' cellRenderer={'plantFormatter'}></AgGridColumn>
                                                         <AgGridColumn field="CostingNumber" headerName='Costing' ></AgGridColumn>
                                                         <AgGridColumn field="NetPOPrice" headerName='Net PO' ></AgGridColumn>
-                                                        <AgGridColumn field="CostingId" headerName='Actions' cellRenderer={'onAction'}></AgGridColumn>
+                                                        <AgGridColumn field="OutsourcingCost" headerName='Outsourcing Cost' cellRenderer={'outsourcingFormatter'}></AgGridColumn>
+                                                        <AgGridColumn field="CostingId" headerName='Actions' type="rightAligned" cellRenderer={'onAction'}></AgGridColumn>
 
-                                                    </AgGridReact>
+                                                    </AgGridReact>}
 
+                                                    {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} globalTake={defaultPageSize} />}
                                                 </div>
-                                                <div className="text-right pb-3">
+                                                {!isApprovalDone && sendForApprovalButtonShow && <div className="text-right pb-3">
                                                     <WarningMessage message="Select one costing to push on SAP." />
-                                                </div>
+                                                </div>}
                                             </div>
                                         </Col>
                                     </Row>
@@ -329,7 +388,7 @@ function NfrSummaryDrawer(props) {
                                     </button>
                                     <button type="button" className="approve-button mr5 approve-hover-btn"
 
-                                        onClick={() => setApprovalDrawer(true)}
+                                        onClick={() => approveClick()}
                                     >
                                         <div className={'save-icon'}></div>
                                         {'Approve'}
@@ -350,6 +409,14 @@ function NfrSummaryDrawer(props) {
                     isSimulation={false}
                     simulationDrawer={false}
                     isReportLoader={isCostingDrawerLoader}
+                />}
+            {showOutsourcingDrawer &&
+                <OutsourcingDrawer
+                    isOpen={showOutsourcingDrawer}
+                    closeDrawer={closeOutsourcingDrawer}
+                    anchor={'right'}
+                    CostingId={OutsourcingCostingData?.CostingId}
+                    viewMode={true}
                 />}
             {approvalDrawer && sendForApprovalButtonShow && <ApprovalDrawer isOpen={approvalDrawer} anchor="right" closeDrawer={closeDrawer} hideTable={true} nfrData={nfrData} type='Approve' isFinalLevelUser={isFinalLevelUser} pushData={selectedRowData} />}
             {rejectDrawer && sendForApprovalButtonShow && <ApprovalDrawer isOpen={rejectDrawer} anchor="right" closeDrawer={closeDrawer} hideTable={true} nfrData={nfrData} rejectDrawer={true} isFinalLevelUser={isFinalLevelUser} pushData={selectedRowData} />}

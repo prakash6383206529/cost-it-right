@@ -473,7 +473,7 @@ function BDSimulation(props) {
                                                 <AgGridColumn width={120} field="NewNetLandedCost" editable='false' valueGetter='data.NewBasicRate' cellRenderer={'NewcostFormatter'} headerName="Revised" colId='NewNetLandedCost'></AgGridColumn>
                                             </AgGridColumn>
 
-                                            <AgGridColumn field="EffectiveDate" headerName="Effective Date" editable='false' minWidth={150} cellRenderer='effectiveDateRenderer'></AgGridColumn>
+                                            <AgGridColumn field="EffectiveDate" headerName={props.isImpactedMaster && !props.lastRevision ? "Current Effective date" : "Effective Date"} editable='false' minWidth={150} cellRenderer='effectiveDateRenderer'></AgGridColumn>
                                             <AgGridColumn field="CostingId" hide={true}></AgGridColumn>
 
 
@@ -498,7 +498,6 @@ function BDSimulation(props) {
                                             showYearDropdown
                                             dateFormat="dd/MM/yyyy"
                                             minDate={new Date(maxDate)}
-                                            dropdownMode="select"
                                             placeholderText="Select effective date"
                                             className="withBorder"
                                             autoComplete={"off"}

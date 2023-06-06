@@ -110,7 +110,7 @@ function Ferrous(props) {
             sum = sum + checkForNull(getValues(`rmGridFields.${index}.Percentage`))
             return null
         })
-        return sum;
+        return checkForDecimalAndNull(sum, getConfigurationKey().NoOfDecimalForInputOutput);
     }
 
     const percentageChange = (e) => {
@@ -226,7 +226,7 @@ function Ferrous(props) {
         calcForOutside().map((item, index) => {
             tempArray.push({
                 RMName: item.RMName, RMRate: item.RMRate, ScrapRate: item.ScrapRate, CostingCalculationDetailId: "00000000-0000-0000-0000-000000000000", Percentage: getValues(`${rmGridFields}.${index}.Percentage`)
-                , GrossWeight: item.GrossWeight, ScrapWeight: item.ScrapWeight, FinishWeight: item.FinishWeight,
+                , GrossWeight: item.GrossWeight, ScrapWeight: item.ScrapWeight, FinishWeight: item.FinishWeight, RawMaterialId: item.RawMaterialId
             })
             return null
         })

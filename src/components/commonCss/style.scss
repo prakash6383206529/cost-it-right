@@ -1416,7 +1416,7 @@ $roboto: "Roboto",
 
         .sub-heading {
           display: block;
-          font-size: 11px;
+          font-size: 13px;
           margin-bottom: 0 !important;
         }
       }
@@ -3148,17 +3148,13 @@ button:disabled,
     margin-left: -4px;
     font-size: 14px;
     box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
+  }
 
-    button {
-      position: absolute;
-      top: -8px;
-      right: -8px;
-      background: none;
-
-      &:focus {
-        border: none !important;
-        box-shadow: none !important;
-      }
+  .CancelIcon,
+  .pie-chart {
+    &:focus {
+      box-shadow: none !important;
+      border: none !important;
     }
   }
 }
@@ -3598,8 +3594,14 @@ body {
     max-width: 280px;
     width: 280px;
 
-    @media screen and (max-width:$miniDesktop) {
-      width: 260px;
+    @media screen and (max-width:$middleDesktop) {
+      width: auto;
+    }
+  }
+
+  .overhead-rejection .cross-btn-container {
+    @media screen and (max-width:$middleDesktop) {
+      width: 240px;
     }
   }
 
@@ -3608,8 +3610,8 @@ body {
       max-width: 280px;
       width: 280px;
 
-      @media screen and (max-width:$miniDesktop) {
-        width: 260px;
+      @media screen and (max-width:$middleDesktop) {
+        width: auto;
       }
     }
 
@@ -3809,7 +3811,11 @@ body {
 
 .css-26l3qy-menu {
   font-size: 14px;
-  z-index: 100 !important;
+  z-index: 12 !important;
+}
+
+.select-container__option {
+  font-size: 14px !important;
 }
 
 .costing-details-page,
@@ -6240,6 +6246,7 @@ body {
       .Under.Revision,
       .Received,
       .Open,
+      .ExternalReject,
       [class^="Pending"],
       [class^="Awaiting"],
       .Approved,
@@ -7491,6 +7498,7 @@ body {
   .cancel-btn,
   .reset-btn,
   .pdf-detail,
+  .rfq-summary-discard,
   .reset {
     font-size: calc(14px * 80 / 100) !important;
     padding-left: calc(15px * 80 / 100) !important;
@@ -8215,6 +8223,44 @@ body {
   }
 }
 
+.simple-pdf {
+  .table-responsive {
+    min-width: 100% !important;
+    overflow: unset !important;
+
+    .table-responsive {
+      overflow: unset !important;
+    }
+
+    table {
+      min-width: 100%;
+    }
+
+    .approval-summary-headers,
+    .header-name,
+    .header-name-left {
+      background-color: #ececec !important;
+    }
+  }
+
+  .background-light-blue {
+    background: #9fcffc !important;
+
+    th {
+      word-spacing: 1px;
+
+      print-color-adjust: exact;
+      -webkit-print-color-adjust: exact;
+    }
+
+    td {
+      padding-right: 20px;
+      print-color-adjust: exact;
+      -webkit-print-color-adjust: exact;
+    }
+  }
+}
+
 .remove-space-border {
   .table-responsive {
     overflow: hidden;
@@ -8356,7 +8402,7 @@ body {
     right: 2px;
     top: 24%;
     min-height: 38px;
-    z-index: 10;
+    z-index: 1;
 
     .input-group-text {
       border-top-right-radius: 4px;
@@ -8366,6 +8412,10 @@ body {
         min-width: 24px;
       }
     }
+  }
+
+  .input-group>.form-control:focus {
+    z-index: 0;
   }
 }
 

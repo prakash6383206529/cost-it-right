@@ -5139,17 +5139,17 @@ export const MRGridForTokenSummary = [
     { label: "Variance (Proc. Cost)", value: "NetProcessCostVariance" },
 ]
 
-export const RMImpactedDownloadArray = ["RawMaterial", "RMGrade", "RMSpec", "RawMaterialCode", "Category", "UOM", "TechnologyName", "Vendor", "ExistingBasicRate", "RevisedBasicRate", "ExistingScrapRate", "RevisedScrapRate", "RMFreightCost", "RMShearingCost", "EffectiveDate"]
+export const RMImpactedDownloadArray = ["RawMaterial", "RMGrade", "RMSpec", "RawMaterialCode", "Category", "UOM", "TechnologyName", "Vendor", "ExistingBasicRate", "RevisedBasicRate", "ExistingScrapRate", "RevisedScrapRate", "RMFreightCost", "RMShearingCost", "CurrentEffectiveDate"]
 
-export const OperationImpactDownloadArray = ["OperationName", "OperationCode", "UOM", "ExistingOperationRate", "RevisedOperationRate", "EffectiveDate",]
+export const OperationImpactDownloadArray = ["OperationName", "OperationCode", "UOM", "ExistingOperationRate", "RevisedOperationRate", "CurrentEffectiveDate",]
 
-export const STOperationImpactDownloadArray = ["STOperationName", "OperationCode", "UOM", "ExistingOperationRate", "RevisedOperationRate", "EffectiveDate",]
+export const STOperationImpactDownloadArray = ["STOperationName", "OperationCode", "UOM", "ExistingOperationRate", "RevisedOperationRate", "CurrentEffectiveDate",]
 
-export const BOPImpactDownloadArray = ["BoughtOutPartNumber", "BoughtOutPartName", "Category", "Vendor", "ExistingBOPRate", "RevisedBOPRate", "EffectiveDate",]
+export const BOPImpactDownloadArray = ["BoughtOutPartNumber", "BoughtOutPartName", "Category", "Vendor", "ExistingBOPRate", "RevisedBOPRate", "CurrentEffectiveDate",]
 
-export const ERImpactDownloadArray = ["Currency", "BankRate", "BankCommissionPercentage", "CustomRate", "CurrencyExchangeRate", "ExistingExchangeRate", "RevisedExchangeRate", "EffectiveDate",]
+export const ERImpactDownloadArray = ["Currency", "BankRate", "BankCommissionPercentage", "CustomRate", "CurrencyExchangeRate", "ExistingExchangeRate", "RevisedExchangeRate", "CurrentEffectiveDate",]
 
-export const MachineImpactDownloadArray = ['MachineName', 'MachineNumber', 'MachineTypeName', 'ProcessName', 'ProcessCode', 'UOM', 'Vendor', 'ExistingMachineRate', 'RevisedMachineRate', 'EffectiveDate']
+export const MachineImpactDownloadArray = ['MachineName', 'MachineNumber', 'MachineTypeName', 'ProcessName', 'ProcessCode', 'UOM', 'Vendor', 'ExistingMachineRate', 'RevisedMachineRate', 'CurrentEffectiveDate']
 
 export const RawMaterialDomesticFileHeads = ["CostingHead", "RawMaterial", "Grade", "Spec", "Code", "Category", "TechnologyName"]
 
@@ -6552,10 +6552,11 @@ export const tokenStatus = {
     Approved: 'The token is approved.',
     Rejected: 'The token is rejected.',
     Pushed: 'The token is pushed to SAP.',
-    Error: 'The token is approved but getting an error when pushed to SAP.',
+    Error: 'An error occurred while pushing the approved token to SAP.',
     History: 'The token is now old, it has new updated costing.',
     Linked: 'The token is linked to another token.',
-    Provisional: 'The token is provisional, will not go for approval.'
+    Provisional: 'The token is provisional, will not go for approval.',
+    POUpdated: 'PO price updated successfully on SAP.'
 };
 export const tokenStatusName = {
     PENDING_FOR_APPROVAL: 'PendingForApproval',
@@ -6567,7 +6568,8 @@ export const tokenStatusName = {
     ERROR: 'Error',
     HISTORY: 'History',
     LINKED: 'Linked',
-    PROVISIONAL: 'Provisional'
+    PROVISIONAL: 'Provisional',
+    POUPDATED: 'POUpdated'
 }
 export const typePercentageAndFixed = [
     { label: 'Fixed', value: 'Fixed' },

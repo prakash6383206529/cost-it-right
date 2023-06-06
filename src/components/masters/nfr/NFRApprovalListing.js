@@ -9,7 +9,7 @@ import { EMPTY_DATA, defaultPageSize } from '../../../config/constants';
 import { useDispatch } from 'react-redux';
 import { getNFRApprovals } from './actions/nfr';
 import { getSingleCostingDetails, setCostingViewData } from '../../costing/actions/Costing';
-import { formViewData } from '../../../helper';
+import { formViewData, loggedInUserId } from '../../../helper';
 import CostingDetailSimulationDrawer from '../../simulation/components/CostingDetailSimulationDrawer';
 import ApprovalSummary from '../../costing/components/approval/ApprovalSummary';
 import { Redirect } from 'react-router';
@@ -43,14 +43,12 @@ function NFRApprovalListing(props) {
     }
 
     useEffect(() => {
-        if (props?.activeTab === '2') {
-            dispatch(getNFRApprovals(res => {
-                if (res?.data?.Result === true) {
-                    setRowData(res?.data?.DataList)
-                }
-            }))
-        }
-    }, [props?.activeTab])
+        dispatch(getNFRApprovals(loggedInUserId(), res => {
+            if (res?.data?.Result === true) {
+                setRowData(res?.data?.DataList)
+            }
+        }))
+    }, [])
 
     /**
     * @method hyphenFormatter
@@ -93,7 +91,7 @@ function NFRApprovalListing(props) {
     const closeDrawer = (e = '', type) => {
         if (type === 'submit') {
             setIsOpen(false)
-            dispatch(getNFRApprovals(res => {
+            dispatch(getNFRApprovals(loggedInUserId(), res => {
                 if (res?.data?.Result === true) {
                     setRowData(res?.data?.DataList)
                 }
@@ -137,9 +135,8 @@ function NFRApprovalListing(props) {
     }
 
     const statusFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        return <div className={cell}>{row.DisplayStatus}</div>
+        return <div className={row?.Status}>{row.DisplayStatus}</div>
     }
 
     const frameworkComponents = {
@@ -173,8 +170,16 @@ function NFRApprovalListing(props) {
     };
     const resetState = () => {
         gridOptions?.columnApi?.resetColumnState(null);
-        window.screen.width >= 1600 && gridApi.sizeColumnsToFit();
+        gridOptions?.api?.setFilterModel(null);
+        window.screen.width >= 1920 && gridApi.sizeColumnsToFit();
+        gridApi.deselectAll()
     }
+
+    const onPageSizeChanged = (newPageSize) => {
+        gridApi.paginationSetPageSize(Number(newPageSize));
+        window.screen.width >= 1920 && gridApi.sizeColumnsToFit();
+
+    };
 
     return (
         <Fragment>
@@ -190,8 +195,8 @@ function NFRApprovalListing(props) {
                                     <div className="ag-grid-header d-flex justify-content-between">
                                         <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
                                         <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}>
-                                                <div className="refresh mr-0"></div>
-                                            </button>
+                                            <div className="refresh mr-0"></div>
+                                        </button>
                                     </div>
                                     <div className="ag-theme-material">
 
@@ -234,7 +239,7 @@ function NFRApprovalListing(props) {
                                             <AgGridColumn field='LastApprovedByName' headerName="Last Approved /Rejected By" cellRenderer='hyphenFormatter'></AgGridColumn>
                                             <AgGridColumn headerClass="justify-content-center" pinned="right" cellClass="text-center" field="DisplayStatus" tooltipField="TooltipText" cellRenderer='statusFormatter' headerName="Status"></AgGridColumn>
                                         </AgGridReact>
-                                            {<PaginationWrapper gridApi={gridApi} globalTake={defaultPageSize} />}
+                                        {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} globalTake={defaultPageSize} />}
                                     </div>
                                 </div>
                             </div>

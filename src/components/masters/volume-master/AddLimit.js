@@ -117,7 +117,8 @@ const AddLimit = (props) => {
         props.closeDrawer("", {});
     };
     const cancelHandler = () => {
-        setShowPopup(true)
+        // setShowPopup(true)
+        cancel('cancel')
     }
     const onPopupConfirm = () => {
         cancel('cancel')

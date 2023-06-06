@@ -12,11 +12,11 @@ import { calculatePercentage, checkForDecimalAndNull, checkForNull, loggedInUser
 import { SearchableSelectHookForm, TextAreaHookForm, TextFieldHookForm } from '../../../layout/HookFormInputs';
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css';
-import { ASSEMBLYNAME, FILE_URL } from '../../../../config/constants';
+import { ASSEMBLYNAME, FILE_URL, NFRTypeId, VBCTypeId } from '../../../../config/constants';
 import Toaster from '../../../common/Toaster';
 import { MESSAGES } from '../../../../config/message';
 import DayTime from '../../../common/DayTimeWrapper'
-import { ViewCostingContext } from '../CostingDetails';
+import { IsNFR, ViewCostingContext } from '../CostingDetails';
 import { Redirect, useHistory } from "react-router-dom";
 import redcrossImg from '../../../../assests/images/red-cross.png'
 import { debounce } from 'lodash'
@@ -33,7 +33,6 @@ import { number, percentageLimitValidation, checkWhiteSpaces, decimalNumberLimit
 import ConditionCosting from '../CostingHeadCosts/AdditionalOtherCost/ConditionCosting';
 import AddConditionCosting from '../CostingHeadCosts/AdditionalOtherCost/AddConditionCosting';
 import { reactLocalStorage } from 'reactjs-localstorage';
-
 let counter = 0;
 function TabDiscountOther(props) {
   // ********* INITIALIZE REF FOR DROPZONE ********
@@ -82,6 +81,7 @@ function TabDiscountOther(props) {
   const [totalConditionCost, setTotalConditionCost] = useState(0)
   const [nfrListing, setNfrListing] = useState(false)
   const { subAssemblyTechnologyArray } = useSelector(state => state.subAssembly)
+  const isNFR = useContext(IsNFR);
 
   const fieldValues = useWatch({
     control,
@@ -128,47 +128,50 @@ function TabDiscountOther(props) {
 
 
   useEffect(() => {
-    if (RMCCTabData && RMCCTabData[0]?.CostingId) {
+    if (RMCCTabData && RMCCTabData[0]?.CostingId && props.activeTab === '6') {
       let npvSum = 0
-      dispatch(getNpvDetails(RMCCTabData && RMCCTabData[0]?.CostingId, (res) => {
-        if (res?.data?.DataList) {
-          let Data = res?.data?.DataList
-          setNpvTableData(Data)
-          const sum = Data.reduce((acc, obj) => Number(acc) + Number(obj.NpvCost), 0);
-          setTotalNpvCost(sum)
-          npvSum = sum
-          dispatch(isDiscountDataChange(true))
-          setDiscountObj({
-            ...discountObj,
-            totalNpvCost: sum
-          })
-        }
-      }))
-
-
-      dispatch(getConditionDetails(RMCCTabData && RMCCTabData[0]?.CostingId, (res) => {
-        if (res?.data?.Data) {
-          let Data = res?.data?.Data.ConditionsData
-          let temp = []
-          Data && Data.map((item) => {
-            item.condition = `${item.Description} (${item.CostingConditionNumber})`
-            temp.push(item)
-          })
-          seConditionTableData(temp)
-          const sum = Data.reduce((acc, obj) => Number(acc) + Number(obj.ConditionCost), 0);
-          setTotalConditionCost(sum)
-          setTimeout(() => {
+      if (initialConfiguration?.IsShowNpvCost) {
+        dispatch(getNpvDetails(RMCCTabData && RMCCTabData[0]?.CostingId, (res) => {
+          if (res?.data?.DataList) {
+            let Data = res?.data?.DataList
+            setNpvTableData(Data)
+            const sum = Data.reduce((acc, obj) => Number(acc) + Number(obj.NpvCost), 0);
+            setTotalNpvCost(sum)
+            npvSum = sum
             dispatch(isDiscountDataChange(true))
             setDiscountObj({
               ...discountObj,
-              totalConditionCost: Number(sum)
+              totalNpvCost: sum
             })
-          }, 1000);
-        }
-      }))
+          }
+        }))
+      }
 
+      if (initialConfiguration?.IsBasicRateAndCostingConditionVisible) {
+        dispatch(getConditionDetails(RMCCTabData && RMCCTabData[0]?.CostingId, (res) => {
+          if (res?.data?.Data) {
+            let Data = res?.data?.Data.ConditionsData
+            let temp = []
+            Data && Data.map((item) => {
+              item.condition = `${item.Description} (${item.CostingConditionNumber})`
+              temp.push(item)
+            })
+            seConditionTableData(temp)
+            const sum = Data.reduce((acc, obj) => Number(acc) + Number(obj.ConditionCost), 0);
+            setTotalConditionCost(sum)
+            setTimeout(() => {
+              dispatch(isDiscountDataChange(true))
+              setDiscountObj({
+                ...discountObj,
+                totalConditionCost: Number(sum)
+              })
+            }, 1000);
+          }
+        }))
+      }
     }
-  }, [RMCCTabData])
+  }, [RMCCTabData, props.activeTab])
+
 
   useEffect(() => {
     if (CostingDataList && CostingDataList.length > 0) {
@@ -593,7 +596,8 @@ function TabDiscountOther(props) {
       dispatch(isDiscountDataChange(true))
       setCurrency(newValue)
       setIsInputLader(true)
-      dispatch(getExchangeRateByCurrency(newValue.label, costData.CostingTypeId, DayTime(CostingEffectiveDate).format('YYYY-MM-DD'), costData.VendorId, costData.CustomerId, res => {
+      let costingTypeId = (costData.CostingTypeId === VBCTypeId || costData.CostingTypeId === NFRTypeId) ? VBCTypeId : costData.CostingTypeId
+      dispatch(getExchangeRateByCurrency(newValue.label, costingTypeId, DayTime(CostingEffectiveDate).format('YYYY-MM-DD'), costData.VendorId, costData.CustomerId, false, res => {
         setIsInputLader(false)
         if (Object.keys(res.data.Data).length === 0) {
           setShowWarning(true)
@@ -828,7 +832,9 @@ function TabDiscountOther(props) {
           "OtherCostApplicabilityId": otherCostApplicability.value,
           "OtherCostApplicability": otherCostApplicability.label,
           "DiscountApplicbilityId": discountCostApplicability.value,
-          "DiscountApplicability": discountCostApplicability.label
+          "DiscountApplicability": discountCostApplicability.label,
+          "SANumber": getValues('SANumber'),
+          "LineNumber": getValues('LineNumber'),
         }
       },
       "Attachements": updatedFiles
@@ -848,11 +854,11 @@ function TabDiscountOther(props) {
           dispatch(setComponentDiscountOtherItemData({}, () => { }))
           dispatch(saveAssemblyBOPHandlingCharge({}, () => { }))
           dispatch(isDiscountDataChange(false))
-          if (gotoNextValue && !props?.isNFR) {
+          if (gotoNextValue && !isNFR) {
             props.toggle('2')
             history.push('/costing-summary')
           }
-          if (props?.isNFR && gotoNextValue) {
+          if (isNFR && gotoNextValue) {
             reactLocalStorage.setObject('isFromDiscountObj', true)
             setNfrListing(true)
           }
@@ -1025,7 +1031,7 @@ function TabDiscountOther(props) {
           <Row>
             <Col md="12">
               <div className="shadow-lgg login-formg">
-                <div className='tab-disount-total-cost'><span>Total Cost:</span> <p className='disabled-input-data'>{`${totalCost && totalCost !== undefined ? checkForDecimalAndNull(totalCost, initialConfiguration.NoOfDecimalForPrice) : 0}`}</p></div>
+                <div className='tab-disount-total-cost'><span >Total Cost:</span><TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'total-cost-tab-discount'} tooltipText={'Total Cost = Net RM BOP CC + SurfaceTreatment Cost + Overheads&Profit Cost + Packaging&Freight Cost + Tool Cost'} /> <p id={'total-cost-tab-discount'} className='disabled-input-data'>{`${totalCost && totalCost !== undefined ? checkForDecimalAndNull(totalCost, initialConfiguration.NoOfDecimalForPrice) : 0}`}</p></div>
                 <form
                   noValidate
                   className="form"

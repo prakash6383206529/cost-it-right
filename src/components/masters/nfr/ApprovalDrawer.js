@@ -14,6 +14,8 @@ import _ from 'lodash';
 import { datalist } from 'react-dom-factories';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
+import { checkFinalUser } from '../../costing/actions/Costing';
+import WarningMessage from '../../common/WarningMessage';
 
 
 const ApprovalDrawer = (props) => {
@@ -32,6 +34,9 @@ const ApprovalDrawer = (props) => {
     const [approver, setApprover] = useState('')
     const [selectedApprover, setSelectedApprover] = useState('')
     const [selectedApproverLevelId, setSelectedApproverLevelId] = useState('')
+    const [isDisable, setIsDisable] = useState('')
+    const [editWarning, setEditWarning] = useState(false)
+    const [filterStatus, setFilterStatus] = useState('')
 
     useEffect(() => {
         dispatch(getReasonSelectList((res) => { }))
@@ -58,30 +63,54 @@ const ApprovalDrawer = (props) => {
             }))
         }))
 
+        let obj = {}
+        obj.DepartmentId = userDetails().DepartmentId
+        obj.UserId = loggedInUserId()
+        obj.TechnologyId = nfrData?.TechnologyId
+        obj.Mode = 'costing'
+        obj.approvalTypeId = costingTypeIdToApprovalTypeIdFunction(NFRTypeId)
+        dispatch(checkFinalUser(obj, (res) => {
+            if (res?.data?.Result) {
+                if (res?.data?.Data?.IsFinalApprover) {
+                    if (res?.data?.Data?.IsFinalApprover) {
+                        setIsDisable(true)
+                        setEditWarning(true)
+                        setFilterStatus("You are a final level user and cannot send NFR for approval.")
+                    } else {
+                        setIsDisable(false)
+                        setEditWarning(false)
+                        setFilterStatus("")
+                    }
+                }
+            }
+        }))
+
         let dataListTemp = []
         let length = rowData?.length - 1
-        let tem = _.map(rowData, 'data')[length]
-        tem && tem?.map(item => {
-            if (item?.SelectedCostingVersion) {
-                let obj = {}
+        if (!props.hideTable) {
+            let tem = [..._.map(rowData, 'data')[0]]
+            tem && tem?.map(item => {
+                if (item?.SelectedCostingVersion) {
+                    let obj = {}
 
 
-                obj.vendor = item?.label
-                obj.vendorCode = item?.vendorCode
-                obj.vendorName = item?.vendorName
-                obj.vendorid = item?.value
-                obj.PlantName = initialConfiguration.DefaultPlantName
-                obj.PlantCode = initialConfiguration.DefaultPlantCode
-                obj.PlantId = initialConfiguration.DefaultPlantId
-                obj.CostingNumber = item?.SelectedCostingVersion?.CostingNumber
-                obj.CostingId = item?.SelectedCostingVersion?.CostingId
-                obj.Price = item?.SelectedCostingVersion?.Price
+                    obj.vendor = item?.label
+                    obj.vendorCode = item?.vendorCode
+                    obj.vendorName = item?.vendorName
+                    obj.vendorid = item?.value
+                    obj.PlantName = initialConfiguration.DefaultPlantName
+                    obj.PlantCode = initialConfiguration.DefaultPlantCode
+                    obj.PlantId = initialConfiguration.DefaultPlantId
+                    obj.CostingNumber = item?.SelectedCostingVersion?.CostingNumber
+                    obj.CostingId = item?.SelectedCostingVersion?.CostingId
+                    obj.Price = item?.SelectedCostingVersion?.Price
 
-                dataListTemp.push(obj)
-            }
-        })
-        setGridData(dataListTemp)
+                    dataListTemp.push(obj)
+                }
+            })
+            setGridData(dataListTemp)
 
+        }
 
 
     }, [])
@@ -109,8 +138,8 @@ const ApprovalDrawer = (props) => {
         }
     }
 
-    const toggleDrawer = (e) => {
-        props.closeDrawer('', 'Cancel')
+    const toggleDrawer = (type) => {
+        props.closeDrawer(type, 'Cancel')
     }
 
     /**
@@ -140,6 +169,25 @@ const ApprovalDrawer = (props) => {
                     //   setShowValidation(true)
                 }
                 setApprovalDropDown(tempDropdownList)
+                let obj = {}
+                obj.DepartmentId = userDetails().DepartmentId
+                obj.UserId = loggedInUserId()
+                obj.TechnologyId = nfrData?.TechnologyId
+                obj.Mode = 'costing'
+                obj.approvalTypeId = costingTypeIdToApprovalTypeIdFunction(NFRTypeId)
+                dispatch(checkFinalUser(obj, (res) => {
+                    if (res?.data?.Result) {
+                        if (res?.data?.Data?.IsFinalApprover) {
+                            setIsDisable(true)
+                            setEditWarning(true)
+                            setFilterStatus("You are a final level user and cannot send NFR for approval.")
+                        } else {
+                            setIsDisable(false)
+                            setEditWarning(false)
+                            setFilterStatus("")
+                        }
+                    }
+                }))
             }))
             //   setSelectedDepartment(newValue)
         } else {
@@ -174,7 +222,8 @@ const ApprovalDrawer = (props) => {
                     "ApproverDepartmentName": getValues("dept")?.label ? getValues("dept")?.label : '',
                     "IsFinalApprovalProcess": true,
                     "ReasonId": getValues('reason')?.value ? getValues('reason')?.value : 0,
-                    "Reason": getValues('reason')?.label ? getValues('reason')?.label : ""
+                    "Reason": getValues('reason')?.label ? getValues('reason')?.label : "",
+                    "PushedCostingId": props?.pushData?.CostingId
                 }
             ]
             let pushRequest = {
@@ -186,11 +235,13 @@ const ApprovalDrawer = (props) => {
                 if (res?.data?.Result === true) {
                     if (type === 'Approve') {
                         Toaster.success(MESSAGES.NFR_APPROVED)
-                        dispatch(pushNfrOnSap(pushRequest, res => {
-                            if (res?.data?.Result) {
-                                Toaster.success(MESSAGES.NFR_PUSHED)
-                            }
-                        }))
+                        if (props?.nfrData?.ApprovalTypeId === NFRAPPROVALTYPEID) {
+                            dispatch(pushNfrOnSap(pushRequest, res => {
+                                if (res?.data?.Result) {
+                                    Toaster.success(MESSAGES.NFR_PUSHED)
+                                }
+                            }))
+                        }
                     } else {
                         Toaster.success(MESSAGES.NFR_REJECTED)
                     }
@@ -214,6 +265,7 @@ const ApprovalDrawer = (props) => {
                         "Reason": "string",
                         "FinancialYear": "string",
                         "IsFinalApproved": false,
+                        "NfrPartWiseGroupDetailsId": item?.NfrPartWiseGroupDetailsId
                     }
                     arrayOfObj.push(obj)
                 }
@@ -227,7 +279,7 @@ const ApprovalDrawer = (props) => {
                 "ApproverId": getValues("approver")?.value,
                 "SenderLevelId": levelDetails?.LevelId,
                 "SenderId": userData?.LoggedInUserId,
-                "ApprovalTypeId": NFRAPPROVALTYPEID,
+                "ApprovalTypeId": NFRTypeId,
                 "NfrPartWiseGroupDetailsId": tempRowData[0]?.nfrPartWiseGroupDetailsId,
                 "SenderLevel": levelDetails?.Level,
                 "SenderRemark": "string",
@@ -239,7 +291,7 @@ const ApprovalDrawer = (props) => {
             dispatch(nfrSendToApproverBySender(req, (res) => {
                 if (res?.data?.Result) {
                     Toaster.success("Costing has been sent for approval.")
-                    toggleDrawer()
+                    toggleDrawer('submit')
                 }
             }))
         }
@@ -259,7 +311,7 @@ const ApprovalDrawer = (props) => {
                                     <h3>{props.rejectDrawer ? "Reject Costing" : props?.IsFinalApproved ? "Approve Costing" : "Send for Approval"}</h3>
                                 </div>
                                 <div
-                                    onClick={(e) => toggleDrawer(e)}
+                                    onClick={(e) => toggleDrawer('cancel')}
                                     // disabled={isDisable}
                                     className={"close-button right"}
                                 ></div>
@@ -375,7 +427,7 @@ const ApprovalDrawer = (props) => {
                                 <button
                                     className="cancel-btn mr-2"
                                     type={"button"}
-                                    onClick={toggleDrawer}
+                                    onClick={() => { toggleDrawer('cancel') }}
                                 // className="reset mr15 cancel-btn"
                                 >
                                     <div className={'cancel-icon'}></div>
@@ -387,7 +439,7 @@ const ApprovalDrawer = (props) => {
                                     className="btn btn-primary save-btn"
                                     type="button"
                                     // className="submit-button save-btn"
-                                    // disabled={isDisable}
+                                    disabled={isDisable}
                                     onClick={onSubmit}
                                 >
                                     <div className={'save-icon'}></div>
@@ -395,6 +447,9 @@ const ApprovalDrawer = (props) => {
                                 </button>
                             </Col>
                         </Row>
+                        <div>
+                            {editWarning && <WarningMessage dClass="mr-3" message={filterStatus} />}
+                        </div>
                     </div>
                 </div>
             </Drawer>

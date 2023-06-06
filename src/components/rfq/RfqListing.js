@@ -421,6 +421,7 @@ function RfqListing(props) {
                                                 enableBrowserTooltips={true}
                                             >
                                                 <AgGridColumn cellClass="has-checkbox" field="QuotationNumber" headerName='RFQ No.' cellRenderer={'linkableFormatter'} ></AgGridColumn>
+                                                {/* <AgGridColumn field="NfrId" headerName='NFR Id' width={150}></AgGridColumn> */}
                                                 <AgGridColumn field="PartNumber" tooltipField="PartNumber" headerName="Part No." width={150}></AgGridColumn>
                                                 <AgGridColumn field="CostingReceived" headerName='No. of Quotation Received' maxWidth={150} cellRenderer={'quotationReceiveFormatter'}></AgGridColumn>
                                                 <AgGridColumn field="VendorName" tooltipField="VendorName" headerName='Vendor (Code)'></AgGridColumn>

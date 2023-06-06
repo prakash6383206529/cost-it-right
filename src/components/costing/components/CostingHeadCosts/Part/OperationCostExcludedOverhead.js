@@ -195,16 +195,8 @@ function OperationCostExcludedOverhead(props) {
     }
     let operationGridData = gridData[index]
     if (operationGridData.UOM === 'Number') {
-      let isValid = Number.isInteger(Number(operationGridData.Quantity));
       if (operationGridData.Quantity === '0') {
         Toaster.warning('Number should not be zero')
-        return false
-      }
-      if (!isValid) {
-        Toaster.warning('Please enter numeric value')
-        setTimeout(() => {
-          setValue(`${OperationGridFields}[${index}].Quantity`, '')
-        }, 200)
         return false
       }
     }
@@ -349,7 +341,7 @@ function OperationCostExcludedOverhead(props) {
                                   register={register}
                                   mandatory={false}
                                   rules={{
-                                    validate: item.UOM === "Number" ? { number, checkWhiteSpaces, noDecimal, numberLimit6 } : { number, checkWhiteSpaces, decimalNumberLimit6 },
+                                    validate: { number, checkWhiteSpaces, decimalNumberLimit6 },
                                   }}
                                   defaultValue={checkForDecimalAndNull(item.Quantity, initialConfiguration.NoOfDecimalForInputOutput)}
                                   className=""

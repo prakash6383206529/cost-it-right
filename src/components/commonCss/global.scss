@@ -51,7 +51,7 @@
 
 //GENERATE THE WIDTH FOR LAYOUT AND CUSTOM ELEMENTS
 $base: 20px;
-$max: 100;
+$max: 150;
 
 @for $i from 0 through $max {
   $width: $i * $base;
@@ -69,6 +69,10 @@ $max: 100;
     min-width: $width;
   }
 
+  .layout-min-height-#{$width} {
+    min-height: $width;
+  }
+
   .custom-width-#{$customWidth} {
     width: $customWidth;
   }
@@ -79,6 +83,10 @@ $max: 100;
 
   .custom-min-width-#{$customWidth} {
     min-width: $customWidth;
+  }
+
+  .custom-min-height-#{$customWidth} {
+    min-height: $customWidth;
   }
 }
 
@@ -2825,7 +2833,8 @@ td,
   .Cancelled,
   .CreatedByAssembly,
   .Received,
-  .Sent {
+  .Sent,
+  .ExternalReject {
     background-color: #da94a1;
     min-width: 90px;
     height: 26px;
@@ -2873,7 +2882,8 @@ td,
     background-color: #fc5774;
   }
 
-  .Error {
+  .Error,
+  .ExternalReject {
     background-color: #f73d3d;
   }
 

@@ -119,12 +119,12 @@ function AnalyticsDrawer(props) {
                 label: `Net Landed Rate (${uomValue})`,
                 fill: false,
                 lineTension: 0,
-                backgroundColor: secondryColor,
+                backgroundColor: primaryColor,
                 borderColor: primaryColor,
                 borderWidth: 2,
                 data: netLandedCostArray,
                 spanGaps: true,
-                pointBackgroundColor: secondryColor
+                pointBackgroundColor: primaryColor
             },
         ]
     }

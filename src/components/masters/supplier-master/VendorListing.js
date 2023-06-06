@@ -481,9 +481,11 @@ class VendorListing extends Component {
         this.setState({ isBulkUpload: true })
     }
 
-    closeBulkUploadDrawer = () => {
+    closeBulkUploadDrawer = (event, type) => {
         this.setState({ isBulkUpload: false }, () => {
-            this.getTableListData(this.state.currentRowIndex, '', "", "", 100, this.state.floatingFilterData, true)
+            if (type !== 'cancel') {
+                this.getTableListData(this.state.currentRowIndex, '', "", "", 100, this.state.floatingFilterData, true)
+            }
         })
     }
 
