@@ -1735,9 +1735,8 @@ const CostingSummaryTable = (props) => {
                                         <span className="d-inline-block w-50">
                                           {data?.CostingHeading !== VARIANCE ? data?.aValue.applicability : ''}
                                         </span>{' '}
-                                        &nbsp;{' '}
                                         <span className="d-inline-block w-50">
-                                          {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.aValue.percentage : '')}
+                                          {(data?.CostingHeading !== VARIANCE ? data?.aValue.percentage : '')}
                                         </span>
                                         <span className="d-inline-block w-50">
                                           {data?.CostingHeading !== VARIANCE ? data?.aValue.value : ''}
@@ -1747,6 +1746,10 @@ const CostingSummaryTable = (props) => {
                                         <span className="d-inline-block w-50 small-grey-text">
                                           {data?.CostingHeading !== VARIANCE ? data?.overheadOn.overheadTitle : ''}
                                         </span>{' '}
+                                        <span className="d-inline-block w-50 small-grey-text">
+                                          {(data?.CostingHeading !== VARIANCE ? data?.overheadOn.overheadPercentage : '')}
+                                        </span>{' '}
+
                                         &nbsp;{' '}
                                         <span className="d-inline-block w-50 small-grey-text">
                                           {data?.CostingHeading !== VARIANCE ? <span title={checkForDecimalAndNull(data?.overheadOn.overheadValue, initialConfiguration.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.overheadOn.overheadValue, initialConfiguration.NoOfDecimalForPrice)}</span> : ''}
@@ -1755,6 +1758,9 @@ const CostingSummaryTable = (props) => {
                                       <div className={`d-flex ${isApproval && viewCostingData?.length > 1 && highlightCostingSummaryValue(viewCostingData[0]?.profitOn.profitValue, viewCostingData[1]?.profitOn.profitValue)}`}>
                                         <span className="d-inline-block w-50 small-grey-text">
                                           {data?.CostingHeading !== VARIANCE ? data?.profitOn.profitTitle : ''}
+                                        </span>{' '}
+                                        <span className="d-inline-block w-50 small-grey-text">
+                                          {(data?.CostingHeading !== VARIANCE ? data?.profitOn.profitPercentage : '')}
                                         </span>{' '}
                                         &nbsp;{' '}
                                         <span className="d-inline-block w-50 small-grey-text">
@@ -1765,6 +1771,10 @@ const CostingSummaryTable = (props) => {
                                         <span className="d-inline-block w-50 small-grey-text">
                                           {data?.CostingHeading !== VARIANCE ? data?.rejectionOn.rejectionTitle : ''}
                                         </span>{' '}
+                                        <span className="d-inline-block w-50 small-grey-text">
+                                          {(data?.CostingHeading !== VARIANCE ? data?.rejectionOn.rejectionPercentage : '')}
+                                        </span>{' '}
+
                                         &nbsp;{' '}
                                         <span className="d-inline-block w-50 small-grey-text">
                                           {data?.CostingHeading !== VARIANCE ? <span title={checkForDecimalAndNull(data?.rejectionOn.rejectionValue, initialConfiguration.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.rejectionOn.rejectionValue, initialConfiguration.NoOfDecimalForPrice)}</span> : ''}
@@ -1774,6 +1784,10 @@ const CostingSummaryTable = (props) => {
                                         <span className="d-inline-block w-50 small-grey-text">
                                           {data?.CostingHeading !== VARIANCE ? data?.iccOn.iccTitle : ''}
                                         </span>{' '}
+                                        <span className="d-inline-block w-50 small-grey-text">
+                                          {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.iccOn.iccPercentage : '')}
+                                        </span>{' '}
+
                                         &nbsp;{' '}
                                         <span className="d-inline-block w-50 small-grey-text">
                                           {data?.CostingHeading !== VARIANCE ? <span title={checkForDecimalAndNull(data?.iccOn.iccValue, initialConfiguration.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.iccOn.iccValue, initialConfiguration.NoOfDecimalForPrice)}</span> : ''}
@@ -1783,6 +1797,10 @@ const CostingSummaryTable = (props) => {
                                         <span className="d-inline-block w-50 small-grey-text">
                                           {data?.CostingHeading !== VARIANCE ? data?.paymentTerms.paymentTitle : ''}
                                         </span>{' '}
+                                        <span className="d-inline-block w-50 small-grey-text">
+                                          {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.paymentTerms.paymentPercentage : '')}
+                                        </span>{' '}
+
                                         &nbsp;{' '}
                                         <span className="d-inline-block w-50 small-grey-text">
                                           {data?.CostingHeading !== VARIANCE ? <span title={checkForDecimalAndNull(data?.paymentTerms.paymentValue, initialConfiguration.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.paymentTerms.paymentValue, initialConfiguration.NoOfDecimalForPrice)}</span> : ''}
@@ -2190,40 +2208,6 @@ const CostingSummaryTable = (props) => {
                           {viewCostingData &&
                             viewCostingData?.map((data, index) => {
                               return (
-                                <td className={props?.isRfqCosting && data.status === APPROVED ? 'finalize-cost' : ''}>
-                                  <div>
-                                    <span className="">{data?.CostingHeading !== VARIANCE ? data?.NCCPartQuantity === '-' ? '-' : checkForDecimalAndNull(data?.NCCPartQuantity, initialConfiguration.NoOfDecimalForPrice) : ''}</span>
-                                  </div>
-                                </td>
-                              )
-                            })}
-                        </tr>
-                      }
-
-
-                      {
-                        viewCostingData[0]?.technologyId !== LOGISTICS && <><tr>
-                          <th>Remarks</th>
-                          {viewCostingData &&
-                            viewCostingData?.map((data) => {
-                              return (
-                                <td className={props?.isRfqCosting && data.status === APPROVED ? 'finalize-cost' : ''}>
-                                  <div>
-                                    <span className="">{data?.CostingHeading !== VARIANCE ? (data.IsRegularized ? 'Yes' : 'No') : ""}</span>
-                                  </div>
-                                </td>
-                              )
-                            })}
-                        </tr>
-                        </>
-                      }
-
-                      {
-                        viewCostingData[0]?.technologyId !== LOGISTICS && <tr>
-                          <td>Attachments</td>
-                          {viewCostingData &&
-                            viewCostingData?.map((data, index) => {
-                              return (
 
                                 <td className={props?.isRfqCosting && data.status === APPROVED ? 'finalize-cost' : ''}>
                                   {(data?.bestCost === true) ? ' ' :
@@ -2271,7 +2255,7 @@ const CostingSummaryTable = (props) => {
                           <th>Remarks</th>
                           {viewCostingData &&
                             viewCostingData?.map((data, index) => {
-                              return <td className={props?.isRfqCosting && data.status === APPROVED ? 'finalize-cost' : ''}><span className="d-block small-grey-text">{(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.remark : '')}</span></td>
+                              return <td className={props?.isRfqCosting && data.status === APPROVED ? 'finalize-cost' : ''}><span className="d-block small-grey-text">{data?.CostingHeading !== VARIANCE ? data?.remark === "" ? '-' : data?.remark : '-'}</span></td>
                             })}
                         </tr>
                       }
