@@ -90,6 +90,10 @@ function OutsourcingDrawer(props) {
 
   const onSubmit = data => {
     let list = [...gridData]
+    if (list?.length === 0) {
+      Toaster.warning("Please enter at least one record.")
+      return false
+    }
     let datalist = mapGrid(list)
     let req = {
       BaseCostingId: props?.CostingId,
