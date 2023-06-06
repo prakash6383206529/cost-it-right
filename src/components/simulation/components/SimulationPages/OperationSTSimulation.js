@@ -22,6 +22,12 @@ import { PaginationWrapper } from '../../../common/commonPagination';
 import DatePicker from "react-datepicker";
 import WarningMessage from '../../../common/WarningMessage';
 import { getMaxDate } from '../../SimulationUtils';
+import ReactExport from 'react-export-excel';
+import { OPERATION_IMPACT_DOWNLOAD_EXCEl } from '../../../../config/masterData';
+
+const ExcelFile = ReactExport.ExcelFile;
+const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 const gridOptions = {
 
@@ -352,9 +358,28 @@ function OperationSTSimulation(props) {
         gridOptions?.api?.setFilterModel(null);
         gridRef.current.api.sizeColumnsToFit();
     }
+
     const basicRatetooltipToggle = () => {
         setBasicRateViewTooltip(!basicRateviewTooltip)
     }
+
+    const onBtExport = () => {
+        return returnExcelColumn(OPERATION_IMPACT_DOWNLOAD_EXCEl, list)
+    };
+
+    const returnExcelColumn = (data = [], TempData) => {
+        let temp = []
+        TempData && TempData.map((item) => {
+            item.EffectiveDate = (item.EffectiveDate)?.slice(0, 10)
+            temp.push(item)
+        })
+
+        return (
+            <ExcelSheet data={temp} name={'Operation Data'}>
+                {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
+            </ExcelSheet>);
+    }
+
     return (
         <div>
             <div className={`ag-grid-react`}>
@@ -370,11 +395,14 @@ function OperationSTSimulation(props) {
                                         <div className="ag-grid-header d-flex align-items-center justify-content-between">
                                             <div className='d-flex align-items-center'>
                                                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
-                                                <button type="button" className="user-btn float-right" title="Reset Grid" onClick={() => resetState()}>
+                                                <button type="button" className="user-btn float-right mr-2" title="Reset Grid" onClick={() => resetState()}>
                                                     <div className="refresh mr-0"></div>
                                                 </button>
+                                                <ExcelFile filename={'Impacted Master Data'} fileExtension={'.xls'} element={
+                                                    <button title="Download" type="button" className={'user-btn'} ><div className="download mr-0"></div></button>}>
+                                                    {onBtExport()}
+                                                </ExcelFile>
                                             </div>
-
 
                                             <div className='d-flex justify-content-end bulk-upload-row'>
                                                 {
@@ -469,7 +497,7 @@ function OperationSTSimulation(props) {
                                                     <AgGridColumn minWidth={120} field="Rate" editable='false' headerName="Existing" colId="Rate" cellRenderer="oldRateFormatter"></AgGridColumn>
                                                     <AgGridColumn minWidth={120} cellRenderer='newRateFormatter' editable={!isImpactedMaster} field="NewRate" headerName="Revised" colId='NewRate' headerComponent={'revisedBasicRateHeader'}></AgGridColumn>
                                                 </AgGridColumn>
-                                                {console.log(props.masterId, "props.masterId ")}
+                                                { }
                                                 <AgGridColumn field="EffectiveDate" headerName={props.isImpactedMaster && !props.lastRevision ? `Current Effective date` : "Effective Date"} editable='false' minWidth={190} cellRenderer='effectiveDateRenderer'></AgGridColumn>
                                                 <AgGridColumn field="CostingId" hide={true}></AgGridColumn>
 
