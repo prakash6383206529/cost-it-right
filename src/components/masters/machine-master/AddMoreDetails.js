@@ -246,7 +246,6 @@ class AddMoreDetails extends Component {
       this.props.change('Specification', fieldsObj.Specification)
       fieldsObj.EffectiveDate && this.props.change('EffectiveDate', fieldsObj.EffectiveDate)
 
-
       setTimeout(() => {
         this.setState({ selectedPlants: selectedPlants, })
         setTimeout(() => {
@@ -440,8 +439,6 @@ class AddMoreDetails extends Component {
               selectedTechnology: [{ label: Data.Technology && Data.Technology[0].Technology, value: Data.Technology && Data.Technology[0].TechnologyId }],
               selectedPlants: { label: Data.Plant[0].PlantName, value: Data.Plant[0].PlantId },
               machineType: machineTypeObj && machineTypeObj !== undefined ? { label: machineTypeObj.Text, value: machineTypeObj.Value } : [],
-              shiftType: shiftObj && shiftObj !== undefined ? { label: shiftObj.Text, value: shiftObj.Value } : [],
-              depreciationType: depreciationObj && depreciationObj !== undefined ? { label: depreciationObj.Text, value: depreciationObj.Value } : [],
               DateOfPurchase: DayTime(Data.DateOfPurchase).isValid() === true ? new Date(DayTime(Data.DateOfPurchase)) : '',
               IsAnnualMaintenanceFixed: Data.IsMaintanceFixed,
               IsAnnualConsumableFixed: Data.IsConsumableFixed,
@@ -1061,7 +1058,7 @@ class AddMoreDetails extends Component {
   /**
   * @method totalCost
   * @description called
-  * 
+  *
   */
   totalCost = () => {
 
@@ -1331,7 +1328,7 @@ class AddMoreDetails extends Component {
     } else {
       TotalMachineCostPerAnnum = checkForNull(fieldsObj.RateOfInterestValue) + checkForNull(fieldsObj.DepreciationAmount) + checkForDecimalAndNull(fieldsObj.TotalMachineCostPerAnnum) + checkForNull(fieldsObj.TotalFuelCostPerYear) + checkForNull(fieldsObj.TotalPowerCostPerYear) + checkForNull(this.calculateTotalLabourCost())
     }
-    // 
+    //
     if (UOM.type === TIME) {
 
       if (UOM.uom === "Hours") {
@@ -1551,7 +1548,7 @@ class AddMoreDetails extends Component {
 
   /**
    * @method processTableHandler
-   * @description ADDING PROCESS IN PROCESS TABLE 
+   * @description ADDING PROCESS IN PROCESS TABLE
   */
   processTableHandler = () => {
     const { processName, UOM, processGrid, isProcessGroup, machineType, selectedPlants, effectiveDate } = this.state;
@@ -1989,6 +1986,7 @@ class AddMoreDetails extends Component {
     let updatedFiles = files.map((file) => ({ ...file, ContextId: MachineID }))
 
     let requestData = {
+      IsSendForApproval: CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true && !this.state.isFinalApprovar,
       CostingTypeId: this.state.CostingTypeId,
       MachineId: MachineID,
       Manufacture: values.Manufacture,
@@ -2140,11 +2138,17 @@ class AddMoreDetails extends Component {
     //       if (isEditFlag) {
 
     //       }
-    // } 
+    // }
     else {
       // EXECUTED WHEN:- ADD MORE MACHINE DETAIL CALLED FROM ADDMACHINERATE.JS FILE
+      if (CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true && !this.state.isFinalApprovar) {
+        this.setState({ IsSendForApproval: true })
+      } else {
+        this.setState({ IsSendForApproval: false })
+      }
 
       const formData = {
+        IsSendForApproval: CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true && !this.state.isFinalApprovar,
         CostingTypeId: this.state.CostingTypeId,
         MachineId: MachineID,
         Manufacture: values.Manufacture,
@@ -2717,7 +2721,7 @@ class AddMoreDetails extends Component {
                           name={"YearOfManufacturing"}
                           //type="text"
                           showYearPicker
-                          selected={this.state.manufactureYear}                       
+                          selected={this.state.manufactureYear}
                           onSelect={this.handleYearChange}
                           placeholder={disableAllForm ? '-' :'Enter'}
                           // dateFormat={'yyyy'}
@@ -2746,7 +2750,7 @@ class AddMoreDetails extends Component {
                             required: false,
                           }}
                           //maxDate={new Date()}
-                          
+
                           placeholder={disableAllForm ? '-' :'Enter'}
                           className="withBorder"
                           autoComplete={'off'}
