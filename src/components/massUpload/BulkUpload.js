@@ -407,9 +407,9 @@ class BulkUpload extends Component {
                                 if (fileHeads[i] === 'NoOfPcs' && typeof el == 'number') {
                                     el = parseInt(checkForNull(el))
                                 }
-                                if (fileHeads[i] === 'MachineSpecification') {
-                                    fileHeads[i] = 'Description'
-                                }
+                                // if (fileHeads[i] === 'MachineSpecification') {
+                                //     fileHeads[i] = 'Description'
+                                // }
                                 else if (fileHeads[i] === 'Grade') {
                                     fileHeads[i] = 'RMGrade'
                                 }
