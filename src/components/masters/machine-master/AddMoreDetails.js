@@ -246,7 +246,6 @@ class AddMoreDetails extends Component {
       this.props.change('Specification', fieldsObj.Specification)
       fieldsObj.EffectiveDate && this.props.change('EffectiveDate', fieldsObj.EffectiveDate)
 
-
       setTimeout(() => {
         this.setState({ selectedPlants: selectedPlants, })
         setTimeout(() => {
@@ -1990,6 +1989,7 @@ class AddMoreDetails extends Component {
     let updatedFiles = files.map((file) => ({ ...file, ContextId: MachineID }))
 
     let requestData = {
+      IsSendForApproval: CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true && !this.state.isFinalApprovar,
       CostingTypeId: this.state.CostingTypeId,
       MachineId: MachineID,
       Manufacture: values.Manufacture,
@@ -2144,8 +2144,14 @@ class AddMoreDetails extends Component {
     // } 
     else {
       // EXECUTED WHEN:- ADD MORE MACHINE DETAIL CALLED FROM ADDMACHINERATE.JS FILE
+      if (CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true && !this.state.isFinalApprovar) {
+        this.setState({ IsSendForApproval: true })
+      } else {
+        this.setState({ IsSendForApproval: false })
+      }
 
       const formData = {
+        IsSendForApproval: CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true && !this.state.isFinalApprovar,
         CostingTypeId: this.state.CostingTypeId,
         MachineId: MachineID,
         Manufacture: values.Manufacture,
