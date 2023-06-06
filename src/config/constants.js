@@ -284,7 +284,7 @@ export const API = {
   deleteBOP: `${BASE_URL}/masters-bought-out-part/delete-bought-out-part`,
   fileUploadBOPDomestic: `${BASE_URL}/masters-bought-out-part/bought-out-part-file-upload`,
   fileDeleteBOPDomestic: `${BASE_URL}/masters-bought-out-part/delete-bought-out-part-file`,
-  bulkUploadBOP: `${BASE_URL}/masters-bought-out-part/bulk-upload-for-bought-out-part-vbc-domestic-json`,
+  bulkUploadBOP: `${BASE_URL}/masters-bought-out-part/bulk-upload-for-bought-out-part-json`,
   getPlantSelectListByVendor: `${BASE_URL}/masters-bought-out-part/get-select-list-plant-by-vendor`,
 
   //BOP IMPORT
