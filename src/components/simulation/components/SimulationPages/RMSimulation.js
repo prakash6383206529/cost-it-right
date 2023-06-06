@@ -23,12 +23,16 @@ import { PaginationWrapper } from '../../../common/commonPagination';
 import WarningMessage from '../../../common/WarningMessage';
 import { getMaxDate } from '../../SimulationUtils';
 import PopupMsgWrapper from '../../../common/PopupMsgWrapper';
-import { FORGING } from '../../../../config/masterData';
+import { FORGING, RM_IMPACT_DOWNLOAD_EXCEl } from '../../../../config/masterData';
+import ReactExport from 'react-export-excel';
 
 const gridOptions = {
 
 };
 
+const ExcelFile = ReactExport.ExcelFile;
+const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 function RMSimulation(props) {
     const { list, isbulkUpload, rowCount, technology, master, isImpactedMaster, costingAndPartNo, tokenForMultiSimulation, technologyId } = props
@@ -56,7 +60,6 @@ function RMSimulation(props) {
         mode: 'onChange',
         reValidateMode: 'onChange',
     })
-
 
 
     const dispatch = useDispatch()
@@ -450,14 +453,29 @@ function RMSimulation(props) {
     const scrapRatetooltipToggle = () => {
         setScrapRateViewTooltip(!scrapRateviewTooltip)
     }
+
+    const onBtExport = () => {
+        return returnExcelColumn(RM_IMPACT_DOWNLOAD_EXCEl, list)
+    };
+
+    const returnExcelColumn = (data = [], TempData) => {
+        let temp = []
+        TempData && TempData.map((item) => {
+            item.EffectiveDate = (item.EffectiveDate)?.slice(0, 10)
+            temp.push(item)
+        })
+
+        return (
+            <ExcelSheet data={temp} name={'RM Data'}>
+                {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
+            </ExcelSheet>);
+    }
+
     return (
 
         <div>
             <div className={`ag-grid-react ${props.customClass}`}>
-
                 {
-
-
                     (!showverifyPage && !showMainSimulation) &&
                     <Fragment>
                         {showTooltip && !isImpactedMaster && <Tooltip className="rfq-tooltip-left" placement={"top"} isOpen={basicRateviewTooltip} toggle={basicRatetooltipToggle} target={"basicRate-tooltip"} >{"To add revised basic rate please double click on the field."}</Tooltip>}
@@ -471,6 +489,10 @@ function RMSimulation(props) {
                                             <button type="button" className="user-btn float-right mr-3" title="Reset Grid" onClick={() => resetState()}>
                                                 <div className="refresh mr-0"></div>
                                             </button>
+                                            <ExcelFile filename={'Impacted Master Data'} fileExtension={'.xls'} element={
+                                                <button title="Download" type="button" className={'user-btn'} ><div className="download mr-0"></div></button>}>
+                                                {onBtExport()}
+                                            </ExcelFile>
                                         </div>
                                         <div className='d-flex justify-content-end'>
                                             {
