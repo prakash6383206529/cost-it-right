@@ -53,6 +53,7 @@ class AddOperation extends Component {
       DataToChange: [],
       costingTypeId: ZBCTypeId,
       isSurfaceTreatment: false,
+      isSurfaceTreatmentSelected: false,
       remarks: '',
       files: [],
       isVisible: false,
@@ -318,8 +319,13 @@ class AddOperation extends Component {
   */
   handleUOM = (newValue) => {
     if (newValue && newValue !== '') {
-
       this.setState({ UOM: newValue, })
+      if (String(newValue.label) === String(this.state.DataToChange.UnitOfMeasurement)) {
+        this.setState({ IsFinancialDataChanged: false })
+      } else {
+        this.setState({ IsFinancialDataChanged: true })
+      }
+
     } else {
       this.setState({ UOM: [] })
     }
@@ -329,9 +335,9 @@ class AddOperation extends Component {
     if (newValue && newValue !== '') {
       this.setState({ operationType: newValue, })
       if (String(newValue.label) === 'Surface Treatment') {
-        this.setState({ isSurfaceTreatment: true })
+        this.setState({ isSurfaceTreatment: true, isSurfaceTreatmentSelected: true })
       } else {
-        this.setState({ isSurfaceTreatment: false })
+        this.setState({ isSurfaceTreatment: false, isSurfaceTreatmentSelected: false })
       }
     } else {
       this.setState({ operationType: [] })
@@ -476,7 +482,7 @@ class AddOperation extends Component {
   }
 
 
-  checkUniqCodeByName = (e) => {
+  checkUniqCodeByName = debounce((e) => {
     this.setState({ operationName: e.target.value })
     this.props.checkAndGetOperationCode(this.state.operationCode, e.target.value, res => {
       if (res && res.data && res.data.Result === false) {
@@ -487,7 +493,7 @@ class AddOperation extends Component {
         })
       }
     })
-  }
+  }, 600)
 
   /**
   * @method setDisableFalseFunction
@@ -682,6 +688,7 @@ class AddOperation extends Component {
     let updatedFiles = files.map((file) => {
       return { ...file, ContextId: OperationId }
     })
+
     let formData = {
       IsFinancialDataChanged: isDateChange ? true : false,
       IsSendForApproval: this.state.IsSendForApproval,
@@ -1008,7 +1015,7 @@ class AddOperation extends Component {
                           type="text"
                           placeholder={isEditFlag ? '-' : "Select"}
                           validate={[required, acceptAllExceptSingleSpecialCharacter, maxLength80, checkWhiteSpaces]}
-                          onBlur={this.checkUniqCodeByName}
+                          onChange={this.checkUniqCodeByName}
                           component={renderText}
                           required={true}
                           disabled={isEditFlag ? true : false}
@@ -1219,7 +1226,7 @@ class AddOperation extends Component {
                           <input
                             type="checkbox"
                             checked={this.state.isSurfaceTreatment}
-                            disabled={isEditFlag ? true : false}
+                            disabled={(isEditFlag || this.state.isSurfaceTreatmentSelected) ? true : false}
                           />
                           <span
                             className=" before-box"

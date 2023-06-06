@@ -103,7 +103,6 @@ function AddMoreOperation(props) {
             setNetCostWelding()
         } else if (other) {
             setRejectionReworkAndProfitCost()
-            setNetCost()
         } else {
             setMaterialCostWelding()
             setPowerCostWelding()
@@ -204,6 +203,13 @@ function AddMoreOperation(props) {
         setDataToSend(prevState => ({ ...prevState, rejectionReworkCostState: rejectionReworkCost, profitCostState: profitCost }))
         setValue('rejoinReworkCost', checkForDecimalAndNull(rejectionReworkCost, initialConfiguration.NoOfDecimalForPrice))
         setValue('profitCost', checkForDecimalAndNull(profitCost, initialConfiguration.NoOfDecimalForPrice))
+
+        //SETTING NET COST NOW
+        let profitCostState = checkForNull(profitCost)
+        let otherCost = checkForNull(Number(getValues('otherCost')))
+        let totalCost = gasCost + electricityCost + manPowerCost + staffCost + maintenanceCost + consumablesCost + waterCost + jigStripping + interestCost + depriciationCost + statuatoryLicense + rateOperation + rejectionReworkCost + profitCostState + otherCost
+        setDataToSend(prevState => ({ ...prevState, netCost: totalCost }))
+        setValue('netCost', checkForDecimalAndNull(totalCost, initialConfiguration.NoOfDecimalForPrice))
     }
 
 
@@ -249,29 +255,6 @@ function AddMoreOperation(props) {
         setValue('netCost', checkForDecimalAndNull(netCost, initialConfiguration.NoOfDecimalForPrice))
     }
 
-    const setNetCost = () => {
-
-        let gasCost = checkForNull(Number(getValues('gasCost')))
-        let electricityCost = checkForNull(Number(getValues('electricityCost')))
-        let manPowerCost = checkForNull(Number(getValues('manPowerCost')))
-        let staffCost = checkForNull(Number(getValues('staffCost')))
-        let maintenanceCost = checkForNull(Number(getValues('maintenanceCost')))
-        let consumablesCost = checkForNull(Number(getValues('consumablesCost')))
-        let waterCost = checkForNull(Number(getValues('waterCost')))
-        let jigStripping = checkForNull(Number(getValues('jigStripping')))
-        let interestCost = checkForNull(Number(getValues('interestCost')))
-        let depriciationCost = checkForNull(Number(getValues('depriciationCost')))
-        let statuatoryLicense = checkForNull(Number(getValues('statuatoryLicense')))
-        let rateOperation = checkForNull(Number(getValues('rateOperation')))
-        let rejectionReworkCost = checkForNull(dataToSend.rejectionReworkCostState)
-        let profitCostState = checkForNull(dataToSend.profitCostState)
-        let otherCost = checkForNull(Number(getValues('otherCost')))
-
-        let totalCost = gasCost + electricityCost + manPowerCost + staffCost + maintenanceCost + consumablesCost + waterCost + jigStripping + interestCost + depriciationCost + statuatoryLicense + rateOperation + rejectionReworkCost + profitCostState + otherCost
-        setDataToSend(prevState => ({ ...prevState, netCost: totalCost }))
-        setValue('netCost', checkForDecimalAndNull(totalCost, initialConfiguration.NoOfDecimalForPrice))
-    }
-
 
     useEffect(() => {
 
@@ -285,7 +268,16 @@ function AddMoreOperation(props) {
 
         setValue('operationType', addMoreDetailObj?.operationType)
         setValue('operationCode', addMoreDetailObj?.operationCode)
-        setValue('technology', { label: addMoreDetailObj.technology[0].Text, value: addMoreDetailObj.technology[0].Value })
+
+        let technologyTemp = []
+        addMoreDetailObj && addMoreDetailObj.technology && addMoreDetailObj.technology.map((item, index) => {
+            let obj = {}
+            obj.label = item.Text
+            obj.value = item.Value
+            technologyTemp.push(obj)
+        })
+
+        setValue('technology', technologyTemp)
         setValue('operationName', addMoreDetailObj.operationName)
         setValue('description', addMoreDetailObj.description)
         setValue('plant', { label: (addMoreDetailObj.costingTypeId === ZBCTypeId) ? addMoreDetailObj?.plants[0]?.Text : addMoreDetailObj?.destinationPlant.label, value: (addMoreDetailObj.costingTypeId === ZBCTypeId) ? addMoreDetailObj?.plants[0]?.Value : addMoreDetailObj?.destinationPlant.value })
@@ -376,8 +368,15 @@ function AddMoreOperation(props) {
 
     const onSubmit = (values) => {
 
-        let technologyArray = [{ Technology: values?.technology.label, TechnologyId: values?.technology.value }]
+        let technologyArray = []
         let plantArray = [{ PlantName: plant.label, PlantId: plant.value, PlantCode: '', }]
+
+        values && values.technology && values.technology.map((item, index) => {
+            let obj = {}
+            obj.Technology = item.Label
+            obj.TechnologyId = item.value
+            technologyArray.push(obj)
+        })
 
         let formData = {
             IsFinancialDataChanged: false,
@@ -777,6 +776,10 @@ function AddMoreOperation(props) {
         return label
     }
 
+    const getAccordianClassName = (value) => {
+        return `accordian-content form-group row mx-0 w-100 ${value ? '' : 'd-none'}`
+    }
+
     return (
         <div className="container-fluid">
             {isLoader && <Loader />}
@@ -831,6 +834,7 @@ function AddMoreOperation(props) {
                                             rules={{
                                                 required: true,
                                             }}
+                                            isMulti={true}
                                             placeholder={'Select'}
                                             options={searchableSelectType('technology')}
                                             required={true}
@@ -1040,8 +1044,7 @@ function AddMoreOperation(props) {
                                     </div>
                                 </Col>
                                 {
-                                    isMaterialCostOpen &&
-                                    <div className="accordian-content form-group row mx-0 w-100">
+                                    <div className={getAccordianClassName(isMaterialCostOpen)}>
 
                                         {other &&
                                             <><Col md="3">
@@ -1306,8 +1309,7 @@ function AddMoreOperation(props) {
                                     </div>
                                 </Col>
                                 {
-                                    isPowerCostOpen &&
-                                    <div className="accordian-content form-group row mx-0 w-100">
+                                    <div className={getAccordianClassName(isPowerCostOpen)}>
 
                                         {other && <><Col md="3">
                                             <SearchableSelectHookForm
@@ -1473,8 +1475,7 @@ function AddMoreOperation(props) {
                                     </div>
                                 </Col>
                                 {
-                                    isLabourCostOpen &&
-                                    <div className="accordian-content form-group row mx-0 w-100">
+                                    <div className={getAccordianClassName(isLabourCostOpen)}>
 
                                         {(other || isPlating) && <>
                                             <Col md="3">
@@ -1691,8 +1692,7 @@ function AddMoreOperation(props) {
                                     </div>
                                 </Col>
                                 {
-                                    isConsumablesCostOpen &&
-                                    <div className="accordian-content form-group row mx-0 w-100">
+                                    <div className={getAccordianClassName(isConsumablesCostOpen)}>
 
                                         {(other || isPlating) && <><Col md="3">
                                             <SearchableSelectHookForm
@@ -1994,9 +1994,8 @@ function AddMoreOperation(props) {
                                         <button className="btn btn-small-primary-circle ml-1" onClick={interestCostToggle} type="button">{isInterestCostOpen ? <i className="fa fa-minus"></i> : <i className="fa fa-plus"></i>}</button>
                                     </div>
                                 </Col>
-                                {
-                                    isInterestCostOpen &&
-                                    <div className="accordian-content form-group row mx-0 w-100">
+                                {true &&
+                                    <div className={getAccordianClassName(isInterestCostOpen)}>
 
                                         {other && <> <Col md="3">
                                             <SearchableSelectHookForm
@@ -2175,9 +2174,8 @@ function AddMoreOperation(props) {
                                         <button className="btn btn-small-primary-circle ml-1" onClick={operationCostToggle} type="button">{isOtherOperationCostOpen ? <i className="fa fa-minus"></i> : <i className="fa fa-plus"></i>}</button>
                                     </div>
                                 </Col>
-                                {
-                                    isOtherOperationCostOpen &&
-                                    <div className="accordian-content form-group row mx-0 w-100">
+                                {true &&
+                                    <div className={getAccordianClassName(isOtherOperationCostOpen)}>
 
                                         <Col md="3">
                                             <SearchableSelectHookForm
@@ -2264,9 +2262,8 @@ function AddMoreOperation(props) {
                                         <button className="btn btn-small-primary-circle ml-1" onClick={otherCostToggle} type="button">{isOtherCostOpen ? <i className="fa fa-minus"></i> : <i className="fa fa-plus"></i>}</button>
                                     </div>
                                 </Col>
-                                {
-                                    isOtherCostOpen &&
-                                    <div className="accordian-content form-group row mx-0 w-100">
+                                {true &&
+                                    <div className={getAccordianClassName(isOtherCostOpen)}>
 
                                         {(other || isPlating) &&
                                             <>
@@ -2352,6 +2349,10 @@ function AddMoreOperation(props) {
                                                                 value: /^\d{0,4}(\.\d{0,7})?$/i,
                                                                 message: 'Maximum length for integer is 4 and for decimal is 7',
                                                             },
+                                                            max: {
+                                                                value: 100,
+                                                                message: 'Percentage should be less than 100'
+                                                            },
                                                         }}
                                                         handleChange={() => { }}
                                                         defaultValue={''}
@@ -2424,6 +2425,10 @@ function AddMoreOperation(props) {
                                                             pattern: {
                                                                 value: /^\d{0,4}(\.\d{0,7})?$/i,
                                                                 message: 'Maximum length for integer is 4 and for decimal is 7',
+                                                            },
+                                                            max: {
+                                                                value: 100,
+                                                                message: 'Percentage should be less than 100'
                                                             },
                                                         }}
                                                         handleChange={() => { }}
@@ -2610,7 +2615,7 @@ function AddMoreOperation(props) {
 
                             <Col md="3">
                                 <NumberFieldHookForm
-                                    label={`Net Cost`}
+                                    label={`Rate (INR)`}
                                     name={'netCost'}
                                     Controller={Controller}
                                     control={control}
