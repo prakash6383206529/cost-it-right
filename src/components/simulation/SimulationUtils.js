@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { BOPImpactDownloadArray, CPImpactDownloadArray, ERImpactDownloadArray, OperationImpactDownloadArray, RMImpactedDownloadArray } from "../../config/masterData";
+import { BOPImpactDownloadArray, CPImpactDownloadArray, ERImpactDownloadArray, OperationImpactDownloadArray, RMImpactedDownloadArray, MachineImpactDownloadArray, STOperationImpactDownloadArray } from "../../config/masterData";
 import { Errorbox } from "../common/ErrorBox";
 import { useDispatch, useSelector } from 'react-redux';
 import { getAmmendentStatus, } from './actions/Simulation'
@@ -125,7 +125,7 @@ export const checkForChangeInOverheadProfit3Values = (item) => {
 
 export const impactmasterDownload = (impactedMasterData) => {
     let rmArraySet = [], bopArraySet = []
-    let operationArraySet = [], erArraySet = [], combinedProcessArraySet = [], surfaceTreatmentArraySet = []
+    let operationArraySet = [], erArraySet = [], combinedProcessArraySet = [], surfaceTreatmentArraySet = [], machineArraySet = []
 
     impactedMasterData?.OperationImpactedMasterDataList && impactedMasterData?.OperationImpactedMasterDataList.map((item) => {
         let tempObj = []
@@ -158,9 +158,9 @@ export const impactmasterDownload = (impactedMasterData) => {
         tempObj.push(item.RMSpec)
         tempObj.push(item.RawMaterialCode)
         tempObj.push(item.Category)
+        tempObj.push(item.UOM)
         tempObj.push(item.TechnologyName)
         tempObj.push(item.VendorName)
-        tempObj.push(item.UOM)
         tempObj.push(item.OldBasicRate)
         tempObj.push(item.NewBasicRate)
         tempObj.push(item.OldScrapRate)
@@ -178,11 +178,8 @@ export const impactmasterDownload = (impactedMasterData) => {
         tempObj.push(item.BoughtOutPartName)
         tempObj.push(item.Category)
         tempObj.push(item.Vendor)
-        tempObj.push(item.PartNumber)
         tempObj.push(item.OldBOPRate)
         tempObj.push(item.NewBOPRate)
-        tempObj.push(item.OldPOPrice)
-        tempObj.push(item.NewPOPrice)
         tempObj.push(DayTime(item.EffectiveDate).format('DD/MM/YYYY'))
         bopArraySet.push(tempObj)
         return null
@@ -190,8 +187,6 @@ export const impactmasterDownload = (impactedMasterData) => {
     impactedMasterData?.ExchangeRateImpactedMasterDataList && impactedMasterData?.ExchangeRateImpactedMasterDataList.map((item) => {
         let tempObj = []
         tempObj.push(item.Currency)
-        tempObj.push(item.CostingNumber)
-        tempObj.push(item.PartNumber)
         tempObj.push(item.BankRate)
         tempObj.push(item.BankCommissionPercentage)
         tempObj.push(item.CustomRate)
@@ -214,6 +209,21 @@ export const impactmasterDownload = (impactedMasterData) => {
         combinedProcessArraySet.push(tempObj)
     })
 
+    impactedMasterData?.MachineProcessImpactedMasterDataList && impactedMasterData?.MachineProcessImpactedMasterDataList.map((item) => {
+        let tempObj = []
+        tempObj.push(item.MachineName)
+        tempObj.push(item.MachineNumber)
+        tempObj.push(item.MachineTypeName)
+        tempObj.push(item.ProcessName)
+        tempObj.push(item.ProcessCode)
+        tempObj.push(item.UOM)
+        tempObj.push(item.Vendor)
+        tempObj.push(item.OldMachineRate)
+        tempObj.push(item.NewMachineRate)
+        tempObj.push(DayTime(item.EffectiveDate).format('DD/MM/YYYY'))
+        machineArraySet.push(tempObj)
+        return null
+    })
     const multiDataSet = [
         {
             columns: RMImpactedDownloadArray,
@@ -224,7 +234,7 @@ export const impactmasterDownload = (impactedMasterData) => {
             data: operationArraySet
         }, {
             ySteps: 5,
-            columns: OperationImpactDownloadArray,
+            columns: STOperationImpactDownloadArray,
             data: surfaceTreatmentArraySet
         }, {
             ySteps: 5,
@@ -238,6 +248,9 @@ export const impactmasterDownload = (impactedMasterData) => {
             ySteps: 5,
             columns: CPImpactDownloadArray,
             data: combinedProcessArraySet
+        }, {
+            columns: MachineImpactDownloadArray,
+            data: machineArraySet
         }
     ];
     return multiDataSet

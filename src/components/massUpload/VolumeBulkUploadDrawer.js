@@ -2,18 +2,18 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import ReactExport from 'react-export-excel';
 import { reduxForm } from "redux-form";
-import { Container, Row, Col, } from 'reactstrap';
-import Drawer from '@material-ui/core/Drawer';
-import Dropzone from 'react-dropzone-uploader'
+import { Row, Col, } from 'reactstrap';
 import LoaderCustom from '../common/LoaderCustom';
 import Toaster from '../common/Toaster';
 import { bulkUploadVolume } from '../masters/actions/Volume';
-import { loggedInUserId } from '../../helper';
+import { checkForSameFileUpload, loggedInUserId } from '../../helper';
 import ExcelFile from 'react-export-excel/dist/ExcelPlugin/components/ExcelFile';
 import { Volume, VolumeTempData } from '../../config/masterData';
 import PopupMsgWrapper from '../common/PopupMsgWrapper';
 import { MESSAGES } from '../../config/message';
 import WarningMessage from '../common/WarningMessage';
+import { ExcelRenderer } from 'react-excel-renderer';
+import cloudImg from '../../assests/images/uploadcloud.png';
 
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -60,18 +60,19 @@ class VolumeBulkUploadDrawer extends Component {
         }
     }
 
-    toggleDrawer = (event) => {
+    toggleDrawer = (event, type) => {
         if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
             return;
         }
-        this.props.closeDrawer('')
+        this.props.closeDrawer('', type)
     };
 
-    cancel = () => {
-        this.toggleDrawer('')
+    cancel = (type) => {
+        this.toggleDrawer('', 'cancel')
     }
     cancelHandler = () => {
-        this.setState({ showPopup: true })
+        this.cancel('cancel')
+        // this.setState({ showPopup: true })
     }
     onPopupConfirm = () => {
         this.cancel('cancel')
@@ -104,14 +105,43 @@ class VolumeBulkUploadDrawer extends Component {
         </ExcelSheet>);
     }
     fileHandler = event => {
-
         let fileObj = event.target.files[0];
         let uploadfileName = fileObj.name;
         let fileType = uploadfileName.substr(uploadfileName.indexOf('.'));
-
+        let fileHeads = [];
+        let checkForFileHead
         //pass the fileObj as parameter
         if (fileType !== '.xls' && fileType !== '.xlsx') {
             Toaster.warning('File type should be .xls or .xlsx')
+        } else {
+            let data = new FormData()
+            data.append('file', fileObj)
+
+            ExcelRenderer(fileObj, (err, resp) => {
+                if (err) {
+
+                }
+                else {
+                    fileHeads = resp.rows[0];
+                    const { fileName } = this.props;
+                    switch (String(fileName)) {
+                        case 'Volume':
+                            checkForFileHead = checkForSameFileUpload(Volume, fileHeads)
+                            break;
+                        default:
+                            break;
+                    }
+                }
+                if (!checkForFileHead) {
+                    Toaster.warning('Please select file of same Master')
+                    return false
+                }
+                this.setState({
+                    cols: resp.cols,
+                    rows: resp.rows,
+                    uploadfileName: uploadfileName,
+                });
+            });
         }
     }
 
@@ -131,7 +161,7 @@ class VolumeBulkUploadDrawer extends Component {
                 const { files } = this.state
                 files.push(Data)
             })
-            this.cancel()
+            this.toggleDrawer('', 'save')
         }
     }
     onBtExport = () => {
@@ -159,40 +189,21 @@ class VolumeBulkUploadDrawer extends Component {
                                 {this.state.fileName}
                             </div>
                         ) : (
-                            <Dropzone
-                                onChangeStatus={this.handleChangeStatus}
-                                PreviewComponent={this.Preview}
-                                onChange={this.fileHandler}
-                                accept=".xlsx"
-                                initialFiles={this.state.initialFiles}
-                                maxFiles={1}
-                                maxSizeBytes={2000000}
-                                inputContent={(files, extra) =>
-                                    extra.reject ? (
-                                        "Image, audio and video files only"
-                                    ) : (<div className="text-center">
-                                        <i className="text-primary fa fa-cloud-upload"></i>
-                                        <span className="d-block">
-                                            Drag and Drop or{" "}
-                                            <span className="text-primary">
-                                                Browse
-                                            </span>
-                                            <br />
-                                            file to upload
-                                        </span>
-                                    </div>)
-                                }
-
-                                styles={{
-                                    dropzoneReject: {
-                                        borderColor: "red",
-                                        backgroundColor: "#DAA",
-                                    },
-                                    inputLabel: (files, extra) =>
-                                        extra.reject ? { color: "red" } : {},
-                                }}
-                                classNames="draper-drop"
-                            />
+                            <div className="input-group mt25 col-md-12 input-withouticon " >
+                                <div className="file-uploadsection">
+                                    {this.state.bulkUploadLoader && <LoaderCustom customClass="attachment-loader" />}
+                                    <label>Drag a file here or<span className="blue-text">Browse</span> for a file to upload <img alt={''} src={cloudImg} ></img> </label>
+                                    <input
+                                        ref={this.fileUploadRef}
+                                        type="file"
+                                        name="File"
+                                        onChange={this.fileHandler}
+                                        onClick={(event) => { event.target.value = [] }}
+                                        //accept="xls/*"
+                                        className="" placeholder="bbb" />
+                                    <p> {this.state.uploadfileName}</p>
+                                </div>
+                            </div>
                         )}
                         {this.state.attachmentLoader && <LoaderCustom customClass="attachment-loader" />}
                     </Col>

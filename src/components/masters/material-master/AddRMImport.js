@@ -25,7 +25,7 @@ import AddVendorDrawer from '../supplier-master/AddVendorDrawer';
 import 'react-dropzone-uploader/dist/styles.css'
 import Dropzone from 'react-dropzone-uploader';
 import "react-datepicker/dist/react-datepicker.css"
-import { FILE_URL, INR, ZBC, RM_MASTER_ID, EMPTY_GUID, SPACEBAR, ZBCTypeId, VBCTypeId, CBCTypeId, searchCount } from '../../../config/constants';
+import { FILE_URL, INR, ZBC, RM_MASTER_ID, EMPTY_GUID, SPACEBAR, ZBCTypeId, VBCTypeId, CBCTypeId, searchCount, SHEET_METAL } from '../../../config/constants';
 import { AcceptableRMUOM, FORGING, SHEETMETAL } from '../../../config/masterData'
 import { getExchangeRateByCurrency, getCostingSpecificTechnology } from "../../costing/actions/Costing"
 import DayTime from '../../common/DayTimeWrapper'
@@ -160,7 +160,7 @@ class AddRMImport extends Component {
       this.props.getPlantSelectListByType(ZBC, () => { })
       this.props.getClientSelectList(() => { })
     }
-    if (!this.state.isViewFlag && initialConfiguration.IsMasterApprovalAppliedConfigure) {
+    if (!this.state.isViewFlag && initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(RM_MASTER_ID) === true) {
       // let obj = {
       //   TechnologyId: RM_MASTER_ID,
       //   DepartmentId: userDetails().DepartmentId,
@@ -218,7 +218,7 @@ class AddRMImport extends Component {
 
         this.handleNetCost()
       }
-      if ((prevState?.costingTypeId !== this.state.costingTypeId) && initialConfiguration.IsMasterApprovalAppliedConfigure) {
+      if ((prevState?.costingTypeId !== this.state.costingTypeId) && initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(RM_MASTER_ID) === true) {
         this.commonFunction()
       }
 
@@ -441,7 +441,11 @@ class AddRMImport extends Component {
     const netCost = checkForNull(Number(fieldsObj.BasicRate ? fieldsObj.BasicRate : 0) + Number(fieldsObj.FreightCharge ? fieldsObj.FreightCharge : 0) + Number(fieldsObj.ShearingCost ? fieldsObj.ShearingCost : 0))
 
     if (this.state.isEditFlag && Number(netCost) === Number(this.state.DataToChange?.NetLandedCost) && Number(fieldsObj.ScrapRate) === Number(this.state.DataToChange?.ScrapRate)) {
-      this.setState({ IsFinancialDataChanged: false })
+      if (String(this.state.Technology.label) === String(SHEET_METAL) && Number(fieldsObj.JaliScrapCost) === Number(this.state.DataToChange.ScrapRate) && checkForNull(Number(fieldsObj.CircleScrapCost)) === Number(this.state.DataToChange.JaliScrapCost)) {
+        this.setState({ IsFinancialDataChanged: false })
+      } else {
+        this.setState({ IsFinancialDataChanged: true })
+      }
     } else if (this.state.isEditFlag) {
       this.setState({ IsFinancialDataChanged: true })
     }
@@ -452,7 +456,7 @@ class AddRMImport extends Component {
     } else {
       if (currency && effectiveDate) {
         const { costingTypeId, vendorName, client } = this.state
-        this.props.getExchangeRateByCurrency(currency.label, costingTypeId, DayTime(effectiveDate).format('YYYY-MM-DD'), costingTypeId === ZBCTypeId ? EMPTY_GUID : vendorName.value, client.value, res => {
+        this.props.getExchangeRateByCurrency(currency.label, costingTypeId, DayTime(effectiveDate).format('YYYY-MM-DD'), costingTypeId === ZBCTypeId ? EMPTY_GUID : vendorName.value, client.value, false, res => {
           if (Object.keys(res.data.Data).length === 0) {
             this.setState({ showWarning: true })
           } else {
@@ -554,7 +558,9 @@ class AddRMImport extends Component {
             }, () => {
               setTimeout(() => {
                 this.setState({ isLoader: false, isCallCalculation: false })
-                this.commonFunction()
+                if (this.props.initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(RM_MASTER_ID) === true) {
+                  this.commonFunction()
+                }
               }, 500)
             })
             // ********** ADD ATTACHMENTS FROM API INTO THE DROPZONE'S PERSONAL DATA STORE **********
@@ -586,7 +592,6 @@ class AddRMImport extends Component {
       'RawMaterialGradeId',
       'RawMaterialSpecificationId',
       'CategoryId',
-      'Code',
       'Currency',
       'SourceSupplierPlantId',
       'DestinationPlant',
@@ -1033,9 +1038,9 @@ class AddRMImport extends Component {
     }
 
 
-    if ((Number(fieldsObj.BasicRate) < Number(fieldsObj.ScrapRate)) || (fieldsObj.JaliScrapCost ? ((Number(fieldsObj.JaliScrapCost) + Number(checkForNull(fieldsObj.CircleScrapCost))) > Number(fieldsObj.BasicRate)) : false) || (fieldsObj.ForgingScrap ? ((Number(fieldsObj.ForgingScrap) + Number(checkForNull(fieldsObj.MachiningScrap))) > Number(fieldsObj.BasicRate)) : false)) {
+    if ((Number(fieldsObj.BasicRate) <= Number(fieldsObj.ScrapRate)) || (Number(fieldsObj.BasicRate) <= Number(fieldsObj.JaliScrapCost)) || (Number(fieldsObj.BasicRate) <= Number(fieldsObj.CircleScrapCost)) || (Number(fieldsObj.BasicRate) <= Number(fieldsObj.ForgingScrap)) || (Number(fieldsObj.BasicRate) <= Number(fieldsObj.MachiningScrap))) {
       this.setState({ setDisable: false })
-      Toaster.warning("Scrap rate should not be greater than basic rate")
+      Toaster.warning("Scrap rate/cost should not be greater than or equal to the basic rate.")
       return false
     }
 
@@ -1334,6 +1339,8 @@ class AddRMImport extends Component {
                               <input
                                 type="radio"
                                 name="costingHead"
+                                className='zero-based'
+                                id="zeroBased"
                                 checked={
                                   costingTypeId === ZBCTypeId ? true : false
                                 }
@@ -1348,6 +1355,8 @@ class AddRMImport extends Component {
                               <input
                                 type="radio"
                                 name="costingHead"
+                                className='vendor-based'
+                                id="vendorBased"
                                 checked={
                                   costingTypeId === VBCTypeId ? true : false
                                 }
@@ -1362,6 +1371,8 @@ class AddRMImport extends Component {
                               <input
                                 type="radio"
                                 name="costingHead"
+                                className='customer-based'
+                                id="customerBased"
                                 checked={
                                   costingTypeId === CBCTypeId ? true : false
                                 }

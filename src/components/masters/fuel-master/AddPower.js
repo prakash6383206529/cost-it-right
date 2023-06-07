@@ -1829,7 +1829,7 @@ class AddPower extends Component {
                                   <div className="d-flex justify-space-between align-items-center inputwith-icon">
                                     <div className="fullinput-icon">
                                       <Field
-                                        label={`Unit Generated/Unit Of fuel `}
+                                        label={`Unit Generated/Unit of fuel `}
                                         name={"UnitGeneratedPerUnitOfFuel"}
                                         type="text"
                                         placeholder={isViewMode ? '-' : 'Enter'}

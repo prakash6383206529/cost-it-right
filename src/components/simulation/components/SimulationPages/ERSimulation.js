@@ -18,6 +18,12 @@ import { debounce } from 'lodash'
 import { PaginationWrapper } from '../../../common/commonPagination';
 import DatePicker from "react-datepicker";
 import WarningMessage from '../../../common/WarningMessage';
+import ReactExport from 'react-export-excel';
+import { EXCHANGE_IMPACT_DOWNLOAD_EXCEl } from '../../../../config/masterData';
+
+const ExcelFile = ReactExport.ExcelFile;
+const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 const gridOptions = {
 
@@ -228,15 +234,31 @@ function ERSimulation(props) {
             }
         }))
         // setShowVerifyPage(true)
-    })
+    }, 500)
 
+    const onBtExport = () => {
+        return returnExcelColumn(EXCHANGE_IMPACT_DOWNLOAD_EXCEl, list)
+    };
+
+    const returnExcelColumn = (data = [], TempData) => {
+
+        let temp = []
+        TempData && TempData.map((item) => {
+            item.EffectiveDate = (item.EffectiveDate)?.slice(0, 10)
+            temp.push(item)
+        })
+
+        return (
+            <ExcelSheet data={temp} name={'Exchange Rate Data'}>
+                {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
+            </ExcelSheet>);
+    }
 
     return (
         <div>
             <div className={`ag-grid-react`}>
 
                 {
-
 
                     (!showverifyPage && !showMainSimulation) &&
                     <Fragment>
@@ -247,8 +269,12 @@ function ERSimulation(props) {
                                     <div className="ag-grid-header d-flex align-items-center justify-content-between">
                                         <div className='d-flex align-items-center'>
                                             <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
-                                            <button type="button" className="user-btn float-right" title="Reset Grid" onClick={() => resetState()}>
+                                            <button type="button" className="user-btn float-right mr-1" title="Reset Grid" onClick={() => resetState()}>
                                                 <div className="refresh mr-0"></div></button>
+                                            <ExcelFile filename={'Impacted Master Data'} fileExtension={'.xls'} element={
+                                                <button title="Download" type="button" className={'user-btn'} ><div className="download mr-0"></div></button>}>
+                                                {onBtExport()}
+                                            </ExcelFile>
                                         </div>
                                         {!isImpactedMaster && <button type="button" className={"apply"} onClick={cancel} disabled={isDisable}> <div className={'back-icon'}></div>Back</button>}
                                     </div>
@@ -313,7 +339,6 @@ function ERSimulation(props) {
                                             showMonthDropdown
                                             showYearDropdown
                                             dateFormat="dd/MM/yyyy"
-                                            dropdownMode="select"
                                             placeholderText="Select effective date"
                                             className="withBorder"
                                             autoComplete={"off"}

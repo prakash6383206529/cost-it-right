@@ -1,4 +1,4 @@
-import { CHECK_RFQ_BULK_UPLOAD } from "../../../config/constants";
+import { CHECK_RFQ_BULK_UPLOAD, GET_NFR_SELECT_LIST, SELECTED_ROW_ARRAY, SET_QUOTATION_ID_FOR_RFQ } from "../../../config/constants";
 
 const initialState = {
     checkRFQPartBulkUpload: []
@@ -12,6 +12,24 @@ export default function RFQReducer(state = initialState, action) {
                 loading: true,
                 checkRFQPartBulkUpload: action.payload
             };
+        case SELECTED_ROW_ARRAY:
+            return {
+                ...state,
+                loading: true,
+                selectedRowRFQ: action.payload
+            };
+        case SET_QUOTATION_ID_FOR_RFQ:
+            return {
+                ...state,
+                loading: false,
+                quotationIDForRFQ: action.payload,
+            }
+        case GET_NFR_SELECT_LIST:
+            return {
+                ...state,
+                loading: false,
+                nfrSelectList: action.payload,
+            }
 
         default:
             return state;

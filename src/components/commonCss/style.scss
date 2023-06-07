@@ -440,6 +440,12 @@ button.add-btn {
   vertical-align: middle;
 }
 
+.table.cr-brdr-main .thead th {
+  color: #3D4465;
+  vertical-align: middle;
+  font-weight: 500;
+}
+
 .withBorder .form-control,
 .form-control {
   border: 1px solid $borderColor;
@@ -1406,7 +1412,7 @@ $roboto: "Roboto",
 
         .sub-heading {
           display: block;
-          font-size: 11px;
+          font-size: 13px;
           margin-bottom: 0 !important;
         }
       }
@@ -3121,11 +3127,31 @@ button:disabled,
   }
 }
 
-.pie-chart {
-  @extend .tooltip-n;
+.pie-chart-wrapper {
+  position: relative;
 
-  .tooltiptext:after {
-    display: none;
+  .pie-chart-inner {
+    min-width: 350px;
+    background-color: #e4e9f0;
+    color: #3d4465;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px 10px;
+    position: absolute;
+    z-index: 12;
+    top: 5px;
+    right: 35px;
+    margin-left: -4px;
+    font-size: 14px;
+    box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
+  }
+
+  .CancelIcon,
+  .pie-chart {
+    &:focus {
+      box-shadow: none !important;
+      border: none !important;
+    }
   }
 }
 
@@ -3564,8 +3590,14 @@ body {
     max-width: 280px;
     width: 280px;
 
-    @media screen and (max-width:$miniDesktop) {
-      width: 260px;
+    @media screen and (max-width:$middleDesktop) {
+      width: auto;
+    }
+  }
+
+  .overhead-rejection .cross-btn-container {
+    @media screen and (max-width:$middleDesktop) {
+      width: 240px;
     }
   }
 
@@ -3574,8 +3606,8 @@ body {
       max-width: 280px;
       width: 280px;
 
-      @media screen and (max-width:$miniDesktop) {
-        width: 260px;
+      @media screen and (max-width:$middleDesktop) {
+        width: auto;
       }
     }
 
@@ -3775,7 +3807,11 @@ body {
 
 .css-26l3qy-menu {
   font-size: 14px;
-  z-index: 100 !important;
+  z-index: 12 !important;
+}
+
+.select-container__option {
+  font-size: 14px !important;
 }
 
 .costing-details-page,
@@ -7458,6 +7494,7 @@ body {
   .cancel-btn,
   .reset-btn,
   .pdf-detail,
+  .rfq-summary-discard,
   .reset {
     font-size: calc(14px * 80 / 100) !important;
     padding-left: calc(15px * 80 / 100) !important;
@@ -8086,6 +8123,7 @@ body {
   margin: 0mm 1mm 1mm 0mm;
 }
 
+
 @media print {
   .simple-pdf {
     .table-responsive {
@@ -8108,26 +8146,31 @@ body {
     }
   }
 
+  @-moz-document url-prefix() {
+    .firefox-spaces {
+      margin-top: 35px;
+    }
+
+    .firefox-space-bottom {
+      margin-bottom: 30px;
+    }
+
+    .firefox-10 {
+      padding-top: 50px;
+    }
+  }
+
   .remove-space-border {
     .table-responsive {
 
       .header-name-left,
       .header-name {
-        border-right: none !important;
         background-color: #ececec !important;
       }
 
     }
 
-    .background-light-blue {
-      th {
-        border-right: none !important;
-      }
 
-      td {
-        border-left: none !important;
-      }
-    }
   }
 
   .background-light-blue {
@@ -8176,6 +8219,44 @@ body {
           background-color: #FEDCE2 !important;
         }
       }
+    }
+  }
+}
+
+.simple-pdf {
+  .table-responsive {
+    min-width: 100% !important;
+    overflow: unset !important;
+
+    .table-responsive {
+      overflow: unset !important;
+    }
+
+    table {
+      min-width: 100%;
+    }
+
+    .approval-summary-headers,
+    .header-name,
+    .header-name-left {
+      background-color: #ececec !important;
+    }
+  }
+
+  .background-light-blue {
+    background: #9fcffc !important;
+
+    th {
+      word-spacing: 1px;
+
+      print-color-adjust: exact;
+      -webkit-print-color-adjust: exact;
+    }
+
+    td {
+      padding-right: 20px;
+      print-color-adjust: exact;
+      -webkit-print-color-adjust: exact;
     }
   }
 }
@@ -8318,7 +8399,7 @@ body {
     right: 2px;
     top: 24%;
     min-height: 38px;
-    z-index: 10;
+    z-index: 1;
 
     .input-group-text {
       border-top-right-radius: 4px;
@@ -8328,6 +8409,10 @@ body {
         min-width: 24px;
       }
     }
+  }
+
+  .input-group>.form-control:focus {
+    z-index: 0;
   }
 }
 
@@ -8939,11 +9024,14 @@ table.group-process-table {
 
 @for $i from 1 through 1000 {
   [row-id~="#{($i * 5) - 1}"] {
+    @for $j from 0 through 11 {
 
-    [col-id="PartNumber"],
-    [aria-colindex="5"] {
-      border-bottom: 1px solid $agGridBorder !important;
+      [col-id="PartNumber"],
+      [aria-colindex="#{$j}"] {
+        border-bottom: 1px solid $agGridBorder !important;
+      }
     }
+
   }
 }
 
@@ -8981,4 +9069,8 @@ div[col-id="ApprovalNumber"] {
       display: block !important;
     }
   }
+}
+
+.dashboard-loader {
+  min-height: 400px;
 }

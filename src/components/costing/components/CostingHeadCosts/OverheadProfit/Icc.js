@@ -6,7 +6,7 @@ import { calculatePercentage, checkForDecimalAndNull, checkForNull, decimalAndNu
 import { getInventoryDataByHeads, gridDataAdded, isOverheadProfitDataChange, setOverheadProfitErrors, } from '../../../actions/Costing';
 import { ViewCostingContext } from '../../CostingDetails';
 import { costingInfoContext, netHeadCostContext } from '../../CostingDetailStepTwo';
-import { CBCTypeId, EMPTY_GUID, VBCTypeId, ZBCTypeId } from '../../../../../config/constants';
+import { CBCTypeId, EMPTY_GUID, NFRTypeId, VBCTypeId, ZBCTypeId } from '../../../../../config/constants';
 import Switch from "react-switch";
 import DayTime from '../../../../common/DayTimeWrapper';
 import { MESSAGES } from '../../../../../config/message';
@@ -28,6 +28,7 @@ function Icc(props) {
 
     const [InventoryObj, setInventoryObj] = useState(ICCApplicabilityDetail)
     const [tempInventoryObj, setTempInventoryObj] = useState(ICCApplicabilityDetail)
+    const [isPartApplicability, setIsPartApplicability] = useState(false)
 
     const [IsInventoryApplicable, setIsInventoryApplicable] = useState(CostingInterestRateDetail && CostingInterestRateDetail.IsInventoryCarringCost ? true : false)
     const [ICCapplicability, setICCapplicability] = useState(ICCApplicabilityDetail !== undefined ? { label: ICCApplicabilityDetail.ICCApplicability, value: ICCApplicabilityDetail.ICCApplicability } : {})
@@ -46,6 +47,12 @@ function Icc(props) {
         control,
         name: ['InterestRatePercentage',],
     });
+
+    useEffect(() => {
+        if (ICCapplicability && ICCapplicability.label === 'Part Cost') {
+            setIsPartApplicability(true)
+        }
+    }, [ICCapplicability])
 
 
     /**
@@ -77,9 +84,9 @@ function Icc(props) {
     const callInventoryAPI = (callAPI) => {
         if (Object.keys(costData).length > 0 && callAPI && !CostingViewMode) {
             const reqParams = {
-                VendorId: costData?.CostingTypeId === VBCTypeId ? costData.VendorId : EMPTY_GUID,
-                costingTypeId: costData.CostingTypeId,
-                plantId: (getConfigurationKey()?.IsPlantRequiredForOverheadProfitInterestRate && costData?.CostingTypeId === ZBCTypeId) ? costData.PlantId : ((getConfigurationKey()?.IsDestinationPlantConfigure && costData?.CostingTypeId === VBCTypeId) || costData?.CostingTypeId === CBCTypeId) ? costData.DestinationPlantId : EMPTY_GUID,
+                VendorId: (costData?.CostingTypeId === VBCTypeId || costData?.CostingTypeId === NFRTypeId) ? costData.VendorId : EMPTY_GUID,
+                costingTypeId: Number(costData.CostingTypeId) === NFRTypeId ? VBCTypeId : costData.CostingTypeId,
+                plantId: (getConfigurationKey()?.IsPlantRequiredForOverheadProfitInterestRate && costData?.CostingTypeId === ZBCTypeId) ? costData.PlantId : ((getConfigurationKey()?.IsDestinationPlantConfigure && costData?.CostingTypeId === VBCTypeId) || costData?.CostingTypeId === CBCTypeId || costData?.CostingTypeId === NFRTypeId) ? costData.DestinationPlantId : EMPTY_GUID,
                 customerId: costData?.CostingTypeId === CBCTypeId ? costData.CustomerId : EMPTY_GUID,
                 effectiveDate: CostingEffectiveDate ? (DayTime(CostingEffectiveDate).format('DD/MM/YYYY')) : ''
             }
@@ -128,7 +135,7 @@ function Icc(props) {
         if (headerCosts !== undefined && Text !== '' && !CostingViewMode) {
 
             let NetRawMaterialsCost;
-            if (isNetWeight && !(costData.IsAssemblyPart)) {
+            if (isNetWeight && !(costData.IsAssemblyPart) && !(isPartApplicability)) {
                 let rmValue = reactLocalStorage.getObject('costingArray')
                 let newRmCost = (Array.isArray(rmValue) && rmValue[0]?.CostingPartDetails?.CostingRawMaterialsCost[0]?.RMRate) * (Array.isArray(rmValue) && rmValue[0]?.CostingPartDetails?.CostingRawMaterialsCost[0]?.FinishWeight)
                 NetRawMaterialsCost = newRmCost
@@ -151,7 +158,7 @@ function Icc(props) {
                     setTempInventoryObj({
                         ...tempInventoryObj,
                         CostApplicability: checkForNull(NetRawMaterialsCost),
-                        NetICCTotal: checkForNull(headerCosts?.NetRawMaterialsCost) * calculatePercentage(InterestRatePercentage)
+                        NetICCTotal: checkForNull(NetRawMaterialsCost) * calculatePercentage(InterestRatePercentage)
                     })
                     break;
 
@@ -335,7 +342,7 @@ function Icc(props) {
                         </Col>
                         <Col md={ICCapplicability?.label?.includes('RM') && !(costData.IsAssemblyPart) && IsShowRmcAndNetWeightToggleForIcc ? '2' : '3'}>
                             <span className="head-text">
-                                {ICCapplicability.label !== 'Fixed' ? 'Interest Rate (%)' : '`Interest Rate'}
+                                {ICCapplicability.label !== 'Fixed' ? 'Interest Rate (%)' : 'Interest Rate'}
                             </span>
                         </Col>
 

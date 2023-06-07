@@ -544,7 +544,7 @@ function CostMovementGraph(props) {
                 {!noRecordFound && <div className='h-298 d-flex align-items-center mt-3'>
                     <NoContentFound title={'Cost card is not available for this date range'} />
                 </div>}
-                {isLoader && <LoaderCustom customClass="center-loader" />}
+                {isLoader && <LoaderCustom customClass="loader-center" />}
             </div >
         </>
     );

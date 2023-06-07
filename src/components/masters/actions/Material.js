@@ -46,7 +46,9 @@ import {
     SET_FILTERED_RM_DATA,
     GET_RM_APPROVAL_LIST,
     GET_ALL_MASTER_APPROVAL_DEPARTMENT,
-    EMPTY_GUID
+    EMPTY_GUID,
+    BUDGET_ID,
+    GET_VOLUME_DATA_LIST
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
 import Toaster from '../../common/Toaster';
@@ -54,6 +56,7 @@ import { loggedInUserId, userDetails } from '../../../helper';
 import { MESSAGES } from '../../../config/message';
 import { rmQueryParms } from '../masterUtil';
 import { reactLocalStorage } from 'reactjs-localstorage';
+
 
 /**
  * @method createMaterialAPI
@@ -1765,6 +1768,12 @@ export function getMasterApprovalSummary(tokenNo, approvalProcessId, masterId, c
                         dispatch({
                             type: GET_MACHINE_DATALIST_SUCCESS,
                             payload: value,
+                        })
+                        callback(response)
+                    } else if (Number(masterId) === BUDGET_ID) {
+                        dispatch({
+                            type: GET_VOLUME_DATA_LIST,
+                            payload: response.data.Data.ImpactedMasterDataListBudgeting,
                         })
                         callback(response)
                     }

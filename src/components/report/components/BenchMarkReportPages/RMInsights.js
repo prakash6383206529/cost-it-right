@@ -2,9 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { Col, Row } from 'reactstrap';
 import { SearchableSelectHookForm } from '../../../layout/HookFormInputs'
-import { getCostingTechnologySelectList } from '../../../costing/actions/Costing'
 import { useDispatch, useSelector } from 'react-redux';
-import { getGradeSelectList, getRawMaterialFilterSelectList } from '../../../masters/actions/Material'
 import { AgGridReact } from 'ag-grid-react/lib/agGridReact';
 import LoaderCustom from '../../../common/LoaderCustom'
 import { AgGridColumn } from 'ag-grid-react/lib/agGridColumn';
@@ -421,10 +419,6 @@ function Insights(props) {
 
     useEffect(() => {
         setShowListing(false)
-        dispatch(getCostingTechnologySelectList(() => { }))
-        dispatch(getGradeSelectList(() => { }))
-        dispatch(getRawMaterialFilterSelectList(() => { }))
-
         let temp = []
         let vendorTemp = []
         let uniqueVendors = []
@@ -970,6 +964,10 @@ function Insights(props) {
 
     return (
         <>
+            {showListing &&
+                <button type="button" className="user-btn report-btn-reset float-right mb-2" title="Reset Grid" onClick={() => resetState()}>
+                    <div className="refresh mr-0"></div>
+                </button>}
             <div className="container-fluid rminsights_page">
                 {isLoader ? <LoaderCustom customClass="loader-center" /> :
                     <form onSubmit={handleSubmit} noValidate >
@@ -1045,11 +1043,6 @@ function Insights(props) {
 
                         {showListing && <>
                             <Row>
-                                <div className='report-btn-reset-container'>
-                                    {<button type="button" className="user-btn float-right mb-2" title="Reset Grid" onClick={() => resetState()}>
-                                        <div className="refresh mr-0"></div>
-                                    </button>}
-                                </div>
                                 <Col md="12">
                                     <div className={`ag-grid-react`}>
                                         <div className={`ag-grid-wrapper rminsights_table  ${rowDataNew && rowDataNew?.length <= 0 ? "overlay-contain" : ""}`}>

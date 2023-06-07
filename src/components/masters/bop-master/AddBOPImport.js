@@ -139,7 +139,7 @@ class AddBOPImport extends Component {
       this.props.getClientSelectList(() => { })
 
     }
-    if (!this.state.isViewMode && initialConfiguration.IsMasterApprovalAppliedConfigure) {
+    if (!this.state.isViewMode && initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(BOP_MASTER_ID) === true) {
       this.props.getUsersMasterLevelAPI(loggedInUserId(), BOP_MASTER_ID, (res) => {
         setTimeout(() => {
           this.commonFunction()
@@ -180,7 +180,7 @@ class AddBOPImport extends Component {
       if (this.props.fieldsObj !== prevProps.fieldsObj) {
         this.handleCalculation()
       }
-      if ((prevState?.costingTypeId !== this.state.costingTypeId) && initialConfiguration.IsMasterApprovalAppliedConfigure) {
+      if ((prevState?.costingTypeId !== this.state.costingTypeId) && initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(BOP_MASTER_ID) === true) {
         if (!(this.props.data.isEditFlag || this.props.data.isViewMode)) {
           this.commonFunction()
         }
@@ -337,11 +337,13 @@ class AddBOPImport extends Component {
             }, () => {
               setTimeout(() => {
                 this.setState({ isLoader: false, isCallCalculation: false })
-                this.commonFunction()
+                if (this.props.initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(BOP_MASTER_ID) === true) {
+                  this.commonFunction()
+                }
               }, 500)
             })
             if (!this.state.isViewMode && Data.NetLandedCostConversion === 0) {
-              this.props.getExchangeRateByCurrency(Data.Currency, costingTypeId, DayTime(Data.EffectiveDate).format('YYYY-MM-DD'), costingTypeId === ZBCTypeId ? EMPTY_GUID : vendorName.value, client.value, res => {
+              this.props.getExchangeRateByCurrency(Data.Currency, costingTypeId, DayTime(Data.EffectiveDate).format('YYYY-MM-DD'), costingTypeId === ZBCTypeId ? EMPTY_GUID : vendorName.value, client.value, false, res => {
                 if (Object.keys(res.data.Data).length === 0) {
                   this.setState({ showWarning: true })
                 }
@@ -622,7 +624,7 @@ class AddBOPImport extends Component {
     } else {
       if (currency && currency.length !== 0 && effectiveDate) {
         const { costingTypeId, vendorName, client } = this.state;
-        this.props.getExchangeRateByCurrency(currency.label, costingTypeId, DayTime(effectiveDate).format('YYYY-MM-DD'), costingTypeId === ZBCTypeId ? EMPTY_GUID : vendorName.value, client.value, res => {
+        this.props.getExchangeRateByCurrency(currency.label, costingTypeId, DayTime(effectiveDate).format('YYYY-MM-DD'), costingTypeId === ZBCTypeId ? EMPTY_GUID : vendorName.value, client.value, false, res => {
           if (Object.keys(res.data.Data).length === 0) {
             this.setState({ showWarning: true });
           } else {
@@ -1047,6 +1049,8 @@ class AddBOPImport extends Component {
                               <input
                                 type="radio"
                                 name="costingHead"
+                                className='zero-based'
+                                id="zeroBased"
                                 checked={
                                   costingTypeId === ZBCTypeId ? true : false
                                 }
@@ -1061,6 +1065,8 @@ class AddBOPImport extends Component {
                               <input
                                 type="radio"
                                 name="costingHead"
+                                className='vendor-based'
+                                id="vendorBased"
                                 checked={
                                   costingTypeId === VBCTypeId ? true : false
                                 }
@@ -1075,6 +1081,8 @@ class AddBOPImport extends Component {
                               <input
                                 type="radio"
                                 name="costingHead"
+                                className='customer-based'
+                                id="customerBased"
                                 checked={
                                   costingTypeId === CBCTypeId ? true : false
                                 }

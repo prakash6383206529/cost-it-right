@@ -18,7 +18,7 @@ import {
   getPartInfo, checkPartWithTechnology,
   updateZBCSOBDetail, updateVBCSOBDetail, storePartNumber, getBriefCostingById, deleteDraftCosting, getPartSelectListByTechnology,
   setOverheadProfitData, setComponentOverheadItemData, setPackageAndFreightData, setComponentPackageFreightItemData, setToolTabData,
-  setComponentToolItemData, setComponentDiscountOtherItemData, gridDataAdded, getCostingSpecificTechnology, setRMCCData, setComponentItemData, createNCCCosting, saveAssemblyBOPHandlingCharge, setProcessGroupGrid, savePartNumber, saveBOMLevel, setPartNumberArrayAPICALL, isDataChange, setSurfaceCostData, saveAssemblyNumber, createCosting, getExistingCosting, createMultiTechnologyCosting, setRMCCErrors, setOverheadProfitErrors, setToolsErrors, setDiscountErrors, isDiscountDataChange,
+  setComponentToolItemData, setComponentDiscountOtherItemData, gridDataAdded, getCostingSpecificTechnology, setRMCCData, setComponentItemData, createNCCCosting, saveAssemblyBOPHandlingCharge, setProcessGroupGrid, savePartNumber, saveBOMLevel, setPartNumberArrayAPICALL, isDataChange, setSurfaceCostData, saveAssemblyNumber, createCosting, getExistingCosting, createMultiTechnologyCosting, setRMCCErrors, setOverheadProfitErrors, setToolsErrors, setDiscountErrors, isDiscountDataChange, setCostingDataList, emptyCostingData, setRMCCBOPCostData
 } from '../actions/Costing'
 import CopyCosting from './Drawers/CopyCosting'
 import { MESSAGES } from '../../../config/message';
@@ -35,6 +35,7 @@ import AddClientDrawer from './AddClientDrawer';
 import { IdForMultiTechnology } from '../../../config/masterData';
 import { autoCompleteDropdown } from '../../common/CommonFunctions';
 import { getUOMSelectList } from '../../../actions/Common';
+import { Redirect } from 'react-router';
 
 export const ViewCostingContext = React.createContext()
 export const EditCostingContext = React.createContext()
@@ -42,6 +43,7 @@ export const CopyCostingContext = React.createContext()
 export const SelectedCostingDetail = React.createContext()
 export const CostingStatusContext = React.createContext()
 export const CostingTypeContext = React.createContext()
+export const IsNFR = React.createContext()
 
 function IsolateReRender(control) {
   const values = useWatch({
@@ -104,7 +106,7 @@ function CostingDetails(props) {
 
 
   //FOR VIEW MODE COSTING
-  const [IsCostingViewMode, setIsCostingViewMode] = useState(false)
+  const [IsCostingViewMode, setIsCostingViewMode] = useState(props?.isNFR ? props?.isViewModeCosting : false)
   // FOR EDIT MODE COSTING
   const [IsCostingEditMode, setIsCostingEditMode] = useState(false)
   // FOR COPY COSTING MODE
@@ -127,6 +129,7 @@ function CostingDetails(props) {
   const [inputLoader, setInputLoader] = useState(false)
   const [costingOptionsSelectedObject, setCostingOptionsSelectedObject] = useState({})
   const [partName, setpartName] = useState('')
+  const [nfrListing, setNFRListing] = useState(false)
 
   const dispatch = useDispatch()
 
@@ -1352,65 +1355,76 @@ function CostingDetails(props) {
    * @description used to Reset form
    */
   const backToFirstStep = () => {
-    setIsLoader(true)
-    dispatch(getBriefCostingById('', (res) => { }))
-    dispatch(isDiscountDataChange(false))
+    if (props?.nfrData?.isNFR) {
+      // CODE FIR BACK BUTTON
+      setNFRListing(true)
+      dispatch(isDataChange(false))
+      dispatch(setRMCCData([], () => { }))                            //THIS WILL CLEAR RM CC REDUCER
+      dispatch(setCostingDataList('setHeaderCostRMCCTab', [], () => { }))
+      dispatch(emptyCostingData())
+      dispatch(setRMCCBOPCostData([], () => { }))
 
-    reactLocalStorage.setObject('costingArray', [])
-    reactLocalStorage.setObject('surfaceCostingArray', [])
-    dispatch(setRMCCData([], () => { }))                            //THIS WILL CLEAR RM CC REDUCER
-    dispatch(setComponentItemData({}, () => { }))
+    } else {
+      setIsLoader(true)
+      dispatch(getBriefCostingById('', (res) => { }))
+      dispatch(isDiscountDataChange(false))
 
-    dispatch(setOverheadProfitData([], () => { }))              //THIS WILL CLEAR OVERHEAD PROFIT REDUCER
-    dispatch(setComponentOverheadItemData({}, () => { }))       //THIS WILL CLEAR OVERHEAD PROFIT ITEM REDUCER
+      reactLocalStorage.setObject('costingArray', [])
+      reactLocalStorage.setObject('surfaceCostingArray', [])
+      dispatch(setRMCCData([], () => { }))                            //THIS WILL CLEAR RM CC REDUCER
+      dispatch(setComponentItemData({}, () => { }))
+
+      dispatch(setOverheadProfitData([], () => { }))              //THIS WILL CLEAR OVERHEAD PROFIT REDUCER
+      dispatch(setComponentOverheadItemData({}, () => { }))       //THIS WILL CLEAR OVERHEAD PROFIT ITEM REDUCER
 
 
-    dispatch(setPackageAndFreightData([], () => { }))           //THIS WILL CLEAR PACKAGE FREIGHT ITEM DATA
-    dispatch(setComponentPackageFreightItemData({}, () => { })) //THIS WILL CLEAR PACKAGE FREIGHT ITEM DATA
+      dispatch(setPackageAndFreightData([], () => { }))           //THIS WILL CLEAR PACKAGE FREIGHT ITEM DATA
+      dispatch(setComponentPackageFreightItemData({}, () => { })) //THIS WILL CLEAR PACKAGE FREIGHT ITEM DATA
 
-    dispatch(setToolTabData([], () => { }))                     //THIS WILL CLEAR TOOL ARR FROM REDUCER  
-    dispatch(setComponentToolItemData({}, () => { }))           //THIS WILL CLEAR TOOL ITEM DATA FROM REDUCER
+      dispatch(setToolTabData([], () => { }))                     //THIS WILL CLEAR TOOL ARR FROM REDUCER  
+      dispatch(setComponentToolItemData({}, () => { }))           //THIS WILL CLEAR TOOL ITEM DATA FROM REDUCER
 
-    dispatch(setComponentDiscountOtherItemData({}, () => { }))  //THIS WILL CLEAR DISCOUNT ITEM DATA FROM REDUCER
+      dispatch(setComponentDiscountOtherItemData({}, () => { }))  //THIS WILL CLEAR DISCOUNT ITEM DATA FROM REDUCER
 
-    dispatch(saveAssemblyBOPHandlingCharge({}, () => { }))
+      dispatch(saveAssemblyBOPHandlingCharge({}, () => { }))
 
-    dispatch(gridDataAdded(false)) //BASIS OF GRID DATA DISABLED/ENABLED COSTING EFFECTIVE DATE
-    setStepOne(true);
-    setStepTwo(false);
+      dispatch(gridDataAdded(false)) //BASIS OF GRID DATA DISABLED/ENABLED COSTING EFFECTIVE DATE
+      setStepOne(true);
+      setStepTwo(false);
 
-    resetGrid()
-    setZBCPlantGrid([])
-    setVBCVendorGrid([])
-    setNccGrid([])
-    dispatch(setSurfaceCostData({}, () => { }))
+      resetGrid()
+      setZBCPlantGrid([])
+      setVBCVendorGrid([])
+      setNccGrid([])
+      dispatch(setSurfaceCostData({}, () => { }))
 
-    setTimeout(() => {
+      setTimeout(() => {
 
-      nextToggle()
-    }, 700);
+        nextToggle()
+      }, 700);
 
-    dispatch(getPartInfo(part.value !== undefined ? part.value : partNumber.partId, (res) => {
-      let Data = res.data.Data;
-      setValue('PartName', Data.PartName)
-      setValue("Description", Data.Description)
-      setValue("ECNNumber", Data.ECNNumber)
-      setValue("DrawingNumber", Data.DrawingNumber)
-      setValue("RevisionNumber", Data.RevisionNumber)
-      setValue("ShareOfBusiness", Data.Price)
-      setEffectiveDate(DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate).format('MM/DD/YYYY') : '')
-    }))
-    setCostingOptionsSelectedObject({})
-    dispatch(setProcessGroupGrid([]))
-    dispatch(savePartNumber(''))
-    dispatch(saveBOMLevel(''))
-    dispatch(setPartNumberArrayAPICALL([]))
-    dispatch(isDataChange(false))
-    dispatch(saveAssemblyNumber([]))
-    dispatch(setRMCCErrors({}))
-    dispatch(setOverheadProfitErrors({}))
-    dispatch(setToolsErrors({}))
-    dispatch(setDiscountErrors({}))
+      dispatch(getPartInfo(part.value !== undefined ? part.value : partNumber.partId, (res) => {
+        let Data = res.data.Data;
+        setValue('PartName', Data.PartName)
+        setValue("Description", Data.Description)
+        setValue("ECNNumber", Data.ECNNumber)
+        setValue("DrawingNumber", Data.DrawingNumber)
+        setValue("RevisionNumber", Data.RevisionNumber)
+        setValue("ShareOfBusiness", Data.Price)
+        setEffectiveDate(DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate).format('MM/DD/YYYY') : '')
+      }))
+      setCostingOptionsSelectedObject({})
+      dispatch(setProcessGroupGrid([]))
+      dispatch(savePartNumber(''))
+      dispatch(saveBOMLevel(''))
+      dispatch(setPartNumberArrayAPICALL([]))
+      dispatch(isDataChange(false))
+      dispatch(saveAssemblyNumber([]))
+      dispatch(setRMCCErrors({}))
+      dispatch(setOverheadProfitErrors({}))
+      dispatch(setToolsErrors({}))
+      dispatch(setDiscountErrors({}))
+    }
   }
 
   /**
@@ -1751,6 +1765,19 @@ function CostingDetails(props) {
 
   }
 
+  if (nfrListing === true) {
+
+    return <Redirect
+      to={{
+        pathname: "/nfr",
+        state: {
+          isNFR: true
+        }
+
+      }}
+    />
+  }
+
   const loaderObj = { isLoader: inputLoader, }
   return (
     <>
@@ -1956,7 +1983,6 @@ function CostingDetails(props) {
                               showYearDropdown
                               dateFormat="dd/MM/yyyy"
                               // maxDate={new Date()}
-                              dropdownMode="select"
                               placeholderText="-"
                               className="withBorder"
                               autoComplete={"off"}
@@ -2471,12 +2497,14 @@ function CostingDetails(props) {
                         <CopyCostingContext.Provider value={IsCopyCostingMode} >
                           <SelectedCostingDetail.Provider value={costingOptionsSelectedObject} >
                             <CostingStatusContext.Provider value={approvalStatus}>
-                              <CostingDetailStepTwo
-                                backBtn={backToFirstStep}
-                                toggle={props.toggle}
-                                IsCostingViewMode={IsCostingViewMode}
-                                IsCopyCostingMode={IsCopyCostingMode}
-                              />
+                              <IsNFR.Provider value={props?.isNFR}>
+                                <CostingDetailStepTwo
+                                  backBtn={backToFirstStep}
+                                  toggle={props.toggle}
+                                  IsCostingViewMode={IsCostingViewMode}
+                                  IsCopyCostingMode={IsCopyCostingMode}
+                                />
+                              </IsNFR.Provider>
                             </CostingStatusContext.Provider>
                           </SelectedCostingDetail.Provider>
                         </CopyCostingContext.Provider>

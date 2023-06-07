@@ -4017,7 +4017,6 @@ export const CostingSimulationDownloadRM = [
     { label: "Gross Weight", value: "RawMaterialGrossWeight" },
     { label: "Vendor (Code)", value: "VendorName" },
     { label: "Plant (Code)", value: "PlantName" },
-    { label: "PlantCode", value: "PlantCode" },
     { label: "Customer (Code)", value: "CustomerName" },
     { label: "Budgeted Price", value: "BudgetedPrice" },
     { label: "Existing PO Price", value: "OldPOPrice" },
@@ -4114,7 +4113,6 @@ export const CostingSimulationDownloadST = [
     { label: "Revision Number", value: "RevisionNumber" },
     { label: "Vendor (Code)", value: "VendorName" },
     { label: "Plant (Code)", value: "PlantName" },
-    { label: "PlantCode", value: "PlantCode" },
     { label: "Customer (Code)", value: "CustomerName" },
     { label: "Budgeted Price", value: "BudgetedPrice" },
     { label: "Existing PO Price", value: "OldPOPrice" },
@@ -4171,7 +4169,6 @@ export const CostingSimulationDownloadOperation = [
     { label: "Revision Number", value: "RevisionNumber" },
     { label: "Vendor (Code)", value: "VendorName" },
     { label: "Plant (Code)", value: "PlantName" },
-    { label: "PlantCode", value: "PlantCode" },
     { label: "Customer (Code)", value: "CustomerName" },
     { label: "Budgeted Price", value: "BudgetedPrice" },
     { label: "Existing PO Price", value: "OldPOPrice" },
@@ -4230,7 +4227,6 @@ export const CostingSimulationDownloadBOP = [
     { label: "BOP Quantity", value: "BoughtOutPartQuantity" },
     { label: "Vendor (Code)", value: "VendorName" },
     { label: "Plant (Code)", value: "PlantName" },
-    { label: "PlantCode", value: "PlantCode" },
     { label: "Customer (Code)", value: "CustomerName" },
     { label: "Budgeted Price", value: "BudgetedPrice" },
     { label: "Existing PO Price", value: "OldPOPrice" },
@@ -4462,13 +4458,13 @@ export const FUELLISTING_DOWNLOAD_EXCEl = [
 export const POWERLISTING_DOWNLOAD_EXCEl = [
     { label: "State Name", value: "StateName", },
     { label: "Plant Name", value: "PlantName", },
-    { label: "Net Power Cost Per Unit", value: "NetPowerCostPerUnit", },
+    { label: "Net Power Cost per Unit", value: "NetPowerCostPerUnit", },
     { label: "Effective Date", value: "EffectiveDate" }
 ]
 
 export const POWERLISTING_VENDOR_DOWNLOAD_EXCEL = [
     { label: "Vendor (Code)", value: "VendorName" },
-    { label: "Net Power Cost Per Unit", value: "NetPowerCostPerUnit" },
+    { label: "Net Power Cost per Unit", value: "NetPowerCostPerUnit" },
 ]
 
 export const INTERESTRATE_DOWNLOAD_EXCEl = [
@@ -4491,7 +4487,7 @@ export const LABOUR_DOWNLOAD_EXCEl = [
     { label: "State", value: "State", },
     { label: "Machine Type", value: "MachineType", },
     { label: "Labour Type", value: "LabourType", },
-    { label: "Rate Per Person/Annum", value: "LabourRate", },
+    { label: "Rate per Person/Annum", value: "LabourRate", },
     { label: "Effective Date", value: "EffectiveDate", }
 ]
 
@@ -4869,6 +4865,58 @@ export const USER_LISTING_DOWNLOAD_EXCEl = [
 
 ]
 
+export const RM_IMPACT_DOWNLOAD_EXCEl = [
+    { label: "Raw Material", value: "RawMaterial", },
+    { label: "Grade", value: "RMGrade", },
+    { label: "Spec", value: "RMSpec", },
+    { label: "Code", value: "RawMaterialCode", },
+    { label: "UOM", value: "UOM", },
+    { label: "Existing Basic Rate", value: "OldBasicRate", },
+    { label: "Revised Basic Rate", value: "NewBasicRate", },
+    { label: "Existing Scrap Rate", value: "OldScrapRate", },
+    { label: "Revised Scrap Rate", value: "NewScrapRate", },
+    { label: "Freight Cost", value: "RMFreightCost", },
+    { label: "Shearing Cost", value: "RMShearingCost", },
+    { label: "Current Effective date", value: "EffectiveDate", },
+]
+
+export const BOP_IMPACT_DOWNLOAD_EXCEl = [
+    { label: "BOP Part No", value: "BoughtOutPartNumber", },
+    { label: "BOP Part Name", value: "BoughtOutPartName", },
+    { label: "Existing Basic Rate", value: "OldBOPRate", },
+    { label: "Revised Basic Rate", value: "NewBOPRate", },
+    { label: "Existing Net Cost", value: "OldNetBoughtOutPartCost", },
+    { label: "Revised Net Cost", value: "NewNetBoughtOutPartCost", },
+    { label: "Current Effective date", value: "EffectiveDate", },
+]
+
+export const MACHINE_IMPACT_DOWNLOAD_EXCEl = [
+    { label: "Machine Name", value: "MachineName", },
+    { label: "Machine Number", value: "MachineNumber", },
+    { label: "Process Name", value: "ProcessName", },
+    { label: "Existing Machine Rate", value: "OldMachineRate", },
+    { label: "Revised Machine Rate", value: "NewMachineRate", },
+    { label: "Current Effective date", value: "EffectiveDate", },
+]
+
+export const OPERATION_IMPACT_DOWNLOAD_EXCEl = [
+    { label: "Operation Name", value: "OperationName", },
+    { label: "Operation Code", value: "OperationCode", },
+    { label: "Existing Net Rate", value: "OldOperationRate", },
+    { label: "Revised Net Rate", value: "NewOperationRate", },
+    { label: "Current Effective date", value: "EffectiveDate", },
+]
+
+export const EXCHANGE_IMPACT_DOWNLOAD_EXCEl = [
+    { label: "Currency", value: "Currency", },
+    { label: "Bank Rate(INR)", value: "BankRate", },
+    { label: "Bank Commission %", value: "BankCommissionPercentage", },
+    { label: "Custom Rate(INR)", value: "CustomRate", },
+    { label: "Existing Exchange Rate(INR)", value: "OldExchangeRate", },
+    { label: "Revised Exchange Rate(INR)", value: "NewExchangeRate", },
+    { label: "Current Effective date", value: "EffectiveDate", },
+]
+
 
 export const OperationGridForToken = [
     { label: "Operation Name", value: "OperationName" },
@@ -5142,7 +5190,6 @@ export const CostingSimulationDownloadMR = [
     { label: "ProcessCode", value: "ProcessCode" },
     { label: "Vendor (Code)", value: "VendorName" },
     { label: "Plant (Code)", value: "PlantName" },
-    { label: "PlantCode", value: "PlantCode" },
     { label: "Customer (Code)", value: "CustomerName" },
     { label: "Budgeted Price", value: "BudgetedPrice" },
     { label: "Existing PO Price", value: "OldPOPrice" },
@@ -5218,13 +5265,17 @@ export const MRGridForTokenSummary = [
     { label: "Variance (Proc. Cost)", value: "NetProcessCostVariance" },
 ]
 
-export const RMImpactedDownloadArray = ["RawMaterial", "RMGrade", "RMSpec", "RawMaterialCode", "Category", "TechnologyName", "VendorName", "UOM", "ExistingBasicRate", "RevisedBasicRate", "ExistingScrapRate", "RevisedScrapRate", "EffectiveDate"]
+export const RMImpactedDownloadArray = ["RawMaterial", "RMGrade", "RMSpec", "RawMaterialCode", "Category", "UOM", "TechnologyName", "Vendor", "ExistingBasicRate", "RevisedBasicRate", "ExistingScrapRate", "RevisedScrapRate", "CurrentEffectiveDate"]
 
-export const OperationImpactDownloadArray = ["OperationName", "OperationCode", "UOM", "ExistingOperationRate", "RevisedOperationRate", "EffectiveDate",]
+export const OperationImpactDownloadArray = ["OperationName", "OperationCode", "UOM", "ExistingOperationRate", "RevisedOperationRate", "CurrentEffectiveDate",]
 
-export const BOPImpactDownloadArray = ["BoughtOutPartNumber", "BoughtOutPartName", "Category", "Vendor", "PartNumber", "ExistingBOPRate", "RevisedBOPRate", "ExistingPOPrice", "RevisedPOPrice", "EffectiveDate",]
+export const STOperationImpactDownloadArray = ["STOperationName", "OperationCode", "UOM", "ExistingOperationRate", "RevisedOperationRate", "CurrentEffectiveDate",]
 
-export const ERImpactDownloadArray = ["Currency", "CostingNumber", "PartNumber", "BankRate", "BankCommissionPercentage", "CustomRate", "CurrencyExchangeRate", "ExistingExchangeRate", "RevisedExchangeRate", "EffectiveDate",]
+export const BOPImpactDownloadArray = ["BoughtOutPartNumber", "BoughtOutPartName", "Category", "Vendor", "ExistingBOPRate", "RevisedBOPRate", "CurrentEffectiveDate",]
+
+export const ERImpactDownloadArray = ["Currency", "BankRate", "BankCommissionPercentage", "CustomRate", "CurrencyExchangeRate", "ExistingExchangeRate", "RevisedExchangeRate", "CurrentEffectiveDate",]
+
+export const MachineImpactDownloadArray = ['MachineName', 'MachineNumber', 'MachineTypeName', 'ProcessName', 'ProcessCode', 'UOM', 'Vendor', 'ExistingMachineRate', 'RevisedMachineRate', 'CurrentEffectiveDate']
 
 export const CPImpactDownloadArray = ["CostingNumber", "PartNumber", "ExistingNetCC", "RevisedNetCC", "ExistingPOPrice", "RevisedPOPrice", "EffectiveDate"]
 
@@ -6441,10 +6492,11 @@ export const tokenStatus = {
     Approved: 'The token is approved.',
     Rejected: 'The token is rejected.',
     Pushed: 'The token is pushed to SAP.',
-    Error: 'The token is approved but getting an error when pushed to SAP.',
+    Error: 'An error occurred while pushing the approved token to SAP.',
     History: 'The token is now old, it has new updated costing.',
     Linked: 'The token is linked to another token.',
-    Provisional: 'The token is provisional, will not go for approval.'
+    Provisional: 'The token is provisional, will not go for approval.',
+    POUpdated: 'PO price updated successfully on SAP.'
 };
 export const tokenStatusName = {
     PENDING_FOR_APPROVAL: 'PendingForApproval',
@@ -6456,7 +6508,8 @@ export const tokenStatusName = {
     ERROR: 'Error',
     HISTORY: 'History',
     LINKED: 'Linked',
-    PROVISIONAL: 'Provisional'
+    PROVISIONAL: 'Provisional',
+    POUPDATED: 'POUpdated'
 }
 export const typePercentageAndFixed = [
     { label: 'Fixed', value: 'Fixed' },

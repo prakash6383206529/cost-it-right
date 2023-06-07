@@ -151,8 +151,12 @@ function HotForging(props) {
     const BilletLength = checkForNull(getValues('BilletLength'))
     const InputLength = dataSend.InputLength
     const NoOfPartsPerLength = dataSend.NoOfPartsPerLength
-    const EndBitLength = BilletLength - (InputLength * NoOfPartsPerLength)
+    let EndBitLength = BilletLength - (InputLength * NoOfPartsPerLength)
     let obj = dataSend
+    if (EndBitLength < 0) {
+      Toaster.warning('End bit length cannot be negetive')
+      EndBitLength = 0
+    }
     obj.EndBitLength = EndBitLength
     setDataSend(obj)
     setValue('EndBitLength', checkForDecimalAndNull(EndBitLength, getConfigurationKey().NoOfDecimalForPrice))
@@ -688,7 +692,11 @@ function HotForging(props) {
                   handleChange={() => { }}
                   rules={{
                     required: false,
-                    validate: { postiveNumber, maxPercentValue }
+                    pattern: {
+                      value: /^\d{0,6}(\.\d{0,4})?$/i,
+                      message: 'Maximum length for integer is 6 and for decimal is 4',
+                    },
+                    validate: { maxPercentValue }
                   }}
                   defaultValue={''}
                   className=""
@@ -707,7 +715,11 @@ function HotForging(props) {
                   register={register}
                   rules={{
                     required: false,
-                    validate: { postiveNumber, maxPercentValue }
+                    pattern: {
+                      value: /^\d{0,6}(\.\d{0,4})?$/i,
+                      message: 'Maximum length for integer is 6 and for decimal is 4',
+                    },
+                    validate: { maxPercentValue }
                   }}
                   mandatory={false}
                   handleChange={() => { }}

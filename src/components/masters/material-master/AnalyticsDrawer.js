@@ -119,12 +119,12 @@ function AnalyticsDrawer(props) {
                 label: `Net Landed Rate (${uomValue})`,
                 fill: false,
                 lineTension: 0,
-                backgroundColor: secondryColor,
+                backgroundColor: primaryColor,
                 borderColor: primaryColor,
                 borderWidth: 2,
                 data: netLandedCostArray,
                 spanGaps: true,
-                pointBackgroundColor: secondryColor
+                pointBackgroundColor: primaryColor
             },
         ]
     }
@@ -312,7 +312,7 @@ function AnalyticsDrawer(props) {
                                 {showLineGraph &&
                                     <Row>
                                         <Col className='pr-0 d-flex align-items-center'>
-                                            <div className='mb-5 pb-5 mr-2' title={rowData?.Currency ? rowData?.Currency : getConfigurationKey().BaseCurrency}>{getCurrencySymbol(rowData?.Currency ? rowData?.Currency : getConfigurationKey().BaseCurrency)}</div>
+                                            <div className='mb-5 pb-5 mr-2' title={rowData?.Currency && props?.rowData?.Currency !== '-' ? rowData?.Currency : getConfigurationKey().BaseCurrency}>{getCurrencySymbol(rowData?.Currency ? rowData?.Currency : getConfigurationKey().BaseCurrency)}</div>
                                             <Line
                                                 data={state}
                                                 height={120}
@@ -328,7 +328,7 @@ function AnalyticsDrawer(props) {
                                                                         label += ': ';
                                                                     }
                                                                     if (context.parsed.y !== null) {
-                                                                        label += new Intl.NumberFormat('en-US', { style: 'currency', currency: (props?.rowData?.Currency) ? props.rowData.Currency : 'INR' }).format(context.parsed.y);
+                                                                        label += new Intl.NumberFormat('en-US', { style: 'currency', currency: (props?.rowData?.Currency && props?.rowData?.Currency !== '-') ? props.rowData.Currency : 'INR' }).format(context.parsed.y);
                                                                     }
                                                                     return label;
                                                                 }

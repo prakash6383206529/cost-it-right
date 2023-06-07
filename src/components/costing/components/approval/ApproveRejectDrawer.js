@@ -391,7 +391,7 @@ function ApproveRejectDrawer(props) {
         dispatch(rejectRequestByApprove(Data, res => {
           setIsDisable(false)
           if (res?.data?.Result) {
-            Toaster.success('Costing Rejected')
+            Toaster.success(`Costing ${props?.isRFQApproval ? 'Returned' : 'Rejected'}`)
             props.closeDrawer('', 'submit')
           }
           if (props?.isRFQApproval) {
@@ -663,7 +663,7 @@ function ApproveRejectDrawer(props) {
               <Row className="drawer-heading">
                 <Col>
                   <div className={'header-wrapper left'}>
-                    <h3>{`${isSimulation ? `${type === 'Sender' ? 'Send For Approval' : `${type} Simulation`}` : `${type} Costing`} `}</h3>
+                    <h3>{`${isSimulation ? `${type === 'Sender' ? 'Send For Approval' : `${type} Simulation`}` : `${props?.isRFQApproval ? 'Return' : type} Costing`} `}</h3>
                   </div>
 
                   <div
@@ -769,6 +769,36 @@ function ApproveRejectDrawer(props) {
                             errors={errors.reason}
                           />
                         </div>
+                        {/* <div className="input-group form-group col-md-12">
+                          <div className="inputbox date-section">
+                            <DatePickerHookForm
+                              name={`EffectiveDate`}
+                              label={'Effective Date'}
+                              selected={selectedDate}
+                              handleChange={(date) => {
+                                handleEffectiveDateChange(date);
+                              }}
+                              //defaultValue={data.effectiveDate != "" ? moment(data.effectiveDate).format('DD/MM/YYYY') : ""}
+                              rules={{ required: true }}
+                              Controller={Controller}
+                              control={control}
+                              register={register}
+                              showMonthDropdown
+                              showYearDropdown
+                              dateFormat="aa/MM/yyyy"
+                              //maxDate={new Date()}
+                              placeholderText="Select date"
+                              customClassName="withBorder"
+                              className="withBorder"
+                              autoComplete={"off"}
+                              disabledKeyboardNavigation
+                              onChangeRaw={(e) => e.preventDefault()}
+                              disabled={false}
+                              mandatory={true}
+                              errors={errors.EffectiveDate}
+                            />
+                          </div>
+                        </div> */}
                         {!isSimulationApprovalListing &&
                           <div className="input-group form-group col-md-12">
                             <label>Effective Date<span className="asterisk-required">*</span></label>
@@ -781,7 +811,6 @@ function ApproveRejectDrawer(props) {
                                 showYearDropdown
                                 dateFormat="dd/MM/yyyy"
                                 //maxDate={new Date()}
-                                dropdownMode="select"
                                 placeholderText="Select date"
                                 className="withBorder"
                                 autoComplete={"off"}

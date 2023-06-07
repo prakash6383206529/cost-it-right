@@ -153,7 +153,7 @@ class AddMachineRate extends Component {
     if (!editDetails.isViewMode) {
       this.props.getUOMSelectList(() => { })
       this.props.getProcessesSelectList(() => { })
-      if (initialConfiguration.IsMasterApprovalAppliedConfigure) {
+      if (initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true) {
         this.props.getUsersMasterLevelAPI(loggedInUserId(), MACHINE_MASTER_ID, (res) => {
           setTimeout(() => {
             this.commonFunction()
@@ -231,7 +231,7 @@ class AddMachineRate extends Component {
   componentDidUpdate(prevProps, prevState) {
     const { initialConfiguration } = this.props
     if (!this.props.data.isViewFlag) {
-      if ((prevState?.costingTypeId !== this.state.costingTypeId) && initialConfiguration.IsMasterApprovalAppliedConfigure) {
+      if ((prevState?.costingTypeId !== this.state.costingTypeId) && initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true) {
         this.commonFunction()
       }
     }
@@ -1936,7 +1936,6 @@ class AddMachineRate extends Component {
                               {!isViewMode && (CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true && !this.state.isFinalApprovar) && initialConfiguration.IsMasterApprovalAppliedConfigure ?
                                 <button type="submit"
                                   class="user-btn approval-btn save-btn mr5"
-
                                   disabled={isViewMode || setDisable || noApprovalCycle}
                                 >
                                   <div className="send-for-approval"></div>

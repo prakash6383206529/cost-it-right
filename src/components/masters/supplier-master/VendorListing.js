@@ -481,9 +481,11 @@ class VendorListing extends Component {
         this.setState({ isBulkUpload: true })
     }
 
-    closeBulkUploadDrawer = () => {
+    closeBulkUploadDrawer = (event, type) => {
         this.setState({ isBulkUpload: false }, () => {
-            this.getTableListData(this.state.currentRowIndex, '', "", "", 100, this.state.floatingFilterData, true)
+            if (type !== 'cancel') {
+                this.getTableListData(this.state.currentRowIndex, '', "", "", 100, this.state.floatingFilterData, true)
+            }
         })
     }
 
@@ -540,7 +542,7 @@ class VendorListing extends Component {
 
     onGridReady = (params) => {
         this.gridApi = params.api;
-        window.screen.width >= 1367 && params.api.sizeColumnsToFit();
+        window.screen.width > 1440 && params.api.sizeColumnsToFit();
         this.setState({ gridApi: params.api, gridColumnApi: params.columnApi })
         params.api.paginationGoToPage(0);
     };

@@ -13,7 +13,7 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '.././common/PopupMsgWrapper';
 import { PaginationWrapper } from '.././common/commonPagination'
-import { sendReminderForQuotation, getQuotationDetailsList, getMultipleCostingDetails } from './actions/rfq';
+import { sendReminderForQuotation, getQuotationDetailsList, getMultipleCostingDetails, setQuotationIdForRFQ, checkExistCosting } from './actions/rfq';
 import AddRfq from './AddRfq';
 import SendForApproval from '../costing/components/approval/SendForApproval';
 import { getSingleCostingDetails, setCostingApprovalData, setCostingViewData, storePartNumber } from '../costing/actions/Costing';
@@ -58,6 +58,10 @@ function RfqListing(props) {
     const { data } = props
     const [isOpen, setIsOpen] = useState(false)
     const [isReportLoader, setIsReportLoader] = useState(false)
+    const [selectedCostingsToShow, setSelectedCostingsToShow] = useState([])
+    const [multipleCostingDetails, setMultipleCostingDetails] = useState([])
+    const [uniqueShouldCostingId, setUniqueShouldCostingId] = useState([])
+    const [selectedRowIndex, setSelectedRowIndex] = useState('')
 
     const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
 
@@ -68,9 +72,15 @@ function RfqListing(props) {
     }, [])
 
     useEffect(() => {
+        if (rowData[0]?.QuotationId) {
+            dispatch(setQuotationIdForRFQ(rowData[0]?.QuotationId))
+        }
+    }, [rowData[0]?.QuotationId])
+
+    useEffect(() => {
 
         if (selectedCostings?.length === selectedRows?.length && selectedRows?.length > 0) {
-            dispatch(setCostingViewData(selectedCostings))
+            setSelectedCostingsToShow(selectedCostings)
             setaddComparisonToggle(true)
         }
 
@@ -99,6 +109,16 @@ function RfqListing(props) {
                 setloader(false)
                 return false;
             }
+            let uniqueShouldCostId = [];
+            res?.data?.DataList && res?.data?.DataList.map(item => {
+                let unique = _.uniq(_.map(item.ShouldCostings, 'CostingId'))
+                uniqueShouldCostId.push(...unique)
+            })
+            setUniqueShouldCostingId(uniqueShouldCostId)
+
+            let requestObject = {}
+            requestObject.PartIdList = _.uniq(_.map(res?.data?.DataList, 'PartId'))
+            requestObject.PlantId = res?.data?.DataList[0]?.PlantId
             let grouped_data = _.groupBy(res?.data?.DataList, 'PartNumber')                           // GROUPING OF THE ROWS FOR SEPERATE PARTS
             let data = []
             for (let x in grouped_data) {
@@ -394,8 +414,15 @@ function RfqListing(props) {
         setShowPopup(false)
     }
 
-    const closeUserDetails = () => {
+    const closeUserDetails = (e = '', type) => {
         setIsOpen(false)
+        if (type !== false) {
+            setloader(true)
+            setTimeout(() => {
+                dispatch(setCostingViewData([...multipleCostingDetails]))
+                setloader(false)
+            }, 200);
+        }
     }
 
     const viewCostingDetail = (rowData) => {
@@ -456,18 +483,17 @@ function RfqListing(props) {
     };
 
 
-    const closeDrawer = () => {
+    const closeDrawer = (e = '', type) => {
         setAddRfqData({})
         setAddRfq(false)
         setRejectDrawer(false)
-        getDataList()
-
+        if (type !== 'cancel') {
+            getDataList()
+        }
     }
 
-    const closeRemarkDrawer = () => {
-
+    const closeRemarkDrawer = (type) => {
         setRemarkHistoryDrawer(false)
-        getDataList()
     }
 
 
@@ -512,34 +538,85 @@ function RfqListing(props) {
     }
 
 
+    // Function that takes an array of objects as an input and returns the same array with an additional object representing the "best cost"
+    const bestCostObjectFunction = (arrayList) => {
+        // Create a copy of the input array to prevent mutation
+        let finalArrayList = [...arrayList];
 
+        // Check if the input array is empty or null
+        if (!finalArrayList || finalArrayList.length === 0) {
+            // If so, return an empty array
+            return [];
+        } else {
+            // Define an array of keys to check when finding the "best cost"
+            const keysToCheck = ["netRM", "netBOP", "pCost", "oCost", "sTreatment", "nPackagingAndFreight", "totalToolCost", "nsTreamnt", "tCost", "nConvCost", "nTotalRMBOPCC", "netSurfaceTreatmentCost", "nOverheadProfit", "nPoPriceCurrency", "nPOPrice", "nPOPriceWithCurrency"];
+            // const keysToCheck = ["nPOPriceWithCurrency"];
+
+            // Create a new object to represent the "best cost" and set it to the first object in the input array
+            let minObject = { ...finalArrayList[0] };
+
+            // Loop through each object in the input array
+            for (let i = 0; i < finalArrayList?.length; i++) {
+                // Get the current object
+                let currentObject = finalArrayList[i];
+
+                // Loop through each key in the current object
+                for (let key in currentObject) {
+                    // Check if the key is in the keysToCheck array
+                    if (keysToCheck?.includes(key)) {
+                        // Check if the current value and the minimum value for this key are both numbers
+                        if (isNumber(currentObject[key]) && isNumber(minObject[key])) {
+                            // If so, check if the current value is smaller than the minimum value
+                            if (checkForNull(currentObject[key]) < checkForNull(minObject[key])) {
+                                // If so, set the current value as the minimum value
+                                minObject[key] = currentObject[key];
+                            }
+                            // If the current value is an array
+                        } else if (Array.isArray(currentObject[key])) {
+                            // Set the minimum value for this key to an empty array
+                            minObject[key] = [];
+                        }
+                    } else {
+                        // If the key is not in the keysToCheck array, set the minimum value for this key to a dash
+                        minObject[key] = "-";
+                        // delete minObject[key];
+                    }
+                }
+                // Set the attachment and bestCost properties of the minimum object
+                minObject.attachment = []
+                minObject.bestCost = true
+            }
+            // Add the minimum object to the end of the array
+            finalArrayList.push(minObject);
+        }
+
+        // Return the modified array
+        return finalArrayList;
+    }
 
     const addComparisonDrawerToggle = () => {
-
         let temp = []
         let tempObj = {}
-
         const isApproval = selectedRows.filter(item => item.ShowApprovalButton)
         setDisableApproveRejectButton(isApproval.length > 0)
-
-        dispatch(getMultipleCostingDetails(selectedRows, (res) => {
-
-
+        let costingIdList = [...selectedRows[0]?.ShouldCostings, ...selectedRows]
+        setloader(true)
+        dispatch(getMultipleCostingDetails(costingIdList, (res) => {
             if (res) {
                 res.map((item) => {
                     tempObj = formViewData(item?.data?.Data)
-
                     temp.push(tempObj[0])
                     return null
                 })
-
-                dispatch(setCostingViewData(temp))
+                let dat = [...temp]
+                let tempArrToSend = _.uniqBy(dat, 'costingId')
+                let arr = bestCostObjectFunction(tempArrToSend)
+                setMultipleCostingDetails([...arr])
+                dispatch(setCostingViewData([...arr]))
                 setaddComparisonToggle(true)
+                setloader(false)
             }
-        },
-        ))
-
-
+        }))
     }
 
 
@@ -552,7 +629,11 @@ function RfqListing(props) {
 
     }
 
-    const onRowSelect = () => {
+    const onRowSelect = (event) => {
+        if (event.node.isSelected()) {
+            const selectedRowIndex = event.node.rowIndex;
+            setSelectedRowIndex(selectedRowIndex)
+        }
         const selectedRows = gridApi?.getSelectedRows()
         let partNumber = []
 
@@ -598,16 +679,26 @@ function RfqListing(props) {
         return `${props?.data?.LastRow ? `border-color` : ''} ${props?.data?.RowMargin} colorWhite`          // ADD SCSS CLASSES FOR ROW MERGING
     }
 
+    const partNumberFormatter = (props) => {
+        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        if (props?.rowIndex === selectedRowIndex) {
+            props.node.setSelected(true)
+        }
+        return cellValue ? cellValue : ''
+    }
+
     const frameworkComponents = {
         totalValueRenderer: buttonFormatter,
         linkableFormatter: linkableFormatter,
-        dateFormatter: dateFormatter
+        dateFormatter: dateFormatter,
+        partNumberFormatter: partNumberFormatter
     }
 
-    const closeSendForApproval = () => {
-
+    const closeSendForApproval = (e = '', type) => {
         setSendForApproval(false)
-        getDataList()
+        if (type !== "Cancel") {
+            getDataList()
+        }
     }
     const getRowStyle = () => {
         return {
@@ -620,6 +711,12 @@ function RfqListing(props) {
 
         }
     };
+
+    const hideSummaryHandler = () => {
+        setaddComparisonToggle(false)
+        setSelectedRowIndex('')
+        gridApi.deselectAll()
+    }
 
     return (
         <>
@@ -635,7 +732,7 @@ function RfqListing(props) {
                                 <div className='d-flex  align-items-center'><div className='w-min-fit'>Raised By:</div>
                                     <input
                                         type="text"
-                                        className="form-control mx-2"
+                                        className="form-control mx-2 defualt-input-value"
                                         value={data.RaisedBy}
                                         style={{ width: (data.RaisedBy.length * 9 + 10) + 'px' }}
                                         disabled={true}
@@ -643,7 +740,7 @@ function RfqListing(props) {
                                 <div className='d-flex align-items-center pr-0'><div className='w-min-fit'>Raised On:</div>
                                     <input
                                         type="text"
-                                        className="form-control ml-2"
+                                        className="form-control ml-2 defualt-input-value"
                                         disabled={true}
                                         style={{ width: '100px' }}
                                         value={data.RaisedOn ? DayTime(data.RaisedOn).format('DD/MM/YYYY') : '-'}
@@ -694,28 +791,29 @@ function RfqListing(props) {
                                                 imagClass: 'imagClass'
                                             }}
                                             frameworkComponents={frameworkComponents}
-                                            rowSelection={'multiple'}
+                                            rowSelection={'single'}
                                             getRowStyle={getRowStyle}
                                             onRowSelected={onRowSelect}
                                             isRowSelectable={isRowSelectable}
                                             suppressRowClickSelection={true}
                                             onFirstDataRendered={onFirstDataRendered}
+                                            enableBrowserTooltips={true}
                                         >
-                                            <AgGridColumn cellClass={cellClass} field="PartNo" headerName='Part No' ></AgGridColumn>
+                                            <AgGridColumn cellClass={cellClass} field="PartNo" tooltipField="PartNo" headerName='Part No' cellRenderer={'partNumberFormatter'}></AgGridColumn>
                                             <AgGridColumn field="TechnologyName" headerName='Technology'></AgGridColumn>
-                                            <AgGridColumn field="VendorName" headerName='Vendor (Code)'></AgGridColumn>
-                                            <AgGridColumn field="PlantName" headerName='Plant (Code)'></AgGridColumn>
+                                            <AgGridColumn field="VendorName" tooltipField="VendorName" headerName='Vendor (Code)'></AgGridColumn>
+                                            <AgGridColumn field="PlantName" tooltipField="PlantName" headerName='Plant (Code)'></AgGridColumn>
                                             {/* <AgGridColumn field="PartNumber" headerName="Attachment "></AgGridColumn> */}
-                                            <AgGridColumn field="Remark" headerName='Notes' cellRenderer={hyphenFormatter}></AgGridColumn>
+                                            <AgGridColumn field="Remark" tooltipField="Remark" headerName='Notes' cellRenderer={hyphenFormatter}></AgGridColumn>
                                             <AgGridColumn field="VisibilityMode" headerName='Visibility Mode' cellRenderer={hyphenFormatter}></AgGridColumn>
-                                            <AgGridColumn field="VisibilityDate" headerName='Visibility Date' cellRenderer={hyphenFormatter}></AgGridColumn>
+                                            <AgGridColumn field="VisibilityDate" headerName='Visibility Date' cellRenderer={dateFormatter}></AgGridColumn>
                                             <AgGridColumn field="VisibilityDuration" headerName='Visibility Duration' cellRenderer={hyphenFormatter}></AgGridColumn>
                                             <AgGridColumn field="CostingNumber" headerName=' Costing Number' cellRenderer={hyphenFormatter}></AgGridColumn>
                                             <AgGridColumn field="CostingId" headerName='Costing Id ' hide={true}></AgGridColumn>
                                             <AgGridColumn field="NetPOPrice" headerName=" Net PO Price" cellRenderer={hyphenFormatter}></AgGridColumn>
                                             <AgGridColumn field="SubmissionDate" headerName='Submission Date' cellRenderer={dateFormatter}></AgGridColumn>
                                             <AgGridColumn field="EffectiveDate" headerName='Effective Date' cellRenderer={dateFormatter}></AgGridColumn>
-                                            {rowData[0]?.IsVisibiltyConditionMet === true && <AgGridColumn width={200} field="QuotationId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
+                                            {rowData[0]?.IsVisibiltyConditionMet === true && <AgGridColumn width={window.screen.width >= 1920 ? 280 : 220} field="QuotationId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
 
                                         </AgGridReact>
                                         {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} globalTake={10} />}
@@ -738,6 +836,7 @@ function RfqListing(props) {
                             isRfq={true}
                             technologyId={technologyId}
                             cancel={cancel}
+                            selectedRows={selectedRows}
                         />
                     )
                 }
@@ -783,10 +882,7 @@ function RfqListing(props) {
                         isEditFlag={isEdit}
                         closeDrawer={closeDrawer}
                     />
-
                 }
-
-
 
                 {
                     <div id='rfq-compare-drawer'>
@@ -798,7 +894,11 @@ function RfqListing(props) {
                                 approvalMode={true}
                                 // isApproval={approvalData.LastCostingId !== EMPTY_GUID ? true : false}
                                 simulationMode={false}
-                                costingIdExist={true} />
+                                uniqueShouldCostingId={uniqueShouldCostingId}
+                                costingIdExist={true}
+                                bestCostObjectFunction={bestCostObjectFunction}
+                                crossButton={hideSummaryHandler}
+                            />
                         )}
                     </div>
                 }

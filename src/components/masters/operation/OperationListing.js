@@ -570,10 +570,11 @@ class OperationListing extends Component {
         this.setState({ isBulkUpload: true })
     }
 
-    closeBulkUploadDrawer = () => {
-        this.setState({ isBulkUpload: false }, () => {
+    closeBulkUploadDrawer = (event, type) => {
+        this.setState({ isBulkUpload: false })
+        if (type !== 'cancel') {
             this.resetState()
-        })
+        }
     }
 
     /**
@@ -632,6 +633,8 @@ class OperationListing extends Component {
                 item.Plants = ' '
             } else if (item.VendorName === '-') {
                 item.VendorName = ' '
+            } else if (item?.EffectiveDate?.includes('T')) {
+                item.EffectiveDate = DayTime(item.EffectiveDate).format('DD/MM/YYYY')
             }
             return item
         })

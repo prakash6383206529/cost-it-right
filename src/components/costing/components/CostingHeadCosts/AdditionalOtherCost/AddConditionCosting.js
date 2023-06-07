@@ -10,6 +10,7 @@ import { number, checkWhiteSpaces, percentageLimitValidation, decimalNumberLimit
 import ConditionCosting from './ConditionCosting'
 import { getCostingCondition } from '../../../../../actions/Common'
 import Toaster from '../../../../common/Toaster'
+import TooltipCustom from '../../../../common/Tooltip'
 
 function AddConditionCosting(props) {
     const [tableData, setTableData] = useState(props?.tableData)
@@ -21,6 +22,8 @@ function AddConditionCosting(props) {
     const [conditionDropdown, setConditionDropdown] = useState([])
     const [type, setType] = useState('')
     const [totalCost, setTotalCost] = useState('')
+    const [percentageType, setPercentageType] = useState('')
+
 
     const { register, control, setValue, getValues, formState: { errors }, } = useForm({
         mode: 'onChange',
@@ -50,18 +53,25 @@ function AddConditionCosting(props) {
         }
 
     }, [])
-
+    const onConditionChange = (e) => {
+        setValue('Type', '')
+        setValue('Percentage', '')
+        setValue('Cost', '')
+    }
 
     const onTypeChange = (e) => {
+        setValue('Cost', '')
         if (e?.label) {
             setType(e?.label)
             if (e?.label === 'Fixed') {
                 setDisableTotalCost(false)
                 setDisableAllFields(true)
+                setPercentageType(false)
                 setValue('Percentage', '')
             } else {
                 setDisableAllFields(false)
                 setDisableTotalCost(true)
+                setPercentageType(true)
                 setValue('Cost', '')
                 setTotalCost('')
             }
@@ -156,6 +166,7 @@ function AddConditionCosting(props) {
         setDisableAllFields(true)
         setDisableTotalCost(true)
         setTotalCost('')
+        setPercentageType(false)
     }
 
     // This function takes in two parameters - the index of the data being edited or deleted, and the operation to perform (either 'delete' or 'edit').
@@ -191,9 +202,11 @@ function AddConditionCosting(props) {
             if (Data.ConditionType === 'Fixed') {
                 setDisableTotalCost(false)
                 setDisableAllFields(true)
+                setPercentageType(false)
             } else {
                 setDisableAllFields(false)
                 setDisableTotalCost(true)
+                setPercentageType(true)
             }
         }
     }
@@ -232,11 +245,11 @@ function AddConditionCosting(props) {
                                             register={register}
                                             mandatory={true}
                                             options={conditionDropdown}
-                                            handleChange={() => { }}
+                                            handleChange={onConditionChange}
                                             defaultValue={''}
                                             className=""
                                             customClassName={'withBorder'}
-                                            errors={errors.LossOfType}
+                                            errors={errors.Condition}
                                             disabled={props.CostingViewMode}
                                         />
                                     </Col>
@@ -285,9 +298,11 @@ function AddConditionCosting(props) {
                                         />
                                     </Col>
                                     <Col md="2" className='px-1'>
+                                        {percentageType && <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'cost-by-percent'} tooltipText={'Cost = (Percentage / 100) * Basic Rate'} />}
                                         <NumberFieldHookForm
                                             label={`Cost`}
                                             name={'Cost'}
+                                            id={'cost-by-percent'}
                                             Controller={Controller}
                                             control={control}
                                             register={register}

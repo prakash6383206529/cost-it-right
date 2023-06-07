@@ -295,7 +295,8 @@ class AddVendorDrawer extends Component {
         this.toggleDrawer('', formData, type)
     }
     cancelHandler = () => {
-        this.setState({ showPopup: true })
+        // this.setState({ showPopup: true })
+        this.cancel('')
     }
     onPopupConfirm = () => {
         this.cancel('submit')

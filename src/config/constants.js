@@ -22,7 +22,6 @@ const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
 // const BASE_URL = `http://10.10.0.43/RohitCIR/api/v1`;
 // const BASE_URL = `https://demov3api.costitright.com/api/v1`;
 // const BASE_URL = `http://10.10.8.117/CIR/api/v1`;
-// const BASE_URL = `http://10.10.1.100:1002/api/v1`;
 // const BASE_URL = `https://upsapi.costitright.com/api/v1`; 
 //FILE URL
 export const FILE_URL = `${process.env.REACT_APP_FILE_URL}`;
@@ -597,6 +596,9 @@ export const API = {
   getRawMaterialCalculationForRubber: `${BASE_URL}/costing/get-raw-material-rubber-calculation-details`,
   saveRawMaterialCalculationForRubber: `${BASE_URL}/costing/save-raw-material-rubber-calculation-details`,
 
+  // YOY
+  getYOYCostList: `${BASE_URL}/rfq-costing/rfq-get-yoy-details`,
+  saveYOYCostList: `${BASE_URL}/rfq-costing/rfq-save-yoy-details`,
 
   // PROCESS COST CALCULATION
   getProcessMachiningCalculation: `${BASE_URL}/costing/get-process-machining-calculation-details`,
@@ -776,7 +778,7 @@ export const API = {
   getLeftMenu: `${BASE_URL}/app-privilege-permission/get-left-menu-module-by-user-and-module-click`,
   checkPageAuthorization: `${BASE_URL}/app-privilege-permission/check-authorization-for-access-page-url`,
   getModuleIdByPathName: `${BASE_URL}/app-privilege-permission/get-module-by-page-url`,
-  getTopAndLeftMenuData: `${BASE_URL}//app-privilege-permission/get-user-top-menu-module-page-with-action-by-user`,
+  getTopAndLeftMenuData: `${BASE_URL}/app-privilege-permission/get-user-top-menu-module-page-with-action-by-user`,
 
 
 
@@ -905,6 +907,7 @@ export const API = {
   getMasterBudget: `${BASE_URL}/master-budgeting/get-by-id`,
   updateBudget: `${BASE_URL}/master-budgeting/update`,
   bulkUploadBudgetMaster: `${BASE_URL}/master-budgeting/bulk-upload-for-budgeting`,
+  masterApprovalRequestBySenderBudget: `${BASE_URL}/master-budgeting/master-send-to-approver-by-sender`,
 
   //CLIENT MASTER
   createClient: `${BASE_URL}/client/create-client`,
@@ -1021,16 +1024,26 @@ export const API = {
 
 
   //RFQ
-  getQuotationList: `${BASE_URL}/rfq-quotation/get-quotation-list`,
-  createRfqQuotation: `${BASE_URL}/rfq-quotation/create`,
   getCostingBenchMarkOperationReport: `${BASE_URL}/reports/get-operation-cost-benchmarking-report`,
   getSupplierContributionData: `${BASE_URL}/reports/get-supplier-contribution-report`,
   getCostingBenchMarkMachineReport: `${BASE_URL}/reports/get-process-cost-benchmarking-report`,
   getSalePurchaseProvisionReport: `${BASE_URL}/reports/get-sale-purchase-provision-report`,
   getPoamSummaryReport: `${BASE_URL}/reports/get-poam-summary-report`,
   getPoamImpactReport: `${BASE_URL}/reports/get-poam-impact-report`,
-  getAllNfrList: `${BASE_URL}/reports/get-all-nfr-list`,
-  getNfrPartDetails: `${BASE_URL}/reports/get-nfr-part-details`,
+  getAllNfrList: `${BASE_URL}/nfr/get-all-nfr-list`,
+  getNfrPartDetails: `${BASE_URL}/nfr/get-nfr-part-details`,
+  getRMCostMovement: `${BASE_URL}/reports/get-raw-material-cost-movement`,
+  getBOPCostMovement: `${BASE_URL}/reports/get-bought-out-part-cost-movement`,
+  getOperationMovement: `${BASE_URL}/reports/get-operation-cost-movement`,
+  getMachineProcessMovement: `${BASE_URL}/reports/get-machine-process-cost-movement`,
+  saveNFRGroupDetails: `${BASE_URL}/nfr/save-nfr-group-details`,
+  getNFRPartWiseGroupDetail: `${BASE_URL}/nfr/get-nfr-part-wise-group-detail`,
+  nfrSendToApproverBySender: `${BASE_URL}/nfr/nfr-send-to-approver-by-sender`,
+  getNFRApprovals: `${BASE_URL}/nfr/get-nfr-approvals`,
+  getNFRApprovalSummary: `${BASE_URL}/nfr/get-nfr-approval-summary`,
+  approvedCostingByApprover: `${BASE_URL}/nfr/approved-nfr-by-approver`,
+  getRawMaterialByNFRPart: `${BASE_URL}/nfr/get-raw-material-by-nfr-part`,
+
 
   //SUB ASSEMBLY
   getSubAssemblyAPI: `${BASE_URL}/sub-assembly/get-sub-assembly`,
@@ -1042,6 +1055,10 @@ export const API = {
   getSettledCostingDetails: `${BASE_URL}/costing/get-settled-costing-details`,
   updateMultiTechnologyTopAndWorkingRowCalculation: `${BASE_URL}/costing/update-multi-technology-top-and-working-row-calculation`,
 
+  //RFQ
+  getQuotationList: `${BASE_URL}/rfq-quotation/get-quotation-list`,
+  getQuotationDetailsByVendor: `${BASE_URL}/rfq-quotation/get-quotation-details-by-vendor`,
+  createRfqQuotation: `${BASE_URL}/rfq-quotation/create`,
   updateRfqQuotation: `${BASE_URL}/rfq-quotation/update`,
   getQuotationById: `${BASE_URL}/rfq-quotation/get-quotation-by-id`,
   cancelRfqQuotation: `${BASE_URL}/rfq-quotation/cancel-quotation`,
@@ -1051,6 +1068,7 @@ export const API = {
   getQuotationDetailsList: `${BASE_URL}/rfq-quotation/get-quotation-details-list`,
   getCommunicationHistory: `${BASE_URL}/rfq-quotation/get-communication-history`,
   checkExistCosting: `${BASE_URL}/rfq-quotation/rfq-check-exist-costing`,
+  rfqSaveBestCosting: `${BASE_URL}/rfq-costing/rfq-save-best-costing`,
 
 }
 
@@ -1511,8 +1529,13 @@ export const SET_SURFACE_COST_FOR_REJECTION_DATA = 'SET_SURFACE_COST_FOR_REJECTI
 export const SET_OVERHEAD_PROFIT_ERRORS = 'SET_OVERHEAD_PROFIT_ERRORS'
 export const SET_TOOLS_ERRORS = 'SET_TOOLS_ERRORS'
 export const SET_DISCOUNT_ERRORS = 'SET_DISCOUNT_ERRORS'
+
+// YOY
+export const SET_YOY_COST_GRID = 'SET_YOY_COST_GRID'
 export const SET_TOOL_COST_FOR_OVERHEAD_PROFIT = 'SET_TOOL_COST_FOR_OVERHEAD_PROFIT'
 export const SET_NPV_DATA = 'SET_NPV_DATA'
+export const SET_YOY_COST_GRID_FOR_SAVE = 'SET_YOY_COST_GRID_FOR_SAVE'
+export const SET_QUOTATION_ID_FOR_RFQ = 'SET_QUOTATION_ID_FOR_RFQ'
 
 //WEIGHT CALCULATION COSTING RM DRAWER
 export const GET_RAW_MATERIAL_CALCI_INFO = 'GET_RAW_MATERIAL_CALCI_INFO'
@@ -1542,7 +1565,7 @@ export const GET_SIMULATION_LEVEL_BY_TECHNOLOGY = 'GET_SIMULATION_LEVEL_BY_TECHN
 export const GET_MASTER_LEVEL_BY_MASTERID = 'GET_MASTER_LEVEL_BY_MASTERID'
 export const COSTINGS_APPROVAL_DASHBOARD = 'COSTINGS_APPROVAL_DASHBOARD'
 export const AMENDMENTS_APPROVAL_DASHBOARD = 'AMENDMENTS_APPROVAL_DASHBOARD'
-
+export const GRANT_USER_WISE_DATA = 'GRANT_USER_WISE_DATA'
 //ROLE
 export const GET_ROLE_SUCCESS = 'GET_ROLE_SUCCESS'
 export const GET_UNIT_ROLE_DATA_SUCCESS = 'GET_UNIT_ROLE_DATA_SUCCESS'
@@ -1713,6 +1736,11 @@ export const GET_DATA_FROM_REPORT = 'GET_DATA_FROM_REPORT'
 export const GET_QUOTATION_BY_ID = 'GET_QUOTATION_BY_ID'
 export const GET_QUOTATION_LIST = 'GET_QUOTATION_LIST'
 export const CHECK_RFQ_BULK_UPLOAD = 'CHECK_RFQ_BULK_UPLOAD'
+export const SELECTED_ROW_ARRAY = 'SELECTED_ROW_ARRAY'
+export const GET_NFR_SELECT_LIST = 'GET_NFR_SELECT_LIST'
+
+// NFR
+export const NFR_DETAILS_FOR_DISCOUNT = 'NFR_DETAILS_FOR_DISCOUNT'
 
 //COSTING STATUS
 export const GET_COSTING_STATUS = 'GET_COSTING_STATUS'
@@ -1736,6 +1764,8 @@ export const UNDER_REVISION = 'UnderRevision'
 export const RECEIVED = 'Received'
 export const SUBMITTED = 'Submitted'
 export const SENT = 'Sent'
+export const DRAFTID = 1
+export const REJECTEDID = 4
 
 // MASTER APPROVAL STATUS ID
 export const APPROVED_STATUS = '3,5'
@@ -1856,6 +1886,7 @@ export const VBC = 'VBC'
 export const NCC = 'NCC'
 export const WAC = 'WAC'
 export const CBC = 'CBC'
+export const NFR = 'NFR'
 //PART TYPE'S USED AT ASSEMBLY CHILD DRAWER
 export const ASSEMBLYNAME = 'Assembly'
 export const COMPONENT_PART = 'Component'
@@ -1874,7 +1905,7 @@ export const SIMULATION_PATH = '/simulation'
 export const SIMULATION_HISTORY_PATH = '/simulation-history'
 export const USER_PATH = '/users'
 export const RFQ_LISTING = '/rfq-listing'
-export const NFR_LISTING = '/nfr-listing'
+export const NFR_LISTING = '/nfr'
 
 
 export const EMPTY_GUID = "00000000-0000-0000-0000-000000000000"
@@ -1957,6 +1988,9 @@ export const VIEW_COSTING_DATA = {
   anyOtherCostApplicablity: 'Any Other Cost Applicability',
   anyOtherCostPercent: 'Any Other Cost Value',
   anyOtherCost: 'Any Other Cost',
+  BasicRate: 'Basic Rate',
+  npvCost: 'NPV Cost',
+  conditionCost: 'Costing Condition',
   nPOPrice: 'Net PO Price (INR)',
   currencyTitle: 'Currency',
   currencyRate: 'Currency Rate',
@@ -1968,6 +2002,293 @@ export const VIEW_COSTING_DATA = {
   // attachment: 'Attachment',
   // approvalButton: '',
 }
+
+
+export const VIEW_COSTING_DATA_TEMPLATE = [
+  {
+    label: 'VBC/ZBC/NCC/CBC',
+    value: 'costingHeadCheck'
+  },
+  {
+    label: 'Costing Version',
+    value: 'costingVersion'
+  },
+  {
+    label: 'PO Price (Effective from)',
+    value: 'PoPriceWithDate'
+  },
+  {
+    label: 'Part Number',
+    value: 'partNumber'
+  },
+  {
+    label: 'Part Name',
+    value: 'partName'
+  },
+  {
+    label: 'Revision Number',
+    value: 'RevisionNumber'
+  },
+  {
+    label: 'Vendor (Code)',
+    value: 'vendorExcel'
+  },
+  {
+    label: 'Customer (Code)',
+    value: 'customer'
+  },
+  {
+    label: 'Plant (Code)',
+    value: 'plantExcel'
+  },
+  {
+    label: 'Status',
+    value: 'status'
+  },
+  {
+    label: 'RM-Grade',
+    value: 'rm'
+  },
+  {
+    label: 'RM Rate',
+    value: 'rmRate'
+  },
+  {
+    label: 'Scrap Rate',
+    value: 'scrapRate'
+  },
+  {
+    label: 'Gross Weight',
+    value: 'gWeight'
+  },
+  {
+    label: 'Finish Weight',
+    value: 'fWeight'
+  },
+  {
+    label: 'Burning Loss Weight',
+    value: 'BurningLossWeight'
+  },
+  {
+    label: 'Scrap Weight',
+    value: 'ScrapWeight'
+  },
+  {
+    label: 'Net RM Cost',
+    value: 'netRM'
+  },
+  {
+    label: 'Net BOP Cost',
+    value: 'netBOP'
+  },
+  {
+    label: 'Part Cost/Pc',
+    value: 'netChildPartsCost'
+  },
+  {
+    label: 'BOP Cost/Assembly',
+    value: 'netBoughtOutPartCost'
+  },
+  {
+    label: 'Process Cost/Assembly',
+    value: 'netProcessCost'
+  },
+  {
+    label: 'Operation Cost/Assembly',
+    value: 'netOperationCost'
+  },
+  {
+    label: 'Cost/Assembly',
+    value: 'nTotalRMBOPCC'
+  },
+  {
+    label: 'Process Cost',
+    value: 'pCost'
+  },
+  {
+    label: 'Operation Cost',
+    value: 'oCost'
+  },
+  {
+    label: 'Other Operation Cost',
+    value: 'netOtherOperationCost'
+  },
+  {
+    label: 'Net Conversion Cost',
+    value: 'nConvCost'
+  },
+  {
+    label: 'Surface Treatment',
+    value: 'sTreatment'
+  },
+  {
+    label: 'Extra Surface Treatment Cost',
+    value: 'tCost'
+  },
+  {
+    label: 'Net Surface Treatment Cost',
+    value: 'netSurfaceTreatmentCost'
+  },
+  {
+    label: 'Model Type For Overhead/Profit',
+    value: 'modelType'
+  },
+  {
+    label: 'Overhead Applicability',
+    value: 'overHeadApplicablity'
+  },
+  {
+    label: 'Overhead Value',
+    value: 'overHeadApplicablityValue'
+  },
+  {
+    label: 'Profit Applicability',
+    value: 'ProfitApplicablity'
+  },
+  {
+    label: 'Profit Value',
+    value: 'ProfitApplicablityValue'
+
+
+  },
+  {
+    label: 'Rejection Applicability',
+    value: 'rejectionApplicablity'
+  },
+  {
+    label: 'Rejection Value',
+    value: 'rejectionApplicablityValue'
+  },
+  {
+    label: 'ICC Applicability',
+    value: 'iccApplicablity'
+  },
+  {
+    label: 'ICC Value',
+    value: 'iccApplicablityValue'
+  },
+  {
+    label: 'Payment Applicability',
+    value: 'paymentApplicablity'
+  },
+  {
+    label: 'Payment Value',
+    value: 'paymentcApplicablityValue'
+  },
+  {
+    label: 'Net Overhead Profits',
+    value: 'nOverheadProfit'
+  },
+  {
+    label: 'Packaging Cost',
+    value: 'packagingCost'
+  },
+  {
+    label: 'Freight',
+    value: 'freight'
+  },
+  {
+    label: 'Net Packaging and Freight',
+    value: 'nPackagingAndFreight'
+  },
+  {
+    label: 'Tool Maintenance Cost Applicability',
+    value: 'toolMaintenanceCostApplicablity'
+  },
+  {
+    label: 'Tool Maintenance Cost Value',
+    value: 'toolMaintenanceCost'
+  },
+  {
+    label: 'Tool Price',
+    value: 'toolPrice'
+  },
+  {
+    label: 'Amortization Quantity',
+    value: 'amortizationQty'
+  },
+  {
+    label: 'Tool Amortization Cost',
+    value: 'toolAmortizationCost'
+  },
+  {
+    label: 'Net Tool Cost',
+    value: 'totalToolCost'
+  },
+  {
+    label: 'Hundi/Discount Type',
+    value: 'otherDiscountType'
+  },
+  {
+    label: 'Hundi/Discount Applicability',
+    value: 'otherDiscountApplicablity'
+  },
+  {
+    label: 'Hundi/Discount Value',
+    value: 'otherDiscountValuePercent'
+  },
+  {
+    label: 'Hundi/Discount Cost',
+    value: 'otherDiscountCost'
+  },
+  {
+    label: 'Any Other Cost Type',
+    value: 'anyOtherCostType'
+  },
+  {
+    label: 'Any Other Cost Applicability',
+    value: 'anyOtherCostApplicablity'
+  },
+  {
+    label: 'Any Other Cost Value',
+    value: 'anyOtherCostPercent'
+  },
+  {
+    label: 'Any Other Cost',
+    value: 'anyOtherCost'
+  },
+  {
+    label: 'Basic Rate',
+    value: 'BasicRate'
+  },
+  {
+    label: 'NPV Cost',
+    value: 'npvCost'
+  },
+  {
+    label: 'Costing Condition',
+    value: 'conditionCost'
+  },
+  {
+    label: 'Net PO Price (INR)',
+    value: 'nPOPrice'
+  },
+  {
+    label: 'Currency',
+    value: 'currencyTitle'
+  },
+  {
+    label: 'Currency Rate',
+    value: 'currencyRate'
+  },
+  {
+    label: 'Net PO Price (In Currency)',
+    value: 'nPoPriceCurrency'
+  },
+  {
+    label: 'Quantity',
+    value: 'NCCPartQuantity'
+  },
+  {
+    label: 'Is Regularized',
+    value: 'IsRegularized'
+  },
+  {
+    label: 'Remarks',
+    value: 'remark'
+  }
+];
+
 
 export const VIEW_COSTING_DATA_LOGISTICS = {
   costingHeadCheck: 'ZBC v/s VBC v/s NCC v/s CBC',
@@ -2110,6 +2431,7 @@ export const RM_MASTER_ID = 1
 export const BOP_MASTER_ID = 2
 export const OPERATIONS_ID = 3
 export const MACHINE_MASTER_ID = 4
+export const BUDGET_ID = 5
 
 //approve reject drawer
 export const PROVISIONAL = "Provisional"
@@ -2217,10 +2539,6 @@ export const statusOptions = _.sortBy([
   // { label: "SendForApproval", value: "7" },
 ], ({ label }) => label.toLowerCase());
 
-//AUTOCOMPLETE IN PART
-export const searchCount = 3
-export const dropdownLimit = 100
-
 //CONSTANTS FOR COSTING HEAD
 export const ZBCTypeId = Number(reactLocalStorage.getObject('CostingHeadsListShortForm')[ZBC])
 export const VBCTypeId = Number(reactLocalStorage.getObject('CostingHeadsListShortForm')[VBC])
@@ -2231,6 +2549,10 @@ export const VBCTypeIdFull = Number(reactLocalStorage.getObject('CostingHeadsLis
 export const CBCTypeIdFull = Number(reactLocalStorage.getObject('CostingHeadsListFullForm')[CBC])
 export const NCCTypeIdFull = Number(reactLocalStorage.getObject('CostingHeadsListFullForm')[NCC])
 export const ZBCADDMORE = 0
+
+export const NFRTypeId = Number(reactLocalStorage.getObject('CostingHeadsListShortForm')[NFR])
+export const NFRAPPROVALTYPEID = Number(reactLocalStorage.getObject('CostingHeadsListShortForm')[NFR])
+// export const NFRTypeId = Number(reactLocalStorage.getObject('CostingHeadsListShortForm')[NCC])
 
 //CONSTANTS FOR APPROVAL TYPE 
 export const CBCAPPROVALTYPEID = Number(reactLocalStorage.getObject('ApprovalTypeListShortForm')[CBC])
@@ -2245,6 +2567,10 @@ export const VBCAPPROVALTYPEIDFULL = Number(reactLocalStorage.getObject('Approva
 export const ZBCAPPROVALTYPEIDFULL = Number(reactLocalStorage.getObject('ApprovalTypeListFullForm')[ZBC])
 export const PROVISIONALAPPROVALTYPEIDFULL = Number(reactLocalStorage.getObject('ApprovalTypeListFullForm')[PROVISIONAL])
 
+//AUTOCOMPLETE IN PART AND VENDOR
+export const searchCount = 3
+export const dropdownLimit = 100
+export const APPROVED_BY_SAP = "Approved By SAP"
 
 
 // KEY AND IV
@@ -2256,4 +2582,4 @@ export const IVRFQ = "8vFNmRQEl91nOtrM"
 
 
 //VERSION 
-export const VERSION = "V2.1.136";
+export const VERSION = "V2.1.173";

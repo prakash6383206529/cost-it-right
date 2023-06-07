@@ -833,7 +833,7 @@ class AddLabour extends Component {
                     <Row className='sub-form-container'>
                       <Col md="12" className="filter-block">
                         <div className=" flex-fills mb-2 w-100 pl-0">
-                          <h5>{"Rate Per Person:"}</h5>
+                          <h5>{"Rate per Person:"}</h5>
                         </div>
                       </Col>
 
@@ -885,7 +885,7 @@ class AddLabour extends Component {
                       <Col md="auto">
                         <div className="form-group">
                           <Field
-                            label={`Rate Per Person/Annum (INR)`}
+                            label={`Rate per Person/Annum (INR)`}
                             name={"LabourRate"}
                             type="text"
                             placeholder={isViewMode ? "-" : "Enter"}
@@ -910,7 +910,6 @@ class AddLabour extends Component {
                               showMonthDropdown
                               showYearDropdown
                               dateFormat="dd/MM/yyyy"
-                              dropdownMode="select"
                               placeholderText={isViewMode ? '-' : "Select Date"}
                               className="withBorder"
                               autoComplete={"off"}
@@ -966,7 +965,7 @@ class AddLabour extends Component {
                             <tr>
                               <th>{`Machine Type`}</th>
                               <th>{`Labour Type`}</th>
-                              <th>{`Rate Per Person/Annum(INR)`}</th>
+                              <th>{`Rate per Person/Annum(INR)`}</th>
                               <th>{`Effective Date`}</th>
                               <th>{`Action`}</th>
                             </tr>

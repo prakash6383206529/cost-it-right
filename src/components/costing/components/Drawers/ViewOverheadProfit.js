@@ -76,7 +76,7 @@ function ViewOverheadProfit(props) {
               <tr>
                 <th>{`Overhead On`}</th>
                 <th>{viewOverheadData.IsOverheadFixedApplicable ? 'Fixed' : 'Percentage (%)'}</th>
-                <th><div className='w-fit'>Cost (Applicability){isRmCutOffApplicable && <TooltipCustom customClass="mt-1 ml-1" id="overhead-rm-applicable" tooltipText="RM Cut Off Price is Applied" />}</div></th>
+                <th><div className='w-fit'>Cost (Applicability){isRmCutOffApplicable && !isPDFShow && <TooltipCustom customClass="mt-1 ml-1" id="overhead-rm-applicable" tooltipText="RM Cut Off Price is Applied" />}</div></th>
                 <th>{`Overhead`}</th>
 
               </tr>
@@ -187,7 +187,7 @@ function ViewOverheadProfit(props) {
               <tr>
                 <th>{`Profit On`}</th>
                 <th>{viewOverheadData.IsProfitFixedApplicable ? 'Fixed' : 'Percentage (%)'}</th>
-                <th><div className='w-fit'>Cost (Applicability){isRmCutOffApplicable && <TooltipCustom customClass="mt-1 ml-1" id="profit-rm-applicable" tooltipText="RM Cut Off Price is Applied" />}</div></th>
+                <th><div className='w-fit'>Cost (Applicability){isRmCutOffApplicable && !isPDFShow && <TooltipCustom customClass="mt-1 ml-1" id="profit-rm-applicable" tooltipText="RM Cut Off Price is Applied" />}</div></th>
                 <th>{`Profit`}</th>
 
               </tr>
@@ -361,9 +361,7 @@ function ViewOverheadProfit(props) {
                     <td>{iccPaymentData.ICCApplicabilityDetail ? iccPaymentData.ICCApplicabilityDetail.ICCApplicability : '-'}</td>
                     <td>{iccPaymentData.ICCApplicabilityDetail.InterestRate ? checkForDecimalAndNull(iccPaymentData.ICCApplicabilityDetail.InterestRate, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
                     <td>{iccPaymentData.ICCApplicabilityDetail.CostApplicability ? checkForDecimalAndNull(iccPaymentData.ICCApplicabilityDetail.CostApplicability, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
-                    <td><div className='w-fit'>{iccPaymentData.NetICC ? checkForDecimalAndNull(iccPaymentData.NetICC, initialConfiguration.NoOfDecimalForPrice) : '-'}
-                      {initialConfiguration?.IsShowRmcAndNetWeightToggleForIcc && <TooltipCustom customClass="mt-1 ml-1" id="icc-rm-applicable" tooltipText={iccPaymentData?.ICCApplicabilityDetail?.IsICCCalculationOnNetWeight ? "ICC Calculation On NetWeight" : "ICC Calculation On RMC"} />}
-                    </div></td>
+                    <td><div className='w-fit'>{iccPaymentData.NetICC ? checkForDecimalAndNull(iccPaymentData.NetICC, initialConfiguration.NoOfDecimalForPrice) : '-'}{!isPDFShow && (iccPaymentData?.ICCApplicabilityDetail?.IsICCCalculationOnNetWeight || iccPaymentData?.ICCApplicabilityDetail?.ICCApplicability?.includes('RM')) && <TooltipCustom customClass="mt-1 ml-1" id="icc-rm-applicable" tooltipText={iccPaymentData?.ICCApplicabilityDetail?.IsICCCalculationOnNetWeight ? "ICC Calculation on NetWeight" : "ICC Calculation on RMC"} />}</div></td>
                   </tr>
               }
 

@@ -504,3 +504,16 @@
     margin-right: 4px;
   }
 }
+
+.finalize-cost {
+  color: $postiveValueColor;
+
+  span {
+    color: $postiveValueColor;
+  }
+}
+.rfq-summary-discard {
+  width: 32px;
+  height: 32px;
+  margin:0;
+}

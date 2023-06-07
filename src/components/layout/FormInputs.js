@@ -365,7 +365,7 @@ export function renderTextInputField(field) {
           ""
         )}
       </label>
-      <div className={inputbox}>
+      <div className={inputbox} id={field.id}>
         <input
           maxLength={field.maxLength}
           {...others}
@@ -584,15 +584,16 @@ export function renderText(field) {
           ""
         )}{" "}
       </label>
-      <input
-        maxLength={field.maxLength}
-        {...input}
-        {...others}
-
-        className={InputClassName}
-        autoComplete={'off'}
-      />
-
+      <div id={field.id}>
+        <input
+          id={field.id}
+          maxLength={field.maxLength}
+          {...input}
+          {...others}
+          className={InputClassName}
+          autoComplete={'off'}
+        />
+      </div>
       <div className="text-help mb-2">{touched ? error : ""}</div>
     </div>
   );
@@ -621,7 +622,7 @@ export function renderDatePicker(field) {
         showMonthDropdown
         showYearDropdown
         readonly="readonly"
-        onBlur={input.onBlur}
+        onBlur={field.selected ? () => null : input.onBlur}
         selected={input.value ? new Date(input.value) : null}
         className={field.className}
         onSelect={field.changeHandler ? (date) => field.changeHandler(date) : null}

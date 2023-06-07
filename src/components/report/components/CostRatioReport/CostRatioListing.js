@@ -168,7 +168,8 @@ const CostRatioListing = (props) => {
                 label: '',
                 data: pieChartDataArray,
                 backgroundColor: colorArray,
-                borderWidth: 1,
+                borderWidth: 0.5,
+                hoverOffset: 10
             },
         ],
 
@@ -191,6 +192,11 @@ const CostRatioListing = (props) => {
                 }
             },
         },
+        layout: {
+            padding: {
+                top: 30
+            }
+        }
     }
     return (
         <>

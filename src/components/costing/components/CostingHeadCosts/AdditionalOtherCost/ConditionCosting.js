@@ -21,9 +21,9 @@ function ConditionCosting(props) {
         <Fragment>
             <Row>
                 <Col md={props.hideAction ? 12 : 12}>
-                    <Table className="table mb-0 forging-cal-table" size="sm">
-                        <thead>
-                            <tr>
+                    <Table className="table cr-brdr-main mb-0 forging-cal-table" size="sm">
+                        <tbody>
+                            <tr className='thead'>
                                 <th>{`Condition`}</th>
                                 {<th>{`Type`}</th>}
                                 {<th>{`Percentage (%)`}</th>}
@@ -32,8 +32,6 @@ function ConditionCosting(props) {
                                 {!props.hideAction && <th className='text-right'>{`Action`}</th>}
 
                             </tr>
-                        </thead>
-                        <tbody>
                             {props?.tableData &&
                                 props?.tableData.map((item, index) => {
                                     return (
@@ -59,13 +57,11 @@ function ConditionCosting(props) {
                                     </td>
                                 </tr>
                             )}
-                        </tbody>
-                        <tfoot>
-                            <tr style={{ backgroundColor: '#E0E9F5' }}>
+                            <tr className='table-footer'>
                                 <td colSpan={"4"} className="text-right">{'Total Cost:'}</td>
                                 <td colSpan={"2"}>{totalCost}</td>
                             </tr>
-                        </tfoot>
+                        </tbody>
                     </Table>
                 </Col>
             </Row>
