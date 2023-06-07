@@ -1026,7 +1026,7 @@ class AddRMImport extends Component {
       HasDifferentSource, sourceLocation, UOM, currency, client,
       effectiveDate, remarks, RawMaterialID, isEditFlag, files, Technology, netCost, costingTypeId, oldDate, netCurrencyCost, singlePlantSelected, DataToChange, DropdownChanged, isDateChange, isSourceChange, currencyValue, IsFinancialDataChanged, showForgingMachiningScrapCost, showExtraCost } = this.state;
 
-    const { fieldsObj } = this.props;
+    const { fieldsObj, isRMAssociated } = this.props;
     const userDetailsRM = JSON.parse(localStorage.getItem('userDetail'))
     if (costingTypeId !== CBCTypeId && vendorName.length <= 0) {
       this.setState({ isVendorNameNotSelected: true, setDisable: false })      // IF VENDOR NAME IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY AND SAVE BUTTON WILL NOT BE DISABLED
@@ -1107,41 +1107,9 @@ class AddRMImport extends Component {
     }
     if ((isEditFlag && this.state.isFinalApprovar) || (isEditFlag && CheckApprovalApplicableMaster(RM_MASTER_ID) !== true)) {
 
-
-      // let requestData = {
-      //   RawMaterialId: RawMaterialID,
-      //   CostingTypeId: costingTypeId,
-      //   HasDifferentSource: HasDifferentSource,
-      //   Source: (costingTypeId !== VBCTypeId && !HasDifferentSource) ? '' : values.Source,
-      //   SourceLocation: (costingTypeId !== VBCTypeId && !HasDifferentSource) ? '' : sourceLocation.value,
-      //   Remark: remarks,
-      //   BasicRatePerUOM: values.BasicRate,
-      //   ScrapRate: showExtraCost ? values.JaliScrapCost : showForgingMachiningScrapCost ? values.ForgingScrap : values.ScrapRate,
-      //   ScrapRateInINR: currency === INR ? (showExtraCost ? values.JaliScrapCost : showForgingMachiningScrapCost ? values.ForgingScrap : values.ScrapRate) : ((showExtraCost ? values.JaliScrapCost : showForgingMachiningScrapCost ? values.ForgingScrap : values.ScrapRate) * currencyValue),
-      //   NetLandedCost: netCost,
-      //   LoggedInUserId: loggedInUserId(),
-      //   EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
-      //   Attachements: updatedFiles,
-      //   NetLandedCostConversion: netCurrencyCost,
-      //   RMFreightCost: values.FreightCharge,
-      //   RMShearingCost: values.ShearingCost,
-      //   IsConvertIntoCopy: isDateChange ? true : false,
-      //   IsForcefulUpdated: isDateChange ? false : isSourceChange ? false : true,
-      //   CutOffPrice: values.cutOffPrice,
-      //   CutOffPriceInINR: (values.cutOffPrice * currencyValue),
-      //   IsCutOffApplicable: values.cutOffPrice < netCost ? true : false,
-      //   RawMaterialCode: values.Code,
-      //   IsFinancialDataChanged: isDateChange ? true : false,
-      //   VendorPlant: [],
-      //   CustomerId: client.value,
-      //   MachiningScrapRate: values.MachiningScrap,
-      //   MachiningScrapRateInINR: currency === INR ? values.MachiningScrap : values.MachiningScrap * currencyValue,
-      //   JaliScrapCost: values.CircleScrapCost ? values.CircleScrapCost : '',// THIS KEY FOR CIRCLE SCRAP COST
-      //   RawMaterialEntryType: Number(ENTRY_TYPE_IMPORT)
-      // }
       //DONT DELETE COMMENTED CODE BELOW
 
-      if (IsFinancialDataChanged) {
+      if (IsFinancialDataChanged && isRMAssociated) {
 
         if (isDateChange && (DayTime(oldDate).format("DD/MM/YYYY") !== DayTime(effectiveDate).format("DD/MM/YYYY"))) {
           this.props.updateRMAPI(formData, (res) => {
@@ -1740,11 +1708,11 @@ class AddRMImport extends Component {
                               label={labelWithUOMAndCurrency("Basic Rate", this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label, this.state.currency.label === undefined ? 'Currency' : this.state.currency.label)}
                               name={"BasicRate"}
                               type="text"
-                              placeholder={isViewFlag || (isEditFlag && isRMAssociated) ? '-' : "Enter"}
+                              placeholder={isViewFlag ? '-' : "Enter"}
                               validate={[required, positiveAndDecimalNumber, decimalLengthsix, number]}
                               component={renderTextInputField}
                               required={true}
-                              disabled={isViewFlag || (isEditFlag && isRMAssociated) ? true : false}
+                              disabled={isViewFlag ? true : false}
                               maxLength="15"
                               className=" "
                               customClassName=" withBorder"
@@ -1757,7 +1725,7 @@ class AddRMImport extends Component {
                                 label={labelWithUOMAndCurrency("Scrap Rate", this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label, this.state.currency.label === undefined ? 'Currency' : this.state.currency.label)}
                                 name={"ScrapRate"}
                                 type="text"
-                                placeholder={isViewFlag || (isEditFlag && isRMAssociated) ? '-' : "Enter"}
+                                placeholder={isViewFlag ? '-' : "Enter"}
                                 validate={[required, positiveAndDecimalNumber, decimalLengthsix, number]}
                                 component={renderTextInputField}
                                 required={true}
@@ -1765,7 +1733,7 @@ class AddRMImport extends Component {
                                 maxLength="15"
                                 customClassName=" withBorder"
                                 onChange={this.handleScrapRate}
-                                disabled={isViewFlag || (isEditFlag && isRMAssociated)}
+                                disabled={isViewFlag}
                               />
                             </Col>
                           }
@@ -1777,14 +1745,14 @@ class AddRMImport extends Component {
                                   label={labelWithUOMAndCurrency("Forging Scrap Cost", this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label, this.state.currency.label === undefined ? 'Currency' : this.state.currency.label)}
                                   name={"ForgingScrap"}
                                   type="text"
-                                  placeholder={isViewFlag || (isEditFlag && isRMAssociated) ? '-' : "Enter"}
+                                  placeholder={isViewFlag ? '-' : "Enter"}
                                   validate={[required, positiveAndDecimalNumber, maxLength15, decimalLengthsix, number]}
                                   component={renderTextInputField}
                                   required={true}
                                   className=""
                                   customClassName=" withBorder"
                                   maxLength="15"
-                                  disabled={isViewFlag || (isEditFlag && isRMAssociated)}
+                                  disabled={isViewFlag}
                                 />
                               </Col>
                               <Col md="3">
@@ -1792,14 +1760,14 @@ class AddRMImport extends Component {
                                   label={labelWithUOMAndCurrency("Machining Scrap Cost", this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label, this.state.currency.label === undefined ? 'Currency' : this.state.currency.label)}
                                   name={"MachiningScrap"}
                                   type="text"
-                                  placeholder={isViewFlag || (isEditFlag && isRMAssociated) ? '-' : "Enter"}
+                                  placeholder={isViewFlag ? '-' : "Enter"}
                                   validate={[positiveAndDecimalNumber, maxLength15, decimalLengthsix, number]}
                                   component={renderTextInputField}
                                   required={false}
                                   className=""
                                   customClassName=" withBorder"
                                   maxLength="15"
-                                  disabled={isViewFlag || (isEditFlag && isRMAssociated)}
+                                  disabled={isViewFlag}
                                 />
                               </Col>
                             </>
@@ -1842,14 +1810,14 @@ class AddRMImport extends Component {
                               label={labelWithUOMAndCurrency("Freight Cost", this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label, this.state.currency.label === undefined ? 'Currency' : this.state.currency.label)}
                               name={"FreightCharge"}
                               type="text"
-                              placeholder={isViewFlag || (isEditFlag && isRMAssociated) ? '-' : "Enter"}
+                              placeholder={isViewFlag ? '-' : "Enter"}
                               validate={[positiveAndDecimalNumber, decimalLengthsix, number]}
                               component={renderTextInputField}
                               required={false}
                               className=""
                               maxLength="15"
                               customClassName=" withBorder"
-                              disabled={isViewFlag || (isEditFlag && isRMAssociated)}
+                              disabled={isViewFlag}
                             />
                           </Col>
                           <Col md="3">
@@ -1857,14 +1825,14 @@ class AddRMImport extends Component {
                               label={labelWithUOMAndCurrency("Shearing Cost", this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label, this.state.currency.label === undefined ? 'Currency' : this.state.currency.label)}
                               name={"ShearingCost"}
                               type="text"
-                              placeholder={isViewFlag || (isEditFlag && isRMAssociated) ? '-' : "Enter"}
+                              placeholder={isViewFlag ? '-' : "Enter"}
                               validate={[positiveAndDecimalNumber, decimalLengthsix, number]}
                               component={renderTextInputField}
                               required={false}
                               className=""
                               maxLength="15"
                               customClassName=" withBorder"
-                              disabled={isViewFlag || (isEditFlag && isRMAssociated)}
+                              disabled={isViewFlag}
                             />
                           </Col> */}
                           <Col md="3"><TooltipCustom id={'net-cost'} tooltipText={"Net Cost = Basic Rate"} />

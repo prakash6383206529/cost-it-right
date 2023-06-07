@@ -1030,7 +1030,7 @@ class AddRMDomestic extends Component {
     const { RawMaterial, RMGrade, RMSpec, Category, client, Technology, selectedPlants, costingTypeId, vendorName,
       VendorCode, HasDifferentSource, sourceLocation,
       UOM, remarks, RawMaterialID, isEditFlag, files, effectiveDate, netLandedCost, oldDate, singlePlantSelected, showForgingMachiningScrapCost, DataToChange, DropdownChanged, isDateChange, isSourceChange, IsFinancialDataChanged, showExtraCost } = this.state
-    const { fieldsObj } = this.props
+    const { fieldsObj, isRMAssociated } = this.props
     const userDetailsRM = JSON.parse(localStorage.getItem('userDetail'))
     if (costingTypeId !== CBCTypeId && vendorName.length <= 0) {
       this.setState({ isVendorNameNotSelected: true, setDisable: false })      // IF VENDOR NAME IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY AND SAVE BUTTON WILL NOT BE DISABLED
@@ -1104,7 +1104,7 @@ class AddRMDomestic extends Component {
     if ((isEditFlag && this.state.isFinalApprovar) || (isEditFlag && CheckApprovalApplicableMaster(RM_MASTER_ID) !== true)) {
       //this.setState({ updatedObj: requestData })
 
-      if (IsFinancialDataChanged) {
+      if (IsFinancialDataChanged && isRMAssociated) {
         if ((isDateChange) && (DayTime(oldDate).format("DD/MM/YYYY") !== DayTime(effectiveDate).format("DD/MM/YYYY"))) {
           this.props.updateRMAPI(formData, (res) => {
             this.setState({ setDisable: false })
@@ -1677,12 +1677,12 @@ class AddRMDomestic extends Component {
                               label={labelWithUOMAndCurrency("Basic Rate", this.state.UOM.label)}
                               name={"BasicRate"}
                               type="text"
-                              placeholder={isViewFlag || (isEditFlag && isRMAssociated) ? '-' : "Enter"}
+                              placeholder={isViewFlag ? '-' : "Enter"}
                               validate={[required, positiveAndDecimalNumber, maxLength15, decimalLengthsix, number]}
                               component={renderTextInputField}
                               onChange={this.handleBasicRate}
                               required={true}
-                              disabled={isViewFlag || (isEditFlag && isRMAssociated)}
+                              disabled={isViewFlag}
                               className=" "
                               customClassName=" withBorder"
                               maxLength={'15'}
@@ -1695,7 +1695,7 @@ class AddRMDomestic extends Component {
                                 label={labelWithUOMAndCurrency("Scrap Rate", this.state.UOM.label)}
                                 name={"ScrapRate"}
                                 type="text"
-                                placeholder={isViewFlag || (isEditFlag && isRMAssociated) ? '-' : "Enter"}
+                                placeholder={isViewFlag ? '-' : "Enter"}
                                 validate={[required, positiveAndDecimalNumber, maxLength15, decimalLengthsix, number]}
                                 component={renderTextInputField}
                                 required={true}
@@ -1703,7 +1703,7 @@ class AddRMDomestic extends Component {
                                 customClassName=" withBorder"
                                 maxLength="15"
                                 onChange={this.handleScrapRate}
-                                disabled={isViewFlag || (isEditFlag && isRMAssociated)}
+                                disabled={isViewFlag}
                               />
                             </Col>
                           }
@@ -1715,14 +1715,14 @@ class AddRMDomestic extends Component {
                                   label={labelWithUOMAndCurrency("Forging Scrap Cost", this.state.UOM.label)}
                                   name={"ForgingScrap"}
                                   type="text"
-                                  placeholder={isViewFlag || (isEditFlag && isRMAssociated) ? '-' : "Enter"}
+                                  placeholder={isViewFlag ? '-' : "Enter"}
                                   validate={[required, positiveAndDecimalNumber, maxLength15, decimalLengthsix, number]}
                                   component={renderTextInputField}
                                   required={true}
                                   className=""
                                   customClassName=" withBorder"
                                   maxLength="15"
-                                  disabled={isViewFlag || (isEditFlag && isRMAssociated)}
+                                  disabled={isViewFlag}
                                 />
                               </Col>
                               <Col md="3">
@@ -1730,14 +1730,14 @@ class AddRMDomestic extends Component {
                                   label={labelWithUOMAndCurrency("Machining Scrap Cost", this.state.UOM.label)}
                                   name={"MachiningScrap"}
                                   type="text"
-                                  placeholder={isViewFlag || (isEditFlag && isRMAssociated) ? '-' : "Enter"}
+                                  placeholder={isViewFlag ? '-' : "Enter"}
                                   validate={[positiveAndDecimalNumber, maxLength15, decimalLengthsix, number]}
                                   component={renderTextInputField}
                                   required={false}
                                   className=""
                                   customClassName=" withBorder"
                                   maxLength="15"
-                                  disabled={isViewFlag || (isEditFlag && isRMAssociated)}
+                                  disabled={isViewFlag}
                                 />
                               </Col>
                             </>
@@ -1780,7 +1780,7 @@ class AddRMDomestic extends Component {
                               label={labelWithUOMAndCurrency("Freight Cost", this.state.UOM.label)}
                               name={"FrieghtCharge"}
                               type="text"
-                              placeholder={isViewFlag || (isEditFlag && isRMAssociated) ? '-' : "Enter"}
+                              placeholder={isViewFlag ? '-' : "Enter"}
                               // onChange={this.handleFreightCharges}
                               validate={[positiveAndDecimalNumber, maxLength15, decimalLengthsix, number]}
                               component={renderTextInputField}
@@ -1788,7 +1788,7 @@ class AddRMDomestic extends Component {
                               className=""
                               customClassName=" withBorder"
                               maxLength="15"
-                              disabled={isViewFlag || (isEditFlag && isRMAssociated)}
+                              disabled={isViewFlag}
                             />
                           </Col>
                           <Col md="3">
@@ -1796,14 +1796,14 @@ class AddRMDomestic extends Component {
                               label={labelWithUOMAndCurrency("Shearing Cost", this.state.UOM.label)}
                               name={"ShearingCost"}
                               type="text"
-                              placeholder={isViewFlag || (isEditFlag && isRMAssociated) ? '-' : "Enter"}
+                              placeholder={isViewFlag ? '-' : "Enter"}
                               validate={[positiveAndDecimalNumber, maxLength15, decimalLengthsix, number]}
                               component={renderTextInputField}
                               required={false}
                               className=""
                               customClassName=" withBorder"
                               maxLength="15"
-                              disabled={isViewFlag || (isEditFlag && isRMAssociated)}
+                              disabled={isViewFlag}
 
 
                             />
@@ -1840,8 +1840,8 @@ class AddRMDomestic extends Component {
                                 }}
                                 component={renderDatePicker}
                                 className="form-control"
-                                disabled={isViewFlag || !this.state.IsFinancialDataChanged || (isEditFlag && isRMAssociated)}
-                                placeholder={isViewFlag || !this.state.IsFinancialDataChanged || (isEditFlag && isRMAssociated) ? '-' : "Select Date"}
+                                disabled={isViewFlag || (!this.state.IsFinancialDataChanged)}
+                                placeholder={isViewFlag || !this.state.IsFinancialDataChanged ? '-' : "Select Date"}
                               />
                             </div>
                           </Col>
