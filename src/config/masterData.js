@@ -1888,11 +1888,11 @@ export const Plant = [
 * @desc USED IN EXCEL HEADER FOR BULK UPLOAD
 */
 export const BOP_ZBC_DOMESTIC = [
-    { label: 'BOPPartNumber', value: 'BOPPartNumber', }, //*
-    { label: 'BOPPartName', value: 'BOPPartName', }, //*
-    { label: 'BOPCategory', value: 'BOPCategory', }, //*
+    { label: 'BoughtOutPartNumber', value: 'BoughtOutPartNumber', }, //*
+    { label: 'BoughtOutPartName', value: 'BoughtOutPartName', }, //*
+    { label: 'CategoryName', value: 'CategoryName', }, //*
     { label: 'Specification', value: 'Specification', },
-    { label: 'UOM', value: 'UOM', }, //*
+    { label: 'UnitOfMeasurement', value: 'UnitOfMeasurement', }, //*
     { label: 'PlantCode', value: 'PlantCode', }, //*
     { label: 'VendorCode', value: 'VendorCode', }, //NOUI
     { label: 'BasicRate', value: 'BasicRate', }, //*
@@ -1902,33 +1902,33 @@ export const BOP_ZBC_DOMESTIC = [
 
 export const BOP_ZBC_DOMESTIC_TempData = [
     {
-        'BOPPartNumber': 'BOP Part123',
-        'BOPPartName': 'Screw',
-        'BOPCategory': 'Machine',
+        'BoughtOutPartNumber': 'BOP Part123',
+        'BoughtOutPartName': 'Screw',
+        'CategoryName': 'Machine',
         'Specification': '20 mm',
-        "UOM": "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram",
+        "UnitOfMeasurement": "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram",
         'PlantCode': 'Plant101',
         'VendorCode': 'Sys01',
         'BasicRate': '100',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text'
     }, {
-        'BOPPartNumber': 'BOP Part123',
-        'BOPPartName': 'Screw',
-        'BOPCategory': 'Machine',
+        'BoughtOutPartNumber': 'BOP Part123',
+        'BoughtOutPartName': 'Screw',
+        'CategoryName': 'Machine',
         'Specification': '20 mm',
-        "UOM": "Gallon/Cubic Centimeter/Cubic Meter/Milliliter/Liter",
+        "UnitOfMeasurement": "Gallon/Cubic Centimeter/Cubic Meter/Milliliter/Liter",
         'PlantCode': 'Plant101',
         'VendorCode': 'Sys01',
         'BasicRate': '100',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text'
     }, {
-        'BOPPartNumber': 'BOP Part123',
-        'BOPPartName': 'Screw',
-        'BOPCategory': 'Machine',
+        'BoughtOutPartNumber': 'BOP Part123',
+        'BoughtOutPartName': 'Screw',
+        'CategoryName': 'Machine',
         'Specification': '20 mm',
-        "UOM": "shot/stroke/Number",
+        "UnitOfMeasurement": "shot/stroke/Number",
         'PlantCode': 'Plant101',
         'VendorCode': 'Sys01',
         'BasicRate': '100',
@@ -1941,18 +1941,17 @@ export const BOP_ZBC_DOMESTIC_TempData = [
 * @desc USED IN EXCEL HEADER FOR BULK UPLOAD
 */
 export const BOP_VBC_DOMESTIC = [
-    { label: 'BOPPartNumber', value: 'BOPPartNumber', }, //*
-    { label: 'BOPPartName', value: 'BOPPartName', }, //*
-    { label: 'BOPCategory', value: 'BOPCategory', }, //*
+    { label: 'BoughtOutPartNumber', value: 'BoughtOutPartNumber', }, //*
+    { label: 'BoughtOutPartName', value: 'BoughtOutPartName', }, //*
+    { label: 'CategoryName', value: 'CategoryName', }, //*
     { label: 'Specification', value: 'Specification', },
-    { label: 'UOM', value: 'UOM', }, //*
-    { label: 'DestinationPlant', value: 'DestinationPlant', }, //*
+    { label: 'UnitOfMeasurement', value: 'UnitOfMeasurement', }, //*
     { label: 'DestinationPlantCode', value: 'DestinationPlantCode', }, //*
-    { label: 'VendorName', value: 'VendorName', },
+    { label: 'IsClientVendorBOP', value: 'IsClientVendorBOP', },
     { label: 'VendorCode', value: 'VendorCode', }, //NOUI
     // { label: 'VendorPlantCode', value: 'VendorPlantCode', }, //NOUI
-    { label: 'SourceVendorName', value: 'SourceVendorName', },
-    { label: 'SourceVendorLocation', value: 'SourceVendorLocation', },
+    { label: 'Source', value: 'Source', },
+    { label: 'SourceLocation', value: 'SourceLocation', },
     { label: 'BasicRate', value: 'BasicRate', }, //*
     { label: 'EffectiveDate', value: 'EffectiveDate', },
     { label: 'Remark', value: 'Remark' }
@@ -1960,55 +1959,52 @@ export const BOP_VBC_DOMESTIC = [
 
 export const BOP_VBC_DOMESTIC_TempData = [
     {
-        'BOPPartNumber': 'BOP Part123',
-        'BOPPartName': 'Screw',
-        'BOPCategory': 'Machine',
+        'BoughtOutPartNumber': 'BOP Part123',
+        'BoughtOutPartName': 'Screw',
+        'CategoryName': 'Machine',
         'Specification': '20 mm',
-        "UOM": "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram",
-        'DestinationPlant': 'Manesar',
+        "UnitOfMeasurement": "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram",
         'DestinationPlantCode': "1032",
-        'VendorName': 'Systematix',
+        "IsClientVendorBOP": "YES",
         'VendorCode': 'Sys01',
         'VendorPlant': 'VPlant',
-        'SourceVendorName': 'VPlant01',
+        'Source': 'VPlant01',
         'VendorSourceName': 'TATA Steel',
-        'SourceVendorLocation': 'Jamshedpur',
+        'SourceLocation': 'Jamshedpur',
         // 'MinimumOrderQuantity': '1',
         'BasicRate(INR)': '100',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text'
     }, {
-        'BOPPartNumber': 'BOP Part123',
-        'BOPPartName': 'Screw',
-        'BOPCategory': 'Machine',
+        'BoughtOutPartNumber': 'BOP Part123',
+        'BoughtOutPartName': 'Screw',
+        'CategoryName': 'Machine',
         'Specification': '20 mm',
-        "UOM": "Gallon/Cubic Centimeter/Cubic Meter/Milliliter/Liter",
-        'DestinationPlant': 'Manesar',
+        "UnitOfMeasurement": "Gallon/Cubic Centimeter/Cubic Meter/Milliliter/Liter",
         'DestinationPlantCode': "1032",
-        'VendorName': 'Systematix',
+        "IsClientVendorBOP": "NO",
         'VendorCode': 'Sys01',
         'VendorPlant': 'VPlant',
-        'SourceVendorName': 'VPlant01',
+        'Source': 'VPlant01',
         'VendorSourceName': 'TATA Steel',
-        'SourceVendorLocation': 'Jamshedpur',
+        'SourceLocation': 'Jamshedpur',
         // 'MinimumOrderQuantity': '1',
         'BasicRate(INR)': '100',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text'
     }, {
-        'BOPPartNumber': 'BOP Part123',
-        'BOPPartName': 'Screw',
-        'BOPCategory': 'Machine',
+        'BoughtOutPartNumber': 'BOP Part123',
+        'BoughtOutPartName': 'Screw',
+        'CategoryName': 'Machine',
         'Specification': '20 mm',
-        "UOM": "shot/stroke/Number",
-        'DestinationPlant': 'Manesar',
+        "UnitOfMeasurement": "shot/stroke/Number",
         'DestinationPlantCode': "1032",
-        'VendorName': 'Systematix',
+        "IsClientVendorBOP": "YES",
         'VendorCode': 'Sys01',
         'VendorPlant': 'VPlant',
-        'SourceVendorName': 'VPlant01',
+        'Source': 'VPlant01',
         'VendorSourceName': 'TATA Steel',
-        'SourceVendorLocation': 'Jamshedpur',
+        'SourceLocation': 'Jamshedpur',
         // 'MinimumOrderQuantity': '1',
         'BasicRate(INR)': '100',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
@@ -2020,13 +2016,12 @@ export const BOP_VBC_DOMESTIC_TempData = [
 * @desc USED IN EXCEL HEADER FOR BULK UPLOAD
 */
 export const BOP_ZBC_IMPORT = [
-    { label: 'BOPPartNumber', value: 'BOPPartNumber', }, //*
-    { label: 'BOPPartName', value: 'BOPPartName', }, //*
-    { label: 'BOPCategory', value: 'BOPCategory', }, //*
+    { label: 'BoughtOutPartNumber', value: 'BoughtOutPartNumber', }, //*
+    { label: 'BoughtOutPartName', value: 'BoughtOutPartName', }, //*
+    { label: 'CategoryName', value: 'CategoryName', }, //*
     { label: 'Specification', value: 'Specification', },
-    { label: 'UOM', value: 'UOM', }, //*
+    { label: 'UnitOfMeasurement', value: 'UnitOfMeasurement', }, //*
     { label: 'PlantCode', value: 'PlantCode', }, //*
-    { label: 'VendorName', value: 'VendorName', },
     { label: 'VendorCode', value: 'VendorCode', }, //*
     { label: 'Currency', value: 'Currency', }, //*
     // { label: 'MinimumOrderQuantity', value: 'MinimumOrderQuantity', }, 
@@ -2039,11 +2034,11 @@ export const BOP_ZBC_IMPORT = [
 
 export const BOP_ZBC_IMPORT_TempData = [
     {
-        'BOPPartNumber': 'BOP Part123',
-        'BOPPartName': 'Screw',
-        'BOPCategory': 'Machine',
+        'BoughtOutPartNumber': 'BOP Part123',
+        'BoughtOutPartName': 'Screw',
+        'CategoryName': 'Machine',
         'Specification': '20 mm',
-        "UOM": "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram",
+        "UnitOfMeasurement": "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram",
         'PlantCode': 'Plant101',
         'VendorName': 'Systematix',
         'VendorCode': 'VC1',
@@ -2055,11 +2050,11 @@ export const BOP_ZBC_IMPORT_TempData = [
         'EffectiveDate': DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text'
     }, {
-        'BOPPartNumber': 'BOP Part123',
-        'BOPPartName': 'Screw',
-        'BOPCategory': 'Machine',
+        'BoughtOutPartNumber': 'BOP Part123',
+        'BoughtOutPartName': 'Screw',
+        'CategoryName': 'Machine',
         'Specification': '20 mm',
-        "UOM": "Gallon/Cubic Centimeter/Cubic Meter/Milliliter/Liter",
+        "UnitOfMeasurement": "Gallon/Cubic Centimeter/Cubic Meter/Milliliter/Liter",
         'PlantCode': 'Plant101',
         'VendorName': 'Systematix',
         'VendorCode': 'VC1',
@@ -2071,11 +2066,11 @@ export const BOP_ZBC_IMPORT_TempData = [
         'EffectiveDate': DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text'
     }, {
-        'BOPPartNumber': 'BOP Part123',
-        'BOPPartName': 'Screw',
-        'BOPCategory': 'Machine',
+        'BoughtOutPartNumber': 'BOP Part123',
+        'BoughtOutPartName': 'Screw',
+        'CategoryName': 'Machine',
         'Specification': '20 mm',
-        "UOM": "shot/stroke/Number",
+        "UnitOfMeasurement": "shot/stroke/Number",
         'PlantCode': 'Plant101',
         'VendorName': 'Systematix',
         'VendorCode': 'VC1',
@@ -2089,14 +2084,12 @@ export const BOP_ZBC_IMPORT_TempData = [
     }
 ]
 export const BOP_CBC_DOMESTIC = [
-    { label: 'BOPPartNumber', value: 'BOPPartNumber', }, //*
-    { label: 'BOPPartName', value: 'BOPPartName', }, //*
-    { label: 'BOPCategory', value: 'BOPCategory', }, //*
+    { label: 'BoughtOutPartNumber', value: 'BoughtOutPartNumber', }, //*
+    { label: 'BoughtOutPartName', value: 'BoughtOutPartName', }, //*
+    { label: 'CategoryName', value: 'CategoryName', }, //*
     { label: 'Specification', value: 'Specification', },
-    { label: 'UOM', value: 'UOM', }, //*
-    { label: 'DestinationPlant', value: 'DestinationPlant', }, //*
+    { label: 'UnitOfMeasurement', value: 'UnitOfMeasurement', }, //*
     { label: 'DestinationPlantCode', value: 'DestinationPlantCode', }, //*
-    { label: 'CustomerName', value: 'CustomerName', },
     { label: 'CustomerCode', value: 'CustomerCode', }, //NOUI
     { label: 'BasicRate', value: 'BasicRate', }, //*
     { label: 'EffectiveDate', value: 'EffectiveDate', },
@@ -2105,42 +2098,36 @@ export const BOP_CBC_DOMESTIC = [
 
 export const BOP_CBC_DOMESTIC_TempData = [
     {
-        'BOPPartNumber': 'BOP Part123',
-        'BOPPartName': 'Screw',
-        'BOPCategory': 'Machine',
+        'BoughtOutPartNumber': 'BOP Part123',
+        'BoughtOutPartName': 'Screw',
+        'CategoryName': 'Machine',
         'Specification': '20 mm',
-        "UOM": "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram",
-        'DestinationPlant': 'Manesar',
+        "UnitOfMeasurement": "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram",
         'DestinationPlantCode': "1032",
-        "CustomerName": "Honda",
         "CustomerCode": "C-10008",
         // 'MinimumOrderQuantity': '1',
         'BasicRate': '100',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text'
     }, {
-        'BOPPartNumber': 'BOP Part123',
-        'BOPPartName': 'Screw',
-        'BOPCategory': 'Machine',
+        'BoughtOutPartNumber': 'BOP Part123',
+        'BoughtOutPartName': 'Screw',
+        'CategoryName': 'Machine',
         'Specification': '20 mm',
-        "UOM": "Gallon/Cubic Centimeter/Cubic Meter/Milliliter/Liter",
-        'DestinationPlant': 'Manesar',
+        "UnitOfMeasurement": "Gallon/Cubic Centimeter/Cubic Meter/Milliliter/Liter",
         'DestinationPlantCode': "1032",
-        "CustomerName": "Honda",
         "CustomerCode": "C-10008",
         // 'MinimumOrderQuantity': '1',
         'BasicRate': '100',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text'
     }, {
-        'BOPPartNumber': 'BOP Part123',
-        'BOPPartName': 'Screw',
-        'BOPCategory': 'Machine',
+        'BoughtOutPartNumber': 'BOP Part123',
+        'BoughtOutPartName': 'Screw',
+        'CategoryName': 'Machine',
         'Specification': '20 mm',
-        "UOM": "shot/stroke/Number",
-        'DestinationPlant': 'Manesar',
+        "UnitOfMeasurement": "shot/stroke/Number",
         'DestinationPlantCode': "1032",
-        "CustomerName": "Honda",
         "CustomerCode": "C-10008",
         // 'MinimumOrderQuantity': '1',
         'BasicRate': '100',
@@ -2153,14 +2140,13 @@ export const BOP_CBC_DOMESTIC_TempData = [
 * @desc USED IN EXCEL HEADER FOR BULK UPLOAD
 */
 export const BOP_VBC_IMPORT = [
-    { label: 'BOPPartNumber', value: 'BOPPartNumber', }, //*
-    { label: 'BOPPartName', value: 'BOPPartName', }, //*
-    { label: 'BOPCategory', value: 'BOPCategory', }, //*
+    { label: 'BoughtOutPartNumber', value: 'BoughtOutPartNumber', }, //*
+    { label: 'BoughtOutPartName', value: 'BoughtOutPartName', }, //*
+    { label: 'CategoryName', value: 'CategoryName', }, //*
     { label: 'Specification', value: 'Specification', },
-    { label: 'UOM', value: 'UOM', }, //*
-    { label: 'DestinationPlant', value: 'DestinationPlant', },
+    { label: 'UnitOfMeasurement', value: 'UnitOfMeasurement', }, //*
     { label: 'DestinationPlantCode', value: 'DestinationPlantCode', },
-    { label: 'VendorName', value: 'VendorName', },
+    { label: 'IsClientVendorBOP', value: 'IsClientVendorBOP', },
     { label: 'VendorCode', value: 'VendorCode', }, //NOUI
     // { label: 'VendorPlant', value: 'VendorPlant' },
     // { label: 'VendorPlantCode', value: 'VendorPlantCode', }, //NOUI
@@ -2177,14 +2163,13 @@ export const BOP_VBC_IMPORT = [
 
 export const BOP_VBC_IMPORT_TempData = [
     {
-        'BOPPartNumber': 'BOP Part123',
-        'BOPPartName': 'Screw',
-        'BOPCategory': 'Machine',
+        'BoughtOutPartNumber': 'BOP Part123',
+        'BoughtOutPartName': 'Screw',
+        'CategoryName': 'Machine',
         'Specification': '20 mm',
-        "UOM": "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram",
-        'DestinationPlant': 'Manesar',
+        "UnitOfMeasurement": "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram",
         'DestinationPlantCode': '1032',
-        'VendorName': 'Systematix',
+        "IsClientVendorBOP": "YES",
         'VendorCode': 'Sys01',
         'SourceVendorName': 'TATA Steel',
         'SourceVendorLocation': 'Jamshedpur',
@@ -2195,14 +2180,13 @@ export const BOP_VBC_IMPORT_TempData = [
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text'
     }, {
-        'BOPPartNumber': 'BOP Part123',
-        'BOPPartName': 'Screw',
-        'BOPCategory': 'Machine',
+        'BoughtOutPartNumber': 'BOP Part123',
+        'BoughtOutPartName': 'Screw',
+        'CategoryName': 'Machine',
         'Specification': '20 mm',
-        "UOM": "Gallon/Cubic Centimeter/Cubic Meter/Milliliter/Liter",
-        'DestinationPlant': 'Manesar',
+        "UnitOfMeasurement": "Gallon/Cubic Centimeter/Cubic Meter/Milliliter/Liter",
         'DestinationPlantCode': '1032',
-        'VendorName': 'Systematix',
+        "IsClientVendorBOP": "YES",
         'VendorCode': 'Sys01',
         'SourceVendorName': 'TATA Steel',
         'SourceVendorLocation': 'Jamshedpur',
@@ -2213,14 +2197,13 @@ export const BOP_VBC_IMPORT_TempData = [
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text'
     }, {
-        'BOPPartNumber': 'BOP Part123',
-        'BOPPartName': 'Screw',
-        'BOPCategory': 'Machine',
+        'BoughtOutPartNumber': 'BOP Part123',
+        'BoughtOutPartName': 'Screw',
+        'CategoryName': 'Machine',
         'Specification': '20 mm',
-        "UOM": "shot/stroke/Number",
-        'DestinationPlant': 'Manesar',
+        "UnitOfMeasurement": "shot/stroke/Number",
         'DestinationPlantCode': '1032',
-        'VendorName': 'Systematix',
+        "IsClientVendorBOP": "NO",
         'VendorCode': 'Sys01',
         'SourceVendorName': 'TATA Steel',
         'SourceVendorLocation': 'Jamshedpur',
@@ -2233,14 +2216,12 @@ export const BOP_VBC_IMPORT_TempData = [
     }
 ]
 export const BOP_CBC_IMPORT = [
-    { label: 'BOPPartNumber', value: 'BOPPartNumber', }, //*
-    { label: 'BOPPartName', value: 'BOPPartName', }, //*
-    { label: 'BOPCategory', value: 'BOPCategory', }, //*
+    { label: 'BoughtOutPartNumber', value: 'BoughtOutPartNumber', }, //*
+    { label: 'BoughtOutPartName', value: 'BoughtOutPartName', }, //*
+    { label: 'CategoryName', value: 'CategoryName', }, //*
     { label: 'Specification', value: 'Specification', },
-    { label: 'UOM', value: 'UOM', }, //*
-    { label: 'DestinationPlant', value: 'DestinationPlant', },
+    { label: 'UnitOfMeasurement', value: 'UnitOfMeasurement', }, //*
     { label: 'DestinationPlantCode', value: 'DestinationPlantCode', },
-    { label: 'CustomerName', value: 'CustomerName', },
     { label: 'CustomerCode', value: 'CustomerCode', }, //NOUI
     { label: 'Currency', value: 'Currency', }, //*
     { label: 'IncoTerm', value: 'IncoTerm', },
@@ -2252,14 +2233,12 @@ export const BOP_CBC_IMPORT = [
 
 export const BOP_CBC_IMPORT_TempData = [
     {
-        'BOPPartNumber': 'BOP Part123',
-        'BOPPartName': 'Screw',
-        'BOPCategory': 'Machine',
+        'BoughtOutPartNumber': 'BOP Part123',
+        'BoughtOutPartName': 'Screw',
+        'CategoryName': 'Machine',
         'Specification': '20 mm',
-        "UOM": "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram",
-        'DestinationPlant': 'Manesar',
+        "UnitOfMeasurement": "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram",
         'DestinationPlantCode': '1032',
-        "CustomerName": "Honda",
         "CustomerCode": "C-10008",
         'Currency': 'INR or USD',
         'IncoTerm': 'CFR',
@@ -2268,14 +2247,12 @@ export const BOP_CBC_IMPORT_TempData = [
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text'
     }, {
-        'BOPPartNumber': 'BOP Part123',
-        'BOPPartName': 'Screw',
-        'BOPCategory': 'Machine',
+        'BoughtOutPartNumber': 'BOP Part123',
+        'BoughtOutPartName': 'Screw',
+        'CategoryName': 'Machine',
         'Specification': '20 mm',
-        "UOM": "Gallon/Cubic Centimeter/Cubic Meter/Milliliter/Liter",
-        'DestinationPlant': 'Manesar',
+        "UnitOfMeasurement": "Gallon/Cubic Centimeter/Cubic Meter/Milliliter/Liter",
         'DestinationPlantCode': '1032',
-        "CustomerName": "Honda",
         "CustomerCode": "C-10008",
         'Currency': 'INR or USD',
         'IncoTerm': 'CFR',
@@ -2284,14 +2261,12 @@ export const BOP_CBC_IMPORT_TempData = [
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text'
     }, {
-        'BOPPartNumber': 'BOP Part123',
-        'BOPPartName': 'Screw',
-        'BOPCategory': 'Machine',
+        'BoughtOutPartNumber': 'BOP Part123',
+        'BoughtOutPartName': 'Screw',
+        'CategoryName': 'Machine',
         'Specification': '20 mm',
-        "UOM": "shot/stroke/Number",
-        'DestinationPlant': 'Manesar',
+        "UnitOfMeasurement": "shot/stroke/Number",
         'DestinationPlantCode': '1032',
-        "CustomerName": "Honda",
         "CustomerCode": "C-10008",
         'Currency': 'INR or USD',
         'IncoTerm': 'CFR',
