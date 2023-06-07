@@ -94,7 +94,7 @@ function AddToComparisonDrawer(props) {
       setisNccSelected(false)
       dispatch(getPartCostingPlantSelectList(partNo.value !== undefined ? partNo.value : partNo.partId, (res) => {
         // dispatch(getCostingSummaryByplantIdPartNo('', '', () => { }))
-
+        dispatch(getPartCostingVendorSelectList(partNo.value !== undefined ? partNo.value : partNo.partId, () => { }))
         dispatch(getCostingByVendorAndVendorPlant('', '', '', '', '', '', () => { }))
       }),
       )
@@ -621,7 +621,7 @@ function AddToComparisonDrawer(props) {
       value = '00000000-0000-0000-0000-000000000000'
     }
     if (isVbcSelected) {
-      dispatch(getCostingByVendorAndVendorPlant(partNo.partId, vendorId, '', value.value, '', VBCTypeId, (res) => {
+      dispatch(getCostingByVendorAndVendorPlant(partNo.partId, vendorId, '', value, '', VBCTypeId, (res) => {
         setValue('costings', '')
       }),
       )
