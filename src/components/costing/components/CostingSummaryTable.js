@@ -1493,7 +1493,7 @@ const CostingSummaryTable = (props) => {
                                         {/* {data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.fWeight, initialConfiguration.NoOfDecimalForInputOutput) : ''} */}
                                       </span>}
                                       {data?.technologyId === DIE_CASTING && <span className={`d-block small-grey-text ${isApproval && viewCostingData?.length > 1 && highlightCostingSummaryValue(viewCostingData[0]?.MeltingLoss, viewCostingData[1]?.MeltingLoss)}`}>
-                                        {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.IsAssemblyCosting === true ? "Multiple RM" : <span title={(data?.netRMCostView && data?.netRMCostView[0]?.MeltingLoss)}>{checkForDecimalAndNull(data?.netRMCostView[0]?.data?.MeltingLoss, initialConfiguration.NoOfDecimalForPrice)}</span> : '-')}
+                                        {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.IsAssemblyCosting === true ? "Multiple RM" : <span title={(data?.netRMCostView && data?.netRMCostView[0]?.MeltingLoss)}>{checkForDecimalAndNull(data?.netRMCostView[0]?.MeltingLoss, initialConfiguration.NoOfDecimalForPrice)}</span> : '-')}
                                         {/* {data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.fWeight, initialConfiguration.NoOfDecimalForInputOutput) : ''} */}
                                       </span>}
 
@@ -1525,7 +1525,6 @@ const CostingSummaryTable = (props) => {
                               <th>Net RM Cost {simulationDrawer && (Number(master) === Number(RMDOMESTIC) || Number(master) === Number(RMIMPORT)) && '(Old)'}</th>
                               {viewCostingData &&
                                 viewCostingData?.map((data, index) => {
-                                  console.log('data: ', data.costingId, props.uniqueShouldCostingId);
                                   return (
                                     <td className={props?.isRfqCosting && data.status === APPROVED && !props.uniqueShouldCostingId.includes(data.costingId) ? 'finalize-cost' : ''}>
                                       {data?.CostingHeading === VARIANCE && (isApproval ? viewCostingData?.length > 0 && viewCostingData[0]?.netRM > viewCostingData[1]?.netRM ? <span className='positive-sign'>+</span> : '' : '')}
