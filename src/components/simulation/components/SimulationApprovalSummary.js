@@ -362,7 +362,7 @@ function SimulationApprovalSummary(props) {
             const obj3 = formViewData(Data.Variance, 'Variance')
             const objj3 = [obj1[0], obj2[0], obj3[0]]
             objj3[1].SimulationId = Data?.SimulationId
-            objj3[1].SimulationStatus = Data?.SimulationStatus
+            objj3[1].SimulationStatusId = Data?.SimulationStatusId
             dispatch(setCostingViewData(objj3))
             setCompareCosting(true)
         }))

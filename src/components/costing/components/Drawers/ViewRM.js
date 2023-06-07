@@ -6,7 +6,7 @@ import Toaster from '../../../common/Toaster';
 import { checkForDecimalAndNull, checkForNull } from '../../../../helper';
 import { Container, Row, Col, Table } from 'reactstrap'
 import NoContentFound from '../../../common/NoContentFound';
-import { EMPTY_DATA } from '../../../../config/constants';
+import { AWAITING_APPROVAL_ID, EMPTY_DATA, PENDING_FOR_APPROVAL_ID, REJECTEDID } from '../../../../config/constants';
 import { SHEETMETAL, RUBBER, FORGING, DIE_CASTING, PLASTIC, CORRUGATEDBOX, Ferrous_Casting } from '../../../../config/masterData'
 import 'reactjs-popup/dist/index.css'
 import { getRawMaterialCalculationForCorrugatedBox, getRawMaterialCalculationForDieCasting, getRawMaterialCalculationForFerrous, getRawMaterialCalculationForForging, getRawMaterialCalculationForPlastic, getRawMaterialCalculationForRubber, getRawMaterialCalculationForSheetMetal, getSimulationRmFerrousCastingCalculation, } from '../../actions/CostWorking'
@@ -43,7 +43,7 @@ function ViewRM(props) {
     setIndex(index)
 
     const tempData = viewCostingData[props.index]
-    if (props.simulationMode && String(tempData.CostingHeading) === String("New Costing") && (String(tempData.SimulationStatus) === String("Rejected") || String(tempData.SimulationStatus) === String("PendingForApproval") || String(tempData.SimulationStatus) === String("AwaitingApproval"))) {
+    if (props.simulationMode && String(tempData.CostingHeading) === String("New Costing") && (Number(tempData.SimulationStatusId) === Number(REJECTEDID) || Number(tempData.SimulationStatusId) === Number(PENDING_FOR_APPROVAL_ID) || Number(tempData.SimulationStatusId) === Number(AWAITING_APPROVAL_ID))) {
       switch ((Number(tempData.technologyId))) {
         case Ferrous_Casting:
           dispatch(getSimulationRmFerrousCastingCalculation(tempData.SimulationId, tempData.netRMCostView[index].CostingId, res => {
