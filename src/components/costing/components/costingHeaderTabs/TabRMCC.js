@@ -1326,7 +1326,7 @@ function TabRMCC(props) {
   const saveCosting = debounce(handleSubmit(() => {
     let count = 0
     for (var prop in ErrorObjRMCC) {
-      if (Object.keys(ErrorObjRMCC[prop])?.length > 0) {
+      if (ErrorObjRMCC[prop] && Object.keys(ErrorObjRMCC[prop])?.length > 0) {
         count++
       }
     }
