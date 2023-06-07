@@ -317,184 +317,177 @@ function AddNfr(props) {
         }
     }
     const addDetails = debounce((data, index1, index, isPFS) => {
-        if (isPFS) {
-            let dataObj = {
-                "nfrPartWiseDetailId": nfrIdsList?.NfrPartWiseDetailId,
-                "costingId": data?.SelectedCostingVersion?.CostingId
+        // if (isPFS) {
+        //     let dataObj = {
+        //         "nfrPartWiseDetailId": nfrIdsList?.NfrPartWiseDetailId,
+        //         "costingId": data?.SelectedCostingVersion?.CostingId
+        //     }
+        //     dispatch(createPFS2Costing(dataObj, (res) => {
+        //         if (res?.data?.Result) {
+        //             let obj = {
+        //                 nfrGroupId: rowData[index1]?.nfrPartWiseGroupDetailsId,
+        //                 vendorId: data?.value,
+        //                 costingId: res?.data?.Data?.CostingId,
+        //                 loggedInUserId: loggedInUserId()
+        //             }
+        //             dispatch(saveNFRCostingInfo(obj, (res) => { }))
+        //             setpartInfoStepTwo({ costingId: res?.data?.Data?.CostingId, PFS2TypeId })
+        //             setcostingData(res?.data?.Data)
+        //             dispatch(getBriefCostingById(res?.data?.Data?.CostingId, () => {
+        //                 setIsAddDetails(true)
+        //             }))
+        //         }
+        //     }))
+        // } else {
+        let outerItem = rowData[index1]
+        let list = outerItem?.data && outerItem?.data[index]
+        const userDetail = userDetails()
+        let tempData = viewCostingData[0]
+        const Data = {
+            PartId: nfrData?.PartId,
+            PartTypeId: nfrPartDetail?.PartTypeId,
+            PartType: nfrData?.PartType,
+            PartNumber: nfrData?.PartNumber,
+            PartName: nfrData?.PartName,
+            TechnologyId: nfrData?.TechnologyId,
+            ZBCId: userDetail.ZBCSupplierInfo.VendorId,
+            VendorId: list?.value,
+            VendorPlantId: checkVendorPlantConfigurable() ? tempData.vendorPlantId : '',
+            // VendorPlantName: tempData.vendorPlantName,
+            // VendorPlantCode: tempData.vendorPlantCode,
+            VendorName: list?.vendorName,
+            VendorCode: list?.vendorCode,
+            PlantId: nfrPartDetail?.PlantId,
+            PlantName: nfrPartDetail?.PlantName,
+            PlantCode: nfrPartDetail?.PlantCode,
+            DestinationPlantId: nfrPartDetail?.PlantId,
+            DestinationPlantName: nfrPartDetail?.PlantName,
+            DestinationPlantCode: nfrPartDetail?.PlantCode,
+            UserId: loggedInUserId(),
+            LoggedInUserId: loggedInUserId(),
+            ShareOfBusinessPercent: 0,
+            IsAssemblyPart: false,
+            Description: nfrPartDetail?.Description,
+            ECNNumber: nfrPartDetail?.ECNNumber,
+            RevisionNumber: nfrPartDetail?.RevisionNumber,
+            DrawingNumber: nfrPartDetail?.DrawingNumber,
+            Price: nfrPartDetail?.Price ? nfrPartDetail?.Price : '',
+            EffectiveDate: nfrPartDetail?.EffectiveDate,
+            CostingHead: outerItem?.CostingTypeId,
+            CostingTypeId: outerItem?.CostingTypeId,
+            CustomerId: '',
+            CustomerName: '',
+            Customer: ''
+        }
+        // if (callAPI) {
+        //     let length = rowData?.length - 1
+        //     let requestObject = {
+        //         GroupName: rowData[length]?.groupName,
+        //         NfrId: nfrIdsList?.NfrMasterId,
+        //         PlantId: nfrPartDetail?.PlantId,
+        //         NfrPartWiseDetailId: nfrIdsList?.NfrPartWiseDetailId,
+        //         LoggedInUserId: loggedInUserId(),
+        //         vendorList: _.map(rowData[length]?.data, 'value')
+        //     }
+        //     dispatch(saveNFRGroupDetails(requestObject, (response) => {
+        //         if (response?.data?.Result === true) {
+        //             Toaster.success("Group details saved successfully")
+
+        //             dispatch(createCosting(Data, (res) => {
+        //                 if (res.data?.Result) {
+        //                     let obj = {
+        //                         nfrGroupId: response?.data?.Identity,
+        //                         vendorId: data?.value,
+        //                         costingId: res?.data?.Data?.CostingId,
+        //                         loggedInUserId: loggedInUserId()
+        //                     }
+        //                     dispatch(saveNFRCostingInfo(obj, (res) => { }))
+        //                     setpartInfoStepTwo({ costingId: res.data?.Data?.CostingId, NFRTypeId })
+        //                     setcostingData(res.data?.Data)
+        //                     dispatch(getBriefCostingById(res.data?.Data?.CostingId, () => {
+        //                         setIsAddDetails(true)
+        //                     }))
+        //                 }
+        //             }))
+        //         }
+        //     }))
+        // } else {
+
+        // dispatch(createCosting(Data, (responseCreate) => {
+        //     if (responseCreate.data?.Result) {
+
+        //         let filterRow = rowData?.filter(ele => ele.groupName === existingGroupNameVersion)
+        //         let requestObject = {
+        //             GroupName: filterRow[0]?.groupName,
+        //             NfrId: nfrIdsList?.NfrMasterId,
+        //             PlantId: nfrPartDetail?.PlantId,
+        //             NfrPartWiseDetailId: nfrIdsList?.NfrPartWiseDetailId,
+        //             LoggedInUserId: loggedInUserId(),
+        //             vendorList: _.map(filterRow[0]?.data, 'value')
+        //         }
+        //         dispatch(saveNFRGroupDetails(requestObject, (res) => {
+        //             let requestObject1 = {
+        //                 nfrId: nfrIdsList?.NfrMasterId,
+        //                 partWiseDetailId: nfrIdsList?.NfrPartWiseDetailId,
+        //                 plantId: nfrData?.PlantId ? nfrData?.PlantId : nfrPartDetail?.PlantId
+        //             }
+        //             dispatch(getNFRPartWiseGroupDetail(requestObject1, (res) => {
+        //                 let obj = {
+        //                     nfrGroupId: res?.data?.Data?.groupWiseResponse[index1]?.VendorList[index]?.NfrPartWiseGroupDetailsId,
+        //                     vendorId: data?.value,
+        //                     costingId: responseCreate?.data?.Data?.CostingId,
+        //                     loggedInUserId: loggedInUserId()
+        //                 }
+        //                 dispatch(saveNFRCostingInfo(obj, (res) => {
+        //                     setpartInfoStepTwo({ costingId: responseCreate.data?.Data?.CostingId, NFRTypeId })
+        //                     setcostingData(responseCreate.data?.Data)
+        //                     dispatch(getBriefCostingById(responseCreate.data?.Data?.CostingId, () => {
+        //                         setIsAddDetails(true)
+        //                     }))
+        //                 }))
+        //             }))
+        //         }))
+        //     }
+        // }))
+        // }
+
+        let filterRow = rowData?.filter(ele => ele.groupName === existingGroupNameVersion)
+        let requestObject = {
+            GroupName: filterRow[0]?.groupName,
+            NfrId: nfrIdsList?.NfrMasterId,
+            PlantId: nfrPartDetail?.PlantId,
+            NfrPartWiseDetailId: nfrIdsList?.NfrPartWiseDetailId,
+            LoggedInUserId: loggedInUserId(),
+            vendorList: _.map(filterRow[0]?.data, 'value')
+        }
+        dispatch(saveNFRGroupDetails(requestObject, (res) => {
+            let requestObject1 = {
+                nfrId: nfrIdsList?.NfrMasterId,
+                partWiseDetailId: nfrIdsList?.NfrPartWiseDetailId,
+                plantId: nfrData?.PlantId ? nfrData?.PlantId : nfrPartDetail?.PlantId
             }
-            dispatch(createPFS2Costing(dataObj, (res) => {
-                if (res?.data?.Result) {
-                    let obj = {
-                        nfrGroupId: rowData[index1]?.nfrPartWiseGroupDetailsId,
-                        vendorId: data?.value,
-                        costingId: res?.data?.Data?.CostingId,
-                        loggedInUserId: loggedInUserId()
-                    }
-                    dispatch(saveNFRCostingInfo(obj, (res) => { }))
-                    setpartInfoStepTwo({ costingId: res?.data?.Data?.CostingId, PFS2TypeId })
-                    setcostingData(res?.data?.Data)
-                    dispatch(getBriefCostingById(res?.data?.Data?.CostingId, () => {
-                        setIsAddDetails(true)
-                    }))
-                }
-            }))
-        } else {
-            let dataa = rowData[index1]
-            let list = dataa?.data && dataa?.data[index]
-            const userDetail = userDetails()
-            let tempData = viewCostingData[0]
-            const Data = {
-                PartId: nfrData?.PartId,
-                PartTypeId: nfrPartDetail?.PartTypeId,
-                PartType: nfrData?.PartType,
-                PartNumber: nfrData?.PartNumber,
-                PartName: nfrData?.PartName,
-                TechnologyId: nfrData?.TechnologyId,
-                ZBCId: userDetail.ZBCSupplierInfo.VendorId,
-                VendorId: list?.value,
-                VendorPlantId: checkVendorPlantConfigurable() ? tempData.vendorPlantId : '',
-                // VendorPlantName: tempData.vendorPlantName,
-                // VendorPlantCode: tempData.vendorPlantCode,
-                VendorName: list?.vendorName,
-                VendorCode: list?.vendorCode,
-                PlantId: nfrPartDetail?.PlantId,
-                PlantName: nfrPartDetail?.PlantName,
-                PlantCode: nfrPartDetail?.PlantCode,
-                DestinationPlantId: nfrPartDetail?.PlantId,
-                DestinationPlantName: nfrPartDetail?.PlantName,
-                DestinationPlantCode: nfrPartDetail?.PlantCode,
-                UserId: loggedInUserId(),
-                LoggedInUserId: loggedInUserId(),
-                ShareOfBusinessPercent: 0,
-                IsAssemblyPart: false,
-                Description: nfrPartDetail?.Description,
-                ECNNumber: nfrPartDetail?.ECNNumber,
-                RevisionNumber: nfrPartDetail?.RevisionNumber,
-                DrawingNumber: nfrPartDetail?.DrawingNumber,
-                Price: nfrPartDetail?.Price ? nfrPartDetail?.Price : '',
-                EffectiveDate: nfrPartDetail?.EffectiveDate,
-                CostingHead: NFRTypeId,
-                CostingTypeId: NFRTypeId,
-                CustomerId: '',
-                CustomerName: '',
-                Customer: ''
-            }
-            // if (callAPI) {
-            //     let length = rowData?.length - 1
-            //     let requestObject = {
-            //         GroupName: rowData[length]?.groupName,
-            //         NfrId: nfrIdsList?.NfrMasterId,
-            //         PlantId: nfrPartDetail?.PlantId,
-            //         NfrPartWiseDetailId: nfrIdsList?.NfrPartWiseDetailId,
-            //         LoggedInUserId: loggedInUserId(),
-            //         vendorList: _.map(rowData[length]?.data, 'value')
-            //     }
-            //     dispatch(saveNFRGroupDetails(requestObject, (response) => {
-            //         if (response?.data?.Result === true) {
-            //             Toaster.success("Group details saved successfully")
-
-            //             dispatch(createCosting(Data, (res) => {
-            //                 if (res.data?.Result) {
-            //                     let obj = {
-            //                         nfrGroupId: response?.data?.Identity,
-            //                         vendorId: data?.value,
-            //                         costingId: res?.data?.Data?.CostingId,
-            //                         loggedInUserId: loggedInUserId()
-            //                     }
-            //                     dispatch(saveNFRCostingInfo(obj, (res) => { }))
-            //                     setpartInfoStepTwo({ costingId: res.data?.Data?.CostingId, NFRTypeId })
-            //                     setcostingData(res.data?.Data)
-            //                     dispatch(getBriefCostingById(res.data?.Data?.CostingId, () => {
-            //                         setIsAddDetails(true)
-            //                     }))
-            //                 }
-            //             }))
-            //         }
-            //     }))
-            // } else {
-
-            // dispatch(createCosting(Data, (responseCreate) => {
-            //     if (responseCreate.data?.Result) {
-
-            //         let filterRow = rowData?.filter(ele => ele.groupName === existingGroupNameVersion)
-            //         let requestObject = {
-            //             GroupName: filterRow[0]?.groupName,
-            //             NfrId: nfrIdsList?.NfrMasterId,
-            //             PlantId: nfrPartDetail?.PlantId,
-            //             NfrPartWiseDetailId: nfrIdsList?.NfrPartWiseDetailId,
-            //             LoggedInUserId: loggedInUserId(),
-            //             vendorList: _.map(filterRow[0]?.data, 'value')
-            //         }
-            //         dispatch(saveNFRGroupDetails(requestObject, (res) => {
-            //             let requestObject1 = {
-            //                 nfrId: nfrIdsList?.NfrMasterId,
-            //                 partWiseDetailId: nfrIdsList?.NfrPartWiseDetailId,
-            //                 plantId: nfrData?.PlantId ? nfrData?.PlantId : nfrPartDetail?.PlantId
-            //             }
-            //             dispatch(getNFRPartWiseGroupDetail(requestObject1, (res) => {
-            //                 let obj = {
-            //                     nfrGroupId: res?.data?.Data?.groupWiseResponse[index1]?.VendorList[index]?.NfrPartWiseGroupDetailsId,
-            //                     vendorId: data?.value,
-            //                     costingId: responseCreate?.data?.Data?.CostingId,
-            //                     loggedInUserId: loggedInUserId()
-            //                 }
-            //                 dispatch(saveNFRCostingInfo(obj, (res) => {
-            //                     setpartInfoStepTwo({ costingId: responseCreate.data?.Data?.CostingId, NFRTypeId })
-            //                     setcostingData(responseCreate.data?.Data)
-            //                     dispatch(getBriefCostingById(responseCreate.data?.Data?.CostingId, () => {
-            //                         setIsAddDetails(true)
-            //                     }))
-            //                 }))
-            //             }))
-            //         }))
-            //     }
-            // }))
-            // }
-
-
-
-
-
-
-
-
-            let filterRow = rowData?.filter(ele => ele.groupName === existingGroupNameVersion)
-            let requestObject = {
-                GroupName: filterRow[0]?.groupName,
-                NfrId: nfrIdsList?.NfrMasterId,
-                PlantId: nfrPartDetail?.PlantId,
-                NfrPartWiseDetailId: nfrIdsList?.NfrPartWiseDetailId,
-                LoggedInUserId: loggedInUserId(),
-                vendorList: _.map(filterRow[0]?.data, 'value')
-            }
-            dispatch(saveNFRGroupDetails(requestObject, (res) => {
-                let requestObject1 = {
-                    nfrId: nfrIdsList?.NfrMasterId,
-                    partWiseDetailId: nfrIdsList?.NfrPartWiseDetailId,
-                    plantId: nfrData?.PlantId ? nfrData?.PlantId : nfrPartDetail?.PlantId
-                }
-                dispatch(getNFRPartWiseGroupDetail(requestObject1, (res) => {
-
-                    dispatch(createCosting(Data, (responseCreate) => {
-                        if (responseCreate.data?.Result) {
-                            let obj = {
-                                nfrGroupId: res?.data?.Data?.groupWiseResponse[index1]?.VendorList[index]?.NfrPartWiseGroupDetailsId,
-                                vendorId: data?.value,
-                                costingId: responseCreate?.data?.Data?.CostingId,
-                                loggedInUserId: loggedInUserId()
-                            }
-                            dispatch(saveNFRCostingInfo(obj, (res) => {
-                                setpartInfoStepTwo({ costingId: responseCreate.data?.Data?.CostingId, NFRTypeId })
-                                setcostingData(responseCreate.data?.Data)
-                                dispatch(getBriefCostingById(responseCreate.data?.Data?.CostingId, () => {
-                                    setIsAddDetails(true)
-                                }))
-                            }))
+            dispatch(getNFRPartWiseGroupDetail(requestObject1, (res) => {
+                Data.CostingTypeId = res?.data?.Data?.CostingTypeId
+                dispatch(createCosting(Data, (responseCreate) => {
+                    if (responseCreate.data?.Result) {
+                        let obj = {
+                            nfrGroupId: res?.data?.Data?.groupWiseResponse[index1]?.VendorList[index]?.NfrPartWiseGroupDetailsId,
+                            vendorId: data?.value,
+                            costingId: responseCreate?.data?.Data?.CostingId,
+                            loggedInUserId: loggedInUserId()
                         }
-                    }))
+                        dispatch(saveNFRCostingInfo(obj, (res) => {
+                            setpartInfoStepTwo({ costingId: responseCreate.data?.Data?.CostingId, NFRTypeId })
+                            setcostingData(responseCreate.data?.Data)
+                            dispatch(getBriefCostingById(responseCreate.data?.Data?.CostingId, () => {
+                                setIsAddDetails(true)
+                            }))
+                        }))
+                    }
                 }))
             }))
-        }
+        }))
+        // }
     }, 500);
 
     const viewDetails = (index) => {
@@ -990,7 +983,7 @@ function AddNfr(props) {
                                             <td> <div className='action-btn-wrapper pr-2'>
                                                 {(item?.isRejectedBySAP === false) &&
                                                     <>
-                                                        {!isViewEstimation && item?.isShowCreateCostingButton && item?.groupName !== PFS2 && <button className="Add-file" type={"button"} title={`${item?.groupName === 'PFS2' ? 'Create PFS2 Costing' : 'Add Costing'}`} onClick={() => addDetails(dataItem, indexOuter, indexInside, item?.groupName === 'PFS2')} />}
+                                                        {!isViewEstimation && item?.IsShowEditButtonForPFS && item?.isShowCreateCostingButton && <button className="Add-file" type={"button"} title={`${item?.groupName === 'PFS2' ? 'Create PFS2 Costing' : 'Add Costing'}`} onClick={() => addDetails(dataItem, indexOuter, indexInside, item?.groupName === 'PFS2')} />}
                                                     </>}
 
                                                 {item?.Status !== '' && dataItem?.SelectedCostingVersion && (<button className="View" type={"button"} title={"View Costing"} onClick={() => viewDetails(indexInside)} />)}
@@ -1006,7 +999,7 @@ function AddNfr(props) {
                                             </div></td>
                                             {indexInside === 0 && (
                                                 <td rowSpan={item?.data.length} className="table-record">
-                                                    <button className="Edit" type={"button"} title={"Edit Costing"} onClick={() => editRow(item, indexInside)} disabled={isViewEstimation || !item?.isRowActionEditable} />
+                                                    <button className="Edit" type={"button"} title={"Edit Costing"} onClick={() => editRow(item, indexInside)} disabled={isViewEstimation || !item?.isRowActionEditable || !item?.IsShowEditButtonForPFS} />
                                                     {/* <button className="Delete All ml-1" title={"Delete Costing"} type={"button"} onClick={() => deleteRow(item, indexInside)} disabled={isViewEstimation || item?.statusId !== DRAFTID} /> */}
                                                 </td>
                                             )}

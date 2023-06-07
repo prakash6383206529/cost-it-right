@@ -429,7 +429,7 @@ function BOPCost(props) {
       BOPHandlingPercentage: 0,
       BOPHandlingCharges: 0,
       // BOPHandlingFixed: 0,
-      BOPHandlingChargeType: newValue
+      BOPHandlingChargeType: newValue.label
     }
     props.setBOPCost(gridData, Params, item, BOPHandlingFields)
     clearErrors('');
