@@ -148,6 +148,7 @@ function AddNfr(props) {
                         data: vendorData,
                         nfrPartWiseGroupDetailsId: item?.NfrPartWiseGroupDetailsId,
                         status: item.Status,
+                        displayStatus: item.DisplayStatus,
                         statusId: item.StatusId,
                         isRejectedBySAP: item.IsRejectedBySAP,
                         isRowActionEditable: item.IsRowActionEditable,
@@ -262,6 +263,7 @@ function AddNfr(props) {
             groupName: getValues('GroupName'),
             data: vendorList,
             status: DRAFT,
+            displayStatus: DRAFT,
             statusId: DRAFTID,
             isRejectedBySAP: false,
             isShowCreateCostingButton: true,
@@ -710,6 +712,7 @@ function AddNfr(props) {
             groupName: temprowData[indexOuter]?.groupName,
             nfrPartWiseGroupDetailsId: temprowData[indexOuter]?.nfrPartWiseGroupDetailsId,
             status: temprowData[indexOuter]?.status,
+            displayStatus: temprowData[indexOuter]?.displayStatus,
             statusId: temprowData[indexOuter]?.statusId,
             isRejectedBySAP: temprowData[indexOuter]?.isRejectedBySAP,
             isRowActionEditable: temprowData[indexOuter]?.isRowActionEditable,
@@ -945,7 +948,7 @@ function AddNfr(props) {
                                                         </label>} */}
                                                         {item?.groupName}
                                                     </td>
-                                                    <td rowSpan={item?.data.length} className="table-record">{item?.status}</td>
+                                                    <td rowSpan={item?.data.length} className="table-record"><div className={item?.status}>{item?.displayStatus}</div></td>
                                                 </>
                                             )}
                                             <td>{dataItem?.label}</td>
@@ -967,8 +970,8 @@ function AddNfr(props) {
                                             // errors={`${indexInside} CostingVersion`}
                                             /></td>
                                             <td className="text-center">
-                                                <div className={dataItem?.CostingId !== EMPTY_GUID ? dataItem?.SelectedCostingVersion?.Status : ''}>
-                                                    {dataItem?.SelectedCostingVersion?.Status ? dataItem?.SelectedCostingVersion?.Status : ''}
+                                                <div className={dataItem?.SelectedCostingVersion?.Status ? dataItem?.SelectedCostingVersion?.Status : ''}>
+                                                    {dataItem?.SelectedCostingVersion?.Status ? dataItem?.SelectedCostingVersion?.DisplayStatus : ''}
                                                 </div>
                                             </td>
                                             <td>{dataItem?.SelectedCostingVersion?.Price}</td>
@@ -987,17 +990,17 @@ function AddNfr(props) {
                                             <td> <div className='action-btn-wrapper pr-2'>
                                                 {(item?.isRejectedBySAP === false) &&
                                                     <>
-                                                        {!isViewEstimation && item?.isShowCreateCostingButton &&  item?.groupName !== PFS2&& <button className="Add-file" type={"button"} title={`${item?.groupName === 'PFS2' ? 'Create PFS2 Costing' : 'Add Costing'}`} onClick={() => addDetails(dataItem, indexOuter, indexInside, item?.groupName === 'PFS2')} />}
+                                                        {!isViewEstimation && item?.isShowCreateCostingButton && item?.groupName !== PFS2 && <button className="Add-file" type={"button"} title={`${item?.groupName === 'PFS2' ? 'Create PFS2 Costing' : 'Add Costing'}`} onClick={() => addDetails(dataItem, indexOuter, indexInside, item?.groupName === 'PFS2')} />}
                                                     </>}
 
-                                      { item?.Status !== '' && dataItem?.SelectedCostingVersion && (<button className="View" type={"button"} title={"View Costing"} onClick={() => viewDetails(indexInside)} />)}
-                                   
-                                                {(item?.isShowCreateCostingButton === true && dataItem?.SelectedCostingVersion&& dataItem?.SelectedCostingVersion?.StatusId === DRAFTID) &&
+                                                {item?.Status !== '' && dataItem?.SelectedCostingVersion && (<button className="View" type={"button"} title={"View Costing"} onClick={() => viewDetails(indexInside)} />)}
+
+                                                {(item?.isShowCreateCostingButton === true && dataItem?.SelectedCostingVersion && dataItem?.SelectedCostingVersion?.StatusId === DRAFTID) &&
                                                     <>
-                                                    
-                                                        {!isViewEstimation  && dataItem?.SelectedCostingVersion && (<button className="Edit" type={"button"} title={"Edit Costing"} onClick={() => editCosting(indexInside)} />)}
-                                                        {!isViewEstimation  && dataItem?.SelectedCostingVersion && (<button className="Copy All" title={"Copy Costing"} type={"button"} onClick={() => copyCosting(indexInside)} />)}
-                                                        {!isViewEstimation  && dataItem?.SelectedCostingVersion && (<button className="Delete All" title={"Delete Costing"} type={"button"} onClick={() => deleteItem(dataItem, indexInside, indexOuter)} />)}
+
+                                                        {!isViewEstimation && dataItem?.SelectedCostingVersion && (<button className="Edit" type={"button"} title={"Edit Costing"} onClick={() => editCosting(indexInside)} />)}
+                                                        {!isViewEstimation && dataItem?.SelectedCostingVersion && (<button className="Copy All" title={"Copy Costing"} type={"button"} onClick={() => copyCosting(indexInside)} />)}
+                                                        {!isViewEstimation && dataItem?.SelectedCostingVersion && (<button className="Delete All" title={"Delete Costing"} type={"button"} onClick={() => deleteItem(dataItem, indexInside, indexOuter)} />)}
                                                         {!isViewEstimation && item?.CostingOptions?.length === 0 && dataItem?.SelectedCostingVersion && <button title='Discard' className="CancelIcon" type={'button'} onClick={() => deleteRowItem(indexInside)} />}
                                                     </>}
                                             </div></td>
