@@ -595,6 +595,7 @@ export const API = {
   saveRawMaterialCalculationForDieCasting: `${BASE_URL}/costing/save-raw-material-die-casting-calculation-details`,
   getRawMaterialCalculationForRubber: `${BASE_URL}/costing/get-raw-material-rubber-calculation-details`,
   saveRawMaterialCalculationForRubber: `${BASE_URL}/costing/save-raw-material-rubber-calculation-details`,
+  getSimulationRmFerrousCastingCalculation: `${BASE_URL}/simulation/get-simulation-raw-material-ferrous-casting-calculation-details`,
 
   // YOY
   getYOYCostList: `${BASE_URL}/rfq-costing/rfq-get-yoy-details`,
