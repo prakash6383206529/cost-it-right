@@ -602,7 +602,7 @@ function AddToComparisonDrawer(props) {
       value = '00000000-0000-0000-0000-000000000000'
     }
     // dispatch(getCostingByVendorAndVendorPlant(partNo.partId, VendorId, vendorPlantId, destinationPlantId, customerId, costingTypeId, () => { }))
-    dispatch(getCostingByVendorAndVendorPlant(partNo.partId, value.value, '', '', '', costingTypeId, (res) => {
+    dispatch(getCostingByVendorAndVendorPlant(partNo.partId, value, '', '', '', costingTypeId, (res) => {
       setValue('costings', '')
     }),
     )
@@ -618,7 +618,7 @@ function AddToComparisonDrawer(props) {
       value = '00000000-0000-0000-0000-000000000000'
     }
     if (isVbcSelected) {
-      dispatch(getCostingByVendorAndVendorPlant(partNo.partId, vendorId, '', value.value, '', VBCTypeId, (res) => {
+      dispatch(getCostingByVendorAndVendorPlant(partNo.partId, vendorId, '', value, '', VBCTypeId, (res) => {
         setValue('costings', '')
       }),
       )
@@ -636,7 +636,7 @@ function AddToComparisonDrawer(props) {
   }
   const handleVendorChangeForNCC = ({ value }) => {
     // setValue('destinationPlant', '')
-    dispatch(getCostingByVendorAndVendorPlant(partNo.partId, value.value, '', '', '', costingTypeId, (res) => {
+    dispatch(getCostingByVendorAndVendorPlant(partNo.partId, value, '', '', '', costingTypeId, (res) => {
       setValue('costings', '')
     }),
     )
