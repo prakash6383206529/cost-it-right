@@ -60,6 +60,7 @@ function RfqListing(props) {
     const [isReportLoader, setIsReportLoader] = useState(false)
     const [selectedCostingsToShow, setSelectedCostingsToShow] = useState([])
     const [multipleCostingDetails, setMultipleCostingDetails] = useState([])
+    const [uniqueShouldCostingId, setUniqueShouldCostingId] = useState([])
     const [selectedRowIndex, setSelectedRowIndex] = useState('')
 
     const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
@@ -108,6 +109,13 @@ function RfqListing(props) {
                 setloader(false)
                 return false;
             }
+            let uniqueShouldCostId = [];
+            res?.data?.DataList && res?.data?.DataList.map(item => {
+                let unique = _.uniq(_.map(item.ShouldCostings, 'CostingId'))
+                uniqueShouldCostId.push(...unique)
+            })
+            setUniqueShouldCostingId(uniqueShouldCostId)
+
             let requestObject = {}
             requestObject.PartIdList = _.uniq(_.map(res?.data?.DataList, 'PartId'))
             requestObject.PlantId = res?.data?.DataList[0]?.PlantId
@@ -886,6 +894,7 @@ function RfqListing(props) {
                                 approvalMode={true}
                                 // isApproval={approvalData.LastCostingId !== EMPTY_GUID ? true : false}
                                 simulationMode={false}
+                                uniqueShouldCostingId={uniqueShouldCostingId}
                                 costingIdExist={true}
                                 bestCostObjectFunction={bestCostObjectFunction}
                                 crossButton={hideSummaryHandler}
