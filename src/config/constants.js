@@ -1761,6 +1761,8 @@ export const EXTERNAL_REJECT = 'ExternalReject'
 export const DRAFTID = 1
 export const REJECTEDID = 4
 export const ERRORID = 12
+export const PENDING_FOR_APPROVAL_ID = 2
+export const AWAITING_APPROVAL_ID = 6
 
 // MASTER APPROVAL STATUS ID
 export const APPROVED_STATUS = '3,5'
