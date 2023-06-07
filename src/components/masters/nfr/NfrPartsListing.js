@@ -16,7 +16,7 @@ import { checkPermission, searchNocontentFilter } from '../../../helper';
 import DayTime from '../../common/DayTimeWrapper';
 import Attachament from '../../costing/components/Drawers/Attachament';
 import { getNfrPartDetails, nfrDetailsForDiscountAction } from './actions/nfr';
-import { hyphenFormatter } from '../masterUtil';
+import { StatusTooltip, hyphenFormatter } from '../masterUtil';
 import AddNfr from './AddNfr';
 import DrawerTechnologyUpdate from './DrawerTechnologyUpdate';
 import { ASSEMBLY } from '../../../config/masterData';
@@ -86,7 +86,7 @@ function NfrPartsListing(props) {
     const getDataList = () => {
         dispatch(getNfrPartDetails(props?.isFromDiscount ? nfrDetailsForDiscount?.rowData?.NfrId : props?.data?.NfrId, (res) => {
             if (res?.data?.DataList?.length > 0) {
-                setRowData(res?.data?.DataList)
+                setRowData(StatusTooltip(res?.data?.DataList))
             }
             setloader(false)
         }))
@@ -348,7 +348,7 @@ function NfrPartsListing(props) {
                                                 <AgGridColumn field="NumberOfSimulation" headerName='No. of Simulations' cellRenderer={hyphenFormatter}></AgGridColumn>
                                                 <AgGridColumn field="CreatedOn" headerName='Created On' cellRenderer={dateFormater}></AgGridColumn>
                                                 <AgGridColumn field="PushedOn" headerName='Pushed On' cellRenderer={dateFormater}></AgGridColumn>
-                                                <AgGridColumn field="Status" headerName="Status" cellClass="text-center" minWidth={170} cellRenderer="statusFormatter"></AgGridColumn>
+                                                <AgGridColumn field="Status" tooltipField="tooltipText" headerName="Status" cellClass="text-center" minWidth={170} cellRenderer="statusFormatter"></AgGridColumn>
                                                 {<AgGridColumn field="Status" width={180} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
                                             </AgGridReact>
                                             <PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} globalTake={10} />
