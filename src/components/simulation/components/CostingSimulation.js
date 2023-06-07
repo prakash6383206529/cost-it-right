@@ -1512,12 +1512,12 @@ function CostingSimulation(props) {
                                                         <AgGridColumn width={120} field="CostingId" headerName='Actions' type="rightAligned" floatingFilter={false} cellRenderer='buttonFormatter' pinned="right"></AgGridColumn>
                                                     </AgGridReact>}
                                                     {storeTechnology === FORGING && <WarningMessage dClass="float-right" textClass="mt2" message="If RMC is calculated through RM weight calculator then change in scrap rate won't affect the RMC." />}
-                                                    {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />}
-                                                </div >
-                                            </div >
-                                        </Col >
-                                    </Row >
-                                </div >
+                                                    {amendmentDetails.SimulationHeadId && <PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />}
+                                                </div>
+                                            </div>
+                                        </Col>
+                                    </Row>
+                                </div>
                                 <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer sticky-btn-footer">
                                     <div className="col-sm-12 text-right bluefooter-butn">
 
