@@ -89,12 +89,12 @@ function AddProcess(props) {
     if (Number(costData?.TechnologyId) === Number(FORGING) || Number(costData?.TechnologyId) === Number(DIE_CASTING) || Number(costData?.TechnologyId) === Number(Ferrous_Casting)) {
       data = {
         VendorId: costData.VendorId ? costData.VendorId : EMPTY_GUID,
-        PlantId: (initialConfiguration?.IsDestinationPlantConfigure && (costData.CostingTypeId === VBCTypeId || costData.CostingTypeId === NCCTypeId)) || costData.CostingTypeId === CBCTypeId ? costData.DestinationPlantId : (costData.CostingTypeId === ZBCTypeId) ? costData.PlantId : EMPTY_GUID,
+        PlantId: (initialConfiguration?.IsDestinationPlantConfigure && (costData.CostingTypeId === VBCTypeId || costData.CostingTypeId === NCCTypeId || costData.CostingTypeId === NFRTypeId)) || costData.CostingTypeId === CBCTypeId ? costData.DestinationPlantId : (costData.CostingTypeId === ZBCTypeId) ? costData.PlantId : EMPTY_GUID,
         TechnologyId: String(`${costData?.TechnologyId},${MACHINING}`),
         VendorPlantId: initialConfiguration?.IsVendorPlantConfigurable ? costData.VendorPlantId : EMPTY_GUID,
         CostingId: costData.CostingId,
         EffectiveDate: CostingEffectiveDate,
-        CostingTypeId: costData.CostingTypeId,
+        CostingTypeId: (Number(costData.CostingTypeId) === NFRTypeId || Number(costData.CostingTypeId) === VBCTypeId) ? VBCTypeId : costData.CostingTypeId,
         CustomerId: costData.CustomerId
       }
     }
@@ -106,7 +106,7 @@ function AddProcess(props) {
         VendorPlantId: initialConfiguration?.IsVendorPlantConfigurable ? costData.VendorPlantId : EMPTY_GUID,
         CostingId: costData.CostingId,
         EffectiveDate: CostingEffectiveDate,
-        CostingTypeId: Number(costData.CostingTypeId) === NFRTypeId ? VBCTypeId : costData.CostingTypeId,
+        CostingTypeId: (Number(costData.CostingTypeId) === NFRTypeId || Number(costData.CostingTypeId) === VBCTypeId) ? VBCTypeId : costData.CostingTypeId,
         CustomerId: costData.CustomerId
       }
     }

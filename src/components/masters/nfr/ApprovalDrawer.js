@@ -282,10 +282,10 @@ const ApprovalDrawer = (props) => {
                 "ApprovalTypeId": NFRTypeId,
                 "NfrPartWiseGroupDetailsId": tempRowData[0]?.nfrPartWiseGroupDetailsId,
                 "SenderLevel": levelDetails?.Level,
-                "SenderRemark": "string",
+                "SenderRemark": getValues('remarks'),
                 "LoggedInUserId": loggedInUserId(),
-                "ReasonId": 0,
-                "Reason": "string",
+                "ReasonId": getValues('reason')?.value,
+                "Reason": getValues('reason')?.label,
                 "NfrGroupList": arrayOfObj
             }
             dispatch(nfrSendToApproverBySender(req, (res) => {
