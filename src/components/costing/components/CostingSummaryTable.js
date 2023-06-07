@@ -29,7 +29,7 @@ import BOMViewer from '../../masters/part-master/BOMViewer';
 import _, { debounce } from 'lodash'
 import ReactExport from 'react-export-excel';
 import ExcelIcon from '../../../assests/images/excel.svg';
-import { FORGING, IdForMultiTechnology } from '../../../config/masterData'
+import { DIE_CASTING, FORGING, IdForMultiTechnology } from '../../../config/masterData'
 import ViewMultipleTechnology from './Drawers/ViewMultipleTechnology'
 import TooltipCustom from '../../common/Tooltip'
 import { Costratiograph } from '../../dashboard/CostRatioGraph'
@@ -1456,6 +1456,8 @@ const CostingSummaryTable = (props) => {
                                 <span className={`d-block small-grey-text ${isApproval && viewCostingData?.length > 1 && highlightCostingSummaryValue(reducerFinish(viewCostingData[0]?.netRMCostView), reducerFinish(viewCostingData[1]?.netRMCostView))}`}>Finish Weight</span>
                                 {viewCostingData && viewCostingData[0]?.technologyId === FORGING && <span className={`d-block small-grey-text ${isApproval && viewCostingData?.length > 1 && highlightCostingSummaryValue(viewCostingData[0]?.ForgingScrapWeight, viewCostingData[1]?.ForgingScrapWeight)}`}>Forging Scrap Weight</span>}
                                 {viewCostingData && viewCostingData[0]?.technologyId === FORGING && <span className={`d-block small-grey-text ${isApproval && viewCostingData?.length > 1 && highlightCostingSummaryValue(viewCostingData[0]?.MachiningScrapWeight, viewCostingData[1]?.MachiningScrapWeight)}`}>Machining Scrap Weight</span>}
+                                {viewCostingData && viewCostingData[0]?.technologyId === DIE_CASTING && <span className={`d-block small-grey-text ${isApproval && viewCostingData?.length > 1 && highlightCostingSummaryValue(viewCostingData[0]?.CastingWeight, viewCostingData[1]?.CastingWeight)}`}>Casting Weight</span>}
+                                {viewCostingData && viewCostingData[0]?.technologyId === DIE_CASTING && <span className={`d-block small-grey-text ${isApproval && viewCostingData?.length > 1 && highlightCostingSummaryValue(viewCostingData[0]?.MeltingLoss, viewCostingData[1]?.MeltingLoss)}`}>Melting Loss</span>}
                                 <span className={`d-block small-grey-text ${isApproval && viewCostingData?.length > 1 && highlightCostingSummaryValue(viewCostingData[0]?.netRMCostView[0]?.BurningLossWeight, viewCostingData[1]?.netRMCostView[0]?.BurningLossWeight)}`}>Burning Loss Weight</span>
                                 <span className={`d-block small-grey-text ${isApproval && viewCostingData?.length > 1 && highlightCostingSummaryValue(viewCostingData[0]?.netRMCostView[0]?.ScrapWeight, viewCostingData[1]?.netRMCostView[0]?.ScrapWeight)}`}>Scrap Weight</span>
                               </td>
@@ -1486,6 +1488,15 @@ const CostingSummaryTable = (props) => {
                                         {data?.CostingHeading !== VARIANCE ? data?.IsAssemblyCosting === true ? "Multiple RM" : <span title={(data?.MachiningScrapWeight && data?.MachiningScrapWeight)}>{(data?.MachiningScrapWeight ? data?.MachiningScrapWeight : '-')}</span> : '-'}
                                         {/* {data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.fWeight, initialConfiguration.NoOfDecimalForInputOutput) : ''} */}
                                       </span>}
+                                      {data?.technologyId === DIE_CASTING && <span className={`d-block small-grey-text ${isApproval && viewCostingData?.length > 1 && highlightCostingSummaryValue(viewCostingData[0]?.CastingWeight, viewCostingData[1]?.CastingWeight)}`}>
+                                        {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.IsAssemblyCosting === true ? "Multiple RM" : <span title={(data?.netRMCostView && data?.netRMCostView[0]?.CastingWeight)}>{checkForDecimalAndNull(data?.netRMCostView[0]?.CastingWeight, initialConfiguration.NoOfDecimalForPrice)}</span> : '-')}
+                                        {/* {data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.fWeight, initialConfiguration.NoOfDecimalForInputOutput) : ''} */}
+                                      </span>}
+                                      {data?.technologyId === DIE_CASTING && <span className={`d-block small-grey-text ${isApproval && viewCostingData?.length > 1 && highlightCostingSummaryValue(viewCostingData[0]?.MeltingLoss, viewCostingData[1]?.MeltingLoss)}`}>
+                                        {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.IsAssemblyCosting === true ? "Multiple RM" : <span title={(data?.netRMCostView && data?.netRMCostView[0]?.MeltingLoss)}>{checkForDecimalAndNull(data?.netRMCostView[0]?.data?.MeltingLoss, initialConfiguration.NoOfDecimalForPrice)}</span> : '-')}
+                                        {/* {data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.fWeight, initialConfiguration.NoOfDecimalForInputOutput) : ''} */}
+                                      </span>}
+
                                       <span className={`d-block small-grey-text ${isApproval && viewCostingData?.length > 1 && highlightCostingSummaryValue(viewCostingData[0]?.BurningLossWeight, viewCostingData[1]?.BurningLossWeight)}`}>
                                         {data?.CostingHeading !== VARIANCE ? data?.netRMCostView && (data?.netRMCostView.length > 1 || data?.IsAssemblyCosting === true) ? 'Multiple RM' : <span title={checkForDecimalAndNull(data?.netRMCostView && data?.netRMCostView[0] && data?.netRMCostView[0]?.BurningLossWeight, initialConfiguration.NoOfDecimalForInputOutput)}>{checkForDecimalAndNull(data?.netRMCostView && data?.netRMCostView[0] && data?.netRMCostView[0]?.BurningLossWeight, initialConfiguration.NoOfDecimalForInputOutput)}</span> : ''}
                                         {/* {data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.fWeight, initialConfiguration.NoOfDecimalForInputOutput) : ''} */}
