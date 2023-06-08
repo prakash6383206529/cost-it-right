@@ -17,7 +17,7 @@ import DayTime from '../../common/DayTimeWrapper';
 import Attachament from '../../costing/components/Drawers/Attachament';
 import NfrPartsListing from './NfrPartsListing';
 import { getAllNfrList, nfrDetailsForDiscountAction } from './actions/nfr';
-import { hyphenFormatter } from '../masterUtil';
+import { StatusTooltip, hyphenFormatter } from '../masterUtil';
 const gridOptions = {};
 
 
@@ -80,7 +80,7 @@ function NfrListing(props) {
     const getDataList = () => {
         dispatch(getAllNfrList((res) => {
             if (res?.data?.DataList?.length > 0) {
-                setRowData(res?.data?.DataList)
+                setRowData(StatusTooltip(res?.data?.DataList))
             }
             setloader(false)
         }))
@@ -328,7 +328,7 @@ function NfrListing(props) {
                                                 <AgGridColumn field="NumberOfParts" headerName='No. of Parts' cellRenderer={hyphenFormatter}></AgGridColumn>
                                                 <AgGridColumn field="SimulatedOn" headerName='Simulated On' cellRenderer={dateFormater}></AgGridColumn>
                                                 <AgGridColumn field="ApprovedOn" headerName='Approved On' cellRenderer={dateFormater}></AgGridColumn>
-                                                <AgGridColumn field="Status" headerName="Status" cellClass="text-center" minWidth={170} cellRenderer="statusFormatter"></AgGridColumn>
+                                                <AgGridColumn field="Status" tooltipField="tooltipText" headerName="Status" cellClass="text-center" minWidth={170} cellRenderer="statusFormatter"></AgGridColumn>
                                                 {<AgGridColumn field="Status" width={180} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
                                             </AgGridReact>
                                             <PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} globalTake={10} />
