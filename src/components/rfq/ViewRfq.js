@@ -734,7 +734,7 @@ function RfqListing(props) {
                                         type="text"
                                         className="form-control mx-2 defualt-input-value"
                                         value={data.RaisedBy}
-                                        style={{ width: (data.RaisedBy.length * 9 + 10) + 'px' }}
+                                        style={{ width: (data.RaisedBy.length * 9 + 13) + 'px' }}
                                         disabled={true}
                                     /> </div>
                                 <div className='d-flex align-items-center pr-0'><div className='w-min-fit'>Raised On:</div>
