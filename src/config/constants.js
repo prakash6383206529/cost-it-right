@@ -594,6 +594,7 @@ export const API = {
   saveRawMaterialCalculationForDieCasting: `${BASE_URL}/costing/save-raw-material-die-casting-calculation-details`,
   getRawMaterialCalculationForRubber: `${BASE_URL}/costing/get-raw-material-rubber-calculation-details`,
   saveRawMaterialCalculationForRubber: `${BASE_URL}/costing/save-raw-material-rubber-calculation-details`,
+  getSimulationRmFerrousCastingCalculation: `${BASE_URL}/simulation/get-simulation-raw-material-ferrous-casting-calculation-details`,
 
   // YOY
   getYOYCostList: `${BASE_URL}/rfq-costing/rfq-get-yoy-details`,
@@ -1741,8 +1742,11 @@ export const UNDER_REVISION = 'UnderRevision'
 export const RECEIVED = 'Received'
 export const SUBMITTED = 'Submitted'
 export const SENT = 'Sent'
+export const EXTERNAL_REJECT = 'ExternalReject'
 export const DRAFTID = 1
 export const REJECTEDID = 4
+export const PENDING_FOR_APPROVAL_ID = 2
+export const AWAITING_APPROVAL_ID = 6
 
 // MASTER APPROVAL STATUS ID
 export const APPROVED_STATUS = '3,5'
