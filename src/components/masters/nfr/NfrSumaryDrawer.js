@@ -1,15 +1,15 @@
 import { Drawer } from "@material-ui/core";
 import React, { useEffect } from "react";
-import { Col, Row, Table } from "reactstrap";
+import { Col, Row } from "reactstrap";
 import LoaderCustom from "../../common/LoaderCustom";
 import { useState } from "react";
 import ApprovalWorkFlow from "../../costing/components/approval/ApprovalWorkFlow";
 import { Fragment } from "react";
 import ApprovalDrawer from "./ApprovalDrawer";
 import NoContentFound from "../../common/NoContentFound";
-import { EMPTY_DATA, NFRTypeId, defaultPageSize } from "../../../config/constants";
+import { EMPTY_DATA, ERRORID, NFRTypeId, defaultPageSize } from "../../../config/constants";
 import { useDispatch } from "react-redux";
-import { getNFRApprovalSummary } from "./actions/nfr";
+import { getNFRApprovalSummary, pushNfrOnSap } from "./actions/nfr";
 import { formViewData, loggedInUserId, searchNocontentFilter, userDetails, userTechnologyLevelDetails } from "../../../helper";
 import { costingTypeIdToApprovalTypeIdFunction } from "../../common/CommonFunctions";
 import { checkFinalUser, getSingleCostingDetails, setCostingViewData } from "../../costing/actions/Costing";
@@ -21,6 +21,7 @@ import { PaginationWrapper } from "../../common/commonPagination";
 import WarningMessage from "../../common/WarningMessage";
 import Toaster from "../../common/Toaster";
 import OutsourcingDrawer from "./OutsourcingDrawer";
+import { MESSAGES } from "../../../config/message";
 const gridOptions = {};
 
 function NfrSummaryDrawer(props) {
@@ -45,6 +46,7 @@ function NfrSummaryDrawer(props) {
     const [isDataCome, setIsDataCome] = useState(false);
     const [showOutsourcingDrawer, setShowOutsourcingDrawer] = useState('');
     const [OutsourcingCostingData, setOutsourcingCostingData] = useState({});
+    const [disablePushButton, setDisablePushButton] = useState(false);
 
     const dispatch = useDispatch()
 
@@ -261,6 +263,21 @@ function NfrSummaryDrawer(props) {
         setApprovalDrawer(true)
     }
 
+    const pushClick = () => {
+        let pushRequest = {
+            nfrGroupId: nfrData?.NfrGroupId,
+            costingId: nfrData?.CostingData[0]?.CostingId
+        }
+        setDisablePushButton(true)
+        dispatch(pushNfrOnSap(pushRequest, res => {
+            if (res?.data?.Result) {
+                Toaster.success(MESSAGES.NFR_PUSHED)
+                setDisablePushButton(false)
+                props.closeDrawer('', "submit")
+            }
+        }))
+    }
+
     const closeOutsourcingDrawer = (type) => {
         setShowOutsourcingDrawer(false)
     }
@@ -395,8 +412,16 @@ function NfrSummaryDrawer(props) {
                                     </button>
                                 </Fragment>
                             </div>
-                        </Row>
-                        }
+                        </Row>}
+                        {Number(nfrData?.StatusId) === ERRORID && <Fragment>
+                            <button type="button" className="user-btn mr5"
+                                onClick={() => pushClick()}
+                                disabled={disablePushButton}
+                            >
+                                <div className={'mr5'}></div>
+                                {'Push'}
+                            </button>
+                        </Fragment>}
                     </div>
                 </div>
             </Drawer >
