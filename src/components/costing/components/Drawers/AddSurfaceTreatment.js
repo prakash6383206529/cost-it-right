@@ -191,7 +191,7 @@ function AddSurfaceTreatment(props) {
               <Row className="drawer-heading">
                 <Col>
                   <div className={'header-wrapper left'}>
-                    <h3>{'ADD Surface Treatment:'}</h3>
+                    <h3>{'Add Surface Treatment:'}</h3>
                   </div>
                   <div
                     onClick={cancel}
