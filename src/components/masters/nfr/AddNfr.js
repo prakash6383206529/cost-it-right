@@ -7,16 +7,15 @@ import { Redirect, useHistory } from 'react-router';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { Col, Row, Table } from 'reactstrap';
 import { getVendorWithVendorCodeSelectList } from '../../../actions/Common';
-import { EMPTY_DATA, EMPTY_GUID, NFR, NFRTypeId, VBCTypeId, searchCount, PFS2TypeId, DRAFT, DRAFTID, REJECTEDID, PFS2 } from '../../../config/constants';
-import { autoCompleteDropdown, costingTypeIdToApprovalTypeIdFunction } from '../../common/CommonFunctions';
+import { EMPTY_DATA, NFRTypeId, searchCount, DRAFT, DRAFTID, REJECTEDID } from '../../../config/constants';
+import { autoCompleteDropdown } from '../../common/CommonFunctions';
 import HeaderTitle from '../../common/HeaderTitle';
 import NoContentFound from '../../common/NoContentFound';
 import Toaster from '../../common/Toaster';
 import { AsyncSearchableSelectHookForm, SearchableSelectHookForm, TextFieldHookForm } from '../../layout/HookFormInputs';
 import { getNFRPartWiseGroupDetail, saveNFRCostingInfo, saveNFRGroupDetails } from './actions/nfr';
 import { checkForNull, checkVendorPlantConfigurable, loggedInUserId, userDetails, userTechnologyLevelDetails } from '../../../helper';
-import { dataLiist } from '../../../config/masterData';
-import { checkFinalUser, createCosting, createPFS2Costing, deleteDraftCosting, getBriefCostingById, storePartNumber } from '../../costing/actions/Costing';
+import { createCosting, deleteDraftCosting, getBriefCostingById } from '../../costing/actions/Costing';
 import ApprovalDrawer from './ApprovalDrawer';
 import TooltipCustom from '../../common/Tooltip'
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
@@ -153,6 +152,7 @@ function AddNfr(props) {
                         isRejectedBySAP: item.IsRejectedBySAP,
                         isRowActionEditable: item.IsRowActionEditable,
                         isShowCreateCostingButton: item.IsShowCreateCostingButton,
+                        IsShowEditButtonForPFS: item.IsShowEditButtonForPFS
                     };
                 });
                 setValue('Plant', `${res?.data?.Data?.PlantName} (${res?.data?.Data?.PlantCode})`);
@@ -267,7 +267,8 @@ function AddNfr(props) {
             statusId: DRAFTID,
             isRejectedBySAP: false,
             isShowCreateCostingButton: true,
-            isRowActionEditable: true
+            isRowActionEditable: true,
+            IsShowEditButtonForPFS: true
         };
         setSendForApprovalButtonDisable(false)
         setEditWarning(false)
@@ -710,6 +711,7 @@ function AddNfr(props) {
             isRejectedBySAP: temprowData[indexOuter]?.isRejectedBySAP,
             isRowActionEditable: temprowData[indexOuter]?.isRowActionEditable,
             isShowCreateCostingButton: temprowData[indexOuter]?.isShowCreateCostingButton,
+            IsShowEditButtonForPFS: temprowData[indexOuter]?.IsShowEditButtonForPFS
         }
         temprowData = Object.assign([...temprowData], { [indexOuter]: newObj })
         setRowData(temprowData)
@@ -999,7 +1001,7 @@ function AddNfr(props) {
                                             </div></td>
                                             {indexInside === 0 && (
                                                 <td rowSpan={item?.data.length} className="table-record">
-                                                    <button className="Edit" type={"button"} title={"Edit Costing"} onClick={() => editRow(item, indexInside)} disabled={isViewEstimation || !item?.isRowActionEditable || !item?.IsShowEditButtonForPFS} />
+                                                    <button className="Edit" type={"button"} title={"Edit Costing"} onClick={() => editRow(item, indexInside)} disabled={isViewEstimation || (!item?.isRowActionEditable && !item?.IsShowEditButtonForPFS)} />
                                                     {/* <button className="Delete All ml-1" title={"Delete Costing"} type={"button"} onClick={() => deleteRow(item, indexInside)} disabled={isViewEstimation || item?.statusId !== DRAFTID} /> */}
                                                 </td>
                                             )}
