@@ -804,7 +804,7 @@ class AddMoreDetails extends Component {
         this.props.change("MachineRate", 0)
       }
 
-      this.setState({ UOM: newValue }, () => { this.handleProcessCalculation() });
+      this.setState({ UOM: newValue, errorObj: { ...this.state.errorObj, processMachineRate: false } }, () => { this.handleProcessCalculation() });
 
     } else {
       this.setState({ UOM: [] })
@@ -1728,7 +1728,7 @@ class AddMoreDetails extends Component {
     }, () => {
       this.props.change('OutputPerHours', tempData.OutputPerHours)
       this.props.change('OutputPerYear', tempData.OutputPerYear)
-      this.props.change('MachineRate', tempData.MachineRate)
+      this.props.change('MachineRate', checkForDecimalAndNull(tempData.MachineRate, getConfigurationKey().NoOfDecimalForPrice))
     })
   }
 
