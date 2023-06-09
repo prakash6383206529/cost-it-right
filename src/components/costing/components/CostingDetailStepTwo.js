@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, Table } from 'reactstrap';
 import {
@@ -10,13 +10,14 @@ import DayTime from '../../common/DayTimeWrapper'
 import CostingHeadTabs from './CostingHeaderTabs/index';
 import LoaderCustom from '../../common/LoaderCustom';
 import { useContext } from 'react';
-import { ViewCostingContext, CostingTypeContext } from './CostingDetails';
+import { ViewCostingContext, CostingTypeContext, IsNFR } from './CostingDetails';
 import { createToprowObjAndSave } from '../CostingUtil';
 import _ from 'lodash'
 import { IdForMultiTechnology } from '../../../config/masterData';
 import { CBCTypeId, NCCTypeId, NFRTypeId, PFS1TypeId, PFS2TypeId, PFS3TypeId, VBCTypeId, ZBCTypeId } from '../../../config/constants';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { LOGISTICS } from '../../../config/masterData';
+import { Redirect } from 'react-router';
 
 export const costingInfoContext = React.createContext()
 export const netHeadCostContext = React.createContext()
@@ -41,6 +42,7 @@ function CostingDetailStepTwo(props) {
 
   const CostingViewMode = useContext(ViewCostingContext);
   const costingType = useContext(CostingTypeContext);
+  const [nfrListing, setNfrListing] = useState(false)
 
 
   const { initialConfiguration } = useSelector(state => state.auth)
@@ -48,6 +50,7 @@ function CostingDetailStepTwo(props) {
     DiscountCostData, partNo, IsToolCostApplicable, showLoading, RMCCTabData, getAssemBOPCharge, SurfaceTabData, OverheadProfitTabData,
     PackageAndFreightTabData, ToolTabData, CostingEffectiveDate } = useSelector(state => state.costing)
   const partType = IdForMultiTechnology.includes(String(costingData?.TechnologyId))
+  const isNFR = useContext(IsNFR);
 
   let data = useSelector(state => state.costing)
 
@@ -379,45 +382,63 @@ function CostingDetailStepTwo(props) {
   }
 
   const handleBackButton = () => {
-    if (RMCCTabData && RMCCTabData.length > 0 && CostingViewMode === false && !partType) {
-      let tempArrForCosting = reactLocalStorage.getObject('costingArray')
-      const data = _.find(tempArrForCosting, ['IsPartLocked', true])
-      const bopData = _.find(tempArrForCosting, ['PartType', 'BOP'])
-      const lockedData = _.find(tempArrForCosting, ['IsLocked', true])
-      const tabData = RMCCTabData[0]
-      const surfaceTabData = SurfaceTabData[0]
-      const overHeadAndProfitTabData = OverheadProfitTabData[0]
-      const discountAndOtherTabData = DiscountCostData
-      if (data !== undefined || bopData !== undefined || lockedData !== undefined) {
-        let assemblyRequestedData = createToprowObjAndSave(tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, NetPOPrice, getAssemBOPCharge, 1, CostingEffectiveDate)
-        dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData, res => { }))
+    if (isNFR) {
+      reactLocalStorage.setObject('isFromDiscountObj', true)
+      setNfrListing(true)
+    } else {
+      if (RMCCTabData && RMCCTabData.length > 0 && CostingViewMode === false && !partType) {
+        let tempArrForCosting = reactLocalStorage.getObject('costingArray')
+        const data = _.find(tempArrForCosting, ['IsPartLocked', true])
+        const bopData = _.find(tempArrForCosting, ['PartType', 'BOP'])
+        const lockedData = _.find(tempArrForCosting, ['IsLocked', true])
+        const tabData = RMCCTabData[0]
+        const surfaceTabData = SurfaceTabData[0]
+        const overHeadAndProfitTabData = OverheadProfitTabData[0]
+        const discountAndOtherTabData = DiscountCostData
+        if (data !== undefined || bopData !== undefined || lockedData !== undefined) {
+          let assemblyRequestedData = createToprowObjAndSave(tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, NetPOPrice, getAssemBOPCharge, 1, CostingEffectiveDate)
+          dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData, res => { }))
+        }
+        let surfaceArrForCosting = reactLocalStorage.getObject('surfaceCostingArray')
+        const surfaceData = _.find(surfaceArrForCosting, ['IsPartLocked', true])
+        const surfaceLockedData = _.find(surfaceArrForCosting, ['IsLocked', true])
+        if (surfaceData !== undefined || surfaceLockedData !== undefined) {
+          let assemblyRequestedData = createToprowObjAndSave(tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, NetPOPrice, getAssemBOPCharge, 2, CostingEffectiveDate)
+          dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData, res => { }))
+        }
       }
-      let surfaceArrForCosting = reactLocalStorage.getObject('surfaceCostingArray')
-      const surfaceData = _.find(surfaceArrForCosting, ['IsPartLocked', true])
-      const surfaceLockedData = _.find(surfaceArrForCosting, ['IsLocked', true])
-      if (surfaceData !== undefined || surfaceLockedData !== undefined) {
-        let assemblyRequestedData = createToprowObjAndSave(tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, NetPOPrice, getAssemBOPCharge, 2, CostingEffectiveDate)
-        dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData, res => { }))
-      }
-    }
-    dispatch(savePartNumber(''))
-    dispatch(setPartNumberArrayAPICALL([]))
-    dispatch(saveBOMLevel(''))
-    dispatch(saveAssemblyNumber([]))
-    dispatch(setRMCCErrors({}))
-    dispatch(setOverheadProfitErrors({}))
-    dispatch(setToolsErrors({}))
-    dispatch(setDiscountErrors({}))
-    dispatch(setComponentDiscountOtherItemData({}, () => { }))
-    dispatch(isDiscountDataChange(false))
+      dispatch(savePartNumber(''))
+      dispatch(setPartNumberArrayAPICALL([]))
+      dispatch(saveBOMLevel(''))
+      dispatch(saveAssemblyNumber([]))
+      dispatch(setRMCCErrors({}))
+      dispatch(setOverheadProfitErrors({}))
+      dispatch(setToolsErrors({}))
+      dispatch(setDiscountErrors({}))
+      dispatch(setComponentDiscountOtherItemData({}, () => { }))
+      dispatch(isDiscountDataChange(false))
 
-    props.backBtn()
+      props.backBtn()
+    }
   }
   const vendorNameWithCode = `${costingData.VendorName}(${costingData.VendorCode})`
+
+  if (nfrListing === true) {
+
+    return <Redirect
+      to={{
+        pathname: "/nfr",
+        state: {
+        }
+
+      }}
+    />
+  }
+
   return (
     <>
       {showLoading && <LoaderCustom customClass={'costing-loader'} />}
-      <div className="login-container signup-form">
+      {!nfrListing && <div className="login-container signup-form">
         <Row>
           <Col md="12">
             <div className="shadow-lgg login-formg">
@@ -553,7 +574,7 @@ function CostingDetailStepTwo(props) {
             </div>
           </Col>
         </Row>
-      </div>
+      </div>}
     </>
   );
 };

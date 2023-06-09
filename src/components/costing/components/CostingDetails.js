@@ -1361,6 +1361,7 @@ function CostingDetails(props) {
     if (props?.nfrData?.isNFR) {
       // CODE FIR BACK BUTTON
       setNFRListing(true)
+      reactLocalStorage.setObject('isFromDiscountObj', true)
       dispatch(isDataChange(false))
       dispatch(setRMCCData([], () => { }))                            //THIS WILL CLEAR RM CC REDUCER
       dispatch(setCostingDataList('setHeaderCostRMCCTab', [], () => { }))

@@ -121,7 +121,7 @@ function AddNfr(props) {
         }
     }, [rowData])
 
-    const getDetails = () => {
+    const getDetails = (isFromOutsourcing) => {
         setLoader(true)
         let requestObject = {
             nfrId: nfrIdsList?.NfrMasterId,
@@ -199,6 +199,11 @@ function AddNfr(props) {
                 //     let temp = tempArrForCosting[indexOuter].data[indexInside]?.CostingOptions
                 //     tempArrForCosting[indexOuter].data[indexInside].SelectedCostingVersion = temp?.filter(element => element?.CostingId === OutsourcingCostingData?.CostingId)[0]
                 // }
+                if (isFromOutsourcing) {
+                    let selectedData = tempArrForCosting[indexOuter]?.data[indexInside]?.CostingOptions
+                    tempArrForCosting[indexOuter].data[indexInside].SelectedCostingVersion = selectedData?.filter(ele => ele?.CostingId === OutsourcingCostingData?.CostingId)[0]
+                    setEditWarning(false)
+                }
                 setRowData(tempArrForCosting)
             }
             setTimeout(() => {
@@ -236,7 +241,7 @@ function AddNfr(props) {
     }
 
     useEffect(() => {
-        getDetails()
+        getDetails(false)
     }, [])
 
     // Sets the initial values of the form fields based on the nfrData prop.
@@ -746,7 +751,7 @@ function AddNfr(props) {
 
     const closeOutsourcingDrawer = (type) => {
         if (type === 'submit') {
-            getDetails()
+            getDetails(true)
         }
         setShowOutsourcingDrawer(false)
     }
