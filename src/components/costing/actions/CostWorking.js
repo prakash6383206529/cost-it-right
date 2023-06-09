@@ -1318,3 +1318,19 @@ export function getSimulationRmFerrousCastingCalculation(simulationId, costingId
     });
   };
 }
+
+
+export function saveRawMaterialCalculationForRubberCompound(data, callback) {
+  return (dispatch) => {
+    const request = axios.post(API.saveRawMaterialCalculationForRubberCompound, data, config());
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response);
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      apiErrors(error);
+      callback(error);
+    });
+  };
+}
