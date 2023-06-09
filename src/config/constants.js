@@ -1743,6 +1743,7 @@ export const UNDER_REVISION = 'UnderRevision'
 export const RECEIVED = 'Received'
 export const SUBMITTED = 'Submitted'
 export const SENT = 'Sent'
+export const EXTERNAL_REJECT = 'ExternalReject'
 export const DRAFTID = 1
 export const REJECTEDID = 4
 export const PENDING_FOR_APPROVAL_ID = 2
