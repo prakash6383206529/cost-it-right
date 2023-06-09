@@ -1269,6 +1269,17 @@ const CostingSummaryTable = (props) => {
               <Col md="12">
                 <div className={`${viewCostingData[0]?.technologyId !== LOGISTICS ? '' : `overflow-y-hidden ${props?.isRfqCosting ? 'layout-min-height-440px' : ''}`} table-responsive`}>
                   <table className={`table table-bordered costing-summary-table ${approvalMode ? 'costing-approval-summary' : ''}`}>
+                    {props.isRfqCosting && <thead>
+                      <tr>
+                        {viewCostingData && viewCostingData?.map((data, index) => {
+                          return (<>
+                            <th key={index} scope="col" className='approval-summary-headers'>{props.uniqueShouldCostingId.includes(data.costingId) && index !== 0 ? "Should Cost" : ""}</th>
+                            {(data?.bestCost === true) && <th key={index} scope="col" className='approval-summary-headers'>{(data?.bestCost === true) ? "Best Cost" : ""}</th>}
+                          </>
+                          )
+                        })}
+                      </tr>
+                    </thead>}
                     <thead>
                       <tr className="main-row">
                         {isApproval ? <th scope="col" className='approval-summary-headers'>{props.id}</th> : <th scope="col" className={`header-name-left ${isLockedState && !drawerDetailPDF && !pdfHead && costingSummaryMainPage ? 'pt-30' : ''}`}>{props?.isRfqCosting ? 'VBC' : (reactLocalStorage.getObject('cbcCostingPermission')) ? 'VBC/ZBC/NCC/CBC' : 'VBC/ZBC/NCC'}</th>}
@@ -1305,7 +1316,9 @@ const CostingSummaryTable = (props) => {
                                       </>
                                     }
                                     {
-                                      (isApproval && data?.CostingHeading !== '-') ? <span>{data?.CostingHeading}</span> : <span className={`checkbox-text`} title={title}><div><span>{heading(data).mainHeading}<span> {data.costingTypeId !== CBCTypeId && `(SOB: ${data?.shareOfBusinessPercent}%)`}</span></span><span className='sub-heading'>{heading(data).subHeading}-{data.costingHeadCheck}</span></div></span>
+                                      (isApproval && data?.CostingHeading !== '-') ? <span>{data?.CostingHeading}</span> :
+                                        (data?.bestCost === true) ? "" :
+                                          <span className={`checkbox-text`} title={title}><div><span>{heading(data).mainHeading}<span> {data.costingTypeId !== CBCTypeId && `(SOB: ${data?.shareOfBusinessPercent}%)`}</span></span><span className='sub-heading'>{heading(data).subHeading}-{data.costingHeadCheck}</span></div></span>
                                     }
                                     {data?.CostingHeading === VARIANCE && ((!pdfHead)) && <TooltipCustom customClass="mb-0 ml-1" id="variance" tooltipText="Variance = (Old Costing - New Costing)" />}
                                   </div>
