@@ -1,7 +1,7 @@
 
 import { useDispatch } from "react-redux";
 import { reactLocalStorage } from "reactjs-localstorage";
-import { HOUR, MINUTES, SECONDS } from "../../config/constants";
+import { HOUR, MICROSECONDS, MILLISECONDS, MINUTES, SECONDS } from "../../config/constants";
 import { checkForNull, loggedInUserId } from "../../helper"
 import DayTime from "../common/DayTimeWrapper";
 import { getBriefCostingById, gridDataAdded, isDataChange, saveAssemblyBOPHandlingCharge, saveBOMLevel, savePartNumber, setComponentDiscountOtherItemData, setComponentItemData, setComponentOverheadItemData, setComponentPackageFreightItemData, setComponentToolItemData, setOverheadProfitData, setPackageAndFreightData, setPartNumberArrayAPICALL, setProcessGroupGrid, setRMCCData, setSurfaceCostData, setToolTabData } from "./actions/Costing";
@@ -172,6 +172,12 @@ export const findProcessCost = (uom, mhr, productionPerHour) => {
     processCost = checkForNull(((checkForNull(mhr) * 60) / checkForNull(productionPerHour)))
   } else if (uom === SECONDS) {
     processCost = checkForNull(((checkForNull(mhr) * 3600) / checkForNull(productionPerHour)))
+  }
+  else if (uom === MILLISECONDS) {
+    processCost = checkForNull(((checkForNull(mhr) * 3600000) / checkForNull(productionPerHour)))
+  }
+  else if (uom === MICROSECONDS) {
+    processCost = checkForNull(((checkForNull(mhr) * 3600000000) / checkForNull(productionPerHour)))
   }
   return processCost
 }
