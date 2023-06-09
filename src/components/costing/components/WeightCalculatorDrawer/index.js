@@ -10,7 +10,7 @@ import NonFerrousCalculator from './dieCasting'
 import Ferrous from './Ferrous'
 import StandardRub from './rubber/StandardRub'
 import CorrugatedBoxCalculator from './corrugatedBox/index'
-import RubberCalciTab from './rubber'
+import RubberCalciTab from './Rubber'
 
 function OpenWeightCalculator(props) {
   const { rmRowData, item, isSummary, rmMBDetail, CostingViewMode, rmData, technology, DisableMasterBatchCheckbox } = props
