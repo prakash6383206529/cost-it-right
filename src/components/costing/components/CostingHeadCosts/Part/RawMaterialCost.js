@@ -22,7 +22,7 @@ import { getTechnology, technologyForDensity, isMultipleRMAllow, STRINGMAXLENGTH
 import PopupMsgWrapper from '../../../../common/PopupMsgWrapper';
 import { SHEETMETAL, RUBBER, FORGING, DIE_CASTING, PLASTIC, CORRUGATEDBOX, Ferrous_Casting } from '../../../../../config/masterData'
 import _, { debounce } from 'lodash'
-import { number, checkWhiteSpaces, hashValidation, percentageLimitValidation, decimalNumberLimit6 } from "../../../../../helper/validation";
+import { number, checkWhiteSpaces, hashValidation, percentageLimitValidation, decimalNumberLimit6, percentageOfNumber } from "../../../../../helper/validation";
 
 let counter = 0;
 let timerId = 0
@@ -242,9 +242,12 @@ function RawMaterialCost(props) {
     }
 
     if (rowData && rowData.length > 0 && IsApplyMasterBatch) {
+      let value = rowData && (rowData[0].EntryType === 'Domestic') ? rowData[0].NetLandedCost : rowData[0].NetLandedCostConversion
       setValue('MBName', rowData && rowData[0].RawMaterial !== undefined ? rowData[0].RawMaterial : '')
       setValue('MBId', rowData && rowData[0].RawMaterialId !== undefined ? rowData[0].RawMaterialId : '')
-      setValue('MBPrice', rowData && (rowData[0].EntryType === 'Domestic') ? rowData[0].NetLandedCost : rowData[0].NetLandedCostConversion)
+      setValue('MBPrice', value)
+      let calculatedPercentage = percentageOfNumber(value, checkForNull(getValues("MBPercentage")))
+      setValue('RMTotal', checkForDecimalAndNull(calculatedPercentage, initialConfiguration.NoOfDecimalForPrice))
     }
     setDrawerOpen(false)
   }
@@ -1169,7 +1172,7 @@ function RawMaterialCost(props) {
                   <div className={'plus'}></div>RM
                 </button>
               }
-              {((costData?.TechnologyId === Ferrous_Casting) && gridData?.length !== 0) && <button
+              {((costData?.TechnologyId === Ferrous_Casting || costData?.TechnologyId === RUBBER) && gridData?.length !== 0) && <button
                 className="secondary-btn"
                 type={'button'}
                 onClick={() => toggleWeightCalculator(0)}
