@@ -9,7 +9,7 @@ import NoContentFound from '../../../common/NoContentFound';
 import { AWAITING_APPROVAL_ID, EMPTY_DATA, PENDING_FOR_APPROVAL_ID, REJECTEDID } from '../../../../config/constants';
 import { SHEETMETAL, RUBBER, FORGING, DIE_CASTING, PLASTIC, CORRUGATEDBOX, Ferrous_Casting } from '../../../../config/masterData'
 import 'reactjs-popup/dist/index.css'
-import { getRawMaterialCalculationForCorrugatedBox, getRawMaterialCalculationForDieCasting, getRawMaterialCalculationForFerrous, getRawMaterialCalculationForForging, getRawMaterialCalculationForPlastic, getRawMaterialCalculationForRubber, getRawMaterialCalculationForSheetMetal, getSimulationRmFerrousCastingCalculation, } from '../../actions/CostWorking'
+import { getRawMaterialCalculationForCorrugatedBox, getRawMaterialCalculationForDieCasting, getRawMaterialCalculationForFerrous, getRawMaterialCalculationForForging, getRawMaterialCalculationForPlastic, getRawMaterialCalculationForRubber, getRawMaterialCalculationForSheetMetal, getSimulationRmFerrousCastingCalculation, getSimulationRmRubberCalculation, } from '../../actions/CostWorking'
 import TooltipCustom from '../../../common/Tooltip';
 
 function ViewRM(props) {
@@ -47,6 +47,17 @@ function ViewRM(props) {
       switch ((Number(tempData.technologyId))) {
         case Ferrous_Casting:
           dispatch(getSimulationRmFerrousCastingCalculation(tempData.SimulationId, tempData.netRMCostView[index].CostingId, res => {
+
+            if (Number(res.status) === Number(204)) {
+              Toaster.warning('Data is not avaliabe for calculator')
+            } else {
+              setCalculatorData(res, index)
+            }
+          }))
+          break;
+
+        case RUBBER:
+          dispatch(getSimulationRmRubberCalculation(tempData.SimulationId, tempData.netRMCostView[index].CostingId, res => {
 
             if (Number(res.status) === Number(204)) {
               Toaster.warning('Data is not avaliabe for calculator')
@@ -133,7 +144,7 @@ function ViewRM(props) {
       {
         !isPDFShow &&
         <Col md="6" className='btn-container mt-1' >
-          {viewCostingData[props.index].technologyId === Ferrous_Casting && <button
+          {(viewCostingData[props.index].technologyId === Ferrous_Casting || viewCostingData[props.index].technologyId === RUBBER) && <button
             className="secondary-btn"
             type={'button'}
             onClick={() => { getWeightData(0) }}
@@ -153,17 +164,17 @@ function ViewRM(props) {
               <th>{`Gross Weight (Kg)`}</th>
               <th>{`Finish Weight (Kg)`}</th>
               <th>{`Scrap Weight`}</th>
-              {!isPDFShow && checkForNull(viewCostingData[props.index].technologyId) !== Ferrous_Casting && <th>{`Calculator`}</th>}
+              {!isPDFShow && checkForNull(viewCostingData[props.index].technologyId !== Ferrous_Casting) && checkForNull(viewCostingData[props.index].technologyId) !== RUBBER && <th>{`Calculator`}</th>}
               {/* <th>{`Freight Cost`}</th>
-                    <th>{`Shearing Cost`}</th> */}
+                  <th>{`Shearing Cost`}</th> */}
               <th>{`Burning Loss Weight`}</th>
               {viewCostingData[0].technologyId === DIE_CASTING && <th>Casting Weight</th>}
               {viewCostingData[0].technologyId === DIE_CASTING && <th>Melting Loss</th>}
               <th >{`Net RM Cost/Pc`}</th>
               <th className="costing-border-right">{`Remark`}</th>
 
-            </tr>
-          </thead>
+            </tr >
+          </thead >
           <tbody>
             {viewRM && viewRM.length > 0 && viewRM.map((item, index) => {
               return (
@@ -176,12 +187,13 @@ function ViewRM(props) {
                   <td>{checkForDecimalAndNull(item.GrossWeight, initialConfiguration.NoOfDecimalForInputOutput)}</td>
                   <td>{checkForDecimalAndNull(item.FinishWeight, initialConfiguration.NoOfDecimalForInputOutput)}</td>
                   <td>{checkForDecimalAndNull(item.ScrapWeight, initialConfiguration.NoOfDecimalForInputOutput)}</td>
-                  {!isPDFShow && checkForNull(viewCostingData[props.index].technologyId) !== Ferrous_Casting && <td><button
+                  {!isPDFShow && checkForNull(viewCostingData[props.index].technologyId) !== Ferrous_Casting && checkForNull(viewCostingData[props.index].technologyId) !== RUBBER && <td><button
                     className="CalculatorIcon cr-cl-icon mr-auto ml-0"
                     type={"button"}
                     disabled={(item.RawMaterialCalculatorId === 0 || item.RawMaterialCalculatorId === null) ? true : false}
                     onClick={() => { getWeightData(index) }}
-                  /></td>}
+                  /></td>
+                  }
                   {/* <td>{item.FreightCost ? checkForDecimalAndNull(item.FreightCost, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
                         <td>{item.ShearingCost ? checkForDecimalAndNull(item.ShearingCost, initialConfiguration.NoOfDecimalForPrice) : '-'}</td> */}
                   <td>{item.BurningLossWeight ? checkForDecimalAndNull(item.BurningLossWeight, initialConfiguration.NoOfDecimalForInputOutput) : '-'}</td>
@@ -192,21 +204,24 @@ function ViewRM(props) {
                     <div className={`${isPDFShow ? '' : 'remark-overflow'}`} title={item.Remark}>
                       <span>{item?.Remark ? item.Remark : "-"}</span></div>
                   </td>
-                </tr>
+                </tr >
               )
             })}
-            {viewRM?.length === 0 && (
-              <tr>
-                <td colSpan={13}>
-                  <NoContentFound title={EMPTY_DATA} />
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </Table>
-      </Col>
+            {
+              viewRM?.length === 0 && (
+                <tr>
+                  <td colSpan={13}>
+                    <NoContentFound title={EMPTY_DATA} />
+                  </td>
+                </tr>
+              )
+            }
+          </tbody >
+        </Table >
+      </Col >
 
-      {viewCostingData[props.index].isApplyMasterBatch && !isAssemblyCosting &&
+      {
+        viewCostingData[props.index].isApplyMasterBatch && !isAssemblyCosting &&
         <>
           < Col md="12">
             <div className="left-border mt-4 mb-3">Master Batch</div>
@@ -238,7 +253,8 @@ function ViewRM(props) {
               </tbody>
             </Table>
           </Col>
-        </>}
+        </>
+      }
 
       {
         isAssemblyCosting && masterBatchList.length > 0 && (!isSimulationDone === false ? isSimulationDone : (simulationMode ? simulationMode : false)) &&
@@ -321,7 +337,7 @@ function ViewRM(props) {
                     rmMBDetail={rmMBDetail} // MASTER BATCH DETAIL
                     CostingViewMode={true}   // THIS KEY WILL BE USE TO OPEN CALCI IN VIEW MODE
                     fromCostingSummary={props.fromCostingSummary}
-                    rmData={calciData.WeightCalculatorRequest.CostingFerrousCalculationRawMaterials}
+                    rmData={viewCostingData[props.index].technologyId === RUBBER ? calciData.WeightCalculatorRequest.CostingRubberCalculationRawMaterials : calciData.WeightCalculatorRequest.CostingFerrousCalculationRawMaterials}
                   />
                 )}
               </Row>
