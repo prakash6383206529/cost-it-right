@@ -264,7 +264,7 @@ function TabDiscountOther(props) {
           let Data = res.data.DataList[0];
           if (Data && Data?.CostingPartDetails && Data?.CostingPartDetails?.GrandTotalCost !== null) {
             let OtherCostDetails = Data?.CostingPartDetails?.OtherCostDetails;
-            setDiscountObj(OtherCostDetails)
+            setDiscountObj({ ...OtherCostDetails, totalConditionCost: Data?.NetConditionCost, totalNpvCost: Data?.NetNpvCost })
             setIsCurrencyChange(OtherCostDetails.IsChangeCurrency ? true : false)
             setCurrencyExchangeRate(OtherCostDetails.CurrencyExchangeRate)
             setFiles(Data.Attachements ? Data.Attachements : [])
