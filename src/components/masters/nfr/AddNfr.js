@@ -104,7 +104,7 @@ function AddNfr(props) {
     }
 
     useEffect(() => {
-        let rowtemp = rowData.filter(element => Number(element?.statusId) === DRAFTID)
+        let rowtemp = rowData.filter(element => element?.groupName === existingGroupNameVersion)
         let dataList = _.map(rowtemp[0]?.data, 'SelectedCostingVersion')
         if (dataList?.length === 0 || dataList.includes(undefined)) {
             // if (dataList.every(value => value === undefined)) {
