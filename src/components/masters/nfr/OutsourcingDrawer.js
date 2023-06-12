@@ -3,7 +3,7 @@ import { useForm, Controller } from "react-hook-form";
 import { useDispatch, useSelector } from 'react-redux';
 import { Container, Row, Col, Table } from 'reactstrap';
 import Drawer from '@material-ui/core/Drawer';
-import { SearchableSelectHookForm, TextFieldHookForm, } from '../../layout/HookFormInputs';
+import { NumberFieldHookForm, SearchableSelectHookForm, TextFieldHookForm, } from '../../layout/HookFormInputs';
 import { EMPTY_DATA } from '../../../config/constants';
 import { checkForDecimalAndNull, checkWhiteSpaces, number, decimalNumberLimit6, loggedInUserId } from '../../../helper';
 import NoContentFound from '../../common/NoContentFound';
@@ -231,24 +231,28 @@ function OutsourcingDrawer(props) {
                     register={register}
                     defaultValue={description.length !== 0 ? description : ""}
                     options={renderListing("Description")}
-                    mandatory={false}
+                    mandatory={true}
                     handleChange={handleDescriptionChange}
                     errors={errors.Plant}
                     disabled={viewMode}
                   />
                 </Col>
                 <Col md="4">
-                  <TextFieldHookForm
+                  <NumberFieldHookForm
                     label={`Cost`}
                     name={'Cost'}
-                    placeholder="-"
+                    placeholder=""
                     Controller={Controller}
                     control={control}
                     register={register}
-                    mandatory={false}
+                    mandatory={true}
+
                     rules={{
                       required: false,
                       validate: { number, checkWhiteSpaces, decimalNumberLimit6 },
+                      pattern: {
+                        value: /^\d{0,8}(\.\d{0,7})?$/i,
+                      },
                     }}
                     handleChange={() => { }}
                     defaultValue={''}

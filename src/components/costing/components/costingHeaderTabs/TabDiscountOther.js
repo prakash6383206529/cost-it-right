@@ -121,8 +121,8 @@ function TabDiscountOther(props) {
   useEffect(() => {
     dispatch(getCurrencySelectList(() => { }))
     return () => {
-      reactLocalStorage.setObject('isFromDiscountObj', false)
-      setNfrListing(false)
+      // reactLocalStorage.setObject('isFromDiscountObj', false)       // TRU UNCOMMENTING THIS CODE WHEN FIND PROBLEM IN NAVIGATING TO NFR CREATE ESTIMATION FROM COSTING
+      // setNfrListing(false)
     }
   }, [])
 

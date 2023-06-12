@@ -4010,7 +4010,7 @@ export const ENDMILL = 'End Mill'
 export const BROACHING = 'Broaching'
 export const HARDFACING = 'Hard Facing'
 
-export const getTechnology = [1, 8, 7, 2, 4, 20, 23]
+export const getTechnology = [1, 8, 2, 4, 20, 23]
 export const technologyForDensity = [1, 2, 7]
 export const getTechnologyForRecoveryPercent = [4, 6, 3, 5, 2]
 export const getTechnologyForSimulation = ['0', '1', '2', '3', '4', '5', '6', '7', '9', '10']
@@ -4813,6 +4813,58 @@ export const USER_LISTING_DOWNLOAD_EXCEl = [
     { label: "Role", value: "RoleName", },
     { label: "Status", value: "status", }
 
+]
+
+export const RM_IMPACT_DOWNLOAD_EXCEl = [
+    { label: "Raw Material", value: "RawMaterial", },
+    { label: "Grade", value: "RMGrade", },
+    { label: "Spec", value: "RMSpec", },
+    { label: "Code", value: "RawMaterialCode", },
+    { label: "UOM", value: "UOM", },
+    { label: "Existing Basic Rate", value: "OldBasicRate", },
+    { label: "Revised Basic Rate", value: "NewBasicRate", },
+    { label: "Existing Scrap Rate", value: "OldScrapRate", },
+    { label: "Revised Scrap Rate", value: "NewScrapRate", },
+    { label: "Freight Cost", value: "RMFreightCost", },
+    { label: "Shearing Cost", value: "RMShearingCost", },
+    { label: "Current Effective date", value: "EffectiveDate", },
+]
+
+export const BOP_IMPACT_DOWNLOAD_EXCEl = [
+    { label: "BOP Part No", value: "BoughtOutPartNumber", },
+    { label: "BOP Part Name", value: "BoughtOutPartName", },
+    { label: "Existing Basic Rate", value: "OldBOPRate", },
+    { label: "Revised Basic Rate", value: "NewBOPRate", },
+    { label: "Existing Net Cost", value: "OldNetBoughtOutPartCost", },
+    { label: "Revised Net Cost", value: "NewNetBoughtOutPartCost", },
+    { label: "Current Effective date", value: "EffectiveDate", },
+]
+
+export const MACHINE_IMPACT_DOWNLOAD_EXCEl = [
+    { label: "Machine Name", value: "MachineName", },
+    { label: "Machine Number", value: "MachineNumber", },
+    { label: "Process Name", value: "ProcessName", },
+    { label: "Existing Machine Rate", value: "OldMachineRate", },
+    { label: "Revised Machine Rate", value: "NewMachineRate", },
+    { label: "Current Effective date", value: "EffectiveDate", },
+]
+
+export const OPERATION_IMPACT_DOWNLOAD_EXCEl = [
+    { label: "Operation Name", value: "OperationName", },
+    { label: "Operation Code", value: "OperationCode", },
+    { label: "Existing Net Rate", value: "OldOperationRate", },
+    { label: "Revised Net Rate", value: "NewOperationRate", },
+    { label: "Current Effective date", value: "EffectiveDate", },
+]
+
+export const EXCHANGE_IMPACT_DOWNLOAD_EXCEl = [
+    { label: "Currency", value: "Currency", },
+    { label: "Bank Rate(INR)", value: "BankRate", },
+    { label: "Bank Commission %", value: "BankCommissionPercentage", },
+    { label: "Custom Rate(INR)", value: "CustomRate", },
+    { label: "Existing Exchange Rate(INR)", value: "OldExchangeRate", },
+    { label: "Revised Exchange Rate(INR)", value: "NewExchangeRate", },
+    { label: "Current Effective date", value: "EffectiveDate", },
 ]
 
 

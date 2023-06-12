@@ -2,9 +2,9 @@ import React, { useState, useEffect, useContext } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Container, Row, Col, } from 'reactstrap';
 import Drawer from '@material-ui/core/Drawer';
-import { getBOPDrawerDataList, getBOPDrawerVBCDataList } from '../../actions/Costing';
+import { getBOPDrawerDataList } from '../../actions/Costing';
 import { costingInfoContext } from '../CostingDetailStepTwo';
-import { CBCTypeId, defaultPageSize, EMPTY_GUID, NCC, NCCTypeId, NFRTypeId, VBC, VBCTypeId, ZBC, ZBCTypeId } from '../../../../config/constants';
+import { CBCTypeId, defaultPageSize, EMPTY_GUID, NCCTypeId, NFRTypeId, PFS1TypeId, PFS2TypeId, PFS3TypeId, VBCTypeId, ZBC, ZBCTypeId } from '../../../../config/constants';
 import NoContentFound from '../../../common/NoContentFound';
 import { EMPTY_DATA } from '../../../../config/constants';
 import Toaster from '../../../common/Toaster';
@@ -101,12 +101,18 @@ function AddBOP(props) {
   const getDataList = (categoryId = 0) => {
     const data = {
       VendorId: costData.VendorId ? costData.VendorId : EMPTY_GUID,
-      PlantId: (initialConfiguration?.IsDestinationPlantConfigure && (costData.CostingTypeId === VBCTypeId || costData.CostingTypeId === NCCTypeId || costData.CostingTypeId === NFRTypeId)) || costData.CostingTypeId === CBCTypeId ? costData.DestinationPlantId : (costData.CostingTypeId === ZBCTypeId) ? costData.PlantId : EMPTY_GUID,
+
+      PlantId: (initialConfiguration?.IsDestinationPlantConfigure && (costData.CostingTypeId === VBCTypeId || costData.CostingTypeId === NCCTypeId || costData.CostingTypeId === NFRTypeId || costData.CostingTypeId === PFS1TypeId
+        || costData.CostingTypeId === PFS2TypeId || costData.CostingTypeId === PFS3TypeId)) || costData.CostingTypeId === CBCTypeId ? costData.DestinationPlantId : (costData.CostingTypeId === ZBCTypeId) ? costData.PlantId : EMPTY_GUID,
+
       VendorPlantId: initialConfiguration?.IsVendorPlantConfigurable ? costData.VendorPlantId : EMPTY_GUID,
       EffectiveDate: CostingEffectiveDate,
       CostingId: costData.CostingId,
       categoryId: categoryId,
-      CostingTypeId: Number(costData.CostingTypeId) === NFRTypeId ? VBCTypeId : costData.CostingTypeId,
+
+      CostingTypeId: (Number(costData.CostingTypeId) === NFRTypeId || Number(costData.CostingTypeId) === VBCTypeId || Number(costData.CostingTypeId) === PFS1TypeId
+        || Number(costData.CostingTypeId) === PFS2TypeId || Number(costData.CostingTypeId) === PFS3TypeId) ? VBCTypeId : costData.CostingTypeId,
+
       CustomerId: costData.CustomerId
     }
     dispatch(getBOPDrawerDataList(data, (res) => {

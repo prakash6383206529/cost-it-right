@@ -169,7 +169,7 @@ function SupplierContributionReport(props) {
                             label += ': ';
                         }
                         if (context.parsed !== null) {
-                            label += new Intl.NumberFormat('en-US', { style: 'currency', currency: (props?.rowData?.Currency) ? props.rowData.Currency : 'INR' }).format(context.parsed);
+                            label += new Intl.NumberFormat('en-IN', { style: 'currency', currency: (props?.rowData?.Currency) ? props.rowData.Currency : 'INR' }).format(context.parsed);
                         }
                         return `Price :${label} | No. of Parts: ${context?.dataset?.vendorPartCount[context?.dataIndex] ? (context?.dataset?.vendorPartCount[context?.dataIndex]) : '-'}`;
                     }
@@ -206,8 +206,8 @@ function SupplierContributionReport(props) {
                 var fontSize = (width + 6) / width;
                 ctx.font = 1.5 + "em sans-serif";
                 ctx.textBaseline = "top";
-                var text = `${getCurrencySymbol(getConfigurationKey().BaseCurrency)} ${totalCost.toLocaleString()}`,
-                    textX = width / 2.1,
+                var text = `${getCurrencySymbol(getConfigurationKey().BaseCurrency)} ${totalCost.toLocaleString('en-IN')}`,
+                    textX = width / (2.1 + (0.02 * (String(totalCost).length))),
                     textY = height / 2;
                 ctx.fillText(text, textX, textY);
                 ctx.save();
