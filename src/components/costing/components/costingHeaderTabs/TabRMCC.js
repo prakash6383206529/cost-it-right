@@ -1409,6 +1409,7 @@ function TabRMCC(props) {
         "NetToolCost": ComponentItemData?.CostingPartDetails?.TotalToolCost,
         "NetTotalRMBOPCC": ComponentItemData?.CostingPartDetails?.TotalCalculatedRMBOPCCCost,
         "TotalCost": costData.IsAssemblyPart ? (stCostingData && Object.keys(stCostingData).length > 0) ? (checkForNull(stCostingData?.CostingPartDetails?.NetSurfaceTreatmentCost) + checkForNull(ComponentItemData?.CostingPartDetails?.TotalCalculatedRMBOPCCCost)) : ComponentItemData?.CostingPartDetails?.TotalCalculatedRMBOPCCCost : netPOPrice,
+        "BasicRate": costData.IsAssemblyPart ? (stCostingData && Object.keys(stCostingData).length > 0) ? (checkForNull(stCostingData?.CostingPartDetails?.NetSurfaceTreatmentCost) + checkForNull(ComponentItemData?.CostingPartDetails?.TotalCalculatedRMBOPCCCost)) : ComponentItemDiscountData?.CostingPartDetails?.OtherCostDetails?.BasicRateINR : ComponentItemDiscountData?.CostingPartDetails?.OtherCostDetails?.BasicRateINR,
         "LoggedInUserId": loggedInUserId(),
         "EffectiveDate": CostingEffectiveDate,
         "IsSubAssemblyComponentPart": costData.IsAssemblyPart,

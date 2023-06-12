@@ -935,6 +935,37 @@ function RawMaterialCost(props) {
           })
         }, 500)
       }
+
+      if (Number(costData?.TechnologyId) === Number(RUBBER)) {
+        gridData && gridData.map((item, index) => {
+          item.FinishWeight = weightData.CostingRubberCalculationRawMaterials[index].FinishWeight ? weightData.CostingRubberCalculationRawMaterials[index].FinishWeight : 0
+          item.GrossWeight = weightData.CostingRubberCalculationRawMaterials[index].GrossWeight ? weightData.CostingRubberCalculationRawMaterials[index].GrossWeight : 0
+          item.NetLandedCost = index === 0 ? weightData.RawMaterialCost : 0
+          item.WeightCalculatorRequest = weightData
+          item.WeightCalculationId = weightData.WeightCalculationId
+          item.RawMaterialCalculatorId = weightData.WeightCalculationId
+          item.IsCalculatedEntry = true
+          item.IsCalculaterAvailable = true
+          item.CutOffRMC = CutOffRMC
+          item.ScrapRecoveryPercentage = RecoveryPercentage
+          item.ScrapWeight = weightData?.CostingRubberCalculationRawMaterials[index]?.ScrapWeight ? weightData?.CostingRubberCalculationRawMaterials[index]?.ScrapWeight : 0
+          item.Percentage = weightData.CostingRubberCalculationRawMaterials[index].Percentage
+          return item
+        })
+
+        setTimeout(() => {
+          setGridData(gridData)
+          gridData && gridData.map((item, index) => {
+            setValue(`${rmGridFields}.${index}.GrossWeight`, checkForDecimalAndNull((weightData.CostingRubberCalculationRawMaterials[index].GrossWeight), getConfigurationKey().NoOfDecimalForInputOutput))
+            setValue(`${rmGridFields}.${index}.FinishWeight`, checkForDecimalAndNull(weightData.CostingRubberCalculationRawMaterials[index].FinishWeight, getConfigurationKey().NoOfDecimalForInputOutput))
+            setValue(`${rmGridFields}.${index}.ScrapRecoveryPercentage`, checkForDecimalAndNull(RecoveryPercentage, getConfigurationKey().NoOfDecimalForInputOutput))
+            // setValue(`${rmGridFields}.${index}.NetRMCost`, checkForDecimalAndNull(NetRMCost, getConfigurationKey().NoOfDecimalForInputOutput))
+            setValue(`${rmGridFields}.${index}.ScrapWeight`, checkForDecimalAndNull((weightData?.CostingRubberCalculationRawMaterials[index]?.ScrapWeight), getConfigurationKey().NoOfDecimalForInputOutput))
+
+            return null
+          })
+        }, 500)
+      }
     }
   }
 
