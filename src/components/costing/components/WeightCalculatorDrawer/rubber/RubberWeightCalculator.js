@@ -37,6 +37,7 @@ function RubberWeightCalculator(props) {
     const [additionalCostType, setAdditionalCostType] = useState('')
     const [totalAdditionalRmCost, setTotalAdditionalRmCost] = useState('')
     const [rejectionCostType, setRejectionCostType] = useState('')
+    const [disablePercentFields, setDisablePercentFields] = useState(false)
 
     const rmGridFields = 'rmGridFields';
     const { register, control, setValue, handleSubmit, getValues, reset, formState: { errors }, } = useForm({
@@ -75,6 +76,13 @@ function RubberWeightCalculator(props) {
         let obj = { ...dataToSend }
         obj.NetRMRate = Number(grossRmRate) + Number(total)
         setDataToSend(obj)
+
+        if (tableData && tableData.length === 0) {
+            setDisablePercentFields(false)
+        } else {
+            setDisablePercentFields(true)
+        }
+
     }, [tableData])
 
 
@@ -527,7 +535,7 @@ function RubberWeightCalculator(props) {
                                                             customClassName={'withBorder'}
                                                             handleChange={(e) => { percentageChange(e) }}
                                                             errors={errors && errors.rmGridFields && errors.rmGridFields[index] !== undefined ? errors.rmGridFields[index].Percentage : ''}
-                                                            disabled={props.isEditFlag ? false : true}
+                                                            disabled={props.CostingViewMode || disablePercentFields}
                                                         />
                                                     </td>
                                                 </tr>
