@@ -517,6 +517,9 @@ const SendForApproval = (props) => {
         return null
       })
       obj.CostingsList = temp
+      obj.MaterialGroup = SAPData.MaterialGroup?.label
+      obj.DecimalOption = SAPData.DecimalOption?.value
+
       // debounce_fun()
       // 
       // props.closeDrawer()
@@ -889,20 +892,19 @@ const SendForApproval = (props) => {
                 {
                   // isFinalApproverShow === false ?
                   <>
-                    {/* <Row className="px-3">
-                        <Col md="12">
-                          <div className="left-border">{"SAP-Push Details"}</div>
-                        </Col>
-                        <div className="w-100">
-                          <PushSection
-                            Controller={Controller}
-                            register={register}
-                            errors={errors}
-                            control={control}
-
-                          <PushSection />
-                        </Col>
-                      </Row> */}
+                    <Row className="px-3">
+                      <Col md="12">
+                        <div className="left-border">{"SAP-Push Details"}</div>
+                      </Col>
+                      <div className="w-100">
+                        <PushSection
+                          Controller={Controller}
+                          register={register}
+                          errors={errors}
+                          control={control}
+                        />
+                      </div>
+                    </Row>
                     <Row className="px-3">
                       <Col md="4">
                         <div className="left-border">{"Approver"}</div>
