@@ -196,7 +196,7 @@ function RubberWeightCalculator(props) {
     const calcForOutside = () => {
         let temp = [...rmData]
         temp && temp.map((item, index) => {
-            item.GrossWeight = calculatePercentageValue(dataToSend?.totalGrossWeight, getValues(`rmGridFields.${index}.Percentage`))
+            item.GrossWeight = calculatePercentageValue(getValues('grossWeight'), getValues(`rmGridFields.${index}.Percentage`))
             item.ScrapWeight = calculatePercentageValue(dataToSend?.scrapCost, getValues(`rmGridFields.${index}.Percentage`))
             item.FinishWeight = calculatePercentageValue(getValues('finishedWeight'), getValues(`rmGridFields.${index}.Percentage`))
             return item
@@ -244,7 +244,7 @@ function RubberWeightCalculator(props) {
         obj.CostingRubberCalculationRawMaterials = tempArray
 
         dispatch(saveRawMaterialCalculationForRubberCompound(obj, res => {
-            if (res.data.Result) {
+            if (res?.data?.Result) {
                 obj.WeightCalculationId = res.data.Identity
                 Toaster.success("Calculation saved successfully")
                 obj.RawMaterialCost = obj.NetRawMaterialCost
