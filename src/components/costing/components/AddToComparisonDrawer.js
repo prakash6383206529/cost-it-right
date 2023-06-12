@@ -55,6 +55,9 @@ function AddToComparisonDrawer(props) {
   const [isCbcSelected, setisCbcSelected] = useState(false)
   const [isNccSelected, setisNccSelected] = useState(false)
   const [showCostingSection, setShowCostingSection] = useState({})
+  const [vendor, setVendor] = useState([]);
+  const [plant, setPlant] = useState([]);
+  const [customer, setCustomer] = useState([]);
 
   /* For vendor dropdown */
   const vendorSelectList = useSelector((state) => state.costing.costingVendorList)
@@ -224,6 +227,8 @@ function AddToComparisonDrawer(props) {
       setValue('destinationPlant', '')
       commonApiCall(VBCTypeId)
       dispatch(getPartCostingVendorSelectList(partNo.value !== undefined ? partNo.value : partNo.partId, () => { }))
+      setVendor('')
+      setPlant('')
 
     } else if ((value) === CBCTypeId) {
       dispatch(getPlantSelectListReducer([]))
@@ -238,6 +243,8 @@ function AddToComparisonDrawer(props) {
       dispatch(getClientSelectList((res) => { }),
         commonApiCall(CBCTypeId)
       )
+      setPlant('')
+      setCustomer('')
     } else if ((value) === NCCTypeId) {
       setisCbcSelected(false)
       setIsZbcSelected(false)
@@ -257,8 +264,9 @@ function AddToComparisonDrawer(props) {
    * @method handleVendorChange
    * @description showing vendor plant by vendor name
    */
-  const handleVendorChange = ({ value }) => {
-    setVendorId(value)
+  const handleVendorChange = (newValue) => {
+    setVendorId(newValue.value)
+    setVendor(newValue)
     setValue('destinationPlant', '')
     dispatch(getPlantSelectListByType(ZBC, () => { }))
     setValue('costings', '')
@@ -275,6 +283,7 @@ function AddToComparisonDrawer(props) {
     // }
   }
   const handleCustomerChange = (v) => {
+    setCustomer(v)
     const userDetails = JSON.parse(localStorage.getItem('userDetail'))
     setValue('plant', '')
     setTimeout(() => {
@@ -579,6 +588,7 @@ function AddToComparisonDrawer(props) {
    */
   const handlePlantChange = (value) => {
     setCustomerId(value)
+    setPlant(value)
     if (isZbcSelected) {
       dispatch(
         getCostingByVendorAndVendorPlant(partNo.value !== undefined ? partNo.value : partNo.partId, '', '', value.value, '', ZBCTypeId, (res) => {
@@ -615,12 +625,13 @@ function AddToComparisonDrawer(props) {
   * @description GETTING COSTING ON BASIS OF VENDOR NAME AND VENDOR PLANT
  */
 
-  const handleDestinationPlantNameChange = ({ value }) => {
+  const handleDestinationPlantNameChange = (value) => {
+    setPlant(value)
     if (value === '') {
       value = '00000000-0000-0000-0000-000000000000'
     }
     if (isVbcSelected) {
-      dispatch(getCostingByVendorAndVendorPlant(partNo.partId, vendorId, '', value, '', VBCTypeId, (res) => {
+      dispatch(getCostingByVendorAndVendorPlant(partNo.partId, vendorId, '', value.value, '', VBCTypeId, (res) => {
         setValue('costings', '')
       }),
       )
@@ -823,7 +834,7 @@ function AddToComparisonDrawer(props) {
                         control={control}
                         rules={{ required: true }}
                         register={register}
-                        // defaultValue={plant.length !== 0 ? plant : ''}
+                        defaultValue={vendor !== " " ? vendor : ""}
                         options={renderListing('vendor')}
                         mandatory={true}
                         handleChange={handleVendorChange}
@@ -862,6 +873,7 @@ function AddToComparisonDrawer(props) {
                           options={renderListing('DestinationPlant')}
                           mandatory={true}
                           handleChange={handleDestinationPlantNameChange}
+                          disabled={vendor === '' ? true : false}
                           errors={errors.destinationPlant}
                         />
                       </Col>
@@ -901,6 +913,7 @@ function AddToComparisonDrawer(props) {
                           mandatory={true}
                           handleChange={handlePlantChange}
                           errors={errors.plant}
+                          disabled={Object.keys(customer).length === 0 ? true : false}
                         />
                       </Col>
                     )}
@@ -958,6 +971,7 @@ function AddToComparisonDrawer(props) {
                     mandatory={true}
                     handleChange={() => { }}
                     errors={errors.costings}
+                    disabled={Object.keys(plant).length === 0 ? true : false}
                   />
                 </Col>
               </Row>
