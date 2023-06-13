@@ -70,7 +70,7 @@ function RubberWeightCalculator(props) {
             return accummlator + checkForNull(el.NetCost)
         }, 0)
 
-        setTotalAdditionalRmCost(Number(total))
+        setTotalAdditionalRmCost(Number(checkForNull(total)))
         let grossRmRate = checkForNull(Number(getValues('grossRMRate')))
         setValue('netTotalRmRate', checkForDecimalAndNull(Number(grossRmRate) + Number(total), getConfigurationKey().NoOfDecimalForPrice))
         let obj = { ...dataToSend }
@@ -83,12 +83,13 @@ function RubberWeightCalculator(props) {
             setDisablePercentFields(true)
         }
 
+        checkRejection()
     }, [tableData])
 
 
     const fieldValues = useWatch({
         control,
-        name: ['finishedWeight', 'grossWeight', 'scrapRecoveryPercentage'],
+        name: ['finishedWeight', 'grossWeight', 'scrapRecoveryPercentage', 'netTotalRmRate'],
     })
 
     const dropDown = [
@@ -113,6 +114,7 @@ function RubberWeightCalculator(props) {
     useEffect(() => {
         if (!CostingViewMode) {
             calculateScrapWeight()
+            checkRejection()
         }
     }, [fieldValues])
 
@@ -135,7 +137,7 @@ function RubberWeightCalculator(props) {
             let rmCost = ((grossWeight * netRmRate) - checkForNull(Number(scrapCost)))
             setValue('rmCost', checkForDecimalAndNull(rmCost, getConfigurationKey().NoOfDecimalForPrice))
 
-            let obj = { ...dataToSend }
+            let obj = dataToSend
             obj.ScrapCost = scrapCost
             obj.RawMaterialScrapWeight = scrapWeight
             obj.RawMaterialCost = rmCost
@@ -173,6 +175,7 @@ function RubberWeightCalculator(props) {
         }, 0)
         let obj = { ...dataToSend }
         obj.GrossRMRate = grossRMRate
+        obj.NetRMRate = Number(grossRMRate) + Number(totalAdditionalRmCost)
         setDataToSend(obj)
         setValue('grossRMRate', checkForDecimalAndNull(grossRMRate, getConfigurationKey().NoOfDecimalForInputOutput))
         setValue('applicablityAdditional', checkForDecimalAndNull(grossRMRate, getConfigurationKey().NoOfDecimalForInputOutput))
@@ -378,6 +381,41 @@ function RubberWeightCalculator(props) {
         }
     }
 
+
+    const checkRejection = () => {
+
+        let value = checkForNull(Number(getValues('rejectionValue')))
+        let rmCost = checkForNull(Number(getValues('rmCost')))
+        let obj = dataToSend
+
+        if (value && rmCost && rejectionCostType) {
+            if (String(rejectionCostType.label) === String('Fixed')) {
+                setValue('netRmc', checkForDecimalAndNull(value + rmCost, getConfigurationKey().NoOfDecimalForPrice))
+                setValue('rejectionCost', checkForDecimalAndNull(value, getConfigurationKey().NoOfDecimalForPrice))
+                obj.NetRawMaterialCost = value + rmCost
+                obj.RejectionCost = value
+            } else {
+                if (value > 100) {
+                    Toaster.warning('Percentage value should not be greater than 100')
+                    setTimeout(() => {
+                        setValue('rejectionValue', 0)
+                        handleValueChangeRejection({ target: { value: 0 } })
+                    }, 100);
+                    return false
+                } else {
+                    setValue('netRmc', checkForDecimalAndNull(rmCost + ((value / 100) * rmCost), getConfigurationKey().NoOfDecimalForPrice))
+                    setValue('rejectionCost', checkForDecimalAndNull((value / 100) * rmCost, getConfigurationKey().NoOfDecimalForPrice))
+                    obj.NetRawMaterialCost = rmCost + ((value / 100) * rmCost)
+                    obj.RejectionCost = ((value / 100) * rmCost)
+                }
+            }
+            setDataToSend(obj)
+        } else {
+
+            setValue('netRmc', checkForDecimalAndNull(rmCost, getConfigurationKey().NoOfDecimalForPrice))
+            obj.NetRawMaterialCost = rmCost
+        }
+    }
 
     const resetTable = (e) => {
         setValue('description', '')
