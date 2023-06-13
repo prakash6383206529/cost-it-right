@@ -353,3 +353,18 @@ export function getNfrSelectList(callback) {
             });
     };
 }
+
+export function rfqGetBestCostingDetails(bestCostId, callback) {
+    return (dispatch) => {
+        const request = axios.get(`${API.rfqGetBestCostingDetails}?bestCostId=${bestCostId}`, config());
+        request.then((response) => {
+            if (response?.data?.Result) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+            callback(error)
+        });
+    };
+}

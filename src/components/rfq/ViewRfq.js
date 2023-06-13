@@ -550,6 +550,7 @@ function RfqListing(props) {
         } else {
             // Define an array of keys to check when finding the "best cost"
             const keysToCheck = ["netRM", "netBOP", "pCost", "oCost", "sTreatment", "nPackagingAndFreight", "totalToolCost", "nsTreamnt", "tCost", "nConvCost", "nTotalRMBOPCC", "netSurfaceTreatmentCost", "nOverheadProfit", "nPoPriceCurrency", "nPOPrice", "nPOPriceWithCurrency"];
+            const keysToCheckSum = ["netRM", "netBOP", "nPackagingAndFreight", "totalToolCost", "nConvCost", "netSurfaceTreatmentCost", "nOverheadProfit"];
             // const keysToCheck = ["nPOPriceWithCurrency"];
 
             // Create a new object to represent the "best cost" and set it to the first object in the input array
@@ -583,8 +584,21 @@ function RfqListing(props) {
                     }
                 }
                 // Set the attachment and bestCost properties of the minimum object
+                let sum = 0
+                for (let key in finalArrayList[0]) {
+                    if (keysToCheckSum?.includes(key)) {
+                        if (isNumber(minObject[key])) {
+                            sum = sum + checkForNull(minObject[key]);
+                        } else if (Array.isArray(minObject[key])) {
+                            minObject[key] = [];
+                        }
+                    } else {
+                        minObject[key] = "-";
+                    }
+                }
                 minObject.attachment = []
                 minObject.bestCost = true
+                minObject.nPOPrice = sum
             }
             // Add the minimum object to the end of the array
             finalArrayList.push(minObject);
