@@ -25,6 +25,8 @@ import Toaster from '../../../common/Toaster'
 import PopupMsgWrapper from '../../../common/PopupMsgWrapper'
 import { reactLocalStorage } from 'reactjs-localstorage'
 import { costingTypeIdToApprovalTypeIdFunction } from '../../../common/CommonFunctions'
+import { getMultipleCostingDetails, rfqGetBestCostingDetails } from '../../../rfq/actions/rfq'
+import _ from 'lodash'
 
 function ApprovalSummary(props) {
   const { approvalNumber, approvalProcessId } = props.location.state
@@ -60,6 +62,8 @@ function ApprovalSummary(props) {
   const [IsRegularized, setIsRegularized] = useState("")
   const [costingTypeId, setCostingTypeId] = useState("")
   const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
+  const [uniqueShouldCostingId, setUniqueShouldCostingId] = useState([])
+  const [isRFQ, setisRFQ] = useState(false)
 
   const headerName = ['Revision No.', 'Name', 'Existing Cost/Pc', 'Revised Cost/Pc', 'Quantity', 'Impact/Pc', 'Volume/Year', 'Impact/Quarter', 'Impact/Year']
   const parentField = ['PartNumber', '-', 'PartName', '-', '-', '-', 'VariancePerPiece', 'VolumePerYear', 'ImpactPerQuarter', 'ImpactPerYear']
@@ -120,7 +124,39 @@ function ApprovalSummary(props) {
 
       const { PartDetails, ApprovalDetails, ApprovalLevelStep, DepartmentId, Technology, ApprovalProcessId,
         ApprovalProcessSummaryId, ApprovalNumber, IsSent, IsFinalLevelButtonShow, IsPushedButtonShow,
-        CostingId, PartId, LastCostingId, PurchasingGroup, MaterialGroup, DecimalOption, VendorId, IsRegularizationLimitCrossed, CostingHead, NCCPartQuantity, IsRegularized, CostingTypeId } = res?.data?.Data?.Costings[0];
+        CostingId, PartId, LastCostingId, DecimalOption, VendorId, IsRegularizationLimitCrossed, CostingHead, NCCPartQuantity, IsRegularized, ApprovalTypeId, CostingTypeId, PurchasingGroup, MaterialGroup, BestCostAndShouldCostDetails } = res?.data?.Data?.Costings[0];
+
+      // let BestCostAndShouldCostDetails = {
+      //   ShouldCostings: [{ CostingId: "aae83b68-128d-4ade-b446-cd2407d6c1c2" }],
+      //   CostingIdList: [{ CostingId: "4a3dc510-ae1c-478a-969a-3fa7c1820d62" }, { CostingId: "2d49ced2-dc50-4e63-b2b9-ed74dd44fb24" }],
+      //   BestCostId: "24f21230-003d-4c1d-92d2-5d4fb48de80e"
+      // }
+      setisRFQ(BestCostAndShouldCostDetails?.BestCostId ? true : false)
+      if (BestCostAndShouldCostDetails?.BestCostId) {
+        let temp = []
+        let tempObj = {}
+        setUniqueShouldCostingId(_.map(BestCostAndShouldCostDetails?.ShouldCostings, 'CostingId'))
+        let costing = [...BestCostAndShouldCostDetails?.ShouldCostings, ...BestCostAndShouldCostDetails?.CostingIdList]
+
+        dispatch(getMultipleCostingDetails(costing, (res) => {
+          if (res) {
+            res.map((item) => {
+              tempObj = formViewData(item?.data?.Data)
+              temp.push(tempObj[0])
+              return null
+            })
+            dispatch(rfqGetBestCostingDetails(BestCostAndShouldCostDetails?.BestCostId, (res) => {
+              tempObj = formViewData(res?.data?.Data, '', true)
+              tempObj[0].bestCost = true
+              temp.push(tempObj[0])
+              let dat = [...temp]
+              let tempArrToSend = _.uniqBy(dat, 'costingId')
+              dispatch(setCostingViewData([...tempArrToSend]))
+            }))
+          }
+        }))
+      }
+
       setCostingTypeId(CostingTypeId)
       setNccPartQuantity(NCCPartQuantity)
       setIsRegularized(IsRegularized)
@@ -207,26 +243,29 @@ function ApprovalSummary(props) {
   ]
 
   const displayCompareCosting = () => {
+    if (uniqueShouldCostingId?.length === 0) {
+      dispatch(getSingleCostingDetails(approvalData.CostingId, res => {
+        const Data = res.data.Data
+        const newObj = formViewData(Data, 'New Costing')
+        let finalObj = []
+        if (approvalData.LastCostingId !== EMPTY_GUID && approvalData.LastCostingId !== undefined && approvalData.LastCostingId !== null) {
+          dispatch(getSingleCostingDetails(approvalData.LastCostingId, response => {
+            const oldData = response.data.Data
+            const oldObj = formViewData(oldData, 'Old Costing')
+            finalObj = [oldObj[0], newObj[0]]
+            dispatch(setCostingViewData(finalObj))
+            setCostingSummary(!costingSummary)
+          }))
+        } else {
 
-    dispatch(getSingleCostingDetails(approvalData.CostingId, res => {
-      const Data = res.data.Data
-      const newObj = formViewData(Data, 'New Costing')
-      let finalObj = []
-      if (approvalData.LastCostingId !== EMPTY_GUID && approvalData.LastCostingId !== undefined && approvalData.LastCostingId !== null) {
-        dispatch(getSingleCostingDetails(approvalData.LastCostingId, response => {
-          const oldData = response.data.Data
-          const oldObj = formViewData(oldData, 'Old Costing')
-          finalObj = [oldObj[0], newObj[0]]
-          dispatch(setCostingViewData(finalObj))
+          dispatch(setCostingViewData(newObj))
           setCostingSummary(!costingSummary)
-        }))
-      } else {
+        }
 
-        dispatch(setCostingViewData(newObj))
-        setCostingSummary(!costingSummary)
-      }
-
-    }))
+      }))
+    } else {
+      setCostingSummary(!costingSummary)
+    }
 
   }
 
@@ -592,7 +631,7 @@ function ApprovalSummary(props) {
             <Row className="mb-4">
               <Col md="12" className="costing-summary-row">
                 {/* SEND isApproval FALSE WHEN OPENING FROM FGWISE */}
-                {costingSummary && <CostingSummaryTable viewMode={true} costingID={approvalDetails.CostingId} approvalMode={true} isApproval={approvalData.LastCostingId !== EMPTY_GUID ? true : false} simulationMode={false} costingIdExist={true} />}
+                {costingSummary && <CostingSummaryTable viewMode={true} costingID={approvalDetails.CostingId} approvalMode={true} isApproval={approvalData.LastCostingId !== EMPTY_GUID ? true : false} simulationMode={false} costingIdExist={true} uniqueShouldCostingId={uniqueShouldCostingId} isRfqCosting={isRFQ} />}
               </Col>
             </Row>
             {/* Costing Summary page here */}
