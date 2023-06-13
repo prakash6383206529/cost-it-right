@@ -1205,7 +1205,7 @@ export function getExchangeRateByCurrency(currency, costingHeadId, effectiveDate
       }
     }).catch((error) => {
       dispatch({ type: API_FAILURE });
-      callback(error);
+      // callback(error);
       apiErrors(error);
     });
   };
