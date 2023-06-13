@@ -1307,7 +1307,7 @@ function AddRfq(props) {
                                             </button>}
                                         </Col>
                                     </Row>
-                                    <div>
+                                    <div className='rfq-part-list'>
                                         {showTooltip && <Tooltip className="rfq-tooltip-left" placement={"top"} isOpen={viewTooltip} toggle={tooltipToggle} target={"quantity-tooltip"} >{"To add the quantity please double click on the field."}</Tooltip>}
                                         {!loader ? <div className={`ag-grid-react`}>
                                             <Row>
