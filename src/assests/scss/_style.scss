@@ -1,15 +1,4 @@
-@import "./cssVariable.scss";
-@import "./icons.scss";
-
-@font-face {
-  font-family: "icomoon";
-  src: url("fonts/icomoon.eot?mx6nlh");
-  src: url("fonts/icomoon.eot?mx6nlh#iefix") format("embedded-opentype"),
-    url("fonts/icomoon.ttf?mx6nlh") format("truetype"), url("fonts/icomoon.woff?mx6nlh") format("woff"),
-    url("fonts/icomoon.svg?mx6nlh#icomoon") format("svg");
-  font-weight: normal;
-  font-style: normal;
-}
+@import "./abstracts/variable.scss";
 
 [class^="icon-"],
 [class*=" icon-"] {
@@ -785,7 +774,7 @@ input.form-control {
 }
 
 .blue-box {
-  padding: 0 15px 30px;
+  padding: 20px 15px 30px;
   background-color: #EDF0F5;
 }
 
@@ -3464,16 +3453,16 @@ body {
   border-left: 1px solid $borderColor;
   border-right: 1px solid $borderColor;
 
-  @for $i from 1 through 12 {
-    .col-md-#{$i} {
-      border-top: 1px solid $borderColor;
-      padding: 12px 15px;
+  // @for $i from 1 through 12 {
+  //   .col-md-#{$i} {
+  //     border-top: 1px solid $borderColor;
+  //     padding: 12px 15px;
 
-      .form-group.inputbox.withBorder {
-        margin-bottom: 0px;
-      }
-    }
-  }
+  //     .form-group.inputbox.withBorder {
+  //       margin-bottom: 0px;
+  //     }
+  //   }
+  // }
 }
 
 .table-responsive {
@@ -3897,6 +3886,9 @@ body {
   }
 }
 
+.date-filed {
+  width: 180px;
+}
 
 .mb27 {
   margin-bottom: 27px;
@@ -8252,6 +8244,44 @@ body {
   }
 }
 
+.simple-pdf {
+  .table-responsive {
+    min-width: 100% !important;
+    overflow: unset !important;
+
+    .table-responsive {
+      overflow: unset !important;
+    }
+
+    table {
+      min-width: 100%;
+    }
+
+    .approval-summary-headers,
+    .header-name,
+    .header-name-left {
+      background-color: #ececec !important;
+    }
+  }
+
+  .background-light-blue {
+    background: #9fcffc !important;
+
+    th {
+      word-spacing: 1px;
+
+      print-color-adjust: exact;
+      -webkit-print-color-adjust: exact;
+    }
+
+    td {
+      padding-right: 20px;
+      print-color-adjust: exact;
+      -webkit-print-color-adjust: exact;
+    }
+  }
+}
+
 .remove-space-border {
   .table-responsive {
     overflow: hidden;
@@ -9005,26 +9035,6 @@ table.group-process-table {
     min-height: unset !important;
     margin-bottom: unset !important;
   }
-
-
-}
-
-.colorWhite {
-  background-color: #fff;
-}
-
-@for $i from 1 through 1000 {
-  .rfq-grid {
-    [row-id~="#{($i * 5) - 1}"] {
-
-      [col-id="PartNumber"],
-      [aria-colindex="5"] {
-        border-bottom: 1px solid $agGridBorder !important;
-      }
-    }
-
-  }
-
 }
 
 .right-tooltip {

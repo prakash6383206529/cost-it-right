@@ -20,7 +20,6 @@ import { getAllCities, getCityByCountry, getAllCity, getReporterList, getApprova
 import { MESSAGES } from "../../config/message";
 import { getConfigurationKey, loggedInUserId } from "../../helper/auth";
 import { Table, Button, Row, Col } from 'reactstrap';
-import "./UserRegistration.scss";
 import { EMPTY_DATA, IV, IVRFQ, KEY, KEYRFQ, VBC_VENDOR_TYPE, searchCount } from "../../config/constants";
 import NoContentFound from "../common/NoContentFound";
 import HeaderTitle from "../common/HeaderTitle";

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from "react-redux";
-import "../UserRegistration.scss";
+
 import {
   getModuleSelectList, getActionHeadsSelectList, getModuleActionInit,
 } from "../../../actions/auth/AuthActions";
