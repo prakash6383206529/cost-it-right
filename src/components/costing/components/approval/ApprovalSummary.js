@@ -63,6 +63,7 @@ function ApprovalSummary(props) {
   const [costingTypeId, setCostingTypeId] = useState("")
   const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
   const [uniqueShouldCostingId, setUniqueShouldCostingId] = useState([])
+  const [costingIdList, setCostingIdList] = useState([])
   const [isRFQ, setisRFQ] = useState(false)
 
   const headerName = ['Revision No.', 'Name', 'Existing Cost/Pc', 'Revised Cost/Pc', 'Quantity', 'Impact/Pc', 'Volume/Year', 'Impact/Quarter', 'Impact/Year']
@@ -135,8 +136,9 @@ function ApprovalSummary(props) {
       if (BestCostAndShouldCostDetails?.BestCostId) {
         let temp = []
         let tempObj = {}
+        setCostingIdList(_.map([...BestCostAndShouldCostDetails?.CostingIdList], 'CostingId'))
         setUniqueShouldCostingId(_.map(BestCostAndShouldCostDetails?.ShouldCostings, 'CostingId'))
-        let costing = [...BestCostAndShouldCostDetails?.ShouldCostings, ...BestCostAndShouldCostDetails?.CostingIdList]
+        let costing = [...BestCostAndShouldCostDetails?.ShouldCostings, ...BestCostAndShouldCostDetails?.CostingIdList, { CostingId: CostingId }]
 
         dispatch(getMultipleCostingDetails(costing, (res) => {
           if (res) {
@@ -631,7 +633,7 @@ function ApprovalSummary(props) {
             <Row className="mb-4">
               <Col md="12" className="costing-summary-row">
                 {/* SEND isApproval FALSE WHEN OPENING FROM FGWISE */}
-                {costingSummary && <CostingSummaryTable viewMode={true} costingID={approvalDetails.CostingId} approvalMode={true} isApproval={approvalData.LastCostingId !== EMPTY_GUID ? true : false} simulationMode={false} costingIdExist={true} uniqueShouldCostingId={uniqueShouldCostingId} isRfqCosting={isRFQ} />}
+                {costingSummary && <CostingSummaryTable viewMode={true} costingID={approvalDetails.CostingId} approvalMode={true} isApproval={approvalData.LastCostingId !== EMPTY_GUID ? true : false} simulationMode={false} costingIdExist={true} uniqueShouldCostingId={uniqueShouldCostingId} isRfqCosting={isRFQ} costingIdList={costingIdList} />}
               </Col>
             </Row>
             {/* Costing Summary page here */}
