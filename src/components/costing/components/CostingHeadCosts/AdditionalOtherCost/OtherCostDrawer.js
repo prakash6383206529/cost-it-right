@@ -3,14 +3,14 @@ import { useForm, Controller, useWatch } from "react-hook-form";
 import { useSelector } from 'react-redux';
 import { Container, Row, Col, Table } from 'reactstrap';
 import Drawer from '@material-ui/core/Drawer';
-import { SearchableSelectHookForm, TextFieldHookForm, } from '../../../layout/HookFormInputs';
-import { EMPTY_DATA } from '../../../../config/constants';
-import { checkForDecimalAndNull, checkWhiteSpaces, number, decimalNumberLimit6, percentageLimitValidation, hashValidation, calculatePercentage, checkForNull } from '../../../../helper';
-import NoContentFound from '../../../common/NoContentFound';
-import { ViewCostingContext } from '../CostingDetails';
-import { STRINGMAXLENGTH } from '../../../../config/masterData';
-import TooltipCustom from '../../../common/Tooltip';
-import { costingInfoContext, netHeadCostContext } from '../CostingDetailStepTwo';
+import { SearchableSelectHookForm, TextFieldHookForm, } from '../../../../layout/HookFormInputs';
+import { EMPTY_DATA } from '../../../../../config/constants';
+import { checkForDecimalAndNull, checkWhiteSpaces, number, decimalNumberLimit6, percentageLimitValidation, hashValidation, calculatePercentage, checkForNull } from '../../../../../helper';
+import NoContentFound from '../../../../common/NoContentFound';
+import { ViewCostingContext } from '../../CostingDetails';
+import { STRINGMAXLENGTH } from '../../../../../config/masterData';
+import TooltipCustom from '../../../../common/Tooltip';
+import { costingInfoContext, netHeadCostContext } from '../../CostingDetailStepTwo';
 import _ from 'lodash'
 
 function OtherCostDrawer(props) {
@@ -74,7 +74,7 @@ function OtherCostDrawer(props) {
         }
         if (label === 'Applicability') {
             costingHead && costingHead.map(item => {
-                if (item.Value === '0' || item.Value === '8') return false;
+                if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
                 return null;
             });
@@ -83,10 +83,27 @@ function OtherCostDrawer(props) {
     }
 
 
-    const handleOtherCostTypeChange = (newValue) => {
+    // const handleOtherCostTypeChange = (newValue) => {
+    //     if (!CostingViewMode) {
+    //         if (newValue && newValue !== '') {
+    //             setOtherCostType(newValue)
+    //             setValue('AnyOtherCost', 0)
+    //             setValue('PercentageOtherCost', 0)
+    //             errors.AnyOtherCost = {}
+    //             errors.PercentageOtherCost = {}
+
+    //         } else {
+    //             setOtherCostType([])
+    //         }
+    //         errors.PercentageOtherCost = {}
+    //     }
+    // }
+
+    const handleOherCostApplicabilityChange = (value) => {
+
         if (!CostingViewMode) {
-            if (newValue && newValue !== '') {
-                setOtherCostType(newValue)
+            if (value && value !== '') {
+                setOtherCostType(value.label !== 'Fixed' ? { label: 'Percentage', value: 'Percentage' } : value)
                 setValue('AnyOtherCost', 0)
                 setValue('PercentageOtherCost', 0)
                 errors.AnyOtherCost = {}
@@ -97,12 +114,8 @@ function OtherCostDrawer(props) {
             }
             errors.PercentageOtherCost = {}
         }
-    }
-
-    const handleOherCostApplicabilityChange = (value) => {
 
         setOtherCostApplicability(value)
-
     }
 
     /**
@@ -215,7 +228,7 @@ function OtherCostDrawer(props) {
         let dataList = CostingDataList && CostingDataList.length > 0 ? CostingDataList[0] : {}
         const totalTabCost = checkForNull(dataList.NetTotalRMBOPCC) + checkForNull(dataList.NetSurfaceTreatmentCost) + checkForNull(dataList.NetOverheadAndProfitCost) + checkForNull(dataList.NetPackagingAndFreight) + checkForNull(dataList.ToolCost)
         const percent = getValues('PercentageOtherCost')
-        console.log('percent: ', percent);
+
 
         let totalCost = ''
         switch (otherCostApplicability?.label) {
@@ -279,7 +292,30 @@ function OtherCostDrawer(props) {
 
                         <form onSubmit={handleSubmit(onSubmit)}>
                             <Row>
-                                <Col md="3">
+
+                                <Col md="5" >
+                                    <TextFieldHookForm
+                                        label="Other Cost Description"
+                                        name={"OtherCostDescription"}
+                                        Controller={Controller}
+                                        control={control}
+                                        register={register}
+                                        mandatory={false}
+                                        rules={{
+                                            required: false,
+                                            validate: { checkWhiteSpaces, hashValidation },
+                                            maxLength: STRINGMAXLENGTH
+                                        }}
+                                        handleChange={() => { }}
+                                        defaultValue={""}
+                                        className=""
+                                        customClassName={"withBorder"}
+                                        errors={errors.OtherCostDescription}
+                                        disabled={CostingViewMode ? true : false}
+                                    />
+                                </Col>
+
+                                {/* <Col md="3">
                                     <SearchableSelectHookForm
                                         label={"Other Cost Type"}
                                         name={"OtherCostType"}
@@ -296,10 +332,9 @@ function OtherCostDrawer(props) {
                                         disabled={CostingViewMode ? true : false}
                                     />
 
-                                </Col>
+                                </Col> */}
 
                                 {
-                                    otherCostType.value === 'Percentage' &&
                                     <Col md="4">
                                         <SearchableSelectHookForm
                                             label={'Other Cost Applicability'}
@@ -347,27 +382,7 @@ function OtherCostDrawer(props) {
                                             disabled={CostingViewMode || !(otherCostType && otherCostType.value === 'Percentage') ? true : false}
                                         />
                                     </Col>}
-                                <Col md="5" >
-                                    <TextFieldHookForm
-                                        label="Other Cost Description"
-                                        name={"OtherCostDescription"}
-                                        Controller={Controller}
-                                        control={control}
-                                        register={register}
-                                        mandatory={false}
-                                        rules={{
-                                            required: false,
-                                            validate: { checkWhiteSpaces, hashValidation },
-                                            maxLength: STRINGMAXLENGTH
-                                        }}
-                                        handleChange={() => { }}
-                                        defaultValue={""}
-                                        className=""
-                                        customClassName={"withBorder"}
-                                        errors={errors.OtherCostDescription}
-                                        disabled={CostingViewMode ? true : false}
-                                    />
-                                </Col>
+
                                 <Col md="2">
                                     {(otherCostType.value === 'Percentage' || Object.keys(otherCostType).length === 0) && <TooltipCustom disabledIcon={true} id="other-cost" tooltipText={"Other Cost = (Other Cost Applicability * Percentage / 100)"} />}
                                     <TextFieldHookForm
@@ -439,10 +454,10 @@ function OtherCostDrawer(props) {
                                 <Table className="table mb-0 forging-cal-table" size="sm">
                                     <thead>
                                         <tr>
-                                            <th>{`Other Cost Type`}</th>
+                                            <th>{`Other Cost Description`}</th>
+                                            {/* <th>{`Other Cost Type`}</th> */}
                                             <th>{`Other Cost Applicability`}</th>
                                             <th>{'Percentage'}</th>
-                                            <th>{`Other Cost Description`}</th>
                                             <th>{`Cost`}</th>
                                             <th className='text-right'>{`Action`}</th>
                                         </tr>
@@ -451,12 +466,11 @@ function OtherCostDrawer(props) {
                                         {gridData && gridData.map((item, index) => {
                                             return (
                                                 <tr key={index} >
-                                                    <td>{item.OtherCostType}</td>
+                                                    <td>{item.OtherCostDescription}</td>
+                                                    {/* <td>{item.OtherCostType}</td> */}
                                                     <td>{item?.OtherCostApplicability}</td>
                                                     <td>{item.PercentageOtherCost}</td>
-                                                    <td>{item.OtherCostDescription}</td>
                                                     <td>{checkForDecimalAndNull(item.AnyOtherCost, initialConfiguration.NoOfDecimalForPrice)}</td>
-
                                                     <td className='text-right'>
                                                         <button
                                                             className="Edit"
