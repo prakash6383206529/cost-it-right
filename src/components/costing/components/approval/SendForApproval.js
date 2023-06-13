@@ -328,8 +328,8 @@ const SendForApproval = (props) => {
       let data = {
         "QuotationPartId": selectedRows[0]?.QuotationPartId,
         "NetRawMaterialsCost": tempData?.netRM,
-        "NetBoughtOutPartCost": tempData?.netBoughtOutPartCost,
-        "NetConversionCost": tempData?.netConversionCostView,
+        "NetBoughtOutPartCost": tempData?.netBOP,
+        "NetConversionCost": tempData?.nConvCost,
         "NetProcessCost": tempData?.netProcessCost,
         "NetOperationCost": tempData?.netOperationCost,
         "NetOtherOperationCost": tempData?.netOtherOperationCost,
