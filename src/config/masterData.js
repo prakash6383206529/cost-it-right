@@ -71,8 +71,6 @@ export const RMDomesticZBC = [
     { label: "Category", value: "Category" }, //*
     { label: "TechnologyName", value: "TechnologyName" }, //*
     { label: "PlantCode", value: "PlantCode" }, //*
-    { label: "PlantName", value: "PlantName" }, //*
-    { label: "VendorName", value: "VendorName" },
     { label: "VendorCode", value: "VendorCode" }, //*
     { label: "HasDifferentSource", value: "HasDifferentSource" },
     { label: "Source", value: "Source" }, //NOUI
@@ -98,9 +96,7 @@ export const RMDomesticZBCTempData = [
         "Category": "STD",
         "TechnologyName": "Sheet Metal",
         "PlantCode": "1511",
-        "PlantName": "1511",
-        "VendorName": "Systematix",
-        "VendorCode": "VP123",
+        "VendorCode": "P123",
         "HasDifferentSource": "Yes",
         "Source": "Tata Steel",
         "SourceLocation": "Jamshedpur",
@@ -123,8 +119,7 @@ export const RMDomesticZBCTempData = [
         "Category": "CTS",
         "TechnologyName": "Sheet Metal",
         "PlantCode": "PC01",
-        "VendorName": "Systematix",
-        "VendorCode": "VP123",
+        "VendorCode": "P123",
         "HasDifferentSource": "No",
         "Source": "Tata Steel",
         "SourceLocation": "Jamshedpur",
@@ -147,8 +142,7 @@ export const RMDomesticZBCTempData = [
         "Category": "CTS",
         "TechnologyName": "Sheet Metal",
         "PlantCode": "PC01",
-        "VendorName": "Systematix",
-        "VendorCode": "VP123",
+        "VendorCode": "P123",
         "HasDifferentSource": "No",
         "Source": "Tata Steel",
         "SourceLocation": "Jamshedpur",
@@ -171,8 +165,7 @@ export const RMDomesticZBCTempData = [
         "Category": "CTS",
         "TechnologyName": "Sheet Metal",
         "PlantCode": "PC01",
-        "VendorName": "Systematix",
-        "VendorCode": "VP123",
+        "VendorCode": "P123",
         "HasDifferentSource": "No",
         "Source": "Tata Steel",
         "SourceLocation": "Jamshedpur",
@@ -199,7 +192,6 @@ export const RMDomesticVBC = [
     { label: "Code", value: "RawMaterialCode" }, //*
     { label: "Category", value: "Category" }, //*
     { label: "TechnologyName", value: "TechnologyName" }, //*
-    { label: "VendorName", value: "VendorName" }, //*
     { label: "VendorCode", value: "VendorCode" }, //NOUI,*
     { label: "PlantCode", value: "PlantCode" }, //NOUI
     { label: "Source", value: "Source" },
@@ -211,8 +203,6 @@ export const RMDomesticVBC = [
     { label: "FreightCost", value: "FreightCost" }, //*
     { label: "ShearingCost", value: "ShearingCost" }, //*
     { label: "CircleSrapCost", value: "CircleSrapCost" }, //*
-    { label: 'DestinationPlantName', value: 'DestinationPlantName', }, //*
-    { label: 'DestinationPlantCode', value: 'DestinationPlantCode', }, //*
     { label: "EffectiveDate", value: "EffectiveDate" }, //*
     { label: "Remark", value: "Remark" },
 ]
@@ -226,9 +216,8 @@ export const RMDomesticVBCTempData = [
         "RawMaterialCode": "RM-10000001",
         "Category": "STD",
         "TechnologyName": "Sheet Metal",
-        "VendorName": "Systematix",
         "VendorCode": "V123",
-        "PlantCode": "VP123",
+        "PlantCode": "P123",
         "Source": "TATA Steel",
         "SourceLocation": "Jamshedpur",
         "UOM": "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram",
@@ -238,8 +227,6 @@ export const RMDomesticVBCTempData = [
         "FreightCost": "10",
         "ShearingCost": "10",
         "CircleSrapCost": "20",
-        "DestinationPlantName": "Manesar",
-        "DestinationPlantCode": "1032",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         "Remark": "Remark Content",
     },
@@ -251,9 +238,8 @@ export const RMDomesticVBCTempData = [
         "RawMaterialCode": "RM-10000002",
         "Category": "CTS",
         "TechnologyName": "Sheet Metal",
-        "VendorName": "Systematix",
         "VendorCode": "V123",
-        "PlantCode": "VP123",
+        "PlantCode": "P123",
         "Source": "TATA Steel",
         "SourceLocation": "Jamshedpur",
         "UOM": "Gallon/Cubic Centimeter/Cubic Meter/Milliliter/Liter",
@@ -263,8 +249,6 @@ export const RMDomesticVBCTempData = [
         "FreightCost": "10",
         "ShearingCost": "10",
         "CircleSrapCost": "20",
-        "DestinationPlantName": "Manesar",
-        "DestinationPlantCode": "EC1",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         "Remark": "Remark Content",
     },
@@ -276,9 +260,8 @@ export const RMDomesticVBCTempData = [
         "RawMaterialCode": "RM-10000002",
         "Category": "CTS",
         "TechnologyName": "Sheet Metal",
-        "VendorName": "Systematix",
         "VendorCode": "V123",
-        "PlantCode": "VP123",
+        "PlantCode": "P123",
         "Source": "TATA Steel",
         "SourceLocation": "Jamshedpur",
         "UOM": "shot/stroke/Number",
@@ -288,8 +271,6 @@ export const RMDomesticVBCTempData = [
         "FreightCost": "10",
         "ShearingCost": "10",
         "CircleSrapCost": "20",
-        "DestinationPlantName": "Manesar",
-        "DestinationPlantCode": "EC1",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         "Remark": "Remark Content",
     },
@@ -301,9 +282,8 @@ export const RMDomesticVBCTempData = [
         "RawMaterialCode": "RM-10000002",
         "Category": "CTS",
         "TechnologyName": "Sheet Metal",
-        "VendorName": "Systematix",
         "VendorCode": "V123",
-        "PlantCode": "VP123",
+        "PlantCode": "P123",
         "Source": "TATA Steel",
         "SourceLocation": "Jamshedpur",
         "UOM": "micrometer/kilometer/Feet/Inch/Millimeter/Centimeter/Meter",
@@ -313,8 +293,6 @@ export const RMDomesticVBCTempData = [
         "FreightCost": "10",
         "ShearingCost": "10",
         "CircleSrapCost": "20",
-        "DestinationPlantName": "Manesar",
-        "DestinationPlantCode": "EC1",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         "Remark": "Remark Content",
     }
@@ -332,8 +310,6 @@ export const RMImportZBC = [
     { label: "Category", value: "Category" }, //*
     { label: "TechnologyName", value: "TechnologyName" }, //*
     { label: "PlantCode", value: "PlantCode" }, //*
-    { label: "PlantName", value: "PlantName" }, //*
-    { label: "VendorName", value: "VendorName" },
     { label: "VendorCode", value: "VendorCode" }, //NOUI
     { label: "HasDifferentSource", value: "HasDifferentSource" },
     { label: "Source", value: "Source" }, //NOUI
@@ -358,7 +334,6 @@ export const RMDomesticCBCTempData = [
         "RawMaterialCode": "RM-10000001",
         "Category": "STD",
         "TechnologyName": "Sheet Metal",
-        "CustomerName": "Honda",
         "CustomerCode": "C-10008",
         "UOM": "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram",
         "BasicRate": "500",
@@ -367,8 +342,7 @@ export const RMDomesticCBCTempData = [
         "FreightCost": "10",
         "ShearingCost": "10",
         "CircleSrapCost": "20",
-        "DestinationPlantName": "Manesar",
-        "DestinationPlantCode": "1032",
+        "PlantCode": "1032",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         "Remark": "Remark Content",
     },
@@ -379,7 +353,6 @@ export const RMDomesticCBCTempData = [
         "RawMaterialCode": "RM-10000002",
         "Category": "CTS",
         "TechnologyName": "Sheet Metal",
-        "CustomerName": "Honda",
         "CustomerCode": "C-10008",
         "UOM": "Gallon/Cubic Centimeter/Cubic Meter/Milliliter/Liter",
         "BasicRate": "500",
@@ -388,8 +361,7 @@ export const RMDomesticCBCTempData = [
         "FreightCost": "10",
         "ShearingCost": "10",
         "CircleSrapCost": "20",
-        "DestinationPlantName": "Manesar",
-        "DestinationPlantCode": "EC1",
+        "PlantCode": "EC1",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         "Remark": "Remark Content",
     },
@@ -400,7 +372,6 @@ export const RMDomesticCBCTempData = [
         "RawMaterialCode": "RM-10000002",
         "Category": "CTS",
         "TechnologyName": "Sheet Metal",
-        "CustomerName": "Honda",
         "CustomerCode": "C-10008",
         "UOM": "shot/stroke/Number",
         "BasicRate": "500",
@@ -409,8 +380,7 @@ export const RMDomesticCBCTempData = [
         "FreightCost": "10",
         "ShearingCost": "10",
         "CircleSrapCost": "20",
-        "DestinationPlantName": "Manesar",
-        "DestinationPlantCode": "EC1",
+        "PlantCode": "EC1",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         "Remark": "Remark Content",
     },
@@ -421,7 +391,6 @@ export const RMDomesticCBCTempData = [
         "RawMaterialCode": "RM-10000002",
         "Category": "CTS",
         "TechnologyName": "Sheet Metal",
-        "CustomerName": "Honda",
         "CustomerCode": "C-10008",
         "UOM": "micrometer/kilometer/Feet/Inch/Millimeter/Centimeter/Meter",
         "BasicRate": "500",
@@ -430,8 +399,7 @@ export const RMDomesticCBCTempData = [
         "FreightCost": "10",
         "ShearingCost": "10",
         "CircleSrapCost": "20",
-        "DestinationPlantName": "Manesar",
-        "DestinationPlantCode": "EC1",
+        "PlantCode": "EC1",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         "Remark": "Remark Content",
     }
@@ -447,8 +415,7 @@ export const RMImportZBCTempData = [
         "Category": "STD",
         "TechnologyName": "Sheet Metal",
         "PlantCode": "PC01",
-        "VendorName": "Systematix",
-        "VendorCode": "VP123",
+        "VendorCode": "P123",
         "HasDifferentSource": "Yes",
         "Source": "Tata Steel",
         "SourceLocation": "Jamshedpur",
@@ -472,8 +439,7 @@ export const RMImportZBCTempData = [
         "Category": "CTS",
         "TechnologyName": "Sheet Metal",
         "PlantCode": "PC01",
-        "VendorName": "Systematix",
-        "VendorCode": "VP123",
+        "VendorCode": "P123",
         "HasDifferentSource": "No",
         "Source": "Tata Steel",
         "SourceLocation": "Jamshedpur",
@@ -497,8 +463,7 @@ export const RMImportZBCTempData = [
         "Category": "CTS",
         "TechnologyName": "Sheet Metal",
         "PlantCode": "PC01",
-        "VendorName": "Systematix",
-        "VendorCode": "VP123",
+        "VendorCode": "P123",
         "HasDifferentSource": "No",
         "Source": "Tata Steel",
         "SourceLocation": "Jamshedpur",
@@ -522,8 +487,7 @@ export const RMImportZBCTempData = [
         "Category": "CTS",
         "TechnologyName": "Sheet Metal",
         "PlantCode": "PC01",
-        "VendorName": "Systematix",
-        "VendorCode": "VP123",
+        "VendorCode": "P123",
         "HasDifferentSource": "No",
         "Source": "Tata Steel",
         "SourceLocation": "Jamshedpur",
@@ -546,7 +510,6 @@ export const RMDomesticCBC = [
     { label: "Code", value: "RawMaterialCode" }, //*
     { label: "Category", value: "Category" }, //*
     { label: "TechnologyName", value: "TechnologyName" }, //*
-    { label: "CustomerName", value: "CustomerName" }, //*
     { label: "CustomerCode", value: "CustomerCode" }, //NOUI,*
     { label: "UOM", value: "UOM" }, //*
     { label: "BasicRate", value: "BasicRate" }, //*
@@ -555,8 +518,7 @@ export const RMDomesticCBC = [
     { label: "FreightCost", value: "FreightCost" }, //*
     { label: "ShearingCost", value: "ShearingCost" }, //*
     { label: "CircleSrapCost", value: "CircleSrapCost" }, //*
-    { label: 'DestinationPlantName', value: 'DestinationPlantName', }, //*
-    { label: 'DestinationPlantCode', value: 'DestinationPlantCode', }, //*
+    { label: 'PlantCode', value: 'PlantCode', }, //*
     { label: "EffectiveDate", value: "EffectiveDate" }, //*
     { label: "Remark", value: "Remark" },
 ]
@@ -572,7 +534,6 @@ export const RMImportVBC = [
     { label: "Code", value: "RawMaterialCode" }, //*
     { label: "Category", value: "Category" }, //*
     { label: "TechnologyName", value: "TechnologyName" }, //*
-    { label: "VendorName", value: "VendorName" },
     { label: "VendorCode", value: "VendorCode" }, //NOUI
     { label: "PlantCode", value: "PlantCode" }, //NOUI
     { label: "Source", value: "Source" },
@@ -585,8 +546,6 @@ export const RMImportVBC = [
     { label: "FreightCost", value: "FreightCost" }, //*
     { label: "ShearingCost", value: "ShearingCost" }, //*
     { label: "CircleSrapCost", value: "CircleSrapCost" }, //*
-    { label: 'DestinationPlantName', value: 'DestinationPlantName', }, //*
-    { label: 'DestinationPlantCode', value: 'DestinationPlantCode', }, //*
     { label: "EffectiveDate", value: "EffectiveDate" }, //*
     { label: "Remark", value: "Remark" },
 ]
@@ -600,9 +559,8 @@ export const RMImportVBCTempData = [
         "RawMaterialCode": "RM-10000001",
         "Category": "STD",
         "TechnologyName": "Sheet Metal",
-        "VendorName": "Systematix",
         "VendorCode": "V123",
-        "PlantCode": "VP123",
+        "PlantCode": "P123",
         "Source": "TATA Steel",
         "SourceLocation": "Jamshedpur",
         "UOM": "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram",
@@ -613,8 +571,6 @@ export const RMImportVBCTempData = [
         "FreightCost": "10",
         "ShearingCost": "10",
         "CircleSrapCost": "20",
-        "DestinationPlantName": "Manesar",
-        "DestinationPlantCode": "EC1",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         "Remark": "Remark Text",
     },
@@ -626,9 +582,8 @@ export const RMImportVBCTempData = [
         "RawMaterialCode": "RM-10000002",
         "Category": "CTS",
         "TechnologyName": "Sheet Metal",
-        "VendorName": "Systematix",
         "VendorCode": "V123",
-        "PlantCode": "VP123",
+        "PlantCode": "P123",
         "Source": "TATA Steel",
         "SourceLocation": "Jamshedpur",
         "UOM": "Gallon/Cubic Centimeter/Cubic Meter/Milliliter/Liter",
@@ -639,8 +594,6 @@ export const RMImportVBCTempData = [
         "FreightCost": "10",
         "ShearingCost": "10",
         "CircleSrapCost": "20",
-        "DestinationPlantName": "Manesar",
-        "DestinationPlantCode": "EC1",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         "Remark": "Remark Text",
     },
@@ -652,9 +605,8 @@ export const RMImportVBCTempData = [
         "RawMaterialCode": "RM-10000002",
         "Category": "CTS",
         "TechnologyName": "Sheet Metal",
-        "VendorName": "Systematix",
         "VendorCode": "V123",
-        "PlantCode": "VP123",
+        "PlantCode": "P123",
         "Source": "TATA Steel",
         "SourceLocation": "Jamshedpur",
         "UOM": "shot/stroke/Number",
@@ -665,8 +617,6 @@ export const RMImportVBCTempData = [
         "FreightCost": "10",
         "ShearingCost": "10",
         "CircleSrapCost": "20",
-        "DestinationPlantName": "Manesar",
-        "DestinationPlantCode": "EC1",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         "Remark": "Remark Text",
     },
@@ -678,9 +628,8 @@ export const RMImportVBCTempData = [
         "RawMaterialCode": "RM-10000002",
         "Category": "CTS",
         "TechnologyName": "Sheet Metal",
-        "VendorName": "Systematix",
         "VendorCode": "V123",
-        "PlantCode": "VP123",
+        "PlantCode": "P123",
         "Source": "TATA Steel",
         "SourceLocation": "Jamshedpur",
         "UOM": "micrometer/kilometer/Feet/Inch/Millimeter/Centimeter/Meter",
@@ -691,8 +640,6 @@ export const RMImportVBCTempData = [
         "FreightCost": "10",
         "ShearingCost": "10",
         "CircleSrapCost": "20",
-        "DestinationPlantName": "Manesar",
-        "DestinationPlantCode": "EC1",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         "Remark": "Remark Text",
     }
@@ -705,7 +652,6 @@ export const RMImportCBC = [
     { label: "Code", value: "RawMaterialCode" }, //*
     { label: "Category", value: "Category" }, //*
     { label: "TechnologyName", value: "TechnologyName" }, //*
-    { label: "CustomerName", value: "CustomerName" },
     { label: "CustomerCode", value: "CustomerCode" }, //NOUI
     { label: "UOM", value: "UOM" }, //*
     { label: "Currency", value: "Currency" }, //*
@@ -715,8 +661,7 @@ export const RMImportCBC = [
     { label: "FreightCost", value: "FreightCost" }, //*
     { label: "ShearingCost", value: "ShearingCost" }, //*
     { label: "CircleSrapCost", value: "CircleSrapCost" }, //*
-    { label: 'DestinationPlantName', value: 'DestinationPlantName', }, //*
-    { label: 'DestinationPlantCode', value: 'DestinationPlantCode', }, //*
+    { label: 'PlantCode', value: 'PlantCode', }, //*
     { label: "EffectiveDate", value: "EffectiveDate" }, //*
     { label: "Remark", value: "Remark" },
 ]
@@ -729,7 +674,6 @@ export const RMImportCBCTempData = [
         "RawMaterialCode": "RM-10000001",
         "Category": "STD",
         "TechnologyName": "Sheet Metal",
-        "CustomerName": "Honda",
         "CustomerCode": "C-10008",
         "UOM": "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram",
         "Currency": "INR",
@@ -739,8 +683,7 @@ export const RMImportCBCTempData = [
         "FreightCost": "10",
         "ShearingCost": "10",
         "CircleSrapCost": "20",
-        "DestinationPlantName": "Manesar",
-        "DestinationPlantCode": "EC1",
+        "PlantCode": "EC1",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         "Remark": "Remark Text",
     },
@@ -751,7 +694,6 @@ export const RMImportCBCTempData = [
         "RawMaterialCode": "RM-10000002",
         "Category": "CTS",
         "TechnologyName": "Sheet Metal",
-        "CustomerName": "Honda",
         "CustomerCode": "C-10008",
         "UOM": "Gallon/Cubic Centimeter/Cubic Meter/Milliliter/Liter",
         "Currency": "USD",
@@ -761,8 +703,7 @@ export const RMImportCBCTempData = [
         "FreightCost": "10",
         "ShearingCost": "10",
         "CircleSrapCost": "20",
-        "DestinationPlantName": "Manesar",
-        "DestinationPlantCode": "EC1",
+        "PlantCode": "EC1",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         "Remark": "Remark Text",
     },
@@ -773,7 +714,6 @@ export const RMImportCBCTempData = [
         "RawMaterialCode": "RM-10000002",
         "Category": "CTS",
         "TechnologyName": "Sheet Metal",
-        "CustomerName": "Honda",
         "CustomerCode": "C-10008",
         "UOM": "shot/stroke/Number",
         "Currency": "USD",
@@ -783,8 +723,7 @@ export const RMImportCBCTempData = [
         "FreightCost": "10",
         "ShearingCost": "10",
         "CircleSrapCost": "20",
-        "DestinationPlantName": "Manesar",
-        "DestinationPlantCode": "EC1",
+        "PlantCode": "EC1",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         "Remark": "Remark Text",
     },
@@ -795,7 +734,6 @@ export const RMImportCBCTempData = [
         "RawMaterialCode": "RM-10000002",
         "Category": "CTS",
         "TechnologyName": "Sheet Metal",
-        "CustomerName": "Honda",
         "CustomerCode": "C-10008",
         "UOM": "micrometer/kilometer/Feet/Inch/Millimeter/Centimeter/Meter",
         "Currency": "USD",
@@ -805,8 +743,7 @@ export const RMImportCBCTempData = [
         "FreightCost": "10",
         "ShearingCost": "10",
         "CircleSrapCost": "20",
-        "DestinationPlantName": "Manesar",
-        "DestinationPlantCode": "EC1",
+        "PlantCode": "EC1",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         "Remark": "Remark Text",
     }
@@ -1946,7 +1883,7 @@ export const BOP_VBC_DOMESTIC = [
     { label: 'CategoryName', value: 'CategoryName', }, //*
     { label: 'Specification', value: 'Specification', },
     { label: 'UnitOfMeasurement', value: 'UnitOfMeasurement', }, //*
-    { label: 'DestinationPlantCode', value: 'DestinationPlantCode', }, //*
+    { label: 'PlantCode', value: 'PlantCode', }, //*
     { label: 'IsClientVendorBOP', value: 'IsClientVendorBOP', },
     { label: 'VendorCode', value: 'VendorCode', }, //NOUI
     // { label: 'VendorPlantCode', value: 'VendorPlantCode', }, //NOUI
@@ -1964,7 +1901,7 @@ export const BOP_VBC_DOMESTIC_TempData = [
         'CategoryName': 'Machine',
         'Specification': '20 mm',
         "UnitOfMeasurement": "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram",
-        'DestinationPlantCode': "1032",
+        'PlantCode': "1032",
         "IsClientVendorBOP": "YES",
         'VendorCode': 'Sys01',
         'VendorPlant': 'VPlant',
@@ -1981,7 +1918,7 @@ export const BOP_VBC_DOMESTIC_TempData = [
         'CategoryName': 'Machine',
         'Specification': '20 mm',
         "UnitOfMeasurement": "Gallon/Cubic Centimeter/Cubic Meter/Milliliter/Liter",
-        'DestinationPlantCode': "1032",
+        'PlantCode': "1032",
         "IsClientVendorBOP": "NO",
         'VendorCode': 'Sys01',
         'VendorPlant': 'VPlant',
@@ -1998,7 +1935,7 @@ export const BOP_VBC_DOMESTIC_TempData = [
         'CategoryName': 'Machine',
         'Specification': '20 mm',
         "UnitOfMeasurement": "shot/stroke/Number",
-        'DestinationPlantCode': "1032",
+        'PlantCode': "1032",
         "IsClientVendorBOP": "YES",
         'VendorCode': 'Sys01',
         'VendorPlant': 'VPlant',
@@ -2089,7 +2026,7 @@ export const BOP_CBC_DOMESTIC = [
     { label: 'CategoryName', value: 'CategoryName', }, //*
     { label: 'Specification', value: 'Specification', },
     { label: 'UnitOfMeasurement', value: 'UnitOfMeasurement', }, //*
-    { label: 'DestinationPlantCode', value: 'DestinationPlantCode', }, //*
+    { label: 'PlantCode', value: 'PlantCode', }, //*
     { label: 'CustomerCode', value: 'CustomerCode', }, //NOUI
     { label: 'BasicRate', value: 'BasicRate', }, //*
     { label: 'EffectiveDate', value: 'EffectiveDate', },
@@ -2103,7 +2040,7 @@ export const BOP_CBC_DOMESTIC_TempData = [
         'CategoryName': 'Machine',
         'Specification': '20 mm',
         "UnitOfMeasurement": "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram",
-        'DestinationPlantCode': "1032",
+        'PlantCode': "1032",
         "CustomerCode": "C-10008",
         // 'MinimumOrderQuantity': '1',
         'BasicRate': '100',
@@ -2115,7 +2052,7 @@ export const BOP_CBC_DOMESTIC_TempData = [
         'CategoryName': 'Machine',
         'Specification': '20 mm',
         "UnitOfMeasurement": "Gallon/Cubic Centimeter/Cubic Meter/Milliliter/Liter",
-        'DestinationPlantCode': "1032",
+        'PlantCode': "1032",
         "CustomerCode": "C-10008",
         // 'MinimumOrderQuantity': '1',
         'BasicRate': '100',
@@ -2127,7 +2064,7 @@ export const BOP_CBC_DOMESTIC_TempData = [
         'CategoryName': 'Machine',
         'Specification': '20 mm',
         "UnitOfMeasurement": "shot/stroke/Number",
-        'DestinationPlantCode': "1032",
+        'PlantCode': "1032",
         "CustomerCode": "C-10008",
         // 'MinimumOrderQuantity': '1',
         'BasicRate': '100',
@@ -2145,7 +2082,7 @@ export const BOP_VBC_IMPORT = [
     { label: 'CategoryName', value: 'CategoryName', }, //*
     { label: 'Specification', value: 'Specification', },
     { label: 'UnitOfMeasurement', value: 'UnitOfMeasurement', }, //*
-    { label: 'DestinationPlantCode', value: 'DestinationPlantCode', },
+    { label: 'PlantCode', value: 'PlantCode', },
     { label: 'IsClientVendorBOP', value: 'IsClientVendorBOP', },
     { label: 'VendorCode', value: 'VendorCode', }, //NOUI
     // { label: 'VendorPlant', value: 'VendorPlant' },
@@ -2168,7 +2105,7 @@ export const BOP_VBC_IMPORT_TempData = [
         'CategoryName': 'Machine',
         'Specification': '20 mm',
         "UnitOfMeasurement": "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram",
-        'DestinationPlantCode': '1032',
+        'PlantCode': '1032',
         "IsClientVendorBOP": "YES",
         'VendorCode': 'Sys01',
         'SourceVendorName': 'TATA Steel',
@@ -2185,7 +2122,7 @@ export const BOP_VBC_IMPORT_TempData = [
         'CategoryName': 'Machine',
         'Specification': '20 mm',
         "UnitOfMeasurement": "Gallon/Cubic Centimeter/Cubic Meter/Milliliter/Liter",
-        'DestinationPlantCode': '1032',
+        'PlantCode': '1032',
         "IsClientVendorBOP": "YES",
         'VendorCode': 'Sys01',
         'SourceVendorName': 'TATA Steel',
@@ -2202,7 +2139,7 @@ export const BOP_VBC_IMPORT_TempData = [
         'CategoryName': 'Machine',
         'Specification': '20 mm',
         "UnitOfMeasurement": "shot/stroke/Number",
-        'DestinationPlantCode': '1032',
+        'PlantCode': '1032',
         "IsClientVendorBOP": "NO",
         'VendorCode': 'Sys01',
         'SourceVendorName': 'TATA Steel',
@@ -2221,7 +2158,7 @@ export const BOP_CBC_IMPORT = [
     { label: 'CategoryName', value: 'CategoryName', }, //*
     { label: 'Specification', value: 'Specification', },
     { label: 'UnitOfMeasurement', value: 'UnitOfMeasurement', }, //*
-    { label: 'DestinationPlantCode', value: 'DestinationPlantCode', },
+    { label: 'PlantCode', value: 'PlantCode', },
     { label: 'CustomerCode', value: 'CustomerCode', }, //NOUI
     { label: 'Currency', value: 'Currency', }, //*
     { label: 'IncoTerm', value: 'IncoTerm', },
@@ -2238,7 +2175,7 @@ export const BOP_CBC_IMPORT_TempData = [
         'CategoryName': 'Machine',
         'Specification': '20 mm',
         "UnitOfMeasurement": "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram",
-        'DestinationPlantCode': '1032',
+        'PlantCode': '1032',
         "CustomerCode": "C-10008",
         'Currency': 'INR or USD',
         'IncoTerm': 'CFR',
@@ -2252,7 +2189,7 @@ export const BOP_CBC_IMPORT_TempData = [
         'CategoryName': 'Machine',
         'Specification': '20 mm',
         "UnitOfMeasurement": "Gallon/Cubic Centimeter/Cubic Meter/Milliliter/Liter",
-        'DestinationPlantCode': '1032',
+        'PlantCode': '1032',
         "CustomerCode": "C-10008",
         'Currency': 'INR or USD',
         'IncoTerm': 'CFR',
@@ -2266,7 +2203,7 @@ export const BOP_CBC_IMPORT_TempData = [
         'CategoryName': 'Machine',
         'Specification': '20 mm',
         "UnitOfMeasurement": "shot/stroke/Number",
-        'DestinationPlantCode': '1032',
+        'PlantCode': '1032',
         "CustomerCode": "C-10008",
         'Currency': 'INR or USD',
         'IncoTerm': 'CFR',
@@ -2611,7 +2548,6 @@ export const Power = [
 */
 export const MachineZBC = [
     { label: 'Technology', value: 'Technology', }, //*
-    { label: "PlantName", value: "PlantName" },
     { label: 'PlantCode', value: 'PlantCode', }, //*
     { label: 'MachineNo', value: 'MachineNo', }, //*
     { label: 'MachineSpecification', value: 'MachineSpecification', },
@@ -2630,7 +2566,6 @@ export const MachineZBCTempData = [
     {
         'Technology': 'Sheet Metal',
         'PlantCode': '8820',
-        'PlantName': 'P882022',
         'MachineNo': 'SM1002',
         'MachineSpecification': 'Mechanical Power Press',
         'MachineName': 'Power Press',
@@ -2645,7 +2580,6 @@ export const MachineZBCTempData = [
     }, {
         'Technology': 'Sheet Metal',
         'PlantCode': '8820',
-        'PlantName': 'P882022',
         'MachineNo': 'SM1002',
         'MachineSpecification': 'Mechanical Power Press',
         'MachineName': 'Power Press',
@@ -2660,7 +2594,6 @@ export const MachineZBCTempData = [
     }, {
         'Technology': 'Sheet Metal',
         'PlantCode': '8820',
-        'PlantName': 'P882022',
         'MachineNo': 'SM1002',
         'MachineSpecification': 'Mechanical Power Press',
         'MachineName': 'Power Press',
@@ -2675,7 +2608,6 @@ export const MachineZBCTempData = [
     }, {
         'Technology': 'Sheet Metal',
         'PlantCode': '8820',
-        'PlantName': 'P882022',
         'MachineNo': 'SM1002',
         'MachineSpecification': 'Mechanical Power Press',
         'MachineName': 'Power Press',
@@ -2690,7 +2622,6 @@ export const MachineZBCTempData = [
     }, {
         'Technology': 'Sheet Metal',
         'PlantCode': '8820',
-        'PlantName': 'P882022',
         'MachineNo': 'SM1002',
         'MachineSpecification': 'Mechanical Power Press',
         'MachineName': 'Power Press',
@@ -2710,7 +2641,7 @@ export const MachineZBCTempData = [
 */
 export const MHRMoreZBC = [
     { label: "Technology", value: "Technology", }, //*
-    { label: "DestinationPlantCode", value: "DestinationPlantCode", }, //*
+    { label: "PlantCode", value: "PlantCode", }, //*
     { label: "VendorCode", value: "VendorCode", },
     { label: "CustomerCode", value: "CustomerCode", },
     { label: "MachineNo", value: "MachineNo", }, //*
@@ -2790,7 +2721,7 @@ export const CLIENT_DOWNLOAD_EXCEl = [
 export const MHRMoreZBCTempData = [
     {
         "Technology": "Sheet Metal",
-        'DestinationPlantCode': '8820',
+        'PlantCode': '8820',
         'VendorCode': '1111',
         'CustomerCode': 'C-100019',
         "MachineNo": "MAC-001",
@@ -2850,7 +2781,7 @@ export const MHRMoreZBCTempData = [
     },
     {
         "Technology": "Sheet Metal",
-        'DestinationPlantCode': '8820',
+        'PlantCode': '8820',
         'VendorCode': '1111',
         'CustomerCode': 'C-100019',
         "MachineNo": "MAC-002",
@@ -2908,7 +2839,7 @@ export const MHRMoreZBCTempData = [
         "Remark": "Remark",
     }, {
         "Technology": "Sheet Metal",
-        'DestinationPlantCode': '8820',
+        'PlantCode': '8820',
         'VendorCode': '1111',
         'CustomerCode': 'C-100019',
         "MachineNo": "MAC-002",
@@ -2966,7 +2897,7 @@ export const MHRMoreZBCTempData = [
         "Remark": "Remark",
     }, {
         "Technology": "Sheet Metal",
-        'DestinationPlantCode': '8820',
+        'PlantCode': '8820',
         'VendorCode': '1111',
         'CustomerCode': 'C-100019',
         "MachineNo": "MAC-002",
@@ -3024,7 +2955,7 @@ export const MHRMoreZBCTempData = [
         "Remark": "Remark",
     }, {
         "Technology": "Sheet Metal",
-        'DestinationPlantCode': '8820',
+        'PlantCode': '8820',
         'VendorCode': '1111',
         'CustomerCode': 'C-100019',
         "MachineNo": "MAC-002",
@@ -3088,10 +3019,8 @@ export const MHRMoreZBCTempData = [
 */
 export const MachineVBC = [
     { label: 'Technology', value: 'Technology', }, //*
-    { label: 'VendorName', value: 'VendorName', }, //*, co
     { label: 'VendorCode', value: 'VendorCode', }, // not on UI
-    { label: 'DestinationPlant', value: 'DestinationPlant', }, // not on UI
-    { label: 'DestinationPlantCode', value: 'DestinationPlantCode', }, // not on UI
+    { label: 'PlantCode', value: 'PlantCode', }, // not on UI
     { label: 'MachineNo', value: 'MachineNo', }, //*
     { label: 'MachineSpecification', value: 'MachineSpecification', },
     { label: 'MachineName', value: 'MachineName', }, //*
@@ -3108,10 +3037,8 @@ export const MachineVBC = [
 export const MachineVBCTempData = [
     {
         'Technology': 'Sheet Metal',
-        'VendorName': 'SIPL',
         'VendorCode': '10222',
-        'DestinationPlant': 'Manesar',
-        'DestinationPlantCode': '1032',
+        'PlantCode': '1032',
         'MachineNo': 'SM101',
         'MachineSpecification': 'Mechanical Power Press',
         'MachineName': 'Power Press',
@@ -3125,10 +3052,8 @@ export const MachineVBCTempData = [
         'Remark': 'Remark Text',
     }, {
         'Technology': 'Sheet Metal',
-        'VendorName': 'SIPL',
         'VendorCode': '10222',
-        'DestinationPlant': 'Manesar',
-        'DestinationPlantCode': '1032',
+        'PlantCode': '1032',
         'MachineNo': 'SM101',
         'MachineSpecification': 'Mechanical Power Press',
         'MachineName': 'Power Press',
@@ -3142,10 +3067,8 @@ export const MachineVBCTempData = [
         'Remark': 'Remark Text',
     }, {
         'Technology': 'Sheet Metal',
-        'VendorName': 'SIPL',
         'VendorCode': '10222',
-        'DestinationPlant': 'Manesar',
-        'DestinationPlantCode': '1032',
+        'PlantCode': '1032',
         'MachineNo': 'SM101',
         'MachineSpecification': 'Mechanical Power Press',
         'MachineName': 'Power Press',
@@ -3159,10 +3082,8 @@ export const MachineVBCTempData = [
         'Remark': 'Remark Text',
     }, {
         'Technology': 'Sheet Metal',
-        'VendorName': 'SIPL',
         'VendorCode': '10222',
-        'DestinationPlant': 'Manesar',
-        'DestinationPlantCode': '1032',
+        'PlantCode': '1032',
         'MachineNo': 'SM101',
         'MachineSpecification': 'Mechanical Power Press',
         'MachineName': 'Power Press',
@@ -3176,10 +3097,8 @@ export const MachineVBCTempData = [
         'Remark': 'Remark Text',
     }, {
         'Technology': 'Sheet Metal',
-        'VendorName': 'SIPL',
         'VendorCode': '10222',
-        'DestinationPlant': 'Manesar',
-        'DestinationPlantCode': '1032',
+        'PlantCode': '1032',
         'MachineNo': 'SM101',
         'MachineSpecification': 'Mechanical Power Press',
         'MachineName': 'Power Press',
@@ -3195,10 +3114,8 @@ export const MachineVBCTempData = [
 ]
 export const MachineCBC = [
     { label: 'Technology', value: 'Technology', }, //*
-    { label: 'CustomerName', value: 'CustomerName', }, //*, co
     { label: 'CustomerCode', value: 'CustomerCode', }, // not on UI
-    { label: 'DestinationPlant', value: 'DestinationPlant', }, // not on UI
-    { label: 'DestinationPlantCode', value: 'DestinationPlantCode', }, // not on UI
+    { label: 'PlantCode', value: 'PlantCode', }, // not on UI
     { label: 'MachineNo', value: 'MachineNo', }, //*
     { label: 'MachineSpecification', value: 'MachineSpecification', },
     { label: 'MachineName', value: 'MachineName', }, //*
@@ -3215,10 +3132,8 @@ export const MachineCBC = [
 export const MachineCBCTempData = [
     {
         'Technology': 'Sheet Metal',
-        'CustomerName': 'Honda',
         'CustomerCode': 'C-10008',
-        'DestinationPlant': 'Manesar',
-        'DestinationPlantCode': '1032',
+        'PlantCode': '1032',
         'MachineNo': 'SM101',
         'MachineSpecification': 'Mechanical Power Press',
         'MachineName': 'Power Press',
@@ -3232,10 +3147,8 @@ export const MachineCBCTempData = [
         'Remark': 'Remark Text',
     }, {
         'Technology': 'Sheet Metal',
-        'CustomerName': 'Honda',
         'CustomerCode': 'C-10008',
-        'DestinationPlant': 'Manesar',
-        'DestinationPlantCode': '1032',
+        'PlantCode': '1032',
         'MachineNo': 'SM101',
         'MachineSpecification': 'Mechanical Power Press',
         'MachineName': 'Power Press',
@@ -3249,10 +3162,8 @@ export const MachineCBCTempData = [
         'Remark': 'Remark Text',
     }, {
         'Technology': 'Sheet Metal',
-        'CustomerName': 'Honda',
         'CustomerCode': 'C-10008',
-        'DestinationPlant': 'Manesar',
-        'DestinationPlantCode': '1032',
+        'PlantCode': '1032',
         'MachineNo': 'SM101',
         'MachineSpecification': 'Mechanical Power Press',
         'MachineName': 'Power Press',
@@ -3266,10 +3177,8 @@ export const MachineCBCTempData = [
         'Remark': 'Remark Text',
     }, {
         'Technology': 'Sheet Metal',
-        'CustomerName': 'Honda',
         'CustomerCode': 'C-10008',
-        'DestinationPlant': 'Manesar',
-        'DestinationPlantCode': '1032',
+        'PlantCode': '1032',
         'MachineNo': 'SM101',
         'MachineSpecification': 'Mechanical Power Press',
         'MachineName': 'Power Press',
@@ -3283,10 +3192,8 @@ export const MachineCBCTempData = [
         'Remark': 'Remark Text',
     }, {
         'Technology': 'Sheet Metal',
-        'CustomerName': 'Honda',
         'CustomerCode': 'C-10008',
-        'DestinationPlant': 'Manesar',
-        'DestinationPlantCode': '1032',
+        'PlantCode': '1032',
         'MachineNo': 'SM101',
         'MachineSpecification': 'Mechanical Power Press',
         'MachineName': 'Power Press',
