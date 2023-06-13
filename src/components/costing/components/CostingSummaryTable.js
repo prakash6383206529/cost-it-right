@@ -2061,22 +2061,8 @@ const CostingSummaryTable = (props) => {
                                 return (
 
                                   (data?.bestCost !== true) && data?.CostingHeading !== VARIANCE ?
-                                    <td className={props?.isRfqCosting && data.status === APPROVED ? 'finalize-cost' : ''} width={"32%"}>
-                                      <div className="d-grid">
-
-                                        <span className="d-inline-block">{"Type"}</span>
-                                        <span className="d-inline-block">{"Applicability"}</span>
-                                        <span className="d-inline-block">{"Value"}</span>
-                                        <span className="d-inline-block">{"Cost"}</span>
-                                      </div>
-                                      <div className={`d-grid ${isApproval && viewCostingData?.length > 1 && highlightCostingSummaryValue(viewCostingData[0]?.anyOtherCost, viewCostingData[1]?.anyOtherCost)}`}>
-                                        <span className="d-inline-block small-grey-text">
-                                          {data?.CostingHeading !== VARIANCE ? data?.anyOtherCostType : ''}
-                                        </span>
-                                        <span className="d-inline-block small-grey-text">{data?.CostingHeading !== VARIANCE && data?.anyOtherCostType === "Percentage" ? data?.anyOtherCostApplicablity : '-'}</span>
-                                        <span className="d-inline-block small-grey-text">{data?.CostingHeading !== VARIANCE && data?.anyOtherCostType === "Percentage" ? <span title={checkForDecimalAndNull(data?.anyOtherCostPercent, initialConfiguration.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.anyOtherCostPercent, initialConfiguration.NoOfDecimalForPrice)}</span> : '-'}</span>
-                                        <span className="d-inline-block small-grey-text">{data?.CostingHeading !== VARIANCE ? <span title={checkForDecimalAndNull(data?.anyOtherCost, initialConfiguration.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.anyOtherCost, initialConfiguration.NoOfDecimalForPrice)}</span> : ''}</span>
-                                      </div>
+                                    <td className={props?.isRfqCosting && data.status === APPROVED && !props.uniqueShouldCostingId.includes(data.costingId) ? 'finalize-cost' : ''} width={"32%"}>
+                                      {data.anyOtherCostTotal}
                                     </td>
                                     : ""
 
@@ -2092,7 +2078,7 @@ const CostingSummaryTable = (props) => {
                               {viewCostingData &&
                                 viewCostingData?.map((data) => {
                                   return (
-                                    <td className={props?.isRfqCosting && data.status === APPROVED ? 'finalize-cost' : ''}>
+                                    <td className={props?.isRfqCosting && data.status === APPROVED && !props.uniqueShouldCostingId.includes(data.costingId) ? 'finalize-cost' : ''}>
                                       <span title={data?.BasicRate} className={`d-block small-grey-text w-fit ${isApproval && viewCostingData?.length > 1 && highlightCostingSummaryValue(viewCostingData[0]?.BasicRate, viewCostingData[1]?.BasicRate)}`}>
                                         {data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.BasicRate, initialConfiguration.NoOfDecimalForPrice) : ''}
                                       </span>

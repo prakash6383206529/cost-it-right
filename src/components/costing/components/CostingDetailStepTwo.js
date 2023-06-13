@@ -309,6 +309,7 @@ function CostingDetailStepTwo(props) {
    * @description SET COSTS FOR TOP HEADER FROM DISCOUNT AND COST
    */
   const setHeaderDiscountTab = (data, headerCostData = {}, CostingData = {}) => {
+    console.log('data: ', data);
     if (!CostingViewMode) {
       const headerIndex = 0;
       if (CostingDataList && CostingDataList.length > 0 && CostingDataList[headerIndex].CostingId === undefined) return false;
@@ -323,16 +324,17 @@ function CostingDetailStepTwo(props) {
           checkForNull(tempData.NetOverheadAndProfitCost) +
           checkForNull(tempData.NetPackagingAndFreight) +
           checkForNull(tempData.ToolCost)
-        if (data.OtherCostType === 'Percentage') {
-          const cost = checkForNull(findApplicabilityCost(data, data?.OtherCostApplicability, headerCostData, CostingData, data?.PercentageOtherCost))
+        // data.AnyOtherCost
+        // if (data.OtherCostType === 'Percentage') {
+        //   const cost = checkForNull(findApplicabilityCost(data, data?.OtherCostApplicability, headerCostData, CostingData, data?.PercentageOtherCost))
 
-          data.AnyOtherCost = cost
-        }
+        //   data.AnyOtherCost = cost
+        // }
         const discountedCost = data.DiscountCostType === 'Percentage' ? checkForNull(findApplicabilityCost(data, data?.DiscountApplicability, headerCostData, CostingData, data?.HundiOrDiscountPercentage)) : data.DiscountsAndOtherCost;
 
         const discountValues = {
-          BasicRateINR: checkForNull(SumOfTab - discountedCost) + checkForNull(data.AnyOtherCost),
-          NetPOPriceINR: checkForNull(SumOfTab - discountedCost) + checkForNull(data.AnyOtherCost),
+          BasicRateINR: checkForNull(SumOfTab - discountedCost) + checkForNull(data?.AnyOtherCost),
+          NetPOPriceINR: checkForNull(SumOfTab - discountedCost) + checkForNull(data?.AnyOtherCost),
           HundiOrDiscountValue: checkForNull(discountedCost),
           AnyOtherCost: checkForNull(data.AnyOtherCost),
           HundiOrDiscountPercentage: checkForNull(data.HundiOrDiscountPercentage),
@@ -348,8 +350,10 @@ function CostingDetailStepTwo(props) {
           ...tempData,
           NetDiscountsCost: checkForNull(discountedCost),
           NetOtherCost: checkForNull(data.AnyOtherCost),
-          TotalCost: OverAllCost + checkForNull(data.AnyOtherCost) + checkForNull(data.totalNpvCost) + checkForNull(data.totalConditionCost),
-          BasicRate: OverAllCost + checkForNull(data.AnyOtherCost),
+          TotalCost: OverAllCost + checkForNull(data?.AnyOtherCost) + checkForNull(data.totalNpvCost) + checkForNull(data.totalConditionCost),
+          // TotalCost: OverAllCost + checkForNull(data.totalNpvCost) + checkForNull(data.totalConditionCost),
+          BasicRate: OverAllCost + checkForNull(data?.AnyOtherCost),
+          // BasicRate: OverAllCost,
           NetPackagingAndFreight: tempData.NetPackagingAndFreight,
         }
 
