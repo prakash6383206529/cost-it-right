@@ -977,6 +977,12 @@ const CostingSummaryTable = (props) => {
       }
     }
 
+    viewCostingData && viewCostingData.map((item) => {
+      item.otherDiscountApplicablity = Array.isArray(item?.CostingPartDetails?.DiscountCostDetails) ? item?.CostingPartDetails?.DiscountCostDetails[0].ApplicabilityType : ''
+      item.otherDiscountValuePercent = Array.isArray(item?.CostingPartDetails?.DiscountCostDetails) ? item?.CostingPartDetails?.DiscountCostDetails[0].Value : ''
+      item.otherDiscountCost = Array.isArray(item?.CostingPartDetails?.DiscountCostDetails) ? item?.CostingPartDetails?.DiscountCostDetails[0].NetCost : ''
+    })
+
     let masterDataArray = []
     viewCostingData && viewCostingData.map((item, index) => {
 

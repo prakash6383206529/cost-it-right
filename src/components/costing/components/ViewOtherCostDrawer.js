@@ -87,9 +87,8 @@ function ViewOtherCostDrawer(props) {
                                 <tr key={index} >
                                     <td>{item.OtherCostDescription}</td>
                                     <td>{item?.OtherCostApplicability}</td>
-                                    <td>{item.PercentageOtherCost}</td>
+                                    <td>{String(item?.OtherCostApplicability) === String('Fixed') ? '-' : item.PercentageOtherCost}</td>
                                     <td>{checkForDecimalAndNull(item.AnyOtherCost, initialConfiguration.NoOfDecimalForPrice)}</td>
-
                                 </tr>
                             );
                         })}
