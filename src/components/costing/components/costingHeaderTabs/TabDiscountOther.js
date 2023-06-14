@@ -313,8 +313,6 @@ function TabDiscountOther(props) {
 
             setOtherCostArray(temp)
 
-            // setOtherCostArray(Data?.CostingPartDetails?.OtherCostDetails)
-            // check here @ashok
             setDiscountCostApplicability({ label: costDetail.DiscountCostDetails[0].ApplicabilityType, value: costDetail.DiscountCostDetails[0].ApplicabilityType })
             setValue('DiscountCostApplicability', { label: costDetail.DiscountCostDetails[0].ApplicabilityType, value: costDetail.DiscountCostDetails[0].ApplicabilityType })
             setValue('crmHeadDiscount', { label: costDetail.DiscountCostDetails[0].CRMHead, value: 1 })
@@ -531,90 +529,6 @@ function TabDiscountOther(props) {
         setDiscountObj({
           ...discountObj,
           HundiOrDiscountPercentage: checkForNull(event.target.value)
-        })
-      }
-    }
-  }
-  // check here @ashok
-  /**
-    * @method handleOtherCostTypeChange
-    * @description  HANDLE OTHER COST TYPE CHANGE
-    */
-  const handleOtherCostTypeChange = (newValue) => {
-    if (!CostingViewMode) {
-      if (newValue && newValue !== '') {
-        dispatch(isDiscountDataChange(true))
-        setOtherCostType(newValue)
-        setValue('AnyOtherCost', 0)
-        setValue('PercentageOtherCost', 0)
-        errors.AnyOtherCost = {}
-        errors.PercentageOtherCost = {}
-        setDiscountObj({
-          ...discountObj,
-          AnyOtherCost: 0,
-          OtherCostPercentage: 0
-        })
-      } else {
-        setOtherCostType([])
-      }
-      errors.PercentageOtherCost = {}
-    }
-  }
-
-  const onCRMHeadChangeOther = (e) => {
-    if (e) {
-      setDiscountObj({
-        ...discountObj,
-        OtherCRMHead: e?.label
-      })
-    }
-  }
-
-  const onCRMHeadChangeDiscount = (e) => {
-    if (e) {
-      setDiscountObj({
-        ...discountObj,
-        DiscountCRMHead: e?.label
-      })
-    }
-  }
-
-  /**
-    * @method handleDiscountTypeChange
-    * @description  HANDLE OTHER DISCOUNT TYPE CHANGE
-    */
-  const handleDiscountTypeChange = (newValue) => {
-    // if (!CostingViewMode) {
-    //   if (newValue && newValue !== '') {
-    //     dispatch(isDiscountDataChange(true))
-    //     setHundiDiscountType(newValue)
-    //     setValue('HundiOrDiscountValue', 0)
-    //     setValue('HundiOrDiscountPercentage', 0)
-    //     setValue('HundiDiscountType', newValue.value)
-    //     errors.HundiOrDiscountValue = {}
-    //     errors.HundiOrDiscountPercentage = {}
-    //     setDiscountObj({
-    //       ...discountObj,
-    //       DiscountCostType: newValue.value
-    //     })
-    //   } else {
-    //     setHundiDiscountType([])
-    //   }
-    //   errors.HundiOrDiscountPercentage = {}
-    // }
-  }
-
-  /**
-  * @method handleOtherCostPercentageChange
-  * @description HANDLE ANY OTHER COST CHANGE
-  */
-  const handleOtherCostPercentageChange = (event) => {
-    if (!CostingViewMode) {
-      if (!isNaN(event.target.value)) {
-        dispatch(isDiscountDataChange(true))
-        setDiscountObj({
-          ...discountObj,
-          OtherCostPercentage: checkForNull(event.target.value)
         })
       }
     }
@@ -1281,24 +1195,6 @@ function TabDiscountOther(props) {
                   className="form"
                 >
                   <Row>
-                    {/* // check here @ashok */}
-                    {/* <Col md="2">
-                      <SearchableSelectHookForm
-                        label={"Discount Type"}
-                        name={"HundiDiscountType"}
-                        placeholder={"Select"}
-                        Controller={Controller}
-                        control={control}
-                        rules={{ required: false }}
-                        register={register}
-                        defaultValue={hundiscountType.length !== 0 ? hundiscountType : ""}
-                        options={renderListing("HundiDiscountType")}
-                        mandatory={false}
-                        handleChange={handleDiscountTypeChange}
-                        errors={errors.HundiDiscountType}
-                        disabled={CostingViewMode ? true : false}
-                      />
-                    </Col> */}
                     {
                       <Col md="3">
                         <SearchableSelectHookForm
