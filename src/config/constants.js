@@ -22,7 +22,7 @@ const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
 // const BASE_URL = `http://10.10.8.160/api/v1`;
 // const BASE_URL = `http://10.10.0.43/RohitCIR/api/v1`;
 // const BASE_URL = `https://demov3api.costitright.com/api/v1`;
-// const BASE_URL = `http://10.10.8.117/CIR/api/v1`;
+//const BASE_URL = `http://10.10.8.109:8081/api/v1`;
 // const BASE_URL = `http://10.10.1.100:1002/api/v1`;
 // const BASE_URL = `https://upsapi.costitright.com/api/v1`; 
 //FILE URL
@@ -1962,14 +1962,10 @@ export const VIEW_COSTING_DATA = {
   // totalCost: 'Total Cost',
   // otherDiscount: 'Hundi/Other Discount',
   // otherDiscountValue: '',
-  otherDiscountType: 'Hundi/Discount Type',
   otherDiscountApplicablity: 'Hundi/Discount Applicability',
   otherDiscountValuePercent: 'Hundi/Discount Value',
   otherDiscountCost: 'Hundi/Discount Cost',
-  anyOtherCostType: 'Any Other Cost Type',
-  anyOtherCostApplicablity: 'Any Other Cost Applicability',
-  anyOtherCostPercent: 'Any Other Cost Value',
-  anyOtherCost: 'Any Other Cost',
+  anyOtherCostTotal: 'Any Other Cost',
   BasicRate: 'Basic Rate',
   npvCost: 'NPV Cost',
   conditionCost: 'Costing Condition',
@@ -2197,10 +2193,7 @@ export const VIEW_COSTING_DATA_TEMPLATE = [
     label: 'Net Tool Cost',
     value: 'totalToolCost'
   },
-  {
-    label: 'Hundi/Discount Type',
-    value: 'otherDiscountType'
-  },
+
   {
     label: 'Hundi/Discount Applicability',
     value: 'otherDiscountApplicablity'
@@ -2214,20 +2207,8 @@ export const VIEW_COSTING_DATA_TEMPLATE = [
     value: 'otherDiscountCost'
   },
   {
-    label: 'Any Other Cost Type',
-    value: 'anyOtherCostType'
-  },
-  {
-    label: 'Any Other Cost Applicability',
-    value: 'anyOtherCostApplicablity'
-  },
-  {
-    label: 'Any Other Cost Value',
-    value: 'anyOtherCostPercent'
-  },
-  {
     label: 'Any Other Cost',
-    value: 'anyOtherCost'
+    value: 'anyOtherCostTotal'
   },
   {
     label: 'Basic Rate',
@@ -2557,4 +2538,4 @@ export const KEYRFQ = "UAGSqTBCbZ8JqHJl"
 export const IVRFQ = "8vFNmRQEl91nOtrM"
 
 //VERSION 
-export const VERSION = "V2.1.176";
+export const VERSION = "V2.1.177";
