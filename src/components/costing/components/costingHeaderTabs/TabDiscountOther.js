@@ -116,6 +116,7 @@ function TabDiscountOther(props) {
           totalNpvCost: discountObj?.totalNpvCost ? discountObj?.totalNpvCost : totalNpvCost,
           totalConditionCost: discountObj?.totalConditionCost ? discountObj?.totalConditionCost : totalConditionCost,
         }
+
         props.setHeaderCost(topHeaderData, headerCosts, costData)
       }
     }
@@ -258,7 +259,7 @@ function TabDiscountOther(props) {
         "CurrencyId": currency.value,
         "Currency": currency.label,
         "IsChangeCurrency": IsCurrencyChange,
-        "NetPOPriceOtherCurrency": netPoPriceCurrencyState,
+        "NetPOPriceInOtherCurrency": netPoPriceCurrencyState,
         "CurrencyExchangeRate": CurrencyExchangeRate,
         "Remark": getValues('Remarks'),
 
@@ -364,7 +365,6 @@ function TabDiscountOther(props) {
             let costDetail = Data?.CostingPartDetails
 
 
-
             //let OtherCostDetails = Data?.CostingPartDetails?.OtherCostDetails;
             setDiscountObj({ ...Data, ...Data?.CostingPartDetails, totalConditionCost: costDetail?.NetConditionCost, totalNpvCost: costDetail?.NetNpvCost, AnyOtherCost: costDetail.NetOtherCost !== null ? checkForNull(costDetail.NetOtherCost) : '', })
 
@@ -391,8 +391,8 @@ function TabDiscountOther(props) {
             //setValue('HundiDiscountType', OtherCostDetails.DiscountCostType !== null ? { label: OtherCostDetails.DiscountCostType, value: OtherCostDetails.DiscountCostType } : '')
 
             setValue('Currency', Data.Currency !== null ? { label: Data.Currency, value: Data.CurrencyId } : [])
-            setValue('NetPOPriceOtherCurrency', Data.NetPOPriceOtherCurrency !== null ? checkForDecimalAndNull(Data.NetPOPriceOtherCurrency, initialConfiguration?.NoOfDecimalForPrice) : '')
-            setNetPoPriceCurrencyState(Data.NetPOPriceOtherCurrency !== null ? Data.NetPOPriceOtherCurrency : '')
+            setValue('NetPOPriceOtherCurrency', Data.NetPOPriceInOtherCurrency !== null ? checkForDecimalAndNull(Data.NetPOPriceInOtherCurrency, initialConfiguration?.NoOfDecimalForPrice) : '')
+            setNetPoPriceCurrencyState(Data.NetPOPriceInOtherCurrency !== null ? Data.NetPOPriceInOtherCurrency : '')
             setValue('Remarks', Data.Remark !== null ? Data.Remark : '')
             setValue('SANumber', Data.SANumber !== null ? Data.SANumber : '')
             setValue('LineNumber', Data.LineNumber !== null ? Data.LineNumber : '')
@@ -442,11 +442,10 @@ function TabDiscountOther(props) {
               //DiscountCostType: OtherCostDetails.DiscountCostType !== null ? OtherCostDetails.DiscountCostType : '',
               // OtherCostApplicability: OtherCostDetails.OtherCostApplicability,
               DiscountApplicability: costDetail.DiscountCostDetails[0].ApplicabilityType,
-              totalNpvCost: discountObj?.totalNpvCost ? discountObj?.totalNpvCost : totalNpvCost,
-              totalConditionCost: discountObj?.totalConditionCost ? discountObj?.totalConditionCost : totalConditionCost,
+              totalNpvCost: discountObj?.totalNpvCost ? discountObj?.totalNpvCost : costDetail?.NetNpvCost,
+              totalConditionCost: discountObj?.totalConditionCost ? discountObj?.totalConditionCost : costDetail?.NetConditionCost,
             }
             setDiscountObj(topHeaderData)
-
             props.setHeaderCost(topHeaderData, headerCosts, costData)
             // ********** ADD ATTACHMENTS FROM API INTO THE DROPZONE'S PERSONAL DATA STORE **********
             let files = Data.Attachements && Data.Attachements.map((item) => {
@@ -559,7 +558,6 @@ function TabDiscountOther(props) {
       totalNpvCost: discountObj?.totalNpvCost ? discountObj?.totalNpvCost : totalNpvCost,
       totalConditionCost: discountObj?.totalConditionCost ? discountObj?.totalConditionCost : totalConditionCost,
     }
-
     props.setHeaderCost(topHeaderData, headerCosts, costData)
 
   }
@@ -997,7 +995,7 @@ function TabDiscountOther(props) {
       "CurrencyId": currency.value,
       "Currency": currency.label,
       "IsChangeCurrency": IsCurrencyChange,
-      "NetPOPriceOtherCurrency": netPoPriceCurrencyState,
+      "NetPOPriceInOtherCurrency": netPoPriceCurrencyState,
       "CurrencyExchangeRate": CurrencyExchangeRate,
       "Remark": getValues('Remarks'),
 
