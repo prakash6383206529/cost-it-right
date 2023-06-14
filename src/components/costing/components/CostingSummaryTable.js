@@ -40,6 +40,7 @@ import { getUsersTechnologyLevelAPI } from '../../../actions/auth/AuthActions'
 import AddNpvCost from './CostingHeadCosts/AdditionalOtherCost/AddNpvCost'
 import { costingTypeIdToApprovalTypeIdFunction } from '../../common/CommonFunctions'
 import CrossIcon from '../../../assests/images/red-cross.png'
+import ViewOtherCostDrawer from './ViewOtherCostDrawer'
 
 const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
 
@@ -1970,7 +1971,6 @@ const CostingSummaryTable = (props) => {
                             </span>
                             <span className="d-block small-grey-text"></span>
                           </td>
-                          { }
                           {viewCostingData &&
                             viewCostingData?.map((data) => {
                               return (
@@ -1979,23 +1979,18 @@ const CostingSummaryTable = (props) => {
                                     <div className="d-grid">
                                       {/* <span className="d-inline-block w-50 ">{data?.CostingHeading !== VARIANCE ? data?.otherDiscount.discount : ''}</span> &nbsp;{' '}
                                        <span className="d-inline-block w-50 ">{data?.CostingHeading !== VARIANCE ? data?.otherDiscount.value : ''}</span> */}
-                                      <span className="d-inline-block ">{"Type"}</span>
+
                                       <span className="d-inline-block ">{"Applicability"}</span>
                                       <span className="d-inline-block ">{"Value"}</span>
                                       <span className="d-inline-block ">{"Cost"}</span>
                                     </div>
                                     <div className={`d-grid ${isApproval && viewCostingData?.length > 1 && highlightCostingSummaryValue(viewCostingData[0]?.otherDiscountValue.discountValue, viewCostingData[1]?.otherDiscountValue.discountValue)}`}>
-                                      <span className="d-inline-block small-grey-text">
-                                        {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.otherDiscountValue.dicountType : '')}
-                                      </span>
-                                      <span className="d-inline-block small-grey-text">{data?.CostingHeading !== VARIANCE && data?.otherDiscountValue.dicountType === "Percentage" ? data?.otherDiscountValue.discountApplicablity : '-'}</span>
-                                      <span className="d-inline-block small-grey-text">{data?.CostingHeading !== VARIANCE && data?.otherDiscountValue.dicountType === "Percentage" ? <span title={checkForDecimalAndNull(data?.otherDiscountValue.discountPercentValue, initialConfiguration.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.otherDiscountValue.discountPercentValue, initialConfiguration.NoOfDecimalForPrice)}</span> : '-'}</span>
-                                      <span className="d-inline-block small-grey-text">{data?.CostingHeading !== VARIANCE ? <span title={checkForDecimalAndNull(data?.otherDiscountValue.discountValue, initialConfiguration.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.otherDiscountValue.discountValue, initialConfiguration.NoOfDecimalForPrice)}</span> : ''}</span>
+                                      <span className="d-inline-block small-grey-text">{data?.CostingHeading !== VARIANCE && data?.CostingPartDetails.DiscountCostDetails[0].ApplicabilityType}</span>
+                                      <span className="d-inline-block small-grey-text">{data?.CostingHeading !== VARIANCE && <span title={checkForDecimalAndNull(data?.CostingPartDetails.DiscountCostDetails[0].Value, initialConfiguration.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.CostingPartDetails.DiscountCostDetails[0].Value, initialConfiguration.NoOfDecimalForPrice)}</span>}</span>
+                                      <span className="d-inline-block small-grey-text">{data?.CostingHeading !== VARIANCE ? <span title={checkForDecimalAndNull(data?.CostingPartDetails.DiscountCostDetails[0].NetCost, initialConfiguration.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.CostingPartDetails.DiscountCostDetails[0].NetCost, initialConfiguration.NoOfDecimalForPrice)}</span> : ''}</span>
                                     </div>
                                   </td>
                                   : ""
-
-
                               )
                             })}
                         </tr>
@@ -2035,7 +2030,7 @@ const CostingSummaryTable = (props) => {
                             })}
                         </tr>}
                         {initialConfiguration?.IsShowNpvCost && drawerDetailPDF && <tr><th colSpan={2}>
-                          <AddNpvCost
+                          <ViewOtherCostDrawer
                             isOpen={openNpvDrawer}
                             costingSummary={true}
                             viewCostingData={viewCostingData}
@@ -2090,7 +2085,7 @@ const CostingSummaryTable = (props) => {
                                 {data?.CostingHeading === VARIANCE && (isApproval ? viewCostingData?.length > 0 && viewCostingData[0]?.nPOPrice > viewCostingData[1]?.nPOPrice ? <span className='positive-sign'>+</span> : '' : '')}
                                 <span title={data?.nPOPrice}><span className='currency-symbol'>{getCurrencySymbol(getConfigurationKey().BaseCurrency)}</span>{checkForDecimalAndNull(data?.nPOPrice, initialConfiguration.NoOfDecimalForPrice)}</span>
                                 {
-                                  (data?.CostingHeading !== VARIANCE) && (!pdfHead && !drawerDetailPDF) && (initialConfiguration?.IsBasicRateAndCostingConditionVisible || initialConfiguration?.IsShowNpvCost) &&
+                                  (data?.CostingHeading !== VARIANCE) && (!pdfHead && !drawerDetailPDF) &&
                                   <button
                                     type="button"
                                     title='View'
@@ -2121,7 +2116,6 @@ const CostingSummaryTable = (props) => {
                             )
                           })}
                       </tr>}
-
 
                       {viewCostingData[0]?.technologyId !== LOGISTICS &&
                         <tr className={`background-light-blue  ${getCurrencyVarianceFormatter()}`}>
@@ -2428,13 +2422,14 @@ const CostingSummaryTable = (props) => {
         />
       }
 
-      {initialConfiguration?.IsShowNpvCost &&
-        openNpvDrawer && <AddNpvCost
+      {
+        openNpvDrawer && <ViewOtherCostDrawer
           isOpen={openNpvDrawer}
           viewCostingData={viewCostingData}
           costingSummary={true}
           tableData={[]}
           npvIndex={npvIndex}
+          costingIndex={npvIndex}
           closeDrawer={closeNpvDrawer}
           anchor={'right'}
           partId={viewCostingData[npvIndex]?.partId}
