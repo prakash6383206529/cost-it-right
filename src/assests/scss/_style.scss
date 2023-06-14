@@ -1,15 +1,4 @@
-@import "./cssVariable.scss";
-@import "./icons.scss";
-
-@font-face {
-  font-family: "icomoon";
-  src: url("fonts/icomoon.eot?mx6nlh");
-  src: url("fonts/icomoon.eot?mx6nlh#iefix") format("embedded-opentype"),
-    url("fonts/icomoon.ttf?mx6nlh") format("truetype"), url("fonts/icomoon.woff?mx6nlh") format("woff"),
-    url("fonts/icomoon.svg?mx6nlh#icomoon") format("svg");
-  font-weight: normal;
-  font-style: normal;
-}
+@import "./abstracts/variable.scss";
 
 [class^="icon-"],
 [class*=" icon-"] {
@@ -785,7 +774,7 @@ input.form-control {
 }
 
 .blue-box {
-  padding: 0 15px 30px;
+  padding: 20px 15px 30px;
   background-color: #EDF0F5;
 }
 
@@ -1412,7 +1401,7 @@ $roboto: "Roboto",
 
         .sub-heading {
           display: block;
-          font-size: 11px;
+          font-size: 13px;
           margin-bottom: 0 !important;
         }
       }
@@ -2394,11 +2383,7 @@ input:disabled {
 }
 
 .add-min-height {
-  min-height: calc(100vh - 303px);
-
-  @media screen and (max-width: $middleDesktop) {
-    min-height: calc(100vh - 253px);
-  }
+  min-height: calc(100vh - 263px);
 
   &.mb-3.sm-edit-page {
     min-height: calc(100vh - 332px);
@@ -3135,7 +3120,7 @@ button:disabled,
   position: relative;
 
   .pie-chart-inner {
-    min-width: 300px;
+    min-width: 350px;
     background-color: #e4e9f0;
     color: #3d4465;
     text-align: center;
@@ -3148,17 +3133,13 @@ button:disabled,
     margin-left: -4px;
     font-size: 14px;
     box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
+  }
 
-    button {
-      position: absolute;
-      top: -8px;
-      right: -8px;
-      background: none;
-
-      &:focus {
-        border: none !important;
-        box-shadow: none !important;
-      }
+  .CancelIcon,
+  .pie-chart {
+    &:focus {
+      box-shadow: none !important;
+      border: none !important;
     }
   }
 }
@@ -3472,16 +3453,16 @@ body {
   border-left: 1px solid $borderColor;
   border-right: 1px solid $borderColor;
 
-  @for $i from 1 through 12 {
-    .col-md-#{$i} {
-      border-top: 1px solid $borderColor;
-      padding: 12px 15px;
+  // @for $i from 1 through 12 {
+  //   .col-md-#{$i} {
+  //     border-top: 1px solid $borderColor;
+  //     padding: 12px 15px;
 
-      .form-group.inputbox.withBorder {
-        margin-bottom: 0px;
-      }
-    }
-  }
+  //     .form-group.inputbox.withBorder {
+  //       margin-bottom: 0px;
+  //     }
+  //   }
+  // }
 }
 
 .table-responsive {
@@ -3596,19 +3577,25 @@ body {
 .overhead-profit-tab-costing {
   .form-control[disabled] {
     max-width: 280px;
-    width: auto;
+    width: 280px;
 
-    @media screen and (max-width:$miniDesktop) {
+    @media screen and (max-width:$middleDesktop) {
       width: auto;
+    }
+  }
+
+  .overhead-rejection .cross-btn-container {
+    @media screen and (max-width:$middleDesktop) {
+      width: 240px;
     }
   }
 
   .form-group.inputbox.withBorder {
     input.form-control {
       max-width: 280px;
-      width: auto;
+      width: 280px;
 
-      @media screen and (max-width:$miniDesktop) {
+      @media screen and (max-width:$middleDesktop) {
         width: auto;
       }
     }
@@ -3812,6 +3799,10 @@ body {
   z-index: 12 !important;
 }
 
+.select-container__option {
+  font-size: 14px !important;
+}
+
 .costing-details-page,
 .costing-summary-page {
   .btn-row {
@@ -3895,6 +3886,9 @@ body {
   }
 }
 
+.date-filed {
+  width: 180px;
+}
 
 .mb27 {
   margin-bottom: 27px;
@@ -7482,6 +7476,7 @@ body {
   .cancel-btn,
   .reset-btn,
   .pdf-detail,
+  .rfq-summary-discard,
   .reset {
     font-size: calc(14px * 80 / 100) !important;
     padding-left: calc(15px * 80 / 100) !important;
@@ -8212,6 +8207,44 @@ body {
 
     .table-footer td {
       background-color: #E0E9F5 !important;
+    }
+  }
+}
+
+.simple-pdf {
+  .table-responsive {
+    min-width: 100% !important;
+    overflow: unset !important;
+
+    .table-responsive {
+      overflow: unset !important;
+    }
+
+    table {
+      min-width: 100%;
+    }
+
+    .approval-summary-headers,
+    .header-name,
+    .header-name-left {
+      background-color: #ececec !important;
+    }
+  }
+
+  .background-light-blue {
+    background: #9fcffc !important;
+
+    th {
+      word-spacing: 1px;
+
+      print-color-adjust: exact;
+      -webkit-print-color-adjust: exact;
+    }
+
+    td {
+      padding-right: 20px;
+      print-color-adjust: exact;
+      -webkit-print-color-adjust: exact;
     }
   }
 }
@@ -8952,25 +8985,6 @@ table.group-process-table {
     min-height: unset !important;
     margin-bottom: unset !important;
   }
-
-
-}
-
-.colorWhite {
-  background-color: #fff;
-}
-
-@for $i from 1 through 1000 {
-  .rfq-grid {
-    [row-id~="#{($i * 5) - 1}"] {
-
-      [col-id="PartNumber"],
-      [aria-colindex="5"] {
-        border-bottom: 1px solid $agGridBorder !important;
-      }
-    }
-  }
-
 }
 
 .right-tooltip {

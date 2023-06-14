@@ -1,4 +1,4 @@
-@import "cssVariable.scss";
+@import './abstracts/variable.scss';
 
 // THIS IS FOR COST RATIO REPORT LISTING UI, ALSO WE WILL USE SAME UI FOR OTHER REPORT AS NEED AND CODE USABLITY
 .costing-ratio-report {
@@ -88,7 +88,7 @@
 
 // THIS IS FOR COST RATIO REPORT FIRST PAGE UI, ALSO WE WILL USE SAME UI FOR OTHER REPORT AS NEED AND CODE USABLITY
 .cost-ratio-report {
-    min-height: calc(100vh - 290px);
+    min-height: calc(100vh - 315px);
 
 }
 
@@ -152,64 +152,4 @@
         position: absolute;
         right: 0;
     }
-}
-
-.got-given-container-listing {
-    display: grid;
-    grid-template-columns: 43% 42% 15%;
-
-    .ag-paging-panel {
-        display: none;
-    }
-
-    .given-report {
-        // border-right: 1px solid $agGridBorder;
-        border-left: 1px solid $agGridBorder;
-    }
-
-    .got-report {
-        border-left: 1px solid $agGridBorder;
-    }
-
-    .got-given-header {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        font-weight: 500;
-        min-height: 45px;
-        font-size: 14px;
-        border: 1px solid $agGridBorder;
-        border-bottom: none;
-    }
-}
-
-.got-given-summary-container {
-    display: grid;
-    grid-template-columns: 51% 160px 39.5%;
-
-    @media screen and (max-width:$middleDesktop) {
-        grid-template-columns: 46.2% 160px 39.5%;
-    }
-
-    .ag-paging-panel {
-        display: none;
-    }
-
-}
-
-.pipd-report-grid {
-    .ag-theme-material {
-        @for $i from 1 through 7 {
-
-            [row-id~="#{($i * 3) - 1}"] {
-                [col-id="Name"] {
-                    border-bottom: 1px solid $agGridBorder !important;
-                }
-            }
-        }
-    }
-}
-
-.highlight-row {
-    font-weight: 600 !important;
 }
