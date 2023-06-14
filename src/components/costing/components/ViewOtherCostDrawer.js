@@ -56,13 +56,55 @@ function ViewOtherCostDrawer(props) {
             setTotalOtherCost(totalCost)
             setgridData(tempNew)
         }
+
     }, [])
 
     const cancel = () => {
         props.closeDrawer('Close')
     }
 
+    const OtherCost = () => {
+        return (<>
+            <Col md="12">
+                <HeaderTitle className="border-bottom"
+                    title={'Other Cost'}
+                    customClass={'underLine-title'}
+                />
+            </Col>
+            <Col md="12">
+                <Table className="table cr-brdr-main mb-0 forging-cal-table" size="sm">
+                    <thead>
+                        <tr>
+                            <th>{`Other Cost Description`}</th>
+                            <th>{`Other Cost Applicability`}</th>
+                            <th>{'Percentage'}</th>
+                            <th>{`Cost`}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {gridData && gridData.map((item, index) => {
+                            return (
+                                <tr key={index} >
+                                    <td>{item.OtherCostDescription}</td>
+                                    <td>{item?.OtherCostApplicability}</td>
+                                    <td>{item.PercentageOtherCost}</td>
+                                    <td>{checkForDecimalAndNull(item.AnyOtherCost, initialConfiguration.NoOfDecimalForPrice)}</td>
 
+                                </tr>
+                            );
+                        })}
+                        {gridData.length === 0 ? <tr>
+                            <td colSpan={"4"}> <NoContentFound title={EMPTY_DATA} /></td>
+                        </tr> :
+                            <tr className='table-footer'>
+                                <td className='text-right' colSpan={3}>Total Other Cost:</td>
+                                <td colSpan={2}>{checkForDecimalAndNull(totalOtherCost, initialConfiguration.NoOfDecimalForPrice)}</td>
+                            </tr>}
+                    </tbody>
+                </Table>
+            </Col>
+        </>)
+    }
     return (
 
         <div>
@@ -75,9 +117,9 @@ function ViewOtherCostDrawer(props) {
 
                             <Row className="drawer-heading">
                                 <Col className='pl-0'>
-                                    {!costingSummary && <div className={'header-wrapper left'}>
-                                        <h3>{'Add NPV:'}</h3>
-                                    </div>}
+                                    <div className={'header-wrapper left'}>
+                                        <h3>{'Additional Other Cost'}</h3>
+                                    </div>
                                     <div
                                         onClick={cancel}
                                         className={'close-button right'}>
@@ -85,63 +127,10 @@ function ViewOtherCostDrawer(props) {
                                 </Col>
                             </Row>
                             <div className='hidepage-size'>
-
-                                {costingSummary &&
-                                    <>
-                                        <Col md="12">
-                                            <HeaderTitle className="border-bottom"
-                                                title={'Other Cost'}
-                                                customClass={'underLine-title'}
-                                            />
-                                        </Col>
-                                        <Col md="12">
-                                            <Table className="table cr-brdr-main mb-0 forging-cal-table" size="sm">
-                                                <thead>
-                                                    <tr>
-                                                        <th>{`Other Cost Description`}</th>
-                                                        <th>{`Other Cost Applicability`}</th>
-                                                        <th>{'Percentage'}</th>
-                                                        <th>{`Cost`}</th>
-                                                        <th className='text-right'>{`Action`}</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    {gridData && gridData.map((item, index) => {
-                                                        return (
-                                                            <tr key={index} >
-                                                                <td>{item.OtherCostDescription}</td>
-                                                                <td>{item?.OtherCostApplicability}</td>
-                                                                <td>{item.PercentageOtherCost}</td>
-                                                                <td>{checkForDecimalAndNull(item.AnyOtherCost, initialConfiguration.NoOfDecimalForPrice)}</td>
-
-                                                            </tr>
-                                                        );
-                                                    })}
-
-                                                </tbody>
-
-                                                {gridData.length === 0 && (
-                                                    <tbody className='border'>
-                                                        <tr>
-                                                            <td colSpan={"4"}> <NoContentFound title={EMPTY_DATA} /></td>
-                                                        </tr>
-                                                    </tbody>
-                                                )}
-
-                                            </Table>
-                                        </Col>
-                                        <div className="col-md-12 text-right bluefooter-butn border mb-4">
-                                            <span className="w-50 d-inline-block">
-                                                {`Total Other Cost:`}
-                                                {checkForDecimalAndNull(totalOtherCost, initialConfiguration.NoOfDecimalForPrice)}
-                                            </span>
-                                        </div>
-                                    </>
-                                }
-
+                                {costingSummary && OtherCost()}
                                 {initialConfiguration?.IsShowNpvCost && costingSummary &&
                                     <>
-                                        <Col md="12">
+                                        <Col md="12" className='mt-4'>
                                             <HeaderTitle className="border-bottom"
                                                 title={'NPV Cost'}
                                                 customClass={'underLine-title'}
@@ -151,8 +140,8 @@ function ViewOtherCostDrawer(props) {
                                 }
                                 {initialConfiguration?.IsShowNpvCost && costingSummary && <NpvCost showAddButton={false} tableData={tableData} hideAction={costingSummary} />}
                                 {initialConfiguration?.IsBasicRateAndCostingConditionVisible && costingSummary &&
-                                    <div className='firefox-spaces'>
-                                        <Col md="12" className={'mt25 firefox-spaces'}>
+                                    <div className='firefox-spaces pb-3'>
+                                        <Col md="12" className={'mt-4 firefox-spaces '}>
                                             <HeaderTitle className="border-bottom firefox-spaces"
                                                 title={'Costing Condition'}
                                                 customClass={'underLine-title'}
@@ -162,7 +151,7 @@ function ViewOtherCostDrawer(props) {
                                     </div>}
 
                                 {costingSummary && props?.isRfqCosting &&
-                                    <div className={'mt25 pb-15'}>
+                                    <div className={'mt-4'}>
                                         <Col md="12" className={'mt25 pb-15'}>
                                             <HeaderTitle className="border-bottom"
                                                 title={'YOY'}
@@ -188,6 +177,7 @@ function ViewOtherCostDrawer(props) {
                     </Container>
                 </div>
             </Drawer> : <>
+                {gridData && gridData.length !== 0 && OtherCost()}
                 {tableData && tableData.length !== 0 && <>
                     <Col md="12">
                         <HeaderTitle className="border-bottom"

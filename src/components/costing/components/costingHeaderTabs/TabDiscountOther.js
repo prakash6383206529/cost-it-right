@@ -1215,50 +1215,52 @@ function TabDiscountOther(props) {
           <Row>
             <Col md="12">
               <div className="shadow-lgg login-formg">
-                <div className='tab-disount-total-cost'><span >Total Cost:</span><TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'total-cost-tab-discount'} tooltipText={'Total Cost = Net RM BOP CC + SurfaceTreatment Cost + Overheads&Profit Cost + Packaging&Freight Cost + Tool Cost'} /> <p id={'total-cost-tab-discount'} className='disabled-input-data'>{`${totalCost && totalCost !== undefined ? checkForDecimalAndNull(totalCost, initialConfiguration.NoOfDecimalForPrice) : 0}`}</p></div>
+                <Row>
+                  <Col md={3}>
+
+                    {(otherCostType.value === 'Percentage' || Object.keys(otherCostType).length === 0) && <TooltipCustom disabledIcon={true} id="other-cost" tooltipText={"Other Cost = Sum of drawer total other cost"} />}
+                    <TextFieldHookForm
+                      label="Other Cost"
+                      name={"AnyOtherCost"}
+                      id="other-cost"
+                      Controller={Controller}
+                      control={control}
+                      register={register}
+                      mandatory={false}
+                      rules={{
+                        //required: true,
+                        validate: { number, checkWhiteSpaces, decimalNumberLimit6 },
+                      }}
+                      handleChange={(e) => {
+                        e.preventDefault();
+                        handleAnyOtherCostChange(e);
+                      }}
+                      defaultValue={""}
+                      className=""
+                      customClassName={"withBorder"}
+                      errors={errors.AnyOtherCost}
+                      disabled={CostingViewMode || otherCostType.value === 'Percentage' || Object.keys(otherCostType).length === 0 ? true : false}
+                    />
+                  </Col>
+                  <Col md={3} className=' pl-0 mt-1 pt-2'> <button
+                    type="button"
+                    className={`${CostingViewMode ? 'View' : 'additional-add'} mt-4 mb-15`}
+                    onClick={() => handleOtherCostdrawer()}
+                    title={CostingViewMode ? 'View Other Cost' : 'Add Other Cost'}
+                  >
+                  </button></Col>
+                  <Col md={6}>
+                    <div className='tab-disount-total-cost mt-4'>
+                      <span >Total Cost:</span>
+                      <TooltipCustom width={"300px"} disabledIcon={true} id={'total-cost-tab-discount'} tooltipText={'Total Cost = Net RM BOP CC + SurfaceTreatment Cost + Overheads&Profit Cost + Packaging&Freight Cost + Tool Cost'} />
+                      <p id={'total-cost-tab-discount'} className='disabled-input-data'>{`${totalCost && totalCost !== undefined ? checkForDecimalAndNull(totalCost, initialConfiguration.NoOfDecimalForPrice) : 0}`}</p>
+                    </div>
+                  </Col>
+                </Row>
                 <form
                   noValidate
                   className="form"
                 >
-                  <Row>
-
-                    <Col md="2">
-                      {(otherCostType.value === 'Percentage' || Object.keys(otherCostType).length === 0) && <TooltipCustom disabledIcon={true} id="other-cost" tooltipText={"Other Cost = (Other Cost Applicability * Percentage / 100)"} />}
-                      <TextFieldHookForm
-                        label="Other Cost"
-                        name={"AnyOtherCost"}
-                        id="other-cost"
-                        Controller={Controller}
-                        control={control}
-                        register={register}
-                        mandatory={false}
-                        rules={{
-                          //required: true,
-                          validate: { number, checkWhiteSpaces, decimalNumberLimit6 },
-                        }}
-                        handleChange={(e) => {
-                          e.preventDefault();
-                          handleAnyOtherCostChange(e);
-                        }}
-                        defaultValue={""}
-                        className=""
-                        customClassName={"withBorder"}
-                        errors={errors.AnyOtherCost}
-                        disabled={CostingViewMode || otherCostType.value === 'Percentage' || Object.keys(otherCostType).length === 0 ? true : false}
-                      />
-
-                    </Col>
-                    <Col md="2" >
-                      <button
-                        type="button"
-                        className={"add-process mt-4 mb-15"}
-                        onClick={() => handleOtherCostdrawer()}
-                        disabled={CostingViewMode}
-                        title="Add"
-                      >
-                      </button>
-                    </Col>
-                  </Row>
                   <Row>
                     {/* <Col md="2">
                       <SearchableSelectHookForm
@@ -1279,7 +1281,7 @@ function TabDiscountOther(props) {
                     </Col> */}
                     {
 
-                      <Col md="2">
+                      <Col md="3">
                         <SearchableSelectHookForm
                           label={'Discount Applicability'}
                           name={'DiscountCostApplicability'}
@@ -1299,7 +1301,7 @@ function TabDiscountOther(props) {
                       </Col>
                     }
                     {
-                      <Col className={`${hundiscountType.value === 'Percentage' ? 'col-md-2' : 'col-md-4'}`}>
+                      <Col md="3">
                         <TextFieldHookForm
                           label="Discount (%)"
                           name={"HundiOrDiscountPercentage"}
@@ -1328,7 +1330,7 @@ function TabDiscountOther(props) {
                       </Col>
                     }
 
-                    <Col md="4" >
+                    <Col md="3" >
                       <TextFieldHookForm
                         label="Hundi/Discount Value"
                         name={'HundiOrDiscountValue'}
@@ -1350,7 +1352,7 @@ function TabDiscountOther(props) {
                         disabled={CostingViewMode || hundiscountType.value === 'Percentage' || Object.keys(hundiscountType).length === 0 ? true : false}
                       />
                     </Col>
-                    <Col md="2">
+                    <Col md="3">
                       <TextFieldHookForm
                         label="Basic Price (INR)"
                         name={'BasicRateINR'}
@@ -1656,14 +1658,16 @@ function TabDiscountOther(props) {
             </Col>
           </Row>
         </div>
-      </div>}
-      {openCloseOtherCost &&
+      </div >}
+      {
+        openCloseOtherCost &&
         <OtherCostDrawer
           isOpen={openCloseOtherCost}
           closeDrawer={closeOtherCostDrawer}
           anchor={'right'}
           otherCostArr={otherCostArray}
-        />}
+        />
+      }
     </>
   );
 };
