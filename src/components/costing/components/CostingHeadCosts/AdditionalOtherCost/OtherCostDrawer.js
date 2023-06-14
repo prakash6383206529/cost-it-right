@@ -12,6 +12,7 @@ import { STRINGMAXLENGTH } from '../../../../../config/masterData';
 import TooltipCustom from '../../../../common/Tooltip';
 import { costingInfoContext, netHeadCostContext } from '../../CostingDetailStepTwo';
 import _ from 'lodash'
+import Toaster from '../../../../common/Toaster';
 
 function OtherCostDrawer(props) {
 
@@ -132,8 +133,30 @@ function OtherCostDrawer(props) {
 
     }
 
+    const validation = () => {
+        let labels = ['OtherCostDescription', 'OtherCostApplicability', 'AnyOtherCost', 'PercentageOtherCost'];
+        let count = 0
+        labels.forEach(label => {
+            if (otherCostType?.label === 'Fixed' && label === 'PercentageOtherCost') {
+                return false
+            } else {
+                if (!getValues(label)) {
+                    count++
+                }
+            }
+        })
+        if (count > 0) {
+            Toaster.warning("Please fill all details")
+            return true
+        } else {
+            return false
+        }
+    }
 
     const addRow = () => {
+        if (validation()) {
+            return false
+        }
 
         const obj = {
             OtherCostType: otherCostType?.label,
@@ -159,7 +182,9 @@ function OtherCostDrawer(props) {
     }
 
     const updateRow = () => {
-
+        if (validation()) {
+            return false
+        }
         const obj = {
             OtherCostType: otherCostType?.label,
             OtherCostApplicability: otherCostApplicability?.label,
@@ -292,8 +317,7 @@ function OtherCostDrawer(props) {
 
                         <form onSubmit={handleSubmit(onSubmit)}>
                             <Row>
-
-                                <Col md="5" >
+                                <Col md="4" >
                                     <TextFieldHookForm
                                         label="Other Cost Description"
                                         name={"OtherCostDescription"}
@@ -355,7 +379,7 @@ function OtherCostDrawer(props) {
                                     </Col>
                                 }
                                 {
-                                    <Col className={`${otherCostType.value === 'Percentage' ? 'col-md-3' : 'col-md-4'}`}>
+                                    <Col md="4">
                                         <TextFieldHookForm
                                             label="Percentage (%)"
                                             name={"PercentageOtherCost"}
@@ -383,12 +407,12 @@ function OtherCostDrawer(props) {
                                         />
                                     </Col>}
 
-                                <Col md="2">
-                                    {(otherCostType.value === 'Percentage' || Object.keys(otherCostType).length === 0) && <TooltipCustom disabledIcon={true} id="other-cost" tooltipText={"Other Cost = (Other Cost Applicability * Percentage / 100)"} />}
+                                <Col md="4">
+                                    {(otherCostType.value === 'Percentage' || Object.keys(otherCostType).length === 0) && <TooltipCustom disabledIcon={true} id="drawer-other-cost" tooltipText={"Other Cost = (Other Cost Applicability * Percentage / 100)"} />}
                                     <TextFieldHookForm
                                         label="Other Cost"
                                         name={"AnyOtherCost"}
-                                        id="other-cost"
+                                        id="drawer-other-cost"
                                         Controller={Controller}
                                         control={control}
                                         register={register}
@@ -408,7 +432,7 @@ function OtherCostDrawer(props) {
                                     />
 
                                 </Col>
-                                <Col md="4" className='pt-1'>
+                                <Col md="5" className='pt-1'>
                                     {isEdit ? (
                                         <>
                                             <button
@@ -417,7 +441,7 @@ function OtherCostDrawer(props) {
                                                 onClick={updateRow}
                                                 disabled={CostingViewMode}
                                             >
-                                                Update
+                                                <div className={"plus"}></div>  Update
                                             </button>
                                             <button
                                                 type="button"
@@ -482,7 +506,7 @@ function OtherCostDrawer(props) {
                                                             }
                                                         />
                                                         <button
-                                                            className="Delete"
+                                                            className="Delete ml-1"
                                                             title='Delete'
                                                             type={"button"}
                                                             disabled={CostingViewMode}
@@ -495,25 +519,24 @@ function OtherCostDrawer(props) {
                                             );
                                         })}
 
-                                    </tbody>
-
-                                    {gridData.length === 0 && (
-                                        <tbody className='border'>
+                                        {gridData.length === 0 ? (
                                             <tr>
-                                                <td colSpan={"4"}> <NoContentFound title={EMPTY_DATA} /></td>
+                                                <td colSpan={"6"}> <NoContentFound title={EMPTY_DATA} /></td>
                                             </tr>
-                                        </tbody>
-                                    )}
-
+                                        ) : (
+                                            <tr className='table-footer'>
+                                                <td colSpan={3} className='text-right'>
+                                                    Total Other Cost:
+                                                </td>
+                                                <td colSpan={2}>
+                                                    {checkForDecimalAndNull(otherCostTotal, initialConfiguration.NoOfDecimalForPrice)}
+                                                </td>
+                                            </tr>
+                                        )}
+                                    </tbody>
                                 </Table>
                             </Col>
-                            <div className="col-md-12 text-right bluefooter-butn border">
-                                <span className="w-50 d-inline-block">
-                                    {`Total Other Cost:`}
-                                    {checkForDecimalAndNull(otherCostTotal, initialConfiguration.NoOfDecimalForPrice)}
-                                </span>
-                            </div>
-                            <Row className="justify-content-between row">
+                            <Row className="pr-0">
                                 <div className="col-sm-12 text-right">
                                     <button
                                         type={"button"}

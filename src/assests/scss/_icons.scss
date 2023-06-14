@@ -82,7 +82,7 @@
     @include extra-icon-styles;
 }
 
-.add-process {
+.additional-add {
     @include icons("../../images/process-add.svg", $shadowColor: #0cbeeb, $borderColor: #bbe8f9);
     border-radius: 4px;
 
@@ -92,6 +92,7 @@
     @include icons("../../images/process-add.svg", 20px, 20px, $shadowColor: #0cbeeb, $borderColor: #bbe8f9);
     border-radius: 4px;
 }
+
 
 .hirarchy-btn {
     @include icons("../../images/hirarchy-btn.svg", $background-size: none, $shadowColor: #0cbeeb, $borderColor: #bbe8f9);
