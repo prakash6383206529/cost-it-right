@@ -1379,69 +1379,8 @@ function TabDiscountOther(props) {
                   className="form"
                 >
                   <Row>
-                    <Col md="2">
-                      {(otherCostType.value === 'Percentage' || Object.keys(otherCostType).length === 0) && <TooltipCustom disabledIcon={true} id="other-cost" tooltipText={"Other Cost = (Other Cost Applicability * Percentage / 100)"} />}
-                      <TextFieldHookForm
-                        label="Other Cost"
-                        name={"AnyOtherCost"}
-                        id="other-cost"
-                        Controller={Controller}
-                        control={control}
-                        register={register}
-                        mandatory={false}
-                        rules={{
-                          //required: true,
-                          validate: { number, checkWhiteSpaces, decimalNumberLimit6 },
-                        }}
-                        handleChange={(e) => {
-                          e.preventDefault();
-                          handleAnyOtherCostChange(e);
-                        }}
-                        defaultValue={""}
-                        className=""
-                        customClassName={"withBorder"}
-                        errors={errors.AnyOtherCost}
-                        disabled={CostingViewMode || otherCostType.value === 'Percentage' || Object.keys(otherCostType).length === 0 ? true : false}
-                      />
-
-                    </Col>
-                    <Col md="2" >
-                      <button
-                        type="button"
-                        className={"add-process mt-4 mb-15"}
-                        onClick={() => handleOtherCostdrawer()}
-                        disabled={CostingViewMode}
-                        title="Add"
-                      >
-                      </button>
-                    </Col>
-                  </Row >
-                  <Row>
-
-                    {
-                      initialConfiguration.IsShowCRMHead && <Col md="2">
-                        <SearchableSelectHookForm
-                          name={`crmHeadDiscount`}
-                          type="text"
-                          label="CRM Head"
-                          errors={errors.crmHeadDiscount}
-                          Controller={Controller}
-                          control={control}
-                          register={register}
-                          mandatory={false}
-                          rules={{
-                            required: false,
-                          }}
-                          placeholder={'Select'}
-                          options={CRMHeads}
-                          required={false}
-                          handleChange={onCRMHeadChangeDiscount}
-                          disabled={CostingViewMode}
-                        />
-                      </Col>
-                    }
-
-                    {/*    <Col md="2">
+                    {/* // check here @ashok */}
+                    {/* <Col md="2">
                       <SearchableSelectHookForm
                         label={"Discount Type"}
                         name={"HundiDiscountType"}
@@ -1460,7 +1399,7 @@ function TabDiscountOther(props) {
                     </Col> */}
                     {
 
-                      <Col md="2">
+                      <Col md="3">
                         <SearchableSelectHookForm
                           label={'Discount Applicability'}
                           name={'DiscountCostApplicability'}
@@ -1480,7 +1419,7 @@ function TabDiscountOther(props) {
                       </Col>
                     }
                     {
-                      <Col className={`${hundiscountType.value === 'Percentage' ? 'col-md-2' : 'col-md-4'}`}>
+                      <Col md="3">
                         <TextFieldHookForm
                           label="Discount (%)"
                           name={"HundiOrDiscountPercentage"}
@@ -1509,7 +1448,7 @@ function TabDiscountOther(props) {
                       </Col>
                     }
 
-                    <Col md="4" >
+                    <Col md="3" >
                       <TextFieldHookForm
                         label="Hundi/Discount Value"
                         name={'HundiOrDiscountValue'}
@@ -1531,7 +1470,7 @@ function TabDiscountOther(props) {
                         disabled={CostingViewMode || hundiscountType.value === 'Percentage' || Object.keys(hundiscountType).length === 0 ? true : false}
                       />
                     </Col>
-                    <Col md="2">
+                    <Col md="3">
                       <TextFieldHookForm
                         label="Basic Price (INR)"
                         name={'BasicRateINR'}
@@ -1842,12 +1781,13 @@ function TabDiscountOther(props) {
                     </div>
                   </Row>
 
-                </form >
-              </div >
-            </Col >
-          </Row >
-        </div >
-      </div >}
+                </form>
+              </div>
+            </Col>
+          </Row>
+        </div>
+
+// check here @ashok      </div >}
       {
         openCloseOtherCost &&
         <OtherCostDrawer
