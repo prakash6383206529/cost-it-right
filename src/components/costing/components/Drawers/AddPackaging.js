@@ -400,7 +400,7 @@ function AddPackaging(props) {
                       rules={{
                         required: true,
                         validate: { checkWhiteSpaces, hashValidation },
-                        maxLength: STRINGMAXLENGTH
+                        maxLength: 80
                       }}
                       handleChange={() => { }}
                       defaultValue={''}

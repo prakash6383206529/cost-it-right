@@ -235,12 +235,8 @@ function OperationCost(props) {
 
     let operationGridData = gridData[index]
     if (operationGridData.UOM === 'Number') {
-      let isValid = Number.isInteger(Number(operationGridData.Quantity));
       if (operationGridData.Quantity === '0') {
         Toaster.warning('Number should not be zero')
-        return false
-      }
-      if (!isValid) {
         return false
       }
     }

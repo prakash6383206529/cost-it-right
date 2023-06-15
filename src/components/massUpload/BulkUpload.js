@@ -24,9 +24,9 @@ import Drawer from '@material-ui/core/Drawer';
 import Downloadxls, { checkLabourRateConfigure, checkRM_Process_OperationConfigurable, checkVendorPlantConfig } from './Downloadxls';
 import DayTime from '../common/DayTimeWrapper'
 import cloudImg from '../../assests/images/uploadcloud.png';
-import { ACTUALVOLUMEBULKUPLOAD, ADDRFQ, BOPDOMESTICBULKUPLOAD, BOPIMPORTBULKUPLOAD, BUDGETBULKUPLOAD, BUDGETEDVOLUMEBULKUPLOAD, CBCADDMORE, CBCTypeId, ENTRY_TYPE_IMPORT, FUELBULKUPLOAD, INTERESTRATEBULKUPLOAD, LABOURBULKUPLOAD, MACHINEBULKUPLOAD, OPERAIONBULKUPLOAD, PARTCOMPONENTBULKUPLOAD, PRODUCTCOMPONENTBULKUPLOAD, RMDOMESTICBULKUPLOAD, RMIMPORTBULKUPLOAD, RMSPECIFICATION, VBCADDMORE, VBCTypeId, VENDORBULKUPLOAD, ZBCADDMORE, ZBCTypeId } from '../../config/constants';
+import { ACTUALVOLUMEBULKUPLOAD, ADDRFQ, BOPDOMESTICBULKUPLOAD, BOPIMPORTBULKUPLOAD, BOP_MASTER_ID, BUDGETBULKUPLOAD, BUDGETEDVOLUMEBULKUPLOAD, CBCADDMORE, CBCTypeId, ENTRY_TYPE_IMPORT, FUELBULKUPLOAD, INTERESTRATEBULKUPLOAD, LABOURBULKUPLOAD, MACHINEBULKUPLOAD, MACHINE_MASTER_ID, OPERAIONBULKUPLOAD, OPERATIONS_ID, PARTCOMPONENTBULKUPLOAD, PRODUCTCOMPONENTBULKUPLOAD, RMDOMESTICBULKUPLOAD, RMIMPORTBULKUPLOAD, RMSPECIFICATION, RM_MASTER_ID, VBCADDMORE, VBCTypeId, VENDORBULKUPLOAD, ZBCADDMORE, ZBCTypeId } from '../../config/constants';
 import { AddRFQUpload, BOP_CBC_DOMESTIC, BOP_CBC_IMPORT, BOP_VBC_DOMESTIC, BOP_VBC_IMPORT, BOP_ZBC_DOMESTIC, BOP_ZBC_IMPORT, BUDGET_CBC, BUDGET_VBC, BUDGET_ZBC, CBCInterestRate, CBCOperation, Fuel, Labour, MachineCBC, MachineVBC, MachineZBC, MHRMoreZBC, PartComponent, ProductComponent, RMDomesticCBC, RMDomesticVBC, RMDomesticZBC, RMImportCBC, RMImportVBC, RMImportZBC, RMSpecification, VBCInterestRate, VBCOperation, Vendor, VOLUME_ACTUAL_CBC, VOLUME_ACTUAL_VBC, VOLUME_ACTUAL_ZBC, VOLUME_BUDGETED_CBC, VOLUME_BUDGETED_VBC, VOLUME_BUDGETED_ZBC, ZBCOperation } from '../../config/masterData';
-import { checkForSameFileUpload, userTechnologyDetailByMasterId } from '../../helper';
+import { CheckApprovalApplicableMaster, checkForSameFileUpload, userTechnologyDetailByMasterId } from '../../helper';
 import LoaderCustom from '../common/LoaderCustom';
 import PopupMsgWrapper from '../common/PopupMsgWrapper';
 import { MESSAGES } from '../../config/message';
@@ -62,7 +62,7 @@ class BulkUpload extends Component {
      * @description called after render the component
     */
     componentDidMount() {
-        if (this.props?.masterId && this.props.initialConfiguration.IsMasterApprovalAppliedConfigure) {
+        if (this.props?.masterId === RM_MASTER_ID && this.props.initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(RM_MASTER_ID) === true) {
             this.props.getUsersMasterLevelAPI(loggedInUserId(), this.props?.masterId, (res) => {
                 setTimeout(() => {
                     this.commonFunction()
@@ -70,6 +70,41 @@ class BulkUpload extends Component {
             })
         } else if (!this.props.initialConfiguration.IsMasterApprovalAppliedConfigure) {
             this.setState({ noApprovalCycle: false })
+        } else {
+            this.setState({ IsFinalApprover: true })
+        }
+        if (this.props?.masterId === BOP_MASTER_ID && this.props.initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(BOP_MASTER_ID) === true) {
+            this.props.getUsersMasterLevelAPI(loggedInUserId(), this.props?.masterId, (res) => {
+                setTimeout(() => {
+                    this.commonFunction()
+                }, 100);
+            })
+        } else if (!this.props.initialConfiguration.IsMasterApprovalAppliedConfigure) {
+            this.setState({ noApprovalCycle: false })
+        } else {
+            this.setState({ IsFinalApprover: true })
+        }
+        if (this.props?.masterId === OPERATIONS_ID && this.props.initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(OPERATIONS_ID) === true) {
+            this.props.getUsersMasterLevelAPI(loggedInUserId(), this.props?.masterId, (res) => {
+                setTimeout(() => {
+                    this.commonFunction()
+                }, 100);
+            })
+        } else if (!this.props.initialConfiguration.IsMasterApprovalAppliedConfigure) {
+            this.setState({ noApprovalCycle: false })
+        } else {
+            this.setState({ IsFinalApprover: true })
+        }
+        if (this.props?.masterId === MACHINE_MASTER_ID && this.props.initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true) {
+            this.props.getUsersMasterLevelAPI(loggedInUserId(), this.props?.masterId, (res) => {
+                setTimeout(() => {
+                    this.commonFunction()
+                }, 100);
+            })
+        } else if (!this.props.initialConfiguration.IsMasterApprovalAppliedConfigure) {
+            this.setState({ noApprovalCycle: false })
+        } else {
+            this.setState({ IsFinalApprover: true })
         }
     }
 
@@ -102,10 +137,19 @@ class BulkUpload extends Component {
      * @description called after render the component
     */
     componentDidUpdate(prevProps, prevState) {
-        let isApproval = getConfigurationKey().ApprovalMasterArrayList.includes(this.props?.masterId)
-        if ((prevState?.costingTypeId !== this.state.costingTypeId) && this.props.initialConfiguration.IsMasterApprovalAppliedConfigure && (isApproval)) {
+        if (this.props?.masterId === RM_MASTER_ID && (prevState?.costingTypeId !== this.state.costingTypeId) && this.props.initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(RM_MASTER_ID) === true) {
             this.commonFunction()
         }
+        if (this.props?.masterId === BOP_MASTER_ID && (prevState?.costingTypeId !== this.state.costingTypeId) && this.props.initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(BOP_MASTER_ID) === true) {
+            this.commonFunction()
+        }
+        if (this.props?.masterId === OPERATIONS_ID && (prevState?.costingTypeId !== this.state.costingTypeId) && this.props.initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(OPERATIONS_ID) === true) {
+            this.commonFunction()
+        }
+        if (this.props?.masterId === MACHINE_MASTER_ID && (prevState?.costingTypeId !== this.state.costingTypeId) && this.props.initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true) {
+            this.commonFunction()
+        }
+
     }
 
     /**

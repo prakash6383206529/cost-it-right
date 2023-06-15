@@ -7,7 +7,7 @@ import Toaster from '../common/Toaster';
 import { useDispatch, useSelector } from 'react-redux';
 import { setGroupProcessList, setProcessList } from './actions/MachineMaster';
 import NoContentFound from '../common/NoContentFound';
-import { EMPTY_DATA, EMPTY_GUID } from '../../config/constants';
+import { APPROVED, CANCELLED, DRAFT, EMPTY_DATA, EXTERNAL_REJECT, RECEIVED, SENT, UNDER_REVISION, EMPTY_GUID } from '../../config/constants';
 
 export const ProcessGroup = (props) => {
     const { isEditFlag, isViewFlag } = props
@@ -354,4 +354,40 @@ export const bopQueryParms = (isPagination, skip, take, obj) => {
 export const hyphenFormatter = (props) => {
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
     return cellValue != null && cellValue !== '' && cellValue !== undefined ? cellValue : '-'
+}
+
+export const StatusTooltip = (APIData) => {
+    let temp = []
+    APIData && APIData.map((item) => {
+
+        item.tooltipText = ''
+        switch (item.Status) {
+            case APPROVED:
+                item.tooltipText = 'Total no. of parts for which costing has been approved from that quotation / Total no. of parts exist in that quotation'
+                break;
+            case RECEIVED:
+                item.tooltipText = 'Total no. of costing received / Total no. of expected costing in that quotation'
+                break;
+            case UNDER_REVISION:
+                item.tooltipText = 'Total no. of costing under revision / Total no. of expected costing in that quotation'
+                break;
+            case DRAFT:
+                item.tooltipText = 'The token is pending to send for approval from your side.'
+                break;
+            case CANCELLED:
+                item.tooltipText = 'Quotation has been cancelled.'
+                break;
+            case SENT:
+                item.tooltipText = 'Costing under the quotation has been sent.'
+                break;
+            case EXTERNAL_REJECT:
+                item.tooltipText = 'The SAP team has rejected the token'
+                break;
+            default:
+                break;
+        }
+        temp.push(item)
+        return null
+    })
+    return temp;
 }

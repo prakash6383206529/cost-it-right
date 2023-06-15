@@ -22,7 +22,7 @@ const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
 // const BASE_URL = `http://10.10.8.160/api/v1`;
 // const BASE_URL = `http://10.10.0.43/RohitCIR/api/v1`;
 // const BASE_URL = `https://demov3api.costitright.com/api/v1`;
-// const BASE_URL = `http://10.10.8.117/CIR/api/v1`;
+//const BASE_URL = `http://10.10.8.109:8081/api/v1`;
 // const BASE_URL = `http://10.10.1.100:1002/api/v1`;
 // const BASE_URL = `https://upsapi.costitright.com/api/v1`; 
 //FILE URL
@@ -562,6 +562,9 @@ export const API = {
   saveRawMaterialCalculationForDieCasting: `${BASE_URL}/costing/save-raw-material-die-casting-calculation-details`,
   getRawMaterialCalculationForRubber: `${BASE_URL}/costing/get-raw-material-rubber-calculation-details`,
   saveRawMaterialCalculationForRubber: `${BASE_URL}/costing/save-raw-material-rubber-calculation-details`,
+  getSimulationRmFerrousCastingCalculation: `${BASE_URL}/simulation/get-simulation-raw-material-ferrous-casting-calculation-details`,
+  saveRawMaterialCalculationForRubberCompound: `${BASE_URL}/costing/save-raw-material-rubber-calculation-details`,
+  getSimulationRmRubberCalculation: `${BASE_URL}/simulation/get-simulation-raw-material-rubber-calculation-details`,
 
   // YOY
   getYOYCostList: `${BASE_URL}/rfq-costing/rfq-get-yoy-details`,
@@ -1705,7 +1708,11 @@ export const UNDER_REVISION = 'UnderRevision'
 export const RECEIVED = 'Received'
 export const SUBMITTED = 'Submitted'
 export const SENT = 'Sent'
+export const EXTERNAL_REJECT = 'ExternalReject'
 export const DRAFTID = 1
+export const REJECTEDID = 4
+export const PENDING_FOR_APPROVAL_ID = 2
+export const AWAITING_APPROVAL_ID = 6
 
 // MASTER APPROVAL STATUS ID
 export const APPROVED_STATUS = '3,5'
@@ -1780,6 +1787,11 @@ export const SIMULATION_APPROVAL_SUM = ' Simulation Approval Summary'
 export const SIMULATION_INSIGNTS = 'Simulation Insignts'
 export const COSTING_DETAIL = 'Costing Details'
 export const COST_RATIO_REPORT = 'Cost Ratio'
+export const COST_MOVEMENT_REPORT = 'Cost Movement'
+export const MASTER_BENCHMARK_REPORT = 'Master Benchmark'
+export const SUPPLIER_CONTRIBUTION_REPORT = 'Supplier Contribution'
+export const SALE_PROVISION_REPORT = 'Sale Provision'
+export const CUSTOMER_POAM_REPORT = 'Customer POAM Summary'
 export const BUDGETING = 'Budgeting'
 export const SALES_PROVISION_REPORT = 'Sales Provision Report'
 export const PURCHASE_PROVISION_REPORT = 'Purchase Provision Report'
@@ -1927,15 +1939,13 @@ export const VIEW_COSTING_DATA = {
   // totalCost: 'Total Cost',
   // otherDiscount: 'Hundi/Other Discount',
   // otherDiscountValue: '',
-  otherDiscountType: 'Hundi/Discount Type',
   otherDiscountApplicablity: 'Hundi/Discount Applicability',
   otherDiscountValuePercent: 'Hundi/Discount Value',
   otherDiscountCost: 'Hundi/Discount Cost',
-  anyOtherCostType: 'Any Other Cost Type',
-  anyOtherCostApplicablity: 'Any Other Cost Applicability',
-  anyOtherCostPercent: 'Any Other Cost Value',
-  anyOtherCost: 'Any Other Cost',
+  anyOtherCostTotal: 'Any Other Cost',
   BasicRate: 'Basic Rate',
+  npvCost: 'NPV Cost',
+  conditionCost: 'Costing Condition',
   nPOPrice: 'Net PO Price (INR)',
   currencyTitle: 'Currency',
   currencyRate: 'Currency Rate',
@@ -1947,6 +1957,278 @@ export const VIEW_COSTING_DATA = {
   // attachment: 'Attachment',
   // approvalButton: '',
 }
+
+
+export const VIEW_COSTING_DATA_TEMPLATE = [
+  {
+    label: 'VBC/ZBC/NCC/CBC',
+    value: 'costingHeadCheck'
+  },
+  {
+    label: 'Costing Version',
+    value: 'costingVersion'
+  },
+  {
+    label: 'PO Price (Effective from)',
+    value: 'PoPriceWithDate'
+  },
+  {
+    label: 'Part Number',
+    value: 'partNumber'
+  },
+  {
+    label: 'Part Name',
+    value: 'partName'
+  },
+  {
+    label: 'Revision Number',
+    value: 'RevisionNumber'
+  },
+  {
+    label: 'Vendor (Code)',
+    value: 'vendorExcel'
+  },
+  {
+    label: 'Customer (Code)',
+    value: 'customer'
+  },
+  {
+    label: 'Plant (Code)',
+    value: 'plantExcel'
+  },
+  {
+    label: 'Status',
+    value: 'status'
+  },
+  {
+    label: 'RM-Grade',
+    value: 'rm'
+  },
+  {
+    label: 'RM Rate',
+    value: 'rmRate'
+  },
+  {
+    label: 'Scrap Rate',
+    value: 'scrapRate'
+  },
+  {
+    label: 'Gross Weight',
+    value: 'gWeight'
+  },
+  {
+    label: 'Finish Weight',
+    value: 'fWeight'
+  },
+  {
+    label: 'Burning Loss Weight',
+    value: 'BurningLossWeight'
+  },
+  {
+    label: 'Scrap Weight',
+    value: 'ScrapWeight'
+  },
+  {
+    label: 'Net RM Cost',
+    value: 'netRM'
+  },
+  {
+    label: 'Net BOP Cost',
+    value: 'netBOP'
+  },
+  {
+    label: 'Part Cost/Pc',
+    value: 'netChildPartsCost'
+  },
+  {
+    label: 'BOP Cost/Assembly',
+    value: 'netBoughtOutPartCost'
+  },
+  {
+    label: 'Process Cost/Assembly',
+    value: 'netProcessCost'
+  },
+  {
+    label: 'Operation Cost/Assembly',
+    value: 'netOperationCost'
+  },
+  {
+    label: 'Cost/Assembly',
+    value: 'nTotalRMBOPCC'
+  },
+  {
+    label: 'Process Cost',
+    value: 'pCost'
+  },
+  {
+    label: 'Operation Cost',
+    value: 'oCost'
+  },
+  {
+    label: 'Other Operation Cost',
+    value: 'netOtherOperationCost'
+  },
+  {
+    label: 'Net Conversion Cost',
+    value: 'nConvCost'
+  },
+  {
+    label: 'Surface Treatment',
+    value: 'sTreatment'
+  },
+  {
+    label: 'Extra Surface Treatment Cost',
+    value: 'tCost'
+  },
+  {
+    label: 'Net Surface Treatment Cost',
+    value: 'netSurfaceTreatmentCost'
+  },
+  {
+    label: 'Model Type For Overhead/Profit',
+    value: 'modelType'
+  },
+  {
+    label: 'Overhead Applicability',
+    value: 'overHeadApplicablity'
+  },
+  {
+    label: 'Overhead Value',
+    value: 'overHeadApplicablityValue'
+  },
+  {
+    label: 'Profit Applicability',
+    value: 'ProfitApplicablity'
+  },
+  {
+    label: 'Profit Value',
+    value: 'ProfitApplicablityValue'
+
+
+  },
+  {
+    label: 'Rejection Applicability',
+    value: 'rejectionApplicablity'
+  },
+  {
+    label: 'Rejection Value',
+    value: 'rejectionApplicablityValue'
+  },
+  {
+    label: 'ICC Applicability',
+    value: 'iccApplicablity'
+  },
+  {
+    label: 'ICC Value',
+    value: 'iccApplicablityValue'
+  },
+  {
+    label: 'Payment Applicability',
+    value: 'paymentApplicablity'
+  },
+  {
+    label: 'Payment Value',
+    value: 'paymentcApplicablityValue'
+  },
+  {
+    label: 'Net Overhead Profits',
+    value: 'nOverheadProfit'
+  },
+  {
+    label: 'Packaging Cost',
+    value: 'packagingCost'
+  },
+  {
+    label: 'Freight',
+    value: 'freight'
+  },
+  {
+    label: 'Net Packaging and Freight',
+    value: 'nPackagingAndFreight'
+  },
+  {
+    label: 'Tool Maintenance Cost Applicability',
+    value: 'toolMaintenanceCostApplicablity'
+  },
+  {
+    label: 'Tool Maintenance Cost Value',
+    value: 'toolMaintenanceCost'
+  },
+  {
+    label: 'Tool Price',
+    value: 'toolPrice'
+  },
+  {
+    label: 'Amortization Quantity',
+    value: 'amortizationQty'
+  },
+  {
+    label: 'Tool Amortization Cost',
+    value: 'toolAmortizationCost'
+  },
+  {
+    label: 'Net Tool Cost',
+    value: 'totalToolCost'
+  },
+
+  {
+    label: 'Hundi/Discount Applicability',
+    value: 'otherDiscountApplicablity'
+  },
+  {
+    label: 'Hundi/Discount Value',
+    value: 'otherDiscountValuePercent'
+  },
+  {
+    label: 'Hundi/Discount Cost',
+    value: 'otherDiscountCost'
+  },
+  {
+    label: 'Any Other Cost',
+    value: 'anyOtherCostTotal'
+  },
+  {
+    label: 'Basic Rate',
+    value: 'BasicRate'
+  },
+  {
+    label: 'NPV Cost',
+    value: 'npvCost'
+  },
+  {
+    label: 'Costing Condition',
+    value: 'conditionCost'
+  },
+  {
+    label: 'Net PO Price (INR)',
+    value: 'nPOPrice'
+  },
+  {
+    label: 'Currency',
+    value: 'currencyTitle'
+  },
+  {
+    label: 'Currency Rate',
+    value: 'currencyRate'
+  },
+  {
+    label: 'Net PO Price (In Currency)',
+    value: 'nPoPriceCurrency'
+  },
+  {
+    label: 'Quantity',
+    value: 'NCCPartQuantity'
+  },
+  {
+    label: 'Is Regularized',
+    value: 'IsRegularized'
+  },
+  {
+    label: 'Remarks',
+    value: 'remark'
+  }
+];
+
 
 export const VIEW_COSTING_DATA_LOGISTICS = {
   costingHeadCheck: 'ZBC v/s VBC v/s NCC v/s CBC',
@@ -1971,6 +2253,8 @@ export const STROKE = "Stroke"
 export const SHOTS = "SHOT"
 export const MINUTES = 'Minutes'
 export const SECONDS = 'Seconds'
+export const MILLISECONDS = 'Milliseconds'
+export const MICROSECONDS = 'Microseconds'
 export const DISPLAY_G = "g"
 export const DISPLAY_KG = "kg"
 export const DISPLAY_MG = "mg"
@@ -2278,4 +2562,4 @@ export const RAW_MATERIAL_VENDOR_TYPE = Number(reactLocalStorage.getObject('vend
 export const VBC_VENDOR_TYPE = Number(reactLocalStorage.getObject('vendortype')[VENDOR_TYPE_VBC])
 
 //VERSION 
-export const VERSION = "V2.1.160";
+export const VERSION = "V2.1.177";

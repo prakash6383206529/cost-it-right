@@ -1294,7 +1294,7 @@ function UserRegistration(props) {
     if (props?.RFQUser || isRfqUser) {
 
       dispatch(updateRfqUser(updatedData, (res) => {
-        if (res.data.Result) {
+        if (res && res.data && res?.data?.Result) {
           Toaster.success(MESSAGES.UPDATE_USER_SUCCESSFULLY)
         }
         cancel();
@@ -1324,11 +1324,17 @@ function UserRegistration(props) {
    * @returns {{}}
    */
   const onSubmit = (values) => {
+
+    let forcefulUpdate = false
     if (isEditFlag && !isForcefulUpdate) {
       if (JSON.stringify(Modules) !== JSON.stringify(oldModules) || JSON.stringify(oldHeadLevelGrid) !== JSON.stringify(HeadLevelGrid) || JSON.stringify(oldMasterLevelGrid) !== JSON.stringify(masterLevelGrid) || JSON.stringify(oldTechnologyLevelGrid) !== JSON.stringify(TechnologyLevelGrid)) {
         setIsForcefulUpdate(true)
+        forcefulUpdate = true
       }
-      else { setIsForcefulUpdate(false) }
+      else {
+        forcefulUpdate = false
+        setIsForcefulUpdate(false)
+      }
     }
     const { reset } = props;
     const userDetails = JSON.parse(localStorage.getItem('userDetail'))
@@ -1405,7 +1411,7 @@ function UserRegistration(props) {
 
     if (isEditFlag) {
       let updatedData = {
-        IsForcefulUpdated: isForcefulUpdate,
+        IsForcefulUpdated: isForcefulUpdate ? isForcefulUpdate : forcefulUpdate,
         UserId: UserId,
         FullName: `${values.FirstName ? values.FirstName.trim() : ''} ${values.LastName ? values.LastName.trim() : ''}`,
         LevelId: registerUserData?.LevelId,

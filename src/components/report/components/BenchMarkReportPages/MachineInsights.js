@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { Col, Row } from 'reactstrap';
-import { getCostingTechnologySelectList } from '../../../costing/actions/Costing'
 import { useDispatch, useSelector } from 'react-redux';
 import { AgGridReact } from 'ag-grid-react/lib/agGridReact';
 import LoaderCustom from '../../../common/LoaderCustom'
@@ -60,8 +59,6 @@ function MachineInsights(props) {
 
     useEffect(() => {
         setShowListing(false)
-        dispatch(getCostingTechnologySelectList(() => { }))
-
         let temp = []
         let vendorTemp = []
         let uniqueVendors = []

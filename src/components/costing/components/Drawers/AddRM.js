@@ -221,7 +221,7 @@ function AddRM(props) {
               <Row className="drawer-heading">
                 <Col>
                   <div className={'header-wrapper left'}>
-                    <h3>{'ADD RM: '}</h3>
+                    <h3>{'Add RM: '}</h3>
                   </div>
                   <div
                     onClick={cancel}

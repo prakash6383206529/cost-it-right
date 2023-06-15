@@ -1438,7 +1438,7 @@ function CostingSimulation(props) {
                                                         {isMasterAssociatedWithCosting && <AgGridColumn width={120} field="CostingId" headerName='Actions' type="rightAligned" floatingFilter={false} cellRenderer='buttonFormatter' pinned="right"></AgGridColumn>}
                                                     </AgGridReact>}
                                                     {storeTechnology === FORGING && <WarningMessage dClass="float-right" textClass="mt2" message="If RMC is calculated through RM weight calculator then change in scrap rate won't affect the RMC." />}
-                                                    {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />}
+                                                    {amendmentDetails.SimulationHeadId && <PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />}
                                                 </div>
                                             </div>
                                         </Col>

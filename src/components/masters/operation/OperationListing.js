@@ -512,6 +512,8 @@ class OperationListing extends Component {
                 item.Plants = ' '
             } else if (item.VendorName === '-') {
                 item.VendorName = ' '
+            } else if (item?.EffectiveDate?.includes('T')) {
+                item.EffectiveDate = DayTime(item.EffectiveDate).format('DD/MM/YYYY')
             }
             return item
         })

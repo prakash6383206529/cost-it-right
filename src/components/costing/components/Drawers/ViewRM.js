@@ -6,10 +6,10 @@ import Toaster from '../../../common/Toaster';
 import { checkForDecimalAndNull } from '../../../../helper';
 import { Container, Row, Col, Table } from 'reactstrap'
 import NoContentFound from '../../../common/NoContentFound';
-import { EMPTY_DATA } from '../../../../config/constants';
+import { AWAITING_APPROVAL_ID, EMPTY_DATA, PENDING_FOR_APPROVAL_ID, REJECTEDID } from '../../../../config/constants';
 import { SHEETMETAL, RUBBER, FORGING, DIE_CASTING, PLASTIC, CORRUGATEDBOX, Ferrous_Casting } from '../../../../config/masterData'
 import 'reactjs-popup/dist/index.css'
-import { getRawMaterialCalculationForCorrugatedBox, getRawMaterialCalculationForDieCasting, getRawMaterialCalculationForFerrous, getRawMaterialCalculationForForging, getRawMaterialCalculationForPlastic, getRawMaterialCalculationForRubber, getRawMaterialCalculationForSheetMetal, } from '../../actions/CostWorking'
+import { getRawMaterialCalculationForCorrugatedBox, getRawMaterialCalculationForDieCasting, getRawMaterialCalculationForFerrous, getRawMaterialCalculationForForging, getRawMaterialCalculationForPlastic, getRawMaterialCalculationForRubber, getRawMaterialCalculationForSheetMetal, getSimulationRmFerrousCastingCalculation, getSimulationRmRubberCalculation, } from '../../actions/CostWorking'
 import TooltipCustom from '../../../common/Tooltip';
 
 function ViewRM(props) {
@@ -41,51 +41,82 @@ function ViewRM(props) {
 
   const getWeightData = (index) => {
     setIndex(index)
-    if (viewRM[index].RawMaterialCalculatorId === 0 || viewRM[index].RawMaterialCalculatorId === null) {
-      Toaster.warning('Data is not avaliabe for calculator')
-      return false
-    }
 
     const tempData = viewCostingData[props.index]
-    switch ((Number(tempData.technologyId))) {
+    if (props.simulationMode && String(tempData.CostingHeading) === String("New Costing") && (Number(tempData.SimulationStatusId) === Number(REJECTEDID) || Number(tempData.SimulationStatusId) === Number(PENDING_FOR_APPROVAL_ID) || Number(tempData.SimulationStatusId) === Number(AWAITING_APPROVAL_ID))) {
+      switch ((Number(tempData.technologyId))) {
+        case Ferrous_Casting:
+          dispatch(getSimulationRmFerrousCastingCalculation(tempData.SimulationId, tempData.netRMCostView[index].CostingId, res => {
 
-      case SHEETMETAL:
-        dispatch(getRawMaterialCalculationForSheetMetal(tempData.netRMCostView[index].CostingId, tempData.netRMCostView[index].RawMaterialId, tempData.netRMCostView[index].RawMaterialCalculatorId, res => {
-          setCalculatorData(res, index)
-        }))
-        break;
-      case FORGING:
-        dispatch(getRawMaterialCalculationForForging(tempData.netRMCostView[index].CostingId, tempData.netRMCostView[index].RawMaterialId, tempData.netRMCostView[index].RawMaterialCalculatorId, res => {
-          setCalculatorData(res, index)
-        }))
-        break;
-      case Ferrous_Casting:
-        dispatch(getRawMaterialCalculationForFerrous(tempData.netRMCostView[index].CostingId, tempData.netRMCostView[index].RawMaterialId, tempData.RawMaterialCalculatorId, res => {
-          setCalculatorData(res, index)
-        }))
-        break;
-      case PLASTIC:
-        dispatch(getRawMaterialCalculationForPlastic(tempData.netRMCostView[index].CostingId, tempData.netRMCostView[index].RawMaterialId, tempData.netRMCostView[index].RawMaterialCalculatorId, res => {
-          setCalculatorData(res, index)
-        }))
-        break;
-      case CORRUGATEDBOX:
-        dispatch(getRawMaterialCalculationForCorrugatedBox(tempData.netRMCostView[index].CostingId, tempData.netRMCostView[index].RawMaterialId, tempData.netRMCostView[index].RawMaterialCalculatorId, res => {
-          setCalculatorData(res, index)
-        }))
-        break;
-      case DIE_CASTING:
-        dispatch(getRawMaterialCalculationForDieCasting(tempData.netRMCostView[index].CostingId, tempData.netRMCostView[index].RawMaterialId, tempData.netRMCostView[index].RawMaterialCalculatorId, res => {
-          setCalculatorData(res, index)
-        }))
-        break;
-      case RUBBER:
-        dispatch(getRawMaterialCalculationForRubber(tempData.netRMCostView[index].CostingId, tempData.netRMCostView[index].RawMaterialId, tempData.netRMCostView[index].RawMaterialCalculatorId, res => {
-          setCalculatorData(res, index)
-        }))
-        break;
-      default:
-        return "none";
+            if (Number(res.status) === Number(204)) {
+              Toaster.warning('Data is not avaliabe for calculator')
+            } else {
+              setCalculatorData(res, index)
+            }
+          }))
+          break;
+
+        case RUBBER:
+          dispatch(getSimulationRmRubberCalculation(tempData.SimulationId, tempData.netRMCostView[index].CostingId, res => {
+
+            if (Number(res.status) === Number(204)) {
+              Toaster.warning('Data is not avaliabe for calculator')
+            } else {
+              setCalculatorData(res, index)
+            }
+          }))
+          break;
+        default:
+          return "none";
+      }
+
+    }
+    else {
+      if (viewRM[index].RawMaterialCalculatorId === 0 || viewRM[index].RawMaterialCalculatorId === null) {
+        Toaster.warning('Data is not avaliabe for calculator')
+        return false
+      }
+
+      switch ((Number(tempData.technologyId))) {
+
+        case SHEETMETAL:
+          dispatch(getRawMaterialCalculationForSheetMetal(tempData.netRMCostView[index].CostingId, tempData.netRMCostView[index].RawMaterialId, tempData.netRMCostView[index].RawMaterialCalculatorId, res => {
+            setCalculatorData(res, index)
+          }))
+          break;
+        case FORGING:
+          dispatch(getRawMaterialCalculationForForging(tempData.netRMCostView[index].CostingId, tempData.netRMCostView[index].RawMaterialId, tempData.netRMCostView[index].RawMaterialCalculatorId, res => {
+            setCalculatorData(res, index)
+          }))
+          break;
+        case Ferrous_Casting:
+          dispatch(getRawMaterialCalculationForFerrous(tempData.netRMCostView[index].CostingId, tempData.netRMCostView[index].RawMaterialId, tempData.RawMaterialCalculatorId, res => {
+            setCalculatorData(res, index)
+          }))
+          break;
+        case PLASTIC:
+          dispatch(getRawMaterialCalculationForPlastic(tempData.netRMCostView[index].CostingId, tempData.netRMCostView[index].RawMaterialId, tempData.netRMCostView[index].RawMaterialCalculatorId, res => {
+            setCalculatorData(res, index)
+          }))
+          break;
+        case CORRUGATEDBOX:
+          dispatch(getRawMaterialCalculationForCorrugatedBox(tempData.netRMCostView[index].CostingId, tempData.netRMCostView[index].RawMaterialId, tempData.netRMCostView[index].RawMaterialCalculatorId, res => {
+            setCalculatorData(res, index)
+          }))
+          break;
+        case DIE_CASTING:
+          dispatch(getRawMaterialCalculationForDieCasting(tempData.netRMCostView[index].CostingId, tempData.netRMCostView[index].RawMaterialId, tempData.netRMCostView[index].RawMaterialCalculatorId, res => {
+            setCalculatorData(res, index)
+          }))
+          break;
+        case RUBBER:
+          dispatch(getRawMaterialCalculationForRubber(tempData.netRMCostView[index].CostingId, tempData.netRMCostView[index].RawMaterialId, tempData.netRMCostView[index].RawMaterialCalculatorId, res => {
+            setCalculatorData(res, index)
+          }))
+          break;
+        default:
+          return "none";
+      }
     }
   }
 
@@ -113,11 +144,10 @@ function ViewRM(props) {
       {
         !isPDFShow &&
         <Col md="6" className='btn-container mt-1' >
-          {viewCostingData[props.index].technologyId === Ferrous_Casting && <button
+          {(viewCostingData[props.index].technologyId === Ferrous_Casting || viewCostingData[props.index].technologyId === RUBBER) && <button
             className="secondary-btn"
             type={'button'}
             onClick={() => { getWeightData(0) }}
-            disabled={(viewRM[0].RawMaterialCalculatorId === 0 || viewRM[0].RawMaterialCalculatorId === null) ? true : false}
           >
             <div className='CalculatorIcon cr-cl-icon '></div>Weight Calculator</button>}
         </Col>
@@ -134,7 +164,7 @@ function ViewRM(props) {
               <th>{`Gross Weight (Kg)`}</th>
               <th>{`Finish Weight (Kg)`}</th>
               <th>{`Scrap Weight`}</th>
-              {!isPDFShow && viewCostingData[props.index].technologyId !== Ferrous_Casting && <th>{`Calculator`}</th>}
+              {!isPDFShow && viewCostingData[props.index].technologyId !== Ferrous_Casting && viewCostingData[props.index].technologyId !== RUBBER && <th>{`Calculator`}</th>}
               <th>{`Freight Cost`}</th>
               <th>{`Shearing Cost`}</th>
               <th>{`Burning Loss Weight`}</th>
@@ -157,7 +187,7 @@ function ViewRM(props) {
                   <td>{checkForDecimalAndNull(item.GrossWeight, initialConfiguration.NoOfDecimalForInputOutput)}</td>
                   <td>{checkForDecimalAndNull(item.FinishWeight, initialConfiguration.NoOfDecimalForInputOutput)}</td>
                   <td>{checkForDecimalAndNull(item.ScrapWeight, initialConfiguration.NoOfDecimalForInputOutput)}</td>
-                  {!isPDFShow && viewCostingData[props.index].technologyId !== Ferrous_Casting && <td><button
+                  {!isPDFShow && viewCostingData[props.index].technologyId !== Ferrous_Casting && viewCostingData[props.index].technologyId !== RUBBER && <td><button
                     className="CalculatorIcon cr-cl-icon mr-auto ml-0"
                     type={"button"}
                     disabled={(item.RawMaterialCalculatorId === 0 || item.RawMaterialCalculatorId === null) ? true : false}
@@ -302,7 +332,7 @@ function ViewRM(props) {
                     rmMBDetail={rmMBDetail} // MASTER BATCH DETAIL
                     CostingViewMode={true}   // THIS KEY WILL BE USE TO OPEN CALCI IN VIEW MODE
                     fromCostingSummary={props.fromCostingSummary}
-                    rmData={calciData.WeightCalculatorRequest.CostingFerrousCalculationRawMaterials}
+                    rmData={viewCostingData[props.index].technologyId === RUBBER ? calciData.WeightCalculatorRequest.CostingRubberCalculationRawMaterials : calciData.WeightCalculatorRequest.CostingFerrousCalculationRawMaterials}
                   />
                 )}
               </Row>

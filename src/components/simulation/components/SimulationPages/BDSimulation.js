@@ -21,11 +21,16 @@ import { PaginationWrapper } from '../../../common/commonPagination';
 import DatePicker from "react-datepicker";
 import WarningMessage from '../../../common/WarningMessage';
 import { getMaxDate } from '../../SimulationUtils';
+import ReactExport from 'react-export-excel';
+import { BOP_IMPACT_DOWNLOAD_EXCEl } from '../../../../config/masterData';
 
 const gridOptions = {
 
 };
 
+const ExcelFile = ReactExport.ExcelFile;
+const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 function BDSimulation(props) {
     const { list, isbulkUpload, rowCount, isImpactedMaster, tokenForMultiSimulation } = props
@@ -362,6 +367,24 @@ function BDSimulation(props) {
         setBasicRateViewTooltip(!basicRateviewTooltip)
     }
 
+    const onBtExport = () => {
+        return returnExcelColumn(BOP_IMPACT_DOWNLOAD_EXCEl, list)
+    };
+
+    const returnExcelColumn = (data = [], TempData) => {
+
+        let temp = []
+        TempData && TempData.map((item) => {
+            item.EffectiveDate = (item.EffectiveDate)?.slice(0, 10)
+            temp.push(item)
+        })
+
+        return (
+            <ExcelSheet data={temp} name={'BOP Data'}>
+                {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
+            </ExcelSheet>);
+    }
+
     return (
 
         <div>
@@ -376,9 +399,13 @@ function BDSimulation(props) {
                                     <div className="ag-grid-header d-flex align-items-center justify-content-between">
                                         <div className='d-flex align-items-center'>
                                             <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
-                                            <button type="button" className="user-btn float-right" title="Reset Grid" onClick={() => resetState()}>
+                                            <button type="button" className="user-btn float-right mr-2" title="Reset Grid" onClick={() => resetState()}>
                                                 <div className="refresh mr-0"></div>
                                             </button>
+                                            <ExcelFile filename={'Impacted Master Data'} fileExtension={'.xls'} element={
+                                                <button title="Download" type="button" className={'user-btn'} ><div className="download mr-0"></div></button>}>
+                                                {onBtExport()}
+                                            </ExcelFile>
                                         </div>
                                         <div className='d-flex justify-content-end bulk-upload-row pr-0 zindex-2'>
                                             {
@@ -475,7 +502,7 @@ function BDSimulation(props) {
                                                 <AgGridColumn width={120} field="NewNetLandedCost" editable='false' valueGetter='data.NewBasicRate' cellRenderer={'NewcostFormatter'} headerName="Revised" colId='NewNetLandedCost'></AgGridColumn>
                                             </AgGridColumn>
 
-                                            <AgGridColumn field="EffectiveDate" headerName="Effective Date" editable='false' minWidth={150} cellRenderer='effectiveDateRenderer'></AgGridColumn>
+                                            <AgGridColumn field="EffectiveDate" headerName={props.isImpactedMaster && !props.lastRevision ? "Current Effective date" : "Effective Date"} editable='false' minWidth={150} cellRenderer='effectiveDateRenderer'></AgGridColumn>
                                             <AgGridColumn field="CostingId" hide={true}></AgGridColumn>
 
 

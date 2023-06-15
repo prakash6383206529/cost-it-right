@@ -311,6 +311,7 @@ function CostingDetailStepTwo(props) {
    * @description SET COSTS FOR TOP HEADER FROM DISCOUNT AND COST
    */
   const setHeaderDiscountTab = (data, headerCostData = {}, CostingData = {}) => {
+    console.log('data: ', data);
     if (!CostingViewMode) {
       const headerIndex = 0;
       if (CostingDataList && CostingDataList.length > 0 && CostingDataList[headerIndex].CostingId === undefined) return false;
@@ -325,16 +326,17 @@ function CostingDetailStepTwo(props) {
           checkForNull(tempData.NetOverheadAndProfitCost) +
           checkForNull(tempData.NetPackagingAndFreight) +
           checkForNull(tempData.ToolCost)
-        if (data.OtherCostType === 'Percentage') {
-          const cost = checkForNull(findApplicabilityCost(data, data?.OtherCostApplicability, headerCostData, CostingData, data?.PercentageOtherCost))
+        // data.AnyOtherCost
+        // if (data.OtherCostType === 'Percentage') {
+        //   const cost = checkForNull(findApplicabilityCost(data, data?.OtherCostApplicability, headerCostData, CostingData, data?.PercentageOtherCost))
 
-          data.AnyOtherCost = cost
-        }
+        //   data.AnyOtherCost = cost
+        // }
         const discountedCost = data.DiscountCostType === 'Percentage' ? checkForNull(findApplicabilityCost(data, data?.DiscountApplicability, headerCostData, CostingData, data?.HundiOrDiscountPercentage)) : data.DiscountsAndOtherCost;
 
         const discountValues = {
-          BasicRateINR: checkForNull(SumOfTab - discountedCost) + checkForNull(data.AnyOtherCost),
-          NetPOPriceINR: checkForNull(SumOfTab - discountedCost) + checkForNull(data.AnyOtherCost),
+          BasicRateINR: checkForNull(SumOfTab - discountedCost) + checkForNull(data?.AnyOtherCost),
+          NetPOPriceINR: checkForNull(SumOfTab - discountedCost) + checkForNull(data?.AnyOtherCost),
           HundiOrDiscountValue: checkForNull(discountedCost),
           AnyOtherCost: checkForNull(data.AnyOtherCost),
           HundiOrDiscountPercentage: checkForNull(data.HundiOrDiscountPercentage),
@@ -350,8 +352,10 @@ function CostingDetailStepTwo(props) {
           ...tempData,
           NetDiscountsCost: checkForNull(discountedCost),
           NetOtherCost: checkForNull(data.AnyOtherCost),
-          TotalCost: OverAllCost + checkForNull(data.AnyOtherCost) + checkForNull(data.totalNpvCost) + checkForNull(data.totalConditionCost),
-          BasicRate: OverAllCost + checkForNull(data.AnyOtherCost),
+          TotalCost: OverAllCost + checkForNull(data?.AnyOtherCost) + checkForNull(data.totalNpvCost) + checkForNull(data.totalConditionCost),
+          // TotalCost: OverAllCost + checkForNull(data.totalNpvCost) + checkForNull(data.totalConditionCost),
+          BasicRate: OverAllCost + checkForNull(data?.AnyOtherCost),
+          // BasicRate: OverAllCost,
           NetPackagingAndFreight: tempData.NetPackagingAndFreight,
         }
 
@@ -459,7 +463,7 @@ function CostingDetailStepTwo(props) {
                           <th style={{ width: '100px' }}><span className="font-weight-500">{`${partType ? "Part Cost/ Assembly" : `${costingData?.IsAssemblyPart ? 'RM Cost/ Assembly' : 'RM Cost/Pc'}`}`}</span></th>
                           <th style={{ width: '120px' }}><span className="font-weight-500">{`${costingData?.IsAssemblyPart ? 'BOP Cost/ Assembly' : 'BOP Cost/ Pc'}`}</span></th>
                           <th style={{ width: '120px' }}><span className="font-weight-500">{`${costingData?.IsAssemblyPart ? 'Conversion Cost/Assembly' : 'Conversion Cost/Pc'}`}</span></th>
-                          <th style={{ width: '180px' }}><span className="font-weight-500">{`${partType ? "Cost/ Assembly" : "Net RMC + CC"}`}</span></th>
+                          <th style={{ width: '180px' }}><span className="font-weight-500">{`${partType ? "Cost/ Assembly" : "Net RMC + BOP + CC"}`}</span></th>
                           <th style={{ width: '220px' }}><span className="font-weight-500">{`Surface Treatment Cost`}</span></th>
                           <th style={{ width: '150px' }}><span className="font-weight-500">{`Overheads & Profits`}</span></th>
                           <th style={{ width: '150px' }}><span className="font-weight-500">{`Packaging & Freight Cost`}</span></th>

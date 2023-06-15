@@ -60,6 +60,7 @@ function RfqListing(props) {
     const [isReportLoader, setIsReportLoader] = useState(false)
     const [selectedCostingsToShow, setSelectedCostingsToShow] = useState([])
     const [multipleCostingDetails, setMultipleCostingDetails] = useState([])
+    const [uniqueShouldCostingId, setUniqueShouldCostingId] = useState([])
     const [selectedRowIndex, setSelectedRowIndex] = useState('')
 
     const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
@@ -108,6 +109,13 @@ function RfqListing(props) {
                 setloader(false)
                 return false;
             }
+            let uniqueShouldCostId = [];
+            res?.data?.DataList && res?.data?.DataList.map(item => {
+                let unique = _.uniq(_.map(item.ShouldCostings, 'CostingId'))
+                uniqueShouldCostId.push(...unique)
+            })
+            setUniqueShouldCostingId(uniqueShouldCostId)
+
             let requestObject = {}
             requestObject.PartIdList = _.uniq(_.map(res?.data?.DataList, 'PartId'))
             requestObject.PlantId = res?.data?.DataList[0]?.PlantId
@@ -410,13 +418,15 @@ function RfqListing(props) {
         setShowPopup(false)
     }
 
-    const closeUserDetails = () => {
+    const closeUserDetails = (e = '', type) => {
         setIsOpen(false)
-        setloader(true)
-        setTimeout(() => {
-            dispatch(setCostingViewData([...multipleCostingDetails]))
-            setloader(false)
-        }, 200);
+        if (type !== false) {
+            setloader(true)
+            setTimeout(() => {
+                dispatch(setCostingViewData([...multipleCostingDetails]))
+                setloader(false)
+            }, 200);
+        }
     }
 
     const viewCostingDetail = (rowData) => {
@@ -477,12 +487,13 @@ function RfqListing(props) {
     };
 
 
-    const closeDrawer = () => {
+    const closeDrawer = (e = '', type) => {
         setAddRfqData({})
         setAddRfq(false)
         setRejectDrawer(false)
-        getDataList()
-
+        if (type !== 'cancel') {
+            getDataList()
+        }
     }
 
     const closeRemarkDrawer = (type) => {
@@ -726,7 +737,7 @@ function RfqListing(props) {
                                         type="text"
                                         className="form-control mx-2 defualt-input-value"
                                         value={data.RaisedBy}
-                                        style={{ width: (data.RaisedBy.length * 9 + 10) + 'px' }}
+                                        style={{ width: (data.RaisedBy.length * 9 + 13) + 'px' }}
                                         disabled={true}
                                     /> </div>
                                 <div className='d-flex align-items-center pr-0'><div className='w-min-fit'>Raised On:</div>
@@ -874,10 +885,7 @@ function RfqListing(props) {
                         isEditFlag={isEdit}
                         closeDrawer={closeDrawer}
                     />
-
                 }
-
-
 
                 {
                     <div id='rfq-compare-drawer'>
@@ -889,6 +897,7 @@ function RfqListing(props) {
                                 approvalMode={true}
                                 // isApproval={approvalData.LastCostingId !== EMPTY_GUID ? true : false}
                                 simulationMode={false}
+                                uniqueShouldCostingId={uniqueShouldCostingId}
                                 costingIdExist={true}
                                 bestCostObjectFunction={bestCostObjectFunction}
                                 crossButton={hideSummaryHandler}

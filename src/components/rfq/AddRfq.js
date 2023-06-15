@@ -98,7 +98,9 @@ function AddRfq(props) {
     const [nfrId, setNfrId] = useState('')
     const [rmName, setRMName] = useState([])
     const [rmgrade, setRMGrade] = useState([])
+    const [state, setState] = useState(true)
     const [rmspecification, setRMSpecification] = useState([])
+    const [deleteToggle, setDeleteToggle] = useState(false)
     const rawMaterialNameSelectList = useSelector(state => state.material.rawMaterialNameSelectList);
     const gradeSelectList = useSelector(state => state.material.gradeSelectList);
     const rmSpecification = useSelector(state => state.comman.rmSpecification);
@@ -125,6 +127,13 @@ function AddRfq(props) {
     }, []);
 
     useEffect(() => {
+        const filteredArray = selectedparts.filter((obj) => {
+            return obj.value !== deleteToggle?.rowData.PartId;
+        });
+        setSelectedParts(filteredArray)
+    }, [deleteToggle])
+
+    useEffect(() => {
         let tempp = _.unionBy(partList, checkRFQPartBulkUpload?.SuccessfulRecord, 'PartNumber');
         setPartList(tempp)
     }, [checkRFQPartBulkUpload])
@@ -135,11 +144,17 @@ function AddRfq(props) {
             item.SOPQuantity.map((ele, ind) => {
                 if (ind !== 2) {
                     ele.PartNo = ele.PartNumber
-                    ele.PartId = item.PartId
+                    ele.PartId = item?.PartId
                     delete ele.PartNumber
                 } else {
                     ele.PartNo = ele.PartNumber
                     ele.PartId = item.PartId
+                    ele.RMName = item?.RMDetailsResponses[0]?.RawMaterialName
+                    ele.RMNameId = item?.RMDetailsResponses[0]?.RawMaterialChildId
+                    ele.RMGrade = item?.RMDetailsResponses[0]?.RawMaterialGrade
+                    ele.RMGradeId = item?.RMDetailsResponses[0]?.RawMaterialGradeId
+                    ele.RMSpecification = item?.RMDetailsResponses[0]?.RawMaterialSpecification
+                    ele.RMSpecificationId = item?.RMDetailsResponses[0]?.RawMaterialSpecificationId
                 }
                 return null
             })
@@ -303,12 +318,9 @@ function AddRfq(props) {
     }
 
     const deleteItemPartTable = (rowData, final) => {
-        const filteredArray = selectedparts.filter((obj) => {
-            return obj.value !== rowData.value;
-        });
-        setSelectedParts(filteredArray)
         let arr = final && final.filter(item => item.PartNo !== rowData?.PartNo)
         setPartList(arr)
+        setDeleteToggle({ deleteToggle: !deleteToggle, rowData: rowData })
         onResetPartNoTable()
     }
 
@@ -466,17 +478,26 @@ function AddRfq(props) {
         partIdList && partIdList?.map((item) => {
             let temppartObj = {}
             let partListArr = []
+            let partObject = []
             temppartObj.PartId = item
-            list && list.map((item1) => {
+            list && list.map((item1, index) => {
                 let partListObj = {}
                 if (item1?.PartId === item) {
                     partListObj.PartNumber = item1?.PartNo
                     partListObj.YearName = item1?.YearName
                     partListObj.Quantity = item1?.Quantity
                     partListArr.push(partListObj)
+                    if (index === 2) {
+                        partObject = item1
+                    }
                 }
                 return null
             })
+            temppartObj.RMDetails = [{
+                "RawMaterialChildId": partObject?.RMNameId,
+                "RawMaterialGradeId": partObject?.RMGradeId,
+                "RawMaterialSpecificationId": partObject?.RMSpecificationId
+            }]
             temppartObj.SOPQuantityDetails = partListArr
             temppartArr.push(temppartObj)
             return null
@@ -535,7 +556,8 @@ function AddRfq(props) {
 
     const hyphenFormatter = (props) => {
         const cellValue = props?.value;
-        return checkForDecimalAndNull(cellValue, getConfigurationKey().NoOfDecimalForInputOutput)
+        const rowData = props?.data;
+        return cellValue ? cellValue : (rowData?.PartNumber ? '-' : '')
     }
 
     const sopFormatter = (props) => {
@@ -689,12 +711,12 @@ function AddRfq(props) {
                     if (index === 2) {
                         objTemp.PartNumber = partNumber?.label
                         objTemp.VendorListExisting = vendorListFinal.join(',') ? vendorListFinal.join(',') : '-'
-                        objTemp.RMName = rmName?.label
-                        objTemp.RMNameId = rmName?.value
-                        objTemp.RMGrade = rmgrade?.label
-                        objTemp.RMGradeId = rmgrade?.value
-                        objTemp.RMSpecification = rmspecification?.label
-                        objTemp.RMSpecificationId = rmspecification?.value
+                        objTemp.RMName = rmName?.label ? rmName?.label : '-'
+                        objTemp.RMNameId = rmName?.value ? rmName?.value : '-'
+                        objTemp.RMGrade = rmgrade?.label ? rmgrade?.label : '-'
+                        objTemp.RMGradeId = rmgrade?.value ? rmgrade?.value : '-'
+                        objTemp.RMSpecification = rmspecification?.label ? rmspecification?.label : '-'
+                        objTemp.RMSpecificationId = rmspecification?.value ? rmspecification?.value : '-'
                     }
                     objTemp.Quantity = 0
 
@@ -712,6 +734,9 @@ function AddRfq(props) {
                 setValue('RMSpecification', "")
                 // setValue('technology', "")
                 setUpdateButtonPartNoTable(false)
+                setRMName('')
+                setRMGrade('')
+                setRMSpecification('')
             }))
         }
     }
@@ -754,9 +779,13 @@ function AddRfq(props) {
             setTechnology(newValue)
         }
         setPartName('')
+        setState(false)
+        setTimeout(() => {
+            setState(true)
+        }, 500);
         reactLocalStorage.setObject('PartData', [])
-    }
 
+    }
     const handleNfrChnage = (newValue) => {
         if (newValue && newValue !== '') {
             // setPartNoDisable(false)
@@ -843,7 +872,7 @@ function AddRfq(props) {
     const quantityHeader = (props) => {
         return (
             <div className='ag-header-cell-label'>
-                <span className='ag-header-cell-text'>Annual Forecast Quantity<i className={`fa fa-info-circle tooltip_custom_right tooltip-icon mb-n3 ml-4 mt2 `} id={"quantity-tooltip"}></i> </span>
+                <span className='ag-header-cell-text d-flex'>Annual Forecast Quantity<i className={`fa fa-info-circle tooltip_custom_right tooltip-icon mb-n3 ml-4 mt2 `} id={"quantity-tooltip"}></i> </span>
             </div>
         );
     };
@@ -1165,7 +1194,7 @@ function AddRfq(props) {
                                                 </div>
                                             </div>
                                         </Col>
-                                        <Col md="3">
+                                        {checkForNull(technology?.value) !== LOGISTICS && <> <Col md="3">
                                             <SearchableSelectHookForm
                                                 label="RM Name"
                                                 name={"RMName"}
@@ -1184,44 +1213,46 @@ function AddRfq(props) {
                                             // errors={`${indexInside} CostingVersion`}
                                             />
                                         </Col>
-                                        <Col md="3">
-                                            <SearchableSelectHookForm
-                                                label="RM Grade"
-                                                name={"RMGrade"}
-                                                placeholder={"Select"}
-                                                Controller={Controller}
-                                                control={control}
-                                                selected={rmgrade ? rmgrade : ''}
-                                                rules={{ required: false }}
-                                                register={register}
-                                                customClassName="costing-version"
-                                                // defaultValue={costingOptionsSelectedObject[indexInside] ? costingOptionsSelectedObject[indexInside] : ''}
-                                                options={renderListingRM('rmgrade')}
-                                                mandatory={false}
-                                                handleChange={(newValue) => handleRMGrade(newValue)}
-                                                disabled={dataProps?.isAddFlag ? partNoDisable : (dataProps?.isViewFlag || !isEditAll)}
-                                            // errors={`${indexInside} CostingVersion`}
-                                            />
-                                        </Col>
-                                        <Col md="3">
-                                            <SearchableSelectHookForm
-                                                label="RM Specification"
-                                                name={"RMSpecification"}
-                                                placeholder={"Select"}
-                                                Controller={Controller}
-                                                control={control}
-                                                selected={rmspecification ? rmspecification : ''}
-                                                rules={{ required: false }}
-                                                register={register}
-                                                customClassName="costing-version"
-                                                // defaultValue={costingOptionsSelectedObject[indexInside] ? costingOptionsSelectedObject[indexInside] : ''}
-                                                options={renderListingRM('rmspecification')}
-                                                mandatory={false}
-                                                handleChange={(newValue) => handleRMSpecification(newValue)}
-                                                disabled={dataProps?.isAddFlag ? partNoDisable : (dataProps?.isViewFlag || !isEditAll)}
-                                            // errors={`${indexInside} CostingVersion`}
-                                            />
-                                        </Col>
+                                            <Col md="3">
+                                                <SearchableSelectHookForm
+                                                    label="RM Grade"
+                                                    name={"RMGrade"}
+                                                    placeholder={"Select"}
+                                                    Controller={Controller}
+                                                    control={control}
+                                                    selected={rmgrade ? rmgrade : ''}
+                                                    rules={{ required: false }}
+                                                    register={register}
+                                                    customClassName="costing-version"
+                                                    // defaultValue={costingOptionsSelectedObject[indexInside] ? costingOptionsSelectedObject[indexInside] : ''}
+                                                    options={renderListingRM('rmgrade')}
+                                                    mandatory={false}
+                                                    handleChange={(newValue) => handleRMGrade(newValue)}
+                                                    disabled={dataProps?.isAddFlag ? partNoDisable : (dataProps?.isViewFlag || !isEditAll)}
+                                                // errors={`${indexInside} CostingVersion`}
+                                                />
+                                            </Col>
+                                            <Col md="3">
+                                                <SearchableSelectHookForm
+                                                    label="RM Specification"
+                                                    name={"RMSpecification"}
+                                                    placeholder={"Select"}
+                                                    Controller={Controller}
+                                                    control={control}
+                                                    selected={rmspecification ? rmspecification : ''}
+                                                    rules={{ required: false }}
+                                                    register={register}
+                                                    customClassName="costing-version"
+                                                    // defaultValue={costingOptionsSelectedObject[indexInside] ? costingOptionsSelectedObject[indexInside] : ''}
+                                                    options={renderListingRM('rmspecification')}
+                                                    mandatory={false}
+                                                    handleChange={(newValue) => handleRMSpecification(newValue)}
+                                                    disabled={dataProps?.isAddFlag ? partNoDisable : (dataProps?.isViewFlag || !isEditAll)}
+                                                // errors={`${indexInside} CostingVersion`}
+                                                />
+
+                                            </Col>
+                                        </>}
                                         {/* <Col md="3">
                                             <NumberFieldHookForm
                                                 label="Annual Forecast Quantity"
@@ -1279,37 +1310,38 @@ function AddRfq(props) {
                                                 <Col>
                                                     <div className={`ag-grid-wrapper rfq-grid height-width-wrapper ${partList && partList.length <= 0 ? "overlay-contain border" : ""} `}>
 
-                                                        <div className={`ag-theme-material`}>
-                                                            <AgGridReact
-                                                                defaultColDef={defaultColDef}
-                                                                //floatingFilter={true}
-                                                                domLayout='autoHeight'
-                                                                // columnDefs={c}
-                                                                rowData={partList}
-                                                                //pagination={true}
-                                                                paginationPageSize={10}
-                                                                onGridReady={onGridReady}
-                                                                gridOptions={gridOptions}
-                                                                noRowsOverlayComponent={'customNoRowsOverlay'}
-                                                                noRowsOverlayComponentParams={{
-                                                                    title: EMPTY_DATA,
-                                                                }}
-                                                                frameworkComponents={frameworkComponents}
-                                                                stopEditingWhenCellsLoseFocus={true}
-                                                                suppressColumnVirtualisation={true}
-                                                            >
-                                                                <AgGridColumn width={"230px"} field="PartNumber" headerName="Part No" cellClass={"colorWhite"} cellRenderer={'partNumberFormatter'}></AgGridColumn>
-                                                                <AgGridColumn width={"230px"} field="VendorListExisting" headerName="Existing Vendor" cellClass={"colorWhite"}></AgGridColumn>
-                                                                <AgGridColumn width={"230px"} field="RMName" headerName="RM Name" cellClass={"colorWhite"}></AgGridColumn>
-                                                                <AgGridColumn width={"230px"} field="RMGrade" headerName="RM Grade" cellClass={"colorWhite"}></AgGridColumn>
-                                                                <AgGridColumn width={"230px"} field="RMSpecification" headerName="RM Specification" cellClass={"colorWhite"}></AgGridColumn>
+                                                        <div className={`ag-theme-material ${!state ? "custom-min-height-208px" : ''}`}>
+                                                            {!state ? <LoaderCustom customClass={""} /> :
+                                                                <AgGridReact
+                                                                    defaultColDef={defaultColDef}
+                                                                    //floatingFilter={true}
+                                                                    domLayout='autoHeight'
+                                                                    // columnDefs={c}
+                                                                    rowData={partList}
+                                                                    //pagination={true}
+                                                                    paginationPageSize={10}
+                                                                    onGridReady={onGridReady}
+                                                                    gridOptions={gridOptions}
+                                                                    noRowsOverlayComponent={'customNoRowsOverlay'}
+                                                                    noRowsOverlayComponentParams={{
+                                                                        title: EMPTY_DATA,
+                                                                    }}
+                                                                    frameworkComponents={frameworkComponents}
+                                                                    stopEditingWhenCellsLoseFocus={true}
+                                                                    suppressColumnVirtualisation={true}
+                                                                >
+                                                                    <AgGridColumn width={"230px"} field="PartNumber" headerName="Part No" cellClass={"colorWhite"} cellRenderer={'partNumberFormatter'}></AgGridColumn>
+                                                                    <AgGridColumn width={"230px"} field="VendorListExisting" headerName="Vendor" cellClass={"colorWhite"} cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                                                                    {checkForNull(technology?.value) !== LOGISTICS && <AgGridColumn width={"230px"} field="RMName" headerName="RM Name" cellClass={"colorWhite"}></AgGridColumn>}
+                                                                    {checkForNull(technology?.value) !== LOGISTICS && <AgGridColumn width={"230px"} field="RMGrade" headerName="RM Grade" cellClass={"colorWhite"}></AgGridColumn>}
+                                                                    {checkForNull(technology?.value) !== LOGISTICS && <AgGridColumn width={"230px"} field="RMSpecification" headerName="RM Specification" cellClass={"colorWhite"}></AgGridColumn>}
 
-                                                                <AgGridColumn width={"230px"} field="YearName" headerName="Production Year" cellRenderer={'sopFormatter'}></AgGridColumn>
-                                                                <AgGridColumn width={"230px"} field="Quantity" headerName="Annual Forecast Quantity" headerComponent={'quantityHeader'} cellRenderer={'afcFormatter'} editable={EditableCallback} colId="Quantity"></AgGridColumn>
-                                                                <AgGridColumn width={"0px"} field="PartId" headerName="Part Id" hide={true} cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                                                                <AgGridColumn width={"190px"} field="PartId" headerName="Action" cellClass={"colorWhite text-right"} floatingFilter={false} type="rightAligned" cellRenderer={'buttonFormatterFirst'}></AgGridColumn>
-                                                            </AgGridReact>
-
+                                                                    <AgGridColumn width={"230px"} field="YearName" headerName="Production Year" cellRenderer={'sopFormatter'}></AgGridColumn>
+                                                                    <AgGridColumn width={"230px"} field="Quantity" headerName="Annual Forecast Quantity" headerComponent={'quantityHeader'} cellRenderer={'afcFormatter'} editable={EditableCallback} colId="Quantity"></AgGridColumn>
+                                                                    <AgGridColumn width={"0px"} field="PartId" headerName="Part Id" hide={true} ></AgGridColumn>
+                                                                    <AgGridColumn width={"190px"} field="PartId" headerName="Action" cellClass={"colorWhite text-right"} floatingFilter={false} type="rightAligned" cellRenderer={'buttonFormatterFirst'}></AgGridColumn>
+                                                                </AgGridReact>
+                                                            }
                                                         </div>
                                                     </div>
                                                 </Col>
@@ -1413,7 +1445,7 @@ function AddRfq(props) {
                                                                 <AgGridColumn field="Vendor" headerName="Vendor (Code)" ></AgGridColumn>
 
                                                                 <AgGridColumn width={"270px"} field="ContactPerson" headerName="Point of Contact" ></AgGridColumn>
-                                                                <AgGridColumn width={"270px"} field="VendorId" headerName="Vendor Id" hide={true} cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                                                                <AgGridColumn width={"270px"} field="VendorId" headerName="Vendor Id" hide={true} ></AgGridColumn>
                                                                 <AgGridColumn width={"180px"} field="partId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'buttonFormatterVendorTable'}></AgGridColumn>
                                                             </AgGridReact>
                                                         </div>

@@ -206,7 +206,7 @@ function AddBOP(props) {
               <Row className="drawer-heading">
                 <Col>
                   <div className={'header-wrapper left'}>
-                    <h3>{'ADD BOP:'}</h3>
+                    <h3>{'Add BOP:'}</h3>
                   </div>
                   <div
                     onClick={cancel}

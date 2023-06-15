@@ -24,6 +24,12 @@ import WarningMessage from '../../../common/WarningMessage';
 import DatePicker from "react-datepicker";
 import { useRef } from 'react';
 import { getMaxDate } from '../../SimulationUtils';
+import ReactExport from 'react-export-excel';
+import { MACHINE_IMPACT_DOWNLOAD_EXCEl } from '../../../../config/masterData';
+
+const ExcelFile = ReactExport.ExcelFile;
+const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 const gridOptions = {
 
@@ -362,9 +368,29 @@ function MRSimulation(props) {
         }))
         setShowTooltip(false)
     }, 500);
+
     const basicRatetooltipToggle = () => {
         setBasicRateViewTooltip(!basicRateviewTooltip)
     }
+
+    const onBtExport = () => {
+        return returnExcelColumn(MACHINE_IMPACT_DOWNLOAD_EXCEl, list)
+    };
+
+    const returnExcelColumn = (data = [], TempData) => {
+
+        let temp = []
+        TempData && TempData.map((item) => {
+            item.EffectiveDate = (item.EffectiveDate)?.slice(0, 10)
+            temp.push(item)
+        })
+
+        return (
+            <ExcelSheet data={temp} name={'Machine Data'}>
+                {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
+            </ExcelSheet>);
+    }
+
     return (
         <div>
             <div className={`ag-grid-react`}>
@@ -380,11 +406,14 @@ function MRSimulation(props) {
                                         <div className="ag-grid-header d-flex align-items-center justify-content-between">
                                             <div className='d-flex align-items-center'>
                                                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
-                                                <button type="button" className="user-btn float-right" title="Reset Grid" onClick={() => resetState()}>
+                                                <button type="button" className="user-btn float-right mr-2" title="Reset Grid" onClick={() => resetState()}>
                                                     <div className="refresh mr-0"></div>
                                                 </button>
+                                                <ExcelFile filename={'Impacted Master Data'} fileExtension={'.xls'} element={
+                                                    <button title="Download" type="button" className={'user-btn'} ><div className="download mr-0"></div></button>}>
+                                                    {onBtExport()}
+                                                </ExcelFile>
                                             </div>
-
 
                                             <div className='d-flex justify-content-end bulk-upload-row'>
                                                 {
@@ -485,7 +514,7 @@ function MRSimulation(props) {
                                                     <AgGridColumn width={120} field="MachineRate" editable='false' headerName="Existing" cellRenderer='oldRateFormatter' colId="MachineRate"></AgGridColumn>
                                                     <AgGridColumn width={120} cellRenderer='newRateFormatter' editable={!isImpactedMaster} field="NewMachineRate" headerName="Revised" colId='NewMachineRate' headerComponent={'revisedBasicRateHeader'}></AgGridColumn>
                                                 </AgGridColumn>
-                                                <AgGridColumn field="EffectiveDate" headerName="Effective Date" editable='false' minWidth={190} cellRenderer='effectiveDateRenderer'></AgGridColumn>
+                                                <AgGridColumn field="EffectiveDate" headerName={props.isImpactedMaster && !props.lastRevision ? "Current Effective date" : "Effective Date"} editable='false' minWidth={190} cellRenderer='effectiveDateRenderer'></AgGridColumn>
                                                 <AgGridColumn field="CostingId" hide={true}></AgGridColumn>
 
                                             </AgGridReact >}

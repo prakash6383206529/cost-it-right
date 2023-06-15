@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, } from 'reactstrap';
-import { required, maxLength6, maxLength80, checkWhiteSpaces, minLength10, alphaNumeric, maxLength71, maxLength5, acceptAllExceptSingleSpecialCharacter, postiveNumber, maxLength12, checkSpacesInString, postiveNumberForPlantCode, number } from "../../../helper/validation";
+import { required, maxLength6, maxLength80, checkWhiteSpaces, minLength10, alphaNumeric, maxLength71, maxLength5, acceptAllExceptSingleSpecialCharacter, postiveNumber, maxLength12, checkSpacesInString, postiveNumberForPlantCode, number, maxLength4 } from "../../../helper/validation";
 import { userDetails, loggedInUserId } from "../../../helper/auth";
 import { focusOnError, renderText, renderTextInputField, searchableSelect } from "../../layout/FormInputs";
 import { createPlantAPI, getPlantUnitAPI, updatePlantAPI, getComapanySelectList } from '../actions/Plant';
@@ -384,7 +384,7 @@ class AddZBCPlant extends Component {
                       name={"PlantCode"}
                       type="text"
                       placeholder={isEditFlag ? '-' : "Enter"}
-                      validate={[required, checkWhiteSpaces, checkSpacesInString, postiveNumberForPlantCode]}
+                      validate={[required, checkWhiteSpaces, checkSpacesInString, postiveNumberForPlantCode, maxLength4]}
                       component={renderText}
                       required={true}
                       className=""

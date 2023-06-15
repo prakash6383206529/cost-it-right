@@ -50,7 +50,6 @@ const allInputFieldsName = ['TechnologyId',
   'RawMaterialGradeId',
   'RawMaterialSpecificationId',
   'CategoryId',
-  'Code',
   'SourceSupplierPlantId',
   'DestinationPlant',
   "UnitOfMeasurementId",
@@ -177,7 +176,7 @@ class AddRMDomestic extends Component {
       this.props.getPlantSelectListByType(ZBC, () => { })
       this.props.getClientSelectList(() => { })
     }
-    if (!this.state.isViewFlag && initialConfiguration.IsMasterApprovalAppliedConfigure) {
+    if (!this.state.isViewFlag && initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(RM_MASTER_ID) === true) {
       this.props.getUsersMasterLevelAPI(loggedInUserId(), RM_MASTER_ID, (res) => {
         setTimeout(() => {
           this.commonFunction()
@@ -191,7 +190,7 @@ class AddRMDomestic extends Component {
     if (this.props.fieldsObj !== prevProps.fieldsObj) {
       this.calculateNetCost()
     }
-    if ((prevState?.costingTypeId !== this.state.costingTypeId) && initialConfiguration.IsMasterApprovalAppliedConfigure) {
+    if ((prevState?.costingTypeId !== this.state.costingTypeId) && initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(RM_MASTER_ID) === true) {
       this.commonFunction()
     }
   }
@@ -1034,9 +1033,9 @@ class AddRMDomestic extends Component {
       return false
     }
 
-    if ((Number(fieldsObj.BasicRate) < Number(fieldsObj.ScrapRate)) || (fieldsObj.JaliScrapCost ? ((Number(fieldsObj.JaliScrapCost) + Number(checkForNull(fieldsObj.CircleScrapCost))) > Number(fieldsObj.BasicRate)) : false) || (fieldsObj.ForgingScrap ? ((Number(fieldsObj.ForgingScrap) + Number(checkForNull(fieldsObj.MachiningScrap))) > Number(fieldsObj.BasicRate)) : false)) {
+    if ((Number(fieldsObj.BasicRate) <= Number(fieldsObj.ScrapRate)) || (Number(fieldsObj.BasicRate) <= Number(fieldsObj.JaliScrapCost)) || (Number(fieldsObj.BasicRate) <= Number(fieldsObj.CircleScrapCost)) || (Number(fieldsObj.BasicRate) <= Number(fieldsObj.ForgingScrap)) || (Number(fieldsObj.BasicRate) <= Number(fieldsObj.MachiningScrap))) {
       this.setState({ setDisable: false })
-      Toaster.warning("Scrap rate should not be greater than basic rate")
+      Toaster.warning("Scrap rate/cost should not be greater than or equal to the basic rate.")
       return false
     }
     this.setState({ isVendorNameNotSelected: false })
@@ -1306,6 +1305,8 @@ class AddRMDomestic extends Component {
                               <input
                                 type="radio"
                                 name="costingHead"
+                                className='zero-based'
+                                id='zeroBased'
                                 checked={
                                   costingTypeId === ZBCTypeId ? true : false
                                 }
@@ -1320,6 +1321,8 @@ class AddRMDomestic extends Component {
                               <input
                                 type="radio"
                                 name="costingHead"
+                                className='vendor-based'
+                                id='vendorBased'
                                 checked={
                                   costingTypeId === VBCTypeId ? true : false
                                 }
@@ -1334,6 +1337,8 @@ class AddRMDomestic extends Component {
                               <input
                                 type="radio"
                                 name="costingHead"
+                                className='customer-based'
+                                id='customerBased'
                                 checked={
                                   costingTypeId === CBCTypeId ? true : false
                                 }
