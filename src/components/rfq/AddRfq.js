@@ -107,8 +107,8 @@ function AddRfq(props) {
 
     useEffect(() => {
         const { vbcVendorGrid } = props;
-        dispatch(getRawMaterialNameChild('', () => { }))
         dispatch(getPlantSelectListByType(ZBC, () => { }))
+        dispatch(getRawMaterialNameChild(() => { }))
         // dispatch(getNfrSelectList(() => { }))
         let tempArr = [];
         vbcVendorGrid && vbcVendorGrid.map(el => {
