@@ -9004,16 +9004,17 @@ table.group-process-table {
   background-color: #fff;
 }
 
-@for $i from 1 through 1000 {
-  [row-id~="#{($i * 5) - 1}"] {
-    @for $j from 0 through 11 {
+.rfq-part-list {
+  @for $i from 1 through 1000 {
+    [row-id~="#{($i * 5) - 1}"] {
+      @for $j from 0 through 11 {
 
-      [col-id="PartNumber"],
-      [aria-colindex="#{$j}"] {
-        border-bottom: 1px solid $agGridBorder !important;
+        [col-id="PartNumber"],
+        [aria-colindex="#{$j}"] {
+          border-bottom: 1px solid $agGridBorder !important;
+        }
       }
     }
-
   }
 }
 
@@ -9043,6 +9044,7 @@ table.group-process-table {
 
 .table-footer {
   background-color: $tableFooterBackground;
+  font-weight: 500 !important;
 }
 
 div[col-id="ApprovalNumber"] {

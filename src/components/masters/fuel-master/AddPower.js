@@ -934,7 +934,7 @@ class AddPower extends Component {
         isEditIndex: true,
         isEditSEBIndex: false,
         source: { label: tempData.SourcePowerType, value: tempData.SourcePowerType },
-        UOM: (UOMObj && UOMObj !== undefined && tempData.SourcePowerType === GENERATOR_DIESEL) ? { label: UOMObj.Text, value: UOMObj.Value } : [],
+        UOM: (UOMObj && UOMObj !== undefined && tempData.SourcePowerType === GENERATOR_DIESEL) ? { label: UOMObj.Display, value: UOMObj.Value } : [],
       }, () => {
         this.props.change('AssetCost', tempData.AssetCost)
         this.props.change('AnnualCost', tempData.AnnualCost)
