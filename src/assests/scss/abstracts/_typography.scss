@@ -1,41 +1,48 @@
 @import "./variable";
 
+
+@function calculatePixels($iterate, $value) {
+    $cal : $iterate * $value !important;
+    @return $cal;
+}
+
 @for $i from 0 through 12 {
+
     .mr-#{$i} {
-        margin-right: $i * 0.25rem;
+        margin-right: calculatePixels($i, 0.25rem);
     }
 
     .ml-#{$i} {
-        margin-left: $i * 0.25rem;
+        margin-left: calculatePixels($i, 0.25rem);
     }
 
     .ml-n#{$i} {
-        margin-left: $i * -0.25rem;
+        margin-left: calculatePixels($i, -0.25rem)
     }
 
     .mr-n#{$i} {
-        margin-right: $i * -0.25rem;
+        margin-right: calculatePixels($i, -0.25rem)
     }
 
     .pr-#{$i} {
-        padding-right: $i * 0.25rem;
+        padding-right: calculatePixels($i, 0.25rem);
     }
 
     .pl-#{$i} {
-        padding-left: $i * 0.25rem;
+        padding-left: calculatePixels($i, 0.25rem);
     }
 
     .col-md-#{$i} {
-        flex: 0 0 $i * 8.33%;
-        width: $i * 8.33%;
+        flex: 0 0 calculatePixels($i, 8.33%);
+        width: calculatePixels($i, 8.33%);
     }
 
     .mt#{$i} {
-        margin-top: #{$i}px;
+        margin-top: #{$i}px !important;
     }
 
     .mr#{$i} {
-        margin-right: #{$i}px;
+        margin-right: #{$i}px !important;
     }
 }
 
@@ -45,8 +52,8 @@ $base: 20px;
 $max: 150;
 
 @for $i from 0 through $max {
-    $width: $i * $base;
-    $customWidth: $i * 2px;
+    $width: $i * $base !important;
+    $customWidth: $i * 2px !important;
 
     .layout-width-#{$width} {
         width: $width;
