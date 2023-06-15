@@ -100,6 +100,7 @@ function AddRfq(props) {
     const [rmgrade, setRMGrade] = useState([])
     const [state, setState] = useState(true)
     const [rmspecification, setRMSpecification] = useState([])
+    const [deleteToggle, setDeleteToggle] = useState(false)
     const rawMaterialNameSelectList = useSelector(state => state.material.rawMaterialNameSelectList);
     const gradeSelectList = useSelector(state => state.material.gradeSelectList);
     const rmSpecification = useSelector(state => state.comman.rmSpecification);
@@ -123,6 +124,13 @@ function AddRfq(props) {
             dispatch(setRFQBulkUpload([]))
         }
     }, []);
+
+    useEffect(() => {
+        const filteredArray = selectedparts.filter((obj) => {
+            return obj.value !== deleteToggle?.rowData.PartId;
+        });
+        setSelectedParts(filteredArray)
+    }, [deleteToggle])
 
     useEffect(() => {
         let tempp = _.unionBy(partList, checkRFQPartBulkUpload?.SuccessfulRecord, 'PartNumber');
@@ -309,12 +317,9 @@ function AddRfq(props) {
     }
 
     const deleteItemPartTable = (rowData, final) => {
-        const filteredArray = selectedparts.filter((obj) => {
-            return obj.value !== rowData.value;
-        });
-        setSelectedParts(filteredArray)
         let arr = final && final.filter(item => item.PartNo !== rowData?.PartNo)
         setPartList(arr)
+        setDeleteToggle({ deleteToggle: !deleteToggle, rowData: rowData })
         onResetPartNoTable()
     }
 
@@ -1297,7 +1302,7 @@ function AddRfq(props) {
                                             </button>}
                                         </Col>
                                     </Row>
-                                    <div>
+                                    <div className='rfq-part-list'>
                                         {showTooltip && <Tooltip className="rfq-tooltip-left" placement={"top"} isOpen={viewTooltip} toggle={tooltipToggle} target={"quantity-tooltip"} >{"To add the quantity please double click on the field."}</Tooltip>}
                                         {!loader ? <div className={`ag-grid-react`}>
                                             <Row>
