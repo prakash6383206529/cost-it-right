@@ -195,11 +195,11 @@ function TabDiscountOther(props) {
       Array.isArray(otherCostArray) && otherCostArray.map(item => {
         let data1 = {
           "Type": 'Other',
-          "ApplicabilityType": item.OtherCostApplicability,
-          "ApplicabilityIdRef": item.OtherCostApplicabilityId,
-          "Description": item.OtherCostDescription,
-          "NetCost": item.AnyOtherCost,
-          "Value": item.PercentageOtherCost,
+          "ApplicabilityType": item?.OtherCostApplicability,
+          "ApplicabilityIdRef": item?.OtherCostApplicabilityId,
+          "Description": item?.OtherCostDescription,
+          "NetCost": item?.AnyOtherCost,
+          "Value": item?.PercentageOtherCost,
         }
         otherCostFinalArray.push(data1)
       })
@@ -207,8 +207,8 @@ function TabDiscountOther(props) {
       let discountArray = [
         {
           "Type": 'Discount',
-          "ApplicabilityType": discountCostApplicability.label,
-          "ApplicabilityIdRef": discountCostApplicability.value,
+          "ApplicabilityType": discountCostApplicability?.label,
+          "ApplicabilityIdRef": discountCostApplicability?.value,
           "Description": '',
           "NetCost": DiscountCostData?.HundiOrDiscountValue,
           "Value": getValues('HundiOrDiscountPercentage'),
@@ -218,16 +218,16 @@ function TabDiscountOther(props) {
 
 
       let data = {
-        "CostingId": costData.CostingId,
-        "PartId": costData.PartId,
-        "PartNumber": costData.PartNumber,
-        "NetPOPrice": netPOPrice,
-        "TotalCost": netPOPrice,
+        "CostingId": costData?.CostingId,
+        "PartId": costData?.PartId,
+        "PartNumber": costData?.PartNumber,
+        "NetPOPrice": checkForNull(netPOPrice),
+        "TotalCost": checkForNull(netPOPrice),
         "LoggedInUserId": loggedInUserId(),
         "EffectiveDate": CostingEffectiveDate,
-        "BasicRate": netPOPrice - (totalNpvCost + totalConditionCost),
-        "CurrencyId": currency.value,
-        "Currency": currency.label,
+        "BasicRate": checkForNull(netPOPrice) - (checkForNull(totalNpvCost) + checkForNull(totalConditionCost)),
+        "CurrencyId": currency?.value,
+        "Currency": currency?.label,
         "IsChangeCurrency": IsCurrencyChange,
         "NetPOPriceInOtherCurrency": netPoPriceCurrencyState,
         "CurrencyExchangeRate": CurrencyExchangeRate,
@@ -235,23 +235,23 @@ function TabDiscountOther(props) {
 
         "CostingPartDetails": {
 
-          "CostingDetailId": costData.CostingId,
-          "PartId": costData.PartId,
+          "CostingDetailId": costData?.CostingId,
+          "PartId": costData?.PartId,
           "PartTypeId": "00000000-0000-0000-0000-000000000000",
-          "Type": costData.VendorType,
-          "PartNumber": costData.PartNumber,
-          "PartName": costData.PartName,
+          "Type": costData?.VendorType,
+          "PartNumber": costData?.PartNumber,
+          "PartName": costData?.PartName,
           "Quantity": 1,
           "IsOpen": true,
           "IsPrimary": true,
           "Sequence": '0',
           "NetDiscountsCost": DiscountCostData?.HundiOrDiscountValue,
-          "TotalCost": netPOPrice,
+          "TotalCost": checkForNull(netPOPrice),
           "NetOtherCost": DiscountCostData?.AnyOtherCost,
           "OtherCostDetails": otherCostFinalArray,
           "DiscountCostDetails": discountArray,
-          "NetNpvCost": totalNpvCost,
-          "NetConditionCost": totalConditionCost,
+          "NetNpvCost": checkForNull(totalNpvCost),
+          "NetConditionCost": checkForNull(totalConditionCost),
         },
         "Attachements": updatedFiles,
         "IsChanged": true,
@@ -745,11 +745,11 @@ function TabDiscountOther(props) {
     otherCostArray && otherCostArray.map(item => {
       let data1 = {
         "Type": 'Other',
-        "ApplicabilityType": item.OtherCostApplicability,
-        "ApplicabilityIdRef": item.OtherCostApplicabilityId,
-        "Description": item.OtherCostDescription,
-        "NetCost": item.AnyOtherCost,
-        "Value": item.PercentageOtherCost,
+        "ApplicabilityType": item?.OtherCostApplicability,
+        "ApplicabilityIdRef": item?.OtherCostApplicabilityId,
+        "Description": item?.OtherCostDescription,
+        "NetCost": item?.AnyOtherCost,
+        "Value": item?.PercentageOtherCost,
 
       }
       otherCostFinalArray.push(data1)
@@ -758,10 +758,10 @@ function TabDiscountOther(props) {
     let discountArray = [
       {
         "Type": 'Discount',
-        "ApplicabilityType": discountCostApplicability.label,
-        "ApplicabilityIdRef": discountCostApplicability.value,
+        "ApplicabilityType": discountCostApplicability?.label,
+        "ApplicabilityIdRef": discountCostApplicability?.value,
         "Description": '',
-        "NetCost": DiscountCostData.HundiOrDiscountValue,
+        "NetCost": DiscountCostData?.HundiOrDiscountValue,
         "Value": getValues('HundiOrDiscountPercentage'),
 
       }
@@ -769,16 +769,16 @@ function TabDiscountOther(props) {
 
 
     let data = {
-      "CostingId": costData.CostingId,
-      "PartId": costData.PartId,
-      "PartNumber": costData.PartNumber,
-      "NetPOPrice": netPOPrice,
-      "TotalCost": netPOPrice,
+      "CostingId": costData?.CostingId,
+      "PartId": costData?.PartId,
+      "PartNumber": costData?.PartNumber,
+      "NetPOPrice": checkForNull(netPOPrice),
+      "TotalCost": checkForNull(netPOPrice),
       "LoggedInUserId": loggedInUserId(),
       "EffectiveDate": CostingEffectiveDate,
-      "BasicRate": netPOPrice - (totalNpvCost + totalConditionCost),
-      "CurrencyId": currency.value,
-      "Currency": currency.label,
+      "BasicRate": checkForNull(netPOPrice) - (checkForNull(totalNpvCost) + checkForNull(totalConditionCost)),
+      "CurrencyId": currency?.value,
+      "Currency": currency?.label,
       "IsChangeCurrency": IsCurrencyChange,
       "NetPOPriceInOtherCurrency": netPoPriceCurrencyState,
       "CurrencyExchangeRate": CurrencyExchangeRate,
@@ -786,23 +786,23 @@ function TabDiscountOther(props) {
 
       "CostingPartDetails": {
 
-        "CostingDetailId": costData.CostingId,
-        "PartId": costData.PartId,
+        "CostingDetailId": costData?.CostingId,
+        "PartId": costData?.PartId,
         "PartTypeId": "00000000-0000-0000-0000-000000000000",
-        "Type": costData.VendorType,
-        "PartNumber": costData.PartNumber,
-        "PartName": costData.PartName,
+        "Type": costData?.VendorType,
+        "PartNumber": costData?.PartNumber,
+        "PartName": costData?.PartName,
         "Quantity": 1,
         "IsOpen": true,
         "IsPrimary": true,
         "Sequence": '0',
-        "NetDiscountsCost": DiscountCostData.HundiOrDiscountValue,
-        "TotalCost": netPOPrice,
-        "NetOtherCost": DiscountCostData.AnyOtherCost,
+        "NetDiscountsCost": DiscountCostData?.HundiOrDiscountValue,
+        "TotalCost": checkForNull(netPOPrice),
+        "NetOtherCost": DiscountCostData?.AnyOtherCost,
         "OtherCostDetails": otherCostFinalArray,
         "DiscountCostDetails": discountArray,
-        "NetNpvCost": totalNpvCost,
-        "NetConditionCost": totalConditionCost,
+        "NetNpvCost": checkForNull(totalNpvCost),
+        "NetConditionCost": checkForNull(totalConditionCost),
       },
       "Attachements": updatedFiles
     }
