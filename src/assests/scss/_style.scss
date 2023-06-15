@@ -1137,8 +1137,8 @@ button.user-btn.pull-right {
 .content-page .cr-subtabs-head.nav-tabs .nav-link:hover {
   border-top: #d62c8c 2px solid;
   border-radius: 0;
-  border-bottom: 0;
-  background-color: #fff;
+  border-bottom: 0 !important;
+  background-color: #fff !important;
 }
 
 //  START Forging costing calculator
