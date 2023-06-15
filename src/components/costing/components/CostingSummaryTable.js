@@ -987,9 +987,9 @@ const CostingSummaryTable = (props) => {
     }
 
     viewCostingData && viewCostingData.map((item) => {
-      item.otherDiscountApplicablity = Array.isArray(item?.CostingPartDetails?.DiscountCostDetails) ? item?.CostingPartDetails?.DiscountCostDetails[0].ApplicabilityType : ''
-      item.otherDiscountValuePercent = Array.isArray(item?.CostingPartDetails?.DiscountCostDetails) ? item?.CostingPartDetails?.DiscountCostDetails[0].Value : ''
-      item.otherDiscountCost = Array.isArray(item?.CostingPartDetails?.DiscountCostDetails) ? item?.CostingPartDetails?.DiscountCostDetails[0].NetCost : ''
+      item.otherDiscountApplicablity = Array.isArray(item?.CostingPartDetails?.DiscountCostDetails) ? item?.CostingPartDetails?.DiscountCostDetails[0]?.ApplicabilityType : ''
+      item.otherDiscountValuePercent = Array.isArray(item?.CostingPartDetails?.DiscountCostDetails) ? item?.CostingPartDetails?.DiscountCostDetails[0]?.Value : ''
+      item.otherDiscountCost = Array.isArray(item?.CostingPartDetails?.DiscountCostDetails) ? item?.CostingPartDetails?.DiscountCostDetails[0]?.NetCost : ''
     })
 
     let masterDataArray = []
@@ -2028,9 +2028,9 @@ const CostingSummaryTable = (props) => {
                                       <span className="d-inline-block ">{"Cost"}</span>
                                     </div>
                                     <div className={`d-grid ${isApproval && viewCostingData?.length > 1 && highlightCostingSummaryValue(viewCostingData[0]?.otherDiscountValue.discountValue, viewCostingData[1]?.otherDiscountValue.discountValue)}`}>
-                                      <span className="d-inline-block small-grey-text">{data?.CostingHeading !== VARIANCE && data?.CostingPartDetails.DiscountCostDetails[0].ApplicabilityType}</span>
-                                      <span className="d-inline-block small-grey-text">{data?.CostingHeading !== VARIANCE && <span title={checkForDecimalAndNull(data?.CostingPartDetails.DiscountCostDetails[0].Value, initialConfiguration.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.CostingPartDetails.DiscountCostDetails[0].Value, initialConfiguration.NoOfDecimalForPrice)}</span>}</span>
-                                      <span className="d-inline-block small-grey-text">{data?.CostingHeading !== VARIANCE ? <span title={checkForDecimalAndNull(data?.CostingPartDetails.DiscountCostDetails[0].NetCost, initialConfiguration.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.CostingPartDetails.DiscountCostDetails[0].NetCost, initialConfiguration.NoOfDecimalForPrice)}</span> : ''}</span>
+                                      <span className="d-inline-block small-grey-text">{data?.CostingHeading !== VARIANCE && data?.CostingPartDetails.DiscountCostDetails[0]?.ApplicabilityType}</span>
+                                      <span className="d-inline-block small-grey-text">{data?.CostingHeading !== VARIANCE && <span title={checkForDecimalAndNull(data?.CostingPartDetails.DiscountCostDetails[0]?.Value, initialConfiguration.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.CostingPartDetails.DiscountCostDetails[0]?.Value, initialConfiguration.NoOfDecimalForPrice)}</span>}</span>
+                                      <span className="d-inline-block small-grey-text">{data?.CostingHeading !== VARIANCE ? <span title={checkForDecimalAndNull(data?.CostingPartDetails.DiscountCostDetails[0]?.NetCost, initialConfiguration.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.CostingPartDetails.DiscountCostDetails[0]?.NetCost, initialConfiguration.NoOfDecimalForPrice)}</span> : ''}</span>
                                     </div>
                                   </td>
                                   : ""
