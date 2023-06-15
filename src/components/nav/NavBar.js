@@ -219,6 +219,8 @@ class SideBar extends Component {
         return this.renderUser(module, LandingPageURL);
       case "Audit":
         return this.renderAudit(module, LandingPageURL);
+      case "NFR":
+        return this.renderNFR(module, LandingPageURL);
       case "RFQ":
         if (getConfigurationKey().IsRFQConfigured) {
           return this.renderRFQ(module, LandingPageURL);
