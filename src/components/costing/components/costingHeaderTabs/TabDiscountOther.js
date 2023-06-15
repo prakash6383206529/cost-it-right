@@ -202,9 +202,11 @@ function TabDiscountOther(props) {
           "Type": 'Other',
           "ApplicabilityType": item?.OtherCostApplicability,
           "ApplicabilityIdRef": item?.OtherCostApplicabilityId,
+          "ApplicabilityCost": item?.ApplicabilityCost,
           "Description": item?.OtherCostDescription,
           "NetCost": item?.AnyOtherCost,
           "Value": item?.PercentageOtherCost,
+          "CRMHead": item?.CRMHead
         }
         otherCostFinalArray.push(data1)
       })
@@ -304,6 +306,8 @@ function TabDiscountOther(props) {
               obj.OtherCostApplicability = item.ApplicabilityType
               obj.PercentageOtherCost = item.Value ? item.Value : '-'
               obj.AnyOtherCost = item.NetCost
+              obj.ApplicabilityCost = item?.ApplicabilityCost
+              obj.CRMHead = item?.CRMHead
               temp.push(obj)
             })
 
@@ -722,11 +726,12 @@ function TabDiscountOther(props) {
       let data1 = {
         "Type": 'Other',
         "ApplicabilityType": item?.OtherCostApplicability,
+        "ApplicabilityCost": item?.ApplicabilityCost,
         "ApplicabilityIdRef": item?.OtherCostApplicabilityId,
         "Description": item?.OtherCostDescription,
         "NetCost": item?.AnyOtherCost,
         "Value": item?.PercentageOtherCost,
-
+        "CRMHead": item?.CRMHead
       }
       otherCostFinalArray.push(data1)
     })

@@ -2496,6 +2496,24 @@ export const statusOptions = _.sortBy([
   // { label: "SendForApproval", value: "7" },
 ], ({ label }) => label.toLowerCase());
 
+export const CRMHeads = [
+  { label: "Net Sales", value: 1 },
+  { label: "Consumption", value: 2 },
+  { label: "Labour Cost", value: 3 },
+  { label: "Manufacturing Expenses", value: 4 },
+  { label: "Office Expenses", value: 5 },
+  { label: "Repairs Expenses", value: 6 },
+  { label: "Selling & Distribution Expenses", value: 7 },
+  { label: "Common Expenses", value: 8 },
+  { label: "Staff Cost", value: 9 },
+  { label: "EBIDTA", value: 10 },
+  { label: "Finance Cost", value: 11 },
+  { label: "Depriciation", value: 12 },
+  { label: "PBT", value: 13 },
+  { label: "Amortization", value: 14 },
+
+]
+
 
 //CONSTANTS FOR COSTING HEAD
 export const ZBCTypeId = Number(reactLocalStorage.getObject('CostingHeadsListShortForm')[ZBC])
