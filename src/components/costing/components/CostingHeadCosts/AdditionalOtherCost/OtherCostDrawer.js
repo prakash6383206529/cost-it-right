@@ -50,7 +50,9 @@ function OtherCostDrawer(props) {
     })
 
     useEffect(() => {
-        findApplicabilityCost()
+        if (!CostingViewMode) {
+            findApplicabilityCost()
+        }
     }, [fieldValues])
 
     /**
@@ -128,9 +130,15 @@ function OtherCostDrawer(props) {
     }
 
     const onSubmit = data => {
+        if (isEdit) {
+            updateRow()
+        } else {
+            addRow()
+        }
+    }
 
+    const onFinalSubmit = () => {
         props.closeDrawer('submit', otherCostTotal, gridData)
-
     }
 
     const validation = () => {
@@ -149,7 +157,24 @@ function OtherCostDrawer(props) {
             Toaster.warning("Please fill all details")
             return true
         } else {
-            return false
+
+            let OtherCostDescription = getValues('OtherCostDescription')
+            let OtherCostApplicability = getValues('OtherCostApplicability')?.label
+            let isDuplicate = false
+
+            gridData && gridData.map((item) => {
+                if (String(item.OtherCostDescription) === String(OtherCostDescription) && String(item.OtherCostApplicability) === String(OtherCostApplicability)) {
+                    isDuplicate = true
+                }
+            })
+
+            if (isDuplicate) {
+                Toaster.warning("Duplicate entries are not allowed")
+                return true
+
+            } else {
+                return false
+            }
         }
     }
 
@@ -225,7 +250,7 @@ function OtherCostDrawer(props) {
         setValue('PercentageOtherCost', editObj.PercentageOtherCost)
         setValue('OtherCostDescription', editObj.OtherCostDescription)
         setValue('AnyOtherCost', editObj.AnyOtherCost)
-        setOtherCostType({ label: editObj.OtherCostType, value: editObj.OtherCostType })
+        setOtherCostType({ label: editObj.OtherCostApplicability !== 'Fixed' ? 'Percentage' : editObj.OtherCostApplicability, value: editObj.OtherCostApplicability !== 'Fixed' ? 'Percentage' : editObj.OtherCostApplicability })
         setOtherCostApplicability({ label: editObj.OtherCostApplicability, value: editObj.OtherCostApplicabilityId })
         setEditIndex(index)
         setIsEdit(true)
@@ -243,7 +268,7 @@ function OtherCostDrawer(props) {
 
 
     const findApplicabilityCost = () => {
-        const ConversionCostForCalculation = costData.IsAssemblyPart ? checkForNull(headerCosts.NetConversionCost) - checkForNull(headerCosts.TotalOtherOperationCostPerAssembly) : headerCosts.ProcessCostTotal + headerCosts.OperationCostTotal
+        const ConversionCostForCalculation = costData.IsAssemblyPart ? checkForNull(headerCosts?.NetConversionCost) - checkForNull(headerCosts?.TotalOtherOperationCostPerAssembly) : headerCosts?.ProcessCostTotal + headerCosts?.OperationCostTotal
         const RMBOPCC = headerCosts.NetBoughtOutPartCost + headerCosts.NetRawMaterialsCost + ConversionCostForCalculation
 
         const RMBOP = headerCosts.NetRawMaterialsCost + headerCosts.NetBoughtOutPartCost;
@@ -324,9 +349,9 @@ function OtherCostDrawer(props) {
                                         Controller={Controller}
                                         control={control}
                                         register={register}
-                                        mandatory={false}
+                                        mandatory={true}
                                         rules={{
-                                            required: false,
+                                            required: true,
                                             validate: { checkWhiteSpaces, hashValidation },
                                             maxLength: STRINGMAXLENGTH
                                         }}
@@ -339,24 +364,6 @@ function OtherCostDrawer(props) {
                                     />
                                 </Col>
 
-                                {/* <Col md="3">
-                                    <SearchableSelectHookForm
-                                        label={"Other Cost Type"}
-                                        name={"OtherCostType"}
-                                        placeholder={"Select"}
-                                        Controller={Controller}
-                                        control={control}
-                                        rules={{ required: false }}
-                                        register={register}
-                                        defaultValue={otherCostType.length !== 0 ? otherCostType : ""}
-                                        options={renderListing("OtherCostType")}
-                                        mandatory={false}
-                                        handleChange={handleOtherCostTypeChange}
-                                        errors={errors.OtherCostType}
-                                        disabled={CostingViewMode ? true : false}
-                                    />
-
-                                </Col> */}
 
                                 {
                                     <Col md="4">
@@ -366,15 +373,14 @@ function OtherCostDrawer(props) {
                                             placeholder={'Select'}
                                             Controller={Controller}
                                             control={control}
-                                            rules={{ required: false }}
+                                            rules={{ required: true }}
                                             register={register}
                                             defaultValue={otherCostApplicability.length !== 0 ? otherCostApplicability : ''}
                                             options={renderListing('Applicability')}
-                                            mandatory={false}
+                                            mandatory={true}
                                             disabled={CostingViewMode ? true : false}
                                             handleChange={handleOherCostApplicabilityChange}
                                             errors={errors.OtherCostApplicability}
-                                        //   buttonCross={resetData("other")}
                                         />
                                     </Col>
                                 }
@@ -386,9 +392,9 @@ function OtherCostDrawer(props) {
                                             Controller={Controller}
                                             control={control}
                                             register={register}
-                                            mandatory={false}
+                                            mandatory={true}
                                             rules={{
-                                                //required: true,
+                                                required: false,
                                                 validate: { number, checkWhiteSpaces, percentageLimitValidation },
                                                 max: {
                                                     value: 100,
@@ -416,9 +422,9 @@ function OtherCostDrawer(props) {
                                         Controller={Controller}
                                         control={control}
                                         register={register}
-                                        mandatory={false}
+                                        mandatory={true}
                                         rules={{
-                                            //required: true,
+                                            required: true,
                                             validate: { number, checkWhiteSpaces, decimalNumberLimit6 },
                                         }}
                                         handleChange={(e) => {
@@ -455,10 +461,10 @@ function OtherCostDrawer(props) {
                                     ) : (
                                         <>
                                             <button
-                                                type="button"
+                                                type="submit"
                                                 className={"user-btn mt30 pull-left"}
                                                 disabled={CostingViewMode}
-                                                onClick={addRow}
+                                            //onClick={addRow}
                                             >
                                                 <div className={"plus"}></div>ADD
                                             </button>
@@ -548,9 +554,10 @@ function OtherCostDrawer(props) {
                                     </button>
 
                                     <button
-                                        type="submit"
+                                        type="button"
                                         className="submit-button save-btn"
                                         disabled={CostingViewMode}
+                                        onClick={onFinalSubmit}
                                     >
                                         <div class="save-icon"></div>
                                         {"Save"}
