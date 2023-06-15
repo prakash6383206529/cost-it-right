@@ -61,14 +61,6 @@ function OtherCostDrawer(props) {
     */
     const renderListing = (label) => {
         const temp = [];
-
-        // if (label === 'Description') {
-        //     dataDescription && dataDescription.map(item => {
-        //         temp.push({ label: item.label, value: item.value })
-        //         return null;
-        //     });
-        //     return temp;
-        // }
         if (label === 'OtherCostType') {
             return [
                 { label: 'Fixed', value: 'Fixed' },
@@ -84,23 +76,6 @@ function OtherCostDrawer(props) {
             return temp;
         }
     }
-
-
-    // const handleOtherCostTypeChange = (newValue) => {
-    //     if (!CostingViewMode) {
-    //         if (newValue && newValue !== '') {
-    //             setOtherCostType(newValue)
-    //             setValue('AnyOtherCost', 0)
-    //             setValue('PercentageOtherCost', 0)
-    //             errors.AnyOtherCost = {}
-    //             errors.PercentageOtherCost = {}
-
-    //         } else {
-    //             setOtherCostType([])
-    //         }
-    //         errors.PercentageOtherCost = {}
-    //     }
-    // }
 
     const handleOherCostApplicabilityChange = (value) => {
 
@@ -131,6 +106,21 @@ function OtherCostDrawer(props) {
 
     const onSubmit = data => {
         if (isEdit) {
+            let OtherCostDescription = getValues('OtherCostDescription')
+            let OtherCostApplicability = getValues('OtherCostApplicability')?.label
+            let isDuplicate = false
+            gridData && gridData.map((item, index) => {
+                if (index !== editIndex) {
+                    if (String(item.OtherCostDescription) === String(OtherCostDescription) && String(item.OtherCostApplicability) === String(OtherCostApplicability)) {
+                        isDuplicate = true
+                    }
+                }
+            })
+
+            if (isDuplicate) {
+                Toaster.warning("Duplicate entries are not allowed")
+                return false
+            }
             updateRow()
         } else {
             addRow()
@@ -168,7 +158,7 @@ function OtherCostDrawer(props) {
                 }
             })
 
-            if (isDuplicate) {
+            if (isDuplicate && !isEdit) {
                 Toaster.warning("Duplicate entries are not allowed")
                 return true
 
@@ -198,13 +188,6 @@ function OtherCostDrawer(props) {
 
     }
 
-    const findValueByApplicabilityLabel = (arr, labelName) => {
-        for (var i = 0; i < arr.length; i++) {
-            if (arr[i].label === labelName) {
-                return arr[i].value;
-            }
-        }
-    }
 
     const updateRow = () => {
         if (validation()) {
@@ -247,7 +230,7 @@ function OtherCostDrawer(props) {
         const editObj = gridData[index]
         setValue('OtherCostType', { label: editObj.OtherCostType, value: editObj.OtherCostType })
         setValue('OtherCostApplicability', { label: editObj.OtherCostApplicability, value: editObj.OtherCostApplicabilityId })
-        setValue('PercentageOtherCost', editObj.PercentageOtherCost)
+        setValue('PercentageOtherCost', editObj.PercentageOtherCost === '-' ? 0 : editObj.PercentageOtherCost)
         setValue('OtherCostDescription', editObj.OtherCostDescription)
         setValue('AnyOtherCost', editObj.AnyOtherCost)
         setOtherCostType({ label: editObj.OtherCostApplicability !== 'Fixed' ? 'Percentage' : editObj.OtherCostApplicability, value: editObj.OtherCostApplicability !== 'Fixed' ? 'Percentage' : editObj.OtherCostApplicability })
@@ -403,7 +386,6 @@ function OtherCostDrawer(props) {
                                             }}
                                             handleChange={(e) => {
                                                 e.preventDefault();
-                                                // handleOtherCostPercentageChange(e);
                                             }}
                                             defaultValue={""}
                                             className=""
@@ -442,9 +424,8 @@ function OtherCostDrawer(props) {
                                     {isEdit ? (
                                         <>
                                             <button
-                                                type="button"
+                                                type="submit"
                                                 className={"btn btn-primary mt30 pull-left mr5"}
-                                                onClick={updateRow}
                                                 disabled={CostingViewMode}
                                             >
                                                 <div className={"plus"}></div>  Update
@@ -464,7 +445,6 @@ function OtherCostDrawer(props) {
                                                 type="submit"
                                                 className={"user-btn mt30 pull-left"}
                                                 disabled={CostingViewMode}
-                                            //onClick={addRow}
                                             >
                                                 <div className={"plus"}></div>ADD
                                             </button>
