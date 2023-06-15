@@ -954,6 +954,14 @@ const CostingSummaryTable = (props) => {
     let costingSummary = []
     let templateObj = viewCostingData[0]?.technologyId === LOGISTICS ? VIEW_COSTING_DATA_LOGISTICS : VIEW_COSTING_DATA
 
+    if (!(getConfigurationKey().IsShowNpvCost)) {
+      delete templateObj.npvCost
+    }
+    if (!(getConfigurationKey().IsBasicRateAndCostingConditionVisible)) {
+      delete templateObj.conditionCost
+      delete templateObj.BasicRate
+    }
+
     if (props?.isRfqCosting) {
       templateObj.costingHeadCheck = 'VBC'
     }
