@@ -1141,14 +1141,50 @@ function TabDiscountOther(props) {
           <Row>
             <Col md="12">
               <div className="shadow-lgg login-formg">
-                <div className='tab-disount-total-cost'>
-                  <span>Total Cost:</span>
-                  <p className='disabled-input-data'>{`${totalCost && totalCost !== undefined ? checkForDecimalAndNull(totalCost, initialConfiguration?.NoOfDecimalForPrice) : 0}`}
-                  </p>
-                  <button type="button" id="overhead-refresh" className={'refresh-icon ml-2'} onClick={() => refreshAllData()}>
-                    <TooltipCustom disabledIcon={true} id="overhead-refresh" tooltipText="Refresh to update Overhead and Profit cost" />
-                  </button>
-                </div>
+                <Row>
+                  <Col md={3}>
+
+                    {(otherCostType.value === 'Percentage' || Object.keys(otherCostType).length === 0) && <TooltipCustom disabledIcon={true} id="other-cost" tooltipText={"Other Cost = Sum of drawer total other cost"} />}
+                    <TextFieldHookForm
+                      label="Other Cost"
+                      name={"AnyOtherCost"}
+                      id="other-cost"
+                      Controller={Controller}
+                      control={control}
+                      register={register}
+                      mandatory={false}
+                      rules={{
+                        //required: true,
+                        validate: { number, checkWhiteSpaces, decimalNumberLimit6 },
+                      }}
+                      handleChange={(e) => {
+                        e.preventDefault();
+                        handleAnyOtherCostChange(e);
+                      }}
+                      defaultValue={""}
+                      className=""
+                      customClassName={"withBorder"}
+                      errors={errors.AnyOtherCost}
+                      disabled={CostingViewMode || otherCostType.value === 'Percentage' || Object.keys(otherCostType).length === 0 ? true : false}
+                    />
+                  </Col>
+                  <Col md={3} className=' pl-0 mt-1 pt-2'> <button
+                    type="button"
+                    className={`${CostingViewMode ? 'View' : 'additional-add'} mt-4 mb-15`}
+                    onClick={() => handleOtherCostdrawer()}
+                    title={CostingViewMode ? 'View Other Cost' : 'Add Other Cost'}
+                  >
+                  </button></Col>
+                  <Col md={6}>
+                    <div className='tab-disount-total-cost mt-4'>
+                      <span >Total Cost:</span>
+                      <TooltipCustom width={"300px"} disabledIcon={true} id={'total-cost-tab-discount'} tooltipText={'Total Cost = Net RM BOP CC + SurfaceTreatment Cost + Overheads&Profit Cost + Packaging&Freight Cost + Tool Cost'} />
+                      <p id={'total-cost-tab-discount'} className='disabled-input-data'>{`${totalCost && totalCost !== undefined ? checkForDecimalAndNull(totalCost, initialConfiguration.NoOfDecimalForPrice) : 0}`}</p>
+                      <button type="button" id="overhead-refresh" className={'refresh-icon ml-2'} onClick={() => refreshAllData()}></button>
+                      <TooltipCustom disabledIcon={true} id="overhead-refresh" tooltipText="Refresh to update Discount, Other cost and PO Price" />
+                    </div>
+                  </Col>
+                </Row>
                 <form
                   noValidate
                   className="form"
