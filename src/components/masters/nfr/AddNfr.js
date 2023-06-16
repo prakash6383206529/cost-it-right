@@ -6,8 +6,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Redirect, useHistory } from 'react-router';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { Col, Row, Table } from 'reactstrap';
-import { getVendorWithVendorCodeSelectList } from '../../../actions/Common';
-import { EMPTY_DATA, EMPTY_GUID, NFRTypeId, searchCount, DRAFT, DRAFTID, REJECTEDID } from '../../../config/constants';
+import { getVendorNameByVendorSelectList, getVendorWithVendorCodeSelectList } from '../../../actions/Common';
+import { EMPTY_DATA, EMPTY_GUID, NFRTypeId, searchCount, DRAFT, DRAFTID, REJECTEDID, VBC_VENDOR_TYPE } from '../../../config/constants';
 
 import { autoCompleteDropdown, costingTypeIdToApprovalTypeIdFunction } from '../../common/CommonFunctions';
 import HeaderTitle from '../../common/HeaderTitle';
@@ -471,7 +471,7 @@ function AddNfr(props) {
         const resultInput = inputValue.slice(0, searchCount)
         if (inputValue?.length >= searchCount && vendor !== resultInput) {
             let res
-            res = await getVendorWithVendorCodeSelectList(resultInput)
+            res = await getVendorNameByVendorSelectList(VBC_VENDOR_TYPE, resultInput)
             setVendor(resultInput)
             let vendorDataAPI = res?.data?.SelectList
             if (inputValue) {
@@ -763,7 +763,8 @@ function AddNfr(props) {
                                                     </td>
                                                     <td rowSpan={item?.data.length} className="table-record">{indexOuter === 0 && item?.status}</td>
                                                 </>
-                                            )}
+                                            )
+                                            }
                                             <td>{dataItem?.label}</td>
 
                                             <td><SearchableSelectHookForm
@@ -786,7 +787,7 @@ function AddNfr(props) {
                                                 <div className={dataItem?.CostingId !== EMPTY_GUID ? dataItem?.SelectedCostingVersion?.Status : ''}>
                                                     {dataItem?.SelectedCostingVersion?.Status ? dataItem?.SelectedCostingVersion?.Status : ''}
                                                 </div>
-                                            </td>
+                                            </td >
                                             <td>{dataItem?.SelectedCostingVersion?.Price}</td>
                                             <td> <div className='action-btn-wrapper pr-2'>
                                                 {(item?.statusId === DRAFTID || item?.statusId === REJECTEDID) && <>
@@ -811,11 +812,13 @@ function AddNfr(props) {
                                     ))}
                                 </React.Fragment>
                             ))}
-                            {rowData.length === 0 && (<tr>
-                                <td colSpan={8} className="text-center"><NoContentFound title={EMPTY_DATA} /></td>
-                            </tr>)}
-                        </tbody>
-                    </Table>
+                            {
+                                rowData.length === 0 && (<tr>
+                                    <td colSpan={8} className="text-center"><NoContentFound title={EMPTY_DATA} /></td>
+                                </tr>)
+                            }
+                        </tbody >
+                    </Table >
                     <Row>
                         <Col md="12" className='text-right'>
                             <button

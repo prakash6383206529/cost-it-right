@@ -7,7 +7,6 @@ import {
   logoutUserAPI, getMenuByUser, getModuleSelectList, getPermissionByUser, getMenu,
   getTopAndLeftMenuData
 } from '../../actions/auth/AuthActions';
-import "./NavBar.scss";
 import { Loader } from "../common/Loader";
 import masterImage from '../../assests/images/list.svg'
 import masterActive from '../../assests/images/masters-active.svg'
@@ -943,6 +942,7 @@ class SideBar extends Component {
                       return this.renderMenus(item.ModuleName, item.LandingPageURL);
                     })}
                 </ul>
+
               </nav>
             </div>
           )

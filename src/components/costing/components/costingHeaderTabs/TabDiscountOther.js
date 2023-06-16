@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, Table, } from 'reactstrap';
 import {
   getDiscountOtherCostTabData, saveDiscountOtherCostTab, fileUploadCosting, fileDeleteCosting,
-  getExchangeRateByCurrency, setDiscountCost, setComponentDiscountOtherItemData, saveAssemblyPartRowCostingCalculation, saveAssemblyBOPHandlingCharge, setDiscountErrors, gridDataAdded, isDiscountDataChange, setNPVData,
+  getExchangeRateByCurrency, setDiscountCost, setComponentDiscountOtherItemData, saveAssemblyPartRowCostingCalculation, saveAssemblyBOPHandlingCharge, setDiscountErrors, gridDataAdded, isDiscountDataChange, setNPVData, setPOPrice,
 } from '../../actions/Costing';
 import { getConditionDetails, getCurrencySelectList, getNpvDetails, saveCostingDetailCondition, saveCostingDetailNpv, } from '../../../../actions/Common';
 import { costingInfoContext, netHeadCostContext, NetPOPriceContext } from '../CostingDetailStepTwo';
@@ -12,7 +12,7 @@ import { calculatePercentage, checkForDecimalAndNull, checkForNull, loggedInUser
 import { SearchableSelectHookForm, TextAreaHookForm, TextFieldHookForm, NumberFieldHookForm } from '../../../layout/HookFormInputs';
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css';
-import { EMPTY_DATA, FILE_URL, NFRTypeId, VBCTypeId } from '../../../../config/constants';
+import { EMPTY_DATA, FILE_URL, NFRTypeId, VBCTypeId, CRMHeads, WACTypeId } from '../../../../config/constants';
 import Toaster from '../../../common/Toaster';
 import { MESSAGES } from '../../../../config/message';
 import DayTime from '../../../common/DayTimeWrapper'
@@ -73,7 +73,7 @@ function TabDiscountOther(props) {
   const [isOpenandClose, setisOpenandClose] = useState(false)
   const [isConditionCostingOpen, setIsConditionCostingOpen] = useState(false)
   const costingHead = useSelector(state => state.comman.costingHead)
-  const partType = IdForMultiTechnology.includes(String(costData?.TechnologyId))
+  const partType = (IdForMultiTechnology.includes(String(costData?.TechnologyId)) || costData.CostingTypeId === WACTypeId)
   const [showWarning, setShowWarning] = useState(false)
   const [isInputLoader, setIsInputLader] = useState(false)
   const [npvTableData, setNpvTableData] = useState([])
@@ -217,7 +217,7 @@ function TabDiscountOther(props) {
           "Description": '',
           "NetCost": DiscountCostData?.HundiOrDiscountValue,
           "Value": getValues('HundiOrDiscountPercentage'),
-
+          "CRMHead": getValues('crmHeadDiscount') ? getValues('crmHeadDiscount').label : '',
         }
       ]
 
@@ -311,6 +311,7 @@ function TabDiscountOther(props) {
 
             setDiscountCostApplicability({ label: costDetail.DiscountCostDetails[0].ApplicabilityType, value: costDetail.DiscountCostDetails[0].ApplicabilityType })
             setValue('DiscountCostApplicability', { label: costDetail.DiscountCostDetails[0].ApplicabilityType, value: costDetail.DiscountCostDetails[0].ApplicabilityType })
+            setValue('crmHeadDiscount', { label: costDetail.DiscountCostDetails[0].CRMHead, value: 1 })
 
             // BELOW CONDITION UPDATES VALUES IN EDIT OR GET MODE
             const discountValues = {
@@ -499,6 +500,24 @@ function TabDiscountOther(props) {
           HundiOrDiscountPercentage: checkForNull(event.target.value)
         })
       }
+    }
+  }
+
+  const onCRMHeadChangeOther = (e) => {
+    if (e) {
+      setDiscountObj({
+        ...discountObj,
+        OtherCRMHead: e?.label
+      })
+    }
+  }
+
+  const onCRMHeadChangeDiscount = (e) => {
+    if (e) {
+      setDiscountObj({
+        ...discountObj,
+        DiscountCRMHead: e?.label
+      })
     }
   }
 
@@ -739,6 +758,7 @@ function TabDiscountOther(props) {
         "Description": '',
         "NetCost": DiscountCostData?.HundiOrDiscountValue,
         "Value": getValues('HundiOrDiscountPercentage'),
+        "CRMHead": getValues('crmHeadDiscount') ? getValues('crmHeadDiscount').label : '',
 
       }
     ]
@@ -917,11 +937,31 @@ function TabDiscountOther(props) {
     }
   }
 
+  const setUpdatednetPoPrice = (data) => {
+    dispatch(setNPVData([]))
+    const sum = data.reduce((acc, obj) => Number(acc) + Number(obj.NpvCost), 0);
+    setTotalNpvCost(sum)
+    dispatch(isDiscountDataChange(true))
+    setDiscountObj({
+      ...discountObj,
+      totalNpvCost: sum
+    })
+
+    if (data) {
+      let obj = {}
+      obj.CostingId = RMCCTabData && RMCCTabData[0]?.CostingId
+      obj.LoggedInUserId = loggedInUserId()
+      obj.NpvDetails = data
+      dispatch(saveCostingDetailNpv(obj, () => { }))
+    }
+  }
+
   const openAndCloseAddNpvDrawer = (type, data = npvTableData) => {
     if (type === 'Open') {
       setisOpenandClose(true)
     } else {
       setisOpenandClose(false)
+      setUpdatednetPoPrice(data)
       setNpvTableData(data)
       dispatch(setNPVData([]))
       const sum = data.reduce((acc, obj) => Number(acc) + Number(obj.NpvCost), 0);
@@ -968,6 +1008,92 @@ function TabDiscountOther(props) {
     }
   }
 
+  function handleInputChanges(quantity, percentage, sumForNPV) {
+    let totalFinal = 0
+
+    if (percentage) {
+      totalFinal = (checkForNull(percentage) / 100) * checkForNull(sumForNPV) * checkForNull(quantity)
+    }
+    return totalFinal
+  }
+
+  const refreshAllData = () => {
+    let finalListCondition = []
+    let tempListCondition = [...conditionTableData]
+
+    tempListCondition && tempListCondition?.map((item) => {
+      let finalValue = 0
+      if (item?.ConditionType === "Fixed") {
+        finalValue = item?.ConditionCost
+      } else if (item?.ConditionType === "Percentage") {
+        finalValue = checkForNull((item?.Percentage) / 100) * checkForNull(getValues('BasicRateINR'))
+      }
+      let tempObject = { ...item, ConditionCost: finalValue }
+      finalListCondition.push(tempObject)
+    })
+    seConditionTableData(finalListCondition)
+    const sum = finalListCondition.reduce((acc, obj) => Number(acc) + Number(obj.ConditionCost), 0);
+
+    if (finalListCondition) {
+      let obj = {}
+      obj.CostingId = RMCCTabData && RMCCTabData[0]?.CostingId
+      obj.LoggedInUserId = loggedInUserId()
+      obj.ConditionsData = finalListCondition
+      dispatch(saveCostingDetailCondition(obj, () => { }))
+    }
+
+    let sumForNPV = getValues('BasicRateINR') + sum
+
+    let finalList = []
+    let tempList = [...npvTableData]
+    let sumNPV = 0
+    tempList && tempList?.map((item) => {
+      let totalFinal = 0
+      let tempObject = { ...item }
+      switch (tempObject?.NpvType) {
+        case "Tool Investment":
+          totalFinal = handleInputChanges(ToolTabData[0]?.CostingPartDetails?.CostingToolCostResponse[0]?.Life, tempObject?.NpvPercentage, sumForNPV)
+          sumNPV = sumNPV + totalFinal
+          tempObject.NpvCost = totalFinal
+          break;
+        case "Additional Investment":
+          totalFinal = handleInputChanges(tempObject?.NpvQuantity, tempObject?.NpvPercentage, sumForNPV)
+          sumNPV = sumNPV + totalFinal
+          tempObject.NpvCost = totalFinal
+          break;
+        case "One Time Investment":
+          totalFinal = handleInputChanges(tempObject?.NpvQuantity, tempObject?.NpvPercentage, sumForNPV)
+          sumNPV = sumNPV + totalFinal
+          tempObject.NpvCost = totalFinal
+          break;
+        default:
+          break;
+      }
+      finalList.push(tempObject)
+    })
+
+    let netPO = sumForNPV + sumNPV
+
+    setTotalConditionCost(sum)
+    setTotalNpvCost(sumNPV)
+    dispatch(isDiscountDataChange(true))
+    setDiscountObj({
+      ...discountObj,
+      totalConditionCost: Number(sum),
+      totalNpvCost: Number(sumNPV)
+    })
+
+    dispatch(setPOPrice(netPO, () => { }))
+    setNpvTableData(finalList)
+
+    if (finalList) {
+      let obj = {}
+      obj.CostingId = RMCCTabData && RMCCTabData[0]?.CostingId
+      obj.LoggedInUserId = loggedInUserId()
+      obj.NpvDetails = finalList
+      dispatch(saveCostingDetailNpv(obj, () => { }))
+    }
+  }
   const handleOtherCostdrawer = () => {
     setOpenCloseOtherCost(true)
   }
@@ -1045,6 +1171,8 @@ function TabDiscountOther(props) {
                       <span >Total Cost:</span>
                       <TooltipCustom width={"300px"} disabledIcon={true} id={'total-cost-tab-discount'} tooltipText={'Total Cost = Net RM BOP CC + SurfaceTreatment Cost + Overheads&Profit Cost + Packaging&Freight Cost + Tool Cost'} />
                       <p id={'total-cost-tab-discount'} className='disabled-input-data'>{`${totalCost && totalCost !== undefined ? checkForDecimalAndNull(totalCost, initialConfiguration.NoOfDecimalForPrice) : 0}`}</p>
+                      <button type="button" id="overhead-refresh" className={'refresh-icon ml-2'} onClick={() => refreshAllData()}></button>
+                      <TooltipCustom disabledIcon={true} id="overhead-refresh" tooltipText="Refresh to update Discount, Other cost and PO Price" />
                     </div>
                   </Col>
                 </Row>
@@ -1054,25 +1182,46 @@ function TabDiscountOther(props) {
                 >
                   <Row>
                     {
-                      <Col md="3">
+                      initialConfiguration.IsShowCRMHead && <Col md="2">
                         <SearchableSelectHookForm
-                          label={'Discount Applicability'}
-                          name={'DiscountCostApplicability'}
-                          placeholder={'Select'}
+                          name={`crmHeadDiscount`}
+                          type="text"
+                          label="CRM Head"
+                          errors={errors.crmHeadDiscount}
                           Controller={Controller}
                           control={control}
-                          rules={{ required: false }}
                           register={register}
-                          defaultValue={discountCostApplicability.length !== 0 ? discountCostApplicability : ''}
-                          options={renderListing('Applicability')}
                           mandatory={false}
-                          disabled={CostingViewMode ? true : false}
-                          handleChange={handleDiscountApplicabilityChange}
-                          errors={errors.DiscountCostApplicability}
-                          buttonCross={resetData('discount')}
+                          rules={{
+                            required: false,
+                          }}
+                          placeholder={'Select'}
+                          options={CRMHeads}
+                          required={false}
+                          handleChange={onCRMHeadChangeDiscount}
+                          disabled={CostingViewMode}
                         />
-                      </Col>
-                    }
+                      </Col>}
+
+                    <Col md="3">
+                      <SearchableSelectHookForm
+                        label={'Discount Applicability'}
+                        name={'DiscountCostApplicability'}
+                        placeholder={'Select'}
+                        Controller={Controller}
+                        control={control}
+                        rules={{ required: false }}
+                        register={register}
+                        defaultValue={discountCostApplicability.length !== 0 ? discountCostApplicability : ''}
+                        options={renderListing('Applicability')}
+                        mandatory={false}
+                        disabled={CostingViewMode ? true : false}
+                        handleChange={handleDiscountApplicabilityChange}
+                        errors={errors.DiscountCostApplicability}
+                        buttonCross={resetData('discount')}
+                      />
+                    </Col>
+
                     {
                       <Col md="3">
                         <TextFieldHookForm

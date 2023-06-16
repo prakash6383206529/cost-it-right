@@ -71,8 +71,6 @@ export const RMDomesticZBC = [
     { label: "Category", value: "Category" }, //*
     { label: "TechnologyName", value: "TechnologyName" }, //*
     { label: "PlantCode", value: "PlantCode" }, //*
-    { label: "PlantName", value: "PlantName" }, //*
-    { label: "VendorName", value: "VendorName" },
     { label: "VendorCode", value: "VendorCode" }, //*
     { label: "HasDifferentSource", value: "HasDifferentSource" },
     { label: "Source", value: "Source" }, //NOUI
@@ -98,9 +96,7 @@ export const RMDomesticZBCTempData = [
         "Category": "STD",
         "TechnologyName": "Sheet Metal",
         "PlantCode": "1511",
-        "PlantName": "1511",
-        "VendorName": "Systematix",
-        "VendorCode": "VP123",
+        "VendorCode": "P123",
         "HasDifferentSource": "Yes",
         "Source": "Tata Steel",
         "SourceLocation": "Jamshedpur",
@@ -123,8 +119,7 @@ export const RMDomesticZBCTempData = [
         "Category": "CTS",
         "TechnologyName": "Sheet Metal",
         "PlantCode": "PC01",
-        "VendorName": "Systematix",
-        "VendorCode": "VP123",
+        "VendorCode": "P123",
         "HasDifferentSource": "No",
         "Source": "Tata Steel",
         "SourceLocation": "Jamshedpur",
@@ -147,8 +142,7 @@ export const RMDomesticZBCTempData = [
         "Category": "CTS",
         "TechnologyName": "Sheet Metal",
         "PlantCode": "PC01",
-        "VendorName": "Systematix",
-        "VendorCode": "VP123",
+        "VendorCode": "P123",
         "HasDifferentSource": "No",
         "Source": "Tata Steel",
         "SourceLocation": "Jamshedpur",
@@ -171,8 +165,7 @@ export const RMDomesticZBCTempData = [
         "Category": "CTS",
         "TechnologyName": "Sheet Metal",
         "PlantCode": "PC01",
-        "VendorName": "Systematix",
-        "VendorCode": "VP123",
+        "VendorCode": "P123",
         "HasDifferentSource": "No",
         "Source": "Tata Steel",
         "SourceLocation": "Jamshedpur",
@@ -199,7 +192,6 @@ export const RMDomesticVBC = [
     { label: "Code", value: "RawMaterialCode" }, //*
     { label: "Category", value: "Category" }, //*
     { label: "TechnologyName", value: "TechnologyName" }, //*
-    { label: "VendorName", value: "VendorName" }, //*
     { label: "VendorCode", value: "VendorCode" }, //NOUI,*
     { label: "PlantCode", value: "PlantCode" }, //NOUI
     { label: "Source", value: "Source" },
@@ -211,8 +203,6 @@ export const RMDomesticVBC = [
     { label: "FreightCost", value: "FreightCost" }, //*
     { label: "ShearingCost", value: "ShearingCost" }, //*
     { label: "CircleSrapCost", value: "CircleSrapCost" }, //*
-    { label: 'DestinationPlantName', value: 'DestinationPlantName', }, //*
-    { label: 'DestinationPlantCode', value: 'DestinationPlantCode', }, //*
     { label: "EffectiveDate", value: "EffectiveDate" }, //*
     { label: "Remark", value: "Remark" },
 ]
@@ -226,9 +216,8 @@ export const RMDomesticVBCTempData = [
         "RawMaterialCode": "RM-10000001",
         "Category": "STD",
         "TechnologyName": "Sheet Metal",
-        "VendorName": "Systematix",
         "VendorCode": "V123",
-        "PlantCode": "VP123",
+        "PlantCode": "P123",
         "Source": "TATA Steel",
         "SourceLocation": "Jamshedpur",
         "UOM": "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram",
@@ -238,8 +227,6 @@ export const RMDomesticVBCTempData = [
         "FreightCost": "10",
         "ShearingCost": "10",
         "CircleSrapCost": "20",
-        "DestinationPlantName": "Manesar",
-        "DestinationPlantCode": "1032",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         "Remark": "Remark Content",
     },
@@ -251,9 +238,8 @@ export const RMDomesticVBCTempData = [
         "RawMaterialCode": "RM-10000002",
         "Category": "CTS",
         "TechnologyName": "Sheet Metal",
-        "VendorName": "Systematix",
         "VendorCode": "V123",
-        "PlantCode": "VP123",
+        "PlantCode": "P123",
         "Source": "TATA Steel",
         "SourceLocation": "Jamshedpur",
         "UOM": "Gallon/Cubic Centimeter/Cubic Meter/Milliliter/Liter",
@@ -263,8 +249,6 @@ export const RMDomesticVBCTempData = [
         "FreightCost": "10",
         "ShearingCost": "10",
         "CircleSrapCost": "20",
-        "DestinationPlantName": "Manesar",
-        "DestinationPlantCode": "EC1",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         "Remark": "Remark Content",
     },
@@ -276,9 +260,8 @@ export const RMDomesticVBCTempData = [
         "RawMaterialCode": "RM-10000002",
         "Category": "CTS",
         "TechnologyName": "Sheet Metal",
-        "VendorName": "Systematix",
         "VendorCode": "V123",
-        "PlantCode": "VP123",
+        "PlantCode": "P123",
         "Source": "TATA Steel",
         "SourceLocation": "Jamshedpur",
         "UOM": "shot/stroke/Number",
@@ -288,8 +271,6 @@ export const RMDomesticVBCTempData = [
         "FreightCost": "10",
         "ShearingCost": "10",
         "CircleSrapCost": "20",
-        "DestinationPlantName": "Manesar",
-        "DestinationPlantCode": "EC1",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         "Remark": "Remark Content",
     },
@@ -301,9 +282,8 @@ export const RMDomesticVBCTempData = [
         "RawMaterialCode": "RM-10000002",
         "Category": "CTS",
         "TechnologyName": "Sheet Metal",
-        "VendorName": "Systematix",
         "VendorCode": "V123",
-        "PlantCode": "VP123",
+        "PlantCode": "P123",
         "Source": "TATA Steel",
         "SourceLocation": "Jamshedpur",
         "UOM": "micrometer/kilometer/Feet/Inch/Millimeter/Centimeter/Meter",
@@ -313,8 +293,6 @@ export const RMDomesticVBCTempData = [
         "FreightCost": "10",
         "ShearingCost": "10",
         "CircleSrapCost": "20",
-        "DestinationPlantName": "Manesar",
-        "DestinationPlantCode": "EC1",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         "Remark": "Remark Content",
     }
@@ -332,8 +310,6 @@ export const RMImportZBC = [
     { label: "Category", value: "Category" }, //*
     { label: "TechnologyName", value: "TechnologyName" }, //*
     { label: "PlantCode", value: "PlantCode" }, //*
-    { label: "PlantName", value: "PlantName" }, //*
-    { label: "VendorName", value: "VendorName" },
     { label: "VendorCode", value: "VendorCode" }, //NOUI
     { label: "HasDifferentSource", value: "HasDifferentSource" },
     { label: "Source", value: "Source" }, //NOUI
@@ -358,7 +334,6 @@ export const RMDomesticCBCTempData = [
         "RawMaterialCode": "RM-10000001",
         "Category": "STD",
         "TechnologyName": "Sheet Metal",
-        "CustomerName": "Honda",
         "CustomerCode": "C-10008",
         "UOM": "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram",
         "BasicRate": "500",
@@ -367,8 +342,7 @@ export const RMDomesticCBCTempData = [
         "FreightCost": "10",
         "ShearingCost": "10",
         "CircleSrapCost": "20",
-        "DestinationPlantName": "Manesar",
-        "DestinationPlantCode": "1032",
+        "PlantCode": "1032",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         "Remark": "Remark Content",
     },
@@ -379,7 +353,6 @@ export const RMDomesticCBCTempData = [
         "RawMaterialCode": "RM-10000002",
         "Category": "CTS",
         "TechnologyName": "Sheet Metal",
-        "CustomerName": "Honda",
         "CustomerCode": "C-10008",
         "UOM": "Gallon/Cubic Centimeter/Cubic Meter/Milliliter/Liter",
         "BasicRate": "500",
@@ -388,8 +361,7 @@ export const RMDomesticCBCTempData = [
         "FreightCost": "10",
         "ShearingCost": "10",
         "CircleSrapCost": "20",
-        "DestinationPlantName": "Manesar",
-        "DestinationPlantCode": "EC1",
+        "PlantCode": "EC1",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         "Remark": "Remark Content",
     },
@@ -400,7 +372,6 @@ export const RMDomesticCBCTempData = [
         "RawMaterialCode": "RM-10000002",
         "Category": "CTS",
         "TechnologyName": "Sheet Metal",
-        "CustomerName": "Honda",
         "CustomerCode": "C-10008",
         "UOM": "shot/stroke/Number",
         "BasicRate": "500",
@@ -409,8 +380,7 @@ export const RMDomesticCBCTempData = [
         "FreightCost": "10",
         "ShearingCost": "10",
         "CircleSrapCost": "20",
-        "DestinationPlantName": "Manesar",
-        "DestinationPlantCode": "EC1",
+        "PlantCode": "EC1",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         "Remark": "Remark Content",
     },
@@ -421,7 +391,6 @@ export const RMDomesticCBCTempData = [
         "RawMaterialCode": "RM-10000002",
         "Category": "CTS",
         "TechnologyName": "Sheet Metal",
-        "CustomerName": "Honda",
         "CustomerCode": "C-10008",
         "UOM": "micrometer/kilometer/Feet/Inch/Millimeter/Centimeter/Meter",
         "BasicRate": "500",
@@ -430,8 +399,7 @@ export const RMDomesticCBCTempData = [
         "FreightCost": "10",
         "ShearingCost": "10",
         "CircleSrapCost": "20",
-        "DestinationPlantName": "Manesar",
-        "DestinationPlantCode": "EC1",
+        "PlantCode": "EC1",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         "Remark": "Remark Content",
     }
@@ -447,8 +415,7 @@ export const RMImportZBCTempData = [
         "Category": "STD",
         "TechnologyName": "Sheet Metal",
         "PlantCode": "PC01",
-        "VendorName": "Systematix",
-        "VendorCode": "VP123",
+        "VendorCode": "P123",
         "HasDifferentSource": "Yes",
         "Source": "Tata Steel",
         "SourceLocation": "Jamshedpur",
@@ -472,8 +439,7 @@ export const RMImportZBCTempData = [
         "Category": "CTS",
         "TechnologyName": "Sheet Metal",
         "PlantCode": "PC01",
-        "VendorName": "Systematix",
-        "VendorCode": "VP123",
+        "VendorCode": "P123",
         "HasDifferentSource": "No",
         "Source": "Tata Steel",
         "SourceLocation": "Jamshedpur",
@@ -497,8 +463,7 @@ export const RMImportZBCTempData = [
         "Category": "CTS",
         "TechnologyName": "Sheet Metal",
         "PlantCode": "PC01",
-        "VendorName": "Systematix",
-        "VendorCode": "VP123",
+        "VendorCode": "P123",
         "HasDifferentSource": "No",
         "Source": "Tata Steel",
         "SourceLocation": "Jamshedpur",
@@ -522,8 +487,7 @@ export const RMImportZBCTempData = [
         "Category": "CTS",
         "TechnologyName": "Sheet Metal",
         "PlantCode": "PC01",
-        "VendorName": "Systematix",
-        "VendorCode": "VP123",
+        "VendorCode": "P123",
         "HasDifferentSource": "No",
         "Source": "Tata Steel",
         "SourceLocation": "Jamshedpur",
@@ -546,7 +510,6 @@ export const RMDomesticCBC = [
     { label: "Code", value: "RawMaterialCode" }, //*
     { label: "Category", value: "Category" }, //*
     { label: "TechnologyName", value: "TechnologyName" }, //*
-    { label: "CustomerName", value: "CustomerName" }, //*
     { label: "CustomerCode", value: "CustomerCode" }, //NOUI,*
     { label: "UOM", value: "UOM" }, //*
     { label: "BasicRate", value: "BasicRate" }, //*
@@ -555,8 +518,7 @@ export const RMDomesticCBC = [
     { label: "FreightCost", value: "FreightCost" }, //*
     { label: "ShearingCost", value: "ShearingCost" }, //*
     { label: "CircleSrapCost", value: "CircleSrapCost" }, //*
-    { label: 'DestinationPlantName', value: 'DestinationPlantName', }, //*
-    { label: 'DestinationPlantCode', value: 'DestinationPlantCode', }, //*
+    { label: 'PlantCode', value: 'PlantCode', }, //*
     { label: "EffectiveDate", value: "EffectiveDate" }, //*
     { label: "Remark", value: "Remark" },
 ]
@@ -572,7 +534,6 @@ export const RMImportVBC = [
     { label: "Code", value: "RawMaterialCode" }, //*
     { label: "Category", value: "Category" }, //*
     { label: "TechnologyName", value: "TechnologyName" }, //*
-    { label: "VendorName", value: "VendorName" },
     { label: "VendorCode", value: "VendorCode" }, //NOUI
     { label: "PlantCode", value: "PlantCode" }, //NOUI
     { label: "Source", value: "Source" },
@@ -585,8 +546,6 @@ export const RMImportVBC = [
     { label: "FreightCost", value: "FreightCost" }, //*
     { label: "ShearingCost", value: "ShearingCost" }, //*
     { label: "CircleSrapCost", value: "CircleSrapCost" }, //*
-    { label: 'DestinationPlantName', value: 'DestinationPlantName', }, //*
-    { label: 'DestinationPlantCode', value: 'DestinationPlantCode', }, //*
     { label: "EffectiveDate", value: "EffectiveDate" }, //*
     { label: "Remark", value: "Remark" },
 ]
@@ -600,9 +559,8 @@ export const RMImportVBCTempData = [
         "RawMaterialCode": "RM-10000001",
         "Category": "STD",
         "TechnologyName": "Sheet Metal",
-        "VendorName": "Systematix",
         "VendorCode": "V123",
-        "PlantCode": "VP123",
+        "PlantCode": "P123",
         "Source": "TATA Steel",
         "SourceLocation": "Jamshedpur",
         "UOM": "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram",
@@ -613,8 +571,6 @@ export const RMImportVBCTempData = [
         "FreightCost": "10",
         "ShearingCost": "10",
         "CircleSrapCost": "20",
-        "DestinationPlantName": "Manesar",
-        "DestinationPlantCode": "EC1",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         "Remark": "Remark Text",
     },
@@ -626,9 +582,8 @@ export const RMImportVBCTempData = [
         "RawMaterialCode": "RM-10000002",
         "Category": "CTS",
         "TechnologyName": "Sheet Metal",
-        "VendorName": "Systematix",
         "VendorCode": "V123",
-        "PlantCode": "VP123",
+        "PlantCode": "P123",
         "Source": "TATA Steel",
         "SourceLocation": "Jamshedpur",
         "UOM": "Gallon/Cubic Centimeter/Cubic Meter/Milliliter/Liter",
@@ -639,8 +594,6 @@ export const RMImportVBCTempData = [
         "FreightCost": "10",
         "ShearingCost": "10",
         "CircleSrapCost": "20",
-        "DestinationPlantName": "Manesar",
-        "DestinationPlantCode": "EC1",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         "Remark": "Remark Text",
     },
@@ -652,9 +605,8 @@ export const RMImportVBCTempData = [
         "RawMaterialCode": "RM-10000002",
         "Category": "CTS",
         "TechnologyName": "Sheet Metal",
-        "VendorName": "Systematix",
         "VendorCode": "V123",
-        "PlantCode": "VP123",
+        "PlantCode": "P123",
         "Source": "TATA Steel",
         "SourceLocation": "Jamshedpur",
         "UOM": "shot/stroke/Number",
@@ -665,8 +617,6 @@ export const RMImportVBCTempData = [
         "FreightCost": "10",
         "ShearingCost": "10",
         "CircleSrapCost": "20",
-        "DestinationPlantName": "Manesar",
-        "DestinationPlantCode": "EC1",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         "Remark": "Remark Text",
     },
@@ -678,9 +628,8 @@ export const RMImportVBCTempData = [
         "RawMaterialCode": "RM-10000002",
         "Category": "CTS",
         "TechnologyName": "Sheet Metal",
-        "VendorName": "Systematix",
         "VendorCode": "V123",
-        "PlantCode": "VP123",
+        "PlantCode": "P123",
         "Source": "TATA Steel",
         "SourceLocation": "Jamshedpur",
         "UOM": "micrometer/kilometer/Feet/Inch/Millimeter/Centimeter/Meter",
@@ -691,8 +640,6 @@ export const RMImportVBCTempData = [
         "FreightCost": "10",
         "ShearingCost": "10",
         "CircleSrapCost": "20",
-        "DestinationPlantName": "Manesar",
-        "DestinationPlantCode": "EC1",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         "Remark": "Remark Text",
     }
@@ -705,7 +652,6 @@ export const RMImportCBC = [
     { label: "Code", value: "RawMaterialCode" }, //*
     { label: "Category", value: "Category" }, //*
     { label: "TechnologyName", value: "TechnologyName" }, //*
-    { label: "CustomerName", value: "CustomerName" },
     { label: "CustomerCode", value: "CustomerCode" }, //NOUI
     { label: "UOM", value: "UOM" }, //*
     { label: "Currency", value: "Currency" }, //*
@@ -715,8 +661,7 @@ export const RMImportCBC = [
     { label: "FreightCost", value: "FreightCost" }, //*
     { label: "ShearingCost", value: "ShearingCost" }, //*
     { label: "CircleSrapCost", value: "CircleSrapCost" }, //*
-    { label: 'DestinationPlantName', value: 'DestinationPlantName', }, //*
-    { label: 'DestinationPlantCode', value: 'DestinationPlantCode', }, //*
+    { label: 'PlantCode', value: 'PlantCode', }, //*
     { label: "EffectiveDate", value: "EffectiveDate" }, //*
     { label: "Remark", value: "Remark" },
 ]
@@ -729,7 +674,6 @@ export const RMImportCBCTempData = [
         "RawMaterialCode": "RM-10000001",
         "Category": "STD",
         "TechnologyName": "Sheet Metal",
-        "CustomerName": "Honda",
         "CustomerCode": "C-10008",
         "UOM": "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram",
         "Currency": "INR",
@@ -739,8 +683,7 @@ export const RMImportCBCTempData = [
         "FreightCost": "10",
         "ShearingCost": "10",
         "CircleSrapCost": "20",
-        "DestinationPlantName": "Manesar",
-        "DestinationPlantCode": "EC1",
+        "PlantCode": "EC1",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         "Remark": "Remark Text",
     },
@@ -751,7 +694,6 @@ export const RMImportCBCTempData = [
         "RawMaterialCode": "RM-10000002",
         "Category": "CTS",
         "TechnologyName": "Sheet Metal",
-        "CustomerName": "Honda",
         "CustomerCode": "C-10008",
         "UOM": "Gallon/Cubic Centimeter/Cubic Meter/Milliliter/Liter",
         "Currency": "USD",
@@ -761,8 +703,7 @@ export const RMImportCBCTempData = [
         "FreightCost": "10",
         "ShearingCost": "10",
         "CircleSrapCost": "20",
-        "DestinationPlantName": "Manesar",
-        "DestinationPlantCode": "EC1",
+        "PlantCode": "EC1",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         "Remark": "Remark Text",
     },
@@ -773,7 +714,6 @@ export const RMImportCBCTempData = [
         "RawMaterialCode": "RM-10000002",
         "Category": "CTS",
         "TechnologyName": "Sheet Metal",
-        "CustomerName": "Honda",
         "CustomerCode": "C-10008",
         "UOM": "shot/stroke/Number",
         "Currency": "USD",
@@ -783,8 +723,7 @@ export const RMImportCBCTempData = [
         "FreightCost": "10",
         "ShearingCost": "10",
         "CircleSrapCost": "20",
-        "DestinationPlantName": "Manesar",
-        "DestinationPlantCode": "EC1",
+        "PlantCode": "EC1",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         "Remark": "Remark Text",
     },
@@ -795,7 +734,6 @@ export const RMImportCBCTempData = [
         "RawMaterialCode": "RM-10000002",
         "Category": "CTS",
         "TechnologyName": "Sheet Metal",
-        "CustomerName": "Honda",
         "CustomerCode": "C-10008",
         "UOM": "micrometer/kilometer/Feet/Inch/Millimeter/Centimeter/Meter",
         "Currency": "USD",
@@ -805,8 +743,7 @@ export const RMImportCBCTempData = [
         "FreightCost": "10",
         "ShearingCost": "10",
         "CircleSrapCost": "20",
-        "DestinationPlantName": "Manesar",
-        "DestinationPlantCode": "EC1",
+        "PlantCode": "EC1",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         "Remark": "Remark Text",
     }
@@ -910,99 +847,266 @@ export const OverheadTempData = [
 * @desc USED IN EXCEL HEADER FOR BULK UPLOAD
 */
 export const ZBCOperation = [
-    { label: 'Technology', value: 'Technology', }, //*
-    { label: 'OperationName', value: 'OperationName', }, //*
-    { label: 'OperationCode', value: 'OperationCode', },
-    { label: 'Description', value: 'Description', },
-    { label: 'Plant', value: 'Plant', }, //*
-    { label: 'PlantCode', value: 'PlantCode', }, //*
+
+    { label: 'DestinationPlant', value: 'DestinationPlant', }, //*
+    { label: 'DestinationPlantCode', value: 'DestinationPlantCode', }, //*
+    { label: 'OperationName', value: 'OperationName' },
+    { label: 'Description', value: 'Description' },
     { label: 'UOM', value: 'UOM', }, //*
-    { label: 'Rate', value: 'Rate', }, //*
-    { label: 'EffectiveDate', value: 'EffectiveDate', }, //NOUI
-    { label: 'IsSurfaceTreatmentOperation', value: 'IsSurfaceTreatmentOperation' },
     { label: 'LabourRate', value: 'LabourRate', }, //NOUI
-    { label: 'Remark', value: 'Remark', },
+    { label: 'SurfaceTreatmentOperation', value: 'SurfaceTreatmentOperation' },
+    { label: 'Rate', value: 'Rate' },
+    { label: 'LabourRatePerUOM', value: 'LabourRatePerUOM' },
+    { label: 'Technology', value: 'Technology' },
+    { label: 'Remark', value: 'Remark' },
+    { label: 'EffectiveDate', value: 'EffectiveDate' },
+    { label: 'DetailedEntry', value: 'DetailedEntry' },
+    { label: 'VendorPlant', value: 'VendorPlant' },
+    { label: 'ForType', value: 'ForType' },
+    { label: 'MaterialGasCRMHead', value: 'MaterialGasCRMHead' },
+    { label: 'MaterialGasRate', value: 'MaterialGasRate' },
+    { label: 'MaterialGasConsumption', value: 'MaterialGasConsumption' },
+    { label: 'MaterialWireCRMHead', value: 'MaterialWireCRMHead' },
+    { label: 'MaterialWireRate', value: 'MaterialWireRate' },
+    { label: 'MaterialWireConsumption', value: 'MaterialWireConsumption' },
+    { label: 'PowerCRMHead', value: 'PowerCRMHead' },
+    { label: 'PowerElectricityRate', value: 'PowerElectricityRate' },
+    { label: 'PowerElectricityConsumption', value: 'PowerElectricityConsumption' },
+    { label: 'LabourCRMHead', value: 'LabourCRMHead' },
+    { label: 'LabourManPowerRate', value: 'LabourManPowerRate' },
+    { label: 'LabourManPowerConsumption', value: 'LabourManPowerConsumption' },
+    { label: 'LabourManPowerCost', value: 'LabourManPowerCost' },
+    { label: 'LabourStaffCRMHead', value: 'LabourStaffCRMHead' },
+    { label: 'LabourStaffCost', value: 'LabourStaffCost' },
+    { label: 'ConsumableMaintenanceCRMHead', value: 'ConsumableMaintenanceCRMHead' },
+    { label: 'ConsumableMaintenanceCost', value: 'ConsumableMaintenanceCost' },
+    { label: 'ConsumableCRMHead', value: 'ConsumableCRMHead' },
+    { label: 'ConsumableCost', value: 'ConsumableCost' },
+    { label: 'ConsumableWaterCRMHead', value: 'ConsumableWaterCRMHead' },
+    { label: 'ConsumableWaterCost', value: 'ConsumableWaterCost' },
+    { label: 'ConsumableJigStrippingCRMHead', value: 'ConsumableJigStrippingCRMHead' },
+    { label: 'ConsumableJigStrippingCost', value: 'ConsumableJigStrippingCost' },
+    { label: 'ConsumableMachineCRMHead', value: 'ConsumableMachineCRMHead' },
+    { label: 'MachineConsumptionCost', value: 'MachineConsumptionCost' },
+    { label: 'ConsumableWelderCRMHead', value: 'ConsumableWelderCRMHead' },
+    { label: 'WelderCost', value: 'WelderCost' },
+    { label: 'InterestCRMHead', value: 'InterestCRMHead' },
+    { label: 'InterestCost', value: 'InterestCost' },
+    { label: 'DepriciationCRMHead', value: 'DepriciationCRMHead' },
+    { label: 'DepriciationCost', value: 'DepriciationCost' },
+    { label: 'OtherOperationCRMHead', value: 'OtherOperationCRMHead' },
+    { label: 'OtherOperationCode', value: 'OtherOperationCode' },
+    { label: 'OtherOperationIdRef', value: 'OtherOperationIdRef' },
+    { label: 'OtherOperationCost', value: 'OtherOperationCost' },
+    { label: 'StatuatoryAndLicenseCRMHead', value: 'StatuatoryAndLicenseCRMHead' },
+    { label: 'StatuatoryAndLicenseCost', value: 'StatuatoryAndLicenseCost' },
+    { label: 'RejectionAndReworkCRMHead', value: 'RejectionAndReworkCRMHead' },
+    { label: 'RejectionAndReworkPercentage', value: 'RejectionAndReworkPercentage' },
+    { label: 'ProfitCRMHead', value: 'ProfitCRMHead' },
+    { label: 'ProfitCRMPercentage', value: 'ProfitCRMPercentage' },
+    { label: 'OtherCostCRMHead', value: 'OtherCostCRMHead' },
+    { label: 'OtherCostDescription', value: 'OtherCostDescription' },
+    { label: 'OtherCost', value: 'OtherCost' },
+    { label: 'IncludeInterestRateAndDepriciationInRjectionAndProfit', value: 'IncludeInterestRateAndDepriciationInRjectionAndProfit' },
+    { label: 'InterestAndDepriciationCRMHead', value: 'InterestAndDepriciationCRMHead' },
+    { label: 'InterestAndDepriciationCost', value: 'InterestAndDepriciationCost' }
 ]
+
+
 
 export const ZBCOperationTempData = [
     {
         'Technology': 'Sheet Metal',
         'OperationName': 'Crushing',
-        'OperationCode': 'Crushing123',
         'Description': 'Description Text',
         'Plant': 'Manesar',
         'PlantCode': 'Systematix01',
         "UOM": "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram",
         'Rate': 50,
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
-        "IsSurfaceTreatmentOperation": "Yes or No",
+        "SurfaceTreatmentOperation": "Yes or No",
         'LabourRate': 5,
         'Remark': 'Remark Text',
-    }, {
-        'Technology': 'Sheet Metal',
-        'OperationName': 'Crushing',
-        'OperationCode': 'Crushing123',
-        'Description': 'Description Text',
-        'Plant': 'Manesar',
-        'PlantCode': 'Systematix01',
-        "UOM": "Gallon/Cubic Centimeter/Cubic Meter/Milliliter/Liter",
-        'Rate': 50,
+        "DestinationPlant": "Plant A",
+        "DestinationPlantCode": "PLT-A",
+        "LabourRatePerUOM": "0.5",
+        "VendorPlant": "Plant B",
+        "ForType": "Surface Treatment",
+        "MaterialGasCRMHead": "Argon",
+        "MaterialGasRate": "10",
+        "MaterialGasConsumption": "5",
+        "MaterialWireCRMHead": "Welding Wire",
+        "MaterialWireRate": "2",
+        "MaterialWireConsumption": "20",
+        "PowerCRMHead": "Electricity",
+        "PowerElectricityRate": "0.5",
+        "PowerElectricityConsumption": "100",
+        "LabourCRMHead": "Manpower",
+        "LabourManPowerRate": "20",
+        "LabourManPowerConsumption": "10",
+        "LabourManPowerCost": "200",
+        "LabourStaffCRMHead": "Supervisor",
+        "LabourStaffCost": "100",
+        "ConsumableMaintenanceCRMHead": "Maintenance",
+        "ConsumableMaintenanceCost": "30",
+        "ConsumableCRMHead": "Tools",
+        "ConsumableCost": "50",
+        "ConsumableWaterCRMHead": "Water",
+        "ConsumableWaterCost": "20",
+        "ConsumableJigStrippingCRMHead": "Jig Stripping",
+        "ConsumableJigStrippingCost": "60",
+        "ConsumableMachineCRMHead": "Machine",
+        "MachineConsumptionCost": "80",
+        "ConsumableWelderCRMHead": "Welder",
+        "WelderCost": "150",
+        "InterestCRMHead": "Interest",
+        "InterestCost": "10",
+        "DepriciationCRMHead": "Depreciation",
+        "DepriciationCost": "30",
+        "OtherOperationCRMHead": "Other Operations",
+        "OtherOperationCode": "OTH",
+        "OtherOperationIdRef": "123",
+        "OtherOperationCost": "50",
+        "StatuatoryAndLicenseCRMHead": "License",
+        "StatuatoryAndLicenseCost": "20",
+        "RejectionAndReworkCRMHead": "Rework",
+        "RejectionAndReworkPercentage": "2",
+        "ProfitCRMHead": "Profit",
+        "ProfitCRMPercentage": "10",
+        "OtherCostCRMHead": "Other Costs",
+        "OtherCost": "20",
+        "DetailedEntry": "Yes or No",
+        "IncludeInterestRateAndDepriciationInRjectionAndProfit": "Yes or No",
+        "InterestAndDepriciationCRMHead": "Depreciation",
+        "InterestAndDepriciationCost": '1500'
+
+    },
+    {
+        "DestinationPlant": "Houston",
+        "DestinationPlantCode": "HOU-123",
+        "OperationName": "Assembly",
+        "Description": "Final product assembly",
+        "UOM": "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram",
+        "LabourRate": "25.50",
+        "SurfaceTreatmentOperation": "No",
+        "Rate": "100.00",
+        "LabourRatePerUOM": "2.00",
+        'Technology': 'Plastic',
+        "Remark": "Quality control passed",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
-        "IsSurfaceTreatmentOperation": "Yes or No",
-        'LabourRate': 5,
-        'Remark': 'Remark Text',
-    }, {
-        'Technology': 'Sheet Metal',
-        'OperationName': 'Crushing',
-        'OperationCode': 'Crushing123',
-        'Description': 'Description Text',
-        'Plant': 'Manesar',
-        'PlantCode': 'Systematix01',
-        "UOM": "shot/stroke/Number",
-        'Rate': 50,
+        "VendorPlant": "Mexico City",
+        "ForType": "Surface Treatment",
+        "MaterialGasCRMHead": "Argon Gas",
+        "MaterialGasRate": "2.50",
+        "MaterialGasConsumption": "15",
+        "MaterialWireCRMHead": "Welding Wire",
+        "MaterialWireRate": "1.75",
+        "MaterialWireConsumption": "10",
+        "PowerCRMHead": "Electricity",
+        "PowerElectricityRate": "0.15",
+        "PowerElectricityConsumption": "200",
+        "LabourCRMHead": "Labor",
+        "LabourManPowerRate": "22.50",
+        "LabourManPowerConsumption": "8",
+        "LabourManPowerCost": "180.00",
+        "LabourStaffCRMHead": "Supervisor",
+        "LabourStaffCost": "150.00",
+        "ConsumableMaintenanceCRMHead": "Cleaning Supplies",
+        "ConsumableMaintenanceCost": "25.00",
+        "ConsumableCRMHead": "Welding Supplies",
+        "ConsumableCost": "50.00",
+        "ConsumableWaterCRMHead": "Water",
+        "ConsumableWaterCost": "10.00",
+        "ConsumableJigStrippingCRMHead": "Jig Stripping Supplies",
+        "ConsumableJigStrippingCost": "40.00",
+        "ConsumableMachineCRMHead": "Machine Maintenance",
+        "MachineConsumptionCost": "75.00",
+        "ConsumableWelderCRMHead": "Welding Consumables",
+        "WelderCost": "30.00",
+        "InterestCRMHead": "Interest",
+        "InterestCost": "10.00",
+        "DepriciationCRMHead": "Depreciation",
+        "DepriciationCost": "50.00",
+        "OtherOperationCRMHead": "Other",
+        "OtherOperationCode": "OTH-789",
+        "OtherOperationIdRef": "ABC-123",
+        "OtherOperationCost": "75.00",
+        "StatuatoryAndLicenseCRMHead": "Permits",
+        "StatuatoryAndLicenseCost": "20.00",
+        "RejectionAndReworkCRMHead": "Rework",
+        "RejectionAndReworkPercentage": "5",
+        "ProfitCRMHead": "Profit",
+        "ProfitCRMPercentage": "10",
+        "OtherCostCRMHead": "Miscellaneous",
+        "OtherCost": "50.00",
+        "DetailedEntry": "Yes or No",
+        "IncludeInterestRateAndDepriciationInRjectionAndProfit": "Yes or No",
+        "InterestAndDepriciationCRMHead": "Depreciation",
+        "InterestAndDepriciationCost": '1600'
+    },
+
+    {
+        "DestinationPlant": "Plant B",
+        "DestinationPlantCode": "PLT-B",
+        "OperationName": "Molding",
+        "Description": "Injection molding process",
+        "UOM": "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram",
+        "LabourRate": "40",
+        "SurfaceTreatmentOperation": "No",
+        "Rate": "150",
+        "LabourRatePerUOM": "0.3",
+        "Technology": "Rubber",
+        "Remark": "Avoid moisture",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
-        "IsSurfaceTreatmentOperation": "Yes or No",
-        'LabourRate': 5,
-        'Remark': 'Remark Text',
-    }, {
-        'Technology': 'Sheet Metal',
-        'OperationName': 'Crushing',
-        'OperationCode': 'Crushing123',
-        'Description': 'Description Text',
-        'Plant': 'Manesar',
-        'PlantCode': 'Systematix01',
-        'UOM': 'Square Millimeter/Square Inch/Square Feet/Square Centimeter/Square Meter',
-        'Rate': 50,
-        "EffectiveDate": DayTime().format('DD-MM-YYYY'),
-        "IsSurfaceTreatmentOperation": "Yes or No",
-        'LabourRate': 5,
-        'Remark': 'Remark Text',
-    }, {
-        'Technology': 'Sheet Metal',
-        'OperationName': 'Crushing',
-        'OperationCode': 'Crushing123',
-        'Description': 'Description Text',
-        'Plant': 'Manesar',
-        'PlantCode': 'Systematix01',
-        'UOM': 'Seconds/Minutes/Hours/MilliSeconds',
-        'Rate': 50,
-        "EffectiveDate": DayTime().format('DD-MM-YYYY'),
-        "IsSurfaceTreatmentOperation": "Yes or No",
-        'LabourRate': 5,
-        'Remark': 'Remark Text',
-    }, {
-        'Technology': 'Sheet Metal',
-        'OperationName': 'Crushing',
-        'OperationCode': 'Crushing123',
-        'Description': 'Description Text',
-        'Plant': 'Manesar',
-        'PlantCode': 'Systematix01',
-        "UOM": "micrometer/kilometer/Feet/Inch/Millimeter/Centimeter/Meter",
-        'Rate': 50,
-        "EffectiveDate": DayTime().format('DD-MM-YYYY'),
-        "IsSurfaceTreatmentOperation": "Yes or No",
-        'LabourRate': 5,
-        'Remark': 'Remark Text',
+        "VendorPlant": "Plant C",
+        "ForType": "Surface Treatment",
+        "MaterialGasCRMHead": "Nitrogen",
+        "MaterialGasRate": "8",
+        "MaterialGasConsumption": "10",
+        "MaterialWireCRMHead": "Solder Wire",
+        "MaterialWireRate": "4",
+        "MaterialWireConsumption": "15",
+        "PowerCRMHead": "Electricity",
+        "PowerElectricityRate": "0.6",
+        "PowerElectricityConsumption": "120",
+        "LabourCRMHead": "Manpower",
+        "LabourManPowerRate": "25",
+        "LabourManPowerConsumption": "8",
+        "LabourManPowerCost": "200",
+        "LabourStaffCRMHead": "Engineer",
+        "LabourStaffCost": "150",
+        "ConsumableMaintenanceCRMHead": "Maintenance",
+        "ConsumableMaintenanceCost": "40",
+        "ConsumableCRMHead": "Blades",
+        "ConsumableCost": "30",
+        "ConsumableWaterCRMHead": "Water",
+        "ConsumableWaterCost": "15",
+        "ConsumableJigStrippingCRMHead": "Mold Release",
+        "ConsumableJigStrippingCost": "45",
+        "ConsumableMachineCRMHead": "Mold",
+        "MachineConsumptionCost": "100",
+        "ConsumableWelderCRMHead": "Soldering Gun",
+        "WelderCost": "120",
+        "InterestCRMHead": "Interest",
+        "InterestCost": "15",
+        "DepriciationCRMHead": "Depreciation",
+        "DepriciationCost": "25",
+        "OtherOperationCRMHead": "Other Operations",
+        "OtherOperationCode": "OTH",
+        "OtherOperationIdRef": "456",
+        "OtherOperationCost": "60",
+        "StatuatoryAndLicenseCRMHead": "License",
+        "StatuatoryAndLicenseCost": "25",
+        "RejectionAndReworkCRMHead": "Rework",
+        "RejectionAndReworkPercentage": "3",
+        "ProfitCRMHead": "Profit",
+        "ProfitCRMPercentage": "12",
+        "OtherCostCRMHead": "Other Costs",
+        "OtherCost": "35",
+        "DetailedEntry": "Yes or No",
+        "IncludeInterestRateAndDepriciationInRjectionAndProfit": "Yes or No",
+        "InterestAndDepriciationCRMHead": "Depreciation",
+        "InterestAndDepriciationCost": '1700'
     }
 ]
 
@@ -1010,28 +1114,81 @@ export const ZBCOperationTempData = [
 * @desc USED IN EXCEL HEADER FOR BULK UPLOAD
 */
 export const VBCOperation = [
-    { label: 'Technology', value: 'Technology', }, //*
-    { label: 'OperationName', value: 'OperationName', }, //*
-    { label: 'OperationCode', value: 'OperationCode', },
-    { label: 'Description', value: 'Description', },
+
     { label: 'VendorName', value: 'VendorName', }, //*
     { label: 'VendorCode', value: 'VendorCode', }, //*
     { label: 'DestinationPlant', value: 'DestinationPlant', }, //*
     { label: 'DestinationPlantCode', value: 'DestinationPlantCode', }, //*
-    // { label: 'VendorPlantCode', value: 'VendorPlantCode', }, //NOUI
+    { label: 'OperationName', value: 'OperationName' },
+    { label: 'Description', value: 'Description' },
     { label: 'UOM', value: 'UOM', }, //*
-    { label: 'Rate', value: 'Rate', }, //*
-    { label: 'EffectiveDate', value: 'EffectiveDate', }, //*
-    { label: 'IsSurfaceTreatmentOperation', value: 'IsSurfaceTreatmentOperation' },
     { label: 'LabourRate', value: 'LabourRate', }, //NOUI
-    { label: 'Remark', value: 'Remark', },
+    { label: 'SurfaceTreatmentOperation', value: 'SurfaceTreatmentOperation' },
+    { label: 'Rate', value: 'Rate' },
+    { label: 'LabourRatePerUOM', value: 'LabourRatePerUOM' },
+    { label: 'Technology', value: 'Technology' },
+    { label: 'Remark', value: 'Remark' },
+    { label: 'Plant', value: 'Plant' },
+    { label: 'EffectiveDate', value: 'EffectiveDate' },
+    { label: 'DetailedEntry', value: 'DetailedEntry' },
+    { label: 'VendorPlant', value: 'VendorPlant' },
+    { label: 'CustomerId', value: 'CustomerId' },
+    { label: 'ForType', value: 'ForType' },
+    { label: 'MaterialGasCRMHead', value: 'MaterialGasCRMHead' },
+    { label: 'MaterialGasRate', value: 'MaterialGasRate' },
+    { label: 'MaterialGasConsumption', value: 'MaterialGasConsumption' },
+    { label: 'MaterialWireCRMHead', value: 'MaterialWireCRMHead' },
+    { label: 'MaterialWireRate', value: 'MaterialWireRate' },
+    { label: 'MaterialWireConsumption', value: 'MaterialWireConsumption' },
+    { label: 'PowerCRMHead', value: 'PowerCRMHead' },
+    { label: 'PowerElectricityRate', value: 'PowerElectricityRate' },
+    { label: 'PowerElectricityConsumption', value: 'PowerElectricityConsumption' },
+    { label: 'LabourCRMHead', value: 'LabourCRMHead' },
+    { label: 'LabourManPowerRate', value: 'LabourManPowerRate' },
+    { label: 'LabourManPowerConsumption', value: 'LabourManPowerConsumption' },
+    { label: 'LabourManPowerCost', value: 'LabourManPowerCost' },
+    { label: 'LabourStaffCRMHead', value: 'LabourStaffCRMHead' },
+    { label: 'LabourStaffCost', value: 'LabourStaffCost' },
+    { label: 'ConsumableMaintenanceCRMHead', value: 'ConsumableMaintenanceCRMHead' },
+    { label: 'ConsumableMaintenanceCost', value: 'ConsumableMaintenanceCost' },
+    { label: 'ConsumableCRMHead', value: 'ConsumableCRMHead' },
+    { label: 'ConsumableCost', value: 'ConsumableCost' },
+    { label: 'ConsumableWaterCRMHead', value: 'ConsumableWaterCRMHead' },
+    { label: 'ConsumableWaterCost', value: 'ConsumableWaterCost' },
+    { label: 'ConsumableJigStrippingCRMHead', value: 'ConsumableJigStrippingCRMHead' },
+    { label: 'ConsumableJigStrippingCost', value: 'ConsumableJigStrippingCost' },
+    { label: 'ConsumableMachineCRMHead', value: 'ConsumableMachineCRMHead' },
+    { label: 'MachineConsumptionCost', value: 'MachineConsumptionCost' },
+    { label: 'ConsumableWelderCRMHead', value: 'ConsumableWelderCRMHead' },
+
+    { label: 'WelderCost', value: 'WelderCost' },
+    { label: 'InterestCRMHead', value: 'InterestCRMHead' },
+    { label: 'InterestCost', value: 'InterestCost' },
+    { label: 'DepriciationCRMHead', value: 'DepriciationCRMHead' },
+    { label: 'DepriciationCost', value: 'DepriciationCost' },
+    { label: 'OtherOperationCRMHead', value: 'OtherOperationCRMHead' },
+    { label: 'OtherOperationCode', value: 'OtherOperationCode' },
+    { label: 'OtherOperationIdRef', value: 'OtherOperationIdRef' },
+    { label: 'OtherOperationCost', value: 'OtherOperationCost' },
+    { label: 'StatuatoryAndLicenseCRMHead', value: 'StatuatoryAndLicenseCRMHead' },
+    { label: 'StatuatoryAndLicenseCost', value: 'StatuatoryAndLicenseCost' },
+    { label: 'RejectionAndReworkCRMHead', value: 'RejectionAndReworkCRMHead' },
+    { label: 'RejectionAndReworkPercentage', value: 'RejectionAndReworkPercentage' },
+    { label: 'ProfitCRMHead', value: 'ProfitCRMHead' },
+    { label: 'ProfitCRMPercentage', value: 'ProfitCRMPercentage' },
+    { label: 'OtherCostCRMHead', value: 'OtherCostCRMHead' },
+    { label: 'OtherCostDescription', value: 'OtherCostDescription' },
+    { label: 'OtherCost', value: 'OtherCost' },
+    { label: 'IncludeInterestRateAndDepriciationInRjectionAndProfit', value: 'IncludeInterestRateAndDepriciationInRjectionAndProfit' },
+    { label: 'InterestAndDepriciationCRMHead', value: 'InterestAndDepriciationCRMHead' },
+    { label: 'InterestAndDepriciationCost', value: 'InterestAndDepriciationCost' }
+
 ]
 
 export const VBCOperationTempData = [
     {
         'Technology': 'Sheet Metal',
         'OperationName': 'Crushing',
-        'OperationCode': 'Crushing123',
         'Description': 'Description Text',
         'VendorName': 'Tata Steel',
         'VendorCode': 'Vendor123',
@@ -1040,111 +1197,279 @@ export const VBCOperationTempData = [
         "UOM": "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram",
         'Rate': 50,
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
-        "IsSurfaceTreatmentOperation": "Yes or No",
+        "SurfaceTreatmentOperation": "Yes or No",
         'LabourRate': 5,
         'Remark': 'Remark',
-    }, {
-        'Technology': 'Sheet Metal',
-        'OperationName': 'Crushing',
-        'OperationCode': 'Crushing123',
+        "LabourRatePerUOM": 20,
+        "Plant": 'Plant A',
+        "VendorPlant": 'Vendor Plant A',
+        "CustomerId": 'C-123',
+        'Operation Type': 'Type A',
+        "MaterialGasCRMHead": 'Material Gas',
+        "MaterialGasRate": 5,
+        "MaterialGasConsumption": 10,
+        "MaterialWireCRMHead": 'Material Wire',
+        "MaterialWireRate": 3,
+        "MaterialWireConsumption": 15,
+        "PowerCRMHead": 'Power',
+        "PowerElectricityRate": 0.5,
+        "PowerElectricityConsumption": 20,
+        "LabourCRMHead": 'Labour',
+        "LabourManPowerRate": 10,
+        "LabourManPowerConsumption": 10,
+        "LabourManPowerCost": 100,
+        "LabourStaffCRMHead": 'Staff',
+        "LabourStaffCost": 50,
+        "ConsumableMaintenanceCRMHead": 'Maintenance',
+        "ConsumableMaintenanceCost": 20,
+        "ConsumableCRMHead": 'Consumable',
+        "ConsumableCost": 30,
+        "ConsumableWaterCRMHead": 'Water',
+        "ConsumableWaterCost": 5,
+        "ConsumableJigStrippingCRMHead": 'Jig Stripping',
+        "ConsumableJigStrippingCost": 15,
+        "ConsumableMachineCRMHead": 'Machine',
+        "MachineConsumptionCost": 75,
+        "ConsumableWelderCRMHead": 'Welder',
+        "WelderCost": 50,
+        "InterestCRMHead": 'Interest',
+        "InterestCost": 25,
+        "DepriciationCRMHead": 'Depreciation',
+        "DepriciationCost": 20,
+        "OtherOperationCRMHead": 'Other',
+        "OtherOperationCode": 'O-002',
+        "OtherOperationIdRef": 'Ref-123',
+        "OtherOperationCost": 75,
+        "StatuatoryAndLicenseCRMHead": 'Statutory and License',
+        "StatuatoryAndLicenseCost": 35,
+        "RejectionAndReworkCRMHead": 'Rejection and Rework',
+        "RejectionAndReworkPercentage": 5,
+        "ProfitCRMHead": 'Profit',
+        "ProfitCRMPercentage": "20",
+        "OtherCostCRMHead": "Maintenance",
+        "OtherCostDescription": "Monthly maintenance cost for machinery",
+        "OtherCost": '5000',
+        "DetailedEntry": "Yes or No",
+        "IncludeInterestRateAndDepriciationInRjectionAndProfit": "Yes or No",
+        "InterestAndDepriciationCRMHead": "Depreciation",
+        "InterestAndDepriciationCost": '1500',
+        "ForType": 'Welding'
+    },
+    {
+        'Technology': 'Rubber',
+        'OperationName': 'Drilling',
         'Description': 'Description Text',
-        'VendorName': 'Tata Steel',
-        'VendorCode': 'Vendor123',
-        'DestinationPlant': 'Manesar',
-        'DestinationPlantCode': "1032",
-        "UOM": "Gallon/Cubic Centimeter/Cubic Meter/Milliliter/Liter",
-        'Rate': 50,
+        'VendorName': 'ABC Manufacturing',
+        'VendorCode': 'Vendor456',
+        'DestinationPlant': 'Chennai',
+        'DestinationPlantCode': "1234",
+        'UOM': 'Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram',
+        'Rate': 30,
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
-        "IsSurfaceTreatmentOperation": "Yes or No",
-        'LabourRate': 5,
+        "SurfaceTreatmentOperation": "No",
+        'LabourRate': 6,
         'Remark': 'Remark',
-    }, {
-        'Technology': 'Sheet Metal',
-        'OperationName': 'Crushing',
-        'OperationCode': 'Crushing123',
+        "LabourRatePerUOM": 24,
+        "Plant": 'Plant B',
+        "VendorPlant": 'Vendor Plant B',
+        "CustomerId": 'C-789',
+        'Operation Type': 'Type B',
+        "MaterialGasCRMHead": 'Material Gas',
+        "MaterialGasRate": 6,
+        "MaterialGasConsumption": 8,
+        "MaterialWireCRMHead": 'Material Wire',
+        "MaterialWireRate": 4,
+        "MaterialWireConsumption": 12,
+        "PowerCRMHead": 'Power',
+        "PowerElectricityRate": 0.6,
+        "PowerElectricityConsumption": 25,
+        "LabourCRMHead": 'Labour',
+        "LabourManPowerRate": 12,
+        "LabourManPowerConsumption": 8,
+        "LabourManPowerCost": 96,
+        "LabourStaffCRMHead": 'Staff',
+        "LabourStaffCost": 60,
+        "ConsumableMaintenanceCRMHead": 'Maintenance',
+        "ConsumableMaintenanceCost": 15,
+        "ConsumableCRMHead": 'Consumable',
+        "ConsumableCost": 20,
+        "ConsumableWaterCRMHead": 'Water',
+        "ConsumableWaterCost": 8,
+        "ConsumableJigStrippingCRMHead": 'Jig Stripping',
+        "ConsumableJigStrippingCost": 10,
+        "ConsumableMachineCRMHead": 'Machine',
+        "MachineConsumptionCost": 70,
+        "ConsumableWelderCRMHead": 'Welder',
+        "WelderCost": 40,
+        "InterestCRMHead": 'Interest',
+        "InterestCost": 20,
+        "DepriciationCRMHead": 'Depreciation',
+        "DepriciationCost": 15,
+        "OtherOperationCRMHead": 'Other',
+        "OtherOperationCode": 'O-003',
+        "OtherOperationIdRef": 'Ref-456',
+        "OtherOperationCost": 65,
+        "StatuatoryAndLicenseCRMHead": 'Statutory and License',
+        "StatuatoryAndLicenseCost": 30,
+        "RejectionAndReworkCRMHead": 'Rejection and Rework',
+        "RejectionAndReworkPercentage": 2,
+        "ProfitCRMHead": 'Profit',
+        "ProfitCRMPercentage": "15",
+        "OtherCostCRMHead": "Maintenance",
+        "OtherCostDescription": "Yearly maintenance cost for machinery",
+        "OtherCost": '10000',
+        "DetailedEntry": "Yes or No",
+        "IncludeInterestRateAndDepriciationInRjectionAndProfit": "Yes or No",
+        "InterestAndDepriciationCRMHead": "Depreciation",
+        "InterestAndDepriciationCost": '1200',
+        "ForType": 'Welding'
+    },
+    {
+        'Technology': 'Plastic',
+        'OperationName': 'Trimming',
         'Description': 'Description Text',
-        'VendorName': 'Tata Steel',
-        'VendorCode': 'Vendor123',
-        'DestinationPlant': 'Manesar',
-        'DestinationPlantCode': "1032",
-        "UOM": "shot/stroke/Number",
-        'Rate': 50,
-        "EffectiveDate": DayTime().format('DD-MM-YYYY'),
-        "IsSurfaceTreatmentOperation": "Yes or No",
-        'LabourRate': 5,
+        'VendorName': 'ABC Plastic Industries',
+        'VendorCode': 'Vendor456',
+        'DestinationPlant': 'Pune',
+        'DestinationPlantCode': '1010',
+        'UOM': 'Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram',
+        'Rate': 35,
+        'EffectiveDate': DayTime().format('DD-MM-YYYY'),
+        'SurfaceTreatmentOperation': 'Yes',
+        'LabourRate': 10,
         'Remark': 'Remark',
-    }, {
-        'Technology': 'Sheet Metal',
-        'OperationName': 'Crushing',
-        'OperationCode': 'Crushing123',
-        'Description': 'Description Text',
-        'VendorName': 'Tata Steel',
-        'VendorCode': 'Vendor123',
-        'DestinationPlant': 'Manesar',
-        'DestinationPlantCode': "1032",
-        'UOM': 'Square Millimeter/Square Inch/Square Feet/Square Centimeter/Square Meter',
-        'Rate': 50,
-        "EffectiveDate": DayTime().format('DD-MM-YYYY'),
-        "IsSurfaceTreatmentOperation": "Yes or No",
-        'LabourRate': 5,
-        'Remark': 'Remark',
-    }, {
-        'Technology': 'Sheet Metal',
-        'OperationName': 'Crushing',
-        'OperationCode': 'Crushing123',
-        'Description': 'Description Text',
-        'VendorName': 'Tata Steel',
-        'VendorCode': 'Vendor123',
-        'DestinationPlant': 'Manesar',
-        'DestinationPlantCode': "1032",
-        'UOM': 'Seconds/Minutes/Hours/MilliSeconds',
-        'Rate': 50,
-        "EffectiveDate": DayTime().format('DD-MM-YYYY'),
-        "IsSurfaceTreatmentOperation": "Yes or No",
-        'LabourRate': 5,
-        'Remark': 'Remark',
-    }, {
-        'Technology': 'Sheet Metal',
-        'OperationName': 'Crushing',
-        'OperationCode': 'Crushing123',
-        'Description': 'Description Text',
-        'VendorName': 'Tata Steel',
-        'VendorCode': 'Vendor123',
-        'DestinationPlant': 'Manesar',
-        'DestinationPlantCode': "1032",
-        "UOM": "micrometer/kilometer/Feet/Inch/Millimeter/Centimeter/Meter",
-        'Rate': 50,
-        "EffectiveDate": DayTime().format('DD-MM-YYYY'),
-        "IsSurfaceTreatmentOperation": "Yes or No",
-        'LabourRate': 5,
-        'Remark': 'Remark',
+        'LabourRatePerUOM': 25,
+        'Plant': 'Plant B',
+        'VendorPlant': 'Vendor Plant B',
+        'CustomerId': 'C-456',
+        'Operation Type': 'Type B',
+        'MaterialGasCRMHead': 'Material Gas',
+        'MaterialGasRate': 2,
+        'MaterialGasConsumption': 5,
+        'MaterialWireCRMHead': 'Material Wire',
+        'MaterialWireRate': 4,
+        'MaterialWireConsumption': 20,
+        'PowerCRMHead': 'Power',
+        'PowerElectricityRate': 0.4,
+        'PowerElectricityConsumption': 15,
+        'LabourCRMHead': 'Labour',
+        'LabourManPowerRate': 8,
+        'LabourManPowerConsumption': 12,
+        'LabourManPowerCost': 96,
+        'LabourStaffCRMHead': 'Staff',
+        'LabourStaffCost': 30,
+        'ConsumableMaintenanceCRMHead': 'Maintenance',
+        'ConsumableMaintenanceCost': 15,
+        'ConsumableCRMHead': 'Consumable',
+        'ConsumableCost': 25,
+        'ConsumableWaterCRMHead': 'Water',
+        'ConsumableWaterCost': 3,
+        'ConsumableJigStrippingCRMHead': 'Jig Stripping',
+        'ConsumableJigStrippingCost': 10,
+        'ConsumableMachineCRMHead': 'Machine',
+        'MachineConsumptionCost': 50,
+        'ConsumableWelderCRMHead': 'Welder',
+        'WelderCost': 20,
+        'InterestCRMHead': 'Interest',
+        'InterestCost': 10,
+        'DepriciationCRMHead': 'Depreciation',
+        'DepriciationCost': 15,
+        'OtherOperationCRMHead': 'Other',
+        'OtherOperationCode': 'O-001',
+        'OtherOperationIdRef': 'Ref-456',
+        'OtherOperationCost': 45,
+        'StatuatoryAndLicenseCRMHead': 'Statutory and License',
+        'StatuatoryAndLicenseCost': 20,
+        'RejectionAndReworkCRMHead': 'Rejection and Rework',
+        'RejectionAndReworkPercentage': 2,
+        'ProfitCRMHead': 'Profit',
+        'ProfitCRMPercentage': '15',
+        'OtherCostCRMHead': 'Maintenance',
+        'OtherCostDescription': 'Monthly maintenance cost for machinery',
+        'OtherCost': '3500',
+        'DetailedEntry': "Yes or No",
+        'IncludeInterestRateAndDepriciationInRjectionAndProfit': "Yes or No",
+        'InterestAndDepriciationCRMHead': 'Interest',
+        "InterestAndDepriciationCost": '1200',
+        "ForType": 'Welding'
     }
 ]
 /** 
 * @desc USED IN EXCEL HEADER FOR BULK UPLOAD
 */
 export const CBCOperation = [
-    { label: 'Technology', value: 'Technology', }, //*
-    { label: 'OperationName', value: 'OperationName', }, //*
-    { label: 'OperationCode', value: 'OperationCode', },
-    { label: 'Description', value: 'Description', },
-    { label: 'CustomerName', value: 'CustomerName', }, //*
+
+    { label: 'CustomerName', value: 'CustomerName' },
     { label: 'CustomerCode', value: 'CustomerCode', }, //*
     { label: 'DestinationPlant', value: 'DestinationPlant', }, //*
     { label: 'DestinationPlantCode', value: 'DestinationPlantCode', }, //*
+    { label: 'OperationName', value: 'OperationName' },
+    { label: 'Description', value: 'Description' },
     { label: 'UOM', value: 'UOM', }, //*
-    { label: 'Rate', value: 'Rate', }, //*
-    { label: 'EffectiveDate', value: 'EffectiveDate', }, //*
-    { label: 'IsSurfaceTreatmentOperation', value: 'IsSurfaceTreatmentOperation' },
     { label: 'LabourRate', value: 'LabourRate', }, //NOUI
-    { label: 'Remark', value: 'Remark', },
+    { label: 'SurfaceTreatmentOperation', value: 'SurfaceTreatmentOperation' },
+    { label: 'Rate', value: 'Rate' },
+    { label: 'LabourRatePerUOM', value: 'LabourRatePerUOM' },
+    { label: 'Technology', value: 'Technology' },
+    { label: 'Remark', value: 'Remark' },
+    { label: 'Plant', value: 'Plant' },
+    { label: 'EffectiveDate', value: 'EffectiveDate' },
+    { label: 'DetailedEntry', value: 'DetailedEntry' },
+    { label: 'ForType', value: 'ForType' },
+    { label: 'MaterialGasCRMHead', value: 'MaterialGasCRMHead' },
+    { label: 'MaterialGasRate', value: 'MaterialGasRate' },
+    { label: 'MaterialGasConsumption', value: 'MaterialGasConsumption' },
+    { label: 'MaterialWireCRMHead', value: 'MaterialWireCRMHead' },
+    { label: 'MaterialWireRate', value: 'MaterialWireRate' },
+    { label: 'MaterialWireConsumption', value: 'MaterialWireConsumption' },
+    { label: 'PowerCRMHead', value: 'PowerCRMHead' },
+    { label: 'PowerElectricityRate', value: 'PowerElectricityRate' },
+    { label: 'PowerElectricityConsumption', value: 'PowerElectricityConsumption' },
+    { label: 'LabourCRMHead', value: 'LabourCRMHead' },
+    { label: 'LabourManPowerRate', value: 'LabourManPowerRate' },
+    { label: 'LabourManPowerConsumption', value: 'LabourManPowerConsumption' },
+    { label: 'LabourManPowerCost', value: 'LabourManPowerCost' },
+    { label: 'LabourStaffCRMHead', value: 'LabourStaffCRMHead' },
+    { label: 'LabourStaffCost', value: 'LabourStaffCost' },
+    { label: 'ConsumableMaintenanceCRMHead', value: 'ConsumableMaintenanceCRMHead' },
+    { label: 'ConsumableMaintenanceCost', value: 'ConsumableMaintenanceCost' },
+    { label: 'ConsumableCRMHead', value: 'ConsumableCRMHead' },
+    { label: 'ConsumableCost', value: 'ConsumableCost' },
+    { label: 'ConsumableWaterCRMHead', value: 'ConsumableWaterCRMHead' },
+    { label: 'ConsumableWaterCost', value: 'ConsumableWaterCost' },
+    { label: 'ConsumableJigStrippingCRMHead', value: 'ConsumableJigStrippingCRMHead' },
+    { label: 'ConsumableJigStrippingCost', value: 'ConsumableJigStrippingCost' },
+    { label: 'ConsumableMachineCRMHead', value: 'ConsumableMachineCRMHead' },
+    { label: 'MachineConsumptionCost', value: 'MachineConsumptionCost' },
+    { label: 'ConsumableWelderCRMHead', value: 'ConsumableWelderCRMHead' },
+    { label: 'WelderCost', value: 'WelderCost' },
+    { label: 'InterestCRMHead', value: 'InterestCRMHead' },
+    { label: 'InterestCost', value: 'InterestCost' },
+    { label: 'DepriciationCRMHead', value: 'DepriciationCRMHead' },
+    { label: 'DepriciationCost', value: 'DepriciationCost' },
+    { label: 'OtherOperationCRMHead', value: 'OtherOperationCRMHead' },
+    { label: 'OtherOperationCode', value: 'OtherOperationCode' },
+    { label: 'OtherOperationIdRef', value: 'OtherOperationIdRef' },
+    { label: 'OtherOperationCost', value: 'OtherOperationCost' },
+    { label: 'StatuatoryAndLicenseCRMHead', value: 'StatuatoryAndLicenseCRMHead' },
+    { label: 'StatuatoryAndLicenseCost', value: 'StatuatoryAndLicenseCost' },
+    { label: 'RejectionAndReworkCRMHead', value: 'RejectionAndReworkCRMHead' },
+    { label: 'RejectionAndReworkPercentage', value: 'RejectionAndReworkPercentage' },
+    { label: 'ProfitCRMHead', value: 'ProfitCRMHead' },
+    { label: 'ProfitCRMPercentage', value: 'ProfitCRMPercentage' },
+    { label: 'OtherCostCRMHead', value: 'OtherCostCRMHead' },
+    { label: 'OtherCostDescription', value: 'OtherCostDescription' },
+    { label: 'OtherCost', value: 'OtherCost' },
+    { label: 'IncludeInterestRateAndDepriciationInRjectionAndProfit', value: 'IncludeInterestRateAndDepriciationInRjectionAndProfit' },
+    { label: 'InterestAndDepriciationCRMHead', value: 'InterestAndDepriciationCRMHead' },
+    { label: 'InterestAndDepriciationCost', value: 'InterestAndDepriciationCost' }
 ]
 
 export const CBCOperationTempData = [
+
     {
         'Technology': 'Sheet Metal',
         'OperationName': 'Crushing',
-        'OperationCode': 'Crushing123',
         'Description': 'Description Text',
         "CustomerName": "Honda",
         "CustomerCode": "C-10008",
@@ -1153,84 +1478,196 @@ export const CBCOperationTempData = [
         "UOM": "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram",
         'Rate': 50,
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
-        "IsSurfaceTreatmentOperation": "Yes or No",
+        "SurfaceTreatmentOperation": "Yes or No",
         'LabourRate': 5,
         'Remark': 'Remark',
+        "LabourRatePerUOM": "5",
+        "Plant": "Plant A",
+        "Operation Type": "Manufacturing",
+        "MaterialGasCRMHead": "Gas Material",
+        "MaterialGasRate": "2",
+        "MaterialGasConsumption": "10",
+        "MaterialWireCRMHead": "Wire Material",
+        "MaterialWireRate": "1",
+        "MaterialWireConsumption": "20",
+        "PowerCRMHead": "Power",
+        "PowerElectricityRate": "0.15",
+        "PowerElectricityConsumption": "5",
+        "LabourCRMHead": "Labour",
+        "LabourManPowerRate": "20",
+        "LabourManPowerConsumption": "2",
+        "LabourManPowerCost": "40",
+        "LabourStaffCRMHead": "Staff",
+        "LabourStaffCost": "25",
+        "ConsumableMaintenanceCRMHead": "Maintenance",
+        "ConsumableMaintenanceCost": "10",
+        "ConsumableCRMHead": "Consumables",
+        "ConsumableCost": "15",
+        "ConsumableWaterCRMHead": "Water",
+        "ConsumableWaterCost": "5",
+        "ConsumableJigStrippingCRMHead": "Jig Stripping",
+        "ConsumableJigStrippingCost": "8",
+        "ConsumableMachineCRMHead": "Machine",
+        "MachineConsumptionCost": "12",
+        "ConsumableWelderCRMHead": "Welder",
+        "WelderCost": "7",
+        "InterestCRMHead": "Interest",
+        "InterestCost": "50",
+        "DepriciationCRMHead": "Depreciation",
+        "DepriciationCost": "30",
+        "OtherOperationCRMHead": "Other Operation",
+        "OtherOperationCode": "OTH001",
+        "OtherOperationIdRef": "OTHER123",
+        "OtherOperationCost": "20",
+        "StatuatoryAndLicenseCRMHead": "Statutory and License",
+        "StatuatoryAndLicenseCost": "5",
+        "RejectionAndReworkCRMHead": "Rejection and Rework",
+        "RejectionAndReworkPercentage": "5",
+        "ProfitCRMHead": "Profit",
+        "ProfitCRMPercentage": "20",
+        "OtherCostCRMHead": "Maintenance",
+        "OtherCostDescription": "Monthly maintenance cost for machinery",
+        "OtherCost": '5000',
+        "DetailedEntry": "Yes or No",
+        "IncludeInterestRateAndDepriciationInRjectionAndProfit": "Yes or No",
+        "InterestAndDepriciationCRMHead": "Depreciation",
+        "InterestAndDepriciationCost": '1500',
+        "ForType": 'Welding'
+    },
+
+
+    {
+        'Technology': 'Plastic',
+        'OperationName': 'Molding',
+        'Description': 'Description Text 2',
+        'CustomerName': 'Toyota',
+        'CustomerCode': 'C-10009',
+        'DestinationPlant': 'Bangalore',
+        'DestinationPlantCode': '1042',
+        'UOM': 'Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram',
+        'Rate': 70,
+        'EffectiveDate': DayTime().format('DD-MM-YYYY'),
+        'SurfaceTreatmentOperation': 'Yes',
+        'LabourRate': 7,
+        'Remark': 'Remark 2',
+        'LabourRatePerUOM': '8',
+        'Plant': 'Plant B',
+        'Operation Type': 'Assembly',
+        'MaterialGasCRMHead': 'Gas Material',
+        'MaterialGasRate': '3',
+        'MaterialGasConsumption': '15',
+        'MaterialWireCRMHead': 'Wire Material',
+        'MaterialWireRate': '2',
+        'MaterialWireConsumption': '25',
+        'PowerCRMHead': 'Power',
+        'PowerElectricityRate': '0.20',
+        'PowerElectricityConsumption': '7',
+        'LabourCRMHead': 'Labour',
+        'LabourManPowerRate': '25',
+        'LabourManPowerConsumption': '3',
+        'LabourManPowerCost': '75',
+        'LabourStaffCRMHead': 'Staff',
+        'LabourStaffCost': '30',
+        'ConsumableMaintenanceCRMHead': 'Maintenance',
+        'ConsumableMaintenanceCost': '20',
+        'ConsumableCRMHead': 'Consumables',
+        'ConsumableCost': '10',
+        'ConsumableWaterCRMHead': 'Water',
+        'ConsumableWaterCost': '10',
+        'ConsumableJigStrippingCRMHead': 'Jig Stripping',
+        'ConsumableJigStrippingCost': '12',
+        'ConsumableMachineCRMHead': 'Machine',
+        'MachineConsumptionCost': '20',
+        'ConsumableWelderCRMHead': 'Welder',
+        'WelderCost': '15',
+        'InterestCRMHead': 'Interest',
+        'InterestCost': '75',
+        'DepriciationCRMHead': 'Depreciation',
+        'DepriciationCost': '40',
+        'OtherOperationCRMHead': 'Other Operation',
+        'OtherOperationCode': 'OTH002',
+        'OtherOperationIdRef': 'OTHER456',
+        'OtherOperationCost': '25',
+        'StatuatoryAndLicenseCRMHead': 'Statutory and License',
+        'StatuatoryAndLicenseCost': '10',
+        'RejectionAndReworkCRMHead': 'Rejection and Rework',
+        'RejectionAndReworkPercentage': '8',
+        'ProfitCRMHead': 'Profit',
+        'ProfitCRMPercentage': '15',
+        'OtherCostCRMHead': 'Maintenance',
+        'OtherCostDescription': 'Quarterly maintenance cost for machinery',
+        'OtherCost': '3000',
+        'DetailedEntry': "Yes or No",
+        'IncludeInterestRateAndDepriciationInRjectionAndProfit': "Yes or No",
+        "InterestAndDepriciationCRMHead": "Depreciation",
+        "InterestAndDepriciationCost": '1500',
+        "ForType": 'Welding'
     }, {
-        'Technology': 'Sheet Metal',
-        'OperationName': 'Crushing',
-        'OperationCode': 'Crushing123',
-        'Description': 'Description Text',
-        "CustomerName": "Honda",
-        "CustomerCode": "C-10008",
-        'DestinationPlant': 'Manesar',
-        'DestinationPlantCode': "1032",
-        "UOM": "Gallon/Cubic Centimeter/Cubic Meter/Milliliter/Liter",
-        'Rate': 50,
-        "EffectiveDate": DayTime().format('DD-MM-YYYY'),
-        "IsSurfaceTreatmentOperation": "Yes or No",
-        'LabourRate': 5,
-        'Remark': 'Remark',
-    }, {
-        'Technology': 'Sheet Metal',
-        'OperationName': 'Crushing',
-        'OperationCode': 'Crushing123',
-        'Description': 'Description Text',
-        "CustomerName": "Honda",
-        "CustomerCode": "C-10008",
-        'DestinationPlant': 'Manesar',
-        'DestinationPlantCode': "1032",
-        "UOM": "shot/stroke/Number",
-        'Rate': 50,
-        "EffectiveDate": DayTime().format('DD-MM-YYYY'),
-        "IsSurfaceTreatmentOperation": "Yes or No",
-        'LabourRate': 5,
-        'Remark': 'Remark',
-    }, {
-        'Technology': 'Sheet Metal',
-        'OperationName': 'Crushing',
-        'OperationCode': 'Crushing123',
-        'Description': 'Description Text',
-        "CustomerName": "Honda",
-        "CustomerCode": "C-10008",
-        'DestinationPlant': 'Manesar',
-        'DestinationPlantCode': "1032",
-        'UOM': 'Square Millimeter/Square Inch/Square Feet/Square Centimeter/Square Meter',
-        'Rate': 50,
-        "EffectiveDate": DayTime().format('DD-MM-YYYY'),
-        "IsSurfaceTreatmentOperation": "Yes or No",
-        'LabourRate': 5,
-        'Remark': 'Remark',
-    }, {
-        'Technology': 'Sheet Metal',
-        'OperationName': 'Crushing',
-        'OperationCode': 'Crushing123',
-        'Description': 'Description Text',
-        "CustomerName": "Honda",
-        "CustomerCode": "C-10008",
-        'DestinationPlant': 'Manesar',
-        'DestinationPlantCode': "1032",
-        'UOM': 'Seconds/Minutes/Hours/MilliSeconds',
-        'Rate': 50,
-        "EffectiveDate": DayTime().format('DD-MM-YYYY'),
-        "IsSurfaceTreatmentOperation": "Yes or No",
-        'LabourRate': 5,
-        'Remark': 'Remark',
-    }, {
-        'Technology': 'Sheet Metal',
-        'OperationName': 'Crushing',
-        'OperationCode': 'Crushing123',
-        'Description': 'Description Text',
-        "CustomerName": "Honda",
-        "CustomerCode": "C-10008",
-        'DestinationPlant': 'Manesar',
-        'DestinationPlantCode': "1032",
-        "UOM": "micrometer/kilometer/Feet/Inch/Millimeter/Centimeter/Meter",
-        'Rate': 50,
-        "EffectiveDate": DayTime().format('DD-MM-YYYY'),
-        "IsSurfaceTreatmentOperation": "Yes or No",
-        'LabourRate': 5,
-        'Remark': 'Remark',
+        'Technology': 'Rubber',
+        'OperationName': 'Sintering',
+        'Description': 'Description Text 3',
+        'CustomerName': 'Samsung',
+        'CustomerCode': 'C-10010',
+        'DestinationPlant': 'Seoul',
+        'DestinationPlantCode': '2031',
+        'UOM': 'Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram',
+        'Rate': 90,
+        'EffectiveDate': DayTime().format('DD-MM-YYYY'),
+        'SurfaceTreatmentOperation': 'No',
+        'LabourRate': 8,
+        'Remark': 'Remark 3',
+        'LabourRatePerUOM': '9',
+        'Plant': 'Plant C',
+        'Operation Type': 'Machining',
+        'MaterialGasCRMHead': 'Gas Material',
+        'MaterialGasRate': '4',
+        'MaterialGasConsumption': '20',
+        'MaterialWireCRMHead': 'Wire Material',
+        'MaterialWireRate': '3',
+        'MaterialWireConsumption': '30',
+        'PowerCRMHead': 'Power',
+        'PowerElectricityRate': '0.25',
+        'PowerElectricityConsumption': '10',
+        'LabourCRMHead': 'Labour',
+        'LabourManPowerRate': '30',
+        'LabourManPowerConsumption': '4',
+        'LabourManPowerCost': '120',
+        'LabourStaffCRMHead': 'Staff',
+        'LabourStaffCost': '40',
+        'ConsumableMaintenanceCRMHead': 'Maintenance',
+        'ConsumableMaintenanceCost': '30',
+        'ConsumableCRMHead': 'Consumables',
+        'ConsumableCost': '15',
+        'ConsumableWaterCRMHead': 'Water',
+        'ConsumableWaterCost': '15',
+        'ConsumableJigStrippingCRMHead': 'Jig Stripping',
+        'ConsumableJigStrippingCost': '18',
+        'ConsumableMachineCRMHead': 'Machine',
+        'MachineConsumptionCost': '30',
+        'ConsumableWelderCRMHead': 'Welder',
+        'WelderCost': '20',
+        'InterestCRMHead': 'Interest',
+        'InterestCost': '100',
+        'DepriciationCRMHead': 'Depreciation',
+        'DepriciationCost': '50',
+        'OtherOperationCRMHead': 'Other Operation',
+        'OtherOperationCode': 'OTH003',
+        'OtherOperationIdRef': 'OTHER789',
+        'OtherOperationCost': '30',
+        'StatuatoryAndLicenseCRMHead': 'Statutory and License',
+        'StatuatoryAndLicenseCost': '15',
+        'RejectionAndReworkCRMHead': 'Rejection and Rework',
+        'RejectionAndReworkPercentage': '6',
+        'ProfitCRMHead': 'Profit',
+        'ProfitCRMPercentage': '18',
+        'OtherCostCRMHead': 'Transportation',
+        'OtherCostDescription': 'Transportation cost for raw materials',
+        'OtherCost': '4000',
+        'DetailedEntry': "Yes or No",
+        'IncludeInterestRateAndDepriciationInRjectionAndProfit': "Yes or No",
+        "InterestAndDepriciationCRMHead": "Interest",
+        "InterestAndDepriciationCost": '1900',
+        "ForType": 'Welding'
     }
 ]
 /** 
@@ -1268,6 +1705,9 @@ export const ProfitTempData = [
 * @desc USED IN EXCEL HEADER FOR BULK UPLOAD
 */
 export const Labour = [
+
+    { label: 'CustomerName', value: 'CustomerName', }, //*
+    { label: 'CustomerCode', value: 'CustomerCode', }, //*
     { label: 'EmploymentTerms', value: 'EmploymentTerms', }, //*
     { label: 'VendorName', value: 'VendorName', },
     { label: 'VendorCode', value: 'VendorCode', }, //*
@@ -1277,9 +1717,12 @@ export const Labour = [
     { label: 'LabourType', value: 'LabourType', }, //*
     { label: 'RatePerPersonPerAnnum', value: 'RatePerPersonPerAnnum', }, //*
     { label: 'EffectiveDate', value: 'EffectiveDate', },
+    { label: 'ProductNumber', value: 'ProductNumber', },
 ]
 export const LabourTempData = [
     {
+        "CustomerName": 'Honda',
+        "CustomerCode": 'C-10008',
         'EmploymentTerms': 'Contractual',
         'VendorName': 'Tata Steel',
         'VendorCode': 'VC123',
@@ -1289,8 +1732,11 @@ export const LabourTempData = [
         'LabourType': 'Skilled',
         'RatePerPersonPerAnnum': 2000000,
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
+        "ProductNumber": 'Silencer'
     },
     {
+        "CustomerName": 'Honda',
+        "CustomerCode": 'C-10008',
         'EmploymentTerms': 'Employed',
         'VendorName': 'Reliance',
         'VendorCode': 'VC124',
@@ -1298,8 +1744,9 @@ export const LabourTempData = [
         'PlantCode': 'Plant02',
         'MachineType': 'Grinder',
         'LabourType': 'Semi-Skilled',
-        'RatePerPerson/Annum': 300000,
+        'RatePerPersonPerAnnum': 300000,
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
+        "ProductNumber": 'Silencer'
     }
 ]
 export const Volume = [
@@ -1378,11 +1825,11 @@ export const Plant = [
 * @desc USED IN EXCEL HEADER FOR BULK UPLOAD
 */
 export const BOP_ZBC_DOMESTIC = [
-    { label: 'BOPPartNumber', value: 'BOPPartNumber', }, //*
-    { label: 'BOPPartName', value: 'BOPPartName', }, //*
-    { label: 'BOPCategory', value: 'BOPCategory', }, //*
+    { label: 'BoughtOutPartNumber', value: 'BoughtOutPartNumber', }, //*
+    { label: 'BoughtOutPartName', value: 'BoughtOutPartName', }, //*
+    { label: 'CategoryName', value: 'CategoryName', }, //*
     { label: 'Specification', value: 'Specification', },
-    { label: 'UOM', value: 'UOM', }, //*
+    { label: 'UnitOfMeasurement', value: 'UnitOfMeasurement', }, //*
     { label: 'PlantCode', value: 'PlantCode', }, //*
     { label: 'VendorCode', value: 'VendorCode', }, //NOUI
     { label: 'BasicRate', value: 'BasicRate', }, //*
@@ -1392,33 +1839,33 @@ export const BOP_ZBC_DOMESTIC = [
 
 export const BOP_ZBC_DOMESTIC_TempData = [
     {
-        'BOPPartNumber': 'BOP Part123',
-        'BOPPartName': 'Screw',
-        'BOPCategory': 'Machine',
+        'BoughtOutPartNumber': 'BOP Part123',
+        'BoughtOutPartName': 'Screw',
+        'CategoryName': 'Machine',
         'Specification': '20 mm',
-        "UOM": "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram",
+        "UnitOfMeasurement": "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram",
         'PlantCode': 'Plant101',
         'VendorCode': 'Sys01',
         'BasicRate': '100',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text'
     }, {
-        'BOPPartNumber': 'BOP Part123',
-        'BOPPartName': 'Screw',
-        'BOPCategory': 'Machine',
+        'BoughtOutPartNumber': 'BOP Part123',
+        'BoughtOutPartName': 'Screw',
+        'CategoryName': 'Machine',
         'Specification': '20 mm',
-        "UOM": "Gallon/Cubic Centimeter/Cubic Meter/Milliliter/Liter",
+        "UnitOfMeasurement": "Gallon/Cubic Centimeter/Cubic Meter/Milliliter/Liter",
         'PlantCode': 'Plant101',
         'VendorCode': 'Sys01',
         'BasicRate': '100',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text'
     }, {
-        'BOPPartNumber': 'BOP Part123',
-        'BOPPartName': 'Screw',
-        'BOPCategory': 'Machine',
+        'BoughtOutPartNumber': 'BOP Part123',
+        'BoughtOutPartName': 'Screw',
+        'CategoryName': 'Machine',
         'Specification': '20 mm',
-        "UOM": "shot/stroke/Number",
+        "UnitOfMeasurement": "shot/stroke/Number",
         'PlantCode': 'Plant101',
         'VendorCode': 'Sys01',
         'BasicRate': '100',
@@ -1431,18 +1878,17 @@ export const BOP_ZBC_DOMESTIC_TempData = [
 * @desc USED IN EXCEL HEADER FOR BULK UPLOAD
 */
 export const BOP_VBC_DOMESTIC = [
-    { label: 'BOPPartNumber', value: 'BOPPartNumber', }, //*
-    { label: 'BOPPartName', value: 'BOPPartName', }, //*
-    { label: 'BOPCategory', value: 'BOPCategory', }, //*
+    { label: 'BoughtOutPartNumber', value: 'BoughtOutPartNumber', }, //*
+    { label: 'BoughtOutPartName', value: 'BoughtOutPartName', }, //*
+    { label: 'CategoryName', value: 'CategoryName', }, //*
     { label: 'Specification', value: 'Specification', },
-    { label: 'UOM', value: 'UOM', }, //*
-    { label: 'DestinationPlant', value: 'DestinationPlant', }, //*
-    { label: 'DestinationPlantCode', value: 'DestinationPlantCode', }, //*
-    { label: 'VendorName', value: 'VendorName', },
+    { label: 'UnitOfMeasurement', value: 'UnitOfMeasurement', }, //*
+    { label: 'PlantCode', value: 'PlantCode', }, //*
+    { label: 'IsClientVendorBOP', value: 'IsClientVendorBOP', },
     { label: 'VendorCode', value: 'VendorCode', }, //NOUI
     // { label: 'VendorPlantCode', value: 'VendorPlantCode', }, //NOUI
-    { label: 'SourceVendorName', value: 'SourceVendorName', },
-    { label: 'SourceVendorLocation', value: 'SourceVendorLocation', },
+    { label: 'Source', value: 'Source', },
+    { label: 'SourceLocation', value: 'SourceLocation', },
     { label: 'BasicRate', value: 'BasicRate', }, //*
     { label: 'EffectiveDate', value: 'EffectiveDate', },
     { label: 'Remark', value: 'Remark' }
@@ -1450,55 +1896,52 @@ export const BOP_VBC_DOMESTIC = [
 
 export const BOP_VBC_DOMESTIC_TempData = [
     {
-        'BOPPartNumber': 'BOP Part123',
-        'BOPPartName': 'Screw',
-        'BOPCategory': 'Machine',
+        'BoughtOutPartNumber': 'BOP Part123',
+        'BoughtOutPartName': 'Screw',
+        'CategoryName': 'Machine',
         'Specification': '20 mm',
-        "UOM": "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram",
-        'DestinationPlant': 'Manesar',
-        'DestinationPlantCode': "1032",
-        'VendorName': 'Systematix',
+        "UnitOfMeasurement": "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram",
+        'PlantCode': "1032",
+        "IsClientVendorBOP": "YES",
         'VendorCode': 'Sys01',
         'VendorPlant': 'VPlant',
-        'SourceVendorName': 'VPlant01',
+        'Source': 'VPlant01',
         'VendorSourceName': 'TATA Steel',
-        'SourceVendorLocation': 'Jamshedpur',
+        'SourceLocation': 'Jamshedpur',
         // 'MinimumOrderQuantity': '1',
         'BasicRate(INR)': '100',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text'
     }, {
-        'BOPPartNumber': 'BOP Part123',
-        'BOPPartName': 'Screw',
-        'BOPCategory': 'Machine',
+        'BoughtOutPartNumber': 'BOP Part123',
+        'BoughtOutPartName': 'Screw',
+        'CategoryName': 'Machine',
         'Specification': '20 mm',
-        "UOM": "Gallon/Cubic Centimeter/Cubic Meter/Milliliter/Liter",
-        'DestinationPlant': 'Manesar',
-        'DestinationPlantCode': "1032",
-        'VendorName': 'Systematix',
+        "UnitOfMeasurement": "Gallon/Cubic Centimeter/Cubic Meter/Milliliter/Liter",
+        'PlantCode': "1032",
+        "IsClientVendorBOP": "NO",
         'VendorCode': 'Sys01',
         'VendorPlant': 'VPlant',
-        'SourceVendorName': 'VPlant01',
+        'Source': 'VPlant01',
         'VendorSourceName': 'TATA Steel',
-        'SourceVendorLocation': 'Jamshedpur',
+        'SourceLocation': 'Jamshedpur',
         // 'MinimumOrderQuantity': '1',
         'BasicRate(INR)': '100',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text'
     }, {
-        'BOPPartNumber': 'BOP Part123',
-        'BOPPartName': 'Screw',
-        'BOPCategory': 'Machine',
+        'BoughtOutPartNumber': 'BOP Part123',
+        'BoughtOutPartName': 'Screw',
+        'CategoryName': 'Machine',
         'Specification': '20 mm',
-        "UOM": "shot/stroke/Number",
-        'DestinationPlant': 'Manesar',
-        'DestinationPlantCode': "1032",
-        'VendorName': 'Systematix',
+        "UnitOfMeasurement": "shot/stroke/Number",
+        'PlantCode': "1032",
+        "IsClientVendorBOP": "YES",
         'VendorCode': 'Sys01',
         'VendorPlant': 'VPlant',
-        'SourceVendorName': 'VPlant01',
+        'Source': 'VPlant01',
         'VendorSourceName': 'TATA Steel',
-        'SourceVendorLocation': 'Jamshedpur',
+        'SourceLocation': 'Jamshedpur',
         // 'MinimumOrderQuantity': '1',
         'BasicRate(INR)': '100',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
@@ -1510,13 +1953,12 @@ export const BOP_VBC_DOMESTIC_TempData = [
 * @desc USED IN EXCEL HEADER FOR BULK UPLOAD
 */
 export const BOP_ZBC_IMPORT = [
-    { label: 'BOPPartNumber', value: 'BOPPartNumber', }, //*
-    { label: 'BOPPartName', value: 'BOPPartName', }, //*
-    { label: 'BOPCategory', value: 'BOPCategory', }, //*
+    { label: 'BoughtOutPartNumber', value: 'BoughtOutPartNumber', }, //*
+    { label: 'BoughtOutPartName', value: 'BoughtOutPartName', }, //*
+    { label: 'CategoryName', value: 'CategoryName', }, //*
     { label: 'Specification', value: 'Specification', },
-    { label: 'UOM', value: 'UOM', }, //*
+    { label: 'UnitOfMeasurement', value: 'UnitOfMeasurement', }, //*
     { label: 'PlantCode', value: 'PlantCode', }, //*
-    { label: 'VendorName', value: 'VendorName', },
     { label: 'VendorCode', value: 'VendorCode', }, //*
     { label: 'Currency', value: 'Currency', }, //*
     // { label: 'MinimumOrderQuantity', value: 'MinimumOrderQuantity', }, 
@@ -1529,11 +1971,11 @@ export const BOP_ZBC_IMPORT = [
 
 export const BOP_ZBC_IMPORT_TempData = [
     {
-        'BOPPartNumber': 'BOP Part123',
-        'BOPPartName': 'Screw',
-        'BOPCategory': 'Machine',
+        'BoughtOutPartNumber': 'BOP Part123',
+        'BoughtOutPartName': 'Screw',
+        'CategoryName': 'Machine',
         'Specification': '20 mm',
-        "UOM": "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram",
+        "UnitOfMeasurement": "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram",
         'PlantCode': 'Plant101',
         'VendorName': 'Systematix',
         'VendorCode': 'VC1',
@@ -1545,11 +1987,11 @@ export const BOP_ZBC_IMPORT_TempData = [
         'EffectiveDate': DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text'
     }, {
-        'BOPPartNumber': 'BOP Part123',
-        'BOPPartName': 'Screw',
-        'BOPCategory': 'Machine',
+        'BoughtOutPartNumber': 'BOP Part123',
+        'BoughtOutPartName': 'Screw',
+        'CategoryName': 'Machine',
         'Specification': '20 mm',
-        "UOM": "Gallon/Cubic Centimeter/Cubic Meter/Milliliter/Liter",
+        "UnitOfMeasurement": "Gallon/Cubic Centimeter/Cubic Meter/Milliliter/Liter",
         'PlantCode': 'Plant101',
         'VendorName': 'Systematix',
         'VendorCode': 'VC1',
@@ -1561,11 +2003,11 @@ export const BOP_ZBC_IMPORT_TempData = [
         'EffectiveDate': DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text'
     }, {
-        'BOPPartNumber': 'BOP Part123',
-        'BOPPartName': 'Screw',
-        'BOPCategory': 'Machine',
+        'BoughtOutPartNumber': 'BOP Part123',
+        'BoughtOutPartName': 'Screw',
+        'CategoryName': 'Machine',
         'Specification': '20 mm',
-        "UOM": "shot/stroke/Number",
+        "UnitOfMeasurement": "shot/stroke/Number",
         'PlantCode': 'Plant101',
         'VendorName': 'Systematix',
         'VendorCode': 'VC1',
@@ -1579,14 +2021,12 @@ export const BOP_ZBC_IMPORT_TempData = [
     }
 ]
 export const BOP_CBC_DOMESTIC = [
-    { label: 'BOPPartNumber', value: 'BOPPartNumber', }, //*
-    { label: 'BOPPartName', value: 'BOPPartName', }, //*
-    { label: 'BOPCategory', value: 'BOPCategory', }, //*
+    { label: 'BoughtOutPartNumber', value: 'BoughtOutPartNumber', }, //*
+    { label: 'BoughtOutPartName', value: 'BoughtOutPartName', }, //*
+    { label: 'CategoryName', value: 'CategoryName', }, //*
     { label: 'Specification', value: 'Specification', },
-    { label: 'UOM', value: 'UOM', }, //*
-    { label: 'DestinationPlant', value: 'DestinationPlant', }, //*
-    { label: 'DestinationPlantCode', value: 'DestinationPlantCode', }, //*
-    { label: 'CustomerName', value: 'CustomerName', },
+    { label: 'UnitOfMeasurement', value: 'UnitOfMeasurement', }, //*
+    { label: 'PlantCode', value: 'PlantCode', }, //*
     { label: 'CustomerCode', value: 'CustomerCode', }, //NOUI
     { label: 'BasicRate', value: 'BasicRate', }, //*
     { label: 'EffectiveDate', value: 'EffectiveDate', },
@@ -1595,42 +2035,36 @@ export const BOP_CBC_DOMESTIC = [
 
 export const BOP_CBC_DOMESTIC_TempData = [
     {
-        'BOPPartNumber': 'BOP Part123',
-        'BOPPartName': 'Screw',
-        'BOPCategory': 'Machine',
+        'BoughtOutPartNumber': 'BOP Part123',
+        'BoughtOutPartName': 'Screw',
+        'CategoryName': 'Machine',
         'Specification': '20 mm',
-        "UOM": "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram",
-        'DestinationPlant': 'Manesar',
-        'DestinationPlantCode': "1032",
-        "CustomerName": "Honda",
+        "UnitOfMeasurement": "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram",
+        'PlantCode': "1032",
         "CustomerCode": "C-10008",
         // 'MinimumOrderQuantity': '1',
         'BasicRate': '100',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text'
     }, {
-        'BOPPartNumber': 'BOP Part123',
-        'BOPPartName': 'Screw',
-        'BOPCategory': 'Machine',
+        'BoughtOutPartNumber': 'BOP Part123',
+        'BoughtOutPartName': 'Screw',
+        'CategoryName': 'Machine',
         'Specification': '20 mm',
-        "UOM": "Gallon/Cubic Centimeter/Cubic Meter/Milliliter/Liter",
-        'DestinationPlant': 'Manesar',
-        'DestinationPlantCode': "1032",
-        "CustomerName": "Honda",
+        "UnitOfMeasurement": "Gallon/Cubic Centimeter/Cubic Meter/Milliliter/Liter",
+        'PlantCode': "1032",
         "CustomerCode": "C-10008",
         // 'MinimumOrderQuantity': '1',
         'BasicRate': '100',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text'
     }, {
-        'BOPPartNumber': 'BOP Part123',
-        'BOPPartName': 'Screw',
-        'BOPCategory': 'Machine',
+        'BoughtOutPartNumber': 'BOP Part123',
+        'BoughtOutPartName': 'Screw',
+        'CategoryName': 'Machine',
         'Specification': '20 mm',
-        "UOM": "shot/stroke/Number",
-        'DestinationPlant': 'Manesar',
-        'DestinationPlantCode': "1032",
-        "CustomerName": "Honda",
+        "UnitOfMeasurement": "shot/stroke/Number",
+        'PlantCode': "1032",
         "CustomerCode": "C-10008",
         // 'MinimumOrderQuantity': '1',
         'BasicRate': '100',
@@ -1643,14 +2077,13 @@ export const BOP_CBC_DOMESTIC_TempData = [
 * @desc USED IN EXCEL HEADER FOR BULK UPLOAD
 */
 export const BOP_VBC_IMPORT = [
-    { label: 'BOPPartNumber', value: 'BOPPartNumber', }, //*
-    { label: 'BOPPartName', value: 'BOPPartName', }, //*
-    { label: 'BOPCategory', value: 'BOPCategory', }, //*
+    { label: 'BoughtOutPartNumber', value: 'BoughtOutPartNumber', }, //*
+    { label: 'BoughtOutPartName', value: 'BoughtOutPartName', }, //*
+    { label: 'CategoryName', value: 'CategoryName', }, //*
     { label: 'Specification', value: 'Specification', },
-    { label: 'UOM', value: 'UOM', }, //*
-    { label: 'DestinationPlant', value: 'DestinationPlant', },
-    { label: 'DestinationPlantCode', value: 'DestinationPlantCode', },
-    { label: 'VendorName', value: 'VendorName', },
+    { label: 'UnitOfMeasurement', value: 'UnitOfMeasurement', }, //*
+    { label: 'PlantCode', value: 'PlantCode', },
+    { label: 'IsClientVendorBOP', value: 'IsClientVendorBOP', },
     { label: 'VendorCode', value: 'VendorCode', }, //NOUI
     // { label: 'VendorPlant', value: 'VendorPlant' },
     // { label: 'VendorPlantCode', value: 'VendorPlantCode', }, //NOUI
@@ -1667,14 +2100,13 @@ export const BOP_VBC_IMPORT = [
 
 export const BOP_VBC_IMPORT_TempData = [
     {
-        'BOPPartNumber': 'BOP Part123',
-        'BOPPartName': 'Screw',
-        'BOPCategory': 'Machine',
+        'BoughtOutPartNumber': 'BOP Part123',
+        'BoughtOutPartName': 'Screw',
+        'CategoryName': 'Machine',
         'Specification': '20 mm',
-        "UOM": "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram",
-        'DestinationPlant': 'Manesar',
-        'DestinationPlantCode': '1032',
-        'VendorName': 'Systematix',
+        "UnitOfMeasurement": "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram",
+        'PlantCode': '1032',
+        "IsClientVendorBOP": "YES",
         'VendorCode': 'Sys01',
         'SourceVendorName': 'TATA Steel',
         'SourceVendorLocation': 'Jamshedpur',
@@ -1685,14 +2117,13 @@ export const BOP_VBC_IMPORT_TempData = [
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text'
     }, {
-        'BOPPartNumber': 'BOP Part123',
-        'BOPPartName': 'Screw',
-        'BOPCategory': 'Machine',
+        'BoughtOutPartNumber': 'BOP Part123',
+        'BoughtOutPartName': 'Screw',
+        'CategoryName': 'Machine',
         'Specification': '20 mm',
-        "UOM": "Gallon/Cubic Centimeter/Cubic Meter/Milliliter/Liter",
-        'DestinationPlant': 'Manesar',
-        'DestinationPlantCode': '1032',
-        'VendorName': 'Systematix',
+        "UnitOfMeasurement": "Gallon/Cubic Centimeter/Cubic Meter/Milliliter/Liter",
+        'PlantCode': '1032',
+        "IsClientVendorBOP": "YES",
         'VendorCode': 'Sys01',
         'SourceVendorName': 'TATA Steel',
         'SourceVendorLocation': 'Jamshedpur',
@@ -1703,14 +2134,13 @@ export const BOP_VBC_IMPORT_TempData = [
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text'
     }, {
-        'BOPPartNumber': 'BOP Part123',
-        'BOPPartName': 'Screw',
-        'BOPCategory': 'Machine',
+        'BoughtOutPartNumber': 'BOP Part123',
+        'BoughtOutPartName': 'Screw',
+        'CategoryName': 'Machine',
         'Specification': '20 mm',
-        "UOM": "shot/stroke/Number",
-        'DestinationPlant': 'Manesar',
-        'DestinationPlantCode': '1032',
-        'VendorName': 'Systematix',
+        "UnitOfMeasurement": "shot/stroke/Number",
+        'PlantCode': '1032',
+        "IsClientVendorBOP": "NO",
         'VendorCode': 'Sys01',
         'SourceVendorName': 'TATA Steel',
         'SourceVendorLocation': 'Jamshedpur',
@@ -1723,14 +2153,12 @@ export const BOP_VBC_IMPORT_TempData = [
     }
 ]
 export const BOP_CBC_IMPORT = [
-    { label: 'BOPPartNumber', value: 'BOPPartNumber', }, //*
-    { label: 'BOPPartName', value: 'BOPPartName', }, //*
-    { label: 'BOPCategory', value: 'BOPCategory', }, //*
+    { label: 'BoughtOutPartNumber', value: 'BoughtOutPartNumber', }, //*
+    { label: 'BoughtOutPartName', value: 'BoughtOutPartName', }, //*
+    { label: 'CategoryName', value: 'CategoryName', }, //*
     { label: 'Specification', value: 'Specification', },
-    { label: 'UOM', value: 'UOM', }, //*
-    { label: 'DestinationPlant', value: 'DestinationPlant', },
-    { label: 'DestinationPlantCode', value: 'DestinationPlantCode', },
-    { label: 'CustomerName', value: 'CustomerName', },
+    { label: 'UnitOfMeasurement', value: 'UnitOfMeasurement', }, //*
+    { label: 'PlantCode', value: 'PlantCode', },
     { label: 'CustomerCode', value: 'CustomerCode', }, //NOUI
     { label: 'Currency', value: 'Currency', }, //*
     { label: 'IncoTerm', value: 'IncoTerm', },
@@ -1742,14 +2170,12 @@ export const BOP_CBC_IMPORT = [
 
 export const BOP_CBC_IMPORT_TempData = [
     {
-        'BOPPartNumber': 'BOP Part123',
-        'BOPPartName': 'Screw',
-        'BOPCategory': 'Machine',
+        'BoughtOutPartNumber': 'BOP Part123',
+        'BoughtOutPartName': 'Screw',
+        'CategoryName': 'Machine',
         'Specification': '20 mm',
-        "UOM": "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram",
-        'DestinationPlant': 'Manesar',
-        'DestinationPlantCode': '1032',
-        "CustomerName": "Honda",
+        "UnitOfMeasurement": "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram",
+        'PlantCode': '1032',
         "CustomerCode": "C-10008",
         'Currency': 'INR or USD',
         'IncoTerm': 'CFR',
@@ -1758,14 +2184,12 @@ export const BOP_CBC_IMPORT_TempData = [
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text'
     }, {
-        'BOPPartNumber': 'BOP Part123',
-        'BOPPartName': 'Screw',
-        'BOPCategory': 'Machine',
+        'BoughtOutPartNumber': 'BOP Part123',
+        'BoughtOutPartName': 'Screw',
+        'CategoryName': 'Machine',
         'Specification': '20 mm',
-        "UOM": "Gallon/Cubic Centimeter/Cubic Meter/Milliliter/Liter",
-        'DestinationPlant': 'Manesar',
-        'DestinationPlantCode': '1032',
-        "CustomerName": "Honda",
+        "UnitOfMeasurement": "Gallon/Cubic Centimeter/Cubic Meter/Milliliter/Liter",
+        'PlantCode': '1032',
         "CustomerCode": "C-10008",
         'Currency': 'INR or USD',
         'IncoTerm': 'CFR',
@@ -1774,14 +2198,12 @@ export const BOP_CBC_IMPORT_TempData = [
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text'
     }, {
-        'BOPPartNumber': 'BOP Part123',
-        'BOPPartName': 'Screw',
-        'BOPCategory': 'Machine',
+        'BoughtOutPartNumber': 'BOP Part123',
+        'BoughtOutPartName': 'Screw',
+        'CategoryName': 'Machine',
         'Specification': '20 mm',
-        "UOM": "shot/stroke/Number",
-        'DestinationPlant': 'Manesar',
-        'DestinationPlantCode': '1032',
-        "CustomerName": "Honda",
+        "UnitOfMeasurement": "shot/stroke/Number",
+        'PlantCode': '1032',
         "CustomerCode": "C-10008",
         'Currency': 'INR or USD',
         'IncoTerm': 'CFR',
@@ -1798,7 +2220,6 @@ export const BOP_CBC_IMPORT_TempData = [
 export const VOLUME_ACTUAL_ZBC = [
     { label: 'PlantCode', value: 'PlantCode', }, //*
     { label: 'PartNumber', value: 'PartNumber', }, //*
-    { label: 'PartName', value: 'PartName', }, //NOUI
     { label: 'RevisionNumber', value: 'RevisionNumber', },
     { label: 'Year', value: 'Year', }, //*
     { label: 'Month', value: 'Month', }, //NOUI,*
@@ -1809,7 +2230,6 @@ export const VOLUME_ACTUAL_ZBC_TEMPDATA = [
     {
         'PlantCode': 'P1',
         'PartNumber': 'Screw01',
-        'PartName': 'Screw',
         'RevisionNumber': '1',
         'Year': `${DayTime().$y}-${DayTime().$y + 1}`,
         'Month': DayTime().format('MMMM'),
@@ -1822,10 +2242,8 @@ export const VOLUME_ACTUAL_ZBC_TEMPDATA = [
 */
 export const VOLUME_ACTUAL_VBC = [
     { label: 'VendorCode', value: 'VendorCode', }, //*
-    { label: 'DestinationPlant', value: 'DestinationPlant', }, //*
-    { label: 'DestinationPlantCode', value: 'DestinationPlantCode', }, //*
+    { label: 'PlantCode', value: 'PlantCode', }, //*
     { label: 'PartNumber', value: 'PartNumber', }, //*
-    { label: 'PartName', value: 'PartName', }, //NOUI
     { label: 'RevisionNumber', value: 'RevisionNumber', },
     { label: 'Year', value: 'Year', }, //*
     { label: 'Month', value: 'Month', }, //NOUI ,*
@@ -1835,10 +2253,8 @@ export const VOLUME_ACTUAL_VBC = [
 export const VOLUME_ACTUAL_VBC_TEMPDATA = [
     {
         'VendorCode': 'Tata01',
-        'DestinationPlant': 'Manesar',
-        'DestinationPlantCode': 1032,
+        'PlantCode': 1032,
         'PartNumber': 'Screw Jack',
-        'PartName': 'Screw',
         'RevisionNumber': '1',
         'Year': `${DayTime().$y}-${DayTime().$y + 1}`,
         'Month': DayTime().format('MMMM'),
@@ -1850,10 +2266,8 @@ export const VOLUME_ACTUAL_VBC_TEMPDATA = [
 */
 export const VOLUME_ACTUAL_CBC = [
     { label: 'CustomerCode', value: 'CustomerCode', }, //*
-    { label: 'DestinationPlant', value: 'DestinationPlant', }, //*
-    { label: 'DestinationPlantCode', value: 'DestinationPlantCode', }, //*
+    { label: 'PlantCode', value: 'PlantCode', }, //*
     { label: 'PartNumber', value: 'PartNumber', }, //*
-    { label: 'PartName', value: 'PartName', }, //NOUI
     { label: 'RevisionNumber', value: 'RevisionNumber', },
     { label: 'Year', value: 'Year', }, //*
     { label: 'Month', value: 'Month', }, //NOUI ,*
@@ -1863,10 +2277,8 @@ export const VOLUME_ACTUAL_CBC = [
 export const VOLUME_ACTUAL_CBC_TEMPDATA = [
     {
         'CustomerCode': 'C-10008',
-        'DestinationPlant': 'Manesar',
-        'DestinationPlantCode': 1032,
+        'PlantCode': 1032,
         'PartNumber': 'Screw Jack',
-        'PartName': 'Screw',
         'RevisionNumber': '1',
         'Year': `${DayTime().$y}-${DayTime().$y + 1}`,
         'Month': DayTime().format('MMMM'),
@@ -1879,7 +2291,6 @@ export const VOLUME_ACTUAL_CBC_TEMPDATA = [
 export const VOLUME_BUDGETED_ZBC = [
     { label: 'PlantCode', value: 'PlantCode', }, //*
     { label: 'PartNumber', value: 'PartNumber', }, //*
-    { label: 'PartName', value: 'PartName', }, //NOUI
     { label: 'RevisionNumber', value: 'RevisionNumber', },
     { label: 'Year', value: 'Year', }, //*
     { label: 'Month', value: 'Month', }, //NOUI
@@ -1891,7 +2302,6 @@ export const VOLUME_BUDGETED_ZBC_TEMPDATA = [
     {
         'PlantCode': 'Systematix01',
         'PartNumber': 'Screw01',
-        'PartName': 'Screw',
         'RevisionNumber': '1',
         'Year': `${DayTime().$y}-${DayTime().$y + 1}`,
         'Month': DayTime().format('MMMM'),
@@ -1905,10 +2315,8 @@ export const VOLUME_BUDGETED_ZBC_TEMPDATA = [
 */
 export const VOLUME_BUDGETED_VBC = [
     { label: 'VendorCode', value: 'VendorCode', }, //*
-    { label: 'DestinationPlant', value: 'DestinationPlant', }, //*
-    { label: 'DestinationPlantCode', value: 'DestinationPlantCode', }, //*
+    { label: 'PlantCode', value: 'PlantCode', }, //*
     { label: 'PartNumber', value: 'PartNumber', }, //*
-    { label: 'PartName', value: 'PartName', },//NOUI
     { label: 'RevisionNumber', value: 'RevisionNumber', },
     { label: 'Year', value: 'Year', }, //*
     { label: 'Month', value: 'Month', }, //NOUI
@@ -1919,10 +2327,8 @@ export const VOLUME_BUDGETED_VBC = [
 export const VOLUME_BUDGETED_VBC_TEMPDATA = [
     {
         'VendorCode': 'Tata01',
-        'DestinationPlant': 'Manesar',
-        'DestinationPlantCode': "1032",
+        'PlantCode': "1032",
         'PartNumber': 'Screw01',
-        'PartName': 'Screw',
         'RevisionNumber': '1',
         'Year': `${DayTime().$y}-${DayTime().$y + 1}`,
         'Month': DayTime().format('MMMM'),
@@ -1932,10 +2338,8 @@ export const VOLUME_BUDGETED_VBC_TEMPDATA = [
 ]
 export const VOLUME_BUDGETED_CBC = [
     { label: 'CustomerCode', value: 'CustomerCode', }, //*
-    { label: 'DestinationPlant', value: 'DestinationPlant', }, //*
-    { label: 'DestinationPlantCode', value: 'DestinationPlantCode', }, //*
+    { label: 'PlantCode', value: 'PlantCode', }, //*
     { label: 'PartNumber', value: 'PartNumber', }, //*
-    { label: 'PartName', value: 'PartName', },//NOUI
     { label: 'RevisionNumber', value: 'RevisionNumber', },
     { label: 'Year', value: 'Year', }, //*
     { label: 'Month', value: 'Month', }, //NOUI
@@ -1946,10 +2350,8 @@ export const VOLUME_BUDGETED_CBC = [
 export const VOLUME_BUDGETED_CBC_TEMPDATA = [
     {
         'CustomerCode': 'C-10008',
-        'DestinationPlant': 'Manesar',
-        'DestinationPlantCode': "1032",
+        'PlantCode': "1032",
         'PartNumber': 'Screw01',
-        'PartName': 'Screw',
         'RevisionNumber': '1',
         'Year': `${DayTime().$y}-${DayTime().$y + 1}`,
         'Month': DayTime().format('MMMM'),
@@ -2146,7 +2548,6 @@ export const Power = [
 */
 export const MachineZBC = [
     { label: 'Technology', value: 'Technology', }, //*
-    { label: "PlantName", value: "PlantName" },
     { label: 'PlantCode', value: 'PlantCode', }, //*
     { label: 'MachineNo', value: 'MachineNo', }, //*
     { label: 'MachineSpecification', value: 'MachineSpecification', },
@@ -2165,7 +2566,6 @@ export const MachineZBCTempData = [
     {
         'Technology': 'Sheet Metal',
         'PlantCode': '8820',
-        'PlantName': 'P882022',
         'MachineNo': 'SM1002',
         'MachineSpecification': 'Mechanical Power Press',
         'MachineName': 'Power Press',
@@ -2180,7 +2580,6 @@ export const MachineZBCTempData = [
     }, {
         'Technology': 'Sheet Metal',
         'PlantCode': '8820',
-        'PlantName': 'P882022',
         'MachineNo': 'SM1002',
         'MachineSpecification': 'Mechanical Power Press',
         'MachineName': 'Power Press',
@@ -2195,7 +2594,6 @@ export const MachineZBCTempData = [
     }, {
         'Technology': 'Sheet Metal',
         'PlantCode': '8820',
-        'PlantName': 'P882022',
         'MachineNo': 'SM1002',
         'MachineSpecification': 'Mechanical Power Press',
         'MachineName': 'Power Press',
@@ -2210,7 +2608,6 @@ export const MachineZBCTempData = [
     }, {
         'Technology': 'Sheet Metal',
         'PlantCode': '8820',
-        'PlantName': 'P882022',
         'MachineNo': 'SM1002',
         'MachineSpecification': 'Mechanical Power Press',
         'MachineName': 'Power Press',
@@ -2225,7 +2622,6 @@ export const MachineZBCTempData = [
     }, {
         'Technology': 'Sheet Metal',
         'PlantCode': '8820',
-        'PlantName': 'P882022',
         'MachineNo': 'SM1002',
         'MachineSpecification': 'Mechanical Power Press',
         'MachineName': 'Power Press',
@@ -2245,59 +2641,63 @@ export const MachineZBCTempData = [
 */
 export const MHRMoreZBC = [
     { label: "Technology", value: "Technology", }, //*
-    { label: "PlantName", value: "PlantName" },
     { label: "PlantCode", value: "PlantCode", }, //*
+    { label: "VendorCode", value: "VendorCode", },
+    { label: "CustomerCode", value: "CustomerCode", },
     { label: "MachineNo", value: "MachineNo", }, //*
     { label: "MachineName", value: "MachineName", }, //*
-    { label: "MachineSpec", value: "MachineSpec", },
+    { label: "MachineSpecification", value: "MachineSpecification", },
     { label: "Description", value: "Description", },
     { label: "MachineType", value: "MachineType", },
+    { label: 'MachineRate', value: 'MachineRate', },
     { label: "Manufacturer", value: "Manufacturer", },
     { label: "YearOfManufacturing", value: "YearOfManufacturing", },
     { label: "MachineCapacityAndTonnage", value: "MachineCapacityAndTonnage", },
     { label: "MachineCost", value: "MachineCost", }, //*
+    { label: "IsIncludeMachineCost", value: "IsIncludeMachineCost", },
     { label: "AccessoriesCost", value: "AccessoriesCost", },
     { label: "InstallationCost", value: "InstallationCost", },
     { label: "LoanPercentage", value: "LoanPercentage", },
-    { label: "EquityPercentage", value: "EquityPercentage", },
     { label: "RateOfInterest", value: "RateOfInterest", },
     { label: "NoOfShifts", value: "NoOfShifts", },
     { label: "WorkingHoursPerShift", value: "WorkingHoursPerShift", },
     { label: "NoOfWorkingDaysPerAnnum", value: "NoOfWorkingDaysPerAnnum", },
-    { label: "Availability", value: "Availability", },
+    { label: "ActualWorkingHours", value: "ActualWorkingHours", },
     { label: "DepreciationType", value: "DepreciationType", },
-    { label: "DepriciationRate", value: "DepriciationRate", },
+    { label: "DepreciationRate", value: "DepreciationRate", },
     { label: "LifeOfAsset", value: "LifeOfAsset", },//NOUI
     { label: "CostOfScrap", value: "CostOfScrap", },
     { label: "DateOfPurchase", value: "DateOfPurchase", },
-    { label: "IsMaintanceFixed", value: "IsMaintanceFixed", },
-    { label: "AnnualMaintance", value: "AnnualMaintance", },
-    { label: "AnnualMaintanaceAmount", value: "AnnualMaintanaceAmount", },
+    { label: "IsMaintenanceFixed", value: "IsMaintenanceFixed", },
+    { label: "AnnualMaintenance", value: "AnnualMaintenance", },
+    { label: "AnnualMaintenanceAmount", value: "AnnualMaintenanceAmount", },
     { label: "IsConsumableFixed", value: "IsConsumableFixed", },
     { label: "AnnualConsumable", value: "AnnualConsumable", },
     { label: "AnnualConsumableAmount", value: "AnnualConsumableAmount", },
-    { label: "InsuaranceTypeFixed", value: "InsuaranceTypeFixed", },
+    { label: "InsuranceTypeFixed", value: "InsuranceTypeFixed", },
     { label: "InsuranceAmount", value: "InsuranceAmount", },
     { label: "AnnualInsurancePercentage", value: "AnnualInsurancePercentage", },
     { label: "BuildingCostPerSqFt", value: "BuildingCostPerSqFt", },
     { label: "MachineFloorAreaSqPerFt", value: "MachineFloorAreaSqPerFt", },
     { label: "OtherYearlyCost", value: "OtherYearlyCost", },
+    { label: "OwnershipIsPurchased", value: "OwnershipIsPurchased", },
     { label: "UsesFuel", value: "UsesFuel", },
     { label: "Fuel", value: "Fuel", },
     { label: "ConsumptionPerAnnum", value: "ConsumptionPerAnnum", },
     { label: "UtilizingFactor", value: "UtilizingFactor", },
     { label: "PowerRatingKW", value: "PowerRatingKW", },
     { label: "UsesSolarPower", value: "UsesSolarPower", },
-    // { label: "PowerCostPerUnit", value: "PowerCostPerUnit", },
     { label: "LabourType", value: "LabourType", },
     // { label: "LabourRate", value: "LabourRate", },
     { label: "NoOfPeople", value: "NoOfPeople", },
     { label: "ProcessName", value: "ProcessName", },
     { label: "ProcessCode", value: "ProcessCode", },
     { label: "UOM", value: "UOM", },
-    { label: "OutputPerHours", value: "OutputPerHours", },
+    { label: "PowerCostPerUnit", value: "PowerCostPerUnit", },
+    { label: "TotalPowerCostAnnum", value: "TotalPowerCostAnnum", },
+    { label: "TotalPowerCostHour", value: "TotalPowerCostHour", },
     { label: 'EffectiveDate', value: 'EffectiveDate', },
-
+    { label: 'Remark', value: 'Remark', },
 ]
 
 export const CLIENT_DOWNLOAD_EXCEl = [
@@ -2322,97 +2722,106 @@ export const MHRMoreZBCTempData = [
     {
         "Technology": "Sheet Metal",
         'PlantCode': '8820',
-        'PlantName': 'P882022',
+        'VendorCode': '1111',
+        'CustomerCode': 'C-100019',
         "MachineNo": "MAC-001",
         "MachineName": "Power Press",
-        "MachineSpec": "Machine Specification",
+        "MachineSpecification": "Machine Specification",
         "Description": "Description text",
         "MachineType": "Mechanical",
+        "MachineRate": 55,
         "Manufacturer": "TATA",
         "YearOfManufacturing": DayTime().format('YYYY'),
         "MachineCapacityAndTonnage": 40,
         "MachineCost": 5000,
+        "IsIncludeMachineCost": "YES",
         "AccessoriesCost": 500,
         "InstallationCost": 500,
         "LoanPercentage": 10,
-        "EquityPercentage": 10,
         "RateOfInterest": 7,
         "NoOfShifts": 2,
         "WorkingHoursPerShift": 8,
         "NoOfWorkingDaysPerAnnum": 250,
-        "Availability": 80,
+        "ActualWorkingHours": 80,
         "NoOfWorkingHourPerAnnum": 0,
         "DepreciationType": "SLM",
-        "DepriciationRate": 0,
+        "DepreciationRate": 0,
         "LifeOfAsset": 5,
         "CostOfScrap": 100,
         "DateOfPurchase": DayTime().format('DD-MM-YYYY'),
-        "IsMaintanceFixed": "YES",
-        "AnnualMaintance": 0,
-        "AnnualMaintanaceAmount": 1000,
+        "IsMaintenanceFixed": "YES",
+        "AnnualMaintenance": 0,
+        "AnnualMaintenanceAmount": 1000,
         "IsConsumableFixed": "YES",
         "AnnualConsumable": 0,
         "AnnualConsumableAmount": 1000,
-        "InsuaranceTypeFixed": "YES",
+        "InsuranceTypeFixed": "YES",
         "InsuranceAmount": 1000,
         "AnnualInsurancePercentage": 0,
         "BuildingCostPerSqFt": 100,
         "MachineFloorAreaSqPerFt": 2500,
         "OtherYearlyCost": 500,
+        "OwnershipIsPurchased": "YES",
         "UsesFuel": "YES",
         "Fuel": "CNG",
         "ConsumptionPerAnnum": 85,
         "UtilizingFactor": 0,
-        "PowerRatingKW": "Power Rating KW",
+        "PowerRatingKW": "100",
         "UsesSolarPower": "NO",
         "LabourType": "Skilled",
         "NoOfPeople": 5,
         "ProcessName": "Grinding",
         "ProcessCode": "PR-1000001",
         "UOM": "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram",
-        "OutputPerHours": 50,
+        "PowerCostPerUnit": 50,
+        "TotalPowerCostAnnum": 1000,
+        "TotalPowerCostHour": 100,
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
+        "Remark": "Remark",
     },
     {
         "Technology": "Sheet Metal",
         'PlantCode': '8820',
-        'PlantName': 'P882022',
+        'VendorCode': '1111',
+        'CustomerCode': 'C-100019',
         "MachineNo": "MAC-002",
         "MachineName": "Hydraulic Press",
-        "MachineSpec": "Machine Specification",
+        "MachineSpecification": "Machine Specification",
         "Description": "Description text",
         "MachineType": "Mechanical",
+        "MachineRate": 55,
         "Manufacturer": "TATA",
         "YearOfManufacturing": DayTime().format('YYYY'),
         "MachineCapacityAndTonnage": 50,
         "MachineCost": 5000,
+        "IsIncludeMachineCost": "YES",
         "AccessoriesCost": 500,
         "InstallationCost": 500,
         "LoanPercentage": 10,
-        "EquityPercentage": 10,
         "RateOfInterest": 7,
         "NoOfShifts": '',
         "WorkingHoursPerShift": 8,
         "NoOfWorkingDaysPerAnnum": 250,
-        "Availability": 80,
+        "ActualWorkingHours": 80,
         "NoOfWorkingHourPerAnnum": 0,
         "DepreciationType": "WDM",
-        "DepriciationRate": 25,
+        "DepreciationRate": 25,
         "LifeOfAsset": 0,
         "CostOfScrap": 100,
         "DateOfPurchase": DayTime().format('DD-MM-YYYY'),
-        "IsMaintanceFixed": "NO",
-        "AnnualMaintance": 10,
-        "AnnualMaintanaceAmount": 0,
+        "IsMaintenanceFixed": "NO",
+        "AnnualMaintenance": 10,
+        "AnnualMaintenanceAmount": 0,
         "IsConsumableFixed": "NO",
         "AnnualConsumable": 10,
         "AnnualConsumableAmount": 0,
-        "InsuaranceTypeFixed": "NO",
+        "InsuranceTypeFixed": "NO",
         "InsuranceAmount": 0,
         "AnnualInsurancePercentage": 10,
         "BuildingCostPerSqFt": 0,
         "MachineFloorAreaSqPerFt": 0,
         "OtherYearlyCost": 0,
+        "OwnershipIsPurchased": "NO",
         "UsesFuel": "NO",
         "Fuel": "",
         "ConsumptionPerAnnum": 0,
@@ -2423,48 +2832,54 @@ export const MHRMoreZBCTempData = [
         "NoOfPeople": 10,
         "ProcessName": "Turning",
         "UOM": "Gallon/Cubic Centimeter/Cubic Meter/Milliliter/Liter",
-        "OutputPerHours": 40,
+        "PowerCostPerUnit": 40,
+        "TotalPowerCostAnnum": 1000,
+        "TotalPowerCostHour": 100,
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
+        "Remark": "Remark",
     }, {
         "Technology": "Sheet Metal",
         'PlantCode': '8820',
-        'PlantName': 'P882022',
+        'VendorCode': '1111',
+        'CustomerCode': 'C-100019',
         "MachineNo": "MAC-002",
         "MachineName": "Hydraulic Press",
-        "MachineSpec": "Machine Specification",
+        "MachineSpecification": "Machine Specification",
         "Description": "Description text",
         "MachineType": "Mechanical",
+        "MachineRate": 55,
         "Manufacturer": "TATA",
         "YearOfManufacturing": DayTime().format('YYYY'),
         "MachineCapacityAndTonnage": 50,
         "MachineCost": 5000,
+        "IsIncludeMachineCost": "YES",
         "AccessoriesCost": 500,
         "InstallationCost": 500,
         "LoanPercentage": 10,
-        "EquityPercentage": 10,
         "RateOfInterest": 7,
         "NoOfShifts": '',
         "WorkingHoursPerShift": 8,
         "NoOfWorkingDaysPerAnnum": 250,
-        "Availability": 80,
+        "ActualWorkingHours": 80,
         "NoOfWorkingHourPerAnnum": 0,
         "DepreciationType": "WDM",
-        "DepriciationRate": 25,
+        "DepreciationRate": 25,
         "LifeOfAsset": 0,
         "CostOfScrap": 100,
         "DateOfPurchase": DayTime().format('DD-MM-YYYY'),
-        "IsMaintanceFixed": "NO",
-        "AnnualMaintance": 10,
-        "AnnualMaintanaceAmount": 0,
+        "IsMaintenanceFixed": "NO",
+        "AnnualMaintenance": 10,
+        "AnnualMaintenanceAmount": 0,
         "IsConsumableFixed": "NO",
         "AnnualConsumable": 10,
         "AnnualConsumableAmount": 0,
-        "InsuaranceTypeFixed": "NO",
+        "InsuranceTypeFixed": "NO",
         "InsuranceAmount": 0,
         "AnnualInsurancePercentage": 10,
         "BuildingCostPerSqFt": 0,
         "MachineFloorAreaSqPerFt": 0,
         "OtherYearlyCost": 0,
+        "OwnershipIsPurchased": "NO",
         "UsesFuel": "NO",
         "Fuel": "",
         "ConsumptionPerAnnum": 0,
@@ -2475,48 +2890,54 @@ export const MHRMoreZBCTempData = [
         "NoOfPeople": 10,
         "ProcessName": "Turning",
         "UOM": "shot/stroke/Number",
-        "OutputPerHours": 40,
+        "PowerCostPerUnit": 40,
+        "TotalPowerCostAnnum": 1000,
+        "TotalPowerCostHour": 100,
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
+        "Remark": "Remark",
     }, {
         "Technology": "Sheet Metal",
         'PlantCode': '8820',
-        'PlantName': 'P882022',
+        'VendorCode': '1111',
+        'CustomerCode': 'C-100019',
         "MachineNo": "MAC-002",
         "MachineName": "Hydraulic Press",
-        "MachineSpec": "Machine Specification",
+        "MachineSpecification": "Machine Specification",
         "Description": "Description text",
         "MachineType": "Mechanical",
+        "MachineRate": 55,
         "Manufacturer": "TATA",
         "YearOfManufacturing": DayTime().format('YYYY'),
         "MachineCapacityAndTonnage": 50,
         "MachineCost": 5000,
+        "IsIncludeMachineCost": "YES",
         "AccessoriesCost": 500,
         "InstallationCost": 500,
         "LoanPercentage": 10,
-        "EquityPercentage": 10,
         "RateOfInterest": 7,
         "NoOfShifts": '',
         "WorkingHoursPerShift": 8,
         "NoOfWorkingDaysPerAnnum": 250,
-        "Availability": 80,
+        "ActualWorkingHours": 80,
         "NoOfWorkingHourPerAnnum": 0,
         "DepreciationType": "WDM",
-        "DepriciationRate": 25,
+        "DepreciationRate": 25,
         "LifeOfAsset": 0,
         "CostOfScrap": 100,
         "DateOfPurchase": DayTime().format('DD-MM-YYYY'),
-        "IsMaintanceFixed": "NO",
-        "AnnualMaintance": 10,
-        "AnnualMaintanaceAmount": 0,
+        "IsMaintenanceFixed": "NO",
+        "AnnualMaintenance": 10,
+        "AnnualMaintenanceAmount": 0,
         "IsConsumableFixed": "NO",
         "AnnualConsumable": 10,
         "AnnualConsumableAmount": 0,
-        "InsuaranceTypeFixed": "NO",
+        "InsuranceTypeFixed": "NO",
         "InsuranceAmount": 0,
         "AnnualInsurancePercentage": 10,
         "BuildingCostPerSqFt": 0,
         "MachineFloorAreaSqPerFt": 0,
         "OtherYearlyCost": 0,
+        "OwnershipIsPurchased": "NO",
         "UsesFuel": "NO",
         "Fuel": "",
         "ConsumptionPerAnnum": 0,
@@ -2527,48 +2948,54 @@ export const MHRMoreZBCTempData = [
         "NoOfPeople": 10,
         "ProcessName": "Turning",
         'UOM': 'Square Millimeter/Square Inch/Square Feet/Square Centimeter/Square Meter',
-        "OutputPerHours": 40,
+        "PowerCostPerUnit": 40,
+        "TotalPowerCostAnnum": 1000,
+        "TotalPowerCostHour": 100,
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
+        "Remark": "Remark",
     }, {
         "Technology": "Sheet Metal",
         'PlantCode': '8820',
-        'PlantName': 'P882022',
+        'VendorCode': '1111',
+        'CustomerCode': 'C-100019',
         "MachineNo": "MAC-002",
         "MachineName": "Hydraulic Press",
-        "MachineSpec": "Machine Specification",
+        "MachineSpecification": "Machine Specification",
         "Description": "Description text",
         "MachineType": "Mechanical",
+        "MachineRate": 55,
         "Manufacturer": "TATA",
         "YearOfManufacturing": DayTime().format('YYYY'),
         "MachineCapacityAndTonnage": 50,
         "MachineCost": 5000,
+        "IsIncludeMachineCost": "YES",
         "AccessoriesCost": 500,
         "InstallationCost": 500,
         "LoanPercentage": 10,
-        "EquityPercentage": 10,
         "RateOfInterest": 7,
         "NoOfShifts": '',
         "WorkingHoursPerShift": 8,
         "NoOfWorkingDaysPerAnnum": 250,
-        "Availability": 80,
+        "ActualWorkingHours": 80,
         "NoOfWorkingHourPerAnnum": 0,
         "DepreciationType": "WDM",
-        "DepriciationRate": 25,
+        "DepreciationRate": 25,
         "LifeOfAsset": 0,
         "CostOfScrap": 100,
         "DateOfPurchase": DayTime().format('DD-MM-YYYY'),
-        "IsMaintanceFixed": "NO",
-        "AnnualMaintance": 10,
-        "AnnualMaintanaceAmount": 0,
+        "IsMaintenanceFixed": "NO",
+        "AnnualMaintenance": 10,
+        "AnnualMaintenanceAmount": 0,
         "IsConsumableFixed": "NO",
         "AnnualConsumable": 10,
         "AnnualConsumableAmount": 0,
-        "InsuaranceTypeFixed": "NO",
+        "InsuranceTypeFixed": "NO",
         "InsuranceAmount": 0,
         "AnnualInsurancePercentage": 10,
         "BuildingCostPerSqFt": 0,
         "MachineFloorAreaSqPerFt": 0,
         "OtherYearlyCost": 0,
+        "OwnershipIsPurchased": "NO",
         "UsesFuel": "NO",
         "Fuel": "",
         "ConsumptionPerAnnum": 0,
@@ -2579,8 +3006,11 @@ export const MHRMoreZBCTempData = [
         "NoOfPeople": 10,
         "ProcessName": "Turning",
         'UOM': 'Seconds/Minutes/Hours/MilliSeconds',
-        "OutputPerHours": 40,
+        "PowerCostPerUnit": 40,
+        "TotalPowerCostAnnum": 1000,
+        "TotalPowerCostHour": 100,
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
+        "Remark": "Remark",
     }
 ]
 
@@ -2589,15 +3019,13 @@ export const MHRMoreZBCTempData = [
 */
 export const MachineVBC = [
     { label: 'Technology', value: 'Technology', }, //*
-    { label: 'VendorName', value: 'VendorName', }, //*, co
     { label: 'VendorCode', value: 'VendorCode', }, // not on UI
-    { label: 'DestinationPlant', value: 'DestinationPlant', }, // not on UI
-    { label: 'DestinationPlantCode', value: 'DestinationPlantCode', }, // not on UI
+    { label: 'PlantCode', value: 'PlantCode', }, // not on UI
     { label: 'MachineNo', value: 'MachineNo', }, //*
-    { label: 'MachineSpecification', value: 'Description', },
+    { label: 'MachineSpecification', value: 'MachineSpecification', },
     { label: 'MachineName', value: 'MachineName', }, //*
     { label: 'MachineType', value: 'MachineType', },
-    { label: 'MachineCapicityAndTonnage', value: 'MachineCapicityAndTonnage', },
+    { label: 'MachineCapacityAndTonnage', value: 'MachineCapacityAndTonnage', },
     { label: 'ProcessName', value: 'ProcessName', }, //*
     { label: 'ProcessCode', value: 'ProcessCode', }, //*
     { label: 'UOM', value: 'UOM', }, //* maybe
@@ -2609,15 +3037,13 @@ export const MachineVBC = [
 export const MachineVBCTempData = [
     {
         'Technology': 'Sheet Metal',
-        'VendorName': 'SIPL',
         'VendorCode': '10222',
-        'DestinationPlant': 'Manesar',
-        'DestinationPlantCode': '1032',
+        'PlantCode': '1032',
         'MachineNo': 'SM101',
-        'Description': 'Mechanical Power Press',
+        'MachineSpecification': 'Mechanical Power Press',
         'MachineName': 'Power Press',
         'MachineType': 'Mechanical',
-        'MachineCapicityAndTonnage': '40',
+        'MachineCapacityAndTonnage': '40',
         'ProcessName': 'Punching',
         'ProcessCode': 'PR-1000001',
         "UOM": "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram",
@@ -2626,15 +3052,13 @@ export const MachineVBCTempData = [
         'Remark': 'Remark Text',
     }, {
         'Technology': 'Sheet Metal',
-        'VendorName': 'SIPL',
         'VendorCode': '10222',
-        'DestinationPlant': 'Manesar',
-        'DestinationPlantCode': '1032',
+        'PlantCode': '1032',
         'MachineNo': 'SM101',
-        'Description': 'Mechanical Power Press',
+        'MachineSpecification': 'Mechanical Power Press',
         'MachineName': 'Power Press',
         'MachineType': 'Mechanical',
-        'MachineCapicityAndTonnage': '40',
+        'MachineCapacityAndTonnage': '40',
         'ProcessName': 'Punching',
         'ProcessCode': 'PR-1000001',
         "UOM": "Gallon/Cubic Centimeter/Cubic Meter/Milliliter/Liter",
@@ -2643,15 +3067,13 @@ export const MachineVBCTempData = [
         'Remark': 'Remark Text',
     }, {
         'Technology': 'Sheet Metal',
-        'VendorName': 'SIPL',
         'VendorCode': '10222',
-        'DestinationPlant': 'Manesar',
-        'DestinationPlantCode': '1032',
+        'PlantCode': '1032',
         'MachineNo': 'SM101',
-        'Description': 'Mechanical Power Press',
+        'MachineSpecification': 'Mechanical Power Press',
         'MachineName': 'Power Press',
         'MachineType': 'Mechanical',
-        'MachineCapicityAndTonnage': '40',
+        'MachineCapacityAndTonnage': '40',
         'ProcessName': 'Punching',
         'ProcessCode': 'PR-1000001',
         "UOM": "shot/stroke/Number",
@@ -2660,15 +3082,13 @@ export const MachineVBCTempData = [
         'Remark': 'Remark Text',
     }, {
         'Technology': 'Sheet Metal',
-        'VendorName': 'SIPL',
         'VendorCode': '10222',
-        'DestinationPlant': 'Manesar',
-        'DestinationPlantCode': '1032',
+        'PlantCode': '1032',
         'MachineNo': 'SM101',
-        'Description': 'Mechanical Power Press',
+        'MachineSpecification': 'Mechanical Power Press',
         'MachineName': 'Power Press',
         'MachineType': 'Mechanical',
-        'MachineCapicityAndTonnage': '40',
+        'MachineCapacityAndTonnage': '40',
         'ProcessName': 'Punching',
         'ProcessCode': 'PR-1000001',
         'UOM': 'Square Millimeter/Square Inch/Square Feet/Square Centimeter/Square Meter',
@@ -2677,15 +3097,13 @@ export const MachineVBCTempData = [
         'Remark': 'Remark Text',
     }, {
         'Technology': 'Sheet Metal',
-        'VendorName': 'SIPL',
         'VendorCode': '10222',
-        'DestinationPlant': 'Manesar',
-        'DestinationPlantCode': '1032',
+        'PlantCode': '1032',
         'MachineNo': 'SM101',
-        'Description': 'Mechanical Power Press',
+        'MachineSpecification': 'Mechanical Power Press',
         'MachineName': 'Power Press',
         'MachineType': 'Mechanical',
-        'MachineCapicityAndTonnage': '40',
+        'MachineCapacityAndTonnage': '40',
         'ProcessName': 'Punching',
         'ProcessCode': 'PR-1000001',
         'UOM': 'Seconds/Minutes/Hours/MilliSeconds',
@@ -2696,15 +3114,13 @@ export const MachineVBCTempData = [
 ]
 export const MachineCBC = [
     { label: 'Technology', value: 'Technology', }, //*
-    { label: 'CustomerName', value: 'CustomerName', }, //*, co
     { label: 'CustomerCode', value: 'CustomerCode', }, // not on UI
-    { label: 'DestinationPlant', value: 'DestinationPlant', }, // not on UI
-    { label: 'DestinationPlantCode', value: 'DestinationPlantCode', }, // not on UI
+    { label: 'PlantCode', value: 'PlantCode', }, // not on UI
     { label: 'MachineNo', value: 'MachineNo', }, //*
-    { label: 'MachineSpecification', value: 'Description', },
+    { label: 'MachineSpecification', value: 'MachineSpecification', },
     { label: 'MachineName', value: 'MachineName', }, //*
     { label: 'MachineType', value: 'MachineType', },
-    { label: 'MachineCapicityAndTonnage', value: 'MachineCapicityAndTonnage', },
+    { label: 'MachineCapacityAndTonnage', value: 'MachineCapacityAndTonnage', },
     { label: 'ProcessName', value: 'ProcessName', }, //*
     { label: 'ProcessCode', value: 'ProcessCode', }, //*
     { label: 'UOM', value: 'UOM', }, //* maybe
@@ -2716,15 +3132,13 @@ export const MachineCBC = [
 export const MachineCBCTempData = [
     {
         'Technology': 'Sheet Metal',
-        'CustomerName': 'Honda',
         'CustomerCode': 'C-10008',
-        'DestinationPlant': 'Manesar',
-        'DestinationPlantCode': '1032',
+        'PlantCode': '1032',
         'MachineNo': 'SM101',
-        'Description': 'Mechanical Power Press',
+        'MachineSpecification': 'Mechanical Power Press',
         'MachineName': 'Power Press',
         'MachineType': 'Mechanical',
-        'MachineCapicityAndTonnage': '40',
+        'MachineCapacityAndTonnage': '40',
         'ProcessName': 'Punching',
         'ProcessCode': 'PR-1000001',
         "UOM": "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram",
@@ -2733,15 +3147,13 @@ export const MachineCBCTempData = [
         'Remark': 'Remark Text',
     }, {
         'Technology': 'Sheet Metal',
-        'CustomerName': 'Honda',
         'CustomerCode': 'C-10008',
-        'DestinationPlant': 'Manesar',
-        'DestinationPlantCode': '1032',
+        'PlantCode': '1032',
         'MachineNo': 'SM101',
-        'Description': 'Mechanical Power Press',
+        'MachineSpecification': 'Mechanical Power Press',
         'MachineName': 'Power Press',
         'MachineType': 'Mechanical',
-        'MachineCapicityAndTonnage': '40',
+        'MachineCapacityAndTonnage': '40',
         'ProcessName': 'Punching',
         'ProcessCode': 'PR-1000001',
         "UOM": "Gallon/Cubic Centimeter/Cubic Meter/Milliliter/Liter",
@@ -2750,15 +3162,13 @@ export const MachineCBCTempData = [
         'Remark': 'Remark Text',
     }, {
         'Technology': 'Sheet Metal',
-        'CustomerName': 'Honda',
         'CustomerCode': 'C-10008',
-        'DestinationPlant': 'Manesar',
-        'DestinationPlantCode': '1032',
+        'PlantCode': '1032',
         'MachineNo': 'SM101',
-        'Description': 'Mechanical Power Press',
+        'MachineSpecification': 'Mechanical Power Press',
         'MachineName': 'Power Press',
         'MachineType': 'Mechanical',
-        'MachineCapicityAndTonnage': '40',
+        'MachineCapacityAndTonnage': '40',
         'ProcessName': 'Punching',
         'ProcessCode': 'PR-1000001',
         "UOM": "shot/stroke/Number",
@@ -2767,15 +3177,13 @@ export const MachineCBCTempData = [
         'Remark': 'Remark Text',
     }, {
         'Technology': 'Sheet Metal',
-        'CustomerName': 'Honda',
         'CustomerCode': 'C-10008',
-        'DestinationPlant': 'Manesar',
-        'DestinationPlantCode': '1032',
+        'PlantCode': '1032',
         'MachineNo': 'SM101',
-        'Description': 'Mechanical Power Press',
+        'MachineSpecification': 'Mechanical Power Press',
         'MachineName': 'Power Press',
         'MachineType': 'Mechanical',
-        'MachineCapicityAndTonnage': '40',
+        'MachineCapacityAndTonnage': '40',
         'ProcessName': 'Punching',
         'ProcessCode': 'PR-1000001',
         'UOM': 'Square Millimeter/Square Inch/Square Feet/Square Centimeter/Square Meter',
@@ -2784,15 +3192,13 @@ export const MachineCBCTempData = [
         'Remark': 'Remark Text',
     }, {
         'Technology': 'Sheet Metal',
-        'CustomerName': 'Honda',
         'CustomerCode': 'C-10008',
-        'DestinationPlant': 'Manesar',
-        'DestinationPlantCode': '1032',
+        'PlantCode': '1032',
         'MachineNo': 'SM101',
-        'Description': 'Mechanical Power Press',
+        'MachineSpecification': 'Mechanical Power Press',
         'MachineName': 'Power Press',
         'MachineType': 'Mechanical',
-        'MachineCapicityAndTonnage': '40',
+        'MachineCapacityAndTonnage': '40',
         'ProcessName': 'Punching',
         'ProcessCode': 'PR-1000001',
         'UOM': 'Seconds/Minutes/Hours/MilliSeconds',
@@ -2812,6 +3218,7 @@ export const PartComponent = [
     { label: 'ECNNumber', value: 'ECNNumber', },
     { label: 'RevisionNo', value: 'RevisionNo', },
     { label: 'DrawingNo', value: 'DrawingNo', },
+    { label: "SAPCode", value: "SAPCode", },
     { label: 'TechnologyName', value: 'TechnologyName', },
     { label: 'EffectiveDate', value: 'EffectiveDate', }, //,* maybe only star
     { label: 'Remark', value: 'Remark', },
@@ -2826,6 +3233,7 @@ export const PartComponentTempData = [
         'ECNNumber': '1',
         'RevisionNo': '1',
         'DrawingNo': '1',
+        'SAPCode': 'sap-1001',
         'TechnologyName': 'Sheet Metal',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text',
@@ -2897,6 +3305,8 @@ export const ZBCInterestRateTempData = [
 * @desc USED IN EXCEL HEADER FOR BULK UPLOAD
 */
 export const VBCInterestRate = [
+    { label: "RawMaterialName", value: "RawMaterialName", },
+    { label: "RawMaterialGrade", value: "RawMaterialGrade", },
     { label: 'VendorName', value: 'VendorName', }, //NOUI
     { label: 'VendorCode', value: 'VendorCode', }, //NOUI
     { label: "PlantName", value: "PlantName" },
@@ -2911,6 +3321,8 @@ export const VBCInterestRate = [
 
 export const VBCInterestRateTempData = [
     {
+        'RawMaterialName': '45455457',
+        'RawMaterialGrade': '2',
         'VendorName': 'Systematix',
         'VendorCode': 'VCode001',
         "PlantName": "1511",
@@ -2924,6 +3336,8 @@ export const VBCInterestRateTempData = [
     }
 ]
 export const CBCInterestRate = [
+    { label: "RawMaterialName", value: "RawMaterialName", },
+    { label: "RawMaterialGrade", value: "RawMaterialGrade", },
     { label: 'CustomerName', value: 'CustomerName', }, //NOUI
     { label: 'CustomerCode', value: 'CustomerCode', }, //NOUI
     { label: "PlantName", value: "PlantName" },
@@ -2938,6 +3352,8 @@ export const CBCInterestRate = [
 
 export const CBCInterestRateTempData = [
     {
+        'RawMaterialName': '45455457',
+        'RawMaterialGrade': '2',
         'CustomerName': 'Honda',
         'CustomerCode': 'C-10008',
         "PlantName": "1511",
@@ -2966,6 +3382,7 @@ export const BOMUpload = [
     { label: "ECNNumber", value: "ECNNumber" },
     { label: "RevisionNo", value: "RevisionNo" },
     { label: "DrawingNo", value: "DrawingNo" },
+    { label: "SAPCode", value: "SAPCode", },
     { label: "IsAssembly", value: "IsAssembly" }, //NOUI,*
     { label: "BOMLevel", value: "BOMLevel" }, //NOUI,*
     { label: "Quantity", value: "Quantity" }, //NOUI
@@ -2987,6 +3404,7 @@ export const BOMUploadTempData = [
         "ECNNumber": 1,
         "RevisionNo": 1,
         "DrawingNo": 1,
+        "SAPCode": "sap-1001",
         "IsAssembly": "YES",
         "BOMLevel": 0,
         "Quantity": 2,
@@ -3006,6 +3424,7 @@ export const BOMUploadTempData = [
         "ECNNumber": 1,
         "RevisionNo": 1,
         "DrawingNo": 1,
+        "SAPCode": "sap-1002",
         "IsAssembly": "NO",
         "BOMLevel": 1,
         "Quantity": 3,
@@ -3025,6 +3444,7 @@ export const BOMUploadTempData = [
         "ECNNumber": 1,
         "RevisionNo": 1,
         "DrawingNo": 1,
+        "SAPCode": "sap-1003",
         "IsAssembly": "YES",
         "BOMLevel": 1,
         "Quantity": 4,
@@ -4214,6 +4634,14 @@ export const CostingSimulationDownloadBOP = [
     { label: "RevisedNetFreightAndPackagingCost", value: "NewNetFreightPackagingCost" },
 ]
 
+export const SimulationDownloadBOP = [
+    { label: "Costing Head", value: "CostingHead" },
+    { label: "Vendor (Code)", value: "VendorName" },
+    { label: "ExistingBOPRate", value: "OldBOPRate" },
+    { label: "RevisedBOPRate", value: "NewBOPRate" },
+    { label: "Variance (BOP Cost)", value: "BOPVariance" },
+]
+
 export const SIMULATIONAPPROVALSUMMARYDOWNLOADRM = [
     { label: "Costing Id", value: "CostingNumber" },
     { label: "RawMaterial Name", value: "RMName" },
@@ -4303,6 +4731,18 @@ export const SIMULATIONAPPROVALSUMMARYDOWNLOADBOP = [
     { label: "Variance (BOP Cost)", value: "NetBoughtOutPartCostVariance" },
     { label: "Impact/Quarter (w.r.t. Existing)", value: "ImpactPerQuarter" },
     { label: "Impact/Quarter (w.r.t. Budgeted Price)", value: "BudgetedPriceImpactPerQuarter" },
+]
+
+export const SIMULATIONAPPROVALSUMMARYDOWNLOADBOPWITHOUTCOSTING = [
+    { label: "Part No", value: "PartNo" },
+    { label: "Part Name", value: "PartName" },
+    { label: "BOP Name", value: "BoughtOutPartName" },
+    { label: "BOP Number", value: "BoughtOutPartNumber" },
+    { label: "Vendor (Code)", value: "VendorName" },
+    { label: "Plant (Code)", value: "PlantName" },
+    { label: "Existing BOP Cost", value: "OldNetBoughtOutPartCost" },
+    { label: "Revised BOP Cost", value: "NewNetBoughtOutPartCost" },
+    { label: "Variance (BOP Cost)", value: "NetBoughtOutPartCostVariance" },
 ]
 
 export const BOP_DOMESTIC_DOWNLOAD_EXCEl = [
@@ -4396,6 +4836,8 @@ export const POWERLISTING_VENDOR_DOWNLOAD_EXCEL = [
 
 export const INTERESTRATE_DOWNLOAD_EXCEl = [
     { label: "Costing Head", value: "CostingHead", },
+    { label: "Raw Material Name", value: "RawMaterialName", },
+    { label: "Raw Material Grade", value: "RawMaterialGrade", },
     { label: "Plant (Code)", value: "PlantName", },
     { label: "Vendor (Code)", value: "VendorName", },
     { label: "Customer (Code)", value: "CustomerName", },
@@ -4420,14 +4862,14 @@ export const LABOUR_DOWNLOAD_EXCEl = [
 
 export const MACHINERATE_DOWNLOAD_EXCEl = [
     { label: "Costing Head", value: "CostingHead", },
-    { label: "Technology", value: "Technologies", },
+    { label: "Technology", value: "Technology", },
     { label: "Machine Name", value: "MachineName" },
     { label: "Machine Number", value: "MachineNumber", },
     { label: "Machine Type", value: "MachineTypeName", },
     { label: "Machine Tonnage", value: "MachineTonnage", },
     { label: "Process Name", value: "ProcessName", },
     { label: "Vendor (Code)", value: "VendorName", },
-    { label: "Plant (Code)", value: "Plants", },
+    { label: "Plant (Code)", value: "Plant", },
     { label: "Customer (Code)", value: "CustomerName", },
     { label: "Machine Rate", value: "MachineRate", },
     { label: "Effective Date", value: "EffectiveDate", },
@@ -4441,17 +4883,17 @@ export const PROCESSLISTING_DOWNLOAD_EXCEl = [
 export const RMDOMESTIC_DOWNLOAD_EXCEl = [
     { label: "Costing Head", value: "CostingHead", },
     { label: "Technology", value: "TechnologyName", },
-    { label: "Raw Material", value: "RawMaterial", },
-    { label: "Grade", value: "RMGrade", },
-    { label: "Spec", value: "RMSpec", },
+    { label: "Raw Material", value: "RawMaterialName", },
+    { label: "Grade", value: "RawMaterialGradeName", },
+    { label: "Spec", value: "RawMaterialSpecificationName", },
     { label: "Code", value: "RawMaterialCode", },
     { label: "Category", value: "Category", },
     { label: "Material Type", value: "MaterialType", },
-    { label: "Plant (Code)", value: "Plant", },
+    { label: "Plant (Code)", value: "DestinationPlantName", },
     { label: "Vendor (code)", value: "VendorName", },
     { label: "Customer (Code)", value: "CustomerName", },
-    { label: "UOM", value: "UOM", },
-    { label: "Basic Rate", value: "BasicRate", },
+    { label: "UOM", value: "UnitOfMeasurementName", },
+    { label: "Basic Rate", value: "BasicRatePerUOM", },
     { label: "Freight Cost", value: "RMFreightCost", },
     { label: "Shearing Cost", value: "RMShearingCost", },
     { label: "Machining Scrap Cost", value: "MachiningScrapRate", },
@@ -4465,18 +4907,18 @@ export const RMDOMESTIC_DOWNLOAD_EXCEl = [
 export const RMIMPORT_DOWNLOAD_EXCEl = [
     { label: "Costing Head", value: "CostingHead", },
     { label: "Technology", value: "TechnologyName", },
-    { label: "Raw Material", value: "RawMaterial", },
-    { label: "Grade", value: "RMGrade", },
-    { label: "Spec", value: "RMSpec", },
+    { label: "Raw Material", value: "RawMaterialName", },
+    { label: "Grade", value: "RawMaterialGradeName", },
+    { label: "Spec", value: "RawMaterialSpecificationName", },
     { label: "Code", value: "RawMaterialCode", },
     { label: "Material Type", value: "MaterialType", },
     { label: "Category", value: "Category", },
-    { label: "Plant (Code)", value: "Plant", },
+    { label: "Plant (Code)", value: "DestinationPlantName", },
     { label: "Vendor (Code)", value: "VendorName", },
     { label: "Customer (Code)", value: "CustomerName", },
-    { label: "UOM", value: "UOM", },
+    { label: "UOM", value: "UnitOfMeasurementName", },
     { label: "Currency", value: "Currency", },
-    { label: "Basic Rate", value: "BasicRate", },
+    { label: "Basic Rate", value: "BasicRatePerUOM", },
     { label: "Freight Cost", value: "RMFreightCost", },
     { label: "Shearing Cost", value: "RMShearingCost", },
     { label: "Machining Scrap Cost", value: "MachiningScrapRate", },
@@ -4517,6 +4959,8 @@ export const OPERATION_DOWNLOAD_EXCEl = [
 
 export const OVERHEAD_DOWNLOAD_EXCEl = [
     { label: "Costing Head", value: "CostingHead", },
+    { label: "Raw Material Name", value: "RawMaterialName", },
+    { label: "Raw Material Grade", value: "RawMaterialGrade", },
     { label: "Plant (Code)", value: "PlantName", },
     { label: "Vendor (Code)", value: "VendorName", },
     { label: "Customer (Code)", value: "CustomerName", },
@@ -4534,6 +4978,7 @@ export const ASSEMBLYPART_DOWNLOAD_EXCEl = [
     { label: "BOM No.", value: "BOMNumber", },
     { label: "Part No.", value: "PartNumber", },
     { label: "Name", value: "PartName", },
+    { label: "SAP Code", value: "SAPCode", },
     { label: "No.of Child Parts", value: "NumberOfParts", },
     { label: "BOM Level Count", value: "BOMLevelCount", },
     { label: "ECN No.", value: "ECNNumber", },
@@ -4546,6 +4991,7 @@ export const INDIVIDUALPART_DOWNLOAD_EXCEl = [
     { label: "Technology", value: "Technology", },
     { label: "Part No.", value: "PartNumber", },
     { label: "Name", value: "PartName", },
+    { label: "SAP Code", value: "SAPCode", },
     { label: "ECN No.", value: "ECNNumber", },
     { label: "Revision No.", value: "RevisionNumber", },
     { label: "Drawing No.", value: "DrawingNumber", },
@@ -4632,6 +5078,8 @@ export const BUDGET_DOWNLOAD_EXCEl = [
 
 export const PROFIT_DOWNLOAD_EXCEl = [
     { label: "Costing Head", value: "CostingHead", },
+    { label: "Raw Material Name", value: "RawMaterialName", },
+    { label: "Raw Material Grade", value: "RawMaterialGrade", },
     { label: "Plant (Code)", value: "PlantName", },
     { label: "Vendor (Code)", value: "VendorName", },
     { label: "Customer (Code)", value: "CustomerName", },
@@ -4763,11 +5211,11 @@ export const USER_LISTING_DOWNLOAD_EXCEl = [
 ]
 
 export const RM_IMPACT_DOWNLOAD_EXCEl = [
-    { label: "Raw Material", value: "RawMaterial", },
-    { label: "Grade", value: "RMGrade", },
-    { label: "Spec", value: "RMSpec", },
+    { label: "Raw Material", value: "RawMaterialName", },
+    { label: "Grade", value: "RawMaterialGradeName", },
+    { label: "Spec", value: "RawMaterialSpecificationName", },
     { label: "Code", value: "RawMaterialCode", },
-    { label: "UOM", value: "UOM", },
+    { label: "UOM", value: "UnitOfMeasurementName", },
     { label: "Existing Basic Rate", value: "OldBasicRate", },
     { label: "Revised Basic Rate", value: "NewBasicRate", },
     { label: "Existing Scrap Rate", value: "OldScrapRate", },
@@ -6389,3 +6837,11 @@ export const tokenStatusName = {
     PROVISIONAL: 'Provisional',
     POUPDATED: 'POUpdated'
 }
+
+export const associationDropdownList = [
+    { label: 'Associated', value: 'Associated' },
+    { label: 'Non Associated', value: 'Non Associated' },
+]
+
+export const NON_ASSOCIATED = "Non Associated"
+export const ASSOCIATED = "Associated"

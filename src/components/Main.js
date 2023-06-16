@@ -66,6 +66,8 @@ import CustomerPoamSummaryReport from './report/components/CustomerPoamSummaryRe
 import HeadWiseCostingGotGiven from './report/components/HeadwiseCostingGotGiven/HeadWiseCostingGotGiven'
 import MasterCostMovement from './report/components/CostMovementByMaster/MasterCostMovement'
 import BudgetMaster from './masters/budget-master'
+import GotGivenReport from './report/components/GotGivenReport/GotGivenReport'
+import PipdReport from './report/components/PIPDReport/PipdReport'
 const CustomHeader = {
   'Content-Type': 'application/x-www-form-urlencoded',
   'Access-Control-Allow-Origin': '*',
@@ -360,13 +362,14 @@ class Main extends Component {
                     <Route path="/purchase-provision-report" component={AuthMiddleware(PurchaseProvisionReport, PURCHASE_PROVISION_REPORT)} />
                     <Route path="/customer-poam-summary-report" component={AuthMiddleware(CustomerPoamSummaryReport, CUSTOMER_POAM_REPORT)} />
                     <Route path="/headwise-costing-got-given" component={HeadWiseCostingGotGiven} />
-                    <Route path="/cost-movement-by-masters" component={MasterCostMovement} />
+                    <Route path="/master-cost-movement-report" component={MasterCostMovement} />
+                    <Route path="/pipd-report" component={PipdReport} />
                     {/*  NEED TO ADD PATH FROM BACKEND */}
                     <Route path="/simulation-insights" component={SimulationInsights} />
                     <Route path="/rfq-listing" component={AuthMiddleware(RfqListing, RFQ)} />
                     <Route path="/nfr" component={AuthMiddleware(NfrTabs, NFR)} />
                     <Route path="/budgeting" component={AuthMiddleware(BudgetMaster, BUDGETING)} />
-
+                    <Route path="/got-given-summary-details-report" component={GotGivenReport} />
                     {/* <Route path='/simulation-approval-listing' component={SimulationApprovalListing} /> */}
 
                     {/* <Route path="/product-master" component={productMaster} /> */}

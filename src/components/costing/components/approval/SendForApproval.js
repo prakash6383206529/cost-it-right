@@ -60,6 +60,7 @@ const SendForApproval = (props) => {
   const [effectiveDate, setEffectiveDate] = useState('')
   const [dataToChange, setDataToChange] = useState([]);
   const [IsLimitCrossed, setIsLimitCrossed] = useState(false);
+  const [tentativeCost, setTentativeCost] = useState(false);
   const [levelDetails, setLevelDetails] = useState('');
   // const [showDate,setDate] = useState(false)
   // const [showDate,setDate] = useState(false)
@@ -390,6 +391,8 @@ const SendForApproval = (props) => {
         tempObj.Remark = getValues("remarks")
         tempObj.IsApproved = true
         tempObj.BasicRate = data.BasicRate
+        tempObj.BudgetedPrice = data.BudgetedPrice
+        tempObj.BudgetedPriceVariance = data.BudgetedPriceVariance
         temp.push(tempObj)
         return null
       })
@@ -439,6 +442,7 @@ const SendForApproval = (props) => {
         SenderRemark: data.remarks,
         LoggedInUserId: userData.LoggedInUserId,
         ApprovalTypeId: costingTypeIdToApprovalTypeIdFunction(viewApprovalData[0].costingTypeId),
+        IsTentativeSaleRate: tentativeCost
         // Quantity: getValues('Quantity'),
         // Attachment: files,
         // IsLimitCrossed: IsLimitCrossed
@@ -509,6 +513,8 @@ const SendForApproval = (props) => {
         tempObj.CustomerName = data.customerName
         tempObj.CustomerCode = data.customerCode
         tempObj.BasicRate = data.BasicRate
+        tempObj.BudgetedPrice = data.BudgetedPrice
+        tempObj.BudgetedPriceVariance = data.BudgetedPriceVariance
         temp.push(tempObj)
         return null
       })
@@ -664,6 +670,10 @@ const SendForApproval = (props) => {
     checkQuantityLimitValue(getValues('Quantity'), !isRegularize)
   };
 
+  const tentativeCheckboxHandler = () => {
+    setTentativeCost(!tentativeCost)
+  }
+
   const reasonField = 'reasonField'
   const dateField = 'dateField'
 
@@ -693,7 +703,6 @@ const SendForApproval = (props) => {
                 ></div>
               </Col>
             </Row>
-            { }
             {viewApprovalData &&
               viewApprovalData.map((data, index) => {
 
@@ -872,6 +881,23 @@ const SendForApproval = (props) => {
                               </label>
                             </div>
                           </Col>
+
+                          {data.oldPrice > 0 && <Col md="4">
+                            <div className="form-group">
+                              <label>Budgeted Price</label>
+                              <label className={data.oldPrice === 0 ? `form-control bg-grey input-form-control` : `form-control bg-grey input-form-control ${data.yearImpact < 0 ? 'green-value' : 'red-value'}`}>
+                                {data.BudgetedPrice && data.BudgetedPrice ? checkForDecimalAndNull(data.BudgetedPrice, initialConfiguration.NoOfDecimalForPrice) : 0}
+                              </label>
+                            </div>
+                          </Col>}
+                          {data.oldPrice > 0 && <Col md="4">
+                            <div className="form-group">
+                              <label>Impact/Quarter (w.r.t. Budgeted Price)</label>
+                              <label className={data.oldPrice === 0 ? `form-control bg-grey input-form-control` : `form-control bg-grey input-form-control ${data.yearImpact < 0 ? 'green-value' : 'red-value'}`}>
+                                {data.BudgetedPriceVariance && data.BudgetedPriceVariance ? checkForDecimalAndNull(data.BudgetedPriceVariance, initialConfiguration.NoOfDecimalForPrice) : 0}
+                              </label>
+                            </div>
+                          </Col>}
                         </>}
                       </Row>
                     </div>
@@ -972,6 +998,24 @@ const SendForApproval = (props) => {
                         </Col>
                       </>
                       }
+
+                      {initialConfiguration.IsShowTentativeSaleRate && <Col md="6" className="d-flex align-items-center mb-3 ml-1 ">
+                        <span className="d-inline-block">
+                          <label
+                            className={`custom-checkbox mb-0`}
+                            onChange={tentativeCheckboxHandler}>
+                            Tentative Cost
+                            <input
+                              type="checkbox"
+                            />
+                            <span
+                              className=" before-box"
+                              onChange={tentativeCheckboxHandler}
+                            />
+                          </label>
+                        </span>
+                      </Col>}
+
                       <Col md="12">
                         <TextAreaHookForm
                           label="Remarks"

@@ -4,9 +4,8 @@ import { Field, reduxForm, formValueSelector, clearFields } from "redux-form";
 import { Row, Col, Label, } from 'reactstrap';
 import { required, getVendorCode, maxLength80, checkWhiteSpaces, acceptAllExceptSingleSpecialCharacter, maxLength10, maxLength15, positiveAndDecimalNumber, maxLength512, decimalLengthsix, checkSpacesInString, number } from "../../../helper/validation";
 import { renderText, renderMultiSelectField, searchableSelect, renderTextAreaField, renderDatePicker, focusOnError, renderTextInputField } from "../../layout/FormInputs";
-import { getVendorWithVendorCodeSelectList } from '../actions/Supplier';
 import { createOperationsAPI, getOperationDataAPI, updateOperationAPI, fileUploadOperation, fileDeleteOperation, checkAndGetOperationCode } from '../actions/OtherOperation';
-import { getPlantSelectListByType, getPlantBySupplier, getUOMSelectList, } from '../../../actions/Common';
+import { getPlantSelectListByType, getPlantBySupplier, getUOMSelectList, getVendorNameByVendorSelectList, } from '../../../actions/Common';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import { getConfigurationKey, loggedInUserId, userDetails } from "../../../helper/auth";
@@ -14,7 +13,7 @@ import AddVendorDrawer from '../supplier-master/AddVendorDrawer';
 import AddUOM from '../uom-master/AddUOM';
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css';
-import { FILE_URL, ZBC, OPERATIONS_ID, EMPTY_GUID, SPACEBAR, VBCTypeId, CBCTypeId, ZBCTypeId, searchCount } from '../../../config/constants';
+import { FILE_URL, ZBC, OPERATIONS_ID, EMPTY_GUID, SPACEBAR, VBCTypeId, CBCTypeId, ZBCTypeId, searchCount, VBC_VENDOR_TYPE } from '../../../config/constants';
 import { AcceptableOperationUOM } from '../../../config/masterData'
 import DayTime from '../../common/DayTimeWrapper'
 import imgRedcross from '../../../assests/images/red-cross.png';
@@ -30,6 +29,7 @@ import { autoCompleteDropdown, costingTypeIdToApprovalTypeIdFunction } from '../
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { checkFinalUser } from '../../../components/costing/actions/Costing'
 import { getUsersMasterLevelAPI } from '../../../actions/auth/AuthActions';
+import AddMoreOperation from './AddMoreOperation';
 
 const selector = formValueSelector('AddOperation');
 
@@ -53,6 +53,7 @@ class AddOperation extends Component {
       DataToChange: [],
       costingTypeId: ZBCTypeId,
       isSurfaceTreatment: false,
+      isSurfaceTreatmentSelected: false,
       remarks: '',
       files: [],
       isVisible: false,
@@ -85,7 +86,12 @@ class AddOperation extends Component {
       showPopup: false,
       levelDetails: {},
       noApprovalCycle: false,
-      vendorFilterList: []
+      vendorFilterList: [],
+      addMoreDetails: false,
+      operationType: '',
+      addMoreDetailObj: {},
+      isDetailEntry: false,
+      detailObject: {}
     }
   }
 
@@ -208,6 +214,14 @@ class AddOperation extends Component {
       });
       return temp;
     }
+
+    if (label === 'operationType') {
+      temp.push({ label: "Welding", value: 1 })
+      temp.push({ label: "Surface Treatment", value: 2 })
+      temp.push({ label: "Other Operation", value: 3 })
+      temp.push({ label: "Ni Cr Plating", value: 4 })
+      return temp;
+    }
   }
   /**
    * @method onPressVendor
@@ -279,7 +293,7 @@ class AddOperation extends Component {
   async closeVendorDrawer(e = '', formData = {}, type) {
     if (type === 'submit') {
       this.setState({ isOpenVendor: false })
-      const res = await getVendorWithVendorCodeSelectList(this.state.vendorName)
+      const res = await getVendorNameByVendorSelectList(VBC_VENDOR_TYPE, this.state.vendorName)
       let vendorDataAPI = res?.data?.SelectList
       reactLocalStorage?.setObject('vendorData', vendorDataAPI)
       if (Object.keys(formData).length > 0) {
@@ -305,10 +319,28 @@ class AddOperation extends Component {
   */
   handleUOM = (newValue) => {
     if (newValue && newValue !== '') {
-
       this.setState({ UOM: newValue, })
+      if (String(newValue.label) === String(this.state.DataToChange.UnitOfMeasurement)) {
+        this.setState({ IsFinancialDataChanged: false })
+      } else {
+        this.setState({ IsFinancialDataChanged: true })
+      }
+
     } else {
       this.setState({ UOM: [] })
+    }
+  };
+
+  handleOperationType = (newValue) => {
+    if (newValue && newValue !== '') {
+      this.setState({ operationType: newValue, })
+      if (String(newValue.label) === 'Surface Treatment') {
+        this.setState({ isSurfaceTreatment: true, isSurfaceTreatmentSelected: true })
+      } else {
+        this.setState({ isSurfaceTreatment: false, isSurfaceTreatmentSelected: false })
+      }
+    } else {
+      this.setState({ operationType: [] })
     }
   };
 
@@ -376,11 +408,11 @@ class AddOperation extends Component {
         isEditFlag: true,
         OperationId: data.ID,
       })
-      // this.props.getVendorWithVendorCodeSelectList(() => { this.setState({ inputLoader: false }) })
       this.props.getOperationDataAPI(data.ID, (res) => {
         if (res && res.data && res.data.Data) {
           let Data = res.data.Data;
-          this.setState({ DataToChange: Data })
+
+          this.setState({ DataToChange: Data, isDetailEntry: Data?.IsDetailedEntry, detailObject: Data })
           this.props.change('EffectiveDate', DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
           this.setState({ minEffectiveDate: Data.EffectiveDate })
           this.props.change('OperationName', Data.OperationName ? Data.OperationName : '')
@@ -413,7 +445,8 @@ class AddOperation extends Component {
               effectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
               oldDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
               destinationPlant: Data.DestinationPlantName !== undefined ? { label: Data.DestinationPlantName, value: Data.DestinationPlantId } : [],
-              dataToChange: Data
+              dataToChange: Data,
+              operationType: { label: Data.ForType, value: 1 }
             })
             // ********** ADD ATTACHMENTS FROM API INTO THE DROPZONE'S PERSONAL DATA STORE **********
             let files = Data.Attachements && Data.Attachements.map((item) => {
@@ -449,18 +482,18 @@ class AddOperation extends Component {
   }
 
 
-  checkUniqCodeByName = (e) => {
+  checkUniqCodeByName = debounce((e) => {
     this.setState({ operationName: e.target.value })
     this.props.checkAndGetOperationCode(this.state.operationCode, e.target.value, res => {
       if (res && res.data && res.data.Result === false) {
-        this.props.change('OperationCode', res.data.DynamicData.OperationCode ? res.data.DynamicData.OperationCode : '')
+        this.props.change('OperationCode', res.data.Identity ? res.data.Identity : '')
       } else {
-        this.setState({ isDisableCode: res.data.DynamicData.IsExist }, () => {
-          this.props.change('OperationCode', res.data.DynamicData.OperationCode ? res.data.DynamicData.OperationCode : '')
+        this.setState({ isDisableCode: !res.data.Result }, () => {
+          this.props.change('OperationCode', res.data.Identity ? res.data.Identity : '')
         })
       }
     })
-  }
+  }, 600)
 
   /**
   * @method setDisableFalseFunction
@@ -626,8 +659,6 @@ class AddOperation extends Component {
     }
     this.setState({ isVendorNameNotSelected: false })
 
-
-
     let technologyArray = [];
     selectedTechnology && selectedTechnology.map((item) => {
       technologyArray.push({ Technology: item.Text, TechnologyId: item.Value })
@@ -654,28 +685,37 @@ class AddOperation extends Component {
     }
     /** Update existing detail of supplier master **/
     // if (this.state.isEditFlag && this.state.isFinalApprovar) {
+    let updatedFiles = files.map((file) => {
+      return { ...file, ContextId: OperationId }
+    })
 
+    let formData = {
+      IsFinancialDataChanged: isDateChange ? true : false,
+      IsSendForApproval: this.state.IsSendForApproval,
+      OperationId: OperationId,
+      CostingTypeId: costingTypeId,
+      OperationName: values.OperationName,
+      OperationCode: values.OperationCode,
+      Description: values.Description,
+      VendorId: costingTypeId === VBCTypeId ? vendorName.value : userDetail?.ZBCSupplierInfo.VendorId,
+      VendorCode: costingTypeId === VBCTypeId ? getVendorCode(vendorName.label) : userDetail?.ZBCSupplierInfo.VendorNameWithCode,
+      UnitOfMeasurementId: UOM.value,
+      IsSurfaceTreatmentOperation: isSurfaceTreatment,
+      //SurfaceTreatmentCharges: values.SurfaceTreatmentCharges,
+      Rate: values.Rate,
+      LabourRatePerUOM: initialConfiguration && initialConfiguration.IsOperationLabourRateConfigure ? values.LabourRatePerUOM : '',
+      Technology: technologyArray,
+      Remark: remarks,
+      plant: costingTypeId === CBCTypeId ? cbcPlantArray : plantArray,
+      Attachements: isEditFlag ? updatedFiles : files,
+      LoggedInUserId: loggedInUserId(),
+      EffectiveDate: DayTime(effectiveDate).format('YYYY/MM/DD HH:mm:ss'),
+      VendorPlant: [],
+      CustomerId: costingTypeId === CBCTypeId ? client.value : '',
+      IsDetailedEntry: false,
+    }
     if ((isEditFlag && this.state.isFinalApprovar) || (isEditFlag && CheckApprovalApplicableMaster(OPERATIONS_ID) !== true)) {
 
-      let updatedFiles = files.map((file) => {
-        return { ...file, ContextId: OperationId }
-      })
-
-
-      let updateData = {
-        EffectiveDate: DayTime(effectiveDate).format('YYYY/MM/DD HH:mm:ss'),
-        OperationId: OperationId,
-        UnitOfMeasurementId: UOM.value,
-        Rate: values.Rate,
-        VendorPlant: [],
-        Technology: technologyArray,
-        Description: values.Description,
-        Remark: remarks,
-        Attachements: updatedFiles,
-        LoggedInUserId: loggedInUserId(),
-        IsForcefulUpdated: true,
-        IsFinancialDataChanged: isDateChange ? true : false
-      }
       // if (this.state.isEditFlag) {
       // if (dataToChange.UnitOfMeasurementId === UOM.value && dataToChange.Rate === Number(values.Rate) && uploadAttachements) {
       //   this.cancel()
@@ -685,7 +725,7 @@ class AddOperation extends Component {
       if (IsFinancialDataChanged) {
 
         if (isDateChange && (DayTime(oldDate).format("DD/MM/YYYY") !== DayTime(effectiveDate).format("DD/MM/YYYY"))) {
-          this.props.updateOperationAPI(updateData, (res) => {
+          this.props.updateOperationAPI(formData, (res) => {
             this.setState({ setDisable: false })
             if (res?.data?.Result) {
               Toaster.success(MESSAGES.OPERATION_UPDATE_SUCCESS);
@@ -699,7 +739,6 @@ class AddOperation extends Component {
           Toaster.warning('Please update the effective date')
           return false
         }
-
       }
       else {
 
@@ -709,7 +748,7 @@ class AddOperation extends Component {
           return false
         }
         else {
-          this.props.updateOperationAPI(updateData, (res) => {
+          this.props.updateOperationAPI(formData, (res) => {
             this.setState({ setDisable: false })
             if (res?.data?.Result) {
               Toaster.success(MESSAGES.OPERATION_UPDATE_SUCCESS);
@@ -717,10 +756,8 @@ class AddOperation extends Component {
             }
           });
         }
-
       }
     } else {/** Add new detail for creating operation master **/
-
 
       if (CheckApprovalApplicableMaster(OPERATIONS_ID) === true && !this.state.isFinalApprovar) {
         if (Number(DataToChange.Rate) === Number(values.Rate) && DataToChange.Remark === values.Remark && UOM.value === oldUOM.value
@@ -733,32 +770,7 @@ class AddOperation extends Component {
         this.setState({ IsSendForApproval: false })
       }
 
-
       this.setState({ setDisable: true })
-      let formData = {
-        IsFinancialDataChanged: isDateChange ? true : false,
-        IsSendForApproval: this.state.IsSendForApproval,
-        OperationId: OperationId,
-        CostingTypeId: costingTypeId,
-        OperationName: values.OperationName,
-        OperationCode: values.OperationCode,
-        Description: values.Description,
-        VendorId: costingTypeId === VBCTypeId ? vendorName.value : userDetail?.ZBCSupplierInfo.VendorId,
-        VendorCode: costingTypeId === VBCTypeId ? getVendorCode(vendorName.label) : userDetail?.ZBCSupplierInfo.VendorNameWithCode,
-        UnitOfMeasurementId: UOM.value,
-        IsSurfaceTreatmentOperation: isSurfaceTreatment,
-        //SurfaceTreatmentCharges: values.SurfaceTreatmentCharges,
-        Rate: values.Rate,
-        LabourRatePerUOM: initialConfiguration && initialConfiguration.IsOperationLabourRateConfigure ? values.LabourRatePerUOM : '',
-        Technology: technologyArray,
-        Remark: remarks,
-        plant: costingTypeId === CBCTypeId ? cbcPlantArray : plantArray,
-        Attachements: files,
-        LoggedInUserId: loggedInUserId(),
-        EffectiveDate: DayTime(effectiveDate).format('YYYY/MM/DD HH:mm:ss'),
-        VendorPlant: [],
-        CustomerId: costingTypeId === CBCTypeId ? client.value : ''
-      }
 
       if (CheckApprovalApplicableMaster(OPERATIONS_ID) === true && !this.state.isFinalApprovar) {
 
@@ -776,18 +788,13 @@ class AddOperation extends Component {
             return false
           }
         }
-
-
         if (Number(DataToChange.Rate) === Number(values.Rate) && DataToChange.Remark === values.Remark && UOM.value === oldUOM.value && DataToChange.Description === values.Description && (JSON.stringify(files) === JSON.stringify(DataToChange.Attachements))) {
           this.cancel('submit')
           return false
         } else {
           this.setState({ approveDrawer: true, approvalObj: formData })
         }
-
-
       } else {
-
         this.props.createOperationsAPI(formData, (res) => {
           this.setState({ setDisable: false })
           if (res.data.Result) {
@@ -816,6 +823,45 @@ class AddOperation extends Component {
       e.preventDefault();
     }
   };
+
+  moreDetailsToggler = () => {
+
+    const { filedObj } = this.props
+    const { selectedPlants, operationType, selectedTechnology, UOM, destinationPlant, costingTypeId, isSurfaceTreatment, OperationId } = this.state
+    let isPlant = costingTypeId === ZBCTypeId ? selectedPlants.length > 0 : destinationPlant.label
+
+    if (operationType && selectedTechnology.length > 0 && filedObj.OperationName && UOM.label && filedObj.EffectiveDate && isPlant) {
+      let obj = {}
+      obj.operationType = this.state.operationType
+      obj.technology = this.state.selectedTechnology
+      obj.operationName = filedObj.OperationName
+      obj.operationCode = filedObj.OperationCode
+      obj.description = filedObj.Description
+      obj.plants = this.state.selectedPlants
+      obj.UOM = this.state.UOM
+      obj.vendor = this.state.vendorName
+      obj.effectiveDate = this.state.effectiveDate
+      obj.destinationPlant = this.state.destinationPlant
+      obj.costingTypeId = this.state.costingTypeId
+      obj.customer = this.state.client
+      obj.isSurfaceTreatment = isSurfaceTreatment
+      obj.OperationId = OperationId
+      if (String(this.state.operationType.label) === "Ni Cr Plating") {
+        obj.useWatchArray = ['wireRate', 'consumptionWire', 'gasRate', 'consumptionGas', 'electricityRate', 'consumptionPower', 'manPowerCost', 'staffCost', 'maintenanceCost', 'consumablesCost', 'waterCost', 'jigStripping', 'statuatoryLicense', 'rejnReworkPercent', 'profitPercent']
+      } else {
+        obj.useWatchArray = String(this.state.operationType.label) === "Welding" ? ['wireRate', 'consumptionWire', 'gasRate', 'consumptionGas', 'electricityRate', 'consumptionPower', 'labourRate', 'weldingShift', 'machineConsumableCost', 'welderCost', 'interestDepriciationCost', 'otherCostWelding'] : ['gasCost', 'electricityCost', 'manPowerCost', 'staffCost', 'maintenanceCost', 'consumablesCost', 'waterCost', 'jigStripping', 'interestCost', 'depriciationCost', 'rateOperation', 'statuatoryLicense', 'rejnReworkPercent', 'profitPercent', 'otherCost']
+      }
+      this.setState({ addMoreDetails: true, addMoreDetailObj: obj })
+    } else {
+      Toaster.warning('Please enter mandatory details')
+    }
+  }
+
+  cancelAddMoreDetails = () => {
+    this.setState({ addMoreDetails: false })
+
+  }
+
   /**
   * @method render
   * @description Renders the component
@@ -832,7 +878,7 @@ class AddOperation extends Component {
       if (inputValue?.length >= searchCount && vendorFilterList !== resultInput) {
         this.setState({ inputLoader: true })
         let res
-        res = await getVendorWithVendorCodeSelectList(resultInput)
+        res = await getVendorNameByVendorSelectList(VBC_VENDOR_TYPE, resultInput)
         this.setState({ inputLoader: false })
         this.setState({ vendorFilterList: resultInput })
         let vendorDataAPI = res?.data?.SelectList
@@ -858,7 +904,7 @@ class AddOperation extends Component {
     return (
       <div className="container-fluid">
         {(this.state.isLoader || this.state.finalApprovalLoader) && <LoaderCustom />}
-        <div className="login-container signup-form">
+        {!this.state.addMoreDetails && <div className="login-container signup-form">
           <div className="row">
             <div className="col-md-12">
               <div className="shadow-lgg login-formg">
@@ -922,6 +968,23 @@ class AddOperation extends Component {
                       </Col>
                     </Row>
                     <Row>
+
+                      <Col md="3">
+                        <Field
+                          name="operationType"
+                          type="text"
+                          label="Operation Type"
+                          component={searchableSelect}
+                          placeholder={"Select"}
+                          options={this.renderListing("operationType")}
+                          validate={this.state.operationType == null || this.state.operationType.length === 0 ? [required] : []}
+                          required={true}
+                          handleChangeDescription={this.handleOperationType}
+                          valueDescription={this.state.operationType}
+                          disabled={isViewMode || isEditFlag ? true : false}
+                        />
+                      </Col>
+
                       <Col md="3">
                         <Field
                           title={showDataOnHover(this.state.selectedTechnology)}
@@ -952,7 +1015,7 @@ class AddOperation extends Component {
                           type="text"
                           placeholder={isEditFlag ? '-' : "Select"}
                           validate={[required, acceptAllExceptSingleSpecialCharacter, maxLength80, checkWhiteSpaces]}
-                          onBlur={this.checkUniqCodeByName}
+                          onChange={this.checkUniqCodeByName}
                           component={renderText}
                           required={true}
                           disabled={isEditFlag ? true : false}
@@ -1153,7 +1216,7 @@ class AddOperation extends Component {
                     </Row>
 
                     <Row>
-                      <Col md="4" className="mb-5 pb-1 st-operation">
+                      <Col md="8" className="mb-5 pb-1 st-operation">
                         <label
                           className={`custom-checkbox ${this.state.isEditFlag ? "disabled" : ""
                             }`}
@@ -1163,7 +1226,7 @@ class AddOperation extends Component {
                           <input
                             type="checkbox"
                             checked={this.state.isSurfaceTreatment}
-                            disabled={isEditFlag ? true : false}
+                            disabled={(isEditFlag || this.state.isSurfaceTreatmentSelected) ? true : false}
                           />
                           <span
                             className=" before-box"
@@ -1171,6 +1234,14 @@ class AddOperation extends Component {
                             onChange={this.onPressSurfaceTreatment}
                           />
                         </label>
+                      </Col>
+                      <Col md="4">
+                        {(!isEditFlag || (isEditFlag && this.state.isDetailEntry)) && < button
+                          type="button"
+                          className={'user-btn '}
+                          disabled={false}
+                          onClick={() => this.moreDetailsToggler()}>
+                          <div className={'plus'}></div>{this.state.isDetailEntry ? (isViewMode ? "VIEW MORE OPERATION DETAILS" : "EDIT MORE OPERATION DETAILS") : "ADD MORE OPERATION DETAILS"}</button>}
                       </Col>
 
                     </Row>
@@ -1295,29 +1366,46 @@ class AddOperation extends Component {
               </div>
             </div>
           </div>
-        </div>
+        </div >}
+
+        {
+          this.state.addMoreDetails &&
+          <AddMoreOperation
+            cancelAddMoreDetails={this.cancelAddMoreDetails}
+            addMoreDetailObj={this.state.addMoreDetailObj}
+            detailObject={this.state.detailObject}
+            cancel={this.cancel}
+            isEditFlag={this.state.isEditFlag}
+            isViewMode={this.state.isViewMode}
+          />
+        }
+
         {
           this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.CANCEL_MASTER_ALERT}`} />
 
         }
-        {isOpenVendor && (
-          <AddVendorDrawer
-            isOpen={isOpenVendor}
-            closeDrawer={this.closeVendorDrawer = this.closeVendorDrawer.bind(this)}
-            isEditFlag={false}
-            ID={""}
-            anchor={"right"}
-          />
-        )}
-        {isOpenUOM && (
-          <AddUOM
-            isOpen={isOpenUOM}
-            closeDrawer={this.closeUOMDrawer}
-            isEditFlag={false}
-            ID={""}
-            anchor={"right"}
-          />
-        )}
+        {
+          isOpenVendor && (
+            <AddVendorDrawer
+              isOpen={isOpenVendor}
+              closeDrawer={this.closeVendorDrawer = this.closeVendorDrawer.bind(this)}
+              isEditFlag={false}
+              ID={""}
+              anchor={"right"}
+            />
+          )
+        }
+        {
+          isOpenUOM && (
+            <AddUOM
+              isOpen={isOpenUOM}
+              closeDrawer={this.closeUOMDrawer}
+              isEditFlag={false}
+              ID={""}
+              anchor={"right"}
+            />
+          )
+        }
 
         {
           this.state.approveDrawer && (
@@ -1336,7 +1424,7 @@ class AddOperation extends Component {
             />
           )
         }
-      </div>
+      </div >
     );
   }
 }
@@ -1348,7 +1436,7 @@ class AddOperation extends Component {
 */
 function mapStateToProps(state) {
   const { comman, otherOperation, supplier, auth, costing, client } = state;
-  const filedObj = selector(state, 'OperationCode', 'text');
+  const filedObj = selector(state, 'OperationCode', 'text', 'OperationName', 'Description', 'operationType', 'technology', 'clientName', 'EffectiveDate', 'Plant');
   const { plantSelectList, filterPlantList, UOMSelectList, } = comman;
   const { operationData } = otherOperation;
   const { vendorWithVendorCodeSelectList } = supplier;
@@ -1378,7 +1466,6 @@ function mapStateToProps(state) {
 */
 export default connect(mapStateToProps, {
   getPlantSelectListByType,
-  getVendorWithVendorCodeSelectList,
   getPlantBySupplier,
   getUOMSelectList,
   createOperationsAPI,
@@ -1390,7 +1477,8 @@ export default connect(mapStateToProps, {
   checkAndGetOperationCode,
   getCostingSpecificTechnology,
   getClientSelectList,
-  getUsersMasterLevelAPI
+  getUsersMasterLevelAPI,
+  getVendorNameByVendorSelectList
 })(reduxForm({
   form: 'AddOperation',
   touchOnChange: true,

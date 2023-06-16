@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { reduxForm } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import {
-    getRMSpecificationDataList, deleteRMSpecificationAPI, getRMGradeSelectListByRawMaterial, getGradeSelectList,
+    getRMSpecificationDataList, deleteRMSpecificationAPI, getRMGradeSelectListByRawMaterial,
     getRawMaterialFilterSelectList, getGradeFilterByRawMaterialSelectList, getRawMaterialFilterByGradeSelectList,
 } from '../actions/Material';
 import { defaultPageSize, EMPTY_DATA } from '../../../config/constants';
@@ -476,7 +476,6 @@ export default connect(mapStateToProps, {
     getRMSpecificationDataList,
     deleteRMSpecificationAPI,
     getRMGradeSelectListByRawMaterial,
-    getGradeSelectList,
     getRawMaterialFilterSelectList,
     getGradeFilterByRawMaterialSelectList,
     getRawMaterialFilterByGradeSelectList,

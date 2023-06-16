@@ -50,9 +50,9 @@ class AddSpecification extends Component {
   * @description Called before render the component
   */
   UNSAFE_componentWillMount() {
-    this.props.getRawMaterialNameChild('', () => { })
+    this.props.getRawMaterialNameChild(() => { })
     // this.props.getMaterialTypeSelectList(() => { })
-    this.props.getRMGradeSelectListByRawMaterial('', res => { })
+    this.props.getRMGradeSelectListByRawMaterial('', false, res => { })
   }
 
   /**
@@ -63,7 +63,7 @@ class AddSpecification extends Component {
     const { RawMaterial, RMGrade, isRMDomesticSpec, } = this.props;
 
     if (isRMDomesticSpec && RawMaterial !== '' && RMGrade !== '') {
-      this.props.getRMGradeSelectListByRawMaterial(RawMaterial.value, res => { })
+      this.props.getRMGradeSelectListByRawMaterial(RawMaterial.value, false, res => { })
 
       setTimeout(() => {
         const { rawMaterialNameSelectList, gradeSelectList } = this.props;
@@ -89,7 +89,7 @@ class AddSpecification extends Component {
         if (res && res.data && res.data.Data) {
           let Data = res.data.Data;
           this.setState({ DataToChange: Data })
-          this.props.getRMGradeSelectListByRawMaterial(Data.RawMaterialId, res => { })
+          this.props.getRMGradeSelectListByRawMaterial(Data.RawMaterialId, false, res => { })
 
           setTimeout(() => {
             const { rawMaterialNameSelectList } = this.props;
@@ -124,7 +124,7 @@ class AddSpecification extends Component {
       this.setState({ RawMaterial: newValue, RMGrade: [], rawMaterialId: newValue.value, isDropDownChanged: true }, () => {
         const { RawMaterial } = this.state;
         this.props.change('Specification', "")
-        this.props.getRMGradeSelectListByRawMaterial(RawMaterial.value, res => { });
+        this.props.getRMGradeSelectListByRawMaterial(RawMaterial.value, false, res => { });
         if (this.state.rmGradeId && this.state.rmSpecification) {
           let obj = {
             materialNameId: newValue.value,
@@ -137,7 +137,7 @@ class AddSpecification extends Component {
       });
     } else {
       this.setState({ RawMaterial: [], RMGrade: [], });
-      this.props.getRMGradeSelectListByRawMaterial(0, res => { });
+      this.props.getRMGradeSelectListByRawMaterial(0, false, res => { });
     }
   }
 
@@ -278,8 +278,8 @@ class AddSpecification extends Component {
     this.setState({ isOpenRMDrawer: false, Id: '' }, () => {
       if (type === 'submit') {
         this.getDetails()
-        this.props.getRawMaterialNameChild('', () => {
-          this.props.getRMGradeSelectListByRawMaterial('', res => { })
+        this.props.getRawMaterialNameChild(() => {
+          this.props.getRMGradeSelectListByRawMaterial('', false, res => { })
           /*FOR SHOWING DEFAULT VALUE FROM SELECTED FROM DRAWER*/
           const { rawMaterialNameSelectList } = this.props;
           if (Object.keys(formData).length > 0) {
@@ -310,11 +310,14 @@ class AddSpecification extends Component {
       if (type === 'submit') {
         this.getDetails()
         const { RawMaterial } = this.state;
-        this.props.getRMGradeSelectListByRawMaterial(RawMaterial.value, res => {
+        this.props.getRMGradeSelectListByRawMaterial(RawMaterial.value, false, res => {
           /* FOR SHOWING DEFAULT VALUE SELECTED FROM DRAWER*/
           const { gradeSelectList } = this.props;
+          let rmGradeObj = null;
           if (Object.keys(formData).length > 0) {
-            let rmGradeObj = gradeSelectList && gradeSelectList.find(item => item.Text === formData.Grade)
+            if (gradeSelectList && gradeSelectList.length > 0) {
+              rmGradeObj = gradeSelectList.find(item => item.Text.split('(')[0].trim() === formData.Grade);
+            }
             this.setState({
               RMGrade: rmGradeObj && rmGradeObj !== undefined ? { label: rmGradeObj.Text, value: rmGradeObj.Value } : [],
               rmGradeId: rmGradeObj?.Value
@@ -432,21 +435,19 @@ class AddSpecification extends Component {
       materialSpec: this.state.rmSpecification,
       materialCode: e.target.value
     }
-
     this.props.checkAndGetRawMaterialCode(obj, res => {
       if (res && res.data && res.data.Result === false) {
         Toaster.warning(res.data.Message);
         this.props.change('Code', "")
       } else {
-        let Data = res.data.DynamicData;
-        this.props.change('Code', Data.RawMaterialCode)
+        let Data = res.data.Identity;
+        this.props.change('Code', Data)
       }
     })
   }, 600)
 
 
   onSpecificationChange = debounce((e) => {
-
     this.setState({ rmSpecification: e.target.value })
     if (this.state.rawMaterialId && this.state.rmGradeId) {
       let obj = {
@@ -462,10 +463,9 @@ class AddSpecification extends Component {
 
 
   getRawMaterialCode = (obj) => {
-
     this.props.checkAndGetRawMaterialCode(obj, (res) => {
-      let Data = res.data.DynamicData;
-      this.props.change('Code', Data.RawMaterialCode)
+      let Data = res.data.Identity;
+      this.props.change('Code', Data)
     })
 
   }

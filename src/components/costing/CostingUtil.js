@@ -7,7 +7,7 @@ import DayTime from "../common/DayTimeWrapper";
 import { getBriefCostingById, gridDataAdded, isDataChange, saveAssemblyBOPHandlingCharge, saveBOMLevel, savePartNumber, setComponentDiscountOtherItemData, setComponentItemData, setComponentOverheadItemData, setComponentPackageFreightItemData, setComponentToolItemData, setOverheadProfitData, setPackageAndFreightData, setPartNumberArrayAPICALL, setProcessGroupGrid, setRMCCData, setSurfaceCostData, setToolTabData } from "./actions/Costing";
 
 // TO CREATE OBJECT FOR IN SAVE-ASSEMBLY-PART-ROW-COSTING
-export const createToprowObjAndSave = (tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, netPOPrice, getAssemBOPCharge, tabId, effectiveDate) => {
+export const createToprowObjAndSave = (tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, netPOPrice, getAssemBOPCharge, tabId, effectiveDate, AddLabour = false) => {
 
   let Arr = reactLocalStorage.getObject('costingArray')
   let surfaceTreatmentArr = reactLocalStorage.getObject('surfaceCostingArray')
@@ -100,7 +100,7 @@ export const createToprowObjAndSave = (tabData, surfaceTabData, PackageAndFreigh
       "EffectiveDate": DayTime(new Date(effectiveDate)),
       "TotalRawMaterialsCostWithQuantity": tabData && tabData.CostingPartDetails?.TotalRawMaterialsCostWithQuantity,
       "TotalBoughtOutPartCostWithQuantity": tabData && tabData.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity,
-      "TotalConversionCostWithQuantity": tabData && tabData.CostingPartDetails?.TotalConversionCostWithQuantity,
+      "TotalConversionCostWithQuantity": tabData && AddLabour ? (tabData.CostingPartDetails?.TotalConversionCostWithQuantity + checkForNull(tabData.CostingPartDetails.NetLabourCost) + checkForNull(tabData.CostingPartDetails.IndirectLaborCost) + checkForNull(tabData.CostingPartDetails.StaffCost)) : tabData.CostingPartDetails?.TotalConversionCostWithQuantity,
       "TotalCalculatedRMBOPCCCostWithQuantity": tabData && tabData.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity,
       "TotalCalculatedRMBOPCCCostPerAssembly": tabData && tabData.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity,
       "TotalOperationCostPerAssembly": tabData.CostingPartDetails?.TotalOperationCostPerAssembly,
@@ -120,8 +120,15 @@ export const createToprowObjAndSave = (tabData, surfaceTabData, PackageAndFreigh
       "TotalCalculatedSurfaceTreatmentCostWithQuantitys": surfaceTabData && surfaceTabData.CostingPartDetails?.TotalCalculatedSurfaceTreatmentCostWithQuantitys,
       "TotalCalculatedSurfaceTreatmentCostComponent": surfaceTabData && surfaceTabData.CostingPartDetails?.TotalCalculatedSurfaceTreatmentCostComponent,
       "RawMaterialCostWithCutOff": tabData && tabData.CostingPartDetails?.RawMaterialCostWithCutOff,
-      "IsRMCutOffApplicable": tabData && tabData.CostingPartDetails?.IsRMCutOffApplicable
-
+      "IsRMCutOffApplicable": tabData && tabData.CostingPartDetails?.IsRMCutOffApplicable,
+      "NetLabourCost": tabData && tabData.CostingPartDetails.NetLabourCost,
+      "IndirectLaborCost": tabData && tabData.CostingPartDetails.IndirectLaborCost,
+      "StaffCost": tabData && tabData.CostingPartDetails.StaffCost,
+      "StaffCostPercentage": tabData && tabData.CostingPartDetails.StaffCostPercentage,
+      "IndirectLaborCostPercentage": tabData && tabData.CostingPartDetails.IndirectLaborCostPercentage,
+      "StaffCRMHead": tabData && tabData?.CostingPartDetails?.StaffCRMHead,
+      "NetLabourCRMHead": tabData && tabData?.CostingPartDetails?.NetLabourCRMHead,
+      "IndirectLabourCRMHead": tabData && tabData?.CostingPartDetails?.IndirectLabourCRMHead,
       // "SurfaceTreatmentCostPerAssembly": surfaceTabData && surfaceTabData.CostingPartDetails?.SurfaceTreatmentCost,
       // "TransportationCostPerAssembly": surfaceTabData && surfaceTabData.CostingPartDetails?.TransportationCost,
       // "TotalSurfaceTreatmentCostPerAssembly": surfaceTabData && surfaceTabData.CostingPartDetails?.NetSurfaceTreatmentCost,
@@ -305,8 +312,6 @@ export const formatMultiTechnologyUpdate = (tabData, totalCost = 0, surfaceTabDa
     return ''
   })
 
-
-
   let temp = {
     "BOPHandlingCharges": {
       "AssemblyCostingId": tabData?.CostingId,
@@ -323,8 +328,8 @@ export const formatMultiTechnologyUpdate = (tabData, totalCost = 0, surfaceTabDa
       "NetChildPartsCost": tabData?.CostingPartDetails?.NetChildPartsCost,
       "NetRMCostPerAssembly": tabData?.CostingPartDetails?.NetChildPartsCost,
       "NetBOPCostAssembly": tabData?.CostingPartDetails?.TotalBoughtOutPartCost,
-      "NetConversionCostPerAssembly": checkForNull(tabData?.CostingPartDetails?.TotalOperationCost) + checkForNull(tabData?.CostingPartDetails?.TotalProcessCost),
-      "NetRMBOPCCCost": checkForNull(tabData?.CostingPartDetails?.NetChildPartsCost) + checkForNull(tabData?.CostingPartDetails?.TotalBoughtOutPartCost) + checkForNull(tabData?.CostingPartDetails?.TotalOperationCost) + checkForNull(tabData?.CostingPartDetails?.TotalProcessCost),
+      "NetConversionCostPerAssembly": checkForNull(tabData?.CostingPartDetails?.TotalOperationCost) + checkForNull(tabData?.CostingPartDetails?.TotalProcessCost) + checkForNull(tabData?.NetLabourCost) + checkForNull(tabData?.IndirectLaborCost) + checkForNull(tabData?.StaffCost),
+      "NetRMBOPCCCost": checkForNull(tabData?.CostingPartDetails?.NetChildPartsCost) + checkForNull(tabData?.CostingPartDetails?.TotalBoughtOutPartCost) + checkForNull(tabData?.CostingPartDetails?.TotalOperationCost) + checkForNull(tabData?.CostingPartDetails?.TotalProcessCost) + checkForNull(tabData?.NetLabourCost) + checkForNull(tabData?.IndirectLaborCost) + checkForNull(tabData?.StaffCost),
       "NetSurfaceTreatmentCost": surfaceTabData?.CostingPartDetails?.NetSurfaceTreatmentCost,
       "NetOverheadAndProfits": overHeadAndProfitTabData?.CostingPartDetails?.NetOverheadAndProfitCost,
       "NetPackagingAndFreightCost": packageAndFreightTabData?.CostingPartDetails?.NetFreightPackagingCost,
@@ -341,7 +346,15 @@ export const formatMultiTechnologyUpdate = (tabData, totalCost = 0, surfaceTabDa
       "ProfitCost": overHeadAndProfitTabData?.CostingPartDetails?.ProfitCost,
       "RejectionCost": overHeadAndProfitTabData?.CostingPartDetails?.RejectionCost,
       "ICCCost": overHeadAndProfitTabData?.CostingPartDetails?.ICCCost,
-      "PaymentTermCost": overHeadAndProfitTabData?.CostingPartDetails?.PaymentTermCost
+      "PaymentTermCost": overHeadAndProfitTabData?.CostingPartDetails?.PaymentTermCost,
+      "NetLabourCost": tabData?.NetLabourCost,
+      "IndirectLaborCost": tabData?.IndirectLaborCost,
+      "StaffCost": tabData?.StaffCost,
+      "StaffCRMHead": tabData?.CostingPartDetails?.StaffCRMHead,
+      "NetLabourCRMHead": tabData?.CostingPartDetails?.NetLabourCRMHead,
+      "IndirectLabourCRMHead": tabData?.CostingPartDetails?.IndirectLabourCRMHead,
+      "StaffCostPercentage": tabData?.StaffCostPercentage,
+      "IndirectLaborCostPercentage": tabData?.IndirectLaborCostPercentage,
     },
     "WorkingRows": assemblyWorkingRow,
     "LoggedInUserId": loggedInUserId()
@@ -381,3 +394,28 @@ export const errorCheckObject = (tempObject) => {
   if (tempObject && count !== 0) return true;
 }
 
+
+export const swappingLogicCommon = (givenArray, dragStart, dragEnd, e) => {
+  const start = Number(e?.target?.title?.slice(-1));
+  const end = Number(dragEnd?.slice(-1));
+
+  if (Number(start) < Number(end)) {
+    return givenArray
+  }
+
+  if (start === end) {
+    return false; // Same start and end, return false
+  }
+
+  const temp = givenArray.slice(); // Create a copy of givenArray
+  const startItem = temp.splice(start, 1)[0]; // Remove start item from temp array
+
+  if (start + 1 === end) {
+    return false; // Item after start is end, return false
+  }
+
+  const insertIndex = end > start ? end - 1 : end; // Adjust insert index based on start and end positions
+  temp.splice(insertIndex, 0, startItem); // Insert start item at insertIndex
+
+  return temp;
+};

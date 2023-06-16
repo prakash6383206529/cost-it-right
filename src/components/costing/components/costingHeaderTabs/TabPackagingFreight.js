@@ -19,6 +19,7 @@ import { debounce } from 'lodash';
 import { updateMultiTechnologyTopAndWorkingRowCalculation } from '../../actions/SubAssembly';
 import { LOGISTICS } from '../../../../config/masterData';
 import { useHistory } from 'react-router';
+import { WACTypeId } from '../../../../config/constants';
 
 function TabPackagingFreight(props) {
 
@@ -32,7 +33,7 @@ function TabPackagingFreight(props) {
 
   const { PackageAndFreightTabData, CostingEffectiveDate, ComponentItemDiscountData, RMCCTabData, SurfaceTabData, OverheadProfitTabData, DiscountCostData, ToolTabData, getAssemBOPCharge, checkIsFreightPackageChange } = useSelector(state => state.costing)
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
-  const partType = IdForMultiTechnology.includes(String(costData?.TechnologyId))
+  const partType = (IdForMultiTechnology.includes(String(costData?.TechnologyId)) || costData.CostingTypeId === WACTypeId)
   const { subAssemblyTechnologyArray } = useSelector(state => state.subAssembly)
   const { ComponentItemData, costingData } = useSelector(state => state.costing)
   let history = useHistory();

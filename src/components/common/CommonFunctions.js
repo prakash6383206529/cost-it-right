@@ -1,6 +1,6 @@
 import { reactLocalStorage } from "reactjs-localstorage";
 import _ from 'lodash';
-import { CBCAPPROVALTYPEID, CBCTypeId, dropdownLimit, NCCAPPROVALTYPEID, NCCTypeId, NFRAPPROVALTYPEID, NFRTypeId, VBCAPPROVALTYPEID, VBCTypeId, ZBCAPPROVALTYPEID, ZBCTypeId } from "../../config/constants";
+import { CBCAPPROVALTYPEID, CBCTypeId, dropdownLimit, NCCAPPROVALTYPEID, NCCTypeId, NFRAPPROVALTYPEID, NFRTypeId, VBCAPPROVALTYPEID, VBCTypeId, WACAPPROVALTYPEID, WACTypeId, ZBCAPPROVALTYPEID, ZBCTypeId } from "../../config/constants";
 
 // COMMON FILTER FUNCTION FOR AUTOCOMPLETE DROPDOWN
 const commonFilterFunction = (inputValue, dropdownArray, filterByName, selectedParts = false) => {
@@ -102,6 +102,7 @@ export const hideColumnFromExcel = (data, value) => {
     excelData = data && data.filter((item) => item.value !== value)
     return excelData
 }
+
 export const costingTypeIdToApprovalTypeIdFunction = (value) => {
     let approvalTypeId;
     switch (Number(value)) {
@@ -119,6 +120,9 @@ export const costingTypeIdToApprovalTypeIdFunction = (value) => {
             break;
         case NFRTypeId:
             approvalTypeId = NFRAPPROVALTYPEID;
+            break;
+        case WACTypeId:
+            approvalTypeId = WACAPPROVALTYPEID;
             break;
         default:
             approvalTypeId = null; // or any default value you prefer

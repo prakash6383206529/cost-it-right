@@ -4,6 +4,7 @@ import { getBOPData, } from '../../../actions/Costing';
 import { useDispatch, useSelector } from 'react-redux';
 import { checkForDecimalAndNull } from '../../../../../helper';
 import { IdForMultiTechnology } from '../../../../../config/masterData';
+import { WACTypeId } from '../../../../../config/constants';
 
 function BoughtOutPart(props) {
   const { item } = props;
@@ -14,7 +15,7 @@ function BoughtOutPart(props) {
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
 
   // partType USED FOR CONDITIONAL RENDERING OF COLUMNS IN CASE OF NORMAL COSTING AND ASSEMBLY TECHNOLOGY COSTING  (TRUE FOR ASSEMBLY TECHNOLOGY)
-  const partType = IdForMultiTechnology.includes(String(costData?.TechnologyId))
+  const partType = (IdForMultiTechnology.includes(String(costData?.TechnologyId)) || costData.CostingTypeId === WACTypeId)
 
   useEffect(() => {
     if (Object.keys(costData).length > 0) {
