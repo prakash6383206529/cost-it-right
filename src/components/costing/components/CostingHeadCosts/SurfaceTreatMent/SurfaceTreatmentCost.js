@@ -355,7 +355,7 @@ function SurfaceTreatmentCost(props) {
                                   required: false,
                                 }}
                                 placeholder={'Select'}
-                                customClassName={'withBorder error-label mn-height-auto mb-0 surface-treament'}
+                                customClassName="costing-selectable-dropdown"
                                 defaultValue={item.SurfaceTreatmentCRMHead ? { label: item.SurfaceTreatmentCRMHead, value: index } : ''}
                                 options={CRMHeads}
                                 required={false}
