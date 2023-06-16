@@ -1306,10 +1306,12 @@ function UserRegistration(props) {
     else {
 
       dispatch(updateUserAPI(updatedData, (res) => {
-        if (res.data.Result) {
+        if (res?.data?.Result) {
           Toaster.success(MESSAGES.UPDATE_USER_SUCCESSFULLY)
+          cancel();
         }
-        cancel();
+        setIsLoader(false)
+        setShowPopup(false)
       }))
     }
 
@@ -1507,10 +1509,12 @@ function UserRegistration(props) {
         else {
           reset();
           dispatch(updateUserAPI(updatedData, (res) => {
-            if (res.data.Result) {
+            if (res?.data?.Result) {
               Toaster.success(MESSAGES.UPDATE_USER_SUCCESSFULLY)
+              cancel();
             }
-            cancel();
+            setIsLoader(false)
+            setShowPopup(false)
           }))
         }
 
