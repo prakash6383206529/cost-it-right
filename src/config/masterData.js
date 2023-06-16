@@ -4838,11 +4838,11 @@ export const USER_LISTING_DOWNLOAD_EXCEl = [
 ]
 
 export const RM_IMPACT_DOWNLOAD_EXCEl = [
-    { label: "Raw Material", value: "RawMaterial", },
-    { label: "Grade", value: "RMGrade", },
-    { label: "Spec", value: "RMSpec", },
+    { label: "Raw Material", value: "RawMaterialName", },
+    { label: "Grade", value: "RawMaterialGradeName", },
+    { label: "Spec", value: "RawMaterialSpecificationName", },
     { label: "Code", value: "RawMaterialCode", },
-    { label: "UOM", value: "UOM", },
+    { label: "UOM", value: "UnitOfMeasurementName", },
     { label: "Existing Basic Rate", value: "OldBasicRate", },
     { label: "Revised Basic Rate", value: "NewBasicRate", },
     { label: "Existing Scrap Rate", value: "OldScrapRate", },

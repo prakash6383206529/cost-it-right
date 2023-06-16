@@ -576,7 +576,7 @@ function MasterSendForApproval(props) {
                                                         customClassName={'withBorder'}
                                                         errors={errors.netCost}
                                                         disabled={true}
-                                                        defaultValue={Object.keys(approvalObj).length > 0 ? checkForDecimalAndNull(approvalObj.NetLandedCost, initialConfiguration.NoOfDecimalForPrice) : ''}
+                                                        defaultValue={Object.keys(approvalObj).length > 0 ? checkForDecimalAndNull(approvalObj.NetLandedCostConversion, initialConfiguration.NoOfDecimalForPrice) : ''}
                                                     />
 
                                                 </div>
