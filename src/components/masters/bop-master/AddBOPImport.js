@@ -61,7 +61,6 @@ class AddBOPImport extends Component {
       costingTypeId: ZBCTypeId,
       isOpenVendor: false,
       isVendorNameNotSelected: false,
-      IsSendForApproval: false,
       vendorName: [],
       approvalObj: {},
       minEffectiveDate: '',
@@ -806,7 +805,6 @@ class AddBOPImport extends Component {
       return { ...file, ContextId: BOPID }
     })
     const formData = {
-      IsSendForApproval: this.state.IsSendForApproval,
       BoughtOutPartId: BOPID,
       Currency: currency.label,
       CostingTypeId: costingTypeId,
@@ -884,9 +882,9 @@ class AddBOPImport extends Component {
 
     } else {
       if (CheckApprovalApplicableMaster(BOP_MASTER_ID) === true && !this.state.isFinalApprovar) {
-        this.setState({ IsSendForApproval: true })
+        formData.IsSendForApproval = true
       } else {
-        this.setState({ IsSendForApproval: false })
+        formData.IsSendForApproval = false
       }
       // this.setState({ setDisable: true })
 
@@ -942,7 +940,7 @@ class AddBOPImport extends Component {
       } else {
         this.props.createBOP(formData, (res) => {
           this.setState({ setDisable: false })
-          if (res.data.Result) {
+          if (res?.data?.Result) {
             Toaster.success(MESSAGES.BOP_ADD_SUCCESS)
             //this.clearForm()
             this.cancel('submit')
