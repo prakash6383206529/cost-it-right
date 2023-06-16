@@ -395,8 +395,8 @@ function ViewConversionCost(props) {
                       <td>{item.UOM ? item.UOM : '-'}</td>
                       <td>{item.Rate ? item.Rate : '-'}</td>
                       <td>{item.Quantity ? item.Quantity : '-'}</td>
-                      <td>{item.IsLabourRateExist ? checkForDecimalAndNull(item.LabourRate, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
-                      <td>{item.IsLabourRateExist ? checkForDecimalAndNull(item.LabourQuantity, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
+                      {costingOperationCost && costingOperationCost[0]?.IsLabourRateExist === true && <td>{item.IsLabourRateExist ? checkForDecimalAndNull(item.LabourRate, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>}
+                      {costingOperationCost && costingOperationCost[0]?.IsLabourRateExist === true && <td>{item.IsLabourRateExist ? checkForDecimalAndNull(item.LabourQuantity, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>}
                       {/* <td>{netCost(item.OperationCost)}</td> */}
                       <td>
                         {item.OperationCost ? checkForDecimalAndNull(item.OperationCost, initialConfiguration.NoOfDecimalForPrice) : 0}
