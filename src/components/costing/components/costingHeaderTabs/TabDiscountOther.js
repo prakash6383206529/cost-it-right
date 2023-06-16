@@ -1171,7 +1171,7 @@ function TabDiscountOther(props) {
                       <TooltipCustom width={"300px"} disabledIcon={true} id={'total-cost-tab-discount'} tooltipText={'Total Cost = Net RM BOP CC + SurfaceTreatment Cost + Overheads&Profit Cost + Packaging&Freight Cost + Tool Cost'} />
                       <p id={'total-cost-tab-discount'} className='disabled-input-data'>{`${totalCost && totalCost !== undefined ? checkForDecimalAndNull(totalCost, initialConfiguration.NoOfDecimalForPrice) : 0}`}</p>
                       <button type="button" id="overhead-refresh" className={'refresh-icon ml-2'} onClick={() => refreshAllData()}></button>
-                      <TooltipCustom disabledIcon={true} id="overhead-refresh" tooltipText="Refresh to update Overhead and Profit cost" />
+                      <TooltipCustom disabledIcon={true} id="overhead-refresh" tooltipText="Refresh to update Discount, Other cost and PO Price" />
                     </div>
                   </Col>
                 </Row>
