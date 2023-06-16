@@ -214,7 +214,7 @@ function TabDiscountOther(props) {
           "Description": '',
           "NetCost": DiscountCostData?.HundiOrDiscountValue,
           "Value": getValues('HundiOrDiscountPercentage'),
-
+          "CRMHead": getValues('crmHeadDiscount') ? getValues('crmHeadDiscount').label : '',
         }
       ]
 
@@ -312,6 +312,7 @@ function TabDiscountOther(props) {
 
             setDiscountCostApplicability({ label: costDetail.DiscountCostDetails[0].ApplicabilityType, value: costDetail.DiscountCostDetails[0].ApplicabilityType })
             setValue('DiscountCostApplicability', { label: costDetail.DiscountCostDetails[0].ApplicabilityType, value: costDetail.DiscountCostDetails[0].ApplicabilityType })
+            setValue('crmHeadDiscount', { label: costDetail.DiscountCostDetails[0].CRMHead, value: 1 })
 
             // BELOW CONDITION UPDATES VALUES IN EDIT OR GET MODE
             const discountValues = {
@@ -768,6 +769,7 @@ function TabDiscountOther(props) {
         "Description": '',
         "NetCost": DiscountCostData?.HundiOrDiscountValue,
         "Value": getValues('HundiOrDiscountPercentage'),
+        "CRMHead": getValues('crmHeadDiscount') ? getValues('crmHeadDiscount').label : '',
 
       }
     ]
