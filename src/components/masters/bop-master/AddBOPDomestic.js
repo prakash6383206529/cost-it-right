@@ -59,7 +59,6 @@ class AddBOPDomestic extends Component {
       vendorLocation: [],
       oldDate: '',
       sourceLocation: [],
-      IsSendForApproval: false,
       UOM: [],
       isOpenUOM: false,
       approveDrawer: false,
@@ -687,7 +686,6 @@ class AddBOPDomestic extends Component {
     })
     // if (isEditFlag && this.state.isFinalApprovar) {
     const formData = {
-      IsSendForApproval: this.state.IsSendForApproval,
       IsFinancialDataChanged: isDateChange ? true : false,
       BoughtOutPartId: BOPID,
       CostingTypeId: costingTypeId,
@@ -755,9 +753,9 @@ class AddBOPDomestic extends Component {
     } else {
 
       if (CheckApprovalApplicableMaster(BOP_MASTER_ID) === true && !this.state.isFinalApprovar) {
-        this.setState({ IsSendForApproval: true })
+        formData.IsSendForApproval = true
       } else {
-        this.setState({ IsSendForApproval: false })
+        formData.IsSendForApproval = false
       }
       // this.setState({ setDisable: true })
 
