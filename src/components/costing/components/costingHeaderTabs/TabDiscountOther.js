@@ -219,7 +219,7 @@ function TabDiscountOther(props) {
           "Description": '',
           "NetCost": DiscountCostData?.HundiOrDiscountValue,
           "Value": getValues('HundiOrDiscountPercentage'),
-
+          "CRMHead": getValues('crmHeadDiscount') ? getValues('crmHeadDiscount').label : '',
         }
       ]
 
