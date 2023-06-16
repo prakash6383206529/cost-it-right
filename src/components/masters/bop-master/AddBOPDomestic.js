@@ -62,7 +62,6 @@ class AddBOPDomestic extends Component {
       vendorLocation: [],
       oldDate: '',
       sourceLocation: [],
-      IsSendForApproval: false,
       UOM: [],
       isOpenUOM: false,
       approveDrawer: false,
@@ -699,7 +698,38 @@ class AddBOPDomestic extends Component {
       return false;
     }
     // if (isEditFlag && this.state.isFinalApprovar) {
-
+    //check here @samrudhi
+    let updatedFiles = files.map((file) => {
+      return { ...file, ContextId: BOPID }
+    })
+    const formData = {
+      IsFinancialDataChanged: isDateChange ? true : false,
+      BoughtOutPartId: BOPID,
+      CostingTypeId: costingTypeId,
+      BoughtOutPartNumber: values.BoughtOutPartNumber,
+      BoughtOutPartName: values.BoughtOutPartName,
+      CategoryId: BOPCategory.value,
+      Specification: values.Specification,
+      UnitOfMeasurementId: UOM.value,
+      Vendor: vendorName.value,
+      Source: values.Source,
+      SourceLocation: sourceLocation.value,
+      EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
+      BasicRate: values.BasicRate,
+      NumberOfPieces: 1,
+      NetLandedCost: this.state.NetLandedCost,
+      Remark: values.Remark,
+      IsActive: true,
+      LoggedInUserId: loggedInUserId(),
+      Plant: [plantArray],
+      VendorPlant: [],
+      DestinationPlantId: (costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? selectedPlants.value : (costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant) ? selectedPlants.value : userDetailsBop.Plants[0].PlantId,
+      Attachements: isEditFlag ? updatedFiles : files,
+      CustomerId: client.value,
+      EntryType: Number(ENTRY_TYPE_DOMESTIC),
+      CategoryName: BOPCategory.label,
+      IsClientVendorBOP: isClientVendorBOP
+    }
     if ((isEditFlag && this.state.isFinalApprovar) || (isEditFlag && CheckApprovalApplicableMaster(BOP_MASTER_ID) !== true)) {
 
       let updatedFiles = files.map((file) => {
@@ -764,9 +794,9 @@ class AddBOPDomestic extends Component {
     } else {
 
       if (CheckApprovalApplicableMaster(BOP_MASTER_ID) === true && !this.state.isFinalApprovar) {
-        this.setState({ IsSendForApproval: true })
+        formData.IsSendForApproval = true
       } else {
-        this.setState({ IsSendForApproval: false })
+        formData.IsSendForApproval = false
       }
       // this.setState({ setDisable: true })
       const formData = {

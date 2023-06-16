@@ -62,7 +62,6 @@ class AddBOPImport extends Component {
       costingTypeId: ZBCTypeId,
       isOpenVendor: false,
       isVendorNameNotSelected: false,
-      IsSendForApproval: false,
       vendorName: [],
       approvalObj: {},
       minEffectiveDate: '',
@@ -809,7 +808,41 @@ class AddBOPImport extends Component {
     if (selectedPlants.length === 0 && costingTypeId === ZBCTypeId) {
       return false;
     }
-
+    let updatedFiles = files.map((file) => {
+      return { ...file, ContextId: BOPID }
+    })
+    //check here @samrudhi
+    const formData = {
+      BoughtOutPartId: BOPID,
+      Currency: currency.label,
+      CostingTypeId: costingTypeId,
+      BoughtOutPartNumber: values.BoughtOutPartNumber,
+      BoughtOutPartName: values.BoughtOutPartName,
+      CategoryId: BOPCategory.value,
+      Specification: values.Specification,
+      Vendor: vendorName.value,
+      Source: values.Source,
+      SourceLocation: sourceLocation.value,
+      EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
+      BasicRate: values.BasicRate,
+      NumberOfPieces: 1,
+      NetLandedCost: this.state.netLandedcost,
+      Remark: values.Remark,
+      IsActive: true,
+      LoggedInUserId: loggedInUserId(),
+      Plant: [plantArray],
+      DestinationPlantId: (costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? selectedPlants.value : (costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant) ? selectedPlants.value : userDetailsBop.Plants[0].PlantId,
+      Attachements: isEditFlag ? updatedFiles : files,
+      UnitOfMeasurementId: UOM.value,
+      VendorPlant: [],
+      NetLandedCostConversion: netLandedConverionCost,
+      IsFinancialDataChanged: isDateChange ? true : false,
+      CustomerId: client.value,
+      BoughtOutPartIncoTermId: incoTerm.value,
+      BoughtOutPartPaymentTermId: paymentTerm.value,
+      EntryType: Number(ENTRY_TYPE_IMPORT),
+      IsClientVendorBOP: isClientVendorBOP
+    }
     if ((isEditFlag && this.state.isFinalApprovar) || (isEditFlag && CheckApprovalApplicableMaster(BOP_MASTER_ID) !== true)) {
 
       this.setState({ setDisable: true })
@@ -884,9 +917,9 @@ class AddBOPImport extends Component {
 
     } else {
       if (CheckApprovalApplicableMaster(BOP_MASTER_ID) === true && !this.state.isFinalApprovar) {
-        this.setState({ IsSendForApproval: true })
+        formData.IsSendForApproval = true
       } else {
-        this.setState({ IsSendForApproval: false })
+        formData.IsSendForApproval = false
       }
       // this.setState({ setDisable: true })
       const formData = {
@@ -973,7 +1006,7 @@ class AddBOPImport extends Component {
       } else {
         this.props.createBOP(formData, (res) => {
           this.setState({ setDisable: false })
-          if (res.data.Result) {
+          if (res?.data?.Result) {
             Toaster.success(MESSAGES.BOP_ADD_SUCCESS)
             //this.clearForm()
             this.cancel('submit')

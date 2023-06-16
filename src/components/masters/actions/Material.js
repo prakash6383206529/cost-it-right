@@ -1496,6 +1496,34 @@ export function getRMApprovalList(masterId, skip, take, isPagination, obj, callb
                 })
                 callback(response);
             }
+            console.log('response: ', response);
+            let data;
+
+            switch (masterId) {
+                case 1:
+                    data = response.status === 204 ? [] : response.data.Data.RMApprovalList;
+                    break;
+                case 2:
+                    data = response.status === 204 ? [] : response.data.Data.BopApprovalList;
+                    break;
+                case 3:
+                    data = response.status === 204 ? [] : response.data.Data.OperationApprovalList;
+                    break;
+                case 4:
+                    data = response.status === 204 ? [] : response.data.Data.MachineApprovalList;
+                    break;
+                case 5:
+                    data = response.status === 204 ? [] : response.data.Data.BudgetingApprovalList;
+                    break;
+                default:
+                    data = null; // or any default value as per requirement
+            }
+            dispatch({
+                type: GET_RM_APPROVAL_LIST,
+                payload: data
+            })
+            callback(response);
+
         }).catch((error) => {
 
             dispatch({ type: API_FAILURE, });
