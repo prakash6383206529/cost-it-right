@@ -218,6 +218,24 @@ export function deleteBOP(Id, callback) {
 }
 
 /**
+ * @method updateBOP
+ * @description update BOP Domestic
+ */
+export function updateBOP(requestData, callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        axios.put(`${API.updateBOP}`, requestData, config())
+            .then((response) => {
+                callback(response);
+            }).catch((error) => {
+                apiErrors(error);
+                dispatch({ type: API_FAILURE });
+                callback(error);
+            });
+    };
+}
+
+/**
  * @method updateBOPDomestic
  * @description update BOP Domestic
  */
