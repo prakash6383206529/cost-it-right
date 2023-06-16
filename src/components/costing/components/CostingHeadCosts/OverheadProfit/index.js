@@ -324,7 +324,6 @@ function OverheadProfit(props) {
       });
       return temp;
     }
-
   }
 
   /**
@@ -391,6 +390,7 @@ function OverheadProfit(props) {
       }
     }
   }
+
 
   /**
   * @method setOverheadValues
