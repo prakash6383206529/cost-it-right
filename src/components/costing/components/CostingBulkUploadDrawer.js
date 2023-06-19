@@ -358,7 +358,7 @@ class CostingBulkUploadDrawer extends Component {
                                                 onChangeStatus={this.handleChangeStatus}
                                                 PreviewComponent={this.Preview}
                                                 onChange={this.fileHandler}
-                                                accept=".xlsx"
+                                                accept="image/jpeg,image/jpg,image/png,image/PNG,.xls,.doc,.pdf,.xlsx"
                                                 initialFiles={this.state.initialFiles}
                                                 maxFiles={1}
                                                 maxSizeBytes={2000000}

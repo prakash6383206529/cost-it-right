@@ -1224,7 +1224,7 @@ class AddOperation extends Component {
                             onChangeStatus={this.handleChangeStatus}
                             PreviewComponent={this.Preview}
                             //onSubmit={this.handleSubmit}
-                            accept="*"
+                            accept="image/jpeg,image/jpg,image/png,image/PNG,.xls,.doc,.pdf,.xlsx"
                             initialFiles={this.state.initialFiles}
                             disabled={isViewMode}
                             maxFiles={3}
