@@ -8,12 +8,13 @@ import Dropzone from 'react-dropzone-uploader'
 import LoaderCustom from '../common/LoaderCustom';
 import Toaster from '../common/Toaster';
 import { bulkUploadVolume } from '../masters/actions/Volume';
-import { loggedInUserId } from '../../helper';
+import { checkForSameFileUpload, loggedInUserId } from '../../helper';
 import ExcelFile from 'react-export-excel/dist/ExcelPlugin/components/ExcelFile';
 import { Volume, VolumeTempData } from '../../config/masterData';
 import PopupMsgWrapper from '../common/PopupMsgWrapper';
 import { MESSAGES } from '../../config/message';
 import WarningMessage from '../common/WarningMessage';
+import { ExcelRenderer } from 'react-excel-renderer';
 
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -27,7 +28,8 @@ class VolumeBulkUploadDrawer extends Component {
             fileName: '',
             Technology: [],
             attachmentLoader: false,
-            showPopup: false
+            showPopup: false,
+            bomUploadLoader: false,
         }
     }
 
@@ -105,16 +107,49 @@ class VolumeBulkUploadDrawer extends Component {
         </ExcelSheet>);
     }
     fileHandler = event => {
-
+        this.setState({ bomUploadLoader: true })
         let fileObj = event.target.files[0];
         let uploadfileName = fileObj.name;
         let fileType = uploadfileName.substr(uploadfileName.indexOf('.'));
-
+        let fileHeads = [];
+        let checkForFileHead
         //pass the fileObj as parameter
         if (fileType !== '.xls' && fileType !== '.xlsx') {
             Toaster.warning('File type should be .xls or .xlsx')
+            this.setState({ bomUploadLoader: false })
+        } else {
+            let data = new FormData()
+            data.append('file', fileObj)
+
+            ExcelRenderer(fileObj, (err, resp) => {
+                if (err) {
+
+                }
+                else {
+                    fileHeads = resp.rows[0];
+                    const { fileName } = this.props;
+                    switch (String(fileName)) {
+                        case 'Volume':
+                            checkForFileHead = checkForSameFileUpload(Volume, fileHeads)
+                            break;
+                        default:
+                            break;
+                    }
+                }
+                this.setState({ bomUploadLoader: false })
+                if (!checkForFileHead) {
+                    Toaster.warning('Please select file of same Master')
+                    return false
+                }
+                this.setState({
+                    cols: resp.cols,
+                    rows: resp.rows,
+                    uploadfileName: uploadfileName,
+                });
+            });
         }
     }
+
 
     onSubmit = (value) => {
 
