@@ -24,6 +24,7 @@ function AddLabourCost(props) {
     const [totalGridCost, setTotalGridCost] = useState(0)
     const [indirectLabourCostState, setIndirectLabourCostState] = useState(0)
     const [staffCostState, setStaffCostState] = useState(0)
+    const [labourDetailsId, setLabourDetailsId] = useState(0)
     const dispatch = useDispatch()
     const { costingData } = useSelector(state => state.costing)
 
@@ -81,7 +82,7 @@ function AddLabourCost(props) {
                 setValue('labourRate', Data.LabourRate)
                 setValue('workingHours', Data.WorkingTime)
                 setValue('efficiency', Data.Efficiency)
-
+                setLabourDetailsId(Data.LabourDetailsId)
             }
         }))
 
@@ -191,6 +192,10 @@ function AddLabourCost(props) {
             obj.Efficiency = getValues('efficiency') ? getValues('efficiency') : ''
             obj.CycleTime = getValues('cycleTime') ? getValues('cycleTime') : ''
             obj.LabourCost = totalCost ? totalCost : ''
+
+            obj.Absentism = getValues('absentism') ? getValues('absentism') : ''
+            obj.NoofLabour = getValues('noOfLabour') ? getValues('noOfLabour') : ''
+            obj.LabourDetailId = labourDetailsId
 
             // If we're in edit mode, update the existing row with the new data.
             // Otherwise, add the new row to the end of the table.
