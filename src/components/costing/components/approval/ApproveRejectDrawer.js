@@ -1070,7 +1070,7 @@ function ApproveRejectDrawer(props) {
                               onChangeStatus={handleChangeStatus}
                               PreviewComponent={Preview}
                               // onSubmit={handleImapctSubmit}
-                              accept="*"
+                              accept="image/jpeg,image/jpg,image/png,image/PNG,.xls,.doc,.pdf,.xlsx"
                               initialFiles={[]}
                               maxFiles={2}
                               maxSizeBytes={5000000}

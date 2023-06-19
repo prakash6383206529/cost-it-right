@@ -1501,7 +1501,7 @@ class AddBOPImport extends Component {
                                 ref={this.dropzone}
                                 onChangeStatus={this.handleChangeStatus}
                                 PreviewComponent={this.Preview}
-                                accept="*"
+                                accept="image/jpeg,image/jpg,image/png,image/PNG,.xls,.doc,.pdf,.xlsx"
                                 disabled={isViewMode}
                                 initialFiles={this.state.initialFiles}
                                 maxFiles={3}
