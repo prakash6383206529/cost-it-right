@@ -513,6 +513,7 @@ class BulkUpload extends Component {
         } else if (costingTypeId === CBCADDMORE) {
             masterUploadData.CostingTypeId = CBCTypeId
         }
+        console.log(masterUploadData, "masterUploadData");
         this.setState({ setDisable: true })
         if (fileName === 'Actual Volume') {
             uploadData.TypeOfEntry = ENTRY_TYPE_DOMESTIC
