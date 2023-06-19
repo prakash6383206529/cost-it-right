@@ -2503,22 +2503,23 @@ export const statusOptions = _.sortBy([
   // { label: "SendForApproval", value: "7" },
 ], ({ label }) => label.toLowerCase());
 
+
 //check here @ashok
 export const CRMHeads = [
   { label: "Net Sales", value: 1 },
-  { label: "Consumption", value: 1 },
-  { label: "Labour Cost", value: 2 },
+  { label: "Consumption", value: 2 },
+  { label: "Labour Cost", value: 3 },
   { label: "Manufacturing Expenses", value: 4 },
-  { label: "Office Expenses", value: 6 },
+  { label: "Office Expenses", value: 5 },
   { label: "Repairs Expenses", value: 6 },
-  { label: "Selling & Distribution Expenses", value: 6 },
-  { label: "Common Expenses", value: 6 },
-  { label: "Staff Cost", value: 3 },
-  { label: "EBIDTA", value: 5 },
-  { label: "Finance Cost", value: 3 },
-  { label: "Depriciation", value: 3 },
-  { label: "PBT", value: 3 },
-  { label: "Amortization", value: 8 },
+  { label: "Selling & Distribution Expenses", value: 7 },
+  { label: "Common Expenses", value: 8 },
+  { label: "Staff Cost", value: 9 },
+  { label: "EBIDTA", value: 10 },
+  { label: "Finance Cost", value: 11 },
+  { label: "Depriciation", value: 12 },
+  { label: "PBT", value: 13 },
+  { label: "Amortization", value: 14 },
 
 ]
 
