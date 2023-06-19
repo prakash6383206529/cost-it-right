@@ -1339,7 +1339,7 @@ class AddBOPDomestic extends Component {
                                 onChangeStatus={this.handleChangeStatus}
                                 PreviewComponent={this.Preview}
                                 disabled={isViewMode}
-                                accept="*"
+                                accept="image/jpeg,image/jpg,image/png,image/PNG,.xls,.doc,.pdf,.xlsx"
                                 initialFiles={this.state.initialFiles}
                                 maxFiles={3}
                                 maxSizeBytes={2000000}

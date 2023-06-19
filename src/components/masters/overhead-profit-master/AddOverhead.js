@@ -1222,7 +1222,7 @@ class AddOverhead extends Component {
                               ref={this.dropzone}
                               onChangeStatus={this.handleChangeStatus}
                               PreviewComponent={this.Preview}
-                              accept="*"
+                              accept="image/jpeg,image/jpg,image/png,image/PNG,.xls,.doc,.pdf,.xlsx"
                               initialFiles={this.state.initialFiles}
                               maxFiles={3}
                               disabled={isViewMode}
