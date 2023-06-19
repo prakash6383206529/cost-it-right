@@ -29,6 +29,7 @@ import { getPartSelectListWtihRevNo } from '../masters/actions/Volume';
 import { DATE_STRING, DURATION_STRING, LOGISTICS, REMARKMAXLENGTH, visibilityModeDropdownArray } from '../../config/masterData';
 import DayTime from '../common/DayTimeWrapper';
 import DatePicker from 'react-datepicker'
+import { setHours, setMinutes } from 'date-fns';
 import { label } from 'react-dom-factories';
 import WarningMessage from '../common/WarningMessage';
 import { getRMGradeSelectListByRawMaterial, getRawMaterialNameChild } from '../masters/actions/Material';
@@ -50,6 +51,9 @@ function AddRfq(props) {
         { sop: 'SOP4' },
         { sop: 'SOP5' },
     ]
+    const currentDate = new Date()
+    const currentHours = currentDate.getHours();
+    const currentMinutes = currentDate.getMinutes();
 
     const [getReporterListDropDown, setGetReporterListDropDown] = useState([]);
     const [vendor, setVendor] = useState([]);
@@ -79,6 +83,8 @@ function AddRfq(props) {
     const [submissionDate, setSubmissionDate] = useState('')
     const [visibilityMode, setVisibilityMode] = useState({})
     const [dateAndTime, setDateAndTime] = useState('')
+    const [minHours, setMinHours] = useState(currentHours)
+    const [minMinutes, setMinMinutes] = useState(currentMinutes)
     const [isConditionalVisible, setIsConditionalVisible] = useState(false)
     const [isWarningMessageShow, setIsWarningMessageShow] = useState(false)
     const [loader, setLoader] = useState(false)
@@ -923,7 +929,23 @@ function AddRfq(props) {
     }
 
     const handleChangeDateAndTime = (value) => {
-        setDateAndTime(DayTime(value).format('YYYY-MM-DD HH:mm:ss'))
+        const localCurrentDate = new Date();
+        if (localCurrentDate.toLocaleDateString() !== value.toLocaleDateString()) {
+            setMinHours(0)
+            setMinMinutes(0)
+            setDateAndTime(DayTime(value).format('YYYY-MM-DD HH:mm:ss'))
+        } else {
+            setMinHours(currentHours)
+            setMinMinutes(currentMinutes)
+            if (value.getHours() > currentHours ? true : value.getMinutes() > currentMinutes) {
+                setDateAndTime(DayTime(value).format('YYYY-MM-DD HH:mm:ss'))
+            } else {
+                const selectedDateTime = setHours(setMinutes(value, new Date().getMinutes()), new Date().getHours());
+                setDateAndTime(DayTime(selectedDateTime).format('YYYY-MM-DD HH:mm:ss'))
+            }
+
+        }
+
     }
 
     const tooltipToggle = () => {
@@ -1510,19 +1532,22 @@ function AddRfq(props) {
                                                 {visibilityMode?.value === DATE_STRING && <div className="inputbox date-section">
                                                     <div className="form-group">
                                                         <label>Date & Time</label>
-                                                        <div className="inputbox date-section">
+                                                        <div className="inputbox date-section rfq-calendar">
                                                             <DatePicker
                                                                 name="startPlanDate"
                                                                 selected={DayTime(dateAndTime).isValid() ? new Date(dateAndTime) : null}
                                                                 onChange={handleChangeDateAndTime}
                                                                 showMonthDropdown
                                                                 showYearDropdown
-                                                                showTimeInput
+                                                                showTimeSelect
                                                                 minDate={new Date()}
                                                                 timeFormat='HH:mm'
                                                                 dateFormat="dd/MM/yyyy HH:mm"
+                                                                minTime={setHours(setMinutes(new Date(), minMinutes), minHours)}
+                                                                maxTime={setHours(setMinutes(new Date(), 59), 23)}
+                                                                timeIntervals={30}
                                                                 placeholderText="Select"
-                                                                className="withBorder"
+                                                                className="withBorder "
                                                                 autoComplete={'off'}
                                                                 errors={errors.startPlanDate}
                                                                 disabledKeyboardNavigation
