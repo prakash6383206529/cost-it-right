@@ -135,6 +135,7 @@ class VolumeBulkUploadDrawer extends Component {
                             break;
                     }
                 }
+                this.setState({ bomUploadLoader: false })
                 if (!checkForFileHead) {
                     Toaster.warning('Please select file of same Master')
                     return false
