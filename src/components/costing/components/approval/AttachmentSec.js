@@ -513,7 +513,7 @@ function AttachmentSec(props) {
                                     onChangeStatus={handleChangeStatus}
                                     PreviewComponent={Preview}
                                     // onSubmit={handleImapctSubmit}
-                                    accept="*"
+                                    accept="image/jpeg,image/jpg,image/png,image/PNG,.xls,.doc,.pdf,.xlsx"
                                     initialFiles={initialFiles}
                                     maxFiles={2}
                                     maxSizeBytes={5000000}
@@ -601,7 +601,7 @@ function AttachmentSec(props) {
                                     onChangeStatus={handleChangeSupplierConfirmationStatus}
                                     PreviewComponent={Preview}
                                     //onSubmit={this.handleSubmit}
-                                    accept="*"
+                                    accept="image/jpeg,image/jpg,image/png,image/PNG,.xls,.doc,.pdf,.xlsx"
                                     initialFiles={initialFiles}
                                     maxFiles={2}
                                     maxSizeBytes={5000000}
@@ -689,7 +689,7 @@ function AttachmentSec(props) {
                                     onChangeStatus={handleChangeInvoiceBackupStatus}
                                     PreviewComponent={Preview}
                                     //onSubmit={this.handleSubmit}
-                                    accept="*"
+                                    accept="image/jpeg,image/jpg,image/png,image/PNG,.xls,.doc,.pdf,.xlsx"
                                     initialFiles={initialFiles}
                                     maxFiles={10}
                                     maxSizeBytes={5000000}
@@ -776,7 +776,7 @@ function AttachmentSec(props) {
                                     onChangeStatus={handleOtherChangeStatus}
                                     PreviewComponent={Preview}
                                     //onSubmit={this.handleSubmit}
-                                    accept="*"
+                                    accept="image/jpeg,image/jpg,image/png,image/PNG,.xls,.doc,.pdf,.xlsx"
                                     initialFiles={initialFiles}
                                     maxFiles={10}
                                     maxSizeBytes={5000000}
@@ -863,7 +863,7 @@ function AttachmentSec(props) {
                                     onChangeStatus={handleChangeAttachment}
                                     PreviewComponent={Preview}
                                     //onSubmit={this.handleSubmit}
-                                    accept="*"
+                                    accept="image/jpeg,image/jpg,image/png,image/PNG,.xls,.doc,.pdf,.xlsx"
                                     initialFiles={initialFiles}
                                     maxFiles={4}
                                     maxSizeBytes={5000000}
