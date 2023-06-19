@@ -74,6 +74,7 @@ class BOMUploadDrawer extends Component {
     //pass the fileObj as parameter
     if (fileType !== '.xls' && fileType !== '.xlsx') {
       Toaster.warning('File type should be .xls or .xlsx')
+      this.setState({ bomUploadLoader: false })
     } else {
 
       let data = new FormData()

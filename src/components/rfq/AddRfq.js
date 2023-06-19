@@ -244,7 +244,7 @@ function AddRfq(props) {
 
     const setDisableFalseFunction = () => {
         const loop = Number(dropzone.current.files?.length) - Number(files?.length)
-        if (Number(loop) === 1) {
+        if (Number(loop) === 1 || Number(dropzone.current.files?.length) === Number(files?.length)) {
             setIsDisable(false)
         }
     }
@@ -1599,7 +1599,7 @@ function AddRfq(props) {
                                                     onChangeStatus={handleChangeStatus}
                                                     PreviewComponent={Preview}
                                                     //onSubmit={this.handleSubmit}
-                                                    accept="*"
+                                                    accept="image/jpeg,image/jpg,image/png,image/PNG,.xls,.doc,.pdf,.xlsx"
                                                     initialFiles={[]}
                                                     maxFiles={4}
                                                     maxSizeBytes={2000000}
