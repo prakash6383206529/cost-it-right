@@ -210,7 +210,7 @@ class AddIndivisualPart extends Component {
   */
   setDisableFalseFunction = () => {
     const loop = Number(this.dropzone.current.files.length) - Number(this.state.files.length)
-    if (Number(loop) === 1) {
+    if (Number(loop) === 1 || Number(this.dropzone.current.files.length) === Number(this.state.files.length)) {
       this.setState({ setDisable: false, attachmentLoader: false })
     }
   }
