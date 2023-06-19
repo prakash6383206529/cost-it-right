@@ -654,7 +654,7 @@ function AddMoreOperation(props) {
 
     const setDisableFalseFunction = () => {
         const loop = Number(dropzone.current.files.length) - Number(files.length)
-        if (Number(loop) === 1) {
+        if (Number(loop) === 1 || Number(dropzone.current.files.length) === Number(files.length)) {
             setDisable(false)
             setAttachmentLoader(false)
         }

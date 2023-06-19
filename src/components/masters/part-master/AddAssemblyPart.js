@@ -507,7 +507,7 @@ class AddAssemblyPart extends Component {
   */
   setDisableFalseFunction = () => {
     const loop = Number(this.dropzone.current.files.length) - Number(this.state.files.length)
-    if (Number(loop) === 1) {
+    if (Number(loop) === 1 || Number(this.dropzone.current.files.length) === Number(this.state.files.length)) {
       this.setState({ setDisable: false, attachmentLoader: false })
     }
   }
@@ -970,7 +970,7 @@ class AddAssemblyPart extends Component {
                             name={"BOMNumber"}
                             type="text"
                             placeholder={(isEditFlag && this.state.isDisableBomNo === false) ? '-' : "Enter"}
-                            validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength20, checkSpacesInString,  minLength3]}
+                            validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength20, checkSpacesInString, minLength3]}
                             component={renderText}
                             required={true}
                             className=""
