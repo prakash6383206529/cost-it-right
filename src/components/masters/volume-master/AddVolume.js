@@ -1026,8 +1026,8 @@ class AddVolume extends Component {
                             <Col>
                               <div className={`ag-grid-wrapper add-volume-table  ${this.state.tableData && this.state.tableData?.length <= 0 ? "overlay-contain" : ""}`} style={{ width: '100%', height: '100%' }}>
                                 {/* <Col md="12"> */}
-                                {this.state.showTooltip && <Tooltip className="rfq-tooltip-left" placement={"top"} isOpen={this.state.viewTooltipBudgeted} toggle={tooltipToggleBudgeted} target={"budgeted-tooltip"} >{"To add budgeted quantity please double click on the field."}</Tooltip>}
-                                {this.state.showTooltip && <Tooltip className="rfq-tooltip-left" placement={"top"} isOpen={this.state.viewTooltipActual} toggle={tooltipToggleActual} target={"actual-tooltip"} >{"To add actual quantity please double click on the field."}</Tooltip>}
+                                {this.state.showTooltip && <Tooltip className="rfq-tooltip-left" placement={"top"} isOpen={this.state.viewTooltipBudgeted} toggle={tooltipToggleBudgeted} target={"budgeted-tooltip"} >{"To edit budgeted quantity please double click on the field."}</Tooltip>}
+                                {this.state.showTooltip && <Tooltip className="rfq-tooltip-left" placement={"top"} isOpen={this.state.viewTooltipActual} toggle={tooltipToggleActual} target={"actual-tooltip"} >{"To edit actual quantity please double click on the field."}</Tooltip>}
                                 <div
                                   className="ag-theme-material"
                                 >
