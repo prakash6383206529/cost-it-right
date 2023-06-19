@@ -155,9 +155,9 @@ export function bulkUploadBudgetMaster(data, callback) {
 }
 
 
-export function masterApprovalRequestBySenderBudget(data, callback) {
+export function masterApprovalAPI(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.masterApprovalRequestBySenderBudget, data, config())
+        const request = axios.post(API.masterApprovalAPI, data, config())
         request.then((response) => {
             if (response.data.Result) {
                 callback(response)

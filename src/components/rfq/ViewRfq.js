@@ -672,7 +672,7 @@ function RfqListing(props) {
         resizable: true,
         filter: true,
         sortable: false,
-        headerCheckboxSelection: true ? isFirstColumn : false,
+        headerCheckboxSelection: false,
         headerCheckboxSelectionFilteredOnly: true,
         checkboxSelection: isFirstColumn,
         hyphenFormatter: hyphenFormatter

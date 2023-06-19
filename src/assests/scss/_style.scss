@@ -1,15 +1,4 @@
-@import "./cssVariable.scss";
-@import "./icons.scss";
-
-@font-face {
-  font-family: "icomoon";
-  src: url("fonts/icomoon.eot?mx6nlh");
-  src: url("fonts/icomoon.eot?mx6nlh#iefix") format("embedded-opentype"),
-    url("fonts/icomoon.ttf?mx6nlh") format("truetype"), url("fonts/icomoon.woff?mx6nlh") format("woff"),
-    url("fonts/icomoon.svg?mx6nlh#icomoon") format("svg");
-  font-weight: normal;
-  font-style: normal;
-}
+@import "./abstracts/variable.scss";
 
 [class^="icon-"],
 [class*=" icon-"] {
@@ -785,7 +774,7 @@ input.form-control {
 }
 
 .blue-box {
-  padding: 0 15px 30px;
+  padding: 20px 15px 30px;
   background-color: #EDF0F5;
 }
 
@@ -1148,8 +1137,8 @@ button.user-btn.pull-right {
 .content-page .cr-subtabs-head.nav-tabs .nav-link:hover {
   border-top: #d62c8c 2px solid;
   border-radius: 0;
-  border-bottom: 0;
-  background-color: #fff;
+  border-bottom: 0 !important;
+  background-color: #fff !important;
 }
 
 //  START Forging costing calculator
@@ -8995,26 +8984,6 @@ table.group-process-table {
   .form-group-searchable-select {
     min-height: unset !important;
     margin-bottom: unset !important;
-  }
-
-
-}
-
-.colorWhite {
-  background-color: #fff;
-}
-
-.rfq-part-list {
-  @for $i from 1 through 1000 {
-    [row-id~="#{($i * 5) - 1}"] {
-      @for $j from 0 through 11 {
-
-        [col-id="PartNumber"],
-        [aria-colindex="#{$j}"] {
-          border-bottom: 1px solid $agGridBorder !important;
-        }
-      }
-    }
   }
 }
 

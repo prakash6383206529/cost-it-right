@@ -24,7 +24,8 @@ import {
     GET_SIMULATION_APPROVAL_LIST_DRAFT,
 
     SET_SELECTED_VENDOR_SIMULATION,
-    GET_ALL_MULTI_TECHNOLOGY_COSTING
+    GET_ALL_MULTI_TECHNOLOGY_COSTING,
+    SET_BOP_ASSOCIATION
 } from '../../../config/constants';
 import { tokenStatus, tokenStatusName } from '../../../config/masterData';
 
@@ -254,6 +255,12 @@ export default function SimulationReducer(state = initialState, action) {
                 ...state,
                 loading: false,
                 multiTechnologyCostinig: action.payload
+            }
+        case SET_BOP_ASSOCIATION:
+            return {
+                ...state,
+                loading: false,
+                isMasterAssociatedWithCosting: action.payload
             }
         default:
             return state;

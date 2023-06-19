@@ -2,20 +2,27 @@ import React, { useState, useEffect } from 'react'
 import { Row, Col, } from 'reactstrap';
 import { useDispatch, useSelector } from 'react-redux'
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
-import { EMPTY_DATA } from '../../../../config/constants'
+import { EMPTY_DATA, PURCHASE_PROVISION_REPORT, SALES_PROVISION_REPORT } from '../../../../config/constants'
 import DayTime from '../../../common/DayTimeWrapper';
 import { PaginationWrapper } from '../../../common/commonPagination';
 import { getSalePurchaseProvisionReport } from '../../actions/ReportListing';
 import { getConfigurationKey, getCurrencySymbol } from '../../../../helper';
 import NoContentFound from '../../../common/NoContentFound';
 import LoaderCustom from '../../../common/LoaderCustom';
-
+import ReactExport from 'react-export-excel';
+import { SALES_PROVISION_EXCEL_TEMPLATE } from '../../ExcelTemplate';
+import { hideColumnFromExcel } from '../../../common/CommonFunctions';
+const ExcelFile = ReactExport.ExcelFile;
+const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
+const gridOptions = {};
 function SalePurchaseProvisionListing(props) {
 
     const dispatch = useDispatch()
     const [showList, setShowList] = useState(false)
     const [gridData, setGridData] = useState([])
     const [gridApi, setGridApi] = useState(null);
+    const [gridColumnApi, setgridColumnApi] = useState(null);
     const [noRecordFound, setNoRecordFound] = useState(false);
     const [isLoader, setIsLoader] = useState(false);
     const [endIndexArray, setEndIndexArray] = useState([]);
@@ -30,6 +37,7 @@ function SalePurchaseProvisionListing(props) {
         let obj = {}
         obj.FromDate = startDate ? DayTime(startDate).format('MM/DD/YYYY') : ''
         obj.ToDate = endDate ? DayTime(endDate).format('MM/DD/YYYY') : ''
+        obj.IsRequestForSalesProvisionReport = props?.isSaleProvision
 
         let sampleArray = []
         tableData && tableData.map((item) => {
@@ -74,13 +82,13 @@ function SalePurchaseProvisionListing(props) {
                 setTimeout(() => {
                     endIndex.map((item) => {
                         var row = document.querySelector(`.ag-row[row-index="${item}"] .ag-cell[col-id="PlantName"]`);
-                        row.classList.add("border-bottomRowMerge");
+                        row?.classList.add("border-bottomRowMerge");
 
                         var row2 = document.querySelector(`.ag-row[row-index="${item}"] .ag-cell[col-id="PartNumber"]`);
-                        row2.classList.add("border-bottomRowMerge");
+                        row2?.classList.add("border-bottomRowMerge");
 
                         var row3 = document.querySelector(`.ag-row[row-index="${item}"] .ag-cell[col-id="PartDescription"]`);
-                        row3.classList.add("border-bottomRowMerge");
+                        row3?.classList.add("border-bottomRowMerge");
 
                         if (!(props.isSaleProvision)) {
                             var row4 = document.querySelector(`.ag-row[row-index="${item}"] .ag-cell[col-id="VendorName"]`);
@@ -103,7 +111,7 @@ function SalePurchaseProvisionListing(props) {
 
     }
 
-    const gridOptions = {};
+
 
     const defaultColDef = {
         resizable: true,
@@ -159,6 +167,7 @@ function SalePurchaseProvisionListing(props) {
         params.api.paginationGoToPage(0);
         setGridApi(params.api)
         params.api.sizeColumnsToFit();
+        setgridColumnApi(params.columnApi);
     };
 
     const hyphenFormatter = (props) => {
@@ -176,18 +185,48 @@ function SalePurchaseProvisionListing(props) {
         const cellValue = props?.value;
         return cellValue ? cellValue : '-';
     }
+    const renderColumn = () => {
+        return returnExcelColumn(SALES_PROVISION_EXCEL_TEMPLATE, gridData)
+    }
 
+    const returnExcelColumn = (data = [], TempData) => {
+        let tempData = [...data]
+        if (props.isSaleProvision) {
+            tempData = hideColumnFromExcel(tempData, 'VendorName')
+        } else {
+            tempData = hideColumnFromExcel(tempData, 'CustomerName')
+        }
+        return (<ExcelSheet data={TempData} name={SALES_PROVISION_REPORT}>
+            {tempData && tempData.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} />)}
+        </ExcelSheet>);
+    }
+    const resetState = () => {
+        gridOptions?.columnApi?.resetColumnState();
+        gridOptions?.api?.setFilterModel(null);
+    }
 
     return (
         <>
             <div className={"container-fluid"}>
                 <form noValidate className="form">
-                    <div className='analytics-drawer justify-content-between'>
+                    <div className='d-flex justify-content-between align-items-center'>
                         <div className='d-flex'>
-                            <div>From: <span className=''> {DayTime(startDate).format('DD/MM/YYYY')}</span>  </div>
-                            <div className='ml-2'> To: <span className=''> {DayTime(endDate).format('DD/MM/YYYY')}</span>  </div>
+                            <div className='d-flex align-items-center'>From:
+                                <input value={DayTime(startDate).format('DD/MM/YYYY')} className='form-control ml-1' disabled={true} />
+                            </div>
+                            <div className='ml-2 d-flex align-items-center'> To: <input value={DayTime(endDate).format('DD/MM/YYYY')} className='form-control ml-1' disabled={true} />
+                            </div>
                         </div>
-                        <button type="button" className={"apply"} onClick={cancelReport}> <div className={'back-icon'}></div>Back</button>
+
+                        <div>
+                            <ExcelFile filename={props.isSaleProvision ? SALES_PROVISION_REPORT : PURCHASE_PROVISION_REPORT} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div></button>}>
+                                {renderColumn()}
+                            </ExcelFile>
+                            <button type="button" className="user-btn mr5" title="Reset Grid" onClick={() => resetState()}>
+                                <div className="refresh mr-0"></div>
+                            </button>
+                            <button type="button" className={"apply"} onClick={cancelReport}> <div className={'back-icon'}></div>Back</button>
+                        </div>
                     </div>
                     {showList &&
                         <Row>

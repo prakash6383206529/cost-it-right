@@ -138,7 +138,11 @@ class AddMoreDetails extends Component {
       levelDetails: {},
       noApprovalCycle: false,
       selectedCustomer: [],
-      selectedVedor: []
+      selectedVedor: [],
+      costingTypeId: ZBCTypeId,
+      vendorId: null,
+      customerId: null,
+      IsSendForApproval: false,
     }
     this.dropzone = React.createRef();
   }
@@ -218,7 +222,7 @@ class AddMoreDetails extends Component {
   UNSAFE_componentWillReceiveProps(nextProps) {
 
     if (nextProps.data !== this.props.data) {
-      const { fieldsObj, machineType, selectedPlants, selectedTechnology, selectedCustomer, selectedVedor, costingTypeId } = nextProps.data;
+      const { fieldsObj, machineType, selectedPlants, selectedTechnology, selectedCustomer, selectedVedor, costingTypeId, vendorName, client } = nextProps.data;
       if (Object.keys(selectedPlants)?.length > 0) {
         this.handlePlants(selectedPlants)
         if (machineType.value) {
@@ -230,13 +234,14 @@ class AddMoreDetails extends Component {
           this.props.getLabourTypeByMachineTypeSelectList(data, () => { })
         }
       }
+
+      this.setState({ costingTypeId: costingTypeId, vendorId: vendorName.value ? vendorName.value : '', customerId: client.value ? client.value : '' })
       this.props.change('MachineName', fieldsObj.MachineName)
       this.props.change('MachineNumber', fieldsObj.MachineNumber)
       this.props.change('TonnageCapacity', fieldsObj.TonnageCapacity)
       this.props.change('Description', fieldsObj.Description)
       this.props.change('Specification', fieldsObj.Specification)
       fieldsObj.EffectiveDate && this.props.change('EffectiveDate', fieldsObj.EffectiveDate)
-
 
       setTimeout(() => {
         this.setState({ selectedPlants: selectedPlants, })
@@ -371,7 +376,7 @@ class AddMoreDetails extends Component {
           if (machineType.value) {
             const data = {
               machineTypeId: machineType?.value,
-              plantId: Data.Plant[0].PlantId,
+              plantId: Data.costingTypeId !== ZBCTypeId ? Data.DestinationPlantId : Data.Plant[0].PlantId,
               effectiveDate: effectiveDate
             }
             this.props.getLabourTypeByMachineTypeSelectList(data, () => { })
@@ -416,7 +421,6 @@ class AddMoreDetails extends Component {
               isLoader: false,
               IsPurchased: Data.OwnershipIsPurchased,
               selectedTechnology: [{ label: Data.Technology && Data.Technology[0].Technology, value: Data.Technology && Data.Technology[0].TechnologyId }],
-              selectedPlants: { label: Data.Plant[0].PlantName, value: Data.Plant[0].PlantId },
               machineType: machineTypeObj && machineTypeObj !== undefined ? { label: machineTypeObj.Text, value: machineTypeObj.Value } : [],
               shiftType: shiftObj && shiftObj !== undefined ? { label: shiftObj.Text, value: shiftObj.Value } : [],
               depreciationType: depreciationObj && depreciationObj !== undefined ? { label: depreciationObj.Text, value: depreciationObj.Value } : [],
@@ -440,6 +444,7 @@ class AddMoreDetails extends Component {
               machineFullValue: { FuelCostPerUnit: Data?.FuelCostPerUnit, PowerCostPerUnit: Data?.PowerCostPerUnit },
               IsIncludeMachineRateDepreciation: Data?.IsIncludeMachineCost
             }, () => this.props.change('MachineRate', (this.state.isProcessGroup && !this.state.isViewMode) ? Data.MachineProcessRates[0].MachineRate : ''))
+            this.props.change('NumberOfWorkingHoursPerYear', Data.NumberOfWorkingHoursPerYear ? Data.NumberOfWorkingHoursPerYear : '')
           }, 2000)
         }
       })
@@ -571,7 +576,13 @@ class AddMoreDetails extends Component {
         })
         if (effectiveDate) {
           setTimeout(() => {
-            this.props.getPowerCostUnit(newValue?.value, effectiveDate, res => {
+            let obj = {}
+            obj.plantId = newValue?.value
+            obj.effectiveDate = effectiveDate
+            obj.costingTypeId = this.state.costingTypeId ? this.state.costingTypeId : ''
+            obj.vendorId = this.state.vendorId ? this.state.vendorId : ''
+            obj.customerId = this.state.customerId ? this.state.customerId : ''
+            this.props.getPowerCostUnit(obj, res => {
               let Data = res?.data?.DynamicData;
               if (res && res.data && res.data.Message !== '') {
                 Toaster.warning(res.data.Message)
@@ -825,7 +836,13 @@ class AddMoreDetails extends Component {
 
     if (Object.keys(selectedPlants)?.length > 0) {
       setTimeout(() => {
-        this.props.getPowerCostUnit(selectedPlants?.value, date, res => {
+        let obj = {}
+        obj.plantId = this.state.selectedPlants?.value
+        obj.effectiveDate = date
+        obj.costingTypeId = this.state.costingTypeId ? this.state.costingTypeId : ''
+        obj.vendorId = this.state.vendorId ? this.state.vendorId : ''
+        obj.customerId = this.state.customerId ? this.state.customerId : ''
+        this.props.getPowerCostUnit(obj, res => {
           let Data = res?.data?.DynamicData;
           if (res && res.data && res.data.Message !== '') {
             Toaster.warning(res.data.Message)
@@ -931,10 +948,15 @@ class AddMoreDetails extends Component {
     this.setState({ IsUsesSolarPower: !this.state.IsUsesSolarPower, }, () => {
       const { IsUsesSolarPower, selectedPlants, machineFullValue, effectiveDate } = this.state;
       // if (IsUsesSolarPower) {
-
       if (selectedPlants) {
         setTimeout(() => {
-          this.props.getPowerCostUnit(selectedPlants?.value, effectiveDate, res => {
+          let obj = {}
+          obj.plantId = selectedPlants?.value
+          obj.effectiveDate = effectiveDate
+          obj.costingTypeId = this.state.costingTypeId ? this.state.costingTypeId : ''
+          obj.vendorId = this.state.vendorId ? this.state.vendorId : ''
+          obj.customerId = this.state.customerId ? this.state.customerId : ''
+          this.props.getPowerCostUnit(obj, res => {
             let Data = res.data.DynamicData;
             if (res && res.data && res.data.Message !== '') {
               Toaster.warning(res.data.Message)
@@ -1939,6 +1961,7 @@ class AddMoreDetails extends Component {
     let updatedFiles = files.map((file) => ({ ...file, ContextId: MachineID }))
 
     let requestData = {
+      IsSendForApproval: CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true && !this.state.isFinalApprovar,
       CostingTypeId: this.state.CostingTypeId,
       MachineId: MachineID,
       Manufacture: values.Manufacture,
@@ -1952,7 +1975,7 @@ class AddMoreDetails extends Component {
       DepreciationType: this.state.depreciationType ? this.state.depreciationType.value : '',
       DepreciationRatePercentage: values.DepreciationRatePercentage,
       LifeOfAssetPerYear: values.LifeOfAssetPerYear,
-      CastOfScrap: values.CastOfScrap,
+      CostOfScrap: values.CastOfScrap,
       DateOfPurchase: DayTime(DateOfPurchase).format('YYYY-MM-DD HH:mm:ss'),
       DepreciationAmount: machineFullValue.depreciationAmount,
       WorkingShift: this.state.shiftType ? this.state.shiftType.value : '',
@@ -2009,8 +2032,9 @@ class AddMoreDetails extends Component {
       LoggedInUserId: loggedInUserId(),
       MachineProcessRates: processGrid,
       Technology: (technologyArray.length > 0 && technologyArray[0]?.Technology !== undefined) ? technologyArray : [{ Technology: selectedTechnology.label ? selectedTechnology.label : selectedTechnology[0].label, TechnologyId: selectedTechnology.value ? selectedTechnology.value : selectedTechnology[0].value }],
-      Plant: [{ PlantId: selectedPlants.value, PlantName: selectedPlants.label }],
+      Plant: this.state.CostingTypeId === ZBCTypeId ? [{ PlantId: selectedPlants.value, PlantName: selectedPlants.label }] : [],
       selectedPlants: selectedPlants,
+      DestinationPlantId: this.state.CostingTypeId !== ZBCTypeId ? selectedPlants.value : null,
       Attachements: updatedFiles,
       VendorPlant: [],
       IsForcefulUpdated: true,
@@ -2019,7 +2043,7 @@ class AddMoreDetails extends Component {
       IsFinancialDataChanged: this.state.isDateChange ? true : false,
       IsIncludeMachineCost: IsIncludeMachineRateDepreciation,
       PowerEntryId: powerIdFromAPI,
-      CustomerId: this.state.CostingTypeId === CBCTypeId ? this.state.selectedCustomer.value : "00000000-0000-0000-0000-000000000000",
+      CustomerId: this.state.CostingTypeId === CBCTypeId ? this.state.selectedCustomer.value : null,
       CustomerName: this.state.CostingTypeId === CBCTypeId ? this.state.selectedCustomer.label : "",
       selectedCustomer: this.state.selectedCustomer,
       selectedVedor: this.state.selectedVedor
@@ -2080,8 +2104,14 @@ class AddMoreDetails extends Component {
     // } 
     else {
       // EXECUTED WHEN:- ADD MORE MACHINE DETAIL CALLED FROM ADDMACHINERATE.JS FILE
+      if (CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true && !this.state.isFinalApprovar) {
+        this.setState({ IsSendForApproval: true })
+      } else {
+        this.setState({ IsSendForApproval: false })
+      }
 
       const formData = {
+        IsSendForApproval: CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true && !this.state.isFinalApprovar,
         CostingTypeId: this.state.CostingTypeId,
         MachineId: MachineID,
         Manufacture: values.Manufacture,
@@ -2095,7 +2125,7 @@ class AddMoreDetails extends Component {
         DepreciationType: this.state.depreciationType ? this.state.depreciationType.value : '',
         DepreciationRatePercentage: values.DepreciationRatePercentage,
         LifeOfAssetPerYear: values.LifeOfAssetPerYear,
-        CastOfScrap: values.CastOfScrap,
+        CostOfScrap: values.CastOfScrap,
         DateOfPurchase: DayTime(DateOfPurchase).format('YYYY-MM-DD HH:mm:ss'),
         DepreciationAmount: machineFullValue.depreciationAmount,
         WorkingShift: this.state.shiftType ? this.state.shiftType.value : '',
@@ -2151,8 +2181,9 @@ class AddMoreDetails extends Component {
         LoggedInUserId: loggedInUserId(),
         MachineProcessRates: processGrid,
         Technology: (technologyArray.length > 0 && technologyArray[0]?.Technology !== undefined) ? technologyArray : [{ Technology: selectedTechnology.label ? selectedTechnology.label : selectedTechnology[0].label, TechnologyId: selectedTechnology.value ? selectedTechnology.value : selectedTechnology[0].value }],
-        Plant: [{ PlantId: selectedPlants.value, PlantName: selectedPlants.label }],
+        Plant: this.state.CostingTypeId === ZBCTypeId ? [{ PlantId: selectedPlants.value, PlantName: selectedPlants.label }] : [],
         selectedPlants: selectedPlants,
+        DestinationPlantId: this.state.CostingTypeId !== ZBCTypeId ? selectedPlants.value : null,
         Attachements: files,
         VendorPlant: [],
         EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
@@ -2162,20 +2193,19 @@ class AddMoreDetails extends Component {
         FuelEntryId: this.state.FuelEntryId,
         IsIncludeMachineCost: IsIncludeMachineRateDepreciation,
         PowerEntryId: powerIdFromAPI,
-        CustomerId: this.state.CostingTypeId === CBCTypeId ? this.state.selectedCustomer.value : "00000000-0000-0000-0000-000000000000",
+        CustomerId: this.state.CostingTypeId === CBCTypeId ? this.state.selectedCustomer.value : null,
         CustomerName: this.state.CostingTypeId === CBCTypeId ? this.state.selectedCustomer.label : "",
+        selectedCustomer: this.state.selectedCustomer ? this.state.selectedCustomer : '',
+        selectedVedor: this.state.selectedVedor
       }
 
-      let obj = {}
-      let finalObj = {
 
+      let finalObj = {
+        ...formData,
         MachineProcessRates: processGrid,
         EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
         MachineId: MachineID,
         IsVendor: false,
-        MachineZBCRequest: formData,
-        MachineVBCRequest: obj,
-
       }
 
       if (CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true && !this.state.isFinalApprovar) {
@@ -3929,7 +3959,7 @@ class AddMoreDetails extends Component {
                               ref={this.dropzone}
                               onChangeStatus={this.handleChangeStatus}
                               PreviewComponent={this.Preview}
-                              accept="*"
+                              accept="image/jpeg,image/jpg,image/png,image/PNG,.xls,.doc,.pdf,.xlsx"
                               initialFiles={this.state.initialFiles}
                               maxFiles={3}
                               maxSizeBytes={2000000}
@@ -4059,12 +4089,14 @@ class AddMoreDetails extends Component {
               closeDrawer={this.closeApprovalDrawer}
               isEditFlag={false}
               masterId={MACHINE_MASTER_ID}
+              detailEntry={true}
               type={'Sender'}
               anchor={"right"}
               approvalObj={this.state.approvalObj}
               isBulkUpload={false}
               IsImportEntery={false}
               costingTypeId={this.state.CostingTypeId}
+              levelDetails={this.state.levelDetails}
             />
           )
         }
@@ -4099,6 +4131,7 @@ function mapStateToProps(state) {
   const { vendorListByVendorType } = material;
   const { fuelDataByPlant } = fuel;
   const { initialConfiguration, userMasterLevelAPI } = auth;
+
   let initialValues = {};
   if (machineData && machineData !== undefined) {
     initialValues = {
@@ -4126,7 +4159,7 @@ function mapStateToProps(state) {
       NumberOfWorkingHoursPerYear: machineData.NumberOfWorkingHoursPerYear,
       DepreciationRatePercentage: machineData.DepreciationRatePercentage,
       LifeOfAssetPerYear: machineData.LifeOfAssetPerYear,
-      CastOfScrap: machineData.CastOfScrap,
+      CastOfScrap: machineData.CostOfScrap,
       DepreciationAmount: machineData.DepreciationAmount,
       AnnualMaintancePercentage: machineData.AnnualMaintancePercentage,
       AnnualMaintanceAmount: machineData.AnnualMaintanceAmount,

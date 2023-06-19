@@ -12,6 +12,7 @@ import { createToprowObjAndSave, findSurfaceTreatmentData, formatMultiTechnology
 import { setSubAssemblyTechnologyArray, updateMultiTechnologyTopAndWorkingRowCalculation } from '../../actions/SubAssembly';
 import { useEffect } from 'react';
 import { useRef } from 'react';
+import { WACTypeId } from '../../../../config/constants';
 
 function AddAssemblyOperation(props) {
   const { item, CostingViewMode, isAssemblyTechnology } = props;
@@ -31,7 +32,7 @@ function AddAssemblyOperation(props) {
 
   const costData = useContext(costingInfoContext)
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
-  const partType = IdForMultiTechnology.includes(String(costData?.TechnologyId))
+  const partType = (IdForMultiTechnology.includes(String(costData?.TechnologyId)) || costData.CostingTypeId === WACTypeId)
   const operationCost = item?.CostingPartDetails && item?.CostingPartDetails?.TotalOperationCostPerAssembly !== null ? checkForDecimalAndNull(item?.CostingPartDetails?.TotalOperationCostPerAssembly, initialConfiguration.NoOfDecimalForPrice) : 0
 
   useEffect(() => {
@@ -87,7 +88,10 @@ function AddAssemblyOperation(props) {
       checkForNull(costPerPieceTotal) +
       checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.TotalBoughtOutPartCost) +
       checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.TotalProcessCost) +
-      checkForNull(totalOperationCost)
+      checkForNull(totalOperationCost) +
+      checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.NetLabourCost) +
+      checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.IndirectLaborCost) +
+      checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.StaffCost)
     tempsubAssemblyTechnologyArray[0].CostingPartDetails.TotalOperationCost = totalOperationCost ? totalOperationCost : 0;
 
     dispatch(setSubAssemblyTechnologyArray(tempsubAssemblyTechnologyArray, res => { }))
@@ -152,6 +156,12 @@ function AddAssemblyOperation(props) {
       "IsSubAssemblyComponentPart": costData.IsAssemblyPart,
       "NetOperationCostPerAssembly": item?.CostingPartDetails?.TotalOperationCostPerAssembly,
       "NetToolCostPerAssembly": item?.CostingPartDetails?.TotalToolCostPerAssembly,
+      "NetLabourCost": item.NetLabourCost,
+      "IndirectLaborCost": item.IndirectLaborCost,
+      "StaffCost": item.StaffCost,
+      "StaffCostPercentage": item.StaffCostPercentage,
+      "IndirectLaborCostPercentage": item.IndirectLaborCostPercentage,
+
       "CostingPartDetails": {
         "CostingId": item.CostingId,
         "CostingNumber": item.CostingNumber,

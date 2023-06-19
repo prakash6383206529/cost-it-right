@@ -62,25 +62,6 @@ class ProcessListing extends Component {
     }, 300);
   }
 
-  getDataList = (plant_id = '', machine_id = '') => {
-    const filterData = {
-      plant_id: plant_id,
-      machine_id: machine_id,
-    }
-    this.setState({ isLoader: true })
-    this.props.getProcessDataList(filterData, (res) => {
-      this.setState({ isLoader: false })
-      if (res && res.status === 200) {
-        let Data = res.data.DataList;
-        this.setState({ tableData: Data })
-      } else if (res && res.response && res.response.status === 412) {
-        this.setState({ tableData: [] })
-      } else {
-        this.setState({ tableData: [] })
-      }
-    })
-  }
-
   /**
   * @method handlePlant
   * @description  PLANT FILTER
@@ -140,10 +121,10 @@ class ProcessListing extends Component {
     return cell ? 'VBC' : 'ZBC';
   }
 
-  getDataList = (plant_id = '', machine_id = '') => {
+  getDataList = (ProcessName = '', ProcessCode = '') => {
     const filterData = {
-      plant_id: plant_id,
-      machine_id: machine_id,
+      ProcessName: ProcessName,
+      ProcessCode: ProcessCode,
     }
     this.setState({ isLoader: true })
     this.props.getProcessDataList(filterData, (res) => {
@@ -286,39 +267,6 @@ class ProcessListing extends Component {
       </>
     )
   }
-
-  /**
-   * @method renderListing
-   * @description Used to show type of listing
-   */
-  renderListing = (label) => {
-    const { filterSelectList } = this.props
-    const temp = []
-
-    if (label === 'plant') {
-      filterSelectList &&
-        filterSelectList.plants &&
-        filterSelectList.plants.map((item) => {
-          if (item.Value === '0') return false
-          temp.push({ label: item.Text, value: item.Value })
-          return null
-        })
-      return temp
-    }
-
-    if (label === 'Machine') {
-      filterSelectList &&
-        filterSelectList.machine &&
-        filterSelectList.machine.map((item) => {
-          if (item.Value === '0') return false
-          temp.push({ label: item.Text, value: item.Value })
-          return null
-        })
-      return temp
-    }
-  }
-
-
 
   processToggler = () => {
     this.setState({ isOpenProcessDrawer: true, isEditFlag: false, Id: '' })
@@ -519,8 +467,8 @@ class ProcessListing extends Component {
  * @param {*} state
  */
 function mapStateToProps({ process }) {
-  const { filterSelectList, processList } = process
-  return { filterSelectList, processList }
+  const { processList } = process
+  return { processList }
 }
 
 /**

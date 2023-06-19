@@ -3,11 +3,11 @@ import { useForm, Controller } from "react-hook-form";
 import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, Tooltip, } from 'reactstrap';
 import { AsyncSearchableSelectHookForm, SearchableSelectHookForm, TextAreaHookForm, TextFieldHookForm } from '.././layout/HookFormInputs'
-import { getVendorWithVendorCodeSelectList, getReporterList, fetchPlantDataAPI, fetchSpecificationDataAPI } from '../.././actions/Common';
+import { getReporterList, getVendorNameByVendorSelectList, getPlantSelectListByType, getVendorWithVendorCodeSelectList, fetchPlantDataAPI, fetchSpecificationDataAPI } from '../.././actions/Common';
 import { getCostingSpecificTechnology, } from '../costing/actions/Costing'
 import { addDays, checkForDecimalAndNull, getConfigurationKey, loggedInUserId } from '../.././helper';
-import { checkForNull } from '../.././helper/validation'
-import { EMPTY_DATA, FILE_URL, searchCount } from '../.././config/constants';
+import { postiveNumber, maxLength10, nonZero, checkForNull } from '../.././helper/validation'
+import { EMPTY_DATA, FILE_URL, VBC_VENDOR_TYPE, ZBC, searchCount } from '../.././config/constants';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
@@ -88,7 +88,7 @@ function AddRfq(props) {
     const checkRFQPartBulkUpload = useSelector((state) => state.rfq.checkRFQPartBulkUpload)
     const nfrSelectList = useSelector((state) => state.rfq.nfrSelectList)
     // const getReporterListDropDown = useSelector(state => state.comman.getReporterListDropDown)
-    const plantList = useSelector(state => state.comman.plantList)
+    const plantSelectList = useSelector(state => state.comman.plantSelectList)
     const [isBulkUpload, setisBulkUpload] = useState(false)
     const [showTooltip, setShowTooltip] = useState(false)
     const [viewTooltip, setViewTooltip] = useState(false)
@@ -107,7 +107,8 @@ function AddRfq(props) {
 
     useEffect(() => {
         const { vbcVendorGrid } = props;
-        dispatch(getRawMaterialNameChild('', () => { }))
+        dispatch(getPlantSelectListByType(ZBC, () => { }))
+        dispatch(getRawMaterialNameChild(() => { }))
         dispatch(fetchPlantDataAPI(() => { }))
         // dispatch(getNfrSelectList(() => { }))
         let tempArr = [];
@@ -361,9 +362,9 @@ function AddRfq(props) {
         const temp = [];
 
         if (label === 'plant') {
-            plantList && plantList.map((item) => {
-                if (item.Value === '0') return false
-                temp.push({ label: item.Text, value: item.Value, PlantName: item.Text, PlantCode: item.Value })
+            plantSelectList && plantSelectList.map((item) => {
+                if (item.PlantId === '0') return false
+                temp.push({ label: item.PlantNameCode, value: item.PlantId })
                 return null
             })
             return temp
@@ -807,7 +808,7 @@ function AddRfq(props) {
         const resultInput = inputValue.slice(0, searchCount)
         if (inputValue?.length >= searchCount && vendor !== resultInput) {
             let res
-            res = await getVendorWithVendorCodeSelectList(resultInput)
+            res = await getVendorNameByVendorSelectList(VBC_VENDOR_TYPE, resultInput)
             setVendor(resultInput)
             let vendorDataAPI = res?.data?.SelectList
             if (inputValue) {
@@ -1006,7 +1007,7 @@ function AddRfq(props) {
 
     const handleRMName = (newValue) => {
         setRMName({ label: newValue?.label, value: newValue?.value })
-        dispatch(getRMGradeSelectListByRawMaterial(newValue.value, (res) => { }))
+        dispatch(getRMGradeSelectListByRawMaterial(newValue.value, false, (res) => { }))
     }
 
     const handleRMGrade = (newValue) => {
@@ -1307,7 +1308,7 @@ function AddRfq(props) {
                                         {!loader ? <div className={`ag-grid-react`}>
                                             <Row>
                                                 <Col>
-                                                    <div className={`ag-grid-wrapper height-width-wrapper ${partList && partList.length <= 0 ? "overlay-contain border" : ""} `}>
+                                                    <div className={`ag-grid-wrapper rfq-grid height-width-wrapper ${partList && partList.length <= 0 ? "overlay-contain border" : ""} `}>
 
                                                         <div className={`ag-theme-material ${!state ? "custom-min-height-208px" : ''}`}>
                                                             {!state ? <LoaderCustom customClass={""} /> :
@@ -1608,7 +1609,7 @@ function AddRfq(props) {
                                                     onChangeStatus={handleChangeStatus}
                                                     PreviewComponent={Preview}
                                                     //onSubmit={this.handleSubmit}
-                                                    accept="*"
+                                                    accept="image/jpeg,image/jpg,image/png,image/PNG,.xls,.doc,.pdf,.xlsx"
                                                     initialFiles={[]}
                                                     maxFiles={4}
                                                     maxSizeBytes={2000000}

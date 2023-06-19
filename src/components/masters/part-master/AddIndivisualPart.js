@@ -87,6 +87,7 @@ class AddIndivisualPart extends Component {
           })
           this.setState({ DataToCheck: Data })
           this.props.change("EffectiveDate", DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
+          this.props.change("SAPCode", Data.SAPCode ?? '')
           this.setState({ minEffectiveDate: Data.LatestEffectiveDate })
 
           setTimeout(() => {
@@ -350,7 +351,7 @@ class AddIndivisualPart extends Component {
       if (DropdownChanged && String(DataToCheck.PartName) === String(values.PartName) && String(DataToCheck.Description) === String(values.Description) &&
         JSON.stringify(DataToCheck.GroupCodeList) === JSON.stringify(values.GroupCode) && String(DataToCheck.ECNNumber) === String(values.ECNNumber) &&
         String(DataToCheck.RevisionNumber) === String(values.RevisionNumber) && String(DataToCheck.DrawingNumber) === String(values.DrawingNumber)
-        && String(DataToCheck.Remark) === String(values.Remark) && !isGroupCodeChange && uploadAttachements) {
+        && String(DataToCheck.Remark) === String(values.Remark) && String(DataToCheck.SAPCode) === String(values.SAPCode) && !isGroupCodeChange && uploadAttachements) {
         this.cancel('submit')
         return false;
       }
@@ -392,6 +393,7 @@ class AddIndivisualPart extends Component {
         PartId: PartId,
         PartName: values.PartName,
         PartNumber: values.PartNumber,
+        SAPCode: values.SAPCode,
         Description: values.Description,
         ECNNumber: values.ECNNumber,
         RevisionNumber: values.RevisionNumber,
@@ -426,6 +428,7 @@ class AddIndivisualPart extends Component {
         Remark: values.Remark,
         PartNumber: values.PartNumber,
         PartName: values.PartName,
+        SAPCode: values.SAPCode,
         Description: values.Description,
         ECNNumber: values.ECNNumber,
         EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
@@ -633,7 +636,21 @@ class AddIndivisualPart extends Component {
                               disabled={(isViewMode) || (!isEditFlag && this.state.disablePartName) || (isEditFlag && !((isEditFlag && this.state.IsTechnologyUpdateRequired) || (isEditFlag && this.state.isBomEditable)))}
                             />
                           </Col>
-
+                          {initialConfiguration?.IsSAPCodeRequired && <Col md="3">
+                            <Field
+                              label={`SAP Code`}
+                              name={"SAPCode"}
+                              type="text"
+                              placeholder={isEditFlag ? '-' : "Enter"}
+                              validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength20, checkSpacesInString]}
+                              component={renderText}
+                              required={true}
+                              onChange={() => { }}
+                              className=""
+                              customClassName={"withBorder"}
+                              disabled={(isViewMode || (isEditFlag && !this.state.isBomEditable)) ? true : false}
+                            />
+                          </Col>}
 
                           <Col md="3">
                             <div className="form-group">
@@ -691,7 +708,7 @@ class AddIndivisualPart extends Component {
                                 ref={this.dropzone}
                                 onChangeStatus={this.handleChangeStatus}
                                 PreviewComponent={this.Preview}
-                                accept="*"
+                                accept="image/jpeg,image/jpg,image/png,image/PNG,.xls,.doc,.pdf,.xlsx"
                                 initialFiles={this.state.initialFiles}
                                 maxFiles={3}
                                 disabled={isViewMode}
