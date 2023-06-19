@@ -197,7 +197,7 @@ function ViewRM(props) {
                   <td>{item.ShearingCost ? checkForDecimalAndNull(item.ShearingCost, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
                   <td>{item.BurningLossWeight ? checkForDecimalAndNull(item.BurningLossWeight, initialConfiguration.NoOfDecimalForInputOutput) : '-'}</td>
                   {viewCostingData[0].technologyId === DIE_CASTING && <td>{item.CastingWeight ? checkForDecimalAndNull(item.CastingWeight, initialConfiguration.NoOfDecimalForInputOutput) : '-'}</td>}
-                  {viewCostingData[0].technologyId === DIE_CASTING && <td>{item.MeltingLoss ? checkForDecimalAndNull(item.MeltingLoss, initialConfiguration.NoOfDecimalForInputOutput) : '-'}</td>}
+                  {viewCostingData[0].technologyId === DIE_CASTING && <td>{item.MeltingLoss ? `${checkForDecimalAndNull(item.MeltingLoss, initialConfiguration.NoOfDecimalForInputOutput)}(${item.LossPercentage}%)` : '-'}</td>}
                   <td> <div className='w-fit d-flex'><div id={`net-rm-cost${index}`}>{checkForDecimalAndNull(item.NetLandedCost, initialConfiguration.NoOfDecimalForPrice)}<TooltipCustom disabledIcon={true} tooltipClass="net-rm-cost" id={`net-rm-cost${index}`} tooltipText="Net RM Cost = (RM Rate * Gross Weight) - (Scrap Weight * Scrap Rate)" /></div>{item.RawMaterialCalculatorId === null && item.GrossWeight !== null && viewCostingData[props.index].technologyId === FORGING && <TooltipCustom id={`forging-tooltip${index}`} customClass={"mt-1 ml-2"} tooltipText={`RMC is calculated on the basis of Forging Scrap Rate.`} />}</div></td>
                   <td>
                     <div className={`${isPDFShow ? '' : 'remark-overflow'}`} title={item.Remark}>
@@ -305,39 +305,37 @@ function ViewRM(props) {
           open={props.isOpen}
           className='view-rm-cost'
           BackdropProps={props?.fromCostingSummary && { style: { opacity: 0 } }}>
-          <Container className={`${isAssemblyCosting && "drawer-1200"}`}>
-            <div className={"drawer-wrapper drawer-1500px"}>
-              <Row className="drawer-heading">
-                <Col className='pl-0'>
-                  <div className={"header-wrapper left"}>
-                    <h3>{"View RM Cost:"}</h3>
-                  </div>
-                  <div
-                    onClick={(e) => toggleDrawer(e)}
-                    className={"close-button right"}
-                  ></div>
-                </Col>
-              </Row>
-              <Row>
-                {!weightCalculatorDrawer && tableData()}
-                {weightCalculatorDrawer && (
-                  <WeightCalculator
-                    rmRowData={viewRM !== undefined ? calciData : {}}
-                    anchor={`right`}
-                    isEditFlag={false}
-                    isOpen={weightCalculatorDrawer}
-                    closeDrawer={closeWeightDrawer}
-                    technology={viewCostingData[props.index].technologyId}
-                    isSummary={true}
-                    rmMBDetail={rmMBDetail} // MASTER BATCH DETAIL
-                    CostingViewMode={true}   // THIS KEY WILL BE USE TO OPEN CALCI IN VIEW MODE
-                    fromCostingSummary={props.fromCostingSummary}
-                    rmData={viewCostingData[props.index].technologyId === RUBBER ? calciData.WeightCalculatorRequest.CostingRubberCalculationRawMaterials : calciData.WeightCalculatorRequest.CostingFerrousCalculationRawMaterials}
-                  />
-                )}
-              </Row>
-            </div>
-          </Container>
+          <div className={"drawer-wrapper drawer-1500px px-2"}>
+            <Row className="drawer-heading">
+              <Col className='pl-0'>
+                <div className={"header-wrapper left"}>
+                  <h3>{"View RM Cost:"}</h3>
+                </div>
+                <div
+                  onClick={(e) => toggleDrawer(e)}
+                  className={"close-button right"}
+                ></div>
+              </Col>
+            </Row>
+            <Row>
+              {!weightCalculatorDrawer && tableData()}
+              {weightCalculatorDrawer && (
+                <WeightCalculator
+                  rmRowData={viewRM !== undefined ? calciData : {}}
+                  anchor={`right`}
+                  isEditFlag={false}
+                  isOpen={weightCalculatorDrawer}
+                  closeDrawer={closeWeightDrawer}
+                  technology={viewCostingData[props.index].technologyId}
+                  isSummary={true}
+                  rmMBDetail={rmMBDetail} // MASTER BATCH DETAIL
+                  CostingViewMode={true}   // THIS KEY WILL BE USE TO OPEN CALCI IN VIEW MODE
+                  fromCostingSummary={props.fromCostingSummary}
+                  rmData={viewCostingData[props.index].technologyId === RUBBER ? calciData.WeightCalculatorRequest.CostingRubberCalculationRawMaterials : calciData.WeightCalculatorRequest.CostingFerrousCalculationRawMaterials}
+                />
+              )}
+            </Row>
+          </div>
         </Drawer> : (viewRM.length !== 0 && <Row className='mt-1'>{tableData()}</Row>)}
     </>
   );
