@@ -394,11 +394,6 @@ class BulkUpload extends Component {
                                 }
                                 if (fileHeads[i] === 'EffectiveDate' && typeof el === 'number') {
                                     el = getJsDateFromExcel(el)
-                                    const date = new Date();
-                                    const shortDateFormat = date.toLocaleDateString(undefined, { dateStyle: 'short' });
-                                    if (Number(shortDateFormat.charAt(0)) === Number(date.getMonth() + 1)) {
-                                        el = DayTime(el).format('YYYY-DD-MM 00:00:00')
-                                    }
                                 }
                                 if (fileHeads[i] === 'NoOfPcs' && typeof el == 'number') {
                                     el = parseInt(checkForNull(el))
