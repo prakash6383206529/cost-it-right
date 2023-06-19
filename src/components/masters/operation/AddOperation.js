@@ -1295,10 +1295,9 @@ class AddOperation extends Component {
                             ref={this.dropzone}
                             onChangeStatus={this.handleChangeStatus}
                             PreviewComponent={this.Preview}
-                            //onSubmit={this.handleSubmit}
+                            disabled={isViewMode}
                             accept="image/jpeg,image/jpg,image/png,image/PNG,.xls,.doc,.pdf,.xlsx"
                             initialFiles={this.state.initialFiles}
-                            disabled={isViewMode}
                             maxFiles={3}
                             maxSizeBytes={2000000}
                             inputContent={(files, extra) => (extra.reject ? 'Image, audio and video files only' : (<div className="text-center">
