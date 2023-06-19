@@ -27,7 +27,8 @@ class VolumeBulkUploadDrawer extends Component {
             fileName: '',
             Technology: [],
             attachmentLoader: false,
-            showPopup: false
+            showPopup: false,
+            bomUploadLoader: false,
         }
     }
 
@@ -105,6 +106,7 @@ class VolumeBulkUploadDrawer extends Component {
         </ExcelSheet>);
     }
     fileHandler = event => {
+        this.setState({ bomUploadLoader: true })
         let fileObj = event.target.files[0];
         let uploadfileName = fileObj.name;
         let fileType = uploadfileName.substr(uploadfileName.indexOf('.'));
@@ -113,6 +115,7 @@ class VolumeBulkUploadDrawer extends Component {
         //pass the fileObj as parameter
         if (fileType !== '.xls' && fileType !== '.xlsx') {
             Toaster.warning('File type should be .xls or .xlsx')
+            this.setState({ bomUploadLoader: false })
         } else {
             let data = new FormData()
             data.append('file', fileObj)
@@ -132,6 +135,7 @@ class VolumeBulkUploadDrawer extends Component {
                             break;
                     }
                 }
+                this.setState({ bomUploadLoader: false })
                 if (!checkForFileHead) {
                     Toaster.warning('Please select file of same Master')
                     return false

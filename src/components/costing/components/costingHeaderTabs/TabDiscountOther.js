@@ -634,7 +634,7 @@ function TabDiscountOther(props) {
   */
   const setDisableFalseFunction = () => {
     const loop = Number(dropzone.current.files.length) - Number(files.length)
-    if (Number(loop) === 1) {
+    if (Number(loop) === 1 || Number(dropzone.current.files.length) === Number(files.length)) {
       setIsDisable(false)
     }
   }
