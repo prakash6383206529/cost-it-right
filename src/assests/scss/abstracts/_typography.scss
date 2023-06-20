@@ -97,18 +97,14 @@ $max: 150;
         @return ($i * 5) - 1;
     }
 
-    @mixin applyBorderBottom($j) {
-
-        [col-id="PartNumber"],
-        [aria-colindex="#{$j}"] {
-            border-bottom: 1px solid $agGridBorder !important;
-        }
-    }
-
     @for $i from 1 through 50 {
         [row-id~="#{calculateRowId($i)}"] {
-            @each $j in 0 through 11 {
-                @include applyBorderBottom($j);
+            @for $j from 0 through 11 {
+
+                [col-id="PartNumber"],
+                [aria-colindex="#{$j}"] {
+                    border-bottom: 1px solid $agGridBorder !important;
+                }
             }
         }
     }
