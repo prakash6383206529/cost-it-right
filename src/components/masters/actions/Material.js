@@ -1587,5 +1587,3 @@ export function clearSpecificationSelectList(data) {
         })
     }
 }
-
-// CIR-I4898
