@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux';
 import { Container, Row, Col, Table } from 'reactstrap';
 import Drawer from '@material-ui/core/Drawer';
 import { SearchableSelectHookForm, TextFieldHookForm, } from '../../../../layout/HookFormInputs';
-import { EMPTY_DATA } from '../../../../../config/constants';
+import { CRMHeads, EMPTY_DATA } from '../../../../../config/constants';
 import { checkForDecimalAndNull, checkWhiteSpaces, number, decimalNumberLimit6, percentageLimitValidation, hashValidation, calculatePercentage, checkForNull } from '../../../../../helper';
 import NoContentFound from '../../../../common/NoContentFound';
 import { ViewCostingContext } from '../../CostingDetails';
@@ -35,7 +35,6 @@ function OtherCostDrawer(props) {
     const { CostingDataList, } = useSelector(state => state.costing)
     const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
     const costingHead = useSelector(state => state.comman.costingHead)
-
     const [isEdit, setIsEdit] = useState(false);
     const [gridData, setgridData] = useState(props?.otherCostArr?.length > 0 ? props?.otherCostArr : []);
     const [otherCostTotal, setOtherCostTotal] = useState(props?.otherCostArr?.length > 0 ? calculateSumOfValues(props?.otherCostArr) : 0)
@@ -43,6 +42,7 @@ function OtherCostDrawer(props) {
     const [otherCostApplicability, setOtherCostApplicability] = useState([])
     const [editIndex, setEditIndex] = useState('')
     const [otherCost, setOtherCost] = useState('')
+    const [applicabilityCost, setApplicabilityCost] = useState('')
 
     const fieldValues = useWatch({
         control,
@@ -179,7 +179,9 @@ function OtherCostDrawer(props) {
             OtherCostApplicabilityId: otherCostApplicability?.value,
             PercentageOtherCost: otherCostType?.label === 'Fixed' ? '-' : getValues('PercentageOtherCost'),
             OtherCostDescription: getValues('OtherCostDescription'),
-            AnyOtherCost: otherCostType?.label === 'Fixed' ? getValues('AnyOtherCost') : otherCost
+            AnyOtherCost: otherCostType?.label === 'Fixed' ? getValues('AnyOtherCost') : otherCost,
+            ApplicabilityCost: applicabilityCost,
+            CRMHead: getValues('crmHeadOtherCost') ? getValues('crmHeadOtherCost').label : '-'
         }
         setOtherCostTotal(0)
         setOtherCostTotal(calculateSumOfValues([...gridData, obj]))
@@ -199,7 +201,9 @@ function OtherCostDrawer(props) {
             OtherCostApplicabilityId: otherCostApplicability?.value,
             PercentageOtherCost: otherCostType?.label === 'Fixed' ? '-' : getValues('PercentageOtherCost'),
             OtherCostDescription: getValues('OtherCostDescription'),
-            AnyOtherCost: otherCostType?.label === 'Fixed' ? getValues('AnyOtherCost') : otherCost
+            AnyOtherCost: otherCostType?.label === 'Fixed' ? getValues('AnyOtherCost') : otherCost,
+            ApplicabilityCost: applicabilityCost,
+            CRMHead: getValues('crmHeadOtherCost') ? getValues('crmHeadOtherCost').label : '-'
         }
 
         let tempArr = Object.assign([...gridData], { [editIndex]: obj })
@@ -217,12 +221,11 @@ function OtherCostDrawer(props) {
         setValue('OtherCostDescription', '')
         setValue('AnyOtherCost', '')
         setOtherCostApplicability([])
-        setOtherCost([])
         setOtherCost(0)
         setEditIndex('')
         setIsEdit(false)
-
-
+        setApplicabilityCost(0)
+        setValue('crmHeadOtherCost', '')
     }
 
 
@@ -233,6 +236,7 @@ function OtherCostDrawer(props) {
         setValue('PercentageOtherCost', editObj.PercentageOtherCost === '-' ? 0 : editObj.PercentageOtherCost)
         setValue('OtherCostDescription', editObj.OtherCostDescription)
         setValue('AnyOtherCost', editObj.AnyOtherCost)
+        setValue('crmHeadOtherCost', { label: editObj.CRMHead, value: index })
         setOtherCostType({ label: editObj.OtherCostApplicability !== 'Fixed' ? 'Percentage' : editObj.OtherCostApplicability, value: editObj.OtherCostApplicability !== 'Fixed' ? 'Percentage' : editObj.OtherCostApplicability })
         setOtherCostApplicability({ label: editObj.OtherCostApplicability, value: editObj.OtherCostApplicabilityId })
         setEditIndex(index)
@@ -268,33 +272,42 @@ function OtherCostDrawer(props) {
             case 'RM':
             case 'Part Cost':
                 totalCost = headerCosts.NetRawMaterialsCost * calculatePercentage(percent)
+                setApplicabilityCost(headerCosts.NetRawMaterialsCost)
                 break;
             case 'BOP':
                 totalCost = headerCosts.NetBoughtOutPartCost * calculatePercentage(percent)
+                setApplicabilityCost(headerCosts.NetBoughtOutPartCost)
                 break;
             case 'RM + CC':
             case 'Part Cost + CC':
                 totalCost = (RMCC) * calculatePercentage(percent)
+                setApplicabilityCost(RMCC)
                 break;
             case 'BOP + CC':
                 totalCost = BOPCC * calculatePercentage(percent)
+                setApplicabilityCost(BOPCC)
                 break;
             case 'CC':
                 totalCost = (ConversionCostForCalculation) * calculatePercentage(percent)
+                setApplicabilityCost(ConversionCostForCalculation)
                 break;
             case 'RM + CC + BOP':
             case 'Part Cost + CC + BOP':
                 totalCost = (RMBOPCC) * calculatePercentage(percent)
+                setApplicabilityCost(RMBOPCC)
                 break;
             case 'RM + BOP':
             case 'Part Cost + BOP':
                 totalCost = (RMBOP) * calculatePercentage(percent)
+                setApplicabilityCost(RMBOP)
                 break;
             case 'Net Cost':
                 totalCost = (totalTabCost) * calculatePercentage(percent)
+                setApplicabilityCost(totalTabCost)
                 break;
             default:
                 totalCost = getValues('AnyOtherCost')
+                setApplicabilityCost(totalCost)
                 break;
         }
         setValue('AnyOtherCost', checkForDecimalAndNull(totalCost, initialConfiguration.NoOfDecimalForPrice))
@@ -325,6 +338,27 @@ function OtherCostDrawer(props) {
 
                         <form onSubmit={handleSubmit(onSubmit)}>
                             <Row>
+                                {<Col md="4">
+                                    <SearchableSelectHookForm
+                                        name={`crmHeadOtherCost`}
+                                        type="text"
+                                        label="CRM Head"
+                                        errors={errors.crmHeadOtherCost}
+                                        Controller={Controller}
+                                        control={control}
+                                        register={register}
+                                        mandatory={false}
+                                        rules={{
+                                            required: false,
+                                        }}
+                                        placeholder={'Select'}
+                                        options={CRMHeads}
+                                        required={false}
+                                        handleChange={() => { }}
+                                        disabled={CostingViewMode}
+                                    />
+                                </Col>}
+
                                 <Col md="4" >
                                     <TextFieldHookForm
                                         label="Other Cost Description"
@@ -464,6 +498,7 @@ function OtherCostDrawer(props) {
                                 <Table className="table mb-0 forging-cal-table" size="sm">
                                     <thead>
                                         <tr>
+                                            <th>{`CRM Head`}</th>
                                             <th>{`Other Cost Description`}</th>
                                             {/* <th>{`Other Cost Type`}</th> */}
                                             <th>{`Other Cost Applicability`}</th>
@@ -476,6 +511,7 @@ function OtherCostDrawer(props) {
                                         {gridData && gridData.map((item, index) => {
                                             return (
                                                 <tr key={index} >
+                                                    <td>{item.CRMHead}</td>
                                                     <td>{item.OtherCostDescription}</td>
                                                     {/* <td>{item.OtherCostType}</td> */}
                                                     <td>{item?.OtherCostApplicability}</td>
@@ -511,10 +547,10 @@ function OtherCostDrawer(props) {
                                             </tr>
                                         ) : (
                                             <tr className='table-footer'>
-                                                <td colSpan={3} className='text-right'>
+                                                <td colSpan={4} className='text-right'>
                                                     Total Other Cost:
                                                 </td>
-                                                <td colSpan={2}>
+                                                <td colSpan={3}>
                                                     {checkForDecimalAndNull(otherCostTotal, initialConfiguration.NoOfDecimalForPrice)}
                                                 </td>
                                             </tr>

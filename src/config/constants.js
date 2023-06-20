@@ -2474,6 +2474,7 @@ export const statusOptions = _.sortBy([
 ], ({ label }) => label.toLowerCase());
 
 
+
 export const CRMHeads = [
   { label: "Net Sales", value: 1 },
   { label: "Consumption", value: 2 },
