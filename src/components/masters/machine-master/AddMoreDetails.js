@@ -17,7 +17,7 @@ import { getLabourTypeByMachineTypeSelectList } from '../actions/Labour';
 import { getFuelByPlant, } from '../actions/Fuel';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
-import { EMPTY_DATA, EMPTY_GUID, TIME, ZBCTypeId, VBCTypeId, CBCTypeId } from '../../../config/constants'
+import { EMPTY_DATA, EMPTY_GUID, TIME, ZBCTypeId, VBCTypeId, CBCTypeId, CRMHeads } from '../../../config/constants'
 import { loggedInUserId, userDetails, getConfigurationKey } from "../../../helper/auth";
 import Switch from "react-switch";
 import Dropzone from 'react-dropzone-uploader';
@@ -29,7 +29,7 @@ import HeaderTitle from '../../common/HeaderTitle';
 import AddMachineTypeDrawer from './AddMachineTypeDrawer';
 import AddProcessDrawer from './AddProcessDrawer';
 import NoContentFound from '../../common/NoContentFound';
-import { calculatePercentage, CheckApprovalApplicableMaster, displayUOM, userTechnologyDetailByMasterId } from '../../../helper';
+import { calculatePercentage, CheckApprovalApplicableMaster, compareObjects, displayUOM, userTechnologyDetailByMasterId } from '../../../helper';
 import EfficiencyDrawer from './EfficiencyDrawer';
 import DayTime from '../../common/DayTimeWrapper'
 import { AcceptableMachineUOM } from '../../../config/masterData'
@@ -141,7 +141,11 @@ class AddMoreDetails extends Component {
       selectedVedor: [],
       costingTypeId: ZBCTypeId,
       vendorId: null,
-      customerId: null
+      customerId: null,
+      IsSendForApproval: false,
+      LabourCRMHead: '',
+      crmHeads: {},
+      updateCrmHeadObj: {}
     }
     this.dropzone = React.createRef();
   }
@@ -396,8 +400,8 @@ class AddMoreDetails extends Component {
                 LabourCostPerAnnum: el.LabourCostPerAnnum,
                 NumberOfLabour: el.NumberOfLabour,
                 LabourCost: el.LabourCost,
-                LabourDetailId: el.LabourDetailId
-
+                LabourDetailId: el.LabourDetailId,
+                LabourCRMHead: el.LabourCRMHead
               }
             })
 
@@ -413,6 +417,19 @@ class AddMoreDetails extends Component {
               }
             })
 
+            let crmHeadObj = {}
+            crmHeadObj.LoanCRMHead = Data.LoanCRMHead ? Data.LoanCRMHead : ''
+            crmHeadObj.InterestCRMHead = Data.InterestCRMHead ? Data.InterestCRMHead : ''
+            crmHeadObj.WorkingShiftCRMHead = Data.WorkingShiftCRMHead ? Data.WorkingShiftCRMHead : ''
+            crmHeadObj.DepreciationCRMHead = Data.DepreciationCRMHead ? Data.DepreciationCRMHead : ''
+            crmHeadObj.AnnualMaintanceCRMHead = Data.AnnualMaintanceCRMHead ? Data.AnnualMaintanceCRMHead : ''
+            crmHeadObj.AnnualConsumableCRMHead = Data.AnnualConsumableCRMHead ? Data.AnnualConsumableCRMHead : ''
+            crmHeadObj.AnnualInsuranceCRMHead = Data.AnnualInsuranceCRMHead ? Data.AnnualInsuranceCRMHead : ''
+            crmHeadObj.BuildingCRMHead = Data.BuildingCRMHead ? Data.BuildingCRMHead : ''
+            crmHeadObj.MachineFloorCRMHead = Data.MachineFloorCRMHead ? Data.MachineFloorCRMHead : ''
+            crmHeadObj.OtherYearlyCRMHead = Data.OtherYearlyCRMHead ? Data.OtherYearlyCRMHead : ''
+            crmHeadObj.PowerCRMHead = Data.PowerCRMHead ? Data.PowerCRMHead : ''
+            crmHeadObj.FuelCRMHead = Data.FuelCRMHead ? Data.FuelCRMHead : ''
 
             this.setState({
               IsFinancialDataChanged: false,
@@ -443,6 +460,8 @@ class AddMoreDetails extends Component {
               FuelEntryId: Data?.FuelEntryId,
               powerId: Data?.PowerId,
               machineFullValue: { FuelCostPerUnit: Data?.FuelCostPerUnit, PowerCostPerUnit: Data?.PowerCostPerUnit },
+              crmHeads: crmHeadObj,
+              updateCrmHeadObj: crmHeadObj,
               IsIncludeMachineRateDepreciation: Data?.IsIncludeMachineCost
             }, () => this.props.change('MachineRate', (this.state.isProcessGroup && !this.state.isViewMode) ? Data.MachineProcessRates[0].MachineRate : ''))
           }, 2000)
@@ -1016,6 +1035,11 @@ class AddMoreDetails extends Component {
     }
   };
 
+  handleLabourCrmHead = (value) => {
+    this.setState({ LabourCRMHead: value })
+
+  }
+
   componentDidUpdate(prevProps, prevState) {
     const { initialConfiguration } = this.props
     if (this.props.fieldsObj !== prevProps.fieldsObj) {
@@ -1334,7 +1358,7 @@ class AddMoreDetails extends Component {
   * @description ADDING VALUE IN LABOUR TABLE GRID
   */
   labourTableHandler = () => {
-    const { labourType, labourGrid } = this.state;
+    const { labourType, labourGrid, LabourCRMHead } = this.state;
     const { fieldsObj } = this.props
 
     if (labourType.length === 0 && (fieldsObj.NumberOfLabour === undefined || Number(fieldsObj.NumberOfLabour) === 0)) {
@@ -1375,7 +1399,8 @@ class AddMoreDetails extends Component {
       LabourCostPerAnnum: LabourPerCost,
       NumberOfLabour: NumberOfLabour,
       LabourCost: TotalLabourCost,
-      LabourDetailId: this.state.labourDetailId
+      LabourDetailId: this.state.labourDetailId,
+      LabourCRMHead: LabourCRMHead ? LabourCRMHead.label : '-'
     })
     if (tempArray?.length > 0) {
       this.setState({ disableMachineType: true })
@@ -1386,7 +1411,8 @@ class AddMoreDetails extends Component {
     this.setState({
       labourGrid: tempArray,
       labourType: [],
-      LabourDetailId: ''
+      LabourDetailId: '',
+      LabourCRMHead: ''
     }, () => {
       this.props.change('LabourCostPerAnnum', '')
       this.props.change('NumberOfLabour', '')
@@ -1400,7 +1426,7 @@ class AddMoreDetails extends Component {
    * @description UPDATE LABOUR GRID
   */
   updateLabourGrid = () => {
-    const { labourType, labourGrid, labourGridEditIndex } = this.state;
+    const { labourType, labourGrid, labourGridEditIndex, LabourCRMHead } = this.state;
     const { fieldsObj } = this.props
 
     //CONDITION TO SKIP DUPLICATE ENTRY IN GRID
@@ -1434,7 +1460,8 @@ class AddMoreDetails extends Component {
       LabourCostPerAnnum: LabourPerCost,
       NumberOfLabour: NumberOfLabour,
       LabourCost: TotalLabourCost,
-      LabourDetailId: this.state.labourDetailId
+      LabourDetailId: this.state.labourDetailId,
+      LabourCRMHead: LabourCRMHead ? LabourCRMHead.label : '-'
     }
 
     tempArray = Object.assign([...labourGrid], { [labourGridEditIndex]: tempData })
@@ -1444,6 +1471,7 @@ class AddMoreDetails extends Component {
       labourType: [],
       labourGridEditIndex: '',
       isEditLabourIndex: false,
+      LabourCRMHead: ''
     }, () => {
       this.props.change('LabourCostPerAnnum', '')
       this.props.change('NumberOfLabour', '')
@@ -1461,6 +1489,7 @@ class AddMoreDetails extends Component {
       labourType: [],
       labourGridEditIndex: '',
       isEditLabourIndex: false,
+      LabourCRMHead: ''
     }, () => {
       this.props.change('LabourCostPerAnnum', '')
       this.props.change('NumberOfLabour', '')
@@ -1480,6 +1509,7 @@ class AddMoreDetails extends Component {
       labourGridEditIndex: index,
       isEditLabourIndex: true,
       labourType: { label: tempData.labourTypeName, value: tempData.labourTypeId },
+      LabourCRMHead: { label: tempData.LabourCRMHead, value: index }
     }, () => {
       this.props.change('LabourCostPerAnnum', tempData.LabourCostPerAnnum)
       this.props.change('NumberOfLabour', tempData.NumberOfLabour)
@@ -1909,11 +1939,9 @@ class AddMoreDetails extends Component {
     // For cancel of mpre detail form to reset form in addMachine form
     data.cancelFlag = true
     data.isFinalApprovar = this.state.isFinalApprovar
-    data.isViewFlag = this.state.isViewFlag
+    data.isViewFlag = true
     /* IF CANCEL IS CLICKED AND MACHINE FORM IS IN EDIT FORM CONTAINING VALUE */
     if (editDetails.isIncompleteMachine || this.state.isEditFlag) {
-
-
       data.Id = this.state.MachineID ? this.state.MachineID : editDetails.Id
       data.isEditFlag = true
       this.props.hideMoreDetailsForm({}, data)
@@ -1944,7 +1972,7 @@ class AddMoreDetails extends Component {
 
     const { isEditFlag, MachineID, selectedTechnology, selectedPlants, machineType, remarks, files, DateOfPurchase,
       IsAnnualMaintenanceFixed, IsAnnualConsumableFixed, IsInsuranceFixed, IsUsesFuel, fuelType,
-      labourGrid, processGrid, machineFullValue, effectiveDate, IsFinancialDataChanged, powerId, IsUsesSolarPower, powerIdFromAPI } = this.state;
+      labourGrid, processGrid, machineFullValue, effectiveDate, IsFinancialDataChanged, powerId, IsUsesSolarPower, powerIdFromAPI, crmHeads } = this.state;
 
     if (this.state.processGrid.length === 0) {
 
@@ -2045,7 +2073,19 @@ class AddMoreDetails extends Component {
       CustomerId: this.state.CostingTypeId === CBCTypeId ? this.state.selectedCustomer.value : null,
       CustomerName: this.state.CostingTypeId === CBCTypeId ? this.state.selectedCustomer.label : "",
       selectedCustomer: this.state.selectedCustomer,
-      selectedVedor: this.state.selectedVedor
+      selectedVedor: this.state.selectedVedor,
+      LoanCRMHead: crmHeads.LoanCRMHead ? crmHeads.LoanCRMHead : '',
+      InterestCRMHead: crmHeads.InterestCRMHead ? crmHeads.InterestCRMHead : '',
+      WorkingShiftCRMHead: crmHeads.WorkingShiftCRMHead ? crmHeads.WorkingShiftCRMHead : '',
+      DepreciationCRMHead: crmHeads.DepreciationCRMHead ? crmHeads.DepreciationCRMHead : '',
+      AnnualMaintanceCRMHead: crmHeads.AnnualMaintanceCRMHead ? crmHeads.AnnualMaintanceCRMHead : '',
+      AnnualConsumableCRMHead: crmHeads.AnnualConsumableCRMHead ? crmHeads.AnnualConsumableCRMHead : '',
+      AnnualInsuranceCRMHead: crmHeads.AnnualInsuranceCRMHead ? crmHeads.AnnualInsuranceCRMHead : '',
+      BuildingCRMHead: crmHeads.BuildingCRMHead ? crmHeads.BuildingCRMHead : '',
+      MachineFloorCRMHead: crmHeads.MachineFloorCRMHead ? crmHeads.MachineFloorCRMHead : '',
+      OtherYearlyCRMHead: crmHeads.OtherYearlyCRMHead ? crmHeads.OtherYearlyCRMHead : '',
+      PowerCRMHead: crmHeads.PowerCRMHead ? crmHeads.PowerCRMHead : '',
+      FuelCRMHead: crmHeads.FuelCRMHead ? crmHeads.FuelCRMHead : ''
       // LabourDetailId: labourType.value
     }
 
@@ -2186,9 +2226,23 @@ class AddMoreDetails extends Component {
         PowerEntryId: powerIdFromAPI,
         CustomerId: this.state.CostingTypeId === CBCTypeId ? this.state.selectedCustomer.value : null,
         CustomerName: this.state.CostingTypeId === CBCTypeId ? this.state.selectedCustomer.label : "",
+        selectedCustomer: this.state.selectedCustomer ? this.state.selectedCustomer : '',
+        selectedVedor: this.state.selectedVedor,
+        LoanCRMHead: crmHeads.LoanCRMHead ? crmHeads.LoanCRMHead : '',
+        InterestCRMHead: crmHeads.InterestCRMHead ? crmHeads.InterestCRMHead : '',
+        WorkingShiftCRMHead: crmHeads.WorkingShiftCRMHead ? crmHeads.WorkingShiftCRMHead : '',
+        DepreciationCRMHead: crmHeads.DepreciationCRMHead ? crmHeads.DepreciationCRMHead : '',
+        AnnualMaintanceCRMHead: crmHeads.AnnualMaintanceCRMHead ? crmHeads.AnnualMaintanceCRMHead : '',
+        AnnualConsumableCRMHead: crmHeads.AnnualConsumableCRMHead ? crmHeads.AnnualConsumableCRMHead : '',
+        AnnualInsuranceCRMHead: crmHeads.AnnualInsuranceCRMHead ? crmHeads.AnnualInsuranceCRMHead : '',
+        BuildingCRMHead: crmHeads.BuildingCRMHead ? crmHeads.BuildingCRMHead : '',
+        MachineFloorCRMHead: crmHeads.MachineFloorCRMHead ? crmHeads.MachineFloorCRMHead : '',
+        OtherYearlyCRMHead: crmHeads.OtherYearlyCRMHead ? crmHeads.OtherYearlyCRMHead : '',
+        PowerCRMHead: crmHeads.PowerCRMHead ? crmHeads.PowerCRMHead : '',
+        FuelCRMHead: crmHeads.FuelCRMHead ? crmHeads.FuelCRMHead : ''
       }
-
       let obj = {}
+
       let finalObj = {
 
         MachineProcessRates: processGrid,
@@ -2411,6 +2465,59 @@ class AddMoreDetails extends Component {
     this.setState({ IsIncludeMachineRateDepreciation: !this.state.IsIncludeMachineRateDepreciation })
     this.handleProcessCalculation()
   }
+
+  handleCRMHeads = (value, name) => {
+
+    let currentCrmHead = value && value.label
+    let { crmHeads } = this.state
+    let obj = { ...crmHeads }
+    switch (String(name)) {
+      case "LoanCRMHead":
+        obj.LoanCRMHead = currentCrmHead
+        break;
+      case "InterestCRMHead":
+        obj.InterestCRMHead = currentCrmHead
+        break;
+      case "FuelCRMHead":
+        obj.FuelCRMHead = currentCrmHead
+        break;
+      case "WorkingShiftCRMHead":
+        obj.WorkingShiftCRMHead = currentCrmHead
+        break;
+      case "DepreciationCRMHead":
+        obj.DepreciationCRMHead = currentCrmHead
+        break;
+      case "AnnualMaintanceCRMHead":
+        obj.AnnualMaintanceCRMHead = currentCrmHead
+        break;
+      case "AnnualConsumableCRMHead":
+        obj.AnnualConsumableCRMHead = currentCrmHead
+        break;
+      case "AnnualInsuranceCRMHead":
+        obj.AnnualInsuranceCRMHead = currentCrmHead
+        break;
+      case "BuildingCRMHead":
+        obj.BuildingCRMHead = currentCrmHead
+        break;
+      case "MachineFloorCRMHead":
+        obj.MachineFloorCRMHead = currentCrmHead
+        break;
+      case "OtherYearlyCRMHead":
+        obj.OtherYearlyCRMHead = currentCrmHead
+        break;
+      case "PowerCRMHead":
+        obj.PowerCRMHead = currentCrmHead
+        break;
+      default:
+    }
+    this.setState({ crmHeads: obj })
+
+    if (this.state.isEditFlag && !compareObjects(obj, this.state.updateCrmHeadObj)) {
+      this.setState({ IsFinancialDataChanged: true })
+
+    }
+  }
+
 
   /**
   * @method render
@@ -2778,6 +2885,21 @@ class AddMoreDetails extends Component {
                         {
                           isLoanOpen &&
                           <div className="accordian-content row mx-0 w-100">
+                            {getConfigurationKey().IsShowCRMHead && <Col md="3">
+                              <Field
+                                name="LoanCRMHead"
+                                type="text"
+                                label="CRM Head"
+                                component={searchableSelect}
+                                placeholder={('Select')}
+                                options={CRMHeads}
+                                required={false}
+                                handleChangeDescription={(e) => this.handleCRMHeads(e, 'LoanCRMHead')}
+                                disabled={isViewFlag}
+                                valueDescription={{ label: this.state.crmHeads?.LoanCRMHead, value: 1 }}
+                              />
+                            </Col>}
+
                             <Col md="4">
                               <Field
                                 label={`Loan (%)`}
@@ -2808,6 +2930,21 @@ class AddMoreDetails extends Component {
                                 customClassName="withBorder"
                               />
                             </Col>
+
+                            {getConfigurationKey().IsShowCRMHead && <Col md="3">
+                              <Field
+                                name="InterestCRMHead"
+                                type="text"
+                                label="CRM Head"
+                                component={searchableSelect}
+                                placeholder={('Select')}
+                                options={CRMHeads}
+                                required={false}
+                                handleChangeDescription={(e) => this.handleCRMHeads(e, 'InterestCRMHead')}
+                                disabled={isViewFlag}
+                                valueDescription={{ label: this.state.crmHeads?.InterestCRMHead, value: 2 }}
+                              />
+                            </Col>}
 
                             <Col md="4">
                               <Field
@@ -2892,6 +3029,21 @@ class AddMoreDetails extends Component {
                         {
                           isWorkingOpen &&
                           <div className="accordian-content row mx-0 w-100">
+                            {getConfigurationKey().IsShowCRMHead && <Col md="3">
+                              <Field
+                                name="WorkingShiftCRMHead"
+                                type="text"
+                                label="CRM Head"
+                                component={searchableSelect}
+                                placeholder={('Select')}
+                                options={CRMHeads}
+                                required={false}
+                                handleChangeDescription={(e) => this.handleCRMHeads(e, 'WorkingShiftCRMHead')}
+                                disabled={isViewFlag}
+                                valueDescription={{ label: this.state.crmHeads?.WorkingShiftCRMHead, value: 3 }}
+                              />
+                            </Col>}
+
                             <Col md="3">
                               <Field
                                 name="WorkingShift"
@@ -2995,6 +3147,22 @@ class AddMoreDetails extends Component {
                         {
                           isDepreciationOpen &&
                           <div className="accordian-content row mx-0 w-100">
+
+                            {getConfigurationKey().IsShowCRMHead && <Col md="3">
+                              <Field
+                                name="DepreciationCRMHead"
+                                type="text"
+                                label="CRM Head"
+                                component={searchableSelect}
+                                placeholder={('Select')}
+                                options={CRMHeads}
+                                required={false}
+                                handleChangeDescription={(e) => this.handleCRMHeads(e, 'DepreciationCRMHead')}
+                                disabled={isViewFlag}
+                                valueDescription={{ label: this.state.crmHeads?.DepreciationCRMHead, value: 4 }}
+                              />
+                            </Col>}
+
                             <Col md="3">
                               <Field
                                 name="DepreciationTypeId"
@@ -3117,6 +3285,22 @@ class AddMoreDetails extends Component {
                         </Col>
                         {
                           isVariableCostOpen && <div className="accordian-content row mx-0 w-100">
+
+                            {getConfigurationKey().IsShowCRMHead && <Col md="3">
+                              <Field
+                                name="AnnualMaintanceCRMHead"
+                                type="text"
+                                label="CRM Head"
+                                component={searchableSelect}
+                                placeholder={('Select')}
+                                options={CRMHeads}
+                                required={false}
+                                handleChangeDescription={(e) => this.handleCRMHeads(e, 'AnnualMaintanceCRMHead')}
+                                disabled={isViewFlag}
+                                valueDescription={{ label: this.state.crmHeads?.AnnualMaintanceCRMHead, value: 5 }}
+                              />
+                            </Col>}
+
                             <Col md={`${this.state.IsAnnualMaintenanceFixed ? 2 : 3}`} className="switch mb15">
                               <label>Annual Maintenance</label>
                               <label className="switch-level mt-2">
@@ -3168,6 +3352,22 @@ class AddMoreDetails extends Component {
                                 customClassName="withBorder"
                               />
                             </Col>
+
+                            {getConfigurationKey().IsShowCRMHead && <Col md="3">
+                              <Field
+                                name="AnnualConsumableCRMHead"
+                                type="text"
+                                label="CRM Head"
+                                component={searchableSelect}
+                                placeholder={('Select')}
+                                options={CRMHeads}
+                                required={false}
+                                handleChangeDescription={(e) => this.handleCRMHeads(e, 'AnnualConsumableCRMHead')}
+                                disabled={isViewFlag}
+                                valueDescription={{ label: this.state.crmHeads?.AnnualConsumableCRMHead, value: 6 }}
+                              />
+                            </Col>}
+
                             <Col md={`${this.state.IsAnnualConsumableFixed ? 2 : 3}`} className="switch mb15">
                               <label>Annual Consumable</label>
                               <label className="switch-level mt-2">
@@ -3221,6 +3421,22 @@ class AddMoreDetails extends Component {
                               />
                             </Col>
 
+
+                            {getConfigurationKey().IsShowCRMHead && <Col md="3">
+                              <Field
+                                name="AnnualInsuranceCRMHead"
+                                type="text"
+                                label="CRM Head"
+                                component={searchableSelect}
+                                placeholder={('Select')}
+                                options={CRMHeads}
+                                required={false}
+                                handleChangeDescription={(e) => this.handleCRMHeads(e, 'AnnualInsuranceCRMHead')}
+                                disabled={isViewFlag}
+                                valueDescription={{ label: this.state.crmHeads?.AnnualInsuranceCRMHead, value: 7 }}
+                              />
+                            </Col>}
+
                             <Col md={`${this.state.IsInsuranceFixed ? 2 : 3}`} className="switch mb15">
                               <label>Insurance</label>
                               <label className="switch-level mt-2">
@@ -3272,6 +3488,22 @@ class AddMoreDetails extends Component {
                                 customClassName="withBorder"
                               />
                             </Col>
+
+                            {getConfigurationKey().IsShowCRMHead && <Col md="3">
+                              <Field
+                                name="BuildingCRMHead"
+                                type="text"
+                                label="CRM Head"
+                                component={searchableSelect}
+                                placeholder={('Select')}
+                                options={CRMHeads}
+                                required={false}
+                                handleChangeDescription={(e) => this.handleCRMHeads(e, 'BuildingCRMHead')}
+                                disabled={isViewFlag}
+                                valueDescription={{ label: this.state.crmHeads?.BuildingCRMHead, value: 8 }}
+                              />
+                            </Col>}
+
                             <Col md="3">
                               <Field
                                 label={`Building Cost/Sq Ft/Annum`}
@@ -3286,6 +3518,22 @@ class AddMoreDetails extends Component {
                                 customClassName="withBorder"
                               />
                             </Col>
+
+                            {getConfigurationKey().IsShowCRMHead && <Col md="3">
+                              <Field
+                                name="MachineFloorCRMHead"
+                                type="text"
+                                label="CRM Head"
+                                component={searchableSelect}
+                                placeholder={('Select')}
+                                options={CRMHeads}
+                                required={false}
+                                handleChangeDescription={(e) => this.handleCRMHeads(e, 'MachineFloorCRMHead')}
+                                disabled={isViewFlag}
+                                valueDescription={{ label: this.state.crmHeads?.MachineFloorCRMHead, value: 9 }}
+                              />
+                            </Col>}
+
                             <Col md="3">
                               <Field
                                 label={`Machine Floor Area(Sq Ft)`}
@@ -3317,6 +3565,22 @@ class AddMoreDetails extends Component {
                                 customClassName="withBorder"
                               />
                             </Col>
+
+                            {getConfigurationKey().IsShowCRMHead && <Col md="3">
+                              <Field
+                                name="OtherYearlyCRMHead"
+                                type="text"
+                                label="CRM Head"
+                                component={searchableSelect}
+                                placeholder={('Select')}
+                                options={CRMHeads}
+                                required={false}
+                                handleChangeDescription={(e) => this.handleCRMHeads(e, 'OtherYearlyCRMHead')}
+                                disabled={isViewFlag}
+                                valueDescription={{ label: this.state.crmHeads?.OtherYearlyCRMHead, value: 10 }}
+                              />
+                            </Col>}
+
                             <Col md="3">
                               <Field
                                 label={`Other Yearly Cost(INR)`}
@@ -3390,6 +3654,21 @@ class AddMoreDetails extends Component {
                           </Col>
                           {this.state.IsUsesFuel &&
                             <>
+                              {getConfigurationKey().IsShowCRMHead && <Col md="3">
+                                <Field
+                                  name="FuelCRMHead"
+                                  type="text"
+                                  label="CRM Head"
+                                  component={searchableSelect}
+                                  placeholder={('Select')}
+                                  options={CRMHeads}
+                                  required={false}
+                                  handleChangeDescription={(e) => this.handleCRMHeads(e, 'FuelCRMHead')}
+                                  disabled={isViewFlag}
+                                  valueDescription={{ label: this.state.crmHeads?.FuelCRMHead, value: 11 }}
+                                />
+                              </Col>}
+
                               <Col md="3">
                                 <Field
                                   name="FuelTypeId"
@@ -3452,6 +3731,21 @@ class AddMoreDetails extends Component {
 
                           {!this.state.IsUsesFuel &&
                             <>
+                              {getConfigurationKey().IsShowCRMHead && <Col md="3">
+                                <Field
+                                  name="PowerCRMHead"
+                                  type="text"
+                                  label="CRM Head"
+                                  component={searchableSelect}
+                                  placeholder={('Select')}
+                                  options={CRMHeads}
+                                  required={false}
+                                  handleChangeDescription={(e) => this.handleCRMHeads(e, 'PowerCRMHead')}
+                                  disabled={isViewFlag}
+                                  valueDescription={{ label: this.state.crmHeads?.PowerCRMHead, value: 12 }}
+                                />
+                              </Col>
+                              }
                               <Col md="3">
                                 <Field
                                   label={`Efficiency (%)`}
@@ -3565,6 +3859,22 @@ class AddMoreDetails extends Component {
                         </Col>
                         {
                           isLabourOpen && <div className="accordian-content row mx-0 w-100">
+
+                            {getConfigurationKey().IsShowCRMHead && <Col md="3">
+                              <Field
+                                name="LabourCRMHead"
+                                type="text"
+                                label="CRM Head"
+                                component={searchableSelect}
+                                placeholder={('Select')}
+                                options={CRMHeads}
+                                required={false}
+                                handleChangeDescription={this.handleLabourCrmHead}
+                                valueDescription={this.state.LabourCRMHead}
+                                disabled={isViewFlag}
+                              />
+                            </Col>}
+
                             <Col md="3" className='p-relative'>
                               <Field
                                 name="LabourTypeIds"
@@ -3667,6 +3977,7 @@ class AddMoreDetails extends Component {
                               <Table className="table border" size="sm" >
                                 <thead>
                                   <tr>
+                                    {getConfigurationKey().IsShowCRMHead && <th>{`CRM Head`}</th>}
                                     <th>{`Labour Type`}</th>
                                     <th>{`Cost/Annum(INR)`}</th>
                                     <th>{`No. of People`}</th>
@@ -3681,6 +3992,7 @@ class AddMoreDetails extends Component {
                                     this.state.labourGrid.map((item, index) => {
                                       return (
                                         <tr key={index}>
+                                          {getConfigurationKey().IsShowCRMHead && <td>{item.LabourCRMHead}</td>}
                                           <td>{item.labourTypeName}</td>
                                           <td>{item.LabourCostPerAnnum}</td>
                                           <td>{item.NumberOfLabour}</td>
@@ -4115,7 +4427,9 @@ function mapStateToProps(state) {
     'BuildingCostPerSquareFeet', 'MachineFloorAreaPerSquareFeet', 'AnnualAreaCost', 'OtherYearlyCost', 'TotalMachineCostPerAnnum',
     'UtilizationFactorPercentage', 'PowerRatingPerKW', 'PowerCostPerUnit', 'TotalPowerCostPerYear', 'TotalPowerCostPerHour',
     'FuelCostPerUnit', 'ConsumptionPerYear', 'TotalFuelCostPerYear',
-    'NumberOfLabour', 'LabourCost', 'OutputPerHours', 'OutputPerYear', 'MachineRate', 'DateOfPurchase', 'Description', 'Specification');
+    'NumberOfLabour', 'LabourCost', 'OutputPerHours', 'OutputPerYear', 'MachineRate', 'DateOfPurchase', 'Description', 'Specification', 'LoanCRMHead',
+    'InterestCRMHead', 'WorkingShiftCRMHead', 'DepreciationCRMHead', 'AnnualMaintanceCRMHead', 'AnnualConsumableCRMHead', 'AnnualInsuranceCRMHead', 'BuildingCRMHead',
+    'MachineFloorCRMHead', 'OtherYearlyCRMHead', 'PowerCRMHead', 'FuelCRMHead');
 
   const { technologySelectList, plantSelectList, UOMSelectList,
     ShiftTypeSelectList, DepreciationTypeSelectList, } = comman;
