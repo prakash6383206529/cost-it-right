@@ -50,6 +50,7 @@ function BDSimulation(props) {
     const [noData, setNoData] = useState(false);
     const [showTooltip, setShowTooltip] = useState(false)
     const [basicRateviewTooltip, setBasicRateViewTooltip] = useState(false)
+    const [showTable, setShowTable] = useState(false)
 
     const { register, control, setValue, formState: { errors }, } = useForm({
         mode: 'onChange',
@@ -63,10 +64,20 @@ function BDSimulation(props) {
     const { selectedMasterForSimulation, selectedTechnologyForSimulation } = useSelector(state => state.simulation)
 
     useEffect(() => {
+        list && list?.map(item => {
+            item.NewBasicRate = item.BasicRate
+            item.OldNetLandedCost = item.NetLandedCost
+            item.NewNetLandedCost = item.NetLandedCost
+        })
         if (isbulkUpload) {
             setValue('NoOfCorrectRow', rowCount.correctRow)
             setValue('NoOfRowsWithoutChange', rowCount.NoOfRowsWithoutChange)
             setTitleObj(prevState => ({ ...prevState, rowWithChanges: rowCount.correctRow, rowWithoutChanges: rowCount.NoOfRowsWithoutChange }))
+        }
+        if (isMasterAssociatedWithCosting === false) {
+            setShowTable(true)
+        } else {
+            setShowTable(true)
         }
     }, [])
 
@@ -74,7 +85,7 @@ function BDSimulation(props) {
         if (list && list.length > 0) {
             window.screen.width >= 1920 && gridRef.current.api.sizeColumnsToFit();
             if (isImpactedMaster) {
-                gridRef.current.api.sizeColumnsToFit();
+                gridRef?.current?.api?.sizeColumnsToFit();
             }
             let maxDate = getMaxDate(list)
             setMaxDate(maxDate)
@@ -99,10 +110,10 @@ function BDSimulation(props) {
             return null;
         })
 
-        if (basicRateCount === list.length) {
-            Toaster.warning('There is no changes in net cost. Please change the basic rate, then run simulation')
-            return false
-        }
+        // if (basicRateCount === list.length) {
+        //     Toaster.warning('There is no changes in net cost. Please change the basic rate, then run simulation')
+        //     return false
+        // }
         setIsDisable(true)
         basicRateCount = 0
         // setShowVerifyPage(true)
@@ -121,11 +132,13 @@ function BDSimulation(props) {
         list && list.map(item => {
             if (item.NewBasicRate !== undefined ? Number(item.NewBasicRate) : Number(item.BasicRate)) {
                 let tempObj = {}
+                let val = item?.BasicRate + (item?.BasicRate * item?.Percentage / 100)
                 tempObj.BoughtOutPartId = item.BoughtOutPartId
                 tempObj.OldBOPRate = item.BasicRate
-                tempObj.NewBOPRate = item.NewBasicRate
-                tempObj.OldNetLandedCost = checkForNull(item.BasicRate) / checkForNull(item.NumberOfPieces)
-                tempObj.NewNetLandedCost = checkForNull(item.NewBasicRate) / checkForNull(item.NumberOfPieces)
+                tempObj.NewBOPRate = isMasterAssociatedWithCosting ? item.NewBasicRate : val
+                tempObj.OldNetLandedCost = checkForNull(item.BasicRate)
+                tempObj.NewNetLandedCost = checkForNull(isMasterAssociatedWithCosting ? item.NewBasicRate : val)
+                tempObj.PercentageChange = checkForNull(item.Percentage)
                 tempArr.push(tempObj)
             }
             return null;
@@ -170,13 +183,29 @@ function BDSimulation(props) {
     const newBasicRateFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        const value = beforeSaveCell(cell)
+        let value = row?.BasicRate + (row?.BasicRate * row?.Percentage / 100)
         return (
             <>
                 {
                     isImpactedMaster ?
                         Number(row.NewBOPRate) :
-                        <span className={`${!isbulkUpload ? 'form-control' : ''}`} >{cell && value ? Number(cell) : Number(row.BasicRate)} </span>
+                        <span className={`${!isbulkUpload ? 'form-control' : ''}`} >{cell && value ? Number(cell) : Number(isMasterAssociatedWithCosting ? row.BasicRate : (row?.Percentage ? (value ? value : row.BasicRate) : row.NewBasicRate))} </span>
+                }
+            </>
+        )
+
+    }
+
+    const percentageFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const value = beforeSaveCell(cell)
+        return (
+            <>
+                {
+                    isImpactedMaster ?
+                        Number(cell) :
+                        <span className={`${!isbulkUpload ? 'form-control' : ''}`} >{cell && value ? Number(cell) : (isMasterAssociatedWithCosting ? Number(cell) : (row?.Percentage ? row?.Percentage : 0))} </span>
                 }
 
             </>
@@ -252,15 +281,15 @@ function BDSimulation(props) {
 
     const NewcostFormatter = (props) => {
         const row = props?.data;
+        let value = row?.BasicRate + (row?.BasicRate * row?.Percentage / 100)
         if (isImpactedMaster) {
             return row.NewNetBoughtOutPartCost ? row.NewNetBoughtOutPartCost : '-'
         } else {
-            if (!row.NewBasicRate || Number(row.BasicRate) === Number(row.NewBasicRate) || row.NewBasicRate === '') return ''
-            const BasicRate = Number(row.BasicRate) / Number(row.NumberOfPieces)
-            const NewBasicRate = Number(row.NewBasicRate) / Number(row.NumberOfPieces)
+            if (isMasterAssociatedWithCosting && (!row.NewBasicRate || Number(row.BasicRate) === Number(row.NewBasicRate) || row.NewBasicRate === '')) return ''
+            const BasicRate = Number(row.BasicRate)
+            const NewBasicRate = Number(row.NewBasicRate)
             const classGreen = (BasicRate < NewBasicRate) ? 'red-value form-control' : (BasicRate > NewBasicRate) ? 'green-value form-control' : 'form-class'
-            return row.NewBasicRate != null ? <span className={classGreen}>{checkForDecimalAndNull(Number(row.NewBasicRate) / Number(row.NumberOfPieces), getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
-
+            return isMasterAssociatedWithCosting ? (row.NewBasicRate != null ? <span className={classGreen}>{checkForDecimalAndNull(Number(row.NewBasicRate), getConfigurationKey().NoOfDecimalForPrice)}</span> : '') : (value ? value : row.OldNetLandedCost)
         }
     }
 
@@ -359,216 +388,216 @@ function BDSimulation(props) {
         plantFormatter: plantFormatter,
         revisedBasicRateHeader: revisedBasicRateHeader,
         customerFormatter: customerFormatter,
+        revisedBasicRateHeader: revisedBasicRateHeader,
+        percentageFormatter: percentageFormatter
     };
 
     const basicRatetooltipToggle = () => {
         setBasicRateViewTooltip(!basicRateviewTooltip)
-    }
+        const onBtExport = () => {
+            return returnExcelColumn(BOP_IMPACT_DOWNLOAD_EXCEl, list)
 
-    const onBtExport = () => {
-        return returnExcelColumn(BOP_IMPACT_DOWNLOAD_EXCEl, list)
-    };
+            const returnExcelColumn = (data = [], TempData) => {
 
-    const returnExcelColumn = (data = [], TempData) => {
+                let temp = []
+                TempData && TempData.map((item) => {
+                    item.EffectiveDate = (item.EffectiveDate)?.slice(0, 10)
+                    temp.push(item)
+                })
 
-        let temp = []
-        TempData && TempData.map((item) => {
-            item.EffectiveDate = (item.EffectiveDate)?.slice(0, 10)
-            temp.push(item)
-        })
+                return (
+                    <ExcelSheet data={temp} name={'BOP Data'}>
+                        {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
+                    </ExcelSheet>);
+            }
 
-        return (
-            <ExcelSheet data={temp} name={'BOP Data'}>
-                {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
-            </ExcelSheet>);
-    }
+            return (
 
-    return (
-
-        <div>
-            <div className={`ag-grid-react`}>
-                {
-                    (!showverifyPage && !showMainSimulation) &&
-                    <Fragment>
-                        {!isImpactedMaster && showTooltip && <Tooltip className="rfq-tooltip-left" placement={"top"} isOpen={basicRateviewTooltip} toggle={basicRatetooltipToggle} target={"basicRate-tooltip"} >{"To add revised basic rate please double click on the field."}</Tooltip>}
-                        <Row>
-                            <Col className={`add-min-height mb-3 sm-edit-page  ${(list && list?.length <= 0) || noData ? "overlay-contain" : ""}`}>
-                                <div className="ag-grid-wrapper height-width-wrapper">
-                                    <div className="ag-grid-header d-flex align-items-center justify-content-between">
-                                        <div className='d-flex align-items-center'>
-                                            <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
-                                            <button type="button" className="user-btn float-right mr-2" title="Reset Grid" onClick={() => resetState()}>
-                                                <div className="refresh mr-0"></div>
-                                            </button>
-                                            <ExcelFile filename={'Impacted Master Data'} fileExtension={'.xls'} element={
-                                                <button title="Download" type="button" className={'user-btn'} ><div className="download mr-0"></div></button>}>
-                                                {onBtExport()}
-                                            </ExcelFile>
-                                        </div>
-                                        <div className='d-flex justify-content-end bulk-upload-row pr-0 zindex-2'>
-                                            {
-                                                isbulkUpload && <>
-                                                    <div className="d-flex align-items-center">
-                                                        <label>Rows with changes:</label>
-                                                        <TextFieldHookForm
-                                                            label=""
-                                                            name={'NoOfCorrectRow'}
-                                                            Controller={Controller}
-                                                            title={titleObj.rowWithChanges}
-                                                            control={control}
-                                                            register={register}
-                                                            rules={{ required: false }}
-                                                            mandatory={false}
-                                                            handleChange={() => { }}
-                                                            defaultValue={''}
-                                                            className=""
-                                                            customClassName={'withBorder mn-height-auto hide-label mb-0'}
-                                                            errors={errors.NoOfCorrectRow}
-                                                            disabled={true}
-                                                        />
-                                                    </div>
-                                                    <div className="d-flex align-items-center">
-                                                        <label>Rows without changes:</label>
-                                                        <TextFieldHookForm
-                                                            label=""
-                                                            name={'NoOfRowsWithoutChange'}
-                                                            title={titleObj.rowWithoutChanges}
-                                                            Controller={Controller}
-                                                            control={control}
-                                                            register={register}
-                                                            rules={{ required: false }}
-                                                            mandatory={false}
-                                                            handleChange={() => { }}
-                                                            defaultValue={''}
-                                                            className=""
-                                                            customClassName={'withBorder mn-height-auto hide-label mb-0'}
-                                                            errors={errors.NoOfRowsWithoutChange}
-                                                            disabled={true}
-                                                        />
-                                                    </div>
-                                                </>
-                                            }
-                                            {!isImpactedMaster && <div className={`d-flex align-items-center simulation-label-container`}>
-                                                {list[0].CostingTypeId !== CBCTypeId && <div className='d-flex pl-3'>
-                                                    <label className='mr-1'>Vendor (Code):</label>
-                                                    <p title={list[0].Vendor} className='mr-2'>{list[0].Vendor ? list[0].Vendor : list[0]['Vendor (Code)']}</p>
-                                                </div>}
-                                                <button type="button" className={"apply"} onClick={cancel}> <div className={'back-icon'}></div>Back</button>
-                                            </div>}
-                                        </div>
-                                    </div>
-                                    <div className="ag-theme-material p-relative" style={{ width: '100%' }}>
-                                        {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found simulation-lisitng" />}
-                                        {list && <AgGridReact
-                                            ref={gridRef}
-                                            floatingFilter={true}
-                                            style={{ height: '100%', width: '100%' }}
-                                            defaultColDef={defaultColDef}
-                                            domLayout='autoHeight'
-                                            // columnDefs={c}
-                                            rowData={list}
-                                            pagination={true}
-                                            paginationPageSize={defaultPageSize}
-                                            onGridReady={onGridReady}
-                                            gridOptions={gridOptions}
-                                            loadingOverlayComponent={'customLoadingOverlay'}
-                                            noRowsOverlayComponent={'customNoRowsOverlay'}
-                                            noRowsOverlayComponentParams={{
-                                                title: EMPTY_DATA,
-                                            }}
-                                            frameworkComponents={frameworkComponents}
-                                            suppressColumnVirtualisation={true}
-                                            stopEditingWhenCellsLoseFocus={true}
-                                            onFilterModified={onFloatingFilterChanged}
-                                        >
-                                            {/* <AgGridColumn field="Technologies" editable='false' headerName="Technology" minWidth={190}></AgGridColumn> */}
-                                            <AgGridColumn field="BoughtOutPartNumber" editable='false' headerName="Insert Part No" minWidth={140}></AgGridColumn>
-                                            <AgGridColumn field="BoughtOutPartName" editable='false' headerName="Insert Part Name" minWidth={140}></AgGridColumn>
-                                            {!isImpactedMaster && <AgGridColumn field="BoughtOutPartCategory" editable='false' headerName="BOP Category" minWidth={140}></AgGridColumn>}
-                                            {!isImpactedMaster && list[0].CostingTypeId !== CBCTypeId && <AgGridColumn field="Vendor" editable='false' headerName="Vendor (Code)" minWidth={140} cellRenderer='vendorFormatter'></AgGridColumn>}
-                                            {!isImpactedMaster && list[0].CostingTypeId === CBCTypeId && <AgGridColumn field="CustomerName" editable='false' headerName="Customer (Code)" minWidth={140} cellRenderer='customerFormatter'></AgGridColumn>}
-                                            {!isImpactedMaster && <AgGridColumn field="Plants" editable='false' headerName="Plant (Code)" minWidth={140} cellRenderer='plantFormatter'></AgGridColumn>}
-
-                                            <AgGridColumn headerClass="justify-content-center" cellClass="text-center" headerName={Number(selectedMasterForSimulation?.value) === 5 ? "Basic Rate (Currency)" : "Basic Rate (INR)"} marryChildren={true} width={240}>
-                                                <AgGridColumn width={120} field="BasicRate" editable='false' cellRenderer='oldBasicRateFormatter' headerName="Existing" colId="BasicRate"></AgGridColumn>
-                                                <AgGridColumn width={120} cellRenderer='newBasicRateFormatter' editable={!isImpactedMaster} onCellValueChanged='cellChange' field="NewBasicRate" headerName="Revised" colId='NewBasicRate' headerComponent={'revisedBasicRateHeader'}></AgGridColumn>
-                                            </AgGridColumn>
-
-                                            <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName={Number(selectedMasterForSimulation?.value) === 5 ? "Net Cost (Currency)" : "Net Cost (INR)"} marryChildren={true}>
-                                                {/* {!isImpactedMaster &&<AgGridColumn width={120} field="OldNetLandedCost" editable='false' cellRenderer={'OldcostFormatter'} headerName="Old" colId='NetLandedCost'></AgGridColumn>} */}
-                                                <AgGridColumn width={120} field="OldNetLandedCost" editable='false' cellRenderer={'OldcostFormatter'} headerName="Existing" colId='NetLandedCost'></AgGridColumn>
-                                                <AgGridColumn width={120} field="NewNetLandedCost" editable='false' valueGetter='data.NewBasicRate' cellRenderer={'NewcostFormatter'} headerName="Revised" colId='NewNetLandedCost'></AgGridColumn>
-                                            </AgGridColumn>
-
-                                            <AgGridColumn field="EffectiveDate" headerName={props.isImpactedMaster && !props.lastRevision ? "Current Effective date" : "Effective Date"} editable='false' minWidth={150} cellRenderer='effectiveDateRenderer'></AgGridColumn>
-                                            <AgGridColumn field="CostingId" hide={true}></AgGridColumn>
-
-
-                                        </AgGridReact>}
-
-                                        {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />}
-                                    </div>
-                                </div>
-
-                            </Col>
-                        </Row>
+                <div>
+                    <div className={`ag-grid-react`}>
                         {
-                            !isImpactedMaster &&
-                            <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
-                                <div className="col-sm-12 text-right bluefooter-butn d-flex justify-content-end align-items-center">
-                                    <div className="inputbox date-section mr-3 verfiy-page">
-                                        <DatePicker
-                                            name="EffectiveDate"
-                                            selected={DayTime(effectiveDate).isValid() ? new Date(effectiveDate) : ''}
-                                            onChange={handleEffectiveDateChange}
-                                            showMonthDropdown
-                                            showYearDropdown
-                                            dateFormat="dd/MM/yyyy"
-                                            minDate={new Date(maxDate)}
-                                            placeholderText="Select effective date"
-                                            className="withBorder"
-                                            autoComplete={"off"}
-                                            disabledKeyboardNavigation
-                                            onChangeRaw={(e) => e.preventDefault()}
-                                        />
-                                        {isWarningMessageShow && <WarningMessage dClass={"error-message"} textClass={"pt-1"} message={"Please select effective date"} />}
-                                    </div>
-                                    <button onClick={verifySimulation} type="submit" className="user-btn mr5 save-btn" disabled={isDisable}>
-                                        <div className={"Run-icon"}>
-                                        </div>{" "}
-                                        {"Verify"}
-                                    </button>
-                                    {/* <button onClick={runSimulation} type="submit" className="user-btn mr5 save-btn"                    >
+                            (!showverifyPage && !showMainSimulation) &&
+                            <Fragment>
+                                {!isImpactedMaster && showTooltip && <Tooltip className="rfq-tooltip-left" placement={"top"} isOpen={basicRateviewTooltip} toggle={basicRatetooltipToggle} target={"basicRate-tooltip"} >{"To add revised basic rate please double click on the field."}</Tooltip>}
+                                <Row>
+                                    <Col className={`add-min-height mb-3 sm-edit-page  ${(list && list?.length <= 0) || noData ? "overlay-contain" : ""}`}>
+                                        <div className="ag-grid-wrapper height-width-wrapper">
+                                            <div className="ag-grid-header d-flex align-items-center justify-content-between">
+                                                <div className='d-flex align-items-center'>
+                                                    <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
+                                                    <button type="button" className="user-btn float-right mr-2" title="Reset Grid" onClick={() => resetState()}>
+                                                        <div className="refresh mr-0"></div>
+                                                    </button>
+                                                    <ExcelFile filename={'Impacted Master Data'} fileExtension={'.xls'} element={
+                                                        <button title="Download" type="button" className={'user-btn'} ><div className="download mr-0"></div></button>}>
+                                                        {onBtExport()}
+                                                    </ExcelFile>
+                                                </div>
+                                                <div className='d-flex justify-content-end bulk-upload-row pr-0 zindex-2'>
+                                                    {
+                                                        isbulkUpload && <>
+                                                            <div className="d-flex align-items-center">
+                                                                <label>Rows with changes:</label>
+                                                                <TextFieldHookForm
+                                                                    label=""
+                                                                    name={'NoOfCorrectRow'}
+                                                                    Controller={Controller}
+                                                                    title={titleObj.rowWithChanges}
+                                                                    control={control}
+                                                                    register={register}
+                                                                    rules={{ required: false }}
+                                                                    mandatory={false}
+                                                                    handleChange={() => { }}
+                                                                    defaultValue={''}
+                                                                    className=""
+                                                                    customClassName={'withBorder mn-height-auto hide-label mb-0'}
+                                                                    errors={errors.NoOfCorrectRow}
+                                                                    disabled={true}
+                                                                />
+                                                            </div>
+                                                            <div className="d-flex align-items-center">
+                                                                <label>Rows without changes:</label>
+                                                                <TextFieldHookForm
+                                                                    label=""
+                                                                    name={'NoOfRowsWithoutChange'}
+                                                                    title={titleObj.rowWithoutChanges}
+                                                                    Controller={Controller}
+                                                                    control={control}
+                                                                    register={register}
+                                                                    rules={{ required: false }}
+                                                                    mandatory={false}
+                                                                    handleChange={() => { }}
+                                                                    defaultValue={''}
+                                                                    className=""
+                                                                    customClassName={'withBorder mn-height-auto hide-label mb-0'}
+                                                                    errors={errors.NoOfRowsWithoutChange}
+                                                                    disabled={true}
+                                                                />
+                                                            </div>
+                                                        </>
+                                                    }
+                                                    {!isImpactedMaster && <div className={`d-flex align-items-center simulation-label-container`}>
+                                                        {list[0].CostingTypeId !== CBCTypeId && <div className='d-flex pl-3'>
+                                                            <label className='mr-1'>Vendor (Code):</label>
+                                                            <p title={list[0].Vendor} className='mr-2'>{list[0].Vendor ? list[0].Vendor : list[0]['Vendor (Code)']}</p>
+                                                        </div>}
+                                                        <button type="button" className={"apply"} onClick={cancel}> <div className={'back-icon'}></div>Back</button>
+                                                    </div>}
+                                                </div>
+                                            </div>
+                                            <div className="ag-theme-material p-relative" style={{ width: '100%' }}>
+                                                {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found simulation-lisitng" />}
+                                                {list && showTable && <AgGridReact
+                                                    ref={gridRef}
+                                                    floatingFilter={true}
+                                                    style={{ height: '100%', width: '100%' }}
+                                                    defaultColDef={defaultColDef}
+                                                    domLayout='autoHeight'
+                                                    // columnDefs={c}
+                                                    rowData={list}
+                                                    pagination={true}
+                                                    paginationPageSize={defaultPageSize}
+                                                    onGridReady={onGridReady}
+                                                    gridOptions={gridOptions}
+                                                    loadingOverlayComponent={'customLoadingOverlay'}
+                                                    noRowsOverlayComponent={'customNoRowsOverlay'}
+                                                    noRowsOverlayComponentParams={{
+                                                        title: EMPTY_DATA,
+                                                    }}
+                                                    frameworkComponents={frameworkComponents}
+                                                    suppressColumnVirtualisation={true}
+                                                    stopEditingWhenCellsLoseFocus={true}
+                                                    onFilterModified={onFloatingFilterChanged}
+                                                >
+                                                    {/* <AgGridColumn field="Technologies" editable='false' headerName="Technology" minWidth={190}></AgGridColumn> */}
+                                                    <AgGridColumn field="BoughtOutPartNumber" editable='false' headerName="Insert Part No" minWidth={140}></AgGridColumn>
+                                                    <AgGridColumn field="BoughtOutPartName" editable='false' headerName="Insert Part Name" minWidth={140}></AgGridColumn>
+                                                    {!isImpactedMaster && <AgGridColumn field="BoughtOutPartCategory" editable='false' headerName="BOP Category" minWidth={140}></AgGridColumn>}
+                                                    {!isImpactedMaster && list[0].CostingTypeId !== CBCTypeId && <AgGridColumn field="Vendor" editable='false' headerName="Vendor (Code)" minWidth={140} cellRenderer='vendorFormatter'></AgGridColumn>}
+                                                    {!isImpactedMaster && list[0].CostingTypeId === CBCTypeId && <AgGridColumn field="CustomerName" editable='false' headerName="Customer (Code)" minWidth={140} cellRenderer='customerFormatter'></AgGridColumn>}
+                                                    {!isImpactedMaster && <AgGridColumn field="Plants" editable='false' headerName="Plant (Code)" minWidth={140} cellRenderer='plantFormatter'></AgGridColumn>}
+
+                                                    <AgGridColumn headerClass="justify-content-center" cellClass="text-center" headerName={Number(selectedMasterForSimulation?.value) === 5 ? "Basic Rate (Currency)" : "Basic Rate (INR)"} marryChildren={true} width={240}>
+                                                        <AgGridColumn width={120} field="BasicRate" editable='false' cellRenderer='oldBasicRateFormatter' headerName="Existing" colId="BasicRate"></AgGridColumn>
+                                                        <AgGridColumn width={120} cellRenderer='newBasicRateFormatter' editable={!isImpactedMaster} onCellValueChanged='cellChange' valueGetter='data.BasicRate + (data.BasicRate * data.Percentage / 100)' field="NewBasicRate" headerName="Revised" colId='NewBasicRate' headerComponent={'revisedBasicRateHeader'}></AgGridColumn>
+                                                    </AgGridColumn>
+                                                    {!isImpactedMaster && <AgGridColumn width={120} editable={true} onCellValueChanged='cellChange' field="Percentage" colId='Percentage' cellRenderer='percentageFormatter'></AgGridColumn>}
+
+                                                    <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName={Number(selectedMasterForSimulation?.value) === 5 ? "Net Cost (Currency)" : "Net Cost (INR)"} marryChildren={true}>
+                                                        {/* {!isImpactedMaster &&<AgGridColumn width={120} field="OldNetLandedCost" editable='false' cellRenderer={'OldcostFormatter'} headerName="Old" colId='NetLandedCost'></AgGridColumn>} */}
+                                                        <AgGridColumn width={120} field="OldNetLandedCost" editable='false' cellRenderer={'OldcostFormatter'} headerName="Existing" colId='NetLandedCost'></AgGridColumn>
+                                                        <AgGridColumn width={120} field="NewNetLandedCost" editable='false' valueGetter='data.BasicRate + (data.BasicRate * data.Percentage / 100)' cellRenderer={'NewcostFormatter'} headerName="Revised" colId='NewNetLandedCost'></AgGridColumn>
+                                                    </AgGridColumn>
+
+                                                    <AgGridColumn field="EffectiveDate" headerName={props.isImpactedMaster && !props.lastRevision ? "Current Effective date" : "Effective Date"} editable='false' minWidth={150} cellRenderer='effectiveDateRenderer'></AgGridColumn>
+                                                    <AgGridColumn field="CostingId" hide={true}></AgGridColumn>
+
+
+                                                </AgGridReact>}
+
+                                                {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />}
+                                            </div>
+                                        </div>
+
+                                    </Col>
+                                </Row>
+                                {
+                                    !isImpactedMaster &&
+                                    <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
+                                        <div className="col-sm-12 text-right bluefooter-butn d-flex justify-content-end align-items-center">
+                                            <div className="inputbox date-section mr-3 verfiy-page">
+                                                <DatePicker
+                                                    name="EffectiveDate"
+                                                    selected={DayTime(effectiveDate).isValid() ? new Date(effectiveDate) : ''}
+                                                    onChange={handleEffectiveDateChange}
+                                                    showMonthDropdown
+                                                    showYearDropdown
+                                                    dateFormat="dd/MM/yyyy"
+                                                    minDate={new Date(maxDate)}
+                                                    placeholderText="Select effective date"
+                                                    className="withBorder"
+                                                    autoComplete={"off"}
+                                                    disabledKeyboardNavigation
+                                                    onChangeRaw={(e) => e.preventDefault()}
+                                                />
+                                                {isWarningMessageShow && <WarningMessage dClass={"error-message"} textClass={"pt-1"} message={"Please select effective date"} />}
+                                            </div>
+                                            <button onClick={verifySimulation} type="submit" className="user-btn mr5 save-btn" disabled={isDisable}>
+                                                <div className={"Run-icon"}>
+                                                </div>{" "}
+                                                {"Verify"}
+                                            </button>
+                                            {/* <button onClick={runSimulation} type="submit" className="user-btn mr5 save-btn"                    >
                                 <div className={"Run"}>
                                 </div>{" "}
                                 {"RUN SIMULATION"}
                             </button> */}
-                                </div>
-                            </Row>
+                                        </div>
+                                    </Row>
+                                }
+                            </Fragment>
+
                         }
-                    </Fragment>
+                        {
+                            showverifyPage &&
+                            <VerifySimulation token={token} cancelVerifyPage={cancelVerifyPage} />
+                        }
 
-                }
-                {
-                    showverifyPage &&
-                    <VerifySimulation token={token} cancelVerifyPage={cancelVerifyPage} />
-                }
-
-                {
-                    showMainSimulation && <Simulation isMasterSummaryDrawer={false} isCancelClicked={true} isRMPage={true} />
-                }
-                {
-                    showRunSimulationDrawer &&
-                    <RunSimulationDrawer
-                        isOpen={showRunSimulationDrawer}
-                        closeDrawer={closeDrawer}
-                        anchor={"right"}
-                    />
-                }
-            </div>
-        </div>
-    );
-}
+                        {
+                            showMainSimulation && <Simulation isMasterSummaryDrawer={false} isCancelClicked={true} isRMPage={true} />
+                        }
+                        {
+                            showRunSimulationDrawer &&
+                            <RunSimulationDrawer
+                                isOpen={showRunSimulationDrawer}
+                                closeDrawer={closeDrawer}
+                                anchor={"right"}
+                            />
+                        }
+                    </div>
+                </div>
+            );
+        }
 
 
-export default BDSimulation;
+        export default BDSimulation;
