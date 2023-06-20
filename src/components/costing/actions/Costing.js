@@ -2616,3 +2616,20 @@ export function getLabourDetailsByFilter(data, callback) {
     })
   }
 }
+
+
+export function checkPartNoExistInBop(data, callback) {
+  return (dispatch) => {
+    const queryParams = `partNumber=${data.partNumber}&plantId=${data.plantId}&vendorId=${data.vendorId}&customerId=${data.customerId}`
+    const request = axios.get(`${API.checkPartNoExistInBop}?${queryParams}`, config())
+    request.then((response) => {
+      if (response.data) {
+        callback(response)
+      }
+    }).catch((error) => {
+      callback(error)
+      dispatch({ type: API_FAILURE })
+      apiErrors(error)
+    })
+  }
+}
