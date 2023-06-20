@@ -239,8 +239,8 @@ function AddLabourCost(props) {
             obj.CycleTime = getValues('cycleTime') ? getValues('cycleTime') : ''
             obj.LabourCost = totalCost ? totalCost : ''
 
-            obj.Absentism = getValues('absentism') ? getValues('absentism') : ''
-            obj.NoofLabour = getValues('noOfLabour') ? getValues('noOfLabour') : ''
+            obj.AbsentismPercentage = getValues('absentism') ? getValues('absentism') : ''
+            obj.NumberOfLabour = getValues('noOfLabour') ? getValues('noOfLabour') : ''
             obj.LabourDetailId = labourDetailsId
 
             // If we're in edit mode, update the existing row with the new data.
@@ -253,7 +253,9 @@ function AddLabourCost(props) {
 
             // Update the table data in the Redux store and reset the form fields.
 
-
+            table[0].StaffCRMHead = getValues('StaffCRMHead') ? getValues('StaffCRMHead').label : ''
+            table[0].NetLabourCRMHead = getValues('NetLabourCRMHead') ? getValues('NetLabourCRMHead').label : ''
+            table[0].IndirectLabourCRMHead = getValues('IndirectLabourCRMHead') ? getValues('IndirectLabourCRMHead').label : ''
             setTableData(table)
             resetData()
             setIsEditMode(false)
@@ -304,6 +306,8 @@ function AddLabourCost(props) {
         setValue('noOfLabour', '')
         setDisableTotalCost(true)
         setTotalCost('')
+        setEditIndex('')
+        setIsEditMode(false)
     }
 
     // This function takes in two parameters - the index of the data being edited or deleted, and the operation to perform (either 'delete' or 'edit').
@@ -346,8 +350,8 @@ function AddLabourCost(props) {
             setValue('efficiency', Data.Efficiency)
             setValue('cycleTime', Data.CycleTime)
             setValue('labourCost', checkForDecimalAndNull(Data.LabourCost, initialConfiguration.NoOfDecimalForPrice))
-            setValue('absentism', Data.Absentism)
-            setValue('noOfLabour', Data.NoofLabour)
+            setValue('absentism', Data.AbsentismPercentage)
+            setValue('noOfLabour', Data.NumberOfLabour)
 
             setTotalCost(Data.LabourCost)
             if (Data.ConditionType === 'Fixed') {

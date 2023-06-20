@@ -47,8 +47,8 @@ function LabourCost(props) {
                                         <Fragment>
                                             <tr key={index}>
                                                 <td>{item.Description} </td>
-                                                <td> {checkForDecimalAndNull(item.NoofLabour, getConfigurationKey().NoOfDecimalForInputOutput)}</td>
-                                                <td> {checkForDecimalAndNull(item.Absentism, getConfigurationKey().NoOfDecimalForInputOutput)}</td>
+                                                <td> {checkForDecimalAndNull(item.NumberOfLabour, getConfigurationKey().NoOfDecimalForInputOutput)}</td>
+                                                <td> {checkForDecimalAndNull(item.AbsentismPercentage, getConfigurationKey().NoOfDecimalForInputOutput)}</td>
                                                 <td>{item.LabourRate} </td>
                                                 {<td>{checkForDecimalAndNull(item.WorkingTime, getConfigurationKey().NoOfDecimalForInputOutput)}</td>}
                                                 {<td>{checkForDecimalAndNull(item?.Efficiency)}</td>}
