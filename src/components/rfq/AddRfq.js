@@ -32,7 +32,7 @@ import DatePicker from 'react-datepicker'
 import { setHours, setMinutes } from 'date-fns';
 import { label } from 'react-dom-factories';
 import WarningMessage from '../common/WarningMessage';
-import { getRMGradeSelectListByRawMaterial, getRawMaterialNameChild } from '../masters/actions/Material';
+import { clearGradeSelectList, clearSpecificationSelectList, getRMGradeSelectListByRawMaterial, getRawMaterialNameChild } from '../masters/actions/Material';
 
 const gridOptions = {};
 
@@ -741,6 +741,8 @@ function AddRfq(props) {
                 setRMName('')
                 setRMGrade('')
                 setRMSpecification('')
+                dispatch(clearGradeSelectList([]))
+                dispatch(clearSpecificationSelectList([]))
             }))
         }
     }

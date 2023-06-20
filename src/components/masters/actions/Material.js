@@ -48,7 +48,9 @@ import {
     GET_ALL_MASTER_APPROVAL_DEPARTMENT,
     EMPTY_GUID,
     BUDGET_ID,
-    GET_VOLUME_DATA_LIST
+    GET_VOLUME_DATA_LIST,
+    GET_SPECIFICATION_SELECTLIST_SUCCESS,
+    GET_RM_SPECIFICATION_LIST_SUCCESS
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
 import Toaster from '../../common/Toaster';
@@ -1603,6 +1605,7 @@ export function getMasterApprovalSummary(tokenNo, approvalProcessId, masterId, c
             })
     }
 }
+
 export function clearGradeSelectList(data) {
     return (dispatch) => {
         dispatch({
@@ -1611,3 +1614,14 @@ export function clearGradeSelectList(data) {
         })
     }
 }
+
+export function clearSpecificationSelectList(data) {
+    return (dispatch) => {
+        dispatch({
+            type: GET_RM_SPECIFICATION_LIST_SUCCESS,
+            payload: data
+        })
+    }
+}
+
+// CIR-I4898
