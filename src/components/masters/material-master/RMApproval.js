@@ -16,7 +16,6 @@ import MasterSendForApproval from '../MasterSendForApproval';
 import WarningMessage from '../../common/WarningMessage';
 import { debounce } from 'lodash'
 import Toaster from '../../common/Toaster'
-import { masterFinalLevelUser } from '../actions/Material'
 import { PaginationWrapper } from '../../common/commonPagination';
 
 const gridOptions = {};
@@ -44,11 +43,6 @@ function RMApproval(props) {
             LoggedInUserLevelId: userDetails().LoggedInMasterLevelId,
             LoggedInUserId: loggedInUserId()
         }
-        dispatch(masterFinalLevelUser(obj, (res) => {
-            if (res.data.Result) {
-                setIsFinalApprover(res.data.Data.IsFinalApprovar)
-            }
-        }))
     }, [])
 
     var filterParams = {
