@@ -83,7 +83,7 @@ function BDSimulation(props) {
 
     useEffect(() => {
         if (list && list.length > 0) {
-            window.screen.width >= 1920 && gridRef.current.api.sizeColumnsToFit();
+            window.screen.width >= 1920 && gridRef?.current?.api?.sizeColumnsToFit();
             if (isImpactedMaster) {
                 gridRef?.current?.api?.sizeColumnsToFit();
             }
