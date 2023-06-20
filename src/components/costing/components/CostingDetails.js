@@ -966,7 +966,7 @@ function CostingDetails(props) {
         CustomerId: type === CBCTypeId ? tempData.CustomerId : EMPTY_GUID,
         CustomerName: type === CBCTypeId ? tempData.CustomerName : '',
       }
-      if (IdForMultiTechnology.includes(technology?.value)) {
+      if (IdForMultiTechnology.includes(technology?.value) || (type === WACTypeId)) {
         data.Technology = technology.label
         data.CostingHead = "string"
         data.IsVendor = true
@@ -979,7 +979,11 @@ function CostingDetails(props) {
         data.CustomerCode = type === CBCTypeId ? tempData.CustomerCode : ''
       }
 
-      if (IdForMultiTechnology.includes(technology?.value)) {
+      if (type === WACTypeId) {
+        data.PlantCode = tempData.PlantCode
+      }
+
+      if (IdForMultiTechnology.includes(technology?.value) || (type === WACTypeId)) {
         dispatch(createMultiTechnologyCosting(data, (res) => {
           if (res.data.Result) {
             dispatch(getBriefCostingById(res.data.Data.CostingId, () => {
@@ -992,7 +996,7 @@ function CostingDetails(props) {
             setPartInfo(res.data.Data)
             setCostingData({ costingId: res.data.Data.CostingId, type })
           }
-        }),)
+        }))
       } else {
         dispatch(createCosting(data, (res) => {
           if (res.data.Result) {
@@ -1006,7 +1010,7 @@ function CostingDetails(props) {
             setPartInfo(res.data.Data)
             setCostingData({ costingId: res.data.Data.CostingId, type })
           }
-        }),)
+        }))
       }
     }
     else {
