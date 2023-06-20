@@ -469,7 +469,7 @@ function CostingSimulation(props) {
             gridApi.deselectAll()
             Toaster.warning(<div>{approvalLockArray}</div>)
             setTimeout(() => {
-                document.getElementsByClassName('custom-toaster')[0].classList.add('custom-class')
+                document?.getElementsByClassName('custom-toaster')[0]?.classList?.add('custom-class')
             }, 200);
             return false
         }
@@ -753,6 +753,13 @@ function CostingSimulation(props) {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         const temp = row.IsMultiProcess === true ? 'Multiple Process' : cell
         return cell != null ? temp : '-';
+    }
+
+    const varianceFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        let value = row?.OldBOPRate - row?.NewBOPRate
+        return cell != null ? checkForDecimalAndNull(value, getConfigurationKey().NoOfDecimalForPrice) : '-';
     }
 
     const oldSTFormatter = (props) => {
