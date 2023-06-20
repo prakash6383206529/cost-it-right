@@ -476,6 +476,7 @@ export const API = {
   saveCostingLabourDetails: `${BASE_URL}/costing/save-costing-labour-details`,
   getCostingLabourDetails: `${BASE_URL}/costing/get-costing-labour-details`,
   getLabourDetailsByFilter: `${BASE_URL}/masters-labour/get-all-by-filter`,
+  checkPartNoExistInBop: `${BASE_URL}/masters-bought-out-part/check-part-number-exist-in-bought-out-parts-against-vendor`,
 
   getRMCCTabData: `${BASE_URL}/costing/get-costing-detail-for-rm-bop-cc`,
   getRMDrawerDataList: `${BASE_URL}/costing/get-costing-raw-materials-detail`,
