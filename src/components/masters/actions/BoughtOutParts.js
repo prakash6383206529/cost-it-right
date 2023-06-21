@@ -398,6 +398,25 @@ export function fileDeleteBOPDomestic(data, callback) {
 }
 
 /**
+ * @method bulkUploadBOP
+ * @description upload bulk BOP Domestic ZBC
+ */
+export function bulkUploadBOP(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.bulkUploadBOP, data, config());
+        request.then((response) => {
+            if (response.status === 200) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+            callback(error);
+        });
+    };
+}
+
+/**
  * @method bulkUploadBOPDomesticZBC
  * @description upload bulk BOP Domestic ZBC
  */
