@@ -6,7 +6,7 @@ import {
 import { Table, } from 'reactstrap';
 import NoContentFound from "../../common/NoContentFound";
 import { EMPTY_DATA, NFR } from "../../../config/constants";
-import { renderActionCommon } from "../userUtil"
+import { renderActionCommon } from "../../user/userUtil"
 
 class NfrTab extends Component {
     constructor(props) {

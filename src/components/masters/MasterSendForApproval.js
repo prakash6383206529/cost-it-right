@@ -1,9 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { checkForDecimalAndNull, getConfigurationKey, loggedInUserId, userDetails, labelWithUOMAndCurrency, displayUOM, userSimulationTechnologyLevelDetails } from '../../helper';
 import { approvalOrRejectRequestByMasterApprove, getAllMasterApprovalDepartment, getAllMasterApprovalUserByDepartment, masterApprovalRequestBySender } from './actions/Material';
-import { masterApprovalRequestBySenderBop } from './actions/BoughtOutParts'
-import { masterApprovalRequestBySenderOperation } from './actions/OtherOperation'
-import { masterApprovalRequestBySenderMachine } from './actions/MachineMaster'
 import "react-datepicker/dist/react-datepicker.css";
 import { debounce } from 'lodash'
 import { Container, Row, Col } from 'reactstrap'
@@ -224,7 +221,7 @@ function MasterSendForApproval(props) {
                     senderObj.EntityList = tempArray
 
                     //THIS CONDITION IS FOR SIMULATION SEND FOR APPROVAL
-                    dispatch(masterApprovalRequestBySenderBop(senderObj, res => {
+                    dispatch(masterApprovalAPI(senderObj, res => {
                         setIsDisable(false)
                         if (res?.data?.Result) {
                             Toaster.success('BOP has been sent for approval.')
@@ -247,7 +244,7 @@ function MasterSendForApproval(props) {
                     senderObj.EntityList = tempArray
 
                     //THIS CONDITION IS FOR SIMULATION SEND FOR APPROVAL
-                    dispatch(masterApprovalRequestBySenderOperation(senderObj, res => {
+                    dispatch(masterApprovalAPI(senderObj, res => {
                         setIsDisable(false)
                         if (res?.data?.Result) {
                             Toaster.success('Operation has been sent for approval.')
@@ -270,7 +267,7 @@ function MasterSendForApproval(props) {
                     senderObj.EntityList = tempArray
 
                     //THIS CONDITION IS FOR SIMULATION SEND FOR APPROVAL
-                    dispatch(masterApprovalRequestBySenderMachine(senderObj, res => {
+                    dispatch(masterApprovalAPI(senderObj, res => {
                         setIsDisable(false)
                         if (res?.data?.Result) {
                             Toaster.success('Machine has been sent for approval.')
