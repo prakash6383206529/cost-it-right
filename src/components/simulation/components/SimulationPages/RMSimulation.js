@@ -113,7 +113,7 @@ function RMSimulation(props) {
                 tempObj.RawMaterialSpecification = item.RawMaterialSpecificationName
                 tempObj.RawMaterialCategory = item.Category
                 tempObj.UOM = item.UnitOfMeasurementName
-                tempObj.OldBasicRate = item.BasicRatePerUOM
+                tempObj.OldBasicRate = isbulkUpload ? item.BasicRate : item.BasicRatePerUOM
                 tempObj.NewBasicRate = item.NewBasicRate ? item.NewBasicRate : item.BasicRate
                 tempObj.OldScrapRate = item.ScrapRate
                 tempObj.NewScrapRate = item.NewScrapRate ? item.NewScrapRate : item.ScrapRate
