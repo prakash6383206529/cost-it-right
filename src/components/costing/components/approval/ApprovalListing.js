@@ -267,6 +267,7 @@ function ApprovalListing(props) {
             return temp
           })
           setloader(false)
+          dispatch(dashboardTabLock(false))
           //  setTableData(Data)
 
           if (res) {

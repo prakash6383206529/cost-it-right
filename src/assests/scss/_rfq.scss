@@ -72,3 +72,14 @@
         }
     }
 }
+
+.rfq-calendar {
+    .react-datepicker {
+        display: flex;
+    }
+}
+
+.font-ellipsis {
+    overflow: hidden;
+    text-overflow: ellipsis;
+}

@@ -1069,7 +1069,7 @@ const SendForApproval = (props) => {
                           PreviewComponent={Preview}
                           mandatory={true}
                           //onSubmit={this.handleSubmit}
-                          accept="*"
+                          accept="image/jpeg,image/jpg,image/png,image/PNG,.xls,.doc,.pdf,.xlsx"
                           initialFiles={[]}
                           maxFiles={4}
                           maxSizeBytes={2000000000}

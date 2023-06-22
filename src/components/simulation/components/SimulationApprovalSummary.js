@@ -658,6 +658,11 @@ function SimulationApprovalSummary(props) {
         return temp
     }
 
+    const percentageFormatter = (props) => {
+        const cell = props?.value;
+        return cell != null ? checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice) : ''
+    }
+
     const viewAssembly = (cell, row, rowIndex) => {
         const data = row
         setDataForAssemblyImpact(data)
@@ -920,7 +925,8 @@ function SimulationApprovalSummary(props) {
         processNameFormatter: processNameFormatter,
         decimalFormatter: decimalFormatter,
         processFormatter: processFormatter,
-        processVarianceFormatter: processVarianceFormatter
+        processVarianceFormatter: processVarianceFormatter,
+        percentageFormatter: percentageFormatter
     };
     const deleteFile = (FileId, OriginalFileName) => {
         if (FileId != null) {
@@ -1208,6 +1214,7 @@ function SimulationApprovalSummary(props) {
                                                                 {(isBOPDomesticOrImport || keysForDownloadSummary.IsBoughtOutPartSimulation) && isMasterAssociatedWithCosting && <AgGridColumn width={140} field="BoughtOutPartNumber" headerName="Bought Out Part Number" cellRenderer='bopNumberFormatter'></AgGridColumn>}
                                                                 {(isBOPDomesticOrImport || keysForDownloadSummary.IsBoughtOutPartSimulation) && <AgGridColumn width={140} field="OldNetBoughtOutPartCost" headerName={`Existing BOP ${isMasterAssociatedWithCosting ? 'Cost' : 'Rate'}`} cellRenderer='oldBOPFormatter' ></AgGridColumn>}
                                                                 {(isBOPDomesticOrImport || keysForDownloadSummary.IsBoughtOutPartSimulation) && <AgGridColumn width={140} field="NewNetBoughtOutPartCost" headerName="Revised BOP Cost" cellRenderer='newBOPFormatter'></AgGridColumn>}
+                                                                {(isBOPDomesticOrImport || keysForDownloadSummary.IsBoughtOutPartSimulation) && <AgGridColumn width={140} field="PercentageChange" headerName="Percentage" cellRenderer='percentageFormatter'></AgGridColumn>}
                                                                 {(isBOPDomesticOrImport || keysForDownloadSummary.IsBoughtOutPartSimulation) && <AgGridColumn width={140} field="NetBoughtOutPartCostVariance" headerName="Variance (BOP Cost)" cellRenderer='BOPVarianceFormatter' ></AgGridColumn>}
 
                                                                 {(isMachineRate || keysForDownloadSummary.IsMachineProcessSimulation) && <AgGridColumn width={140} field="OldNetProcessCost" headerName="Existing Net Process Cost" cellRenderer='processFormatter' ></AgGridColumn>}
@@ -1301,7 +1308,7 @@ function SimulationApprovalSummary(props) {
                                         onChangeStatus={handleChangeStatus}
                                         PreviewComponent={Preview}
                                         // onSubmit={handleImapctSubmit}
-                                        accept="*"
+                                        accept="image/jpeg,image/jpg,image/png,image/PNG,.xls,.doc,.pdf,.xlsx"
                                         initialFiles={[]}
                                         maxFiles={4}
                                         maxSizeBytes={2000000000}

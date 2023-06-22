@@ -368,8 +368,11 @@ class AddIndivisualPart extends Component {
         String(DataToCheck.RevisionNumber) !== String(values.RevisionNumber) || String(DataToCheck.DrawingNumber) !== String(values.DrawingNumber)
         || String(oldProductGroup) !== String(ProductGroup))) {
         // IF THERE ARE CHANGES ,THEN REVISION NO SHOULD BE CHANGED
-        if (String(DataToCheck.RevisionNumber).toLowerCase() === String(values.RevisionNumber).toLowerCase() || DayTime(DataToCheck.EffectiveDate).format('YYYY-MM-DD HH:mm:ss') === DayTime(this.state.effectiveDate).format('YYYY-MM-DD HH:mm:ss') || String(DataToCheck.ECNNumber).toLowerCase() === String(values.ECNNumber).toLowerCase()) {
-          Toaster.warning('Please edit Revision no, ECN no, and Effective date')
+        if (DayTime(DataToCheck.EffectiveDate).format('YYYY-MM-DD HH:mm:ss') === DayTime(this.state.effectiveDate).format('YYYY-MM-DD HH:mm:ss')) {
+          Toaster.warning('Please edit Revision no or ECN no, and Effective date')
+          return false
+        } else if ((DayTime(DataToCheck.EffectiveDate).format('YYYY-MM-DD HH:mm:ss') !== DayTime(this.state.effectiveDate).format('YYYY-MM-DD HH:mm:ss')) && (String(DataToCheck.RevisionNumber).toLowerCase() === String(values.RevisionNumber).toLowerCase() && String(DataToCheck.ECNNumber).toLowerCase() === String(values.ECNNumber).toLowerCase())) {
+          Toaster.warning('Please edit Revision no or ECN no, and Effective date')
           return false
         } else {
           isStructureChanges = true
@@ -705,7 +708,7 @@ class AddIndivisualPart extends Component {
                                 ref={this.dropzone}
                                 onChangeStatus={this.handleChangeStatus}
                                 PreviewComponent={this.Preview}
-                                accept="*"
+                                accept="image/jpeg,image/jpg,image/png,image/PNG,.xls,.doc,.pdf,.xlsx"
                                 initialFiles={this.state.initialFiles}
                                 maxFiles={3}
                                 disabled={isViewMode}
