@@ -2241,7 +2241,7 @@ class AddMoreDetails extends Component {
         PowerCRMHead: crmHeads.PowerCRMHead ? crmHeads.PowerCRMHead : '',
         FuelCRMHead: crmHeads.FuelCRMHead ? crmHeads.FuelCRMHead : ''
       }
-
+      let obj = {}
       let finalObj = {
 
         MachineProcessRates: processGrid,
