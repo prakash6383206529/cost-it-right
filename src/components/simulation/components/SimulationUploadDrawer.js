@@ -204,11 +204,15 @@ class SimulationUploadDrawer extends Component {
                                             } else if (fileHeads[i] === 'RevisedScrapRate') {
                                                 obj["NewScrapRate"] = el;
                                             } else if (fileHeads[i] === "Grade") {
-                                                obj["RMGrade"] = el;
+                                                obj["RawMaterialGradeName"] = el;
                                             } else if (fileHeads[i] === "Spec") {
-                                                obj["RMSpec"] = el;
+                                                obj["RawMaterialSpecificationName"] = el;
                                             } else if (fileHeads[i] === "Code") {
                                                 obj["RawMaterialCode"] = el;
+                                            } else if (fileHeads[i] === "RawMaterial") {
+                                                obj["RawMaterialName"] = el;
+                                            } else if (fileHeads[i] === "UOM") {
+                                                obj["UnitOfMeasurementName"] = el;
                                             } else {
                                                 obj[fileHeads[i]] = el;
                                             }

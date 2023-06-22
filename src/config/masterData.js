@@ -3888,56 +3888,52 @@ export const RMDomesticSimulation = [
     // ******* RMShearingCost AND RMFreightCost WILL NOT COME IN RE *****
 
     { label: "CostingHead", value: "CostingHead" },
-    { label: "RawMaterial", value: "RawMaterial" },
-    { label: "Grade", value: "RMGrade" },
-    { label: "Spec", value: "RMSpec" },
+    { label: "RawMaterial", value: "RawMaterialName" },
+    { label: "Grade", value: "RawMaterialGradeName" },
+    { label: "Spec", value: "RawMaterialSpecificationName" },
     { label: "Code", value: "RawMaterialCode", },
     { label: "Category", value: "Category" },
     { label: "TechnologyName", value: "TechnologyName" },
-    { label: "Plant (Code)", value: "Plant" },
+    { label: "Plant (Code)", value: "DestinationPlantName" },
     { label: "Vendor (Code)", value: "VendorName" },
     { label: "VendorLocation", value: "VendorLocation" },
     { label: "Customer (Code)", value: "CustomerName" },
-    { label: "UOM", value: "UOM" },
-    { label: "BasicRate", value: "BasicRate" },
+    { label: "UOM", value: "UnitOfMeasurementName" },
+    { label: "BasicRate", value: "BasicRatePerUOM" },
     { label: 'RevisedBasicRate', value: 'NewBasicRate' },
     { label: "ScrapRate", value: "ScrapRate" },
     { label: 'RevisedScrapRate', value: 'NewScrapRate' },
     { label: "NetLandedCost", value: "NetLandedCost" },
     { label: "EffectiveDate", value: "EffectiveDate" },
     { label: "RawMaterialId", value: "RawMaterialId" },
-    { label: "VendorId", value: "VendorId" },
-    { label: "PlantId", value: "PlantId" },
+    { label: "VendorId", value: "Vendor" },
+    { label: "PlantId", value: "DestinationPlantId" },
     { label: "CostingTypeId", value: "CostingTypeId" }
-
-
 ]
 
 export const RMImportSimulation = [
     { label: "CostingHead", value: "CostingHead" },
-    { label: "RawMaterial", value: "RawMaterial" },
-    { label: "Grade", value: "RMGrade" },
-    { label: "Spec", value: "RMSpec" },
+    { label: "RawMaterial", value: "RawMaterialName" },
+    { label: "Grade", value: "RawMaterialGradeName" },
+    { label: "Spec", value: "RawMaterialSpecificationName" },
     { label: "Code", value: "RawMaterialCode", },
     { label: "Category", value: "Category" },
     { label: "TechnologyName", value: "TechnologyName" },
-    { label: "Plant (Code)", value: "Plant" },
+    { label: "Plant (Code)", value: "DestinationPlantName" },
     { label: "Vendor (Code)", value: "VendorName" },
     { label: "VendorLocation", value: "VendorLocation" },
     { label: "Customer (Code)", value: "CustomerName" },
-    { label: "UOM", value: "UOM" },
-    { label: "BasicRate", value: "BasicRate" },
+    { label: "UOM", value: "UnitOfMeasurementName" },
+    { label: "BasicRate", value: "BasicRatePerUOM" },
     { label: 'RevisedBasicRate', value: 'NewBasicRate' },
     { label: "ScrapRate", value: "ScrapRate" },
     { label: 'RevisedScrapRate', value: 'NewScrapRate' },
     { label: "NetLandedCost", value: "NetLandedCost" },
     { label: "EffectiveDate", value: "EffectiveDate" },
     { label: "RawMaterialId", value: "RawMaterialId" },
-    { label: "VendorId", value: "VendorId" },
-    { label: "PlantId", value: "PlantId" },
-    { label: "RMCode", value: "RawMaterialCode", },
+    { label: "VendorId", value: "Vendor" },
+    { label: "PlantId", value: "DestinationPlantId" },
     { label: "CostingTypeId", value: "CostingTypeId" }
-
 ]
 
 export const SurfaceTreatmentSimulation = [
@@ -3975,12 +3971,12 @@ export const OperationSimulation = [
 
 export const MachineRateSimulation = [
     { label: "CostingHead", value: "CostingHead" },
-    { label: "Technologies", value: "Technologies" },
+    { label: "Technology", value: "Technology" },
     { label: "MachineName", value: "MachineName", },
     { label: "MachineNumber", value: "MachineNumber", },
     { label: "MachineTypeName", value: "MachineTypeName" },
     { label: "Vendor (Code)", value: "VendorName" },
-    { label: "Plant (Code)", value: "Plants" },
+    { label: "Plant (Code)", value: "Plant" },
     { label: "Customer (Code)", value: "CustomerName" },
     { label: "MachineTonnage", value: "MachineTonnage" },
     { label: "ProcessName", value: "ProcessName" },
@@ -4000,6 +3996,7 @@ export const BOPDomesticSimulation = [
     { label: "Plant (Code)", value: "Plants", },
     { label: "Vendor (Code)", value: "Vendor" },
     { label: "Customer (Code)", value: "CustomerName" },
+    { label: "Percentage", value: "Percentage" },
     { label: "BasicRate", value: "BasicRate" },
     { label: "RevisedBasicRate", value: "NewBasicRate" },
     { label: "NetLandedCost", value: "NetLandedCost" },
@@ -4016,6 +4013,7 @@ export const BOPImportSimulation = [
     { label: "Plant (Code)", value: "Plants", },
     { label: "Vendor (Code)", value: "Vendor" },
     { label: "Customer (Code)", value: "CustomerName" },
+    { label: "Percentage", value: "Percentage" },
     { label: "BasicRate", value: "BasicRate" },
     { label: "RevisedBasicRate", value: "NewBasicRate" },
     { label: "NetLandedCost", value: "NetLandedCost" },
@@ -5834,7 +5832,7 @@ export const BoughtOutPartDomesticFileHeads = ['CostingHead', 'BoughtOutPartNumb
 
 export const BoughtOutPartImportFileHeads = ['CostingHead', 'BoughtOutPartNumber', 'BoughtOutPartName', 'BoughtOutPartCategory']
 
-export const MachineRateFileHeads = ['CostingHead', 'Technologies', 'MachineName', 'MachineNumber']
+export const MachineRateFileHeads = ['CostingHead', 'Technology', 'MachineName', 'MachineNumber']
 
 export const CombinedProcessFileHeads = ['TechnologyName', 'PartName', 'PartNumber', 'PlantName', 'ConversionCost']
 
