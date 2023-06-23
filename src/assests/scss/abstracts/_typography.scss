@@ -86,6 +86,10 @@ $max: 150;
     .custom-min-height-#{$customWidth} {
         min-height: $customWidth;
     }
+
+    .font-size-#{$i} {
+        font-size: $i * 1px;
+    }
 }
 
 .colorWhite {

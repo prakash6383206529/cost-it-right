@@ -2435,6 +2435,7 @@ export const GRADE = 'Grade';
 export const SPECIFICATION = 'Specification';
 export const DATE = 'Created Date';
 export const EMPTY_DATA = 'No Record Found';
+export const DATE_TYPE = 'Date';
 
 export const LEVEL0 = 'L0';
 export const LEVEL1 = 'L1';

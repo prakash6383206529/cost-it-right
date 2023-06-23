@@ -1,331 +1,776 @@
-import React, { useState, useEffect } from 'react'
-import { Row, Col } from 'reactstrap'
-import NoContentFound from '../../../common/NoContentFound'
-import { AgGridColumn, AgGridReact } from 'ag-grid-react';
-import 'ag-grid-community/dist/styles/ag-grid.css';
-import 'ag-grid-community/dist/styles/ag-theme-material.css';
-import { EMPTY_DATA, EMPTY_GUID, GOT_GIVEN_REPORT } from '../../../../config/constants';
-import LoaderCustom from '../../../common/LoaderCustom';
-import { useDispatch, useSelector } from 'react-redux';
-import { getGotAndGivenDetails } from '../../actions/ReportListing';
-import { checkForDecimalAndNull, formViewData } from '../../../../helper';
-import CostingDetailSimulationDrawer from '../../../simulation/components/CostingDetailSimulationDrawer';
-import { getSingleCostingDetails, setCostingViewData } from '../../../costing/actions/Costing';
-import ReactExport from 'react-export-excel';
-import { GOT_GIVEN_EXCEL_TEMPLATE } from '../../ExcelTemplate';
-const ExcelFile = ReactExport.ExcelFile;
-const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
-const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
-const gridOptions = {};
+import React from 'react';
+import { useSelector } from 'react-redux';
+import { Table } from 'reactstrap';
+import { checkForDecimalAndNull } from '../../../../helper';
+import DayTime from '../../../common/DayTimeWrapper';
+import { DATE_TYPE } from '../../../../config/constants';
+import { useState } from 'react';
+import { useEffect } from 'react';
+const DUMMY_DATA = {
+    "BaseCostingId": "00000000-0000-0000-0000-000000000000",
+    "CostingNumber": "string",
+    "CostingEffectiveDate": "2023-06-22T11:12:00.057Z",
+    "Month": "string",
+    "PartNumber": "string",
+    "PartName": "string",
+    "Mod": "string",
+    "Plant": "string",
+    "PlantName": "string",
+    "PlantCode": "string",
+    "PlantAddress": "string",
+    "Vendor": "string",
+    "VendorName": "string",
+    "VendorCode": "string",
+    "Customer": "string",
+    "CustomerName": "string",
+    "CustomerCode": "string",
+    "BudgetedQuantity": 0,
+    "ApprovedQuantity": 0,
+    "GotDetails": {
+        "HeadWiseCostingDetails": {
+            "BaseCostingId": "00000000-0000-0000-0000-000000000000",
+            "CostingNumber": "string",
+            "CostingEffectiveDate": "2023-06-22T11:12:00.057Z",
+            "Month": "string",
+            "PartNumber": "string",
+            "PartName": "string",
+            "Mod": "string",
+            "Plant": "string",
+            "PlantName": "string",
+            "PlantCode": "string",
+            "PlantAddress": "string",
+            "Vendor": "string",
+            "VendorName": "string",
+            "VendorCode": "string",
+            "Customer": "string",
+            "CustomerName": "string",
+            "CustomerCode": "string",
+            "BudgetedQuantity": 0,
+            "ApprovedQuantity": 0,
+            "CurrentTentativeSaleRate": "string",
+            "RawMaterialEffectiveDate": "2023-06-22T11:12:00.057Z",
+            "NetPOPrice": 0,
+            "ProvisionPrice": 0,
+            "NetSales": 0,
+            "Consumption": 0,
+            "LabourCost": 0,
+            "ManufacturingExpenses": 0,
+            "OfficeExpenses": 0,
+            "RepairsExpenses": 0,
+            "SellingAndDistributionExpenses": 0,
+            "CommonExpenses": 0,
+            "StaffCost": 0,
+            "EBIDTA": 0,
+            "FinanceCost": 0,
+            "Depreciation": 0,
+            "PBT": 0,
+            "Amortization": 0
+        },
+        "HeadWiseSurfaceTreatmentDetails": {
+            "BaseCostingId": "00000000-0000-0000-0000-000000000000",
+            "CostingNumber": "string",
+            "CostingEffectiveDate": "2023-06-22T11:12:00.057Z",
+            "Month": "string",
+            "PartNumber": "string",
+            "PartName": "string",
+            "Mod": "string",
+            "Plant": "string",
+            "PlantName": "string",
+            "PlantCode": "string",
+            "PlantAddress": "string",
+            "Vendor": "string",
+            "VendorName": "string",
+            "VendorCode": "string",
+            "Customer": "string",
+            "CustomerName": "string",
+            "CustomerCode": "string",
+            "BudgetedQuantity": 0,
+            "ApprovedQuantity": 0,
+            "CurrentTentativeSaleRate": "string",
+            "RawMaterialEffectiveDate": "2023-06-22T11:12:00.057Z",
+            "NetPOPrice": 0,
+            "ProvisionPrice": 0,
+            "NetSales": 0,
+            "Consumption": 0,
+            "LabourCost": 0,
+            "ManufacturingExpenses": 0,
+            "OfficeExpenses": 0,
+            "RepairsExpenses": 0,
+            "SellingAndDistributionExpenses": 0,
+            "CommonExpenses": 0,
+            "StaffCost": 0,
+            "EBIDTA": 0,
+            "FinanceCost": 0,
+            "Depreciation": 0,
+            "PBT": 0,
+            "Amortization": 0
+        },
+        "HeadWiseCostingAndSurfaceTreatmentSumDetails": {
+            "BaseCostingId": "00000000-0000-0000-0000-000000000000",
+            "CostingNumber": "string",
+            "CostingEffectiveDate": "2023-06-22T11:12:00.057Z",
+            "Month": "string",
+            "PartNumber": "string",
+            "PartName": "string",
+            "Mod": "string",
+            "Plant": "string",
+            "PlantName": "string",
+            "PlantCode": "string",
+            "PlantAddress": "string",
+            "Vendor": "string",
+            "VendorName": "string",
+            "VendorCode": "string",
+            "Customer": "string",
+            "CustomerName": "string",
+            "CustomerCode": "string",
+            "BudgetedQuantity": 0,
+            "ApprovedQuantity": 0,
+            "CurrentTentativeSaleRate": "string",
+            "RawMaterialEffectiveDate": "2023-06-22T11:12:00.057Z",
+            "NetPOPrice": 0,
+            "ProvisionPrice": 0,
+            "NetSales": 0,
+            "Consumption": 0,
+            "LabourCost": 0,
+            "ManufacturingExpenses": 0,
+            "OfficeExpenses": 0,
+            "RepairsExpenses": 0,
+            "SellingAndDistributionExpenses": 0,
+            "CommonExpenses": 0,
+            "StaffCost": 0,
+            "EBIDTA": 0,
+            "FinanceCost": 0,
+            "Depreciation": 0,
+            "PBT": 0,
+            "Amortization": 0
+        },
+        "BudgetedHeadWiseCostingDetails": {
+            "BaseCostingId": "00000000-0000-0000-0000-000000000000",
+            "CostingNumber": "string",
+            "CostingEffectiveDate": "2023-06-22T11:12:00.057Z",
+            "Month": "string",
+            "PartNumber": "string",
+            "PartName": "string",
+            "Mod": "string",
+            "Plant": "string",
+            "PlantName": "string",
+            "PlantCode": "string",
+            "PlantAddress": "string",
+            "Vendor": "string",
+            "VendorName": "string",
+            "VendorCode": "string",
+            "Customer": "string",
+            "CustomerName": "string",
+            "CustomerCode": "string",
+            "BudgetedQuantity": 0,
+            "ApprovedQuantity": 0,
+            "CurrentTentativeSaleRate": "string",
+            "RawMaterialEffectiveDate": "2023-06-22T11:12:00.057Z",
+            "NetPOPrice": 0,
+            "ProvisionPrice": 0,
+            "NetSales": 0,
+            "Consumption": 0,
+            "LabourCost": 0,
+            "ManufacturingExpenses": 0,
+            "OfficeExpenses": 0,
+            "RepairsExpenses": 0,
+            "SellingAndDistributionExpenses": 0,
+            "CommonExpenses": 0,
+            "StaffCost": 0,
+            "EBIDTA": 0,
+            "FinanceCost": 0,
+            "Depreciation": 0,
+            "PBT": 0,
+            "Amortization": 0
+        },
+        "ApprovedHeadWiseCostingDetails": {
+            "BaseCostingId": "00000000-0000-0000-0000-000000000000",
+            "CostingNumber": "string",
+            "CostingEffectiveDate": "2023-06-22T11:12:00.057Z",
+            "Month": "string",
+            "PartNumber": "string",
+            "PartName": "string",
+            "Mod": "string",
+            "Plant": "string",
+            "PlantName": "string",
+            "PlantCode": "string",
+            "PlantAddress": "string",
+            "Vendor": "string",
+            "VendorName": "string",
+            "VendorCode": "string",
+            "Customer": "string",
+            "CustomerName": "string",
+            "CustomerCode": "string",
+            "BudgetedQuantity": 0,
+            "ApprovedQuantity": 0,
+            "CurrentTentativeSaleRate": "string",
+            "RawMaterialEffectiveDate": "2023-06-22T11:12:00.057Z",
+            "NetPOPrice": 0,
+            "ProvisionPrice": 0,
+            "NetSales": 0,
+            "Consumption": 0,
+            "LabourCost": 0,
+            "ManufacturingExpenses": 0,
+            "OfficeExpenses": 0,
+            "RepairsExpenses": 0,
+            "SellingAndDistributionExpenses": 0,
+            "CommonExpenses": 0,
+            "StaffCost": 0,
+            "EBIDTA": 0,
+            "FinanceCost": 0,
+            "Depreciation": 0,
+            "PBT": 0,
+            "Amortization": 0
+        }
+    },
+    "GivenDetails": {
+        "HeadWiseCostingDetails": {
+            "BaseCostingId": "00000000-0000-0000-0000-000000000000",
+            "CostingNumber": "string",
+            "CostingEffectiveDate": "2023-06-22T11:12:00.057Z",
+            "Month": "string",
+            "PartNumber": "string",
+            "PartName": "string",
+            "Mod": "string",
+            "Plant": "string",
+            "PlantName": "string",
+            "PlantCode": "string",
+            "PlantAddress": "string",
+            "Vendor": "string",
+            "VendorName": "string",
+            "VendorCode": "string",
+            "Customer": "string",
+            "CustomerName": "string",
+            "CustomerCode": "string",
+            "BudgetedQuantity": 0,
+            "ApprovedQuantity": 0,
+            "CurrentTentativeSaleRate": "string",
+            "RawMaterialEffectiveDate": "2023-06-22T11:12:00.057Z",
+            "NetPOPrice": 0,
+            "ProvisionPrice": 0,
+            "NetSales": 0,
+            "Consumption": 0,
+            "LabourCost": 0,
+            "ManufacturingExpenses": 0,
+            "OfficeExpenses": 0,
+            "RepairsExpenses": 0,
+            "SellingAndDistributionExpenses": 0,
+            "CommonExpenses": 0,
+            "StaffCost": 0,
+            "EBIDTA": 0,
+            "FinanceCost": 0,
+            "Depreciation": 0,
+            "PBT": 0,
+            "Amortization": 0
+        },
+        "HeadWiseSurfaceTreatmentDetails": {
+            "BaseCostingId": "00000000-0000-0000-0000-000000000000",
+            "CostingNumber": "string",
+            "CostingEffectiveDate": "2023-06-22T11:12:00.057Z",
+            "Month": "string",
+            "PartNumber": "string",
+            "PartName": "string",
+            "Mod": "string",
+            "Plant": "string",
+            "PlantName": "string",
+            "PlantCode": "string",
+            "PlantAddress": "string",
+            "Vendor": "string",
+            "VendorName": "string",
+            "VendorCode": "string",
+            "Customer": "string",
+            "CustomerName": "string",
+            "CustomerCode": "string",
+            "BudgetedQuantity": 0,
+            "ApprovedQuantity": 0,
+            "CurrentTentativeSaleRate": "string",
+            "RawMaterialEffectiveDate": "2023-06-22T11:12:00.057Z",
+            "NetPOPrice": 0,
+            "ProvisionPrice": 0,
+            "NetSales": 0,
+            "Consumption": 0,
+            "LabourCost": 0,
+            "ManufacturingExpenses": 0,
+            "OfficeExpenses": 0,
+            "RepairsExpenses": 0,
+            "SellingAndDistributionExpenses": 0,
+            "CommonExpenses": 0,
+            "StaffCost": 0,
+            "EBIDTA": 0,
+            "FinanceCost": 0,
+            "Depreciation": 0,
+            "PBT": 0,
+            "Amortization": 0
+        },
+        "HeadWiseCostingAndSurfaceTreatmentSumDetails": {
+            "BaseCostingId": "00000000-0000-0000-0000-000000000000",
+            "CostingNumber": "string",
+            "CostingEffectiveDate": "2023-06-22T11:12:00.057Z",
+            "Month": "string",
+            "PartNumber": "string",
+            "PartName": "string",
+            "Mod": "string",
+            "Plant": "string",
+            "PlantName": "string",
+            "PlantCode": "string",
+            "PlantAddress": "string",
+            "Vendor": "string",
+            "VendorName": "string",
+            "VendorCode": "string",
+            "Customer": "string",
+            "CustomerName": "string",
+            "CustomerCode": "string",
+            "BudgetedQuantity": 0,
+            "ApprovedQuantity": 0,
+            "CurrentTentativeSaleRate": "string",
+            "RawMaterialEffectiveDate": "2023-06-22T11:12:00.057Z",
+            "NetPOPrice": 0,
+            "ProvisionPrice": 0,
+            "NetSales": 0,
+            "Consumption": 0,
+            "LabourCost": 0,
+            "ManufacturingExpenses": 0,
+            "OfficeExpenses": 0,
+            "RepairsExpenses": 0,
+            "SellingAndDistributionExpenses": 0,
+            "CommonExpenses": 0,
+            "StaffCost": 0,
+            "EBIDTA": 0,
+            "FinanceCost": 0,
+            "Depreciation": 0,
+            "PBT": 0,
+            "Amortization": 0
+        },
+        "BudgetedHeadWiseCostingDetails": {
+            "BaseCostingId": "00000000-0000-0000-0000-000000000000",
+            "CostingNumber": "string",
+            "CostingEffectiveDate": "2023-06-22T11:12:00.057Z",
+            "Month": "string",
+            "PartNumber": "string",
+            "PartName": "string",
+            "Mod": "string",
+            "Plant": "string",
+            "PlantName": "string",
+            "PlantCode": "string",
+            "PlantAddress": "string",
+            "Vendor": "string",
+            "VendorName": "string",
+            "VendorCode": "string",
+            "Customer": "string",
+            "CustomerName": "string",
+            "CustomerCode": "string",
+            "BudgetedQuantity": 0,
+            "ApprovedQuantity": 0,
+            "CurrentTentativeSaleRate": "string",
+            "RawMaterialEffectiveDate": "2023-06-22T11:12:00.057Z",
+            "NetPOPrice": 0,
+            "ProvisionPrice": 0,
+            "NetSales": 0,
+            "Consumption": 0,
+            "LabourCost": 0,
+            "ManufacturingExpenses": 0,
+            "OfficeExpenses": 0,
+            "RepairsExpenses": 0,
+            "SellingAndDistributionExpenses": 0,
+            "CommonExpenses": 0,
+            "StaffCost": 0,
+            "EBIDTA": 0,
+            "FinanceCost": 0,
+            "Depreciation": 0,
+            "PBT": 0,
+            "Amortization": 0
+        },
+        "ApprovedHeadWiseCostingDetails": {
+            "BaseCostingId": "00000000-0000-0000-0000-000000000000",
+            "CostingNumber": "string",
+            "CostingEffectiveDate": "2023-06-22T11:12:00.057Z",
+            "Month": "string",
+            "PartNumber": "string",
+            "PartName": "string",
+            "Mod": "string",
+            "Plant": "string",
+            "PlantName": "string",
+            "PlantCode": "string",
+            "PlantAddress": "string",
+            "Vendor": "string",
+            "VendorName": "string",
+            "VendorCode": "string",
+            "Customer": "string",
+            "CustomerName": "string",
+            "CustomerCode": "string",
+            "BudgetedQuantity": 0,
+            "ApprovedQuantity": 0,
+            "CurrentTentativeSaleRate": "string",
+            "RawMaterialEffectiveDate": "2023-06-22T11:12:00.057Z",
+            "NetPOPrice": 0,
+            "ProvisionPrice": 0,
+            "NetSales": 0,
+            "Consumption": 0,
+            "LabourCost": 0,
+            "ManufacturingExpenses": 0,
+            "OfficeExpenses": 0,
+            "RepairsExpenses": 0,
+            "SellingAndDistributionExpenses": 0,
+            "CommonExpenses": 0,
+            "StaffCost": 0,
+            "EBIDTA": 0,
+            "FinanceCost": 0,
+            "Depreciation": 0,
+            "PBT": 0,
+            "Amortization": 0
+        }
+    }
+}
+//ONCE API DEPLOY FROM BACKEND THE DUMMY JSON WILL BE REMOVED
 
+const mainHeaders = ["Month", "Part Number", "Part Name", "Revision Number", "Plant(Code)", "Plant Address", "Vendor(Code)", "Customer(Code)", "Budgeted Quantity", "Approved Quantity", "Effective Date"]
 function GotGivenListing(props) {
 
-    const { part, product } = props
+    const formData = useSelector(state => state.report.costReportFormGridData);
+    const { initialConfiguration } = useSelector(state => state.auth)
+    const [tableData, setTableData] = useState([]);
 
-    const simulationInsights = []
-    const [gridApi, setGridApi] = useState(null);
-    const [gridColumnApi, setGridColumnApi] = useState(null);
-    const [gotCost, setGotCost] = useState([]);
-    const [givenCost, setGivenCost] = useState([]);
-    const [variance, setVariance] = useState([]);
-    const dispatch = useDispatch()
-    const [isOpen, setIsOpen] = useState(false)
-    const [isReportLoader, setIsReportLoader] = useState(false)
-    const [isLoader, setIsLoader] = useState(false)
-    const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
-
-
-    useEffect(() => {
-        let obj = {}
-        obj.plantId = EMPTY_GUID
-        obj.partId = (part ? part : EMPTY_GUID)
-        obj.productCategoryId = product ? (product.value ? product.value : EMPTY_GUID) : EMPTY_GUID
-        obj.isRequestForSummary = false
-        setIsLoader(true)
-        dispatch(getGotAndGivenDetails(obj, (res) => {
-            setIsLoader(false)
-            setGotCost(res.data.Data.GotCostingDetails)
-            setGivenCost(res.data.Data.GivenCostingDetails)
-            setVariance(res.data.Data.GotAndGivenVariance)
-        }))
-
-
-    }, [])
-
-
-    const onGridReady = (params) => {
-        setGridApi(params.api)
-        setGridColumnApi(params.columnApi)
-        params.api.paginationGoToPage(0);
-
-    };
-    const gridOptions = {
-        clearSearch: true,
-        noDataText: (simulationInsights === undefined ? <LoaderCustom /> : <NoContentFound title={EMPTY_DATA} />),
-
-    };
-    const defaultColDef = {
-
-        resizable: true,
-        filter: true,
-        sortable: false,
-    };
-
-    const hyperLinkableFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-
-        return (
-            <>
-                {
-                    <div
-                        onClick={() => viewDetails(row.UserId, cell, row)}
-                        className={'link'}
-                    >{cell}</div>
-                }
-            </>
-        )
+    const cancelReport = () => {
+        props.closeDrawer('')
     }
+    const { Month, PartNumber, PartName, RevisionNumber, PlantName, PlantAddress, VendorName, CustomerName, BudgetedQuantity, ApprovedQuantity, EffectiveDate, GotDetails, GivenDetails } = DUMMY_DATA;
 
-    const viewDetails = (UserId, cell, row) => {
-        setIsReportLoader(true)
-        if (row.CostingId) {
-            dispatch(getSingleCostingDetails(row.CostingId, (res) => {
-                if (res.data.Data) {
-                    let dataFromAPI = res.data.Data
-                    const tempObj = formViewData(dataFromAPI)
-                    dispatch(setCostingViewData(tempObj))
-                    setIsReportLoader(false)
-                }
-            },
-            ))
+
+    const leftHeaderClass = "font-weight-500 custom-min-width-140px"
+    const checkValidData = (value, type = '') => {
+        if (type === DATE_TYPE) {
+            return value ? DayTime(value).format('DD/MM/YYYY') : '-'
+        } else {
+            return value ? value : '-'
         }
-        setIsOpen(true)
     }
 
-
-    const frameworkComponents = {
-        customLoadingOverlay: LoaderCustom,
-        hyperLinkableFormatter: hyperLinkableFormatter,
-
+    const renderTableHeaders = (headers) => {
+        return headers.map((item, index) => {
+            return <td key={index}>{item}</td>;
+        });
     };
-
-    const exitReport = () => {
-        props.closeDrawer()
-    }
-
-    const decimalFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        let value = cell != null ? checkForDecimalAndNull(cell, initialConfiguration.NoOfDecimalForPrice) : '';
-        return value
-    }
-
-    const closeUserDetails = () => {
-        setIsOpen(false)
-    }
-
-    const hyphenFormatter = (props) => {
-        const cellValue = props?.value;
-        return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? cellValue : '-';
-    }
-
-    const renderColumn = () => {
-        return returnExcelColumn(GOT_GIVEN_EXCEL_TEMPLATE, gotCost)
-    }
-
-    const returnExcelColumn = (data = [], TempData) => {
-        let tempData = [...data]
-        let tempArray = []
-        let givenArray = [...givenCost]
-        let finalGivenArray = []
-        givenArray && givenArray.map((item, index) => {
-            let obj = {}
-            for (let key in item) {
-                obj[`given${key}`] = item[key]
+    const renderTableCells = (data) => {
+        return data.map((value, index) => {
+            if (value === EffectiveDate) {
+                return <td key={index}>{checkValidData(value, DATE_TYPE)}</td>;
+            } else {
+                return <td key={index}>{checkValidData(value)}</td>;
             }
-            finalGivenArray.push(obj)
-        })
 
-        gotCost.map((item, index) => {
-            let obj = { ...gotCost[index], ...finalGivenArray[index], ...variance[index] }
-            tempArray.push(obj)
-        })
-
-        return (<ExcelSheet data={tempArray} name={GOT_GIVEN_REPORT}>
-            {tempData && tempData.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} />)}
-        </ExcelSheet>);
-    }
-
-    return (
-        <div className="container-fluid report-listing-page ag-grid-react">
-            <Row className="pt-4 blue-before ">
-                <Col md="6" lg="6" className="search-user-block mb-3">
-                    <div className="d-flex justify-content-end bd-highlight excel-btn w100">
-                        <ExcelFile filename={'Got Given Report'} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div></button>}>
-                            {renderColumn()}
-                        </ExcelFile>
-                        <div className="mb-3"><button type="button" className={"apply"} onClick={exitReport}> <div className={'back-icon'}></div>Back</button></div>
-
-                    </div>
-                </Col>
-            </Row>
-            <div className='got-given-container-listing mt-4'>
-                {isLoader && <LoaderCustom />}
-
-                <div className="ag-grid-react">
-                    <div className={`ag-grid-wrapper height-width-wrapper ${gotCost && gotCost?.length <= 0 ? "overlay-contain" : ""}`}>
-                        <div className='got-given-header'>
-                            Got Cost Details
-                        </div>
-                        <div
-                            className="ag-theme-material got-report">
-                            <AgGridReact
-                                defaultColDef={defaultColDef}
-                                floatingFilter={true}
-                                domLayout='autoHeight'
-                                // columnDefs={c}
-                                rowData={gotCost}
-                                pagination={true}
-                                paginationPageSize={100}
-                                onGridReady={onGridReady}
-                                gridOptions={gridOptions}
-                                loadingOverlayComponent={'customLoadingOverlay'}
-                                noRowsOverlayComponent={'customNoRowsOverlay'}
-                                frameworkComponents={frameworkComponents}
-                                suppressRowClickSelection={true}
-                                rowSelection={'multiple'}
-                            >
-                                <AgGridColumn field="PartNumber" width={160} headerName="Part No." cellRenderer={'hyperLinkableFormatter'}></AgGridColumn>
-                                <AgGridColumn field="PartRevisionNumber" width={130} headerName="Revision No." cellRenderer={hyphenFormatter}></AgGridColumn>
-
-                                <AgGridColumn field="PartDescription" headerName="Part Description" cellRenderer={hyphenFormatter}></AgGridColumn>
-                                <AgGridColumn field="PartType" width={130} headerName="Type" cellRenderer={hyphenFormatter}></AgGridColumn>
-                                <AgGridColumn field="RawMaterialGrossWeight" width={110} headerName="GW" cellRenderer={hyphenFormatter}></AgGridColumn>
-                                <AgGridColumn field="RawMaterialRate" width={120} headerName="RM Rate" cellRenderer={hyphenFormatter}></AgGridColumn>
-                                <AgGridColumn field="RawMaterialScrapRate" width={130} headerName="Scrap Rate" cellRenderer={hyphenFormatter}></AgGridColumn>
-                                <AgGridColumn field="RawMaterialGrossWeightAndRate" width={130} headerName="Gr RM Cost" cellRenderer={hyphenFormatter}></AgGridColumn>
-                                <AgGridColumn field="RawMaterialFinishWeight" width={110} headerName="FW" cellRenderer={hyphenFormatter}></AgGridColumn>
-                                <AgGridColumn field="RawMaterialScrapWeight" width={130} headerName="Scrap Weight" cellRenderer={hyphenFormatter}></AgGridColumn>
-                                <AgGridColumn field="NetRawMaterialsCost" width={130} headerName="Net RM Cost" cellRenderer={hyphenFormatter}></AgGridColumn>
-                                <AgGridColumn field="ProfitRMTotalCost" width={130} headerName="Profit of Component" cellRenderer={hyphenFormatter}></AgGridColumn>
-                                <AgGridColumn field="NetProcessCost" headerName="Process Cost of Component" cellRenderer={hyphenFormatter}></AgGridColumn>
-                                <AgGridColumn field="ProfitCCPercentage" headerName="Profit of Component on CC (%)" cellRenderer={hyphenFormatter}></AgGridColumn>
-                                <AgGridColumn field="SubTotal" width={130} headerName="Sub Total" cellRenderer={hyphenFormatter}></AgGridColumn>
-                                <AgGridColumn field="NewRawMaterialRate" width={130} headerName="Revised RM Rate" cellRenderer={hyphenFormatter}></AgGridColumn>
-                                <AgGridColumn field="NewRawMaterialScrapRate" width={130} headerName="Revised Scrap Rate" cellRenderer={hyphenFormatter}></AgGridColumn>
-                                <AgGridColumn field="RawMaterialCostVariance" width={130} headerName="RM Variance" cellRenderer={hyphenFormatter}></AgGridColumn>
-                                <AgGridColumn field="ProductSum" width={130} headerName="Sum product" cellRenderer={hyphenFormatter}></AgGridColumn>
-                                <AgGridColumn field="NewRejectionCost" width={130} headerName="Rejection" cellRenderer={hyphenFormatter}></AgGridColumn>
-                                <AgGridColumn field="NewNetFreightPackagingCost" width={160} headerName="Packaging and Freight of Part" cellRenderer={hyphenFormatter}></AgGridColumn>
-                                <AgGridColumn field="NewICCCost" width={130} headerName="ICC of Part" cellRenderer={hyphenFormatter}></AgGridColumn>
-                                <AgGridColumn field="NewSubTotal" width={130} headerName="Sub total" cellRenderer={hyphenFormatter}></AgGridColumn>
-                                <AgGridColumn field="Total" width={130} headerName="Total" cellRenderer={hyphenFormatter}></AgGridColumn>
-
-                            </AgGridReact>
-                        </div>
-                    </div>
-                </div>
-
-
-                <div className="ag-grid-react">
-                    <div className={`ag-grid-wrapper height-width-wrapper ${gotCost && gotCost?.length <= 0 ? "overlay-contain" : ""}`}>
-                        <div className='got-given-header'>
-                            Given Cost Details
-                        </div>
-                        <div
-                            className="ag-theme-material given-report">
-                            <AgGridReact
-                                defaultColDef={defaultColDef}
-                                floatingFilter={true}
-                                domLayout='autoHeight'
-                                // columnDefs={c}
-                                rowData={givenCost}
-                                pagination={true}
-                                paginationPageSize={100}
-                                onGridReady={onGridReady}
-                                gridOptions={gridOptions}
-                                loadingOverlayComponent={'customLoadingOverlay'}
-                                noRowsOverlayComponent={'customNoRowsOverlay'}
-
-                                frameworkComponents={frameworkComponents}
-                                suppressRowClickSelection={true}
-                                rowSelection={'multiple'}
-                            >
-                                <AgGridColumn field="VendorName" headerName="Vendor Name" cellRenderer={hyphenFormatter}></AgGridColumn>
-                                <AgGridColumn field="SAPCode" headerName="SAP Code" cellRenderer={hyphenFormatter}></AgGridColumn>
-
-                                <AgGridColumn field="PartDescription" headerName="Material Description" cellRenderer={hyphenFormatter}></AgGridColumn>
-                                <AgGridColumn field="PartType" width={130} headerName="Type" cellRenderer={hyphenFormatter}></AgGridColumn>
-                                <AgGridColumn field="RawMaterialGrossWeight" width={110} headerName="GW" cellRenderer={hyphenFormatter}></AgGridColumn>
-                                <AgGridColumn field="RawMaterialRate" width={110} headerName="RM Rate" cellRenderer={hyphenFormatter}></AgGridColumn>
-                                <AgGridColumn field="RawMaterialScrapRate" width={110} headerName="Scrap Rate" cellRenderer={hyphenFormatter}></AgGridColumn>
-                                <AgGridColumn field="RawMaterialGrossWeightAndRate" width={120} headerName="Gr RM Cost" cellRenderer={hyphenFormatter}></AgGridColumn>
-                                <AgGridColumn field="RawMaterialFinishWeight" width={100} headerName="FW" cellRenderer={hyphenFormatter}></AgGridColumn>
-                                <AgGridColumn field="RawMaterialScrapWeight" width={130} headerName="Scrap Weight" cellRenderer={hyphenFormatter}></AgGridColumn>
-                                <AgGridColumn field="NetRawMaterialsCost" width={130} headerName="Net RM Cost" cellRenderer={hyphenFormatter}></AgGridColumn>
-                                <AgGridColumn field="ProfitRMTotalCost" width={130} headerName="Profit of Component" cellRenderer={hyphenFormatter}></AgGridColumn>
-                                <AgGridColumn field="NetProcessCost" width={170} headerName="Process Cost of Component" cellRenderer={hyphenFormatter}></AgGridColumn>
-                                <AgGridColumn field="ProfitCCPercentage" width={170} headerName="Profit of Component on CC (%)" cellRenderer={hyphenFormatter}></AgGridColumn>
-                                <AgGridColumn field="SubTotal" width={130} headerName="Sub Total" cellRenderer={hyphenFormatter}></AgGridColumn>
-                                <AgGridColumn field="NewRawMaterialRate" headerName="Revised RM Rate" cellRenderer={hyphenFormatter}></AgGridColumn>
-                                <AgGridColumn field="NewRawMaterialScrapRate" width={130} headerName="Revised Scrap Rate" cellRenderer={hyphenFormatter}></AgGridColumn>
-                                <AgGridColumn field="RawMaterialCostVariance" width={130} headerName="RM Variance" cellRenderer={hyphenFormatter}></AgGridColumn>
-                                <AgGridColumn field="ProductSum" width={130} headerName="Sum product" cellRenderer={hyphenFormatter}></AgGridColumn>
-                                <AgGridColumn field="NewRejectionCost" width={130} headerName="Rejection" cellRenderer={hyphenFormatter}></AgGridColumn>
-                                <AgGridColumn field="NewNetFreightPackagingCost" headerName="Packaging and Freight of Part" cellRenderer={hyphenFormatter}></AgGridColumn>
-                                <AgGridColumn field="NewICCCost" width={130} headerName="ICC of Part" cellRenderer={hyphenFormatter}></AgGridColumn>
-                                <AgGridColumn field="NewSubTotal" width={130} headerName="Sub total" cellRenderer={hyphenFormatter}></AgGridColumn>
-                                <AgGridColumn field="Total" width={130} headerName="Total" cellRenderer={hyphenFormatter}></AgGridColumn>
-                            </AgGridReact>
-                        </div>
-                    </div>
-                </div>
-
-
-                <div className="ag-grid-react 400px">
-                    <div className={`ag-grid-wrapper height-width-wrapper ${gotCost && gotCost?.length <= 0 ? "overlay-contain" : ""}`}>
-                        <div className='got-given-header'>
-                        </div>
-                        <div
-                            className="ag-theme-material">
-                            <AgGridReact
-                                defaultColDef={defaultColDef}
-                                floatingFilter={true}
-                                domLayout='autoHeight'
-                                // columnDefs={c}
-                                rowData={variance}
-                                pagination={true}
-                                paginationPageSize={100}
-                                onGridReady={onGridReady}
-                                gridOptions={gridOptions}
-                                loadingOverlayComponent={'customLoadingOverlay'}
-
-                                frameworkComponents={frameworkComponents}
-                                suppressRowClickSelection={true}
-                                rowSelection={'multiple'}
-                            >
-
-                                <AgGridColumn width={120} field="TotalDelta" headerName="Variance" cellRenderer={decimalFormatter}></AgGridColumn>
-                                <AgGridColumn width={120} field="TotalDeltaPercentage" headerName="Variance (%)" cellRenderer={decimalFormatter}></AgGridColumn>
-                            </AgGridReact>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            {
-                isOpen &&
-                <CostingDetailSimulationDrawer
-                    isOpen={isOpen}
-                    closeDrawer={closeUserDetails}
-                    anchor={"right"}
-                    isReport={isOpen}
-                    isSimulation={false}
-                    simulationDrawer={false}
-                    isReportLoader={isReportLoader}
-                />
-            }
-        </div >
-    );
+        });
+    };
+    const Data = [{
+        label: 'Current Tentative Sale Rate',
+        fields: [
+            GotDetails.HeadWiseCostingDetails.CurrentTentativeSaleRate,
+            GotDetails.HeadWiseSurfaceTreatmentDetails.CurrentTentativeSaleRate,
+            GotDetails.HeadWiseCostingAndSurfaceTreatmentSumDetails.CurrentTentativeSaleRate,
+            GotDetails.BudgetedHeadWiseCostingDetails.CurrentTentativeSaleRate,
+            GotDetails.ApprovedHeadWiseCostingDetails.CurrentTentativeSaleRate,
+            GivenDetails.HeadWiseCostingDetails.CurrentTentativeSaleRate,
+            GivenDetails.HeadWiseSurfaceTreatmentDetails.CurrentTentativeSaleRate,
+            GivenDetails.HeadWiseCostingAndSurfaceTreatmentSumDetails.CurrentTentativeSaleRate,
+            GivenDetails.BudgetedHeadWiseCostingDetails.CurrentTentativeSaleRate,
+            GivenDetails.ApprovedHeadWiseCostingDetails.CurrentTentativeSaleRate,
+        ],
+    },
+    {
+        label: 'Raw Material Effective Date',
+        fields: [
+            GotDetails.HeadWiseCostingDetails.RawMaterialEffectiveDate,
+            GotDetails.HeadWiseSurfaceTreatmentDetails.RawMaterialEffectiveDate,
+            GotDetails.HeadWiseCostingAndSurfaceTreatmentSumDetails.RawMaterialEffectiveDate,
+            GotDetails.BudgetedHeadWiseCostingDetails.RawMaterialEffectiveDate,
+            GotDetails.ApprovedHeadWiseCostingDetails.RawMaterialEffectiveDate,
+            GivenDetails.HeadWiseCostingDetails.RawMaterialEffectiveDate,
+            GivenDetails.HeadWiseSurfaceTreatmentDetails.RawMaterialEffectiveDate,
+            GivenDetails.HeadWiseCostingAndSurfaceTreatmentSumDetails.RawMaterialEffectiveDate,
+            GivenDetails.BudgetedHeadWiseCostingDetails.RawMaterialEffectiveDate,
+            GivenDetails.ApprovedHeadWiseCostingDetails.RawMaterialEffectiveDate
+        ]
+    },
+    {
+        label: 'Net POPrice',
+        fields: [
+            GotDetails.HeadWiseCostingDetails.NetPOPrice,
+            GotDetails.HeadWiseSurfaceTreatmentDetails.NetPOPrice,
+            GotDetails.HeadWiseCostingAndSurfaceTreatmentSumDetails.NetPOPrice,
+            GotDetails.BudgetedHeadWiseCostingDetails.NetPOPrice,
+            GotDetails.ApprovedHeadWiseCostingDetails.NetPOPrice,
+            GivenDetails.HeadWiseCostingDetails.NetPOPrice,
+            GivenDetails.HeadWiseSurfaceTreatmentDetails.NetPOPrice,
+            GivenDetails.HeadWiseCostingAndSurfaceTreatmentSumDetails.NetPOPrice,
+            GivenDetails.BudgetedHeadWiseCostingDetails.NetPOPrice,
+            GivenDetails.ApprovedHeadWiseCostingDetails.NetPOPrice
+        ]
+    },
+    {
+        label: 'Provision Price',
+        fields: [
+            GotDetails.HeadWiseCostingDetails.ProvisionPrice,
+            GotDetails.HeadWiseSurfaceTreatmentDetails.ProvisionPrice,
+            GotDetails.HeadWiseCostingAndSurfaceTreatmentSumDetails.ProvisionPrice,
+            GotDetails.BudgetedHeadWiseCostingDetails.ProvisionPrice,
+            GotDetails.ApprovedHeadWiseCostingDetails.ProvisionPrice,
+            GivenDetails.HeadWiseCostingDetails.ProvisionPrice,
+            GivenDetails.HeadWiseSurfaceTreatmentDetails.ProvisionPrice,
+            GivenDetails.HeadWiseCostingAndSurfaceTreatmentSumDetails.ProvisionPrice,
+            GivenDetails.BudgetedHeadWiseCostingDetails.ProvisionPrice,
+            GivenDetails.ApprovedHeadWiseCostingDetails.ProvisionPrice
+        ]
+    },
+    {
+        label: 'Net Sales',
+        fields: [
+            GotDetails.HeadWiseCostingDetails.NetSales,
+            GotDetails.HeadWiseSurfaceTreatmentDetails.NetSales,
+            GotDetails.HeadWiseCostingAndSurfaceTreatmentSumDetails.NetSales,
+            GotDetails.BudgetedHeadWiseCostingDetails.NetSales,
+            GotDetails.ApprovedHeadWiseCostingDetails.NetSales,
+            GivenDetails.HeadWiseCostingDetails.NetSales,
+            GivenDetails.HeadWiseSurfaceTreatmentDetails.NetSales,
+            GivenDetails.HeadWiseCostingAndSurfaceTreatmentSumDetails.NetSales,
+            GivenDetails.BudgetedHeadWiseCostingDetails.NetSales,
+            GivenDetails.ApprovedHeadWiseCostingDetails.NetSales
+        ]
+    },
+    {
+        label: 'Consumption',
+        fields: [
+            GotDetails.HeadWiseCostingDetails.Consumption,
+            GotDetails.HeadWiseSurfaceTreatmentDetails.Consumption,
+            GotDetails.HeadWiseCostingAndSurfaceTreatmentSumDetails.Consumption,
+            GotDetails.BudgetedHeadWiseCostingDetails.Consumption,
+            GotDetails.ApprovedHeadWiseCostingDetails.Consumption,
+            GivenDetails.HeadWiseCostingDetails.Consumption,
+            GivenDetails.HeadWiseSurfaceTreatmentDetails.Consumption,
+            GivenDetails.HeadWiseCostingAndSurfaceTreatmentSumDetails.Consumption,
+            GivenDetails.BudgetedHeadWiseCostingDetails.Consumption,
+            GivenDetails.ApprovedHeadWiseCostingDetails.Consumption
+        ]
+    },
+    {
+        label: 'Labour Cost',
+        fields: [
+            GotDetails.HeadWiseCostingDetails.LabourCost,
+            GotDetails.HeadWiseSurfaceTreatmentDetails.LabourCost,
+            GotDetails.HeadWiseCostingAndSurfaceTreatmentSumDetails.LabourCost,
+            GotDetails.BudgetedHeadWiseCostingDetails.LabourCost,
+            GotDetails.ApprovedHeadWiseCostingDetails.LabourCost,
+            GivenDetails.HeadWiseCostingDetails.LabourCost,
+            GivenDetails.HeadWiseSurfaceTreatmentDetails.LabourCost,
+            GivenDetails.HeadWiseCostingAndSurfaceTreatmentSumDetails.LabourCost,
+            GivenDetails.BudgetedHeadWiseCostingDetails.LabourCost,
+            GivenDetails.ApprovedHeadWiseCostingDetails.LabourCost
+        ]
+    },
+    {
+        label: 'Manufacturing Expenses',
+        fields: [
+            GotDetails.HeadWiseCostingDetails.ManufacturingExpenses,
+            GotDetails.HeadWiseSurfaceTreatmentDetails.ManufacturingExpenses,
+            GotDetails.HeadWiseCostingAndSurfaceTreatmentSumDetails.ManufacturingExpenses,
+            GotDetails.BudgetedHeadWiseCostingDetails.ManufacturingExpenses,
+            GotDetails.ApprovedHeadWiseCostingDetails.ManufacturingExpenses,
+            GivenDetails.HeadWiseCostingDetails.ManufacturingExpenses,
+            GivenDetails.HeadWiseSurfaceTreatmentDetails.ManufacturingExpenses,
+            GivenDetails.HeadWiseCostingAndSurfaceTreatmentSumDetails.ManufacturingExpenses,
+            GivenDetails.BudgetedHeadWiseCostingDetails.ManufacturingExpenses,
+            GivenDetails.ApprovedHeadWiseCostingDetails.ManufacturingExpenses
+        ]
+    },
+    {
+        label: 'Office Expenses',
+        fields: [
+            GotDetails.HeadWiseCostingDetails.OfficeExpenses,
+            GotDetails.HeadWiseSurfaceTreatmentDetails.OfficeExpenses,
+            GotDetails.HeadWiseCostingAndSurfaceTreatmentSumDetails.OfficeExpenses,
+            GotDetails.BudgetedHeadWiseCostingDetails.OfficeExpenses,
+            GotDetails.ApprovedHeadWiseCostingDetails.OfficeExpenses,
+            GivenDetails.HeadWiseCostingDetails.OfficeExpenses,
+            GivenDetails.HeadWiseSurfaceTreatmentDetails.OfficeExpenses,
+            GivenDetails.HeadWiseCostingAndSurfaceTreatmentSumDetails.OfficeExpenses,
+            GivenDetails.BudgetedHeadWiseCostingDetails.OfficeExpenses,
+            GivenDetails.ApprovedHeadWiseCostingDetails.OfficeExpenses
+        ]
+    },
+    {
+        label: 'Repairs Expenses',
+        fields: [
+            GotDetails.HeadWiseCostingDetails.RepairsExpenses,
+            GotDetails.HeadWiseSurfaceTreatmentDetails.RepairsExpenses,
+            GotDetails.HeadWiseCostingAndSurfaceTreatmentSumDetails.RepairsExpenses,
+            GotDetails.BudgetedHeadWiseCostingDetails.RepairsExpenses,
+            GotDetails.ApprovedHeadWiseCostingDetails.RepairsExpenses,
+            GivenDetails.HeadWiseCostingDetails.RepairsExpenses,
+            GivenDetails.HeadWiseSurfaceTreatmentDetails.RepairsExpenses,
+            GivenDetails.HeadWiseCostingAndSurfaceTreatmentSumDetails.RepairsExpenses,
+            GivenDetails.BudgetedHeadWiseCostingDetails.RepairsExpenses,
+            GivenDetails.ApprovedHeadWiseCostingDetails.RepairsExpenses
+        ]
+    },
+    {
+        label: 'Selling and Distribution Expenses',
+        fields: [
+            GotDetails.HeadWiseCostingDetails.SellingAndDistributionExpenses,
+            GotDetails.HeadWiseSurfaceTreatmentDetails.SellingAndDistributionExpenses,
+            GotDetails.HeadWiseCostingAndSurfaceTreatmentSumDetails.SellingAndDistributionExpenses,
+            GotDetails.BudgetedHeadWiseCostingDetails.SellingAndDistributionExpenses,
+            GotDetails.ApprovedHeadWiseCostingDetails.SellingAndDistributionExpenses,
+            GivenDetails.HeadWiseCostingDetails.SellingAndDistributionExpenses,
+            GivenDetails.HeadWiseSurfaceTreatmentDetails.SellingAndDistributionExpenses,
+            GivenDetails.HeadWiseCostingAndSurfaceTreatmentSumDetails.SellingAndDistributionExpenses,
+            GivenDetails.BudgetedHeadWiseCostingDetails.SellingAndDistributionExpenses,
+            GivenDetails.ApprovedHeadWiseCostingDetails.SellingAndDistributionExpenses
+        ]
+    },
+    {
+        label: 'Common Expenses',
+        fields: [
+            GotDetails.HeadWiseCostingDetails.CommonExpenses,
+            GotDetails.HeadWiseSurfaceTreatmentDetails.CommonExpenses,
+            GotDetails.HeadWiseCostingAndSurfaceTreatmentSumDetails.CommonExpenses,
+            GotDetails.BudgetedHeadWiseCostingDetails.CommonExpenses,
+            GotDetails.ApprovedHeadWiseCostingDetails.CommonExpenses,
+            GivenDetails.HeadWiseCostingDetails.CommonExpenses,
+            GivenDetails.HeadWiseSurfaceTreatmentDetails.CommonExpenses,
+            GivenDetails.HeadWiseCostingAndSurfaceTreatmentSumDetails.CommonExpenses,
+            GivenDetails.BudgetedHeadWiseCostingDetails.CommonExpenses,
+            GivenDetails.ApprovedHeadWiseCostingDetails.CommonExpenses
+        ]
+    },
+    {
+        label: 'Staff Cost',
+        fields: [
+            GotDetails.HeadWiseCostingDetails.StaffCost,
+            GotDetails.HeadWiseSurfaceTreatmentDetails.StaffCost,
+            GotDetails.HeadWiseCostingAndSurfaceTreatmentSumDetails.StaffCost,
+            GotDetails.BudgetedHeadWiseCostingDetails.StaffCost,
+            GotDetails.ApprovedHeadWiseCostingDetails.StaffCost,
+            GivenDetails.HeadWiseCostingDetails.StaffCost,
+            GivenDetails.HeadWiseSurfaceTreatmentDetails.StaffCost,
+            GivenDetails.HeadWiseCostingAndSurfaceTreatmentSumDetails.StaffCost,
+            GivenDetails.BudgetedHeadWiseCostingDetails.StaffCost,
+            GivenDetails.ApprovedHeadWiseCostingDetails.StaffCost
+        ]
+    },
+    {
+        label: 'EBIDTA',
+        fields: [
+            GotDetails.HeadWiseCostingDetails.EBIDTA,
+            GotDetails.HeadWiseSurfaceTreatmentDetails.EBIDTA,
+            GotDetails.HeadWiseCostingAndSurfaceTreatmentSumDetails.EBIDTA,
+            GotDetails.BudgetedHeadWiseCostingDetails.EBIDTA,
+            GotDetails.ApprovedHeadWiseCostingDetails.EBIDTA,
+            GivenDetails.HeadWiseCostingDetails.EBIDTA,
+            GivenDetails.HeadWiseSurfaceTreatmentDetails.EBIDTA,
+            GivenDetails.HeadWiseCostingAndSurfaceTreatmentSumDetails.EBIDTA,
+            GivenDetails.BudgetedHeadWiseCostingDetails.EBIDTA,
+            GivenDetails.ApprovedHeadWiseCostingDetails.EBIDTA
+        ]
+    },
+    {
+        label: 'Finance Cost',
+        fields: [
+            GotDetails.HeadWiseCostingDetails.FinanceCost,
+            GotDetails.HeadWiseSurfaceTreatmentDetails.FinanceCost,
+            GotDetails.HeadWiseCostingAndSurfaceTreatmentSumDetails.FinanceCost,
+            GotDetails.BudgetedHeadWiseCostingDetails.FinanceCost,
+            GotDetails.ApprovedHeadWiseCostingDetails.FinanceCost,
+            GivenDetails.HeadWiseCostingDetails.FinanceCost,
+            GivenDetails.HeadWiseSurfaceTreatmentDetails.FinanceCost,
+            GivenDetails.HeadWiseCostingAndSurfaceTreatmentSumDetails.FinanceCost,
+            GivenDetails.BudgetedHeadWiseCostingDetails.FinanceCost,
+            GivenDetails.ApprovedHeadWiseCostingDetails.FinanceCost
+        ]
+    },
+    {
+        label: 'Depreciation',
+        fields: [
+            GotDetails.HeadWiseCostingDetails.Depreciation,
+            GotDetails.HeadWiseSurfaceTreatmentDetails.Depreciation,
+            GotDetails.HeadWiseCostingAndSurfaceTreatmentSumDetails.Depreciation,
+            GotDetails.BudgetedHeadWiseCostingDetails.Depreciation,
+            GotDetails.ApprovedHeadWiseCostingDetails.Depreciation,
+            GivenDetails.HeadWiseCostingDetails.Depreciation,
+            GivenDetails.HeadWiseSurfaceTreatmentDetails.Depreciation,
+            GivenDetails.HeadWiseCostingAndSurfaceTreatmentSumDetails.Depreciation,
+            GivenDetails.BudgetedHeadWiseCostingDetails.Depreciation,
+            GivenDetails.ApprovedHeadWiseCostingDetails.Depreciation
+        ]
+    },
+    {
+        label: 'PBT',
+        fields: [
+            GotDetails.HeadWiseCostingDetails.PBT,
+            GotDetails.HeadWiseSurfaceTreatmentDetails.PBT,
+            GotDetails.HeadWiseCostingAndSurfaceTreatmentSumDetails.PBT,
+            GotDetails.BudgetedHeadWiseCostingDetails.PBT,
+            GotDetails.ApprovedHeadWiseCostingDetails.PBT,
+            GivenDetails.HeadWiseCostingDetails.PBT,
+            GivenDetails.HeadWiseSurfaceTreatmentDetails.PBT,
+            GivenDetails.HeadWiseCostingAndSurfaceTreatmentSumDetails.PBT,
+            GivenDetails.BudgetedHeadWiseCostingDetails.PBT,
+            GivenDetails.ApprovedHeadWiseCostingDetails.PBT
+        ]
+    },
+    {
+        label: 'Amortization',
+        fields: [
+            GotDetails.HeadWiseCostingDetails.Amortization,
+            GotDetails.HeadWiseSurfaceTreatmentDetails.Amortization,
+            GotDetails.HeadWiseCostingAndSurfaceTreatmentSumDetails.Amortization,
+            GotDetails.BudgetedHeadWiseCostingDetails.Amortization,
+            GotDetails.ApprovedHeadWiseCostingDetails.Amortization,
+            GivenDetails.HeadWiseCostingDetails.Amortization,
+            GivenDetails.HeadWiseSurfaceTreatmentDetails.Amortization,
+            GivenDetails.HeadWiseCostingAndSurfaceTreatmentSumDetails.Amortization,
+            GivenDetails.BudgetedHeadWiseCostingDetails.Amortization,
+            GivenDetails.ApprovedHeadWiseCostingDetails.Amortization
+        ]
+    }]
+    useEffect(() => {
+        setTableData(Data)
+    }, [])
+    return <>
+        <div className='d-flex justify-content-end'>
+            <button type="button" className={"apply"} onClick={cancelReport}> <div className={'back-icon'}></div>Back</button>
+        </div>
+        <div>
+            <Table className='mt-2 table-bordered'>
+                <thead>
+                    <tr>
+                        {renderTableHeaders(mainHeaders)}
+                    </tr>
+                </thead>
+                <thead>
+                    <tr>
+                        {renderTableCells([Month, PartNumber, PartName, RevisionNumber, PlantName, PlantAddress, VendorName, CustomerName, BudgetedQuantity, ApprovedQuantity, EffectiveDate])}
+                    </tr>
+                </thead>
+            </Table>
+            <Table responsive className='table-bordered mb-0'>
+                <tbody>
+                    <tr>
+                        <td></td>
+                        <td colSpan={5} className='text-center font-weight-500 font-size-16'>Got Details</td>
+                        <td colSpan={5} className='text-center font-weight-500 font-size-16'>Given Details</td>
+                    </tr>
+                    {tableData.map((row, rowIndex) => (
+                        <tr key={rowIndex}>
+                            <td className={leftHeaderClass}>{row.label}</td>
+                            {row.fields.map((field, fieldIndex) => (
+                                <td key={fieldIndex}>
+                                    {row.label === 'Raw Material Effective Date' ? checkValidData(field, DATE_TYPE) : checkForDecimalAndNull(field, initialConfiguration.NoOfDecimalForPrice)}
+                                </td>
+                            ))}
+                        </tr>
+                    ))}
+                </tbody>
+            </Table>
+        </div>
+    </>
 }
 
 export default GotGivenListing
