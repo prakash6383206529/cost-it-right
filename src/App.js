@@ -43,7 +43,6 @@ class App extends Component {
         })
 
 
-
         let objShortApp = {};
         approvalTypeListArray && approvalTypeListArray.map(item => {
           let shortFormList = objShortApp[item.split("=")[0]] = item.match(/\d+/g)[item.match(/\d+/g)?.length - 1]
@@ -59,10 +58,22 @@ class App extends Component {
         reactLocalStorage.setObject('CostingHeadsListShortForm', objShort)
         reactLocalStorage.setObject('CostingHeadsListFullForm', objFull)
 
-
-
         reactLocalStorage.setObject('ApprovalTypeListShortForm', objShortApp)
         reactLocalStorage.setObject('ApprovalTypeListFullForm', objFullApp)
+
+        const approvalmasterType = Data.ApprovalMasterArrayList.split(",")
+        const masterType = Object.fromEntries(approvalmasterType.map(item => {
+          const masterTypeobj = item.split("=");
+          return masterTypeobj;
+        }));
+        reactLocalStorage.setObject('masterType', masterType)
+
+        const vendorTypeList = Data?.VendorTypeList?.split(",")
+        const vendortype = Object.fromEntries(vendorTypeList.map(item => {
+          const vendortypeobj = item.split("=");
+          return vendortypeobj;
+        }));
+        reactLocalStorage.setObject('vendortype', vendortype)
       }
     })
     reactLocalStorage.setObject('isFromDiscountObj', false)

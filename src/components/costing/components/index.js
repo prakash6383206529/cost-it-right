@@ -135,6 +135,7 @@ function Costing(props) {
                 nfrData={props?.location?.state}
                 isNFR={props?.location?.state?.isNFR}
                 isViewModeCosting={props?.location?.state?.isViewMode}
+                isRFQViewMode={props?.location?.state?.isViewMode}
               />
             </TabPane>
             <TabPane tabId="2">

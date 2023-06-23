@@ -17,7 +17,7 @@ import {
   saveDiscountOtherCostTab, setComponentDiscountOtherItemData, setCostingEffectiveDate, CloseOpenAccordion, saveAssemblyPartRowCostingCalculation, isDataChange, saveAssemblyOverheadProfitTab, isToolDataChange, isOverheadProfitDataChange,
 } from '../../actions/Costing';
 import { checkForNull, CheckIsCostingDateSelected, loggedInUserId } from '../../../../helper';
-import { LEVEL1 } from '../../../../config/constants';
+import { LEVEL1, WACTypeId } from '../../../../config/constants';
 import { EditCostingContext, ViewCostingContext, CostingStatusContext } from '../CostingDetails';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -437,7 +437,7 @@ function CostingHeaderTabs(props) {
           </Nav>
           <TabContent activeTab={activeTab}>
             <TabPane tabId="1">
-              {IdForMultiTechnology.includes(String(costingData?.TechnologyId)) ? <TabAssemblyTechnology
+              {IdForMultiTechnology.includes(String(costingData?.TechnologyId)) || (costingData.CostingTypeId === WACTypeId) ? <TabAssemblyTechnology
                 setHeaderCost={props.setHeaderCost}
                 backBtn={props.backBtn}
                 activeTab={activeTab}

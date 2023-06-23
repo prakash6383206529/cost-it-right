@@ -1,4 +1,4 @@
-@import 'cssVariable.scss';
+@import './abstracts/variable.scss';
 
 .calculator {
     &__forging {
@@ -194,8 +194,8 @@
 
 .check-box-container:nth-child(11),
 .check-box-container:nth-child(12) {
-    flex: 0 0 100%;
-    max-width: 100%;
+    flex: 0 0 100% !important;
+    max-width: 100% !important;
 }
 
 .check-box-container:nth-child(11) {

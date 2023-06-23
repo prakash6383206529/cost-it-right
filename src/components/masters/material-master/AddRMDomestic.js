@@ -7,12 +7,12 @@ import { renderText, renderTextInputField, searchableSelect, renderMultiSelectFi
 import { AcceptableRMUOM, FORGING, SHEETMETAL } from '../../../config/masterData'
 import {
   getRawMaterialCategory, fetchGradeDataAPI, fetchSpecificationDataAPI, getCityBySupplier, getPlantByCity,
-  getPlantByCityAndSupplier, fetchRMGradeAPI, getSupplierList, getPlantBySupplier, getUOMSelectList, fetchSupplierCityDataAPI,
-  fetchPlantDataAPI, getPlantSelectListByType, getCityByCountry, getAllCity
+  getPlantByCityAndSupplier, fetchRMGradeAPI, getSupplierList, getUOMSelectList, fetchSupplierCityDataAPI,
+  getPlantSelectListByType, getCityByCountry, getAllCity, getVendorNameByVendorSelectList
 } from '../../../actions/Common'
 import {
-  createRMDomestic, getRawMaterialDetailsAPI, updateRMDomesticAPI, getRawMaterialNameChild, getRMGradeSelectListByRawMaterial,
-  getVendorListByVendorType, fileUploadRMDomestic, fileUpdateRMDomestic, fileDeleteRMDomestic, getVendorWithVendorCodeSelectList, checkAndGetRawMaterialCode,
+  createRM, getRMDataById, updateRMAPI, getRawMaterialNameChild, getRMGradeSelectListByRawMaterial,
+  fileUploadRMDomestic, fileUpdateRMDomestic, fileDeleteRMDomestic, checkAndGetRawMaterialCode,
 } from '../actions/Material'
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message'
@@ -25,7 +25,7 @@ import AddVendorDrawer from '../supplier-master/AddVendorDrawer'
 import Dropzone from 'react-dropzone-uploader'
 import 'react-dropzone-uploader/dist/styles.css'
 import 'react-datepicker/dist/react-datepicker.css'
-import { FILE_URL, ZBC, RM_MASTER_ID, EMPTY_GUID, SPACEBAR, ZBCTypeId, VBCTypeId, CBCTypeId, searchCount, SHEET_METAL } from '../../../config/constants'
+import { FILE_URL, ZBC, RM_MASTER_ID, EMPTY_GUID, SPACEBAR, ZBCTypeId, VBCTypeId, CBCTypeId, searchCount, RMDOMESTIC, ENTRY_TYPE_DOMESTIC, SHEET_METAL, VBC_VENDOR_TYPE, RAW_MATERIAL_VENDOR_TYPE } from '../../../config/constants'
 import DayTime from '../../common/DayTimeWrapper'
 import TooltipCustom from '../../common/Tooltip';
 import LoaderCustom from '../../common/LoaderCustom';
@@ -151,7 +151,6 @@ class AddRMDomestic extends Component {
   UNSAFE_componentWillMount() {
     if (!(this.props.data.isEditFlag || this.state.isViewFlag)) {
       this.props.getUOMSelectList(() => { })
-      this.props.fetchPlantDataAPI(() => { })
       this.props.getRMGradeSelectListByRawMaterial('', (res) => { })
     }
   }
@@ -162,9 +161,12 @@ class AddRMDomestic extends Component {
    */
   componentDidMount() {
     const { data, initialConfiguration } = this.props
+    if ((this.props.data.isEditFlag || this.state.isViewFlag)) {
+      this.getDetails(data)
+    }
     this.getDetails(data)
     if (!this.state.isViewFlag) {
-      this.props.getRawMaterialNameChild('', () => { })
+      this.props.getRawMaterialNameChild(() => { })
       this.props.getAllCity(cityId => {
         this.props.getCityByCountry(cityId, 0, () => { })
       })
@@ -340,7 +342,6 @@ class AddRMDomestic extends Component {
               ? getVendorCode(vendorName.label)
               : ''
           this.setState({ VendorCode: result })
-          this.props.getPlantBySupplier(vendorName.value, () => { })
         },
       )
     } else {
@@ -348,7 +349,6 @@ class AddRMDomestic extends Component {
         vendorName: [],
         vendorLocation: [],
       })
-      this.props.getPlantBySupplier('', () => { })
     }
   }
   /**
@@ -500,11 +500,10 @@ class AddRMDomestic extends Component {
       this.setState({
         isEditFlag: false, isLoader: true, isShowForm: true, RawMaterialID: data.Id,
       })
-      this.props.getRawMaterialDetailsAPI(data, true, (res) => {
+      this.props.getRMDataById(data, true, (res) => {
         if (res && res.data && res?.data?.Result) {
           const Data = res.data.Data
           this.setState({ DataToChange: Data })
-          // this.props.getPlantBySupplier(Data.Vendor, () => { })
           this.props.change('FrieghtCharge', Data.RMFreightCost ? Data.RMFreightCost : '')
           this.props.change('ShearingCost', Data.RMShearingCost ? Data.RMShearingCost : '')
           this.props.change('cutOffPrice', Data.CutOffPrice ? Data.CutOffPrice : '')
@@ -562,7 +561,7 @@ class AddRMDomestic extends Component {
         isLoader: false,
         RawMaterialID: EMPTY_GUID,
       })
-      this.props.getRawMaterialDetailsAPI('', false, (res) => { })
+      this.props.getRMDataById('', false, (res) => { })
     }
   }
 
@@ -583,7 +582,6 @@ class AddRMDomestic extends Component {
       this.props.getClientSelectList(() => { })
     }
     else {
-      this.props.getPlantBySupplier('', () => { })
       this.props.getCityBySupplier(0, () => { })
     }
   }
@@ -603,7 +601,7 @@ class AddRMDomestic extends Component {
   closeRMDrawer = (e = '', data = {}) => {
     this.setState({ isRMDrawerOpen: false }, () => {
       /* FOR SHOWING RM ,GRADE AND SPECIFICATION SELECTED IN RM SPECIFICATION DRAWER*/
-      this.props.getRawMaterialNameChild('', () => {
+      this.props.getRawMaterialNameChild(() => {
 
         if (Object.keys(data).length > 0) {
           this.props.getRMGradeSelectListByRawMaterial(data.RawMaterialId, (res) => {
@@ -672,7 +670,7 @@ class AddRMDomestic extends Component {
       const { costingTypeId } = this.state
       if (costingTypeId !== VBCTypeId) {
         if (this.state.vendorName && this.state.vendorName.length > 0) {
-          const res = await getVendorListByVendorType(costingTypeId, this.state.vendorName)
+          const res = await getVendorNameByVendorSelectList(RAW_MATERIAL_VENDOR_TYPE, this.state.vendorName)
           let vendorDataAPI = res?.data?.SelectList
           reactLocalStorage?.setObject('vendorData', vendorDataAPI)
         }
@@ -681,7 +679,7 @@ class AddRMDomestic extends Component {
         }
       } else {
         if (this.state.vendorName && this.state.vendorName.length > 0) {
-          const res = await getVendorWithVendorCodeSelectList(this.state.vendorName)
+          const res = await getVendorNameByVendorSelectList(VBC_VENDOR_TYPE, this.state.vendorName)
           let vendorDataAPI = res?.data?.SelectList
           reactLocalStorage?.setObject('vendorData', vendorDataAPI)
         }
@@ -882,7 +880,7 @@ class AddRMDomestic extends Component {
       IsVendor: false,
       updatedObj: {}
     })
-    this.props.getRawMaterialDetailsAPI('', false, (res) => { })
+    this.props.getRMDataById('', false, (res) => { })
     this.props.fetchSpecificationDataAPI(0, () => { })
     this.props.hideForm(type)
   }
@@ -923,7 +921,7 @@ class AddRMDomestic extends Component {
   */
   setDisableFalseFunction = () => {
     const loop = Number(this.dropzone.current.files.length) - Number(this.state.files.length)
-    if (Number(loop) === 1) {
+    if (Number(loop) === 1 || Number(this.dropzone.current.files.length) === Number(this.state.files.length)) {
       this.setState({ setDisable: false, attachmentLoader: false })
     }
   }
@@ -1095,10 +1093,11 @@ class AddRMDomestic extends Component {
         VendorPlant: [],
         MachiningScrapRate: values.MachiningScrap,
         JaliScrapCost: values.CircleScrapCost ? values.CircleScrapCost : '',// THIS KEY FOR CIRCLE SCRAP COST
+        RawMaterialEntryType: Number(ENTRY_TYPE_DOMESTIC)
       }
       if (IsFinancialDataChanged) {
         if ((isDateChange) && (DayTime(oldDate).format("DD/MM/YYYY") !== DayTime(effectiveDate).format("DD/MM/YYYY"))) {
-          this.props.updateRMDomesticAPI(requestData, (res) => {
+          this.props.updateRMAPI(requestData, (res) => {
             this.setState({ setDisable: false })
             if (res?.data?.Result) {
               Toaster.success(MESSAGES.RAW_MATERIAL_DETAILS_UPDATE_SUCCESS)
@@ -1128,7 +1127,7 @@ class AddRMDomestic extends Component {
         }
         else {
 
-          this.props.updateRMDomesticAPI(requestData, (res) => {
+          this.props.updateRMAPI(requestData, (res) => {
             this.setState({ setDisable: false })
             if (res?.data?.Result) {
               Toaster.success(MESSAGES.RAW_MATERIAL_DETAILS_UPDATE_SUCCESS)
@@ -1179,6 +1178,7 @@ class AddRMDomestic extends Component {
       formData.CustomerId = costingTypeId === CBCTypeId ? client.value : ''
       formData.MachiningScrapRate = values.MachiningScrap
       formData.JaliScrapCost = values.CircleScrapCost ? values.CircleScrapCost : '' // THIS KEY FOR CIRCLE SCRAP COST
+      formData.RawMaterialEntryType = Number(ENTRY_TYPE_DOMESTIC)
       if (CheckApprovalApplicableMaster(RM_MASTER_ID) === true && !this.state.isFinalApprovar) {
         formData.NetLandedCostConversion = 0
         formData.Currency = "INR"
@@ -1237,7 +1237,7 @@ class AddRMDomestic extends Component {
 
 
       } else {
-        this.props.createRMDomestic(formData, (res) => {
+        this.props.createRM(formData, (res) => {
           this.setState({ setDisable: false })
           if (res?.data?.Result) {
             Toaster.success(MESSAGES.MATERIAL_ADD_SUCCESS)
@@ -1282,10 +1282,10 @@ class AddRMDomestic extends Component {
         this.setState({ inputLoader: true })
         let res
         if (costingTypeId === VBCTypeId && resultInput) {
-          res = await getVendorWithVendorCodeSelectList(resultInput)
+          res = await getVendorNameByVendorSelectList(VBC_VENDOR_TYPE, resultInput)
         }
         else {
-          res = await getVendorListByVendorType(costingTypeId, resultInput)
+          res = await getVendorNameByVendorSelectList(RAW_MATERIAL_VENDOR_TYPE, resultInput)
         }
         this.setState({ inputLoader: false })
         this.setState({ vendorFilterList: resultInput })
@@ -1915,7 +1915,7 @@ class AddRMDomestic extends Component {
                                 ref={this.dropzone}
                                 onChangeStatus={this.handleChangeStatus}
                                 PreviewComponent={this.Preview}
-                                accept="*"
+                                accept="image/jpeg,image/jpg,image/png,image/PNG,.xls,.doc,.pdf,.xlsx"
                                 initialFiles={this.state.initialFiles}
                                 maxFiles={3}
                                 maxSizeBytes={2000000}
@@ -2191,36 +2191,33 @@ function mapStateToProps(state) {
  * @param {function} mapDispatchToProps
  */
 export default connect(mapStateToProps, {
-  createRMDomestic,
+  createRM,
   getRawMaterialCategory,
   getCostingSpecificTechnology,
   fetchSupplierCityDataAPI,
   fetchGradeDataAPI,
-  fetchPlantDataAPI,
   fetchSpecificationDataAPI,
-  getRawMaterialDetailsAPI,
+  getRMDataById,
   getCityBySupplier,
   getPlantByCity,
   getPlantByCityAndSupplier,
-  updateRMDomesticAPI,
+  updateRMAPI,
   fetchRMGradeAPI,
   getRawMaterialNameChild,
   getRMGradeSelectListByRawMaterial,
   getSupplierList,
-  getPlantBySupplier,
   getUOMSelectList,
-  getVendorListByVendorType,
   fileUploadRMDomestic,
   fileUpdateRMDomestic,
   fileDeleteRMDomestic,
   getPlantSelectListByType,
-  getVendorWithVendorCodeSelectList,
   checkAndGetRawMaterialCode,
   getCityByCountry,
   getAllCity,
   getClientSelectList,
   checkFinalUser,
-  getUsersMasterLevelAPI
+  getUsersMasterLevelAPI,
+  getVendorNameByVendorSelectList
 })(
   reduxForm({
     form: 'AddRMDomestic',

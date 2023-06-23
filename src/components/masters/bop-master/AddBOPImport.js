@@ -7,19 +7,18 @@ import {
   maxLength10, positiveAndDecimalNumber, maxLength512, decimalLengthsix, checkWhiteSpaces, checkSpacesInString, maxLength80, number, postiveNumber
 } from "../../../helper/validation";
 import { renderText, searchableSelect, renderTextAreaField, renderDatePicker, renderTextInputField, focusOnError } from "../../layout/FormInputs";
-import { getPlantBySupplier, getUOMSelectList, getCurrencySelectList, getPlantSelectListByType, getCityByCountry, getAllCity } from '../../../actions/Common';
+import { getPlantBySupplier, getUOMSelectList, getCurrencySelectList, getPlantSelectListByType, getCityByCountry, getAllCity, getVendorNameByVendorSelectList } from '../../../actions/Common';
 import {
-  createBOPImport, updateBOPImport, getBOPCategorySelectList, getBOPImportById,
+  createBOP, updateBOP, getBOPCategorySelectList, getBOPImportById,
   fileUploadBOPDomestic, fileDeleteBOPDomestic, getIncoTermSelectList, getPaymentTermSelectList
 } from '../actions/BoughtOutParts';
-import { getVendorWithVendorCodeSelectList, getVendorTypeBOPSelectList, } from '../actions/Supplier';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import { getConfigurationKey, loggedInUserId, userDetails } from "../../../helper/auth";
 import "react-datepicker/dist/react-datepicker.css";
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css';
-import { FILE_URL, ZBC, INR, BOP_MASTER_ID, EMPTY_GUID, SPACEBAR, ZBCTypeId, VBCTypeId, CBCTypeId, searchCount } from '../../../config/constants';
+import { FILE_URL, ZBC, INR, BOP_MASTER_ID, EMPTY_GUID, SPACEBAR, ZBCTypeId, VBCTypeId, CBCTypeId, searchCount, ENTRY_TYPE_IMPORT, VBC_VENDOR_TYPE, BOP_VENDOR_TYPE } from '../../../config/constants';
 import AddBOPCategory from './AddBOPCategory';
 import AddVendorDrawer from '../supplier-master/AddVendorDrawer';
 import AddUOM from '../uom-master/AddUOM';
@@ -63,7 +62,6 @@ class AddBOPImport extends Component {
       costingTypeId: ZBCTypeId,
       isOpenVendor: false,
       isVendorNameNotSelected: false,
-      IsSendForApproval: false,
       vendorName: [],
       approvalObj: {},
       minEffectiveDate: '',
@@ -107,7 +105,8 @@ class AddBOPImport extends Component {
       noApprovalCycle: false,
       vendorFilterList: [],
       isCallCalculation: false,
-      uomIsNo: false
+      uomIsNo: false,
+      isClientVendorBOP: false
     }
   }
   /**
@@ -336,7 +335,8 @@ class AddBOPImport extends Component {
               isLoader: false,
               incoTerm: Data.IncoTerm !== undefined ? { label: `${Data.IncoTermDescription ? Data.IncoTermDescription : ''} ${Data.IncoTerm ? `(${Data.IncoTerm})` : '-'}`, value: Data.BoughtOutPartIncoTermId } : [],
               paymentTerm: Data.PaymentTerm !== undefined ? { label: `${Data.PaymentTermDescription ? Data.PaymentTermDescription : ''} ${Data.PaymentTerm ? `(${Data.PaymentTerm})` : '-'}`, value: Data.BoughtOutPartPaymentTermId } : [],
-              showCurrency: true
+              showCurrency: true,
+              isClientVendorBOP: Data.IsClientVendorBOP,
             }, () => {
               setTimeout(() => {
                 this.setState({ isLoader: false, isCallCalculation: false })
@@ -533,7 +533,7 @@ class AddBOPImport extends Component {
       const { costingTypeId } = this.state;
       if (costingTypeId === VBCTypeId) {
         if (this.state.vendorName && this.state.vendorName.length > 0) {
-          const res = await getVendorWithVendorCodeSelectList(this.state.vendorName)
+          const res = await getVendorNameByVendorSelectList(VBC_VENDOR_TYPE, this.state.vendorName)
           let vendorDataAPI = res?.data?.SelectList
           reactLocalStorage?.setObject('vendorData', vendorDataAPI)
         }
@@ -542,7 +542,7 @@ class AddBOPImport extends Component {
         }
       } else {
         if (this.state.vendorName && this.state.vendorName.length > 0) {
-          const res = await getVendorTypeBOPSelectList(this.state.vendorName)
+          const res = await getVendorNameByVendorSelectList(BOP_VENDOR_TYPE, this.state.vendorName)
           let vendorDataAPI = res?.data?.SelectList
           reactLocalStorage?.setObject('vendorData', vendorDataAPI)
         }
@@ -614,15 +614,12 @@ class AddBOPImport extends Component {
     const basicRate = fieldsObj && fieldsObj.BasicRate !== undefined ? fieldsObj.BasicRate : 0;
     const netLandedCost = checkForNull((basicRate / NoOfPieces))
 
-
-    // handleCalculation = () => {
-    // const { fieldsObj, initialConfiguration } = this.props;
-    // const { currency, effectiveDate } = this.state;
-    // const basicRate = fieldsObj && fieldsObj.BasicRate !== undefined ? fieldsObj.BasicRate : 0;
-    // const netLandedCost = checkForNull((basicRate) * this.state.currencyValue);
-
-    if (this.state.isEditFlag && Number(checkForDecimalAndNull(netLandedCost, initialConfiguration.NoOfDecimalForPrice)) === Number(checkForDecimalAndNull(this.state.DataToChange?.NetLandedCostConversion, initialConfiguration.NoOfDecimalForPrice)) &&
-      this.state.DataToChange.BoughtOutPartIncoTermId === this.state.incoTerm.value && this.state.DataToChange.BoughtOutPartPaymentTermId === this.state.paymentTerm.value) {
+    if (
+      this.state.isEditFlag &&
+      Number(checkForDecimalAndNull(netLandedCost, initialConfiguration.NoOfDecimalForPrice)) === Number(checkForDecimalAndNull(this.state.DataToChange?.NetLandedCost, initialConfiguration.NoOfDecimalForPrice)) &&
+      this.state.DataToChange.BoughtOutPartIncoTermId === this.state.incoTerm.value &&
+      this.state.DataToChange.BoughtOutPartPaymentTermId === this.state.paymentTerm.value
+    ) {
       this.setState({ IsFinancialDataChanged: false });
     } else if (this.state.isEditFlag) {
       this.setState({ IsFinancialDataChanged: true });
@@ -671,7 +668,7 @@ class AddBOPImport extends Component {
   */
   setDisableFalseFunction = () => {
     const loop = Number(this.dropzone.current.files.length) - Number(this.state.files.length)
-    if (Number(loop) === 1) {
+    if (Number(loop) === 1 || Number(this.dropzone.current.files.length) === Number(this.state.files.length)) {
       this.setState({ setDisable: false, attachmentLoader: false })
     }
   }
@@ -797,7 +794,7 @@ class AddBOPImport extends Component {
   * @description Used to Submit the form
   */
   onSubmit = debounce((values) => {
-    const { BOPCategory, selectedPlants, costingTypeId, client, vendorName, currency, isSourceChange, sourceLocation, BOPID, isEditFlag, files, effectiveDate, oldDate, UOM, netLandedConverionCost, DataToChange, DropdownChange, uploadAttachements, isDateChange, IsFinancialDataChanged, incoTerm, paymentTerm } = this.state;
+    const { BOPCategory, selectedPlants, costingTypeId, client, vendorName, currency, isSourceChange, sourceLocation, BOPID, isEditFlag, files, effectiveDate, oldDate, UOM, netLandedConverionCost, DataToChange, DropdownChange, uploadAttachements, isDateChange, IsFinancialDataChanged, incoTerm, paymentTerm, isClientVendorBOP } = this.state;
     const userDetailsBop = JSON.parse(localStorage.getItem('userDetail'))
     if (costingTypeId !== CBCTypeId && vendorName.length <= 0) {
       this.setState({ isVendorNameNotSelected: true, setDisable: false })      // IF VENDOR NAME IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY AND SAVE BUTTON WILL NOT BE DISABLED
@@ -811,7 +808,41 @@ class AddBOPImport extends Component {
     if (selectedPlants.length === 0 && costingTypeId === ZBCTypeId) {
       return false;
     }
-
+    let updatedFiles = files.map((file) => {
+      return { ...file, ContextId: BOPID }
+    })
+    //check here @samrudhi
+    const formData = {
+      BoughtOutPartId: BOPID,
+      Currency: currency.label,
+      CostingTypeId: costingTypeId,
+      BoughtOutPartNumber: values.BoughtOutPartNumber,
+      BoughtOutPartName: values.BoughtOutPartName,
+      CategoryId: BOPCategory.value,
+      Specification: values.Specification,
+      Vendor: vendorName.value,
+      Source: values.Source,
+      SourceLocation: sourceLocation.value,
+      EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
+      BasicRate: values.BasicRate,
+      NumberOfPieces: 1,
+      NetLandedCost: this.state.netLandedcost,
+      Remark: values.Remark,
+      IsActive: true,
+      LoggedInUserId: loggedInUserId(),
+      Plant: [plantArray],
+      DestinationPlantId: (costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? selectedPlants.value : (costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant) ? selectedPlants.value : userDetailsBop.Plants[0].PlantId,
+      Attachements: isEditFlag ? updatedFiles : files,
+      UnitOfMeasurementId: UOM.value,
+      VendorPlant: [],
+      NetLandedCostConversion: netLandedConverionCost,
+      IsFinancialDataChanged: isDateChange ? true : false,
+      CustomerId: client.value,
+      BoughtOutPartIncoTermId: incoTerm.value,
+      BoughtOutPartPaymentTermId: paymentTerm.value,
+      EntryType: Number(ENTRY_TYPE_IMPORT),
+      IsClientVendorBOP: isClientVendorBOP
+    }
     if ((isEditFlag && this.state.isFinalApprovar) || (isEditFlag && CheckApprovalApplicableMaster(BOP_MASTER_ID) !== true)) {
 
       this.setState({ setDisable: true })
@@ -838,11 +869,13 @@ class AddBOPImport extends Component {
         IsFinancialDataChanged: isDateChange ? true : false,
         CustomerId: client.value,
         BoughtOutPartIncoTermId: incoTerm.value,
-        BoughtOutPartPaymentTermId: paymentTerm.value
+        BoughtOutPartPaymentTermId: paymentTerm.value,
+        EntryType: Number(ENTRY_TYPE_IMPORT),
+        IsClientVendorBOP: isClientVendorBOP
       }
       if (IsFinancialDataChanged) {
         if (isDateChange && (DayTime(oldDate).format("DD/MM/YYYY") !== DayTime(effectiveDate).format("DD/MM/YYYY"))) {
-          this.props.updateBOPImport(requestData, (res) => {
+          this.props.updateBOP(requestData, (res) => {
             this.setState({ setDisable: false })
             if (res?.data?.Result) {
               Toaster.success(MESSAGES.UPDATE_BOP_SUCESS);
@@ -864,13 +897,13 @@ class AddBOPImport extends Component {
         if (DropdownChange && String(DataToChange.Source) === String(values.Source) &&
           Number(DataToChange.BasicRate) === Number(values.BasicRate) && DataToChange.Remark === values.Remark && JSON.stringify(updatedFiles) === JSON.stringify(DataToChange.Attachements) &&
           ((DataToChange.Source ? DataToChange.Source : '-') === (values.Source ? values.Source : '-')) &&
-          ((DataToChange.SourceLocation ? DataToChange.SourceLocation : '-') === (sourceLocation.value ? sourceLocation.value : '-')) && (DataToChange.BoughtOutPartIncoTermId === incoTerm.value)) {
+          ((DataToChange.SourceLocation ? DataToChange.SourceLocation : '-') === (sourceLocation.value ? sourceLocation.value : '-')) && (DataToChange.BoughtOutPartIncoTermId === incoTerm.value) && DataToChange.IsClientVendorBOP === isClientVendorBOP) {
           this.cancel('submit')
           return false;
         }
         else {
           // if (isSourceChange) {
-          this.props.updateBOPImport(requestData, (res) => {
+          this.props.updateBOP(requestData, (res) => {
             this.setState({ setDisable: false })
             if (res?.data?.Result) {
               Toaster.success(MESSAGES.UPDATE_BOP_SUCESS);
@@ -884,9 +917,9 @@ class AddBOPImport extends Component {
 
     } else {
       if (CheckApprovalApplicableMaster(BOP_MASTER_ID) === true && !this.state.isFinalApprovar) {
-        this.setState({ IsSendForApproval: true })
+        formData.IsSendForApproval = true
       } else {
-        this.setState({ IsSendForApproval: false })
+        formData.IsSendForApproval = false
       }
       // this.setState({ setDisable: true })
       const formData = {
@@ -894,7 +927,6 @@ class AddBOPImport extends Component {
         BoughtOutPartId: BOPID,
         Currency: currency.label,
         CostingTypeId: costingTypeId,
-        EntryType: 0,
         BoughtOutPartNumber: values.BoughtOutPartNumber,
         BoughtOutPartName: values.BoughtOutPartName,
         CategoryId: BOPCategory.value,
@@ -918,7 +950,9 @@ class AddBOPImport extends Component {
         IsFinancialDataChanged: isDateChange ? true : false,
         CustomerId: client.value,
         BoughtOutPartIncoTermId: incoTerm.value,
-        BoughtOutPartPaymentTermId: paymentTerm.value
+        BoughtOutPartPaymentTermId: paymentTerm.value,
+        EntryType: Number(ENTRY_TYPE_IMPORT),
+        IsClientVendorBOP: isClientVendorBOP
       }
 
       if (CheckApprovalApplicableMaster(BOP_MASTER_ID) === true && !this.state.isFinalApprovar) {
@@ -970,9 +1004,9 @@ class AddBOPImport extends Component {
 
 
       } else {
-        this.props.createBOPImport(formData, (res) => {
+        this.props.createBOP(formData, (res) => {
           this.setState({ setDisable: false })
-          if (res.data.Result) {
+          if (res?.data?.Result) {
             Toaster.success(MESSAGES.BOP_ADD_SUCCESS)
             //this.clearForm()
             this.cancel('submit')
@@ -989,14 +1023,16 @@ class AddBOPImport extends Component {
       e.preventDefault();
     }
   };
-
+  onIsClientVendorBOP = () => {
+    this.setState({ isClientVendorBOP: !this.state.isClientVendorBOP })
+  }
   /**
   * @method render
   * @description Renders the component
   */
   render() {
     const { handleSubmit, isBOPAssociated, initialConfiguration } = this.props;
-    const { isCategoryDrawerOpen, isOpenVendor, isOpenUOM, isEditFlag, isViewMode, setDisable, costingTypeId, noApprovalCycle } = this.state;
+    const { isCategoryDrawerOpen, isOpenVendor, isOpenUOM, isEditFlag, isViewMode, setDisable, costingTypeId, noApprovalCycle, isClientVendorBOP } = this.state;
     const filterList = async (inputValue) => {
       const { vendorFilterList } = this.state
       if (inputValue && typeof inputValue === 'string' && inputValue.includes(' ')) {
@@ -1007,10 +1043,10 @@ class AddBOPImport extends Component {
         this.setState({ inputLoader: true })
         let res
         if (costingTypeId === VBCTypeId) {
-          res = await getVendorWithVendorCodeSelectList(resultInput)
+          res = await getVendorNameByVendorSelectList(VBC_VENDOR_TYPE, resultInput)
         }
         else {
-          res = await getVendorTypeBOPSelectList(resultInput)
+          res = await getVendorNameByVendorSelectList(BOP_VENDOR_TYPE, resultInput)
         }
         this.setState({ inputLoader: false })
         this.setState({ vendorFilterList: resultInput })
@@ -1467,7 +1503,24 @@ class AddBOPImport extends Component {
                         <Row> */}
 
                         </Row>
-
+                        {getConfigurationKey().IsShowClientVendorBOP && <Col md="3" className="d-flex align-items-center mb-3">
+                          <label
+                            className={`custom-checkbox`}
+                            onChange={this.onIsClientVendorBOP}
+                          >
+                            Client Approved Vendor
+                            <input
+                              type="checkbox"
+                              checked={isClientVendorBOP}
+                              disabled={(isEditFlag && isBOPAssociated) || isViewMode ? true : false}
+                            />
+                            <span
+                              className=" before-box"
+                              checked={isClientVendorBOP}
+                              onChange={this.onIsClientVendorBOP}
+                            />
+                          </label>
+                        </Col>}
                         <Row>
                           <Col md="12">
                             <div className="left-border">
@@ -1501,7 +1554,7 @@ class AddBOPImport extends Component {
                                 ref={this.dropzone}
                                 onChangeStatus={this.handleChangeStatus}
                                 PreviewComponent={this.Preview}
-                                accept="*"
+                                accept="image/jpeg,image/jpg,image/png,image/PNG,.xls,.doc,.pdf,.xlsx"
                                 disabled={isViewMode}
                                 initialFiles={this.state.initialFiles}
                                 maxFiles={3}
@@ -1707,13 +1760,12 @@ function mapStateToProps(state) {
 * @param {function} mapDispatchToProps
 */
 export default connect(mapStateToProps, {
-  getVendorWithVendorCodeSelectList,
-  getVendorTypeBOPSelectList,
+  getVendorNameByVendorSelectList,
   getPlantBySupplier,
   getUOMSelectList,
   getCurrencySelectList,
-  createBOPImport,
-  updateBOPImport,
+  createBOP,
+  updateBOP,
   getBOPCategorySelectList,
   getBOPImportById,
   fileUploadBOPDomestic,

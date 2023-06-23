@@ -1,15 +1,4 @@
-@import "./cssVariable.scss";
-@import "./icons.scss";
-
-@font-face {
-  font-family: "icomoon";
-  src: url("fonts/icomoon.eot?mx6nlh");
-  src: url("fonts/icomoon.eot?mx6nlh#iefix") format("embedded-opentype"),
-    url("fonts/icomoon.ttf?mx6nlh") format("truetype"), url("fonts/icomoon.woff?mx6nlh") format("woff"),
-    url("fonts/icomoon.svg?mx6nlh#icomoon") format("svg");
-  font-weight: normal;
-  font-style: normal;
-}
+@import "./abstracts/variable.scss";
 
 [class^="icon-"],
 [class*=" icon-"] {
@@ -789,7 +778,7 @@ input.form-control {
 }
 
 .blue-box {
-  padding: 0 15px 30px;
+  padding: 20px 15px 30px;
   background-color: #EDF0F5;
 }
 
@@ -1152,8 +1141,8 @@ button.user-btn.pull-right {
 .content-page .cr-subtabs-head.nav-tabs .nav-link:hover {
   border-top: #d62c8c 2px solid;
   border-radius: 0;
-  border-bottom: 0;
-  background-color: #fff;
+  border-bottom: 0 !important;
+  background-color: #fff !important;
 }
 
 //  START Forging costing calculator
@@ -3135,7 +3124,7 @@ button:disabled,
   position: relative;
 
   .pie-chart-inner {
-    min-width: 300px;
+    min-width: 350px;
     background-color: #e4e9f0;
     color: #3d4465;
     text-align: center;
@@ -8261,6 +8250,44 @@ body {
   }
 }
 
+.simple-pdf {
+  .table-responsive {
+    min-width: 100% !important;
+    overflow: unset !important;
+
+    .table-responsive {
+      overflow: unset !important;
+    }
+
+    table {
+      min-width: 100%;
+    }
+
+    .approval-summary-headers,
+    .header-name,
+    .header-name-left {
+      background-color: #ececec !important;
+    }
+  }
+
+  .background-light-blue {
+    background: #9fcffc !important;
+
+    th {
+      word-spacing: 1px;
+
+      print-color-adjust: exact;
+      -webkit-print-color-adjust: exact;
+    }
+
+    td {
+      padding-right: 20px;
+      print-color-adjust: exact;
+      -webkit-print-color-adjust: exact;
+    }
+  }
+}
+
 .remove-space-border {
   .table-responsive {
     overflow: hidden;
@@ -9025,12 +9052,16 @@ table.group-process-table {
   background-color: #fff;
 }
 
-@for $i from 1 through 1000 {
-  [row-id~="#{($i * 5) - 1}"] {
+.rfq-part-list {
+  @for $i from 1 through 1000 {
+    [row-id~="#{($i * 5) - 1}"] {
+      @for $j from 0 through 11 {
 
-    [col-id="PartNumber"],
-    [aria-colindex="5"] {
-      border-bottom: 1px solid $agGridBorder !important;
+        [col-id="PartNumber"],
+        [aria-colindex="#{$j}"] {
+          border-bottom: 1px solid $agGridBorder !important;
+        }
+      }
     }
   }
 }
@@ -9061,6 +9092,7 @@ table.group-process-table {
 
 .table-footer {
   background-color: $tableFooterBackground;
+  font-weight: 500 !important;
 }
 
 div[col-id="ApprovalNumber"] {

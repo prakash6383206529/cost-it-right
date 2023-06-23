@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import { useForm, } from "react-hook-form";
 import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, Table, } from 'reactstrap';
-import { getOverheadProfitTabData, isOverheadProfitDataChange, setOverheadProfitData, setSurfaceCostInOverheadProfit, setSurfaceCostInOverheadProfitRejection, setToolCostInOverheadProfit } from '../../actions/Costing';
+import { getOverheadProfitTabData, isOverheadProfitDataChange, setIncludeOverheadProfitIcc, setOverheadProfitData, setSurfaceCostInOverheadProfit, setSurfaceCostInOverheadProfitRejection, setToolCostInOverheadProfit } from '../../actions/Costing';
 import { costingInfoContext, } from '../CostingDetailStepTwo';
 import { checkForNull, } from '../../../../helper';
 import PartOverheadProfit from '../CostingHeadCosts/OverheadProfit/PartOverheadProfit';
@@ -20,6 +20,8 @@ function TabOverheadProfit(props) {
   const [isPressedST, setIsPressST] = useState(false)
   const [isPressedSTRejection, setIsPressSTRejection] = useState(false)
   const [isPressedToolCost, setIsPressToolCost] = useState(false)
+  const [isPressedOverHeadAndProfit, setIsPressedOverHeadAndProfit] = useState(false)
+  const [IncludeOverheadProfitInIcc, setIncludeOverheadProfitInIcc] = useState(false)
   const dispatch = useDispatch()
   const costData = useContext(costingInfoContext);
   const CostingViewMode = useContext(ViewCostingContext);
@@ -56,7 +58,11 @@ function TabOverheadProfit(props) {
       if (OverheadProfitTabData[0].IsIncludeToolCostWithOverheadAndProfit !== null && !isPressedToolCost) {
         setIsIncludeToolCost(OverheadProfitTabData[0].IsIncludeToolCostWithOverheadAndProfit)
         dispatch(setToolCostInOverheadProfit(OverheadProfitTabData[0].IsIncludeToolCostWithOverheadAndProfit, () => { }))
+      }
 
+      if (OverheadProfitTabData[0].IsIncludeOverheadAndProfitInICC !== null && !isPressedOverHeadAndProfit) {
+        setIncludeOverheadProfitInIcc(OverheadProfitTabData[0].IsIncludeOverheadAndProfitInICC)
+        dispatch(setIncludeOverheadProfitIcc(OverheadProfitTabData[0].IsIncludeOverheadAndProfitInICC, () => { }))
       }
     }
   }, [OverheadProfitTabData])
@@ -542,6 +548,14 @@ function TabOverheadProfit(props) {
     }
   }
 
+  const onPressIncludeOverheadProfitInIcc = () => {
+
+    dispatch(setIncludeOverheadProfitIcc(!IncludeOverheadProfitInIcc, () => { }))
+    setIsPressedOverHeadAndProfit(true)
+    setIncludeOverheadProfitInIcc(!IncludeOverheadProfitInIcc)
+    dispatch(isOverheadProfitDataChange(true))
+  }
+
   /**
   * @method onSubmit
   * @description Used to Submit the form
@@ -586,7 +600,7 @@ function TabOverheadProfit(props) {
                   </Col>
                 } */}
 
-                <Col md="12" className="py-4 overhead-profit-tab d-flex">
+                <Col md="12" className="py-3 overhead-profit-tab">
                   <label
                     className={`custom-checkbox mb-0 w-fit-content`}
                     onChange={onPressIncludeSurfaceTreatment}
@@ -620,7 +634,6 @@ function TabOverheadProfit(props) {
                     />
                   </label>
 
-
                   <label
                     className={`custom-checkbox mb-0 w-fit-content`}
                     onChange={onPressIncludeToolCost}
@@ -635,6 +648,23 @@ function TabOverheadProfit(props) {
                       className=" before-box"
                       checked={IsIncludeToolCost}
                       onChange={onPressIncludeToolCost}
+                    />
+                  </label>
+
+                  <label
+                    className={`custom-checkbox mb-0 w-fit-content`}
+                    onChange={onPressIncludeOverheadProfitInIcc}
+                  >
+                    Include Overhead & Profit in ICC
+                    <input
+                      type="checkbox"
+                      checked={IncludeOverheadProfitInIcc}
+                      disabled={CostingViewMode ? true : false}
+                    />
+                    <span
+                      className=" before-box"
+                      checked={IncludeOverheadProfitInIcc}
+                      onChange={onPressIncludeOverheadProfitInIcc}
                     />
                   </label>
 
@@ -669,6 +699,7 @@ function TabOverheadProfit(props) {
                                   IsIncludeSurfaceTreatment={IsIncludeSurfaceTreatment}
                                   IsIncludedSurfaceInRejection={IsIncludeSurfaceTreatmentRejection}
                                   IsIncludeToolCost={IsIncludeToolCost}
+                                  IncludeOverheadProfitInIcc={IncludeOverheadProfitInIcc}
                                   setPartDetails={setPartDetails}
                                   setOverheadDetail={setOverheadDetail}
                                   setProfitDetail={setProfitDetail}
@@ -689,6 +720,7 @@ function TabOverheadProfit(props) {
                                   IsIncludeSurfaceTreatment={IsIncludeSurfaceTreatment}
                                   IsIncludeSurfaceTreatmentRejection={IsIncludeSurfaceTreatmentRejection}
                                   IsIncludeToolCost={IsIncludeToolCost}
+                                  IncludeOverheadProfitInIcc={IncludeOverheadProfitInIcc}
                                   setPartDetails={setPartDetails}
                                   toggleAssembly={toggleAssembly}
                                   setOverheadDetail={setOverheadDetail}

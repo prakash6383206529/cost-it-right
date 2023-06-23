@@ -7,7 +7,7 @@ import { Controller, useForm } from 'react-hook-form';
 import { getMasterSelectListSimulation, getTokenSelectListAPI, setSelectedRowForPagination, setMasterForSimulation, setTechnologyForSimulation, setTokenCheckBoxValue, setTokenForSimulation, getSelectListOfMasters, setVendorForSimulation } from '../actions/Simulation';
 import { useDispatch, useSelector } from 'react-redux';
 import SimulationUploadDrawer from './SimulationUploadDrawer';
-import { BOPDOMESTIC, BOPIMPORT, EXCHNAGERATE, MACHINERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, RM_MASTER_ID, searchCount } from '../../../config/constants';
+import { BOPDOMESTIC, BOPIMPORT, EXCHNAGERATE, MACHINERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, RM_MASTER_ID, searchCount, VBC_VENDOR_TYPE } from '../../../config/constants';
 import ReactExport from 'react-export-excel';
 import { getTechnologyForSimulation, OperationSimulation, RMDomesticSimulation, RMImportSimulation, SurfaceTreatmentSimulation, MachineRateSimulation, BOPDomesticSimulation, BOPImportSimulation, IdForMultiTechnology, ASSEMBLY_TECHNOLOGY_MASTER, ASSEMBLY } from '../../../config/masterData';
 import RMSimulation from './SimulationPages/RMSimulation';
@@ -29,7 +29,7 @@ import ScrollToTop from '../../common/ScrollToTop';
 import LoaderCustom from '../../common/LoaderCustom';
 import _ from 'lodash'
 import AssemblySimulationListing from './AssemblySimulationListing';
-import { getVendorWithVendorCodeSelectList } from '../../../actions/Common';
+import { getVendorNameByVendorSelectList } from '../../../actions/Common';
 import VerifySimulation from './VerifySimulation';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { autoCompleteDropdown, hideColumnFromExcel } from '../../common/CommonFunctions';
@@ -965,7 +965,7 @@ function Simulation(props) {
         const resultInput = inputValue.slice(0, searchCount)
         if (inputValue?.length >= searchCount && vendorName !== resultInput) {
             let res
-            res = await getVendorWithVendorCodeSelectList(resultInput)
+            res = await getVendorNameByVendorSelectList(VBC_VENDOR_TYPE, resultInput)
             setVendorName(resultInput)
             let vendorDataAPI = res?.data?.SelectList
             if (inputValue) {

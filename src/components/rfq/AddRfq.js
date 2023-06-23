@@ -3,11 +3,11 @@ import { useForm, Controller } from "react-hook-form";
 import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, Tooltip, } from 'reactstrap';
 import { AsyncSearchableSelectHookForm, SearchableSelectHookForm, TextAreaHookForm, TextFieldHookForm } from '.././layout/HookFormInputs'
-import { getVendorWithVendorCodeSelectList, getReporterList, fetchPlantDataAPI, fetchSpecificationDataAPI } from '../.././actions/Common';
+import { getReporterList, fetchPlantDataAPI, getVendorNameByVendorSelectList, getPlantSelectListByType, fetchSpecificationDataAPI } from '../.././actions/Common';
 import { getCostingSpecificTechnology, } from '../costing/actions/Costing'
-import { addDays, checkForDecimalAndNull, getConfigurationKey, loggedInUserId } from '../.././helper';
-import { checkForNull } from '../.././helper/validation'
-import { EMPTY_DATA, FILE_URL, searchCount } from '../.././config/constants';
+import { addDays, loggedInUserId } from '../.././helper';
+import { postiveNumber, maxLength10, nonZero, checkForNull } from '../.././helper/validation'
+import { EMPTY_DATA, FILE_URL, VBC_VENDOR_TYPE, ZBC, searchCount } from '../.././config/constants';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
@@ -29,9 +29,10 @@ import { getPartSelectListWtihRevNo } from '../masters/actions/Volume';
 import { DATE_STRING, DURATION_STRING, LOGISTICS, REMARKMAXLENGTH, visibilityModeDropdownArray } from '../../config/masterData';
 import DayTime from '../common/DayTimeWrapper';
 import DatePicker from 'react-datepicker'
+import { setHours, setMinutes } from 'date-fns';
 import { label } from 'react-dom-factories';
 import WarningMessage from '../common/WarningMessage';
-import { getRMGradeSelectListByRawMaterial, getRawMaterialNameChild } from '../masters/actions/Material';
+import { clearGradeSelectList, clearSpecificationSelectList, getRMGradeSelectListByRawMaterial, getRawMaterialNameChild } from '../masters/actions/Material';
 
 const gridOptions = {};
 
@@ -50,6 +51,9 @@ function AddRfq(props) {
         { sop: 'SOP4' },
         { sop: 'SOP5' },
     ]
+    const currentDate = new Date()
+    const currentHours = currentDate.getHours();
+    const currentMinutes = currentDate.getMinutes();
 
     const [getReporterListDropDown, setGetReporterListDropDown] = useState([]);
     const [vendor, setVendor] = useState([]);
@@ -79,6 +83,8 @@ function AddRfq(props) {
     const [submissionDate, setSubmissionDate] = useState('')
     const [visibilityMode, setVisibilityMode] = useState({})
     const [dateAndTime, setDateAndTime] = useState('')
+    const [minHours, setMinHours] = useState(currentHours)
+    const [minMinutes, setMinMinutes] = useState(currentMinutes)
     const [isConditionalVisible, setIsConditionalVisible] = useState(false)
     const [isWarningMessageShow, setIsWarningMessageShow] = useState(false)
     const [loader, setLoader] = useState(false)
@@ -88,7 +94,7 @@ function AddRfq(props) {
     const checkRFQPartBulkUpload = useSelector((state) => state.rfq.checkRFQPartBulkUpload)
     const nfrSelectList = useSelector((state) => state.rfq.nfrSelectList)
     // const getReporterListDropDown = useSelector(state => state.comman.getReporterListDropDown)
-    const plantList = useSelector(state => state.comman.plantList)
+    const plantSelectList = useSelector(state => state.comman.plantSelectList)
     const [isBulkUpload, setisBulkUpload] = useState(false)
     const [showTooltip, setShowTooltip] = useState(false)
     const [viewTooltip, setViewTooltip] = useState(false)
@@ -100,15 +106,19 @@ function AddRfq(props) {
     const [rmgrade, setRMGrade] = useState([])
     const [state, setState] = useState(true)
     const [rmspecification, setRMSpecification] = useState([])
+    const [deleteToggle, setDeleteToggle] = useState(false)
     const rawMaterialNameSelectList = useSelector(state => state.material.rawMaterialNameSelectList);
     const gradeSelectList = useSelector(state => state.material.gradeSelectList);
     const rmSpecification = useSelector(state => state.comman.rmSpecification);
 
     useEffect(() => {
         const { vbcVendorGrid } = props;
-        dispatch(getRawMaterialNameChild('', () => { }))
+        dispatch(getPlantSelectListByType(ZBC, () => { }))
+        dispatch(getRawMaterialNameChild(() => { }))
         dispatch(fetchPlantDataAPI(() => { }))
         dispatch(getNfrSelectList(() => { }))
+        dispatch(getPlantSelectListByType(ZBC, () => { }))
+
         let tempArr = [];
         vbcVendorGrid && vbcVendorGrid.map(el => {
             tempArr.push(el.VendorId)
@@ -123,6 +133,13 @@ function AddRfq(props) {
             dispatch(setRFQBulkUpload([]))
         }
     }, []);
+
+    useEffect(() => {
+        const filteredArray = selectedparts.filter((obj) => {
+            return obj.value !== deleteToggle?.rowData.PartId;
+        });
+        setSelectedParts(filteredArray)
+    }, [deleteToggle])
 
     useEffect(() => {
         let tempp = _.unionBy(partList, checkRFQPartBulkUpload?.SuccessfulRecord, 'PartNumber');
@@ -246,7 +263,7 @@ function AddRfq(props) {
 
     const setDisableFalseFunction = () => {
         const loop = Number(dropzone.current.files?.length) - Number(files?.length)
-        if (Number(loop) === 1) {
+        if (Number(loop) === 1 || Number(dropzone.current.files?.length) === Number(files?.length)) {
             setIsDisable(false)
         }
     }
@@ -311,12 +328,9 @@ function AddRfq(props) {
     }
 
     const deleteItemPartTable = (rowData, final) => {
-        const filteredArray = selectedparts.filter((obj) => {
-            return obj.value !== rowData.value;
-        });
-        setSelectedParts(filteredArray)
         let arr = final && final.filter(item => item.PartNo !== rowData?.PartNo)
         setPartList(arr)
+        setDeleteToggle({ deleteToggle: !deleteToggle, rowData: rowData })
         onResetPartNoTable()
     }
 
@@ -358,9 +372,9 @@ function AddRfq(props) {
         const temp = [];
 
         if (label === 'plant') {
-            plantList && plantList.map((item) => {
-                if (item.Value === '0') return false
-                temp.push({ label: item.Text, value: item.Value, PlantName: item.Text, PlantCode: item.Value })
+            plantSelectList && plantSelectList.map((item) => {
+                if (item.PlantId === '0') return false
+                temp.push({ label: item.PlantNameCode, value: item.PlantId })
                 return null
             })
             return temp
@@ -726,6 +740,11 @@ function AddRfq(props) {
                 setValue('RMSpecification', "")
                 // setValue('technology', "")
                 setUpdateButtonPartNoTable(false)
+                setRMName('')
+                setRMGrade('')
+                setRMSpecification('')
+                dispatch(clearGradeSelectList([]))
+                dispatch(clearSpecificationSelectList([]))
             }))
         }
     }
@@ -793,7 +812,7 @@ function AddRfq(props) {
         const resultInput = inputValue.slice(0, searchCount)
         if (inputValue?.length >= searchCount && vendor !== resultInput) {
             let res
-            res = await getVendorWithVendorCodeSelectList(resultInput)
+            res = await getVendorNameByVendorSelectList(VBC_VENDOR_TYPE, resultInput)
             setVendor(resultInput)
             let vendorDataAPI = res?.data?.SelectList
             if (inputValue) {
@@ -902,7 +921,7 @@ function AddRfq(props) {
     const partNumberFormatter = (props) => {
         const row = props?.data;
         const value = row?.RevisionNumber ? (row?.PartNumber + ' (' + row?.RevisionNumber + ')') : (row?.PartNumber ? row?.PartNumber : '')
-        return <div className={`${value ? '' : 'row-merge'}`}>{value}</div>
+        return <div className={`${value ? 'font-ellipsis' : 'row-merge'}`}>{value}</div>
     }
 
     /**
@@ -915,7 +934,23 @@ function AddRfq(props) {
     }
 
     const handleChangeDateAndTime = (value) => {
-        setDateAndTime(DayTime(value).format('YYYY-MM-DD HH:mm:ss'))
+        const localCurrentDate = new Date();
+        if (localCurrentDate.toLocaleDateString() !== value.toLocaleDateString()) {
+            setMinHours(0)
+            setMinMinutes(0)
+            setDateAndTime(DayTime(value).format('YYYY-MM-DD HH:mm:ss'))
+        } else {
+            setMinHours(currentHours)
+            setMinMinutes(currentMinutes)
+            if (value.getHours() > currentHours ? true : value.getMinutes() > currentMinutes) {
+                setDateAndTime(DayTime(value).format('YYYY-MM-DD HH:mm:ss'))
+            } else {
+                const selectedDateTime = setHours(setMinutes(value, new Date().getMinutes()), new Date().getHours());
+                setDateAndTime(DayTime(selectedDateTime).format('YYYY-MM-DD HH:mm:ss'))
+            }
+
+        }
+
     }
 
     const tooltipToggle = () => {
@@ -1305,12 +1340,12 @@ function AddRfq(props) {
                                             </button>}
                                         </Col>
                                     </Row>
-                                    <div>
-                                        {showTooltip && <Tooltip className="rfq-tooltip-left" placement={"top"} isOpen={viewTooltip} toggle={tooltipToggle} target={"quantity-tooltip"} >{"To add the quantity please double click on the field."}</Tooltip>}
+                                    <div className='rfq-part-list'>
+                                        {showTooltip && <Tooltip className="rfq-tooltip-left" placement={"top"} isOpen={viewTooltip} toggle={tooltipToggle} target={"quantity-tooltip"} >{"To edit the quantity please double click on the field."}</Tooltip>}
                                         {!loader ? <div className={`ag-grid-react`}>
                                             <Row>
                                                 <Col>
-                                                    <div className={`ag-grid-wrapper height-width-wrapper ${partList && partList.length <= 0 ? "overlay-contain border" : ""} `}>
+                                                    <div className={`ag-grid-wrapper rfq-grid height-width-wrapper ${partList && partList.length <= 0 ? "overlay-contain border" : ""} `}>
 
                                                         <div className={`ag-theme-material ${!state ? "custom-min-height-208px" : ''}`}>
                                                             {!state ? <LoaderCustom customClass={""} /> :
@@ -1331,8 +1366,9 @@ function AddRfq(props) {
                                                                     frameworkComponents={frameworkComponents}
                                                                     stopEditingWhenCellsLoseFocus={true}
                                                                     suppressColumnVirtualisation={true}
+                                                                    enableBrowserTooltips={true}
                                                                 >
-                                                                    <AgGridColumn width={"230px"} field="PartNumber" headerName="Part No" cellClass={"colorWhite"} cellRenderer={'partNumberFormatter'}></AgGridColumn>
+                                                                    <AgGridColumn width={"230px"} field="PartNumber" headerName="Part No" tooltipField="PartNumber" cellClass={"colorWhite"} cellRenderer={'partNumberFormatter'}></AgGridColumn>
                                                                     <AgGridColumn width={"230px"} field="VendorListExisting" headerName="Vendor" cellClass={"colorWhite"} cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                                                     {checkForNull(technology?.value) !== LOGISTICS && <AgGridColumn width={"230px"} field="RMName" headerName="RM Name" cellClass={"colorWhite"}></AgGridColumn>}
                                                                     {checkForNull(technology?.value) !== LOGISTICS && <AgGridColumn width={"230px"} field="RMGrade" headerName="RM Grade" cellClass={"colorWhite"}></AgGridColumn>}
@@ -1502,19 +1538,22 @@ function AddRfq(props) {
                                                 {visibilityMode?.value === DATE_STRING && <div className="inputbox date-section">
                                                     <div className="form-group">
                                                         <label>Date & Time</label>
-                                                        <div className="inputbox date-section">
+                                                        <div className="inputbox date-section rfq-calendar">
                                                             <DatePicker
                                                                 name="startPlanDate"
                                                                 selected={DayTime(dateAndTime).isValid() ? new Date(dateAndTime) : null}
                                                                 onChange={handleChangeDateAndTime}
                                                                 showMonthDropdown
                                                                 showYearDropdown
-                                                                showTimeInput
+                                                                showTimeSelect
                                                                 minDate={new Date()}
                                                                 timeFormat='HH:mm'
                                                                 dateFormat="dd/MM/yyyy HH:mm"
+                                                                minTime={setHours(setMinutes(new Date(), minMinutes), minHours)}
+                                                                maxTime={setHours(setMinutes(new Date(), 59), 23)}
+                                                                timeIntervals={30}
                                                                 placeholderText="Select"
-                                                                className="withBorder"
+                                                                className="withBorder "
                                                                 autoComplete={'off'}
                                                                 errors={errors.startPlanDate}
                                                                 disabledKeyboardNavigation
@@ -1610,7 +1649,7 @@ function AddRfq(props) {
                                                     onChangeStatus={handleChangeStatus}
                                                     PreviewComponent={Preview}
                                                     //onSubmit={this.handleSubmit}
-                                                    accept="*"
+                                                    accept="image/jpeg,image/jpg,image/png,image/PNG,.xls,.doc,.pdf,.xlsx"
                                                     initialFiles={[]}
                                                     maxFiles={4}
                                                     maxSizeBytes={2000000}

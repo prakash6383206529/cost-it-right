@@ -10,6 +10,7 @@ import LoaderCustom from '../../../common/LoaderCustom'
 import VariableMhrDrawer from '../Drawers/processCalculatorDrawer/VariableMhrDrawer'
 import { getProcessDefaultCalculation, getProcessMachiningCalculation } from '../../actions/CostWorking'
 import { MACHINING } from '../../../../config/masterData'
+import { getCostingLabourDetails } from '../../actions/Costing'
 
 function ViewConversionCost(props) {
 
@@ -47,6 +48,8 @@ function ViewConversionCost(props) {
   const [processAcc, setProcessAcc] = useState(false)
   const [processAccObj, setProcessAccObj] = useState({});
   const [calculatorTechnology, setCalculatorTechnology] = useState('')
+  const [showLabourData, setShowLabourData] = useState(initialConfiguration.IsShowCostingLabour ? initialConfiguration.IsShowCostingLabour : false)
+  const [labourTable, setLabourTable] = useState([])
 
   const dispatch = useDispatch()
 
@@ -110,6 +113,14 @@ function ViewConversionCost(props) {
       setSurfaceTreatmentCost(surfaceTreatmentDetails ? surfaceTreatmentDetails : [])
     }
 
+    if (showLabourData) {
+      dispatch(getCostingLabourDetails(viewCostingData[0].costingId !== null ? viewCostingData[0].costingId : "00000000-0000-0000-0000-000000000000", (res) => {
+        if (res) {
+          let Data = res?.data?.Data
+          setLabourTable(Data.CostingLabourDetailList)
+        }
+      }))
+    }
   }, [])
 
   const setCalculatorData = (data, list, id, parentId) => {
@@ -384,8 +395,8 @@ function ViewConversionCost(props) {
                       <td>{item.UOM ? item.UOM : '-'}</td>
                       <td>{item.Rate ? item.Rate : '-'}</td>
                       <td>{item.Quantity ? item.Quantity : '-'}</td>
-                      <td>{item.IsLabourRateExist ? checkForDecimalAndNull(item.LabourRate, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
-                      <td>{item.IsLabourRateExist ? checkForDecimalAndNull(item.LabourQuantity, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
+                      {costingOperationCost && costingOperationCost[0]?.IsLabourRateExist === true && <td>{item.IsLabourRateExist ? checkForDecimalAndNull(item.LabourRate, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>}
+                      {costingOperationCost && costingOperationCost[0]?.IsLabourRateExist === true && <td>{item.IsLabourRateExist ? checkForDecimalAndNull(item.LabourQuantity, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>}
                       {/* <td>{netCost(item.OperationCost)}</td> */}
                       <td>
                         {item.OperationCost ? checkForDecimalAndNull(item.OperationCost, initialConfiguration.NoOfDecimalForPrice) : 0}
@@ -397,6 +408,60 @@ function ViewConversionCost(props) {
                   )
                 })}
               {costingOperationCost && costingOperationCost.length === 0 && (
+                <tr>
+                  <td colSpan={12}>
+                    <NoContentFound title={EMPTY_DATA} />
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </Table>
+        </Col>
+      </Row>
+    </>
+  }
+
+  const labourTableData = () => {
+    return <>
+      <Row>
+        <Col md="8">
+          <div className="left-border">{'Labour Cost:'}</div>
+        </Col>
+      </Row>
+      <Row>
+        {/*LABOUR COST GRID */}
+
+        <Col md="12">
+          <Table className="table cr-brdr-main" size="sm">
+            <thead>
+              <tr>
+                <th>{`Description`}</th>
+                <th>{`Labour Rate (Rs/Shift)`}</th>
+                <th>{`Working Time`}</th>
+                <th>{`Efficiency`}</th>
+                <th>{`Cycle Time`}</th>
+                <th>{`Labour Cost Rs/Pcs`}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {labourTable &&
+                labourTable.map((item, index) => {
+                  return (
+                    <tr key={index}>
+                      <td>
+                        {item.Description ? item.Description : '-'}
+                      </td>
+                      <td>
+                        {item.LabourRate ? item.LabourRate : '-'}
+                      </td>
+                      <td>{item.WorkingTime ? item.WorkingTime : '-'}</td>
+                      <td>{item.Efficiency ? item.Efficiency : '-'}</td>
+                      <td>{item.CycleTime ? item.CycleTime : '-'}</td>
+                      <td>{item.LabourCost ? checkForDecimalAndNull(item.LabourCost, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
+                    </tr>
+                  )
+                })}
+              {labourTable && labourTable.length === 0 && (
                 <tr>
                   <td colSpan={12}>
                     <NoContentFound title={EMPTY_DATA} />
@@ -638,11 +703,19 @@ function ViewConversionCost(props) {
                   {props.viewConversionCostData.isSurfaceTreatmentCost &&                   // SHOW ONLY WHEN NETSURFACETREATMENT COST EYE BUTTON IS CLICKED
                     <>
                       {stTableData()}
+                      <br />
                     </>
                   }
-                  <br />
+
                   {props.viewConversionCostData.isSurfaceTreatmentCost &&    // SHOW ONLY WHEN NETSURFACETREATMENT COST EYE BUTTON IS CLICKED
                     <>{extraCostTableData()} </>
+                  }
+
+
+                  {!props.viewConversionCostData.isSurfaceTreatmentCost && !props.viewConversionCostData.processHide && showLabourData &&  // SHOW ONLY WHEN NETCONVERSION COST EYE BUTTON IS CLICKED
+                    <>
+                      {labourTableData()}
+                    </>
                   }
                 </TabPane>
               </TabContent>
@@ -664,11 +737,13 @@ function ViewConversionCost(props) {
         {!stCostShow && costingProcessCost.length !== 0 && !props?.processShow && !props?.operationShow && processTableData()}
         {!stCostShow && costingOperationCost.length !== 0 && !props?.processShow && !props?.operationShow && operationTableData()}
         {!stCostShow && othercostingOperationCost.length !== 0 && !props?.processShow && !props?.operationShow && otherOperTableData()}
+        {!stCostShow && showLabourData && labourTable.length !== 0 && labourTableData()}
         {/* {costingToolsCost.length != 0 && toolCostTableData()} */}
         {stCostShow && surfaceTreatmentCost.length !== 0 && !props?.processShow && !props?.operationShow && stTableData()}
         {stCostShow && transportCost.length !== 0 && !props?.processShow && !props?.operationShow && extraCostTableData()}
         {props?.processShow && costingProcessCost.length !== 0 && processTableData()}
         {props?.operationShow && costingOperationCost.length !== 0 && operationTableData()}
+
       </>}
     </>
   )

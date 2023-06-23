@@ -5,8 +5,8 @@ import AddRM from '../../Drawers/AddRM'
 import { costingInfoContext } from '../../CostingDetailStepTwo'
 import NoContentFound from '../../../../common/NoContentFound'
 import { useDispatch, useSelector } from 'react-redux'
-import { EMPTY_DATA } from '../../../../../config/constants'
-import { TextFieldHookForm, TextAreaHookForm } from '../../../../layout/HookFormInputs'
+import { CRMHeads, EMPTY_DATA } from '../../../../../config/constants'
+import { TextFieldHookForm, TextAreaHookForm, SearchableSelectHookForm } from '../../../../layout/HookFormInputs'
 import Toaster from '../../../../common/Toaster'
 import { calculateNetLandedCost, calculatePercentage, calculatePercentageValue, checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected, getConfigurationKey, isRMDivisorApplicable } from '../../../../../helper'
 import OpenWeightCalculator from '../../WeightCalculatorDrawer'
@@ -935,6 +935,37 @@ function RawMaterialCost(props) {
           })
         }, 500)
       }
+
+      if (Number(costData?.TechnologyId) === Number(RUBBER)) {
+        gridData && gridData.map((item, index) => {
+          item.FinishWeight = weightData.CostingRubberCalculationRawMaterials[index].FinishWeight ? weightData.CostingRubberCalculationRawMaterials[index].FinishWeight : 0
+          item.GrossWeight = weightData.CostingRubberCalculationRawMaterials[index].GrossWeight ? weightData.CostingRubberCalculationRawMaterials[index].GrossWeight : 0
+          item.NetLandedCost = index === 0 ? weightData.RawMaterialCost : 0
+          item.WeightCalculatorRequest = weightData
+          item.WeightCalculationId = weightData.WeightCalculationId
+          item.RawMaterialCalculatorId = weightData.WeightCalculationId
+          item.IsCalculatedEntry = true
+          item.IsCalculaterAvailable = true
+          item.CutOffRMC = CutOffRMC
+          item.ScrapRecoveryPercentage = RecoveryPercentage
+          item.ScrapWeight = weightData?.CostingRubberCalculationRawMaterials[index]?.ScrapWeight ? weightData?.CostingRubberCalculationRawMaterials[index]?.ScrapWeight : 0
+          item.Percentage = weightData.CostingRubberCalculationRawMaterials[index].Percentage
+          return item
+        })
+
+        setTimeout(() => {
+          setGridData(gridData)
+          gridData && gridData.map((item, index) => {
+            setValue(`${rmGridFields}.${index}.GrossWeight`, checkForDecimalAndNull((weightData.CostingRubberCalculationRawMaterials[index].GrossWeight), getConfigurationKey().NoOfDecimalForInputOutput))
+            setValue(`${rmGridFields}.${index}.FinishWeight`, checkForDecimalAndNull(weightData.CostingRubberCalculationRawMaterials[index].FinishWeight, getConfigurationKey().NoOfDecimalForInputOutput))
+            setValue(`${rmGridFields}.${index}.ScrapRecoveryPercentage`, checkForDecimalAndNull(RecoveryPercentage, getConfigurationKey().NoOfDecimalForInputOutput))
+            // setValue(`${rmGridFields}.${index}.NetRMCost`, checkForDecimalAndNull(NetRMCost, getConfigurationKey().NoOfDecimalForInputOutput))
+            setValue(`${rmGridFields}.${index}.ScrapWeight`, checkForDecimalAndNull((weightData?.CostingRubberCalculationRawMaterials[index]?.ScrapWeight), getConfigurationKey().NoOfDecimalForInputOutput))
+
+            return null
+          })
+        }, 500)
+      }
     }
   }
 
@@ -1003,6 +1034,17 @@ function RawMaterialCost(props) {
     }
     var button = document.getElementById(`popUpTrigger${index}`)
     button.click()
+  }
+
+  const onCRMHeadChange = (e, index) => {
+    let tempArr = []
+    let tempData = gridData[index]
+    tempData = {
+      ...tempData,
+      RawMaterialCRMHead: e?.label
+    }
+    tempArr = Object.assign([...gridData], { [index]: tempData })
+    setGridData(tempArr)
   }
 
   const onRemarkPopUpClose = (index) => {
@@ -1303,6 +1345,7 @@ function RawMaterialCost(props) {
                       <th className='scrap-weight'>Scrap Weight </th>
                       {/* //Add i here for MB+ */}
                       <th className='net-rm-cost'>{`Net RM Cost ${isRMDivisorApplicable(costData.TechnologyName) ? '/(' + RMDivisor + ')' : ''}`}  </th>
+                      {initialConfiguration.IsShowCRMHead && <th>{'CRM Head'}</th>}
                       <th style={{ textAlign: "right" }}>{`Action`}</th>
                     </tr>
                   </thead>
@@ -1421,6 +1464,26 @@ function RawMaterialCost(props) {
                                 {index === 0 && (item.RawMaterialCalculatorId !== '' && item?.RawMaterialCalculatorId > 0) && costData?.TechnologyId === Ferrous_Casting && <TooltipCustom id={`forging-tooltip${index}`} customClass={"mt-1 ml-2"} tooltipText={`This is RMC of all RM present in alloy.`} />}
                               </div>
                             </td>
+                            {initialConfiguration.IsShowCRMHead && <td>
+                              <SearchableSelectHookForm
+                                name={`crmHeadRm${index}`}
+                                type="text"
+                                label="CRM Head"
+                                errors={`${errors.crmHeadRm}${index}`}
+                                Controller={Controller}
+                                control={control}
+                                register={register}
+                                mandatory={false}
+                                rules={{
+                                  required: false,
+                                }}
+                                defaultValue={item.RawMaterialCRMHead ? { label: item.RawMaterialCRMHead, value: index } : ''}
+                                placeholder={'Select'}
+                                options={CRMHeads}
+                                required={false}
+                                handleChange={(e) => { onCRMHeadChange(e, index) }}
+                                disabled={CostingViewMode}
+                              /></td>}
                             <td>
                               <div className='action-btn-wrapper'>
                                 {!CostingViewMode && !IsLocked && (item.IsRMCopied ? (initialConfiguration.IsCopyCostingFinishAndGrossWeightEditable ? true : false) : true) && !dataInNFRAPI && < button

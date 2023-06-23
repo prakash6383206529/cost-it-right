@@ -707,7 +707,7 @@ function ApproveRejectDrawer(props) {
  */
   const setDisableFalseFunction = () => {
     const loop = Number(dropzone.current.files.length) - Number(files.length)
-    if (Number(loop) === 1) {
+    if (Number(loop) === 1 || Number(dropzone.current.files.length) === Number(files.length)) {
       setIsDisable(false)
       setAttachmentLoader(false)
     }
@@ -1070,7 +1070,7 @@ function ApproveRejectDrawer(props) {
                               onChangeStatus={handleChangeStatus}
                               PreviewComponent={Preview}
                               // onSubmit={handleImapctSubmit}
-                              accept="*"
+                              accept="image/jpeg,image/jpg,image/png,image/PNG,.xls,.doc,.pdf,.xlsx"
                               initialFiles={[]}
                               maxFiles={2}
                               maxSizeBytes={5000000}

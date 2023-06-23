@@ -15,7 +15,7 @@ import NoContentFound from '../../../../common/NoContentFound';
 import { getSingleCostingDetails, gridDataAdded, setCostingViewData } from '../../../actions/Costing';
 import CostingDetailSimulationDrawer from '../../../../simulation/components/CostingDetailSimulationDrawer';
 import { ViewCostingContext } from '../../CostingDetails';
-import { EMPTY_DATA } from '../../../../../config/constants';
+import { EMPTY_DATA, WACTypeId } from '../../../../../config/constants';
 
 function EditPartCost(props) {
 
@@ -107,7 +107,8 @@ function EditPartCost(props) {
         let obj = {
             partId: props?.tabAssemblyIndividualPartDetail?.PartId,
             plantId: costData?.DestinationPlantId,
-            costingTypeId: costData?.CostingTypeId
+            isRequestForWAC: (costData.CostingTypeId === WACTypeId) ? true : false,
+            costingTypeId: (costData.CostingTypeId === WACTypeId) ? null : costData?.CostingTypeId
         }
 
         !props.costingSummary && dispatch(getCostingForMultiTechnology(obj, res => { }))
@@ -300,6 +301,7 @@ function EditPartCost(props) {
     const addGrid = () => {
         if (Object.keys(costingNumberData).length > 0) {
             setGridData([...gridData, costingNumberData])
+            let currentGrid = [...gridData, costingNumberData]
             setValue('CostingNumber', {})
             setCostingNumberData({})
             let indexForUpdate = _.findIndex([...gridData, costingNumberData], costingNumberData);
@@ -308,6 +310,12 @@ function EditPartCost(props) {
             setValue(`${PartCostFields}.${indexForUpdate}.DeltaSign`, 0)
             setValue(`${PartCostFields}.${indexForUpdate}.SOBPercentage`, 0)
             setValue(`${PartCostFields}.${indexForUpdate}.NetCost`, 0)
+
+            if (costData.CostingTypeId === WACTypeId) {
+                if (indexForUpdate) {
+                    setValue(`${PartCostFields}.${indexForUpdate}.SOBPercentage`, currentGrid[indexForUpdate].SOBPercentage)
+                }
+            }
         } else {
             Toaster.warning('Please select Costing Number')
             return false
@@ -322,7 +330,7 @@ function EditPartCost(props) {
                 if (item?.Value === '0' || final.includes(item?.CostingNumber)) return false;
                 temp.push({
                     label: item?.CostingNumber, value: item?.BaseCostingIdRef,
-                    SettledPrice: item?.SettledPrice, VendorCode: item?.VendorCode, VendorName: item?.VendorName
+                    SettledPrice: item?.SettledPrice, VendorCode: item?.VendorCode, VendorName: item?.VendorName, SOBPercentage: (item?.SOBPercentage) ? item.SOBPercentage : 0
                 })
                 return null;
             });
@@ -470,7 +478,7 @@ function EditPartCost(props) {
                                             <th>Costing Number</th>
                                             <th>Settled Price</th>
                                             <th>SOB%</th>
-                                            <th>Delta</th>
+                                            {costData.CostingTypeId !== WACTypeId && <th>Delta</th>}
                                             <th>Net Cost</th>
                                             <th>Action</th>
                                         </tr>
@@ -505,10 +513,10 @@ function EditPartCost(props) {
                                                                 defaultValue={''}
                                                                 className=""
                                                                 customClassName={'withBorder'}
-                                                                disabled={CostingViewMode || props.costingSummary ? true : false}
+                                                                disabled={(CostingViewMode || props.costingSummary || costData.CostingTypeId === WACTypeId) ? true : false}
                                                             />
                                                         </td>
-                                                        <td >
+                                                        {costData.CostingTypeId !== WACTypeId && <td >
                                                             <div className='delta-warpper'>
                                                                 <SearchableSelectHookForm
                                                                     name={`${PartCostFields}.${index}.DeltaSign`}
@@ -544,7 +552,7 @@ function EditPartCost(props) {
                                                                     disabled={CostingViewMode || props.costingSummary ? true : false}
                                                                 />
                                                             </div>
-                                                        </td>
+                                                        </td>}
                                                         <td >
                                                             <NumberFieldHookForm
                                                                 name={`${PartCostFields}.${index}.NetCost`}

@@ -1228,29 +1228,6 @@ export function getTechnologySelectList(callback) {
 }
 
 /**
-* @method getPlantSelectList
-* @description Used to get select list of Vendor's
-*/
-export function getPlantSelectList(callback) {
-  return (dispatch) => {
-    dispatch({ type: API_REQUEST });
-    const request = axios.get(`${API.getPlantSelectList}`, config());
-    request.then((response) => {
-      if (response.data.Result) {
-        dispatch({
-          type: GET_PLANT_SELECTLIST_SUCCESS,
-          payload: response.data.SelectList,
-        });
-        callback(response);
-      }
-    }).catch((error) => {
-      dispatch({ type: FETCH_MATER_DATA_FAILURE, });
-      apiErrors(error);
-    });
-  };
-}
-
-/**
 * @method getVendorPlantSelectList
 * @description Used to get Un Associated vendor platn list
 */
@@ -1369,15 +1346,6 @@ export function getPlantSelectListByType(TYPE, callback) {
     });
   };
 }
-
-export function getVendorWithVendorCodeSelectList(vendorName, callback) {
-  return axios.get(`${API.getVendorWithVendorCodeSelectList}?vendorName=${vendorName}`, config()).catch(error => {
-    apiErrors(error);
-    callback(error);
-    return Promise.reject(error)
-  });
-}
-
 
 export function getReporterList(callback) {
   return (dispatch) => {
@@ -1728,3 +1696,10 @@ export function getCostingCondition(callback) {
 }
 
 
+export function getVendorNameByVendorSelectList(vendorTypeId, vendorName, callback) {
+  return axios.get(`${API.getVendorNameByVendorSelectList}?vendorTypeId=${vendorTypeId}&vendorName=${vendorName}`, config()).catch(error => {
+    apiErrors(error);
+    callback(error);
+    return Promise.reject(error)
+  });
+}

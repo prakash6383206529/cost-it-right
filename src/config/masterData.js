@@ -2280,13 +2280,18 @@ export const MHRMoreZBC = [
     { label: "MachineCost", value: "MachineCost", }, //*
     { label: "AccessoriesCost", value: "AccessoriesCost", },
     { label: "InstallationCost", value: "InstallationCost", },
+    { label: "LoanCRMHead", value: "LoanCRMHead", },
     { label: "LoanPercentage", value: "LoanPercentage", },
     { label: "EquityPercentage", value: "EquityPercentage", },
+    { label: "InterestCRMHead", value: "InterestCRMHead", },
     { label: "RateOfInterest", value: "RateOfInterest", },
+    { label: "WorkingShiftCRMHead", value: "WorkingShiftCRMHead", },
     { label: "NoOfShifts", value: "NoOfShifts", },
     { label: "WorkingHoursPerShift", value: "WorkingHoursPerShift", },
     { label: "NoOfWorkingDaysPerAnnum", value: "NoOfWorkingDaysPerAnnum", },
     { label: "Availability", value: "Availability", },
+    { label: "ActualWorkingHours", value: "ActualWorkingHours", },
+    { label: "DepreciationCRMHead", value: "DepreciationCRMHead", },
     { label: "DepreciationType", value: "DepreciationType", },
     { label: "DepriciationRate", value: "DepriciationRate", },
     { label: "LifeOfAsset", value: "LifeOfAsset", },//NOUI
@@ -2295,24 +2300,37 @@ export const MHRMoreZBC = [
     { label: "IsMaintanceFixed", value: "IsMaintanceFixed", },
     { label: "AnnualMaintance", value: "AnnualMaintance", },
     { label: "AnnualMaintanaceAmount", value: "AnnualMaintanaceAmount", },
+    { label: "IsMaintenanceFixed", value: "IsMaintenanceFixed", },
+    { label: "AnnualMaintanceCRMHead", value: "AnnualMaintanceCRMHead", },
+    { label: "AnnualMaintenance", value: "AnnualMaintenance", },
+    { label: "AnnualMaintenanceAmount", value: "AnnualMaintenanceAmount", },
     { label: "IsConsumableFixed", value: "IsConsumableFixed", },
+    { label: "AnnualConsumableCRMHead", value: "AnnualConsumableCRMHead", },
     { label: "AnnualConsumable", value: "AnnualConsumable", },
     { label: "AnnualConsumableAmount", value: "AnnualConsumableAmount", },
     { label: "InsuaranceTypeFixed", value: "InsuaranceTypeFixed", },
+    { label: "InsuranceTypeFixed", value: "InsuranceTypeFixed", },
+    { label: "AnnualInsuranceCRMHead", value: "AnnualInsuranceCRMHead", },
     { label: "InsuranceAmount", value: "InsuranceAmount", },
     { label: "AnnualInsurancePercentage", value: "AnnualInsurancePercentage", },
+    { label: "BuildingCRMHead", value: "BuildingCRMHead", },
     { label: "BuildingCostPerSqFt", value: "BuildingCostPerSqFt", },
+    { label: "MachineFloorCRMHead", value: "MachineFloorCRMHead", },
     { label: "MachineFloorAreaSqPerFt", value: "MachineFloorAreaSqPerFt", },
+    { label: "OtherYearlyCRMHead", value: "OtherYearlyCRMHead", },
     { label: "OtherYearlyCost", value: "OtherYearlyCost", },
     { label: "UsesFuel", value: "UsesFuel", },
+    { label: "FuelCRMHead", value: "FuelCRMHead", },
     { label: "Fuel", value: "Fuel", },
     { label: "ConsumptionPerAnnum", value: "ConsumptionPerAnnum", },
     { label: "UtilizingFactor", value: "UtilizingFactor", },
+    { label: "PowerCRMHead", value: "PowerCRMHead", },
     { label: "PowerRatingKW", value: "PowerRatingKW", },
     { label: "UsesSolarPower", value: "UsesSolarPower", },
     // { label: "PowerCostPerUnit", value: "PowerCostPerUnit", },
     { label: "LabourType", value: "LabourType", },
     // { label: "LabourRate", value: "LabourRate", },
+    { label: "LabourCRMHead", value: "LabourCRMHead", },
     { label: "NoOfPeople", value: "NoOfPeople", },
     { label: "ProcessName", value: "ProcessName", },
     { label: "ProcessCode", value: "ProcessCode", },
@@ -2394,6 +2412,20 @@ export const MHRMoreZBCTempData = [
         "UOM": "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram",
         "OutputPerHours": 50,
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
+        "Remark": "Remark",
+        "LoanCRMHead": "Net Sales",
+        "InterestCRMHead": "Consumption",
+        "WorkingShiftCRMHead": "Labour Cost",
+        "DepreciationCRMHead": "Net Sales",
+        "AnnualMaintanceCRMHead": "Manufacturing Expenses",
+        "AnnualConsumableCRMHead": "Office Expenses",
+        "AnnualInsuranceCRMHead": "Repairs Expenses",
+        "BuildingCRMHead": "Selling & Distribution Expenses",
+        "MachineFloorCRMHead": "Net Sales",
+        "OtherYearlyCRMHead": "Common Expenses",
+        "PowerCRMHead": "Staff Cost",
+        "FuelCRMHead": "EBIDTA",
+        "LabourCRMHead": "Net Sales",
     },
     {
         "Technology": "Sheet Metal",
@@ -2447,6 +2479,20 @@ export const MHRMoreZBCTempData = [
         "UOM": "Gallon/Cubic Centimeter/Cubic Meter/Milliliter/Liter",
         "OutputPerHours": 40,
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
+        "Remark": "Remark",
+        "LoanCRMHead": "Net Sales",
+        "InterestCRMHead": "Consumption",
+        "WorkingShiftCRMHead": "Labour Cost",
+        "DepreciationCRMHead": "Net Sales",
+        "AnnualMaintanceCRMHead": "Manufacturing Expenses",
+        "AnnualConsumableCRMHead": "Office Expenses",
+        "AnnualInsuranceCRMHead": "Repairs Expenses",
+        "BuildingCRMHead": "Selling & Distribution Expenses",
+        "MachineFloorCRMHead": "Net Sales",
+        "OtherYearlyCRMHead": "Common Expenses",
+        "PowerCRMHead": "Staff Cost",
+        "FuelCRMHead": "EBIDTA",
+        "LabourCRMHead": "Net Sales",
     }, {
         "Technology": "Sheet Metal",
         'PlantCode': '8820',
@@ -2499,6 +2545,20 @@ export const MHRMoreZBCTempData = [
         "UOM": "shot/stroke/Number",
         "OutputPerHours": 40,
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
+        "Remark": "Remark",
+        "LoanCRMHead": "Net Sales",
+        "InterestCRMHead": "Consumption",
+        "WorkingShiftCRMHead": "Labour Cost",
+        "DepreciationCRMHead": "Net Sales",
+        "AnnualMaintanceCRMHead": "Manufacturing Expenses",
+        "AnnualConsumableCRMHead": "Office Expenses",
+        "AnnualInsuranceCRMHead": "Repairs Expenses",
+        "BuildingCRMHead": "Selling & Distribution Expenses",
+        "MachineFloorCRMHead": "Net Sales",
+        "OtherYearlyCRMHead": "Common Expenses",
+        "PowerCRMHead": "Staff Cost",
+        "FuelCRMHead": "EBIDTA",
+        "LabourCRMHead": "Net Sales",
     }, {
         "Technology": "Sheet Metal",
         'PlantCode': '8820',
@@ -2551,6 +2611,20 @@ export const MHRMoreZBCTempData = [
         'UOM': 'Square Millimeter/Square Inch/Square Feet/Square Centimeter/Square Meter',
         "OutputPerHours": 40,
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
+        "Remark": "Remark",
+        "LoanCRMHead": "Net Sales",
+        "InterestCRMHead": "Consumption",
+        "WorkingShiftCRMHead": "Labour Cost",
+        "DepreciationCRMHead": "Net Sales",
+        "AnnualMaintanceCRMHead": "Manufacturing Expenses",
+        "AnnualConsumableCRMHead": "Office Expenses",
+        "AnnualInsuranceCRMHead": "Repairs Expenses",
+        "BuildingCRMHead": "Selling & Distribution Expenses",
+        "MachineFloorCRMHead": "Net Sales",
+        "OtherYearlyCRMHead": "Common Expenses",
+        "PowerCRMHead": "Staff Cost",
+        "FuelCRMHead": "EBIDTA",
+        "LabourCRMHead": "Net Sales",
     }, {
         "Technology": "Sheet Metal",
         'PlantCode': '8820',
@@ -2603,6 +2677,20 @@ export const MHRMoreZBCTempData = [
         'UOM': 'Seconds/Minutes/Hours/MilliSeconds',
         "OutputPerHours": 40,
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
+        "Remark": "Remark",
+        "LoanCRMHead": "Net Sales",
+        "InterestCRMHead": "Consumption",
+        "WorkingShiftCRMHead": "Labour Cost",
+        "DepreciationCRMHead": "Net Sales",
+        "AnnualMaintanceCRMHead": "Manufacturing Expenses",
+        "AnnualConsumableCRMHead": "Office Expenses",
+        "AnnualInsuranceCRMHead": "Repairs Expenses",
+        "BuildingCRMHead": "Selling & Distribution Expenses",
+        "MachineFloorCRMHead": "Net Sales",
+        "OtherYearlyCRMHead": "Common Expenses",
+        "PowerCRMHead": "Staff Cost",
+        "FuelCRMHead": "EBIDTA",
+        "LabourCRMHead": "Net Sales",
     }
 ]
 
@@ -2834,6 +2922,7 @@ export const PartComponent = [
     { label: 'ECNNumber', value: 'ECNNumber', },
     { label: 'RevisionNo', value: 'RevisionNo', },
     { label: 'DrawingNo', value: 'DrawingNo', },
+    { label: "SAPCode", value: "SAPCode", },
     { label: 'TechnologyName', value: 'TechnologyName', },
     { label: 'EffectiveDate', value: 'EffectiveDate', }, //,* maybe only star
     { label: 'Remark', value: 'Remark', },
@@ -2848,6 +2937,7 @@ export const PartComponentTempData = [
         'ECNNumber': '1',
         'RevisionNo': '1',
         'DrawingNo': '1',
+        'SAPCode': 'sap-1001',
         'TechnologyName': 'Sheet Metal',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text',
@@ -2919,6 +3009,8 @@ export const ZBCInterestRateTempData = [
 * @desc USED IN EXCEL HEADER FOR BULK UPLOAD
 */
 export const VBCInterestRate = [
+    { label: "RawMaterialName", value: "RawMaterialName", },
+    { label: "RawMaterialGrade", value: "RawMaterialGrade", },
     { label: 'VendorName', value: 'VendorName', }, //NOUI
     { label: 'VendorCode', value: 'VendorCode', }, //NOUI
     { label: "PlantName", value: "PlantName" },
@@ -2933,6 +3025,8 @@ export const VBCInterestRate = [
 
 export const VBCInterestRateTempData = [
     {
+        'RawMaterialName': '45455457',
+        'RawMaterialGrade': '2',
         'VendorName': 'Systematix',
         'VendorCode': 'VCode001',
         "PlantName": "1511",
@@ -2946,6 +3040,8 @@ export const VBCInterestRateTempData = [
     }
 ]
 export const CBCInterestRate = [
+    { label: "RawMaterialName", value: "RawMaterialName", },
+    { label: "RawMaterialGrade", value: "RawMaterialGrade", },
     { label: 'CustomerName', value: 'CustomerName', }, //NOUI
     { label: 'CustomerCode', value: 'CustomerCode', }, //NOUI
     { label: "PlantName", value: "PlantName" },
@@ -2960,6 +3056,8 @@ export const CBCInterestRate = [
 
 export const CBCInterestRateTempData = [
     {
+        'RawMaterialName': '45455457',
+        'RawMaterialGrade': '2',
         'CustomerName': 'Honda',
         'CustomerCode': 'C-10008',
         "PlantName": "1511",
@@ -2988,6 +3086,7 @@ export const BOMUpload = [
     { label: "ECNNumber", value: "ECNNumber" },
     { label: "RevisionNo", value: "RevisionNo" },
     { label: "DrawingNo", value: "DrawingNo" },
+    { label: "SAPCode", value: "SAPCode", },
     { label: "IsAssembly", value: "IsAssembly" }, //NOUI,*
     { label: "BOMLevel", value: "BOMLevel" }, //NOUI,*
     { label: "Quantity", value: "Quantity" }, //NOUI
@@ -3009,6 +3108,7 @@ export const BOMUploadTempData = [
         "ECNNumber": 1,
         "RevisionNo": 1,
         "DrawingNo": 1,
+        "SAPCode": "sap-1001",
         "IsAssembly": "YES",
         "BOMLevel": 0,
         "Quantity": 2,
@@ -3028,6 +3128,7 @@ export const BOMUploadTempData = [
         "ECNNumber": 1,
         "RevisionNo": 1,
         "DrawingNo": 1,
+        "SAPCode": "sap-1002",
         "IsAssembly": "NO",
         "BOMLevel": 1,
         "Quantity": 3,
@@ -3047,6 +3148,7 @@ export const BOMUploadTempData = [
         "ECNNumber": 1,
         "RevisionNo": 1,
         "DrawingNo": 1,
+        "SAPCode": "sap-1003",
         "IsAssembly": "YES",
         "BOMLevel": 1,
         "Quantity": 4,
@@ -4011,7 +4113,7 @@ export const BROACHING = 'Broaching'
 export const HARDFACING = 'Hard Facing'
 
 export const getTechnology = [1, 8, 2, 4, 20, 23]
-export const technologyForDensity = [1, 2, 7]
+export const technologyForDensity = [1, 2]
 export const getTechnologyForRecoveryPercent = [4, 6, 3, 5, 2]
 export const getTechnologyForSimulation = ['0', '1', '2', '3', '4', '5', '6', '7', '9', '10']
 export const IdForMultiTechnology = ['13', '10', '9']   //Assembly, Electrical Proprietary, Mechanical Proprietary
@@ -4428,6 +4530,8 @@ export const POWERLISTING_VENDOR_DOWNLOAD_EXCEL = [
 
 export const INTERESTRATE_DOWNLOAD_EXCEl = [
     { label: "Costing Head", value: "CostingHead", },
+    { label: "Raw Material Name", value: "RawMaterialName", },
+    { label: "Raw Material Grade", value: "RawMaterialGrade", },
     { label: "Plant (Code)", value: "PlantName", },
     { label: "Vendor (Code)", value: "VendorName", },
     { label: "Customer (Code)", value: "CustomerName", },
@@ -4452,14 +4556,14 @@ export const LABOUR_DOWNLOAD_EXCEl = [
 
 export const MACHINERATE_DOWNLOAD_EXCEl = [
     { label: "Costing Head", value: "CostingHead", },
-    { label: "Technology", value: "Technologies", },
+    { label: "Technology", value: "Technology", },
     { label: "Machine Name", value: "MachineName" },
     { label: "Machine Number", value: "MachineNumber", },
     { label: "Machine Type", value: "MachineTypeName", },
     { label: "Machine Tonnage", value: "MachineTonnage", },
     { label: "Process Name", value: "ProcessName", },
     { label: "Vendor (Code)", value: "VendorName", },
-    { label: "Plant (Code)", value: "Plants", },
+    { label: "Plant (Code)", value: "Plant", },
     { label: "Customer (Code)", value: "CustomerName", },
     { label: "Machine Rate", value: "MachineRate", },
     { label: "Effective Date", value: "EffectiveDate", },
@@ -4473,18 +4577,18 @@ export const PROCESSLISTING_DOWNLOAD_EXCEl = [
 export const RMDOMESTIC_DOWNLOAD_EXCEl = [
     { label: "Costing Head", value: "CostingHead", },
     { label: "Technology", value: "TechnologyName", },
-    { label: "Raw Material", value: "RawMaterial", },
-    { label: "Grade", value: "RMGrade", },
-    { label: "Spec", value: "RMSpec", },
+    { label: "Raw Material", value: "RawMaterialName", },
+    { label: "Grade", value: "RawMaterialGradeName", },
+    { label: "Spec", value: "RawMaterialSpecificationName", },
     { label: "Code", value: "RawMaterialCode", },
     { label: "Category", value: "Category", },
     { label: "Material Type", value: "MaterialType", },
-    { label: "Plant (Code)", value: "Plant", },
+    { label: "Plant (Code)", value: "DestinationPlantName", },
     { label: "Vendor (code)", value: "VendorName", },
     { label: "Company (Code)", value: "DepartmentName", },
     { label: "Customer (Code)", value: "CustomerName", },
-    { label: "UOM", value: "UOM", },
-    { label: "Basic Rate", value: "BasicRate", },
+    { label: "UOM", value: "UnitOfMeasurementName", },
+    { label: "Basic Rate", value: "BasicRatePerUOM", },
     { label: "Freight Cost", value: "RMFreightCost", },
     { label: "Shearing Cost", value: "RMShearingCost", },
     { label: "Machining Scrap Cost", value: "MachiningScrapRate", },
@@ -4498,19 +4602,19 @@ export const RMDOMESTIC_DOWNLOAD_EXCEl = [
 export const RMIMPORT_DOWNLOAD_EXCEl = [
     { label: "Costing Head", value: "CostingHead", },
     { label: "Technology", value: "TechnologyName", },
-    { label: "Raw Material", value: "RawMaterial", },
-    { label: "Grade", value: "RMGrade", },
-    { label: "Spec", value: "RMSpec", },
+    { label: "Raw Material", value: "RawMaterialName", },
+    { label: "Grade", value: "RawMaterialGradeName", },
+    { label: "Spec", value: "RawMaterialSpecificationName", },
     { label: "Code", value: "RawMaterialCode", },
     { label: "Material Type", value: "MaterialType", },
     { label: "Category", value: "Category", },
-    { label: "Plant (Code)", value: "Plant", },
+    { label: "Plant (Code)", value: "DestinationPlantName", },
     { label: "Vendor (Code)", value: "VendorName", },
     { label: "Company (Code)", value: "DepartmentName", },
     { label: "Customer (Code)", value: "CustomerName", },
-    { label: "UOM", value: "UOM", },
+    { label: "UOM", value: "UnitOfMeasurementName", },
     { label: "Currency", value: "Currency", },
-    { label: "Basic Rate", value: "BasicRate", },
+    { label: "Basic Rate", value: "BasicRatePerUOM", },
     { label: "Freight Cost", value: "RMFreightCost", },
     { label: "Shearing Cost", value: "RMShearingCost", },
     { label: "Machining Scrap Cost", value: "MachiningScrapRate", },
@@ -4552,6 +4656,8 @@ export const OPERATION_DOWNLOAD_EXCEl = [
 
 export const OVERHEAD_DOWNLOAD_EXCEl = [
     { label: "Costing Head", value: "CostingHead", },
+    { label: "Raw Material Name", value: "RawMaterialName", },
+    { label: "Raw Material Grade", value: "RawMaterialGrade", },
     { label: "Plant (Code)", value: "PlantName", },
     { label: "Vendor (Code)", value: "VendorName", },
     { label: "Customer (Code)", value: "CustomerName", },
@@ -4569,6 +4675,7 @@ export const ASSEMBLYPART_DOWNLOAD_EXCEl = [
     { label: "BOM No.", value: "BOMNumber", },
     { label: "Part No.", value: "PartNumber", },
     { label: "Name", value: "PartName", },
+    { label: "SAP Code", value: "SAPCode", },
     { label: "No.of Child Parts", value: "NumberOfParts", },
     { label: "BOM Level Count", value: "BOMLevelCount", },
     { label: "ECN No.", value: "ECNNumber", },
@@ -4581,6 +4688,7 @@ export const INDIVIDUALPART_DOWNLOAD_EXCEl = [
     { label: "Technology", value: "Technology", },
     { label: "Part No.", value: "PartNumber", },
     { label: "Name", value: "PartName", },
+    { label: "SAP Code", value: "SAPCode", },
     { label: "ECN No.", value: "ECNNumber", },
     { label: "Revision No.", value: "RevisionNumber", },
     { label: "Drawing No.", value: "DrawingNumber", },
@@ -4667,6 +4775,8 @@ export const BUDGET_DOWNLOAD_EXCEl = [
 
 export const PROFIT_DOWNLOAD_EXCEl = [
     { label: "Costing Head", value: "CostingHead", },
+    { label: "Raw Material Name", value: "RawMaterialName", },
+    { label: "Raw Material Grade", value: "RawMaterialGrade", },
     { label: "Plant (Code)", value: "PlantName", },
     { label: "Vendor (Code)", value: "VendorName", },
     { label: "Customer (Code)", value: "CustomerName", },
@@ -4816,11 +4926,11 @@ export const USER_LISTING_DOWNLOAD_EXCEl = [
 ]
 
 export const RM_IMPACT_DOWNLOAD_EXCEl = [
-    { label: "Raw Material", value: "RawMaterial", },
-    { label: "Grade", value: "RMGrade", },
-    { label: "Spec", value: "RMSpec", },
+    { label: "Raw Material", value: "RawMaterialName", },
+    { label: "Grade", value: "RawMaterialGradeName", },
+    { label: "Spec", value: "RawMaterialSpecificationName", },
     { label: "Code", value: "RawMaterialCode", },
-    { label: "UOM", value: "UOM", },
+    { label: "UOM", value: "UnitOfMeasurementName", },
     { label: "Existing Basic Rate", value: "OldBasicRate", },
     { label: "Revised Basic Rate", value: "NewBasicRate", },
     { label: "Existing Scrap Rate", value: "OldScrapRate", },

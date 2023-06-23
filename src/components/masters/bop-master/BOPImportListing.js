@@ -3,8 +3,8 @@ import { connect } from 'react-redux';
 import { reduxForm, } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import { checkForDecimalAndNull } from "../../../helper/validation";
-import { BOPIMPORT, EMPTY_DATA, defaultPageSize, APPROVED_STATUS } from '../../../config/constants';
-import { getBOPImportDataList, deleteBOP, getAllVendorSelectList, } from '../actions/BoughtOutParts';
+import { BOPIMPORT, EMPTY_DATA, defaultPageSize, APPROVED_STATUS, ENTRY_TYPE_IMPORT } from '../../../config/constants';
+import { getBOPDataList, deleteBOP } from '../actions/BoughtOutParts';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
 import { onFloatingFilterChanged, onSearch, resetState, onBtPrevious, onBtNext, onPageSizeChanged, PaginationWrapper } from '../../common/commonPagination'
@@ -154,7 +154,8 @@ class BOPImportListing extends Component {
 
         let FloatingfilterData = this.state.filterModel
         let obj = { ...this.state.floatingFilterData }
-        this.props.getBOPImportDataList(filterData, skip, take, isPagination, dataObj, (res) => {
+        dataObj.EntryType = ENTRY_TYPE_IMPORT
+        this.props.getBOPDataList(filterData, skip, take, isPagination, dataObj, true, (res) => {
             this.setState({ noData: false })
             if (this.props.isSimulation) {
                 this.props?.changeTokenCheckBox(true)
@@ -786,6 +787,7 @@ class BOPImportListing extends Component {
                         messageLabel={'Insert Import'}
                         anchor={'right'}
                         masterId={BOP_MASTER_ID}
+                        typeOfEntryId={ENTRY_TYPE_IMPORT}
                     />
                 }
 
@@ -833,9 +835,8 @@ function mapStateToProps({ boughtOutparts, comman, supplier, auth, simulation })
 * @param {function} mapDispatchToProps
 */
 export default connect(mapStateToProps, {
-    getBOPImportDataList,
+    getBOPDataList,
     deleteBOP,
-    getAllVendorSelectList,
     getListingForSimulationCombined,
     setSelectedRowForPagination,
     disabledClass

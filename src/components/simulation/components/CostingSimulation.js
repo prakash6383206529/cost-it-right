@@ -457,7 +457,7 @@ function CostingSimulation(props) {
             gridApi.deselectAll()
             Toaster.warning(<div>{approvalLockArray}</div>)
             setTimeout(() => {
-                document.getElementsByClassName('custom-toaster')[0].classList.add('custom-class')
+                document?.getElementsByClassName('custom-toaster')[0]?.classList?.add('custom-class')
             }, 200);
             return false
         }

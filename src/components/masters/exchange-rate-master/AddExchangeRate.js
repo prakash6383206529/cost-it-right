@@ -14,12 +14,12 @@ import LoaderCustom from '../../common/LoaderCustom';
 import { debounce } from 'lodash';
 import { onFocus } from '../../../helper';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
-import { CBCTypeId, searchCount, SPACEBAR, VBCTypeId, ZBCTypeId } from '../../../config/constants';
+import { CBCTypeId, searchCount, SPACEBAR, VBC_VENDOR_TYPE, VBCTypeId, ZBCTypeId } from '../../../config/constants';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import AsyncSelect from 'react-select/async';
 import { autoCompleteDropdown } from '../../common/CommonFunctions';
-import { getVendorWithVendorCodeSelectList } from '../actions/Supplier';
 import { getClientSelectList, } from '../actions/Client';
+import { getVendorNameByVendorSelectList } from '../../../actions/Common';
 const
   selector = formValueSelector('AddExchangeRate');
 
@@ -377,7 +377,7 @@ class AddExchangeRate extends Component {
       if (inputValue?.length >= searchCount && vendorFilterList !== resultInput) {
         this.setState({ inputLoader: true })
         let res
-        res = await getVendorWithVendorCodeSelectList(resultInput)
+        res = await getVendorNameByVendorSelectList(VBC_VENDOR_TYPE, resultInput)
 
         this.setState({ inputLoader: false })
         this.setState({ vendorFilterList: resultInput })
@@ -712,7 +712,6 @@ export default connect(mapStateToProps, {
   updateExchangeRate,
   getExchangeRateData,
   getCurrencySelectList,
-  getVendorWithVendorCodeSelectList,
   getClientSelectList
 })(reduxForm({
   form: 'AddExchangeRate',

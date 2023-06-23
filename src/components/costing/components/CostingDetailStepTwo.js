@@ -14,7 +14,7 @@ import { ViewCostingContext, CostingTypeContext, IsNFR } from './CostingDetails'
 import { createToprowObjAndSave } from '../CostingUtil';
 import _ from 'lodash'
 import { IdForMultiTechnology } from '../../../config/masterData';
-import { CBCTypeId, NCCTypeId, NFRTypeId, PFS1TypeId, PFS2TypeId, PFS3TypeId, VBCTypeId, ZBCTypeId } from '../../../config/constants';
+import { CBCTypeId, NCC, NCCTypeId, NFRTypeId, PFS1TypeId, PFS2TypeId, PFS3TypeId, VBCTypeId, ZBCTypeId } from '../../../config/constants';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { LOGISTICS } from '../../../config/masterData';
 import { Redirect } from 'react-router';
@@ -314,6 +314,7 @@ function CostingDetailStepTwo(props) {
    * @description SET COSTS FOR TOP HEADER FROM DISCOUNT AND COST
    */
   const setHeaderDiscountTab = (data, headerCostData = {}, CostingData = {}) => {
+    console.log('data: ', data);
     if (!CostingViewMode) {
       const headerIndex = 0;
       if (CostingDataList && CostingDataList.length > 0 && CostingDataList[headerIndex].CostingId === undefined) return false;
@@ -328,16 +329,17 @@ function CostingDetailStepTwo(props) {
           checkForNull(tempData.NetOverheadAndProfitCost) +
           checkForNull(tempData.NetPackagingAndFreight) +
           checkForNull(tempData.ToolCost)
-        if (data.OtherCostType === 'Percentage') {
-          const cost = checkForNull(findApplicabilityCost(data, data?.OtherCostApplicability, headerCostData, CostingData, data?.PercentageOtherCost))
+        // data.AnyOtherCost
+        // if (data.OtherCostType === 'Percentage') {
+        //   const cost = checkForNull(findApplicabilityCost(data, data?.OtherCostApplicability, headerCostData, CostingData, data?.PercentageOtherCost))
 
-          data.AnyOtherCost = cost
-        }
+        //   data.AnyOtherCost = cost
+        // }
         const discountedCost = data.DiscountCostType === 'Percentage' ? checkForNull(findApplicabilityCost(data, data?.DiscountApplicability, headerCostData, CostingData, data?.HundiOrDiscountPercentage)) : data.DiscountsAndOtherCost;
 
         const discountValues = {
-          BasicRateINR: checkForNull(SumOfTab - discountedCost) + checkForNull(data.AnyOtherCost),
-          NetPOPriceINR: checkForNull(SumOfTab - discountedCost) + checkForNull(data.AnyOtherCost),
+          BasicRateINR: checkForNull(SumOfTab - discountedCost) + checkForNull(data?.AnyOtherCost),
+          NetPOPriceINR: checkForNull(SumOfTab - discountedCost) + checkForNull(data?.AnyOtherCost),
           HundiOrDiscountValue: checkForNull(discountedCost),
           AnyOtherCost: checkForNull(data.AnyOtherCost),
           HundiOrDiscountPercentage: checkForNull(data.HundiOrDiscountPercentage),
@@ -353,8 +355,10 @@ function CostingDetailStepTwo(props) {
           ...tempData,
           NetDiscountsCost: checkForNull(discountedCost),
           NetOtherCost: checkForNull(data.AnyOtherCost),
-          TotalCost: OverAllCost + checkForNull(data.AnyOtherCost) + checkForNull(data.totalNpvCost) + checkForNull(data.totalConditionCost),
-          BasicRate: OverAllCost + checkForNull(data.AnyOtherCost),
+          TotalCost: OverAllCost + checkForNull(data?.AnyOtherCost) + checkForNull(data.totalNpvCost) + checkForNull(data.totalConditionCost),
+          // TotalCost: OverAllCost + checkForNull(data.totalNpvCost) + checkForNull(data.totalConditionCost),
+          BasicRate: OverAllCost + checkForNull(data?.AnyOtherCost),
+          // BasicRate: OverAllCost,
           NetPackagingAndFreight: tempData.NetPackagingAndFreight,
         }
 
@@ -460,17 +464,23 @@ function CostingDetailStepTwo(props) {
                       <td><div className={'part-info-title costing-head-overflow'}><p><span className="cr-tbl-label">Part Name:</span><span className="dark-blue" title={costingData.PartName}> {costingData.PartName}</span></p></div></td>
                       <td><div className={'part-info-title'}><p><span className="cr-tbl-label">Revision No:</span><span className="dark-blue"> {costingData.RevisionNumber !== null ? costingData.RevisionNumber : '-'}</span></p></div></td>
 
-                      {(costingData.CostingTypeId === VBCTypeId || costingData.CostingTypeId === NCCTypeId || costingData.CostingTypeId === NFRTypeId ||
-                        costingData.CostingTypeId === PFS1TypeId || costingData.CostingTypeId === PFS2TypeId || costingData.CostingTypeId === PFS3TypeId) && <td><div className={'part-info-title costing-head-overflow'}><p><span className="cr-tbl-label">Vendor (Code):</span><span className="dark-blue" title={costingData.VendorName}> {`${costingData.VendorName}`}</span></p></div></td>}
+                      {
+                        (costingData.CostingTypeId === VBCTypeId || costingData.CostingTypeId === NCCTypeId || costingData.CostingTypeId === NFRTypeId ||
+                          costingData.CostingTypeId === PFS1TypeId || costingData.CostingTypeId === PFS2TypeId || costingData.CostingTypeId === PFS3TypeId) && <td><div className={'part-info-title costing-head-overflow'}><p><span className="cr-tbl-label">Vendor (Code):</span><span className="dark-blue" title={costingData.VendorName}> {`${costingData.VendorName}`}</span></p></div></td>
+                      }
 
                       {costingData.CostingTypeId === CBCTypeId && <td><div className={'part-info-title costing-head-overflow'}><p><span className="cr-tbl-label">Customer (Code):</span><span className="dark-blue" title={costingData.Customer}> {`${costingData.Customer}`}</span></p></div></td>}
 
-                      {(((costingData.CostingTypeId === VBCTypeId || costingData.CostingTypeId === PFS1TypeId
-                        || costingData.CostingTypeId === PFS2TypeId || costingData.CostingTypeId === PFS3TypeId) && initialConfiguration?.IsDestinationPlantConfigure) || (costingData.CostingTypeId === CBCTypeId) || costingData.CostingTypeId === NCCTypeId || costingData.CostingTypeId === NFRTypeId) && <td><div className={'part-info-title costing-head-overflow'}><p><span className="cr-tbl-label">Destination Plant (Code):</span><span className="dark-blue " title={costingData.DestinationPlantName}> {`${costingData.DestinationPlantName}`}</span></p></div></td>}
+                      {
+                        (((costingData.CostingTypeId === VBCTypeId || costingData.CostingTypeId === PFS1TypeId
+                          || costingData.CostingTypeId === PFS2TypeId || costingData.CostingTypeId === PFS3TypeId) && initialConfiguration?.IsDestinationPlantConfigure) || (costingData.CostingTypeId === CBCTypeId) || costingData.CostingTypeId === NCCTypeId || costingData.CostingTypeId === NFRTypeId) && <td><div className={'part-info-title costing-head-overflow'}><p><span className="cr-tbl-label">Destination Plant (Code):</span><span className="dark-blue " title={costingData.DestinationPlantName}> {`${costingData.DestinationPlantName}`}</span></p></div></td>
+                      }
 
-                      {costingData.CostingTypeId === ZBCTypeId && <td><div className={'part-info-title costing-head-overflow'}><p><span className="cr-tbl-label">Plant (Code):</span><span className="dark-blue "
-                        title={`${costingData.PlantName}(${costingData.PlantCode})`}>
-                        {`${costingData.PlantName}`}</span></p></div></td>}
+                      {
+                        costingData.CostingTypeId === ZBCTypeId && <td><div className={'part-info-title costing-head-overflow'}><p><span className="cr-tbl-label">Plant (Code):</span><span className="dark-blue "
+                          title={`${costingData.PlantName}(${costingData.PlantCode})`}>
+                          {`${costingData.PlantName}`}</span></p></div></td>
+                      }
 
                       {costingData.CostingTypeId !== NCCTypeId && < td > <div className={'part-info-title'}><p><span className="cr-tbl-label">SOB:</span><span className="dark-blue"> {costingData.ShareOfBusinessPercent}%</span></p></div></td>}
                       <td><div className={'part-info-title'}><p><span className="cr-tbl-label">Costing Version:</span><span className="dark-blue"> {`${DayTime(costingData.CreatedDate).format('DD/MM/YYYY')}-${costingData.CostingNumber}`}</span></p></div></td>
@@ -478,7 +488,7 @@ function CostingDetailStepTwo(props) {
                   </Table >
 
                   {/* RENDER TOP HEADER VIEW WITH HEADS AND DYNAMIC VALUES */}
-                  <div class="table-responsive costing-header-table">
+                  < div class="table-responsive costing-header-table" >
                     <Table className="table cr-brdr-main mb-0" size="sm">
                       {costingData?.TechnologyId !== LOGISTICS && <thead>
                         <tr>
@@ -528,9 +538,9 @@ function CostingDetailStepTwo(props) {
                         </tr>
                       </tbody>
                     </Table>
-                  </div>
-                </Col>
-              </Row>
+                  </div >
+                </Col >
+              </Row >
               <Row>
                 <Col md="3">
                   <button
@@ -571,10 +581,10 @@ function CostingDetailStepTwo(props) {
                   </costingInfoContext.Provider>
                 </Col>
               </Row>
-            </div>
-          </Col>
-        </Row>
-      </div>}
+            </div >
+          </Col >
+        </Row >
+      </div >}
     </>
   );
 };

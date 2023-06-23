@@ -55,6 +55,9 @@ function AddToComparisonDrawer(props) {
   const [isCbcSelected, setisCbcSelected] = useState(false)
   const [isNccSelected, setisNccSelected] = useState(false)
   const [showCostingSection, setShowCostingSection] = useState({})
+  const [vendor, setVendor] = useState([]);
+  const [plant, setPlant] = useState([]);
+  const [customer, setCustomer] = useState([]);
 
   /* For vendor dropdown */
   const vendorSelectList = useSelector((state) => state.costing.costingVendorList)
@@ -224,6 +227,8 @@ function AddToComparisonDrawer(props) {
       setValue('destinationPlant', '')
       commonApiCall(VBCTypeId)
       dispatch(getPartCostingVendorSelectList(partNo.value !== undefined ? partNo.value : partNo.partId, () => { }))
+      setVendor('')
+      setPlant('')
 
     } else if ((value) === CBCTypeId) {
       dispatch(getPlantSelectListReducer([]))
@@ -238,6 +243,8 @@ function AddToComparisonDrawer(props) {
       dispatch(getClientSelectList((res) => { }),
         commonApiCall(CBCTypeId)
       )
+      setPlant('')
+      setCustomer('')
     } else if ((value) === NCCTypeId) {
       setisCbcSelected(false)
       setIsZbcSelected(false)
@@ -257,8 +264,9 @@ function AddToComparisonDrawer(props) {
    * @method handleVendorChange
    * @description showing vendor plant by vendor name
    */
-  const handleVendorChange = ({ value }) => {
-    setVendorId(value)
+  const handleVendorChange = (newValue) => {
+    setVendorId(newValue.value)
+    setVendor(newValue)
     setValue('destinationPlant', '')
     dispatch(getPlantSelectListByType(ZBC, () => { }))
     setValue('costings', '')
@@ -274,11 +282,12 @@ function AddToComparisonDrawer(props) {
     //   handleVendorNameChange('')
     // }
   }
-  const handleCustomerChange = (v) => {
+  const handleCustomerChange = (value) => {
+    setCustomer(value)
     const userDetails = JSON.parse(localStorage.getItem('userDetail'))
     setValue('plant', '')
     setTimeout(() => {
-      setCustomerId(v.value)
+      setCustomerId(value.value)
     }, 500);
     if (!getConfigurationKey().IsCBCApplicableOnPlant) {
       dispatch(getCostingByVendorAndVendorPlant(partNo.partId, VendorId, vendorPlantId, userDetails.Plants[0].PlantId, customerId, costingTypeId, () => { }))
@@ -329,17 +338,27 @@ function AddToComparisonDrawer(props) {
           obj.MachiningScrapWeight = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingRawMaterialsCost.length > 0 ? dataFromAPI?.CostingPartDetails?.CostingRawMaterialsCost[0].MachiningScrapWeight : '-'
           obj.modelType = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.ModelType ? dataFromAPI?.CostingPartDetails?.ModelType : '-'
           obj.BasicRate = (dataFromAPI && dataFromAPI.BasicRate) ? dataFromAPI.BasicRate : 0
+          obj.BudgetedPrice = (dataFromAPI && dataFromAPI.BudgetedPrice) ? dataFromAPI.BudgetedPrice : 0
+          obj.BudgetedPriceVariance = (dataFromAPI && dataFromAPI.BudgetedPriceVariance) ? dataFromAPI.BudgetedPriceVariance : 0
           obj.CostingPartDetails = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails
 
           obj.aValue = { applicability: 'Applicability', value: 'Value', }
           obj.overheadOn = {
             overheadTitle: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingOverheadDetail !== null && dataFromAPI?.CostingPartDetails?.CostingOverheadDetail.OverheadApplicability !== null ? dataFromAPI?.CostingPartDetails?.CostingOverheadDetail.OverheadApplicability : '-',
-            overheadValue: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetOverheadCost !== null ? dataFromAPI?.CostingPartDetails?.NetOverheadCost : '-'
+            overheadValue: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetOverheadCost !== null ? dataFromAPI?.CostingPartDetails?.NetOverheadCost : '-',
+            overheadPercentage: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingOverheadDetail !== null && dataFromAPI?.CostingPartDetails?.CostingOverheadDetail.OverheadPercentage !== null ? dataFromAPI?.CostingPartDetails?.CostingOverheadDetail.OverheadPercentage : '-',
+            overheadRMPercentage: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingOverheadDetail !== null && dataFromAPI?.CostingPartDetails?.CostingOverheadDetail.OverheadRMPercentage !== null ? dataFromAPI?.CostingPartDetails?.CostingOverheadDetail.OverheadRMPercentage : '-',
+            overheadBOPPercentage: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingOverheadDetail !== null && dataFromAPI?.CostingPartDetails?.CostingOverheadDetail.OverheadBOPPercentage !== null ? dataFromAPI?.CostingPartDetails?.CostingOverheadDetail.OverheadBOPPercentage : '-',
+            overheadCCPercentage: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingOverheadDetail !== null && dataFromAPI?.CostingPartDetails?.CostingOverheadDetail.OverheadCCPercentage !== null ? dataFromAPI?.CostingPartDetails?.CostingOverheadDetail.OverheadCCPercentage : '-',
           }
 
           obj.profitOn = {
             profitTitle: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingProfitDetail.ProfitApplicability !== null ? dataFromAPI?.CostingPartDetails?.CostingProfitDetail.ProfitApplicability : '-',
-            profitValue: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetProfitCost !== null ? dataFromAPI?.CostingPartDetails?.NetProfitCost : '-'
+            profitValue: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetProfitCost !== null ? dataFromAPI?.CostingPartDetails?.NetProfitCost : '-',
+            profitPercentage: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingProfitDetail.ProfitPercentage !== null ? dataFromAPI?.CostingPartDetails?.CostingProfitDetail.ProfitPercentage : '-',
+            profitRMPercentage: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingProfitDetail.ProfitRMPercentage !== null ? dataFromAPI?.CostingPartDetails?.CostingProfitDetail.ProfitRMPercentage : '-',
+            profitBOPPercentage: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingProfitDetail.ProfitBOPPercentage !== null ? dataFromAPI?.CostingPartDetails?.CostingProfitDetail.ProfitBOPPercentage : '-',
+            profitCCPercentage: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingProfitDetail.ProfitCCPercentage !== null ? dataFromAPI?.CostingPartDetails?.CostingProfitDetail.ProfitCCPercentage : '-',
           }
 
           obj.rejectionOn = {
@@ -394,18 +413,16 @@ function AddToComparisonDrawer(props) {
             dicountType: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.OtherCostDetails.DiscountCostType !== null ? dataFromAPI?.CostingPartDetails?.OtherCostDetails.DiscountCostType : 0
           }
 
-
           obj.anyOtherCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.OtherCostDetails.AnyOtherCost !== null ? dataFromAPI?.CostingPartDetails?.OtherCostDetails.AnyOtherCost : 0
           obj.anyOtherCostType = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.OtherCostDetails.OtherCostType !== null ? dataFromAPI?.CostingPartDetails?.OtherCostDetails.OtherCostType : '-'
           obj.anyOtherCostApplicablity = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.OtherCostDetails.AnyOtherCost !== null ? dataFromAPI?.CostingPartDetails?.OtherCostDetails.OtherCostApplicability : 0
           obj.anyOtherCostPercent = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.OtherCostDetails.OtherCostPercentage !== null ? dataFromAPI?.CostingPartDetails?.OtherCostDetails.OtherCostPercentage : 0
-          obj.remark = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.OtherCostDetails.Remark !== null ? dataFromAPI?.CostingPartDetails?.OtherCostDetails.Remark : '-'
-          obj.nPOPriceWithCurrency = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.OtherCostDetails.NetPOPriceOtherCurrency !== null ? dataFromAPI?.CostingPartDetails?.OtherCostDetails.NetPOPriceOtherCurrency : 0
+          obj.remark = dataFromAPI && dataFromAPI.OtherRemark ? dataFromAPI.OtherRemark : '-'
+          obj.nPOPriceWithCurrency = dataFromAPI && dataFromAPI.NetPOPriceInOtherCurrency ? dataFromAPI.NetPOPriceInOtherCurrency : 0
           obj.currency = {
-            currencyTitle: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.OtherCostDetails.Currency !== null ? dataFromAPI?.CostingPartDetails?.OtherCostDetails.Currency : '-',
-            currencyValue: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.OtherCostDetails.CurrencyExchangeRate ? dataFromAPI?.CostingPartDetails?.OtherCostDetails.CurrencyExchangeRate : '-',
+            currencyTitle: dataFromAPI && dataFromAPI.Currency ? dataFromAPI?.Currency : '-',
+            currencyValue: dataFromAPI && dataFromAPI.CurrencyExchangeRate ? dataFromAPI?.CurrencyExchangeRate : '-',
           }
-
 
           obj.nPOPrice = dataFromAPI.NetPOPrice && dataFromAPI.NetPOPrice !== null ? dataFromAPI.NetPOPrice : 0
           obj.effectiveDate = dataFromAPI.EffectiveDate ? dataFromAPI.EffectiveDate : ''
@@ -524,6 +541,7 @@ function AddToComparisonDrawer(props) {
           obj.multiTechnologyCostingDetails = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.MultiTechnologyCostingDetails ? dataFromAPI?.CostingPartDetails?.MultiTechnologyCostingDetails : ''
           obj.isRmCutOffApplicable = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.IsRMCutOffApplicable && dataFromAPI?.CostingPartDetails?.IsRMCutOffApplicable
           obj.MachiningScrapRate = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingRawMaterialsCost.length > 0 ? dataFromAPI?.CostingPartDetails?.CostingRawMaterialsCost[0].MachiningScrapRate : '-'
+          obj.anyOtherCostTotal = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetOtherCost ? dataFromAPI?.CostingPartDetails?.NetOtherCost : '-'
           // temp.push(VIEW_COSTING_DATA)
           if (index >= 0) {
 
@@ -577,6 +595,7 @@ function AddToComparisonDrawer(props) {
    */
   const handlePlantChange = (value) => {
     setCustomerId(value)
+    setPlant(value)
     if (isZbcSelected) {
       dispatch(
         getCostingByVendorAndVendorPlant(partNo.value !== undefined ? partNo.value : partNo.partId, '', '', value.value, '', ZBCTypeId, (res) => {
@@ -613,12 +632,13 @@ function AddToComparisonDrawer(props) {
   * @description GETTING COSTING ON BASIS OF VENDOR NAME AND VENDOR PLANT
  */
 
-  const handleDestinationPlantNameChange = ({ value }) => {
+  const handleDestinationPlantNameChange = (value) => {
+    setPlant(value)
     if (value === '') {
       value = '00000000-0000-0000-0000-000000000000'
     }
     if (isVbcSelected) {
-      dispatch(getCostingByVendorAndVendorPlant(partNo.partId, vendorId, '', value, '', VBCTypeId, (res) => {
+      dispatch(getCostingByVendorAndVendorPlant(partNo.partId, vendorId, '', value.value, '', VBCTypeId, (res) => {
         setValue('costings', '')
       }),
       )
@@ -821,7 +841,7 @@ function AddToComparisonDrawer(props) {
                         control={control}
                         rules={{ required: true }}
                         register={register}
-                        // defaultValue={plant.length !== 0 ? plant : ''}
+                        defaultValue={vendor !== " " ? vendor : ""}
                         options={renderListing('vendor')}
                         mandatory={true}
                         handleChange={handleVendorChange}
@@ -860,6 +880,7 @@ function AddToComparisonDrawer(props) {
                           options={renderListing('DestinationPlant')}
                           mandatory={true}
                           handleChange={handleDestinationPlantNameChange}
+                          disabled={vendor === '' ? true : false}
                           errors={errors.destinationPlant}
                         />
                       </Col>
@@ -899,6 +920,7 @@ function AddToComparisonDrawer(props) {
                           mandatory={true}
                           handleChange={handlePlantChange}
                           errors={errors.plant}
+                          disabled={Object.keys(customer).length === 0 ? true : false}
                         />
                       </Col>
                     )}
@@ -956,6 +978,7 @@ function AddToComparisonDrawer(props) {
                     mandatory={true}
                     handleChange={() => { }}
                     errors={errors.costings}
+                    disabled={Object.keys(plant).length === 0 ? true : false}
                   />
                 </Col>
               </Row>

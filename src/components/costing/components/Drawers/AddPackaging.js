@@ -12,6 +12,7 @@ import { LOGISTICS, STRINGMAXLENGTH } from '../../../../config/masterData';
 import _ from 'lodash';
 import { MESSAGES } from '../../../../config/message';
 import TooltipCustom from '../../../common/Tooltip';
+import { CRMHeads } from '../../../../config/constants';
 
 function IsolateReRender(control) {
   const values = useWatch({
@@ -33,6 +34,7 @@ function AddPackaging(props) {
     Applicability: rowObjData && rowObjData.Applicability !== undefined ? { label: rowObjData.Applicability, value: rowObjData.Applicability } : [],
     PackagingCost: rowObjData && rowObjData.PackagingCost !== undefined ? checkForDecimalAndNull(rowObjData.PackagingCost, getConfigurationKey().NoOfDecimalForPrice) : '',
     Cost: rowObjData && rowObjData.PackagingCost !== undefined ? checkForDecimalAndNull(rowObjData.PackagingCost, getConfigurationKey().NoOfDecimalForPrice) : 0,
+    crmHeadPackaging: rowObjData && rowObjData.PackagingCRMHead !== undefined ? { label: rowObjData.PackagingCRMHead, value: 1 } : [],
   }
 
   const { register, handleSubmit, control, setValue, getValues, reset, formState: { errors } } = useForm({
@@ -41,6 +43,7 @@ function AddPackaging(props) {
     defaultValues: isEditFlag ? defaultValues : {},
   });
 
+  const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   const headCostData = useContext(netHeadCostContext)
   const costData = useContext(costingInfoContext);
 
@@ -319,6 +322,7 @@ function AddPackaging(props) {
         PackagingCostPercentage: 0,
         PackagingCost: getValues('Cost'),
         Applicability: 'Fixed',
+        PackagingCRMHead: getValues('crmHeadPackaging') ? getValues('crmHeadPackaging').label : ''
       }
     } else {
       formData = {
@@ -329,6 +333,7 @@ function AddPackaging(props) {
         PackagingCostPercentage: PackageType ? data.PackagingCostPercentage : 0,
         PackagingCost: applicability.label === 'Fixed' ? getValues('PackagingCost') : packagingCost,
         Applicability: applicability ? data.Applicability.label : '',
+        PackagingCRMHead: getValues('crmHeadPackaging') ? getValues('crmHeadPackaging').label : ''
       }
     }
 
@@ -542,6 +547,28 @@ function AddPackaging(props) {
                       disabled={applicability.label === 'Fixed' ? false : true}
                     />
                     {applicability.label === 'Fixed' && (showCostError) && <WarningMessage dClass={"error-message"} textClass={"pl-0"} message={errorMessage} />}
+                  </Col>
+                  }
+
+                  {initialConfiguration.IsShowCRMHead && <Col md="12">
+                    <SearchableSelectHookForm
+                      name={`crmHeadPackaging`}
+                      type="text"
+                      label="CRM Head"
+                      errors={`${errors.crmHeadPackaging}`}
+                      Controller={Controller}
+                      control={control}
+                      register={register}
+                      mandatory={false}
+                      rules={{
+                        required: false,
+                      }}
+                      placeholder={'Select'}
+                      options={CRMHeads}
+                      required={false}
+                      handleChange={() => { }}
+                      disabled={false}
+                    />
                   </Col>
                   }
                 </Row>

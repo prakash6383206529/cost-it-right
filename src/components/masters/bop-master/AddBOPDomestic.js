@@ -7,9 +7,8 @@ import {
   maxLength, maxLength10, positiveAndDecimalNumber, maxLength512, maxLength80, checkWhiteSpaces, decimalLengthsix, checkSpacesInString, postiveNumber
 } from "../../../helper/validation";
 import { renderText, searchableSelect, renderTextAreaField, focusOnError, renderDatePicker, renderTextInputField } from "../../layout/FormInputs";
-import { getCityBySupplier, getPlantBySupplier, getUOMSelectList, getPlantSelectListByType, getCityByCountry, getAllCity } from '../../../actions/Common';
-import { getVendorWithVendorCodeSelectList, getVendorTypeBOPSelectList, } from '../actions/Supplier';
-import { createBOPDomestic, updateBOPDomestic, getBOPCategorySelectList, getBOPDomesticById, fileUploadBOPDomestic, fileDeleteBOPDomestic, } from '../actions/BoughtOutParts';
+import { getCityBySupplier, getPlantBySupplier, getUOMSelectList, getPlantSelectListByType, getCityByCountry, getAllCity, getVendorNameByVendorSelectList } from '../../../actions/Common';
+import { createBOP, updateBOP, getBOPCategorySelectList, getBOPDomesticById, fileUploadBOPDomestic, fileDeleteBOPDomestic, } from '../actions/BoughtOutParts';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import { getConfigurationKey, loggedInUserId, userDetails } from "../../../helper/auth";
@@ -18,7 +17,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css';
-import { BOP_MASTER_ID, FILE_URL, ZBC, EMPTY_GUID, SPACEBAR, VBCTypeId, CBCTypeId, ZBCTypeId, searchCount } from '../../../config/constants';
+import { BOP_MASTER_ID, FILE_URL, ZBC, EMPTY_GUID, SPACEBAR, VBCTypeId, CBCTypeId, ZBCTypeId, searchCount, ENTRY_TYPE_DOMESTIC, VBC_VENDOR_TYPE, BOP_VENDOR_TYPE } from '../../../config/constants';
 import AddBOPCategory from './AddBOPCategory';
 import AddVendorDrawer from '../supplier-master/AddVendorDrawer';
 import AddUOM from '../uom-master/AddUOM';
@@ -63,7 +62,6 @@ class AddBOPDomestic extends Component {
       vendorLocation: [],
       oldDate: '',
       sourceLocation: [],
-      IsSendForApproval: false,
       UOM: [],
       isOpenUOM: false,
       approveDrawer: false,
@@ -94,7 +92,8 @@ class AddBOPDomestic extends Component {
       levelDetails: {},
       noApprovalCycle: false,
       vendorFilterList: [],
-      uomIsNo: false
+      uomIsNo: false,
+      isClientVendorBOP: false
     }
   }
 
@@ -276,6 +275,7 @@ class AddBOPDomestic extends Component {
               UOM: Data.UnitOfMeasurement !== undefined ? { label: Data.UnitOfMeasurement, value: Data.UnitOfMeasurementId } : [],
               isLoader: false,
               client: Data.CustomerName !== undefined ? { label: Data.CustomerName, value: Data.CustomerId } : [],
+              isClientVendorBOP: Data.IsClientVendorBOP,
             }, () => this.setState({ isLoader: false }))
             // ********** ADD ATTACHMENTS FROM API INTO THE DROPZONE'S PERSONAL DATA STORE **********
             let files = Data.Attachements && Data.Attachements.map((item) => {
@@ -432,7 +432,7 @@ class AddBOPDomestic extends Component {
       const { costingTypeId } = this.state;
       if (costingTypeId === VBCTypeId) {
         if (this.state.vendorName && this.state.vendorName.length > 0) {
-          const res = await getVendorWithVendorCodeSelectList(this.state.vendorName)
+          const res = await getVendorNameByVendorSelectList(VBC_VENDOR_TYPE, this.state.vendorName)
           let vendorDataAPI = res?.data?.SelectList
           reactLocalStorage?.setObject('vendorData', vendorDataAPI)
         }
@@ -441,7 +441,7 @@ class AddBOPDomestic extends Component {
         }
       } else {
         if (this.state.vendorName && this.state.vendorName.length > 0) {
-          const res = await getVendorTypeBOPSelectList(this.state.vendorName)
+          const res = await getVendorNameByVendorSelectList(BOP_VENDOR_TYPE, this.state.vendorName)
           let vendorDataAPI = res?.data?.SelectList
           reactLocalStorage?.setObject('vendorData', vendorDataAPI)
         }
@@ -553,7 +553,7 @@ class AddBOPDomestic extends Component {
   */
   setDisableFalseFunction = () => {
     const loop = Number(this.dropzone.current.files.length) - Number(this.state.files.length)
-    if (Number(loop) === 1) {
+    if (Number(loop) === 1 || Number(this.dropzone.current.files.length) === Number(this.state.files.length)) {
       this.setState({ setDisable: false, attachmentLoader: false })
     }
   }
@@ -684,7 +684,7 @@ class AddBOPDomestic extends Component {
   onSubmit = debounce((values) => {
     const { BOPCategory, selectedPlants, vendorName, costingTypeId,
 
-      sourceLocation, BOPID, isEditFlag, files, DropdownChanged, oldDate, isSourceChange, client, effectiveDate, UOM, DataToCheck, isDateChange, IsFinancialDataChanged } = this.state;
+      sourceLocation, BOPID, isEditFlag, files, DropdownChanged, oldDate, isSourceChange, client, effectiveDate, UOM, DataToCheck, isDateChange, IsFinancialDataChanged, isClientVendorBOP } = this.state;
     const userDetailsBop = JSON.parse(localStorage.getItem('userDetail'))
     if (costingTypeId !== CBCTypeId && vendorName.length <= 0) {
       this.setState({ isVendorNameNotSelected: true, setDisable: false })      // IF VENDOR NAME IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY AND SAVE BUTTON WILL NOT BE DISABLED
@@ -698,7 +698,38 @@ class AddBOPDomestic extends Component {
       return false;
     }
     // if (isEditFlag && this.state.isFinalApprovar) {
-
+    //check here @samrudhi
+    let updatedFiles = files.map((file) => {
+      return { ...file, ContextId: BOPID }
+    })
+    const formData = {
+      IsFinancialDataChanged: isDateChange ? true : false,
+      BoughtOutPartId: BOPID,
+      CostingTypeId: costingTypeId,
+      BoughtOutPartNumber: values.BoughtOutPartNumber,
+      BoughtOutPartName: values.BoughtOutPartName,
+      CategoryId: BOPCategory.value,
+      Specification: values.Specification,
+      UnitOfMeasurementId: UOM.value,
+      Vendor: vendorName.value,
+      Source: values.Source,
+      SourceLocation: sourceLocation.value,
+      EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
+      BasicRate: values.BasicRate,
+      NumberOfPieces: 1,
+      NetLandedCost: this.state.NetLandedCost,
+      Remark: values.Remark,
+      IsActive: true,
+      LoggedInUserId: loggedInUserId(),
+      Plant: [plantArray],
+      VendorPlant: [],
+      DestinationPlantId: (costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? selectedPlants.value : (costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant) ? selectedPlants.value : userDetailsBop.Plants[0].PlantId,
+      Attachements: isEditFlag ? updatedFiles : files,
+      CustomerId: client.value,
+      EntryType: Number(ENTRY_TYPE_DOMESTIC),
+      CategoryName: BOPCategory.label,
+      IsClientVendorBOP: isClientVendorBOP
+    }
     if ((isEditFlag && this.state.isFinalApprovar) || (isEditFlag && CheckApprovalApplicableMaster(BOP_MASTER_ID) !== true)) {
 
       let updatedFiles = files.map((file) => {
@@ -721,11 +752,13 @@ class AddBOPDomestic extends Component {
         VendorPlant: [],
         IsFinancialDataChanged: isDateChange ? true : false,
         CustomerId: client.value,
+        EntryType: Number(ENTRY_TYPE_DOMESTIC),
+        IsClientVendorBOP: isClientVendorBOP
       }
 
       if (IsFinancialDataChanged) {
         if (isDateChange && (DayTime(oldDate).format("DD/MM/YYYY") !== DayTime(effectiveDate).format("DD/MM/YYYY"))) {
-          this.props.updateBOPDomestic(requestData, (res) => {
+          this.props.updateBOP(requestData, (res) => {
             this.setState({ setDisable: false })
             if (res?.data?.Result) {
               Toaster.success(MESSAGES.UPDATE_BOP_SUCESS);
@@ -742,12 +775,12 @@ class AddBOPDomestic extends Component {
       else {
         if (DropdownChanged && (DataToCheck.Remark) === (values.Remark) && JSON.stringify(updatedFiles) === JSON.stringify(DataToCheck.Attachements) && Number(DataToCheck.BasicRate) === Number(values.BasicRate) &&
           ((DataToCheck.Source ? String(DataToCheck.Source) : '-') === (values.Source ? String(values.Source) : '-')) &&
-          ((DataToCheck.SourceLocation ? String(DataToCheck.SourceLocation) : '') === (sourceLocation.value ? String(sourceLocation.value) : ''))) {
+          ((DataToCheck.SourceLocation ? String(DataToCheck.SourceLocation) : '') === (sourceLocation.value ? String(sourceLocation.value) : '')) && DataToCheck.IsClientVendorBOP === isClientVendorBOP) {
           this.cancel('submit')
           return false;
         }
         else {
-          this.props.updateBOPDomestic(requestData, (res) => {
+          this.props.updateBOP(requestData, (res) => {
             this.setState({ setDisable: false })
             if (res?.data?.Result) {
               Toaster.success(MESSAGES.UPDATE_BOP_SUCESS);
@@ -761,9 +794,9 @@ class AddBOPDomestic extends Component {
     } else {
 
       if (CheckApprovalApplicableMaster(BOP_MASTER_ID) === true && !this.state.isFinalApprovar) {
-        this.setState({ IsSendForApproval: true })
+        formData.IsSendForApproval = true
       } else {
-        this.setState({ IsSendForApproval: false })
+        formData.IsSendForApproval = false
       }
       // this.setState({ setDisable: true })
       const formData = {
@@ -790,7 +823,10 @@ class AddBOPDomestic extends Component {
         VendorPlant: [],
         DestinationPlantId: (costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? selectedPlants.value : (costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant) ? selectedPlants.value : userDetailsBop.Plants[0].PlantId,
         Attachements: files,
-        CustomerId: client.value
+        CustomerId: client.value,
+        EntryType: Number(ENTRY_TYPE_DOMESTIC),
+        CategoryName: BOPCategory.label,
+        IsClientVendorBOP: isClientVendorBOP
       }
 
       if (CheckApprovalApplicableMaster(BOP_MASTER_ID) === true && !this.state.isFinalApprovar) {
@@ -844,7 +880,7 @@ class AddBOPDomestic extends Component {
           return false
         }
       } else {
-        this.props.createBOPDomestic(formData, (res) => {
+        this.props.createBOP(formData, (res) => {
           this.setState({ setDisable: false })
           if (res?.data?.Result) {
             Toaster.success(MESSAGES.BOP_ADD_SUCCESS)
@@ -871,13 +907,16 @@ class AddBOPDomestic extends Component {
       <span className='d-flex'>Basic Rate/{displayUOM(value)} (INR)</span>
     </div>
   }
+  onIsClientVendorBOP = () => {
+    this.setState({ isClientVendorBOP: !this.state.isClientVendorBOP })
+  }
   /**
   * @method render
   * @description Renders the component
   */
   render() {
     const { handleSubmit, isBOPAssociated, initialConfiguration } = this.props;
-    const { isCategoryDrawerOpen, isOpenVendor, costingTypeId, isOpenUOM, isEditFlag, isViewMode, setDisable, noApprovalCycle } = this.state;
+    const { isCategoryDrawerOpen, isOpenVendor, costingTypeId, isOpenUOM, isEditFlag, isViewMode, setDisable, noApprovalCycle, isClientVendorBOP } = this.state;
     const filterList = async (inputValue) => {
       const { vendorFilterList } = this.state
       if (inputValue && typeof inputValue === 'string' && inputValue.includes(' ')) {
@@ -888,10 +927,10 @@ class AddBOPDomestic extends Component {
         this.setState({ inputLoader: true })
         let res
         if (costingTypeId === VBCTypeId) {
-          res = await getVendorWithVendorCodeSelectList(resultInput)
+          res = await getVendorNameByVendorSelectList(VBC_VENDOR_TYPE, resultInput)
         }
         else {
-          res = await getVendorTypeBOPSelectList(resultInput)
+          res = await getVendorNameByVendorSelectList(BOP_VENDOR_TYPE, resultInput)
         }
         this.setState({ inputLoader: false })
         this.setState({ vendorFilterList: resultInput })
@@ -1304,7 +1343,24 @@ class AddBOPDomestic extends Component {
                           </Col>
 
                         </Row>
-
+                        {getConfigurationKey().IsShowClientVendorBOP && <Col md="3" className="d-flex align-items-center mb-3">
+                          <label
+                            className={`custom-checkbox`}
+                            onChange={this.onIsClientVendorBOP}
+                          >
+                            Client Approved Vendor
+                            <input
+                              type="checkbox"
+                              checked={isClientVendorBOP}
+                              disabled={(isEditFlag && isBOPAssociated) || isViewMode ? true : false}
+                            />
+                            <span
+                              className=" before-box"
+                              checked={isClientVendorBOP}
+                              onChange={this.onIsClientVendorBOP}
+                            />
+                          </label>
+                        </Col>}
                         <Row>
                           <Col md="12">
                             <div className="left-border">
@@ -1339,7 +1395,7 @@ class AddBOPDomestic extends Component {
                                 onChangeStatus={this.handleChangeStatus}
                                 PreviewComponent={this.Preview}
                                 disabled={isViewMode}
-                                accept="*"
+                                accept="image/jpeg,image/jpg,image/png,image/PNG,.xls,.doc,.pdf,.xlsx"
                                 initialFiles={this.state.initialFiles}
                                 maxFiles={3}
                                 maxSizeBytes={2000000}
@@ -1553,10 +1609,8 @@ function mapStateToProps(state) {
 * @param {function} mapDispatchToProps
 */
 export default connect(mapStateToProps, {
-  createBOPDomestic,
-  updateBOPDomestic,
-  getVendorWithVendorCodeSelectList,
-  getVendorTypeBOPSelectList,
+  createBOP,
+  updateBOP,
   getPlantBySupplier,
   getCityBySupplier,
   getUOMSelectList,
@@ -1569,7 +1623,8 @@ export default connect(mapStateToProps, {
   getCityByCountry,
   getAllCity,
   getClientSelectList,
-  getUsersMasterLevelAPI
+  getUsersMasterLevelAPI,
+  getVendorNameByVendorSelectList
 })(reduxForm({
   form: 'AddBOPDomestic',
   touchOnChange: true,

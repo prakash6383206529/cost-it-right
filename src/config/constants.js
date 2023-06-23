@@ -18,12 +18,15 @@ export const config = () => {
 
 // DEVELOPMENT MIL URL
 
+// DEVELOPMENT
 const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
-//const BASE_URL = `http://10.10.8.117/CIR/api/v1`;
-// const BASE_URL = `http://10.10.8.109:8081/api/v1`;
-// const BASE_URL = `https://apiinsightqa.unominda.com/api/v1`;
-
-//DEVELOPMENT MIL URL
+// const BASE_URL = `http://10.10.8.160/api/v1`;
+// const BASE_URL = `http://10.10.0.43/RohitCIR/api/v1`;
+// const BASE_URL = `https://demov3api.costitright.com/api/v1`;
+//const BASE_URL = `http://10.10.8.109:8081/api/v1`;
+// const BASE_URL = `http://10.10.1.100:1002/api/v1`;
+// const BASE_URL = `https://upsapi.costitright.com/api/v1`; 
+//FILE URL
 export const FILE_URL = `${process.env.REACT_APP_FILE_URL}`;
 
 /** Export API */
@@ -31,7 +34,7 @@ export const API = {
 
   getMasterFilterUOMAPI: `${BASE_URL}/masters-unit-of-measurement/get`,
   getMaterialType: `${BASE_URL}/configuration/select-list-get-material-type`,
-  getPlant: `${BASE_URL}/configuration/select-list-get-plant`,
+  // getPlant: `${BASE_URL}/configuration/select-list-get-plant`,
   getTechnology: `${BASE_URL}/configuration/select-list-get-technology`,
   getSupplierCode: `${BASE_URL}/configuration/select-list-get-vendor-code`,
   getCategoryType: `${BASE_URL}/configuration/select-list-get-category-type`,
@@ -40,7 +43,6 @@ export const API = {
   getCostingHeads: `${BASE_URL}/configuration/select-list-get-costing-heads`,
   getModelTypes: `${BASE_URL}/configuration/select-list-get-costing-model-type`,
   getTechnologySelectList: `${BASE_URL}/configuration/select-list-get-technology`,
-  getPlantSelectList: `${BASE_URL}/configuration/select-list-get-plant`,
   getPlantSelectListByType: `${BASE_URL}/configuration/select-list-get-plants-by-type`,
   getVendorPlantSelectList: `${BASE_URL}/configuration/select-list-get-un-associated-vendor-plants`,
   getPartSelectLists: `${BASE_URL}/masters-part/select-list-component-part-for-convert-to-assembly`,
@@ -173,46 +175,38 @@ export const API = {
   getRawMaterialDataAPI: `${BASE_URL}/masters-raw-material/get-raw-material`,
   updateRawMaterialAPI: `${BASE_URL}/masters-raw-material/update-raw-material`,
   deleteRawMaterialAPI: `${BASE_URL}/masters-raw-material/delete-raw-material`,
-
+  createRM: `${BASE_URL}/masters-raw-material/create-raw-material`,
+  getAllRMDataList: `${BASE_URL}/masters-raw-material/get-all-raw-material-list`,
+  getRMDataById: `${BASE_URL}/masters-raw-material/get-raw-material-by-id`,
+  updateRMAPI: `${BASE_URL}/masters-raw-material/update-raw-material`,
   //RAW MATERIAL DETAILS
   getRawMaterialDetailsDataAPI: `${BASE_URL}/masters-raw-material/get-all-costing-raw-material-details`,
 
   //RAW MATERIAL DOMESTIC
-  createRMDomestic: `${BASE_URL}/masters-raw-material/create-raw-material-domestic`,
-  updateRMDomesticAPI: `${BASE_URL}/masters-raw-material/update-raw-material-domestic`,
   deleteRawMaterialDetailAPI: `${BASE_URL}/masters-raw-material/delete-raw-material-details`,
-  getRMDomesticDataById: `${BASE_URL}/masters-raw-material/get-raw-material-domestic-by-id`,
-  createRawMaterialNameChild: `${BASE_URL}/masters-raw-material/create-raw-material-name-child`,
+  createRawMaterialNameChild: `${BASE_URL}/masters-raw-material/create-raw-material-name`,
   getRawMaterialNameChild: `${BASE_URL}/masters-raw-material/select-list-raw-material-name-child`,
   getGradeListByRawMaterialNameChild: `${BASE_URL}/masters-raw-material/select-list-raw-material-grade-child`,
   getVendorListByVendorType: `${BASE_URL}/masters-raw-material/select-list-for-raw-material-vendor-by-type`,
-  getRMDomesticDataList: `${BASE_URL}/masters-raw-material/get-all-raw-material-domestic-list`,
+  getRMDataList: `${BASE_URL}/masters-raw-material/get-all-raw-material-list`,
   fileUploadRMDomestic: `${BASE_URL}/masters-raw-material/raw-material-file-upload`,
   fileUpdateRMDomestic: `${BASE_URL}/masters-raw-material/update-raw-material-file`,
   fileDeleteRMDomestic: `${BASE_URL}/masters-raw-material/delete-raw-material-file`,
-  bulkUploadRMDomesticZBC: `${BASE_URL}/masters-raw-material/bulk-upload-for-raw-material-zbc-domestic-json`,
-  bulkUploadRMDomesticVBC: `${BASE_URL}/masters-raw-material/bulk-upload-for-raw-material-vbc-domestic-json`,
-  bulkUploadRMDomesticCBC: `${BASE_URL}/masters-raw-material/bulk-upload-for-raw-material-cbc-domestic-json`,
+  bulkUploadRM: `${BASE_URL}/masters-raw-material/bulk-upload-for-raw-material`,
   bulkfileUploadRM: `${BASE_URL}/masters-raw-material/bulk-file-upload-raw-material`,
-  getUnassociatedRawMaterial: `${BASE_URL}/masters-raw-material/select-list-raw-material-not-associated-name-child`,
+  getUnassociatedRawMaterial: `${BASE_URL}/masters-raw-material/select-list-raw-material-name-child`,
+
+  //Master Approval 
+  masterApprovalAPI: `${BASE_URL}/masters-approval/master-send-to-approver-by-sender`,
 
   //RM APPROVAL API'S
   getRMApprovalList: `${BASE_URL}/app-approval-system/get-master-approvals-by-filter`,
   getAllMasterApprovalDepartment: `${BASE_URL}/app-approval-system/get-all-master-approval-department`,
   getAllMasterApprovalUserByDepartment: `${BASE_URL}/app-approval-system/get-all-master-approval-users-level-filter-by-department`,
-  masterSendToApprover: `${BASE_URL}/masters-approval-raw-material/master-send-to-approver-by-sender`,
+  masterSendToApprover: `${BASE_URL}/masters-approval/master-send-to-approver-by-sender`,
   approveOrRejectMasterByApprover: `${BASE_URL}/app-approval-system/approve-or-reject-master-by-approver`,
   getMasterApprovalSummaryByApprovalNo: `${BASE_URL}/app-approval-system/get-approval-master-summary`,
   masterFinalLeveluser: `${BASE_URL}/app-approval-system/is-this-user-final-master-approver`,
-
-  //RAW MATERIAL IMPORT
-  createRMImport: `${BASE_URL}/masters-raw-material/create-raw-material-import`,
-  updateRMImportAPI: `${BASE_URL}/masters-raw-material/update-raw-material-import`,
-  getRMImportDataById: `${BASE_URL}/masters-raw-material/get-raw-material-import-by-id`,
-  getRMImportDataList: `${BASE_URL}/masters-raw-material/get-all-raw-material-import-list`,
-  bulkUploadRMImportZBC: `${BASE_URL}/masters-raw-material/bulk-upload-for-raw-material-zbc-import-json`,
-  bulkUploadRMImportVBC: `${BASE_URL}/masters-raw-material/bulk-upload-for-raw-material-vbc-import-json`,
-  bulkUploadRMImportCBC: `${BASE_URL}/masters-raw-material/bulk-upload-for-raw-material-cbc-import-json`,
 
   //RAW MATERIAL DOMESTIC AND IMPORT FILTER API'S
   getRawMaterialFilterSelectList: `${BASE_URL}/masters-raw-material/get-raw-material-filter-select-list`,
@@ -254,7 +248,7 @@ export const API = {
   getRMTypeSelectListAPI: `${BASE_URL}/configuration-raw-material /select-list-get-material-type`,
   getGradeSelectList: `${BASE_URL}/masters-raw-material/select-list-raw-material-grade`,
   getGradeByRMTypeSelectListAPI: `${BASE_URL}/configuration-raw-material /select-list-get-raw-material-grade`,
-  getRMGradeSelectListByRawMaterial: `${BASE_URL}/masters-raw-material/select-list-raw-material-grade-by-raw-material-id`,
+  getRMGradeSelectListByRawMaterial: `${BASE_URL}/masters-raw-material/select-list-raw-material-grade`,
   bulkUploadRMSpecification: `${BASE_URL}/masters-raw-material/bulk-upload-for-raw-material-spec-json`,
   getRawMaterialChildById: `${BASE_URL}/masters-raw-material/get-raw-material-child-by-id`,
   updateRawMaterialChildName: `${BASE_URL}/masters-raw-material/update-raw-material-name-child`,
@@ -277,38 +271,25 @@ export const API = {
   deleteSupplierAPI: `${BASE_URL}/vendor/delete-vendor`,
   getRadioButtonSupplierType: `${BASE_URL}/configuration/radio-button-list-get-supplier-type`,
   getVendorTypesSelectList: `${BASE_URL}/vendor/vendor-types-select-list`,
-  getSupplierLists: `${BASE_URL}/configuration/select-list-get-vendor`,
   activeInactiveVendorStatus: `${BASE_URL}/vendor/active-vendor`,
-  getVendorsByVendorTypeID: `${BASE_URL}/vendor/vendor-by-vendor-type-select-list`,
   vendorBulkUpload: `${BASE_URL}/vendor/bulk-upload-for-vendor-json`,
-  getAllVendorSelectList: `${BASE_URL}/vendor/all-vendor-select-list`,
-  getVendorTypeByVendorSelectList: `${BASE_URL}/vendor/vendor-type-by-vendor-select-list`,
-  getVendorWithVendorCodeSelectList: `${BASE_URL}/vendor/vbc-vendor-with-code-select-list`,
-  getVendorTypeBOPSelectList: `${BASE_URL}/vendor/vendor-bop-type-select-list`,
   getReporterList: `${BASE_URL}/rfq-user/get-user-select-list`,
   getContactPerson: `${BASE_URL}/rfq-quotation/get-contact-person-by-vendor-selectlist`,
+  getVendorNameByVendorSelectList: `${BASE_URL}/vendor/vendor-name-by-vendor-select-list`,
 
   //BOP DOMESTIC
-  createBOPDomestic: `${BASE_URL}/masters-bought-out-part/create-bought-out-part-domestic`,
+  createBOP: `${BASE_URL}/masters-bought-out-part/create-bought-out-part`,
   getBOPDomesticById: `${BASE_URL}/masters-bought-out-part/get-domestic-bought-out-part-by-id`,
-  getBOPDomesticDataList: `${BASE_URL}/masters-bought-out-part/get-all-domestic-bought-out-part-by-filter`,
-  updateBOPDomestic: `${BASE_URL}/masters-bought-out-part/update-bought-out-part-domestic`,
+  getBOPDataList: `${BASE_URL}/masters-bought-out-part/get-all-bought-out-part-by-filter`,
+  updateBOP: `${BASE_URL}/masters-bought-out-part/update-bought-out-part`,
   deleteBOP: `${BASE_URL}/masters-bought-out-part/delete-bought-out-part`,
   fileUploadBOPDomestic: `${BASE_URL}/masters-bought-out-part/bought-out-part-file-upload`,
   fileDeleteBOPDomestic: `${BASE_URL}/masters-bought-out-part/delete-bought-out-part-file`,
-  bulkUploadBOPDomesticZBC: `${BASE_URL}/masters-bought-out-part/bulk-upload-for-bought-out-part-zbc-domestic-json`,
-  bulkUploadBOPDomesticVBC: `${BASE_URL}/masters-bought-out-part/bulk-upload-for-bought-out-part-vbc-domestic-json`,
-  bulkUploadBOPDomesticCBC: `${BASE_URL}/masters-bought-out-part/bulk-upload-for-bought-out-part-cbc-domestic-json`,
+  bulkUploadBOP: `${BASE_URL}/masters-bought-out-part/bulk-upload-for-bought-out-part-vbc-domestic-json`,
   getPlantSelectListByVendor: `${BASE_URL}/masters-bought-out-part/get-select-list-plant-by-vendor`,
 
   //BOP IMPORT
-  createBOPImport: `${BASE_URL}/masters-bought-out-part/create-bought-out-part-import`,
   getBOPImportById: `${BASE_URL}/masters-bought-out-part/get-import-bought-out-part-by-id`,
-  getBOPImportDataList: `${BASE_URL}/masters-bought-out-part/get-all-import-bought-out-part-by-filter`,
-  updateBOPImport: `${BASE_URL}/masters-bought-out-part/update-bought-out-part-import`,
-  bulkUploadBOPImportZBC: `${BASE_URL}/masters-bought-out-part/bulk-upload-for-bought-out-part-zbc-import-json`,
-  bulkUploadBOPImportVBC: `${BASE_URL}/masters-bought-out-part/bulk-upload-for-bought-out-part-vbc-import-json`,
-  bulkUploadBOPImportCBC: `${BASE_URL}/masters-bought-out-part/bulk-upload-for-bought-out-part-cbc-import-json`,
   getManageBOPSOBDataList: `${BASE_URL}/masters-bought-out-part/get-bought-out-part-vendor-share-of-business-by-filter`,
   getManageBOPSOBById: `${BASE_URL}/masters-bought-out-part/get-bought-out-part-vendor-share-of-business-by-bop-part-number`,
   updateBOPSOBVendors: `${BASE_URL}/masters-bought-out-part/update-bought-out-part-vendor-share-of-business`,
@@ -317,7 +298,6 @@ export const API = {
 
   //BOP APPROVAL API'S
 
-  getBOPApprovalList: `${BASE_URL}/app-approval-system/get-master-approvals-by-filter`,
   masterSendToApproverBop: `${BASE_URL}/masters-approval-Bought-Out-Part/master-send-to-approver-by-sender`,
 
 
@@ -394,26 +374,16 @@ export const API = {
   getOperationsDataList: `${BASE_URL}/masters-operation/get-all-operation-by-filter`,
   getOperationDataAPI: `${BASE_URL}/masters-operation/get-operation`,
   deleteOperationAPI: `${BASE_URL}/masters-operation/delete-operation`,
-  getOperationSelectList: `${BASE_URL}/configuration/select-list-get-operation`,
   fileUploadOperation: `${BASE_URL}/masters-operation/operation-file-upload`,
   fileDeleteOperation: `${BASE_URL}/masters-operation/delete-operation-file`,
   checkAndGetOperationCode: `${BASE_URL}/masters-operation/check-operation-code-is-unique`,
-  operationZBCBulkUpload: `${BASE_URL}/masters-operation/bulk-upload-for-operation-zbc-json`,
-  operationVBCBulkUpload: `${BASE_URL}/masters-operation/bulk-upload-for-operation-vbc-json`,
-  operationCBCBulkUpload: `${BASE_URL}/masters-operation/bulk-upload-for-operation-cbc-json`,
+  operationBulkUpload: `${BASE_URL}/masters-operation/bulk-upload-operation`,
 
-  getVendorListByTechnology: `${BASE_URL}/masters-operation/get-operation-vendor-by-technology-select-list`,
-  getOperationListByTechnology: `${BASE_URL}/masters-operation/get-operation-by-technology-select-list`,
-  getTechnologyListByOperation: `${BASE_URL}/masters-operation/get-operation-technology-by-operation-select-list`,
-  getVendorListByOperation: `${BASE_URL}/masters-operation/get-operation-vendor-by-operation-select-list`,
-  getTechnologyListByVendor: `${BASE_URL}/masters-operation/get-operation-technology-by-vendor-select-list`,
-  getOperationListByVendor: `${BASE_URL}/masters-operation/get-operation-by-vendor-select-list`,
-
+  getOperationPartSelectList: `${BASE_URL}/masters-operation/get-operation-code-select-list`,
 
   //OPERATION APPROVAL API'S
 
   masterSendToApproverOperation: `${BASE_URL}/masters-approval-Operation/master-send-to-approver-by-sender`,
-  getOperationApprovalList: `${BASE_URL}/app-approval-system/get-master-approvals-by-filter`,
 
   //FREIGHT MASTER
   createFreight: `${BASE_URL}/masters-freight/create`,
@@ -439,7 +409,6 @@ export const API = {
   getLabourDataList: `${BASE_URL}/masters-labour/get-all-by-filter`,
   updateLabour: `${BASE_URL}/masters-labour/update`,
   deleteLabour: `${BASE_URL}/masters-labour/delete-individual`,
-  labourTypeVendorSelectList: `${BASE_URL}/vendor/vendor-labour-type-select-list`,
   getLabourTypeByPlantSelectList: `${BASE_URL}/masters-labour/get-labour-type-by-plant-select-list`,
   labourBulkUpload: `${BASE_URL}/masters-labour/bulk-upload-for-labour-details-vbc-json`,
   getLabourTypeByMachineTypeSelectList: `${BASE_URL}/masters-labour/get-labour-type-by-machine-type-select-list`,
@@ -499,6 +468,7 @@ export const API = {
   getVBCDetailByVendorId: `${BASE_URL}/costing/get-vbc-vendor-by-id`,
   updateZBCSOBDetail: `${BASE_URL}/costing/bulk-update-zbc-sob-detail`,
   updateVBCSOBDetail: `${BASE_URL}/costing/bulk-update-vbc-sob-detail`,
+  updateSOBDetail: `${BASE_URL}/costing/update-sob-details`,
   getBriefCostingById: `${BASE_URL}/costing/get-costing-detail-by-id`,
   getVBCCostingByCostingId: `${BASE_URL}/costing/get-vbc-costing-detail-by-id`,
   deleteDraftCosting: `${BASE_URL}/costing/delete-draft-costing`,
@@ -506,6 +476,10 @@ export const API = {
   createNCCCosting: `${BASE_URL}/costing/create-ncc-costing`,
   getMachineProcessGroupDetail: `${BASE_URL}/costing/get-costing-machine-process-group-detail`,
   getFgWiseImpactDataForCosting: `${BASE_URL}/costing/get-fgwise-impact-detail`,
+  saveCostingLabourDetails: `${BASE_URL}/costing/save-costing-labour-details`,
+  getCostingLabourDetails: `${BASE_URL}/costing/get-costing-labour-details`,
+  getLabourDetailsByFilter: `${BASE_URL}/masters-labour/get-all-by-filter`,
+  checkPartNoExistInBop: `${BASE_URL}/masters-bought-out-part/check-part-number-exist-in-bought-out-parts-against-vendor`,
 
   getRMCCTabData: `${BASE_URL}/costing/get-costing-detail-for-rm-bop-cc`,
   getRMDrawerDataList: `${BASE_URL}/costing/get-costing-raw-materials-detail`,
@@ -594,6 +568,7 @@ export const API = {
   saveRawMaterialCalculationForRubber: `${BASE_URL}/costing/save-raw-material-rubber-calculation-details`,
   getSimulationRmFerrousCastingCalculation: `${BASE_URL}/simulation/get-simulation-raw-material-ferrous-casting-calculation-details`,
   saveRawMaterialCalculationForRubberCompound: `${BASE_URL}/costing/save-raw-material-rubber-calculation-details`,
+  getSimulationRmRubberCalculation: `${BASE_URL}/simulation/get-simulation-raw-material-rubber-calculation-details`,
 
   // YOY
   getYOYCostList: `${BASE_URL}/rfq-costing/rfq-get-yoy-details`,
@@ -826,16 +801,14 @@ export const API = {
   checkAndGetMachineNumber: `${BASE_URL}/masters-machine/check-machine-number-is-unique`,
   getFuelUnitCost: `${BASE_URL}/masters-machine/get-fuel-unit-cost`,
   getLabourCost: `${BASE_URL}/masters-machine/get-labour-cost`,
-  getPowerCostUnit: `${BASE_URL}/masters-machine/get-zbc-power-cost`,
+  getPowerCostUnit: `${BASE_URL}/masters-machine/get-power-cost`,
 
   createMachineDetails: `${BASE_URL}/masters-machine/create-machine-details`,
   updateMachineDetails: `${BASE_URL}/masters-machine/update-machine-Details`,
   getMachineDetailsData: `${BASE_URL}/masters-machine/get-machine-details`,
 
-  bulkUploadMachineZBC: `${BASE_URL}/masters-machine/bulk-upload-for-machine-zbc-json`,
-  bulkUploadMachineVBC: `${BASE_URL}/masters-machine/bulk-upload-for-machine-vbc-json`,
-  bulkUploadMachineMoreZBC: `${BASE_URL}/masters-machine/bulk-upload-for-machine-zbc-details-json`,
-  bulkUploadMachineCBC: `${BASE_URL}/masters-machine/bulk-upload-for-machine-cbc-json`,
+  bulkUploadMachine: `${BASE_URL}/masters-machine/bulk-upload-for-machine-json`,
+  bulkUploadMachineMoreZBC: `${BASE_URL}/masters-machine/bulk-upload-for-machine-details-json`,
 
   createProcess: `${BASE_URL}/masters-machine/create-process`,
   getProcessCode: `${BASE_URL}/masters-machine/generate-process-code`,
@@ -1044,6 +1017,7 @@ export const API = {
   saveOutsourcingData: `${BASE_URL}/nfr/save-nfr-costing-outsorcing-details`,
   getNFRCostingOutsourcingDetails: `${BASE_URL}/nfr/get-nfr-costing-outsorcing-details`,
   getRMFromNFR: `${BASE_URL}/nfr/get-nfr-part-wise-raw-materials`,
+  getGotAndGivenDetails: `${BASE_URL}/reports/get-got-and-given-details`,
 
 
   //SUB ASSEMBLY
@@ -1277,7 +1251,6 @@ export const GET_PROCESS_LIST_FAILURE = 'GET_PROCESS_LIST_FAILURE'
 export const GET_PROCESS_UNIT_DATA_SUCCESS = 'GET_PROCESS_UNIT_DATA_SUCCESS'
 export const GET_PROCESS_DATA_SUCCESS = 'GET_PROCESS_DATA_SUCCESS'
 export const GET_INITIAL_PLANT_SELECTLIST_SUCCESS = 'GET_INITIAL_PLANT_SELECTLIST_SUCCESS'
-//export const GET_INITIAL_VENDOR_WITH_VENDOR_CODE_SELECTLIST = 'GET_INITIAL_VENDOR_WITH_VENDOR_CODE_SELECTLIST';
 export const GET_INITIAL_MACHINE_TYPE_SELECTLIST = 'GET_INITIAL_MACHINE_TYPE_SELECTLIST'
 export const GET_INITIAL_MACHINE_LIST_SUCCESS = 'GET_INITIAL_MACHINE_LIST_SUCCESS'
 export const GET_INITIAL_PROCESSES_LIST_SUCCESS = 'GET_INITIAL_PROCESSES_LIST_SUCCESS'
@@ -1348,11 +1321,9 @@ export const GET_DATA_WHILE_LOADING = 'GET_DATA_WHILE_LOADING';
 //OPERATION
 export const GET_OPERATION_SUCCESS = 'GET_OPERATION_SUCCESS'
 export const GET_UNIT_OPERATION_DATA_SUCCESS = 'GET_UNIT_OPERATION_DATA_SUCCESS'
-export const GET_OPERATION_SELECTLIST_SUCCESS = 'GET_OPERATION_SELECTLIST_SUCCESS'
-export const GET_INITIAL_VENDOR_WITH_VENDOR_CODE_SELECTLIST = 'GET_INITIAL_VENDOR_WITH_VENDOR_CODE_SELECTLIST'
-export const GET_INITIAL_TECHNOLOGY_SELECTLIST = 'GET_INITIAL_TECHNOLOGY_SELECTLIST'
 export const GET_OPERATION_APPROVAL_LIST = 'GET_OPERATION_APPROVAL_LIST'
 export const SET_OPERATION_DATA = 'SET_OPERATION_DATA'
+export const GET_OPERATION_SELECTLIST = 'GET_OPERATION_SELECTLIST'
 
 
 //FREIGHT MASTER
@@ -1533,6 +1504,7 @@ export const SET_TOOL_COST_FOR_OVERHEAD_PROFIT = 'SET_TOOL_COST_FOR_OVERHEAD_PRO
 export const SET_NPV_DATA = 'SET_NPV_DATA'
 export const SET_YOY_COST_GRID_FOR_SAVE = 'SET_YOY_COST_GRID_FOR_SAVE'
 export const SET_QUOTATION_ID_FOR_RFQ = 'SET_QUOTATION_ID_FOR_RFQ'
+export const SET_OVERHEAD_PROFIT_ICC = 'SET_OVERHEAD_PROFIT_ICC'
 
 //WEIGHT CALCULATION COSTING RM DRAWER
 export const GET_RAW_MATERIAL_CALCI_INFO = 'GET_RAW_MATERIAL_CALCI_INFO'
@@ -1837,7 +1809,18 @@ export const SIMULATION_APPROVAL_SUM = ' Simulation Approval Summary'
 export const SIMULATION_INSIGNTS = 'Simulation Insignts'
 export const COSTING_DETAIL = 'Costing Details'
 export const COST_RATIO_REPORT = 'Cost Ratio'
+export const COST_MOVEMENT_REPORT = 'Cost Movement'
+export const MASTER_BENCHMARK_REPORT = 'Master Benchmark'
+export const SUPPLIER_CONTRIBUTION_REPORT = 'Supplier Contribution'
+export const SALE_PROVISION_REPORT = 'Sale Provision'
+export const CUSTOMER_POAM_REPORT = 'Customer POAM Summary'
 export const BUDGETING = 'Budgeting'
+export const SALES_PROVISION_REPORT = 'Sales Provision Report'
+export const PURCHASE_PROVISION_REPORT = 'Purchase Provision Report'
+export const CUSTOMER_POAM_SUMMARY_REPORT = 'Customer Poam Summary Report'
+export const MASTER_MOVEMENT_REPORT = 'Master Movement Report'
+
+
 //export const SIMULATION_HISTORY = 'Simulation History'
 
 export const SHEET_METAL = 'Sheet Metal';
@@ -1981,7 +1964,6 @@ export const VIEW_COSTING_DATA = {
   // totalCost: 'Total Cost',
   // otherDiscount: 'Hundi/Other Discount',
   // otherDiscountValue: '',
-  otherDiscountType: 'Hundi/Discount Type',
   otherDiscountApplicablity: 'Hundi/Discount Applicability',
   otherDiscountValuePercent: 'Hundi/Discount Value',
   otherDiscountCost: 'Hundi/Discount Cost',
@@ -1989,6 +1971,10 @@ export const VIEW_COSTING_DATA = {
   anyOtherCostApplicablity: 'Any Other Cost Applicability',
   anyOtherCostPercent: 'Any Other Cost Value',
   anyOtherCost: 'Any Other Cost',
+  anyOtherCostTotal: 'Any Other Cost',
+  BasicRate: 'Basic Rate',
+  npvCost: 'NPV Cost',
+  conditionCost: 'Costing Condition',
   nPOPrice: 'Net PO Price (INR)',
   currencyTitle: 'Currency',
   currencyRate: 'Currency Rate',
@@ -2213,10 +2199,7 @@ export const VIEW_COSTING_DATA_TEMPLATE = [
     label: 'Net Tool Cost',
     value: 'totalToolCost'
   },
-  {
-    label: 'Hundi/Discount Type',
-    value: 'otherDiscountType'
-  },
+
   {
     label: 'Hundi/Discount Applicability',
     value: 'otherDiscountApplicablity'
@@ -2230,20 +2213,8 @@ export const VIEW_COSTING_DATA_TEMPLATE = [
     value: 'otherDiscountCost'
   },
   {
-    label: 'Any Other Cost Type',
-    value: 'anyOtherCostType'
-  },
-  {
-    label: 'Any Other Cost Applicability',
-    value: 'anyOtherCostApplicablity'
-  },
-  {
-    label: 'Any Other Cost Value',
-    value: 'anyOtherCostPercent'
-  },
-  {
     label: 'Any Other Cost',
-    value: 'anyOtherCost'
+    value: 'anyOtherCostTotal'
   },
   {
     label: 'Basic Rate',
@@ -2311,6 +2282,8 @@ export const STROKE = "Stroke"
 export const SHOTS = "SHOT"
 export const MINUTES = 'Minutes'
 export const SECONDS = 'Seconds'
+export const MILLISECONDS = 'Milliseconds'
+export const MICROSECONDS = 'Microseconds'
 export const DISPLAY_G = "g"
 export const DISPLAY_KG = "kg"
 export const DISPLAY_MG = "mg"
@@ -2424,7 +2397,6 @@ export const MACHINE_MASTER_ID = 4
 export const BUDGET_ID = 5
 
 
-
 //approve reject drawer
 export const PROVISIONAL = "Provisional"
 export const NEW_COMPONENT = "New Component"
@@ -2533,10 +2505,31 @@ export const statusOptions = _.sortBy([
 ], ({ label }) => label.toLowerCase());
 
 
+//check here @ashok
+export const CRMHeads = [
+  { label: "Net Sales", value: 1 },
+  { label: "Consumption", value: 2 },
+  { label: "Labour Cost", value: 3 },
+  { label: "Manufacturing Expenses", value: 4 },
+  { label: "Office Expenses", value: 5 },
+  { label: "Repairs Expenses", value: 6 },
+  { label: "Selling & Distribution Expenses", value: 7 },
+  { label: "Common Expenses", value: 8 },
+  { label: "Staff Cost", value: 9 },
+  { label: "EBIDTA", value: 10 },
+  { label: "Finance Cost", value: 11 },
+  { label: "Depriciation", value: 12 },
+  { label: "PBT", value: 13 },
+  { label: "Amortization", value: 14 },
+
+]
+
+
 //CONSTANTS FOR COSTING HEAD
 export const ZBCTypeId = Number(reactLocalStorage.getObject('CostingHeadsListShortForm')[ZBC])
 export const VBCTypeId = Number(reactLocalStorage.getObject('CostingHeadsListShortForm')[VBC])
 export const CBCTypeId = Number(reactLocalStorage.getObject('CostingHeadsListShortForm')[CBC])
+export const WACTypeId = Number(reactLocalStorage.getObject('CostingHeadsListShortForm')[WAC])
 export const NCCTypeId = Number(reactLocalStorage.getObject('CostingHeadsListShortForm')[NCC])
 export const ZBCTypeIdFull = Number(reactLocalStorage.getObject('CostingHeadsListFullForm')[ZBC])
 export const VBCTypeIdFull = Number(reactLocalStorage.getObject('CostingHeadsListFullForm')[VBC])
@@ -2556,6 +2549,7 @@ export const CBCAPPROVALTYPEID = Number(reactLocalStorage.getObject('ApprovalTyp
 export const NCCAPPROVALTYPEID = Number(reactLocalStorage.getObject('ApprovalTypeListShortForm')[NCC])
 export const VBCAPPROVALTYPEID = Number(reactLocalStorage.getObject('ApprovalTypeListShortForm')[VBC])
 export const ZBCAPPROVALTYPEID = Number(reactLocalStorage.getObject('ApprovalTypeListShortForm')[ZBC])
+export const WACAPPROVALTYPEID = Number(reactLocalStorage.getObject('ApprovalTypeListShortForm')[WAC])
 export const PROVISIONALAPPROVALTYPEID = Number(reactLocalStorage.getObject('ApprovalTypeListShortForm'))
 export const PFS1APPROVALTYPEID = Number(reactLocalStorage.getObject('ApprovalTypeListShortForm')[PFS1])
 export const PFS2APPROVALTYPEID = Number(reactLocalStorage.getObject('ApprovalTypeListShortForm')[PFS2])
@@ -2567,6 +2561,13 @@ export const VBCAPPROVALTYPEIDFULL = Number(reactLocalStorage.getObject('Approva
 export const ZBCAPPROVALTYPEIDFULL = Number(reactLocalStorage.getObject('ApprovalTypeListFullForm')[ZBC])
 export const PFS2APPROVALTYPEIDFULL = Number(reactLocalStorage.getObject('ApprovalTypeListFullForm')[PFS2])
 export const PROVISIONALAPPROVALTYPEIDFULL = Number(reactLocalStorage.getObject('ApprovalTypeListFullForm')[PROVISIONAL])
+
+//CONSTANTS FOR MASTER APPROVAL TYPE 
+export const RMTYPE = Number(reactLocalStorage.getObject('masterType')[RAW_MATERIAL])
+export const BOPTYPE = Number(reactLocalStorage.getObject('masterType')[BOP])
+export const MACHINETYPE = Number(reactLocalStorage.getObject('masterType')[MACHINE])
+export const OPERATIONTYPE = Number(reactLocalStorage.getObject('masterType')[OPERATION])
+export const BUDGETTYPE = Number(reactLocalStorage.getObject('masterType')[BUDGETING])
 
 //AUTOCOMPLETE IN PART AND VENDOR
 export const searchCount = 3
@@ -2581,5 +2582,22 @@ export const IV = 'vuqqsafvwouoqtgh'
 export const KEYRFQ = "UAGSqTBCbZ8JqHJl"
 export const IVRFQ = "8vFNmRQEl91nOtrM"
 
+//CONSTANT FOR DOMESTIC AND IMPORT COMMON LISTING API
+export const ENTRY_TYPE_DOMESTIC = 0
+export const ENTRY_TYPE_IMPORT = 1
+
+//CONSTANT FOR VENDOR TYPE 
+export const VENDOR_TYPE_BOP = 'BOP'
+export const VENDOR_TYPE_FREIGHT = 'FREIGHT'
+export const VENDOR_TYPE_LABOUR = 'LABOUR'
+export const VENDOR_TYPE_RAW_MATERIAL = 'RAW MATERIAL'
+export const VENDOR_TYPE_VBC = 'VBC'
+
+export const BOP_VENDOR_TYPE = Number(reactLocalStorage.getObject('vendortype')[VENDOR_TYPE_BOP])
+export const FREIGHT_VENDOR_TYPE = Number(reactLocalStorage.getObject('vendortype')[VENDOR_TYPE_FREIGHT])
+export const LABOUR_VENDOR_TYPE = Number(reactLocalStorage.getObject('vendortype')[VENDOR_TYPE_LABOUR])
+export const RAW_MATERIAL_VENDOR_TYPE = Number(reactLocalStorage.getObject('vendortype')[VENDOR_TYPE_RAW_MATERIAL])
+export const VBC_VENDOR_TYPE = Number(reactLocalStorage.getObject('vendortype')[VENDOR_TYPE_VBC])
+
 //VERSION 
-export const VERSION = "V2.1.186";
+export const VERSION = "V2.1.180";

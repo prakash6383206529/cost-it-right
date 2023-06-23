@@ -6,18 +6,19 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Redirect, useHistory } from 'react-router';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { Col, Row, Table } from 'reactstrap';
-import { getVendorWithVendorCodeSelectList } from '../../../actions/Common';
-import { EMPTY_DATA, NFRTypeId, searchCount, DRAFT, DRAFTID, REJECTEDID } from '../../../config/constants';
+import { getVendorNameByVendorSelectList } from '../../../actions/Common';
+import { EMPTY_DATA, NFRTypeId, searchCount, DRAFT, DRAFTID, REJECTEDID, VBC_VENDOR_TYPE } from '../../../config/constants';
 import { autoCompleteDropdown } from '../../common/CommonFunctions';
 import HeaderTitle from '../../common/HeaderTitle';
 import NoContentFound from '../../common/NoContentFound';
 import Toaster from '../../common/Toaster';
-import { AsyncSearchableSelectHookForm, SearchableSelectHookForm, TextFieldHookForm } from '../../layout/HookFormInputs';
+import { AsyncSearchableSelectHookForm, NumberFieldHookForm, SearchableSelectHookForm, TextFieldHookForm } from '../../layout/HookFormInputs';
 import { getNFRPartWiseGroupDetail, saveNFRCostingInfo, saveNFRGroupDetails } from './actions/nfr';
 import { checkForNull, checkVendorPlantConfigurable, loggedInUserId, userDetails, userTechnologyLevelDetails } from '../../../helper';
-import { createCosting, deleteDraftCosting, getBriefCostingById } from '../../costing/actions/Costing';
+import { createCosting, deleteDraftCosting, getBriefCostingById, storePartNumber } from '../../costing/actions/Costing';
 import ApprovalDrawer from './ApprovalDrawer';
 import TooltipCustom from '../../common/Tooltip'
+import { dataLiist } from '../../../config/masterData';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { MESSAGES } from '../../../config/message';
 import { getUsersTechnologyLevelAPI } from '../../../actions/auth/AuthActions';
@@ -609,7 +610,7 @@ function AddNfr(props) {
         const resultInput = inputValue.slice(0, searchCount)
         if (inputValue?.length >= searchCount && vendor !== resultInput) {
             let res
-            res = await getVendorWithVendorCodeSelectList(resultInput)
+            res = await getVendorNameByVendorSelectList(VBC_VENDOR_TYPE, resultInput)
             setVendor(resultInput)
             let vendorDataAPI = res?.data?.SelectList
             if (inputValue) {
@@ -922,8 +923,8 @@ function AddNfr(props) {
                                 <th>Outsourcing Cost</th>
                                 <th className='text-right'>Action</th>
                                 <th className="table-record">Row Action</th>
-                            </tr>
-                        </thead>
+                            </tr >
+                        </thead >
                         <tbody>
                             {rowData?.map((item, indexOuter) => (
                                 <React.Fragment key={item?.groupName}>
@@ -1004,21 +1005,27 @@ function AddNfr(props) {
                                                         {!isViewEstimation && item?.CostingOptions?.length === 0 && dataItem?.SelectedCostingVersion && <button title='Discard' className="CancelIcon" type={'button'} onClick={() => deleteRowItem(indexInside)} />}
                                                     </>}
                                             </div></td>
-                                            {indexInside === 0 && (
-                                                <td rowSpan={item?.data.length} className="table-record">
-                                                    <button className="Edit" type={"button"} title={"Edit Costing"} onClick={() => editRow(item, indexInside)} disabled={isViewEstimation || (!item?.isRowActionEditable && !item?.IsShowEditButtonForPFS)} />
-                                                    {/* <button className="Delete All ml-1" title={"Delete Costing"} type={"button"} onClick={() => deleteRow(item, indexInside)} disabled={isViewEstimation || item?.statusId !== DRAFTID} /> */}
-                                                </td>
-                                            )}
-                                        </tr>
-                                    ))}
-                                </React.Fragment>
-                            ))}
-                            {rowData.length === 0 && (<tr>
-                                <td colSpan={8} className="text-center"><NoContentFound title={EMPTY_DATA} /></td>
-                            </tr>)}
-                        </tbody>
-                    </Table>
+                                            {
+                                                indexInside === 0 && (
+                                                    <td rowSpan={item?.data.length} className="table-record">
+                                                        <button className="Edit" type={"button"} title={"Edit Costing"} onClick={() => editRow(item, indexInside)} disabled={isViewEstimation || (!item?.isRowActionEditable && !item?.IsShowEditButtonForPFS)} />
+                                                        {/* <button className="Delete All ml-1" title={"Delete Costing"} type={"button"} onClick={() => deleteRow(item, indexInside)} disabled={isViewEstimation || item?.statusId !== DRAFTID} /> */}
+                                                    </td>
+                                                )
+                                            }
+                                        </tr >
+                                    ))
+                                    }
+                                </React.Fragment >
+                            ))
+                            }
+                            {
+                                rowData.length === 0 && (<tr>
+                                    <td colSpan={8} className="text-center"><NoContentFound title={EMPTY_DATA} /></td>
+                                </tr>)
+                            }
+                        </tbody >
+                    </Table >
                     <Row>
                         <Col md="12" className='text-right'>
                             <button
@@ -1030,26 +1037,28 @@ function AddNfr(props) {
                                 <div className={"save-icon"}></div>
                                 Save
                             </button>
-                            {isFinalApproverShowButton && <button
-                                className='user-btn'
-                                type='button'
-                                onClick={sendForApproval}
-                                disabled={isViewEstimation || sendForApprovalButtonDisable || allCostingNotSelected || topGroupNotAdded}
-                            >
-                                <div className="send-for-approval"></div>
-                                Send for Approval
-                            </button>}
+                            {
+                                isFinalApproverShowButton && <button
+                                    className='user-btn'
+                                    type='button'
+                                    onClick={sendForApproval}
+                                    disabled={isViewEstimation || sendForApprovalButtonDisable || allCostingNotSelected || topGroupNotAdded}
+                                >
+                                    <div className="send-for-approval"></div>
+                                    Send for Approval
+                                </button>
+                            }
                             <div>
                                 {editWarning && <WarningMessage dClass="mr-3" message={filterStatus} />}
                             </div>
                             {
                                 showPopup && <PopupMsgWrapper isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${MESSAGES.COSTING_DELETE_ALERT}`} />
                             }
-                        </Col>
-                    </Row>
+                        </Col >
+                    </Row >
 
-                </div>
-            </div>}
+                </div >
+            </div >}
 
             {
                 showDrawer &&
@@ -1064,13 +1073,15 @@ function AddNfr(props) {
                     levelDetails={levelDetails}
                 />
             }
-            {showOutsourcingDrawer &&
+            {
+                showOutsourcingDrawer &&
                 <OutsourcingDrawer
                     isOpen={showOutsourcingDrawer}
                     closeDrawer={closeOutsourcingDrawer}
                     anchor={'right'}
                     CostingId={OutsourcingCostingData?.CostingId}
-                />}
+                />
+            }
         </>
     );
 }

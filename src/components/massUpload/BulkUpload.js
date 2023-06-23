@@ -4,17 +4,16 @@ import { reduxForm } from "redux-form";
 import { Container, Row, Col, Label } from 'reactstrap';
 import { checkForNull, getJsDateFromExcel, isDateFormatter } from "../../helper/validation";
 import {
-    bulkUploadRMDomesticZBC, bulkUploadRMDomesticVBC, bulkUploadRMImportCBC, bulkUploadRMDomesticCBC, bulkUploadRMImportZBC, bulkUploadRMImportVBC,
-    bulkfileUploadRM, bulkUploadRMSpecification,
+    bulkUploadRM, bulkfileUploadRM, bulkUploadRMSpecification,
 } from '../masters/actions/Material';
-import { bulkUploadMachineZBC, bulkUploadMachineVBC, bulkUploadMachineMoreZBC, bulkUploadMachineCBC } from '../masters/actions/MachineMaster';
+import { bulkUploadMachine, bulkUploadMachineMoreZBC } from '../masters/actions/MachineMaster';
 import { fuelBulkUpload } from '../masters/actions/Fuel';
 import { labourBulkUpload } from '../masters/actions/Labour';
 import { vendorBulkUpload } from '../masters/actions/Supplier';
 import { overheadBulkUpload, profitBulkUpload } from '../masters/actions/OverheadProfit';
-import { operationZBCBulkUpload, operationVBCBulkUpload, operationCBCBulkUpload } from '../masters/actions/OtherOperation';
+import { operationBulkUpload } from '../masters/actions/OtherOperation';
 import { partComponentBulkUpload, productComponentBulkUpload } from '../masters/actions/Part';
-import { bulkUploadBOPDomesticZBC, bulkUploadBOPDomesticCBC, bulkUploadBOPDomesticVBC, bulkUploadBOPImportZBC, bulkUploadBOPImportCBC, bulkUploadBOPImportVBC, } from '../masters/actions/BoughtOutParts';
+import { bulkUploadBOP } from '../masters/actions/BoughtOutParts';
 import { bulkUploadVolumeActualZBC, bulkUploadVolumeActualVBC, bulkUploadVolumeBudgetedZBC, bulkUploadVolumeBudgetedCBC, bulkUploadVolumeActualCBC, bulkUploadVolumeBudgetedVBC, } from '../masters/actions/Volume';
 import { bulkUploadBudgetMaster } from '../masters/actions/Budget'
 import { bulkUploadInterestRateZBC, bulkUploadInterestRateVBC, bulkUploadInterestRateCBC } from '../masters/actions/InterestRateMaster';
@@ -398,11 +397,6 @@ class BulkUpload extends Component {
                                 }
                                 if (fileHeads[i] === 'EffectiveDate' && typeof el === 'number') {
                                     el = getJsDateFromExcel(el)
-                                    const date = new Date();
-                                    const shortDateFormat = date.toLocaleDateString(undefined, { dateStyle: 'short' });
-                                    if (Number(shortDateFormat.charAt(0)) === Number(date.getMonth() + 1)) {
-                                        el = DayTime(el).format('YYYY-DD-MM 00:00:00')
-                                    }
                                 }
                                 if (fileHeads[i] === 'NoOfPcs' && typeof el == 'number') {
                                     el = parseInt(checkForNull(el))
@@ -419,6 +413,8 @@ class BulkUpload extends Component {
                                     fileHeads[i] = 'JaliScrapCost'
                                 } else if ((fileName === 'RM Domestic' || fileName === 'RM Import') && fileHeads[i] === 'ScrapRate/JaliScrapCost') {
                                     fileHeads[i] = 'ScrapRate'
+                                } else if (fileName === 'Machine' && fileHeads[i] === 'PlantCode') {
+                                    fileHeads[i] = 'DestinationPlantCode'
                                 }
                                 obj[fileHeads[i]] = el;
                                 return null;
@@ -455,7 +451,7 @@ class BulkUpload extends Component {
             if (Data?.CountFailed > 0) {
                 Toaster.warning(res.data.Message);
                 this.setState({
-                    failedData: Data.FaildRecords,
+                    failedData: Data?.FailedRecords,
                     faildRecords: true,
                 })
             }
@@ -487,7 +483,7 @@ class BulkUpload extends Component {
     */
     onSubmit = (values) => {
         const { fileData, costingTypeId, IsFinalApprover } = this.state;
-        const { fileName } = this.props;
+        const { fileName, typeOfEntryId } = this.props;
         if (fileData.length === 0) {
             Toaster.warning('Please select a file to upload.')
             return false
@@ -502,40 +498,20 @@ class BulkUpload extends Component {
             Records: fileData,
             LoggedInUserId: loggedInUserId(),
             IsFinalApprover: IsFinalApprover,
-            CostingTypeId: costingTypeId
+            CostingTypeId: costingTypeId,
+            TypeOfEntry: typeOfEntryId ? typeOfEntryId : 0
         }
         console.log(masterUploadData, "masterUploadData");
         this.setState({ setDisable: true })
 
-        if (fileName === 'RM Domestic' && costingTypeId === ZBCTypeId) {
-            this.props.bulkUploadRMDomesticZBC(masterUploadData, (res) => {
+        if (fileName === 'RM Domestic' || fileName === 'RM Import') {
+            this.props.bulkUploadRM(masterUploadData, (res) => {
                 this.setState({ setDisable: false })
                 this.responseHandler(res)
             });
 
-        } else if (fileName === 'RM Domestic' && costingTypeId === VBCTypeId) {
-            this.props.bulkUploadRMDomesticVBC(masterUploadData, (res) => {
-                this.setState({ setDisable: false })
-                this.responseHandler(res)
-            });
-        } else if (fileName === 'RM Domestic' && costingTypeId === CBCTypeId) {
-            this.props.bulkUploadRMDomesticCBC(masterUploadData, (res) => {
-                this.setState({ setDisable: false })
-                this.responseHandler(res)
-            });
-        } else if (fileName === 'RM Import' && costingTypeId === ZBCTypeId) {
-            this.props.bulkUploadRMImportZBC(masterUploadData, (res) => {
-                this.setState({ setDisable: false })
-                this.responseHandler(res)
-            });
-
-        } else if (fileName === 'RM Import' && costingTypeId === VBCTypeId) {
-            this.props.bulkUploadRMImportVBC(masterUploadData, (res) => {
-                this.setState({ setDisable: false })
-                this.responseHandler(res)
-            });
-        } else if (fileName === 'RM Import' && costingTypeId === CBCTypeId) {
-            this.props.bulkUploadRMImportCBC(masterUploadData, (res) => {
+        } else if (fileName === 'BOP Domestic' || fileName === 'BOP Import') {
+            this.props.bulkUploadBOP(masterUploadData, (res) => {
                 this.setState({ setDisable: false })
                 this.responseHandler(res)
             });
@@ -552,24 +528,11 @@ class BulkUpload extends Component {
                 this.responseHandler(res)
             });
 
-        } else if (fileName === 'Operation' && costingTypeId === ZBCTypeId) {
-            this.props.operationZBCBulkUpload(masterUploadData, (res) => {
+        } else if (fileName === 'Operation') {
+            this.props.operationBulkUpload(masterUploadData, (res) => {
                 this.setState({ setDisable: false })
                 this.responseHandler(res)
             });
-
-        } else if (fileName === 'Operation' && costingTypeId === VBCTypeId) {
-            this.props.operationVBCBulkUpload(masterUploadData, (res) => {
-                this.setState({ setDisable: false })
-                this.responseHandler(res)
-            });
-
-        } else if (fileName === 'Operation' && costingTypeId === CBCTypeId) {
-            this.props.operationCBCBulkUpload(masterUploadData, (res) => {
-                this.setState({ setDisable: false })
-                this.responseHandler(res)
-            });
-
         } else if (fileName === 'Fuel') {
             this.props.fuelBulkUpload(uploadData, (res) => {
                 this.setState({ setDisable: false })
@@ -593,25 +556,14 @@ class BulkUpload extends Component {
                 this.setState({ setDisable: false })
                 this.responseHandler(res)
             });
-        } else if (fileName === 'Machine' && costingTypeId === ZBCTypeId) {
-            this.props.bulkUploadMachineZBC(masterUploadData, (res) => {
-                this.setState({ setDisable: false })
-                this.responseHandler(res)
-            });
-
-        } else if (fileName === 'Machine' && costingTypeId === VBCTypeId) {
-            this.props.bulkUploadMachineVBC(masterUploadData, (res) => {
+        } else if (fileName === 'Machine' && costingTypeId !== ZBCADDMORE) {
+            this.props.bulkUploadMachine(masterUploadData, (res) => {
                 this.setState({ setDisable: false })
                 this.responseHandler(res)
             });
 
         } else if (fileName === 'Machine' && costingTypeId === ZBCADDMORE) {
             this.props.bulkUploadMachineMoreZBC(masterUploadData, (res) => {
-                this.setState({ setDisable: false })
-                this.responseHandler(res)
-            });
-        } else if (fileName === 'Machine' && costingTypeId === CBCTypeId) {
-            this.props.bulkUploadMachineCBC(masterUploadData, (res) => {
                 this.setState({ setDisable: false })
                 this.responseHandler(res)
             });
@@ -994,24 +946,16 @@ export default connect(mapStateToProps, {
     bulkUploadRMSpecification,
     fuelBulkUpload,
     vendorBulkUpload,
-    bulkUploadRMDomesticZBC,
-    bulkUploadRMDomesticVBC,
-    bulkUploadRMImportZBC,
-    bulkUploadRMImportVBC,
+    bulkUploadRM,
     overheadBulkUpload,
     profitBulkUpload,
-    operationZBCBulkUpload,
-    operationVBCBulkUpload,
+    operationBulkUpload,
     labourBulkUpload,
-    bulkUploadMachineZBC,
-    bulkUploadMachineVBC,
+    bulkUploadMachine,
     bulkUploadMachineMoreZBC,
     partComponentBulkUpload,
     productComponentBulkUpload,
-    bulkUploadBOPDomesticZBC,
-    bulkUploadBOPDomesticVBC,
-    bulkUploadBOPImportZBC,
-    bulkUploadBOPImportVBC,
+    bulkUploadBOP,
     bulkUploadVolumeActualZBC,
     bulkUploadVolumeActualVBC,
     bulkUploadVolumeBudgetedZBC,
@@ -1019,12 +963,6 @@ export default connect(mapStateToProps, {
     bulkUploadInterestRateZBC,
     bulkUploadInterestRateVBC,
     bulkUploadInterestRateCBC,
-    bulkUploadRMDomesticCBC,
-    bulkUploadRMImportCBC,
-    operationCBCBulkUpload,
-    bulkUploadMachineCBC,
-    bulkUploadBOPDomesticCBC,
-    bulkUploadBOPImportCBC,
     bulkUploadVolumeActualCBC,
     bulkUploadVolumeBudgetedCBC,
     bulkUploadBudgetMaster,

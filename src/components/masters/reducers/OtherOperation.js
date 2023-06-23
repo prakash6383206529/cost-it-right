@@ -13,13 +13,11 @@ import {
     GET_OPERATION_SUCCESS,
     GET_UNIT_OPERATION_DATA_SUCCESS,
     GET_CED_OTHER_OPERATION_BY_SUPPLIER_SUCCESS,
-    GET_OPERATION_SELECTLIST_SUCCESS,
-    GET_INITIAL_VENDOR_WITH_VENDOR_CODE_SELECTLIST,
-    GET_INITIAL_TECHNOLOGY_SELECTLIST,
     GET_OPERATION_COMBINED_DATA_LIST,
     GET_ALL_OPERATION_COMBINED_DATA_LIST,
     GET_OPERATION_APPROVAL_LIST,
     SET_OPERATION_DATA,
+    GET_OPERATION_SELECTLIST,
 } from '../../../config/constants';
 import { checkForDecimalAndNull, getConfigurationKey } from '../../../helper';
 
@@ -111,24 +109,7 @@ export default function OtherOperationReducer(state = initialState, action) {
                 loading: false,
                 cedOperationData: action.payload
             };
-        case GET_OPERATION_SELECTLIST_SUCCESS:
-            return {
-                ...state,
-                loading: false,
-                filterOperation: { ...state.filterOperation, operations: action.payload }
-            };
-        case GET_INITIAL_VENDOR_WITH_VENDOR_CODE_SELECTLIST:
-            return {
-                ...state,
-                loading: false,
-                filterOperation: { ...state.filterOperation, vendors: action.payload }
-            };
-        case GET_INITIAL_TECHNOLOGY_SELECTLIST:
-            return {
-                ...state,
-                loading: false,
-                filterOperation: { ...state.filterOperation, technology: action.payload }
-            };
+
         case GET_OPERATION_COMBINED_DATA_LIST:
             let arr = []
             arr = action.payload && action.payload.filter((el) => {
@@ -159,6 +140,12 @@ export default function OtherOperationReducer(state = initialState, action) {
                 ...state,
                 loading: false,
                 operationDataHold: action.payload
+            }
+        case GET_OPERATION_SELECTLIST:
+            return {
+                ...state,
+                loading: false,
+                operationSelectList: action.payload
             }
 
         default:

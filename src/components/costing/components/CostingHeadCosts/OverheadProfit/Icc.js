@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Col, Row, } from 'reactstrap';
-import { TextFieldHookForm } from '../../../../layout/HookFormInputs';
+import { SearchableSelectHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs';
 import { calculatePercentage, checkForDecimalAndNull, checkForNull, decimalAndNumberValidationBoolean, getConfigurationKey, } from '../../../../../helper';
 import { getInventoryDataByHeads, gridDataAdded, isOverheadProfitDataChange, setOverheadProfitErrors, } from '../../../actions/Costing';
 import { ViewCostingContext } from '../../CostingDetails';
 import { costingInfoContext, netHeadCostContext } from '../../CostingDetailStepTwo';
-import { CBCTypeId, EMPTY_GUID, NFRTypeId, VBCTypeId, ZBCTypeId } from '../../../../../config/constants';
+import { CBCTypeId, CRMHeads, EMPTY_GUID, NFRTypeId, VBCTypeId, ZBCTypeId } from '../../../../../config/constants';
 import Switch from "react-switch";
 import DayTime from '../../../../common/DayTimeWrapper';
 import { MESSAGES } from '../../../../../config/message';
@@ -24,7 +24,7 @@ function Icc(props) {
 
     const ICCApplicabilityDetail = CostingInterestRateDetail && CostingInterestRateDetail.ICCApplicabilityDetail !== null ? CostingInterestRateDetail.ICCApplicabilityDetail : {}
     const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
-    const { IsIncludedSurfaceInOverheadProfit } = useSelector(state => state.costing)
+    const { IsIncludedSurfaceInOverheadProfit, OverheadProfitTabData, includeOverHeadProfitIcc } = useSelector(state => state.costing)
 
     const [InventoryObj, setInventoryObj] = useState(ICCApplicabilityDetail)
     const [tempInventoryObj, setTempInventoryObj] = useState(ICCApplicabilityDetail)
@@ -37,7 +37,7 @@ function Icc(props) {
     const [errorMessage, setErrorMessage] = useState('')
     const [isNetWeight, setIsNetWeight] = useState((ICCApplicabilityDetail?.IsICCCalculationOnNetWeight) ? (ICCApplicabilityDetail?.IsICCCalculationOnNetWeight) : false)
     const [IsShowRmcAndNetWeightToggleForIcc, setIsShowRmcAndNetWeightToggleForIcc] = useState(reactLocalStorage.getObject('InitialConfiguration')?.IsShowRmcAndNetWeightToggleForIcc)
-
+    const [totalOverHeadAndProfit, setTotalOverHeadAndProfit] = useState((OverheadProfitTabData[0]?.CostingPartDetails?.TotalOverheadAndProfitPerAssembly) ? (OverheadProfitTabData[0]?.CostingPartDetails?.TotalOverheadAndProfitPerAssembly) : 0)
     const { CostingEffectiveDate } = useSelector(state => state.costing)
 
     const dispatch = useDispatch()
@@ -81,7 +81,10 @@ function Icc(props) {
                 costingTypeId: Number(costData.CostingTypeId) === NFRTypeId ? VBCTypeId : costData.CostingTypeId,
                 plantId: (getConfigurationKey()?.IsPlantRequiredForOverheadProfitInterestRate && costData?.CostingTypeId === ZBCTypeId) ? costData.PlantId : ((getConfigurationKey()?.IsDestinationPlantConfigure && costData?.CostingTypeId === VBCTypeId) || costData?.CostingTypeId === CBCTypeId || costData?.CostingTypeId === NFRTypeId) ? costData.DestinationPlantId : EMPTY_GUID,
                 customerId: costData?.CostingTypeId === CBCTypeId ? costData.CustomerId : EMPTY_GUID,
-                effectiveDate: CostingEffectiveDate ? (DayTime(CostingEffectiveDate).format('DD/MM/YYYY')) : ''
+                effectiveDate: CostingEffectiveDate ? (DayTime(CostingEffectiveDate).format('DD/MM/YYYY')) : '',
+                rawMaterialGradeId: initialConfiguration.IsShowRawMaterialInOverheadProfitAndICC ? OverheadProfitTabData[0]?.CostingPartDetails?.RawMaterialGradeId : EMPTY_GUID,
+                rawMaterialChildId: initialConfiguration.IsShowRawMaterialInOverheadProfitAndICC ? OverheadProfitTabData[0]?.CostingPartDetails?.RawMaterialChildId : EMPTY_GUID,
+                technologyId: null,
             }
             dispatch(getInventoryDataByHeads(reqParams, res => {
                 if (res && res.data && res.data.Result) {
@@ -110,6 +113,13 @@ function Icc(props) {
         }
     }
 
+    useEffect(() => {
+
+        if (ICCApplicabilityDetail) {
+            setValue('crmHeadIcc', ICCApplicabilityDetail.ICCCRMHead ? { label: ICCApplicabilityDetail.ICCCRMHead, value: 1 } : '')
+        }
+
+    }, [])
 
     /**
     * @description SET VALUE IN NetICCTotal WHEN FIXED AND ENABLED 'InterestRatePercentage'
@@ -119,6 +129,10 @@ function Icc(props) {
             setValue('NetICCTotal', getValues('InterestRatePercentage'))
         }
     }, [interestRateValues])
+
+    useEffect(() => {
+        setTotalOverHeadAndProfit(OverheadProfitTabData[0]?.CostingPartDetails?.TotalOverheadAndProfitPerAssembly)
+    }, [OverheadProfitTabData[0]?.CostingPartDetails?.TotalOverheadAndProfitPerAssembly])
 
     /**
       * @method checkInventoryApplicability
@@ -131,9 +145,9 @@ function Icc(props) {
             if (isNetWeight && !(costData.IsAssemblyPart)) {
                 let rmValue = reactLocalStorage.getObject('costingArray')
                 let newRmCost = (Array.isArray(rmValue) && rmValue[0]?.CostingPartDetails?.CostingRawMaterialsCost[0]?.RMRate) * (Array.isArray(rmValue) && rmValue[0]?.CostingPartDetails?.CostingRawMaterialsCost[0]?.FinishWeight)
-                NetRawMaterialsCost = newRmCost
+                NetRawMaterialsCost = newRmCost + (includeOverHeadProfitIcc ? totalOverHeadAndProfit : 0)
             } else {
-                NetRawMaterialsCost = headerCosts.NetRawMaterialsCost
+                NetRawMaterialsCost = headerCosts.NetRawMaterialsCost + (includeOverHeadProfitIcc ? totalOverHeadAndProfit : 0)
             }
 
             const ConversionCostForCalculation = costData.IsAssemblyPart ? checkForNull(headerCosts.NetConversionCost) - checkForNull(headerCosts.TotalOtherOperationCostPerAssembly) : headerCosts.ProcessCostTotal + headerCosts.OperationCostTotal
@@ -151,7 +165,7 @@ function Icc(props) {
                     setTempInventoryObj({
                         ...tempInventoryObj,
                         CostApplicability: checkForNull(NetRawMaterialsCost),
-                        NetICCTotal: checkForNull(NetRawMaterialsCost) * calculatePercentage(InterestRatePercentage)
+                        NetICCTotal: checkForNull(headerCosts?.NetRawMaterialsCost + (includeOverHeadProfitIcc ? totalOverHeadAndProfit : 0)) * calculatePercentage(InterestRatePercentage)
                     })
                     break;
 
@@ -257,8 +271,8 @@ function Icc(props) {
 
     useEffect(() => {
         checkInventoryApplicability(ICCapplicability?.label)
+    }, [interestRateValues, IsIncludedSurfaceInOverheadProfit, ICCapplicability, isNetWeight, includeOverHeadProfitIcc, totalOverHeadAndProfit]);
 
-    }, [interestRateValues, IsIncludedSurfaceInOverheadProfit, ICCapplicability, isNetWeight]);
 
     useEffect(() => {
         setTimeout(() => {
@@ -271,10 +285,12 @@ function Icc(props) {
                 "InterestRate": IsInventoryApplicable ? getValues('InterestRatePercentage') : '',
                 "NetCost": IsInventoryApplicable ? tempInventoryObj.NetICCTotal : '',
                 "EffectiveDate": "",
-                "IsICCCalculationOnNetWeight": isNetWeight
+                "IsICCCalculationOnNetWeight": isNetWeight,
+                "ICCCRMHead": tempInventoryObj.ICCCRMHead ? tempInventoryObj.ICCCRMHead : ''
             }
             setValue('CostApplicability', IsInventoryApplicable ? checkForDecimalAndNull(tempInventoryObj.CostApplicability, initialConfiguration.NoOfDecimalForPrice) : '')
             if (!CostingViewMode) {
+
                 props.setICCDetail(tempObj, { BOMLevel: data.BOMLevel, PartNumber: data.PartNumber })
             }
         }, 200)
@@ -299,6 +315,16 @@ function Icc(props) {
     } else if (Object.keys(errors).length === 0 && counter > 0) {
         counter = 0
         dispatch(setOverheadProfitErrors({}))
+    }
+
+    const handleCrmHeadChange = (e) => {
+        if (e) {
+            setTempInventoryObj({
+                ...tempInventoryObj,
+                ICCCRMHead: e?.label
+            })
+        }
+
     }
 
     return (
@@ -456,6 +482,26 @@ function Icc(props) {
                             </Col>
                         </>
                     </Row>
+                    {initialConfiguration.IsShowCRMHead && <Col md="2">
+                        <SearchableSelectHookForm
+                            name={`crmHeadIcc`}
+                            type="text"
+                            label="CRM Head"
+                            errors={errors.crmHeadIcc}
+                            Controller={Controller}
+                            control={control}
+                            register={register}
+                            mandatory={false}
+                            rules={{
+                                required: false,
+                            }}
+                            placeholder={'Select'}
+                            options={CRMHeads}
+                            required={false}
+                            handleChange={handleCrmHeadChange}
+                            disabled={CostingViewMode}
+                        />
+                    </Col>}
                 </>
             }
         </>
