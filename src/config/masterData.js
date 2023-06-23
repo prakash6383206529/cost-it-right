@@ -6734,3 +6734,5 @@ export const typePercentageAndFixed = [
     { label: 'Fixed', value: 'Fixed' },
     { label: 'Percentage', value: 'Percentage' },
 ];
+export const NON_ASSOCIATED = "Non Associated"
+export const ASSOCIATED = "Associated"
