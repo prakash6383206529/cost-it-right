@@ -448,3 +448,6 @@ export const isDateFormatter = value =>
     value && !/^[0-3]?[0-9].[0-3]?[0-9].(?:[0-9]{2})?[0-9]{2}$/.test(value)
         ? false : true;
 
+export const decimalNumberLimit8 = value =>
+    value && !/^\d{0,8}(\.\d{0,6})?$/.test(value)
+        ? 'Maximum length for integer is 8 and for decimal is 6' : undefined;
