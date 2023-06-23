@@ -4,7 +4,7 @@ import { Container, Row, Col, NavItem, TabContent, TabPane, Nav, NavLink } from 
 import { getProcessDrawerDataList, setIdsOfProcess, setIdsOfProcessGroup, setSelectedDataOfCheckBox } from '../../actions/Costing';
 import { costingInfoContext } from '../CostingDetailStepTwo';
 import NoContentFound from '../../../common/NoContentFound';
-import { CBCTypeId, defaultPageSize, EMPTY_DATA, NCCTypeId, NCC, NFRTypeId, PFS1TypeId, VBC, PFS2TypeId, PFS3TypeId, VBCTypeId, ZBCTypeId } from '../../../../config/constants';
+import { CBCTypeId, defaultPageSize, EMPTY_DATA, NCCTypeId, NCC, NFRTypeId, PFS1TypeId, VBC, PFS2TypeId, PFS3TypeId, WACTypeId, VBCTypeId, ZBCTypeId } from '../../../../config/constants';
 import Toaster from '../../../common/Toaster';
 import classnames from 'classnames';
 import Drawer from '@material-ui/core/Drawer';
@@ -91,7 +91,7 @@ function AddProcess(props) {
         VendorId: costData.VendorId ? costData.VendorId : EMPTY_GUID,
 
         PlantId: (initialConfiguration?.IsDestinationPlantConfigure && (costData.CostingTypeId === VBCTypeId || costData.CostingTypeId === NCCTypeId || costData.CostingTypeId === NFRTypeId || costData.CostingTypeId === PFS1TypeId ||
-          costData.CostingTypeId === PFS2TypeId || costData.CostingTypeId === PFS3TypeId)) || costData.CostingTypeId === CBCTypeId ? costData.DestinationPlantId : (costData.CostingTypeId === ZBCTypeId) ? costData.PlantId : EMPTY_GUID,
+          costData.CostingTypeId === PFS2TypeId || costData.CostingTypeId === PFS3TypeId)) || costData.CostingTypeId === CBCTypeId ? costData.DestinationPlantId : (costData.CostingTypeId === ZBCTypeId || costData.CostingTypeId === WACTypeId) ? costData.PlantId : EMPTY_GUID,
 
         TechnologyId: String(`${costData?.TechnologyId},${MACHINING}`),
         VendorPlantId: initialConfiguration?.IsVendorPlantConfigurable ? costData.VendorPlantId : EMPTY_GUID,
@@ -99,7 +99,7 @@ function AddProcess(props) {
         EffectiveDate: CostingEffectiveDate,
 
         CostingTypeId: (Number(costData.CostingTypeId) === NFRTypeId || Number(costData.CostingTypeId) === VBCTypeId || Number(costData.CostingTypeId) === PFS1TypeId
-          || Number(costData.CostingTypeId) === PFS2TypeId || Number(costData.CostingTypeId) === PFS3TypeId) ? VBCTypeId : costData.CostingTypeId,
+          || Number(costData.CostingTypeId) === PFS2TypeId || Number(costData.CostingTypeId) === PFS3TypeId) ? VBCTypeId : Number(costData.CostingTypeId === WACTypeId) ? ZBCTypeId : costData.CostingTypeId,
 
         CustomerId: costData.CustomerId
       }
@@ -112,7 +112,7 @@ function AddProcess(props) {
         VendorId: costData.VendorId ? costData.VendorId : EMPTY_GUID,
 
         PlantId: (initialConfiguration?.IsDestinationPlantConfigure && (costData.CostingTypeId === VBCTypeId || costData.CostingTypeId === NCCTypeId || costData.CostingTypeId === NFRTypeId || costData.CostingTypeId === PFS1TypeId
-          || costData.CostingTypeId === PFS2TypeId || costData.CostingTypeId === PFS3TypeId)) || costData.CostingTypeId === CBCTypeId ? costData.DestinationPlantId : (costData.CostingTypeId === ZBCTypeId) ? costData.PlantId : EMPTY_GUID,
+          || costData.CostingTypeId === PFS2TypeId || costData.CostingTypeId === PFS3TypeId)) || costData.CostingTypeId === CBCTypeId ? costData.DestinationPlantId : (costData.CostingTypeId === ZBCTypeId || costData.CostingTypeId === WACTypeId) ? costData.PlantId : EMPTY_GUID,
 
         TechnologyId: String(costData?.TechnologyId),
         VendorPlantId: initialConfiguration?.IsVendorPlantConfigurable ? costData.VendorPlantId : EMPTY_GUID,
@@ -120,7 +120,7 @@ function AddProcess(props) {
         EffectiveDate: CostingEffectiveDate,
 
         CostingTypeId: (Number(costData.CostingTypeId) === NFRTypeId || Number(costData.CostingTypeId) === VBCTypeId || Number(costData.CostingTypeId) === PFS1TypeId
-          || Number(costData.CostingTypeId) === PFS2TypeId || Number(costData.CostingTypeId) === PFS3TypeId) ? VBCTypeId : costData.CostingTypeId,
+          || Number(costData.CostingTypeId) === PFS2TypeId || Number(costData.CostingTypeId) === PFS3TypeId) ? VBCTypeId : Number(costData.CostingTypeId === WACTypeId) ? ZBCTypeId : costData.CostingTypeId,
 
         CustomerId: costData.CustomerId
       }
