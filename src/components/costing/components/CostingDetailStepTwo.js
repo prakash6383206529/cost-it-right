@@ -14,7 +14,7 @@ import { ViewCostingContext, CostingTypeContext, IsNFR } from './CostingDetails'
 import { createToprowObjAndSave } from '../CostingUtil';
 import _ from 'lodash'
 import { IdForMultiTechnology } from '../../../config/masterData';
-import { CBCTypeId, NCC, NCCTypeId, NFRTypeId, PFS1TypeId, PFS2TypeId, PFS3TypeId, VBCTypeId, ZBCTypeId } from '../../../config/constants';
+import { CBCTypeId, NCC, NCCTypeId, NFRTypeId, PFS1TypeId, PFS2TypeId, PFS3TypeId, VBCTypeId, WACTypeId, ZBCTypeId } from '../../../config/constants';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { LOGISTICS } from '../../../config/masterData';
 import { Redirect } from 'react-router';
@@ -477,7 +477,7 @@ function CostingDetailStepTwo(props) {
                       }
 
                       {
-                        costingData.CostingTypeId === ZBCTypeId && <td><div className={'part-info-title costing-head-overflow'}><p><span className="cr-tbl-label">Plant (Code):</span><span className="dark-blue "
+                        (costingData.CostingTypeId === ZBCTypeId || costingData.CostingTypeId === WACTypeId) && <td><div className={'part-info-title costing-head-overflow'}><p><span className="cr-tbl-label">Plant (Code):</span><span className="dark-blue "
                           title={`${costingData.PlantName}(${costingData.PlantCode})`}>
                           {`${costingData.PlantName}`}</span></p></div></td>
                       }
