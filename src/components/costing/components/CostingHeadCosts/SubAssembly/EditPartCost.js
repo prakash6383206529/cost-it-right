@@ -16,6 +16,7 @@ import { getSingleCostingDetails, gridDataAdded, setCostingViewData } from '../.
 import CostingDetailSimulationDrawer from '../../../../simulation/components/CostingDetailSimulationDrawer';
 import { ViewCostingContext } from '../../CostingDetails';
 import { EMPTY_DATA, WACTypeId } from '../../../../../config/constants';
+import { reactLocalStorage } from 'reactjs-localstorage';
 
 function EditPartCost(props) {
 
@@ -25,7 +26,7 @@ function EditPartCost(props) {
     const [costingNumberData, setCostingNumberData] = useState({})
     const [isOpen, setIsOpen] = useState(false)
     const CostingViewMode = useContext(ViewCostingContext);
-
+    const viewCosting = reactLocalStorage.getObject("viewCostingData")
     const dispatch = useDispatch()
 
     const PartCostFields = 'PartCostFields';
@@ -107,8 +108,8 @@ function EditPartCost(props) {
         let obj = {
             partId: props?.tabAssemblyIndividualPartDetail?.PartId,
             plantId: costData?.DestinationPlantId,
-            isRequestForWAC: (costData.CostingTypeId === WACTypeId) ? true : false,
-            costingTypeId: (costData.CostingTypeId === WACTypeId) ? null : costData?.CostingTypeId
+            isRequestForWAC: (costData?.CostingTypeId === WACTypeId) ? true : false,
+            costingTypeId: (costData?.CostingTypeId === WACTypeId) ? null : costData?.CostingTypeId
         }
 
         !props.costingSummary && dispatch(getCostingForMultiTechnology(obj, res => { }))
@@ -150,7 +151,7 @@ function EditPartCost(props) {
         let netCost = 0
 
         // GET RUN TIME EDITED VALUES FROM INPUT FIELD
-        if (costData.CostingTypeId === WACTypeId) {
+        if (costData?.CostingTypeId === WACTypeId) {
             editedObject = currentGrid[gridIndex]
             editedObject.SOBPercentage = getValues(`${PartCostFields}.${gridIndex}.SOBPercentage`)
         } else {
@@ -489,7 +490,7 @@ function EditPartCost(props) {
                                             <th>Costing Number</th>
                                             <th>Settled Price</th>
                                             <th>SOB%</th>
-                                            {costData.CostingTypeId !== WACTypeId && <th>Delta</th>}
+                                            {costData?.CostingTypeId !== WACTypeId && <th>Delta</th>}
                                             <th>Net Cost</th>
                                             <th>Action</th>
                                         </tr>
@@ -524,10 +525,11 @@ function EditPartCost(props) {
                                                                 defaultValue={''}
                                                                 className=""
                                                                 customClassName={'withBorder'}
-                                                                disabled={(CostingViewMode || props.costingSummary || costData.CostingTypeId === WACTypeId) ? true : false}
+                                                                disabled={(CostingViewMode || props.costingSummary || costData?.CostingTypeId === WACTypeId) ? true : false}
                                                             />
                                                         </td>
-                                                        {costData.CostingTypeId !== WACTypeId && <td >
+
+                                                        {costData?.CostingTypeId !== WACTypeId && <td >
                                                             <div className='delta-warpper'>
                                                                 <SearchableSelectHookForm
                                                                     name={`${PartCostFields}.${index}.DeltaSign`}
