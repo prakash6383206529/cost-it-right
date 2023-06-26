@@ -58,14 +58,9 @@ function BDSimulation(props) {
 
     const dispatch = useDispatch()
 
-    const { selectedMasterForSimulation, selectedTechnologyForSimulation } = useSelector(state => state.simulation)
+    const { selectedMasterForSimulation, selectedTechnologyForSimulation, isMasterAssociatedWithCosting } = useSelector(state => state.simulation)
 
     useEffect(() => {
-        list && list?.map(item => {
-            item.NewBasicRate = item.BasicRate
-            item.OldNetLandedCost = item.NetLandedCost
-            item.NewNetLandedCost = item.NetLandedCost
-        })
         if (isbulkUpload) {
             setValue('NoOfCorrectRow', rowCount.correctRow)
             setValue('NoOfRowsWithoutChange', rowCount.NoOfRowsWithoutChange)
@@ -75,9 +70,9 @@ function BDSimulation(props) {
 
     useEffect(() => {
         if (list && list.length > 0) {
-            window.screen.width >= 1920 && gridRef?.current?.api?.sizeColumnsToFit();
+            window.screen.width >= 1920 && gridRef.current.api.sizeColumnsToFit();
             if (isImpactedMaster) {
-                gridRef?.current?.api?.sizeColumnsToFit();
+                gridRef.current.api.sizeColumnsToFit();
             }
             let maxDate = getMaxDate(list)
             setMaxDate(maxDate)
@@ -102,10 +97,10 @@ function BDSimulation(props) {
             return null;
         })
 
-        // if (basicRateCount === list.length) {
-        //     Toaster.warning('There is no changes in net cost. Please change the basic rate, then run simulation')
-        //     return false
-        // }
+        if (basicRateCount === list.length) {
+            Toaster.warning('There is no changes in net cost. Please change the basic rate, then run simulation')
+            return false
+        }
         setIsDisable(true)
         basicRateCount = 0
         // setShowVerifyPage(true)
@@ -124,13 +119,11 @@ function BDSimulation(props) {
         list && list.map(item => {
             if (item.NewBasicRate !== undefined ? Number(item.NewBasicRate) : Number(item.BasicRate)) {
                 let tempObj = {}
-                let val = item?.BasicRate + (item?.BasicRate * item?.Percentage / 100)
                 tempObj.BoughtOutPartId = item.BoughtOutPartId
                 tempObj.OldBOPRate = item.BasicRate
                 tempObj.NewBOPRate = item.NewBasicRate
                 tempObj.OldNetLandedCost = checkForNull(item.BasicRate)
                 tempObj.NewNetLandedCost = checkForNull(item.NewBasicRate)
-                tempObj.PercentageChange = checkForNull(item.Percentage)
                 tempArr.push(tempObj)
             }
             return null;
@@ -140,7 +133,7 @@ function BDSimulation(props) {
         obj.SimulationBoughtOutPart = tempArr
         obj.EffectiveDate = DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss')
         obj.SimulationHeadId = list[0].CostingTypeId
-        obj.IsSimulationWithOutCosting = false
+        obj.IsSimulationWithOutCosting = !isMasterAssociatedWithCosting
 
         dispatch(runVerifyBoughtOutPartSimulation(obj, res => {
             setIsDisable(false)
@@ -176,29 +169,13 @@ function BDSimulation(props) {
     const newBasicRateFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        let value = row?.BasicRate + (row?.BasicRate * row?.Percentage / 100)
-        return (
-            <>
-                {
-                    isImpactedMaster ?
-                        Number(row.NewBOPRate) :
-                        <span className={`${!isbulkUpload ? 'form-control' : ''}`} >{cell && value ? Number(cell) : Number(row.NewBasicRate)} </span>
-                }
-            </>
-        )
-
-    }
-
-    const percentageFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         const value = beforeSaveCell(cell)
         return (
             <>
                 {
                     isImpactedMaster ?
-                        Number(cell) :
-                        <span className={`${!isbulkUpload ? 'form-control' : ''}`} >{cell && value ? Number(cell) : Number(cell)} </span>
+                        Number(row.NewBOPRate) :
+                        <span className={`${!isbulkUpload ? 'form-control' : ''}`} >{cell && value ? Number(cell) : Number(row.BasicRate)} </span>
                 }
 
             </>
@@ -274,11 +251,10 @@ function BDSimulation(props) {
 
     const NewcostFormatter = (props) => {
         const row = props?.data;
-        let value = row?.BasicRate + (row?.BasicRate * row?.Percentage / 100)
         if (isImpactedMaster) {
             return row.NewNetBoughtOutPartCost ? row.NewNetBoughtOutPartCost : '-'
         } else {
-            if ((!row.NewBasicRate || Number(row.BasicRate) === Number(row.NewBasicRate) || row.NewBasicRate === '')) return ''
+            if (!row.NewBasicRate || Number(row.BasicRate) === Number(row.NewBasicRate) || row.NewBasicRate === '') return ''
             const BasicRate = Number(row.BasicRate)
             const NewBasicRate = Number(row.NewBasicRate)
             const classGreen = (BasicRate < NewBasicRate) ? 'red-value form-control' : (BasicRate > NewBasicRate) ? 'green-value form-control' : 'form-class'
@@ -515,14 +491,13 @@ function BDSimulation(props) {
 
                                             <AgGridColumn headerClass="justify-content-center" cellClass="text-center" headerName={Number(selectedMasterForSimulation?.value) === 5 ? "Basic Rate (Currency)" : "Basic Rate (INR)"} marryChildren={true} width={240}>
                                                 <AgGridColumn width={120} field="BasicRate" editable='false' cellRenderer='oldBasicRateFormatter' headerName="Existing" colId="BasicRate"></AgGridColumn>
-                                                <AgGridColumn width={120} cellRenderer='newBasicRateFormatter' editable={!isImpactedMaster} onCellValueChanged='cellChange' field="NewBasicRate" headerName="Revised" colId='NewBasicRate'></AgGridColumn>
+                                                <AgGridColumn width={120} cellRenderer='newBasicRateFormatter' editable={!isImpactedMaster} onCellValueChanged='cellChange' field="NewBasicRate" headerName="Revised" colId='NewBasicRate' headerComponent={'revisedBasicRateHeader'}></AgGridColumn>
                                             </AgGridColumn>
-                                            {!isImpactedMaster && <AgGridColumn width={120} editable={true} onCellValueChanged='cellChange' field="Percentage" colId='Percentage' cellRenderer='percentageFormatter'></AgGridColumn>}
 
                                             <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName={Number(selectedMasterForSimulation?.value) === 5 ? "Net Cost (Currency)" : "Net Cost (INR)"} marryChildren={true}>
                                                 {/* {!isImpactedMaster &&<AgGridColumn width={120} field="OldNetLandedCost" editable='false' cellRenderer={'OldcostFormatter'} headerName="Old" colId='NetLandedCost'></AgGridColumn>} */}
                                                 <AgGridColumn width={120} field="OldNetLandedCost" editable='false' cellRenderer={'OldcostFormatter'} headerName="Existing" colId='NetLandedCost'></AgGridColumn>
-                                                <AgGridColumn width={120} field="NewNetLandedCost" editable='false' cellRenderer={'NewcostFormatter'} headerName="Revised" colId='NewNetLandedCost'></AgGridColumn>
+                                                <AgGridColumn width={120} field="NewNetLandedCost" editable='false' valueGetter='data.NewBasicRate' cellRenderer={'NewcostFormatter'} headerName="Revised" colId='NewNetLandedCost'></AgGridColumn>
                                             </AgGridColumn>
 
                                             <AgGridColumn field="EffectiveDate" headerName={props.isImpactedMaster && !props.lastRevision ? "Current Effective date" : "Effective Date"} editable='false' minWidth={150} cellRenderer='effectiveDateRenderer'></AgGridColumn>

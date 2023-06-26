@@ -4,7 +4,7 @@ import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import NoContentFound from '../../common/NoContentFound';
 import { EMPTY_DATA, EXCHNAGERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, BOPDOMESTIC, BOPIMPORT, MACHINERATE, OVERHEAD, defaultPageSize, COMBINED_PROCESS, CBCTypeId } from '../../../config/constants';
-import { getAllMultiTechnologyCostings, getAllMultiTechnologyImpactedSimulationCostings, getAllSimulationBoughtOutPart, getVerifyBoughtOutPartSimulationList, getverifyCombinedProcessSimulationList, getVerifyExchangeSimulationList, getVerifyMachineRateSimulationList, getVerifySimulationList, getVerifySurfaceTreatmentSimulationList } from '../actions/Simulation';
+import { getAllMultiTechnologyCostings, getAllMultiTechnologyImpactedSimulationCostings, getAllSimulationBoughtOutPart, getVerifyBoughtOutPartSimulationList, getverifyCombinedProcessSimulationList, getVerifyExchangeSimulationList, getVerifyMachineRateSimulationList, getVerifySimulationList, getVerifySurfaceTreatmentSimulationList, runSimulationOnSelectedBoughtOutPart } from '../actions/Simulation';
 import RunSimulationDrawer from './RunSimulationDrawer';
 import CostingSimulation from './CostingSimulation';
 import { checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUserId, searchNocontentFilter } from '../../../helper';
@@ -16,6 +16,8 @@ import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import { debounce } from 'lodash'
 import { PaginationWrapper } from '../../common/commonPagination';
 import { ASSEMBLY_TECHNOLOGY_MASTER } from '../../../config/masterData';
+import DayTime from '../../common/DayTimeWrapper';
+import DatePicker from "react-datepicker";
 // import AssemblySimulation from './AssemblySimulation';
 
 const gridOptions = {};
@@ -470,13 +472,15 @@ function VerifySimulation(props) {
         var selectedRows = gridApi.getSelectedRows();
         const rowIndex = clickedElement.rowIndex
         const costingNumber = clickedElement.data.CostingNumber
-        gridApi.forEachNode(node => {
-            if (node.rowIndex !== rowIndex) {
-                if (node.data.CostingNumber === costingNumber) {
-                    node.setSelected(type);
+        if (isMasterAssociatedWithCosting) {
+            gridApi.forEachNode(node => {
+                if (node.rowIndex !== rowIndex) {
+                    if (node.data.CostingNumber === costingNumber) {
+                        node.setSelected(type);
+                    }
                 }
-            }
-        });
+            });
+        }
         setSelectedRowData(selectedRows)
     }
 
@@ -486,111 +490,186 @@ function VerifySimulation(props) {
         }
     }, [verifyList])
 
-    const runSimulation = debounce(() => {
-        if (selectedRowData.length === 0) {
-            Toaster.warning('Please select atleast one costing.')
-            return false
+    const checkForResponse = (res) => {
+        if ('response' in res) {
+            if (res && res?.response?.data?.Result === false) {
+            }
         }
+        if (res?.data?.Result) {
+            Toaster.success('Simulation process run successfully.')
+            closeDrawer('', true)
+        }
+    }
 
-        let obj = {};
-        obj.SimulationId = simulationId
-        obj.LoggedInUserId = loggedInUserId()
-        let tempArr = []
+    const runSimulation = debounce(() => {
+        if (isMasterAssociatedWithCosting) {
+            if (selectedRowData.length === 0) {
+                Toaster.warning('Please select atleast one costing.')
+                return false
+            }
 
-        if (isMultiTechnology) {
+            let obj = {};
+            obj.SimulationId = simulationId
+            obj.LoggedInUserId = loggedInUserId()
+            let tempArr = []
+
+            if (isMultiTechnology) {
+                selectedRowData && selectedRowData.map(item => {
+                    let tempObj = {}
+                    tempObj.AssemblyCostingId = item.AssemblyCostingId
+                    tempObj.BaseWeightedAverageCostingId = item.BaseWeightedAverageCostingId
+                    tempObj.BaseCostingId = item.BaseCostingId
+                    tempObj.NewBaseCostingId = item.NewBaseCostingId
+                    tempObj.PartTypeId = item.PartTypeId
+                    tempArr.push(tempObj)
+                    return null;
+                })
+            } else {
+                switch (Number(selectedMasterForSimulation.value)) {
+                    case Number(RMDOMESTIC):
+                    case Number(RMIMPORT):
+                        selectedRowData && selectedRowData.map(item => {
+                            let tempObj = {}
+                            tempObj.RawMaterialId = item.RawMaterialId
+                            tempObj.CostingId = item.CostingId
+                            tempArr.push(tempObj)
+                            return null;
+                        })
+                        break;
+
+                    case Number(SURFACETREATMENT):
+                    case Number(OPERATIONS):
+                        selectedRowData && selectedRowData.map(item => {
+                            let tempObj = {}
+                            tempObj.OperationId = item.OperationId
+                            tempObj.CostingId = item.CostingId
+                            tempArr.push(tempObj)
+                            return null;
+                        })
+                        break;
+
+                    case Number(BOPDOMESTIC):
+                    case Number(BOPIMPORT):
+                        selectedRowData && selectedRowData.map(item => {
+                            let tempObj = {}
+                            tempObj.BoughtOutPartId = item.BoughtOutPartId
+                            tempObj.CostingId = item.CostingId
+                            tempArr.push(tempObj)
+                            return null;
+                        })
+                        break;
+
+                    case Number(EXCHNAGERATE):
+                        selectedRowData && selectedRowData.map(item => {
+                            let tempObj = {}
+                            tempObj.CostingId = item.CostingId
+                            tempArr.push(tempObj)
+                            return null;
+                        })
+                        obj.RunSimualtionExchangeRateCostingInfos = tempArr
+                        setObj(obj)
+                        setSimulationDrawer(true)
+
+                        break;
+
+                    case Number(MACHINERATE):
+                        selectedRowData && selectedRowData.map(item => {
+                            let tempObj = {}
+                            tempObj.CostingId = item.CostingId
+                            tempObj.MachineId = item.MachineId
+                            tempObj.ProcessId = item.ProcessId
+                            tempArr.push(tempObj)
+                            return null;
+                        })
+                        obj.RunSimualtionCostingInfo = tempArr
+                        setObj(obj)
+                        setSimulationDrawer(true)
+                        break;
+                    case Number(COMBINED_PROCESS):
+                        selectedRowData && selectedRowData.map(item => {
+                            let tempObj = {}
+                            tempObj.CostingId = item.CostingId
+                            tempArr.push(tempObj)
+                            return null;
+                        })
+                        obj.RunSimualtionCostingInfo = tempArr
+                        setObj(obj)
+                        setSimulationDrawer(true)
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            if (!isExchangeRate) {
+                obj.RunSimualtionCostingInfo = tempArr
+                setObj(obj)
+                setSimulationDrawer(true)
+            }
+        } else {
+            if (selectedRowData.length === 0) {
+                Toaster.warning('Please select atleast one Bought Out Part.')
+                return false
+            }
+
+
+            let tempArr = []
+            let obj = {}
+            let obj2 = {}
+
+            let temp1 = []
+            let temp = []
+            obj2.IsOverhead = false
+            obj2.IsProfit = false
+            obj2.IsRejection = false
+            obj2.IsInventory = false
+            obj2.IsPaymentTerms = false
+            obj2.IsDiscountAndOtherCost = false
+            obj2.IsAdditionalDiscount = false
+            obj2.IsAdditionalOtherCost = false
+            obj2.AdditionalOtherValue = ''                  // if toggleSwitchAdditionalOtherCOst==true then we will fetch percent value else (fixed value)
+            obj2.AdditionalDiscountPercentage = ''               // if toggleSwitchAdditionalDiscount==true then we will fetch discount percent value else fixed value
+            obj2.IsAdditionalOtherCostPercentage = false
+            obj2.IsAdditionalDiscountPercentage = false
+            obj2.IsTool = false
+            obj2.IsFreight = false
+            obj2.IsPackaging = false
+            obj2.IsBOPHandlingCharge = false
+            obj2.AdditionalOtherCostApplicability = ''
+            obj2.AdditionalDiscountApplicability = ''
+            obj2.IsAdditionalToolPercentage = ''
+            obj2.AdditionalToolApplicability = ''
+            obj2.IsAdditionalTool = false
+            obj2.AdditionalToolValue = ''
+            obj2.IsAdditionalPackagingPercentage = false
+            obj2.AdditionalPackagingApplicability = ''
+            obj2.IsAdditionalPackaging = false
+            obj2.AdditionalPackagingValue = ''
+            obj2.IsAdditionalFreightPercentage = false
+            obj2.AdditionalFreightApplicability = ''
+            obj2.IsAdditionalFreight = false
+            obj2.AdditionalFreightValue = ''
+            obj2.IsApplyLatestExchangeRate = false
+            obj2.IsCostingCondition = false
+            obj2.IsCostingNPV = false
+            temp1.push(obj2)
+
             selectedRowData && selectedRowData.map(item => {
                 let tempObj = {}
-                tempObj.AssemblyCostingId = item.AssemblyCostingId
-                tempObj.BaseWeightedAverageCostingId = item.BaseWeightedAverageCostingId
-                tempObj.BaseCostingId = item.BaseCostingId
-                tempObj.NewBaseCostingId = item.NewBaseCostingId
-                tempObj.PartTypeId = item.PartTypeId
+                tempObj.BoughtOutPartId = item.BoughtOutPartId
+                tempObj.CostingId = item.CostingId
                 tempArr.push(tempObj)
                 return null;
             })
-        } else {
-            switch (Number(selectedMasterForSimulation.value)) {
-                case Number(RMDOMESTIC):
-                case Number(RMIMPORT):
-                    selectedRowData && selectedRowData.map(item => {
-                        let tempObj = {}
-                        tempObj.RawMaterialId = item.RawMaterialId
-                        tempObj.CostingId = item.CostingId
-                        tempArr.push(tempObj)
-                        return null;
-                    })
-                    break;
 
-                case Number(SURFACETREATMENT):
-                case Number(OPERATIONS):
-                    selectedRowData && selectedRowData.map(item => {
-                        let tempObj = {}
-                        tempObj.OperationId = item.OperationId
-                        tempObj.CostingId = item.CostingId
-                        tempArr.push(tempObj)
-                        return null;
-                    })
-                    break;
-
-                case Number(BOPDOMESTIC):
-                case Number(BOPIMPORT):
-                    selectedRowData && selectedRowData.map(item => {
-                        let tempObj = {}
-                        tempObj.BoughtOutPartId = item.BoughtOutPartId
-                        tempObj.CostingId = item.CostingId
-                        tempArr.push(tempObj)
-                        return null;
-                    })
-                    break;
-
-                case Number(EXCHNAGERATE):
-                    selectedRowData && selectedRowData.map(item => {
-                        let tempObj = {}
-                        tempObj.CostingId = item.CostingId
-                        tempArr.push(tempObj)
-                        return null;
-                    })
-                    obj.RunSimualtionExchangeRateCostingInfos = tempArr
-                    setObj(obj)
-                    setSimulationDrawer(true)
-
-                    break;
-
-                case Number(MACHINERATE):
-                    selectedRowData && selectedRowData.map(item => {
-                        let tempObj = {}
-                        tempObj.CostingId = item.CostingId
-                        tempObj.MachineId = item.MachineId
-                        tempObj.ProcessId = item.ProcessId
-                        tempArr.push(tempObj)
-                        return null;
-                    })
-                    obj.RunSimualtionCostingInfo = tempArr
-                    setObj(obj)
-                    setSimulationDrawer(true)
-                    break;
-                case Number(COMBINED_PROCESS):
-                    selectedRowData && selectedRowData.map(item => {
-                        let tempObj = {}
-                        tempObj.CostingId = item.CostingId
-                        tempArr.push(tempObj)
-                        return null;
-                    })
-                    obj.RunSimualtionCostingInfo = tempArr
-                    setObj(obj)
-                    setSimulationDrawer(true)
-                    break;
-                default:
-                    break;
-            }
-        }
-
-        if (!isExchangeRate && !isCombinedProcess) {
+            obj.SimulationId = simulationId
+            obj.LoggedInUserId = loggedInUserId()
             obj.RunSimualtionCostingInfo = tempArr
-            setObj(obj)
-            setSimulationDrawer(true)
-        }
 
+            dispatch(runSimulationOnSelectedBoughtOutPart({ ...obj, EffectiveDate: DayTime(effectiveDate !== null ? effectiveDate : "").format('YYYY/MM/DD HH:mm'), IsProvisional: false, SimulationApplicability: temp1 }, (res) => {
+                checkForResponse(res)
+            }))
+        }
     }, 500)
 
     const closeDrawer = (e = '', mode) => {
@@ -793,6 +872,17 @@ function VerifySimulation(props) {
                         <div className="col-sm-12 text-right bluefooter-butn">
                             {/* {!isAssemblyCosting && */}
                             {/* <button onClick={runSimulation} type="submit" disabled={hideRunButton || runSimulationPermission} className="user-btn mr5 save-btn"                    > */}
+                            {!isMasterAssociatedWithCosting && <DatePicker
+                                selected={DayTime(effectiveDate).isValid() ? new Date(effectiveDate) : ''}
+                                dateFormat="dd/MM/yyyy"
+                                showMonthDropdown
+                                showYearDropdown
+                                readonly="readonly"
+                                onBlur={() => null}
+                                autoComplete={'off'}
+                                disabledKeyboardNavigation
+                                disabled={true}
+                            />}
                             <button onClick={runSimulation} type="submit" className="user-btn mr5 save-btn"                    >
                                 <div className={"Run-icon"}>
                                 </div>{" "}

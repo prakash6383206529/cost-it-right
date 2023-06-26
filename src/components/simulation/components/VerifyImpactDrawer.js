@@ -16,7 +16,7 @@ import { checkForDecimalAndNull, getConfigurationKey } from '../../../helper';
 
 
 function VerifyImpactDrawer(props) {
-  const { SimulationTechnologyIdState, simulationId, vendorIdState, EffectiveDate, CostingTypeId, amendmentDetails, dataForAssemblyImpactInVerifyImpact, assemblyImpactButtonTrue, costingDrawer, costingIdArray, approvalSummaryTrue } = props
+  const { SimulationTechnologyIdState, simulationId, vendorIdState, EffectiveDate, CostingTypeId, amendmentDetails, dataForAssemblyImpactInVerifyImpact, assemblyImpactButtonTrue, costingDrawer, costingIdArray, approvalSummaryTrue, isSimulationWithOutCosting } = props
 
   const [impactedMasterDataListForLastRevisionData, setImpactedMasterDataListForLastRevisionData] = useState([])
   const [impactedMasterDataListForImpactedMaster, setImpactedMasterDataListForImpactedMaster] = useState([])
@@ -111,7 +111,7 @@ function VerifyImpactDrawer(props) {
                     <tbody>
                       <tr>
                         {CostingTypeId !== CBCTypeId && <th>Vendor (Code):</th>}
-                        <th>Technology:</th>
+                        {isSimulationWithOutCosting ? <th>Technology:</th> : <th>Association:</th>}
                         <th>Master:</th>
                         <th>Costing Head:</th>
                         {CostingTypeId === CBCTypeId && <th>CUSTOMER:</th>}
@@ -123,7 +123,7 @@ function VerifyImpactDrawer(props) {
                     <tbody>
                       <tr>
                         {CostingTypeId !== CBCTypeId && <td>{amendmentDetails.Vendor}</td>}
-                        <td>{amendmentDetails.Technology}</td>
+                        {isSimulationWithOutCosting ? <td>{amendmentDetails.Technology}</td> : <td>{'Non Associated'}</td>}
                         <td>{amendmentDetails.SimulationAppliedOn}</td>
                         <td>{amendmentDetails.CostingHead}</td>
                         {CostingTypeId === CBCTypeId && <td>{amendmentDetails.CustomerName}</td>}

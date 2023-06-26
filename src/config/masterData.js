@@ -4789,7 +4789,7 @@ export const SimulationDownloadBOP = [
     { label: "Vendor (Code)", value: "VendorName" },
     { label: "ExistingBOPRate", value: "OldBOPRate" },
     { label: "RevisedBOPRate", value: "NewBOPRate" },
-    { label: "Variance (BOP Cost)", value: "BOPVariance" },
+    { label: "Variance (BOP Cost)", value: "BOPNONVariance" },
 ]
 
 export const SIMULATIONAPPROVALSUMMARYDOWNLOADRM = [
