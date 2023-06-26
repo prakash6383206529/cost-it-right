@@ -17,7 +17,7 @@ import { debounce } from 'lodash';
 import { IdForMultiTechnology } from '../../../../../config/masterData';
 import TooltipCustom from '../../../../common/Tooltip';
 import { errorCheckObject } from '../../../CostingUtil';
-import { number, decimalNumberLimit6, checkWhiteSpaces, NoSignNoDecimalMessage, isNumber, percentageLimitValidation } from "../../../../../helper/validation";
+import { number, decimalNumberLimit6, checkWhiteSpaces, NoSignNoDecimalMessage, isNumber, percentageLimitValidation, decimalNumberLimit8 } from "../../../../../helper/validation";
 
 let counter = 0;
 function Tool(props) {
@@ -811,7 +811,7 @@ function Tool(props) {
                       mandatory={false}
                       rules={{
                         required: false,
-                        validate: { number, checkWhiteSpaces, decimalNumberLimit6 }
+                        validate: { number, checkWhiteSpaces, decimalNumberLimit8 }
                       }}
                       defaultValue={''}
                       className=""
