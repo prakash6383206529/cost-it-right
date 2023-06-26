@@ -1073,7 +1073,29 @@ function Simulation(props) {
                                         />
                                     </div>
                                 </div>
-                                {
+                                {(String(master?.value) === BOPDOMESTIC || String(master?.value) === BOPIMPORT) &&
+                                    <div className="d-inline-flex justify-content-start align-items-center mr-3">
+                                        <div className="flex-fills label">Association:</div>
+                                        <div className="flex-fills hide-label pl-0">
+                                            <SearchableSelectHookForm
+                                                label={''}
+                                                name={'Association'}
+                                                placeholder={'Association'}
+                                                Controller={Controller}
+                                                control={control}
+                                                rules={{ required: false }}
+                                                register={register}
+                                                defaultValue={association.length !== 0 ? association : ''}
+                                                options={renderListing('association')}
+                                                mandatory={false}
+                                                handleChange={handleAssociationChange}
+                                                errors={errors.Masters}
+                                            />
+                                        </div>
+                                    </div>
+                                }
+                                {((String(selectedMasterForSimulation?.value) !== BOPDOMESTIC && String(selectedMasterForSimulation?.value) !== BOPIMPORT) ? true :
+                                    (association !== '' && association?.value !== NON_ASSOCIATED)) &&
                                     getTechnologyForSimulation.includes(master.value) &&
                                     <div className="d-inline-flex justify-content-start align-items-center mr-3">
                                         <div className="flex-fills label">Technology:</div>
