@@ -4,12 +4,12 @@ import RMDomesticListing from '../../masters/material-master/RMDomesticListing';
 import RMImportListing from '../../masters/material-master/RMImportListing';
 import { Row, Col } from 'reactstrap'
 import { Controller, useForm } from 'react-hook-form';
-import { getMasterSelectListSimulation, getTokenSelectListAPI, setSelectedRowForPagination, setMasterForSimulation, setTechnologyForSimulation, setTokenCheckBoxValue, setTokenForSimulation, getSelectListOfMasters, setVendorForSimulation } from '../actions/Simulation';
+import { getMasterSelectListSimulation, getTokenSelectListAPI, setSelectedRowForPagination, setMasterForSimulation, setTechnologyForSimulation, setTokenCheckBoxValue, setTokenForSimulation, getSelectListOfMasters, setVendorForSimulation, setIsMasterAssociatedWithCosting } from '../actions/Simulation';
 import { useDispatch, useSelector } from 'react-redux';
 import SimulationUploadDrawer from './SimulationUploadDrawer';
 import { BOPDOMESTIC, BOPIMPORT, EXCHNAGERATE, MACHINERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, RM_MASTER_ID, searchCount, VBC_VENDOR_TYPE } from '../../../config/constants';
 import ReactExport from 'react-export-excel';
-import { getTechnologyForSimulation, OperationSimulation, RMDomesticSimulation, RMImportSimulation, SurfaceTreatmentSimulation, MachineRateSimulation, BOPDomesticSimulation, BOPImportSimulation, IdForMultiTechnology, ASSEMBLY_TECHNOLOGY_MASTER, ASSEMBLY } from '../../../config/masterData';
+import { getTechnologyForSimulation, OperationSimulation, RMDomesticSimulation, RMImportSimulation, SurfaceTreatmentSimulation, MachineRateSimulation, BOPDomesticSimulation, BOPImportSimulation, IdForMultiTechnology, ASSEMBLY_TECHNOLOGY_MASTER, ASSEMBLY, NON_ASSOCIATED, ASSOCIATED } from '../../../config/masterData';
 import RMSimulation from './SimulationPages/RMSimulation';
 import { getCostingSpecificTechnology, getCostingTechnologySelectList } from '../../costing/actions/Costing';
 import CostingSimulation from './CostingSimulation';
@@ -46,7 +46,7 @@ function Simulation(props) {
         reValidateMode: 'onChange',
     })
 
-    const { selectedMasterForSimulation, selectedTechnologyForSimulation, getTokenSelectList, tokenCheckBoxValue, tokenForSimulation } = useSelector(state => state.simulation)
+    const { selectedMasterForSimulation, selectedTechnologyForSimulation, getTokenSelectList, tokenCheckBoxValue, tokenForSimulation, isMasterAssociatedWithCosting } = useSelector(state => state.simulation)
 
     const [master, setMaster] = useState({})
     const [technology, setTechnology] = useState({})
@@ -70,6 +70,7 @@ function Simulation(props) {
     const [vendor, setVendor] = useState({})
     const [showverifyPage, setShowVerifyPage] = useState(false)
     const [vendorName, setVendorName] = useState({})
+    const [association, setAssociation] = useState('')
     const partType = (checkForNull(selectedMasterForSimulation?.value) === ASSEMBLY_TECHNOLOGY_MASTER) ? true : false
 
     const dispatch = useDispatch()
@@ -93,6 +94,7 @@ function Simulation(props) {
             setTechnology({ label: selectedTechnologyForSimulation?.label, value: selectedTechnologyForSimulation?.value })
             setEditWarning(applyEditCondSimulation(getValues('Masters').value))
             setShowMasterList(true)
+            setShowEditTable(false)
         }
         return () => {
             reactLocalStorage?.setObject('vendorData', [])
@@ -118,6 +120,13 @@ function Simulation(props) {
     useEffect(() => {
         renderListing('vendor')
     }, [vendorSelectList])
+
+    useEffect(() => {
+        if (showMasterList) {
+            setShowEditTable(false)
+        }
+    }, [showMasterList])
+
 
     const handleMasterChange = (value) => {
         dispatch(setFilterForRM({ costingHeadTemp: '', plantId: '', RMid: '', RMGradeid: '', Vendorid: '' }))
@@ -151,6 +160,31 @@ function Simulation(props) {
         }
         setEditWarning(applyEditCondSimulation(value.value))
         setFilterStatus(`Please check the ${(value.label)} that you want to edit.`)
+    }
+
+    const handleAssociationChange = (value) => {
+        if (value?.value === NON_ASSOCIATED) {
+            setShowMasterList(true)
+            setShowEditTable(false)
+        } else {
+
+            setShowMasterList(false)
+            setShowEditTable(false)
+        }
+
+
+        dispatch(setIsMasterAssociatedWithCosting(value?.value === ASSOCIATED))
+        setTimeout(() => {
+            setAssociation(value)
+            if (value?.value === NON_ASSOCIATED) {
+                setShowMasterList(true)
+                setSelectionForListingMasterAPI('Master')
+                setmasterSummaryDrawerState(false)
+                dispatch(setTokenForSimulation([]))
+                setEditWarning(true);
+                setShowTokenDropdown(false)
+            }
+        }, 200);
     }
 
     const handleTechnologyChange = (value) => {
@@ -913,6 +947,7 @@ function Simulation(props) {
 
     const openEditPage = () => {
         setShowEditTable(true)
+        setShowMasterList(false)
     }
 
     const editMasterPage = (page) => {
@@ -937,14 +972,13 @@ function Simulation(props) {
             case MACHINERATE:
                 return <MRSimulation isOperation={true} cancelEditPage={cancelEditPage} list={tableData} isbulkUpload={isbulkUpload} technology={technology.label} master={master.value} rowCount={rowCount} tokenForMultiSimulation={tempObject} technologyId={technology.value} />
             case BOPDOMESTIC:
-                return <BDSimulation isOperation={true} cancelEditPage={cancelEditPage} list={tableData} isbulkUpload={isbulkUpload} technology={technology.label} master={master.value} rowCount={rowCount} tokenForMultiSimulation={tempObject} />
-            // if (isMasterAssociatedWithCosting) {
-            //     return <BDSimulation isOperation={true} cancelEditPage={cancelEditPage} list={tableData} isbulkUpload={isbulkUpload} technology={technology.label} master={master.value} rowCount={rowCount} tokenForMultiSimulation={tempObject} />
-            // } else if (!isMasterAssociatedWithCosting) {
-            //     return <BDNonAssociatedSimulation isOperation={true} cancelEditPage={cancelEditPage} list={tableData} isbulkUpload={isbulkUpload} technology={technology.label} master={master.value} rowCount={rowCount} tokenForMultiSimulation={tempObject} />
-            // } else {
-            //     return ''
-            // }
+                if (isMasterAssociatedWithCosting) {
+                    return <BDSimulation isOperation={true} cancelEditPage={cancelEditPage} list={tableData} isbulkUpload={isbulkUpload} technology={technology.label} master={master.value} rowCount={rowCount} tokenForMultiSimulation={tempObject} />
+                } else if (!isMasterAssociatedWithCosting) {
+                    return <BDNonAssociatedSimulation isOperation={true} cancelEditPage={cancelEditPage} list={tableData} isbulkUpload={isbulkUpload} technology={technology.label} master={master.value} rowCount={rowCount} tokenForMultiSimulation={tempObject} />
+                } else {
+                    return ''
+                }
             case BOPIMPORT:
                 return <BDSimulation isOperation={true} cancelEditPage={cancelEditPage} list={tableData} isbulkUpload={isbulkUpload} technology={technology.label} master={master.value} rowCount={rowCount} tokenForMultiSimulation={tempObject} />
             // case BOPIMPORT:

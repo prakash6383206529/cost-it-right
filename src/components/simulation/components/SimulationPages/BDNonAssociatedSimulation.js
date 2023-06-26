@@ -89,24 +89,6 @@ function BDNonAssociatedSimulation(props) {
             return false
         }
 
-        let basicRateCount = 0
-
-        list && list.map((li) => {
-
-            if (Number(li.BasicRate) === Number(li.NewBasicRate) || li?.NewBasicRate === undefined) {
-
-                basicRateCount = basicRateCount + 1
-            }
-
-            return null;
-        })
-
-        // if (basicRateCount === list.length) {
-        //     Toaster.warning('There is no changes in net cost. Please change the basic rate, then run simulation')
-        //     return false
-        // }
-        setIsDisable(true)
-        basicRateCount = 0
         // setShowVerifyPage(true)
         /**********POST METHOD TO CALL HERE AND AND SEND TOKEN TO VERIFY PAGE TODO ****************/
         let obj = {}
@@ -121,7 +103,7 @@ function BDNonAssociatedSimulation(props) {
         // }
         let tempArr = []
         list && list.map(item => {
-            if (item.NewBasicRate !== undefined ? Number(item.NewBasicRate) : Number(item.BasicRate)) {
+            if ((item?.Percentage !== '') && (checkForNull(item?.Percentage) !== 0)) {
                 let tempObj = {}
                 let val = item?.BasicRate + (item?.BasicRate * item?.Percentage / 100)
                 tempObj.BoughtOutPartId = item.BoughtOutPartId
@@ -130,11 +112,41 @@ function BDNonAssociatedSimulation(props) {
                 tempObj.OldNetLandedCost = checkForNull(item.BasicRate)
                 tempObj.NewNetLandedCost = checkForNull(val)
                 tempObj.PercentageChange = checkForNull(item.Percentage)
+                if (checkForNull(tempObj.OldNetLandedCost) === checkForNull(tempObj.NewNetLandedCost)) {
+                    return false
+                }
+                tempArr.push(tempObj)
+            } else {
+                let tempObj = {}
+                tempObj.BoughtOutPartId = item.BoughtOutPartId
+                tempObj.OldBOPRate = item.BasicRate
+                tempObj.NewBOPRate = item.NewBasicRate
+                tempObj.OldNetLandedCost = checkForNull(item.BasicRate)
+                tempObj.NewNetLandedCost = checkForNull(item.NewBasicRate)
+                if (checkForNull(tempObj.OldNetLandedCost) === checkForNull(tempObj.NewNetLandedCost)) {
+                    return false
+                }
                 tempArr.push(tempObj)
             }
             return null;
         })
 
+        let basicRateCount = 0
+
+        tempArr && tempArr.map((li) => {
+
+            if (Number(li.OldBOPRate) === Number(li.NewBOPRate)) {
+                basicRateCount = basicRateCount + 1
+            }
+            return null;
+        })
+
+        if (basicRateCount === list.length) {
+            Toaster.warning('There is no changes in net cost. Please change, then run simulation')
+            return false
+        }
+        setIsDisable(true)
+        basicRateCount = 0
         obj.SimulationIds = tokenForMultiSimulation
         obj.SimulationBoughtOutPart = tempArr
         obj.EffectiveDate = DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss')
@@ -173,14 +185,14 @@ function BDNonAssociatedSimulation(props) {
     }
 
     const newBasicRateFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        let value = row?.BasicRate + (row?.BasicRate * row?.Percentage / 100)
-        return (
-            <>
-                {<span className={`${!isbulkUpload ? 'form-control' : ''}`} >{cell && value ? Number(cell) : Number(row?.Percentage ? (value ? value : row.BasicRate) : row.NewBasicRate)} </span>}
-            </>
-        )
+        let returnValue = ''
+        if ((row?.Percentage !== '') && (checkForNull(row?.Percentage) !== 0)) {
+            returnValue = row?.BasicRate + (row?.BasicRate * row?.Percentage / 100)
+        } else {
+            returnValue = row.NewBasicRate
+        }
+        return returnValue
 
     }
 
@@ -264,9 +276,15 @@ function BDNonAssociatedSimulation(props) {
     }
 
     const NewcostFormatter = (props) => {
-        const row = props?.data;
-        let value = row?.BasicRate + (row?.BasicRate * row?.Percentage / 100)
-        return (value ? value : row.OldNetLandedCost)
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        let returnValue = ''
+        if ((row?.Percentage !== '') && (checkForNull(row?.Percentage) !== 0)) {
+            returnValue = row?.BasicRate + (row?.BasicRate * row?.Percentage / 100)
+        } else {
+            returnValue = row.NewBasicRate
+        }
+
+        return returnValue
     }
 
     const OldcostFormatter = (props) => {
@@ -340,6 +358,49 @@ function BDNonAssociatedSimulation(props) {
         setIsWarningMessageShow(false)
     }
 
+    const EditableCallbackForBasicRate = (props) => {
+        const rowData = props?.data;
+        let value = false
+        if ((rowData?.Percentage !== '') && (checkForNull(rowData?.Percentage) !== 0)) {
+            value = false
+        } else {
+            value = true
+        }
+        return value
+    }
+
+    const EditableCallbackForPercentage = (props) => {
+        const rowData = props?.data;
+        let value = false
+        if (Number(rowData?.BasicRate) === Number(rowData?.NewBasicRate)) {
+            value = true
+        } else {
+            value = false
+        }
+        return value
+    }
+
+    const ageValueGetter = (params) => {
+        let row = params.data
+        let valueReturn = ''
+        if ((row?.Percentage !== '') && (checkForNull(row?.Percentage) !== 0)) {
+            valueReturn = row?.BasicRate + (row?.BasicRate * row?.Percentage / 100)
+        } else {
+            valueReturn = row?.NewBasicRate
+        }
+        return valueReturn;
+    };
+
+    const ageValueGetterLanded = (params) => {
+        let row = params.data
+        let valueReturn = ''
+        if ((row?.Percentage !== '') && (checkForNull(row?.Percentage) !== 0)) {
+            valueReturn = row?.BasicRate + (row?.BasicRate * row?.Percentage / 100)
+        } else {
+            valueReturn = row?.NewBasicRate
+        }
+        return valueReturn;
+    };
 
     const frameworkComponents = {
         effectiveDateRenderer: effectiveDateFormatter,
@@ -355,7 +416,8 @@ function BDNonAssociatedSimulation(props) {
         plantFormatter: plantFormatter,
         customerFormatter: customerFormatter,
         revisedBasicRateHeader: revisedBasicRateHeader,
-        percentageFormatter: percentageFormatter
+        percentageFormatter: percentageFormatter,
+        ageValueGetter: ageValueGetter
     };
 
     const basicRatetooltipToggle = () => {
@@ -478,7 +540,7 @@ function BDNonAssociatedSimulation(props) {
                                             onFilterModified={onFloatingFilterChanged}
                                         >
                                             {/* <AgGridColumn field="Technologies" editable='false' headerName="Technology" minWidth={190}></AgGridColumn> */}
-                                            <AgGridColumn field="BoughtOutPartNumber" editable='false' headerName="BOP Part NDddddddddddddddddd NON o" minWidth={140}></AgGridColumn>
+                                            <AgGridColumn field="BoughtOutPartNumber" editable='false' headerName="BOP Part No NON ASSOCIATION" minWidth={140}></AgGridColumn>
                                             <AgGridColumn field="BoughtOutPartName" editable='false' headerName="BOP Part Name" minWidth={140}></AgGridColumn>
                                             {<AgGridColumn field="BoughtOutPartCategory" editable='false' headerName="BOP Category" minWidth={140}></AgGridColumn>}
                                             {list[0].CostingTypeId !== CBCTypeId && <AgGridColumn field="Vendor" editable='false' headerName="Vendor (Code)" minWidth={140} cellRenderer='vendorFormatter'></AgGridColumn>}
@@ -487,14 +549,14 @@ function BDNonAssociatedSimulation(props) {
 
                                             <AgGridColumn headerClass="justify-content-center" cellClass="text-center" headerName={Number(selectedMasterForSimulation?.value) === 5 ? "Basic Rate (Currency)" : "Basic Rate (INR)"} marryChildren={true} width={240}>
                                                 <AgGridColumn width={120} field="BasicRate" editable='false' cellRenderer='oldBasicRateFormatter' headerName="Existing" colId="BasicRate"></AgGridColumn>
-                                                <AgGridColumn width={120} cellRenderer='newBasicRateFormatter' editable={true} onCellValueChanged='cellChange' valueGetter='BasicRate + (data.BasicRate * data.Percentage / 100)' field="NewBasicRate" headerName="Revised" colId='NewBasicRate' headerComponent={'revisedBasicRateHeader'}></AgGridColumn>
+                                                <AgGridColumn width={120} cellRenderer='newBasicRateFormatter' editable={EditableCallbackForBasicRate} onCellValueChanged='cellChange' field="NewBasicRate" valueGetter={ageValueGetter} headerName="Revised" colId='NewBasicRate' headerComponent={'revisedBasicRateHeader'}></AgGridColumn>
                                             </AgGridColumn>
-                                            {<AgGridColumn width={120} editable={true} onCellValueChanged='cellChange' field="Percentage" colId='Percentage' cellRenderer='percentageFormatter'></AgGridColumn>}
+                                            {<AgGridColumn width={120} editable={EditableCallbackForPercentage} onCellValueChanged='cellChange' field="Percentage" colId='Percentage' cellRenderer='percentageFormatter'></AgGridColumn>}
 
                                             <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName={Number(selectedMasterForSimulation?.value) === 5 ? "Net Cost (Currency)" : "Net Cost (INR)"} marryChildren={true}>
                                                 {/* <AgGridColumn width={120} field="OldNetLandedCost" editable='false' cellRenderer={'OldcostFormatter'} headerName="Old" colId='NetLandedCost'></AgGridColumn>} */}
                                                 <AgGridColumn width={120} field="OldNetLandedCost" editable='false' cellRenderer={'OldcostFormatter'} headerName="Existing" colId='NetLandedCost'></AgGridColumn>
-                                                <AgGridColumn width={120} field="NewNetLandedCost" editable='false' valueGetter='data.BasicRate + (data.BasicRate * data.Percentage / 100)' cellRenderer={'NewcostFormatter'} headerName="Revised" colId='NewNetLandedCost'></AgGridColumn>
+                                                <AgGridColumn width={120} field="NewNetLandedCost" editable='false' cellRenderer={'NewcostFormatter'} headerName="Revised" valueGetter={ageValueGetterLanded} colId='NewNetLandedCost'></AgGridColumn>
                                             </AgGridColumn>
 
                                             <AgGridColumn field="EffectiveDate" headerName={props.isImpactedMaster && !props.lastRevision ? "Current Effective date" : "Effective Date"} editable='false' minWidth={150} cellRenderer='effectiveDateRenderer'></AgGridColumn>

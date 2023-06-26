@@ -49,6 +49,7 @@ import {
     GET_SIMULATION_APPROVAL_LIST_DRAFT,
     SET_SELECTED_VENDOR_SIMULATION,
     GET_ALL_MULTI_TECHNOLOGY_COSTING,
+    SET_BOP_ASSOCIATION,
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
 import Toaster from '../../common/Toaster';
@@ -137,6 +138,38 @@ export function getCostingSimulationList(token, plantId, rawMatrialId, callback)
             apiErrors(error);
         })
     }
+}
+/**
+ * @method setIsMasterAssociatedWithCosting
+ * @description Is Master Associated With Costing
+ */
+export function setIsMasterAssociatedWithCosting(value) {
+    return (dispatch) => {
+        dispatch({
+            type: SET_BOP_ASSOCIATION,
+            payload: value,
+        });
+    }
+}
+
+
+/**
+ * @method runSimulationOnSelectedBoughtOutPart
+ * @description run Simulation On Selected Bought Out Part
+ */
+export function runSimulationOnSelectedBoughtOutPart(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.runSimulationOnSelectedBoughtOutPart, data, config());
+        request.then((response) => {
+            if (response.data.Result) {
+                callback(response);
+            }
+        }).catch((error) => {
+            callback(error);
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    };
 }
 
 export function runSimulationOnSelectedCosting(data, callback) {
