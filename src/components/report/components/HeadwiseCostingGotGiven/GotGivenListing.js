@@ -1,440 +1,29 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Table } from 'reactstrap';
 import { checkForDecimalAndNull } from '../../../../helper';
 import DayTime from '../../../common/DayTimeWrapper';
 import { DATE_TYPE } from '../../../../config/constants';
 import { useState } from 'react';
 import { useEffect } from 'react';
-const DUMMY_DATA = {
-    "BaseCostingId": "00000000-0000-0000-0000-000000000000",
-    "CostingNumber": "string",
-    "CostingEffectiveDate": "2023-06-22T11:12:00.057Z",
-    "Month": "string",
-    "PartNumber": "string",
-    "PartName": "string",
-    "Mod": "string",
-    "Plant": "string",
-    "PlantName": "string",
-    "PlantCode": "string",
-    "PlantAddress": "string",
-    "Vendor": "string",
-    "VendorName": "string",
-    "VendorCode": "string",
-    "Customer": "string",
-    "CustomerName": "string",
-    "CustomerCode": "string",
-    "BudgetedQuantity": 0,
-    "ApprovedQuantity": 0,
-    "GotDetails": {
-        "HeadWiseCostingDetails": {
-            "BaseCostingId": "00000000-0000-0000-0000-000000000000",
-            "CostingNumber": "string",
-            "CostingEffectiveDate": "2023-06-22T11:12:00.057Z",
-            "Month": "string",
-            "PartNumber": "string",
-            "PartName": "string",
-            "Mod": "string",
-            "Plant": "string",
-            "PlantName": "string",
-            "PlantCode": "string",
-            "PlantAddress": "string",
-            "Vendor": "string",
-            "VendorName": "string",
-            "VendorCode": "string",
-            "Customer": "string",
-            "CustomerName": "string",
-            "CustomerCode": "string",
-            "BudgetedQuantity": 0,
-            "ApprovedQuantity": 0,
-            "CurrentTentativeSaleRate": "string",
-            "RawMaterialEffectiveDate": "2023-06-22T11:12:00.057Z",
-            "NetPOPrice": 0,
-            "ProvisionPrice": 0,
-            "NetSales": 0,
-            "Consumption": 0,
-            "LabourCost": 0,
-            "ManufacturingExpenses": 0,
-            "OfficeExpenses": 0,
-            "RepairsExpenses": 0,
-            "SellingAndDistributionExpenses": 0,
-            "CommonExpenses": 0,
-            "StaffCost": 0,
-            "EBIDTA": 0,
-            "FinanceCost": 0,
-            "Depreciation": 0,
-            "PBT": 0,
-            "Amortization": 0
-        },
-        "HeadWiseSurfaceTreatmentDetails": {
-            "BaseCostingId": "00000000-0000-0000-0000-000000000000",
-            "CostingNumber": "string",
-            "CostingEffectiveDate": "2023-06-22T11:12:00.057Z",
-            "Month": "string",
-            "PartNumber": "string",
-            "PartName": "string",
-            "Mod": "string",
-            "Plant": "string",
-            "PlantName": "string",
-            "PlantCode": "string",
-            "PlantAddress": "string",
-            "Vendor": "string",
-            "VendorName": "string",
-            "VendorCode": "string",
-            "Customer": "string",
-            "CustomerName": "string",
-            "CustomerCode": "string",
-            "BudgetedQuantity": 0,
-            "ApprovedQuantity": 0,
-            "CurrentTentativeSaleRate": "string",
-            "RawMaterialEffectiveDate": "2023-06-22T11:12:00.057Z",
-            "NetPOPrice": 0,
-            "ProvisionPrice": 0,
-            "NetSales": 0,
-            "Consumption": 0,
-            "LabourCost": 0,
-            "ManufacturingExpenses": 0,
-            "OfficeExpenses": 0,
-            "RepairsExpenses": 0,
-            "SellingAndDistributionExpenses": 0,
-            "CommonExpenses": 0,
-            "StaffCost": 0,
-            "EBIDTA": 0,
-            "FinanceCost": 0,
-            "Depreciation": 0,
-            "PBT": 0,
-            "Amortization": 0
-        },
-        "HeadWiseCostingAndSurfaceTreatmentSumDetails": {
-            "BaseCostingId": "00000000-0000-0000-0000-000000000000",
-            "CostingNumber": "string",
-            "CostingEffectiveDate": "2023-06-22T11:12:00.057Z",
-            "Month": "string",
-            "PartNumber": "string",
-            "PartName": "string",
-            "Mod": "string",
-            "Plant": "string",
-            "PlantName": "string",
-            "PlantCode": "string",
-            "PlantAddress": "string",
-            "Vendor": "string",
-            "VendorName": "string",
-            "VendorCode": "string",
-            "Customer": "string",
-            "CustomerName": "string",
-            "CustomerCode": "string",
-            "BudgetedQuantity": 0,
-            "ApprovedQuantity": 0,
-            "CurrentTentativeSaleRate": "string",
-            "RawMaterialEffectiveDate": "2023-06-22T11:12:00.057Z",
-            "NetPOPrice": 0,
-            "ProvisionPrice": 0,
-            "NetSales": 0,
-            "Consumption": 0,
-            "LabourCost": 0,
-            "ManufacturingExpenses": 0,
-            "OfficeExpenses": 0,
-            "RepairsExpenses": 0,
-            "SellingAndDistributionExpenses": 0,
-            "CommonExpenses": 0,
-            "StaffCost": 0,
-            "EBIDTA": 0,
-            "FinanceCost": 0,
-            "Depreciation": 0,
-            "PBT": 0,
-            "Amortization": 0
-        },
-        "BudgetedHeadWiseCostingDetails": {
-            "BaseCostingId": "00000000-0000-0000-0000-000000000000",
-            "CostingNumber": "string",
-            "CostingEffectiveDate": "2023-06-22T11:12:00.057Z",
-            "Month": "string",
-            "PartNumber": "string",
-            "PartName": "string",
-            "Mod": "string",
-            "Plant": "string",
-            "PlantName": "string",
-            "PlantCode": "string",
-            "PlantAddress": "string",
-            "Vendor": "string",
-            "VendorName": "string",
-            "VendorCode": "string",
-            "Customer": "string",
-            "CustomerName": "string",
-            "CustomerCode": "string",
-            "BudgetedQuantity": 0,
-            "ApprovedQuantity": 0,
-            "CurrentTentativeSaleRate": "string",
-            "RawMaterialEffectiveDate": "2023-06-22T11:12:00.057Z",
-            "NetPOPrice": 0,
-            "ProvisionPrice": 0,
-            "NetSales": 0,
-            "Consumption": 0,
-            "LabourCost": 0,
-            "ManufacturingExpenses": 0,
-            "OfficeExpenses": 0,
-            "RepairsExpenses": 0,
-            "SellingAndDistributionExpenses": 0,
-            "CommonExpenses": 0,
-            "StaffCost": 0,
-            "EBIDTA": 0,
-            "FinanceCost": 0,
-            "Depreciation": 0,
-            "PBT": 0,
-            "Amortization": 0
-        },
-        "ApprovedHeadWiseCostingDetails": {
-            "BaseCostingId": "00000000-0000-0000-0000-000000000000",
-            "CostingNumber": "string",
-            "CostingEffectiveDate": "2023-06-22T11:12:00.057Z",
-            "Month": "string",
-            "PartNumber": "string",
-            "PartName": "string",
-            "Mod": "string",
-            "Plant": "string",
-            "PlantName": "string",
-            "PlantCode": "string",
-            "PlantAddress": "string",
-            "Vendor": "string",
-            "VendorName": "string",
-            "VendorCode": "string",
-            "Customer": "string",
-            "CustomerName": "string",
-            "CustomerCode": "string",
-            "BudgetedQuantity": 0,
-            "ApprovedQuantity": 0,
-            "CurrentTentativeSaleRate": "string",
-            "RawMaterialEffectiveDate": "2023-06-22T11:12:00.057Z",
-            "NetPOPrice": 0,
-            "ProvisionPrice": 0,
-            "NetSales": 0,
-            "Consumption": 0,
-            "LabourCost": 0,
-            "ManufacturingExpenses": 0,
-            "OfficeExpenses": 0,
-            "RepairsExpenses": 0,
-            "SellingAndDistributionExpenses": 0,
-            "CommonExpenses": 0,
-            "StaffCost": 0,
-            "EBIDTA": 0,
-            "FinanceCost": 0,
-            "Depreciation": 0,
-            "PBT": 0,
-            "Amortization": 0
-        }
-    },
-    "GivenDetails": {
-        "HeadWiseCostingDetails": {
-            "BaseCostingId": "00000000-0000-0000-0000-000000000000",
-            "CostingNumber": "string",
-            "CostingEffectiveDate": "2023-06-22T11:12:00.057Z",
-            "Month": "string",
-            "PartNumber": "string",
-            "PartName": "string",
-            "Mod": "string",
-            "Plant": "string",
-            "PlantName": "string",
-            "PlantCode": "string",
-            "PlantAddress": "string",
-            "Vendor": "string",
-            "VendorName": "string",
-            "VendorCode": "string",
-            "Customer": "string",
-            "CustomerName": "string",
-            "CustomerCode": "string",
-            "BudgetedQuantity": 0,
-            "ApprovedQuantity": 0,
-            "CurrentTentativeSaleRate": "string",
-            "RawMaterialEffectiveDate": "2023-06-22T11:12:00.057Z",
-            "NetPOPrice": 0,
-            "ProvisionPrice": 0,
-            "NetSales": 0,
-            "Consumption": 0,
-            "LabourCost": 0,
-            "ManufacturingExpenses": 0,
-            "OfficeExpenses": 0,
-            "RepairsExpenses": 0,
-            "SellingAndDistributionExpenses": 0,
-            "CommonExpenses": 0,
-            "StaffCost": 0,
-            "EBIDTA": 0,
-            "FinanceCost": 0,
-            "Depreciation": 0,
-            "PBT": 0,
-            "Amortization": 0
-        },
-        "HeadWiseSurfaceTreatmentDetails": {
-            "BaseCostingId": "00000000-0000-0000-0000-000000000000",
-            "CostingNumber": "string",
-            "CostingEffectiveDate": "2023-06-22T11:12:00.057Z",
-            "Month": "string",
-            "PartNumber": "string",
-            "PartName": "string",
-            "Mod": "string",
-            "Plant": "string",
-            "PlantName": "string",
-            "PlantCode": "string",
-            "PlantAddress": "string",
-            "Vendor": "string",
-            "VendorName": "string",
-            "VendorCode": "string",
-            "Customer": "string",
-            "CustomerName": "string",
-            "CustomerCode": "string",
-            "BudgetedQuantity": 0,
-            "ApprovedQuantity": 0,
-            "CurrentTentativeSaleRate": "string",
-            "RawMaterialEffectiveDate": "2023-06-22T11:12:00.057Z",
-            "NetPOPrice": 0,
-            "ProvisionPrice": 0,
-            "NetSales": 0,
-            "Consumption": 0,
-            "LabourCost": 0,
-            "ManufacturingExpenses": 0,
-            "OfficeExpenses": 0,
-            "RepairsExpenses": 0,
-            "SellingAndDistributionExpenses": 0,
-            "CommonExpenses": 0,
-            "StaffCost": 0,
-            "EBIDTA": 0,
-            "FinanceCost": 0,
-            "Depreciation": 0,
-            "PBT": 0,
-            "Amortization": 0
-        },
-        "HeadWiseCostingAndSurfaceTreatmentSumDetails": {
-            "BaseCostingId": "00000000-0000-0000-0000-000000000000",
-            "CostingNumber": "string",
-            "CostingEffectiveDate": "2023-06-22T11:12:00.057Z",
-            "Month": "string",
-            "PartNumber": "string",
-            "PartName": "string",
-            "Mod": "string",
-            "Plant": "string",
-            "PlantName": "string",
-            "PlantCode": "string",
-            "PlantAddress": "string",
-            "Vendor": "string",
-            "VendorName": "string",
-            "VendorCode": "string",
-            "Customer": "string",
-            "CustomerName": "string",
-            "CustomerCode": "string",
-            "BudgetedQuantity": 0,
-            "ApprovedQuantity": 0,
-            "CurrentTentativeSaleRate": "string",
-            "RawMaterialEffectiveDate": "2023-06-22T11:12:00.057Z",
-            "NetPOPrice": 0,
-            "ProvisionPrice": 0,
-            "NetSales": 0,
-            "Consumption": 0,
-            "LabourCost": 0,
-            "ManufacturingExpenses": 0,
-            "OfficeExpenses": 0,
-            "RepairsExpenses": 0,
-            "SellingAndDistributionExpenses": 0,
-            "CommonExpenses": 0,
-            "StaffCost": 0,
-            "EBIDTA": 0,
-            "FinanceCost": 0,
-            "Depreciation": 0,
-            "PBT": 0,
-            "Amortization": 0
-        },
-        "BudgetedHeadWiseCostingDetails": {
-            "BaseCostingId": "00000000-0000-0000-0000-000000000000",
-            "CostingNumber": "string",
-            "CostingEffectiveDate": "2023-06-22T11:12:00.057Z",
-            "Month": "string",
-            "PartNumber": "string",
-            "PartName": "string",
-            "Mod": "string",
-            "Plant": "string",
-            "PlantName": "string",
-            "PlantCode": "string",
-            "PlantAddress": "string",
-            "Vendor": "string",
-            "VendorName": "string",
-            "VendorCode": "string",
-            "Customer": "string",
-            "CustomerName": "string",
-            "CustomerCode": "string",
-            "BudgetedQuantity": 0,
-            "ApprovedQuantity": 0,
-            "CurrentTentativeSaleRate": "string",
-            "RawMaterialEffectiveDate": "2023-06-22T11:12:00.057Z",
-            "NetPOPrice": 0,
-            "ProvisionPrice": 0,
-            "NetSales": 0,
-            "Consumption": 0,
-            "LabourCost": 0,
-            "ManufacturingExpenses": 0,
-            "OfficeExpenses": 0,
-            "RepairsExpenses": 0,
-            "SellingAndDistributionExpenses": 0,
-            "CommonExpenses": 0,
-            "StaffCost": 0,
-            "EBIDTA": 0,
-            "FinanceCost": 0,
-            "Depreciation": 0,
-            "PBT": 0,
-            "Amortization": 0
-        },
-        "ApprovedHeadWiseCostingDetails": {
-            "BaseCostingId": "00000000-0000-0000-0000-000000000000",
-            "CostingNumber": "string",
-            "CostingEffectiveDate": "2023-06-22T11:12:00.057Z",
-            "Month": "string",
-            "PartNumber": "string",
-            "PartName": "string",
-            "Mod": "string",
-            "Plant": "string",
-            "PlantName": "string",
-            "PlantCode": "string",
-            "PlantAddress": "string",
-            "Vendor": "string",
-            "VendorName": "string",
-            "VendorCode": "string",
-            "Customer": "string",
-            "CustomerName": "string",
-            "CustomerCode": "string",
-            "BudgetedQuantity": 0,
-            "ApprovedQuantity": 0,
-            "CurrentTentativeSaleRate": "string",
-            "RawMaterialEffectiveDate": "2023-06-22T11:12:00.057Z",
-            "NetPOPrice": 0,
-            "ProvisionPrice": 0,
-            "NetSales": 0,
-            "Consumption": 0,
-            "LabourCost": 0,
-            "ManufacturingExpenses": 0,
-            "OfficeExpenses": 0,
-            "RepairsExpenses": 0,
-            "SellingAndDistributionExpenses": 0,
-            "CommonExpenses": 0,
-            "StaffCost": 0,
-            "EBIDTA": 0,
-            "FinanceCost": 0,
-            "Depreciation": 0,
-            "PBT": 0,
-            "Amortization": 0
-        }
-    }
-}
-//ONCE API DEPLOY FROM BACKEND THE DUMMY JSON WILL BE REMOVED
+import { getCostingGotAndGivenDetails } from '../../actions/ReportListing';
+import LoaderCustom from '../../../common/LoaderCustom';
 
 const mainHeaders = ["Month", "Part Number", "Part Name", "Revision Number", "Plant(Code)", "Plant Address", "Vendor(Code)", "Customer(Code)", "Budgeted Quantity", "Approved Quantity", "Effective Date"]
-function GotGivenListing(props) {
 
+function GotGivenListing(props) {
     const formData = useSelector(state => state.report.costReportFormGridData);
     const { initialConfiguration } = useSelector(state => state.auth)
     const [tableData, setTableData] = useState([]);
+    const [gotDetails, setGotDetails] = useState([]);
+    const [givenDetails, setGivenDetails] = useState([]);
+    const [isLoader, setIsLoader] = useState('')
+    const [topHeaderData, setTopHeaderData] = useState({})
+    const dispatch = useDispatch()
 
     const cancelReport = () => {
         props.closeDrawer('')
     }
-    const { Month, PartNumber, PartName, RevisionNumber, PlantName, PlantAddress, VendorName, CustomerName, BudgetedQuantity, ApprovedQuantity, EffectiveDate, GotDetails, GivenDetails } = DUMMY_DATA;
-
 
     const leftHeaderClass = "font-weight-500 custom-min-width-140px"
     const checkValidData = (value, type = '') => {
@@ -452,7 +41,7 @@ function GotGivenListing(props) {
     };
     const renderTableCells = (data) => {
         return data.map((value, index) => {
-            if (value === EffectiveDate) {
+            if (DayTime(value).format('DD/MM/YYYY') === DayTime(formData?.EffectiveDate).format('DD/MM/YYYY')) {
                 return <td key={index}>{checkValidData(value, DATE_TYPE)}</td>;
             } else {
                 return <td key={index}>{checkValidData(value)}</td>;
@@ -460,280 +49,351 @@ function GotGivenListing(props) {
 
         });
     };
-    const Data = [{
-        label: 'Current Tentative Sale Rate',
-        fields: [
-            GotDetails.HeadWiseCostingDetails.CurrentTentativeSaleRate,
-            GotDetails.HeadWiseSurfaceTreatmentDetails.CurrentTentativeSaleRate,
-            GotDetails.HeadWiseCostingAndSurfaceTreatmentSumDetails.CurrentTentativeSaleRate,
-            GotDetails.BudgetedHeadWiseCostingDetails.CurrentTentativeSaleRate,
-            GotDetails.ApprovedHeadWiseCostingDetails.CurrentTentativeSaleRate,
-            GivenDetails.HeadWiseCostingDetails.CurrentTentativeSaleRate,
-            GivenDetails.HeadWiseSurfaceTreatmentDetails.CurrentTentativeSaleRate,
-            GivenDetails.HeadWiseCostingAndSurfaceTreatmentSumDetails.CurrentTentativeSaleRate,
-            GivenDetails.BudgetedHeadWiseCostingDetails.CurrentTentativeSaleRate,
-            GivenDetails.ApprovedHeadWiseCostingDetails.CurrentTentativeSaleRate,
-        ],
-    },
-    {
-        label: 'Raw Material Effective Date',
-        fields: [
-            GotDetails.HeadWiseCostingDetails.RawMaterialEffectiveDate,
-            GotDetails.HeadWiseSurfaceTreatmentDetails.RawMaterialEffectiveDate,
-            GotDetails.HeadWiseCostingAndSurfaceTreatmentSumDetails.RawMaterialEffectiveDate,
-            GotDetails.BudgetedHeadWiseCostingDetails.RawMaterialEffectiveDate,
-            GotDetails.ApprovedHeadWiseCostingDetails.RawMaterialEffectiveDate,
-            GivenDetails.HeadWiseCostingDetails.RawMaterialEffectiveDate,
-            GivenDetails.HeadWiseSurfaceTreatmentDetails.RawMaterialEffectiveDate,
-            GivenDetails.HeadWiseCostingAndSurfaceTreatmentSumDetails.RawMaterialEffectiveDate,
-            GivenDetails.BudgetedHeadWiseCostingDetails.RawMaterialEffectiveDate,
-            GivenDetails.ApprovedHeadWiseCostingDetails.RawMaterialEffectiveDate
-        ]
-    },
-    {
-        label: 'Net POPrice',
-        fields: [
-            GotDetails.HeadWiseCostingDetails.NetPOPrice,
-            GotDetails.HeadWiseSurfaceTreatmentDetails.NetPOPrice,
-            GotDetails.HeadWiseCostingAndSurfaceTreatmentSumDetails.NetPOPrice,
-            GotDetails.BudgetedHeadWiseCostingDetails.NetPOPrice,
-            GotDetails.ApprovedHeadWiseCostingDetails.NetPOPrice,
-            GivenDetails.HeadWiseCostingDetails.NetPOPrice,
-            GivenDetails.HeadWiseSurfaceTreatmentDetails.NetPOPrice,
-            GivenDetails.HeadWiseCostingAndSurfaceTreatmentSumDetails.NetPOPrice,
-            GivenDetails.BudgetedHeadWiseCostingDetails.NetPOPrice,
-            GivenDetails.ApprovedHeadWiseCostingDetails.NetPOPrice
-        ]
-    },
-    {
-        label: 'Provision Price',
-        fields: [
-            GotDetails.HeadWiseCostingDetails.ProvisionPrice,
-            GotDetails.HeadWiseSurfaceTreatmentDetails.ProvisionPrice,
-            GotDetails.HeadWiseCostingAndSurfaceTreatmentSumDetails.ProvisionPrice,
-            GotDetails.BudgetedHeadWiseCostingDetails.ProvisionPrice,
-            GotDetails.ApprovedHeadWiseCostingDetails.ProvisionPrice,
-            GivenDetails.HeadWiseCostingDetails.ProvisionPrice,
-            GivenDetails.HeadWiseSurfaceTreatmentDetails.ProvisionPrice,
-            GivenDetails.HeadWiseCostingAndSurfaceTreatmentSumDetails.ProvisionPrice,
-            GivenDetails.BudgetedHeadWiseCostingDetails.ProvisionPrice,
-            GivenDetails.ApprovedHeadWiseCostingDetails.ProvisionPrice
-        ]
-    },
-    {
-        label: 'Net Sales',
-        fields: [
-            GotDetails.HeadWiseCostingDetails.NetSales,
-            GotDetails.HeadWiseSurfaceTreatmentDetails.NetSales,
-            GotDetails.HeadWiseCostingAndSurfaceTreatmentSumDetails.NetSales,
-            GotDetails.BudgetedHeadWiseCostingDetails.NetSales,
-            GotDetails.ApprovedHeadWiseCostingDetails.NetSales,
-            GivenDetails.HeadWiseCostingDetails.NetSales,
-            GivenDetails.HeadWiseSurfaceTreatmentDetails.NetSales,
-            GivenDetails.HeadWiseCostingAndSurfaceTreatmentSumDetails.NetSales,
-            GivenDetails.BudgetedHeadWiseCostingDetails.NetSales,
-            GivenDetails.ApprovedHeadWiseCostingDetails.NetSales
-        ]
-    },
-    {
-        label: 'Consumption',
-        fields: [
-            GotDetails.HeadWiseCostingDetails.Consumption,
-            GotDetails.HeadWiseSurfaceTreatmentDetails.Consumption,
-            GotDetails.HeadWiseCostingAndSurfaceTreatmentSumDetails.Consumption,
-            GotDetails.BudgetedHeadWiseCostingDetails.Consumption,
-            GotDetails.ApprovedHeadWiseCostingDetails.Consumption,
-            GivenDetails.HeadWiseCostingDetails.Consumption,
-            GivenDetails.HeadWiseSurfaceTreatmentDetails.Consumption,
-            GivenDetails.HeadWiseCostingAndSurfaceTreatmentSumDetails.Consumption,
-            GivenDetails.BudgetedHeadWiseCostingDetails.Consumption,
-            GivenDetails.ApprovedHeadWiseCostingDetails.Consumption
-        ]
-    },
-    {
-        label: 'Labour Cost',
-        fields: [
-            GotDetails.HeadWiseCostingDetails.LabourCost,
-            GotDetails.HeadWiseSurfaceTreatmentDetails.LabourCost,
-            GotDetails.HeadWiseCostingAndSurfaceTreatmentSumDetails.LabourCost,
-            GotDetails.BudgetedHeadWiseCostingDetails.LabourCost,
-            GotDetails.ApprovedHeadWiseCostingDetails.LabourCost,
-            GivenDetails.HeadWiseCostingDetails.LabourCost,
-            GivenDetails.HeadWiseSurfaceTreatmentDetails.LabourCost,
-            GivenDetails.HeadWiseCostingAndSurfaceTreatmentSumDetails.LabourCost,
-            GivenDetails.BudgetedHeadWiseCostingDetails.LabourCost,
-            GivenDetails.ApprovedHeadWiseCostingDetails.LabourCost
-        ]
-    },
-    {
-        label: 'Manufacturing Expenses',
-        fields: [
-            GotDetails.HeadWiseCostingDetails.ManufacturingExpenses,
-            GotDetails.HeadWiseSurfaceTreatmentDetails.ManufacturingExpenses,
-            GotDetails.HeadWiseCostingAndSurfaceTreatmentSumDetails.ManufacturingExpenses,
-            GotDetails.BudgetedHeadWiseCostingDetails.ManufacturingExpenses,
-            GotDetails.ApprovedHeadWiseCostingDetails.ManufacturingExpenses,
-            GivenDetails.HeadWiseCostingDetails.ManufacturingExpenses,
-            GivenDetails.HeadWiseSurfaceTreatmentDetails.ManufacturingExpenses,
-            GivenDetails.HeadWiseCostingAndSurfaceTreatmentSumDetails.ManufacturingExpenses,
-            GivenDetails.BudgetedHeadWiseCostingDetails.ManufacturingExpenses,
-            GivenDetails.ApprovedHeadWiseCostingDetails.ManufacturingExpenses
-        ]
-    },
-    {
-        label: 'Office Expenses',
-        fields: [
-            GotDetails.HeadWiseCostingDetails.OfficeExpenses,
-            GotDetails.HeadWiseSurfaceTreatmentDetails.OfficeExpenses,
-            GotDetails.HeadWiseCostingAndSurfaceTreatmentSumDetails.OfficeExpenses,
-            GotDetails.BudgetedHeadWiseCostingDetails.OfficeExpenses,
-            GotDetails.ApprovedHeadWiseCostingDetails.OfficeExpenses,
-            GivenDetails.HeadWiseCostingDetails.OfficeExpenses,
-            GivenDetails.HeadWiseSurfaceTreatmentDetails.OfficeExpenses,
-            GivenDetails.HeadWiseCostingAndSurfaceTreatmentSumDetails.OfficeExpenses,
-            GivenDetails.BudgetedHeadWiseCostingDetails.OfficeExpenses,
-            GivenDetails.ApprovedHeadWiseCostingDetails.OfficeExpenses
-        ]
-    },
-    {
-        label: 'Repairs Expenses',
-        fields: [
-            GotDetails.HeadWiseCostingDetails.RepairsExpenses,
-            GotDetails.HeadWiseSurfaceTreatmentDetails.RepairsExpenses,
-            GotDetails.HeadWiseCostingAndSurfaceTreatmentSumDetails.RepairsExpenses,
-            GotDetails.BudgetedHeadWiseCostingDetails.RepairsExpenses,
-            GotDetails.ApprovedHeadWiseCostingDetails.RepairsExpenses,
-            GivenDetails.HeadWiseCostingDetails.RepairsExpenses,
-            GivenDetails.HeadWiseSurfaceTreatmentDetails.RepairsExpenses,
-            GivenDetails.HeadWiseCostingAndSurfaceTreatmentSumDetails.RepairsExpenses,
-            GivenDetails.BudgetedHeadWiseCostingDetails.RepairsExpenses,
-            GivenDetails.ApprovedHeadWiseCostingDetails.RepairsExpenses
-        ]
-    },
-    {
-        label: 'Selling and Distribution Expenses',
-        fields: [
-            GotDetails.HeadWiseCostingDetails.SellingAndDistributionExpenses,
-            GotDetails.HeadWiseSurfaceTreatmentDetails.SellingAndDistributionExpenses,
-            GotDetails.HeadWiseCostingAndSurfaceTreatmentSumDetails.SellingAndDistributionExpenses,
-            GotDetails.BudgetedHeadWiseCostingDetails.SellingAndDistributionExpenses,
-            GotDetails.ApprovedHeadWiseCostingDetails.SellingAndDistributionExpenses,
-            GivenDetails.HeadWiseCostingDetails.SellingAndDistributionExpenses,
-            GivenDetails.HeadWiseSurfaceTreatmentDetails.SellingAndDistributionExpenses,
-            GivenDetails.HeadWiseCostingAndSurfaceTreatmentSumDetails.SellingAndDistributionExpenses,
-            GivenDetails.BudgetedHeadWiseCostingDetails.SellingAndDistributionExpenses,
-            GivenDetails.ApprovedHeadWiseCostingDetails.SellingAndDistributionExpenses
-        ]
-    },
-    {
-        label: 'Common Expenses',
-        fields: [
-            GotDetails.HeadWiseCostingDetails.CommonExpenses,
-            GotDetails.HeadWiseSurfaceTreatmentDetails.CommonExpenses,
-            GotDetails.HeadWiseCostingAndSurfaceTreatmentSumDetails.CommonExpenses,
-            GotDetails.BudgetedHeadWiseCostingDetails.CommonExpenses,
-            GotDetails.ApprovedHeadWiseCostingDetails.CommonExpenses,
-            GivenDetails.HeadWiseCostingDetails.CommonExpenses,
-            GivenDetails.HeadWiseSurfaceTreatmentDetails.CommonExpenses,
-            GivenDetails.HeadWiseCostingAndSurfaceTreatmentSumDetails.CommonExpenses,
-            GivenDetails.BudgetedHeadWiseCostingDetails.CommonExpenses,
-            GivenDetails.ApprovedHeadWiseCostingDetails.CommonExpenses
-        ]
-    },
-    {
-        label: 'Staff Cost',
-        fields: [
-            GotDetails.HeadWiseCostingDetails.StaffCost,
-            GotDetails.HeadWiseSurfaceTreatmentDetails.StaffCost,
-            GotDetails.HeadWiseCostingAndSurfaceTreatmentSumDetails.StaffCost,
-            GotDetails.BudgetedHeadWiseCostingDetails.StaffCost,
-            GotDetails.ApprovedHeadWiseCostingDetails.StaffCost,
-            GivenDetails.HeadWiseCostingDetails.StaffCost,
-            GivenDetails.HeadWiseSurfaceTreatmentDetails.StaffCost,
-            GivenDetails.HeadWiseCostingAndSurfaceTreatmentSumDetails.StaffCost,
-            GivenDetails.BudgetedHeadWiseCostingDetails.StaffCost,
-            GivenDetails.ApprovedHeadWiseCostingDetails.StaffCost
-        ]
-    },
-    {
-        label: 'EBIDTA',
-        fields: [
-            GotDetails.HeadWiseCostingDetails.EBIDTA,
-            GotDetails.HeadWiseSurfaceTreatmentDetails.EBIDTA,
-            GotDetails.HeadWiseCostingAndSurfaceTreatmentSumDetails.EBIDTA,
-            GotDetails.BudgetedHeadWiseCostingDetails.EBIDTA,
-            GotDetails.ApprovedHeadWiseCostingDetails.EBIDTA,
-            GivenDetails.HeadWiseCostingDetails.EBIDTA,
-            GivenDetails.HeadWiseSurfaceTreatmentDetails.EBIDTA,
-            GivenDetails.HeadWiseCostingAndSurfaceTreatmentSumDetails.EBIDTA,
-            GivenDetails.BudgetedHeadWiseCostingDetails.EBIDTA,
-            GivenDetails.ApprovedHeadWiseCostingDetails.EBIDTA
-        ]
-    },
-    {
-        label: 'Finance Cost',
-        fields: [
-            GotDetails.HeadWiseCostingDetails.FinanceCost,
-            GotDetails.HeadWiseSurfaceTreatmentDetails.FinanceCost,
-            GotDetails.HeadWiseCostingAndSurfaceTreatmentSumDetails.FinanceCost,
-            GotDetails.BudgetedHeadWiseCostingDetails.FinanceCost,
-            GotDetails.ApprovedHeadWiseCostingDetails.FinanceCost,
-            GivenDetails.HeadWiseCostingDetails.FinanceCost,
-            GivenDetails.HeadWiseSurfaceTreatmentDetails.FinanceCost,
-            GivenDetails.HeadWiseCostingAndSurfaceTreatmentSumDetails.FinanceCost,
-            GivenDetails.BudgetedHeadWiseCostingDetails.FinanceCost,
-            GivenDetails.ApprovedHeadWiseCostingDetails.FinanceCost
-        ]
-    },
-    {
-        label: 'Depreciation',
-        fields: [
-            GotDetails.HeadWiseCostingDetails.Depreciation,
-            GotDetails.HeadWiseSurfaceTreatmentDetails.Depreciation,
-            GotDetails.HeadWiseCostingAndSurfaceTreatmentSumDetails.Depreciation,
-            GotDetails.BudgetedHeadWiseCostingDetails.Depreciation,
-            GotDetails.ApprovedHeadWiseCostingDetails.Depreciation,
-            GivenDetails.HeadWiseCostingDetails.Depreciation,
-            GivenDetails.HeadWiseSurfaceTreatmentDetails.Depreciation,
-            GivenDetails.HeadWiseCostingAndSurfaceTreatmentSumDetails.Depreciation,
-            GivenDetails.BudgetedHeadWiseCostingDetails.Depreciation,
-            GivenDetails.ApprovedHeadWiseCostingDetails.Depreciation
-        ]
-    },
-    {
-        label: 'PBT',
-        fields: [
-            GotDetails.HeadWiseCostingDetails.PBT,
-            GotDetails.HeadWiseSurfaceTreatmentDetails.PBT,
-            GotDetails.HeadWiseCostingAndSurfaceTreatmentSumDetails.PBT,
-            GotDetails.BudgetedHeadWiseCostingDetails.PBT,
-            GotDetails.ApprovedHeadWiseCostingDetails.PBT,
-            GivenDetails.HeadWiseCostingDetails.PBT,
-            GivenDetails.HeadWiseSurfaceTreatmentDetails.PBT,
-            GivenDetails.HeadWiseCostingAndSurfaceTreatmentSumDetails.PBT,
-            GivenDetails.BudgetedHeadWiseCostingDetails.PBT,
-            GivenDetails.ApprovedHeadWiseCostingDetails.PBT
-        ]
-    },
-    {
-        label: 'Amortization',
-        fields: [
-            GotDetails.HeadWiseCostingDetails.Amortization,
-            GotDetails.HeadWiseSurfaceTreatmentDetails.Amortization,
-            GotDetails.HeadWiseCostingAndSurfaceTreatmentSumDetails.Amortization,
-            GotDetails.BudgetedHeadWiseCostingDetails.Amortization,
-            GotDetails.ApprovedHeadWiseCostingDetails.Amortization,
-            GivenDetails.HeadWiseCostingDetails.Amortization,
-            GivenDetails.HeadWiseSurfaceTreatmentDetails.Amortization,
-            GivenDetails.HeadWiseCostingAndSurfaceTreatmentSumDetails.Amortization,
-            GivenDetails.BudgetedHeadWiseCostingDetails.Amortization,
-            GivenDetails.ApprovedHeadWiseCostingDetails.Amortization
-        ]
-    }]
+
+
+    const gotGivenLabels = () => {
+        let Data = gotDetails.HeaderName
+        let DataSecond = givenDetails.HeaderName
+
+        return (<>
+            < td className='text-center font-weight-500 font-size-16' > {Data?.Part}</td >
+            {
+                Data?.SurfaceTreatmentNames.map((item) => {
+                    return < td className='text-center font-weight-500 font-size-16' > {item}</td >
+                })
+            }
+            < td className='text-center font-weight-500 font-size-16' > {Data?.TotalOfPartAndSurfaceTreatment}</td >
+            < td className='text-center font-weight-500 font-size-16' > {Data?.BudgetedHeadWiseCosting}</td >
+            < td className='text-center font-weight-500 font-size-16' > {Data?.ActualHeadWiseCosting}</td >
+
+            {/* GIVEN DETAILS */}
+            < td className='text-center font-weight-500 font-size-16' > {DataSecond?.Part}</td >
+            {
+                DataSecond?.SurfaceTreatmentNames.map((item) => {
+                    return < td className='text-center font-weight-500 font-size-16' > {item}</td >
+                })
+            }
+            < td className='text-center font-weight-500 font-size-16' > {DataSecond?.TotalOfPartAndSurfaceTreatment}</td >
+            < td className='text-center font-weight-500 font-size-16' > {DataSecond?.BudgetedHeadWiseCosting}</td >
+            < td className='text-center font-weight-500 font-size-16' > {DataSecond?.ActualHeadWiseCosting}</td >
+        </>
+        )
+    }
+
     useEffect(() => {
-        setTableData(Data)
+        let obj = {}
+        obj.effectiveDate = DayTime(formData?.EffectiveDate).format('YYYY-MM-DDTHH:mm:ss')
+        obj.partId = formData?.part?.value
+        obj.plantId = formData?.plant?.value
+        obj.vendorId = formData?.vendor?.value
+        obj.customerId = formData?.customer?.value
+
+        setIsLoader(true)
+        dispatch(getCostingGotAndGivenDetails(obj, (res) => {
+            let Data = res.data && res.data.Data
+            if (res.status === 200) {
+                let GotDetails = Data.GotDetails
+                let GivenDetails = Data.GivenDetails
+                setGivenDetails(Data.GivenDetails)
+                setGotDetails(Data.GotDetails)
+
+                const DataTemplate = [{
+                    label: 'Current Tentative Sale Rate',
+                    fields: [
+                        GotDetails?.HeadWiseCostingDetails?.CurrentTentativeSaleRate,
+                        ...GotDetails?.HeadWiseSurfaceTreatmentDetails.map((item) => { return item.CurrentTentativeSaleRate }),
+                        GotDetails?.HeadWiseCostingAndSurfaceTreatmentSumDetails?.CurrentTentativeSaleRate,
+                        GotDetails?.BudgetedHeadWiseCostingDetails?.CurrentTentativeSaleRate,
+                        GotDetails?.ActualHeadWiseCostingDetails?.CurrentTentativeSaleRate,
+                        GivenDetails?.HeadWiseCostingDetails?.CurrentTentativeSaleRate,
+                        ...GivenDetails?.HeadWiseSurfaceTreatmentDetails.map((item) => { return item.CurrentTentativeSaleRate }),
+                        GivenDetails?.HeadWiseCostingAndSurfaceTreatmentSumDetails?.CurrentTentativeSaleRate,
+                        GivenDetails?.BudgetedHeadWiseCostingDetails?.CurrentTentativeSaleRate,
+                        GivenDetails?.ActualHeadWiseCostingDetails?.CurrentTentativeSaleRate,
+                    ],
+                },
+                {
+                    label: 'Raw Material Effective Date',
+                    fields: [
+                        GotDetails?.HeadWiseCostingDetails?.RawMaterialEffectiveDate,
+                        ...GotDetails?.HeadWiseSurfaceTreatmentDetails.map((item) => { return item.RawMaterialEffectiveDate }),
+                        GotDetails?.HeadWiseCostingAndSurfaceTreatmentSumDetails?.RawMaterialEffectiveDate,
+                        GotDetails?.BudgetedHeadWiseCostingDetails?.RawMaterialEffectiveDate,
+                        GotDetails?.ActualHeadWiseCostingDetails?.RawMaterialEffectiveDate,
+                        GivenDetails?.HeadWiseCostingDetails?.RawMaterialEffectiveDate,
+                        ...GivenDetails?.HeadWiseSurfaceTreatmentDetails.map((item) => { return item.RawMaterialEffectiveDate }),
+                        GivenDetails?.HeadWiseCostingAndSurfaceTreatmentSumDetails?.RawMaterialEffectiveDate,
+                        GivenDetails?.BudgetedHeadWiseCostingDetails?.RawMaterialEffectiveDate,
+                        GivenDetails?.ActualHeadWiseCostingDetails?.RawMaterialEffectiveDate
+                    ]
+                },
+                {
+                    label: 'Net POPrice',
+                    fields: [
+                        GotDetails?.HeadWiseCostingDetails?.NetPOPrice,
+                        ...GotDetails?.HeadWiseSurfaceTreatmentDetails.map((item) => { return item.NetPOPrice }),
+                        GotDetails?.HeadWiseCostingAndSurfaceTreatmentSumDetails?.NetPOPrice,
+                        GotDetails?.BudgetedHeadWiseCostingDetails?.NetPOPrice,
+                        GotDetails?.ActualHeadWiseCostingDetails?.NetPOPrice,
+                        GivenDetails?.HeadWiseCostingDetails?.NetPOPrice,
+                        ...GivenDetails?.HeadWiseSurfaceTreatmentDetails.map((item) => { return item.NetPOPrice }),
+                        GivenDetails?.HeadWiseCostingAndSurfaceTreatmentSumDetails?.NetPOPrice,
+                        GivenDetails?.BudgetedHeadWiseCostingDetails?.NetPOPrice,
+                        GivenDetails?.ActualHeadWiseCostingDetails?.NetPOPrice
+                    ]
+                },
+                {
+                    label: 'Provision Price',
+                    fields: [
+                        GotDetails?.HeadWiseCostingDetails?.ProvisionPrice,
+                        ...GotDetails?.HeadWiseSurfaceTreatmentDetails.map((item) => { return item.ProvisionPrice }),
+                        GotDetails?.HeadWiseCostingAndSurfaceTreatmentSumDetails?.ProvisionPrice,
+                        GotDetails?.BudgetedHeadWiseCostingDetails?.ProvisionPrice,
+                        GotDetails?.ActualHeadWiseCostingDetails?.ProvisionPrice,
+                        GivenDetails?.HeadWiseCostingDetails?.ProvisionPrice,
+                        ...GivenDetails?.HeadWiseSurfaceTreatmentDetails.map((item) => { return item.ProvisionPrice }),
+                        GivenDetails?.HeadWiseCostingAndSurfaceTreatmentSumDetails?.ProvisionPrice,
+                        GivenDetails?.BudgetedHeadWiseCostingDetails?.ProvisionPrice,
+                        GivenDetails?.ActualHeadWiseCostingDetails?.ProvisionPrice
+                    ]
+                },
+                {
+                    label: 'Net Sales',
+                    fields: [
+                        GotDetails?.HeadWiseCostingDetails?.NetSales,
+                        ...GotDetails?.HeadWiseSurfaceTreatmentDetails.map((item) => { return item.NetSales }),
+                        GotDetails?.HeadWiseCostingAndSurfaceTreatmentSumDetails?.NetSales,
+                        GotDetails?.BudgetedHeadWiseCostingDetails?.NetSales,
+                        GotDetails?.ActualHeadWiseCostingDetails?.NetSales,
+                        GivenDetails?.HeadWiseCostingDetails?.NetSales,
+                        ...GivenDetails?.HeadWiseSurfaceTreatmentDetails.map((item) => { return item.NetSales }),
+                        GivenDetails?.HeadWiseCostingAndSurfaceTreatmentSumDetails?.NetSales,
+                        GivenDetails?.BudgetedHeadWiseCostingDetails?.NetSales,
+                        GivenDetails?.ActualHeadWiseCostingDetails?.NetSales
+                    ]
+                },
+                {
+                    label: 'Consumption',
+                    fields: [
+                        GotDetails?.HeadWiseCostingDetails?.Consumption,
+                        ...GotDetails?.HeadWiseSurfaceTreatmentDetails.map((item) => { return item.Consumption }),
+                        GotDetails?.HeadWiseCostingAndSurfaceTreatmentSumDetails?.Consumption,
+                        GotDetails?.BudgetedHeadWiseCostingDetails?.Consumption,
+                        GotDetails?.ActualHeadWiseCostingDetails?.Consumption,
+                        GivenDetails?.HeadWiseCostingDetails?.Consumption,
+                        ...GivenDetails?.HeadWiseSurfaceTreatmentDetails.map((item) => { return item.Consumption }),
+                        GivenDetails?.HeadWiseCostingAndSurfaceTreatmentSumDetails?.Consumption,
+                        GivenDetails?.BudgetedHeadWiseCostingDetails?.Consumption,
+                        GivenDetails?.ActualHeadWiseCostingDetails?.Consumption
+                    ]
+                },
+                {
+                    label: 'Labour Cost',
+                    fields: [
+                        GotDetails?.HeadWiseCostingDetails?.LabourCost,
+                        ...GotDetails?.HeadWiseSurfaceTreatmentDetails.map((item) => { return item.LabourCost }),
+                        GotDetails?.HeadWiseCostingAndSurfaceTreatmentSumDetails?.LabourCost,
+                        GotDetails?.BudgetedHeadWiseCostingDetails?.LabourCost,
+                        GotDetails?.ActualHeadWiseCostingDetails?.LabourCost,
+                        GivenDetails?.HeadWiseCostingDetails?.LabourCost,
+                        ...GivenDetails?.HeadWiseSurfaceTreatmentDetails.map((item) => { return item.LabourCost }),
+                        GivenDetails?.HeadWiseCostingAndSurfaceTreatmentSumDetails?.LabourCost,
+                        GivenDetails?.BudgetedHeadWiseCostingDetails?.LabourCost,
+                        GivenDetails?.ActualHeadWiseCostingDetails?.LabourCost
+                    ]
+                },
+                {
+                    label: 'Manufacturing Expenses',
+                    fields: [
+                        GotDetails?.HeadWiseCostingDetails?.ManufacturingExpenses,
+                        ...GotDetails?.HeadWiseSurfaceTreatmentDetails.map((item) => { return item.ManufacturingExpenses }),
+                        GotDetails?.HeadWiseCostingAndSurfaceTreatmentSumDetails?.ManufacturingExpenses,
+                        GotDetails?.BudgetedHeadWiseCostingDetails?.ManufacturingExpenses,
+                        GotDetails?.ActualHeadWiseCostingDetails?.ManufacturingExpenses,
+                        GivenDetails?.HeadWiseCostingDetails?.ManufacturingExpenses,
+                        ...GivenDetails?.HeadWiseSurfaceTreatmentDetails.map((item) => { return item.ManufacturingExpenses }),
+                        GivenDetails?.HeadWiseCostingAndSurfaceTreatmentSumDetails?.ManufacturingExpenses,
+                        GivenDetails?.BudgetedHeadWiseCostingDetails?.ManufacturingExpenses,
+                        GivenDetails?.ActualHeadWiseCostingDetails?.ManufacturingExpenses
+                    ]
+                },
+                {
+                    label: 'Office Expenses',
+                    fields: [
+                        GotDetails?.HeadWiseCostingDetails?.OfficeExpenses,
+                        ...GotDetails?.HeadWiseSurfaceTreatmentDetails.map((item) => { return item.OfficeExpenses }),
+                        GotDetails?.HeadWiseCostingAndSurfaceTreatmentSumDetails?.OfficeExpenses,
+                        GotDetails?.BudgetedHeadWiseCostingDetails?.OfficeExpenses,
+                        GotDetails?.ActualHeadWiseCostingDetails?.OfficeExpenses,
+                        GivenDetails?.HeadWiseCostingDetails?.OfficeExpenses,
+                        ...GivenDetails?.HeadWiseSurfaceTreatmentDetails.map((item) => { return item.OfficeExpenses }),
+                        GivenDetails?.HeadWiseCostingAndSurfaceTreatmentSumDetails?.OfficeExpenses,
+                        GivenDetails?.BudgetedHeadWiseCostingDetails?.OfficeExpenses,
+                        GivenDetails?.ActualHeadWiseCostingDetails?.OfficeExpenses
+                    ]
+                },
+                {
+                    label: 'Repairs Expenses',
+                    fields: [
+                        GotDetails?.HeadWiseCostingDetails?.RepairsExpenses,
+                        ...GotDetails?.HeadWiseSurfaceTreatmentDetails.map((item) => { return item.RepairsExpenses }),
+                        GotDetails?.HeadWiseCostingAndSurfaceTreatmentSumDetails?.RepairsExpenses,
+                        GotDetails?.BudgetedHeadWiseCostingDetails?.RepairsExpenses,
+                        GotDetails?.ActualHeadWiseCostingDetails?.RepairsExpenses,
+                        GivenDetails?.HeadWiseCostingDetails?.RepairsExpenses,
+                        ...GivenDetails?.HeadWiseSurfaceTreatmentDetails.map((item) => { return item.RepairsExpenses }),
+                        GivenDetails?.HeadWiseCostingAndSurfaceTreatmentSumDetails?.RepairsExpenses,
+                        GivenDetails?.BudgetedHeadWiseCostingDetails?.RepairsExpenses,
+                        GivenDetails?.ActualHeadWiseCostingDetails?.RepairsExpenses
+                    ]
+                },
+                {
+                    label: 'Selling and Distribution Expenses',
+                    fields: [
+                        GotDetails?.HeadWiseCostingDetails?.SellingAndDistributionExpenses,
+                        ...GotDetails?.HeadWiseSurfaceTreatmentDetails.map((item) => { return item.SellingAndDistributionExpenses }),
+                        GotDetails?.HeadWiseCostingAndSurfaceTreatmentSumDetails?.SellingAndDistributionExpenses,
+                        GotDetails?.BudgetedHeadWiseCostingDetails?.SellingAndDistributionExpenses,
+                        GotDetails?.ActualHeadWiseCostingDetails?.SellingAndDistributionExpenses,
+                        GivenDetails?.HeadWiseCostingDetails?.SellingAndDistributionExpenses,
+                        ...GivenDetails?.HeadWiseSurfaceTreatmentDetails.map((item) => { return item.SellingAndDistributionExpenses }),
+                        GivenDetails?.HeadWiseCostingAndSurfaceTreatmentSumDetails?.SellingAndDistributionExpenses,
+                        GivenDetails?.BudgetedHeadWiseCostingDetails?.SellingAndDistributionExpenses,
+                        GivenDetails?.ActualHeadWiseCostingDetails?.SellingAndDistributionExpenses
+                    ]
+                },
+                {
+                    label: 'Common Expenses',
+                    fields: [
+                        GotDetails?.HeadWiseCostingDetails?.CommonExpenses,
+                        ...GotDetails?.HeadWiseSurfaceTreatmentDetails.map((item) => { return item.CommonExpenses }),
+                        GotDetails?.HeadWiseCostingAndSurfaceTreatmentSumDetails?.CommonExpenses,
+                        GotDetails?.BudgetedHeadWiseCostingDetails?.CommonExpenses,
+                        GotDetails?.ActualHeadWiseCostingDetails?.CommonExpenses,
+                        GivenDetails?.HeadWiseCostingDetails?.CommonExpenses,
+                        ...GivenDetails?.HeadWiseSurfaceTreatmentDetails.map((item) => { return item.CommonExpenses }),
+                        GivenDetails?.HeadWiseCostingAndSurfaceTreatmentSumDetails?.CommonExpenses,
+                        GivenDetails?.BudgetedHeadWiseCostingDetails?.CommonExpenses,
+                        GivenDetails?.ActualHeadWiseCostingDetails?.CommonExpenses
+                    ]
+                },
+                {
+                    label: 'Staff Cost',
+                    fields: [
+                        GotDetails?.HeadWiseCostingDetails?.StaffCost,
+                        ...GotDetails?.HeadWiseSurfaceTreatmentDetails.map((item) => { return item.StaffCost }),
+                        GotDetails?.HeadWiseCostingAndSurfaceTreatmentSumDetails?.StaffCost,
+                        GotDetails?.BudgetedHeadWiseCostingDetails?.StaffCost,
+                        GotDetails?.ActualHeadWiseCostingDetails?.StaffCost,
+                        GivenDetails?.HeadWiseCostingDetails?.StaffCost,
+                        ...GivenDetails?.HeadWiseSurfaceTreatmentDetails.map((item) => { return item.StaffCost }),
+                        GivenDetails?.HeadWiseCostingAndSurfaceTreatmentSumDetails?.StaffCost,
+                        GivenDetails?.BudgetedHeadWiseCostingDetails?.StaffCost,
+                        GivenDetails?.ActualHeadWiseCostingDetails?.StaffCost
+                    ]
+                },
+                {
+                    label: 'EBIDTA',
+                    fields: [
+                        GotDetails?.HeadWiseCostingDetails?.EBIDTA,
+                        ...GotDetails?.HeadWiseSurfaceTreatmentDetails.map((item) => { return item.EBIDTA }),
+                        GotDetails?.HeadWiseCostingAndSurfaceTreatmentSumDetails?.EBIDTA,
+                        GotDetails?.BudgetedHeadWiseCostingDetails?.EBIDTA,
+                        GotDetails?.ActualHeadWiseCostingDetails?.EBIDTA,
+                        GivenDetails?.HeadWiseCostingDetails?.EBIDTA,
+                        ...GivenDetails?.HeadWiseSurfaceTreatmentDetails.map((item) => { return item.EBIDTA }),
+                        GivenDetails?.HeadWiseCostingAndSurfaceTreatmentSumDetails?.EBIDTA,
+                        GivenDetails?.BudgetedHeadWiseCostingDetails?.EBIDTA,
+                        GivenDetails?.ActualHeadWiseCostingDetails?.EBIDTA
+                    ]
+                },
+                {
+                    label: 'Finance Cost',
+                    fields: [
+                        GotDetails?.HeadWiseCostingDetails?.FinanceCost,
+                        ...GotDetails?.HeadWiseSurfaceTreatmentDetails.map((item) => { return item.FinanceCost }),
+                        GotDetails?.HeadWiseCostingAndSurfaceTreatmentSumDetails?.FinanceCost,
+                        GotDetails?.BudgetedHeadWiseCostingDetails?.FinanceCost,
+                        GotDetails?.ActualHeadWiseCostingDetails?.FinanceCost,
+                        GivenDetails?.HeadWiseCostingDetails?.FinanceCost,
+                        ...GivenDetails?.HeadWiseSurfaceTreatmentDetails.map((item) => { return item.FinanceCost }),
+                        GivenDetails?.HeadWiseCostingAndSurfaceTreatmentSumDetails?.FinanceCost,
+                        GivenDetails?.BudgetedHeadWiseCostingDetails?.FinanceCost,
+                        GivenDetails?.ActualHeadWiseCostingDetails?.FinanceCost
+                    ]
+                },
+                {
+                    label: 'Depreciation',
+                    fields: [
+                        GotDetails?.HeadWiseCostingDetails?.Depreciation,
+                        ...GotDetails?.HeadWiseSurfaceTreatmentDetails.map((item) => { return item.Depreciation }),
+                        GotDetails?.HeadWiseCostingAndSurfaceTreatmentSumDetails?.Depreciation,
+                        GotDetails?.BudgetedHeadWiseCostingDetails?.Depreciation,
+                        GotDetails?.ActualHeadWiseCostingDetails?.Depreciation,
+                        GivenDetails?.HeadWiseCostingDetails?.Depreciation,
+                        ...GivenDetails?.HeadWiseSurfaceTreatmentDetails.map((item) => { return item.Depreciation }),
+                        GivenDetails?.HeadWiseCostingAndSurfaceTreatmentSumDetails?.Depreciation,
+                        GivenDetails?.BudgetedHeadWiseCostingDetails?.Depreciation,
+                        GivenDetails?.ActualHeadWiseCostingDetails?.Depreciation
+                    ]
+                },
+                {
+                    label: 'PBT',
+                    fields: [
+                        GotDetails?.HeadWiseCostingDetails?.PBT,
+                        ...GotDetails?.HeadWiseSurfaceTreatmentDetails.map((item) => { return item.PBT }),
+                        GotDetails?.HeadWiseCostingAndSurfaceTreatmentSumDetails?.PBT,
+                        GotDetails?.BudgetedHeadWiseCostingDetails?.PBT,
+                        GotDetails?.ActualHeadWiseCostingDetails?.PBT,
+                        GivenDetails?.HeadWiseCostingDetails?.PBT,
+                        ...GivenDetails?.HeadWiseSurfaceTreatmentDetails.map((item) => { return item.PBT }),
+                        GivenDetails?.HeadWiseCostingAndSurfaceTreatmentSumDetails?.PBT,
+                        GivenDetails?.BudgetedHeadWiseCostingDetails?.PBT,
+                        GivenDetails?.ActualHeadWiseCostingDetails?.PBT
+                    ]
+                },
+                {
+                    label: 'Amortization',
+                    fields: [
+                        GotDetails?.HeadWiseCostingDetails?.Amortization,
+                        ...GotDetails?.HeadWiseSurfaceTreatmentDetails.map((item) => { return item.Amortization }),
+                        GotDetails?.HeadWiseCostingAndSurfaceTreatmentSumDetails?.Amortization,
+                        GotDetails?.BudgetedHeadWiseCostingDetails?.Amortization,
+                        GotDetails?.ActualHeadWiseCostingDetails?.Amortization,
+                        GivenDetails?.HeadWiseCostingDetails?.Amortization,
+                        ...GivenDetails?.HeadWiseSurfaceTreatmentDetails.map((item) => { return item.Amortization }),
+                        GivenDetails?.HeadWiseCostingAndSurfaceTreatmentSumDetails?.Amortization,
+                        GivenDetails?.BudgetedHeadWiseCostingDetails?.Amortization,
+                        GivenDetails?.ActualHeadWiseCostingDetails?.Amortization
+                    ]
+                }]
+
+                setTopHeaderData({
+                    Month: Data.Month,
+                    PartNumber: Data.PartNumber,
+                    PartName: Data.PartName,
+                    RevisionNumber: Data.RevisionNumber,
+                    PlantName: Data.PlantName,
+                    PlantAddress: Data.PlantAddress,
+                    VendorName: Data.VendorName,
+                    CustomerName: Data.CustomerName,
+                    BudgetedQuantity: Data.CBCBudgetedQuantity,
+                    ApprovedQuantity: Data.CBCApprovedQuantity,
+                    EffectiveDate: Data.SelectedEffectiveDate ? DayTime(Data.SelectedEffectiveDate).format('DD/MM/YYYY') : '-',
+
+                })
+                setIsLoader(false)
+                setTableData(DataTemplate)
+            } else {
+                setIsLoader(false)
+            }
+        }))
+
     }, [])
+
+
     return <>
+        {isLoader && <LoaderCustom />}
         <div className='d-flex justify-content-end'>
             <button type="button" className={"apply"} onClick={cancelReport}> <div className={'back-icon'}></div>Back</button>
         </div>
@@ -746,7 +406,7 @@ function GotGivenListing(props) {
                 </thead>
                 <thead>
                     <tr>
-                        {renderTableCells([Month, PartNumber, PartName, RevisionNumber, PlantName, PlantAddress, VendorName, CustomerName, BudgetedQuantity, ApprovedQuantity, EffectiveDate])}
+                        {renderTableCells([topHeaderData.Month, topHeaderData.PartNumber, topHeaderData.PartName, topHeaderData.RevisionNumber, topHeaderData.PlantName, topHeaderData.PlantAddress, topHeaderData.VendorName, topHeaderData.CustomerName, topHeaderData.BudgetedQuantity, topHeaderData.ApprovedQuantity, topHeaderData.EffectiveDate])}
                     </tr>
                 </thead>
             </Table>
@@ -754,8 +414,12 @@ function GotGivenListing(props) {
                 <tbody>
                     <tr>
                         <td></td>
-                        <td colSpan={5} className='text-center font-weight-500 font-size-16'>Got Details</td>
-                        <td colSpan={5} className='text-center font-weight-500 font-size-16'>Given Details</td>
+                        <td colSpan={tableData ? (tableData[0]?.fields?.length) / 2 : 5} className='text-center font-weight-500 font-size-16'>Got Details</td>
+                        <td colSpan={tableData ? (tableData[0]?.fields?.length) / 2 : 5} className='text-center font-weight-500 font-size-16'>Given Details</td>
+                    </tr>
+                    <tr>
+                        <td className='text-center font-weight-500 font-size-16'>Parameters</td>
+                        {gotGivenLabels()}
                     </tr>
                     {tableData.map((row, rowIndex) => (
                         <tr key={rowIndex}>
@@ -769,7 +433,7 @@ function GotGivenListing(props) {
                     ))}
                 </tbody>
             </Table>
-        </div>
+        </div >
     </>
 }
 

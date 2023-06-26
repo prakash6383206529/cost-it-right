@@ -358,7 +358,6 @@ function BDSimulation(props) {
         plantFormatter: plantFormatter,
         revisedBasicRateHeader: revisedBasicRateHeader,
         customerFormatter: customerFormatter,
-        percentageFormatter: percentageFormatter
     };
 
     const basicRatetooltipToggle = () => {
