@@ -1053,7 +1053,7 @@ function Simulation(props) {
                                         />
                                     </div>
                                 </div>
-                                {(String(selectedMasterForSimulation?.value) === BOPDOMESTIC || String(selectedMasterForSimulation?.value) === BOPIMPORT) &&
+                                {(String(master?.value) === BOPDOMESTIC || String(master?.value) === BOPIMPORT) &&
                                     <div className="d-inline-flex justify-content-start align-items-center mr-3">
                                         <div className="flex-fills label">Association:</div>
                                         <div className="flex-fills hide-label pl-0">
