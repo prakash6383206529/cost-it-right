@@ -28,7 +28,7 @@ import { getPartSelectListWtihRevNo } from "../../masters/actions/Volume"
 
 const gridOptions = {}
 function CostReportForm(props) {
-    const { isDateMandatory, showVendor } = props
+    const { isDateMandatory, showVendor, gotGiven } = props
     const [technology, setTechnology] = useState([])
     const [partName, setpartName] = useState('')
     const [part, setPart] = useState([]);
@@ -291,10 +291,9 @@ function CostReportForm(props) {
                         setValue('Part', '')
                     } else {
                         setPart(newValue)
+                        dispatch(getFormGridData({ ...costReportFormData, part: newValue, isPlant: true, isCompany: false }))
                     }
                     if (response.data.Result) {
-
-
                         dispatch(getRevisionNoFromPartId(newValue.value, (res) => {
                             let Data = res && res.data && res.data.SelectList
                             setRevision(Data)
@@ -637,7 +636,7 @@ function CostReportForm(props) {
                         </Col>
 
 
-                        {(!showVendor || customerPoamSummary) && <Col md="3">
+                        {(!showVendor || customerPoamSummary || gotGiven) && <Col md="3">
                             <SearchableSelectHookForm
                                 label={"Customer (Code)"}
                                 name={"Customer"}

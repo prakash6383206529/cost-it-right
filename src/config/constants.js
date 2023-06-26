@@ -998,6 +998,7 @@ export const API = {
   approvedCostingByApprover: `${BASE_URL}/nfr/approved-nfr-by-approver`,
   getGotAndGivenDetails: `${BASE_URL}/reports/get-got-and-given-details`,
   getRawMaterialByNFRPart: `${BASE_URL}/nfr/get-raw-material-by-nfr-part`,
+  getCostingGotAndGivenDetails: `${BASE_URL}/reports/get-head-wise-costing-got-and-given-details`,
 
 
   //SUB ASSEMBLY
