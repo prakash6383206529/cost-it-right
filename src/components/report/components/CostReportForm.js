@@ -28,7 +28,7 @@ import { getPartSelectListWtihRevNo } from "../../masters/actions/Volume"
 
 const gridOptions = {}
 function CostReportForm(props) {
-    const { isDateMandatory, showVendor } = props
+    const { isDateMandatory, showVendor, gotGiven, plantWiseGotGiven } = props
     const [technology, setTechnology] = useState([])
     const [partName, setpartName] = useState('')
     const [part, setPart] = useState([]);
@@ -508,7 +508,7 @@ function CostReportForm(props) {
                         </Col>}
 
 
-                        <Col md="3">
+                        {!plantWiseGotGiven && <Col md="3">
                             <SearchableSelectHookForm
                                 label={"Technology"}
                                 name={"Technology"}
@@ -523,9 +523,9 @@ function CostReportForm(props) {
                                 handleChange={handleTechnologyChange}
                                 errors={errors.Technology}
                             />
-                        </Col>
+                        </Col>}
 
-                        <Col md="3">
+                        {!plantWiseGotGiven && <Col md="3">
 
                             <AsyncSearchableSelectHookForm
                                 label={"Part No."}
@@ -545,10 +545,10 @@ function CostReportForm(props) {
                                 NoOptionMessage={MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN}
                             />
 
-                        </Col>
+                        </Col>}
 
 
-                        {!customerPoamSummary && !props.partWithRevision && <Col md="3">
+                        {!customerPoamSummary && !props.partWithRevision && !plantWiseGotGiven && <Col md="3">
                             <SearchableSelectHookForm
                                 label={"Revision Number"}
                                 name={"Revision"}
@@ -603,12 +603,12 @@ function CostReportForm(props) {
                                 mandatory={props.isPlantRequired ? true : false}
                                 handleChange={plantHandleChange}
                                 errors={errors.Plant}
-                                disabled={props.isSaleAndPurchase ? false : (part.length === 0 ? true : false)}
+                                disabled={!plantWiseGotGiven ? (props.isSaleAndPurchase || props.isCompany ? false : (part.length === 0 ? true : false)) : false}
                             />
                         </Col>
 
 
-                        {(!showVendor || customerPoamSummary) && <Col md="3">
+                        {(!showVendor || customerPoamSummary || gotGiven) && !plantWiseGotGiven && <Col md="3">
                             <SearchableSelectHookForm
                                 label={"Customer (Code)"}
                                 name={"Customer"}
