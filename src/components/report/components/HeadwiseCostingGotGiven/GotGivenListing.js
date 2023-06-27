@@ -3,11 +3,12 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Table } from 'reactstrap';
 import { checkForDecimalAndNull } from '../../../../helper';
 import DayTime from '../../../common/DayTimeWrapper';
-import { DATE_TYPE } from '../../../../config/constants';
+import { DATE_TYPE, EMPTY_DATA } from '../../../../config/constants';
 import { useState } from 'react';
 import { useEffect } from 'react';
 import { getCostingGotAndGivenDetails } from '../../actions/ReportListing';
 import LoaderCustom from '../../../common/LoaderCustom';
+import NoContentFound from '../../../common/NoContentFound';
 
 const mainHeaders = ["Month", "Part Number", "Part Name", "Revision Number", "Plant(Code)", "Plant Address", "Vendor(Code)", "Customer(Code)", "Budgeted Quantity", "Approved Quantity", "Effective Date"]
 
@@ -54,28 +55,28 @@ function GotGivenListing(props) {
     const gotGivenLabels = () => {
         let Data = gotDetails.HeaderName
         let DataSecond = givenDetails.HeaderName
-
+        const headerClass = `text-center font-weight-500`
         return (<>
-            < td className='text-center font-weight-500 font-size-16' > {Data?.Part}</td >
+            <td className={headerClass}> {Data?.Part}</td >
             {
                 Data?.SurfaceTreatmentNames.map((item) => {
-                    return < td className='text-center font-weight-500 font-size-16' > {item}</td >
+                    return < td className={headerClass}> {item}</td >
                 })
             }
-            < td className='text-center font-weight-500 font-size-16' > {Data?.TotalOfPartAndSurfaceTreatment}</td >
-            < td className='text-center font-weight-500 font-size-16' > {Data?.BudgetedHeadWiseCosting}</td >
-            < td className='text-center font-weight-500 font-size-16' > {Data?.ActualHeadWiseCosting}</td >
+            <td className={headerClass}> {Data?.TotalOfPartAndSurfaceTreatment}</td >
+            <td className={headerClass}> {Data?.BudgetedHeadWiseCosting}</td >
+            <td className={headerClass}> {Data?.ActualHeadWiseCosting}</td >
 
             {/* GIVEN DETAILS */}
-            < td className='text-center font-weight-500 font-size-16' > {DataSecond?.Part}</td >
+            <td className={headerClass}> {DataSecond?.Part}</td >
             {
                 DataSecond?.SurfaceTreatmentNames.map((item) => {
-                    return < td className='text-center font-weight-500 font-size-16' > {item}</td >
+                    return <td className={headerClass}> {item}</td >
                 })
             }
-            < td className='text-center font-weight-500 font-size-16' > {DataSecond?.TotalOfPartAndSurfaceTreatment}</td >
-            < td className='text-center font-weight-500 font-size-16' > {DataSecond?.BudgetedHeadWiseCosting}</td >
-            < td className='text-center font-weight-500 font-size-16' > {DataSecond?.ActualHeadWiseCosting}</td >
+            <td className={headerClass}> {DataSecond?.TotalOfPartAndSurfaceTreatment}</td >
+            <td className={headerClass}> {DataSecond?.BudgetedHeadWiseCosting}</td >
+            <td className={headerClass}> {DataSecond?.ActualHeadWiseCosting}</td >
         </>
         )
     }
@@ -417,10 +418,10 @@ function GotGivenListing(props) {
                         <td colSpan={tableData ? (tableData[0]?.fields?.length) / 2 : 5} className='text-center font-weight-500 font-size-16'>Got Details</td>
                         <td colSpan={tableData ? (tableData[0]?.fields?.length) / 2 : 5} className='text-center font-weight-500 font-size-16'>Given Details</td>
                     </tr>
-                    <tr>
+                    {gotDetails?.length === 0 && givenDetails?.length === 0 ? <tr><td colSpan={3}><NoContentFound title={EMPTY_DATA} /></td></tr> : <tr>
                         <td className='text-center font-weight-500 font-size-16'>Parameters</td>
                         {gotGivenLabels()}
-                    </tr>
+                    </tr>}
                     {tableData.map((row, rowIndex) => (
                         <tr key={rowIndex}>
                             <td className={leftHeaderClass}>{row.label}</td>
