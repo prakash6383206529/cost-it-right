@@ -564,7 +564,6 @@ function CommonApproval(props) {
             let valid = true
             selectedRowData.map((item) => {
                 if (item.CostingHead !== costingHead) {
-                    Toaster.warning('Please select  token with same costing head.')
                     valid = false
                     return false
                 }
@@ -572,6 +571,8 @@ function CommonApproval(props) {
             })
             if (valid) {
                 setApprovalDrawer(true)
+            } else {
+                Toaster.warning('Please select token with same costing head.')
             }
         }
         else {
