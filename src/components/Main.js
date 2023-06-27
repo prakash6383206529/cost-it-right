@@ -68,6 +68,7 @@ import MasterCostMovement from './report/components/CostMovementByMaster/MasterC
 import BudgetMaster from './masters/budget-master'
 import GotGivenReport from './report/components/GotGivenReport/GotGivenReport'
 import PipdReport from './report/components/PIPDReport/PipdReport'
+import PlantWiseCostingGotGiven from './report/components/PlantWiseCostingGotGiven/PlantWiseCostingGotGiven'
 const CustomHeader = {
   'Content-Type': 'application/x-www-form-urlencoded',
   'Access-Control-Allow-Origin': '*',
@@ -362,6 +363,7 @@ class Main extends Component {
                     <Route path="/purchase-provision-report" component={AuthMiddleware(PurchaseProvisionReport, PURCHASE_PROVISION_REPORT)} />
                     <Route path="/customer-poam-summary-report" component={AuthMiddleware(CustomerPoamSummaryReport, CUSTOMER_POAM_REPORT)} />
                     <Route path="/headwise-costing-got-given" component={HeadWiseCostingGotGiven} />
+                    <Route path="/plantwise-costing-got-given" component={PlantWiseCostingGotGiven} />
                     <Route path="/master-cost-movement-report" component={MasterCostMovement} />
                     <Route path="/pipd-report" component={PipdReport} />
                     {/*  NEED TO ADD PATH FROM BACKEND */}
