@@ -2519,7 +2519,7 @@ export const CRMHeads = [
   { label: "Staff Cost", value: 9 },
   { label: "EBIDTA", value: 10 },
   { label: "Finance Cost", value: 11 },
-  { label: "Depriciation", value: 12 },
+  { label: "Depreciation", value: 12 },
   { label: "PBT", value: 13 },
   { label: "Amortization", value: 14 },
 
