@@ -1021,6 +1021,7 @@ export const API = {
   getRawMaterialByNFRPart: `${BASE_URL}/nfr/get-raw-material-by-nfr-part`,
   getGotAndGivenDetails: `${BASE_URL}/reports/get-got-and-given-details`,
   getCostingGotAndGivenDetails: `${BASE_URL}/reports/get-head-wise-costing-got-and-given-details`,
+  getPlantWiseGotAndGivenDetails: `${BASE_URL}/reports/get-plant-head-wise-details`,
 
 
   //SUB ASSEMBLY
@@ -1838,6 +1839,8 @@ export const PURCHASE_PROVISION_REPORT = 'Purchase Provision Report'
 export const CUSTOMER_POAM_SUMMARY_REPORT = 'Customer Poam Summary Report'
 export const MASTER_MOVEMENT_REPORT = 'Master Movement Report'
 export const GOT_GIVEN_REPORT = "Got Given Report"
+export const HEAD_WISE_COSTING_GOT_GIVEN = "Head Wise Costing Got Given"
+export const PLANT_HEAD_WISE = "Plant Head Wise"
 
 
 //export const SIMULATION_HISTORY = 'Simulation History'
