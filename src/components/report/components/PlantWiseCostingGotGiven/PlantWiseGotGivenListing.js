@@ -6,17 +6,15 @@ import DayTime from '../../../common/DayTimeWrapper';
 import { DATE_TYPE } from '../../../../config/constants';
 import { useState } from 'react';
 import { useEffect } from 'react';
-import { getCostingGotAndGivenDetails, getCostingGotAndGivenDetailsPlantWise } from '../../actions/ReportListing';
+import { getPlantWiseGotAndGivenDetails } from '../../actions/ReportListing';
 import LoaderCustom from '../../../common/LoaderCustom';
 
-const mainHeaders = ["Month", "Part Number", "Part Name", "Revision Number", "Plant(Code)", "Plant Address", "Vendor(Code)", "Customer(Code)", "Budgeted Quantity", "Approved Quantity", "Effective Date"]
+const mainHeaders = ["Month", "Plant(Code)", "Plant Address", "Net Sales", "Effective Date"]
 
 function PlantWiseGotGivenListing(props) {
     const formData = useSelector(state => state.report.costReportFormGridData);
     const { initialConfiguration } = useSelector(state => state.auth)
     const [tableData, setTableData] = useState([]);
-    const [gotDetails, setGotDetails] = useState([]);
-    const [givenDetails, setGivenDetails] = useState([]);
     const [isLoader, setIsLoader] = useState('')
     const [topHeaderData, setTopHeaderData] = useState({})
     const dispatch = useDispatch()
@@ -25,7 +23,6 @@ function PlantWiseGotGivenListing(props) {
         props.closeDrawer('')
     }
 
-    const leftHeaderClass = "font-weight-500 custom-min-width-140px"
     const checkValidData = (value, type = '') => {
         if (type === DATE_TYPE) {
             return value ? DayTime(value).format('DD/MM/YYYY') : '-'
@@ -36,7 +33,7 @@ function PlantWiseGotGivenListing(props) {
 
     const renderTableHeaders = (headers) => {
         return headers.map((item, index) => {
-            return <td key={index}>{item}</td>;
+            return <td key={index} >{item}</td>;
         });
     };
     const renderTableCells = (data) => {
@@ -51,34 +48,7 @@ function PlantWiseGotGivenListing(props) {
     };
 
 
-    const gotGivenLabels = () => {
-        let Data = gotDetails.HeaderName
-        let DataSecond = givenDetails.HeaderName
 
-        return (<>
-            < td className='text-center font-weight-500 font-size-16' > {Data?.Part}</td >
-            {
-                Data?.SurfaceTreatmentNames.map((item) => {
-                    return < td className='text-center font-weight-500 font-size-16' > {item}</td >
-                })
-            }
-            < td className='text-center font-weight-500 font-size-16' > {Data?.TotalOfPartAndSurfaceTreatment}</td >
-            < td className='text-center font-weight-500 font-size-16' > {Data?.BudgetedHeadWiseCosting}</td >
-            < td className='text-center font-weight-500 font-size-16' > {Data?.ActualHeadWiseCosting}</td >
-
-            {/* GIVEN DETAILS */}
-            < td className='text-center font-weight-500 font-size-16' > {DataSecond?.Part}</td >
-            {
-                DataSecond?.SurfaceTreatmentNames.map((item) => {
-                    return < td className='text-center font-weight-500 font-size-16' > {item}</td >
-                })
-            }
-            < td className='text-center font-weight-500 font-size-16' > {DataSecond?.TotalOfPartAndSurfaceTreatment}</td >
-            < td className='text-center font-weight-500 font-size-16' > {DataSecond?.BudgetedHeadWiseCosting}</td >
-            < td className='text-center font-weight-500 font-size-16' > {DataSecond?.ActualHeadWiseCosting}</td >
-        </>
-        )
-    }
 
     useEffect(() => {
         let obj = {}
@@ -89,13 +59,65 @@ function PlantWiseGotGivenListing(props) {
         obj.customerId = formData?.customer?.value
 
         setIsLoader(true)
-        dispatch(getCostingGotAndGivenDetailsPlantWise(obj, (res) => {
+        dispatch(getPlantWiseGotAndGivenDetails(obj, (res) => {
             let Data = res.data && res.data.Data
             if (res.status === 200) {
-                let GotDetails = Data.GotDetails
-                let GivenDetails = Data.GivenDetails
-                setGivenDetails(Data.GivenDetails)
-                setGotDetails(Data.GotDetails)
+                setTopHeaderData({
+                    Month: Data.Month,
+                    PlantName: Data.PlantName,
+                    PlantAddress: Data.PlantAddress,
+                    NetSales: checkForDecimalAndNull(Data.NetSales.NetCost, initialConfiguration.NoOfDecimalForPrice),
+                    EffectiveDate: Data.SelectedEffectiveDate ? DayTime(Data.SelectedEffectiveDate).format('DD/MM/YYYY') : '-',
+
+                })
+                const TemplateData = [
+                    {
+                        label: 'Consumption',
+                        NetCost: checkForDecimalAndNull(Data.Consumption.NetCost, initialConfiguration.NoOfDecimalForPrice),
+                        Percentage: Data.Consumption.Percentage,
+                    },
+                    {
+                        label: 'Labour Cost',
+                        NetCost: checkForDecimalAndNull(Data.LabourCost.NetCost, initialConfiguration.NoOfDecimalForPrice),
+                        Percentage: Data.LabourCost.Percentage,
+                    },
+                    {
+                        label: 'Manufacturing Expenses',
+                        NetCost: checkForDecimalAndNull(Data.ManufacturingExpenses.NetCost, initialConfiguration.NoOfDecimalForPrice),
+                        Percentage: Data.ManufacturingExpenses.Percentage,
+                    },
+                    {
+                        label: 'Office Expenses',
+                        NetCost: checkForDecimalAndNull(Data.OfficeExpenses.NetCost, initialConfiguration.NoOfDecimalForPrice),
+                        Percentage: Data.OfficeExpenses.Percentage,
+                    },
+                    {
+                        label: 'Repairs Expenses',
+                        NetCost: checkForDecimalAndNull(Data.RepairsExpenses.NetCost, initialConfiguration.NoOfDecimalForPrice),
+                        Percentage: Data.RepairsExpenses.Percentage,
+                    },
+                    {
+                        label: 'Selling and Distribution Expenses',
+                        NetCost: checkForDecimalAndNull(Data.SellingAndDistributionExpenses.NetCost, initialConfiguration.NoOfDecimalForPrice),
+                        Percentage: Data.SellingAndDistributionExpenses.Percentage,
+                    },
+                    {
+                        label: 'Common Expenses',
+                        NetCost: checkForDecimalAndNull(Data.CommonExpenses.NetCost, initialConfiguration.NoOfDecimalForPrice),
+                        Percentage: Data.CommonExpenses.Percentage,
+                    },
+                    {
+                        label: 'Staff Cost',
+                        NetCost: checkForDecimalAndNull(Data.StaffCost.NetCost, initialConfiguration.NoOfDecimalForPrice),
+                        Percentage: Data.StaffCost.Percentage,
+                    },
+                    {
+                        label: 'EBIDTA',
+                        NetCost: checkForDecimalAndNull(Data.EBIDTA.NetCost, initialConfiguration.NoOfDecimalForPrice),
+                        Percentage: Data.EBIDTA.Percentage,
+                    },
+                ]
+                setTableData(TemplateData)
 
 
                 setIsLoader(false)
@@ -122,29 +144,22 @@ function PlantWiseGotGivenListing(props) {
                 </thead>
                 <thead>
                     <tr>
-                        {renderTableCells([topHeaderData.Month, topHeaderData.PartNumber, topHeaderData.PartName, topHeaderData.RevisionNumber, topHeaderData.PlantName, topHeaderData.PlantAddress, topHeaderData.VendorName, topHeaderData.CustomerName, topHeaderData.BudgetedQuantity, topHeaderData.ApprovedQuantity, topHeaderData.EffectiveDate])}
+                        {renderTableCells([topHeaderData.Month, topHeaderData.PlantName, topHeaderData.PlantAddress, topHeaderData.NetSales, topHeaderData.EffectiveDate])}
                     </tr>
                 </thead>
             </Table>
             <Table responsive className='table-bordered mb-0'>
                 <tbody>
                     <tr>
-                        <td></td>
-                        <td colSpan={tableData ? (tableData[0]?.fields?.length) / 2 : 5} className='text-center font-weight-500 font-size-16'>Got Details</td>
-                        <td colSpan={tableData ? (tableData[0]?.fields?.length) / 2 : 5} className='text-center font-weight-500 font-size-16'>Given Details</td>
-                    </tr>
-                    <tr>
-                        <td className='text-center font-weight-500 font-size-16'>Parameters</td>
-                        {gotGivenLabels()}
+                        <td className='font-weight-500'>Performance  Parameters</td>
+                        <td className='font-weight-500'>Amount Rs in Crore</td>
+                        <td className='font-weight-500'>Percentage(%)</td>
                     </tr>
                     {tableData.map((row, rowIndex) => (
                         <tr key={rowIndex}>
-                            <td className={leftHeaderClass}>{row.label}</td>
-                            {row.fields.map((field, fieldIndex) => (
-                                <td key={fieldIndex}>
-                                    {row.label === 'Raw Material Effective Date' ? checkValidData(field, DATE_TYPE) : checkForDecimalAndNull(field, initialConfiguration.NoOfDecimalForPrice)}
-                                </td>
-                            ))}
+                            <td>{row.label}</td>
+                            <td>{checkForDecimalAndNull(row.NetCost, initialConfiguration.NoOfDecimalForPrice)}</td>
+                            <td>{checkForDecimalAndNull(row.Percentage, 2)}{row.Percentage > 0 ? '%' : ''}</td>
                         </tr>
                     ))}
                 </tbody>
