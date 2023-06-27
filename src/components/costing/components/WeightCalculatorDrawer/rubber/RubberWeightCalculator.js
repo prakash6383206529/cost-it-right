@@ -28,7 +28,7 @@ function RubberWeightCalculator(props) {
         scrapCost: WeightCalculatorRequest && WeightCalculatorRequest.ScrapCost !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.ScrapCost, getConfigurationKey().NoOfDecimalForPrice) : '',
     }
 
-    const [dataToSend, setDataToSend] = useState(WeightCalculatorRequest)
+    const [dataToSend, setDataToSend] = useState({ ...WeightCalculatorRequest })
     const { rmRowData, rmData, CostingViewMode, item } = props
     const [isEdit, setIsEdit] = useState(false)
     const [editIndex, setEditIndex] = useState('')
@@ -59,6 +59,7 @@ function RubberWeightCalculator(props) {
                 setValue('scrapWeight', WeightCalculatorRequest.RawMaterialScrapWeight ? checkForDecimalAndNull(WeightCalculatorRequest.RawMaterialScrapWeight, getConfigurationKey().NoOfDecimalForPrice) : '')
                 setValue('NetScrapRate', WeightCalculatorRequest && WeightCalculatorRequest.NetScrapRate !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.NetScrapRate, getConfigurationKey().NoOfDecimalForPrice) : '')
                 setValue('rejectionCost', WeightCalculatorRequest && WeightCalculatorRequest.RejectionCost !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.RejectionCost, getConfigurationKey().NoOfDecimalForPrice) : '')
+                setValue('netRmc', WeightCalculatorRequest && WeightCalculatorRequest.NetRawMaterialCost !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.NetRawMaterialCost, getConfigurationKey().NoOfDecimalForPrice) : '',)
                 setDataToSend(WeightCalculatorRequest)
             }, 500);
         }
