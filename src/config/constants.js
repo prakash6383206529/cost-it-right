@@ -1018,6 +1018,8 @@ export const API = {
   getNFRCostingOutsourcingDetails: `${BASE_URL}/nfr/get-nfr-costing-outsorcing-details`,
   getRMFromNFR: `${BASE_URL}/nfr/get-nfr-part-wise-raw-materials`,
   getGotAndGivenDetails: `${BASE_URL}/reports/get-got-and-given-details`,
+  getCostingGotAndGivenDetails: `${BASE_URL}/reports/get-head-wise-costing-got-and-given-details`,
+  getPlantWiseGotAndGivenDetails: `${BASE_URL}/reports/get-plant-head-wise-details`,
 
 
   //SUB ASSEMBLY
@@ -1819,9 +1821,9 @@ export const SALES_PROVISION_REPORT = 'Sales Provision Report'
 export const PURCHASE_PROVISION_REPORT = 'Purchase Provision Report'
 export const CUSTOMER_POAM_SUMMARY_REPORT = 'Customer Poam Summary Report'
 export const MASTER_MOVEMENT_REPORT = 'Master Movement Report'
+export const GOT_GIVEN_REPORT = "Got Given Report"
 
 
-//export const SIMULATION_HISTORY = 'Simulation History'
 
 export const SHEET_METAL = 'Sheet Metal';
 export const PLASTIC = 'Plastic';

@@ -39,7 +39,7 @@ import {
   OVERHEAD_AND_PROFIT, PART, PLANT, RAW_MATERIAL, UOM, USER, VENDOR,
   REASON, VOLUME, CLIENT, EXCHANGE_RATE, TAX, COSTING_PATH, APPROVAL_LISTING_PATH, COSTING_BREAKUP_DETAILS_REPORT, APPROVAL_APP,
   APPROVAL_SUMMARY_PATH, COSTING_BULK_UPLOAD, COSTING_SUMMARY_, COSTING_SUMMARY, Simulation_Page, Simulation_Upload, API,
-  DASHBOARDWITHGRAPH_PATH, SIMULATION_APPROVAL_SUMMARY_PATH, DASHBOARD_PATH, DASHBOARD_PATH_SECOND, SHEET_METAL, SIMULATION_PATH, SIMULATION_HISTORY_PATH, USER_PATH, RFQ_LISTING, RFQ, COST_RATIO_REPORT, BUDGETING, NFR_LISTING, NFR, MASTER_BENCHMARK_REPORT, COST_MOVEMENT_REPORT, SUPPLIER_CONTRIBUTION_REPORT, SALE_PROVISION_REPORT, PURCHASE_PROVISION_REPORT, CUSTOMER_POAM_REPORT
+  DASHBOARDWITHGRAPH_PATH, SIMULATION_APPROVAL_SUMMARY_PATH, DASHBOARD_PATH, DASHBOARD_PATH_SECOND, SHEET_METAL, SIMULATION_PATH, SIMULATION_HISTORY_PATH, USER_PATH, RFQ_LISTING, RFQ, COST_RATIO_REPORT, BUDGETING, NFR_LISTING, NFR, MASTER_BENCHMARK_REPORT, COST_MOVEMENT_REPORT, SUPPLIER_CONTRIBUTION_REPORT, SALE_PROVISION_REPORT, PURCHASE_PROVISION_REPORT, CUSTOMER_POAM_REPORT, HEAD_WISE_COSTING_GOT_GIVEN, PLANT_HEAD_WISE
 } from '../config/constants'
 import ApprovalSummary from './costing/components/approval/ApprovalSummary'
 import CostingSummaryBulkUpload from './costing/components/CostingSummaryBulkUpload'
@@ -373,8 +373,8 @@ class Main extends Component {
                     <Route path="/sale-provision-report" component={AuthMiddleware(SaleProvisionReport, SALE_PROVISION_REPORT)} />
                     <Route path="/purchase-provision-report" component={AuthMiddleware(PurchaseProvisionReport, PURCHASE_PROVISION_REPORT)} />
                     <Route path="/customer-poam-summary-report" component={AuthMiddleware(CustomerPoamSummaryReport, CUSTOMER_POAM_REPORT)} />
-                    <Route path="/headwise-costing-got-given" component={HeadWiseCostingGotGiven} />
-                    <Route path="/plantwise-costing-got-given" component={PlantWiseCostingGotGiven} />
+                    <Route path="/head-wise-costing-got-given" component={AuthMiddleware(HeadWiseCostingGotGiven, HEAD_WISE_COSTING_GOT_GIVEN)} />
+                    <Route path="/plant-head-wise" component={AuthMiddleware(PlantWiseCostingGotGiven, PLANT_HEAD_WISE)} />
                     {/*  NEED TO ADD PATH FROM BACKEND */}
                     {/* <Route path="/simulation-insights" component={SimulationInsights} />                   MAY BE USE IN FUTURE*/}
                     <Route path="/rfq-listing" component={AuthMiddleware(RfqListing, RFQ)} />
