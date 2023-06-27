@@ -50,6 +50,7 @@ function MRSimulation(props) {
     const [noData, setNoData] = useState(false);
     const [showTooltip, setShowTooltip] = useState(false)
     const [basicRateviewTooltip, setBasicRateViewTooltip] = useState(false)
+    const [textFilterSearch, setTextFilterSearch] = useState('')
     const gridRef = useRef();
 
 
@@ -218,9 +219,11 @@ function MRSimulation(props) {
 
     const onFilterTextBoxChanged = (e) => {
         gridApi.setQuickFilter(e.target.value);
+        setTextFilterSearch(e?.target?.value)
     }
 
     const resetState = () => {
+        setTextFilterSearch('')
         gridApi?.setQuickFilter('');
         gridOptions?.columnApi?.resetColumnState();
         gridOptions?.api?.setFilterModel(null);
@@ -405,7 +408,7 @@ function MRSimulation(props) {
                                     <div className="ag-grid-wrapper height-width-wrapper">
                                         <div className="ag-grid-header d-flex align-items-center justify-content-between">
                                             <div className='d-flex align-items-center'>
-                                                <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
+                                                <input type="text" className="form-control table-search" id="filter-text-box" value={textFilterSearch} placeholder="Search " autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
                                                 <button type="button" className="user-btn float-right mr-2" title="Reset Grid" onClick={() => resetState()}>
                                                     <div className="refresh mr-0"></div>
                                                 </button>
