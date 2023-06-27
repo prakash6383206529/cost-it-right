@@ -34,6 +34,7 @@ import VerifySimulation from './VerifySimulation';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { autoCompleteDropdown, hideColumnFromExcel } from '../../common/CommonFunctions';
 import { MESSAGES } from '../../../config/message';
+import BDNonAssociatedSimulation from './SimulationPages/BDNonAssociatedSimulation';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -96,6 +97,7 @@ function Simulation(props) {
             setTechnology({ label: selectedTechnologyForSimulation?.label, value: selectedTechnologyForSimulation?.value })
             setEditWarning(applyEditCondSimulation(getValues('Masters').value))
             setShowMasterList(true)
+            setShowEditTable(false)
         }
         return () => {
             reactLocalStorage?.setObject('vendorData', [])
@@ -121,6 +123,13 @@ function Simulation(props) {
     useEffect(() => {
         renderListing('vendor')
     }, [vendorSelectList])
+
+    useEffect(() => {
+        if (showMasterList) {
+            setShowEditTable(false)
+        }
+    }, [showMasterList])
+
 
     const handleMasterChange = (value) => {
         dispatch(setFilterForRM({ costingHeadTemp: '', plantId: '', RMid: '', RMGradeid: '', Vendorid: '' }))
@@ -161,10 +170,19 @@ function Simulation(props) {
     }
 
     const handleAssociationChange = (value) => {
-        setShowMasterList(false)
+        if (value?.value === NON_ASSOCIATED) {
+            setShowMasterList(true)
+            setShowEditTable(false)
+        } else {
+
+            setShowMasterList(false)
+            setShowEditTable(false)
+        }
+
+
+        dispatch(setIsMasterAssociatedWithCosting(value?.value === ASSOCIATED))
         setTimeout(() => {
             setAssociation(value)
-            dispatch(setIsMasterAssociatedWithCosting(value?.value === ASSOCIATED))
             if (value?.value === NON_ASSOCIATED) {
                 setShowMasterList(true)
                 setSelectionForListingMasterAPI('Master')
@@ -492,9 +510,9 @@ function Simulation(props) {
         // setTableData([])
         setMaster({ label: master.label, value: master.value })
         setTechnology({ label: technology.label, value: technology.value })
-        setTimeout(() => {
-            setShowEditTable(true)
-        }, 200);
+        // setTimeout(() => {
+        //     setShowEditTable(true)
+        // }, 200);
 
         setSelectionForListingMasterAPI('Master')
         setTimeout(() => {
@@ -899,6 +917,7 @@ function Simulation(props) {
 
     const openEditPage = () => {
         setShowEditTable(true)
+        setShowMasterList(false)
     }
 
     const editMasterPage = (page) => {
@@ -924,7 +943,13 @@ function Simulation(props) {
             case MACHINERATE:
                 return <MRSimulation isOperation={true} cancelEditPage={cancelEditPage} list={tableData} isbulkUpload={isbulkUpload} technology={technology.label} master={master.value} rowCount={rowCount} tokenForMultiSimulation={tempObject} technologyId={technology.value} />
             case BOPDOMESTIC:
-                return <BDSimulation isOperation={true} cancelEditPage={cancelEditPage} list={tableData} isbulkUpload={isbulkUpload} technology={technology.label} master={master.value} rowCount={rowCount} tokenForMultiSimulation={tempObject} />
+                if (isMasterAssociatedWithCosting) {
+                    return <BDSimulation isOperation={true} cancelEditPage={cancelEditPage} list={tableData} isbulkUpload={isbulkUpload} technology={technology.label} master={master.value} rowCount={rowCount} tokenForMultiSimulation={tempObject} />
+                } else if (!isMasterAssociatedWithCosting) {
+                    return <BDNonAssociatedSimulation isOperation={true} cancelEditPage={cancelEditPage} list={tableData} isbulkUpload={isbulkUpload} technology={technology.label} master={master.value} rowCount={rowCount} tokenForMultiSimulation={tempObject} />
+                } else {
+                    return ''
+                }
             case BOPIMPORT:
                 return <BDSimulation isOperation={true} cancelEditPage={cancelEditPage} list={tableData} isbulkUpload={isbulkUpload} technology={technology.label} master={master.value} rowCount={rowCount} tokenForMultiSimulation={tempObject} />
             // case BOPIMPORT:
@@ -1017,7 +1042,7 @@ function Simulation(props) {
                                         />
                                     </div>
                                 </div>
-                                {(String(selectedMasterForSimulation?.value) === BOPDOMESTIC || String(selectedMasterForSimulation?.value) === BOPIMPORT) &&
+                                {(String(master?.value) === BOPDOMESTIC || String(master?.value) === BOPIMPORT) &&
                                     <div className="d-inline-flex justify-content-start align-items-center mr-3">
                                         <div className="flex-fills label">Association:</div>
                                         <div className="flex-fills hide-label pl-0">

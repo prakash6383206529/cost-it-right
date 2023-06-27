@@ -2493,7 +2493,7 @@ export const CRMHeads = [
   { label: "Staff Cost", value: 9 },
   { label: "EBIDTA", value: 10 },
   { label: "Finance Cost", value: 11 },
-  { label: "Depriciation", value: 12 },
+  { label: "Depreciation", value: 12 },
   { label: "PBT", value: 13 },
   { label: "Amortization", value: 14 },
 
@@ -2569,4 +2569,4 @@ export const RAW_MATERIAL_VENDOR_TYPE = Number(reactLocalStorage.getObject('vend
 export const VBC_VENDOR_TYPE = Number(reactLocalStorage.getObject('vendortype')[VENDOR_TYPE_VBC])
 
 //VERSION 
-export const VERSION = "V2.1.188";
+export const VERSION = "V2.1.190";
