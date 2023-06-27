@@ -11,7 +11,7 @@ import { getPlantSelectListByType, getVendorNameByVendorSelectList } from "../..
 import { defaultPageSize, EMPTY_DATA, searchCount, VBC_VENDOR_TYPE, ZBC } from "../../../config/constants"
 import { MESSAGES } from "../../../config/message"
 import { loggedInUserId } from "../../../helper"
-import { autoCompleteDropdown } from "../../common/CommonFunctions"
+import { autoCompleteDropdown, autoCompleteDropdownPart } from "../../common/CommonFunctions"
 import DayTime from "../../common/DayTimeWrapper"
 import LoaderCustom from "../../common/LoaderCustom"
 import NoContentFound from "../../common/NoContentFound"
@@ -22,12 +22,13 @@ import { getFormGridData, getRevisionNoFromPartId } from "../actions/ReportListi
 import { PaginationWrapper } from '../../common/commonPagination';
 import { getClientSelectList } from "../../masters/actions/Client"
 import { getProductGroupSelectList } from "../../masters/actions/Part"
+import { getPartSelectListWtihRevNo } from "../../masters/actions/Volume"
 
 
 
 const gridOptions = {}
 function CostReportForm(props) {
-    const { isDateMandatory, showVendor } = props
+    const { isDateMandatory, showVendor, gotGiven, plantWiseGotGiven } = props
     const [technology, setTechnology] = useState([])
     const [partName, setpartName] = useState('')
     const [part, setPart] = useState([]);
@@ -39,6 +40,7 @@ function CostReportForm(props) {
     const [toDate, setToDate] = useState('')
     const [minDate, setMinDate] = useState('')
     const [maxDate, setMaxDate] = useState('')
+    const [effectiveDate, setEffectiveDate] = useState('')
     const [gridApi, setGridApi] = useState(null);
     const [customerPoamSummary, setCustomerPoamSummary] = useState(props.customerPoamSummary ? true : false);
     const [productCategory, setProductCategory] = useState('');
@@ -124,9 +126,8 @@ function CostReportForm(props) {
     * @description Handle change for from date input field
     */
     const handleFromDate = (value) => {
-        setMinDate(value)
-        setFromDate(value)
-        dispatch(getFormGridData({ ...costReportFormData, fromDate: value }))
+        setEffectiveDate(value)
+        dispatch(getFormGridData({ ...costReportFormData, EffectiveDate: value }))
 
     }
 
@@ -290,10 +291,9 @@ function CostReportForm(props) {
                         setValue('Part', '')
                     } else {
                         setPart(newValue)
+                        dispatch(getFormGridData({ ...costReportFormData, part: newValue, isPlant: true, isCompany: false }))
                     }
                     if (response.data.Result) {
-
-
                         dispatch(getRevisionNoFromPartId(newValue.value, (res) => {
                             let Data = res && res.data && res.data.SelectList
                             setRevision(Data)
@@ -312,38 +312,56 @@ function CostReportForm(props) {
     }
     const handleVendorChange = (value) => {
         setVendor(value)
+        dispatch(getFormGridData({ ...costReportFormData, vendor: value, isPlant: true, isCompany: false }))
     }
 
     const plantHandleChange = (value) => {
         setPlant(value)
-        dispatch(getFormGridData({ ...costReportFormData, isPlant: true, isCompany: false }))
+        dispatch(getFormGridData({ ...costReportFormData, plant: value, isPlant: true, isCompany: false }))
     }
 
     /**
     * @Method filterList
     * @description get data from backend after entering three char
     */
+
     const filterList = async (inputValue) => {
         if (inputValue && typeof inputValue === 'string' && inputValue.includes(' ')) {
             inputValue = inputValue.trim();
         }
         const resultInput = inputValue.slice(0, searchCount)
         if (inputValue?.length >= searchCount && partName !== resultInput) {
-            const res = await getPartSelectListByTechnology(technology.value, resultInput);
-            setpartName(resultInput)
-            let partDataAPI = res?.data?.SelectList
-            if (inputValue) {
-                return autoCompleteDropdown(inputValue, partDataAPI, false, [], true)
+
+            if (props.partWithRevision) {
+                const res = await getPartSelectListWtihRevNo(resultInput, technology.value);
+                setpartName(resultInput)
+                let partDataAPI = res?.data?.DataList
+                if (inputValue) {
+                    return autoCompleteDropdownPart(inputValue, partDataAPI, false, [], true)
+                } else {
+                    return partDataAPI
+                }
             } else {
-                return partDataAPI
+                const res = await getPartSelectListByTechnology(technology.value, resultInput);
+                setpartName(resultInput)
+                let partDataAPI = res?.data?.SelectList
+                if (inputValue) {
+                    return autoCompleteDropdown(inputValue, partDataAPI, false, [], true)
+                } else {
+                    return partDataAPI
+                }
             }
         }
         else {
             if (inputValue?.length < searchCount) return false
             else {
-                let partData = reactLocalStorage.getObject('Data')
+                let partData = reactLocalStorage.getObject(props.partWithRevision ? 'PartData' : 'Data')
                 if (inputValue) {
-                    return autoCompleteDropdown(inputValue, partData, false, [], false)
+                    if (props.partWithRevision) {
+                        return autoCompleteDropdownPart(inputValue, partData, false, [], false)
+                    } else {
+                        return autoCompleteDropdown(inputValue, partData, false, [], false)
+                    }
                 } else {
                     return partData
                 }
@@ -439,7 +457,7 @@ function CostReportForm(props) {
                 <form onSubmit={handleSubmit(onSubmit)} noValidate>
                     {false && <LoaderCustom message={MESSAGES.DOWNLOADING_MESSAGE} customClass="loader-center mt-n2" />}
 
-                    <Row className="pt-2 mb-5">
+                    {!props.dateHide && <Row className="pt-2 mb-5">
                         <div className="form-group mb-0 col-md-3">
                             <div className="inputbox date-section">
                                 <DatePickerHookForm
@@ -496,7 +514,7 @@ function CostReportForm(props) {
                                 />
                             </div>
                         </div>
-                    </Row>
+                    </Row>}
 
 
                     {<Row>
@@ -518,7 +536,7 @@ function CostReportForm(props) {
                         </Col>}
 
 
-                        <Col md="3">
+                        {!plantWiseGotGiven && <Col md="3">
                             <SearchableSelectHookForm
                                 label={"Technology"}
                                 name={"Technology"}
@@ -533,9 +551,9 @@ function CostReportForm(props) {
                                 handleChange={handleTechnologyChange}
                                 errors={errors.Technology}
                             />
-                        </Col>
+                        </Col>}
 
-                        <Col md="3">
+                        {!plantWiseGotGiven && <Col md="3">
 
                             <AsyncSearchableSelectHookForm
                                 label={"Part No."}
@@ -555,10 +573,10 @@ function CostReportForm(props) {
                                 NoOptionMessage={MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN}
                             />
 
-                        </Col>
+                        </Col>}
 
 
-                        {!customerPoamSummary && <Col md="3">
+                        {!customerPoamSummary && !props.partWithRevision && !plantWiseGotGiven && <Col md="3">
                             <SearchableSelectHookForm
                                 label={"Revision Number"}
                                 name={"Revision"}
@@ -613,24 +631,24 @@ function CostReportForm(props) {
                                 mandatory={props.isPlantRequired ? true : false}
                                 handleChange={plantHandleChange}
                                 errors={errors.Plant}
-                                disabled={props.isSaleAndPurchase || props.isCompany ? false : (part.length === 0 ? true : false)}
+                                disabled={!plantWiseGotGiven ? (props.isSaleAndPurchase || props.isCompany ? false : (part.length === 0 ? true : false)) : false}
                             />
                         </Col>
 
 
-                        {(!showVendor || customerPoamSummary) && <Col md="3">
+                        {(!showVendor || customerPoamSummary || gotGiven) && !plantWiseGotGiven && <Col md="3">
                             <SearchableSelectHookForm
                                 label={"Customer (Code)"}
                                 name={"Customer"}
                                 placeholder={"Select"}
                                 Controller={Controller}
                                 control={control}
-                                rules={{ required: false }}
+                                rules={{ required: isDateMandatory }}
                                 register={register}
                                 // defaultValue={customer.length !== 0 ? customer : ""}
                                 options={renderListing("Customer")}
-                                mandatory={false}
-                                handleChange={() => { }}
+                                mandatory={isDateMandatory}
+                                handleChange={(e) => { dispatch(getFormGridData({ ...costReportFormData, customer: e })) }}
                                 errors={errors.Customer}
                                 disabled={props.isSaleAndPurchase ? false : (part.length === 0 ? true : false)}
                             />
@@ -652,6 +670,34 @@ function CostReportForm(props) {
                                 disabled={false}
                             />
                         </Col>}
+                        {props.effectiveDate && <div className="form-group mb-0 col-md-3">
+                            <div className="inputbox date-section">
+                                <DatePickerHookForm
+                                    name={`EffectiveDate`}
+                                    label={'Effective Date'}
+                                    selected={new Date(effectiveDate)}
+                                    handleChange={(date) => {
+                                        handleFromDate(date);
+                                    }}
+                                    rules={{ required: true }}
+                                    Controller={Controller}
+                                    control={control}
+                                    register={register}
+                                    showMonthDropdown
+                                    showYearDropdown
+                                    dateFormat="DD/MM/YYYY"
+                                    placeholder="Select date"
+                                    customClassName="withBorder"
+                                    className="withBorder"
+                                    autoComplete={"off"}
+                                    disabledKeyboardNavigation
+                                    onChangeRaw={(e) => e.preventDefault()}
+                                    // disabled={rowData.length !== 0}
+                                    mandatory={true}
+                                    errors={errors && errors.EffectiveDate}
+                                />
+                            </div>
+                        </div>}
 
 
                         {customerPoamSummary && <Col md="2" className="d-flex align-items-center">

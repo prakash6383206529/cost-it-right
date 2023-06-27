@@ -998,6 +998,8 @@ export const API = {
   approvedCostingByApprover: `${BASE_URL}/nfr/approved-nfr-by-approver`,
   getGotAndGivenDetails: `${BASE_URL}/reports/get-got-and-given-details`,
   getRawMaterialByNFRPart: `${BASE_URL}/nfr/get-raw-material-by-nfr-part`,
+  getCostingGotAndGivenDetails: `${BASE_URL}/reports/get-head-wise-costing-got-and-given-details`,
+  getPlantWiseGotAndGivenDetails: `${BASE_URL}/reports/get-plant-head-wise-details`,
 
 
   //SUB ASSEMBLY
@@ -1799,6 +1801,8 @@ export const PURCHASE_PROVISION_REPORT = 'Purchase Provision Report'
 export const CUSTOMER_POAM_SUMMARY_REPORT = 'Customer Poam Summary Report'
 export const MASTER_MOVEMENT_REPORT = 'Master Movement Report'
 export const GOT_GIVEN_REPORT = "Got Given Report"
+export const HEAD_WISE_COSTING_GOT_GIVEN = "Head Wise Costing Got Given"
+export const PLANT_HEAD_WISE = "Plant Head Wise"
 
 
 //export const SIMULATION_HISTORY = 'Simulation History'
@@ -2387,6 +2391,7 @@ export const GRADE = 'Grade';
 export const SPECIFICATION = 'Specification';
 export const DATE = 'Created Date';
 export const EMPTY_DATA = 'No Record Found';
+export const DATE_TYPE = 'Date';
 
 export const LEVEL0 = 'L0';
 export const LEVEL1 = 'L1';
@@ -2488,7 +2493,7 @@ export const CRMHeads = [
   { label: "Staff Cost", value: 9 },
   { label: "EBIDTA", value: 10 },
   { label: "Finance Cost", value: 11 },
-  { label: "Depriciation", value: 12 },
+  { label: "Depreciation", value: 12 },
   { label: "PBT", value: 13 },
   { label: "Amortization", value: 14 },
 

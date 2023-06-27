@@ -108,15 +108,7 @@
     // }
 }
 
-.goat-given {
-    td {
-        width: 33% !important;
 
-        span {
-            font-size: 14px;
-        }
-    }
-}
 
 .master-movement-report {
     min-height: calc(100vh - 268px);
@@ -151,5 +143,17 @@
     button {
         position: absolute;
         right: 0;
+    }
+}
+
+
+.product-rollout-container {
+
+    // background-color: $primaryBackground;
+    .seprate-box {
+        background-color: $primaryBackground;
+        box-shadow: 0 3px 5px rgba(55, 0, 0, 0.15), 0 0px 0px rgba(0, 0, 0, 0.02);
+        padding: 10px;
+        margin-bottom: 20px;
     }
 }
