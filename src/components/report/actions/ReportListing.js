@@ -412,22 +412,22 @@ export function getCostingGotAndGivenDetails(data, callback) {
             }
         }).catch((error) => {
             dispatch({ type: API_FAILURE })
-            // apiErrors(error)
+            apiErrors(error)
         })
     }
 }
 
-export function getCostingGotAndGivenDetailsPlantWise(data, callback) {
+export function getPlantWiseGotAndGivenDetails(data, callback) {
 
     return (dispatch) => {
-        const request = axios.get(`${API.getCostingGotAndGivenDetails}?plantId=${data.plantId}&partId=${data.partId}&vendorId=${data.vendorId}&customerId=${data.customerId}&effectiveDate=${data.effectiveDate}`, config(),)
+        const request = axios.get(`${API.getPlantWiseGotAndGivenDetails}?plantId=${data.plantId}&vendorId=${null}&customerId=${null}&technologyId=${null}&effectiveDate=${data.effectiveDate}`, config(),)
         request.then((response) => {
             if (response) {
                 callback(response)
             }
         }).catch((error) => {
             dispatch({ type: API_FAILURE })
-            // apiErrors(error)
+            apiErrors(error)
         })
     }
 }

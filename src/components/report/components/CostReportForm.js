@@ -670,7 +670,7 @@ function CostReportForm(props) {
                                 disabled={false}
                             />
                         </Col>}
-                        {props.partWithRevision && <div className="form-group mb-0 col-md-3">
+                        {props.effectiveDate && <div className="form-group mb-0 col-md-3">
                             <div className="inputbox date-section">
                                 <DatePickerHookForm
                                     name={`EffectiveDate`}
