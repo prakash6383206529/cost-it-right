@@ -401,7 +401,7 @@ class BulkUpload extends Component {
                                     const date = new Date();
                                     const shortDateFormat = date.toLocaleDateString(undefined, { dateStyle: 'short' });
                                     if (Number(shortDateFormat.charAt(0)) === Number(date.getMonth() + 1)) {
-                                        el = DayTime(el).format('YYYY-DD-MM 00:00:00')
+                                        el = DayTime(el).format('YYYY-MM-DD 00:00:00')
                                     }
                                 }
                                 if (fileHeads[i] === 'NoOfPcs' && typeof el == 'number') {
