@@ -2040,7 +2040,7 @@ const CostingSummaryTable = (props) => {
                                 //check here @ashok
                                 (data?.bestCost !== true) && data?.CostingHeading !== VARIANCE ?
                                   <td className={props?.isRfqCosting && data.status === APPROVED && !props.uniqueShouldCostingId.includes(data.costingId) ? 'finalize-cost' : ''} width={"32%"}>
-                                    {data.anyOtherCostTotal}
+                                    {checkForDecimalAndNull(data.anyOtherCostTotal, initialConfiguration.NoOfDecimalForPrice)}
                                   </td>
                                   : ""
 
