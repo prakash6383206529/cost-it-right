@@ -327,7 +327,7 @@ function OtherCostDrawer(props) {
                         <Row className="drawer-heading">
                             <Col>
                                 <div className={"header-wrapper left"}>
-                                    <h3>{"Other Cost"}</h3>
+                                    <h3>{"Add Other Cost"}</h3>
                                 </div>
                                 <div
                                     onClick={() => props.closeDrawer('cancel')}
