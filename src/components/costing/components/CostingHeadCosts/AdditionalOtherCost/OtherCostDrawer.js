@@ -338,7 +338,7 @@ function OtherCostDrawer(props) {
 
                         <form onSubmit={handleSubmit(onSubmit)}>
                             <Row>
-                                {<Col md="4">
+                                {initialConfiguration.IsShowCRMHead && <Col md="4">
                                     <SearchableSelectHookForm
                                         name={`crmHeadOtherCost`}
                                         type="text"
@@ -498,7 +498,7 @@ function OtherCostDrawer(props) {
                                 <Table className="table mb-0 forging-cal-table" size="sm">
                                     <thead>
                                         <tr>
-                                            <th>{`CRM Head`}</th>
+                                            {initialConfiguration.IsShowCRMHead && <th>{`CRM Head`}</th>}
                                             <th>{`Other Cost Description`}</th>
                                             {/* <th>{`Other Cost Type`}</th> */}
                                             <th>{`Other Cost Applicability`}</th>
@@ -511,7 +511,7 @@ function OtherCostDrawer(props) {
                                         {gridData && gridData.map((item, index) => {
                                             return (
                                                 <tr key={index} >
-                                                    <td>{item.CRMHead}</td>
+                                                    {initialConfiguration.IsShowCRMHead && <td>{item.CRMHead}</td>}
                                                     <td>{item.OtherCostDescription}</td>
                                                     {/* <td>{item.OtherCostType}</td> */}
                                                     <td>{item?.OtherCostApplicability}</td>
