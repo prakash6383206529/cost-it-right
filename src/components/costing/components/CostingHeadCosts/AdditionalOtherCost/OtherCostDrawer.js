@@ -454,7 +454,7 @@ function OtherCostDrawer(props) {
                                     />
 
                                 </Col>
-                                <Col md="5" className='pt-1'>
+                                <Col md="4" className='pt-1 d-flex'>
                                     {isEdit ? (
                                         <>
                                             <button
