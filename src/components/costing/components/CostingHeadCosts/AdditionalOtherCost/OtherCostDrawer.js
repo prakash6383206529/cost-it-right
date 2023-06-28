@@ -502,7 +502,7 @@ function OtherCostDrawer(props) {
                                             <th>{`Other Cost Description`}</th>
                                             {/* <th>{`Other Cost Type`}</th> */}
                                             <th>{`Other Cost Applicability`}</th>
-                                            <th>{'Percentage'}</th>
+                                            <th>{'Percentage (%)'}</th>
                                             <th>{`Cost`}</th>
                                             <th className='text-right'>{`Action`}</th>
                                         </tr>
