@@ -70,6 +70,7 @@ function ApprovalListing(props) {
   const [noData, setNoData] = useState(false)
   const [pageSize, setPageSize] = useState({ pageSize10: true, pageSize50: false, pageSize100: false })
   const [floatingFilterData, setFloatingFilterData] = useState({ ApprovalNumber: "", CostingNumber: "", PartNumber: "", PartName: "", VendorName: "", PlantName: "", TechnologyName: "", NetPOPriceNew: "", OldPOPriceNew: "", Reason: "", EffectiveDate: "", CreatedBy: "", CreatedOn: "", RequestedBy: "", RequestedOn: "" })
+  const [isSuperAdmin, setIsSuperAdmin] = useState(false)
 
   const isApproval = props.isApproval;
   let approvalGridData = isDashboard ? approvalList : approvalListDraft
@@ -81,6 +82,10 @@ function ApprovalListing(props) {
     component: 'costingApproval',
     location: "costing"
   }
+
+  useEffect(() => {
+    setIsSuperAdmin(userDetails()?.Role === "SuperAdmin")
+  }, [])
 
   useEffect(() => {
     if (props.activeTab === "3" || isDashboard) {
@@ -931,7 +936,7 @@ function ApprovalListing(props) {
                           class="user-btn approval-btn"
                           type='button'
                           onClick={sendForApproval}
-                          disabled={(isDashboard ? (approvalList && approvalList.length === 0) : (approvalListDraft && approvalListDraft.length === 0)) ? true : false}
+                          disabled={((isDashboard ? (approvalList && approvalList.length === 0) : (approvalListDraft && approvalListDraft.length === 0)) || isSuperAdmin) ? true : false}
                         >
                           <div className="send-for-approval mr-0" ></div>
                         </button>}

@@ -80,6 +80,7 @@ const CostingSummaryTable = (props) => {
   const [viewPackagingFreight, setViewPackagingFreight] = useState({})
   const [multipleCostings, setMultipleCostings] = useState([])
   const [isWarningFlag, setIsWarningFlag] = useState(false)
+  const [isSuperAdmin, setIsSuperAdmin] = useState(false)
   const [rmMBDetail, setrmMBDetail] = useState({})
   const [viewAtttachments, setViewAttachment] = useState([])
   const [pdfHead, setPdfHead] = useState(false);
@@ -132,7 +133,7 @@ const CostingSummaryTable = (props) => {
 
   useEffect(() => {
     applyPermission(topAndLeftMenuData, selectedTechnology)
-
+    setIsSuperAdmin(userDetails()?.Role === "SuperAdmin")
     return () => {
       dispatch(setCostingViewData([]))
     }
@@ -1234,7 +1235,7 @@ const CostingSummaryTable = (props) => {
                   !simulationMode && !props.isRfqCosting && <>
 
                     {(!viewMode && !isFinalApproverShow) && !props.isRfqCosting && (
-                      <button className="user-btn mr-1 mb-2 approval-btn" disabled={isWarningFlag} onClick={() => checkCostings()}>
+                      <button className="user-btn mr-1 mb-2 approval-btn" disabled={isWarningFlag || isSuperAdmin} onClick={() => checkCostings()}>
                         <div className="send-for-approval"></div>
                         {'Send For Approval'}
                       </button>
@@ -2561,7 +2562,7 @@ const CostingSummaryTable = (props) => {
                                     (data?.status === DRAFT) && (!pdfHead && !drawerDetailPDF) &&
                                     <button
                                       className="user-btn"
-                                      disabled={viewCostingData[index].IsApprovalLocked}
+                                      disabled={viewCostingData[index].IsApprovalLocked || isSuperAdmin}
                                       onClick={() => {
                                         sendForApprovalDown(data)
                                       }}

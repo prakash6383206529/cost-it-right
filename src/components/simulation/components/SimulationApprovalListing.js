@@ -42,6 +42,7 @@ function SimulationApprovalListing(props) {
     const [isApprovalDrawer, setIsApprovalDrawer] = useState(false);
     const [isPendingForApproval, setIsPendingForApproval] = useState(false);
     const [showFinalLevelButtons, setShowFinalLevelButton] = useState(false)
+    const [isSuperAdmin, setIsSuperAdmin] = useState(false)
 
     const dispatch = useDispatch()
     const { simualtionApprovalList, simualtionApprovalListDraft } = useSelector(state => state.simulation)
@@ -131,6 +132,9 @@ function SimulationApprovalListing(props) {
         minValidYear: 2000,
     };
 
+    useEffect(() => {
+        setIsSuperAdmin(userDetails()?.Role === "SuperAdmin")
+    }, [])
 
     useEffect(() => {
         if (props.activeTab === '2' || isDashboard) {
@@ -710,7 +714,7 @@ function SimulationApprovalListing(props) {
                                             onClick={sendForApproval}
                                             // disabled={selectedRowData && selectedRowData.length === 0 ? true : disableApproveButton ? true : false}
                                             title="Send For Approval"
-                                            disabled={(isDashboard ? (simualtionApprovalList && simualtionApprovalList.length === 0) : (simualtionApprovalListDraft && simualtionApprovalListDraft.length === 0)) ? true : false}
+                                            disabled={((isDashboard ? (simualtionApprovalList && simualtionApprovalList.length === 0) : (simualtionApprovalListDraft && simualtionApprovalListDraft.length === 0)) || isSuperAdmin) ? true : false}
                                         >
                                             <div className="send-for-approval"></div>
                                         </button>}

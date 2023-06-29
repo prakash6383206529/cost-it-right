@@ -106,7 +106,7 @@ function AddAssemblyOperation(props) {
     const tabData = RMCCTabData[0]
     const surfaceTabData = SurfaceTabData && SurfaceTabData[0]
     const overHeadAndProfitTabData = OverheadProfitTabData[0]
-    const discountAndOtherTabData = DiscountCostData[0]
+    const discountAndOtherTabData = DiscountCostData
     const packageAndFreightTabData = PackageAndFreightTabData && PackageAndFreightTabData[0]
     const toolTabData = ToolTabData && ToolTabData[0]
 
