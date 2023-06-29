@@ -374,10 +374,10 @@ function GotGivenListing(props) {
                     PartNumber: Data.PartNumber,
                     PartName: Data.PartName,
                     RevisionNumber: Data.RevisionNumber,
-                    PlantName: Data.PlantName,
+                    PlantName: Data.Plant,
                     PlantAddress: Data.PlantAddress,
-                    VendorName: Data.VendorName,
-                    CustomerName: Data.CustomerName,
+                    VendorName: Data.Vendor,
+                    CustomerName: Data.Customer,
                     BudgetedQuantity: Data.CBCBudgetedQuantity,
                     ApprovedQuantity: Data.CBCApprovedQuantity,
                     EffectiveDate: Data.SelectedEffectiveDate ? DayTime(Data.SelectedEffectiveDate).format('DD/MM/YYYY') : '-',
@@ -411,9 +411,9 @@ function GotGivenListing(props) {
                     </tr>
                 </thead>
             </Table>
-            <Table responsive className='table-bordered mb-0'>
+            <Table responsive className='table-bordered mb-0 got-given-listing'>
                 <tbody>
-                    <tr>
+                    <tr className='sub-headers'>
                         <td></td>
                         <td colSpan={tableData ? (tableData[0]?.fields?.length) / 2 : 5} className='text-center font-weight-500 font-size-16'>Got Details</td>
                         <td colSpan={tableData ? (tableData[0]?.fields?.length) / 2 : 5} className='text-center font-weight-500 font-size-16'>Given Details</td>

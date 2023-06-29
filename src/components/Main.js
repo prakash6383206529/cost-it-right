@@ -39,7 +39,7 @@ import {
   OVERHEAD_AND_PROFIT, PART, PLANT, RAW_MATERIAL, UOM, USER, VENDOR,
   REASON, VOLUME, CLIENT, EXCHANGE_RATE, TAX, COSTING_PATH, APPROVAL_LISTING_PATH, COSTING_BREAKUP_DETAILS_REPORT, APPROVAL_APP,
   APPROVAL_SUMMARY_PATH, COSTING_BULK_UPLOAD, COSTING_SUMMARY_, COSTING_SUMMARY, Simulation_Page, Simulation_Upload, API,
-  DASHBOARDWITHGRAPH_PATH, SIMULATION_APPROVAL_SUMMARY_PATH, DASHBOARD_PATH, DASHBOARD_PATH_SECOND, SHEET_METAL, SIMULATION_PATH, SIMULATION_HISTORY_PATH, USER_PATH, RFQ_LISTING, RFQ, COST_RATIO_REPORT, BUDGETING, NFR_LISTING, NFR, MASTER_BENCHMARK_REPORT, COST_MOVEMENT_REPORT, SUPPLIER_CONTRIBUTION_REPORT, SALE_PROVISION_REPORT, PURCHASE_PROVISION_REPORT, CUSTOMER_POAM_REPORT, HEAD_WISE_COSTING_GOT_GIVEN, PLANT_HEAD_WISE
+  DASHBOARDWITHGRAPH_PATH, SIMULATION_APPROVAL_SUMMARY_PATH, DASHBOARD_PATH, DASHBOARD_PATH_SECOND, SHEET_METAL, SIMULATION_PATH, SIMULATION_HISTORY_PATH, USER_PATH, RFQ_LISTING, RFQ, COST_RATIO_REPORT, BUDGETING, NFR_LISTING, NFR, MASTER_BENCHMARK_REPORT, COST_MOVEMENT_REPORT, SUPPLIER_CONTRIBUTION_REPORT, SALE_PROVISION_REPORT, PURCHASE_PROVISION_REPORT, CUSTOMER_POAM_REPORT, HEAD_WISE_COSTING_GOT_GIVEN, PLANT_HEAD_WISE, PRODUCT_ROLLOUT
 } from '../config/constants'
 import ApprovalSummary from './costing/components/approval/ApprovalSummary'
 import CostingSummaryBulkUpload from './costing/components/CostingSummaryBulkUpload'
@@ -69,6 +69,7 @@ import BudgetMaster from './masters/budget-master'
 import GotGivenReport from './report/components/GotGivenReport/GotGivenReport'
 import PipdReport from './report/components/PIPDReport/PipdReport'
 import PlantWiseCostingGotGiven from './report/components/PlantWiseCostingGotGiven/PlantWiseCostingGotGiven'
+import ProductRollout from './report/components/ProductRollout'
 const CustomHeader = {
   'Content-Type': 'application/x-www-form-urlencoded',
   'Access-Control-Allow-Origin': '*',
@@ -209,12 +210,13 @@ class Main extends Component {
         location.pathname === SIMULATION_PATH ||
         location.pathname === SIMULATION_HISTORY_PATH ||
         location.pathname === USER_PATH ||
-        location.pathname === RFQ_LISTING ? 'w-100' : '' ||
-          location.pathname === NFR_LISTING ? 'w-100' : ''
+        location.pathname === RFQ_LISTING ||
+        location.pathname === PRODUCT_ROLLOUT ||
+        location.pathname === NFR_LISTING ? 'w-100' : ''
 
     //  ADD DASHBPOARD CLASS FOR DASHBOARD PAGE ONLY
     const DashboardPage = location.pathname === DASHBOARDWITHGRAPH_PATH ? 'Dashboard-page' : '';
-    const DashboardMainPage = location.pathname === DASHBOARD_PATH || location.pathname === DASHBOARD_PATH_SECOND ? 'Dashboard-page' : ''
+    const DashboardMainPage = location.pathname === DASHBOARD_PATH || location.pathname === DASHBOARD_PATH_SECOND || location.pathname === PRODUCT_ROLLOUT ? 'Dashboard-page' : ''
     //  ADD DASHBPOARD CLASS FOR DASHBOARD PAGE ONLY
 
 
@@ -268,6 +270,7 @@ class Main extends Component {
                 location.pathname !== USER_PATH &&
                 location.pathname !== RFQ_LISTING &&
                 location.pathname !== NFR_LISTING &&
+                location.pathname !== PRODUCT_ROLLOUT &&
                 (
                   <LeftMenu {...this.props} />
                 )}
@@ -366,6 +369,7 @@ class Main extends Component {
                     <Route path="/plant-head-wise" component={AuthMiddleware(PlantWiseCostingGotGiven, PLANT_HEAD_WISE)} />
                     <Route path="/master-cost-movement-report" component={MasterCostMovement} />
                     <Route path="/pipd-report" component={PipdReport} />
+                    <Route path="/product-rollout" component={ProductRollout} />
                     {/*  NEED TO ADD PATH FROM BACKEND */}
                     <Route path="/simulation-insights" component={SimulationInsights} />
                     <Route path="/rfq-listing" component={AuthMiddleware(RfqListing, RFQ)} />

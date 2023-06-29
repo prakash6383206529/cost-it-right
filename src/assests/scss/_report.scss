@@ -151,9 +151,42 @@
 
     // background-color: $primaryBackground;
     .seprate-box {
-        background-color: $primaryBackground;
+        background-color: $white;
         box-shadow: 0 3px 5px rgba(55, 0, 0, 0.15), 0 0px 0px rgba(0, 0, 0, 0.02);
         padding: 10px;
         margin-bottom: 20px;
+    }
+
+    .part-usage-container {
+        .inner-container {
+            min-height: 80px;
+            position: relative;
+            border-right: 1px solid $borderColor;
+
+            &:last-child {
+                border-right: none;
+            }
+
+            h6 {
+                font-size: 15px;
+            }
+
+            h1 {
+                position: absolute;
+                bottom: 0;
+                margin-bottom: 0;
+                left: 0;
+                right: 0;
+            }
+        }
+    }
+}
+
+.got-given-listing {
+
+    td:nth-child(1),
+    td:nth-child(7),
+    .sub-headers td:nth-child(2) {
+        border-right: 1px solid $headingblack;
     }
 }

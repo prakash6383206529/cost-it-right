@@ -11,18 +11,23 @@ function HeadWiseCostingGotGiven(props) {
     const dispatch = useDispatch()
 
     const [reportListing, setReportListing] = useState(false)
-
+    const [disableBtn, setDisableBtn] = useState(true)
     const [isDataClear, setIsDataClear] = useState(false)
-    const gridData = useSelector(state => state.report.costReportFormGridData && state.report.costReportFormGridData.gridData ? state.report.costReportFormGridData.gridData : [])
-
+    const formData = useSelector(state => state.report.costReportFormGridData);
     useEffect(() => {
         dispatch(getFormGridData({}))
+        setDisableBtn(true)
     }, [])
+    useEffect(() => {
+        setDisableBtn(!(formData.EffectiveDate && formData.customer && formData.plant && formData.part && formData.vendor))
+
+    }, [formData])
     const runReport = () => {
         setReportListing(true)
     }
     const closeDrawer = (value) => {
         setReportListing(false)
+        dispatch(getFormGridData({}))
         setIsDataClear(true)
     }
 
@@ -34,7 +39,7 @@ function HeadWiseCostingGotGiven(props) {
             <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
                 <Col md="12" className="text-right bluefooter-butn mt-3">
                     <div className="d-flex justify-content-end bd-highlight w100 my-2 align-items-center">
-                        <button type="button" className={"user-btn save-btn"} disabled={false} onClick={runReport}> <div className={"Run-icon"}></div>RUN REPORT</button>
+                        <button type="button" className={"user-btn save-btn"} disabled={disableBtn} onClick={runReport} > <div className={"Run-icon"}></div>RUN REPORT</button>
                     </div>
                 </Col>
             </Row>
