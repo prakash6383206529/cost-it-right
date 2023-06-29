@@ -327,7 +327,9 @@ function TabDiscountOther(props) {
               HundiOrDiscountPercentage: costDetail.DiscountCostDetails[0].Value !== null ? checkForNull(costDetail.DiscountCostDetails[0].Value) : '',
               //DiscountCostType: OtherCostDetails.DiscountCostType !== null ? OtherCostDetails.DiscountCostType : '',
               // OtherCostApplicability: OtherCostDetails.OtherCostApplicability,
-              DiscountApplicability: costDetail.DiscountCostDetails[0].ApplicabilityType
+              DiscountApplicability: costDetail.DiscountCostDetails[0].ApplicabilityType,
+              totalNpvCost: discountObj?.totalNpvCost ? discountObj?.totalNpvCost : costDetail?.NetNpvCost,
+              totalConditionCost: discountObj?.totalConditionCost ? discountObj?.totalConditionCost : costDetail?.NetConditionCost,
             }
             dispatch(setDiscountCost(discountValues, () => { }))
 
@@ -375,7 +377,9 @@ function TabDiscountOther(props) {
       HundiOrDiscountPercentage: discountObj?.HundiOrDiscountPercentage !== null ? checkForNull(discountObj?.HundiOrDiscountPercentage) : '',
       DiscountCostType: discountObj?.DiscountCostType !== null ? discountObj?.DiscountCostType : '',
       // OtherCostApplicability: discountObj?.OtherCostApplicability,
-      DiscountApplicability: discountObj?.DiscountApplicability
+      DiscountApplicability: discountObj?.DiscountApplicability,
+      totalNpvCost: discountObj?.totalNpvCost ? discountObj?.totalNpvCost : totalNpvCost,
+      totalConditionCost: discountObj?.totalConditionCost ? discountObj?.totalConditionCost : totalConditionCost,
     }
     dispatch(setDiscountCost(discountValues, () => { }))
 
