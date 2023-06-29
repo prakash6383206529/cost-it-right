@@ -165,7 +165,7 @@ function TabPackagingFreight(props) {
       const tabData = RMCCTabData[0]
       const surfaceTabData = SurfaceTabData[0]
       const overHeadAndProfitTabData = OverheadProfitTabData[0]
-      const discountAndOtherTabData = DiscountCostData[0]
+      const discountAndOtherTabData = DiscountCostData
       const packageAndFreightTabData = PackageAndFreightTabData && PackageAndFreightTabData[0]
       const toolTabData = ToolTabData && ToolTabData[0]
 
@@ -179,7 +179,8 @@ function TabPackagingFreight(props) {
         "TotalCost": netPOPrice,
         "CostingNumber": costData.CostingNumber,
         // "NetPackagingAndFreight": PackageAndFreightTabData && PackageAndFreightTabData[0].NetPackagingAndFreight,
-        "CostingPartDetails": PackageAndFreightTabData && PackageAndFreightTabData[0]?.CostingPartDetails
+        "CostingPartDetails": PackageAndFreightTabData && PackageAndFreightTabData[0]?.CostingPartDetails,
+        "BasicRate": discountAndOtherTabData?.BasicRateINR,
       }
       if (costData.IsAssemblyPart === true && !partType) {
         if (!CostingViewMode) {

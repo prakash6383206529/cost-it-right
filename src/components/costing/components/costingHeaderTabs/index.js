@@ -123,6 +123,7 @@ function CostingHeaderTabs(props) {
 
     // USED FOR OVERHEAD AND PROFIT WHEN CLICKED ON OTHER TABS WITHOUT SAVING
     if (!CostingViewMode && Object.keys(ComponentItemOverheadData).length > 0 && ComponentItemOverheadData.IsOpen !== false && activeTab !== '3' & checkIsOverheadProfitChange) {
+      const discountAndOtherTabData = DiscountCostData
 
       let reqData = {
         "CostingId": ComponentItemOverheadData.CostingId,
@@ -148,6 +149,7 @@ function CostingHeaderTabs(props) {
             checkForNull(ComponentItemOverheadData?.CostingPartDetails?.ICCCost) +
             checkForNull(ComponentItemOverheadData?.CostingPartDetails?.PaymentTermCost),
         },
+        "BasicRate": discountAndOtherTabData?.BasicRateINR,
       }
       if (ComponentItemOverheadData.IsAssemblyPart) {
         dispatch(saveAssemblyOverheadProfitTab(reqData, res => {
@@ -166,6 +168,7 @@ function CostingHeaderTabs(props) {
 
 
     }
+    const discountAndOtherTabData = DiscountCostData
 
     // USED FOR PACKAGE AND FREIGHT WHEN CLICKED ON OTHER TABS WITHOUT SAVING
     if (!CostingViewMode && Object.keys(ComponentItemPackageFreightData).length > 0 && ComponentItemPackageFreightData.IsChanged === true && activeTab !== '4' && Object.keys(ComponentItemPackageFreightData).length > 0 && ComponentItemPackageFreightData.IsChanged === true && checkIsFreightPackageChange) {
@@ -181,6 +184,7 @@ function CostingHeaderTabs(props) {
         "CostingNumber": costData.CostingNumber,
         //"NetPackagingAndFreight": ComponentItemPackageFreightData.NetPackagingAndFreight,
         "CostingPartDetails": ComponentItemPackageFreightData?.CostingPartDetails,
+        "BasicRate": discountAndOtherTabData?.BasicRateINR,
       }
       dispatch(saveCostingPackageFreightTab(data, res => {
         callAssemblyAPi(4)
@@ -203,6 +207,7 @@ function CostingHeaderTabs(props) {
         "CostingPartDetails": ComponentItemToolData?.CostingPartDetails,
         "EffectiveDate": CostingEffectiveDate,
         "TotalCost": netPOPrice,
+        "BasicRate": discountAndOtherTabData?.BasicRateINR,
       }
       dispatch(saveToolTab(data, res => {
         callAssemblyAPi(5)
