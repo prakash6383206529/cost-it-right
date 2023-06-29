@@ -46,6 +46,7 @@ import {
   SET_YOY_COST_GRID,
   SET_YOY_COST_GRID_FOR_SAVE,
   SET_OVERHEAD_PROFIT_ICC,
+  SET_OTHER_COST,
 } from '../../../config/constants'
 import { apiErrors } from '../../../helper/util'
 import { MESSAGES } from '../../../config/message'
@@ -2490,6 +2491,17 @@ export function setNPVData(data) {
     });
   }
 };
+export function setOtherCostData(data) {
+  console.log('data: ', data);
+  return (dispatch) => {
+    dispatch({
+      type: SET_OTHER_COST,
+      payload: data,
+    });
+  }
+};
+
+
 
 /**
  * @method setYOYCostGrid
