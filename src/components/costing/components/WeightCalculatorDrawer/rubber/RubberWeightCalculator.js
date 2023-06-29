@@ -620,7 +620,7 @@ function RubberWeightCalculator(props) {
                                             Controller={Controller}
                                             control={control}
                                             register={register}
-                                            mandatory={false}
+                                            mandatory={true}
                                             rules={{
                                                 required: false,
                                                 validate: { checkWhiteSpaces },
@@ -642,7 +642,7 @@ function RubberWeightCalculator(props) {
                                             Controller={Controller}
                                             control={control}
                                             register={register}
-                                            mandatory={false}
+                                            mandatory={true}
                                             options={dropDown}
                                             handleChange={handleType}
                                             defaultValue={''}
@@ -661,7 +661,7 @@ function RubberWeightCalculator(props) {
                                             Controller={Controller}
                                             control={control}
                                             register={register}
-                                            mandatory={false}
+                                            mandatory={true}
                                             rules={{
                                                 required: false,
                                                 pattern: {

@@ -1353,3 +1353,21 @@ export function saveRawMaterialCalculationForRubberCompound(data, callback) {
     });
   };
 }
+
+
+export function wiringHarnessBulkUploadCosting(data, callback) {
+  return (dispatch) => {
+    const request = axios.post(API.uploadWiringHarnessCosting, data, config());
+    request.then((response) => {
+      if (response.status === 200) {
+        callback(response);
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      if (error?.response?.status === 400) {
+        callback(error.response)
+      }
+      apiErrors(error);
+    });
+  };
+}
