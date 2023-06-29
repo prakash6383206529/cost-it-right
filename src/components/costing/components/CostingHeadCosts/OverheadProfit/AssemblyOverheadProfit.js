@@ -87,7 +87,7 @@ function AssemblyOverheadProfit(props) {
     const packageAndFreightTabData = PackageAndFreightTabData && PackageAndFreightTabData[0]
     const toolTabData = ToolTabData && ToolTabData[0]
 
-    const discountAndOtherTabData = DiscountCostData && DiscountCostData[0]
+    const discountAndOtherTabData = DiscountCostData
     let reqData = {
       "CostingId": item.CostingId,
       "LoggedInUserId": loggedInUserId(),
@@ -108,6 +108,7 @@ function AssemblyOverheadProfit(props) {
       },
       "EffectiveDate": CostingEffectiveDate,
       "TotalCost": netPOPrice,
+      "BasicRate": discountAndOtherTabData?.BasicRateINR,
     }
 
     if (!CostingViewMode && checkIsOverheadProfitChange) {

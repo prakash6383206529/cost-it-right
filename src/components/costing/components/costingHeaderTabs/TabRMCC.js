@@ -433,6 +433,7 @@ function TabRMCC(props) {
 
   const updateCostingValuesInStructure = () => {
     //MAKING THIS MAP ARRAY COMMON
+    let stCostingData = findSurfaceTreatmentData(ComponentItemData)
     const mapArray = (data) => data.map(item => {
       let newItem = item
       let updatedArr = reactLocalStorage.getObject('costingArray')
@@ -460,6 +461,7 @@ function TabRMCC(props) {
       newItem.CostingPartDetails.CostingRawMaterialsCost = obj?.CostingPartDetails?.CostingRawMaterialsCost;
       newItem.CostingPartDetails.CostingBoughtOutPartCost = obj?.CostingPartDetails?.CostingBoughtOutPartCost;
       newItem.CostingPartDetails.CostingConversionCost = obj?.CostingPartDetails?.CostingConversionCost;
+      newItem.CostingPartDetails.BasicRate = costData.IsAssemblyPart ? (stCostingData && Object.keys(stCostingData).length > 0) ? (checkForNull(stCostingData?.CostingPartDetails?.NetSurfaceTreatmentCost) + checkForNull(ComponentItemData?.CostingPartDetails?.TotalCalculatedRMBOPCCCost)) : checkForNull(obj?.CostingPartDetails?.TotalCalculatedRMBOPCCCost) : netPOPrice;
       // newItem?.CostingPartDetails?.BOPHandlingFixed = checkForNull(obj?.CostingPartDetails?.BOPHandlingFixed);
 
 
@@ -985,7 +987,7 @@ function TabRMCC(props) {
           newItem.CostingPartDetails.TotalOperationCostPerAssembly = checkForNull(obj?.CostingPartDetails?.TotalOperationCostPerAssembly)
           newItem.CostingPartDetails.TotalOperationCostSubAssembly = checkForNull(obj?.CostingPartDetails?.TotalOperationCostSubAssembly)
           newItem.CostingPartDetails.TotalOperationCostComponent = checkForNull(obj?.CostingPartDetails?.TotalOperationCostComponent)
-          //Operation for subassembly key will come here
+          //Operation for subassembly key will come here 
           newItem.CostingPartDetails.TotalCalculatedRMBOPCCCost = checkForNull(obj?.CostingPartDetails?.TotalCalculatedRMBOPCCCost)
           newItem.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity = checkForNull(obj?.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity)
           newItem.CostingPartDetails.IsRMCutOffApplicable = obj?.CostingPartDetails?.IsRMCutOffApplicable
@@ -1409,7 +1411,7 @@ function TabRMCC(props) {
         "NetToolCost": ComponentItemData?.CostingPartDetails?.TotalToolCost,
         "NetTotalRMBOPCC": ComponentItemData?.CostingPartDetails?.TotalCalculatedRMBOPCCCost,
         "TotalCost": costData.IsAssemblyPart ? (stCostingData && Object.keys(stCostingData).length > 0) ? (checkForNull(stCostingData?.CostingPartDetails?.NetSurfaceTreatmentCost) + checkForNull(ComponentItemData?.CostingPartDetails?.TotalCalculatedRMBOPCCCost)) : ComponentItemData?.CostingPartDetails?.TotalCalculatedRMBOPCCCost : netPOPrice,
-        "BasicRate": costData.IsAssemblyPart ? (stCostingData && Object.keys(stCostingData).length > 0) ? (checkForNull(stCostingData?.CostingPartDetails?.NetSurfaceTreatmentCost) + checkForNull(ComponentItemData?.CostingPartDetails?.TotalCalculatedRMBOPCCCost)) : ComponentItemDiscountData?.CostingPartDetails?.OtherCostDetails?.BasicRateINR : ComponentItemDiscountData?.CostingPartDetails?.OtherCostDetails?.BasicRateINR,
+        "BasicRate": costData.IsAssemblyPart ? (stCostingData && Object.keys(stCostingData).length > 0) ? (checkForNull(stCostingData?.CostingPartDetails?.NetSurfaceTreatmentCost) + checkForNull(ComponentItemData?.CostingPartDetails?.TotalCalculatedRMBOPCCCost)) : ComponentItemData?.CostingPartDetails?.TotalCalculatedRMBOPCCCost : netPOPrice,
         "LoggedInUserId": loggedInUserId(),
         "EffectiveDate": CostingEffectiveDate,
         "IsSubAssemblyComponentPart": costData.IsAssemblyPart,

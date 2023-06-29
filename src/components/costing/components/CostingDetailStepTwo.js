@@ -314,7 +314,6 @@ function CostingDetailStepTwo(props) {
    * @description SET COSTS FOR TOP HEADER FROM DISCOUNT AND COST
    */
   const setHeaderDiscountTab = (data, headerCostData = {}, CostingData = {}) => {
-    console.log('data: ', data);
     if (!CostingViewMode) {
       const headerIndex = 0;
       if (CostingDataList && CostingDataList.length > 0 && CostingDataList[headerIndex].CostingId === undefined) return false;
@@ -343,6 +342,8 @@ function CostingDetailStepTwo(props) {
           HundiOrDiscountValue: checkForNull(discountedCost),
           AnyOtherCost: checkForNull(data.AnyOtherCost),
           HundiOrDiscountPercentage: checkForNull(data.HundiOrDiscountPercentage),
+          totalNpvCost: data.totalNpvCost,
+          totalConditionCost: data.totalConditionCost
         }
         dispatch(setDiscountCost(discountValues, () => { }))
         OverAllCost = checkForNull(tempData.NetTotalRMBOPCC) +
