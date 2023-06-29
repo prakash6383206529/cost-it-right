@@ -1044,6 +1044,7 @@ export const API = {
   saveOutsourcingData: `${BASE_URL}/nfr/save-nfr-costing-outsorcing-details`,
   getNFRCostingOutsourcingDetails: `${BASE_URL}/nfr/get-nfr-costing-outsorcing-details`,
   getRMFromNFR: `${BASE_URL}/nfr/get-nfr-part-wise-raw-materials`,
+  pushNfrRmBopOnSap: `${BASE_URL}/nfr/push-nfr-rm-bop-on-sap`,
 
 
   //SUB ASSEMBLY
@@ -1736,6 +1737,7 @@ export const GET_NFR_SELECT_LIST = 'GET_NFR_SELECT_LIST'
 
 // NFR
 export const NFR_DETAILS_FOR_DISCOUNT = 'NFR_DETAILS_FOR_DISCOUNT'
+export const SET_OPEN_ALL_TABS = 'SET_OPEN_ALL_TABS'
 
 //COSTING STATUS
 export const GET_COSTING_STATUS = 'GET_COSTING_STATUS'

@@ -20,7 +20,7 @@ import { checkForDecimalAndNull, checkForNull, loggedInUserId, CheckIsCostingDat
 import { EMPTY_GUID, LEVEL1 } from '../../../../../config/constants';
 import Toaster from '../../../../common/Toaster';
 import { MESSAGES } from '../../../../../config/message';
-import { ViewCostingContext } from '../../CostingDetails';
+import { IsNFR, ViewCostingContext } from '../../CostingDetails';
 import { createToprowObjAndSave, errorCheck, errorCheckObject, findSurfaceTreatmentData } from '../../../CostingUtil';
 import _ from 'lodash';
 
@@ -37,15 +37,20 @@ function PartCompoment(props) {
 
   const dispatch = useDispatch()
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
-  const { ComponentItemDiscountData, CloseOpenAccordion, ErrorObjRMCC, ErrorObjOverheadProfit } = useSelector(state => state.costing)
+  const { ComponentItemDiscountData, CloseOpenAccordion, ErrorObjRMCC, ErrorObjOverheadProfit, openAllTabs } = useSelector(state => state.costing)
 
   const costData = useContext(costingInfoContext);
   const CostingViewMode = useContext(ViewCostingContext);
   const netPOPrice = useContext(NetPOPriceContext);
+  const isNFR = useContext(IsNFR);
 
   const toggle = (BOMLevel, PartNumber, IsOpen, AssemblyPartNumber) => {
     let isOpen = IsOpen
     if (CheckIsCostingDateSelected(CostingEffectiveDate)) return false;
+    if (isNFR && !openAllTabs) {
+      Toaster.warning("All Raw Material's price has not added in the Raw Material master against this vendor and plant.")
+      return false;
+    }
     let tempErrorObjRMCC = { ...ErrorObjRMCC }
     delete tempErrorObjRMCC?.bopGridFields
 
