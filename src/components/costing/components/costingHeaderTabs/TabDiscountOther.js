@@ -34,6 +34,7 @@ import ConditionCosting from '../CostingHeadCosts/AdditionalOtherCost/ConditionC
 import AddConditionCosting from '../CostingHeadCosts/AdditionalOtherCost/AddConditionCosting';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import OtherCostDrawer from '../CostingHeadCosts/AdditionalOtherCost/OtherCostDrawer'
+import OtherCostTable from '../CostingHeadCosts/AdditionalOtherCost/OtherCosttTable';
 let counter = 0;
 function TabDiscountOther(props) {
   // ********* INITIALIZE REF FOR DROPZONE ********
@@ -54,6 +55,7 @@ function TabDiscountOther(props) {
   const [isDisable, setIsDisable] = useState(false)
   const [npvAcc, setNpvAcc] = useState(false)
   const [conditionAcc, setConditionAcc] = useState(false)
+  const [otherCostAcc, setOtherCotAcc] = useState(false)
   const dispatch = useDispatch()
   let history = useHistory();
   const costData = useContext(costingInfoContext);
@@ -83,6 +85,7 @@ function TabDiscountOther(props) {
   const [nfrListing, setNfrListing] = useState(false)
   const [openCloseOtherCost, setOpenCloseOtherCost] = useState(false)
   const { subAssemblyTechnologyArray } = useSelector(state => state.subAssembly)
+  const { otherCostData } = useSelector(state => state.costing)
   const [otherCostArray, setOtherCostArray] = useState([])
   const isNFR = useContext(IsNFR);
 
@@ -1151,40 +1154,7 @@ function TabDiscountOther(props) {
               <div className="shadow-lgg login-formg">
                 {/* //  check here @ashok */}
                 <Row>
-                  <Col md={3}>
-
-                    {(otherCostType.value === 'Percentage' || Object.keys(otherCostType).length === 0) && <TooltipCustom disabledIcon={true} id="other-cost" tooltipText={"Other Cost = Sum of drawer total other cost"} />}
-                    <TextFieldHookForm
-                      label="Other Cost"
-                      name={"AnyOtherCost"}
-                      id="other-cost"
-                      Controller={Controller}
-                      control={control}
-                      register={register}
-                      mandatory={false}
-                      rules={{
-                        //required: true,
-                        validate: { number, checkWhiteSpaces, decimalNumberLimit6 },
-                      }}
-                      handleChange={(e) => {
-                        e.preventDefault();
-                        handleAnyOtherCostChange(e);
-                      }}
-                      defaultValue={""}
-                      className=""
-                      customClassName={"withBorder"}
-                      errors={errors.AnyOtherCost}
-                      disabled={CostingViewMode || otherCostType.value === 'Percentage' || Object.keys(otherCostType).length === 0 ? true : false}
-                    />
-                  </Col>
-                  <Col md={3} className=' pl-0 mt-1 pt-2'> <button
-                    type="button"
-                    className={`${CostingViewMode ? 'View' : 'additional-add'} mt-4 mb-15`}
-                    onClick={() => handleOtherCostdrawer()}
-                    title={CostingViewMode ? 'View Other Cost' : 'Add Other Cost'}
-                  >
-                  </button></Col>
-                  <Col md={6}>
+                  <Col md={12}>
                     <div className='tab-disount-total-cost mt-4'>
                       <span >Total Cost:</span>
                       <TooltipCustom width={"300px"} disabledIcon={true} id={'total-cost-tab-discount'} tooltipText={'Total Cost = Net RM BOP CC + SurfaceTreatment Cost + Overheads&Profit Cost + Packaging&Freight Cost + Tool Cost'} />
@@ -1289,21 +1259,63 @@ function TabDiscountOther(props) {
                         hidden={initialConfiguration?.IsBasicRateAndCostingConditionVisible ? false : true}
                       />
                     </Col>
-                  </Row >
-                  {
-                    initialConfiguration?.IsBasicRateAndCostingConditionVisible && <Row>
-                      <Col md="8"><div className="left-border mt-1">Costing Condition:</div></Col>
-                      <Col md="4" className="text-right">
-                        <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setConditionAcc(!conditionAcc) }}>
-                          {conditionAcc ? (
-                            <i className="fa fa-minus" ></i>
-                          ) : (
-                            <i className="fa fa-plus"></i>
-                          )}
+                  </Row>
+
+                  <Row>
+                    <Col md="8"><div className="left-border mt-1">Other Cost:</div></Col>
+                    <Col md="4" className="text-right">
+                      <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setOtherCotAcc(!otherCostAcc) }}>
+                        {conditionAcc ? (
+                          <i className="fa fa-minus" ></i>
+                        ) : (
+                          <i className="fa fa-plus"></i>
+                        )}
+                      </button>
+                    </Col>
+                  </Row>
+                  {otherCostAcc &&
+                    <Row>
+                      {!CostingViewMode && <Col md="12">
+                        <div className='d-flex justify-content-end mb-2'>
+                          <button
+                            type="button"
+                            className={"user-btn"}
+                            onClick={() => handleOtherCostdrawer()}
+                            title="Add"
+                          >
+                            <div className={"plus mr-1"}></div> Add
+                          </button>
+                        </div>
+                      </Col>}
+                      <OtherCostTable tableData={{ gridData: otherCostData.gridData, otherCostTotal: otherCostData.otherCostTotal }} />
+                    </Row>}
+                  {initialConfiguration?.IsBasicRateAndCostingConditionVisible && <Row>
+                    <Col md="8"><div className="left-border mt-1">Costing Condition:</div></Col>
+                    <Col md="4" className="text-right">
+                      <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setConditionAcc(!conditionAcc) }}>
+                        {conditionAcc ? (
+                          <i className="fa fa-minus" ></i>
+                        ) : (
+                          <i className="fa fa-plus"></i>
+                        )}
+                      </button>
+                    </Col>
+                  </Row>}
+                  {initialConfiguration?.IsBasicRateAndCostingConditionVisible && conditionAcc && <div className='mb-2'><Row>
+                    {!CostingViewMode && <Col md="12">
+                      <div className='d-flex justify-content-end mb-2'>
+                        <button
+                          type="button"
+                          className={"user-btn"}
+                          onClick={() => openAndCloseAddConditionCosting('Open')}
+                          title="Add"
+                        >
+                          <div className={"plus mr-1"}></div> Add
                         </button>
-                      </Col>
-                    </Row>
-                  }
+                      </div>
+                    </Col>}
+                  </Row>
+                    <ConditionCosting hideAction={true} tableData={conditionTableData} /></div>}
                   {
                     initialConfiguration?.IsBasicRateAndCostingConditionVisible && conditionAcc && <div className='mb-2'><Row>
                       {!CostingViewMode && <Col md="12">
