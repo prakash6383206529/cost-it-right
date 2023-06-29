@@ -5691,7 +5691,8 @@ export const TechnologyDropdownBulkUpload = [
     { label: 'Rubber, Plastic, Die Casting', value: '2' },
     { label: 'Forging, Machining, Turn Part', value: '3' },
     { label: 'Corrugated Box', value: '4' },
-    { label: 'Assembly', value: '5' }
+    { label: 'Assembly', value: '5' },
+    { label: 'Wiring Harness', value: '6' }
 ]
 
 export const tempObject = [
