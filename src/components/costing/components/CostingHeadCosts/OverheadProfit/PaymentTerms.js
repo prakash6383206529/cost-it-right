@@ -2,8 +2,8 @@ import React, { useState, useEffect, useContext } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Col, Row, } from 'reactstrap';
 import { SearchableSelectHookForm, TextAreaHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs';
-import { calculatePercentage, checkForDecimalAndNull, checkForNull, decimalAndNumberValidationBoolean, getConfigurationKey, } from '../../../../../helper';
 // import { fetchModelTypeAPI, fetchCostingHeadsAPI, getICCAppliSelectListKeyValue, getPaymentTermsAppliSelectListKeyValue } from '../../../../../actions/Common';
+import { calculatePercentage, checkForDecimalAndNull, checkForNull, decimalAndNumberValidationBoolean, getConfigurationKey } from '../../../../../helper';
 import { getPaymentTermsDataByHeads, gridDataAdded, isOverheadProfitDataChange, setOverheadProfitErrors, } from '../../../actions/Costing';
 import Switch from "react-switch";
 import { CBCTypeId, CRMHeads, EMPTY_GUID, NFRTypeId, VBCTypeId, WACTypeId, ZBCTypeId } from '../../../../../config/constants';
@@ -37,12 +37,12 @@ function PaymentTerms(props) {
 
     const PaymentTermsFieldValues = useWatch({
         control,
-        name: ['RepaymentPeriodCost'],
+        name: ['RepaymentPeriodCost',],
     });
 
     const PaymentTermsFixedFieldValues = useWatch({
         control,
-        name: ['RepaymentPeriodPercentage'],
+        name: ['RepaymentPeriodPercentage', 'RepaymentPeriodFixed'],
     });
 
     useEffect(() => {
@@ -59,7 +59,7 @@ function PaymentTerms(props) {
                 "PaymentTermDetailId": IsPaymentTermsApplicable ? PaymentTermDetail.IccDetailId : '',
                 "PaymentTermApplicability": Object.keys(paymentTermsApplicability).length > 0 ? paymentTermsApplicability.label : '',
                 "RepaymentPeriod": IsPaymentTermsApplicable ? getValues('RepaymentPeriodDays') : '',
-                "InterestRate": IsPaymentTermsApplicable ? getValues('RepaymentPeriodPercentage') : '',
+                "InterestRate": IsPaymentTermsApplicable ? paymentTermsApplicability.label !== 'Fixed' ? getValues('RepaymentPeriodPercentage') : (getValues('RepaymentPeriodFixed')) : '',
                 "NetCost": IsPaymentTermsApplicable ? tempPaymentTermObj.NetCost : '',
                 "EffectiveDate": "",
                 "PaymentTermCRMHead": tempPaymentTermObj.PaymentTermCRMHead ? tempPaymentTermObj.PaymentTermCRMHead : '',
@@ -111,6 +111,7 @@ function PaymentTerms(props) {
                     let Data = res.data.Data;
                     setValue('RepaymentPeriodDays', Data.RepaymentPeriod)
                     setValue('RepaymentPeriodPercentage', Data.InterestRate !== null ? Data.InterestRate : 0)
+                    setValue('RepaymentPeriodFixed', Data.InterestRate !== null ? Data.InterestRate : 0)
                     setPaymentTermInterestRateId(Data.InterestRateId !== EMPTY_GUID ? Data.InterestRateId : null)
                     checkPaymentTermApplicability(Data.PaymentTermApplicability)
                     setPaymentTermsApplicability({ label: Data.PaymentTermApplicability, value: Data.PaymentTermApplicability })
@@ -118,6 +119,7 @@ function PaymentTerms(props) {
                     setValue('RepaymentPeriodDays', '')
                     setValue('RepaymentPeriodPercentage', '')
                     setValue('RepaymentPeriodCost', '')
+                    setValue('RepaymentPeriodFixed', '')
                     checkPaymentTermApplicability('')
                     setPaymentTermsApplicability([])
                 }
@@ -214,8 +216,7 @@ function PaymentTerms(props) {
                     break;
 
                 case 'CC':
-                    setValue('CostApplicability', checkForDecimalAndNull((ConversionCostForCalculation * RepaymentCost), initialConfiguration.NoOfDecimalForPrice))
-                    setValue('NetICCTotal', checkForDecimalAndNull((ConversionCostForCalculation * RepaymentCost), initialConfiguration.NoOfDecimalForPrice))
+                    setValue('RepaymentPeriodCost', checkForDecimalAndNull((ConversionCostForCalculation * RepaymentCost), initialConfiguration.NoOfDecimalForPrice))
                     setTempPaymentTermObj({
                         ...tempPaymentTermObj,
                         NetCost: checkForNull(ConversionCostForCalculation * RepaymentCost),
@@ -262,11 +263,11 @@ function PaymentTerms(props) {
                     break;
 
                 case 'Fixed':
-                    setValue('RepaymentPeriodCost', checkForDecimalAndNull(RepaymentPeriodPercentage, initialConfiguration.NoOfDecimalForPrice))
+                    setValue('RepaymentPeriodCost', checkForDecimalAndNull(getValues("RepaymentPeriodFixed"), initialConfiguration.NoOfDecimalForPrice))
 
                     setTempPaymentTermObj({
                         ...tempPaymentTermObj,
-                        NetCost: checkForNull(RepaymentPeriodPercentage)
+                        NetCost: checkForNull(getValues("RepaymentPeriodFixed"))
                     })
                     break;
 
@@ -400,145 +401,150 @@ function PaymentTerms(props) {
                         />
                     </Col>}
 
+                    <Row className='mb-4'>
+                        <Col md="11" className='first-section'>
+                            <Row className="costing-border-inner-section border-bottom-none m-0">
+                                <Col md="3">
+                                    <span className="head-text">
+                                        Applicability
+                                    </span>
+                                </Col>
+                                {paymentTermsApplicability.label !== 'Fixed' && <Col md="3">
+                                    <span className="head-text">
+                                        Repayment Period(No. of Days)
+                                    </span>
+                                </Col>}
+                                <Col md="3">
+                                    <span className="head-text">
+                                        {paymentTermsApplicability.label !== 'Fixed' ? 'Interest Rate (%)' : 'Interest Rate'}
+                                    </span>
+                                </Col>
 
-                    {
-
-                        <Popup className='rm-popup ml=5' trigger={<button id={`popUpTriggerPayment`} title="Remark" className="Comment-box" type={'button'} />}
-                            position="top right">
-                            <TextAreaHookForm
-                                label="Remark:"
-                                name={`paymentRemark`}
-                                Controller={Controller}
-                                control={control}
-                                register={register}
-                                mandatory={false}
-                                rules={{
-                                    maxLength: REMARKMAXLENGTH
-                                }}
-                                handleChange={() => { }}
-                                className=""
-                                customClassName={"withBorder"}
-                                errors={errors.paymentRemark}
-                                disabled={CostingViewMode}
-                                hidden={false}
-                            />
-                            <Row>
-                                <Col md="12" className='remark-btn-container'>
-                                    <button className='submit-button mr-2' disabled={(CostingViewMode) ? true : false} onClick={() => onRemarkPopUpClickPayment()} > <div className='save-icon'></div> </button>
-                                    <button className='reset' onClick={() => onRemarkPopUpClosePayment()} > <div className='cancel-icon'></div></button>
+                                <Col md={paymentTermsApplicability.label === 'Fixed' ? '6' : '3'}>
+                                    <span className="head-text">
+                                        Cost
+                                    </span>
                                 </Col>
                             </Row>
-                        </Popup>
-
-                    }
-
-
-                    <Row className="costing-border-inner-section border-bottom-none m-0">
-                        <Col md="3">
-                            <span className="head-text">
-                                Applicability
-                            </span>
-                        </Col>
-                        {paymentTermsApplicability.label !== 'Fixed' && <Col md="3">
-                            <span className="head-text">
-                                Repayment Period(No. of Days)
-                            </span>
-                        </Col>}
-                        <Col md="3">
-                            <span className="head-text">
-                                {paymentTermsApplicability.label !== 'Fixed' ? 'Interest Rate (%)' : 'Interest Rate'}
-                            </span>
-                        </Col>
-
-                        <Col md={paymentTermsApplicability.label === 'Fixed' ? '6' : '3'}>
-                            <span className="head-text">
-                                Cost
-                            </span>
-                        </Col>
-                    </Row>
-                    <Row className="costing-border costing-border-with-labels px-2 pt-3 m-0 overhead-profit-tab-costing mb-4">
-                        <>
-                            <Col md="3">
-                                <label className="col-label">
-                                    {paymentTermsApplicability.label}
-                                </label>
-                            </Col>
-                            {paymentTermsApplicability.label !== 'Fixed' && <Col md="3">
-                                <TextFieldHookForm
-                                    label={false}
-                                    name={'RepaymentPeriodDays'}
-                                    Controller={Controller}
-                                    control={control}
-                                    register={register}
-                                    mandatory={false}
-                                    handleChange={() => { dispatch(isOverheadProfitDataChange(true)) }}
-                                    defaultValue={''}
-                                    className=""
-                                    customClassName={'withBorder'}
-                                    errors={errors.RepaymentPeriodDays}
-                                    disabled={paymentTermsApplicability.label !== 'Fixed' ? true : false}
-                                />
-                            </Col>}
-                            <Col md="3">
-                                {paymentTermsApplicability.label !== 'Fixed' ?
-                                    <TextFieldHookForm
-                                        label={false}
-                                        name={'RepaymentPeriodPercentage'}
-                                        Controller={Controller}
-                                        control={control}
-                                        register={register}
-                                        mandatory={false}
-                                        rules={{
-                                            required: false,
-                                            validate: { number, checkWhiteSpaces, percentageLimitValidation },
-                                            max: {
-                                                value: 100,
-                                                message: 'Percentage cannot be greater than 100'
-                                            },
-                                        }}
-                                        handleChange={() => { dispatch(isOverheadProfitDataChange(true)) }}
-                                        defaultValue={''}
-                                        className=""
-                                        customClassName={'withBorder'}
-                                        errors={errors.RepaymentPeriodPercentage}
-                                        disabled={CostingViewMode ? true : false}
-                                    />
-                                    :
-                                    <div className='p-relative error-wrapper'>
+                            <Row className="costing-border costing-border-with-labels px-2 pt-3 m-0 overhead-profit-tab-costing">
+                                <>
+                                    <Col md="3">
+                                        <label className="col-label">
+                                            {paymentTermsApplicability.label}
+                                        </label>
+                                    </Col>
+                                    {paymentTermsApplicability.label !== 'Fixed' && <Col md="3">
                                         <TextFieldHookForm
                                             label={false}
-                                            name={'RepaymentPeriodPercentage'}
+                                            name={'RepaymentPeriodFixed'}
                                             Controller={Controller}
                                             control={control}
                                             register={register}
                                             mandatory={false}
-                                            handleChange={(e) => handleChangeInterestRateFixedLimit(e)}
+                                            handleChange={() => { dispatch(isOverheadProfitDataChange(true)) }}
                                             defaultValue={''}
                                             className=""
                                             customClassName={'withBorder'}
-                                            disabled={CostingViewMode || paymentTermsApplicability.label !== 'Fixed' ? true : false}
+                                            errors={errors.RepaymentPeriodDays}
+                                            disabled={paymentTermsApplicability.label !== 'Fixed' ? true : false}
                                         />
-                                        {paymentTermsApplicability.label === 'Fixed' && InterestRateFixedLimit && <WarningMessage dClass={"error-message fixed-error"} message={errorMessage} />}           {/* //MANUAL CSS FOR ERROR VALIDATION MESSAGE */}
-                                    </div>}
-                            </Col>
-                            <Col md={paymentTermsApplicability.label === 'Fixed' ? '6' : '3'}>
-                                <TextFieldHookForm
-                                    label={false}
-                                    name={'RepaymentPeriodCost'}
-                                    Controller={Controller}
-                                    control={control}
-                                    register={register}
-                                    mandatory={false}
-                                    handleChange={() => { }}
-                                    defaultValue={''}
-                                    className=""
-                                    customClassName={'withBorder'}
-                                    errors={errors.RepaymentPeriodCost}
-                                    disabled={true}
-                                />
-                            </Col>
-                        </>
+                                    </Col>}
+                                    <Col md="3">
+                                        {paymentTermsApplicability.label !== 'Fixed' ?
+                                            <TextFieldHookForm
+                                                label={false}
+                                                name={'RepaymentPeriodPercentage'}
+                                                Controller={Controller}
+                                                control={control}
+                                                register={register}
+                                                mandatory={false}
+                                                rules={{
+                                                    required: false,
+                                                    validate: { number, checkWhiteSpaces, percentageLimitValidation },
+                                                    max: {
+                                                        value: 100,
+                                                        message: 'Percentage cannot be greater than 100'
+                                                    },
+                                                }}
+                                                handleChange={() => { dispatch(isOverheadProfitDataChange(true)) }}
+                                                defaultValue={''}
+                                                className=""
+                                                customClassName={'withBorder'}
+                                                errors={errors.RepaymentPeriodPercentage}
+                                                disabled={CostingViewMode ? true : false}
+                                            />
+                                            :
+                                            <div className='p-relative error-wrapper'>
+                                                <TextFieldHookForm
+                                                    label={false}
+                                                    name={'RepaymentPeriodPercentage'}
+                                                    Controller={Controller}
+                                                    control={control}
+                                                    register={register}
+                                                    mandatory={false}
+                                                    handleChange={(e) => handleChangeInterestRateFixedLimit(e)}
+                                                    defaultValue={''}
+                                                    className=""
+                                                    customClassName={'withBorder'}
+                                                    disabled={CostingViewMode || paymentTermsApplicability.label !== 'Fixed' ? true : false}
+                                                />
+                                                {paymentTermsApplicability.label === 'Fixed' && InterestRateFixedLimit && <WarningMessage dClass={"error-message fixed-error"} message={errorMessage} />}           {/* //MANUAL CSS FOR ERROR VALIDATION MESSAGE */}
+                                            </div>}
+                                    </Col>
+                                    <Col md={paymentTermsApplicability.label === 'Fixed' ? '6' : '3'}>
+                                        <TextFieldHookForm
+                                            label={false}
+                                            name={'RepaymentPeriodCost'}
+                                            Controller={Controller}
+                                            control={control}
+                                            register={register}
+                                            mandatory={false}
+                                            handleChange={() => { }}
+                                            defaultValue={''}
+                                            className=""
+                                            customClassName={'withBorder'}
+                                            errors={errors.RepaymentPeriodCost}
+                                            disabled={true}
+                                        />
+                                    </Col>
+                                </>
+                            </Row>
+                        </Col>
+                        <Col md="1" className='second-section pr-2'>
+                            <div className='costing-border-inner-section'>
+                                <Col md="12" className='text-center'>Remark</Col>
+                                <Col md="12">
+                                    <Popup trigger={<button id={`popUpTriggerPayment`} title="Remark" className="Comment-box" type={'button'} />}
+                                        position="top center">
+                                        <TextAreaHookForm
+                                            label="Remark:"
+                                            name={`paymentRemark`}
+                                            Controller={Controller}
+                                            control={control}
+                                            register={register}
+                                            mandatory={false}
+                                            rules={{
+                                                maxLength: REMARKMAXLENGTH
+                                            }}
+                                            handleChange={() => { }}
+                                            className=""
+                                            customClassName={"withBorder"}
+                                            errors={errors.paymentRemark}
+                                            disabled={CostingViewMode}
+                                            hidden={false}
+                                        />
+                                        <Row>
+                                            <Col md="12" className='remark-btn-container'>
+                                                <button className='submit-button mr-2' disabled={(CostingViewMode) ? true : false} onClick={() => onRemarkPopUpClickPayment()} > <div className='save-icon'></div> </button>
+                                                <button className='reset' onClick={() => onRemarkPopUpClosePayment()} > <div className='cancel-icon'></div></button>
+                                            </Col>
+                                        </Row>
+                                    </Popup>
+                                </Col>
+                            </div>
+                        </Col>
                     </Row>
+
 
                 </>
             }
