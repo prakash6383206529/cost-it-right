@@ -23,6 +23,7 @@ import { ASSEMBLY } from '../../../config/masterData';
 import Toaster from '../../common/Toaster';
 import RMDrawer from './RMDrawer';
 import OutsourcingDrawer from './OutsourcingDrawer';
+import WarningMessage from '../../common/WarningMessage';
 const gridOptions = {};
 
 
@@ -54,6 +55,7 @@ function NfrPartsListing(props) {
     const [rowDataFortechnologyUpdate, setRowDataFortechnologyUpdate] = useState({})
     const [showOutsourcingDrawer, setShowOutsourcingDrawer] = useState('');
     const [viewMode, setViewMode] = useState(false);
+    const [showWarning, setShowWarning] = useState(false);
     const [outsourcingCostingData, setOutsourcingCostingData] = useState({});
     const { topAndLeftMenuData } = useSelector(state => state.auth);
 
@@ -93,6 +95,20 @@ function NfrPartsListing(props) {
         dispatch(getNfrPartDetails(props?.isFromDiscount ? nfrDetailsForDiscount?.rowData?.NfrId : props?.data?.NfrId, (res) => {
             if (res?.data?.DataList?.length > 0) {
                 setRowData(StatusTooltip(res?.data?.DataList))
+                let data = [...res?.data?.DataList]
+                let showOutsourcing = false
+                data && data?.map(item => {
+                    if (item?.PartType === "Raw Material" && item?.RawMaterialId !== null) {
+                        showOutsourcing = true
+                    } else if (item?.PartType === "Bought Out Part" && item?.BoughtOutPartId !== null) {
+                        showOutsourcing = true
+                    }
+                })
+                if (showOutsourcing) {
+                    setShowWarning(true)
+                } else {
+                    setShowWarning(false)
+                }
             }
             setloader(false)
         }))
@@ -160,7 +176,7 @@ function NfrPartsListing(props) {
         }
         dispatch(pushNfrRmBopOnSap(obj, (res) => {
             if (res?.data?.Result) {
-                Toaster.warining(MESSAGES.BOP_RM_PUSHED)
+                Toaster.success(MESSAGES.BOP_RM_PUSHED)
             }
             getDataList()
         }))
@@ -306,7 +322,7 @@ function NfrPartsListing(props) {
 
     const closeOutsourcingDrawer = (type) => {
         if (type === 'submit') {
-            // getDetails(true)
+            getDataList()
         }
         setShowOutsourcingDrawer(false)
     }
@@ -416,6 +432,9 @@ function NfrPartsListing(props) {
                                             <PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} globalTake={10} />
                                         </div>
                                     </div>
+                                </Col>
+                                <Col md="12" className='justify-content-end d-flex'>
+                                    {showWarning && <WarningMessage dClass="mt-2" message={'Please add RM/BOP price in master, to add outsourcing cost and push the price on SAP'} />}
                                 </Col>
                             </Row>
 
