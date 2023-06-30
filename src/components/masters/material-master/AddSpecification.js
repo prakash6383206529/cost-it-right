@@ -124,7 +124,7 @@ class AddSpecification extends Component {
       this.setState({ RawMaterial: newValue, RMGrade: [], rawMaterialId: newValue.value, isDropDownChanged: true }, () => {
         const { RawMaterial } = this.state;
         this.props.change('Specification', "")
-        this.props.getRMGradeSelectListByRawMaterial(RawMaterial.value, res => { });
+        this.props.getRMGradeSelectListByRawMaterial(RawMaterial.value, false, res => { });
         if (this.state.rmGradeId && this.state.rmSpecification) {
           let obj = {
             materialNameId: newValue.value,
