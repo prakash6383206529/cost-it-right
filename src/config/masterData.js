@@ -4986,20 +4986,20 @@ export const FUELLISTING_DOWNLOAD_EXCEl = [
     { label: "UOM", value: "UnitOfMeasurementName", },
     { label: "State", value: "StateName", },
     { label: "Rate (INR)", value: "Rate", },
+    { label: "Plant (Code)", value: "PlantWithCode", },
+    { label: "Vendor (Code)", value: "VendorWithCode", },
+    { label: "Customer (Code)", value: "CustomerWithCode", },
     { label: "Effective Date", value: "EffectiveDate", },
     { label: "Date of Modification", value: "ModifiedDate", },
 ]
 
 export const POWERLISTING_DOWNLOAD_EXCEl = [
     { label: "State Name", value: "StateName", },
-    { label: "Plant Name", value: "PlantName", },
+    { label: "Plant (Code)", value: "PlantWithCode", },
+    { label: "Vendor (Code)", value: "VendorWithCode" },
+    { label: "Customer (Code)", value: "CustomerWithCode", },
     { label: "Net Power Cost per Unit", value: "NetPowerCostPerUnit", },
     { label: "Effective Date", value: "EffectiveDate" }
-]
-
-export const POWERLISTING_VENDOR_DOWNLOAD_EXCEL = [
-    { label: "Vendor (Code)", value: "VendorName" },
-    { label: "Net Power Cost per Unit", value: "NetPowerCostPerUnit" },
 ]
 
 export const INTERESTRATE_DOWNLOAD_EXCEl = [

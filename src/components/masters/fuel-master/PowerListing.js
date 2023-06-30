@@ -17,7 +17,7 @@ import { GridTotalFormate } from '../../common/TableGridFunctions';
 import LoaderCustom from '../../common/LoaderCustom';
 import { PowerMaster } from '../../../config/constants';
 import ReactExport from 'react-export-excel';
-import { POWERLISTING_DOWNLOAD_EXCEl, POWERLISTING_VENDOR_DOWNLOAD_EXCEL } from '../../../config/masterData';
+import { POWERLISTING_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
@@ -314,13 +314,8 @@ class PowerListing extends Component {
   onBtExport = () => {
     let tempArr = []
     tempArr = this.state.gridApi && this.state.gridApi?.getSelectedRows()
-    if (this.state.IsVendor) {
-      tempArr = (tempArr && tempArr.length > 0) ? tempArr : (this.props.vendorPowerDataList ? this.props.vendorPowerDataList : [])
-      return this.returnExcelColumn(POWERLISTING_VENDOR_DOWNLOAD_EXCEL, tempArr)
-    } else {
-      tempArr = (tempArr && tempArr.length > 0) ? tempArr : (this.props.powerDataList ? this.props.powerDataList : [])
-      return this.returnExcelColumn(POWERLISTING_DOWNLOAD_EXCEl, tempArr)
-    }
+    tempArr = (tempArr && tempArr.length > 0) ? tempArr : (this.props.powerDataList ? this.props.powerDataList : [])
+    return this.returnExcelColumn(POWERLISTING_DOWNLOAD_EXCEl, tempArr)
   };
 
   onFilterTextBoxChanged(e) {
@@ -477,10 +472,10 @@ class PowerListing extends Component {
                   >
                     <AgGridColumn field="CostingType"></AgGridColumn>
                     <AgGridColumn field="StateName"></AgGridColumn>
-                    <AgGridColumn field="PlantName" headerName="Plant (Code)"></AgGridColumn>
+                    <AgGridColumn field="PlantWithCode" headerName="Plant (Code)"></AgGridColumn>
+                    <AgGridColumn field="VendorWithCode" headerName="Vendor (Code)" ></AgGridColumn>
+                    <AgGridColumn field="CustomerWithCode" headerName="Customer (Code)" ></AgGridColumn>
                     <AgGridColumn field="NetPowerCostPerUnit" cellRenderer={'costFormatter'}></AgGridColumn>
-                    <AgGridColumn field="VendorName" ></AgGridColumn>
-                    <AgGridColumn field="CustomerName" ></AgGridColumn>
                     <AgGridColumn field="EffectiveDate" cellRenderer='effectiveDateFormatter' filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
                     <AgGridColumn field="PowerId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                   </AgGridReact>}
