@@ -398,7 +398,8 @@ function ApproveRejectDrawer(props) {
                 purchasingGroup: approvalData[0]?.PurchasingGroup?.label ? approvalData[0]?.PurchasingGroup.label.split('(')[0] : '',
                 purchasingOrg: dataSend[0].CompanyCode ? dataSend[0].CompanyCode : '',
                 CostingId: approvalData[0].CostingId,
-                DecimalOption: approvalData[0].DecimalOption
+                DecimalOption: approvalData[0].DecimalOption,
+                InfoToConditions: props.conditionInfo
                 // Quantity: quantity
                 // effectiveDate: '11/30/2021',
                 // vendorCode: '203670',
