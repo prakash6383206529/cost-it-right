@@ -301,24 +301,6 @@ class FuelListing extends Component {
         return cell != null ? cell : '-';
     }
 
-    plantFormatter = (props) => {
-        const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
-        let value = (rowData.PlantName && rowData.PlantName !== '-') ? `${rowData.PlantName} (${rowData.PlantCode})` : '-'
-        return value ? value : '-'
-    }
-
-    vendorFormatter = (props) => {
-        const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
-        let value = (rowData.VendorName && rowData.VendorName !== '-') ? `${rowData.VendorName} (${rowData.VendorCode})` : '-'
-        return value ? value : '-'
-    }
-
-    customerFormatter = (props) => {
-        const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
-        let value = (rowData.CustomerName && rowData.CustomerName !== '-') ? `${rowData.CustomerName} (${rowData.CustomerCode})` : '-'
-        return value ? value : '-'
-    }
-
     /**
     * @method render
     * @description Renders the component
@@ -348,9 +330,6 @@ class FuelListing extends Component {
             effectiveDateRenderer: this.effectiveDateFormatter,
             customNoRowsOverlay: NoContentFound,
             commonCostFormatter: this.commonCostFormatter,
-            plantFormatter: this.plantFormatter,
-            vendorFormatter: this.vendorFormatter,
-            customerFormatter: this.customerFormatter
         };
 
 
@@ -452,9 +431,9 @@ class FuelListing extends Component {
                                     <AgGridColumn field="UnitOfMeasurementName" headerName="UOM"></AgGridColumn>
                                     <AgGridColumn field="StateName" headerName="State"></AgGridColumn>
                                     <AgGridColumn field="Rate" headerName="Rate (INR)" cellRenderer={'commonCostFormatter'}></AgGridColumn>
-                                    <AgGridColumn field="PlantName" headerName="Plant (Code)" cellRenderer={'plantFormatter'}></AgGridColumn>
-                                    <AgGridColumn field="VendorName" headerName="Vendor (Code)" cellRenderer={'vendorFormatter'}></AgGridColumn>
-                                    <AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'customerFormatter'}></AgGridColumn>
+                                    <AgGridColumn field="PlantWithCode" headerName="Plant (Code)"></AgGridColumn>
+                                    <AgGridColumn field="VendorWithCode" headerName="Vendor (Code)"></AgGridColumn>
+                                    <AgGridColumn field="CustomerWithCode" headerName="Customer (Code)" ></AgGridColumn>
                                     <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateRenderer'}></AgGridColumn>
                                     <AgGridColumn field="ModifiedDate" minWidth={170} headerName="Date of Modification" cellRenderer={'effectiveDateRenderer'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
                                     <AgGridColumn field="FuelDetailId" width={300} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>

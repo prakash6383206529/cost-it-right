@@ -122,9 +122,9 @@ class AddFuel extends Component {
             })
 
             this.setState({
-              singlePlantSelected: { label: Data.FuelDetails[0]?.PlantName, value: Data.FuelDetails[0]?.PlantId },
-              vendorName: { label: Data.FuelDetails[0]?.VendorName, value: Data.FuelDetails[0]?.VendorId },
-              client: { label: Data.FuelDetails[0]?.CustomerName, value: Data.FuelDetails[0]?.CustomerId },
+              singlePlantSelected: { label: `${Data.FuelDetails[0]?.PlantName} (${Data.FuelDetails[0]?.PlantCode})`, value: Data.FuelDetails[0]?.PlantId },
+              vendorName: { label: `${Data.FuelDetails[0]?.VendorName} (${Data.FuelDetails[0]?.VendorCode})`, value: Data.FuelDetails[0]?.VendorId },
+              client: { label: `${Data.FuelDetails[0]?.CustomerName} (${Data.FuelDetails[0]?.CustomerCode})`, value: Data.FuelDetails[0]?.CustomerId },
               isEditFlag: true,
               fuel: Data.FuelName && Data.FuelName !== undefined ? { label: Data.FuelName, value: Data.FuelId } : [],
               UOM: Data.UnitOfMeasurement !== undefined ? { label: Data.UnitOfMeasurement, value: Data.UnitOfMeasurementId } : [],

@@ -302,6 +302,7 @@ class AddPower extends Component {
         if (res && res.data && res.data.Result) {
 
           const Data = res.data.Data;
+          console.log('Data: ', Data);
           this.setState({ DataToChangeVendor: Data })
           this.props.getPlantBySupplier(Data.VendorId, () => { })
 
@@ -538,8 +539,8 @@ class AddPower extends Component {
 
         let data = { StateID: StateName.value, UOMID: UOM.value, plantId: selectedPlants[0].Value, vendorId: vendorName.value, customerId: client.value, effectiveDate: DayTime(effectiveDate).format('DD/MM/YYYY') }
         this.props.getDieselRateByStateAndUOM(data, (res) => {
-          let DynamicData = res.data.DynamicData;
-          this.props.change('CostPerUnitOfMeasurement', DynamicData.FuelRate)
+          let DynamicData = res?.data?.DynamicData;
+          this.props.change('CostPerUnitOfMeasurement', DynamicData?.FuelRate)
         })
       })
     } else {
