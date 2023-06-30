@@ -213,6 +213,8 @@ class SimulationUploadDrawer extends Component {
                                                 obj["RawMaterialName"] = el;
                                             } else if (fileHeads[i] === "UOM") {
                                                 obj["UnitOfMeasurementName"] = el;
+                                            } else if (fileHeads[i] === "Technology") {
+                                                obj["TechnologyName"] = el;
                                             } else {
                                                 obj[fileHeads[i]] = el;
                                             }
