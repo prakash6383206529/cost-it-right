@@ -28,6 +28,7 @@ import { costingTypeIdToApprovalTypeIdFunction } from '../../../common/CommonFun
 import { getMultipleCostingDetails, rfqGetBestCostingDetails } from '../../../rfq/actions/rfq'
 import _ from 'lodash'
 
+
 function ApprovalSummary(props) {
   const { approvalNumber, approvalProcessId } = props.location.state
   const loggedInUser = loggedInUserId()
@@ -153,7 +154,9 @@ function ApprovalSummary(props) {
               tempObj[0].bestCost = true
               temp.push(tempObj[0])
               let dat = [...temp]
+
               let tempArrToSend = _.uniqBy(dat, 'costingId')
+
               dispatch(setCostingViewData([...tempArrToSend]))
             }))
           }
@@ -266,7 +269,8 @@ function ApprovalSummary(props) {
   ]
 
   const displayCompareCosting = () => {
-    if (uniqueShouldCostingId?.length === 0) {
+
+    if (!isRFQ && uniqueShouldCostingId?.length === 0) {
       dispatch(getSingleCostingDetails(approvalData.CostingId, res => {
         const Data = res.data.Data
         const newObj = formViewData(Data, 'New Costing')
