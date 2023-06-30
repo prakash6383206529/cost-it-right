@@ -359,6 +359,7 @@ export const MESSAGES = {
   // NFR
   NFR_APPROVED: 'NFR is approved successfully',
   NFR_REJECTED: 'NFR is rejected successfully',
-  NFR_PUSHED: 'NFR is pushed successfully'
+  NFR_PUSHED: 'NFR is pushed successfully',
+  BOP_RM_PUSHED: 'Pushed successfully to SAP',
 
 }

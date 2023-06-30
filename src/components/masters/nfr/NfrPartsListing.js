@@ -53,6 +53,7 @@ function NfrPartsListing(props) {
     const [rmDrawer, setRMDrawer] = useState(false)
     const [rowDataFortechnologyUpdate, setRowDataFortechnologyUpdate] = useState({})
     const [showOutsourcingDrawer, setShowOutsourcingDrawer] = useState('');
+    const [viewMode, setViewMode] = useState(false);
     const [outsourcingCostingData, setOutsourcingCostingData] = useState({});
     const { topAndLeftMenuData } = useSelector(state => state.auth);
 
@@ -140,12 +141,13 @@ function NfrPartsListing(props) {
         setConfirmPopup(false)
     }
 
-    const formToggle = (data) => {
+    const formToggle = (data, viewMode) => {
         // setIndexOuter(indexOuter)
         // setIndexInside(indexInside)
         setOutsourcingCostingData(data)
         setTimeout(() => {
             setShowOutsourcingDrawer(true)
+            setViewMode(viewMode)
         }, 300);
     }
 
@@ -157,6 +159,10 @@ function NfrPartsListing(props) {
             LoggedInUserId: loggedInUserId()
         }
         dispatch(pushNfrRmBopOnSap(obj, (res) => {
+            if (res?.data?.Result) {
+                Toaster.warining(MESSAGES.BOP_RM_PUSHED)
+            }
+            getDataList()
         }))
     }
 
@@ -178,12 +184,13 @@ function NfrPartsListing(props) {
         let showPush = rowData?.IsPushedButtonShow && (rowData?.NetLandedCost !== null || rowData?.NetLandedCost !== 0)
         return (
             <>
-                {showOutsourcing && rowData?.IsRmAndBopActionEditable && < button type="button" className={"add-out-sourcing mr-1"} onClick={() => { formToggle(rowData) }} disabled={false} title="Add"></button >}
+                {showOutsourcing && !rowData?.IsRmAndBopActionEditable && < button type="button" className={"View mr-1"} onClick={() => { formToggle(rowData, true) }} disabled={false} title="View"></button >}
+                {showOutsourcing && rowData?.IsRmAndBopActionEditable && < button type="button" className={"add-out-sourcing mr-1"} onClick={() => { formToggle(rowData, false) }} disabled={false} title="Add"></button >}
                 {showOutsourcing && showPush && < button type="button" className={"view-masters mr-1"} onClick={() => { pushToSap(rowData) }} disabled={false} title="Push"></button >}
-                {!rowData?.IsRmAndBopActionEditable && <button title='View RM' className="view-masters mr-1" type={'button'} onClick={() => viewRM(rowData)} />}
-                {!rowData?.IsRmAndBopActionEditable && <button title='View' className="View mr-1" type={'button'} onClick={() => editPartHandler(cellValue, rowData, true)} />}
-                {!rowData?.IsRmAndBopActionEditable && <button title='Edit' className="Edit mr-1" type={'button'} onClick={() => editPartHandler(cellValue, rowData, false)} />}
-                {!rowData?.IsRmAndBopActionEditable && <button title='Associate part with technology' className="create-rfq mr-1" type={'button'} onClick={() => associatePartWithTechnology(cellValue, rowData, false)} />}
+                {!rowData?.IsRmAndBopActionEditable && !showOutsourcing && <button title='View RM' className="view-masters mr-1" type={'button'} onClick={() => viewRM(rowData)} />}
+                {!rowData?.IsRmAndBopActionEditable && !showOutsourcing && <button title='View' className="View mr-1" type={'button'} onClick={() => editPartHandler(cellValue, rowData, true)} />}
+                {!rowData?.IsRmAndBopActionEditable && !showOutsourcing && <button title='Edit' className="Edit mr-1" type={'button'} onClick={() => editPartHandler(cellValue, rowData, false)} />}
+                {!rowData?.IsRmAndBopActionEditable && !showOutsourcing && <button title='Associate part with technology' className="create-rfq mr-1" type={'button'} onClick={() => associatePartWithTechnology(cellValue, rowData, false)} />}
 
             </>
         )
@@ -427,6 +434,7 @@ function NfrPartsListing(props) {
                     closeDrawer={closeOutsourcingDrawer}
                     anchor={'right'}
                     outsourcingCostingData={outsourcingCostingData}
+                    viewMode={viewMode}
                 // CostingId={OutsourcingCostingData?.CostingId}
                 />}
             {

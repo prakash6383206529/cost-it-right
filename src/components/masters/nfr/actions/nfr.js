@@ -236,7 +236,6 @@ export function saveOutsourcingData(requestData, callback) {
  * @description getNFRCostingOutsourcingDetails
  */
 export function getNFRCostingOutsourcingDetails(baseCostingId, nfrRawMaterialAndBoughtOutPartDetailId, callback) {
-    console.log('baseCostingId: ', baseCostingId);
     return (dispatch) => {
         const request = axios.get(`${API.getNFRCostingOutsourcingDetails}?baseCostingId=${baseCostingId ? baseCostingId : null}&nfrRawMaterialAndBoughtOutPartDetailId=${nfrRawMaterialAndBoughtOutPartDetailId ? nfrRawMaterialAndBoughtOutPartDetailId : null}`, config());
         request.then((response) => {
