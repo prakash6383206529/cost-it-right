@@ -727,6 +727,17 @@ function AddNfr(props) {
         setSelectedCheckbox(!temp)
     }
     const sendForApproval = () => {
+        let data = (rowData?.filter(item => item?.groupName === existingGroupNameVersion)[0]?.data)
+        let checkProceZero = false
+        data && data?.map(item => {
+            if (checkForNull(item?.SelectedCostingVersion?.Price) === 0) {
+                checkProceZero = true
+            }
+        })
+        if (checkProceZero === true) {
+            Toaster.warning('Po Price should not be zero')
+            return false
+        }
         setShowDrawer(true)
     }
     const closeShowApproval = (type) => {

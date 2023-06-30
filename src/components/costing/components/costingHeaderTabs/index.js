@@ -18,7 +18,7 @@ import {
 } from '../../actions/Costing';
 import { checkForNull, CheckIsCostingDateSelected, loggedInUserId } from '../../../../helper';
 import { LEVEL1 } from '../../../../config/constants';
-import { EditCostingContext, ViewCostingContext, CostingStatusContext } from '../CostingDetails';
+import { EditCostingContext, ViewCostingContext, CostingStatusContext, IsNFR } from '../CostingDetails';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import DayTime from '../../../common/DayTimeWrapper'
@@ -29,13 +29,18 @@ import { IdForMultiTechnology } from '../../../../config/masterData';
 import WarningMessage from '../../../common/WarningMessage';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { LOGISTICS } from '../../../../config/masterData';
+import { getRMFromNFR, setOpenAllTabs } from '../../../masters/nfr/actions/nfr';
+import Toaster from '../../../common/Toaster';
 
 function CostingHeaderTabs(props) {
   const dispatch = useDispatch()
 
   const { ComponentItemData, ComponentItemOverheadData, ComponentItemPackageFreightData, ComponentItemToolData,
     ComponentItemDiscountData, IsIncludedSurfaceInOverheadProfit, costingData, CostingEffectiveDate,
-    IsCostingDateDisabled, CostingDataList, RMCCTabData, getAssemBOPCharge, SurfaceTabData, OverheadProfitTabData, PackageAndFreightTabData, ToolTabData, DiscountCostData, checkIsDataChange, checkIsOverheadProfitChange, checkIsFreightPackageChange, checkIsToolTabChange, messageForAssembly, checkIsDiscountChange, IsIncludedSurfaceInRejection, IsIncludedToolCost } = useSelector(state => state.costing)
+    IsCostingDateDisabled, CostingDataList, RMCCTabData, getAssemBOPCharge, SurfaceTabData, OverheadProfitTabData,
+    PackageAndFreightTabData, ToolTabData, DiscountCostData, checkIsDataChange, checkIsOverheadProfitChange,
+    checkIsFreightPackageChange, checkIsToolTabChange, messageForAssembly, checkIsDiscountChange,
+    IsIncludedSurfaceInRejection, IsIncludedToolCost, openAllTabs } = useSelector(state => state.costing)
   const { ErrorObjRMCC, ErrorObjOverheadProfit, ErrorObjTools, ErrorObjDiscount } = useSelector(state => state.costing)
   const [activeTab, setActiveTab] = useState('1');
   const [IsOpenViewHirarchy, setIsOpenViewHirarchy] = useState(false);
@@ -51,8 +56,10 @@ function CostingHeaderTabs(props) {
   const netPOPrice = useContext(NetPOPriceContext);
   const CostingEditMode = useContext(EditCostingContext);
   const partType = IdForMultiTechnology.includes(String(costData?.TechnologyId))
+  const isNFR = useContext(IsNFR);
 
   const costingApprovalStatus = useContext(CostingStatusContext);
+  const { nfrDetailsForDiscount } = useSelector(state => state.costing)
 
   useEffect(() => {
     setActiveTab(costingData?.TechnologyId !== LOGISTICS ? '1' : '4')
@@ -276,6 +283,10 @@ function CostingHeaderTabs(props) {
   */
   const toggle = (tab) => {
     if (CheckIsCostingDateSelected(CostingEffectiveDate)) return false;
+    if (isNFR && !openAllTabs) {
+      Toaster.warning("All Raw Material's price has not added in the Raw Material master against this vendor and plant.")
+      return false;
+    }
     let tempErrorObjRMCC = { ...ErrorObjRMCC }
     delete tempErrorObjRMCC?.bopGridFields
     if (errorCheck(ErrorObjRMCC) || errorCheckObject(tempErrorObjRMCC) || errorCheckObject(ErrorObjOverheadProfit) || errorCheckObject(ErrorObjTools) || errorCheckObject(ErrorObjDiscount)) return false;
@@ -339,6 +350,28 @@ function CostingHeaderTabs(props) {
   }
 
   useEffect(() => {
+    if (effectiveDate) {
+      let obj = {
+        nfrId: nfrDetailsForDiscount?.objectFordisc?.NfrMasterId,
+        partId: costData?.PartId,
+        vendorId: costData?.VendorId,
+        plantId: costData?.DestinationPlantId,
+        costingId: ComponentItemData.CostingId,
+        effectiveDate: CostingEffectiveDate,
+        technologyId: costData?.TechnologyId
+      }
+      dispatch(getRMFromNFR(obj, (res) => {
+        if (res?.data?.Result && res?.status === 200) {
+          if (res?.data?.Identity === res?.data?.DataList?.length) {
+            dispatch(setOpenAllTabs(true))
+          } else {
+            dispatch(setOpenAllTabs(false))
+          }
+        } else if (res?.status === 204) {
+          dispatch(setOpenAllTabs(false))
+        }
+      }))
+    }
     dispatch(setCostingEffectiveDate(DayTime(effectiveDate).format('YYYY-MM-DD')))
   }, [effectiveDate])
 
