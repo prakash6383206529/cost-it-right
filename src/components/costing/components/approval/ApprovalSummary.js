@@ -65,6 +65,7 @@ function ApprovalSummary(props) {
   const [uniqueShouldCostingId, setUniqueShouldCostingId] = useState([])
   const [costingIdList, setCostingIdList] = useState([])
   const [isRFQ, setisRFQ] = useState(false)
+  const [conditionInfo, setConditionInfo] = useState([])
 
   const headerName = ['Revision No.', 'Name', 'Existing Cost/Pc', 'Revised Cost/Pc', 'Quantity', 'Impact/Pc', 'Volume/Year', 'Impact/Quarter', 'Impact/Year']
   const parentField = ['PartNumber', '-', 'PartName', '-', '-', '-', 'VariancePerPiece', 'VolumePerYear', 'ImpactPerQuarter', 'ImpactPerYear']
@@ -158,7 +159,6 @@ function ApprovalSummary(props) {
           }
         }))
       }
-
       setCostingTypeId(CostingTypeId)
       setNccPartQuantity(NCCPartQuantity)
       setIsRegularized(IsRegularized)
@@ -201,6 +201,27 @@ function ApprovalSummary(props) {
         if (res && res.data && res.data.Result) {
           setFinalLevelUser(res.data.Data.IsFinalApprover)
         }
+      }))
+
+      dispatch(getSingleCostingDetails(CostingId, res => {
+        let responseData = res?.data?.Data
+        let conditionArr = []
+        responseData.CostingPartDetails.CostingConditionResponse.forEach((item, index) => {
+          let obj = {
+            Lifnr: responseData.VendorCode,
+            Matnr: responseData.PartNumber,
+            Kschl: item.CostingConditionNumber,
+            Datab: responseData.EffectiveDate,
+            Datbi: responseData.CostingDate,
+            Kbetr: item.ConditionCost,
+            Konwa: INR,
+            Kpein: "1",
+            Kmein: "NO"
+          }
+          conditionArr.push(obj)
+        })
+
+        setConditionInfo(conditionArr)
       }))
     }),
 
@@ -293,7 +314,7 @@ function ApprovalSummary(props) {
   }
 
   const callPushAPI = debounce(() => {
-    const { netPo, quantity } = getPOPriceAfterDecimal(approvalData?.DecimalOption, dataSend.NewPOPrice ? dataSend.NewPOPrice : 0)
+    const { quantity } = getPOPriceAfterDecimal(approvalData?.DecimalOption, dataSend.NewPOPrice ? dataSend.NewPOPrice : 0)
     let pushdata = {
       effectiveDate: dataSend[0].EffectiveDate ? DayTime(dataSend[0].EffectiveDate).format('MM/DD/YYYY') : '',
       vendorCode: dataSend[0].VendorCode ? dataSend[0].VendorCode : '',
@@ -308,7 +329,8 @@ function ApprovalSummary(props) {
       purchasingOrg: dataSend[0].CompanyCode ? dataSend[0].CompanyCode : '',
       CostingId: approvalData.CostingId,
       Quantity: quantity,
-      DecimalOption: approvalData.DecimalOption
+      DecimalOption: approvalData.DecimalOption,
+      InfoToConditions: conditionInfo
       // effectiveDate: '11/30/2021',
       // vendorCode: '203670',
       // materialNumber: 'S07004-003A0Y',
@@ -715,6 +737,7 @@ function ApprovalSummary(props) {
           IsPushDrawer={showPushDrawer}
           dataSend={[approvalDetails, partDetail]}
           costingTypeId={costingTypeId}
+          conditionInfo={conditionInfo}
         />
       )}
       {pushButton && (
@@ -724,6 +747,7 @@ function ApprovalSummary(props) {
           dataSend={[approvalDetails, partDetail]}
           anchor={'right'}
           approvalData={[approvalData]}
+          conditionInfo={conditionInfo}
         />
       )}
 
