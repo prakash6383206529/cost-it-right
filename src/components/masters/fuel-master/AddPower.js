@@ -302,7 +302,6 @@ class AddPower extends Component {
         if (res && res.data && res.data.Result) {
 
           const Data = res.data.Data;
-          console.log('Data: ', Data);
           this.setState({ DataToChangeVendor: Data })
           this.props.getPlantBySupplier(Data.VendorId, () => { })
 
