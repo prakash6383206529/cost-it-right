@@ -475,6 +475,7 @@ const CostingSummaryTable = (props) => {
       customerName: viewCostingData[index]?.customerName,
       customerId: viewCostingData[index]?.customerId,
       customerCode: viewCostingData[index]?.customerCode,
+      vendorCode: viewCostingData[index]?.vendorCode
     }
 
     setIsEditFlag(true)
