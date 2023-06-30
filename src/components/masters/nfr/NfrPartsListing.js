@@ -399,6 +399,8 @@ function NfrPartsListing(props) {
                                                 <AgGridColumn field="PartNumber" headerName='Part No.' cellRenderer={hyphenFormatter}></AgGridColumn>
                                                 <AgGridColumn field="PartName" headerName='Part Name' cellRenderer={hyphenFormatter}></AgGridColumn>
                                                 <AgGridColumn field="NumberOfSimulation" headerName='No. of Simulations' cellRenderer={hyphenFormatter}></AgGridColumn>
+                                                <AgGridColumn field="NetLandedCost" headerName='Cost/Rate' cellRenderer={hyphenFormatter}></AgGridColumn>
+                                                <AgGridColumn field="OutsourcingCost" headerName='Outsourcing Cost' cellRenderer={hyphenFormatter}></AgGridColumn>
                                                 <AgGridColumn field="CreatedOn" headerName='Created On' cellRenderer={dateFormater}></AgGridColumn>
                                                 <AgGridColumn field="PushedOn" headerName='Pushed On' cellRenderer={dateFormater}></AgGridColumn>
                                                 <AgGridColumn field="Status" tooltipField="tooltipText" headerName="Status" cellClass="text-center" minWidth={170} cellRenderer="statusFormatter"></AgGridColumn>
