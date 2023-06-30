@@ -133,7 +133,8 @@ function PushButtonDrawer(props) {
         purchasingOrg: dataSend[0].CompanyCode ? dataSend[0].CompanyCode : '',
         CostingId: approvalData[0].CostingId,
         Quantity: quantity,
-        DecimalOption: approvalData[0].DecimalOption
+        DecimalOption: approvalData[0].DecimalOption,
+        InfoToConditions: props.conditionInfo
         // effectiveDate: '11/30/2021',
         // vendorCode: '203670',
         // materialNumber: 'S07004-003A0Y',
