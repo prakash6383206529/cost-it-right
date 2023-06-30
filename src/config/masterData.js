@@ -3859,7 +3859,7 @@ export const RMDomesticSimulation = [
     { label: "Spec", value: "RawMaterialSpecificationName" },
     { label: "Code", value: "RawMaterialCode", },
     { label: "Category", value: "Category" },
-    { label: "TechnologyName", value: "TechnologyName" },
+    { label: "Technology", value: "TechnologyName" },
     { label: "Plant (Code)", value: "DestinationPlantName" },
     { label: "Vendor (Code)", value: "VendorName" },
     { label: "VendorLocation", value: "VendorLocation" },
@@ -3886,7 +3886,7 @@ export const RMImportSimulation = [
     { label: "Spec", value: "RawMaterialSpecificationName" },
     { label: "Code", value: "RawMaterialCode", },
     { label: "Category", value: "Category" },
-    { label: "TechnologyName", value: "TechnologyName" },
+    { label: "Technology", value: "TechnologyName" },
     { label: "Plant (Code)", value: "DestinationPlantName" },
     { label: "Vendor (Code)", value: "VendorName" },
     { label: "VendorLocation", value: "VendorLocation" },
@@ -3912,7 +3912,7 @@ export const SurfaceTreatmentSimulation = [
     { label: "DestinationPlant (Code)", value: "Plants" },
     { label: "Vendor (Code)", value: "VendorName", },
     { label: "Customer (Code)", value: "CustomerName" },
-    { label: "UnitOfMeasurement", value: "UOM" },
+    { label: "UOM", value: "UOM" },
     { label: "Rate", value: "Rate" },
     { label: "RevisedRate", value: "NewRate" },
     { label: "EffectiveDate", value: "EffectiveDate" },
@@ -3928,7 +3928,7 @@ export const OperationSimulation = [
     { label: "DestinationPlant (Code)", value: "Plants" },
     { label: "Vendor (Code)", value: "VendorName", },
     { label: "Customer (Code)", value: "CustomerName" },
-    { label: "UnitOfMeasurement", value: "UOM" },
+    { label: "UOM", value: "UOM" },
     { label: "Rate", value: "Rate" },
     { label: "RevisedRate", value: "NewRate" },
     { label: "EffectiveDate", value: "EffectiveDate" },
@@ -5674,9 +5674,9 @@ export const ERImpactDownloadArray = ["Currency", "BankRate", "BankCommissionPer
 
 export const MachineImpactDownloadArray = ['MachineName', 'MachineNumber', 'MachineTypeName', 'ProcessName', 'ProcessCode', 'UOM', 'Vendor', 'ExistingMachineRate', 'RevisedMachineRate', 'CurrentEffectiveDate']
 
-export const RawMaterialDomesticFileHeads = ["CostingHead", "RawMaterial", "Grade", "Spec", "Code", "Category", "TechnologyName"]
+export const RawMaterialDomesticFileHeads = ["CostingHead", "RawMaterial", "Grade", "Spec", "Code", "Category", "Technology"]
 
-export const RawMaterialImportFileHeads = ["CostingHead", "RawMaterial", "Grade", "Spec", "Code", "Category", "TechnologyName"]
+export const RawMaterialImportFileHeads = ["CostingHead", "RawMaterial", "Grade", "Spec", "Code", "Category", "Technology"]
 
 export const OperationFileHeads = ['Technology', 'CostingHead', 'OperationName', 'OperationCode']
 
