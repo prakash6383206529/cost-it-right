@@ -191,7 +191,7 @@ function ViewOverheadProfit(props) {
             <thead>
               <tr>
                 <th>{`Profit On`}</th>
-                <th>{viewOverheadData.IsProfitFixedApplicable ? 'Fixed' : 'Percentage (%)'}</th>
+                <th>{viewProfitData.IsProfitFixedApplicable ? 'Fixed' : 'Percentage (%)'}</th>
                 <th><div className='w-fit'>Cost (Applicability){isRmCutOffApplicable && !isPDFShow && <TooltipCustom customClass="mt-1 ml-1" id="profit-rm-applicable" tooltipText="RM Cut Off Price is Applied" />}</div></th>
                 <th>{`Profit`}</th>
                 <th>{`Remark`}</th>
@@ -327,10 +327,9 @@ function ViewOverheadProfit(props) {
                     </td>
                   </tr> :
                   <tr>
-
                     <td>{rejectData.RejectionApplicability ? rejectData.RejectionApplicability : '-'}</td>
-                    <td>{rejectData.RejectionPercentage ? checkForDecimalAndNull(rejectData.RejectionPercentage, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
-                    <td>{rejectData.RejectionCost ? checkForDecimalAndNull(rejectData.RejectionCost, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
+                    <td>{rejectData.RejectionApplicability === "Fixed" ? rejectData.RejectionCost : rejectData.RejectionPercentage ? checkForDecimalAndNull(rejectData.RejectionPercentage, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
+                    <td>{rejectData.RejectionApplicability === "Fixed" ? '-' : rejectData.RejectionCost ? checkForDecimalAndNull(rejectData.RejectionCost, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
                     <td>{rejectData.RejectionTotalCost ? checkForDecimalAndNull(rejectData.RejectionTotalCost, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
                     <td>{rejectData.Remark ? rejectData.Remark : "-"}</td>
                   </tr>
@@ -356,7 +355,7 @@ function ViewOverheadProfit(props) {
               <tr>
 
                 <th>{`Applicability`}</th>
-                <th>{`Interest Rate (%)`}</th>
+                <th>{`Interest Rate ${iccPaymentData.ICCApplicabilityDetail.ICCApplicability === 'Fixed' ? '' : '(%)'}`}</th>
                 <th>{`Cost (Applicability)`}</th>
                 <th>{`Net ICC`}</th>
                 <th>{`Remark`}</th>
@@ -402,7 +401,7 @@ function ViewOverheadProfit(props) {
 
                 <th>{`Applicability`}</th>
                 <th>{`Repayment Period (No. of days)`}</th>
-                <th>{`Interest Rate (%)`}</th>
+                <th>{`Interest Rate ${iccPaymentData.PaymentTermDetail.PaymentTermApplicability === 'Fixed' ? '' : '(%)'}`}</th>
                 <th>{`Cost`}</th>
                 <th>{`Remark`}</th>
               </tr>
@@ -417,7 +416,7 @@ function ViewOverheadProfit(props) {
                   </tr> :
                   <tr>
                     <td>{iccPaymentData.PaymentTermDetail.PaymentTermApplicability ? iccPaymentData.PaymentTermDetail.PaymentTermApplicability : '-'}</td>
-                    <td>{iccPaymentData.PaymentTermDetail.RepaymentPeriod ? checkForDecimalAndNull(iccPaymentData.PaymentTermDetail.RepaymentPeriod, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
+                    <td>{iccPaymentData.PaymentTermDetail.PaymentTermApplicability === 'Fixed' ? '-' : iccPaymentData.PaymentTermDetail.RepaymentPeriod ? checkForDecimalAndNull(iccPaymentData.PaymentTermDetail.RepaymentPeriod, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
                     <td>{iccPaymentData.PaymentTermDetail.InterestRate ? checkForDecimalAndNull(iccPaymentData.PaymentTermDetail.InterestRate, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
                     <td>{iccPaymentData.PaymentTermDetail.NetCost ? checkForDecimalAndNull(iccPaymentData.PaymentTermDetail.NetCost, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
                     <td>{iccPaymentData.PaymentTermDetail.Remark ? iccPaymentData.PaymentTermDetail.Remark : '-'}</td>
