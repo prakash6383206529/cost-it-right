@@ -120,8 +120,8 @@ function PushButtonDrawer(props) {
 
       const { netPo, quantity } = getPOPriceAfterDecimal(approvalData[0].DecimalOption, dataSend[0].NewPOPrice ? dataSend[0].NewPOPrice : 0)
       let pushdata = {
-        effectiveDate: dataSend[0].EffectiveDate ? DayTime(dataSend[0].EffectiveDate).format('MM/DD/YYYY') : '',
-        vendorCode: dataSend[0].VendorCode ? dataSend[0].VendorCode : '',
+        effectiveDate: dataSend[0].EffectiveDate ? DayTime(dataSend[0].EffectiveDate).format('YYYY-MM-DD') : '',
+        vendorCode: props?.vendorCodeForSAP ? props?.vendorCodeForSAP : '',
         materialNumber: dataSend[1].PartNumber,
         netPrice: netPo,
         plant: dataSend[0].PlantCode ? dataSend[0].PlantCode : dataSend[0].DestinationPlantId ? dataSend[0].DestinationPlantCode : '',

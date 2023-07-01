@@ -228,6 +228,8 @@ class SideBar extends Component {
         } else {
           break;
         }
+      case "NFR":
+        return this.renderNFR(module, LandingPageURL);
       default:
         return null
     }
@@ -948,7 +950,6 @@ class SideBar extends Component {
 
                       return this.renderMenus(item.ModuleName, item.LandingPageURL);
                     })}
-                  {this.renderNFR('RFQ')}
                 </ul>
               </nav>
             </div>
