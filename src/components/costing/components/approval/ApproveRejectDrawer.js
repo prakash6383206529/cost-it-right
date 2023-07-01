@@ -387,7 +387,7 @@ function ApproveRejectDrawer(props) {
               Toaster.success('The costing approved successfully')
               let pushdata = {
                 effectiveDate: dataSend[0].EffectiveDate ? DayTime(dataSend[0].EffectiveDate).format('YYYY-MM-DD') : '',
-                vendorCode: dataSend[0].VendorCode ? dataSend[0].VendorCode : '',
+                vendorCode: props?.vendorCodeForSAP ? props?.vendorCodeForSAP : '',
                 materialNumber: dataSend[1].PartNumber,
                 netPrice: dataSend[0].NewPOPrice,
                 plant: dataSend[0].PlantCode ? dataSend[0].PlantCode : dataSend[0].DestinationPlantId ? dataSend[0].DestinationPlantCode : '',
