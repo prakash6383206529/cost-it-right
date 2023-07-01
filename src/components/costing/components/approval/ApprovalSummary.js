@@ -65,6 +65,7 @@ function ApprovalSummary(props) {
   const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
   const [uniqueShouldCostingId, setUniqueShouldCostingId] = useState([])
   const [costingIdList, setCostingIdList] = useState([])
+  const [notSelectedCostingId, setNotSelectedCostingId] = useState([])
   const [isRFQ, setisRFQ] = useState(false)
   const [conditionInfo, setConditionInfo] = useState([])
 
@@ -138,7 +139,13 @@ function ApprovalSummary(props) {
       if (BestCostAndShouldCostDetails?.BestCostId) {
         let temp = []
         let tempObj = {}
-        setCostingIdList(_.map([...BestCostAndShouldCostDetails?.CostingIdList], 'CostingId'))
+        let list = _.map([...BestCostAndShouldCostDetails?.CostingIdList], 'CostingId')
+
+        setCostingIdList(list)
+        const filteredArray = list.filter((id) => id !== CostingId);
+        setNotSelectedCostingId(filteredArray)
+
+
         setUniqueShouldCostingId(_.map(BestCostAndShouldCostDetails?.ShouldCostings, 'CostingId'))
         let costing = [...BestCostAndShouldCostDetails?.ShouldCostings, ...BestCostAndShouldCostDetails?.CostingIdList, { CostingId: CostingId }]
 
@@ -659,7 +666,7 @@ function ApprovalSummary(props) {
             <Row className="mb-4">
               <Col md="12" className="costing-summary-row">
                 {/* SEND isApproval FALSE WHEN OPENING FROM FGWISE */}
-                {costingSummary && <CostingSummaryTable VendorId={approvalData.VendorId} viewMode={true} costingID={approvalDetails.CostingId} approvalMode={true} isApproval={approvalData.LastCostingId !== EMPTY_GUID ? true : false} simulationMode={false} costingIdExist={true} uniqueShouldCostingId={uniqueShouldCostingId} isRfqCosting={isRFQ} costingIdList={costingIdList} />}
+                {costingSummary && <CostingSummaryTable VendorId={approvalData.VendorId} viewMode={true} costingID={approvalDetails.CostingId} approvalMode={true} isApproval={approvalData.LastCostingId !== EMPTY_GUID ? true : false} simulationMode={false} costingIdExist={true} uniqueShouldCostingId={uniqueShouldCostingId} isRfqCosting={isRFQ} costingIdList={costingIdList} notSelectedCostingId={notSelectedCostingId} />}
               </Col>
             </Row>
             {/* Costing Summary page here */}
