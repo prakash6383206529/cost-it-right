@@ -214,8 +214,8 @@ function ApprovalSummary(props) {
             Lifnr: responseData.VendorCode,
             Matnr: responseData.PartNumber,
             Kschl: item.CostingConditionNumber,
-            Datab: responseData.EffectiveDate,
-            Datbi: responseData.CostingDate,
+            Datab: DayTime(responseData.EffectiveDate).format('YYYY-MM-DD'),
+            Datbi: DayTime(responseData.CostingDate).format('YYYY-MM-DD'),
             Kbetr: item.ConditionCost,
             Konwa: INR,
             Kpein: "1",
@@ -320,7 +320,7 @@ function ApprovalSummary(props) {
   const callPushAPI = debounce(() => {
     const { quantity } = getPOPriceAfterDecimal(approvalData?.DecimalOption, dataSend.NewPOPrice ? dataSend.NewPOPrice : 0)
     let pushdata = {
-      effectiveDate: dataSend[0].EffectiveDate ? DayTime(dataSend[0].EffectiveDate).format('MM/DD/YYYY') : '',
+      effectiveDate: dataSend[0].EffectiveDate ? DayTime(dataSend[0].EffectiveDate).format('YYYY-MM-DD') : '',
       vendorCode: dataSend[0].VendorCode ? dataSend[0].VendorCode : '',
       materialNumber: dataSend[1].PartNumber,
       netPrice: dataSend[0].NewPOPrice,
