@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import AddToComparisonDrawer from './AddToComparisonDrawer'
 import {
   setCostingViewData, setCostingApprovalData, getBriefCostingById,
-  storePartNumber, getSingleCostingDetails, createCosting, checkFinalUser
+  storePartNumber, getSingleCostingDetails, createCosting, checkFinalUser, getCostingByVendorAndVendorPlant
 } from '../actions/Costing'
 import ViewBOP from './Drawers/ViewBOP'
 import ViewConversionCost from './Drawers/ViewConversionCost'
@@ -16,7 +16,7 @@ import SendForApproval from './approval/SendForApproval'
 import Toaster from '../../common/Toaster'
 import { checkForDecimalAndNull, checkForNull, checkPermission, formViewData, getTechnologyPermission, loggedInUserId, userDetails, allEqual, getConfigurationKey, getCurrencySymbol, highlightCostingSummaryValue, checkVendorPlantConfigurable, userTechnologyLevelDetails } from '../../../helper'
 import Attachament from './Drawers/Attachament'
-import { BOPDOMESTIC, BOPIMPORT, COSTING, DRAFT, FILE_URL, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, VARIANCE, VBC, ZBC, VIEW_COSTING_DATA, VIEW_COSTING_DATA_LOGISTICS, NCC, EMPTY_GUID, CBC, ZBCTypeId, VBCTypeId, NCCTypeId, CBCTypeId, APPROVED, PENDING, VIEW_COSTING_DATA_TEMPLATE, PFS2TypeId } from '../../../config/constants'
+import { BOPDOMESTIC, BOPIMPORT, COSTING, DRAFT, FILE_URL, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, VARIANCE, VBC, ZBC, VIEW_COSTING_DATA, VIEW_COSTING_DATA_LOGISTICS, NCC, EMPTY_GUID, CBC, ZBCTypeId, VBCTypeId, NCCTypeId, CBCTypeId, APPROVED, PENDING, VIEW_COSTING_DATA_TEMPLATE, PFS2TypeId, REJECTED } from '../../../config/constants'
 import { useHistory } from "react-router-dom";
 import WarningMessage from '../../common/WarningMessage'
 import DayTime from '../../common/DayTimeWrapper'
@@ -40,6 +40,7 @@ import { getUsersTechnologyLevelAPI } from '../../../actions/auth/AuthActions'
 import AddNpvCost from './CostingHeadCosts/AdditionalOtherCost/AddNpvCost'
 import { costingTypeIdToApprovalTypeIdFunction } from '../../common/CommonFunctions'
 import CrossIcon from '../../../assests/images/red-cross.png'
+import { getMultipleCostingDetails, getMultipleCostingDetailsForVendor } from '../../rfq/actions/rfq'
 
 const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
 
@@ -1171,6 +1172,37 @@ const CostingSummaryTable = (props) => {
   const tableDataClass = (data) => {
     return props?.isRfqCosting && data.isRFQFinalApprovedCosting && !isApproval && !data?.bestCost ? 'finalize-cost' : ''
   }
+  const showReturnCosting = (index) => {
+    console.log('index: ', index);
+    console.log(viewCostingData, "viewCostingData");
+    setLoader(true)
+    dispatch(getCostingByVendorAndVendorPlant(viewCostingData[0]?.partId, props.VendorId, '', viewCostingData[0]?.destinationPlantId, '', VBCTypeId, (res) => {
+      if (res?.data?.Result) {
+        let list = [...res?.data?.DataList]
+        let rejectedCostingList = list.filter(element => element?.DisplayStatus === REJECTED)
+        if (rejectedCostingList && rejectedCostingList.length > 0) {
+          console.log('rejectedCostingList: ', rejectedCostingList);
+
+          dispatch(getMultipleCostingDetails(rejectedCostingList, (res) => {
+            let datalist = []
+            let arrayfromapi = _.map(res, 'data.Data')
+            console.log('arrayfromapi: ', arrayfromapi);
+            arrayfromapi && arrayfromapi?.map(item => {
+              datalist.push(formViewData(item)[0])
+            })
+            let finaldata = _.uniqBy([...viewCostingData, ...datalist], 'costingId')
+            console.log('finaldata: ', finaldata);
+            dispatch(setCostingViewData(finaldata))
+            setTimeout(() => {
+              setLoader(false)
+            }, 200);
+          }))
+        } else {
+          setLoader(false)
+        }
+      }
+    }))
+  }
   return (
     <Fragment>
       {
@@ -1197,6 +1229,18 @@ const CostingSummaryTable = (props) => {
                       {props.isRfqCosting && !isApproval && <button onClick={() => props?.crossButton()} title='Discard Summary' className='CancelIcon rfq-summary-discard'></button>}
                     </div>
                 }
+
+                {!simulationMode &&
+                  <button
+                    type="button"
+                    className={'user-btn mb-2 comparison-btn'}
+                    onClick={() => showReturnCosting(index)}
+                  >
+                    <div className="compare-arrows"></div>
+                    View Return Costing{' '}
+                  </button>
+                }
+
                 {!simulationMode && !props.isRfqCosting && !props.isRfqCosting &&
                   <ReactToPrint
                     bodyClass='mx-2 mt-3 remove-space-border'
