@@ -78,6 +78,7 @@ const CostingSummaryTable = (props) => {
   const [viewPackagingFreight, setViewPackagingFreight] = useState({})
   const [multipleCostings, setMultipleCostings] = useState([])
   const [isWarningFlag, setIsWarningFlag] = useState(false)
+  const [isSuperAdmin, setIsSuperAdmin] = useState(false)
   const [rmMBDetail, setrmMBDetail] = useState({})
   const [viewAtttachments, setViewAttachment] = useState([])
   const [pdfHead, setPdfHead] = useState(false);
@@ -130,7 +131,7 @@ const CostingSummaryTable = (props) => {
 
   useEffect(() => {
     applyPermission(topAndLeftMenuData, selectedTechnology)
-
+    setIsSuperAdmin(userDetails()?.Role === "SuperAdmin")
     return () => {
       dispatch(setCostingViewData([]))
     }
@@ -476,6 +477,7 @@ const CostingSummaryTable = (props) => {
       customerName: viewCostingData[index]?.customerName,
       customerId: viewCostingData[index]?.customerId,
       customerCode: viewCostingData[index]?.customerCode,
+      vendorCode: viewCostingData[index]?.vendorCode
     }
 
     setIsEditFlag(true)
@@ -1225,7 +1227,7 @@ const CostingSummaryTable = (props) => {
                   !simulationMode && !props.isRfqCosting && <>
 
                     {(!viewMode && !isFinalApproverShow) && !props.isRfqCosting && (
-                      <button className="user-btn mr-1 mb-2 approval-btn" disabled={isWarningFlag} onClick={() => checkCostings()}>
+                      <button className="user-btn mr-1 mb-2 approval-btn" disabled={isWarningFlag || isSuperAdmin} onClick={() => checkCostings()}>
                         <div className="send-for-approval"></div>
                         {'Send For Approval'}
                       </button>
@@ -1815,7 +1817,7 @@ const CostingSummaryTable = (props) => {
                                         {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.rejectionOn.rejectionTitle : '')}
                                       </span>{' '}
                                       <span className="d-inline-block w-50 small-grey-text">
-                                        {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.rejectionOn.rejectionPercentage : '')}
+                                        {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.rejectionOn.rejectionTitle === 'Fixed' ? '-' : data?.rejectionOn.rejectionPercentage : '')}
                                       </span>{' '}
                                       <span className="d-inline-block w-50 small-grey-text">
                                         {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? <span title={checkForDecimalAndNull(data?.rejectionOn.rejectionValue, initialConfiguration.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.rejectionOn.rejectionValue, initialConfiguration.NoOfDecimalForPrice)}</span> : '')}
@@ -1826,7 +1828,7 @@ const CostingSummaryTable = (props) => {
                                         {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.iccOn.iccTitle : '')}
                                       </span>{' '}
                                       <span className="d-inline-block w-50 small-grey-text">
-                                        {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.iccOn.iccPercentage : '')}
+                                        {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.iccOn.iccTitle === 'Fixed' ? '-' : data?.iccOn.iccPercentage : '')}
                                       </span>{' '}
                                       <span className="d-inline-block w-50 small-grey-text">
                                         {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? <span title={checkForDecimalAndNull(data?.iccOn.iccValue, initialConfiguration.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.iccOn.iccValue, initialConfiguration.NoOfDecimalForPrice)}</span> : '')}
@@ -1837,7 +1839,7 @@ const CostingSummaryTable = (props) => {
                                         {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.paymentTerms.paymentTitle : '')}
                                       </span>{' '}
                                       <span className="d-inline-block w-50 small-grey-text">
-                                        {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.paymentTerms.paymentPercentage : '')}
+                                        {(data?.bestCost === true) ? ' ' : data?.CostingHeading !== VARIANCE ? data?.paymentTerms.paymentTitle === 'Fixed' ? '-' : data?.paymentTerms.paymentPercentage : ''}
                                       </span>{' '}
                                       <span className="d-inline-block w-50 small-grey-text">
                                         {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? <span title={checkForDecimalAndNull(data?.paymentTerms.paymentValue, initialConfiguration.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.paymentTerms.paymentValue, initialConfiguration.NoOfDecimalForPrice)}</span> : '')}
@@ -2044,7 +2046,7 @@ const CostingSummaryTable = (props) => {
 
                                 (data?.bestCost !== true) && data?.CostingHeading !== VARIANCE ?
                                   <td className={props?.isRfqCosting && data.status === APPROVED && !props.uniqueShouldCostingId.includes(data.costingId) ? 'finalize-cost' : ''} width={"32%"}>
-                                    {data.anyOtherCostTotal}
+                                    {checkForDecimalAndNull(data.anyOtherCostTotal, initialConfiguration.NoOfDecimalForPrice)}
                                   </td>
                                   : ""
 
@@ -2292,7 +2294,7 @@ const CostingSummaryTable = (props) => {
                                     (data?.status === DRAFT) && (!pdfHead && !drawerDetailPDF) &&
                                     <button
                                       className="user-btn"
-                                      disabled={viewCostingData[index].IsApprovalLocked}
+                                      disabled={viewCostingData[index].IsApprovalLocked || isSuperAdmin}
                                       onClick={() => {
                                         sendForApprovalDown(data)
                                       }}

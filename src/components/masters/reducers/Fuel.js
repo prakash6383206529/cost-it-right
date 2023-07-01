@@ -59,6 +59,9 @@ export default function fuelReducer(state = initialState, action) {
             let arr = []
             arr = action.payload && action.payload.filter((el) => {
                 el.Rate = checkForDecimalAndNull(el.Rate, getConfigurationKey()?.NoOfDecimalForPrice)
+                el.PlantWithCode = `${el.PlantName ? el.PlantName : ''} ${el.PlantCode ? ` (${el.PlantCode})` : "-"}`
+                el.VendorWithCode = `${el.VendorName ? el.VendorName : ''} ${el.VendorCode ? ` (${el.VendorCode})` : "-"}`
+                el.CustomerWithCode = `${el.CustomerName ? el.CustomerName : ''} ${el.CustomerCode ? ` (${el.CustomerCode})` : "-"}`
                 return el
             })
             return {
@@ -150,6 +153,9 @@ export default function fuelReducer(state = initialState, action) {
             let arr = []
             arr = action.payload && action.payload.filter((el) => {
                 el.NetPowerCostPerUnit = checkForDecimalAndNull(el.NetPowerCostPerUnit, getConfigurationKey()?.NoOfDecimalForPrice)
+                el.PlantWithCode = `${el.PlantName ? el.PlantName : ''} ${el.PlantCode ? ` (${el.PlantCode})` : "-"}`
+                el.VendorWithCode = `${el.VendorName ? el.VendorName : ''} ${el.VendorCode ? ` (${el.VendorCode})` : "-"}`
+                el.CustomerWithCode = `${el.CustomerName ? el.CustomerName : ''} ${el.CustomerCode ? ` (${el.CustomerCode})` : "-"}`
                 return el
             })
             return {

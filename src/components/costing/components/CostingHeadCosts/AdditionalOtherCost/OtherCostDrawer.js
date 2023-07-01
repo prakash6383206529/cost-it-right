@@ -14,7 +14,7 @@ import { costingInfoContext, netHeadCostContext } from '../../CostingDetailStepT
 import _ from 'lodash'
 import Toaster from '../../../../common/Toaster';
 import { setOtherCostData } from '../../../actions/Costing';
-import OtherCostTable from './OtherCosttTable';
+import OtherCostTable from './OtherCostTable';
 
 function OtherCostDrawer(props) {
 
@@ -333,7 +333,7 @@ function OtherCostDrawer(props) {
                         <Row className="drawer-heading">
                             <Col>
                                 <div className={"header-wrapper left"}>
-                                    <h3>{"Other Cost"}</h3>
+                                    <h3>{"Add Other Cost"}</h3>
                                 </div>
                                 <div
                                     onClick={() => props.closeDrawer('cancel')}
@@ -344,7 +344,7 @@ function OtherCostDrawer(props) {
 
                         <form onSubmit={handleSubmit(onSubmit)}>
                             <Row>
-                                {<Col md="4">
+                                {initialConfiguration.IsShowCRMHead && <Col md="4">
                                     <SearchableSelectHookForm
                                         name={`crmHeadOtherCost`}
                                         type="text"

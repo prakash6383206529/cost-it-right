@@ -34,7 +34,7 @@ import ConditionCosting from '../CostingHeadCosts/AdditionalOtherCost/ConditionC
 import AddConditionCosting from '../CostingHeadCosts/AdditionalOtherCost/AddConditionCosting';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import OtherCostDrawer from '../CostingHeadCosts/AdditionalOtherCost/OtherCostDrawer'
-import OtherCostTable from '../CostingHeadCosts/AdditionalOtherCost/OtherCosttTable';
+import OtherCostTable from '../CostingHeadCosts/AdditionalOtherCost/OtherCostTable';
 let counter = 0;
 function TabDiscountOther(props) {
   // ********* INITIALIZE REF FOR DROPZONE ********
@@ -103,7 +103,7 @@ function TabDiscountOther(props) {
         setValue('NetPOPriceINR', discountObj !== undefined && checkForDecimalAndNull((netPOPrice - netPOPrice * calculatePercentage(discountObj?.HundiOrDiscountPercentage)), initialConfiguration?.NoOfDecimalForPrice))
         setValue('HundiOrDiscountPercentage', discountObj !== undefined && discountObj?.HundiOrDiscountPercentage !== null ? discountObj?.HundiOrDiscountPercentage : '')
         setValue('HundiOrDiscountValue', discountObj !== undefined && discountObj?.DiscountCostType === 'Percentage' ? discountObj !== undefined && (netPOPrice * calculatePercentage(discountObj?.HundiOrDiscountPercentage)) : discountObj?.HundiOrDiscountValue)
-        setValue('AnyOtherCost', discountObj !== undefined && discountObj?.AnyOtherCost)
+        setValue('AnyOtherCost', discountObj !== undefined && checkForDecimalAndNull(discountObj?.AnyOtherCost, initialConfiguration.NoOfDecimalForPrice))
 
         let topHeaderData = {
           DiscountsAndOtherCost: checkForNull(discountObj?.HundiOrDiscountValue),
@@ -330,7 +330,9 @@ function TabDiscountOther(props) {
               HundiOrDiscountPercentage: costDetail.DiscountCostDetails[0].Value !== null ? checkForNull(costDetail.DiscountCostDetails[0].Value) : '',
               //DiscountCostType: OtherCostDetails.DiscountCostType !== null ? OtherCostDetails.DiscountCostType : '',
               // OtherCostApplicability: OtherCostDetails.OtherCostApplicability,
-              DiscountApplicability: costDetail.DiscountCostDetails[0].ApplicabilityType
+              DiscountApplicability: costDetail.DiscountCostDetails[0].ApplicabilityType,
+              totalNpvCost: discountObj?.totalNpvCost ? discountObj?.totalNpvCost : costDetail?.NetNpvCost,
+              totalConditionCost: discountObj?.totalConditionCost ? discountObj?.totalConditionCost : costDetail?.NetConditionCost,
             }
             dispatch(setDiscountCost(discountValues, () => { }))
 
@@ -378,7 +380,9 @@ function TabDiscountOther(props) {
       HundiOrDiscountPercentage: discountObj?.HundiOrDiscountPercentage !== null ? checkForNull(discountObj?.HundiOrDiscountPercentage) : '',
       DiscountCostType: discountObj?.DiscountCostType !== null ? discountObj?.DiscountCostType : '',
       // OtherCostApplicability: discountObj?.OtherCostApplicability,
-      DiscountApplicability: discountObj?.DiscountApplicability
+      DiscountApplicability: discountObj?.DiscountApplicability,
+      totalNpvCost: discountObj?.totalNpvCost ? discountObj?.totalNpvCost : totalNpvCost,
+      totalConditionCost: discountObj?.totalConditionCost ? discountObj?.totalConditionCost : totalConditionCost,
     }
     dispatch(setDiscountCost(discountValues, () => { }))
 

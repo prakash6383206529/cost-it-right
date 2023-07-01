@@ -3859,7 +3859,7 @@ export const RMDomesticSimulation = [
     { label: "Spec", value: "RawMaterialSpecificationName" },
     { label: "Code", value: "RawMaterialCode", },
     { label: "Category", value: "Category" },
-    { label: "TechnologyName", value: "TechnologyName" },
+    { label: "Technology", value: "TechnologyName" },
     { label: "Plant (Code)", value: "DestinationPlantName" },
     { label: "Vendor (Code)", value: "VendorName" },
     { label: "VendorLocation", value: "VendorLocation" },
@@ -3886,7 +3886,7 @@ export const RMImportSimulation = [
     { label: "Spec", value: "RawMaterialSpecificationName" },
     { label: "Code", value: "RawMaterialCode", },
     { label: "Category", value: "Category" },
-    { label: "TechnologyName", value: "TechnologyName" },
+    { label: "Technology", value: "TechnologyName" },
     { label: "Plant (Code)", value: "DestinationPlantName" },
     { label: "Vendor (Code)", value: "VendorName" },
     { label: "VendorLocation", value: "VendorLocation" },
@@ -3912,7 +3912,7 @@ export const SurfaceTreatmentSimulation = [
     { label: "DestinationPlant (Code)", value: "Plants" },
     { label: "Vendor (Code)", value: "VendorName", },
     { label: "Customer (Code)", value: "CustomerName" },
-    { label: "UnitOfMeasurement", value: "UOM" },
+    { label: "UOM", value: "UOM" },
     { label: "Rate", value: "Rate" },
     { label: "RevisedRate", value: "NewRate" },
     { label: "EffectiveDate", value: "EffectiveDate" },
@@ -3928,7 +3928,7 @@ export const OperationSimulation = [
     { label: "DestinationPlant (Code)", value: "Plants" },
     { label: "Vendor (Code)", value: "VendorName", },
     { label: "Customer (Code)", value: "CustomerName" },
-    { label: "UnitOfMeasurement", value: "UOM" },
+    { label: "UOM", value: "UOM" },
     { label: "Rate", value: "Rate" },
     { label: "RevisedRate", value: "NewRate" },
     { label: "EffectiveDate", value: "EffectiveDate" },
@@ -4811,8 +4811,6 @@ export const SIMULATIONAPPROVALSUMMARYDOWNLOADBOP = [
 export const SIMULATIONAPPROVALSUMMARYDOWNLOADBOPWITHOUTCOSTING = [
     { label: "Part No", value: "PartNo" },
     { label: "Part Name", value: "PartName" },
-    { label: "BOP Name", value: "BoughtOutPartName" },
-    { label: "BOP Number", value: "BoughtOutPartNumber" },
     { label: "Vendor (Code)", value: "VendorName" },
     { label: "Plant (Code)", value: "PlantName" },
     { label: "Existing BOP Cost", value: "OldNetBoughtOutPartCost" },
@@ -4893,20 +4891,20 @@ export const FUELLISTING_DOWNLOAD_EXCEl = [
     { label: "UOM", value: "UnitOfMeasurementName", },
     { label: "State", value: "StateName", },
     { label: "Rate (INR)", value: "Rate", },
+    { label: "Plant (Code)", value: "PlantWithCode", },
+    { label: "Vendor (Code)", value: "VendorWithCode", },
+    { label: "Customer (Code)", value: "CustomerWithCode", },
     { label: "Effective Date", value: "EffectiveDate", },
     { label: "Date of Modification", value: "ModifiedDate", },
 ]
 
 export const POWERLISTING_DOWNLOAD_EXCEl = [
     { label: "State Name", value: "StateName", },
-    { label: "Plant Name", value: "PlantName", },
+    { label: "Plant (Code)", value: "PlantWithCode", },
+    { label: "Vendor (Code)", value: "VendorWithCode" },
+    { label: "Customer (Code)", value: "CustomerWithCode", },
     { label: "Net Power Cost per Unit", value: "NetPowerCostPerUnit", },
     { label: "Effective Date", value: "EffectiveDate" }
-]
-
-export const POWERLISTING_VENDOR_DOWNLOAD_EXCEL = [
-    { label: "Vendor (Code)", value: "VendorName" },
-    { label: "Net Power Cost per Unit", value: "NetPowerCostPerUnit" },
 ]
 
 export const INTERESTRATE_DOWNLOAD_EXCEl = [
@@ -5674,9 +5672,9 @@ export const ERImpactDownloadArray = ["Currency", "BankRate", "BankCommissionPer
 
 export const MachineImpactDownloadArray = ['MachineName', 'MachineNumber', 'MachineTypeName', 'ProcessName', 'ProcessCode', 'UOM', 'Vendor', 'ExistingMachineRate', 'RevisedMachineRate', 'CurrentEffectiveDate']
 
-export const RawMaterialDomesticFileHeads = ["CostingHead", "RawMaterial", "Grade", "Spec", "Code", "Category", "TechnologyName"]
+export const RawMaterialDomesticFileHeads = ["CostingHead", "RawMaterial", "Grade", "Spec", "Code", "Category", "Technology"]
 
-export const RawMaterialImportFileHeads = ["CostingHead", "RawMaterial", "Grade", "Spec", "Code", "Category", "TechnologyName"]
+export const RawMaterialImportFileHeads = ["CostingHead", "RawMaterial", "Grade", "Spec", "Code", "Category", "Technology"]
 
 export const OperationFileHeads = ['Technology', 'CostingHead', 'OperationName', 'OperationCode']
 
@@ -5691,7 +5689,8 @@ export const TechnologyDropdownBulkUpload = [
     { label: 'Rubber, Plastic, Die Casting', value: '2' },
     { label: 'Forging, Machining, Turn Part', value: '3' },
     { label: 'Corrugated Box', value: '4' },
-    { label: 'Assembly', value: '5' }
+    { label: 'Assembly', value: '5' },
+    { label: 'Wiring Harness', value: '6' }
 ]
 
 export const tempObject = [

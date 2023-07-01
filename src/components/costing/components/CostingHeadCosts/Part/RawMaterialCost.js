@@ -1288,7 +1288,6 @@ function RawMaterialCost(props) {
                   <tbody className='rm-table-body'>
                     {gridData &&
                       gridData.map((item, index) => {
-                        console.log('item: ', item);
                         return (
                           <tr key={index} className=''>
                             <td className='text-overflow'><span title={item.RMName}>{item.RMName}</span></td>
