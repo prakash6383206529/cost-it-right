@@ -39,7 +39,7 @@ import {
   OVERHEAD_AND_PROFIT, PART, PLANT, RAW_MATERIAL, UOM, USER, VENDOR,
   REASON, VOLUME, CLIENT, EXCHANGE_RATE, TAX, COSTING_PATH, APPROVAL_LISTING_PATH, COSTING_BREAKUP_DETAILS_REPORT, APPROVAL_APP,
   APPROVAL_SUMMARY_PATH, COSTING_BULK_UPLOAD, COSTING_SUMMARY_, COSTING_SUMMARY, Simulation_Page, Simulation_Upload, API,
-  DASHBOARDWITHGRAPH_PATH, SIMULATION_APPROVAL_SUMMARY_PATH, DASHBOARD_PATH, DASHBOARD_PATH_SECOND, SHEET_METAL, SIMULATION_PATH, SIMULATION_HISTORY_PATH, USER_PATH
+  DASHBOARDWITHGRAPH_PATH, SIMULATION_APPROVAL_SUMMARY_PATH, DASHBOARD_PATH, DASHBOARD_PATH_SECOND, SHEET_METAL, SIMULATION_PATH, SIMULATION_HISTORY_PATH, USER_PATH, RFQ_LISTING, RFQ, COST_RATIO_REPORT, BUDGETING, NFR_LISTING
 } from '../config/constants'
 import ApprovalSummary from './costing/components/approval/ApprovalSummary'
 import CostingSummaryBulkUpload from './costing/components/CostingSummaryBulkUpload'
@@ -55,6 +55,16 @@ import ToasterBoXWrapper from './common/ToasterBoXWrapper'
 // import SimulationInsights from './report/components/SimulationInsights'
 import SimulationRoutes from './simulation/Routes'
 import CommonApproval from './masters/material-master/CommonApproval'
+import RfqListing from './rfq/RfqListing'
+import CostMovementReport from './report/components/CostMovementReport/CostMovementReport'
+import CostRatioReport from './report/components/CostRatioReport/CostRatioReport'
+import SupplierContributionReport from './report/components/SupplierContribution'
+import NfrTabs from './masters/nfr'
+import SaleProvisionReport from './report/components/SaleProvisionReport/SaleProvisionReport'
+import PurchaseProvisionReport from './report/components/PurchaseProvisionReport/PurchaseProvisionReport'
+import CustomerPoamSummaryReport from './report/components/CustomerPoamSummaryReport/CustomerPoamSummaryReport'
+import HeadWiseCostingGotGiven from './report/components/HeadwiseCostingGotGiven/HeadWiseCostingGotGiven'
+import BudgetMaster from './masters/budget-master'
 const CustomHeader = {
   'Content-Type': 'application/x-www-form-urlencoded',
   'Access-Control-Allow-Origin': '*',
@@ -77,7 +87,7 @@ if (Detail && Object.keys(Detail).length > 0) {
 
     let queryParams = `refresh_token=${reqParams.refresh_token}&ClientId=${reqParams.ClientId}&grant_type=${reqParams.grant_type}`;
 
-    axios.post(API.tokenAPI, queryParams, CustomHeader)
+    axios.post(API.login, queryParams, CustomHeader)
       .then((response) => {
         if (response && response.status === 200) {
           let userDetail = formatLoginResult(response.data);
@@ -204,14 +214,16 @@ class Main extends Component {
         location.pathname === DASHBOARD_PATH ||
         location.pathname === DASHBOARD_PATH_SECOND ||
         location.pathname === DASHBOARDWITHGRAPH_PATH ||
-        location.pathname !== SIMULATION_PATH ||
-        location.pathname !== SIMULATION_HISTORY_PATH ? 'w-100' : ''
+        location.pathname === SIMULATION_PATH ||
+        location.pathname === SIMULATION_HISTORY_PATH ||
+        location.pathname === USER_PATH ||
+        location.pathname === RFQ_LISTING ? 'w-100' : '' ||
+          location.pathname === NFR_LISTING ? 'w-100' : ''
 
     //  ADD DASHBPOARD CLASS FOR DASHBOARD PAGE ONLY
     const DashboardPage = location.pathname === DASHBOARDWITHGRAPH_PATH ? 'Dashboard-page' : '';
     const DashboardMainPage = location.pathname === DASHBOARD_PATH || location.pathname === DASHBOARD_PATH_SECOND ? 'Dashboard-page' : ''
     //  ADD DASHBPOARD CLASS FOR DASHBOARD PAGE ONLY
-
 
 
     return (
@@ -262,6 +274,8 @@ class Main extends Component {
                 location.pathname !== SIMULATION_PATH &&
                 location.pathname !== SIMULATION_HISTORY_PATH &&
                 location.pathname !== USER_PATH &&
+                location.pathname !== RFQ_LISTING &&
+                location.pathname !== NFR_LISTING &&
                 (
                   <LeftMenu {...this.props} />
                 )}
@@ -346,16 +360,22 @@ class Main extends Component {
                     <Route path="/simulation-history" component={AuthMiddleware(SimulationRoutes, Simulation_Page)} />
 
                     <Route path='/simulation-approval-summary' component={AuthMiddleware(SimulationApprovalSummary, Simulation_Page)} />
-
                     <Route path="/simulation" component={SimulationRoutes} exact={true} />
-
                     <Route path="/simulation-upload" component={AuthMiddleware(SimulationUpload, Simulation_Upload)} />
-
-
                     <Route path="/costing-breakup-report" component={AuthMiddleware(CostingDetailReport, COSTING_BREAKUP_DETAILS_REPORT)} />
-                    <Route path="/cost-benchmarking-report" component={CostingBenchmarkReport} />
+                    <Route path="/cost-ratio-report" component={AuthMiddleware(CostRatioReport, COST_RATIO_REPORT)} />
+                    <Route path="/master-benchmarking-report" component={CostingBenchmarkReport} />
+                    <Route path="/cost-movement-report" component={CostMovementReport} />
+                    <Route path="/supplier-contribution-report" component={SupplierContributionReport} />
+                    <Route path="/sale-provision-report" component={SaleProvisionReport} />
+                    <Route path="/purchase-provision-report" component={PurchaseProvisionReport} />
+                    <Route path="/customer-poam-summary-report" component={CustomerPoamSummaryReport} />
+                    <Route path="/headwise-costing-got-given" component={HeadWiseCostingGotGiven} />
                     {/*  NEED TO ADD PATH FROM BACKEND */}
-                    {/* <Route path="/simulation-insights" component={SimulationInsights} /> */}
+                    {/* <Route path="/simulation-insights" component={SimulationInsights} />                   MAY BE USE IN FUTURE*/}
+                    <Route path="/rfq-listing" component={AuthMiddleware(RfqListing, RFQ)} />
+                    <Route path="/nfr" component={NfrTabs} />
+                    <Route path="/budgeting" component={AuthMiddleware(BudgetMaster, BUDGETING)} />
 
                     {/* <Route path='/simulation-approval-listing' component={SimulationApprovalListing} /> */}
 

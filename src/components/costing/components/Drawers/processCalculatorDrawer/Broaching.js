@@ -2,13 +2,15 @@ import React, { Fragment, useState, useEffect, useContext } from 'react'
 import { Row, Col } from 'reactstrap'
 import { useForm, Controller, useWatch } from 'react-hook-form'
 import { useDispatch } from 'react-redux'
-import { NumberFieldHookForm } from '../../../../layout/HookFormInputs'
+import { NumberFieldHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs'
 import { checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUserId, } from '../../../../../helper'
 import { costingInfoContext } from '../../CostingDetailStepTwo'
 import { saveMachiningProcessCostCalculationData } from '../../../actions/CostWorking'
 import Toaster from '../../../../common/Toaster'
 import { debounce } from 'lodash'
 import { findProcessCost } from '../../../CostingUtil'
+import TooltipCustom from '../../../../common/Tooltip'
+import { number, percentageLimitValidation, checkWhiteSpaces } from "../../../../../helper/validation";
 
 function Broaching(props) {
     const WeightCalculatorRequest = props.calculatorData.WeightCalculatorRequest
@@ -185,7 +187,7 @@ function Broaching(props) {
             setIsDisable(false)
             if (res.data.Result) {
                 obj.ProcessCalculationId = res.data.Identity
-                Toaster.success('Calculation saved sucessfully.')
+                Toaster.success('Calculation saved successfully.')
                 calculateMachineTime('', obj)
             }
         }))
@@ -392,9 +394,11 @@ function Broaching(props) {
                                         </Col>
 
                                         <Col md="4">
+                                            <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'broaching-force'} tooltipText={'Broaching Force in Ton = Cutting Resistance * (Cutting Length / Module) * (No. of Teeth * Module * Step Forward Thinning)  / 1000'} />
                                             <NumberFieldHookForm
                                                 label={`Broaching Force in Ton`}
                                                 name={'broachingForceInTon'}
+                                                id={'broaching-force'}
                                                 Controller={Controller}
                                                 control={control}
                                                 register={register}
@@ -481,9 +485,11 @@ function Broaching(props) {
                                         </Col>
 
                                         <Col md="4">
+                                            <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'broaching-cutting-time'} tooltipText={'Cutting time(Min) = (Tool Length / Cutting Speed Forward / 1000) + (Tool Length / Cutting Speed Return / 1000)'} />
                                             <NumberFieldHookForm
                                                 label={`Cutting time(min)`}
                                                 name={'cuttingTimeMins'}
+                                                id={'broaching-cutting-time'}
                                                 Controller={Controller}
                                                 control={control}
                                                 register={register}
@@ -603,9 +609,11 @@ function Broaching(props) {
 
 
                                         <Col md="4">
+                                            <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'broaching-cyle-time-min'} tooltipText={'Total Cycle Time(Min) = (Cutting Time + Chip to Chip + Tool Non-Cutting + Indexing table + Loading & Unloading)'} />
                                             <NumberFieldHookForm
                                                 label={`Total Cycle Time(min)`}
                                                 name={'totalCycleTimeMins'}
+                                                id={'broaching-cyle-time-min'}
                                                 Controller={Controller}
                                                 control={control}
                                                 register={register}
@@ -620,9 +628,11 @@ function Broaching(props) {
                                         </Col>
 
                                         <Col md="4">
+                                            <TooltipCustom disabledIcon={true} id={'broaching-cyle-time-sec'} tooltipText={'Total Cycle Time(Sec) = (Total Cycle Time in Mins * 60)'} />
                                             <NumberFieldHookForm
                                                 label={`Total Cycle Time(sec)`}
                                                 name={'TotalCycleTimeSec'}
+                                                id={'broaching-cyle-time-sec'}
                                                 Controller={Controller}
                                                 control={control}
                                                 register={register}
@@ -637,8 +647,8 @@ function Broaching(props) {
                                         </Col>
 
                                         <Col md="4">
-                                            <NumberFieldHookForm
-                                                label={`Efficiency(%)`}
+                                            <TextFieldHookForm
+                                                label={`Efficiency (%)`}
                                                 name={'efficiencyPercentage'}
                                                 Controller={Controller}
                                                 control={control}
@@ -647,15 +657,11 @@ function Broaching(props) {
                                                 handleChange={() => { }}
                                                 rules={{
                                                     required: true,
-                                                    pattern: {
-                                                        value: /^\d*\.?\d*$/,
-                                                        message: 'Invalid Number.'
-                                                    },
-
+                                                    validate: { number, checkWhiteSpaces, percentageLimitValidation },
                                                     max: {
                                                         value: 100,
-                                                        message: "Should not be greater than 100"
-                                                    }
+                                                        message: 'Percentage cannot be greater than 100'
+                                                    },
                                                 }}
                                                 defaultValue={''}
                                                 className=""
@@ -666,9 +672,11 @@ function Broaching(props) {
                                         </Col>
 
                                         <Col md="4">
+                                            <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'broaching-part-hour'} tooltipText={'Part per Hour = (3600 / Cycle Time) * Efficiency / 100'} />
                                             <NumberFieldHookForm
                                                 label={`Parts per hour`}
                                                 name={'partsPerHour'}
+                                                id={'broaching-part-hour'}
                                                 Controller={Controller}
                                                 control={control}
                                                 register={register}
@@ -683,9 +691,11 @@ function Broaching(props) {
                                         </Col>
 
                                         <Col md="4">
+                                            <TooltipCustom disabledIcon={true} id={'broaching-process-cost'} tooltipText={'Process Cost = (Machine Rate / Parts per Hour)'} />
                                             <NumberFieldHookForm
                                                 label={`Process Cost`}
                                                 name={'processCost'}
+                                                id={'broaching-process-cost'}
                                                 Controller={Controller}
                                                 control={control}
                                                 register={register}

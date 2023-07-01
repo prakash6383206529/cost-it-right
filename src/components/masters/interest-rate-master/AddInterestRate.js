@@ -1,23 +1,25 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Field, reduxForm, formValueSelector, propTypes } from "redux-form";
-import { Row, Col, } from 'reactstrap';
-import { required, positiveAndDecimalNumber, postiveNumber, maxLength10, checkPercentageValue, decimalLengthThree, } from "../../../helper/validation";
-import { renderDatePicker, renderMultiSelectField, renderNumberInputField, searchableSelect, } from "../../layout/FormInputs";
+import { Field, reduxForm, formValueSelector, propTypes, clearFields } from "redux-form";
+import { Row, Col, Label, } from 'reactstrap';
+import { required, postiveNumber, maxLength10, nonZero, number, positiveAndDecimalNumber, checkPercentageValue, decimalLengthThree } from "../../../helper/validation";
+import { renderDatePicker, renderMultiSelectField, renderTextInputField, searchableSelect, renderNumberInputField } from "../../layout/FormInputs";
 import { updateInterestRate, createInterestRate, getPaymentTermsAppliSelectList, getICCAppliSelectList, getInterestRateData, } from '../actions/InterestRateMaster';
 import { getVendorWithVendorCodeSelectList, getPlantSelectListByType } from '../../../actions/Common';
-import { getVendorListByVendorType, } from '../actions/Material';
 import { MESSAGES } from '../../../config/message';
 import { getConfigurationKey, loggedInUserId, userDetails } from "../../../helper/auth";
-import Switch from "react-switch";
 import DayTime from '../../common/DayTimeWrapper'
 import "react-datepicker/dist/react-datepicker.css";
 import LoaderCustom from '../../common/LoaderCustom';
 import Toaster from '../../common/Toaster'
 import { debounce } from 'lodash';
 import AsyncSelect from 'react-select/async';
-import { SPACEBAR, ZBC } from '../../../config/constants';
+import { CBCTypeId, SPACEBAR, VBCTypeId, ZBC, ZBCTypeId, searchCount } from '../../../config/constants';
 import { onFocus, showDataOnHover } from '../../../helper';
+import { getClientSelectList, } from '../actions/Client';
+import { reactLocalStorage } from 'reactjs-localstorage';
+import { autoCompleteDropdown } from '../../common/CommonFunctions';
+import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 
 const selector = formValueSelector('AddInterestRate');
 
@@ -39,15 +41,17 @@ class AddInterestRate extends Component {
       Data: [],
       DropdownChanged: true,
       plant: [],
-      showPopup: false,
+      DropdownNotChanged: true,
       updatedObj: {},
       setDisable: false,
       inputLoader: false,
       isDataChanged: this.props.data.isEditFlag,
       minEffectiveDate: '',
       showErrorOnFocus: false,
-      showErrorOnFocusDate: false
-
+      costingTypeId: ZBCTypeId,
+      client: [],
+      showPopup: false,
+      vendorFilterList: []
     }
   }
   /**
@@ -55,15 +59,19 @@ class AddInterestRate extends Component {
   * @description called before render the component
   */
   UNSAFE_componentWillMount() {
-    if (!(this.props.data.isEditFlag || this.state.isViewMode))
-      this.props.getVendorListByVendorType(true, () => { })
+    if (!(this.props.data.isEditFlag || this.state.isViewMode)) {
+      // this.props.getVendorListByVendorType(true, this.state.vendorName, (res) => {
+      // })
+    }
   }
-
   /**
    * @method componentDidMount
    * @description called after render the component
    */
   componentDidMount() {
+    if (!(this.props.data.isEditFlag || this.state.isViewMode)) {
+      this.props.getClientSelectList(() => { })
+    }
     this.props.getPlantSelectListByType(ZBC, () => { })
     this.getDetail()
     this.props.getICCAppliSelectList(() => { })
@@ -83,22 +91,16 @@ class AddInterestRate extends Component {
 
     }
   }
-
+  componentWillUnmount() {
+    reactLocalStorage?.setObject('vendorData', [])
+  }
   /**
   * @method renderListing
   * @description Used show listing of unit of measurement
   */
   renderListing = (label) => {
-    const { vendorWithVendorCodeSelectList, plantSelectList, paymentTermsSelectList, iccApplicabilitySelectList } = this.props;
+    const { vendorWithVendorCodeSelectList, plantSelectList, paymentTermsSelectList, iccApplicabilitySelectList, clientSelectList } = this.props;
     const temp = [];
-    if (label === 'VendorNameList') {
-      vendorWithVendorCodeSelectList && vendorWithVendorCodeSelectList.map(item => {
-        if (item.Value === '0') return false;
-        temp.push({ label: item.Text, value: item.Value })
-        return null
-      });
-      return temp;
-    }
     if (label === 'ICC') {
       iccApplicabilitySelectList && iccApplicabilitySelectList.map(item => {
         if (item.Value === '0' || item.Text === 'Net Cost') return false;
@@ -131,18 +133,43 @@ class AddInterestRate extends Component {
       })
       return temp
     }
+    if (label === 'ClientList') {
+      clientSelectList && clientSelectList.map(item => {
+        if (item.Value === '0') return false;
+        temp.push({ label: item.Text, value: item.Value })
+        return null;
+      });
+      return temp;
+    }
   }
 
   /**
   * @method onPressVendor
   * @description Used for Vendor checked
   */
-  onPressVendor = () => {
-    this.setState({ IsVendor: !this.state.IsVendor, });
-    this.setState({ inputLoader: true })
-    this.props.getVendorWithVendorCodeSelectList(() => { this.setState({ inputLoader: false }) })
+  onPressVendor = (costingHeadFlag) => {
+    const fieldsToClear = [
+      'Mode',
+      'vendorName',
+      'Plant',
+      'DestinationPlant',
+      'clientName',
+      'ICCPercent',
+      'ICCApplicability',
+      'PaymentTermsApplicability',
+      'EffectiveDate',
+    ];
+    fieldsToClear.forEach(fieldName => {
+      this.props.dispatch(clearFields('AddInterestRate', false, false, fieldName));
+    });
+    this.setState({
+      vendorName: [],
+      costingTypeId: costingHeadFlag
+    });
+    if (costingHeadFlag === CBCTypeId) {
+      this.props.getClientSelectList(() => { })
+    }
   }
-
   /**
   * @method handleVendorName
   * @description called
@@ -165,8 +192,11 @@ class AddInterestRate extends Component {
     } else {
       this.setState({ ICCApplicability: [], })
     }
-    if (this.state.isEditFlag) {
-      this.setState({ isDataChanged: false })
+    if (this.state.ICCApplicability.value === newValue.value) {
+      this.setState({ isDataChanged: true, DropdownNotChanged: true })
+    }
+    else {
+      this.setState({ isDataChanged: false, DropdownNotChanged: false })
     }
   };
 
@@ -180,8 +210,11 @@ class AddInterestRate extends Component {
     } else {
       this.setState({ PaymentTermsApplicability: [], })
     }
-    if (this.state.isEditFlag) {
-      this.setState({ isDataChanged: false })
+    if (this.state.PaymentTermsApplicability.value === newValue.value) {
+      this.setState({ isDataChanged: true, DropdownNotChanged: true })
+    }
+    else {
+      this.setState({ isDataChanged: false, DropdownNotChanged: false })
     }
   };
 
@@ -234,7 +267,7 @@ class AddInterestRate extends Component {
   */
   handleEffectiveDateChange = (date) => {
     this.setState({ effectiveDate: DayTime(date).isValid() ? DayTime(date) : '', });
-    this.setState({ DropdownChanged: false })
+    this.setState({ DropdownNotChanged: false })
   };
   /** 
    * @method handlePlant
@@ -242,11 +275,22 @@ class AddInterestRate extends Component {
    */
   handlePlant = (e) => {
     this.setState({ selectedPlants: e })
-    this.setState({ DropdownChanged: false })
+    this.setState({ DropdownNotChanged: false })
   }
   handleSinglePlant = (newValue) => {
     this.setState({ singlePlantSelected: newValue })
   }
+  /**
+* @method handleClient
+* @description called
+*/
+  handleClient = (newValue, actionMeta) => {
+    if (newValue && newValue !== '') {
+      this.setState({ client: newValue });
+    } else {
+      this.setState({ client: [] })
+    }
+  };
   /**
   * @method getDetail
   * @description used to get user detail
@@ -271,9 +315,10 @@ class AddInterestRate extends Component {
             const paymentObj = paymentTermsSelectList && paymentTermsSelectList.find(item => item.Value === Data.PaymentTermApplicability)
             this.setState({
               isEditFlag: true,
-              IsVendor: Data.IsVendor,
+              costingTypeId: Data.CostingTypeId,
+              client: Data.CustomerName !== undefined ? { label: Data.CustomerName, value: Data.CustomerId } : [],
               vendorName: Data.VendorName !== undefined ? { label: Data.VendorName, value: Data.VendorIdRef } : [],
-              selectedPlants: Data && Data.Plants[0] && Data.Plants[0].PlantId ? [{ Text: Data.Plants[0].PlantName, Value: Data.Plants[0].PlantId }] : [],
+              selectedPlants: Data && Data.Plants[0] && Data.Plants[0]?.PlantId ? [{ Text: Data.Plants[0].PlantName, Value: Data.Plants[0]?.PlantId }] : [],
               singlePlantSelected: Data && Data.Plants[0] && Data.Plants[0].PlantId ? { label: Data.Plants[0].PlantName, value: Data.Plants[0].PlantId } : {},
               ICCApplicability: iccObj && iccObj !== undefined ? { label: iccObj.Text, value: iccObj.Value } : [],
               PaymentTermsApplicability: paymentObj && paymentObj !== undefined ? { label: paymentObj.Text, value: paymentObj.Value } : [],
@@ -306,7 +351,16 @@ class AddInterestRate extends Component {
     this.props.getInterestRateData('', () => { })
     this.props.hideForm(type)
   }
-
+  cancelHandler = () => {
+    this.setState({ showPopup: true })
+  }
+  onPopupConfirm = () => {
+    this.cancel('cancel')
+    this.setState({ showPopup: false })
+  }
+  closePopUp = () => {
+    this.setState({ showPopup: false })
+  }
   handleKeyDown = function (e) {
     if (e.key === 'Enter' && e.shiftKey === false) {
       e.preventDefault();
@@ -319,24 +373,33 @@ class AddInterestRate extends Component {
   */
 
   onSubmit = debounce((values) => {
-
-    const { Data, IsVendor, vendorName, ICCApplicability, singlePlantSelected, selectedPlants, PaymentTermsApplicability, InterestRateId, effectiveDate, DropdownChanged } = this.state;
+    const { Data, vendorName, costingTypeId, client, ICCApplicability, singlePlantSelected, selectedPlants, PaymentTermsApplicability, InterestRateId, effectiveDate, DropdownNotChanged } = this.state;
     const userDetail = userDetails()
-
+    const userDetailsInterest = JSON.parse(localStorage.getItem('userDetail'))
     let plantArray = []
-    if (IsVendor) {
+    if (costingTypeId === VBCTypeId) {
       plantArray.push({ PlantName: singlePlantSelected.label, PlantId: singlePlantSelected.value })
     } else {
-
       selectedPlants && selectedPlants.map((item) => {
         plantArray.push({ PlantName: item.Text, PlantId: item.Value })
         return plantArray
       })
     }
+    let cbcPlantArray = []
+    if (costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant) {
+      cbcPlantArray.push({ PlantName: singlePlantSelected.label, PlantId: singlePlantSelected.value })
+    }
+    else {
+      userDetailsInterest?.Plants.map((item) => {
+        cbcPlantArray.push({ PlantName: item.PlantName, PlantId: item.PlantId, PlantCode: item.PlantCode, })
+        return cbcPlantArray
+      })
+    }
 
-    if (vendorName.length <= 0) {
 
-      if (IsVendor) {
+    if (costingTypeId !== CBCTypeId && vendorName.length <= 0) {
+
+      if (costingTypeId === VBCTypeId) {
         this.setState({ isVendorNameNotSelected: true, setDisable: false })      // IF VENDOR NAME IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY AND SAVE BUTTON WILL NOT BE DISABLED
         return false
       }
@@ -349,7 +412,7 @@ class AddInterestRate extends Component {
       if (Data.ICCApplicability === ICCApplicability.label && Data.ICCPercent === values.ICCPercent &&
         Data.PaymentTermApplicability === PaymentTermsApplicability.label &&
         Data.PaymentTermPercent === values.PaymentTermPercent &&
-        Data.RepaymentPeriod === values.RepaymentPeriod && DropdownChanged) {
+        Data.RepaymentPeriod === values.RepaymentPeriod && DropdownNotChanged) {
 
         this.cancel('cancel')
         return false;
@@ -358,11 +421,11 @@ class AddInterestRate extends Component {
       let updateData = {
         VendorInterestRateId: InterestRateId,
         ModifiedBy: loggedInUserId(),
-        VendorName: IsVendor ? vendorName.label : userDetail.ZBCSupplierInfo.VendorName,
+        VendorName: costingTypeId === VBCTypeId ? vendorName.label : userDetail.ZBCSupplierInfo.VendorName,
         ICCApplicability: ICCApplicability.value,
         PaymentTermApplicability: PaymentTermsApplicability.value,
-        Isvendor: IsVendor,
-        VendorIdRef: IsVendor ? vendorName.value : userDetail.ZBCSupplierInfo.VendorId,
+        CostingTypeId: costingTypeId,
+        VendorIdRef: costingTypeId === VBCTypeId ? vendorName.value : userDetail.ZBCSupplierInfo.VendorId,
         ICCPercent: values.ICCPercent,
         PaymentTermPercent: values.PaymentTermPercent,
         RepaymentPeriod: values.RepaymentPeriod,
@@ -370,8 +433,7 @@ class AddInterestRate extends Component {
         IsActive: true,
         CreatedDate: '',
         CreatedBy: loggedInUserId(),
-        // PlantId: plant.value
-        Plants: plantArray
+        Plants: costingTypeId === CBCTypeId ? cbcPlantArray : plantArray,
       }
       if (this.state.isEditFlag) {
         if (DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss') === DayTime(Data?.EffectiveDate).format('YYYY-MM-DD HH:mm:ss')) {
@@ -393,8 +455,8 @@ class AddInterestRate extends Component {
 
       this.setState({ setDisable: true })
       let formData = {
-        Isvendor: IsVendor,
-        VendorIdRef: IsVendor ? vendorName.value : userDetail.ZBCSupplierInfo.VendorId,
+        CostingTypeId: costingTypeId,
+        VendorIdRef: costingTypeId === VBCTypeId ? vendorName.value : userDetail.ZBCSupplierInfo.VendorId,
         ICCApplicability: ICCApplicability.label,
         ICCPercent: values.ICCPercent,
         PaymentTermApplicability: PaymentTermsApplicability.label,
@@ -404,8 +466,8 @@ class AddInterestRate extends Component {
         IsActive: true,
         CreatedDate: '',
         CreatedBy: loggedInUserId(),
-        // PlantId: plant.value
-        Plants: plantArray
+        Plants: costingTypeId === CBCTypeId ? cbcPlantArray : plantArray,
+        CustomerId: costingTypeId === CBCTypeId ? client.value : ''
       }
 
       this.props.createInterestRate(formData, (res) => {
@@ -434,28 +496,40 @@ class AddInterestRate extends Component {
       pos_drop_down = "top";
     }
     const { handleSubmit, } = this.props;
-    const { isEditFlag, isViewMode, setDisable, isDataChanged } = this.state;
+    const { isEditFlag, isViewMode, setDisable, costingTypeId, isDataChanged } = this.state;
 
-    const filterList = (inputValue) => {
-      let tempArr = []
-
-      tempArr = this.renderListing("VendorNameList").filter(i =>
-        i.label !== null && i.label.toLowerCase().includes(inputValue.toLowerCase())
-      );
-
-      if (tempArr.length <= 100) {
-        return tempArr
-      } else {
-        return tempArr.slice(0, 100)
+    const filterList = async (inputValue) => {
+      const { vendorFilterList } = this.state
+      if (inputValue && typeof inputValue === 'string' && inputValue.includes(' ')) {
+        inputValue = inputValue.trim();
+      }
+      const resultInput = inputValue.slice(0, searchCount)
+      if (inputValue?.length >= searchCount && vendorFilterList !== resultInput) {
+        this.setState({ inputLoader: true })
+        let res
+        res = await getVendorWithVendorCodeSelectList(resultInput)
+        this.setState({ inputLoader: false })
+        this.setState({ vendorFilterList: resultInput })
+        let vendorDataAPI = res?.data?.SelectList
+        if (inputValue) {
+          return autoCompleteDropdown(inputValue, vendorDataAPI, false, [], true)
+        } else {
+          return vendorDataAPI
+        }
+      }
+      else {
+        if (inputValue?.length < searchCount) return false
+        else {
+          let VendorData = reactLocalStorage?.getObject('Data')
+          if (inputValue) {
+            return autoCompleteDropdown(inputValue, VendorData, false, [], false)
+          } else {
+            return VendorData
+          }
+        }
       }
     };
 
-    const promiseOptions = inputValue =>
-      new Promise(resolve => {
-        resolve(filterList(inputValue));
-
-
-      });
     return (
       <div className="container-fluid">
         {this.state.isLoader && <LoaderCustom />}
@@ -478,32 +552,56 @@ class AddInterestRate extends Component {
                 >
                   <div className="add-min-height">
                     <Row>
-                      <Col md="4" className="switch mb15">
-                        <label className="switch-level">
-                          <div className={"left-title"}>Zero Based</div>
-                          <Switch
-                            onChange={this.onPressVendor}
-                            checked={this.state.IsVendor}
-                            id="normal-switch"
+                      <Col md="12">
+                        <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
+                          <input
+                            type="radio"
+                            name="costingHead"
+                            checked={
+                              costingTypeId === ZBCTypeId ? true : false
+                            }
+                            onClick={() =>
+                              this.onPressVendor(ZBCTypeId)
+                            }
                             disabled={isEditFlag ? true : false}
-                            background="#4DC771"
-                            onColor="#4DC771"
-                            onHandleColor="#ffffff"
-                            offColor="#4DC771"
-                            uncheckedIcon={false}
-                            checkedIcon={false}
-                            height={20}
-                            width={46}
-                          />
-                          <div className={"right-title"}>Vendor Based</div>
-                        </label>
+                          />{" "}
+                          <span>Zero Based</span>
+                        </Label>
+                        <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
+                          <input
+                            type="radio"
+                            name="costingHead"
+                            checked={
+                              costingTypeId === VBCTypeId ? true : false
+                            }
+                            onClick={() =>
+                              this.onPressVendor(VBCTypeId)
+                            }
+                            disabled={isEditFlag ? true : false}
+                          />{" "}
+                          <span>Vendor Based</span>
+                        </Label>
+                        {reactLocalStorage.getObject('cbcCostingPermission') && <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 pt-0 radio-box"} check>
+                          <input
+                            type="radio"
+                            name="costingHead"
+                            checked={
+                              costingTypeId === CBCTypeId ? true : false
+                            }
+                            onClick={() =>
+                              this.onPressVendor(CBCTypeId)
+                            }
+                            disabled={isEditFlag ? true : false}
+                          />{" "}
+                          <span>Customer Based</span>
+                        </Label>}
                       </Col>
                     </Row>
                     <Row>
-                      {((this.state.IsVendor === false && getConfigurationKey().IsPlantRequiredForOverheadProfitInterestRate) && (
+                      {((costingTypeId === ZBCTypeId && getConfigurationKey().IsPlantRequiredForOverheadProfitInterestRate) && (
                         <Col md="3">
                           <Field
-                            label="Plant"
+                            label="Plant (Code)"
                             name="Plant"
                             placeholder={"Select"}
                             title={showDataOnHover(this.state.selectedPlants)}
@@ -523,20 +621,21 @@ class AddInterestRate extends Component {
                           />
                         </Col>)
                       )}
-                      {this.state.IsVendor && (
+
+                      {costingTypeId === VBCTypeId && (
                         <Col md="3" className='mb-4'>
 
-                          <label>{"Vendor Name"}<span className="asterisk-required">*</span></label>
+                          <label>{"Vendor (Code)"}<span className="asterisk-required">*</span></label>
                           <div className='p-relative'>
                             {this.state.inputLoader && <LoaderCustom customClass={`input-loader`} />}
                             <AsyncSelect
                               name="vendorName"
                               ref={this.myRef}
                               key={this.state.updateAsyncDropdown}
-                              loadOptions={promiseOptions}
+                              loadOptions={filterList}
                               onChange={(e) => this.handleVendorName(e)}
-                              noOptionsMessage={({ inputValue }) => !inputValue ? "Please enter vendor name/code" : "No results found"}
-                              value={this.state.vendorName} isDisabled={(isEditFlag || this.state.inputLoader) ? true : false}
+                              noOptionsMessage={({ inputValue }) => inputValue.length < 3 ? MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN : "No results found"}
+                              value={this.state.vendorName} isDisabled={(isEditFlag) ? true : false}
                               onKeyDown={(onKeyDown) => {
                                 if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
                               }}
@@ -545,12 +644,13 @@ class AddInterestRate extends Component {
                             {((this.state.showErrorOnFocus && this.state.vendorName.length === 0) || this.state.isVendorNameNotSelected) && <div className='text-help mt-1'>This field is required.</div>}
                           </div>
                         </Col>
-                      )}
+                      )
+                      }
                       {
-                        (this.state.IsVendor === true && getConfigurationKey().IsDestinationPlantConfigure) &&
+                        ((costingTypeId === VBCTypeId && getConfigurationKey().IsDestinationPlantConfigure) || (costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant)) &&
                         <Col md="3">
                           <Field
-                            label={'Plant'}
+                            label={'Plant (Code)'}
                             name="DestinationPlant"
                             placeholder={"Select"}
                             options={this.renderListing("singlePlant")}
@@ -565,7 +665,32 @@ class AddInterestRate extends Component {
                           />
                         </Col>
                       }
-                    </Row>
+                      {
+                        costingTypeId === CBCTypeId && (
+                          <Col md="3">
+                            <Field
+                              name="clientName"
+                              type="text"
+                              label={"Customer (Code)"}
+                              component={searchableSelect}
+                              placeholder={isEditFlag ? '-' : "Select"}
+                              options={this.renderListing("ClientList")}
+                              //onKeyUp={(e) => this.changeItemDesc(e)}
+                              validate={
+                                this.state.client == null ||
+                                  this.state.client.length === 0
+                                  ? [required]
+                                  : []
+                              }
+                              required={true}
+                              handleChangeDescription={this.handleClient}
+                              valueDescription={this.state.client}
+                              disabled={isEditFlag ? true : false}
+                            />
+                          </Col>
+                        )
+                      }
+                    </Row >
 
                     <Row>
                       <Col md="12">
@@ -602,7 +727,7 @@ class AddInterestRate extends Component {
                             name={"ICCPercent"}
                             type="text"
                             placeholder={isViewMode ? '-' : "Enter"}
-                            validate={[required, positiveAndDecimalNumber, decimalLengthThree]}
+                            validate={[required, positiveAndDecimalNumber, decimalLengthThree, nonZero]}
                             max={100}
                             component={renderNumberInputField}
                             required={true}
@@ -655,8 +780,8 @@ class AddInterestRate extends Component {
                               name={"RepaymentPeriod"}
                               type="text"
                               placeholder={isViewMode ? '-' : "Enter"}
-                              validate={[postiveNumber, maxLength10]}
-                              component={renderNumberInputField}
+                              validate={[postiveNumber, maxLength10, nonZero, number]}
+                              component={renderTextInputField}
                               required={false}
                               onChange={(event) => this.handleChangeRepaymentPeriod(event.target.value)}
                               disabled={isViewMode}
@@ -670,7 +795,7 @@ class AddInterestRate extends Component {
                               name={"PaymentTermPercent"}
                               type="text"
                               placeholder={isViewMode ? '-' : "Enter"}
-                              validate={[positiveAndDecimalNumber, decimalLengthThree]}
+                              validate={[positiveAndDecimalNumber, decimalLengthThree, nonZero]}
                               component={renderNumberInputField}
                               max={100}
                               required={false}
@@ -720,21 +845,19 @@ class AddInterestRate extends Component {
                               component={renderDatePicker}
                               disabled={isViewMode || isDataChanged}
                               className="form-control"
-                              onFocus={() => onFocus(this, true)}
                             />
                           </div>
-                          {this.state.showErrorOnFocusDate && this.state.effectiveDate === '' && <div className='text-help mt-1 p-absolute bottom-7'>This field is required.</div>}
                         </div>
                       </Col>
                     </Row>
-                  </div>
+                  </div >
 
                   <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
                     <div className="col-sm-12 text-right bluefooter-butn">
                       <button
                         type={"button"}
                         className=" mr15 cancel-btn"
-                        onClick={() => { this.cancel('cancel') }}
+                        onClick={this.cancelHandler}
                         disabled={setDisable}
                       >
                         <div className={"cancel-icon"}></div>
@@ -755,7 +878,9 @@ class AddInterestRate extends Component {
             </div>
           </div>
         </div>
-
+        {
+          this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.CANCEL_MASTER_ALERT}`} />
+        }
       </div>
     );
   }
@@ -767,13 +892,14 @@ class AddInterestRate extends Component {
 * @param {*} state
 */
 function mapStateToProps(state) {
-  const { interestRate, comman } = state;
+  const { interestRate, comman, client } = state;
 
   const filedObj = selector(state, 'ICCPercent', 'PaymentTermPercent');
 
 
   const { paymentTermsSelectList, iccApplicabilitySelectList, interestRateData } = interestRate;
   const { vendorWithVendorCodeSelectList, plantSelectList } = comman;
+  const { clientSelectList } = client;
 
   let initialValues = {};
   if (interestRateData && interestRateData !== undefined) {
@@ -786,7 +912,7 @@ function mapStateToProps(state) {
   }
 
   return {
-    paymentTermsSelectList, iccApplicabilitySelectList, plantSelectList, vendorWithVendorCodeSelectList, interestRateData, initialValues, filedObj
+    paymentTermsSelectList, iccApplicabilitySelectList, plantSelectList, vendorWithVendorCodeSelectList, interestRateData, initialValues, filedObj, clientSelectList
   }
 }
 
@@ -803,8 +929,8 @@ export default connect(mapStateToProps, {
   getInterestRateData,
   getPaymentTermsAppliSelectList,
   getICCAppliSelectList,
-  getVendorListByVendorType,
   getVendorWithVendorCodeSelectList,
+  getClientSelectList
 })(reduxForm({
   form: 'AddInterestRate',
   enableReinitialize: true,

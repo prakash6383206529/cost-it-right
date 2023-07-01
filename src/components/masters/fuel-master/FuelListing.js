@@ -139,8 +139,8 @@ class FuelListing extends Component {
         const { EditAccessibility, DeleteAccessibility, ViewAccessibility } = this.props;
         return (
             <>
-                {ViewAccessibility && <button title='View' className="View mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, rowData, true)} />}
-                {EditAccessibility && <button title='Edit' className="Edit" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, rowData, false)} />}
+                {ViewAccessibility && <button title='View' className="View mr5" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, rowData, true)} />}
+                {EditAccessibility && <button title='Edit' className="Edit mr5" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, rowData, false)} />}
                 {DeleteAccessibility && <button title='Delete' className="Delete" type={'button'} onClick={() => this?.deleteItem(rowData?.FuelDetailId)} />}
             </>
         )
@@ -155,6 +155,7 @@ class FuelListing extends Component {
             if (res.data.Result === true) {
                 Toaster.success(MESSAGES.DELETE_FUEL_DETAIL_SUCCESS);
                 this.getDataList()
+                this.setState({ dataCount: 0 })
             }
         });
         this.setState({ showPopup: false })
@@ -196,8 +197,11 @@ class FuelListing extends Component {
     * @description Renders buttons
     */
     effectiveDateFormatter = (props) => {
-        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
+        let cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        if (cellValue?.includes('T')) {
+            cellValue = DayTime(cellValue).format('DD/MM/YYYY')
+        }
+        return (!cellValue ? '-' : cellValue)
     }
 
 
@@ -220,9 +224,10 @@ class FuelListing extends Component {
     }
 
     closeBulkUploadDrawer = () => {
-        this.setState({ isBulkUpload: false }, () => this.getDataList(0, 0))
+        this.setState({ isBulkUpload: false }, () => {
+            this.getDataList(0, 0)
+        })
     }
-
     /**
     * @method onSubmit
     * @description Used to Submit the form
@@ -240,6 +245,9 @@ class FuelListing extends Component {
                 item.Plants = ' '
             } if (item.Vendor === '-') {
                 item.Vendor = ' '
+            } else if (item?.EffectiveDate?.includes('T') || item?.ModifiedDate?.includes('T')) {
+                item.EffectiveDate = DayTime(item.EffectiveDate).format('DD/MM/YYYY')
+                item.ModifiedDate = DayTime(item.ModifiedDate).format('DD/MM/YYYY')
             }
             return item
         })
@@ -313,7 +321,7 @@ class FuelListing extends Component {
         const defaultColDef = {
             resizable: true,
             filter: true,
-            sortable: true,
+            sortable: false,
             headerCheckboxSelectionFilteredOnly: true,
             checkboxSelection: isFirstColumn
         };
@@ -368,8 +376,9 @@ class FuelListing extends Component {
                                         <>
 
                                             <ExcelFile filename={'Fuel'} fileExtension={'.xls'} element={
-                                                <button type="button" className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
+                                                <button title={`Download ${this.state.dataCount === 0 ? "All" : "(" + this.state.dataCount + ")"}`} type="button" className={'user-btn mr5'}><div className="download mr-1" ></div>
                                                     {/* DOWNLOAD */}
+                                                    {`${this.state.dataCount === 0 ? "All" : "(" + this.state.dataCount + ")"}`}
                                                 </button>}>
 
                                                 {this.onBtExport()}
@@ -395,8 +404,7 @@ class FuelListing extends Component {
                         <div className={`ag-grid-wrapper height-width-wrapper ${(this.props.fuelDataList && this.props.fuelDataList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
                             <div className="ag-grid-header">
                                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={'off'} onChange={(e) => this.onFilterTextBoxChanged(e)} />
-                                <SelectRowWrapper dataCount={dataCount} />
-                            </div >
+                            </div>
                             <div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
                                 {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
                                 <AgGridReact
@@ -418,13 +426,14 @@ class FuelListing extends Component {
                                     onSelectionChanged={this.onRowSelect}
                                     frameworkComponents={frameworkComponents}
                                     onFilterModified={this.onFloatingFilterChanged}
+                                    suppressRowClickSelection={true}
                                 >
                                     <AgGridColumn field="FuelName" headerName="Fuel" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
                                     <AgGridColumn field="UnitOfMeasurementName" headerName="UOM"></AgGridColumn>
                                     <AgGridColumn field="StateName" headerName="State"></AgGridColumn>
                                     <AgGridColumn field="Rate" headerName="Rate (INR)" cellRenderer={'commonCostFormatter'}></AgGridColumn>
                                     <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateRenderer'}></AgGridColumn>
-                                    <AgGridColumn field="ModifiedDate" minWidth={170} headerName="Date Of Modification" cellRenderer={'effectiveDateRenderer'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
+                                    <AgGridColumn field="ModifiedDate" minWidth={170} headerName="Date of Modification" cellRenderer={'effectiveDateRenderer'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
                                     <AgGridColumn field="FuelDetailId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                                 </AgGridReact>
                                 {<PaginationWrapper gridApi={this.gridApi} setPage={this.onPageSizeChanged} />}

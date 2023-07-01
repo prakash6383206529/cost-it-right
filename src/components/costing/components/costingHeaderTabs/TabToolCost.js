@@ -15,16 +15,20 @@ import { MESSAGES } from '../../../../config/message';
 import { ViewCostingContext } from '../CostingDetails';
 import LoaderCustom from '../../../common/LoaderCustom';
 import NoContentFound from '../../../common/NoContentFound';
-import { defaultPageSize, EMPTY_DATA } from '../../../../config/constants';
+import { defaultPageSize, EMPTY_DATA, ASSEMBLYNAME } from '../../../../config/constants';
+import { GridTotalFormate } from '../../../common/TableGridFunctions';
 import { AgGridReact } from 'ag-grid-react/lib/agGridReact';
 import { AgGridColumn } from 'ag-grid-react/lib/agGridColumn';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import AddTool from '../Drawers/AddTool';
 import { gridDataAdded } from '../../actions/Costing'
-import { createToprowObjAndSave } from '../../CostingUtil';
+import { createToprowObjAndSave, formatMultiTechnologyUpdate } from '../../CostingUtil';
+import { IdForMultiTechnology } from '../../../../config/masterData';
 import { debounce } from 'lodash';
 import { PaginationWrapper } from '../../../common/commonPagination';
+import { ASSEMBLY } from '../../../../config/masterData';
+import { updateMultiTechnologyTopAndWorkingRowCalculation } from '../../actions/SubAssembly';
 
 function TabToolCost(props) {
 
@@ -46,7 +50,9 @@ function TabToolCost(props) {
   const [processArray, setProcessArray] = useState([])
   const [operationArray, setOperationArray] = useState([])
   const [gridData, setGridData] = useState([])
+  const partType = IdForMultiTechnology.includes(String(costData?.TechnologyId))
   const [disableSwitch, setDisableSwitch] = useState(false)
+  const { subAssemblyTechnologyArray } = useSelector(state => state.subAssembly)
 
   const dispense = () => {
     setIsApplicableProcessWise(IsToolCostApplicable)
@@ -110,7 +116,7 @@ function TabToolCost(props) {
   useEffect(() => {
     // CostingViewMode CONDITION IS USED TO AVOID CALCULATION IN VIEWMODE
     if (CostingViewMode === false) {
-      let TopHeaderValues = ToolTabData && ToolTabData.length > 0 && ToolTabData[0].CostingPartDetails !== undefined ? ToolTabData[0].CostingPartDetails : null;
+      let TopHeaderValues = ToolTabData && ToolTabData.length > 0 && ToolTabData[0]?.CostingPartDetails !== undefined ? ToolTabData[0]?.CostingPartDetails : null;
       //setTimeout(() => {
 
       let topHeaderData = {
@@ -124,7 +130,7 @@ function TabToolCost(props) {
     }
 
     if (ToolTabData) {
-      if (ToolTabData[0]?.CostingPartDetails.IsToolCostProcessWise) {
+      if (ToolTabData[0]?.CostingPartDetails?.IsToolCostProcessWise) {
         setIsApplicableProcessWise(true)
       }
     }
@@ -148,19 +154,12 @@ function TabToolCost(props) {
   const gridOptions = {
     clearSearch: true,
     noDataText: (ToolsDataList === undefined ? <LoaderCustom /> : <NoContentFound title={EMPTY_DATA} />),
-    // // paginationShowsTotal: renderPaginationShowsTotal(),
-    // prePage: <span className="prev-page-pg"></span>, // Previous page button text
-    // nextPage: <span className="next-page-pg"></span>, // Next page button text
-    // firstPage: <span className="first-page-pg"></span>, // First page button text
-    // lastPage: <span className="last-page-pg"></span>,
   };
   const defaultColDef = {
 
     resizable: true,
     filter: true,
-    sortable: true,
-    // headerCheckboxSelection: isFirstColumn,
-    // checkboxSelection: isFirstColumn
+    sortable: false,
   };
   /**
    * @method dispatchOverallApplicabilityCost
@@ -206,7 +205,7 @@ function TabToolCost(props) {
 
         i.CostingPartDetails.CostingToolCostResponse = ToolGrid;
         i.CostingPartDetails.TotalToolCost = getTotalCost(ToolGrid);
-        //i.CostingPartDetails.OverAllApplicability = {};
+        //i?.CostingPartDetails?.OverAllApplicability = {};
         i.IsChanged = IsChanged;
 
         return i;
@@ -241,7 +240,7 @@ function TabToolCost(props) {
 
     if (IsApplicableProcessWise && props.activeTab === '5') {
       dispatch(getToolsProcessWiseDataListByCostingID(costData.CostingId, (res) => {
-        if (res) { setGridData(res.data.DataList) }
+        if (res?.data?.DataList[0]?.ProcessOrOperation) { setGridData(res.data.DataList) }
       }))
     }
 
@@ -258,6 +257,9 @@ function TabToolCost(props) {
       const surfaceTabData = SurfaceTabData[0]
       const overHeadAndProfitTabData = OverheadProfitTabData[0]
       const discountAndOtherTabData = DiscountCostData[0]
+      const packageAndFreightTabData = PackageAndFreightTabData && PackageAndFreightTabData[0]
+      const toolTabData = ToolTabData && ToolTabData[0]
+
       const data = {
         "IsToolCostProcessWise": IsApplicableProcessWise,
         "CostingId": costData.CostingId,
@@ -266,17 +268,33 @@ function TabToolCost(props) {
         "EffectiveDate": CostingEffectiveDate,
         "CostingNumber": costData.CostingNumber,
         "ToolCost": ToolTabData.TotalToolCost,
-        "CostingPartDetails": ToolTabData && ToolTabData[0].CostingPartDetails,
+        "CostingPartDetails": ToolTabData && ToolTabData[0]?.CostingPartDetails,
         "TotalCost": netPOPrice,
       }
-      if (costData.IsAssemblyPart === true) {
+      if (costData.IsAssemblyPart === true && !partType) {
 
         if (!CostingViewMode) {
           let assemblyRequestedData = createToprowObjAndSave(tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, netPOPrice, getAssemBOPCharge, 5, CostingEffectiveDate)
           dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData, res => { }))
         }
       }
+      if (partType) {
 
+        let tempsubAssemblyTechnologyArray = subAssemblyTechnologyArray[0]
+        tempsubAssemblyTechnologyArray.CostingPartDetails.NetToolCost = ToolTabData && ToolTabData[0]?.CostingPartDetails?.TotalToolCost
+
+        let totalCost = (checkForNull(tempsubAssemblyTechnologyArray?.CostingPartDetails?.TotalCalculatedRMBOPCCCost) +
+          checkForNull(surfaceTabData?.CostingPartDetails?.NetSurfaceTreatmentCost) +
+          checkForNull(PackageAndFreightTabData[0]?.CostingPartDetails?.NetFreightPackagingCost) +
+          checkForNull(ToolTabData && ToolTabData[0]?.CostingPartDetails?.TotalToolCost) +
+          checkForNull(overHeadAndProfitTabData?.CostingPartDetails?.NetOverheadAndProfitCost) +
+          checkForNull(DiscountCostData?.AnyOtherCost)) -
+          checkForNull(DiscountCostData?.HundiOrDiscountValue)
+
+        let request = formatMultiTechnologyUpdate(tempsubAssemblyTechnologyArray, totalCost, surfaceTabData, overHeadAndProfitTabData, packageAndFreightTabData, toolTabData, DiscountCostData, CostingEffectiveDate)
+        dispatch(updateMultiTechnologyTopAndWorkingRowCalculation(request, res => { }))
+        dispatch(gridDataAdded(true))
+      }
 
       dispatch(saveToolTab(data, res => {
         if (res.data.Result) {
@@ -292,9 +310,7 @@ function TabToolCost(props) {
   }), 500);
 
   const InjectDiscountAPICall = () => {
-    dispatch(saveDiscountOtherCostTab({ ...ComponentItemDiscountData, CallingFrom: 5 }, res => {
-      dispatch(setComponentDiscountOtherItemData({}, () => { }))
-    }))
+    dispatch(saveDiscountOtherCostTab({ ...ComponentItemDiscountData, CallingFrom: 5 }, res => { }))
   }
 
 
@@ -331,8 +347,8 @@ function TabToolCost(props) {
 
     return (
       <>
-        <button className="Edit mr-2 align-middle" type={'button'} onClick={() => editItem(props?.rowIndex, props?.agGridReact?.props?.rowData)} />
-        {!CostingViewMode && <button className="Delete align-middle" type={'button'} onClick={() => deleteItem(props?.rowIndex, props?.agGridReact?.props?.rowData)} />}
+        <button title='Edit' className="Edit mr-2 align-middle" type={'button'} onClick={() => editItem(props?.rowIndex, props?.agGridReact?.props?.rowData)} />
+        {!CostingViewMode && <button title='Delete' className="Delete align-middle" type={'button'} onClick={() => deleteItem(props?.rowIndex, props?.agGridReact?.props?.rowData)} />}
       </>
     )
   }
@@ -355,9 +371,9 @@ function TabToolCost(props) {
 
 
   /**
-* @method DrawerToggle
-* @description TOGGLE DRAWER
-*/
+  * @method DrawerToggle
+  * @description TOGGLE DRAWER
+  */
   const DrawerToggle = () => {
     setEditIndex('')
     setRowObjData(gridData)
@@ -378,6 +394,8 @@ function TabToolCost(props) {
         ToolCost: rowData.ToolCost,
         Life: rowData.Life,
         NetToolCost: rowData.NetToolCost,
+        BOMLevel: RMCCTabData && RMCCTabData[0]?.BOMLevel,
+        PartNumber: RMCCTabData && RMCCTabData[0].PartNumber
       }
       if (editIndex !== '' && isEditFlag) {
         let tempArr = Object.assign([...gridData], { [editIndex]: rowArray })
@@ -389,6 +407,10 @@ function TabToolCost(props) {
       dispatch(gridDataAdded(true))
     }
     setDrawerOpen(false)
+  }
+
+  const disableToggle = (value) => {
+    setDisableSwitch(value)
   }
 
   return (
@@ -431,7 +453,7 @@ function TabToolCost(props) {
                 <Col md="3" className="border-section pl-0 d-flex justify-content-between align-items-center text-dark-blue">
                   <div>
                     {"Net Tool Cost:"}
-                    {IsApplicableProcessWise && <span className="d-inline-block pl-1 font-weight-500">{checkForDecimalAndNull(ToolTabData[0]?.CostingPartDetails?.TotalToolCost, initialConfiguration.NoOfDecimalForPrice)}</span>}
+                    <span className="d-inline-block pl-1 font-weight-500">{IsApplicableProcessWise ? checkForDecimalAndNull(ToolTabData[0]?.CostingPartDetails?.TotalToolCost, initialConfiguration.NoOfDecimalForPrice) : (ToolTabData && ToolTabData.map((item) => checkForDecimalAndNull(item?.CostingPartDetails?.TotalToolCost, initialConfiguration.NoOfDecimalForPrice)))}</span>
                   </div>
                   {IsApplicableProcessWise &&
                     <>
@@ -458,25 +480,18 @@ function TabToolCost(props) {
                           {ToolTabData && ToolTabData.map((item, index) => {
                             return (
                               <>
-                                <tr className="accordian-row" key={index}>
-                                  <td style={{ width: '75%' }}>
-                                    <span class="cr-prt-link1">
-                                      {item.PartName}
-                                    </span>
-                                  </td>
-                                  <td className="pl10">{checkForDecimalAndNull(item.CostingPartDetails.TotalToolCost, initialConfiguration.NoOfDecimalForPrice)}</td>
-                                </tr>
                                 <tr>
                                   <td colSpan={2} className="cr-innerwrap-td pb-3">
                                     <div>
                                       <Tool
                                         index={index}
-                                        IsApplicableProcessWise={item.CostingPartDetails.IsToolCostProcessWise}
+                                        IsApplicableProcessWise={item?.CostingPartDetails?.IsToolCostProcessWise}
                                         data={item}
                                         // headCostRMCCBOPData={props.headCostRMCCBOPData}
                                         setOverAllApplicabilityCost={setOverAllApplicabilityCost}
                                         setToolCost={setToolCost}
                                         saveCosting={saveCosting}
+                                        disableToggle={disableToggle}
                                       />
                                     </div>
                                   </td>

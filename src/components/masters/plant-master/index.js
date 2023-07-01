@@ -84,7 +84,6 @@ class PlantMaster extends Component {
                     {/* {this.props.loading && <Loader/>} */}
                     <ScrollToTop pointProp="go-to-top" />
                     <Col>
-                        <h1>Plant Master</h1>
                         <Nav tabs className="subtabs">
                             <NavItem>
                                 <NavLink className={classnames({ active: this.state.activeTab === '1' })} onClick={() => { this.toggle('1'); }}>

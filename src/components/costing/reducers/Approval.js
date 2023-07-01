@@ -12,6 +12,7 @@ import {
   SET_SAP_DATA,
   GET_APPROVAL_LIST_DRAFT
 } from '../../../config/constants'
+import { tokenStatus, tokenStatusName } from '../../../config/masterData'
 import { userDetails, checkForDecimalAndNull, getConfigurationKey } from '../../../helper'
 
 const initialState = {
@@ -84,6 +85,44 @@ export default function ApprovalReducer(state = initialState, action) {
       let temp = action.payload && action.payload.map((item) => {
         item.NetPOPriceNew = checkForDecimalAndNull(item.NetPOPrice, getConfigurationKey()?.NoOfDecimalForPrice)
         item.OldPOPriceNew = checkForDecimalAndNull(item.OldPOPrice, getConfigurationKey()?.NoOfDecimalForPrice)
+        switch (item.Status) {
+          case tokenStatusName.AWAITING_FOR_APPROVAL:
+            item.TooltipText = tokenStatus.AwaitingForApproval;
+            break;
+          case tokenStatusName.PENDING_FOR_APPROVAL:
+            item.TooltipText = tokenStatus.PendingForApproval;
+            break;
+          case tokenStatusName.DRAFT:
+            item.TooltipText = tokenStatus.Draft;
+            break;
+          case tokenStatusName.APPROVED:
+            item.TooltipText = tokenStatus.Approved;
+            break;
+          case tokenStatusName.REJECTED:
+            item.TooltipText = tokenStatus.Rejected;
+            break;
+          case tokenStatusName.PUSHED:
+            item.TooltipText = tokenStatus.Pushed;
+            break;
+          case tokenStatusName.ERROR:
+            item.TooltipText = tokenStatus.Error;
+            break;
+          case tokenStatusName.HISTORY:
+            item.TooltipText = tokenStatus.History;
+            break;
+          case tokenStatusName.LINKED:
+            item.TooltipText = tokenStatus.Linked;
+            break;
+          case tokenStatusName.PROVISIONAL:
+            item.TooltipText = tokenStatus.Provisional;
+            break;
+          case tokenStatusName.POUPDATED:
+            item.TooltipText = tokenStatus.POUpdated;
+            break;
+
+          default:
+            break;
+        }
         return item
       })
       return {

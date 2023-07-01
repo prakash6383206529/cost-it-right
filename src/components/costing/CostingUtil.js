@@ -22,15 +22,15 @@ export const createToprowObjAndSave = (tabData, surfaceTabData, PackageAndFreigh
           "CostingId": item.CostingId,
           "SubAssemblyCostingId": item.SubAssemblyCostingId,
           "CostingNumber": "", // Need to find out how to get it.
-          "TotalRawMaterialsCostWithQuantity": item.PartType === 'Part' ? item.CostingPartDetails?.TotalRawMaterialsCost * item.CostingPartDetails.Quantity : item.CostingPartDetails?.TotalRawMaterialsCostWithQuantity,
-          "TotalBoughtOutPartCostWithQuantity": item.PartType === 'Part' ? item.CostingPartDetails?.TotalBoughtOutPartCost * item.CostingPartDetails.Quantity : item.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity,
-          "TotalConversionCostWithQuantity": item.PartType === 'Part' ? item.CostingPartDetails?.TotalConversionCost * item.CostingPartDetails.Quantity : item.CostingPartDetails?.TotalConversionCostWithQuantity,
+          "TotalRawMaterialsCostWithQuantity": item.PartType === 'Part' ? item.CostingPartDetails?.TotalRawMaterialsCost * item.CostingPartDetails?.Quantity : item.CostingPartDetails?.TotalRawMaterialsCostWithQuantity,
+          "TotalBoughtOutPartCostWithQuantity": item.PartType === 'Part' ? item.CostingPartDetails?.TotalBoughtOutPartCost * item.CostingPartDetails?.Quantity : item.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity,
+          "TotalConversionCostWithQuantity": item.PartType === 'Part' ? item.CostingPartDetails?.TotalConversionCost * item.CostingPartDetails?.Quantity : item.CostingPartDetails?.TotalConversionCostWithQuantity,
           "TotalCalculatedRMBOPCCCostWithQuantity": item.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity,
           "TotalCalculatedRMBOPCCCostPerAssembly": item.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity,
           "TotalOperationCostPerAssembly": checkForNull(item.CostingPartDetails?.TotalOperationCostPerAssembly),
           "TotalOperationCostSubAssembly": checkForNull(item.CostingPartDetails?.TotalOperationCostSubAssembly),
-          "TotalOperationCostComponent": item.CostingPartDetails.TotalOperationCostComponent,
-          "TotalOtherOperationCostPerAssembly": item.CostingPartDetails.TotalOtherOperationCostPerAssembly,
+          "TotalOperationCostComponent": item.CostingPartDetails?.TotalOperationCostComponent,
+          "TotalOtherOperationCostPerAssembly": item.CostingPartDetails?.TotalOtherOperationCostPerAssembly,
           "SurfaceTreatmentCostPerAssembly": surfaceTabData.CostingPartDetails?.SurfaceTreatmentCost,
           "TransportationCostPerAssembly": surfaceTabData.CostingPartDetails?.TransportationCost,
           "TotalSurfaceTreatmentCostPerAssembly": surfaceTabData.CostingPartDetails?.NetSurfaceTreatmentCost,
@@ -58,19 +58,19 @@ export const createToprowObjAndSave = (tabData, surfaceTabData, PackageAndFreigh
           "CostingId": item.CostingId,
           "SubAssemblyCostingId": item.SubAssemblyCostingId,
           "CostingNumber": "",
-          "TotalSurfaceTreatmentCostPerAssembly": item.CostingPartDetails.TotalSurfaceTreatmentCostPerAssembly,
-          "TotalSurfaceTreatmentCostPerSubAssembly": item.CostingPartDetails.TotalSurfaceTreatmentCostPerSubAssembly,
-          "TotalSurfaceTreatmentCostWithQuantity": item.CostingPartDetails.TotalSurfaceTreatmentCostWithQuantity,
-          "TotalSurfaceTreatmentCostComponent": item.CostingPartDetails.TotalSurfaceTreatmentCostComponent,
-          "TotalTransportationCostPerAssembly": item.CostingPartDetails.TotalTransportationCostPerAssembly,
-          "TotalTransportationCostPerSubAssembly": item.CostingPartDetails.TotalTransportationCostPerSubAssembly,
-          "TotalTransportationCostWithQuantity": item.CostingPartDetails.TotalTransportationCostWithQuantity,
-          "TotalTransportationCostComponent": item.CostingPartDetails.TotalTransportationCostComponent,
-          "TotalCalculatedSurfaceTreatmentCostPerAssembly": checkForNull(item.CostingPartDetails.TotalCalculatedSurfaceTreatmentCostPerAssembly),
-          "TotalCalculatedSurfaceTreatmentCostPerSubAssembly": checkForNull(item.CostingPartDetails.TotalCalculatedSurfaceTreatmentCostPerSubAssembly),
-          "TotalCalculatedSurfaceTreatmentCostWithQuantitys": checkForNull(item.CostingPartDetails.TotalCalculatedSurfaceTreatmentCostWithQuantitys),
-          "TotalCalculatedSurfaceTreatmentCostComponent": checkForNull(item.CostingPartDetails.TotalCalculatedSurfaceTreatmentCostComponent),
-          "TotalCostINR": (rmCcTabSubAssembly !== undefined && Object.keys(rmCcTabSubAssembly).length > 0) ? checkForNull(item.CostingPartDetails.TotalCalculatedSurfaceTreatmentCostWithQuantitys) + checkForNull(rmCcTabSubAssembly.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity) : checkForNull(item.CostingPartDetails.TotalCalculatedSurfaceTreatmentCostWithQuantitys),
+          "TotalSurfaceTreatmentCostPerAssembly": item.CostingPartDetails?.TotalSurfaceTreatmentCostPerAssembly,
+          "TotalSurfaceTreatmentCostPerSubAssembly": item.CostingPartDetails?.TotalSurfaceTreatmentCostPerSubAssembly,
+          "TotalSurfaceTreatmentCostWithQuantity": item.CostingPartDetails?.TotalSurfaceTreatmentCostWithQuantity,
+          "TotalSurfaceTreatmentCostComponent": item.CostingPartDetails?.TotalSurfaceTreatmentCostComponent,
+          "TotalTransportationCostPerAssembly": item.CostingPartDetails?.TotalTransportationCostPerAssembly,
+          "TotalTransportationCostPerSubAssembly": item.CostingPartDetails?.TotalTransportationCostPerSubAssembly,
+          "TotalTransportationCostWithQuantity": item.CostingPartDetails?.TotalTransportationCostWithQuantity,
+          "TotalTransportationCostComponent": item.CostingPartDetails?.TotalTransportationCostComponent,
+          "TotalCalculatedSurfaceTreatmentCostPerAssembly": checkForNull(item.CostingPartDetails?.TotalCalculatedSurfaceTreatmentCostPerAssembly),
+          "TotalCalculatedSurfaceTreatmentCostPerSubAssembly": checkForNull(item.CostingPartDetails?.TotalCalculatedSurfaceTreatmentCostPerSubAssembly),
+          "TotalCalculatedSurfaceTreatmentCostWithQuantitys": checkForNull(item.CostingPartDetails?.TotalCalculatedSurfaceTreatmentCostWithQuantitys),
+          "TotalCalculatedSurfaceTreatmentCostComponent": checkForNull(item.CostingPartDetails?.TotalCalculatedSurfaceTreatmentCostComponent),
+          "TotalCostINR": (rmCcTabSubAssembly !== undefined && Object.keys(rmCcTabSubAssembly).length > 0) ? checkForNull(item.CostingPartDetails?.TotalCalculatedSurfaceTreatmentCostWithQuantitys) + checkForNull(rmCcTabSubAssembly.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity) : checkForNull(item.CostingPartDetails?.TotalCalculatedSurfaceTreatmentCostWithQuantitys),
         }
         assemblyWorkingRow.push(subAssemblyObj)
       }
@@ -88,7 +88,7 @@ export const createToprowObjAndSave = (tabData, surfaceTabData, PackageAndFreigh
       "NetConversionCostPerAssembly": tabData && tabData.CostingPartDetails?.TotalConversionCostWithQuantity,
       "NetRMBOPCCCost": tabData && tabData.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity,
       "NetSurfaceTreatmentCost": surfaceTabData && surfaceTabData.CostingPartDetails?.TotalCalculatedSurfaceTreatmentCostWithQuantitys,
-      "NetOverheadAndProfits": overHeadAndProfitTabData.CostingPartDetails ? (checkForNull(overHeadAndProfitTabData.CostingPartDetails.OverheadCost) + checkForNull(overHeadAndProfitTabData.CostingPartDetails.ProfitCost) + checkForNull(overHeadAndProfitTabData.CostingPartDetails.RejectionCost) + checkForNull(overHeadAndProfitTabData.CostingPartDetails.ICCCost) + checkForNull(overHeadAndProfitTabData.CostingPartDetails.PaymentTermCost)) : 0,
+      "NetOverheadAndProfits": overHeadAndProfitTabData.CostingPartDetails ? (checkForNull(overHeadAndProfitTabData.CostingPartDetails?.OverheadCost) + checkForNull(overHeadAndProfitTabData.CostingPartDetails?.ProfitCost) + checkForNull(overHeadAndProfitTabData.CostingPartDetails?.RejectionCost) + checkForNull(overHeadAndProfitTabData.CostingPartDetails?.ICCCost) + checkForNull(overHeadAndProfitTabData.CostingPartDetails?.PaymentTermCost)) : 0,
       "NetPackagingAndFreightCost": PackageAndFreightTabData && PackageAndFreightTabData[0]?.CostingPartDetails?.NetFreightPackagingCost,
       "NetToolCost": ToolTabData && ToolTabData[0]?.CostingPartDetails?.TotalToolCost,
       "NetOtherCost": discountAndOtherTabData?.AnyOtherCost,
@@ -101,10 +101,10 @@ export const createToprowObjAndSave = (tabData, surfaceTabData, PackageAndFreigh
       "TotalConversionCostWithQuantity": tabData && tabData.CostingPartDetails?.TotalConversionCostWithQuantity,
       "TotalCalculatedRMBOPCCCostWithQuantity": tabData && tabData.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity,
       "TotalCalculatedRMBOPCCCostPerAssembly": tabData && tabData.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity,
-      "TotalOperationCostPerAssembly": tabData.CostingPartDetails.TotalOperationCostPerAssembly,
+      "TotalOperationCostPerAssembly": tabData.CostingPartDetails?.TotalOperationCostPerAssembly,
       "TotalOperationCostSubAssembly": checkForNull(tabData.CostingPartDetails?.TotalOperationCostSubAssembly),
-      "TotalOperationCostComponent": tabData.CostingPartDetails.TotalOperationCostComponent,
-      "TotalOtherOperationCostPerAssembly": tabData.CostingPartDetails.TotalOtherOperationCostPerAssembly,
+      "TotalOperationCostComponent": tabData.CostingPartDetails?.TotalOperationCostComponent,
+      "TotalOtherOperationCostPerAssembly": tabData.CostingPartDetails?.TotalOtherOperationCostPerAssembly,
       "TotalSurfaceTreatmentCostPerAssembly": surfaceTabData && surfaceTabData.CostingPartDetails?.TotalSurfaceTreatmentCostPerAssembly,
       "TotalSurfaceTreatmentCostPerSubAssembly": surfaceTabData && surfaceTabData.CostingPartDetails?.TotalSurfaceTreatmentCostPerSubAssembly,
       "TotalSurfaceTreatmentCostWithQuantity": surfaceTabData && surfaceTabData.CostingPartDetails?.TotalSurfaceTreatmentCostWithQuantity,
@@ -127,10 +127,10 @@ export const createToprowObjAndSave = (tabData, surfaceTabData, PackageAndFreigh
     "WorkingRows": assemblyWorkingRow,
     "BOPHandlingCharges": {
       "AssemblyCostingId": tabData && tabData.CostingId,
-      "IsApplyBOPHandlingCharges": tabData && tabData.CostingPartDetails.IsApplyBOPHandlingCharges,
-      "BOPHandlingChargeApplicability": tabData && tabData.CostingPartDetails.BOPHandlingChargeApplicability,
-      "BOPHandlingPercentage": tabData && tabData.CostingPartDetails.BOPHandlingPercentage,
-      "BOPHandlingCharges": tabData && tabData.CostingPartDetails.BOPHandlingCharges,
+      "IsApplyBOPHandlingCharges": tabData && tabData.CostingPartDetails?.IsApplyBOPHandlingCharges,
+      "BOPHandlingChargeApplicability": tabData && tabData.CostingPartDetails?.BOPHandlingChargeApplicability,
+      "BOPHandlingPercentage": tabData && tabData.CostingPartDetails?.BOPHandlingPercentage,
+      "BOPHandlingCharges": tabData && tabData.CostingPartDetails?.BOPHandlingCharges,
       "BOPHandlingChargeType": tabData && tabData.CostingPartDetails?.BOPHandlingChargeType
     },
     "LoggedInUserId": loggedInUserId()
@@ -280,3 +280,96 @@ export const clearCosting = (dispatch) => {
   dispatch(isDataChange(false))
 
 }
+
+export const formatMultiTechnologyUpdate = (tabData, totalCost = 0, surfaceTabData = {}, overHeadAndProfitTabData = {}, packageAndFreightTabData = {}, toolTabData = {}, DiscountCostData = {}, CostingEffectiveDate = new Date()) => {
+  let Arr = tabData
+  let assemblyWorkingRow = []
+  Arr?.CostingChildPartDetails && Arr?.CostingChildPartDetails.map((item) => {
+    // let sTSubAssembly = surfaceTreatmentArr && surfaceTreatmentArr.find(surfaceItem => surfaceItem.PartNumber === item.PartNumber && surfaceItem.AssemblyPartNumber === item.AssemblyPartNumber)
+    if (item.BOMLevel === 'L1' && (item.PartType === 'Sub Assembly' || item.PartType === 'Part')) {
+      let subAssemblyObj = {
+        "CostingId": item?.CostingId,
+        "TotalCostINR": item?.CostingPartDetails?.NetPOPrice,
+        "NetChildPartsCostWithQuantity": item?.CostingPartDetails?.NetChildPartsCostWithQuantity
+      }
+      assemblyWorkingRow.push(subAssemblyObj)
+    }
+    return ''
+  })
+
+
+
+  let temp = {
+    "BOPHandlingCharges": {
+      "AssemblyCostingId": tabData?.CostingId,
+      "BOPHandlingChargeType": tabData?.CostingPartDetails?.BOPHandlingChargeType,
+      "IsApplyBOPHandlingCharges": tabData?.CostingPartDetails?.IsApplyBOPHandlingCharges,
+      "BOPHandlingPercentage": tabData?.CostingPartDetails?.BOPHandlingPercentage,
+      "BOPHandlingCharges": tabData?.CostingPartDetails?.BOPHandlingCharges,
+      "BOPHandlingChargeApplicability": 0
+    },
+    "TopRow": {
+      "CostingId": tabData?.CostingId,
+      "TotalOperationCost": tabData?.CostingPartDetails?.TotalOperationCost,
+      "TotalProcessCost": tabData?.CostingPartDetails?.TotalProcessCost,
+      "NetChildPartsCost": tabData?.CostingPartDetails?.NetChildPartsCost,
+      "NetRMCostPerAssembly": tabData?.CostingPartDetails?.NetChildPartsCost,
+      "NetBOPCostAssembly": tabData?.CostingPartDetails?.TotalBoughtOutPartCost,
+      "NetConversionCostPerAssembly": checkForNull(tabData?.CostingPartDetails?.TotalOperationCost) + checkForNull(tabData?.CostingPartDetails?.TotalProcessCost),
+      "NetRMBOPCCCost": checkForNull(tabData?.CostingPartDetails?.NetChildPartsCost) + checkForNull(tabData?.CostingPartDetails?.TotalBoughtOutPartCost) + checkForNull(tabData?.CostingPartDetails?.TotalOperationCost) + checkForNull(tabData?.CostingPartDetails?.TotalProcessCost),
+      "NetSurfaceTreatmentCost": surfaceTabData?.CostingPartDetails?.NetSurfaceTreatmentCost,
+      "NetOverheadAndProfits": overHeadAndProfitTabData?.CostingPartDetails?.NetOverheadAndProfitCost,
+      "NetPackagingAndFreightCost": packageAndFreightTabData?.CostingPartDetails?.NetFreightPackagingCost,
+      "NetToolCost": toolTabData?.CostingPartDetails?.TotalToolCost,
+      "NetOtherCost": DiscountCostData?.AnyOtherCost,
+      "NetDiscounts": DiscountCostData?.HundiOrDiscountValue,
+      "TotalCostINR": totalCost,
+      "EffectiveDate": CostingEffectiveDate,
+      "TransportationCost": surfaceTabData?.CostingPartDetails?.TransportationCost,
+      "SurfaceTreatmentCost": surfaceTabData?.CostingPartDetails?.SurfaceTreatmentCost,
+      "PackagingCost": packageAndFreightTabData?.CostingPartDetails?.PackagingNetCost,
+      "FreightCost": packageAndFreightTabData?.CostingPartDetails?.FreightNetCost,
+      "OverheadCost": overHeadAndProfitTabData?.CostingPartDetails?.OverheadCost,
+      "ProfitCost": overHeadAndProfitTabData?.CostingPartDetails?.ProfitCost,
+      "RejectionCost": overHeadAndProfitTabData?.CostingPartDetails?.RejectionCost,
+      "ICCCost": overHeadAndProfitTabData?.CostingPartDetails?.ICCCost,
+      "PaymentTermCost": overHeadAndProfitTabData?.CostingPartDetails?.PaymentTermCost
+    },
+    "WorkingRows": assemblyWorkingRow,
+    "LoggedInUserId": loggedInUserId()
+  }
+  return temp
+}
+
+const calcEdit = () => {
+  // let tempsubAssemblyTechnologyArray = subAssemblyTechnologyArray
+  // let costPerPieceTotal = 0
+  // let CostPerAssemblyBOPTotal = 0
+
+  // tempsubAssemblyTechnologyArray[0]?.CostingChildPartDetails && tempsubAssemblyTechnologyArray[0]?.CostingChildPartDetails.map((item) => {
+  //     costPerPieceTotal = checkForNull(costPerPieceTotal) + checkForNull(item?.CostingPartDetails?.NetChildPartsCostWithQuantity)
+  //     CostPerAssemblyBOPTotal = checkForNull(CostPerAssemblyBOPTotal) + checkForNull(item?.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity)
+  //     return null
+  // })
+}
+
+export const errorCheck = (tempObject) => {
+  let count = 0
+  for (var prop in tempObject) {
+    if (tempObject[prop]?.length > 0) {
+      count++
+    }
+  }
+  if (tempObject && count !== 0) return true;
+}
+
+export const errorCheckObject = (tempObject) => {
+  let count = 0
+  for (var prop in tempObject) {
+    if (Object.keys(tempObject[prop])?.length > 0) {
+      count++
+    }
+  }
+  if (tempObject && count !== 0) return true;
+}
+

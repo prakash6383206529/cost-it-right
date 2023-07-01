@@ -363,7 +363,7 @@ function ProfitSimulation(props) {
         if (ProfitApplicabilityTypeCount === list.length && ProfitPercentageCount === list.length &&
             ProfitRMPercentageCount === list.length && ProfitMachiningCCPercentageCount === list.length &&
             ProfitBOPPercentageCount === list.length) {
-            Toaster.warning('There is no changes in new value.Please correct the data, then run simulation')
+            Toaster.warning('There is no changes in net cost. Please change the basic rate, then run simulation')
             return false
         }
         setIsDisable(true)
@@ -755,7 +755,7 @@ function ProfitSimulation(props) {
     const defaultColDef = {
         resizable: true,
         filter: true,
-        sortable: true,
+        sortable: false,
         editable: true
     };
 
@@ -1242,33 +1242,33 @@ function ProfitSimulation(props) {
                                             {/* <AgGridColumn field="ModelType" editable={false} headerName="Model Type" minWidth={190}></AgGridColumn> */}
 
                                             <AgGridColumn headerClass="justify-content-center" cellClass="text-center" headerName="Profit Applicability Type" marryChildren={true} >
-                                                <AgGridColumn width={160} field="ProfitApplicabilityType" editable='false' headerName="Old" cellRenderer='oldProfitApplicabilityTypeFormatter' colId="ProfitApplicabilityType"></AgGridColumn>
-                                                <AgGridColumn width={160} cellRenderer='newProfitApplicabilityTypeFormatter' cellEditor="agSelectCellEditor" cellEditorParams={applicabilityCellEditor} field="NewProfitApplicabilityType" headerName="New" colId='NewProfitApplicabilityType'></AgGridColumn>
+                                                <AgGridColumn width={160} field="ProfitApplicabilityType" editable='false' headerName="Existing" cellRenderer='oldProfitApplicabilityTypeFormatter' colId="ProfitApplicabilityType"></AgGridColumn>
+                                                <AgGridColumn width={160} cellRenderer='newProfitApplicabilityTypeFormatter' cellEditor="agSelectCellEditor" cellEditorParams={applicabilityCellEditor} field="NewProfitApplicabilityType" headerName="Revised" colId='NewProfitApplicabilityType'></AgGridColumn>
                                             </AgGridColumn>
                                             {/* <AgGridColumn field="ProfitApplicabilityType" cellEditor="agSelectCellEditor" cellEditorParams={applicabilityCellEditor} ></AgGridColumn> */}
 
                                             <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName="Profit BOP Percentage" marryChildren={true} >
-                                                <AgGridColumn width={120} field="ProfitBOPPercentage" editable='false' headerName="Old" cellRenderer='oldProfitBOPPercentageFormatter' colId="ProfitBOPPercentage"></AgGridColumn>
-                                                <AgGridColumn width={120} cellRenderer='newProfitBOPPercentageFormatter' onCellValueChanged='cellChange' field="NewProfitBOPPercentage" headerName="New" colId='NewProfitBOPPercentage' editable={EditableCallbackForBOP}></AgGridColumn>
+                                                <AgGridColumn width={120} field="ProfitBOPPercentage" editable='false' headerName="Existing" cellRenderer='oldProfitBOPPercentageFormatter' colId="ProfitBOPPercentage"></AgGridColumn>
+                                                <AgGridColumn width={120} cellRenderer='newProfitBOPPercentageFormatter' onCellValueChanged='cellChange' field="NewProfitBOPPercentage" headerName="Revised" colId='NewProfitBOPPercentage' editable={EditableCallbackForBOP}></AgGridColumn>
                                             </AgGridColumn>
                                             {/* <AgGridColumn field="ProfitBOPPercentage" headerName="Profit BOP Percentage" minWidth={190} editable={EditableCallbackForBOP} ></AgGridColumn> */}
 
                                             <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName="Profit Machining CC Percentage" marryChildren={true} >
-                                                <AgGridColumn width={120} field="ProfitMachiningCCPercentage" editable='false' headerName="Old" cellRenderer='oldProfitMachiningCCPercentageFormatter' colId="ProfitMachiningCCPercentage"></AgGridColumn>
-                                                <AgGridColumn width={120} cellRenderer='newProfitMachiningCCPercentageFormatter' onCellValueChanged='cellChange' field="NewProfitMachiningCCPercentage" headerName="New" colId='NewProfitMachiningCCPercentage' editable={EditableCallbackForCC}></AgGridColumn>
+                                                <AgGridColumn width={120} field="ProfitMachiningCCPercentage" editable='false' headerName="Existing" cellRenderer='oldProfitMachiningCCPercentageFormatter' colId="ProfitMachiningCCPercentage"></AgGridColumn>
+                                                <AgGridColumn width={120} cellRenderer='newProfitMachiningCCPercentageFormatter' onCellValueChanged='cellChange' field="NewProfitMachiningCCPercentage" headerName="Revised" colId='NewProfitMachiningCCPercentage' editable={EditableCallbackForCC}></AgGridColumn>
                                             </AgGridColumn>
                                             {/* <AgGridColumn field="ProfitMachiningCCPercentage" headerName="Profit Machining CC Percentage" editable={EditableCallbackForCC} minWidth={190}></AgGridColumn> */}
 
 
                                             <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName="Profit RM Percentage" marryChildren={true} >
-                                                <AgGridColumn width={120} field="ProfitRMPercentage" editable='false' headerName="Old" cellRenderer='oldProfitRMPercentageFormatter' colId="ProfitRMPercentage"></AgGridColumn>
-                                                <AgGridColumn width={120} cellRenderer='newProfitRMPercentageFormatter' onCellValueChanged='cellChange' field="NewProfitRMPercentage" headerName="New" colId='NewProfitRMPercentage' editable={EditableCallbackForRM}></AgGridColumn>
+                                                <AgGridColumn width={120} field="ProfitRMPercentage" editable='false' headerName="Existing" cellRenderer='oldProfitRMPercentageFormatter' colId="ProfitRMPercentage"></AgGridColumn>
+                                                <AgGridColumn width={120} cellRenderer='newProfitRMPercentageFormatter' onCellValueChanged='cellChange' field="NewProfitRMPercentage" headerName="Revised" colId='NewProfitRMPercentage' editable={EditableCallbackForRM}></AgGridColumn>
                                             </AgGridColumn>
                                             {/* <AgGridColumn field="ProfitRMPercentage" headerName="Profit RM Percentage" minWidth={190} editable={EditableCallbackForRM} ></AgGridColumn> */}
 
                                             <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName="Profit Percentage" marryChildren={true} >
-                                                <AgGridColumn width={120} field="ProfitPercentage" editable='false' headerName="Old" cellRenderer='oldProfitPercentageFormatter' colId="ProfitPercentage"></AgGridColumn>
-                                                <AgGridColumn width={120} cellRenderer='newProfitPercentageFormatter' onCellValueChanged='cellChange' field="NewProfitPercentage" headerName="New" colId='NewProfitPercentage' editable={EditableCallbackForOP}></AgGridColumn>
+                                                <AgGridColumn width={120} field="ProfitPercentage" editable='false' headerName="Existing" cellRenderer='oldProfitPercentageFormatter' colId="ProfitPercentage"></AgGridColumn>
+                                                <AgGridColumn width={120} cellRenderer='newProfitPercentageFormatter' onCellValueChanged='cellChange' field="NewProfitPercentage" headerName="Revised" colId='NewProfitPercentage' editable={EditableCallbackForOP}></AgGridColumn>
                                             </AgGridColumn>
                                             {/* <AgGridColumn field="ProfitPercentage" headerName="Profit Percentage" minWidth={190} editable={EditableCallbackForOP}></AgGridColumn> */}
 

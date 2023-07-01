@@ -1,16 +1,21 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Col, Row, } from 'reactstrap';
-import { NumberFieldHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs';
-import { calculatePercentage, checkForDecimalAndNull, checkForNull, getConfigurationKey } from '../../../../../helper';
+import { TextFieldHookForm } from '../../../../layout/HookFormInputs';
 // import { fetchModelTypeAPI, fetchCostingHeadsAPI, getICCAppliSelectListKeyValue, getPaymentTermsAppliSelectListKeyValue } from '../../../../../actions/Common';
-import { getPaymentTermsDataByHeads, gridDataAdded, isOverheadProfitDataChange, } from '../../../actions/Costing';
+import { calculatePercentage, checkForDecimalAndNull, checkForNull, decimalAndNumberValidationBoolean, getConfigurationKey } from '../../../../../helper';
+import { getPaymentTermsDataByHeads, gridDataAdded, isOverheadProfitDataChange, setOverheadProfitErrors, } from '../../../actions/Costing';
 import Switch from "react-switch";
-import { EMPTY_GUID } from '../../../../../config/constants';
+import { CBCTypeId, EMPTY_GUID, NFRTypeId, VBCTypeId, ZBCTypeId } from '../../../../../config/constants';
 import { costingInfoContext, netHeadCostContext } from '../../CostingDetailStepTwo';
 import { ViewCostingContext } from '../../CostingDetails';
 import DayTime from '../../../../common/DayTimeWrapper';
+import { IdForMultiTechnology } from '../../../../../config/masterData';
+import WarningMessage from '../../../../common/WarningMessage';
+import { MESSAGES } from '../../../../../config/message';
+import { number, checkWhiteSpaces, percentageLimitValidation, isNumber, NoSignNoDecimalMessage } from "../../../../../helper/validation";
 
+let counter = 0;
 function PaymentTerms(props) {
     const { Controller, control, register, data, setValue, getValues, errors, useWatch, CostingInterestRateDetail, PaymentTermDetail } = props
     const headerCosts = useContext(netHeadCostContext);
@@ -24,6 +29,8 @@ function PaymentTerms(props) {
     const [paymentTermsApplicability, setPaymentTermsApplicability] = useState(PaymentTermDetail !== undefined ? { label: PaymentTermDetail.PaymentTermApplicability, value: PaymentTermDetail.PaymentTermApplicability } : [])
     const [PaymentTermInterestRateId, setPaymentTermInterestRateId] = useState(PaymentTermDetail !== undefined ? PaymentTermDetail.InterestRateId : '')
     const [tempPaymentTermObj, setTempPaymentTermObj] = useState(PaymentTermDetail)
+    const [InterestRateFixedLimit, setInterestRateFixedLimit] = useState(false)
+    const [errorMessage, setErrorMessage] = useState('')
 
     const PaymentTermsFieldValues = useWatch({
         control,
@@ -80,14 +87,14 @@ function PaymentTerms(props) {
         if (Object.keys(costData).length > 0 && isCallAPI && !CostingViewMode) {
 
             const reqParams = {
-                vendorId: costData.IsVendor ? costData.VendorId : EMPTY_GUID,
-                isVendor: costData.IsVendor,
-                plantId: (getConfigurationKey()?.IsPlantRequiredForOverheadProfitInterestRate && !costData?.IsVendor) ? costData.PlantId : (getConfigurationKey()?.IsDestinationPlantConfigure && costData?.IsVendor) ? costData.DestinationPlantId : EMPTY_GUID,
+                VendorId: (costData?.CostingTypeId === VBCTypeId || costData?.CostingTypeId === NFRTypeId) ? costData.VendorId : EMPTY_GUID,
+                costingTypeId: Number(costData.CostingTypeId) === NFRTypeId ? VBCTypeId : costData.CostingTypeId,
+                plantId: (getConfigurationKey()?.IsPlantRequiredForOverheadProfitInterestRate && costData?.CostingTypeId === ZBCTypeId) ? costData.PlantId : ((getConfigurationKey()?.IsDestinationPlantConfigure && costData?.CostingTypeId === VBCTypeId) || (costData?.CostingTypeId === CBCTypeId) || (costData?.CostingTypeId === NFRTypeId)) ? costData.DestinationPlantId : EMPTY_GUID,
+                customerId: costData?.CostingTypeId === CBCTypeId ? costData.CustomerId : EMPTY_GUID,
                 effectiveDate: CostingEffectiveDate ? (DayTime(CostingEffectiveDate).format('DD/MM/YYYY')) : ''
             }
 
             dispatch(getPaymentTermsDataByHeads(reqParams, res => {
-
                 if (res && res.data && res.data.Result) {
                     let Data = res.data.Data;
                     setValue('RepaymentPeriodDays', Data.RepaymentPeriod)
@@ -172,11 +179,13 @@ function PaymentTerms(props) {
             const RMBOPCC = headerCosts.NetRawMaterialsCost + headerCosts.NetBoughtOutPartCost + ConversionCostForCalculation
             const RMBOP = headerCosts.NetRawMaterialsCost + headerCosts.NetBoughtOutPartCost;
             const RMCC = headerCosts.NetRawMaterialsCost + ConversionCostForCalculation;
+            const BOPCC = headerCosts.NetBoughtOutPartCost + ConversionCostForCalculation;
             const RepaymentPeriodDays = getValues('RepaymentPeriodDays')
             const RepaymentPeriodPercentage = getValues('RepaymentPeriodPercentage')
             const RepaymentCost = (calculatePercentage(RepaymentPeriodPercentage) / 90) * RepaymentPeriodDays;
             switch (Text) {
                 case 'RM':
+                case 'Part Cost':
                     setValue('RepaymentPeriodCost', checkForDecimalAndNull((headerCosts.NetRawMaterialsCost * RepaymentCost), initialConfiguration.NoOfDecimalForPrice))
                     setTempPaymentTermObj({
                         ...tempPaymentTermObj,
@@ -184,7 +193,25 @@ function PaymentTerms(props) {
                     })
                     break;
 
+                case 'BOP':
+                    setValue('RepaymentPeriodCost', checkForDecimalAndNull((headerCosts.NetBoughtOutPartCost * RepaymentCost), initialConfiguration.NoOfDecimalForPrice))
+                    setTempPaymentTermObj({
+                        ...tempPaymentTermObj,
+                        NetCost: checkForNull(headerCosts.NetBoughtOutPartCost * RepaymentCost),
+                    })
+                    break;
+
+                case 'CC':
+                    setValue('CostApplicability', checkForDecimalAndNull((ConversionCostForCalculation * RepaymentCost), initialConfiguration.NoOfDecimalForPrice))
+                    setValue('NetICCTotal', checkForDecimalAndNull((ConversionCostForCalculation * RepaymentCost), initialConfiguration.NoOfDecimalForPrice))
+                    setTempPaymentTermObj({
+                        ...tempPaymentTermObj,
+                        NetCost: checkForNull(ConversionCostForCalculation * RepaymentCost),
+                    })
+                    break;
+
                 case 'RM + CC':
+                case 'Part Cost + CC':
                     setValue('RepaymentPeriodCost', checkForDecimalAndNull((RMCC * RepaymentCost), initialConfiguration.NoOfDecimalForPrice))
 
                     setTempPaymentTermObj({
@@ -194,6 +221,7 @@ function PaymentTerms(props) {
                     break;
 
                 case 'RM + BOP':
+                case 'Part Cost + BOP':
                     setValue('RepaymentPeriodCost', checkForDecimalAndNull((RMBOP * RepaymentCost), initialConfiguration.NoOfDecimalForPrice))
 
                     setTempPaymentTermObj({
@@ -202,7 +230,17 @@ function PaymentTerms(props) {
                     })
                     break;
 
+                case 'BOP + CC':
+                    setValue('RepaymentPeriodCost', checkForDecimalAndNull((BOPCC * RepaymentCost), initialConfiguration.NoOfDecimalForPrice))
+
+                    setTempPaymentTermObj({
+                        ...tempPaymentTermObj,
+                        NetCost: checkForNull(BOPCC * RepaymentCost)
+                    })
+                    break;
+
                 case 'RM + CC + BOP':
+                case 'Part Cost + CC + BOP':
                     setValue('RepaymentPeriodCost', checkForDecimalAndNull(((RMBOPCC) * RepaymentCost), initialConfiguration.NoOfDecimalForPrice))
 
                     setTempPaymentTermObj({
@@ -245,6 +283,27 @@ function PaymentTerms(props) {
         }
     }
 
+    const handleChangeInterestRateFixedLimit = (event) => {
+        let message = ''
+        if (decimalAndNumberValidationBoolean(event.target.value)) {
+            setInterestRateFixedLimit(true)
+            message = MESSAGES.OTHER_VALIDATION_ERROR_MESSAGE
+        } if (!isNumber(event.target.value)) {
+            setInterestRateFixedLimit(true)
+            message = NoSignNoDecimalMessage
+        }
+        setErrorMessage(message)
+        dispatch(isOverheadProfitDataChange(true))
+    }
+
+    if (Object.keys(errors).length > 0 && counter < 2) {
+        counter = counter + 1;
+        dispatch(setOverheadProfitErrors(errors))
+    } else if (Object.keys(errors).length === 0 && counter > 0) {
+        counter = 0
+        dispatch(setOverheadProfitErrors({}))
+    }
+
     return (
         <>
             <Row className="mt-15 pt-15">
@@ -269,97 +328,114 @@ function PaymentTerms(props) {
                 </Col>
             </Row>
             {IsPaymentTermsApplicable &&
-                <Row className="costing-border costing-border-with-labels px-2 py-3 m-0 overhead-profit-tab-costing mb-4">
-                    <>
+                <>
+                    <Row className="costing-border-inner-section border-bottom-none m-0">
                         <Col md="3">
-                            <label className="col-label">
-                                {paymentTermsApplicability.label}
-                            </label>
+                            <span className="head-text">
+                                Applicability
+                            </span>
                         </Col>
                         {paymentTermsApplicability.label !== 'Fixed' && <Col md="3">
-                            <TextFieldHookForm
-                                label="Repayment Period(No. of Days)"
-                                name={'RepaymentPeriodDays'}
-                                Controller={Controller}
-                                control={control}
-                                register={register}
-                                mandatory={false}
-                                handleChange={() => { dispatch(isOverheadProfitDataChange(true)) }}
-                                defaultValue={''}
-                                className=""
-                                customClassName={'withBorder'}
-                                errors={errors.RepaymentPeriodDays}
-                                disabled={paymentTermsApplicability.label !== 'Fixed' ? true : false}
-                            />
+                            <span className="head-text">
+                                Repayment Period(No. of Days)
+                            </span>
                         </Col>}
                         <Col md="3">
-                            {paymentTermsApplicability.label !== 'Fixed' ?
-                                <NumberFieldHookForm
-                                    label={`Interest Rate(%)`}
-                                    name={'RepaymentPeriodPercentage'}
+                            <span className="head-text">
+                                {paymentTermsApplicability.label !== 'Fixed' ? 'Interest Rate (%)' : 'Interest Rate'}
+                            </span>
+                        </Col>
+
+                        <Col md={paymentTermsApplicability.label === 'Fixed' ? '6' : '3'}>
+                            <span className="head-text">
+                                Cost
+                            </span>
+                        </Col>
+                    </Row>
+                    <Row className="costing-border costing-border-with-labels px-2 pt-3 m-0 overhead-profit-tab-costing mb-4">
+                        <>
+                            <Col md="3">
+                                <label className="col-label">
+                                    {paymentTermsApplicability.label}
+                                </label>
+                            </Col>
+                            {paymentTermsApplicability.label !== 'Fixed' && <Col md="3">
+                                <TextFieldHookForm
+                                    label={false}
+                                    name={'RepaymentPeriodDays'}
                                     Controller={Controller}
                                     control={control}
                                     register={register}
                                     mandatory={false}
-                                    rules={{
-                                        required: false,
-                                        pattern: {
-                                            value: /^\d*\.?\d*$/,
-                                            message: 'Invalid Number.'
-                                        },
-                                        max: {
-                                            value: 100,
-                                            message: 'Percentage cannot be greater than 100'
-                                        },
-                                    }}
                                     handleChange={() => { dispatch(isOverheadProfitDataChange(true)) }}
                                     defaultValue={''}
                                     className=""
                                     customClassName={'withBorder'}
-                                    errors={errors.RepaymentPeriodPercentage}
-                                    disabled={CostingViewMode ? true : false}
+                                    errors={errors.RepaymentPeriodDays}
+                                    disabled={paymentTermsApplicability.label !== 'Fixed' ? true : false}
                                 />
-                                :
-                                <NumberFieldHookForm
-                                    label={`Interest Rate`}
-                                    name={'RepaymentPeriodPercentage'}
+                            </Col>}
+                            <Col md="3">
+                                {paymentTermsApplicability.label !== 'Fixed' ?
+                                    <TextFieldHookForm
+                                        label={false}
+                                        name={'RepaymentPeriodPercentage'}
+                                        Controller={Controller}
+                                        control={control}
+                                        register={register}
+                                        mandatory={false}
+                                        rules={{
+                                            required: false,
+                                            validate: { number, checkWhiteSpaces, percentageLimitValidation },
+                                            max: {
+                                                value: 100,
+                                                message: 'Percentage cannot be greater than 100'
+                                            },
+                                        }}
+                                        handleChange={() => { dispatch(isOverheadProfitDataChange(true)) }}
+                                        defaultValue={''}
+                                        className=""
+                                        customClassName={'withBorder'}
+                                        errors={errors.RepaymentPeriodPercentage}
+                                        disabled={CostingViewMode ? true : false}
+                                    />
+                                    :
+                                    <div className='p-relative error-wrapper'>
+                                        <TextFieldHookForm
+                                            label={false}
+                                            name={'RepaymentPeriodPercentage'}
+                                            Controller={Controller}
+                                            control={control}
+                                            register={register}
+                                            mandatory={false}
+                                            handleChange={(e) => handleChangeInterestRateFixedLimit(e)}
+                                            defaultValue={''}
+                                            className=""
+                                            customClassName={'withBorder'}
+                                            disabled={CostingViewMode || paymentTermsApplicability.label !== 'Fixed' ? true : false}
+                                        />
+                                        {paymentTermsApplicability.label === 'Fixed' && InterestRateFixedLimit && <WarningMessage dClass={"error-message fixed-error"} message={errorMessage} />}           {/* //MANUAL CSS FOR ERROR VALIDATION MESSAGE */}
+                                    </div>}
+                            </Col>
+                            <Col md={paymentTermsApplicability.label === 'Fixed' ? '6' : '3'}>
+                                <TextFieldHookForm
+                                    label={false}
+                                    name={'RepaymentPeriodCost'}
                                     Controller={Controller}
                                     control={control}
                                     register={register}
                                     mandatory={false}
-                                    rules={{
-                                        required: false,
-                                        pattern: {
-                                            value: /^\d*\.?\d*$/,
-                                            message: 'Invalid Number.'
-                                        },
-                                    }}
-                                    handleChange={() => { dispatch(isOverheadProfitDataChange(true)) }}
+                                    handleChange={() => { }}
                                     defaultValue={''}
                                     className=""
                                     customClassName={'withBorder'}
-                                    errors={errors.RepaymentPeriodPercentage}
-                                    disabled={CostingViewMode || paymentTermsApplicability.label !== 'Fixed' ? true : false}
-                                />}
-                        </Col>
-                        <Col md="3">
-                            <TextFieldHookForm
-                                label="Cost"
-                                name={'RepaymentPeriodCost'}
-                                Controller={Controller}
-                                control={control}
-                                register={register}
-                                mandatory={false}
-                                handleChange={() => { }}
-                                defaultValue={''}
-                                className=""
-                                customClassName={'withBorder'}
-                                errors={errors.RepaymentPeriodCost}
-                                disabled={true}
-                            />
-                        </Col>
-                    </>
-                </Row>
+                                    errors={errors.RepaymentPeriodCost}
+                                    disabled={true}
+                                />
+                            </Col>
+                        </>
+                    </Row>
+                </>
             }
         </>
     );

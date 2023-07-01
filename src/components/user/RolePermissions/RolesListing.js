@@ -16,6 +16,7 @@ import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { PaginationWrapper } from '../../common/commonPagination';
 import { loggedInUserId } from '../../../helper';
 import Switch from "react-switch";
+import ScrollToTop from '../../common/ScrollToTop';
 
 const gridOptions = {};
 
@@ -117,7 +118,7 @@ class RolesListing extends Component {
     const { EditAccessibility, DeleteAccessibility } = this.state;
     return (
       <>
-        {EditAccessibility && <button title='Edit' className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(cellValue, rowData)} />}
+        {!(rowData?.RoleName === 'RFQUser') && EditAccessibility && <button title='Edit' className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(cellValue, rowData)} />}
         {DeleteAccessibility && <button title='Delete' className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
       </>
     )
@@ -187,7 +188,7 @@ class RolesListing extends Component {
     const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
 
     const { ActivateAccessibility } = this.state;
-    if (rowData.UserId === loggedInUserId()) return null;
+    if (rowData.UserId === loggedInUserId() || rowData.RoleName === 'RFQUser') return null;
     showTitleForActiveToggle(props)
     return (
       <>
@@ -221,7 +222,7 @@ class RolesListing extends Component {
     const defaultColDef = {
       resizable: true,
       filter: true,
-      sortable: true,
+      sortable: false,
     };
 
     const frameworkComponents = {
@@ -231,7 +232,8 @@ class RolesListing extends Component {
     };
 
     return (
-      <div className={"ag-grid-react"}>
+      <div className={"ag-grid-react"} id={'role-go-to-top'}>
+        <ScrollToTop pointProp={"role-go-to-top"} />
         <>
           {this.state.isLoader && <LoaderCustom />}
           <Row className="pt-4 ">
@@ -286,7 +288,7 @@ class RolesListing extends Component {
                   >
                     {/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
                     <AgGridColumn field="RoleName" headerName="Role"></AgGridColumn>
-                    <AgGridColumn pinned="right" field="IsActive" headerName="Status" floatingFilter={false} cellRenderer={'statusButtonFormatter'}></AgGridColumn>
+                    <AgGridColumn field="IsActive" headerName="Status" floatingFilter={false} cellRenderer={'statusButtonFormatter'}></AgGridColumn>
                     <AgGridColumn field="RoleId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                   </AgGridReact>
                   {<PaginationWrapper gridApi={this.gridApi} setPage={this.onPageSizeChanged} />}

@@ -7,7 +7,7 @@ import $ from 'jquery';
 import { focusOnError, searchableSelect } from "../layout/FormInputs";
 import Toaster from '../common/Toaster';
 import { MESSAGES } from '../../config/message';
-import { defaultPageSize, EMPTY_DATA } from '../../config/constants';
+import { defaultPageSize, EMPTY_DATA, RFQUSER } from '../../config/constants';
 import { USER } from '../../config/constants';
 import NoContentFound from '../common/NoContentFound';
 import Switch from "react-switch";
@@ -25,6 +25,7 @@ import { USER_LISTING_DOWNLOAD_EXCEl } from '../../config/masterData';
 import { UserListing } from '../../config/constants';
 import { PaginationWrapper } from '../common/commonPagination';
 import SelectRowWrapper from '../common/SelectRowWrapper';
+import ScrollToTop from '../common/ScrollToTop';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -66,21 +67,35 @@ class UsersListing extends Component {
 
 	componentDidMount() {
 		this.getUsersListData(null, null);
-
 		const { topAndLeftMenuData } = this.props;
-		if (topAndLeftMenuData !== undefined) {
-
-			const userMenu = topAndLeftMenuData && topAndLeftMenuData.find(el => el.ModuleName === 'Users');
-			const userPermissions = userMenu && userMenu.Pages.find(el => el.PageName === USER);
-			const permmisionData = userPermissions && userPermissions.Actions && checkPermission(userPermissions.Actions)
-
-			if (permmisionData !== undefined) {
-				this.setState({
-					AddAccessibility: permmisionData && permmisionData.Add ? permmisionData.Add : false,
-					EditAccessibility: permmisionData && permmisionData.Edit ? permmisionData.Edit : false,
-					DeleteAccessibility: permmisionData && permmisionData.Delete ? permmisionData.Delete : false,
-					ActivateAccessibility: permmisionData && permmisionData.Activate ? permmisionData.Activate : false,
-				})
+		if (this.props.tabId === '1') {
+			if (topAndLeftMenuData !== undefined) {
+				const userMenu = topAndLeftMenuData && topAndLeftMenuData.find(el => el.ModuleName === 'Users');
+				const userPermissions = userMenu && userMenu.Pages.find(el => el.PageName === USER);
+				const permmisionData = userPermissions && userPermissions.Actions && checkPermission(userPermissions.Actions)
+				if (permmisionData !== undefined) {
+					this.setState({
+						AddAccessibility: permmisionData && permmisionData.Add ? permmisionData.Add : false,
+						EditAccessibility: permmisionData && permmisionData.Edit ? permmisionData.Edit : false,
+						DeleteAccessibility: permmisionData && permmisionData.Delete ? permmisionData.Delete : false,
+						ActivateAccessibility: permmisionData && permmisionData.Activate ? permmisionData.Activate : false,
+					})
+				}
+			}
+		}
+		if (this.props.tabId === '5') {
+			if (topAndLeftMenuData !== undefined) {
+				const userMenu = topAndLeftMenuData && topAndLeftMenuData.find(el => el.ModuleName === 'Users');
+				const userPermissions = userMenu && userMenu.Pages.find(el => el.PageName === RFQUSER);
+				const permmisionData = userPermissions && userPermissions.Actions && checkPermission(userPermissions.Actions)
+				if (permmisionData !== undefined) {
+					this.setState({
+						AddAccessibility: permmisionData && permmisionData.Add ? permmisionData.Add : false,
+						EditAccessibility: permmisionData && permmisionData.Edit ? permmisionData.Edit : false,
+						DeleteAccessibility: permmisionData && permmisionData.Delete ? permmisionData.Delete : false,
+						ActivateAccessibility: permmisionData && permmisionData.Activate ? permmisionData.Activate : false,
+					})
+				}
 			}
 		}
 
@@ -153,8 +168,10 @@ class UsersListing extends Component {
 			logged_in_user: loggedInUserId(),
 			DepartmentId: departmentId,
 			RoleId: roleId,
+			userType: this.props.RFQUser ? 'RFQ' : 'CIR'
 		}
 		this.setState({ isLoader: true })
+
 		this.props.getAllUserDataAPI(data, res => {
 			this.setState({ isLoader: false })
 			if (res.status === 204 && res.data === '') {
@@ -165,9 +182,8 @@ class UsersListing extends Component {
 					userData: Data,
 				})
 			} else {
-
 			}
-		});
+		})
 	}
 
 	/**
@@ -218,6 +234,7 @@ class UsersListing extends Component {
 			isEditFlag: true,
 			UserId: Id,
 			passwordFlag: passwordFlag,
+			RFQUser: this.props.RFQUser
 		}
 		this.closeUserDetails()
 		this.props.getUserDetail(data)
@@ -238,6 +255,7 @@ class UsersListing extends Component {
 					Toaster.success(MESSAGES.USER_ACTIVE_SUCCESSFULLY)
 				}
 				this.getUsersListData(null, null);
+				this.setState({ dataCount: 0 })
 			}
 		})
 
@@ -295,12 +313,12 @@ class UsersListing extends Component {
 	*/
 	buttonFormatter = (props) => {
 		const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-
+		const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
 		const { EditAccessibility } = this.state;
-		if (cellValue === loggedInUserId()) return null;
+		if (rowData?.UserId === loggedInUserId()) return null;
 		return (
 			<div className="">
-				{EditAccessibility && <button title='Edit' className="Edit " type={'button'} onClick={() => this.editItemDetails(cellValue, false)} />}
+				{EditAccessibility && <button title='Edit' className="Edit " type={'button'} onClick={() => this.editItemDetails(rowData?.UserId, false)} />}
 				{/* <Button className="btn btn-danger" onClick={() => this.deleteItem(cell)}><i className="far fa-trash-alt"></i></Button> */}
 			</div>
 		)
@@ -477,7 +495,7 @@ class UsersListing extends Component {
 		})
 	}
 	formToggle = () => {
-		this.props.formToggle()
+		this.props.formToggle(this.props?.RFQUser)
 	}
 
 	onPageSizeChanged = (newPageSize) => {
@@ -491,6 +509,7 @@ class UsersListing extends Component {
 	resetState = () => {
 		gridOptions.columnApi.resetColumnState();
 		gridOptions.api.setFilterModel(null);
+		window.screen.width >= 1920 && this.state.gridApi.sizeColumnsToFit()
 	}
 
 	onGridReady = (params) => {
@@ -528,7 +547,7 @@ class UsersListing extends Component {
 		const defaultColDef = {
 			resizable: true,
 			filter: true,
-			sortable: true,
+			sortable: false,
 			headerCheckboxSelectionFilteredOnly: true,
 			checkboxSelection: isFirstColumn
 
@@ -542,12 +561,11 @@ class UsersListing extends Component {
 			departmentFormatter: this.departmentFormatter,
 			linkableFormatter: this.linkableFormatter
 		};
-
 		return (
-			<div className={"ag-grid-react"}>
+			<div className={"ag-grid-react"} id={'userlist-go-to-top'}>
+				<ScrollToTop pointProp={"userlist-go-to-top"} />
 				<>
-					{" "}
-					{this.state.isLoader && <LoaderCustom />}
+
 					<form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
 						<Row className="pt-4">
 							{this.state.shown &&
@@ -610,11 +628,8 @@ class UsersListing extends Component {
 								<div className="d-flex justify-content-end bd-highlight w100">
 									{AddAccessibility && (
 										<div>
-											<ExcelFile filename={'User Listing'} fileExtension={'.xls'} element={
-												<button type="button" className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
-													{/* DOWNLOAD */}
-												</button>}>
-
+											<ExcelFile filename={`${this.props.RFQUser ? 'RFQ User Listing' : 'User Listing'}`} fileExtension={'.xls'} element={<button title={`Download ${this.state.dataCount === 0 ? "All" : "(" + this.state.dataCount + ")"}`} type="button" className={'user-btn mr5'} ><div className="download mr-1"></div>
+												{`${this.state.dataCount === 0 ? "All" : "(" + this.state.dataCount + ")"}`}</button>}>
 												{this.onBtExport()}
 											</ExcelFile>
 											<button
@@ -636,10 +651,9 @@ class UsersListing extends Component {
 							</Col>
 						</Row>
 					</form>
-					<div className={`ag-grid-wrapper height-width-wrapper ${(this.props.userDataList && this.props.userDataList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
+					{this.state.isLoader ? <LoaderCustom customClass="loader-center" /> : <div className={`ag-grid-wrapper height-width-wrapper ${(this.props.userDataList && this.props.userDataList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
 						<div className="ag-grid-header">
 							<input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={'off'} onChange={(e) => this.onFilterTextBoxChanged(e)} />
-							<SelectRowWrapper dataCount={dataCount} />
 						</div>
 						<div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
 							{noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
@@ -670,6 +684,7 @@ class UsersListing extends Component {
 								{initialConfiguration && !initialConfiguration.IsLoginEmailConfigure ? (
 									<AgGridColumn field="UserName" headerName="User Name"></AgGridColumn>
 								) : null}
+								{this.props?.RFQUser && <AgGridColumn field="VendorName" headerName="Vendor (code)"></AgGridColumn>}
 								<AgGridColumn field="EmailAddress" headerName="Email Id"></AgGridColumn>
 								<AgGridColumn field="Mobile" headerName="Mobile No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
 								<AgGridColumn field="PhoneNumber" headerName="Phone No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
@@ -678,11 +693,11 @@ class UsersListing extends Component {
 								<AgGridColumn field="DepartmentName" tooltipField="DepartmentName" headerName="Company"></AgGridColumn>
 								<AgGridColumn field="RoleName" headerName="Role"></AgGridColumn>
 								<AgGridColumn pinned="right" field="IsActive" width={120} headerName="Status" floatingFilter={false} cellRenderer={'statusButtonFormatter'}></AgGridColumn>
-								<AgGridColumn field="UserId" width={120} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
+								<AgGridColumn field="RoleName" width={120} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
 							</AgGridReact>
 							{<PaginationWrapper gridApi={this.gridApi} setPage={this.onPageSizeChanged} />}
 						</div>
-					</div>
+					</div>}
 
 					{this.state.isOpen && (
 						<ViewUserDetails
@@ -693,6 +708,7 @@ class UsersListing extends Component {
 							EditAccessibility={EditAccessibility}
 							anchor={"right"}
 							IsLoginEmailConfigure={initialConfiguration.IsLoginEmailConfigure}
+							RFQUser={this.props.RFQUser}
 						/>
 					)}
 
@@ -703,7 +719,7 @@ class UsersListing extends Component {
 				{/* {
                 this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup2} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm2} message={`${MESSAGES.USER_DELETE_ALERT}`}  />
                 } */}
-			</div>
+			</div >
 
 		);
 	}

@@ -6,10 +6,11 @@ import ForgingCalculator from './forging'
 import Plastic from './Plastic'
 import { SHEETMETAL, RUBBER, PLASTIC, FORGING, DIE_CASTING, CORRUGATEDBOX, Ferrous_Casting } from '../../../../config/masterData'
 import { calculatePercentageValue, checkForDecimalAndNull, checkForNull, getConfigurationKey } from '../../../../helper'
-import CorrugatedBox from './CorrugatedBox';
 import NonFerrousCalculator from './dieCasting'
 import Ferrous from './Ferrous'
 import StandardRub from './rubber/StandardRub'
+import CorrugatedBoxCalculator from './corrugatedBox/index'
+import RubberCalciTab from './Rubber'
 
 function OpenWeightCalculator(props) {
   const { rmRowData, item, isSummary, rmMBDetail, CostingViewMode, rmData, technology, DisableMasterBatchCheckbox } = props
@@ -100,7 +101,7 @@ function OpenWeightCalculator(props) {
           />
         )
       case RUBBER:
-        return (<StandardRub
+        return (<RubberCalciTab
           rmRowData={props.rmRowData}
           inputDiameter={props.inputDiameter}
           isEditFlag={props.isEditFlag}
@@ -123,7 +124,7 @@ function OpenWeightCalculator(props) {
 
       case CORRUGATEDBOX:
         return (
-          <CorrugatedBox
+          <CorrugatedBoxCalculator
             rmRowData={props.rmRowData}
             isEditFlag={props.isEditFlag}
             toggleDrawer={toggleDrawer}
@@ -169,14 +170,14 @@ function OpenWeightCalculator(props) {
         className={`weight-drawer-costing calculator-drawer calculator__${drawerClassHandler()}`}
         anchor={props.anchor}
         open={props.isOpen}
-      // onClose={(e) => toggleDrawer(e)}
-      >
+        // onClose={(e) => toggleDrawer(e)}
+        BackdropProps={props?.fromCostingSummary && { style: { opacity: 0 } }}>
         <Container className='px-0'>
           <div className={'drawer-wrapper drawer-1500px'}>
             <Row className="drawer-heading">
               <Col>
                 <div className={'header-wrapper left'}>
-                  <h3>{'Weight Calculator'}</h3>
+                  <h3>{Number(technology) !== Number(Ferrous_Casting) ? 'Weight Calculator' : 'Alloy Composition '}</h3>
                 </div>
                 <div
                   onClick={(e) => toggleDrawer(e)}
@@ -189,7 +190,7 @@ function OpenWeightCalculator(props) {
                 <Col md="12 d-flex weight-calculator-headings">
                   <div className="d-inline-block overflow"><span className="grey-text d-block">RM Name:</span><span className="text-dark-blue one-line-overflow" title={rmRowData.RMName}>{`${rmRowData.RMName !== undefined ? rmRowData.RMName : ''}`}</span></div>
                   <div className="d-inline-block "><span className="grey-text d-block">Material:</span><span className="text-dark-blue">{`${rmRowData.MaterialType !== undefined ? rmRowData.MaterialType : ''}`}</span></div>
-                  <div className="d-inline-block "><span className="grey-text d-block">Density(g/cm){<sup>3</sup>}:</span><span className="text-dark-blue">{`${rmRowData.Density !== undefined ? rmRowData.Density : ''}`}</span></div>
+                  {(Number(technology) === Number(SHEETMETAL) || Number(technology) === Number(FORGING)) && <div className="d-inline-block "><span className="grey-text d-block">Density(g/cm){<sup>3</sup>}:</span><span className="text-dark-blue">{`${rmRowData.Density !== undefined ? rmRowData.Density : ''}`}</span></div>}
                   <div className="d-inline-block "><span className="grey-text d-block">RM Rate(INR):</span><span className="text-dark-blue">{`${rmRowData.RMRate !== undefined ? rmRowData.RMRate : ''}`}</span></div>
                   {appyMasterBatch && < div className="d-inline-block "><span className="grey-text d-block">RM Rate(including Master Batch):</span><span className="text-dark-blue">{`${rmRowData.RMRate !== undefined ? checkForDecimalAndNull(totalRM, getConfigurationKey().NoOfDecimalForInputOutput) : ''}`}</span></div>}
                   <div className="d-inline-block "><span className="grey-text d-block">Scrap Rate(INR):</span><span className="text-dark-blue">{`${rmRowData.ScrapRate !== undefined ? rmRowData.ScrapRate : ''}`}</span></div>

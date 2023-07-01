@@ -73,9 +73,10 @@ class Login extends Component {
     // this.props.loginUserAPI(values, (res) => {
     this.props.TokenAPI(reqParams, (res) => {
       if (res && res.status === 200) {
+        reactLocalStorage.setObject("loginTime", new Date());
         this.setState({ isLoader: false, isSubmitted: false });
 
-        let userDetail = formatLoginResult(res.data);
+        let userDetail = formatLoginResult(res.data.Data);
         let departmentList = ''
         const dept = userDetail && userDetail.Department.map((item) => {
           if (userDetail.Role === 'Group Category Head' || userDetail.Role === 'SuperAdmin') {

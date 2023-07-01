@@ -4,6 +4,7 @@ import {
     GET_CLIENT_DATA_SUCCESS,
     GET_CLIENT_SELECTLIST_SUCCESS,
     GET_CLIENT_DATALIST_SUCCESS,
+    GET_POAM_STATUS_SELECTLIST
 } from '../../../config/constants';
 
 const initialState = {
@@ -40,6 +41,12 @@ export default function ClientReducer(state = initialState, action) {
                 loading: false,
                 clientDataList: action.payload
             };
+        case GET_POAM_STATUS_SELECTLIST:
+            return {
+                ...state,
+                loading: false,
+                poamStatusSelectList: action.payload
+            }
         default:
             return state;
     }

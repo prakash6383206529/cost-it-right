@@ -104,7 +104,7 @@ class EfficiencyDrawer extends Component {
                                 <Row className="pl-3">
                                     <Col md="12">
                                         <Field
-                                            label={`No. Of Working Hrs/Annum`}
+                                            label={`No. of Working Hrs/Annum`}
                                             name={"NumberOfWorkingHoursPerYear"}
                                             type="text"
                                             placeholder={''}

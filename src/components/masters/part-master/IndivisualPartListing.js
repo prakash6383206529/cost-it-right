@@ -260,6 +260,7 @@ class IndivisualPartListing extends Component {
                 Toaster.success(MESSAGES.PART_DELETE_SUCCESS);
                 //this.getTableListData();
                 this.ApiActionCreator(this.state.currentRowIndex, 100, this.state.floatingFilterData, true)
+                this.setState({ dataCount: 0 })
             }
         });
         this.setState({ showPopup: false })
@@ -277,13 +278,15 @@ class IndivisualPartListing extends Component {
     */
     buttonFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
 
         const { EditAccessibility, DeleteAccessibility, ViewAccessibility } = this.props;
+
         return (
             <>
-                {ViewAccessibility && <button title='View' className="View mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, true)} />}
-                {EditAccessibility && <button title='Edit' className="Edit mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, false)} />}
-                {DeleteAccessibility && <button title='Delete' className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
+                {ViewAccessibility && <button title='View' className="View" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, true)} />}
+                {EditAccessibility && <button title='Edit' className="Edit ml-1" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, false)} />}
+                {DeleteAccessibility && !rowData?.IsAssociate && <button title='Delete ' className="Delete ml-1" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
             </>
         )
     };
@@ -426,9 +429,11 @@ class IndivisualPartListing extends Component {
         this.setState({ isBulkUpload: true })
     }
 
-    closeBulkUploadDrawer = () => {
+    closeBulkUploadDrawer = (event, type) => {
         this.setState({ isBulkUpload: false })
-        this.resetState()
+        if (type !== 'cancel') {
+            this.resetState()
+        }
     }
 
     formToggle = () => {
@@ -480,7 +485,7 @@ class IndivisualPartListing extends Component {
 
         let tempArr = []
         //tempArr = this.state.gridApi && this.state.gridApi?.getSelectedRows()
-        tempArr = this.props.selectedCostingListSimulation
+        tempArr = this.props.selectedRowForPagination
         tempArr = (tempArr && tempArr.length > 0) ? tempArr : (this.props.allNewPartsListing ? this.props.allNewPartsListing : [])
         return this.returnExcelColumn(INDIVIDUALPART_DOWNLOAD_EXCEl, tempArr)
     };
@@ -594,7 +599,7 @@ class IndivisualPartListing extends Component {
         const defaultColDef = {
             resizable: true,
             filter: true,
-            sortable: true,
+            sortable: false,
             headerCheckboxSelectionFilteredOnly: true,
             checkboxSelection: isFirstColumn
         };
@@ -610,10 +615,10 @@ class IndivisualPartListing extends Component {
             <>
                 <div className={`ag-grid-react custom-pagination ${DownloadAccessibility ? "show-table-btn" : ""}`}>
                     {this.state.isLoader && <LoaderCustom />}
+                    {this.state.disableDownload && <LoaderCustom message={MESSAGES.DOWNLOADING_MESSAGE} />}
                     <Row className="pt-4 no-filter-row">
                         <Col md="9" className="search-user-block pr-0">
                             <div className="d-flex justify-content-end bd-highlight w100">
-                                {this.state.disableDownload && <div title={MESSAGES.DOWNLOADING_MESSAGE} className="disabled-overflow"><WarningMessage dClass="ml-4 mt-1" message={MESSAGES.DOWNLOADING_MESSAGE} /></div>}
                                 <div className="warning-message d-flex align-items-center">
                                     {this.state.warningMessage && !this.state.disableDownload && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
                                 </div>
@@ -641,21 +646,15 @@ class IndivisualPartListing extends Component {
                                     {
                                         DownloadAccessibility &&
                                         <>
-                                            {this.state.disableDownload ? <div className='p-relative mr5'> <LoaderCustom customClass={"download-loader"} /> <button type="button" className={'user-btn'}><div className="download mr-0"></div>
-                                            </button></div> :
-
-                                                <>
-                                                    <button type="button" onClick={this.onExcelDownload} className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
-                                                        {/* DOWNLOAD */}
-                                                    </button>
-
-                                                    <ExcelFile filename={'Component Part'} fileExtension={'.xls'} element={
-                                                        <button id={'Excel-Downloads-component-part'} className="p-absolute" type="button" >
-                                                        </button>}>
-                                                        {this.onBtExport()}
-                                                    </ExcelFile>
-                                                </>
-                                            }
+                                            <button title={`Download ${this.state.dataCount === 0 ? "All" : "(" + this.state.dataCount + ")"}`} type="button" onClick={this.onExcelDownload} className={'user-btn mr5'}><div className="download mr-1" ></div>
+                                                {/* DOWNLOAD */}
+                                                {`${this.state.dataCount === 0 ? "All" : "(" + this.state.dataCount + ")"}`}
+                                            </button>
+                                            <ExcelFile filename={'Component Part'} fileExtension={'.xls'} element={
+                                                <button id={'Excel-Downloads-component-part'} className="p-absolute" type="button" >
+                                                </button>}>
+                                                {this.onBtExport()}
+                                            </ExcelFile>
                                         </>
                                     }
                                     <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
@@ -669,7 +668,6 @@ class IndivisualPartListing extends Component {
                     <div className={`ag-grid-wrapper height-width-wrapper ${(this.props.newPartsListing && this.props.newPartsListing?.length <= 0) || noData ? "overlay-contain" : ""}`}>
                         <div className="ag-grid-header">
                             <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={'off'} onChange={(e) => this.onFilterTextBoxChanged(e)} />
-                            <SelectRowWrapper dataCount={this.state.dataCount} />
                         </div>
                         <div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
                             {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
@@ -692,6 +690,7 @@ class IndivisualPartListing extends Component {
 
                                 }}
                                 frameworkComponents={frameworkComponents}
+                                suppressRowClickSelection={true}
                             >
                                 <AgGridColumn field="Technology" headerName="Technology" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                 <AgGridColumn field="PartNumber" headerName="Part No."></AgGridColumn>
@@ -720,7 +719,7 @@ class IndivisualPartListing extends Component {
                         isOpen={isBulkUpload}
                         closeDrawer={this.closeBulkUploadDrawer}
                         isEditFlag={false}
-                        fileName={'PartComponent'}
+                        fileName={'Part Component'}
                         isZBCVBCTemplate={false}
                         messageLabel={'Part'}
                         anchor={'right'}
@@ -742,9 +741,9 @@ class IndivisualPartListing extends Component {
 function mapStateToProps({ part, auth, simulation }) {
     const { newPartsListing, allNewPartsListing } = part
     const { initialConfiguration } = auth;
-    const { selectedCostingListSimulation } = simulation;
+    const { selectedCostingListSimulation, selectedRowForPagination } = simulation;
 
-    return { newPartsListing, allNewPartsListing, initialConfiguration, selectedCostingListSimulation };
+    return { newPartsListing, allNewPartsListing, initialConfiguration, selectedCostingListSimulation, selectedRowForPagination };
 }
 
 /**

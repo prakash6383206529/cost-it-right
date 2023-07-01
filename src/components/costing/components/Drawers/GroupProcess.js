@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { getMachineProcessGroupDetail, setSelectedDataOfCheckBox } from "../../actions/Costing";
 import { costingInfoContext } from "../CostingDetailStepTwo";
 import { getConfigurationKey } from "../../../../helper";
-import { EMPTY_DATA, EMPTY_GUID, VBC, ZBC } from "../../../../config/constants";
+import { CBCTypeId, EMPTY_DATA, EMPTY_GUID, NCCTypeId, VBC, VBCTypeId, ZBC, ZBCTypeId } from "../../../../config/constants";
 import LoaderCustom from "../../../common/LoaderCustom";
 import NoContentFound from "../../../common/NoContentFound";
 import { DIE_CASTING, Ferrous_Casting, FORGING, MACHINING } from "../../../../config/masterData";
@@ -23,16 +23,18 @@ function GroupProcess(props) {
 
     useEffect(() => {
         let data = {
-            VendorId: costData.VendorType === VBC ? costData.VendorId : EMPTY_GUID,
+            VendorId: costData.CostingTypeId === VBCTypeId ? costData.VendorId : EMPTY_GUID,
             TechnologyId: Number(costData?.TechnologyId) === Number(FORGING) || Number(costData?.TechnologyId) === Number(DIE_CASTING) || Number(costData?.TechnologyId) === Number(Ferrous_Casting) ? String(`${costData?.TechnologyId},${MACHINING}`) : `${costData?.TechnologyId}`,
             VendorPlantId: getConfigurationKey()?.IsVendorPlantConfigurable ? costData.VendorPlantId : EMPTY_GUID,
-            DestinationPlantId: costData.VendorType === VBC ? getConfigurationKey()?.IsDestinationPlantConfigure ? costData.DestinationPlantId : EMPTY_GUID : EMPTY_GUID,
             CostingId: costData.CostingId,
             EffectiveDate: CostingEffectiveDate,
-            PlantId: costData.VendorType === ZBC ? costData.PlantId : EMPTY_GUID
+            PlantId: (getConfigurationKey()?.IsDestinationPlantConfigure && (costData.CostingTypeId === VBCTypeId || costData.CostingTypeId === NCCTypeId)) || costData.CostingTypeId === CBCTypeId ? costData.DestinationPlantId : (costData.CostingTypeId === ZBCTypeId) ? costData.PlantId : EMPTY_GUID,
+            CostingTypeId: costData.CostingTypeId,
+            CustomerId: costData.CustomerId
         }
         setIsLoader(true)
         dispatch(getMachineProcessGroupDetail(data, (res) => {
+            console.log('res: ', res);
             if (res && res.status === 200) {
                 let Data = res.data.DataList;
                 setTableDataList(Data)
@@ -127,9 +129,10 @@ function GroupProcess(props) {
                                     </td>
                                     <td>{item.Technology}</td>
                                     <td>{item.MachineName}</td>
-                                    <td className='process-name'>{item.Tonnage} <div onClick={() => {
-                                        processAccObj[index] === true ? setProcessAccObj(prevState => ({ ...prevState, [index]: false })) : setProcessAccObj(prevState => ({ ...prevState, [index]: true }))
-                                    }} className={`${processAccObj[index] ? 'Open' : 'Close'}`}></div></td>
+                                    <td ><div className='process-name'>{item.Tonnage}
+                                        <div onClick={() => {
+                                            processAccObj[index] === true ? setProcessAccObj(prevState => ({ ...prevState, [index]: false })) : setProcessAccObj(prevState => ({ ...prevState, [index]: true }))
+                                        }} className={`${processAccObj[index] ? 'Open' : 'Close'}`}></div> </div></td>
                                 </tr>
                                 {processAccObj[index] && <tr>
                                     <td colSpan={4}>

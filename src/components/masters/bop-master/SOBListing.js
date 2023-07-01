@@ -369,7 +369,7 @@ class SOBListing extends Component {
     const defaultColDef = {
       resizable: true,
       filter: true,
-      sortable: true,
+      sortable: false,
       headerCheckboxSelectionFilteredOnly: true,
       checkboxSelection: isFirstColumn
     };
@@ -403,7 +403,8 @@ class SOBListing extends Component {
                   DownloadAccessibility &&
                   <>
                     <ExcelFile filename={Sob} fileExtension={'.xls'} element={
-                      <button type="button" className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
+                      <button title={`Download ${this.state.dataCount === 0 ? "All" : "(" + this.state.dataCount + ")"}`} type="button" className={'user-btn mr5'}><div className="download mr-1" ></div>
+                        {`${this.state.dataCount === 0 ? "All" : "(" + this.state.dataCount + ")"}`}
                       </button>}>
                       {this.onBtExport()}
                     </ExcelFile>
@@ -425,7 +426,6 @@ class SOBListing extends Component {
             <div className={`ag-grid-wrapper height-width-wrapper ${(this.props.bopSobList && this.props.bopSobList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
               <div className="ag-grid-header">
                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={'off'} onChange={(e) => this.onFilterTextBoxChanged(e)} />
-                <SelectRowWrapper dataCount={this.state.dataCount} />
               </div>
               <div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
                 {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
@@ -456,8 +456,8 @@ class SOBListing extends Component {
                   <AgGridColumn field="BoughtOutPartCategory" headerName="Insert Category"></AgGridColumn>
                   <AgGridColumn field="Specification" headerName="Specification" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                   <AgGridColumn field="NoOfVendors" headerName="No. of Vendors"></AgGridColumn>
-                  <AgGridColumn field="Plant" headerName="Plant(Code)"></AgGridColumn>
-                  <AgGridColumn field="ShareOfBusinessPercentage" headerName="Total SOB(%)"></AgGridColumn>
+                  <AgGridColumn field="Plant" headerName="Plant (Code)"></AgGridColumn>
+                  <AgGridColumn field="ShareOfBusinessPercentage" headerName="Total SOB (%)"></AgGridColumn>
                   <AgGridColumn width={205} field="WeightedNetLandedCost" headerName="Weighted Net Cost (INR)" cellRenderer={'commonCostFormatter'}></AgGridColumn>
                   <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'} filter="agDateColumnFilter"></AgGridColumn>
                   <AgGridColumn field="BoughtOutPartNumber" width={120} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>

@@ -58,7 +58,7 @@
       }
 
       &:nth-child(8) {
-        width: 9%;
+        width: 10%;
       }
 
       &:nth-child(9) {
@@ -392,4 +392,135 @@
   .tooltip-inner {
     min-width: 310px;
   }
+}
+
+.process-quatity-tooltip {
+  @extend .weight-of-sheet;
+
+  .tooltip-inner {
+    text-align: left;
+  }
+}
+
+.sticky-headers {
+  position: sticky;
+  top: 190px;
+  z-index: 1;
+  background-color: $agGridBorder;
+
+  @media screen and (min-height:768px) and (max-height: 1092px) {
+    top: 173px;
+  }
+}
+
+//Sticky headers for multiple technology
+.multi-technology-container {
+  .sticky-headers {
+    top: 72px;
+  }
+}
+
+.pin-btn-container {
+  display: flex;
+  align-items: center;
+  justify-content: end;
+  grid-gap: 3px;
+
+  .pinned {
+    position: relative;
+
+    .unpin {
+      position: absolute;
+      height: 18px;
+      width: 1px;
+      background-color: $colorPrimary;
+      transform: rotate(-15deg);
+      right: 9px;
+      top: 1px;
+    }
+  }
+}
+
+.float-unset {
+  float: unset;
+}
+
+.overhead-profit-tab {
+  border-left: 1px solid $borderColor;
+  border-right: 1px solid $borderColor;
+}
+
+.costing-main-container {
+  table.costing-table-next {
+
+    .cr-select-height,
+    .form-group-searchable-select {
+      max-width: 320px;
+
+      @media screen and (max-width: $middleDesktop) {
+        max-width: 230px;
+      }
+    }
+  }
+}
+
+.overflow-y-hidden {
+  overflow-y: hidden !important;
+}
+
+.error-label {
+  .text-error-title {
+    .text-help {
+      bottom: -21px !important;
+      margin: 0 !important;
+
+      @media screen and (min-width: $middleDesktop) {
+        bottom: -23px !important;
+      }
+    }
+  }
+
+  &.surface-treament {
+    .text-help {
+      bottom: -21px !important;
+      margin: 0 !important;
+
+      @media screen and (min-width: $middleDesktop) {
+        bottom: -21px !important;
+      }
+    }
+  }
+}
+
+.tab-disount-total-cost {
+  display: flex;
+  align-items: center;
+  justify-content: end;
+  margin-bottom: 8px;
+
+  span {
+    font-weight: 700;
+    color: $headinlightgblack;
+    margin-right: 4px;
+  }
+}
+
+.finalize-cost {
+  // color: $postiveValueColor;
+  background-color: $positiveBackground !important;
+
+  .bg-grey {
+    padding-left: 0 !important;
+  }
+
+  span {
+    // color: $postiveValueColor;
+    background-color: $positiveBackground !important;
+  }
+}
+
+.rfq-summary-discard {
+  width: 32px;
+  height: 32px;
+  margin: 0;
 }

@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { Row, Col, } from 'reactstrap';
+import { Row, Col, Tooltip, } from 'reactstrap';
 import moment from 'moment';
-import { defaultPageSize, EMPTY_DATA } from '../../../../config/constants';
+import { defaultPageSize, EMPTY_DATA, CBCTypeId } from '../../../../config/constants';
 import NoContentFound from '../../../common/NoContentFound';
-import { checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUserId } from '../../../../helper';
+import { checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUserId, searchNocontentFilter } from '../../../../helper';
 // import { runVerifyCombinedProcessSimulation } from '../../actions/Simulation';
 import { Fragment } from 'react';
 import { Controller, useForm } from 'react-hook-form'
@@ -15,23 +15,42 @@ import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import Simulation from '../Simulation';
 import debounce from 'lodash.debounce';
 import { TextFieldHookForm } from '../../../layout/HookFormInputs';
-import { VBC, ZBC } from '../../../../config/constants';
 import { runVerifyMachineRateSimulation } from '../../actions/Simulation';
 import VerifySimulation from '../VerifySimulation';
 import Toaster from '../../../common/Toaster';
 import { PaginationWrapper } from '../../../common/commonPagination';
+import DayTime from '../../../common/DayTimeWrapper';
+import WarningMessage from '../../../common/WarningMessage';
+import DatePicker from "react-datepicker";
+import { useRef } from 'react';
+import { getMaxDate } from '../../SimulationUtils';
+import ReactExport from 'react-export-excel';
+import { MACHINE_IMPACT_DOWNLOAD_EXCEl } from '../../../../config/masterData';
+
+const ExcelFile = ReactExport.ExcelFile;
+const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 const gridOptions = {
 
 };
 function MRSimulation(props) {
-    const { list, isbulkUpload, rowCount, isImpactedMaster, tokenForMultiSimulation } = props
+    const { list, isbulkUpload, rowCount, isImpactedMaster, tokenForMultiSimulation, costingAndPartNo } = props
     const [showRunSimulationDrawer, setShowRunSimulationDrawer] = useState(false)
     const [showverifyPage, setShowVerifyPage] = useState(false)
     const [token, setToken] = useState('')
     const [gridApi, setGridApi] = useState(null);
     const [gridColumnApi, setGridColumnApi] = useState(null);
     const [showMainSimulation, setShowMainSimulation] = useState(false)
+    const [effectiveDate, setEffectiveDate] = useState('');
+    const [isEffectiveDateSelected, setIsEffectiveDateSelected] = useState(false);
+    const [isWarningMessageShow, setIsWarningMessageShow] = useState(false);
+    const [maxDate, setMaxDate] = useState('');
+    const [isDisable, setIsDisable] = useState(false)
+    const [noData, setNoData] = useState(false);
+    const [showTooltip, setShowTooltip] = useState(false)
+    const [basicRateviewTooltip, setBasicRateViewTooltip] = useState(false)
+    const gridRef = useRef();
 
 
     const { register, control, setValue, formState: { errors }, } = useForm({
@@ -43,6 +62,7 @@ function MRSimulation(props) {
     const dispatch = useDispatch()
 
     const { selectedMasterForSimulation } = useSelector(state => state.simulation)
+    const { selectedTechnologyForSimulation } = useSelector(state => state.simulation)
 
     const cancelVerifyPage = () => {
         setShowVerifyPage(false)
@@ -60,7 +80,18 @@ function MRSimulation(props) {
         }
     }, [])
 
-    const oldCPFormatter = (props) => {
+    useEffect(() => {
+        if (list && list.length > 0) {
+            window.screen.width >= 1920 && gridRef.current.api.sizeColumnsToFit();
+            if (isImpactedMaster) {
+                gridRef.current.api.sizeColumnsToFit();
+            }
+            let maxDate = getMaxDate(list)
+            setMaxDate(maxDate)
+        }
+    }, [list])
+
+    const oldRateFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         const value = beforeSaveCell(cell)
@@ -68,8 +99,7 @@ function MRSimulation(props) {
             <>
                 {
                     isImpactedMaster ?
-                        Number(row.OldNetCC) :
-                        <span className={`${!isbulkUpload ? 'form-control' : ''}`} >{cell && value ? Number(cell) : Number(row.ConversionCost)} </span>
+                        Number(row.OldMachineRate) : cell && value ? Number(cell) : Number(row.MachineRate)
                 }
 
             </>
@@ -85,7 +115,7 @@ function MRSimulation(props) {
                 {
                     isImpactedMaster ?
                         row.NewMachineRate :
-                        <span className={`${true ? 'form-control' : ''}`} >{cell && value ? Number(cell) : Number(row.MachineRate)} </span>
+                        <span className={`${!isbulkUpload ? 'form-control' : ''}`} >{cell && value ? Number(cell) : Number(row.MachineRate)} </span>
                 }
 
             </>
@@ -105,8 +135,18 @@ function MRSimulation(props) {
         const classGreen = (tempA > row.NetLandedCost) ? 'red-value form-control' : (tempA < row.NetLandedCost) ? 'green-value form-control' : 'form-class'
         return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
     }
-
-
+    const revisedBasicRateHeader = (props) => {
+        return (
+            <div className='ag-header-cell-label'>
+                <span className='ag-header-cell-text'>Revised{!isImpactedMaster && <i className={`fa fa-info-circle tooltip_custom_right tooltip-icon mb-n3 ml-4 mt2 `} id={"basicRate-tooltip"}></i>} </span>
+            </div>
+        );
+    };
+    const onFloatingFilterChanged = (value) => {
+        if (list.length !== 0) {
+            setNoData(searchNocontentFilter(value, noData))
+        }
+    }
     /**
   * @method beforeSaveCell
   * @description CHECK FOR ENTER NUMBER IN CELL
@@ -128,6 +168,10 @@ function MRSimulation(props) {
 
 
     const cancel = () => {
+        list && list.map((item) => {
+            item.NewMachineRate = undefined
+            return null
+        })
         setShowMainSimulation(true)
     }
 
@@ -139,7 +183,7 @@ function MRSimulation(props) {
     const defaultColDef = {
         resizable: true,
         filter: true,
-        sortable: true
+        sortable: false
     };
 
     const onGridReady = (params) => {
@@ -154,7 +198,18 @@ function MRSimulation(props) {
         params.columnApi.getAllColumns().forEach(function (column) {
             allColumnIds.push(column.colId);
         });
-
+        for (let i = 0; i < list?.length; i++) {
+            gridOptions?.api?.startEditingCell({
+                rowIndex: i,
+                colKey: 'NewMachineRate'
+            })
+            setTimeout(() => {
+                gridOptions?.api?.stopEditing()
+            }, 200);
+        }
+        setTimeout(() => {
+            setShowTooltip(true)
+        }, 100);
     };
 
     const onPageSizeChanged = (newPageSize) => {
@@ -163,6 +218,18 @@ function MRSimulation(props) {
 
     const onFilterTextBoxChanged = (e) => {
         gridApi.setQuickFilter(e.target.value);
+    }
+
+    const resetState = () => {
+        gridApi?.setQuickFilter('');
+        gridOptions?.columnApi?.resetColumnState();
+        gridOptions?.api?.setFilterModel(null);
+        if (!isImpactedMaster) {
+            window.screen.width >= 1600 && gridRef.current.api.sizeColumnsToFit();
+        }
+        else {
+            gridRef.current.api.sizeColumnsToFit();
+        }
     }
 
     const NewcostFormatter = (props) => {
@@ -180,19 +247,75 @@ function MRSimulation(props) {
         return row.ConversionCost != null ? checkForDecimalAndNull(ConversionCost, getConfigurationKey().NoOfDecimalForPrice) : ''
     }
 
+    const customerFormatter = (props) => {
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        return (isbulkUpload ? row['Customer (Code)'] : row.CustomerName);
+    }
+
+    // TRIGGER ON EVERY CHNAGE IN CELL
+    const onCellValueChanged = (props) => {
+        if (typeof (checkForNull(props?.value)) === 'number') {
+            let data = [...list]
+            let filteredDataWithoutEditedRow = data && data.filter(e => e?.MachineId === props?.data?.MachineId)
+            filteredDataWithoutEditedRow && filteredDataWithoutEditedRow.map((item, index) => {
+                item.NewMachineRate = props?.value
+                return null
+            })
+        } else {
+            return false
+        }
+        gridApi.redrawRows()
+    }
+
+    const vendorFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        return (
+            <>
+                {isbulkUpload ? row['Vendor (Code)'] : cell}
+
+            </>
+        )
+    }
+
+    const plantFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        return (
+            <>
+                {isbulkUpload ? row['Plant (Code)'] : cell}
+
+            </>
+        )
+    }
+
+    const handleEffectiveDateChange = (date) => {
+        setEffectiveDate(date)
+        setIsEffectiveDateSelected(true)
+        setIsWarningMessageShow(false)
+    }
+
     const frameworkComponents = {
         effectiveDateRenderer: effectiveDateFormatter,
         costFormatter: costFormatter,
         customNoRowsOverlay: NoContentFound,
         newRateFormatter: newRateFormatter,
-        oldCPFormatter: oldCPFormatter,
+        oldRateFormatter: oldRateFormatter,
         statusFormatter: statusFormatter,
         NewcostFormatter: NewcostFormatter,
-        OldcostFormatter: OldcostFormatter
+        OldcostFormatter: OldcostFormatter,
+        onCellValueChanged: onCellValueChanged,
+        vendorFormatter: vendorFormatter,
+        plantFormatter: plantFormatter,
+        revisedBasicRateHeader: revisedBasicRateHeader,
+        customerFormatter: customerFormatter
     };
-    let obj = {}
     const verifySimulation = debounce(() => {
         /**********CONDITION FOR: IS ANY FIELD EDITED****************/
+        if (!isEffectiveDateSelected) {
+            setIsWarningMessageShow(true)
+            return false
+        }
 
         let ccCount = 0
         let tempData = list
@@ -209,40 +332,64 @@ function MRSimulation(props) {
             return null;
         })
         if (ccCount === tempData.length) {
-            Toaster.warning('There is no changes in new value. Please correct the data, then run simulation')
+            Toaster.warning('Please change the machine rate, then run simulation')
             return false
         }
+        setIsDisable(true)
         /**********POST METHOD TO CALL HERE AND AND SEND TOKEN TO VERIFY PAGE ****************/
+        let obj = {}
         obj.SimulationTechnologyId = selectedMasterForSimulation.value
         obj.LoggedInUserId = loggedInUserId()
-        obj.CostingHead = list[0].CostingHead === 'Vendor Based' ? VBC : ZBC
-        obj.TechnologyId = list[0].TechnologyId
-        obj.TechnologyName = list[0].TechnologyName
+        obj.SimulationHeadId = list[0].CostingTypeId
+        obj.TechnologyId = selectedTechnologyForSimulation.value
+        obj.TechnologyName = selectedTechnologyForSimulation.label
+        obj.EffectiveDate = DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss')
 
         let tempArr = []
         arr && arr.map(item => {
             let tempObj = {}
-            tempObj.CostingId = item.CostingId
-            tempObj.OldNetCC = item.ConversionCost
-            tempObj.NewNetCC = item.NewMachineRate
-            tempObj.RemainingTotal = item.RemainingTotal
-            tempObj.OldTotalCost = item.TotalCost
-            tempObj.NewTotalCost = item.NewTotal
+            tempObj.MachineId = item.MachineId
+            tempObj.MachineProcessRateId = item.MachineProcessRateId
+            tempObj.OldMachineRate = item.MachineRate
+            tempObj.NewMachineRate = item.NewMachineRate
             tempArr.push(tempObj)
             return null
         })
 
         obj.SimulationIds = tokenForMultiSimulation
 
-        obj.SimulationCombinedProcess = tempArr
+        obj.SimulationMachineProcessList = tempArr
         dispatch(runVerifyMachineRateSimulation(obj, res => {
+            setIsDisable(false)
             if (res?.data?.Result) {
                 setToken(res.data.Identity)
                 setShowVerifyPage(true)
             }
         }))
-        setShowVerifyPage(true)
+        setShowTooltip(false)
     }, 500);
+
+    const basicRatetooltipToggle = () => {
+        setBasicRateViewTooltip(!basicRateviewTooltip)
+    }
+
+    const onBtExport = () => {
+        return returnExcelColumn(MACHINE_IMPACT_DOWNLOAD_EXCEl, list)
+    };
+
+    const returnExcelColumn = (data = [], TempData) => {
+
+        let temp = []
+        TempData && TempData.map((item) => {
+            item.EffectiveDate = (item.EffectiveDate)?.slice(0, 10)
+            temp.push(item)
+        })
+
+        return (
+            <ExcelSheet data={temp} name={'Machine Data'}>
+                {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
+            </ExcelSheet>);
+    }
 
     return (
         <div>
@@ -250,58 +397,82 @@ function MRSimulation(props) {
                 {
                     (!showverifyPage && !showMainSimulation) &&
                     <Fragment>
-
-                        <form>
+                        {!isImpactedMaster && showTooltip && <Tooltip className="rfq-tooltip-left" placement={"top"} isOpen={basicRateviewTooltip} toggle={basicRatetooltipToggle} target={"basicRate-tooltip"} >{"To add revised net machine rate please double click on the field."}</Tooltip>}
+                        <div>
 
                             <Row>
-                                <Col className={`add-min-height mb-3 sm-edit-page  ${list && list?.length <= 0 ? "overlay-contain" : ""}`}>
-                                    <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
-                                        <div className="ag-grid-header">
-                                            <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
-                                        </div>
-                                        {
-                                            isbulkUpload &&
-                                            <div className='d-flex justify-content-end bulk-upload-row'>
-                                                <div className="d-flex align-items-center">
-                                                    <label>Rows with changes:</label>
-                                                    <TextFieldHookForm
-                                                        label=""
-                                                        name={'NoOfCorrectRow'}
-                                                        Controller={Controller}
-                                                        control={control}
-                                                        register={register}
-                                                        rules={{ required: false }}
-                                                        mandatory={false}
-                                                        handleChange={() => { }}
-                                                        defaultValue={''}
-                                                        className=""
-                                                        customClassName={'withBorder mn-height-auto hide-label mb-0'}
-                                                        errors={errors.NoOfCorrectRow}
-                                                        disabled={true}
-                                                    />
-                                                </div>
-                                                <div className="d-flex align-items-center">
-                                                    <label>Rows without changes:</label>
-                                                    <TextFieldHookForm
-                                                        label=""
-                                                        name={'NoOfRowsWithoutChange'}
-                                                        Controller={Controller}
-                                                        control={control}
-                                                        register={register}
-                                                        rules={{ required: false }}
-                                                        mandatory={false}
-                                                        handleChange={() => { }}
-                                                        defaultValue={''}
-                                                        className=""
-                                                        customClassName={'withBorder mn-height-auto hide-label mb-0'}
-                                                        errors={errors.NoOfRowsWithoutChange}
-                                                        disabled={true}
-                                                    />
-                                                </div>
+                                <Col className={`add-min-height mb-3 sm-edit-page  ${(list && list?.length <= 0) || noData ? "overlay-contain" : ""}`}>
+                                    <div className="ag-grid-wrapper height-width-wrapper">
+                                        <div className="ag-grid-header d-flex align-items-center justify-content-between">
+                                            <div className='d-flex align-items-center'>
+                                                <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
+                                                <button type="button" className="user-btn float-right mr-2" title="Reset Grid" onClick={() => resetState()}>
+                                                    <div className="refresh mr-0"></div>
+                                                </button>
+                                                <ExcelFile filename={'Impacted Master Data'} fileExtension={'.xls'} element={
+                                                    <button title="Download" type="button" className={'user-btn'} ><div className="download mr-0"></div></button>}>
+                                                    {onBtExport()}
+                                                </ExcelFile>
                                             </div>
-                                        }
-                                        <div className="ag-theme-material" style={{ width: '100%' }}>
-                                            <AgGridReact
+
+                                            <div className='d-flex justify-content-end bulk-upload-row'>
+                                                {
+                                                    isbulkUpload && <>
+                                                        <div className="d-flex align-items-center">
+                                                            <label>Rows with changes:</label>
+                                                            <TextFieldHookForm
+                                                                label=""
+                                                                name={'NoOfCorrectRow'}
+                                                                Controller={Controller}
+                                                                control={control}
+                                                                register={register}
+                                                                rules={{ required: false }}
+                                                                mandatory={false}
+                                                                handleChange={() => { }}
+                                                                defaultValue={''}
+                                                                className=""
+                                                                customClassName={'withBorder mn-height-auto hide-label mb-0'}
+                                                                errors={errors.NoOfCorrectRow}
+                                                                disabled={true}
+                                                            />
+                                                        </div>
+                                                        <div className="d-flex align-items-center">
+                                                            <label>Rows without changes:</label>
+                                                            <TextFieldHookForm
+                                                                label=""
+                                                                name={'NoOfRowsWithoutChange'}
+                                                                Controller={Controller}
+                                                                control={control}
+                                                                register={register}
+                                                                rules={{ required: false }}
+                                                                mandatory={false}
+                                                                handleChange={() => { }}
+                                                                defaultValue={''}
+                                                                className=""
+                                                                customClassName={'withBorder mn-height-auto hide-label mb-0'}
+                                                                errors={errors.NoOfRowsWithoutChange}
+                                                                disabled={true}
+                                                            />
+                                                        </div>
+                                                    </>}
+                                                {!isImpactedMaster && <div className={`d-flex align-items-center simulation-label-container`}>
+                                                    <div className='d-flex pl-3'>
+                                                        <label>Technology: </label>
+                                                        <p className='technology ml-1' title={list[0].Technologies}>{list[0].Technologies}</p>
+                                                    </div>
+                                                    {list[0].CostingTypeId !== CBCTypeId && <div className='d-flex pl-3'>
+                                                        <label className='mr-1'>Vendor (Code):</label>
+                                                        <p className='mr-2' title={list[0].VendorName}>{list[0].VendorName ? list[0].VendorName : list[0]['Vendor (Code)']}</p>
+                                                    </div>}
+                                                    <button type="button" className={"apply"} onClick={cancel}> <div className={'back-icon'}></div>Back</button>
+                                                </div>}
+                                            </div>
+                                        </div>
+
+
+                                        <div className="ag-theme-material p-relative" style={{ width: '100%' }}>
+                                            {list && <AgGridReact
+                                                ref={gridRef}
                                                 floatingFilter={true}
                                                 style={{ height: '100%', width: '100%' }}
                                                 defaultColDef={defaultColDef}
@@ -314,32 +485,39 @@ function MRSimulation(props) {
                                                 gridOptions={gridOptions}
                                                 // loadingOverlayComponent={'customLoadingOverlay'}
                                                 noRowsOverlayComponent={'customNoRowsOverlay'}
+                                                onFilterModified={onFloatingFilterChanged}
                                                 noRowsOverlayComponentParams={{
                                                     title: EMPTY_DATA,
                                                 }}
                                                 frameworkComponents={frameworkComponents}
                                                 stopEditingWhenCellsLoseFocus={true}
+                                                suppressColumnVirtualisation={true}
                                                 rowSelection={'multiple'}
-                                            // frameworkComponents={frameworkComponents}
+                                                onCellValueChanged={onCellValueChanged}
                                             >
-                                                <AgGridColumn field="Technologies" editable='false' headerName="Technology" minWidth={190}></AgGridColumn>
-                                                <AgGridColumn field="VendorName" editable='false' headerName="Vendor" minWidth={190}></AgGridColumn>
-                                                {isImpactedMaster && <AgGridColumn field="PartNo" editable='false' headerName="Part No" minWidth={190}></AgGridColumn>}
+                                                {!isImpactedMaster && <AgGridColumn field="Technologies" editable='false' headerName="Technology" minWidth={190}></AgGridColumn>}
+                                                {costingAndPartNo && <AgGridColumn field="CostingNumber" editable='false' headerName="Costing No" minWidth={190}></AgGridColumn>}
+                                                {costingAndPartNo && <AgGridColumn field="PartNo" editable='false' headerName="Part No" minWidth={190}></AgGridColumn>}
+                                                <AgGridColumn field="MachineName" editable='false' headerName="Machine Name" minWidth={140}></AgGridColumn>
+                                                <AgGridColumn field="MachineNumber" editable='false' headerName="Machine Number" minWidth={140}></AgGridColumn>
+                                                <AgGridColumn field="ProcessName" editable='false' headerName="Process Name" minWidth={140}></AgGridColumn>
+                                                {!isImpactedMaster && list[0].CostingTypeId !== CBCTypeId && <AgGridColumn field="VendorName" editable='false' headerName="Vendor (Code)" minWidth={190} cellRenderer='vendorFormatter'></AgGridColumn>}
+                                                {!isImpactedMaster && list[0].CostingTypeId === CBCTypeId && <AgGridColumn width={100} field="CustomerName" editable='false' headerName="Customer (Code)" cellRenderer='customerFormatter'></AgGridColumn>}
                                                 {
                                                     !isImpactedMaster &&
                                                     <>
-                                                        <AgGridColumn field="DestinationPlant" editable='false' headerName="Plant" minWidth={190}></AgGridColumn>
+                                                        <AgGridColumn field="Plants" editable='false' headerName="Plant (Code)" minWidth={190} cellRenderer='plantFormatter'></AgGridColumn>
 
                                                     </>
                                                 }
                                                 <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName="Net Machine Rate" marryChildren={true} >
-                                                    <AgGridColumn width={120} field="MachineRate" editable='false' headerName="Old" cellRenderer='oldCPFormatter' colId="MachineRate"></AgGridColumn>
-                                                    <AgGridColumn width={120} cellRenderer='newRateFormatter' editable={true} field="NewMachineRate" headerName="New" colId='NewMachineRate'></AgGridColumn>
+                                                    <AgGridColumn width={120} field="MachineRate" editable='false' headerName="Existing" cellRenderer='oldRateFormatter' colId="MachineRate"></AgGridColumn>
+                                                    <AgGridColumn width={120} cellRenderer='newRateFormatter' editable={!isImpactedMaster} field="NewMachineRate" headerName="Revised" colId='NewMachineRate' headerComponent={'revisedBasicRateHeader'}></AgGridColumn>
                                                 </AgGridColumn>
                                                 <AgGridColumn field="EffectiveDate" headerName="Effective Date" editable='false' minWidth={190} cellRenderer='effectiveDateRenderer'></AgGridColumn>
                                                 <AgGridColumn field="CostingId" hide={true}></AgGridColumn>
 
-                                            </AgGridReact>
+                                            </AgGridReact >}
                                             {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />}
                                         </div>
                                     </div>
@@ -349,12 +527,26 @@ function MRSimulation(props) {
                             {
                                 !isImpactedMaster &&
                                 <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
-                                    <div className="col-sm-12 text-right bluefooter-butn">
-                                        <button type={"button"} className="mr15 cancel-btn" onClick={cancel}>
-                                            <div className={"cancel-icon"}></div>
-                                            {"CANCEL"}
-                                        </button>
-                                        <button onClick={verifySimulation} type="button" className="user-btn mr5 save-btn">
+                                    <div className="col-sm-12 text-right bluefooter-butn d-flex justify-content-end align-items-center">
+                                        <div className="inputbox date-section mr-3 verfiy-page">
+                                            <DatePicker
+                                                name="EffectiveDate"
+                                                selected={DayTime(effectiveDate).isValid() ? new Date(effectiveDate) : ''}
+                                                onChange={handleEffectiveDateChange}
+                                                showMonthDropdown
+                                                showYearDropdown
+                                                dateFormat="dd/MM/yyyy"
+                                                minDate={new Date(maxDate)}
+                                                placeholderText="Select effective date"
+                                                className="withBorder"
+                                                autoComplete={"off"}
+                                                disabledKeyboardNavigation
+                                                onChangeRaw={(e) => e.preventDefault()}
+                                            />
+                                            {isWarningMessageShow && <WarningMessage dClass={"error-message"} textClass={"pt-1"} message={"Please select effective date"} />}
+                                        </div>
+
+                                        <button onClick={verifySimulation} type="submit" className="user-btn mr5 save-btn" disabled={false}>
                                             <div className={"Run-icon"}>
                                             </div>{" "}
                                             {"Verify"}
@@ -367,7 +559,7 @@ function MRSimulation(props) {
                                     </div>
                                 </Row>
                             }
-                        </form>
+                        </div>
                     </Fragment>
 
                 }
@@ -377,7 +569,7 @@ function MRSimulation(props) {
                 }
 
                 {
-                    showMainSimulation && <Simulation isRMPage={true} />
+                    showMainSimulation && <Simulation isMasterSummaryDrawer={false} isCancelClicked={true} isRMPage={true} />
                 }
                 {
                     showRunSimulationDrawer &&
@@ -385,7 +577,7 @@ function MRSimulation(props) {
                         isOpen={showRunSimulationDrawer}
                         closeDrawer={closeDrawer}
                         anchor={"right"}
-                        masterId={selectedMasterForSimulation.value}
+                    // masterId={selectedMasterForSimulation.value}
                     />
                 }
             </div>

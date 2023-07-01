@@ -6,6 +6,10 @@ import { getToolCategoryList } from '../../actions/Costing';
 import Drawer from '@material-ui/core/Drawer';
 import { TextFieldHookForm, SearchableSelectHookForm, } from '../../../layout/HookFormInputs';
 import { checkForDecimalAndNull, checkForNull, getConfigurationKey } from '../../../../helper';
+import {
+  maxLength5, checkWhiteSpaces, postiveNumber, maxLength25, number, decimalNumberLimit6, alphaNumericValidation
+} from "../../../../helper/validation";
+import { STRINGMAXLENGTH } from '../../../../config/masterData';
 
 function AddTool(props) {
 
@@ -21,6 +25,7 @@ function AddTool(props) {
     Life: rowObjData?.Life ? rowObjData.Life : '',
     TotalToolCost: rowObjData?.TotalToolCost ? rowObjData.TotalToolCost : '',
   }
+
 
   const { register, handleSubmit, control, setValue, getValues, reset, formState: { errors } } = useForm({
     mode: 'onChange',
@@ -216,7 +221,7 @@ function AddTool(props) {
             <Row className="drawer-heading">
               <Col>
                 <div className={'header-wrapper left'}>
-                  <h3>{'ADD Tool'}</h3>
+                  <h3>{isEditFlag ? 'Update Tool' : 'Add Tool'}</h3>
                 </div>
                 <div
                   onClick={(e) => toggleDrawer(e)}
@@ -224,7 +229,7 @@ function AddTool(props) {
                 </div>
               </Col>
             </Row>
-            <form noValidate className="form" onSubmit={handleSubmit(onSubmitForm)}>
+            <form noValidate className="form" onSubmit={handleSubmit(addRow)}>
               <>
                 <Row className="pl-3">
                   <Col md="12">
@@ -273,11 +278,8 @@ function AddTool(props) {
                       mandatory={true}
                       rules={{
                         required: true,
-                        // pattern: {
-                        //   value: /^[0-9]*$/i,
-                        //   message: 'Invalid Number.'
-                        // },
-                        // maxLength: 4,
+                        validate: { checkWhiteSpaces, alphaNumericValidation },
+                        maxLength: STRINGMAXLENGTH
                       }}
                       handleChange={() => { }}
                       defaultValue={''}
@@ -298,11 +300,7 @@ function AddTool(props) {
                       mandatory={true}
                       rules={{
                         required: true,
-                        pattern: {
-                          value: /^[0-9]*$/i,
-                          message: 'Invalid Number.'
-                        },
-                        // maxLength: 4,
+                        validate: { number, checkWhiteSpaces, decimalNumberLimit6 }
                       }}
                       handleChange={() => { }}
                       defaultValue={''}
@@ -323,11 +321,7 @@ function AddTool(props) {
                       mandatory={true}
                       rules={{
                         required: true,
-                        pattern: {
-                          value: /^\d*\.?\d*$/,
-                          message: 'Invalid Number.'
-                        },
-                        // maxLength: 4,
+                        validate: { number, checkWhiteSpaces, decimalNumberLimit6 }
                       }}
                       handleChange={() => { }}
                       defaultValue={''}
@@ -348,11 +342,7 @@ function AddTool(props) {
                       mandatory={true}
                       rules={{
                         required: true,
-                        pattern: {
-                          value: /^\d*\.?\d*$/,
-                          message: 'Invalid Number.'
-                        },
-                        // maxLength: 4,
+                        validate: { number, checkWhiteSpaces, decimalNumberLimit6 }
                       }}
                       handleChange={() => { }}
                       defaultValue={''}
@@ -371,14 +361,6 @@ function AddTool(props) {
                       control={control}
                       register={register}
                       mandatory={false}
-                      rules={{
-                        required: false,
-                        // pattern: {
-                        //   value: /^[0-9]*$/i,
-                        //   message: 'Invalid Number.'
-                        // },
-                        // maxLength: 4,
-                      }}
                       handleChange={() => { }}
                       defaultValue={''}
                       className=""
@@ -399,7 +381,7 @@ function AddTool(props) {
                     </button>
 
                     <button
-                      type={'button'}
+                      type={'submit'}
                       className="submit-button save-btn"
                       onClick={addRow}
                       disabled={CostingViewMode}

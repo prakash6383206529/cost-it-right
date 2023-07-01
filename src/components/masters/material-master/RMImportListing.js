@@ -3,7 +3,6 @@ import { Row, Col, } from 'reactstrap';
 import {
   deleteRawMaterialAPI, getRMImportDataList, masterFinalLevelUser
 } from '../actions/Material';
-import { checkForDecimalAndNull } from "../../../helper/validation";
 import { APPROVED_STATUS, defaultPageSize, EMPTY_DATA, RMIMPORT } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
@@ -29,7 +28,9 @@ import WarningMessage from '../../common/WarningMessage';
 import { PaginationWrapper } from '../../common/commonPagination';
 import _ from 'lodash';
 import { disabledClass } from '../../../actions/Common';
-import SelectRowWrapper from '../../common/SelectRowWrapper';
+import { reactLocalStorage } from 'reactjs-localstorage';
+import AnalyticsDrawer from './AnalyticsDrawer';
+import { hideCustomerFromExcel } from '../../common/CommonFunctions';
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -45,8 +46,7 @@ function RMImportListing(props) {
   const [isBulkUpload, setisBulkUpload] = useState(false);
   const [gridApi, setgridApi] = useState(null);   // DONT DELETE THIS STATE , IT IS USED BY AG GRID
   const [gridColumnApi, setgridColumnApi] = useState(null);   // DONT DELETE THIS STATE , IT IS USED BY AG GRID
-  const [loader, setloader] = useState(false);
-  const [isFinalLevelUser, setIsFinalLevelUser] = useState(false)
+  const [loader, setloader] = useState(true);
   const dispatch = useDispatch();
   const rmImportDataList = useSelector((state) => state.material.rmImportDataList);
   const filteredRMData = useSelector((state) => state.material.filteredRMData);
@@ -57,6 +57,8 @@ function RMImportListing(props) {
   const [showPopupBulk, setShowPopupBulk] = useState(false)
   const [disableDownload, setDisableDownload] = useState(false)
   const [disableFilter, setDisableFilter] = useState(true) // STATE MADE FOR CHECKBOX IN SIMULATION
+  const [analyticsDrawer, setAnalyticsDrawer] = useState(false);
+  const [selectedRowData, setSelectedRowData] = useState([]);
   //STATES BELOW ARE MADE FOR PAGINATION PURPOSE
   const [warningMessage, setWarningMessage] = useState(false)
   const [globalTake, setGlobalTake] = useState(defaultPageSize)
@@ -67,14 +69,32 @@ function RMImportListing(props) {
   const [isFilterButtonClicked, setIsFilterButtonClicked] = useState(false)
   const [currentRowIndex, setCurrentRowIndex] = useState(0)
   const [pageSize, setPageSize] = useState({ pageSize10: true, pageSize50: false, pageSize100: false })
-  const [floatingFilterData, setFloatingFilterData] = useState({ CostingHead: "", TechnologyName: "", RawMaterial: "", RMGrade: "", RMSpec: "", RawMaterialCode: "", Category: "", MaterialType: "", Plant: "", UOM: "", VendorName: "", BasicRate: "", ScrapRate: "", RMFreightCost: "", RMShearingCost: "", NetLandedCost: "", EffectiveDate: "", DepartmentName: isSimulation ? userDepartmetList() : "" })
+  const [floatingFilterData, setFloatingFilterData] = useState({ CostingHead: "", TechnologyName: "", RawMaterial: "", RMGrade: "", RMSpec: "", RawMaterialCode: "", Category: "", MaterialType: "", Plant: "", UOM: "", VendorName: "", BasicRate: "", ScrapRate: "", RMFreightCost: "", RMShearingCost: "", NetLandedCost: "", EffectiveDate: "", DepartmentName: isSimulation ? userDepartmetList() : "", CustomerName: "" })
   const [noData, setNoData] = useState(false)
-  const [dataCount, setDataCount] = useState(false)
+  const [dataCount, setDataCount] = useState(0)
+  const [inRangeDate, setinRangeDate] = useState([])
+  const [dateArray, setDateArray] = useState([])
+
   var filterParams = {
     comparator: function (filterLocalDateAtMidnight, cellValue) {
       var dateAsString = cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
       var newDate = filterLocalDateAtMidnight != null ? DayTime(filterLocalDateAtMidnight).format('DD/MM/YYYY') : '';
-      setFloatingFilterData({ ...floatingFilterData, EffectiveDate: newDate })
+      let temp = inRangeDate
+      temp.push(newDate)
+      setinRangeDate(temp)
+      if (props?.benchMark) {
+        props?.handleDate(inRangeDate)
+      }
+      let unique = temp.filter((item, i, ar) => ar.indexOf(item) === i);
+      setDateArray(unique)
+      setFloatingFilterData({ ...floatingFilterData, EffectiveDate: newDate, dateArray: unique })
+      setTimeout(() => {
+
+        var y = document.getElementsByClassName('ag-radio-button-input');
+        var radioBtn = y[0];
+        radioBtn?.click()
+
+      }, 300);
       if (dateAsString == null) return -1;
       var dateParts = dateAsString.split('/');
       var cellDate = new Date(
@@ -108,21 +128,12 @@ function RMImportListing(props) {
 
   useEffect(() => {
     setTimeout(() => {
+      reactLocalStorage.setObject('selectedRow', {})
       if (!props.stopApiCallOnCancel) {
-        let obj = {
-          MasterId: RM_MASTER_ID,
-          DepartmentId: userDetails().DepartmentId,
-          LoggedInUserLevelId: userDetails().LoggedInMasterLevelId,
-          LoggedInUserId: loggedInUserId()
-        }
-        dispatch(masterFinalLevelUser(obj, (res) => {
-          if (res?.data?.Result) {
-            setIsFinalLevelUser(res.data.Data.IsFinalApprovar)
-          }
-        }))
 
         return () => {
           dispatch(setSelectedRowForPagination([]))
+          reactLocalStorage.setObject('selectedRow', {})
         }
       }
     }, 300);
@@ -136,7 +147,7 @@ function RMImportListing(props) {
           props?.changeSetLoader(true)
           dispatch(getListingForSimulationCombined(objectForMultipleSimulation, RMIMPORT, (res) => {
             props?.changeSetLoader(false)
-
+            setloader(false)
           }))
 
         } else {
@@ -149,23 +160,7 @@ function RMImportListing(props) {
         setvalue({ min: 0, max: 0 });
       }
     }, 300);
-    if (!props.stopApiCallOnCancel) {
-      if (isSimulation && selectionForListingMasterAPI === 'Combined') {
-        props?.changeSetLoader(true)
-        dispatch(getListingForSimulationCombined(objectForMultipleSimulation, RMIMPORT, (res) => {
-          props?.changeSetLoader(false)
 
-        }))
-
-      } else {
-        if (isSimulation) {
-          props?.changeTokenCheckBox(false)
-        }
-        getDataList(null, null, null, null, null, 0, 0, defaultPageSize, true, floatingFilterData)
-      }
-
-      setvalue({ min: 0, max: 0 });
-    }
   }, [])
 
 
@@ -173,8 +168,19 @@ function RMImportListing(props) {
   * @method hideForm
   * @description HIDE DOMESTIC, IMPORT FORMS
   */
-  const getDataList = (costingHead = null, plantId = null, materialId = null, gradeId = null, vendorId = null, technologyId = 0, skip = 0, take = 100, isPagination = true, dataObj) => {
+  const getDataList = (costingHead = null, plantId = null, materialId = null, gradeId = null, vendorId = null, technologyId = 0, skip = 0, take = 100, isPagination = true, dataObj, isReset = false) => {
     const { isSimulation } = props
+
+    if (filterModel?.EffectiveDate && !isReset) {
+      if (filterModel.EffectiveDate.dateTo) {
+        let temp = []
+        temp.push(DayTime(filterModel.EffectiveDate.dateFrom).format('DD/MM/YYYY'))
+        temp.push(DayTime(filterModel.EffectiveDate.dateTo).format('DD/MM/YYYY'))
+
+        dataObj.dateArray = temp
+      }
+    }
+
     // TO HANDLE FUTURE CONDITIONS LIKE [APPROVED_STATUS, DRAFT_STATUS] FOR MULTIPLE STATUS
     let statusString = [APPROVED_STATUS].join(",")
 
@@ -314,7 +320,7 @@ function RMImportListing(props) {
 
 
   const onSearch = () => {
-
+    setNoData(false)
     setWarningMessage(false)
     setIsFilterButtonClicked(true)
     setPageNo(1)
@@ -364,6 +370,7 @@ function RMImportListing(props) {
       isEditFlag: true,
       isViewFlag: isViewMode,
       Id: Id,
+      costingTypeId: rowData.CostingTypeId,
       IsVendor: rowData.CostingHead === 'Vendor Based' ? true : rowData.CostingHead === 'Zero Based' ? false : rowData.CostingHead,
     }
     props.getDetails(data, rowData?.IsRMAssociated);
@@ -388,6 +395,7 @@ function RMImportListing(props) {
         Toaster.error(res.data.Message)
       } else if (res && res.data && res.data.Result === true) {
         Toaster.success(MESSAGES.DELETE_RAW_MATERIAL_SUCCESS);
+        setDataCount(0)
         resetState()
       }
     }));
@@ -432,12 +440,24 @@ function RMImportListing(props) {
 
     return (
       <>
+        <button className="cost-movement" title='Cost Movement' type={'button'} onClick={() => showAnalytics(cellValue, rowData)}> </button>
         {ViewRMAccessibility && <button title='View' className="View" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, true)} />}
         {isEditbale && <button title='Edit' className="Edit align-middle" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, false)} />}
         {isDeleteButton && <button title='Delete' className="Delete align-middle" type={'button'} onClick={() => deleteItem(cellValue)} />}
       </>
     )
   };
+
+
+  const closeAnalyticsDrawer = () => {
+    setAnalyticsDrawer(false)
+  }
+
+  const showAnalytics = (cell, rowData) => {
+    setSelectedRowData(rowData)
+    setAnalyticsDrawer(true)
+  }
+
 
   /**
   * @method costingHeadFormatter
@@ -518,7 +538,7 @@ function RMImportListing(props) {
 
   const checkBoxRenderer = (props) => {
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-
+    let selectedRowForPagination = reactLocalStorage.getObject('selectedRow').selectedRow
     if (selectedRowForPagination?.length > 0) {
       selectedRowForPagination.map((item) => {
         if (item.RawMaterialId === props.node.data.RawMaterialId) {
@@ -542,10 +562,11 @@ function RMImportListing(props) {
     setisBulkUpload(true);
   }
 
-  const closeBulkUploadDrawer = () => {
+  const closeBulkUploadDrawer = (event, type) => {
     setisBulkUpload(false);
-
-    resetState()
+    if (type !== 'cancel') {
+      resetState()
+    }
   }
 
   /**
@@ -595,6 +616,7 @@ function RMImportListing(props) {
   };
 
   const returnExcelColumn = (data = [], TempData) => {
+    let excelData = hideCustomerFromExcel(data, "CustomerName")
     let temp = []
     temp = TempData && TempData.map((item) => {
       if (item.CostingHead === true) {
@@ -611,7 +633,7 @@ function RMImportListing(props) {
     return (
 
       <ExcelSheet data={temp} name={'RM Import'}>
-        {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
+        {excelData && excelData.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
       </ExcelSheet>);
   }
 
@@ -653,6 +675,8 @@ function RMImportListing(props) {
 
 
   const resetState = () => {
+    setFilterModel({})
+    setinRangeDate([])
     setIsFilterButtonClicked(false)
     gridOptions?.columnApi?.resetColumnState(null);
     gridOptions?.api?.setFilterModel(null);
@@ -671,11 +695,15 @@ function RMImportListing(props) {
     setPageNo(1)
     setPageNoNew(1)
     setCurrentRowIndex(0)
-    getDataList(null, null, null, null, null, 0, 0, 10, true, floatingFilterData)
+    getDataList(null, null, null, null, null, 0, 0, 10, true, floatingFilterData, true)
     dispatch(setSelectedRowForPagination([]))
     setGlobalTake(10)
     setPageSize(prevState => ({ ...prevState, pageSize10: true, pageSize50: false, pageSize100: false }))
     setDataCount(0)
+    reactLocalStorage.setObject('selectedRow', {})
+    if (isSimulation) {
+      props.isReset()
+    }
   }
 
 
@@ -689,6 +717,7 @@ function RMImportListing(props) {
 
   const onRowSelect = (event) => {
 
+    let selectedRowForPagination = reactLocalStorage.getObject('selectedRow').selectedRow
     var selectedRows = gridApi && gridApi?.getSelectedRows();
     if (selectedRows === undefined || selectedRows === null) {    //CONDITION FOR FIRST RENDERING OF COMPONENT
       selectedRows = selectedRowForPagination
@@ -710,10 +739,10 @@ function RMImportListing(props) {
       selectedRows = [...selectedRows, ...finalData]
     }
 
-
     let uniqeArray = _.uniqBy(selectedRows, "RawMaterialId")           //UNIQBY FUNCTION IS USED TO FIND THE UNIQUE ELEMENTS & DELETE DUPLICATE ENTRY
-    dispatch(setSelectedRowForPagination(uniqeArray))                   //SETTING CHECKBOX STATE DATA IN REDUCER
+    reactLocalStorage.setObject('selectedRow', { selectedRow: uniqeArray })  //SETTING CHECKBOX STATE DATA IN LOCAL STORAGE
     setDataCount(uniqeArray.length)
+    dispatch(setSelectedRowForPagination(uniqeArray))
     let finalArr = selectedRows
     let length = finalArr?.length
     let uniqueArray = _.uniqBy(finalArr, "RawMaterialId")
@@ -721,15 +750,25 @@ function RMImportListing(props) {
     if (isSimulation) {
       apply(uniqueArray, length)
     }
+
+    if (props?.benchMark) {
+      let uniqueArrayNew = _.uniqBy(selectedRows, v => [v.TechnologyId, v.RawMaterial].join())
+      if (uniqueArrayNew.length > 1) {
+        dispatch(setSelectedRowForPagination([]))
+        gridApi.deselectAll()
+        Toaster.warning("Technology & Raw material should be same")
+      }
+    }
+
   }
 
 
   const defaultColDef = {
     resizable: true,
     filter: true,
-    sortable: true,
+    sortable: false,
     headerCheckboxSelectionFilteredOnly: true,
-    headerCheckboxSelection: isSimulation ? isFirstColumn : false,
+    headerCheckboxSelection: (isSimulation || props?.benchMark) ? isFirstColumn : false,
     checkboxSelection: isFirstColumn
   };
 
@@ -756,13 +795,13 @@ function RMImportListing(props) {
     <div className={`ag-grid-react custom-pagination ${isSimulation ? 'simulation-height' : 'min-height100vh'}  ${DownloadAccessibility ? "show-table-btn" : ""}`}>
       {(loader && !props.isMasterSummaryDrawer) ? <LoaderCustom customClass="simulation-Loader" /> :
         <>
+          {disableDownload && <LoaderCustom message={MESSAGES.DOWNLOADING_MESSAGE} />}
           <Row className={`filter-row-large pt-4 ${isSimulation ? "zindex-0" : ""}`}>
             <Col md="3" lg="3">
               <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
             </Col>
             <Col md="9" lg="9" className=" mb-3 d-flex justify-content-end">
               {/* SHOW FILTER BUTTON ONLY FOR RM MASTER NOT FOR SIMULATION AMD MASTER APPROVAL SUMMARY */}
-              {disableDownload && <div title={MESSAGES.DOWNLOADING_MESSAGE} className="disabled-overflow"><WarningMessage dClass="ml-4 mt-1" message={MESSAGES.DOWNLOADING_MESSAGE} /></div>}
               {(!props.isMasterSummaryDrawer) && <>
 
                 {isSimulation &&
@@ -809,23 +848,16 @@ function RMImportListing(props) {
                       {
                         DownloadAccessibility &&
                         <>
-                          {disableDownload ? <div className='p-relative mr5'> <LoaderCustom customClass={"download-loader"} /> <button type="button" className={'user-btn'}><div className="download mr-0"></div>
-                          </button></div> :
+                          <button title={`Download ${dataCount === 0 ? "All" : "(" + dataCount + ")"}`} type="button" onClick={onExcelDownload} className={'user-btn mr5'}><div className="download mr-1"></div>
+                            {/* DOWNLOAD */}
+                            {`${dataCount === 0 ? "All" : "(" + dataCount + ")"}`}
+                          </button>
 
-                            <>
-                              <button type="button" onClick={onExcelDownload} className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
-                                {/* DOWNLOAD */}
-                              </button>
-
-                              <ExcelFile filename={'RM Import'} fileExtension={'.xls'} element={
-                                <button id={'Excel-Downloads-rm-import'} className="p-absolute" type="button" >
-                                </button>}>
-                                {onBtExport()}
-                              </ExcelFile>
-
-                            </>
-
-                          }
+                          <ExcelFile filename={'RM Import'} fileExtension={'.xls'} element={
+                            <button id={'Excel-Downloads-rm-import'} className="p-absolute" type="button" >
+                            </button>}>
+                            {onBtExport()}
+                          </ExcelFile>
                         </>
                       }
                     </>
@@ -840,7 +872,6 @@ function RMImportListing(props) {
           <Row>
             <Col>
               <div className={`ag-grid-wrapper ${(rmImportDataList && rmImportDataList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
-                <SelectRowWrapper dataCount={dataCount} className="mb-1 mt-n1" />
                 <div className={`ag-theme-material ${loader && "max-loader-height"}`}>
                   {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
                   <AgGridReact
@@ -867,38 +898,30 @@ function RMImportListing(props) {
                     suppressRowClickSelection={true}
                   >
                     <AgGridColumn cellClass="has-checkbox" field="CostingHead" headerName='Costing Head' cellRenderer={checkBoxRenderer}></AgGridColumn>
-
-                    <AgGridColumn field="TechnologyName" headerName="Technology"></AgGridColumn>
-
-                    <AgGridColumn field="RawMaterial" headerName="Raw Material"></AgGridColumn>
-
-                    <AgGridColumn field="RMGrade" headerName="RM Grade"></AgGridColumn>
-
-                    <AgGridColumn field="RMSpec" headerName="RM Spec"></AgGridColumn>
-
+                    <AgGridColumn field="TechnologyName" headerName='Technology'></AgGridColumn>
+                    <AgGridColumn field="RawMaterial" ></AgGridColumn>
+                    <AgGridColumn field="RMGrade" headerName='Grade'></AgGridColumn>
+                    <AgGridColumn field="RMSpec" headerName='Spec'></AgGridColumn>
                     <AgGridColumn field="RawMaterialCode" headerName='Code' cellRenderer='hyphenFormatter'></AgGridColumn>
                     <AgGridColumn field="Category"></AgGridColumn>
                     <AgGridColumn field="MaterialType"></AgGridColumn>
                     <AgGridColumn field="Plant" headerName="Plant(Code)"></AgGridColumn>
                     <AgGridColumn field="VendorName" headerName="Vendor(Code)"></AgGridColumn>
 
-                    <AgGridColumn field="DepartmentName" headerName="Company"></AgGridColumn>
-
+                    <AgGridColumn field="DepartmentName" headerName="Company (Code)"></AgGridColumn>
+                    {(reactLocalStorage.getObject('cbcCostingPermission')) && <AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
+                    {/* <AgGridColumn field="DepartmentName" headerName="Department"></AgGridColumn> */}
                     <AgGridColumn field="UOM"></AgGridColumn>
 
                     <AgGridColumn field="Currency" cellRenderer={"currencyFormatter"}></AgGridColumn>
-
-                    <AgGridColumn field="BasicRate" headerName="Basic Rate(INR)" cellRenderer='commonCostFormatter'></AgGridColumn>
-
-                    <AgGridColumn field="ScrapRate" headerName="Scrap Rate(INR)" cellRenderer='commonCostFormatter' ></AgGridColumn>
-
-                    <AgGridColumn field="RMFreightCost" headerName="Freight Cost(INR)" cellRenderer='commonCostFormatter'></AgGridColumn>
-
-                    <AgGridColumn field="RMShearingCost" headerName="Shearing Cost(INR)" cellRenderer='commonCostFormatter'></AgGridColumn>
-
+                    <AgGridColumn field="BasicRate" cellRenderer='commonCostFormatter'></AgGridColumn>
+                    <AgGridColumn field="ScrapRate" cellRenderer='commonCostFormatter'></AgGridColumn>
+                    {props.isMasterSummaryDrawer && <AgGridColumn width="140" field="MachiningScrapRate" headerName='Machining Scrap Cost'></AgGridColumn>}
+                    <AgGridColumn field="RMFreightCost" headerName="Freight Cost" cellRenderer='commonCostFormatter'></AgGridColumn>
+                    <AgGridColumn field="RMShearingCost" headerName="Shearing Cost" cellRenderer='shearingCostFormatter'></AgGridColumn>
                     <AgGridColumn field="NetLandedCost" headerName="Net Cost (Currency)" cellRenderer='costFormatter'></AgGridColumn>
 
-                    <AgGridColumn field="NetLandedCostConversion" headerName="Net Cost(INR)" cellRenderer='costFormatter'></AgGridColumn>
+                    <AgGridColumn field="NetLandedCostConversion" headerName="Net Cost (INR)" cellRenderer='costFormatter'></AgGridColumn>
 
                     <AgGridColumn field="EffectiveDate" cellRenderer='effectiveDateRenderer' filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
                     {(!isSimulation && !props.isMasterSummaryDrawer) && <AgGridColumn width={160} field="RawMaterialId" cellClass={"actions-wrapper"} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
@@ -930,14 +953,34 @@ function RMImportListing(props) {
             closeDrawer={closeBulkUploadDrawer}
             isEditFlag={false}
             densityAlert={densityAlert}
-            fileName={"RMImport"}
+            fileName={"RM Import"}
             isZBCVBCTemplate={true}
             messageLabel={"RM Import"}
             anchor={"right"}
-            isFinalApprovar={isFinalLevelUser}
+            masterId={RM_MASTER_ID}
           />
         )
       }
+
+      {
+        analyticsDrawer &&
+        <AnalyticsDrawer
+          isOpen={analyticsDrawer}
+          ModeId={1}
+          closeDrawer={closeAnalyticsDrawer}
+          anchor={"right"}
+          isReport={analyticsDrawer}
+          importEntry={true}
+          selectedRowData={selectedRowData}
+          isSimulation={true}
+          //cellValue={cellValue}
+          rowData={selectedRowData}
+          import={true}
+        />
+      }
+
+
+
       {
         showPopup && <PopupMsgWrapper isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${MESSAGES.RAW_MATERIAL_DETAIL_DELETE_ALERT}`} />
       }

@@ -19,6 +19,7 @@ import AddGrade from './AddGrade';
 import AddMaterialType from './AddMaterialType';
 import AddRawMaterial from './AddRawMaterial';
 import { debounce } from 'lodash';
+import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 
 class AddSpecification extends Component {
   constructor(props) {
@@ -39,6 +40,8 @@ class AddSpecification extends Component {
       rmGradeId: '',
       rmSpecification: '',
       rmCode: '',
+      showPopup: false,
+      isDropDownChanged: false,
     }
   }
 
@@ -118,8 +121,9 @@ class AddSpecification extends Component {
   handleRawMaterial = (newValue, actionMeta) => {
 
     if (newValue && newValue !== '') {
-      this.setState({ RawMaterial: newValue, RMGrade: [], rawMaterialId: newValue.value }, () => {
+      this.setState({ RawMaterial: newValue, RMGrade: [], rawMaterialId: newValue.value, isDropDownChanged: true }, () => {
         const { RawMaterial } = this.state;
+        this.props.change('Specification', "")
         this.props.getRMGradeSelectListByRawMaterial(RawMaterial.value, res => { });
         if (this.state.rmGradeId && this.state.rmSpecification) {
           let obj = {
@@ -169,7 +173,7 @@ class AddSpecification extends Component {
   handleGrade = (newValue, actionMeta) => {
 
     if (newValue && newValue !== '') {
-      this.setState({ RMGrade: newValue, rmGradeId: newValue.value });
+      this.setState({ RMGrade: newValue, rmGradeId: newValue.value, isDropDownChanged: true });
 
       if (this.state.rawMaterialId && this.state.rmSpecification) {
         let obj = {
@@ -238,6 +242,22 @@ class AddSpecification extends Component {
     this.props.getRMSpecificationDataAPI('', res => { });
   }
 
+  cancelHandler = () => {
+    const { dirty } = this.props;
+    if (dirty || this.state.isDropDownChanged) {
+      this.setState({ showPopup: true })
+    }
+    else {
+      this.cancel('cancel')
+    }
+  }
+  onPopupConfirm = () => {
+    this.cancel('cancel')
+    this.setState({ showPopup: false })
+  }
+  closePopUp = () => {
+    this.setState({ showPopup: false })
+  }
   toggleDrawer = (event, data, type) => {
     if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
       return;
@@ -535,7 +555,7 @@ class AddSpecification extends Component {
                           <Field
                             name="GradeId"
                             type="text"
-                            label="RM Grade"
+                            label="Grade"
                             component={searchableSelect}
                             placeholder={"Select"}
                             options={this.renderListing("RMGrade")}
@@ -655,7 +675,7 @@ class AddSpecification extends Component {
                         <button
                           type={"button"}
                           className=" mr15 cancel-btn"
-                          onClick={() => { this.cancel('cancel') }}
+                          onClick={this.cancelHandler}
                           disabled={setDisable}
                         >
                           <div className={"cancel-icon"}></div>
@@ -677,6 +697,9 @@ class AddSpecification extends Component {
             </div>
           </Container>
         </Drawer>
+        {
+          this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.CANCEL_MASTER_ALERT}`} />
+        }
         {isOpenRMDrawer && (
           <AddRawMaterial
             isOpen={isOpenRMDrawer}

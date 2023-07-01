@@ -8,6 +8,9 @@ import { calculatePercentage, checkForDecimalAndNull, checkForNull } from '../..
 import { getUOMSelectList } from '../../../../../actions/Common'
 import { ViewCostingContext } from '../../CostingDetails'
 import WarningMessage from '../../../../common/WarningMessage';
+import TooltipCustom from '../../../../common/Tooltip';
+import { number, decimalNumberLimit6, checkWhiteSpaces, percentageLimitValidation } from "../../../../../helper/validation";
+import { NUMBERMAXLENGTH } from '../../../../../config/masterData';
 
 function TransportationCost(props) {
 
@@ -27,6 +30,8 @@ function TransportationCost(props) {
   const [Rate, setRate] = useState('')
   const [TransportationType, setTransportationType] = useState()
   const [transportCost, setTransportCost] = useState(checkForNull(data?.TransportationCost))
+  const [reRenderComponent, setReRenderComponent] = useState(false)
+  const [count, setCount] = useState(0)
 
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
 
@@ -75,14 +80,14 @@ function TransportationCost(props) {
 
       if (props.IsAssemblyCalculation) {
         // props.setAssemblyTransportationCost(tempObj, Params, item)
-        props.getTransportationObj({ tempObj, Params, item })
+        props.getTransportationObj({ tempObj, Params, item }, errors)
       } else {
         // props.setTransportationCost(tempObj, Params)
-        props.getTransportationObj({ tempObj, Params })
+        props.getTransportationObj({ tempObj, Params }, errors)
       }
     }
 
-  }, [uom, Rate, Quantity, transportCost]);
+  }, [uom, Rate, Quantity, transportCost, reRenderComponent]);
 
   useEffect(() => {
     dispatch(getUOMSelectList(() => { }))
@@ -114,11 +119,6 @@ function TransportationCost(props) {
       const Quantity = getValues('Quantity')
 
       if (TransportationType === 'Percentage') {
-        if (event.target.value > 100) {
-          Toaster.warning('Value should not be greater than 100.')
-          event.target.value = '';
-          return false
-        }
         setTransportCost(checkForNull(props.surfaceCost * calculatePercentage(event.target.value)))
         setValue('TransportationCost', checkForDecimalAndNull(props.surfaceCost * calculatePercentage(event.target.value), initialConfiguration.NoOfDecimalForPrice))
         setRate(event.target.value)
@@ -134,9 +134,6 @@ function TransportationCost(props) {
           setRate(event.target.value)
         }
       }
-    } else {
-      Toaster.warning('Please enter valid number.')
-      event.target.value = '';
     }
   }
 
@@ -155,9 +152,6 @@ function TransportationCost(props) {
         setValue('TransportationCost', 0);
         setQuantity(event.target.value);
       }
-    } else {
-      Toaster.warning('Please enter valid number.')
-      event.target.value = '';
     }
   }
 
@@ -166,41 +160,66 @@ function TransportationCost(props) {
       setTransportCost(event.target.value)
       setValue('TransportationCost', event.target.value)
     }
-    else {
-      Toaster.warning('Please enter valid number.')
-      event.target.value = '';
-    }
   }
 
-  const reCalculation = () => {
 
-    if ((props.surfaceCost === 0 || props.surfaceCost === null) && data.UOM !== 'Fixed') {
+  // This function is responsible for recalculating transportation cost based on the user's inputs
+  const reCalculation = () => {
+    let cost = 0;
+    let newTransportCost = 0;
+
+    // If surfaceCost is not provided or is 0, and the UOM is set to Percentage, reset the UOM, Rate and Quantity fields
+    if ((props.surfaceCost === 0 || props.surfaceCost === null) && data.UOM === 'Percentage') {
       setValue('UOM', {})
       setValue('Rate', '')
       setValue('Quantity', '')
     } else {
-      setValue('UOM', { label: data.UOM, value: data.UOMId })
-      setValue('Rate', checkForNull(data.Rate))
-      setValue('Quantity', checkForNull(data.Quantity))
+      // If this is the first time the function is being called, set UOM, Rate and Quantity fields with the initial data
+      if (count === 0) {
+        setValue('UOM', { label: data.UOM, value: data.UOMId })
+        setValue('Rate', checkForNull(data.Rate))
+        setValue('Quantity', checkForNull(data.Quantity))
+      }
     }
-    if (data.UOM === 'Rate') {
-      const cost = (props.surfaceCost === 0 || props.surfaceCost === null) ? 0 : checkForNull(data.Rate) * checkForNull(data.Quantity);
-      setTransportCost(cost)
-      setValue('TransportationCost', checkForDecimalAndNull(cost, initialConfiguration.NoOfDecimalForPrice));
-    } else if (data.UOM === 'Fixed') {
-      setTransportCost(data.TransportationCost)
-      setValue('TransportationCost', checkForDecimalAndNull(data.TransportationCost, initialConfiguration.NoOfDecimalForPrice));
-    } else if (data.UOM === 'Percentage') {
-      const cost = (props.surfaceCost === 0 || props.surfaceCost === null) ? 0 : checkForNull(props.surfaceCost * calculatePercentage(checkForNull(data.Rate)));
-      setTransportCost(cost)
-      setValue('TransportationCost', checkForDecimalAndNull(cost, initialConfiguration.NoOfDecimalForPrice))
-      setRate((props.surfaceCost === 0 || props.surfaceCost === null) ? 0 : data.Rate)
-    } else {
-      setTransportCost(0)
-      setRate(0)
-      setValue('TransportationCost', checkForDecimalAndNull(data.TransportationCost, initialConfiguration.NoOfDecimalForPrice));
+
+    // Calculate transportation cost based on UOM
+    switch (data.UOM) {
+      // If UOM is Rate, calculate the cost as Rate * Quantity and set newTransportCost accordingly
+      case 'Rate':
+        cost = checkForNull(data.Rate) * checkForNull(data.Quantity);
+        newTransportCost = checkForDecimalAndNull(cost, initialConfiguration.NoOfDecimalForPrice);
+        break;
+
+      // If UOM is Fixed, set newTransportCost to the value provided in the data
+      case 'Fixed':
+        newTransportCost = checkForDecimalAndNull(data.TransportationCost, initialConfiguration.NoOfDecimalForPrice);
+        break;
+
+      // If UOM is Percentage, calculate the cost as surfaceCost * Rate * (percentage/100) and set newTransportCost accordingly.
+      // Also, set Rate value and check if surfaceCost is provided, if not, set cost to 0
+      case 'Percentage':
+        cost = (props.surfaceCost === 0 || props.surfaceCost === null) ? 0 : checkForNull(props.surfaceCost * calculatePercentage(checkForNull(data.Rate)));
+        newTransportCost = checkForDecimalAndNull(cost, initialConfiguration.NoOfDecimalForPrice);
+        setRate((props.surfaceCost === 0 || props.surfaceCost === null) ? 0 : data.Rate);
+        break;
+
+      // If UOM is not Rate, Fixed or Percentage, set newTransportCost to the value provided in the data
+      default:
+        newTransportCost = checkForDecimalAndNull(data.TransportationCost, initialConfiguration.NoOfDecimalForPrice);
+        break;
     }
+
+    // If the UOM label is present or newTransportCost is 0, update the transportation cost and set the value of TransportationCost field
+    if (getValues('UOM').label || newTransportCost === 0) {
+      setTransportCost(newTransportCost);
+      setValue('TransportationCost', newTransportCost);
+    }
+
+    // Re-render the component and update the count by 1
+    setReRenderComponent(!reRenderComponent);
+    setCount(count + 1);
   }
+
 
   /**
   * @method renderListing
@@ -279,11 +298,11 @@ function TransportationCost(props) {
                     mandatory={false}
                     rules={{
                       required: false,
-                      pattern: {
-                        //value: /^[0-9]*$/i,
-                        value: (TransportationType === 'Percentage') ? /^((?:|0|[1-9]\d?|100)(?:\.\d{1,6})?)$/i : /^\d{0,6}(\.\d{0,6})?$/i,
-                        message: (TransportationType === 'Percentage') ? 'Percentage should not be greater than 100.' : 'Maximum length for integer is 6 and for decimal is 6'
-                      },
+                      validate: TransportationType === 'Percentage' ? { number, checkWhiteSpaces, percentageLimitValidation } : { number, checkWhiteSpaces, decimalNumberLimit6 },
+                      max: TransportationType === 'Percentage' ? {
+                        value: 100,
+                        message: 'Percentage cannot be greater than 100'
+                      } : {},
                     }}
                     defaultValue={''}
                     customClassName={'withBorder'}
@@ -292,7 +311,7 @@ function TransportationCost(props) {
                       handleRateChange(e)
                     }}
                     errors={errors && errors.Rate}
-                    disabled={TransportationType === 'Fixed' || (CostingViewMode || IsLocked) ? true : false}
+                    disabled={!TransportationType || TransportationType === 'Fixed' || (CostingViewMode || IsLocked) ? true : false}
                   />
                 </div>
               </Col>
@@ -305,12 +324,8 @@ function TransportationCost(props) {
                   register={register}
                   mandatory={false}
                   rules={{
-                    //required: true,
-                    pattern: {
-                      //value: /^[0-9]*$/i,
-                      value: /^\d{0,6}?$/i,
-                      message: 'Maximum length for integer is 6.'
-                    },
+                    validate: TransportationType === 'Percentage' ? { number, checkWhiteSpaces, percentageLimitValidation } : { number, checkWhiteSpaces, decimalNumberLimit6 },
+                    maxLength: NUMBERMAXLENGTH
                   }}
                   defaultValue={''}
                   className=""
@@ -320,24 +335,21 @@ function TransportationCost(props) {
                     handleQuantityChange(e)
                   }}
                   errors={errors && errors.Quantity}
-                  disabled={(TransportationType === 'Fixed' || TransportationType === 'Percentage') || (CostingViewMode || IsLocked) ? true : false}
+                  disabled={(!TransportationType || TransportationType === 'Fixed' || TransportationType === 'Percentage') || (CostingViewMode || IsLocked) ? true : false}
                 />
 
               </Col>
-              <Col md="3">
+              <Col md="3">{TransportationType !== 'Fixed' && <TooltipCustom disabledIcon={true} id="operation-cost" tooltipText={TransportationType === 'Percentage' ? "Cost = (Operation cost * Percentage)/100" : "Cost = (Rate * Quantity)"} />}
                 <TextFieldHookForm
                   label="Cost"
+                  id="operation-cost"
                   name={`TransportationCost`}
                   Controller={Controller}
                   control={control}
                   register={register}
                   mandatory={false}
                   rules={{
-                    //required: true,
-                    pattern: {
-                      value: /^\d{0,6}(\.\d{0,6})?$/,
-                      message: 'Maximum length for integer is 6 and for decimal is 6.'
-                    },
+                    validate: { number, checkWhiteSpaces, decimalNumberLimit6 }
                   }}
                   defaultValue={''}
                   className=""
@@ -347,7 +359,7 @@ function TransportationCost(props) {
                     handleTransportChange(e)
                   }}
                   errors={errors && errors.TransportationCost}
-                  disabled={(TransportationType !== 'Fixed' || TransportationType === 'Percentage') || (CostingViewMode || IsLocked) ? true : false}
+                  disabled={(!TransportationType || TransportationType !== 'Fixed' || TransportationType === 'Percentage') || (CostingViewMode || IsLocked) ? true : false}
                 />
 
               </Col>

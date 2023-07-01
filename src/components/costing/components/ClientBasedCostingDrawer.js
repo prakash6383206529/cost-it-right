@@ -114,7 +114,7 @@ export function Clientbasedcostingdrawer(props) {
                                         <span>123456</span>
                                     </span>
                                     <span class="d-inline-block mr-4 mb-4 pl-3">
-                                        <span class="cr-tbl-label d-block">Costing ID:</span>
+                                        <span class="cr-tbl-label d-block">Costing Id:</span>
                                         <span>CS7654 - 12/01/2020 10:00AM</span>
                                     </span>
                                 </Col>
@@ -130,7 +130,7 @@ export function Clientbasedcostingdrawer(props) {
                                 </Col>
                                 <Col md="3">
                                     <Field
-                                        label={`RM Name-Grade`}
+                                        label={`Grade`}
                                         type="text"
                                         placeholder={"Enter"}
                                         component={renderText}
@@ -438,7 +438,7 @@ export function Clientbasedcostingdrawer(props) {
                                         customClassName="withBorder" />
                                 </Col>
                                 <Col md="3" className="two-filled-container">
-                                    <label>Hundi/Other Discount</label>
+                                    <label>Hundi/Discount</label>
                                     <Row className="p-0">
                                         <div className="col-md-6">
                                             <Field
@@ -547,7 +547,7 @@ export function Clientbasedcostingdrawer(props) {
                                             onChangeStatus={handleChangeStatus}
                                             PreviewComponent={Preview}
                                             //onSubmit={this.handleSubmit}
-                                            accept="*"
+                                            accept="image/jpeg,image/jpg,image/png,image/PNG,.xls,.doc,.pdf,.xlsx"
                                             initialFiles={[]}
                                             maxFiles={4}
                                             maxSizeBytes={2000000000}

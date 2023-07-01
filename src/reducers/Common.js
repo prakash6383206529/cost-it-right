@@ -57,7 +57,11 @@ import {
   STATUS_COLUMN_DATA,
   IS_RESET,
   GET_GRID_HEIGHT,
-  GET_STATE_WHILE_DOWNLOADING
+  GET_STATE_WHILE_DOWNLOADING,
+  GET_REPORTER_LIST,
+  GET_APPROVAL_TYPE_SELECT_LIST,
+  GET_DATA_WHILE_LOADING,
+  GET_DATA_FROM_REPORT
 } from '../config/constants';
 
 const initialState = {
@@ -415,6 +419,13 @@ export default function commanReducer(state = initialState, action) {
         error: true,
         vendorWithVendorCodeSelectList: action.payload
       };
+    case GET_REPORTER_LIST:
+      return {
+        ...state,
+        loading: false,
+        error: true,
+        getReporterListDropDown: action.payload
+      };
     case GET_UOM_SELECTLIST_BY_UNITTYPE:
       return {
         ...state,
@@ -467,6 +478,21 @@ export default function commanReducer(state = initialState, action) {
       return {
         ...state,
         disabledClass: action.payload
+      }
+    case GET_DATA_WHILE_LOADING:
+      return {
+        ...state,
+        dashboardTabLock: action.payload
+      }
+    case GET_APPROVAL_TYPE_SELECT_LIST:
+      return {
+        ...state,
+        approvalTypeSelectList: action.payload
+      }
+    case GET_DATA_FROM_REPORT:
+      return {
+        ...state,
+        sidebarAndNavbarHide: action.payload
       }
     default:
       return state;

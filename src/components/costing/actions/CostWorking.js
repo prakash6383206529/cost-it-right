@@ -1051,16 +1051,24 @@ export function getErrorFile(costingId, callback) {
  * @description Costing Bulk Upload (SHEET METAL)
 */
 
-export function bulkUploadCosting(data, callback) {
+export function bulkUploadCosting(data, costingVersion, callback) {
 
   return (dispatch) => {
-    const request = axios.post(API.uploadCosting, data, config());
+    let request;
+    if (costingVersion === 'NEW') {  // BULK UPLOAD NEW COSTING
+      request = axios.post(API.uploadCosting, data, config());
+    } else {  // BULK UPLOAD OLD COSTING
+      request = axios.post(API.uploadOldCosting, data, config());
+    }
     request.then((response) => {
       if (response.status === 200) {
         callback(response);
       }
     }).catch((error) => {
       dispatch({ type: API_FAILURE });
+      if (error?.response?.status === 400) {
+        callback(error.response)
+      }
       apiErrors(error);
     });
   };
@@ -1147,36 +1155,6 @@ export function saveDefaultProcessCostCalculationData(data, callback) {
   }
 }
 
-/**
- * @method getProcessCalculation
- * @description Get Process Calculation
-*/
-
-export function getProcessCalculation(costingId, processId, processCalculationId, technologyId, processType, callback) {
-  return (dispatch) => {
-    //dispatch({ type: API_REQUEST });
-    const queryParams = `costingId=${costingId}&processId=${processId}&processCalculationId=${processCalculationId ? processCalculationId : "00000000-0000-0000-0000-000000000000"}&technologyId=${technologyId}&processType=${processType}`
-    const request = axios.get(`${API.getProcessCalculation}?${queryParams}`, config());
-    request.then((response) => {
-      if (response.data.Result) {
-        // dispatch({
-        //   type: GET_RAW_MATERIAL_CALCI_INFO,
-        //   payload: response.data.Data,
-        // });
-        callback(response);
-      } else {
-        Toaster.error(MESSAGES.SOME_ERROR);
-      }
-    }).catch((error) => {
-      dispatch({ type: API_FAILURE });
-      callback(error);
-      apiErrors(error);
-    });
-  };
-}
-
-
-
 export function getProcessMachiningCalculation(processCalculationId, callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
@@ -1225,35 +1203,93 @@ export function getProcessDefaultCalculation(processCalculationId, callback) {
  * @description Costing Bulk Upload
 */
 
-export function plasticBulkUploadCosting(data, callback) {
+export function plasticBulkUploadCosting(data, costingVersion, callback) {
 
   return (dispatch) => {
-    const request = axios.post(API.uploadPlasticCosting, data, config());
+
+    let request;
+    if (costingVersion === 'NEW') {  // BULK UPLOAD NEW COSTING
+      request = axios.post(API.uploadPlasticCosting, data, config());
+    } else {  // BULK UPLOAD OLD COSTING
+      request = axios.post(API.uploadPlasticOldCosting, data, config());
+    }
     request.then((response) => {
       if (response.status === 200) {
         callback(response);
       }
     }).catch((error) => {
       dispatch({ type: API_FAILURE });
+      if (error?.response?.status === 400) {
+        callback(error.response)
+      }
       apiErrors(error);
     });
   };
 }
 
-export function machiningBulkUploadCosting(data, callback) {
+export function machiningBulkUploadCosting(data, costingVersion, callback) {
 
   return (dispatch) => {
-    const request = axios.post(API.uploadMachiningCosting, data, config());
+
+    let request;
+    if (costingVersion === 'NEW') {  // BULK UPLOAD NEW COSTING
+      request = axios.post(API.uploadMachiningCosting, data, config());
+    } else {  // BULK UPLOAD OLD COSTING
+      request = axios.post(API.uploadMachiningOldCosting, data, config());
+    }
     request.then((response) => {
       if (response.status === 200) {
         callback(response);
       }
     }).catch((error) => {
       dispatch({ type: API_FAILURE });
+      if (error?.response?.status === 400) {
+        callback(error.response)
+      }
       apiErrors(error);
     });
   };
 }
+
+
+export function corrugatedBoxBulkUploadCosting(data, callback) {
+
+  return (dispatch) => {
+    const request = axios.post(API.uploadCorrugatedBoxCosting, data, config());
+    request.then((response) => {
+      if (response.status === 200) {
+        callback(response);
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      if (error?.response?.status === 400) {
+        callback(error.response)
+      }
+      apiErrors(error);
+    });
+  };
+}
+
+export function assemblyBulkUploadCosting(data, callback) {
+
+  return (dispatch) => {
+    const request = axios.post(API.uploadAssemblyCosting, data, config());
+    request.then((response) => {
+      if (response.status === 200) {
+        callback(response);
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      if (error?.response?.status === 400) {
+        callback(error.response)
+      }
+      apiErrors(error);
+    });
+  };
+}
+
+
+
 export function setFerrousCalculatorReset(data) {
   return (dispatch) => {
     dispatch({
@@ -1261,4 +1297,40 @@ export function setFerrousCalculatorReset(data) {
       payload: data,
     })
   }
+}
+
+
+export function getSimulationRmFerrousCastingCalculation(simulationId, costingId, callback) {
+  return (dispatch) => {
+    //dispatch({ type: API_REQUEST });
+    const queryParams = `simulationId=${simulationId}&costingId=${costingId ? costingId : "0"}`
+    const request = axios.get(`${API.getSimulationRmFerrousCastingCalculation}?${queryParams}`, config());
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response);
+      } else {
+        Toaster.error(MESSAGES.SOME_ERROR);
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      callback(error);
+      apiErrors(error);
+    });
+  };
+}
+
+
+export function saveRawMaterialCalculationForRubberCompound(data, callback) {
+  return (dispatch) => {
+    const request = axios.post(API.saveRawMaterialCalculationForRubberCompound, data, config());
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response);
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      apiErrors(error);
+      callback(error);
+    });
+  };
 }

@@ -1,18 +1,22 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Field, reduxForm } from "redux-form";
-import { Container, Row, Col, } from 'reactstrap';
-import { required, email, minLength7, maxLength70, acceptAllExceptSingleSpecialCharacter, maxLength12, minLength10, maxLength80, checkWhiteSpaces, maxLength20, postiveNumber, maxLength5 } from "../../../helper/validation";
-import { renderText, renderEmailInputField, searchableSelect, renderNumberInputField } from "../../layout/FormInputs";
-import { createClient, updateClient, getClientData } from '../actions/Client';
+import { Field, reduxForm, formValueSelector } from "redux-form";
+import { Container, Row, Col, Table, } from 'reactstrap';
+import { required, email, minLength7, maxLength70, acceptAllExceptSingleSpecialCharacter, maxLength12, minLength10, maxLength80, checkWhiteSpaces, maxLength20, postiveNumber, maxLength5, maxLength6, number, checkForNull, positiveAndDecimalNumber, maxLength10 } from "../../../helper/validation";
+import { renderText, renderEmailInputField, searchableSelect, renderTextInputField } from "../../layout/FormInputs";
+import { createClient, updateClient, getClientData, checkAndGetCustomerCode, getPoamStatusSelectList } from '../actions/Client';
 import { fetchCountryDataAPI, fetchStateDataAPI, fetchCityDataAPI, getCityByCountry, } from '../../../actions/Common';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
-import { loggedInUserId, } from "../../../helper/auth";
+import { getConfigurationKey, loggedInUserId, } from "../../../helper/auth";
 import Drawer from '@material-ui/core/Drawer';
 import LoaderCustom from '../../common/LoaderCustom';
 import { debounce } from 'lodash';
-
+import PopupMsgWrapper from '../../common/PopupMsgWrapper';
+import HeaderTitle from '../../common/HeaderTitle';
+import { EMPTY_DATA } from '../../../config/constants';
+import NoContentFound from '../../common/NoContentFound';
+const selector = formValueSelector('AddClientDrawer');
 
 
 class AddClientDrawer extends Component {
@@ -29,10 +33,20 @@ class AddClientDrawer extends Component {
             showStateCity: true,
             DropdownChanged: true,
             DataToCheck: [],
-            setDisable: false
+            setDisable: false,
+            isDisableCode: false,
+            companyCode: '',
+            companyName: '',
+            showPopup: false,
+            status: [],
+            errorObj: {
+                status: false,
+                fromPOSeries: false,
+                toPOSeries: false
+            },
+            statusGrid: []
         }
     }
-
     /**
     * @method componentDidMount
     * @description called after render the component
@@ -42,7 +56,7 @@ class AddClientDrawer extends Component {
             this.props.fetchCountryDataAPI(() => { })
         }
         this.getDetail()
-
+        this.props.getPoamStatusSelectList(() => { })
     }
 
     getAllCityData = () => {
@@ -97,13 +111,25 @@ class AddClientDrawer extends Component {
         }
         this.setState({ DropdownChanged: false })
     };
+    /**
+* @method handleStatus
+* @description called
+*/
+    handleStatus = (newValue, actionMeta) => {
+        if (newValue && newValue !== '') {
+            this.setState({ status: newValue });
+        } else {
+            this.setState({ status: [] })
+        }
+        this.setState({ DropdownChanged: false })
+    };
 
     /**
     * @method renderListing
     * @description Used show listing of unit of measurement
     */
     renderListing = (label) => {
-        const { countryList, stateList, cityList } = this.props;
+        const { countryList, stateList, cityList, poamStatusSelectList } = this.props;
         const temp = [];
 
         if (label === 'country') {
@@ -130,7 +156,14 @@ class AddClientDrawer extends Component {
             });
             return temp;
         }
-
+        if (label === 'status') {
+            poamStatusSelectList && poamStatusSelectList.map(item => {
+                if (item.Value === '0') return false;
+                temp.push({ label: item.Text, value: item.Value })
+                return null
+            });
+            return temp;
+        }
     }
 
     /**
@@ -147,20 +180,31 @@ class AddClientDrawer extends Component {
             this.props.getClientData(ID, (res) => {
                 if (res && res.data && res.data.Data) {
                     let Data = res.data.Data;
+                    let gridArray = Data &&
+                        Data.POSeriesRequestList.map((item) => {
+                            return {
+                                Status: item.Status,
+                                StatusId: item.StatusId,
+                                POSeriesFrom: item.POSeriesFrom,
+                                POSeriesTo: item.POSeriesTo,
+                            }
+                        })
                     this.setState({ DataToCheck: Data })
                     if (!(this.props.isEditFlag || this.props.isViewMode)) {
                         this.props.fetchStateDataAPI(Data.CountryId, () => { })
                         this.props.fetchCityDataAPI(Data.StateId, () => { })
                     }
+
+                    this.props.change('CompanyCode', Data.CompanyCode)
                     setTimeout(() => {
                         this.setState({
                             // isLoader: false,
                             country: Data.CountryName !== undefined ? { label: Data.CountryName, value: Data.CountryId } : [],
                             state: Data.StateName !== undefined ? { label: Data.StateName, value: Data.StateId } : [],
                             city: Data.CityName !== undefined ? { label: Data.CityName, value: Data.CityId } : [],
+                            statusGrid: gridArray
                         }, () => this.setState({ isLoader: false }))
                     }, 500)
-
                 }
             })
         } else {
@@ -195,21 +239,34 @@ class AddClientDrawer extends Component {
 
         this.toggleDrawer('', type)
     }
-
+    cancelHandler = () => {
+        // this.setState({ showPopup: true })
+        this.cancel('cancel')
+    }
+    onPopupConfirm = () => {
+        this.cancel('cancel')
+        this.setState({ showPopup: false })
+    }
+    closePopUp = () => {
+        this.setState({ showPopup: false })
+    }
     /**
     * @method onSubmit
     * @description Used to Submit the form
     */
     onSubmit = debounce((values) => {
-        const { city, DataToCheck, DropdownChanged } = this.state;
+        const { city, DataToCheck, DropdownChanged, statusGrid } = this.state;
         const { isEditFlag, ID } = this.props;
 
+        if (getConfigurationKey().IsShowPOSeriesInCustomerMaster && statusGrid && statusGrid.length === 0) {
+            Toaster.warning('PO Series Table entry required.')
+            return false
+        }
         /** Update existing detail of supplier master **/
         if (isEditFlag) {
             if (DropdownChanged && DataToCheck.ClientName === values.ClientName && DataToCheck.ClientEmailId === values.ClientEmailId &&
                 DataToCheck.PhoneNumber === values.PhoneNumber && DataToCheck.Extension === values.Extension &&
                 DataToCheck.MobileNumber === values.MobileNumber && DataToCheck.ZipCode === values.ZipCode) {
-
                 this.toggleDrawer('')
                 return false
             }
@@ -226,6 +283,8 @@ class AddClientDrawer extends Component {
                 Extension: values.Extension,
                 CityId: city.value,
                 LoggedInUserId: loggedInUserId(),
+                CompanyCode: values.CompanyCode,
+                POSeriesRequestList: statusGrid
             }
 
             this.props.updateClient(updateData, (res) => {
@@ -249,6 +308,8 @@ class AddClientDrawer extends Component {
                 Extension: values.Extension,
                 CityId: city.value,
                 LoggedInUserId: loggedInUserId(),
+                CompanyCode: values.CompanyCode,
+                POSeriesRequestList: statusGrid
             }
             this.props.createClient(formData, (res) => {
                 this.setState({ setDisable: false })
@@ -265,13 +326,135 @@ class AddClientDrawer extends Component {
             e.preventDefault();
         }
     };
+
+    checkUniqCode = (e) => {
+        this.setState({ companyCode: e.target.value })
+        this.props.checkAndGetCustomerCode(e.target.value, this.state.companyName, res => {
+
+            let Data = res.data.DynamicData
+            if (Data?.IsExist) {
+                if (this.state.companyName) {
+                    this.props.change('CompanyCode', res.data.DynamicData.CustomerCode ? res.data.DynamicData.CustomerCode : '')
+                } else {
+                    Toaster.warning(res.data.Message);
+                    this.props.change('CompanyCode', '')
+                }
+            }
+        })
+    }
+
+    checkUniqCodeByName = (e) => {
+        this.setState({ companyName: e.target.value })
+        this.props.checkAndGetCustomerCode(this.state.companyCode, e.target.value, res => {
+            if (res && res.data && res.data.Result === false) {
+                this.props.change('CompanyCode', res.data.DynamicData.CustomerCode ? res.data.DynamicData.CustomerCode : '')
+            } else {
+                this.setState({ isDisableCode: res.data.DynamicData.IsExist }, () => {
+                    this.props.change('CompanyCode', res.data.DynamicData.CustomerCode ? res.data.DynamicData.CustomerCode : '')
+                })
+            }
+        })
+    }
     /**
-    * @method render
-    * @description Renders the component
+     * @method statusTableHandler
+  
+     * @description ADDIN PROCESS ROW IN TABLE GRID
     */
+    statusTableHandler
+        = () => {
+            const { status, statusGrid } = this.state;
+            const { fieldsObj } = this.props;
+            const tempArray = [];
+            let count = 0;
+            setTimeout(() => {
+
+                if (status.length === 0) {
+                    this.setState({ errorObj: { ...this.state.errorObj, status: true } })
+                    count++;
+                }
+                if (fieldsObj.FromPOSeries === undefined || Number(fieldsObj.FromPOSeries) === 0) {
+                    this.setState({ errorObj: { ...this.state.errorObj, fromPOSeries: true } })
+                    count++;
+                }
+                if (fieldsObj.ToPOSeries === undefined || Number(fieldsObj.ToPOSeries) === 0) {
+                    this.setState({ errorObj: { ...this.state.errorObj, toPOSeries: true } })
+                    count++;
+                }
+                if (count > 0) {
+                    return false;
+                }
+                if (maxLength10(fieldsObj.ToPOSeries) || maxLength10(fieldsObj.FromPOSeries)) {
+                    return false
+                }
+
+                const FromPOSeries = checkForNull(fieldsObj?.FromPOSeries);
+                const ToPOSeries = checkForNull(fieldsObj.ToPOSeries);
+
+                // CONDITION TO CHECK DUPLICATE ENTRY IN GRID
+                const isExist = statusGrid.findIndex(el => ((el.statusId === status.value) && (el.FromPOSeries === FromPOSeries) && (el.ToPOSeries === ToPOSeries)))
+                if (isExist !== -1) {
+                    Toaster.warning('Already added, Please check the values.')
+                    return false;
+                }
+                if (FromPOSeries >= ToPOSeries) {
+                    Toaster.warning('From PO Series should be less than To PO Series ')
+                    return false;
+                }
+                tempArray.push(...statusGrid, {
+                    Status: status.label,
+                    StatusId: status.value,
+                    POSeriesFrom: FromPOSeries,
+                    POSeriesTo: ToPOSeries
+                })
+
+                this.setState({
+                    statusGrid: tempArray,
+                    status: [],
+                    errorObj: []
+                }, () => this.props.change('ToPOSeries', ''));
+                this.props.change('FromPOSeries', '')
+            }, 200);
+        }
+    /**     
+     * @method statusTableReset
+     * @description RESET VALUES 
+     */
+    statusTableReset = () => {
+        this.setState({
+            status: [],
+            errorObj: []
+        }, () => this.props.change('ToPOSeries', ''));
+        this.props.change('FromPOSeries', '')
+    }
+
+    /**     
+     * @method deleteItem
+     * @description DELETE ROW ENTRY FROM TABLE 
+     */
+    deleteItem = (index) => {
+        const { statusGrid } = this.state;
+
+        let tempData = statusGrid.filter((item, i) => {
+            if (i === index) {
+                return false;
+            }
+            return true;
+        });
+
+        this.setState({
+            statusGrid: tempData,
+            status: [],
+            DropdownChanged: false
+        }, () => this.props.change('ToPOSeries', tempData.length === 0 ? '' : this.props.fieldsObj.ToPOSeries))
+        this.props.change('FromPOSeries', tempData.length === 0 ? '' : this.props.fieldsObj.FromPOSeries)
+    }
+    /**
+     * @method render
+     * @description Renders the component
+     */
     render() {
         const { handleSubmit, isEditFlag, } = this.props;
-        const { country, isViewMode, setDisable } = this.state;
+        const { country, isViewMode, setDisable, isDisableCode } = this.state;
         return (
             <div>
                 <Drawer anchor={this.props.anchor} open={this.props.isOpen}
@@ -288,7 +471,7 @@ class AddClientDrawer extends Component {
                                 <Row className="drawer-heading">
                                     <Col>
                                         <div className={'header-wrapper left'}>
-                                            <h3>{isViewMode ? "View" : isEditFlag ? "Update" : "Add"} Client</h3>
+                                            <h3>{isViewMode ? "View" : isEditFlag ? "Update" : "Add"} Customer</h3>
                                         </div>
                                         <div
                                             onClick={(e) => this.toggleDrawer(e, 'cancel')}
@@ -305,10 +488,27 @@ class AddClientDrawer extends Component {
                                             placeholder={isViewMode ? '-' : "Enter"}
                                             validate={[required, acceptAllExceptSingleSpecialCharacter, maxLength80, checkWhiteSpaces]}
                                             component={renderText}
+                                            onBlur={this.checkUniqCodeByName}
                                             required={true}
                                             className=""
                                             customClassName={'withBorder'}
                                             disabled={isEditFlag ? true : false}
+                                        />
+                                    </Col>
+                                    <Col md="6">
+                                        <Field
+                                            label={`Company Code`}
+                                            name={'CompanyCode'}
+                                            type="text"
+                                            placeholder={(isEditFlag || isDisableCode || getConfigurationKey()?.IsAutoGeneratedCustomerCompanyCode) ? '-' : "Select"}
+                                            validate={[required]}
+                                            valueDescription={this.state.companyCode}
+                                            component={renderText}
+                                            required={true}
+                                            onChange={this.checkUniqCode}
+                                            className=" "
+                                            customClassName=" withBorder"
+                                            disabled={(isEditFlag || isDisableCode || getConfigurationKey()?.IsAutoGeneratedCustomerCompanyCode) ? true : false}
                                         />
                                     </Col>
                                     <Col md="6">
@@ -347,8 +547,8 @@ class AddClientDrawer extends Component {
                                                     name={"PhoneNumber"}
                                                     type="text"
                                                     placeholder={isViewMode ? '-' : "Enter"}
-                                                    validate={[postiveNumber, minLength10, maxLength12, checkWhiteSpaces]}
-                                                    component={renderNumberInputField}
+                                                    validate={[postiveNumber, minLength10, maxLength12, checkWhiteSpaces, number]}
+                                                    component={renderTextInputField}
                                                     // required={true}
                                                     // maxLength={12}
                                                     className=""
@@ -362,8 +562,8 @@ class AddClientDrawer extends Component {
                                                     name={"Extension"}
                                                     type="text"
                                                     placeholder={isViewMode ? '-' : "Enter"}
-                                                    validate={[postiveNumber, maxLength5, checkWhiteSpaces]}
-                                                    component={renderNumberInputField}
+                                                    validate={[postiveNumber, maxLength5, checkWhiteSpaces, number]}
+                                                    component={renderTextInputField}
                                                     // required={true}
                                                     maxLength={5}
                                                     className=""
@@ -382,9 +582,9 @@ class AddClientDrawer extends Component {
                                             label="Mobile No."
                                             type="text"
                                             placeholder={isViewMode ? '-' : "Enter"}
-                                            component={renderNumberInputField}
+                                            component={renderTextInputField}
                                             disabled={isViewMode}
-                                            validate={[postiveNumber, maxLength12, minLength10, checkWhiteSpaces]}
+                                            validate={[postiveNumber, maxLength12, minLength10, checkWhiteSpaces, number]}
                                             // required={true}
                                             maxLength={10}
                                             customClassName={'withBorder'}
@@ -448,8 +648,8 @@ class AddClientDrawer extends Component {
                                             name={"ZipCode"}
                                             type="text"
                                             placeholder={isViewMode ? '-' : "Enter"}
-                                            validate={[postiveNumber]}
-                                            component={renderNumberInputField}
+                                            validate={[postiveNumber, maxLength6, number]}
+                                            component={renderTextInputField}
                                             // required={true}
                                             maxLength={6}
                                             customClassName={'withBorder'}
@@ -458,13 +658,123 @@ class AddClientDrawer extends Component {
                                     </Col>
                                 </Row>
 
+                                <Row className='pl-3'>
+                                    {getConfigurationKey().IsShowPOSeriesInCustomerMaster && (
+                                        <>
+                                            <Col md="12">
+                                                <HeaderTitle title={'PO Series Table:'} />
+                                            </Col>
+                                            <Col md="3">
+                                                <div className="d-flex justify-space-between align-items-center inputwith-icon">
+                                                    <div className="fullinput-icon">
+                                                        <Field
+                                                            name="Status"
+                                                            type="text"
+                                                            label="Status"
+                                                            component={searchableSelect}
+                                                            placeholder={isViewMode ? '-' : 'Select'}
+                                                            options={this.renderListing('status')}
+                                                            required={true}
+                                                            handleChangeDescription={this.handleStatus}
+                                                            valueDescription={this.state.status}
+                                                            disabled={isViewMode}
+                                                        />
+                                                        {this.state.errorObj?.status && (this.state.status && this.state.status?.length === 0) && <div className='text-help p-absolute bottom-7'>This field is required.</div>}
+                                                    </div>
+                                                </div>
+                                            </Col>
+                                            <Col md="3">
+                                                <Field
+                                                    label={'From PO Series'}
+                                                    name={"FromPOSeries"}
+                                                    type="number"
+                                                    placeholder={isViewMode ? '-' : "Enter"}
+                                                    validate={[positiveAndDecimalNumber, maxLength10]}
+                                                    component={renderText}
+                                                    required={true}
+                                                    disabled={isViewMode}
+                                                    className=" "
+                                                    customClassName="po-series withBorder"
+                                                />
+                                                {this.state.errorObj.fromPOSeries && (this.props.fieldsObj.FromPOSeries === undefined || Number(this.props.fieldsObj.FromPOSeries) === 0) && <div className='text-help p-absolute'>This field is required.</div>}
+                                            </Col>
+                                            <Col md="3">
+                                                <Field
+                                                    label={'To PO Series'}
+                                                    name={"ToPOSeries"}
+                                                    type="number"
+                                                    placeholder={isViewMode ? '-' : "Enter"}
+                                                    validate={[positiveAndDecimalNumber, maxLength10]}
+                                                    component={renderText}
+                                                    required={true}
+                                                    disabled={isViewMode}
+                                                    className=" "
+                                                    customClassName="po-series withBorder"
+                                                />
+                                                {this.state.errorObj.toPOSeries && (this.props.fieldsObj.ToPOSeries === undefined || Number(this.props.fieldsObj.ToPOSeries) === 0) && <div className='text-help p-absolute'>This field is required.</div>}
+                                            </Col>
+                                            <Col md="3" className='pl-0 mb-2 d-flex align-items-center'>
+                                                <div className='d-flex mb-1'>
+                                                    <button
+                                                        type="button"
+                                                        className={`${isViewMode ? 'disabled-button user-btn' : 'user-btn'} pull-left mr5`}
+                                                        disabled={isViewMode ? true : false}
+                                                        onClick={this.statusTableHandler}>
+                                                        <div className={'plus'}></div>ADD</button>
+                                                    <button
+                                                        type="button"
+                                                        disabled={isViewMode ? true : false}
+                                                        className={`${isViewMode ? 'disabled-button reset-btn' : 'reset-btn'} pull-left`}
+                                                        onClick={this.statusTableReset}
+                                                    >Reset</button>
+                                                </div>
+                                            </Col>
+                                            <Col md="12">
+                                                <Table className="table border" size="sm" >
+                                                    <thead>
+                                                        <tr>
+                                                            <th>{`Status`}</th>
+                                                            <th>{`From PO Series`}</th>
+                                                            <th>{`To PO Series`}</th>
+                                                            <th>{`Action`}</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody >
+                                                        {
+                                                            this.state.statusGrid &&
+                                                            this.state.statusGrid.map((item, index) => {
+                                                                return (
+                                                                    <tr key={index}>
+                                                                        <td>{item.Status}</td>
+                                                                        <td>{item.POSeriesFrom}</td>
+                                                                        <td>{item.POSeriesTo}</td>
+                                                                        <td>
+                                                                            <button title='Delete' className="Delete" type={'button'} disabled={isViewMode ? true : false} onClick={() => this.deleteItem(index)} />
+                                                                        </td>
+                                                                    </tr>
+                                                                )
+                                                            })
+                                                        }
+                                                        <tr>
+                                                            {this.state.statusGrid?.length === 0 && <td colSpan={"6"}>
+                                                                <NoContentFound title={EMPTY_DATA} />
+                                                            </td>}
+                                                        </tr>
+                                                    </tbody>
+
+                                                </Table>
+
+                                            </Col>
+                                        </>
+                                    )}
+                                </Row>
                                 <Row className="sf-btn-footer no-gutters justify-content-between mb-4">
                                     <div className="col-md-12  text-right px-3">
                                         <div className="">
                                             <button
                                                 type={'button'}
                                                 className="mr15 cancel-btn"
-                                                onClick={() => { this.cancel('cancel') }}
+                                                onClick={this.cancelHandler}
                                                 disabled={setDisable}
                                             >
                                                 <div className={'cancel-icon'}></div> {'Cancel'}
@@ -483,6 +793,9 @@ class AddClientDrawer extends Component {
                         </div>
                     </Container>
                 </Drawer>
+                {
+                    this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.CANCEL_MASTER_ALERT}`} />
+                }
             </div>
         );
     }
@@ -493,10 +806,11 @@ class AddClientDrawer extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ comman, client }) {
+function mapStateToProps(state) {
+    const { comman, client } = state;
+    const fieldsObj = selector(state, 'FromPOSeries', 'ToPOSeries');
     const { countryList, stateList, cityList } = comman;
-    const { clientData } = client;
-
+    const { clientData, poamStatusSelectList } = client;
     let initialValues = {};
     if (clientData && clientData !== undefined) {
         initialValues = {
@@ -510,7 +824,7 @@ function mapStateToProps({ comman, client }) {
         }
     }
 
-    return { countryList, stateList, cityList, initialValues, clientData, }
+    return { countryList, stateList, cityList, initialValues, clientData, poamStatusSelectList, fieldsObj }
 }
 
 /**
@@ -527,6 +841,8 @@ export default connect(mapStateToProps, {
     updateClient,
     getClientData,
     getCityByCountry,
+    checkAndGetCustomerCode,
+    getPoamStatusSelectList
 })(reduxForm({
     form: 'AddClientDrawer',
     enableReinitialize: true,

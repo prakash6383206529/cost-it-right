@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+  <g id="pie-chart" transform="translate(-1336 -366)">
+    <g id="Rectangle_6" data-name="Rectangle 6" transform="translate(1336 366)" fill="#0cbeeb" stroke="#0cbeeb" stroke-width="1" opacity="0.2">
+      <rect width="32" height="32" rx="4" stroke="none"/>
+      <rect x="0.5" y="0.5" width="31" height="31" rx="3.5" fill="none"/>
+    </g>
+    <g id="pie-chart-svgrepo-com" transform="translate(1339.583 370.824)">
+      <path id="Path_12" data-name="Path 12" d="M43.2,11.784A12.691,12.691,0,0,0,31.451.03L31,0V12.235H43.235Zm-11.36-.393V.912a11.668,11.668,0,0,1,2.965.718c0,.019.391.15.733.319a11.913,11.913,0,0,1,5.744,5.744c.107.206.3.736.319.733a11.672,11.672,0,0,1,.718,2.965Z" transform="translate(-18.401 -0.749)" fill="#0cbeeb" stroke="#0cbeeb" stroke-linecap="round" stroke-linejoin="bevel" stroke-width="0.1"/>
+      <path id="Path_13" data-name="Path 13" d="M39.722,39.474l.3-.323a12.682,12.682,0,0,0,3.324-7.707l.031-.451H31.242Zm-3.1-7.636h5.837a11.767,11.767,0,0,1-.579,2.585,4.72,4.72,0,0,1-.3.77,11.864,11.864,0,0,1-1.893,3.058l-.51-.51c-.109-.109-.307-.319-.442-.442l-.824-.825c-.129-.116-.3-.289-.442-.441l-.824-.824c-.149-.149-.334-.322-.442-.442l-.824-.824c-.144-.168-.329-.329-.442-.442l-.824-.824a3.712,3.712,0,0,1-.442-.442l-.4-.4Z" transform="translate(-18.541 -18.664)" fill="#0cbeeb" stroke="#0cbeeb" stroke-linecap="round" stroke-linejoin="bevel" stroke-width="0.1"/>
+      <path id="Path_14" data-name="Path 14" d="M11.6,0l-.427.029a12,12,0,1,0,8.442,21.238l.34-.28L11.6,12.632Zm7.16,20.923A11.2,11.2,0,1,1,10.8.864v12.1Z" transform="translate(0 -0.187)" fill="#0cbeeb" stroke="#0cbeeb" stroke-linecap="round" stroke-linejoin="bevel" stroke-width="0.1"/>
+    </g>
+  </g>
+</svg>

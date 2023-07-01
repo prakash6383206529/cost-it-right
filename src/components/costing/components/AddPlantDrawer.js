@@ -23,7 +23,6 @@ function AddPlantDrawer(props) {
 
   useEffect(() => {
     const { zbcPlantGrid } = props;
-    dispatch(getVendorWithVendorCodeSelectList(() => { }))
     dispatch(getPlantSelectListByType(ZBC, () => { }))
 
     let tempArr = [];
@@ -39,7 +38,10 @@ function AddPlantDrawer(props) {
     if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
       return;
     }
-    props.closeDrawer('', data)
+    props.closeDrawer('', {
+      ...data,
+      PlantName: `${data.PlantName} (${data.PlantCode})`
+    })
   };
 
   /**
@@ -134,7 +136,7 @@ function AddPlantDrawer(props) {
               <Row className="pl-3">
                 <Col md="12">
                   <SearchableSelectHookForm
-                    label={"Plant"}
+                    label={"Plant (Code)"}
                     name={"Plant"}
                     placeholder={"Select"}
                     Controller={Controller}

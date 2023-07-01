@@ -7,7 +7,8 @@ import AddFreight from '../../Drawers/AddFreight';
 import { Fixed, FullTruckLoad, PartTruckLoad, Percentage } from '../../../../../config/constants';
 import { ViewCostingContext } from '../../CostingDetails';
 import { gridDataAdded, isPackageAndFreightDataChange } from '../../../actions/Costing';
-import { checkForDecimalAndNull } from '../../../../../helper';
+import { checkForDecimalAndNull, CheckIsCostingDateSelected } from '../../../../../helper';
+import { LOGISTICS } from '../../../../../config/masterData';
 
 function FreightCost(props) {
 
@@ -20,6 +21,7 @@ function FreightCost(props) {
 
   const dispatch = useDispatch()
   const CostingViewMode = useContext(ViewCostingContext);
+  const { CostingEffectiveDate, costingData } = useSelector(state => state.costing)
 
   useEffect(() => {
     props.setFreightCost(gridData, JSON.stringify(gridData) !== JSON.stringify((props?.data && props?.data?.length > 0 ? props?.data : [])) ? true : false)
@@ -33,6 +35,7 @@ function FreightCost(props) {
   * @description TOGGLE DRAWER
   */
   const DrawerToggle = () => {
+    if (costingData.TechnologyId === LOGISTICS && CheckIsCostingDateSelected(CostingEffectiveDate)) return false;
     setDrawerOpen(true)
     setIsEditFlag(false)
   }
@@ -135,8 +138,8 @@ function FreightCost(props) {
                             <td>{item.EFreightLoadType === Fixed || item.EFreightLoadType === Percentage ? '-' : item.Quantity}</td>
                             <td>{checkForDecimalAndNull(item.FreightCost, initialConfiguration.NoOfDecimalForPrice)}</td>
                             <td style={{ textAlign: "right" }}>
-                              {!CostingViewMode && <button className="Edit mt15 mr5" type={'button'} onClick={() => editItem(index)} />}
-                              {!CostingViewMode && <button className="Delete mt15" type={'button'} onClick={() => deleteItem(index)} />}
+                              {!CostingViewMode && <button title='Edit' className="Edit mt15 mr5" type={'button'} onClick={() => editItem(index)} />}
+                              {!CostingViewMode && <button title='Delete' className="Delete mt15" type={'button'} onClick={() => deleteItem(index)} />}
                             </td>
                           </tr>
                         )

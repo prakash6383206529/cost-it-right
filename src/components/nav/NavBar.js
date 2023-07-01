@@ -1,10 +1,10 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import { Link, } from "react-router-dom";
-import { NavbarToggler, Nav, Dropdown, DropdownToggle } from "reactstrap";
-import { isUserLoggedIn, loggedInUserId } from '../../helper/auth';
+import { NavbarToggler, Nav } from "reactstrap";
+import { getConfigurationKey, isUserLoggedIn, loggedInUserId } from '../../helper/auth';
 import {
-  logoutUserAPI, getMenuByUser, getModuleSelectList, getPermissionByUser, getModuleIdByPathName, getMenu,
+  logoutUserAPI, getMenuByUser, getModuleSelectList, getPermissionByUser, getMenu,
   getTopAndLeftMenuData
 } from '../../actions/auth/AuthActions';
 import "./NavBar.scss";
@@ -28,13 +28,16 @@ import Logo from '../../assests/images/logo/company-logo.png'
 import cirLogo from '../../assests/images/logo/CIRlogo.svg'
 import logoutImg from '../../assests/images/logout.svg'
 import activeReport from '../../assests/images/report-active.svg'
+import activeRFQ from '../../assests/images/rfqActive.svg'
+import RFQ from '../../assests/images/rfq.svg'
 import PopupMsgWrapper from "../common/PopupMsgWrapper";
 import Calculator from "../common/Calculator/component/Calculator";
 import Draggable from 'react-draggable';
-import { SIMULATION, VERSION } from '../../config/constants';
+import { CBC_COSTING, COSTING, SIMULATION, VERSION } from '../../config/constants';
 import _ from "lodash";
 import { reactLocalStorage } from "reactjs-localstorage";
 import { MESSAGES } from "../../config/message";
+import { checkForNull } from "../../helper";
 
 class SideBar extends Component {
   constructor(props) {
@@ -85,15 +88,24 @@ class SideBar extends Component {
     const { location } = this.props;
     this.setState({ isLoader: true });
     if (location && location !== undefined) {
-      this.props.getModuleIdByPathName(location.pathname, (res) => {
-        // this.setLeftMenu(res.data.Data.ModuleId);
-        this.setState({ isLoader: false });
-      });
-
       this.props.getTopAndLeftMenuData((res) => {
         this.simulationPermission(res?.data?.Data, 1)
         this.simulationPermission(res?.data?.Data, 0)
         this.simulationPermission(res?.data?.Data, 2)
+
+        let Data = res?.data?.Data
+        let costingIndex = Data && Data?.findIndex(item => item?.ModuleName === COSTING)
+        let cbcCostingData = Data && Data[costingIndex]?.Pages?.filter(item => item?.PageName === CBC_COSTING)
+        let cbcCostingPermission
+
+        if (checkForNull(cbcCostingData?.length) === 0) {
+          cbcCostingPermission = false
+          reactLocalStorage.setObject('cbcCostingPermission', cbcCostingPermission)
+        }
+        else {
+          cbcCostingPermission = true
+          reactLocalStorage.setObject('cbcCostingPermission', cbcCostingPermission)
+        }
       })
     }
 
@@ -104,6 +116,10 @@ class SideBar extends Component {
         this.setState({ isLoader: false });
       });
     }
+    let disabledLogo = document.getElementsByClassName('logo-container')[0];
+    disabledLogo.addEventListener('contextmenu', function (e) {
+      e.preventDefault();
+    }, false);
   }
 
   /**
@@ -127,6 +143,7 @@ class SideBar extends Component {
         localStorage.setItem('simulationRunPermission', JSON.stringify(_.map(simulationArray, 'PageName')))
       }
     }
+
   }
 
   /**
@@ -205,6 +222,14 @@ class SideBar extends Component {
         return this.renderUser(module, LandingPageURL);
       case "Audit":
         return this.renderAudit(module, LandingPageURL);
+      case "RFQ":
+        if (getConfigurationKey().IsRFQConfigured) {
+          return this.renderRFQ(module, LandingPageURL);
+        } else {
+          break;
+        }
+      case "NFR":
+        return this.renderNFR(module, LandingPageURL);
       default:
         return null
     }
@@ -258,7 +283,7 @@ class SideBar extends Component {
                     src={`${reactLocalStorage.get("ModuleId") === el.ModuleId ? activeDashBoard : dashboardImg}`}
                     alt={module + " icon"}
                   />
-                  <span>{module}</span>
+                  <span className="module">{module}</span>
                 </Link>
               </li>
             </>
@@ -320,7 +345,7 @@ class SideBar extends Component {
                     src={reactLocalStorage.get("ModuleId") === el.ModuleId ? masterActive : masterImage}
                     alt={module + " icon"}
                   />
-                  <span>Masters</span>
+                  <span className="masters">Masters</span>
                 </Link>
                 <div className="dropdown-menu sub-menu">
                   <ul>
@@ -415,7 +440,7 @@ class SideBar extends Component {
                     src={reactLocalStorage.get("ModuleId") === el.ModuleId ? addMasterActive : additionalMaster}
                     alt={module + " icon"}
                   />
-                  <span>Additional Masters</span>
+                  <span className="additional-masters">Additional Masters</span>
                 </Link>
                 <div className="dropdown-menu sub-menu">
                   <ul>
@@ -489,7 +514,7 @@ class SideBar extends Component {
                   src={reactLocalStorage.get("ModuleId") === el.ModuleId ? activeReport : reportImg}
                   alt={module + " icon"}
                 />
-                <span>Report</span>
+                <span className="report">Report</span>
               </Link>
               <div className="dropdown-menu sub-menu">
                 <ul>
@@ -549,7 +574,7 @@ class SideBar extends Component {
                     src={reactLocalStorage.get("ModuleId") === el.ModuleId ? activeCosting : costingImg}
                     alt={module + " icon"}
                   />
-                  <span>Costing </span>
+                  <span className="costing">Costing </span>
                 </Link>
                 <div className="dropdown-menu sub-menu">
                   <ul>
@@ -625,7 +650,7 @@ class SideBar extends Component {
                   src={reactLocalStorage.get("ModuleId") === el.ModuleId ? activeSimulation : simulationImg}
                   alt={module + " icon"}
                 />
-                <span>Simulation</span>
+                <span className="simulation">Simulation</span>
               </Link>
               <div className="dropdown-menu sub-menu">
                 <ul>
@@ -715,7 +740,7 @@ class SideBar extends Component {
                   src={reactLocalStorage.get("ModuleId") === el.ModuleId ? activeUser : userImg}
                   alt={module + " icon"}
                 />
-                <span>{el.ModuleName}</span>
+                <span className="users">{el.ModuleName}</span>
               </Link>
             </li>
           );
@@ -755,7 +780,80 @@ class SideBar extends Component {
                   src={reactLocalStorage.get("ModuleId") === el.ModuleId ? activeAudit : auditImg}
                   alt={module + " icon"}
                 />
-                <span>{el.ModuleName}</span>
+                <span className="audit">{el.ModuleName}</span>
+              </Link>
+            </li>
+          );
+        }
+        return null
+      })
+    );
+  };
+
+
+  renderRFQ = (module) => {
+    const { topAndLeftMenuData } = this.props
+    return (
+      topAndLeftMenuData &&
+      topAndLeftMenuData.map((el, i) => {
+        if (el.ModuleName === module) {
+          return (
+            <li>
+              <Link
+                key={i}
+                className={`nav-link ${reactLocalStorage.get("ModuleId") === el.ModuleId ? 'IsActive' : ''}`}
+                onClick={() => this.setLeftMenu(el.ModuleId)}
+                to={{
+                  pathname: "/rfq-listing",
+                  state: {
+                    ModuleId: el.ModuleId,
+                    PageName: "RFQ",
+                    PageURL: "/rfq-listing",
+                  },
+                }}
+              >
+                <img
+                  className=""
+                  src={reactLocalStorage.get("ModuleId") === el.ModuleId ? activeRFQ : RFQ}
+                  alt={module + " icon"}
+                />
+                <span className="rfq">{el.ModuleName}</span>
+              </Link>
+            </li>
+          );
+        }
+        return null
+      })
+    );
+  };
+
+  renderNFR = (module) => {
+    const { topAndLeftMenuData } = this.props
+    return (
+      topAndLeftMenuData &&
+      topAndLeftMenuData.map((el, i) => {
+        if (el.ModuleName === module) {
+          return (
+            <li>
+              <Link
+                key={i}
+                className={`nav-link ${reactLocalStorage.get("ModuleId") === 'NFR' ? 'IsActive' : ''}`}
+                onClick={() => this.setLeftMenu('NFR')}
+                to={{
+                  pathname: "/nfr",
+                  state: {
+                    ModuleId: el.ModuleId,
+                    PageName: "NFR",
+                    PageURL: "/nfr",
+                  },
+                }}
+              >
+                <img
+                  className=""
+                  src={reactLocalStorage.get("ModuleId") === 'NFR' ? activeRFQ : RFQ}
+                  alt={module + " icon"}
+                />
+                <span className="rfq">{'NFR'}</span>
               </Link>
             </li>
           );
@@ -770,7 +868,7 @@ class SideBar extends Component {
     const { isLoader, isLeftMenuRendered } = this.state;
     const isLoggedIn = isUserLoggedIn();
     return (
-      <nav>
+      <nav className={`${this.props.sidebarAndNavbarHide ? 'hide-navbar' : ''}`}>
         {isLoader && <Loader />}
         {/* {isLeftMenuRendered && leftMenuData[0] !== undefined && (
           <Redirect
@@ -789,17 +887,17 @@ class SideBar extends Component {
           <div>
             <nav className="navbar navbar-expand-lg fixed-top nav bg-light">
               <div className="logo-container">
-                <button className="btn btn-no-border" >
+                <div className="py-1">
                   <img
                     src={Logo}
                     alt="Minda"
                     height="40"
                   />
-                </button>
+                </div>
                 <div className="border-left"></div>
-                <button className="btn btn-no-border">
+                <div className="py-1">
                   <img src={cirLogo} alt="Cost It Right" height="40" />
-                </button>
+                </div>
               </div>
               <div className="navbar-collapse offcanvas-collapse justify-content-end" id="">
                 <ul className="navbar-nav ml-auto">
@@ -809,47 +907,22 @@ class SideBar extends Component {
                   <li className="nav-item d-xl-inline-block">
                     <div className="nav-link-user">
                       <Nav className="ml-auto top-menu logout d-inline-flex">
-                        <Dropdown
-                          isOpen={this.state.dropdownOpen}
-                          toggle={this.toggle}
-                        >
-                          <DropdownToggle caret className="username">
-                            {isLoggedIn ? (
-                              <>
-                                {/* <img
-                                  className="img-xs rounded-circle"
-                                  alt={""}
-                                  src={UserImg}
-                                 /> */}    {/* commented this code by Banti as I get instruction by TR sir 07-10-2021 */}
-                                {userData.Name}
-                              </>
-                            ) : (
-                              "Login"
-                            )}
-                          </DropdownToggle>
-
-                          {/* <DropdownMenu>
-                            {
-                              isLoggedIn ?
-                                <DropdownItem tag="a" href="javascript:void(0)" onClick={this.logout}>Logout</DropdownItem>
-                                :
-                                <DropdownItem header>
-                                  <Link className="bell-notifcation-icon" to="/login">
-                                    Login
-                                  </Link>
-                                </DropdownItem>
-                            }
-                          </DropdownMenu> */}
-                        </Dropdown>
-                        <NavbarToggler
-                          className="navbar-light float-right"
-                          onClick={this.toggleMobile}
-                        />
+                        <div className="user-container"><div className="dropdown"><div className="user-name">{userData.Name}</div>
+                          <ul className="dropdown_menu">
+                            <li className="dropdown_item-1">User Id: <span>{userData.UserName}</span></li>
+                            <li className="dropdown_item-2">Email Id:<span>{userData.Email}</span></li>
+                            <li className="dropdown_item-3">Role:<span>{ }</span></li>
+                            <li className="dropdown_item-4">Department:{userData.Department && userData.Department.map((item, index) => {
+                              return <span>{index + 1}. {item.DepartmentName}{userData.Department > 1 ? ',' : ''}</span>
+                            })}</li>
+                          </ul>
+                        </div>
+                        </div>
                       </Nav>
                     </div>
                   </li>
                   {isLoggedIn ? (
-                    <li className="nav-item d-xl-inline-block cr-logout-btn p-relative">
+                    <li className=" d-xl-inline-block ml-2 p-relative">
                       {this.props.disabledClass && <div title={MESSAGES.DOWNLOADING_MESSAGE} className="disabled-overflow min-width"></div>}
                       <button className="btn btn-no-border" onClick={this.logout}>
                         <img
@@ -865,7 +938,7 @@ class SideBar extends Component {
                 </ul>
               </div>
             </nav>
-          </div>
+          </div >
 
           {isLoggedIn && (
             <div className="nav-scroller bg-white shadow-sm header-secondry w100 p-relative">
@@ -880,12 +953,14 @@ class SideBar extends Component {
                 </ul>
               </nav>
             </div>
-          )}
+          )
+          }
         </div>
         {
           this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`Are you sure do you want to logout?`} />
         }
-      </nav>
+
+      </nav >
     )
   }
 }
@@ -897,8 +972,8 @@ class SideBar extends Component {
  */
 function mapStateToProps({ auth, comman }) {
   const { loading, userData, leftMenuData, menusData, moduleSelectList, menuData, topAndLeftMenuData } = auth
-  const { disabledClass } = comman;
-  return { loading, userData, leftMenuData, menusData, moduleSelectList, menuData, topAndLeftMenuData, disabledClass }
+  const { disabledClass, sidebarAndNavbarHide } = comman;
+  return { loading, userData, leftMenuData, menusData, moduleSelectList, menuData, topAndLeftMenuData, disabledClass, sidebarAndNavbarHide }
 }
 
 /**
@@ -912,7 +987,6 @@ export default connect(mapStateToProps, {
   getMenuByUser,
   getModuleSelectList,
   getPermissionByUser,
-  getModuleIdByPathName,
   getMenu,
   getTopAndLeftMenuData
 })(SideBar)

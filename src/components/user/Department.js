@@ -3,7 +3,7 @@ import { Field, reduxForm } from "redux-form";
 import Toaster from "../common/Toaster";
 import { connect } from "react-redux";
 import { Loader } from "../common/Loader";
-import { required, checkWhiteSpaces, acceptAllExceptSingleSpecialCharacter, maxLength80, checkSpacesInString } from "../../helper/validation";
+import { required, checkWhiteSpaces, acceptAllExceptSingleSpecialCharacter, checkSpacesInString, excludeOnlySpecialCharacter, maxLength50, hashValidation, maxLength75 } from "../../helper/validation";
 import { focusOnError, renderText } from "../layout/FormInputs";
 import "./UserRegistration.scss";
 import { addDepartmentAPI, getDepartmentAPI, setEmptyDepartmentAPI, updateDepartmentAPI, addCompanyAPI, updateCompanyAPI } from "../../actions/auth/AuthActions";
@@ -166,10 +166,9 @@ class Department extends Component {
 												name={"DepartmentName"}
 												type="text"
 												placeholder={''}
-												validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80, checkSpacesInString]}
+												validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength75, checkSpacesInString, hashValidation]}
 												component={renderText}
 												required={true}
-												maxLength={26}
 												customClassName={'withBorder'}
 											/>
 										</div>
@@ -181,7 +180,7 @@ class Department extends Component {
 													name={"DepartmentCode"}
 													type="text"
 													placeholder={''}
-													validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80, checkSpacesInString]}
+													validate={[required, excludeOnlySpecialCharacter, checkWhiteSpaces, maxLength50, checkSpacesInString]}
 													component={renderText}
 													required={true}
 													customClassName={'withBorder'}

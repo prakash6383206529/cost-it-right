@@ -6,7 +6,7 @@ import { Row, Col } from 'reactstrap'
 import { Controller, useForm } from 'react-hook-form';
 import { getSelectListOfMasters, setMasterForSimulation } from '../../simulation/actions/Simulation'
 import { useDispatch, useSelector } from 'react-redux';
-import { BOPDOMESTIC, BOPIMPORT, EXCHNAGERATE, MACHINERATE, OPERATIONS, RMDOMESTIC, RMIMPORT } from '../../../config/constants'
+import { BOPDOMESTIC, BOPIMPORT, EXCHNAGERATE, MACHINERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT } from '../../../config/constants'
 import { getCostingTechnologySelectList } from '../../costing/actions/Costing'
 import MachineRateListing from '../../masters/machine-master/MachineRateListing'
 import BOPDomesticListing from '../../masters/bop-master/BOPDomesticListing'
@@ -18,11 +18,9 @@ import Insights from '../../report/components/BenchMarkReportPages/RMInsights'
 import MachineInsights from '../../report/components/BenchMarkReportPages/MachineInsights'
 import InsightsBop from '../../report/components/BenchMarkReportPages/InsightsBop'
 import OperationInsights from '../../report/components/BenchMarkReportPages/OperationInsights'
-
-
+import LoaderCustom from '../../common/LoaderCustom';
 
 function CostingBenchmarkReport(props) {
-
 
     const { register, control, setValue, formState: { errors } } = useForm({
         mode: 'onBlur',
@@ -40,8 +38,12 @@ function CostingBenchmarkReport(props) {
     const [cancelButton, setcancelButton] = useState(false)
     const [dropDown, setDropDown] = useState(true)
     const [blueDivison, setblueDivison] = useState(false)
+    const [dateArray, setDateArray] = useState([])
+    const [disableRunReport, setDisableRunReport] = useState(true)
+    const [loader, setLoader] = useState(false)
 
     const dispatch = useDispatch()
+    const { selectedRowForPagination } = useSelector((state => state.simulation))
 
     useEffect(() => {
         dispatch(getSelectListOfMasters(() => { }))
@@ -58,71 +60,95 @@ function CostingBenchmarkReport(props) {
         }
     }, [])
 
+
+    useEffect(() => {
+
+        if (selectedRowForPagination) {
+
+            if (selectedRowForPagination.length > 0) {
+                setDisableRunReport(false)
+            } else {
+                setDisableRunReport(true)
+            }
+        }
+
+    }, [selectedRowForPagination])
+
     const masterList = useSelector(state => state.simulation.masterSelectList)
-
-
     const handleMasterChange = (value) => {
         dispatch(setFilterForRM({ costingHeadTemp: '', plantId: '', RMid: '', RMGradeid: '', Vendorid: '' }))
-
         setShowInsight(false)
-
         dispatch(setMasterForSimulation(value))
-
         setRunReportButton(true)
-        setblueDivison(true)
-
-        setShowMasterList(true)
+        setblueDivison(false)
+        setShowMasterList(false)
+        if ((Number(value.value) === Number(7)) || (Number(master.value) === Number(7) && Number(value.value) === Number(6))) { //SURFACE TREATMENT & OPERATION
+            setTimeout(() => {
+                setShowMasterList(true)
+                setblueDivison(true)
+            }, 100);
+        } else {
+            setShowMasterList(true)
+            setblueDivison(true)
+        }
         setMaster(value)
+    }
 
+    const handleDate = (data) => {
+
+        let unique = data.filter((item, i, ar) => ar.indexOf(item) === i);
+        setDateArray(unique)
     }
 
 
-
     const renderModule = (value) => {
+
         switch (value.value) {
             case RMDOMESTIC:
-                return (<RMDomesticListing isSimulation={false} technology={technology.value} selectionForListingMasterAPI='Master' />)
+                return (<RMDomesticListing isSimulation={false} technology={technology.value} selectionForListingMasterAPI='Master' handleDate={handleDate} benchMark={true} />)
             case RMIMPORT:
-                return (<RMImportListing isSimulation={false} technology={0} selectionForListingMasterAPI='Master' />)
+                return (<RMImportListing isSimulation={false} technology={0} selectionForListingMasterAPI='Master' handleDate={handleDate} benchMark={true} />)
             case MACHINERATE:
-                return (<MachineRateListing isMasterSummaryDrawer={false} isSimulation={true} technology={0} selectionForListingMasterAPI='Master' />)
+                return (<MachineRateListing isMasterSummaryDrawer={false} isSimulation={false} technology={0} selectionForListingMasterAPI='Master' benchMark={true} handleDate={handleDate} />)
             case BOPDOMESTIC:
-                return (<BOPDomesticListing isSimulation={true} technology={technology.value} selectionForListingMasterAPI='Master' />)
+                return (<BOPDomesticListing isSimulation={false} technology={technology.value} selectionForListingMasterAPI='Master' isMasterSummaryDrawer={false} handleDate={handleDate} benchMark={true} />)
             case BOPIMPORT:
-                return (<BOPImportListing isSimulation={true} technology={technology.value} selectionForListingMasterAPI='Master' />)
+                return (<BOPImportListing isSimulation={false} technology={technology.value} selectionForListingMasterAPI='Master' isMasterSummaryDrawer={false} handleDate={handleDate} benchMark={true} />)
             case EXCHNAGERATE:
                 return (<ExchangeRateListing isSimulation={true} technology={technology.value} selectionForListingMasterAPI='Master' />)
             case OPERATIONS:
-                return (<OperationListing isSimulation={true} technology={null} selectionForListingMasterAPI='Master' stopAPICall={false} />)
+                return (<OperationListing isSimulation={false} technology={null} selectionForListingMasterAPI='Master' stopAPICall={false} isMasterSummaryDrawer={false} benchMark={true} handleDate={handleDate} />)
+            case SURFACETREATMENT:
+                return (<OperationListing isSimulation={false} technology={null} selectionForListingMasterAPI='Master' stopAPICall={false} isMasterSummaryDrawer={false} isOperationST={SURFACETREATMENT} benchMark={true} handleDate={handleDate} />)
             default:
                 return <div className="empty-table-paecholder" />;
         }
     }
-
 
 
     const renderInsights = (value) => {
 
         switch (value.value) {
             case RMDOMESTIC:
-                return (<Insights />)
+                return (<Insights data={selectedRowForPagination} dateArray={dateArray} />)
             case RMIMPORT:
-                return (<Insights />)
+                return (<Insights data={selectedRowForPagination} dateArray={dateArray} />)
             case MACHINERATE:
-                return (<MachineInsights />)
+                return (<MachineInsights data={selectedRowForPagination} dateArray={dateArray} />)
             case BOPDOMESTIC:
-                return (<InsightsBop />)
+                return (<InsightsBop data={selectedRowForPagination} dateArray={dateArray} />)
             case BOPIMPORT:
-                return (<InsightsBop />)
+                return (<InsightsBop data={selectedRowForPagination} dateArray={dateArray} />)
             case EXCHNAGERATE:
                 return (<ExchangeRateListing isSimulation={true} technology={technology.value} />)
             case OPERATIONS:
-                return (<OperationInsights />)
+                return (<OperationInsights data={selectedRowForPagination} surfaceTreatMent={false} dateArray={dateArray} />)
+            case SURFACETREATMENT:
+                return (<OperationInsights data={selectedRowForPagination} surfaceTreatMent={true} dateArray={dateArray} />)
             default:
                 return <div className="empty-table-paecholder" />;
         }
     }
-
 
 
     const runReport = () => {
@@ -132,7 +158,6 @@ function CostingBenchmarkReport(props) {
         setRunReportButton(false)
         setDropDown(false)
         setcancelButton(true)
-
     }
 
     const cancelReport = () => {
@@ -142,10 +167,7 @@ function CostingBenchmarkReport(props) {
         setRunReportButton(true)
         setDropDown(true)
         setcancelButton(false)
-
-
     }
-
 
     const renderListing = (label) => {
         let temp = []
@@ -153,33 +175,28 @@ function CostingBenchmarkReport(props) {
         if (label === 'masters') {
             masterList && masterList.map((item) => {
                 if (item.Value === '0') return false
-                temp.push({ label: item.Text, value: item.Value })
+
+                if (item.Text !== 'Assembly' && item.Text !== 'Exchange Rates' && item.Text !== 'Combined Process') {
+                    temp.push({ label: item.Text, value: item.Value })
+                }
                 return null
             })
             return temp
         }
-
     }
-
 
     /**
   
     */
 
-
     return (
         <div className="container-fluid simulation-page">
             {
                 !showEditTable &&
-                <div className="simulation-main">
-                    <Row>
-                        <Col sm="12">
-                            <h1>{`Report`}</h1>
-                        </Col>
-                    </Row>
+                <div className="simulation-main p-relative mt-3">      
 
                     <Row>
-                        <Col md="12" className="filter-block zindex-12">
+                        <Col md="12" className="filter-block">
                             {dropDown &&
                                 <div className="d-inline-flex justify-content-start align-items-center mr-3">
                                     <div className="flex-fills label">Masters:</div>
@@ -205,27 +222,25 @@ function CostingBenchmarkReport(props) {
                         </Col>
                     </Row>
 
-
+                    {loader && < LoaderCustom />}
                     {showMasterList && renderModule(master)}
+                    <div className='p-relative'>
+                    <Row>
+                        {cancelButton && <Col md="12" className='mb-2'>
+                            <button type="button" className={`apply float-right`} onClick={cancelReport}> <div className={'back-icon'}></div>Back</button>
+                        </Col>}
+                    </Row>
                     {showInsight && renderInsights(master)}
-
-                    {blueDivison &&
-                        <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
-
-
+                        </div>
+                    {blueDivison && runReportButton &&
+                        <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer sticky-btn-footer">
                             <div className="col-sm-12 text-right bluefooter-butn mt-3">
-                                <div className="d-flex justify-content-end bd-highlight w100 my-2 align-items-center">
-
-                                    {cancelButton && <button type="button" className={"mr15 cancel-btn"} onClick={cancelReport}> <div className={"cancel-icon"}></div>CANCEL</button>}
-                                    {runReportButton && <button type="button" className={"user-btn mr5 save-btn"} onClick={runReport}> <div className={"Run-icon"}></div>RUN REPORT</button>}
-
+                                <div className="d-flex justify-content-end bd-highlight w100 align-items-center">
+                                    <button type="button" className={"user-btn mr5 save-btn"} onClick={runReport} disabled={disableRunReport}> <div className={"Run-icon"}></div>RUN REPORT</button>
                                 </div>
-
                             </div>
                         </Row>
                     }
-
-
 
                 </div >
             }

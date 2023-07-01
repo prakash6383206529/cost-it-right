@@ -72,6 +72,7 @@ class RMListing extends Component {
             if (type === 'submit') {
                 this.setState({ isLoader: true })
                 this.getListData()
+                this.setState({ dataCount: 0 })
             }
         })
     }
@@ -91,6 +92,7 @@ class RMListing extends Component {
         this.setState({ isOpenAssociation: false }, () => {
             this.getListData()
         })
+        this.setState({ dataCount: 0 })
     }
 
     /**
@@ -123,6 +125,7 @@ class RMListing extends Component {
                 Toaster.error(res.data.Message)
             } else if (res && res.data && res.data.Result === true) {
                 Toaster.success(MESSAGES.DELETE_MATERIAL_SUCCESS);
+                this.setState({ dataCount: 0 })
                 this.getListData();
             }
         });
@@ -155,18 +158,31 @@ class RMListing extends Component {
     * @method indexFormatter
     * @description Renders serial number
     */
-    indexFormatter = (cell, row, enumObject, rowIndex) => {
-        const { table } = this.refs;
-        let currentPage = table && table.state && table.state.currPage ? table.state.currPage : '';
-        let sizePerPage = table && table.state && table.state.sizePerPage ? table.state.sizePerPage : '';
-        let serialNumber = '';
-        if (currentPage === 1) {
-            serialNumber = rowIndex + 1;
-        } else {
-            serialNumber = (rowIndex + 1) + (sizePerPage * (currentPage - 1));
-        }
-        return serialNumber;
-    }
+    // indexFormatter = (cell, row, enumObject, rowIndex) => {
+    //     const { table } = this.refs;
+    //     let currentPage = table && table.state && table.state.currPage ? table.state.currPage : '';
+    //     let sizePerPage = table && table.state && table.state.sizePerPage ? table.state.sizePerPage : '';
+    //     let serialNumber = '';
+    //     if (currentPage === 1) {
+    //         serialNumber = rowIndex + 1;
+    //     } else {
+    //         serialNumber = (rowIndex + 1) + (sizePerPage * (currentPage - 1));
+    //     }
+    //     return serialNumber;
+    // }
+
+    // indexFormatter = (props) => {
+    //     const { table } = this.refs;
+    //     let currentPage = table && table.state && table.state.currPage ? table.state.currPage : '';
+    //     let sizePerPage = table && table.state && table.state.sizePerPage ? table.state.sizePerPage : '';
+    //     let serialNumber = '';
+    //     if (currentPage === 1) {
+    //         serialNumber = rowIndex + 1;
+    //     } else {
+    //         serialNumber = (rowIndex + 1) + (sizePerPage * (currentPage - 1));
+    //     }
+    //     return serialNumber;
+    // }
 
     /**
     * @method renderPaginationShowsTotal
@@ -279,7 +295,6 @@ class RMListing extends Component {
         const defaultColDef = {
             resizable: true,
             filter: true,
-            sortable: true,
             headerCheckboxSelectionFilteredOnly: true,
             checkboxSelection: isFirstColumn
         };
@@ -320,8 +335,9 @@ class RMListing extends Component {
                             DownloadAccessibility &&
                             <>
                                 <>
-                                    <ExcelFile filename={'RmMaterial'} fileExtension={'.xls'} element={
-                                        <button title="Download" type="button" className={'user-btn mr5'} ><div className="download mr-0"></div></button>}>
+                                    <ExcelFile filename={'Rm Material'} fileExtension={'.xls'} element={
+                                        <button title={`Download ${this.state.dataCount === 0 ? "All" : "(" + this.state.dataCount + ")"}`} type="button" className={'user-btn mr5'} ><div className="download mr-1"></div>
+                                            {`${this.state.dataCount === 0 ? "All" : "(" + this.state.dataCount + ")"}`}</button>}>
                                         {this.onBtExport()}
                                     </ExcelFile>
                                 </>
@@ -343,7 +359,6 @@ class RMListing extends Component {
                         <div className={`ag-grid-wrapper height-width-wrapper ${(this.props.rawMaterialTypeDataList && this.props.rawMaterialTypeDataList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
                             <div className="ag-grid-header">
                                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={'off'} onChange={(e) => this.onFilterTextBoxChanged(e)} />
-                                <SelectRowWrapper dataCount={dataCount} />
                             </div>
                             <div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
                                 {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
@@ -367,12 +382,13 @@ class RMListing extends Component {
                                     frameworkComponents={frameworkComponents}
                                     onSelectionChanged={this.onRowSelect}
                                     onFilterModified={this.onFloatingFilterChanged}
+                                    suppressRowClickSelection={true}
                                 >
                                     {/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
                                     <AgGridColumn field="RawMaterial" headerName="Material"></AgGridColumn>
                                     <AgGridColumn field="Density"></AgGridColumn>
                                     <AgGridColumn field="RMName" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                                    <AgGridColumn field="RMGrade" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                                    <AgGridColumn field="RMGrade" headerName="Grade" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                     <AgGridColumn field="MaterialId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                                 </AgGridReact>
                                 {<PaginationWrapper gridApi={this.gridApi} setPage={this.onPageSizeChanged} />}

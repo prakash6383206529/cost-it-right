@@ -10,9 +10,9 @@ import { ExcelRenderer } from 'react-excel-renderer';
 import { getJsDateFromExcel } from "../../../helper/validation";
 import imgCloud from '../../../assests/images/uploadcloud.png';
 import _ from 'lodash'
-
 import { BOPDOMESTIC, BOPIMPORT, MACHINERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT } from '../../../config/constants';
 import { BoughtOutPartDomesticFileHeads, BoughtOutPartImportFileHeads, MachineRateFileHeads, OperationFileHeads, RawMaterialDomesticFileHeads, RawMaterialImportFileHeads } from '../../../config/masterData';
+import TooltipCustom from '../../common/Tooltip';
 
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -43,10 +43,7 @@ class SimulationUploadDrawer extends Component {
         }
 
         if (status === 'done') {
-
             this.setState({ fileName: file.name, fileData: file })
-
-
         }
 
         if (status === 'rejected_file_type') {
@@ -111,6 +108,8 @@ class SimulationUploadDrawer extends Component {
         let fileHeads = [];
         let uploadfileName = fileObj?.name;
         let fileType = uploadfileName?.substr(uploadfileName.indexOf('.'));
+        let checkForRM = []
+        let checkForBopOperMachine = []
 
         //pass the fileObj as parameter
         if (fileType !== '.xls' && fileType !== '.xlsx') {
@@ -125,32 +124,34 @@ class SimulationUploadDrawer extends Component {
 
                 } else {
                     fileHeads = resp.rows[0];
+                    checkForRM = fileHeads.slice(0, 7)
+                    checkForBopOperMachine = fileHeads.slice(0, 4)
                     let checkForFileHead
                     switch (String(this.props.master.value)) {
 
                         case String(RMDOMESTIC):
-                            checkForFileHead = _.isEqual(fileHeads, RawMaterialDomesticFileHeads) ? true : false
+                            checkForFileHead = _.isEqual(checkForRM, RawMaterialDomesticFileHeads) ? true : false
                             break;
 
                         case String(RMIMPORT):
-                            checkForFileHead = _.isEqual(fileHeads, RawMaterialImportFileHeads) ? true : false
+                            checkForFileHead = _.isEqual(checkForRM, RawMaterialImportFileHeads) ? true : false
                             break;
 
                         case String(BOPDOMESTIC):
-                            checkForFileHead = _.isEqual(fileHeads, BoughtOutPartDomesticFileHeads) ? true : false
+                            checkForFileHead = _.isEqual(checkForBopOperMachine, BoughtOutPartDomesticFileHeads) ? true : false
                             break;
 
                         case String(BOPIMPORT):
-                            checkForFileHead = _.isEqual(fileHeads, BoughtOutPartImportFileHeads) ? true : false
+                            checkForFileHead = _.isEqual(checkForBopOperMachine, BoughtOutPartImportFileHeads) ? true : false
                             break;
 
                         case String(OPERATIONS):
                         case String(SURFACETREATMENT):
-                            checkForFileHead = _.isEqual(fileHeads, OperationFileHeads) ? true : false
+                            checkForFileHead = _.isEqual(checkForBopOperMachine, OperationFileHeads) ? true : false
                             break;
 
                         case String(MACHINERATE):
-                            checkForFileHead = _.isEqual(fileHeads, MachineRateFileHeads) ? true : false
+                            checkForFileHead = _.isEqual(checkForBopOperMachine, MachineRateFileHeads) ? true : false
                             break;
 
                         // CONDITION FOR COMBINED PROCESS;
@@ -167,54 +168,23 @@ class SimulationUploadDrawer extends Component {
                     let correctRowCount = 0
                     let scrapRateLessBasicRate = 0
                     let NoOfRowsWithoutChange = 0
+                    let header_row = resp.rows[0];
+                    let br_index = header_row.indexOf("BasicRate");
+                    let rbr_index = header_row.indexOf("RevisedBasicRate");
                     switch (Number(this.props.master.value)) {
                         case Number(RMDOMESTIC):
-                            resp.rows.map((val, index) => {
-                                const scrapTemp = (val[15] !== val[14]) && val[15] ? val[15] : val[14]
-                                const basicTemp = (val[11] !== val[10]) && val[11] ? val[11] : val[10]
-                                if (val.length !== 0) {
-                                    if (index > 0) {
-                                        if ((val[11] !== '' && val[11] !== undefined && val[11] !== null && val[10] !== val[11]) ||
-                                            (val[15] !== '' && val[15] !== undefined && val[15] !== null && val[15] !== null && val[14] !== val[15])) {
-                                            basicRateCount = 1
-                                        }
-                                        if ((val[11] === '' || val[11] === undefined || val[11] === null || val[10] === val[11]) && (val[15] === '' ||
-                                            val[15] === undefined || val[15] === null || val[14] === val[15])) {
-                                            NoOfRowsWithoutChange = NoOfRowsWithoutChange + 1
-                                            return false
-                                        }
-
-                                        if (basicTemp < scrapTemp) {
-                                            scrapRateLessBasicRate = 1
-                                        }
-                                        correctRowCount = correctRowCount + 1
-                                        let obj = {}
-                                        val.map((el, i) => {
-                                            if (fileHeads[i] === 'EffectiveDate' && typeof el === 'number') {
-                                                el = getJsDateFromExcel(el)
-                                            }
-                                            obj[fileHeads[i]] = el;
-                                            return null;
-                                        })
-                                        fileData.push(obj)
-                                        obj = {}
-
-                                    }
-                                }
-                                return null;
-                            })
-                            break;
-
                         case Number(RMIMPORT):
+                            const sr_index = header_row.indexOf("ScrapRate");
+                            const rsr_index = header_row.indexOf("RevisedScrapRate");
                             resp.rows.map((val, index) => {
-                                const scrapTemp = (val[13] !== val[12]) && val[13] ? val[13] : val[12]
-                                const basicTemp = (val[11] !== val[10]) && val[11] ? val[11] : val[10]
+                                const scrapTemp = (val[rsr_index] !== val[sr_index]) && val[rsr_index] ? val[rsr_index] : val[sr_index]
+                                const basicTemp = (val[rbr_index] !== val[br_index]) && val[rbr_index] ? val[rbr_index] : val[br_index]
                                 if (val.length !== 0) {
                                     if (index > 0) {
-                                        if ((val[11] !== '' && val[11] !== undefined && val[11] !== null && val[10] !== val[11]) || (val[13] !== '' && val[13] !== undefined && val[13] !== null && val[12] !== val[13])) {
+                                        if ((val[rbr_index] !== '' && val[rbr_index] !== undefined && val[rbr_index] !== null && val[br_index] !== val[rbr_index])) {
                                             basicRateCount = 1
                                         }
-                                        if ((val[11] === '' || val[11] === undefined || val[11] === null || val[10] === val[11]) && (val[13] === '' || val[13] === undefined || val[13] === null || val[12] === val[13])) {
+                                        if ((val[rbr_index] === '' || val[rbr_index] === undefined || val[rbr_index] === null || val[br_index] === val[rbr_index])) {
                                             NoOfRowsWithoutChange = NoOfRowsWithoutChange + 1
                                             return false
                                         }
@@ -227,36 +197,19 @@ class SimulationUploadDrawer extends Component {
                                             if (fileHeads[i] === 'EffectiveDate' && typeof el === 'number') {
                                                 el = getJsDateFromExcel(el)
                                             }
-                                            obj[fileHeads[i]] = el;
-                                            return null;
-                                        })
-                                        fileData.push(obj)
-                                        obj = {}
-
-                                    }
-                                }
-                                return null;
-                            })
-                            break;
-
-                        case Number(SURFACETREATMENT):
-                            resp.rows.map((val, index) => {
-                                if (val.length !== 0) {
-                                    if (index > 0) {
-                                        if (val[8] !== '' && val[8] !== undefined && val[8] !== null && val[7] !== val[8]) {
-                                            basicRateCount = 1
-                                        }
-                                        if (val[8] === '' || val[8] === undefined || val[8] === null || val[7] === val[8]) {
-                                            NoOfRowsWithoutChange = NoOfRowsWithoutChange + 1
-                                            return false
-                                        }
-                                        correctRowCount = correctRowCount + 1
-                                        let obj = {}
-                                        val.map((el, i) => {
-                                            if (fileHeads[i] === 'EffectiveDate' && typeof el === 'number') {
-                                                el = getJsDateFromExcel(el)
+                                            if (fileHeads[i] === 'RevisedBasicRate') {
+                                                obj["NewBasicRate"] = el;
+                                            } else if (fileHeads[i] === 'RevisedScrapRate') {
+                                                obj["NewScrapRate"] = el;
+                                            } else if (fileHeads[i] === "Grade") {
+                                                obj["RMGrade"] = el;
+                                            } else if (fileHeads[i] === "Spec") {
+                                                obj["RMSpec"] = el;
+                                            } else if (fileHeads[i] === "Code") {
+                                                obj["RawMaterialCode"] = el;
+                                            } else {
+                                                obj[fileHeads[i]] = el;
                                             }
-                                            obj[fileHeads[i]] = el;
                                             return null;
                                         })
                                         fileData.push(obj)
@@ -269,13 +222,16 @@ class SimulationUploadDrawer extends Component {
                             break;
 
                         case Number(OPERATIONS):
+                        case Number(SURFACETREATMENT):
+                            const r_index = header_row.indexOf("Rate");
+                            const rr_index = header_row.indexOf("RevisedRate");
                             resp.rows.map((val, index) => {
                                 if (val.length !== 0) {
                                     if (index > 0) {
-                                        if (val[8] !== '' && val[8] !== undefined && val[8] !== null && val[7] !== val[8]) {
+                                        if (val[rr_index] !== '' && val[rr_index] !== undefined && val[rr_index] !== null && val[r_index] !== val[rr_index]) {
                                             basicRateCount = 1
                                         }
-                                        if (val[8] === '' || val[8] === undefined || val[8] === null || val[7] === val[8]) {
+                                        if (val[rr_index] === '' || val[rr_index] === undefined || val[rr_index] === null || val[r_index] === val[rr_index]) {
                                             NoOfRowsWithoutChange = NoOfRowsWithoutChange + 1
                                             return false
                                         }
@@ -285,7 +241,11 @@ class SimulationUploadDrawer extends Component {
                                             if (fileHeads[i] === 'EffectiveDate' && typeof el === 'number') {
                                                 el = getJsDateFromExcel(el)
                                             }
-                                            obj[fileHeads[i]] = el;
+                                            if (fileHeads[i] === 'RevisedRate') {
+                                                obj["NewRate"] = el;
+                                            } else {
+                                                obj[fileHeads[i]] = el;
+                                            }
                                             return null;
                                         })
                                         fileData.push(obj)
@@ -297,69 +257,42 @@ class SimulationUploadDrawer extends Component {
                             })
                             break;
                         case Number(MACHINERATE):
-                            resp.rows.map((val, index) => {
-                                if (val.length !== 0) {
-                                    if (index > 0) {
-                                        if (val[9] !== '' && val[9] !== undefined && val[9] !== null && val[8] !== val[9]) {
-                                            basicRateCount = 1
-                                        }
-                                        if (val[9] === '' || val[9] === undefined || val[9] === null || val[8] === val[9]) {
-                                            NoOfRowsWithoutChange = NoOfRowsWithoutChange + 1
-                                            return false
-                                        }
-                                        correctRowCount = correctRowCount + 1
-                                        let obj = {}
-                                        val.map((el, i) => {
-                                            if (fileHeads[i] === 'EffectiveDate' && typeof el === 'number') {
-                                                el = getJsDateFromExcel(el)
-                                            }
-                                            obj[fileHeads[i]] = el;
-                                            return null;
-                                        })
-                                        fileData.push(obj)
-                                        obj = {}
+                            const mr_index = header_row.indexOf("MachineRate");
+                            const rmr_index = header_row.indexOf("RevisedMachineRate");
 
-                                    }
+                            for (let i = 1; i < resp.rows.length; i++) {
+                                const val = resp.rows[i];
+                                if (val.length === 0) {
+                                    continue;
                                 }
-                                return null;
-                            })
+                                if (val[rmr_index] === undefined || val[rmr_index] === null || val[mr_index] === val[rmr_index]) {
+                                    NoOfRowsWithoutChange++;
+                                    continue;
+                                }
+                                if (val[rmr_index]) {
+                                    basicRateCount = 1;
+                                }
+                                correctRowCount++;
+                                const obj = {};
+                                for (let j = 0; j < fileHeads.length; j++) {
+                                    let el = val[j];
+                                    if (fileHeads[j] === 'EffectiveDate' && typeof el === 'number') {
+                                        el = getJsDateFromExcel(el);
+                                    }
+                                    obj[fileHeads[j] === 'RevisedMachineRate' ? 'NewMachineRate' : fileHeads[j]] = el;
+                                }
+                                fileData.push(obj);
+                            }
                             break;
                         case Number(BOPDOMESTIC):
-                            resp.rows.map((val, index) => {
-                                if (val.length !== 0) {
-                                    if (index > 0) {
-                                        if (val[7] !== '' && val[7] !== undefined && val[7] !== null && val[6] !== val[7]) {
-                                            basicRateCount = 1
-                                        }
-                                        if (val[7] === '' || val[7] === undefined || val[7] === null || val[6] === val[7]) {
-                                            NoOfRowsWithoutChange = NoOfRowsWithoutChange + 1
-                                            return false
-                                        }
-                                        correctRowCount = correctRowCount + 1
-                                        let obj = {}
-                                        val.map((el, i) => {
-                                            if (fileHeads[i] === 'EffectiveDate' && typeof el === 'number') {
-                                                el = getJsDateFromExcel(el)
-                                            }
-                                            obj[fileHeads[i]] = el;
-                                            return null;
-                                        })
-                                        fileData.push(obj)
-                                        obj = {}
-
-                                    }
-                                }
-                                return null;
-                            })
-                            break;
                         case Number(BOPIMPORT):
                             resp.rows.map((val, index) => {
                                 if (val.length !== 0) {
                                     if (index > 0) {
-                                        if (val[7] !== '' && val[7] !== undefined && val[7] !== null && val[6] !== val[7]) {
+                                        if (val[rbr_index] !== '' && val[rbr_index] !== undefined && val[rbr_index] !== null && val[br_index] !== val[rbr_index]) {
                                             basicRateCount = 1
                                         }
-                                        if (val[7] === '' || val[7] === undefined || val[7] === null || val[6] === val[7]) {
+                                        if (val[rbr_index] === '' || val[rbr_index] === undefined || val[rbr_index] === null || val[br_index] === val[rbr_index]) {
                                             NoOfRowsWithoutChange = NoOfRowsWithoutChange + 1
                                             return false
                                         }
@@ -369,7 +302,17 @@ class SimulationUploadDrawer extends Component {
                                             if (fileHeads[i] === 'EffectiveDate' && typeof el === 'number') {
                                                 el = getJsDateFromExcel(el)
                                             }
-                                            obj[fileHeads[i]] = el;
+                                            if (fileHeads[i] === 'RevisedBasicRate') {
+                                                obj["NewBasicRate"] = el;
+                                            } else if (fileHeads[i] === 'InsertPartNumber') {
+                                                obj["BoughtOutPartNumber"] = el;
+                                            } else if (fileHeads[i] === 'InsertPartName') {
+                                                obj["BoughtOutPartName"] = el;
+                                            } else if (fileHeads[i] === 'InsertPartCategory') {
+                                                obj["BoughtOutPartCategory"] = el;
+                                            } else {
+                                                obj[fileHeads[i]] = el;
+                                            }
                                             return null;
                                         })
                                         fileData.push(obj)
@@ -387,16 +330,6 @@ class SimulationUploadDrawer extends Component {
 
                     switch (Number(this.props.master.value)) {
                         case Number(RMDOMESTIC):
-                            if (basicRateCount === 0) {
-                                Toaster.warning('Please change at least one basic rate or scrap rate.')
-                                return false
-                            }
-                            if (scrapRateLessBasicRate === 1) {
-                                Toaster.warning('Scrap Rate should be less than Basic Rate.')
-                                return false
-                            }
-
-                            break;
                         case Number(RMIMPORT):
                             if (basicRateCount === 0) {
                                 Toaster.warning('Please change at least one basic rate.')
@@ -406,14 +339,10 @@ class SimulationUploadDrawer extends Component {
                                 Toaster.warning('Scrap Rate should be less than Basic Rate.')
                                 return false
                             }
-                            break;
-                        case Number(SURFACETREATMENT):
-                            if (basicRateCount === 0) {
-                                Toaster.warning('Please change at least one rate.')
-                                return false
-                            }
+
                             break;
                         case Number(OPERATIONS):
+                        case Number(SURFACETREATMENT):
                             if (basicRateCount === 0) {
                                 Toaster.warning('Please change at least one rate.')
                                 return false
@@ -426,29 +355,16 @@ class SimulationUploadDrawer extends Component {
                             }
                             break;
                         case Number(BOPDOMESTIC):
-                            if (basicRateCount === 0) {
-                                Toaster.warning('Please change at least one basic rate.')
-                                return false
-                            }
-                            break;
                         case Number(BOPIMPORT):
                             if (basicRateCount === 0) {
                                 Toaster.warning('Please change at least one basic rate.')
                                 return false
                             }
                             break;
+
                         default:
                             break;
                     }
-
-
-
-
-
-
-
-
-
                     // resp.rows.map((val, index) => {
                     //     if (index > 0) {
                     //         if (val[10] !== '' && val[10] !== undefined && val[9] !== val[10]) {
@@ -538,9 +454,7 @@ class SimulationUploadDrawer extends Component {
                                     </Col> */}
                                     <Col md="12">
                                         <label className="d-inline-block w-auto">Upload</label>
-                                        <div class="tooltip-n ml-1 tooltip-left"><i className="fa fa-info-circle text-primary tooltip-icon"></i>
-                                            <span class="tooltiptext text-center">Please upload the file with data. The file can be downloaded from previous screen.</span>
-                                        </div>
+                                        <TooltipCustom placement="left" customClass="mt-1" tooltipClass="right-tooltip" id="upload-icon" tooltipText={'Please upload the file with data. The file can be downloaded from previous screen.'} />
                                         <div className="input-group mt-1 input-withouticon " >
                                             <div className="file-uploadsection">
                                                 <label>Drag a file here or<span className="blue-text">Browse</span> for a file to upload <img alt={''} src={imgCloud} ></img> </label>

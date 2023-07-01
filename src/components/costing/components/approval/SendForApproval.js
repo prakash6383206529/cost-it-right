@@ -5,12 +5,12 @@ import { useDispatch, useSelector } from 'react-redux'
 import Toaster from '../../../common/Toaster'
 import Drawer from '@material-ui/core/Drawer'
 import { SearchableSelectHookForm, TextAreaHookForm, DatePickerHookForm, NumberFieldHookForm, } from '../../../layout/HookFormInputs'
-import { getReasonSelectList, getAllApprovalDepartment, getAllApprovalUserFilterByDepartment, sendForApprovalBySender, isFinalApprover } from '../../actions/Approval'
-import { getConfigurationKey, userDetails } from '../../../../helper/auth'
+import { getReasonSelectList, getAllApprovalDepartment, getAllApprovalUserFilterByDepartment, sendForApprovalBySender, approvalRequestByApprove } from '../../actions/Approval'
+import { getConfigurationKey, loggedInUserId, userDetails } from '../../../../helper/auth'
 import { setCostingApprovalData, setCostingViewData, fileUploadCosting } from '../../actions/Costing'
 import { getVolumeDataByPartAndYear, checkRegularizationLimit } from '../../../masters/actions/Volume'
 
-import { calculatePercentageValue, checkForDecimalAndNull, checkForNull } from '../../../../helper'
+import { calculatePercentageValue, checkForDecimalAndNull, checkForNull, userTechnologyLevelDetails } from '../../../../helper'
 import DayTime from '../../../common/DayTimeWrapper'
 import WarningMessage from '../../../common/WarningMessage'
 import DatePicker from "react-datepicker";
@@ -18,20 +18,23 @@ import "react-datepicker/dist/react-datepicker.css";
 // import PushSection from '../../../common/PushSection'
 import { debounce } from 'lodash'
 import Dropzone from 'react-dropzone-uploader'
-import { FILE_URL, NCC, VBC, ZBC } from "../../../../config/constants";
+import { EMPTY_GUID, FILE_URL, NCC, NCCTypeId, VBC, VBCTypeId, ZBC, ZBCTypeId } from "../../../../config/constants";
 import redcrossImg from "../../../../assests/images/red-cross.png";
 import VerifyImpactDrawer from '../../../simulation/components/VerifyImpactDrawer';
 import PushSection from '../../../common/PushSection'
 import LoaderCustom from '../../../common/LoaderCustom'
 import TooltipCustom from '../../../common/Tooltip'
+import { getUsersTechnologyLevelAPI } from '../../../../actions/auth/AuthActions'
+import { costingTypeIdToApprovalTypeIdFunction } from '../../../common/CommonFunctions'
+import { rfqSaveBestCosting } from '../../../rfq/actions/rfq'
 
 
 const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
 const SendForApproval = (props) => {
-  const { isApprovalisting } = props
+  const { isApprovalisting, selectedRows } = props
   const dispatch = useDispatch()
   const { register, handleSubmit, control, setValue, getValues, formState: { errors } } = useForm({
-    mode: 'onBlur',
+    mode: 'onChange',
     reValidateMode: 'onChange',
   })
 
@@ -50,7 +53,6 @@ const SendForApproval = (props) => {
   const [financialYear, setFinancialYear] = useState('')
   const [approvalDropDown, setApprovalDropDown] = useState([])
   const [showValidation, setShowValidation] = useState(false)
-  const [isFinalApproverShow, setIsFinalApproverShow] = useState(false)
   const [approver, setApprover] = useState('')
   const [dataToPush, setDataToPush] = useState({})
   const [isDisable, setIsDisable] = useState('')
@@ -63,9 +65,11 @@ const SendForApproval = (props) => {
   const [effectiveDate, setEffectiveDate] = useState('')
   const [dataToChange, setDataToChange] = useState([]);
   const [IsLimitCrossed, setIsLimitCrossed] = useState(false);
+  const [levelDetails, setLevelDetails] = useState('');
   // const [showDate,setDate] = useState(false)
   // const [showDate,setDate] = useState(false)
   const userData = userDetails()
+  const viewCostingData = useSelector((state) => state.costing.viewCostingDetailData)
 
   useEffect(() => {
     let obj = {}
@@ -74,65 +78,82 @@ const SendForApproval = (props) => {
     obj.DepartmentId = '00000000-0000-0000-0000-000000000000'
     obj.LoggedInUserLevelId = userDetails().LoggedInLevelId
     obj.LoggedInUserId = userDetails().LoggedInUserId
+    obj.approvalTypeId = costingTypeIdToApprovalTypeIdFunction(viewApprovalData[0]?.costingTypeId)
+
     let drawerDataObj = {}
     drawerDataObj.EffectiveDate = viewApprovalData[0]?.effectiveDate
-    drawerDataObj.CostingHead = viewApprovalData[0].typeOfCosting === 0 ? ZBC : VBC
+    drawerDataObj.CostingHead = viewApprovalData[0]?.costingTypeId === ZBCTypeId ? ZBC : VBC
     drawerDataObj.Technology = props.technologyId
     setCostingApprovalDrawerData(drawerDataObj);
 
-    regularizationObj.technologyId = viewApprovalData[0].technologyId
-    regularizationObj.partId = viewApprovalData[0].partId
-    regularizationObj.destinationPlantId = viewApprovalData[0].destinationPlantId
-    regularizationObj.vendorId = viewApprovalData[0].vendorId
+    regularizationObj.technologyId = viewApprovalData[0]?.technologyId
+    regularizationObj.partId = viewApprovalData[0]?.partId
+    regularizationObj.destinationPlantId = viewApprovalData[0]?.destinationPlantId
+    regularizationObj.vendorId = viewApprovalData[0]?.vendorId
 
-    dispatch(checkRegularizationLimit(regularizationObj, (res) => {
-      if (res && res?.data && res?.data?.Data) {
-        let Data = res.data.Data
-        setDataToChange(Data)
+    if (viewApprovalData[0]?.costingTypeId === NCCTypeId) {
+      dispatch(checkRegularizationLimit(regularizationObj, (res) => {
+        if (res && res?.data && res?.data?.Data) {
+          let Data = res.data.Data
+          setDataToChange(Data)
+        }
+      }))
+    }
+    // dispatch(checkFinalUser(obj, res => {
+    //   if (res.data.Result) {
+    //     setIsFinalApproverShow(res.data.Data.IsFinalApprovar)
+    //     if (props?.isRfq) {
+    //       setIsFinalApproverShow(false)
+    //     }
+    //   }
+
+    dispatch(getReasonSelectList((res) => { }))
+    // if (!res.data.Data.IsFinalApprovar || props?.isRfq) {
+
+    dispatch(getAllApprovalDepartment((res) => {
+      const Data = res?.data?.SelectList
+      const departObj = Data && Data.filter(item => item.Value === userData.DepartmentId)
+
+      setSelectedDepartment({ label: departObj[0]?.Text, value: departObj[0]?.Value })
+      setValue('dept', { label: departObj[0]?.Text, value: departObj[0]?.Value })
+
+      let requestObject = {
+        LoggedInUserId: userData.LoggedInUserId,
+        DepartmentId: departObj[0]?.Value,
+        TechnologyId: props.technologyId,
+        ReasonId: 0, // key only for minda
+        ApprovalTypeId: costingTypeIdToApprovalTypeIdFunction(viewApprovalData[0]?.costingTypeId),
       }
+      dispatch(getAllApprovalUserFilterByDepartment(requestObject, (res) => {
+        let tempDropdownList = []
+        if (res.data.DataList.length === 1) {
+          return false
+        }
+        res.data.DataList && res.data.DataList.map((item) => {
+          if (item.Value === '0') return false;
+          if (item.Value === EMPTY_GUID) return false;
+          tempDropdownList.push({ label: item.Text, value: item.Value, levelId: item.LevelId, levelName: item.LevelName })
+          return null
+        })
+        const Data = res.data.DataList[1]
+        setApprover(Data.Text)
+        setSelectedApprover(Data.Value)
+        setSelectedApproverLevelId({ levelName: Data.LevelName, levelId: Data.LevelId })
+        if (tempDropdownList?.length !== 0) {
+          setValue('approver', { label: Data.Text, value: Data.Value })
+        } else {
+          setShowValidation(true)
+        }
+        setApprovalDropDown(tempDropdownList)
+      }))
     }))
-    dispatch(isFinalApprover(obj, res => {
-      if (res.data.Result) {
-        setIsFinalApproverShow(res.data.Data.IsFinalApprovar) // UNCOMMENT IT AFTER DEPLOTED FROM KAMAL SIR END
-        // setIsFinalApproverShow(false)
-      }
+    // }
 
-      dispatch(getReasonSelectList((res) => { }))
-      if (!res.data.Data.IsFinalApprovar) {
-
-        dispatch(getAllApprovalDepartment((res) => {
-          const Data = res?.data?.SelectList
-          const departObj = Data && Data.filter(item => item.Value === userData.DepartmentId)
-
-          setSelectedDepartment({ label: departObj[0]?.Text, value: departObj[0]?.Value })
-          setValue('dept', { label: departObj[0]?.Text, value: departObj[0]?.Value })
-
-          let requestObject = {
-            LoggedInUserId: userData.LoggedInUserId,
-            DepartmentId: departObj[0]?.Value,
-            TechnologyId: props.technologyId,
-            ReasonId: 0 // key only for minda
-          }
-          dispatch(getAllApprovalUserFilterByDepartment(requestObject, (res) => {
-            let tempDropdownList = []
-            if (res.data.DataList.length === 1) {
-              setShowValidation(true)
-              return false
-            }
-            res.data.DataList && res.data.DataList.map((item) => {
-              if (item.Value === '0') return false;
-              tempDropdownList.push({ label: item.Text, value: item.Value, levelId: item.LevelId, levelName: item.LevelName })
-              return null
-            })
-            const Data = res.data.DataList[1]
-            setApprover(Data.Text)
-            setSelectedApprover(Data.Value)
-            setSelectedApproverLevelId({ levelName: Data.LevelName, levelId: Data.LevelId })
-            setValue('approver', { label: Data.Text, value: Data.Value })
-            setApprovalDropDown(tempDropdownList)
-          }))
-        }))
-      }
+    // }))
+    let levelDetailsTemp = ''
+    dispatch(getUsersTechnologyLevelAPI(loggedInUserId(), props.technologyId, (res) => {
+      levelDetailsTemp = userTechnologyLevelDetails(viewApprovalData[0]?.costingTypeId, res?.data?.Data?.TechnologyLevels)
+      setLevelDetails(levelDetailsTemp)
 
     }))
 
@@ -179,16 +200,18 @@ const SendForApproval = (props) => {
         LoggedInUserId: userData.LoggedInUserId,
         DepartmentId: newValue.value,
         TechnologyId: props.technologyId,
+        ApprovalTypeId: costingTypeIdToApprovalTypeIdFunction(viewApprovalData[0]?.costingTypeId),
       }
       dispatch(getAllApprovalUserFilterByDepartment(requestObject, (res) => {
-        if (res.data.DataList.length <= 1) {
-          setShowValidation(true)
-        }
         res.data.DataList && res.data.DataList.map((item) => {
           if (item.Value === '0') return false;
+          if (item.Value === EMPTY_GUID) return false;
           tempDropdownList.push({ label: item.Text, value: item.Value, levelId: item.LevelId, levelName: item.LevelName })
           return null
         })
+        if (tempDropdownList?.length === 0) {
+          setShowValidation(true)
+        }
         setApprovalDropDown(tempDropdownList)
       }))
       setSelectedDepartment(newValue)
@@ -238,7 +261,7 @@ const SendForApproval = (props) => {
     }
     setFinancialYear(year)
 
-    dispatch(getVolumeDataByPartAndYear(partNo.value ? partNo.value : partNo.partId, year, (res) => {
+    dispatch(getVolumeDataByPartAndYear(partNo.value ? partNo.value : partNo.partId, year, viewApprovalData[index]?.costingTypeId === ZBCTypeId ? viewApprovalData[index]?.plantId : viewApprovalData[index]?.destinationPlantId, viewApprovalData[index]?.vendorId, viewApprovalData[index]?.customerId, viewApprovalData[index]?.costingTypeId, (res) => {
       if (res.data.Result === true || res.status === 202) {
         let approvedQtyArr = res.data.Data.VolumeApprovedDetails
         let budgetedQtyArr = res.data.Data.VolumeBudgetedDetails
@@ -299,107 +322,215 @@ const SendForApproval = (props) => {
       Toaster.warning('Please upload file to send for approval.')
       return false
     }
-    let obj = {
-      ApproverDepartmentId: selectedDepartment.value,
-      ApproverDepartmentName: selectedDepartment.label,
-      ApproverLevelId: !isFinalApproverShow ? selectedApproverLevelId.levelId : userData.LoggedInLevelId,
-      ApproverLevel: !isFinalApproverShow ? selectedApproverLevelId.levelName : userData.LoggedInLevel,
-      ApproverId: !isFinalApproverShow ? selectedApprover : userData.LoggedInUserId,
 
-      // ApproverLevelId: "4645EC79-B8C0-49E5-98D6-6779A8F69692", // approval dropdown data here
-      // ApproverId: "566E7AB0-804F-403F-AE7F-E7B15A289362",// approval dropdown data here
-      SenderLevelId: userData.LoggedInLevelId,
-      SenderLevel: userData.LoggedInLevel,
-      SenderId: userData.LoggedInUserId,
-      SenderRemark: data.remarks,
-      LoggedInUserId: userData.LoggedInUserId,
-      // Quantity: getValues('Quantity'),
-      // Attachment: files,
-      // IsLimitCrossed: IsLimitCrossed
+    if (props?.isRfq) {
+      let tempData = { ...viewCostingData[viewCostingData?.length - 1] }
+      let data = {
+        "QuotationPartId": selectedRows[0]?.QuotationPartId,
+        "NetRawMaterialsCost": tempData?.netRM,
+        "NetBoughtOutPartCost": tempData?.netBOP,
+        "NetConversionCost": tempData?.nConvCost,
+        "NetProcessCost": tempData?.netProcessCost,
+        "NetOperationCost": tempData?.netOperationCost,
+        "NetOtherOperationCost": tempData?.netOtherOperationCost,
+        "NetTotalRMBOPCC": tempData?.nTotalRMBOPCC,
+        "NetSurfaceTreatmentCost": tempData?.netSurfaceTreatmentCost,
+        "OverheadCost": 0,
+        "ProfitCost": 0,
+        "RejectionCost": tempData?.netRejectionCostView,
+        "ICCCost": 0,
+        "PaymentTermCost": 0,
+        "NetOverheadAndProfitCost": tempData?.nOverheadProfit,
+        "PackagingCost": 0,
+        "FreightCost": 0,
+        "NetFreightPackagingCost": tempData?.nPackagingAndFreight,
+        "NetToolCost": tempData?.totalToolCost,
+        "DiscountCost": tempData?.otherDiscountCost,
+        "OtherCost": tempData?.anyOtherCost,
+        "BasicRate": tempData?.BasicRate,
+        "NetPOPrice": tempData?.nPOPrice,
+        "NetPOPriceOtherCurrency": tempData?.nPoPriceCurrency
+      }
+
+      dispatch(rfqSaveBestCosting(data, res => {
+
+      }))
+
+      let temp = []
+
+      viewApprovalData.map((data) => {
+
+
+        let tempObj = {}
+        tempObj.ApprovalProcessSummaryId = data.ApprovalProcessSummaryId
+        tempObj.ApprovalToken = data.ApprovalToken
+        tempObj.ApproverDepartmentId = selectedDepartment.value
+        tempObj.ApproverDepartmentName = selectedDepartment.label
+        // tempObj.ApproverLevelId = !isFinalApproverShow ? selectedApproverLevelId.levelId : userData.LoggedInLevelId
+        // tempObj.ApproverLevel = !isFinalApproverShow ? selectedApproverLevelId.levelName : userData.LoggedInLevel
+        // tempObj.Approver = !isFinalApproverShow ? selectedApprover : userData.LoggedInUserId
+        tempObj.ApproverLevelId = selectedApproverLevelId.levelId
+        tempObj.ApproverLevel = selectedApproverLevelId.levelName
+        tempObj.Approver = selectedApprover
+
+        // ApproverLevelId: "4645EC79-B8C0-49E5-98D6-6779A8F69692", // approval dropdown data here
+        // ApproverId: "566E7AB0-804F-403F-AE7F-E7B15A289362",// approval dropdown data here
+        tempObj.SenderLevelId = userData.LoggedInLevelId
+        tempObj.SenderLevel = userData.LoggedInLevel
+        tempObj.SenderId = userData.LoggedInUserId
+        // tempObj.SenderRemark = data.remarks
+        tempObj.LoggedInUserId = userData.LoggedInUserId
+        tempObj.ReasonId = data.reasonId
+        tempObj.Reason = data.reason
+        tempObj.FinancialYear = financialYear
+        tempObj.OldPOPrice = data.oldPrice ? data.oldPrice : 0
+        tempObj.NewPoPrice = data.revisedPrice ? data.revisedPrice : 0
+        tempObj.POCurrency = data.nPOPriceWithCurrency ? data.nPOPriceWithCurrency : 0
+        tempObj.CurrencyRate = data.currencyRate ? data.currencyRate : 0
+        tempObj.Variance = data.variance ? data.variance : 0
+        tempObj.ConsumptionQuantity = data.consumptionQty
+        tempObj.RemainingQuantity = data.remainingQty
+        tempObj.AnnualImpact = data.annualImpact
+        tempObj.ImpactOfTheYear = data.yearImpact
+        tempObj.Remark = getValues("remarks")
+        tempObj.IsApproved = true
+
+        temp.push(tempObj)
+        return null
+      })
+
+
+
+      // action
+
+      dispatch(approvalRequestByApprove(temp, res => {
+
+        if (res?.data?.Result) {
+          // if (isFinalApproverShow) {
+          //   Toaster.success('The costing has been approved')
+
+          // } else {
+          //   Toaster.success(isFinalApproverShow ? 'The costing has been approved' : 'The costing has been sent to next level for approval')
+
+          //   props.closeDrawer('', 'submit')
+          // }
+          Toaster.success('The costing has been sent to next level for approval')
+          props.closeDrawer('', 'submit')
+        }
+        props?.cancel()
+      }))
+
+
+
+
+    } else {
+
+
+      let obj = {
+        ApproverDepartmentId: selectedDepartment.value,
+        ApproverDepartmentName: selectedDepartment.label,
+        ApproverLevelId: selectedApproverLevelId.levelId,
+        ApproverLevel: selectedApproverLevelId.levelName,
+        ApproverId: selectedApprover,
+        // ApproverLevelId: !isFinalApproverShow ? selectedApproverLevelId.levelId : userData.LoggedInLevelId,
+        // ApproverLevel: !isFinalApproverShow ? selectedApproverLevelId.levelName : userData.LoggedInLevel,
+        // ApproverId: !isFinalApproverShow ? selectedApprover : userData.LoggedInUserId,
+
+        // ApproverLevelId: "4645EC79-B8C0-49E5-98D6-6779A8F69692", // approval dropdown data here
+        // ApproverId: "566E7AB0-804F-403F-AE7F-E7B15A289362",// approval dropdown data here
+        SenderLevelId: levelDetails.LevelId,
+        SenderLevel: levelDetails.Level,
+        SenderId: userData.LoggedInUserId,
+        SenderRemark: data.remarks,
+        LoggedInUserId: userData.LoggedInUserId,
+        ApprovalTypeId: costingTypeIdToApprovalTypeIdFunction(viewApprovalData[0].costingTypeId),
+        // Quantity: getValues('Quantity'),
+        // Attachment: files,
+        // IsLimitCrossed: IsLimitCrossed
+      }
+
+      let temp = []
+
+      setIsDisable(true)
+
+      viewApprovalData.map((data) => {
+
+        let tempObj = {}
+        tempObj.ApprovalProcessId = "00000000-0000-0000-0000-000000000000"
+        tempObj.TypeOfCosting = (data.typeOfCosting === 0 || data.typeOfCosting === ZBC) ? ZBC : VBC
+        tempObj.PlantId =
+          (data.costingTypeId === ZBCTypeId) ? data.plantId : ''
+        tempObj.PlantNumber =
+          (data.costingTypeId === ZBCTypeId) ? data.plantCode : ''
+        tempObj.PlantName =
+          (data.costingTypeId === ZBCTypeId) ? data.plantName : ''
+        tempObj.PlantCode =
+          (data.costingTypeId === ZBCTypeId) ? data.plantCode : ''
+        tempObj.CostingId = data.costingId
+        tempObj.CostingNumber = data.costingName
+        tempObj.ReasonId = data.reasonId
+        tempObj.Reason = data.reason
+        tempObj.ECNNumber = ''
+        // tempObj.ECNNumber = 1;
+        tempObj.EffectiveDate = DayTime(data.effectiveDate).format('YYYY-MM-DD HH:mm:ss')
+        tempObj.RevisionNumber = partNo.revisionNumber
+        tempObj.PartName = isApprovalisting ? data.partName : partNo.partName
+        // tempObj.PartName = "Compressor"; // set data for this is in costing summary,will come here
+        tempObj.PartNumber = isApprovalisting ? data.partNo : partNo.partNumber //label
+        tempObj.PartId = isApprovalisting ? data.partId : partNo.partId
+        // tempObj.PartNumber = "CP021220";// set data for this is in costing summary,will come here
+        tempObj.FinancialYear = financialYear
+        tempObj.OldPOPrice = data.oldPrice
+        tempObj.NewPoPrice = data.revisedPrice
+        tempObj.POCurrency = data.nPOPriceWithCurrency
+        tempObj.CurrencyRate = data.currencyRate
+        tempObj.Variance = data.variance
+        tempObj.ConsumptionQuantity = data.consumptionQty
+        tempObj.RemainingQuantity = data.remainingQty
+        tempObj.AnnualImpact = data.annualImpact
+        tempObj.ImpactOfTheYear = data.yearImpact
+        tempObj.VendorId =
+          (data.costingTypeId === VBCTypeId) ? data.vendorId : ''
+        tempObj.VendorCode =
+          (data.costingTypeId === VBCTypeId) ? data.vendorCode : ''
+        tempObj.VendorPlantId =
+          (data.costingTypeId === VBCTypeId) ? data.vendorePlantId : ''
+        tempObj.VendorPlantCode =
+          (data.costingTypeId === VBCTypeId) ? data.vendorPlantCode : ''
+        tempObj.VendorName =
+          (data.costingTypeId === VBCTypeId) ? data.vendorName : ''
+        tempObj.VendorPlantName =
+          (data.costingTypeId === VBCTypeId) ? data.vendorPlantName : ''
+        tempObj.IsFinalApproved = false
+        tempObj.DestinationPlantCode = data.destinationPlantCode
+        tempObj.DestinationPlantName = data.destinationPlantName
+        tempObj.DestinationPlantId = data.destinationPlantId
+        tempObj.NCCPartQuantity = getValues('Quantity')
+        tempObj.Attachment = files
+        tempObj.IsRegularized = isRegularize
+        tempObj.IsRegularizationLimitCrossed = IsLimitCrossed
+        tempObj.CostingTypeId = data.costingTypeId
+        tempObj.CustomerId = data.customerId
+        tempObj.CustomerName = data.customerName
+        tempObj.CustomerCode = data.customerCode
+        temp.push(tempObj)
+        return null
+      })
+      obj.CostingsList = temp
+      obj.MaterialGroup = SAPData.MaterialGroup?.label
+      obj.DecimalOption = SAPData.DecimalOption?.value
+
+      // debounce_fun()
+      // 
+      // props.closeDrawer()
+      dispatch(sendForApprovalBySender(obj, (res) => {
+        setIsDisable(false)
+        Toaster.success(viewApprovalData.length === 1 ? `Costing Id ${viewApprovalData[0].costingName} has been sent for approval to ${approver.split('(')[0]}.` : `Costings has been sent for approval to ${approver.split('(')[0]}.`)
+        props.closeDrawer('', 'Submit')
+        dispatch(setCostingApprovalData([]))
+        dispatch(setCostingViewData([]))
+      }))
     }
-
-    let temp = []
-
-    setIsDisable(true)
-
-    viewApprovalData.map((data) => {
-      // const { netPo, quantity } = getPOPriceAfterDecimal(SAPData.DecimalOption.value, data.revisedPrice)
-      let tempObj = {}
-      tempObj.ApprovalProcessId = "00000000-0000-0000-0000-000000000000"
-      tempObj.TypeOfCosting = (data.typeOfCosting === 0 || data.typeOfCosting === ZBC) ? ZBC : VBC
-      tempObj.PlantId =
-        (Number(data.typeOfCosting) === 0 || data.typeOfCosting === ZBC) ? data.plantId : ''
-      tempObj.PlantNumber =
-        (Number(data.typeOfCosting) === 0 || data.typeOfCosting === ZBC) ? data.plantCode : ''
-      tempObj.PlantName =
-        (Number(data.typeOfCosting) === 0 || data.typeOfCosting === ZBC) ? data.plantName : ''
-      tempObj.PlantCode =
-        (Number(data.typeOfCosting) === 0 || data.typeOfCosting === ZBC) ? data.plantCode : ''
-      tempObj.CostingId = data.costingId
-      tempObj.CostingNumber = data.costingName
-      tempObj.ReasonId = data.reasonId
-      tempObj.Reason = data.reason
-      tempObj.ECNNumber = ''
-      // tempObj.ECNNumber = 1;
-      tempObj.EffectiveDate = DayTime(data.effectiveDate).format('YYYY-MM-DD')
-      tempObj.RevisionNumber = partNo.revisionNumber
-      tempObj.PartName = isApprovalisting ? data.partName : partNo.partName
-      // tempObj.PartName = "Compressor"; // set data for this is in costing summary,will come here
-      tempObj.PartNumber = isApprovalisting ? data.partNo : partNo.partNumber //label
-      tempObj.PartId = isApprovalisting ? data.partId : partNo.partId
-      // tempObj.PartNumber = "CP021220";// set data for this is in costing summary,will come here
-      tempObj.FinancialYear = financialYear
-      tempObj.OldPOPrice = data.oldPrice
-      // tempObj.Quantity = quantity
-      // tempObj.NewPoPrice = netPo // here price condition on the basis of Decimal option dropdown (Specifically in Minda)
-      tempObj.NewPoPrice = data.revisedPrice
-      tempObj.POCurrency = data.nPOPriceWithCurrency
-      tempObj.CurrencyRate = data.currencyRate
-      tempObj.Variance = data.variance
-      tempObj.ConsumptionQuantity = data.consumptionQty
-      tempObj.RemainingQuantity = data.remainingQty
-      tempObj.AnnualImpact = data.annualImpact
-      tempObj.ImpactOfTheYear = data.yearImpact
-      tempObj.VendorId =
-        (Number(data.typeOfCosting) === 1 || data.typeOfCosting === VBC) ? data.vendorId : ''
-      tempObj.VendorCode =
-        (Number(data.typeOfCosting) === 1 || data.typeOfCosting === VBC) ? data.vendorCode : ''
-      tempObj.VendorPlantId =
-        (Number(data.typeOfCosting) === 1 || data.typeOfCosting === VBC) ? data.vendorePlantId : ''
-      tempObj.VendorPlantCode =
-        (Number(data.typeOfCosting) === 1 || data.typeOfCosting === VBC) ? data.vendorPlantCode : ''
-      tempObj.VendorName =
-        (Number(data.typeOfCosting) === 1 || data.typeOfCosting === VBC) ? data.vendorName : ''
-      tempObj.VendorPlantName =
-        (Number(data.typeOfCosting) === 1 || data.typeOfCosting === VBC) ? data.vendorPlantName : ''
-      tempObj.IsFinalApproved = isFinalApproverShow ? true : false
-      tempObj.DestinationPlantCode = data.destinationPlantCode
-      tempObj.DestinationPlantName = data.destinationPlantName
-      tempObj.DestinationPlantId = data.destinationPlantId
-      tempObj.NCCPartQuantity = getValues('Quantity')
-      tempObj.Attachment = files
-      tempObj.IsRegularized = isRegularize
-      tempObj.IsRegularizationLimitCrossed = IsLimitCrossed
-
-      temp.push(tempObj)
-      return null
-    })
-
-    obj.CostingsList = temp
-    obj.MaterialGroup = SAPData.MaterialGroup?.label
-    obj.DecimalOption = SAPData.DecimalOption?.value
-
-
-    // debounce_fun()
-    // 
-    // props.closeDrawer()
-    dispatch(sendForApprovalBySender(obj, (res) => {
-      setIsDisable(false)
-      Toaster.success(viewApprovalData.length === 1 ? `Costing ID ${viewApprovalData[0].costingName} has been sent for approval to ${approver.split('(')[0]}.` : `Costings has been sent for approval to ${approver.split('(')[0]}.`)
-      props.closeDrawer('', 'Submit')
-      dispatch(setCostingApprovalData([]))
-      dispatch(setCostingViewData([]))
-    }))
   }), 500)
 
 
@@ -563,7 +694,6 @@ const SendForApproval = (props) => {
                 <div className={"header-wrapper left"}>
                   <h3>{"Send for Approval"}</h3>
                 </div>
-
                 <div
                   onClick={(e) => toggleDrawer(e)}
                   disabled={isDisable}
@@ -571,299 +701,289 @@ const SendForApproval = (props) => {
                 ></div>
               </Col>
             </Row>
+            { }
             {viewApprovalData &&
               viewApprovalData.map((data, index) => {
 
-                return (
-                  <div className="" key={index}>
-                    <Row className="px-3">
-                      <Col md="12">
-                        <h6 className="left-border d-inline-block mr-4">
-                          {(data.typeOfCosting === 0 || data.typeOfCosting === ZBC) ? ZBC : `${data.vendorName}`}
-                        </h6>
-                        <div className=" d-inline-block mr-4">
-                          {`Part No:`}{" "}
-                          <span className="grey-text">{`${isApprovalisting ? data.partNo : partNo.partNumber}`}</span>
-                        </div>
-                        <div className=" d-inline-block mr-4">
-                          {(data.typeOfCosting === 0 || data.typeOfCosting === ZBC) ? `Plant Code:` : `Vendor Code`}{" "}
-                          <span className="grey-text">{(data.typeOfCosting === 0 || data.typeOfCosting === ZBC) ? `${data.plantCode}` : `${data.vendorCode}`}</span>
-                        </div>
-                        <div className=" d-inline-block">
-                          {`Costing Id:`}{" "}
-                          <span className="grey-text">{`${data.costingName}`}</span>
-                        </div>
+                return (<div className="" key={index}>
+                  <Row className="px-3">
+                    <Col md="12">
+                      <h6 className="left-border d-inline-block mr-4">
+                        {(data.costingTypeId === ZBCTypeId) ? ZBC : (data.costingTypeId === VBCTypeId || data.costingTypeId === NCCTypeId) ? `${data.vendorName}` : `${data.customerName}`}
+                      </h6>
+                      <div className=" d-inline-block mr-4">
+                        {`Part No:`}{" "}
+                        <span className="grey-text">{`${isApprovalisting ? data.partNo : partNo.partNumber}`}</span>
+                      </div>
+                      <div className=" d-inline-block mr-4">
+                        {(data.costingTypeId === ZBCTypeId) ? `Plant Code: ` : (data.costingTypeId === VBCTypeId || data.costingTypeId === NCCTypeId) ? `Vendor Code: ` : `Customer Code: `}
+                        <span className="grey-text">{(data.costingTypeId === ZBCTypeId) ? `${data.plantCode}` : (data.costingTypeId === VBCTypeId || data.costingTypeId === NCCTypeId) ? `${data.vendorCode}` : `${data.customerCode}`}</span>
+                      </div>
+                      <div className=" d-inline-block">
+                        {`Costing Id:`}{" "}
+                        <span className="grey-text">{`${data.costingName}`}</span>
+                      </div>
 
-                      </Col>
-                    </Row>
-                    <div className="px-3">
-                      <div className="border-box border p-3 mb-4">
-                        <Row>
-                          <Col md="4">
-                            <SearchableSelectHookForm
-                              label={"Reason"}
-                              // name={"reason"}
-                              name={`${reasonField}reason[${index}]`}
-                              placeholder={"Select"}
-                              Controller={Controller}
-                              control={control}
-                              rules={{ required: true }}
-                              register={register}
-                              defaultValue={data.reason !== "" ? { label: data.reason, value: data.reasonId } : ""}
-                              options={renderDropdownListing("Reason")}
-                              mandatory={true}
-                              handleChange={(e) => {
-                                handleReasonChange(e, index);
-                              }}
-                              errors={errors && errors.reasonFieldreason && errors.reasonFieldreason !== undefined ? errors.reasonFieldreason[index] : ""}
-                            // errors={`${errors}.${reasonField}[${index}]reason`}
+                    </Col>
+                  </Row>
+                  <div className="px-3">
+                    <div className="border-box border p-3 mb-4">
+                      <Row>
+                        <Col md="4">
+                          <SearchableSelectHookForm
+                            label={"Reason"}
+                            // name={"reason"}
+                            name={`${reasonField}reason[${index}]`}
+                            placeholder={"Select"}
+                            Controller={Controller}
+                            control={control}
+                            rules={{ required: true }}
+                            register={register}
+                            defaultValue={data.reason !== "" ? { label: data.reason, value: data.reasonId } : ""}
+                            options={renderDropdownListing("Reason")}
+                            mandatory={true}
+                            handleChange={(e) => {
+                              handleReasonChange(e, index);
+                            }}
+                            errors={errors && errors.reasonFieldreason && errors.reasonFieldreason !== undefined ? errors.reasonFieldreason[index] : ""}
+                          // errors={`${errors}.${reasonField}[${index}]reason`}
 
-                            />
-                          </Col>
+                          />
+                        </Col>
 
-                          <Col md="4">
-                            <div className="d-flex">
-                              <div className="inputbox date-section">
-                                {
-                                  data.isDate ?
-                                    <div className={'form-group inputbox withBorder'}>
-                                      <label>Effective Date</label>
-                                      <DatePicker
-                                        selected={DayTime(data.effectiveDate).isValid() ? new Date(data.effectiveDate) : ''}
-                                        dateFormat="dd/MM/yyyy"
-                                        showMonthDropdown
-                                        showYearDropdown
-                                        readonly="readonly"
-                                        onBlur={() => null}
-                                        autoComplete={'off'}
-                                        disabledKeyboardNavigation
-                                        disabled={true}
-                                      />
-                                    </div>
-                                    :
-
-                                    <DatePickerHookForm
-                                      name={`${dateField}EffectiveDate.${index}`}
-                                      label={'Effective Date'}
-                                      selected={data.effectiveDate !== "" ? DayTime(data.effectiveDate).format('DD/MM/YYYY') : ""}
-                                      handleChange={(date) => {
-                                        handleEffectiveDateChange(date, index);
-                                      }}
-                                      //defaultValue={data.effectiveDate != "" ? moment(data.effectiveDate).format('DD/MM/YYYY') : ""}
-                                      rules={{ required: true }}
-                                      Controller={Controller}
-                                      control={control}
-                                      register={register}
+                        <Col md="4">
+                          <div className="d-flex">
+                            <div className="inputbox date-section">
+                              {
+                                data.isDate ?
+                                  <div className={'form-group inputbox withBorder'}>
+                                    <label>Effective Date</label>
+                                    <DatePicker
+                                      selected={DayTime(data.effectiveDate).isValid() ? new Date(data.effectiveDate) : ''}
+                                      dateFormat="dd/MM/yyyy"
                                       showMonthDropdown
                                       showYearDropdown
-                                      dateFormat="DD/MM/YYYY"
-                                      //maxDate={new Date()}
-                                      dropdownMode="select"
-                                      placeholderText="Select date"
-                                      customClassName="withBorder"
-                                      className="withBorder"
-                                      autoComplete={"off"}
+                                      readonly="readonly"
+                                      onBlur={() => null}
+                                      autoComplete={'off'}
                                       disabledKeyboardNavigation
-                                      onChangeRaw={(e) => e.preventDefault()}
-                                      disabled={false}
-                                      mandatory={true}
-                                      errors={errors && errors.dateFieldEffectiveDate && errors.dateFieldEffectiveDate !== undefined ? errors.dateFieldEffectiveDate[index] : ""}
+                                      disabled={true}
                                     />
-                                }
-                              </div>
-                              {/* <i className="fa fa-calendar icon-small-primary ml-2"></i> */}
-                            </div>
-                            {/* </div> */}
-                          </Col>
+                                  </div>
+                                  :
 
-                          <Col md="4">
-                            <div className="form-group">
-                              <label>Old/Current Price</label>
-                              <label className="form-control bg-grey input-form-control">
-                                {data.oldPrice && data.oldPrice !== '-' ? checkForDecimalAndNull(data.oldPrice, initialConfiguration.NoOfDecimalForPrice) : 0}
-                              </label>
+                                  <DatePickerHookForm
+                                    name={`${dateField}EffectiveDate.${index}`}
+                                    label={'Effective Date'}
+                                    selected={data.effectiveDate !== "" ? DayTime(data.effectiveDate).format('DD/MM/YYYY') : ""}
+                                    handleChange={(date) => {
+                                      handleEffectiveDateChange(date, index);
+                                    }}
+                                    //defaultValue={data.effectiveDate != "" ? moment(data.effectiveDate).format('DD/MM/YYYY') : ""}
+                                    rules={{ required: true }}
+                                    Controller={Controller}
+                                    control={control}
+                                    register={register}
+                                    showMonthDropdown
+                                    showYearDropdown
+                                    dateFormat="DD/MM/YYYY"
+                                    //maxDate={new Date()}
+                                    placeholderText="Select date"
+                                    customClassName="withBorder"
+                                    className="withBorder"
+                                    autoComplete={"off"}
+                                    disabledKeyboardNavigation
+                                    onChangeRaw={(e) => e.preventDefault()}
+                                    disabled={false}
+                                    mandatory={true}
+                                    errors={errors && errors.dateFieldEffectiveDate && errors.dateFieldEffectiveDate !== undefined ? errors.dateFieldEffectiveDate[index] : ""}
+                                  />
+                              }
                             </div>
-                          </Col>
-                          <Col md="4">
-                            <div className="form-group">
-                              <label>Revised Price</label>
-                              <label className="form-control bg-grey input-form-control">
-                                {data.revisedPrice ? checkForDecimalAndNull(data.revisedPrice, initialConfiguration.NoOfDecimalForPrice) : 0}
-                              </label>
-                            </div>
-                          </Col>
-                          <Col md="4">
-                            <div className="form-group">
-                              <label>Variance</label>
-                              <label className={data.oldPrice === 0 ? `form-control bg-grey input-form-control` : `form-control bg-grey input-form-control ${data.variance < 0 ? 'red-value' : 'green-value'}`}>
-                                {data.variance ? checkForDecimalAndNull(data.variance, initialConfiguration.NoOfDecimalForPrice) : 0}
-                              </label>
-                            </div>
-                          </Col>
+                            {/* <i className="fa fa-calendar icon-small-primary ml-2"></i> */}
+                          </div>
+                          {/* </div> */}
+                        </Col>
+                        {initialConfiguration?.IsBasicRateAndCostingConditionVisible && <Col md="4">
+                          <div className="form-group">
+                            <label>Basic Price</label>
+                            <label className="form-control bg-grey input-form-control">
+                              {data.BasicRate && data.BasicRate !== '-' ? checkForDecimalAndNull(data.BasicRate, initialConfiguration.NoOfDecimalForPrice) : 0}
+                            </label>
+                          </div>
+                        </Col>}
+                        <Col md="4">
+                          <div className="form-group">
+                            <label>Existing Price</label>
+                            <label className="form-control bg-grey input-form-control">
+                              {data.oldPrice && data.oldPrice !== '-' ? checkForDecimalAndNull(data.oldPrice, initialConfiguration.NoOfDecimalForPrice) : 0}
+                            </label>
+                          </div>
+                        </Col>
+                        <Col md="4">
+                          <div className="form-group">
+                            <label>Revised Price</label>
+                            <label className="form-control bg-grey input-form-control">
+                              {data.revisedPrice ? checkForDecimalAndNull(data.revisedPrice, initialConfiguration.NoOfDecimalForPrice) : 0}
+                            </label>
+                          </div>
+                        </Col>
+                        <Col md="4">
+                          <div className="form-group">
+                            <TooltipCustom id={"variance-tooltip"} disabledIcon={true} tooltipText={`Existing Price - Revised Price`} />
+                            <label>Variance (w.r.t. Existing)</label>
+                            <label id={"variance-tooltip"} className={data.oldPrice === 0 ? `form-control bg-grey input-form-control` : `form-control bg-grey input-form-control ${data.variance < 0 ? 'red-value' : 'green-value'}`}>
+                              {data.variance ? checkForDecimalAndNull(data.variance, initialConfiguration.NoOfDecimalForPrice) : 0}
+                            </label>
+                          </div>
+                        </Col>
 
-                          {viewApprovalData && viewApprovalData[0]?.CostingHead !== NCC && <>
-                            <Col md="4">
-                              <div className="form-group">
-                                <label>Consumed Quantity</label>
-                                <div className="d-flex align-items-center">
-                                  <label className="form-control bg-grey input-form-control">
-                                    {checkForDecimalAndNull(data.consumptionQty, initialConfiguration.NoOfDecimalForPrice)}
-                                  </label>
-                                  {/* <div class="plus-icon-square  right m-0 mb-1"></div> */}
-                                </div>
-                              </div>
-                            </Col>
-                            <Col md="4">
-                              <div className="form-group">
-                                <label>Remaining Budgeted Quantity</label>
+                        {viewApprovalData && viewApprovalData[0]?.CostingHead !== NCC && <>
+                          <Col md="4">
+                            <div className="form-group">
+                              <TooltipCustom id={"consumed-quantity"} tooltipText={`Consumed Quantity is calculated based on the data present in the volume master (${data.effectiveDate !== "" ? DayTime(data.effectiveDate).format('DD/MM/YYYY') : ""}).`} />
+                              <label>Consumed Quantity</label>
+                              <div className="d-flex align-items-center">
                                 <label className="form-control bg-grey input-form-control">
-                                  {data.remainingQty && data.remainingQty !== "" ? checkForDecimalAndNull(data.remainingQty, initialConfiguration.NoOfDecimalForPrice) : 0}
+                                  {checkForDecimalAndNull(data.consumptionQty, initialConfiguration.NoOfDecimalForPrice)}
                                 </label>
+                                {/* <div class="plus-icon-square  right m-0 mb-1"></div> */}
                               </div>
-                            </Col>
-                            <Col md="4">
-                              <div className="form-group">
-                                <TooltipCustom tooltipText={`The current impact is calculated based on the data present in the volume master (${data.effectiveDate !== "" ? DayTime(data.effectiveDate).format('DD/MM/YYYY') : ""}).`} />
-                                <label>Annual Impact</label>
-                                <label className={data.oldPrice === 0 ? `form-control bg-grey input-form-control` : `form-control bg-grey input-form-control ${data.annualImpact < 0 ? 'green-value' : 'red-value'}`}>
-                                  {data.annualImpact && data.annualImpact ? checkForDecimalAndNull(data.annualImpact, initialConfiguration.NoOfDecimalForPrice) : 0}
-                                </label>
-                              </div>
-                            </Col>
+                            </div>
+                          </Col>
+                          <Col md="4">
+                            <div className="form-group">
+                              <TooltipCustom id={"remaining-budgeted-quantity-formula"} disabledIcon={true} tooltipText={`Budgeted Quantity (Refer From Volume Master) - Consumed Quantity`} />
+                              <label>Remaining Budgeted Quantity</label>
+                              <label id={"remaining-budgeted-quantity-formula"} className="form-control bg-grey input-form-control">
+                                {data.remainingQty && data.remainingQty !== "" ? checkForDecimalAndNull(data.remainingQty, initialConfiguration.NoOfDecimalForPrice) : 0}
+                              </label>
+                            </div>
+                          </Col>
+                          <Col md="4">
+                            <div className="form-group">
+                              <TooltipCustom id={"costing-approval"} tooltipText={`The current impact is calculated based on the data present in the volume master (${data.effectiveDate !== "" ? DayTime(data.effectiveDate).format('DD/MM/YYYY') : ""}).`} />
+                              <TooltipCustom id={"annual-formula"} disabledIcon={true} tooltipText={`Total Budget Quantity (Refer From Volume Master) * Variance`} />
+                              <label>Annual Impact</label>
+                              <label id={"annual-formula"} className={data.oldPrice === 0 ? `form-control bg-grey input-form-control` : `form-control bg-grey input-form-control ${data.annualImpact < 0 ? 'green-value' : 'red-value'}`}>
+                                {data.annualImpact && data.annualImpact ? checkForDecimalAndNull(data.annualImpact, initialConfiguration.NoOfDecimalForPrice) : 0}
+                              </label>
+                            </div>
+                          </Col>
 
-                            <Col md="4">
-                              <div className="form-group">
-                                <label>Impact for the Year</label>
-                                <label className={data.oldPrice === 0 ? `form-control bg-grey input-form-control` : `form-control bg-grey input-form-control ${data.yearImpact < 0 ? 'green-value' : 'red-value'}`}>
-                                  {data.yearImpact && data.yearImpact ? checkForDecimalAndNull(data.yearImpact, initialConfiguration.NoOfDecimalForPrice) : 0}
-                                </label>
-                              </div>
-                            </Col>
-                          </>}
-                        </Row>
-                      </div>
+                          <Col md="4">
+                            <div className="form-group">
+                              <TooltipCustom id={"impact-for-year-formula"} disabledIcon={true} tooltipText={`(Total Budget Quantity (Refer From Volume Master) * Consumed Quantity) - Variance`} />
+                              <label>Impact for the Year</label>
+                              <label id={"impact-for-year-formula"} className={data.oldPrice === 0 ? `form-control bg-grey input-form-control` : `form-control bg-grey input-form-control ${data.yearImpact < 0 ? 'green-value' : 'red-value'}`}>
+                                {data.yearImpact && data.yearImpact ? checkForDecimalAndNull(data.yearImpact, initialConfiguration.NoOfDecimalForPrice) : 0}
+                              </label>
+                            </div>
+                          </Col>
+                        </>}
+                      </Row>
                     </div>
                   </div>
+                </div>
                 );
               })}
             <div className="">
               <form >
                 {
-                  isFinalApproverShow === false ?
-                    <>
-                      <Row className="px-3">
-                        <Col md="12">
-                          <div className="left-border">{"SAP-Push Details"}</div>
-                        </Col>
-                        <div className="w-100">
-                          <PushSection
-                            Controller={Controller}
-                            register={register}
-                            errors={errors}
-                            control={control}
-
-
-                          />
-                        </div>
-                      </Row>
-                      <Row className="px-3">
-                        <Col md="4">
-                          <div className="left-border">{"Approver"}</div>
-                        </Col>
-                      </Row>
-                      <Row className="px-3">
-                        <Col md="6">
-                          <SearchableSelectHookForm
-                            label={`${getConfigurationKey().IsCompanyConfigureOnPlant ? 'Company' : 'Department'}`}
-                            name={"dept"}
-                            placeholder={"Select"}
-                            Controller={Controller}
-                            control={control}
-                            rules={{ required: false }}
-                            register={register}
-                            defaultValue={""}
-                            options={renderDropdownListing("Dept")}
-                            disabled={userData.Department.length > 1 ? false : true}
-                            mandatory={false}
-                            handleChange={handleDepartmentChange}
-                            errors={errors.dept}
-                          />
-                        </Col>
-                        <Col md="6">
-                          <SearchableSelectHookForm
-                            label={"Approver"}
-                            name={"approver"}
-                            placeholder={"Select"}
-                            Controller={Controller}
-                            control={control}
-                            rules={{ required: false }}
-                            register={register}
-                            defaultValue={""}
-                            options={approvalDropDown}
-                            mandatory={false}
-                            disabled={userData.Department.length > 1 ? false : true}
-                            handleChange={handleApproverChange}
-                            errors={errors.approver}
-                          />
-                        </Col>
-                        {
-                          showValidation && <span className="warning-top"><WarningMessage dClass="pl-3" message={'There is no approver added in this department'} /></span>
-                        }
-
-                        {viewApprovalData && viewApprovalData[0]?.CostingHead === NCC && <><Col md="6">
-                          <NumberFieldHookForm
-                            label="Quantity"
-                            name={"Quantity"}
-                            Controller={Controller}
-                            control={control}
-                            register={register}
-                            mandatory={true}
-                            rules={{ required: true }}
-                            defaultValue={""}
-                            className=""
-                            customClassName={"withBorder"}
-                            handleChange={handleChangeQuantity}
-                            errors={errors.Quantity}
-                            disabled={false}
-                          />
-                        </Col>
-                          <Col md="6" className="d-flex align-items-center mb-2">
-                            <span className="d-inline-block">
-                              <label
-                                className={`custom-checkbox mb-0`}
-                                onChange={checkboxHandler}>
-                                Regularize
-                                <input
-                                  type="checkbox"
-                                />
-                                <span
-                                  className=" before-box"
-                                  onChange={checkboxHandler}
-                                />
-                              </label>
-                            </span>
-                          </Col>
-                        </>
-                        }
-                        <Col md="12">
-                          <TextAreaHookForm
-                            label="Remarks"
-                            name={"remarks"}
-                            Controller={Controller}
-                            control={control}
-                            register={register}
-                            mandatory={false}
-                            handleChange={() => { }}
-                            defaultValue={""}
-                            className=""
-                            customClassName={"withBorder"}
-                            errors={errors.remarks}
-                            disabled={false}
-                          />
-                        </Col>
-                      </Row>
-                    </> :
+                  // isFinalApproverShow === false ?
+                  <>
                     <Row className="px-3">
+                      <Col md="12">
+                        <div className="left-border">{"SAP-Push Details"}</div>
+                      </Col>
+                      <div className="w-100">
+                        <PushSection
+                          Controller={Controller}
+                          register={register}
+                          errors={errors}
+                          control={control}
+                        />
+                      </div>
+                    </Row>
+                    <Row className="px-3">
+                      <Col md="4">
+                        <div className="left-border">{"Approver"}</div>
+                      </Col>
+                    </Row>
+                    <Row className="px-3">
+                      <Col md="6">
+                        <SearchableSelectHookForm
+                          label={`${getConfigurationKey().IsCompanyConfigureOnPlant ? 'Company' : 'Department'}`}
+                          name={"dept"}
+                          placeholder={"Select"}
+                          Controller={Controller}
+                          control={control}
+                          rules={{ required: true }}
+                          register={register}
+                          defaultValue={""}
+                          options={renderDropdownListing("Dept")}
+                          disabled={false}
+                          mandatory={true}
+                          handleChange={handleDepartmentChange}
+                          errors={errors.dept}
+                        />
+                      </Col>
+                      <Col md="6">
+                        <SearchableSelectHookForm
+                          label={"Approver"}
+                          name={"approver"}
+                          placeholder={"Select"}
+                          Controller={Controller}
+                          control={control}
+                          rules={{ required: true }}
+                          register={register}
+                          defaultValue={""}
+                          options={approvalDropDown}
+                          mandatory={true}
+                          disabled={false}
+                          handleChange={handleApproverChange}
+                          errors={errors.approver}
+                        />
+                      </Col>
+                      {
+                        showValidation && <span className="warning-top"><WarningMessage dClass="mt-2" message={'There is no approver added in this department'} /></span>
+                      }
+
+                      {viewApprovalData && viewApprovalData[0]?.costingTypeId === NCCTypeId && <><Col md="6">
+                        <NumberFieldHookForm
+                          label="Quantity"
+                          name={"Quantity"}
+                          Controller={Controller}
+                          control={control}
+                          register={register}
+                          mandatory={true}
+                          rules={{ required: true }}
+                          defaultValue={""}
+                          className=""
+                          customClassName={"withBorder"}
+                          handleChange={handleChangeQuantity}
+                          errors={errors.Quantity}
+                          disabled={false}
+                        />
+                      </Col>
+                        <Col md="6" className="d-flex align-items-center mb-2">
+                          <span className="d-inline-block">
+                            <label
+                              className={`custom-checkbox mb-0`}
+                              onChange={checkboxHandler}>
+                              Regularize
+                              <input
+                                type="checkbox"
+                              />
+                              <span
+                                className=" before-box"
+                                onChange={checkboxHandler}
+                              />
+                            </label>
+                          </span>
+                        </Col>
+                      </>
+                      }
                       <Col md="12">
                         <TextAreaHookForm
                           label="Remarks"
@@ -881,6 +1001,27 @@ const SendForApproval = (props) => {
                         />
                       </Col>
                     </Row>
+                  </>
+                  // :
+                  // <Row className="px-3">
+                  //   <Col md="12">
+                  //     <TextAreaHookForm
+                  //       label="Remarks"
+                  //       name={"remarks"}
+                  //       Controller={Controller}
+                  //       control={control}
+                  //       register={register}
+                  //       mandatory={false}
+                  //       handleChange={() => { }}
+                  //       defaultValue={""}
+                  //       className=""
+                  //       customClassName={"withBorder"}
+                  //       errors={errors.remarks}
+                  //       disabled={false}
+                  //     />
+                  //   </Col>
+                  // </Row>
+
                 }
                 {isRegularize ? (
                   <Row className="mb-4 mx-0">
@@ -896,7 +1037,7 @@ const SendForApproval = (props) => {
                           PreviewComponent={Preview}
                           mandatory={true}
                           //onSubmit={this.handleSubmit}
-                          accept="*"
+                          accept="image/jpeg,image/jpg,image/png,image/PNG,.xls,.doc,.pdf,.xlsx"
                           initialFiles={[]}
                           maxFiles={4}
                           maxSizeBytes={2000000000}
@@ -974,7 +1115,7 @@ const SendForApproval = (props) => {
                       <div className={'cancel-icon'}></div>
                       {"Cancel"}
                     </button>
-                    {viewApprovalData && viewApprovalData[0]?.CostingHead !== NCC && <button type="button" className="user-btn mr5 save-btn" onClick={viewImpactDrawer}>
+                    {viewApprovalData && viewApprovalData[0]?.costingTypeId === VBCTypeId && <button type="button" className="user-btn mr5 save-btn" onClick={viewImpactDrawer}>
                       <div className={"save-icon"}></div>
                       {"Verify Impact"}
                     </button>
@@ -983,7 +1124,8 @@ const SendForApproval = (props) => {
                       className="btn btn-primary save-btn"
                       type="button"
                       // className="submit-button save-btn"
-                      disabled={(isDisable || isFinalApproverShow)}
+                      // disabled={(isDisable || isFinalApproverShow)}
+                      disabled={isDisable}
                       onClick={onSubmit}
                     >
                       <div className={'save-icon'}></div>
@@ -1004,14 +1146,14 @@ const SendForApproval = (props) => {
                 amendmentDetails={costingApprovalDrawerData}
                 vendorIdState={viewApprovalData[0].vendorId}
                 EffectiveDate={DayTime(viewApprovalData[0].effectiveDate).format('YYYY-MM-DD HH:mm:ss')}
-                TypeOfCosting={viewApprovalData[0].typeOfCosting}
+                CostingTypeId={viewApprovalData[0]?.costingTypeId}
               />}
           </div>
         </div>
 
       </Drawer>
 
-    </Fragment>
+    </Fragment >
   );
 }
 

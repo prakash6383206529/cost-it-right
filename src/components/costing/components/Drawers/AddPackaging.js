@@ -3,9 +3,15 @@ import { useForm, Controller, useWatch, } from "react-hook-form";
 import { Container, Row, Col, } from 'reactstrap';
 import { costingInfoContext, netHeadCostContext } from '../CostingDetailStepTwo';
 import Drawer from '@material-ui/core/Drawer';
-import { TextFieldHookForm, SearchableSelectHookForm, NumberFieldHookForm, } from '../../../layout/HookFormInputs';
+import { TextFieldHookForm, SearchableSelectHookForm } from '../../../layout/HookFormInputs';
 import { calculatePercentage, checkForDecimalAndNull, checkForNull, getConfigurationKey, } from '../../../../helper';
 import { useSelector } from 'react-redux';
+import WarningMessage from '../../../common/WarningMessage';
+import { number, percentageLimitValidation, checkWhiteSpaces, hashValidation, decimalNumberLimit6, decimalAndNumberValidationBoolean, NoSignNoDecimalMessage, isNumber } from "../../../../helper/validation";
+import { LOGISTICS, STRINGMAXLENGTH } from '../../../../config/masterData';
+import _ from 'lodash';
+import { MESSAGES } from '../../../../config/message';
+import TooltipCustom from '../../../common/Tooltip';
 
 function IsolateReRender(control) {
   const values = useWatch({
@@ -18,14 +24,15 @@ function IsolateReRender(control) {
 
 function AddPackaging(props) {
 
-  const { rowObjData, isEditFlag } = props;
+  const { rowObjData, isEditFlag, gridData } = props;
 
   const defaultValues = {
     PackagingDetailId: rowObjData && rowObjData.PackagingDetailId !== undefined ? rowObjData.PackagingDetailId : '',
     PackagingDescription: rowObjData && rowObjData.PackagingDescription !== undefined ? rowObjData.PackagingDescription : '',
     PackagingCostPercentage: rowObjData && rowObjData.PackagingCostPercentage !== undefined ? checkForDecimalAndNull(rowObjData.PackagingCostPercentage, getConfigurationKey().NoOfDecimalForPrice) : 0,
     Applicability: rowObjData && rowObjData.Applicability !== undefined ? { label: rowObjData.Applicability, value: rowObjData.Applicability } : [],
-    PackagingCost: rowObjData && rowObjData.PackagingCost !== undefined ? checkForDecimalAndNull(rowObjData.PackagingCost, getConfigurationKey().NoOfDecimalForPrice) : 0,
+    PackagingCost: rowObjData && rowObjData.PackagingCost !== undefined ? checkForDecimalAndNull(rowObjData.PackagingCost, getConfigurationKey().NoOfDecimalForPrice) : '',
+    Cost: rowObjData && rowObjData.PackagingCost !== undefined ? checkForDecimalAndNull(rowObjData.PackagingCost, getConfigurationKey().NoOfDecimalForPrice) : 0,
   }
 
   const { register, handleSubmit, control, setValue, getValues, reset, formState: { errors } } = useForm({
@@ -39,13 +46,24 @@ function AddPackaging(props) {
 
 
   const [applicability, setApplicability] = useState(isEditFlag ? { label: rowObjData.Applicability, value: rowObjData.Applicability } : []);
+  const [freightTypeState, setFreightTypeState] = useState(isEditFlag ? { label: rowObjData.PackagingDescription, value: rowObjData.PackagingDescription } : []);
   // const [PackageType, setPackageType] = useState(isEditFlag ? rowObjData.IsPackagingCostFixed : false);
   const [PackageType, setPackageType] = useState(true);
-  const [packagingCost, setPackagingCost] = useState('')
+  const [packagingCost, setPackagingCost] = useState(0)
   const costingHead = useSelector(state => state.comman.costingHead)
   const { CostingDataList } = useSelector(state => state.costing)
+  const [showCostError, setShowCostError] = useState(false)
+  const [packagingCostDataFixed, setPackagingCostDataFixed] = useState(getValues('PackagingCost') ? getValues('PackagingCost') : '')
+  const [errorMessage, setErrorMessage] = useState('')
 
   const fieldValues = IsolateReRender(control)
+  const { costingData, ComponentItemData } = useSelector(state => state.costing)
+
+  const freightType = [
+    { label: 'Origin THC', value: 'Origin THC' },
+    { label: 'Ocean/Air Freight', value: 'Ocean/Air Freight' },
+    { label: 'Destination THC', value: 'Destination THC' }
+  ]
 
   useEffect(() => {
     if (applicability && applicability.value !== undefined) {
@@ -87,8 +105,16 @@ function AddPackaging(props) {
       });
       return temp;
     }
-
-
+    if (label === 'FrieghtType') {
+      freightType && freightType.map(item => {
+        let array = _.map(gridData, 'PackagingDescription')
+        if (item.value === '0' || array.includes(item.label)) return false;
+        temp.push({ label: item.label, value: item.value })
+        return null;
+      });
+      isEditFlag && temp.push({ label: rowObjData.PackagingDescription, value: rowObjData.PackagingDescription })
+      return temp;
+    }
 
   }
 
@@ -102,6 +128,21 @@ function AddPackaging(props) {
       calculateApplicabilityCost(newValue.label, true)
     } else {
       setApplicability([])
+    }
+    setShowCostError(false)
+    setErrorMessage('')
+  }
+
+  /**
+  * @method handleFrieghtTypeChange
+  * @description  FREIGHT CHANGE HANDLE
+  */
+  const handleFrieghtTypeChange = (newValue) => {
+    if (newValue && newValue !== '') {
+      setFreightTypeState(newValue)
+      calculateApplicabilityCost(newValue.label, true)
+    } else {
+      setFreightTypeState([])
     }
   }
 
@@ -127,6 +168,7 @@ function AddPackaging(props) {
     let totalPackagingCost = 0
     switch (Text) {
       case 'RM':
+      case 'Part Cost':
         if (!PackageType) {
           setValue('PackagingCost', '')
           setPackagingCost('')
@@ -148,6 +190,7 @@ function AddPackaging(props) {
         break;
 
       case 'RM + CC':
+      case 'Part Cost + CC':
         if (!PackageType) {
           setValue('PackagingCost', '')
           setPackagingCost('')
@@ -180,6 +223,7 @@ function AddPackaging(props) {
         break;
 
       case 'RM + CC + BOP':
+      case 'Part Cost + CC + BOP':
         if (!PackageType) {
           setValue('PackagingCost', '')
         } else {
@@ -190,6 +234,7 @@ function AddPackaging(props) {
         break;
 
       case 'RM + BOP':
+      case 'Part Cost + BOP':
         if (!PackageType) {
           setValue('PackagingCost', '')
         } else {
@@ -241,17 +286,52 @@ function AddPackaging(props) {
     reset({ Applicability: '' })
     props.closeDrawer('', {})
   }
-
-  const onSubmit = data => {
-    let formData = {
-      PackagingDetailId: isEditFlag ? rowObjData.PackagingDetailId : '',
-      IsPackagingCostFixed: applicability.label === 'Fixed' ? false : true,
-      PackagingDescription: data.PackagingDescription,
-      PackagingCostFixed: 0,
-      PackagingCostPercentage: PackageType ? data.PackagingCostPercentage : 0,
-      PackagingCost: applicability.label === 'Fixed' ? getValues('PackagingCost') : packagingCost,
-      Applicability: applicability ? data.Applicability.label : '',
+  const packingCostHandler = (e) => {
+    let message = ''
+    if (decimalNumberLimit6(e.target.value)) {
+      setShowCostError(true)
+      message = MESSAGES.OTHER_VALIDATION_ERROR_MESSAGE
+    } else if (!isNumber(e.target.value)) {
+      setShowCostError(true)
+      message = NoSignNoDecimalMessage
+    } else if (e.target.value === '') {
+      setShowCostError(true)
+      message = 'This field is required'
+    } else {
+      setPackagingCostDataFixed(e.target.value)
+      setShowCostError(false)
+      message = ''
     }
+    setErrorMessage(message)
+  }
+  const onSubmit = data => {
+    if (showCostError || (applicability.label === 'Fixed' && (checkForNull(packagingCostDataFixed) === 0 || packagingCostDataFixed === ''))) {
+      setShowCostError(true)
+      return false
+    }
+    let formData
+    if (costingData.TechnologyId === LOGISTICS) {
+      formData = {
+        PackagingDetailId: isEditFlag ? rowObjData.PackagingDetailId : '',
+        IsPackagingCostFixed: true,
+        PackagingDescription: freightTypeState?.label,   // Freight Type as a text
+        PackagingCostFixed: getValues('Cost'),
+        PackagingCostPercentage: 0,
+        PackagingCost: getValues('Cost'),
+        Applicability: 'Fixed',
+      }
+    } else {
+      formData = {
+        PackagingDetailId: isEditFlag ? rowObjData.PackagingDetailId : '',
+        IsPackagingCostFixed: applicability.label === 'Fixed' ? false : true,
+        PackagingDescription: data.PackagingDescription,
+        PackagingCostFixed: 0,
+        PackagingCostPercentage: PackageType ? data.PackagingCostPercentage : 0,
+        PackagingCost: applicability.label === 'Fixed' ? getValues('PackagingCost') : packagingCost,
+        Applicability: applicability ? data.Applicability.label : '',
+      }
+    }
+
     toggleDrawer('', formData)
   }
 
@@ -269,7 +349,8 @@ function AddPackaging(props) {
             <Row className="drawer-heading">
               <Col>
                 <div className={'header-wrapper left'}>
-                  <h3>{isEditFlag ? 'Update Packaging' : 'Add Packaging'}</h3>
+                  <h3>{costingData.TechnologyId === LOGISTICS ? (isEditFlag ? 'Update Freight' : 'Add Freight')
+                    : (isEditFlag ? 'Update Packaging' : 'Add Packaging')}</h3>
                 </div>
                 <div
                   onClick={(e) => toggleDrawer(e)}
@@ -303,7 +384,7 @@ function AddPackaging(props) {
                       <div className={'right-title'}>{'Percentage'}</div>
                     </label>
                   </Col> */}
-                  <Col md="12">
+                  {costingData.TechnologyId !== LOGISTICS && <Col md="12">
                     <TextFieldHookForm
                       label="Packaging Description"
                       name={'PackagingDescription'}
@@ -313,10 +394,8 @@ function AddPackaging(props) {
                       mandatory={true}
                       rules={{
                         required: true,
-                        maxLength: {
-                          value: 80,
-                          message: 'Length should not be more than 80'
-                        },
+                        validate: { checkWhiteSpaces, hashValidation },
+                        maxLength: 80
                       }}
                       handleChange={() => { }}
                       defaultValue={''}
@@ -325,8 +404,8 @@ function AddPackaging(props) {
                       errors={errors.PackagingDescription}
                       disabled={isEditFlag ? true : false}
                     />
-                  </Col>
-                  <Col md="12">
+                  </Col>}
+                  {costingData.TechnologyId !== LOGISTICS && <Col md="12">
                     <SearchableSelectHookForm
                       label={'Applicability'}
                       name={'Applicability'}
@@ -342,7 +421,7 @@ function AddPackaging(props) {
                       errors={errors.Applicability}
                       disabled={!PackageType ? true : false}
                     />
-                  </Col>
+                  </Col>}
                   {/* {
                     applicability.label === 'Fixed'?
                     <Col md="12">
@@ -370,11 +449,53 @@ function AddPackaging(props) {
                   </Col>:
 
                   } */}
-                  {
-                    applicability.label !== 'Fixed' &&
+
+                  {costingData.TechnologyId === LOGISTICS && <>
+                    <Col md="12">
+                      <TooltipCustom id="freight" tooltipText="Terminal Handling Charges" />
+                      <SearchableSelectHookForm
+                        label={'Charges'}
+                        name={'FrieghtType'}
+                        placeholder={'Select'}
+                        Controller={Controller}
+                        control={control}
+                        rules={{ required: PackageType ? true : false }}
+                        register={register}
+                        defaultValue={freightTypeState.length !== 0 ? freightTypeState : ''}
+                        options={renderListing('FrieghtType')}
+                        mandatory={PackageType ? true : false}
+                        handleChange={handleFrieghtTypeChange}
+                        errors={errors.FrieghtType}
+                        disabled={!PackageType ? true : false}
+                      />
+                    </Col>
 
                     <Col md="12">
-                      <NumberFieldHookForm
+                      <TextFieldHookForm
+                        label="Cost"
+                        name={'Cost'}
+                        Controller={Controller}
+                        control={control}
+                        register={register}
+                        mandatory={true}
+                        rules={{
+                          required: true,
+                          validate: { number, checkWhiteSpaces, decimalNumberLimit6 }
+                        }}
+                        handleChange={() => { }}
+                        defaultValue={0}
+                        className=""
+                        customClassName={'withBorder'}
+                        errors={errors.Cost}
+                        disabled={false}
+                      />
+                    </Col>
+                  </>}
+
+                  {costingData.TechnologyId !== LOGISTICS &&
+                    applicability.label !== 'Fixed' &&
+                    <Col md="12">
+                      <TextFieldHookForm
                         label="Packaging Percentage"
                         name={'PackagingCostPercentage'}
                         Controller={Controller}
@@ -383,13 +504,10 @@ function AddPackaging(props) {
                         mandatory={PackageType ? true : false}
                         rules={{
                           required: PackageType ? true : false,
-                          pattern: {
-                            value: PackageType ? /^\d*\.?\d*$/ : '',
-                            message: PackageType ? 'Invalid Number.' : '',
-                          },
+                          validate: { number, checkWhiteSpaces, percentageLimitValidation },
                           max: {
                             value: 100,
-                            message: 'Percentage should be less than 100'
+                            message: 'Percentage cannot be greater than 100'
                           },
                         }}
                         handleChange={() => { }}
@@ -404,29 +522,28 @@ function AddPackaging(props) {
 
 
 
-                  <Col md="12">
+                  {costingData.TechnologyId !== LOGISTICS && <Col md="12">
                     <TextFieldHookForm
                       label="Packaging Cost"
                       name={'PackagingCost'}
                       Controller={Controller}
                       control={control}
                       register={register}
-                      mandatory={true}
-                      rules={{
-                        required: true,
-                        pattern: {
-                          value: /^[0-9]\d*(\.\d+)?$/i,
-                          message: 'Invalid Number.'
-                        },
-                      }}
-                      handleChange={() => { }}
+                      mandatory={applicability.label === 'Fixed' ? true : false}
+                      // rules={{
+                      //   required: true,
+                      //   validate: { number, checkWhiteSpaces, decimalNumberLimit6 }
+                      // }}
+                      handleChange={packingCostHandler}
                       defaultValue={''}
                       className=""
-                      customClassName={'withBorder'}
+                      customClassName={'withBorder mb-0'}
                       errors={errors.PackagingCost}
                       disabled={applicability.label === 'Fixed' ? false : true}
                     />
+                    {applicability.label === 'Fixed' && (showCostError) && <WarningMessage dClass={"error-message"} textClass={"pl-0"} message={errorMessage} />}
                   </Col>
+                  }
                 </Row>
 
                 <Row className="sf-btn-footer no-gutters justify-content-between ml-0">

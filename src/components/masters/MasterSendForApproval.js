@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { checkForDecimalAndNull, getConfigurationKey, loggedInUserId, userDetails, labelWithUOMAndCurrency, displayUOM } from '../../helper';
+import { checkForDecimalAndNull, getConfigurationKey, loggedInUserId, userDetails, labelWithUOMAndCurrency, displayUOM, userSimulationTechnologyLevelDetails } from '../../helper';
 import { approvalOrRejectRequestByMasterApprove, getAllMasterApprovalDepartment, getAllMasterApprovalUserByDepartment, masterApprovalRequestBySender } from './actions/Material';
 import { masterApprovalRequestBySenderBop } from './actions/BoughtOutParts'
 import { masterApprovalRequestBySenderOperation } from './actions/OtherOperation'
@@ -16,9 +16,13 @@ import { getReasonSelectList } from '../costing/actions/Approval';
 import DayTime from '../common/DayTimeWrapper'
 import DatePicker from "react-datepicker";
 import { EMPTY_GUID } from '../../config/constants';
+import { getUsersMasterLevelAPI } from '../../actions/auth/AuthActions';
+import { REMARKMAXLENGTH } from '../../config/masterData';
+import { costingTypeIdToApprovalTypeIdFunction } from '../common/CommonFunctions';
+import { masterApprovalRequestBySenderBudget } from './actions/Budget';
 
 function MasterSendForApproval(props) {
-    const { type, IsFinalLevel, IsPushDrawer, reasonId, masterId, approvalObj, isBulkUpload, IsImportEntery, approvalDetails, IsFinalLevelButtonShow, approvalData } = props
+    const { type, IsFinalLevel, IsPushDrawer, reasonId, masterId, approvalObj, isBulkUpload, IsImportEntery, approvalDetails, IsFinalLevelButtonShow, approvalData, levelDetails } = props
 
 
     const { register, control, formState: { errors }, handleSubmit, setValue, getValues, reset, } = useForm({
@@ -61,8 +65,9 @@ function MasterSendForApproval(props) {
 
             let obj = {
                 LoggedInUserId: loggedInUserId(),
-                DepartmentId: departObj[0].Value,
+                DepartmentId: departObj && departObj[0]?.Value,
                 MasterId: masterId,
+                ApprovalTypeId: costingTypeIdToApprovalTypeIdFunction(props?.costingTypeId),
                 ReasonId: reasonId
             }
 
@@ -83,9 +88,7 @@ function MasterSendForApproval(props) {
                         return null
                     })
                 setApprovalDropDown(tempDropdownList)
-            },
-            ),
-            )
+            },),)
         }))
     }, [])
 
@@ -126,23 +129,23 @@ function MasterSendForApproval(props) {
             LoggedInUserId: loggedInUserId(), // user id
             DepartmentId: value.value,
             MasterId: masterId,
-            ReasonId: ''
+            ReasonId: '',
+            ApprovalTypeId: costingTypeIdToApprovalTypeIdFunction(props?.costingTypeId),
         }
-        dispatch(
-            getAllMasterApprovalUserByDepartment(obj, (res) => {
-                res.data.DataList &&
-                    res.data.DataList.map((item) => {
-                        if (item.Value === '0') return false;
-                        tempDropdownList.push({
-                            label: item.Text,
-                            value: item.Value,
-                            levelId: item.LevelId,
-                            levelName: item.LevelName
-                        })
-                        return null
+        dispatch(getAllMasterApprovalUserByDepartment(obj, (res) => {
+            res.data.DataList &&
+                res.data.DataList.map((item) => {
+                    if (item.Value === '0') return false;
+                    tempDropdownList.push({
+                        label: item.Text,
+                        value: item.Value,
+                        levelId: item.LevelId,
+                        levelName: item.LevelName
                     })
-                setApprovalDropDown(tempDropdownList)
-            }),
+                    return null
+                })
+            setApprovalDropDown(tempDropdownList)
+        }),
         )
 
     }
@@ -168,21 +171,23 @@ function MasterSendForApproval(props) {
             senderObj.ApproverLevel = approver && approver.levelName ? approver.levelName : ''
             senderObj.ApproverDepartmentName = dept && dept.label ? dept.label : ''
             senderObj.ApproverId = approver && approver.value ? approver.value : ''
-            senderObj.SenderLevelId = userDetails().LoggedInMasterLevelId
+            senderObj.SenderLevelId = levelDetails.LevelId
             senderObj.SenderId = loggedInUserId()
-            senderObj.SenderLevel = userDetails().LoggedInMasterLevel
+            senderObj.SenderLevel = levelDetails.Level
             senderObj.SenderRemark = remark
             senderObj.LoggedInUserId = loggedInUserId()
             senderObj.IsVendor = approvalObj && Object.keys(approvalObj).length > 0 ? approvalObj.IsVendor : false
             senderObj.EffectiveDate = approvalObj && Object.keys(approvalObj).length > 0 ? approvalObj.EffectiveDate : DayTime(new Date()).format('YYYY-MM-DD HH:mm:ss')
             senderObj.PurchasingGroup = ''
             senderObj.MaterialGroup = ''
+            senderObj.CostingTypeId = props?.costingTypeId
+            senderObj.ApprovalTypeId = costingTypeIdToApprovalTypeIdFunction(props?.costingTypeId)
             let tempArray = []
             switch (masterId) {
                 case 1:                        // CASE 1 FOR RAW MATERIAL
                     if (isBulkUpload) {
                         approvalData && approvalData.map(item => {
-                            tempArray.push({ RawMaterialId: item.RawMaterialId, IsImportEntery: item.EnteryType === 'Domestic' ? false : true, RawMaterialRequest: {} })
+                            tempArray.push({ RawMaterialId: item.RawMaterialId, IsImportEntery: item.EnteryType === 'Domestic' ? false : true, RawMaterialRequest: {}, CostingTypeId: item.CostingTypeId })
                             return null
                         })
                     } else {
@@ -207,7 +212,7 @@ function MasterSendForApproval(props) {
 
                     if (isBulkUpload) {
                         approvalData && approvalData.map(item => {
-                            tempArray.push({ BoughtOutPartId: item.BoughtOutPartId, IsImportEntery: item.EnteryType === 'Domestic' ? false : true, BoughtoutPartRequest: {} })
+                            tempArray.push({ BoughtOutPartId: item.BoughtOutPartId, IsImportEntery: item.EnteryType === 'Domestic' ? false : true, BoughtoutPartRequest: {}, CostingTypeId: item.CostingTypeId })
                             return null
                         })
                     } else {
@@ -219,7 +224,7 @@ function MasterSendForApproval(props) {
                     dispatch(masterApprovalRequestBySenderBop(senderObj, res => {
                         setIsDisable(false)
                         if (res?.data?.Result) {
-                            Toaster.success('BOP has been sent for approval.')
+                            Toaster.success('Insert has been sent for approval.')
                             props.closeDrawer('', 'submit')
                         }
                     }))
@@ -230,7 +235,7 @@ function MasterSendForApproval(props) {
 
                     if (isBulkUpload) {
                         approvalData && approvalData.map(item => {
-                            tempArray.push({ OperationId: item.OperationId, IsImportEntery: item.EnteryType === 'Domestic' ? false : true, OperationRequest: {} })
+                            tempArray.push({ OperationId: item.OperationId, IsImportEntery: item.EnteryType === 'Domestic' ? false : true, OperationRequest: {}, CostingTypeId: item.CostingTypeId })
                             return null
                         })
                     } else {
@@ -253,7 +258,7 @@ function MasterSendForApproval(props) {
 
                     if (isBulkUpload) {
                         approvalData && approvalData.map(item => {
-                            tempArray.push({ MachineId: item.MachineId, IsImportEntery: item.EnteryType === 'Domestic' ? false : true, MachineRequest: {} })
+                            tempArray.push({ MachineId: item.MachineId, IsImportEntery: item.EnteryType === 'Domestic' ? false : true, MachineRequest: {}, CostingTypeId: item.CostingTypeId })
                             return null
                         })
                     } else {
@@ -271,7 +276,24 @@ function MasterSendForApproval(props) {
                     }))
                     break;
 
+                case 5:  //CASE 5 FOR BUDGET MASTER
 
+
+                    tempArray.push({
+                        BudgetingId: 0,
+                        BudgetingRequest: approvalObj,
+                    })
+
+                    senderObj.EntityList = tempArray
+                    //THIS CONDITION IS FOR SIMULATION SEND FOR APPROVAL
+                    dispatch(masterApprovalRequestBySenderBudget(senderObj, res => {
+                        setIsDisable(false)
+                        if (res?.data?.Result) {
+                            Toaster.success('Budget has been sent for approval.')
+                            props.closeDrawer('', 'submit')
+                        }
+                    }))
+                    break;
                 default:
                     break;
             }
@@ -283,9 +305,9 @@ function MasterSendForApproval(props) {
             obj.ApprovalProcessId = approvalDetails.ApprovalProcessId
             obj.ApprovalToken = approvalDetails.Token
             obj.LoggedInUserId = loggedInUserId()
-            obj.SenderLevelId = userDetails().LoggedInMasterLevelId
+            obj.SenderLevelId = levelDetails.LevelId
             obj.SenderId = loggedInUserId()
-            obj.SenderLevel = userDetails().LoggedInMasterLevel
+            obj.SenderLevel = levelDetails.Level
             obj.SenderDepartmentId = dept && dept.value ? dept.value : ''
             obj.SenderDepartmentName = dept && dept.label ? dept.label : ''
             obj.ApproverId = approver && approver.value ? approver.value : ''
@@ -328,11 +350,13 @@ function MasterSendForApproval(props) {
             case 1:
                 return "Raw Material"
             case 2:
-                return "Bought Out Part"
+                return "Insert"
             case 3:
                 return "Operation"
             case 4:
                 return "Machine"
+            case 5:
+                return "Budgeting"
             default:
                 break;
         }
@@ -432,7 +456,6 @@ function MasterSendForApproval(props) {
                                                             showMonthDropdown
                                                             showYearDropdown
                                                             dateFormat="dd/MM/yyyy"
-                                                            dropdownMode="select"
                                                             placeholderText="-"
                                                             className="withBorder"
                                                             autoComplete={"off"}
@@ -539,7 +562,6 @@ function MasterSendForApproval(props) {
                                                             showMonthDropdown
                                                             showYearDropdown
                                                             dateFormat="dd/MM/yyyy"
-                                                            dropdownMode="select"
                                                             placeholderText="-"
                                                             className="withBorder"
                                                             autoComplete={"off"}
@@ -641,7 +663,6 @@ function MasterSendForApproval(props) {
                                                             showMonthDropdown
                                                             showYearDropdown
                                                             dateFormat="dd/MM/yyyy"
-                                                            dropdownMode="select"
                                                             placeholderText="-"
                                                             className="withBorder"
                                                             autoComplete={"off"}
@@ -685,7 +706,6 @@ function MasterSendForApproval(props) {
                                                             showMonthDropdown
                                                             showYearDropdown
                                                             dateFormat="dd/MM/yyyy"
-                                                            dropdownMode="select"
                                                             placeholderText="-"
                                                             className="withBorder"
                                                             autoComplete={"off"}
@@ -731,7 +751,10 @@ function MasterSendForApproval(props) {
                                         control={control}
                                         register={register}
                                         mandatory={type === 'Approve' ? false : true}
-                                        rules={{ required: type === 'Approve' ? false : true }}
+                                        rules={{
+                                            required: type === 'Approve' ? false : true,
+                                            maxLength: REMARKMAXLENGTH
+                                        }}
                                         handleChange={() => { }}
                                         className=""
                                         customClassName={'withBorder'}

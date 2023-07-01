@@ -11,6 +11,7 @@ import {
     GET_MANAGE_SPECIFICATION, GET_UNASSOCIATED_RM_NAME_SELECTLIST, SET_FILTERED_RM_DATA, GET_ALL_MASTER_APPROVAL_DEPARTMENT, GET_RM_APPROVAL_LIST, GET_ALL_RM_DOMESTIC_LIST
 } from '../../../config/constants';
 import { userDetails, checkForDecimalAndNull, getConfigurationKey } from '../../../helper';
+import { tokenStatus, tokenStatusName } from '../../../config/masterData';
 
 const initialState = {
     filterRMSelectList: {}
@@ -361,7 +362,6 @@ export default function materialReducer(state = initialState, action) {
             if (action?.payload[0]?.OperationId !== undefined && action?.payload[0]?.OperationId !== null) {
                 array = action.payload && action.payload.filter((item) => {
                     return (item.TechnologyName = item.Technology,
-                        item.UOM = item.UnitOfMeasurement,
                         item.BasicRate = item.Rate
 
                     )
@@ -389,15 +389,52 @@ export default function materialReducer(state = initialState, action) {
             }
             else if (action?.payload[0]?.BoughtOutPartId !== undefined && action?.payload[0]?.BoughtOutPartId !== null) {
                 array = action.payload && action.payload.filter((item) => {
-                    return (
-                        item.NetLandedCost = checkForDecimalAndNull(item.NetLandedCost, getConfigurationKey()?.NoOfDecimalForPrice),
-                        item.BasicRate = checkForDecimalAndNull(item.BasicRate, getConfigurationKey()?.NoOfDecimalForPrice),
-                        item.IncoTermDescriptionAndInfoTerm = `${item.IncoTermDescription ? `${item.IncoTermDescription}` : ''} ${item.IncoTerm ? `(${item.IncoTerm})` : '-'}`,
-                        item.PaymentTermDescriptionAndPaymentTerm = `${item.PaymentTermDescription ? `${item.PaymentTermDescription}` : ''} ${item.PaymentTerm ? `(${item.PaymentTerm})` : '-'}`
-                    )
+                    item.NetLandedCost = checkForDecimalAndNull(item.NetLandedCost, getConfigurationKey()?.NoOfDecimalForPrice)
+                    item.BasicRate = checkForDecimalAndNull(item.BasicRate, getConfigurationKey()?.NoOfDecimalForPrice)
+                    item.IncoTermDescriptionAndInfoTerm = `${item.IncoTermDescription ? `${item.IncoTermDescription}` : ''} ${item.IncoTerm ? `(${item.IncoTerm})` : '-'}`
+                    item.PaymentTermDescriptionAndPaymentTerm = `${item.PaymentTermDescription ? `${item.PaymentTermDescription}` : ''} ${item.PaymentTerm ? `(${item.PaymentTerm})` : '-'}`
+                    return item
                 })
             }
+            array = action.payload.map(item => {
+                item.TooltipText = '';
+                switch (item.Status) {
+                    case tokenStatusName.AWAITING_FOR_APPROVAL:
+                        item.TooltipText = tokenStatus.AwaitingForApproval;
+                        break;
+                    case tokenStatusName.PENDING_FOR_APPROVAL:
+                        item.TooltipText = tokenStatus.PendingForApproval;
+                        break;
+                    case tokenStatusName.DRAFT:
+                        item.TooltipText = tokenStatus.Draft;
+                        break;
+                    case tokenStatusName.APPROVED:
+                        item.TooltipText = tokenStatus.Approved;
+                        break;
+                    case tokenStatusName.REJECTED:
+                        item.TooltipText = tokenStatus.Rejected;
+                        break;
+                    case tokenStatusName.PUSHED:
+                        item.TooltipText = tokenStatus.Pushed;
+                        break;
+                    case tokenStatusName.ERROR:
+                        item.TooltipText = tokenStatus.Error;
+                        break;
+                    case tokenStatusName.HISTORY:
+                        item.TooltipText = tokenStatus.History;
+                        break;
+                    case tokenStatusName.LINKED:
+                        item.TooltipText = tokenStatus.Linked;
+                        break;
+                    case tokenStatusName.PROVISIONAL:
+                        item.TooltipText = tokenStatus.Provisional;
+                        break;
 
+                    default:
+                        break;
+                }
+                return item
+            })
             if (array.length === 0) {
                 array = action.payload
             }

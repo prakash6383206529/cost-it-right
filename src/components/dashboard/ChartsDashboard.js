@@ -9,15 +9,27 @@ const color7 = "#D6DDEB";
 // graph colors end
 
 // graph colors start
-export const graphColor1 = "#F199CE";
-export const graphColor2 = "#78AAD8";
-export const graphColor3 = "#73B0F4";
-export const graphColor4 = "#3E88CB";
-export const graphColor5 = "#B1CEEE";
-export const graphColor6 = "#76E2C5";
-export const graphColor7 = "#D6DDEB";
+export const primaryColor = '#0072B2';
+export const secondryColor = '#E69F00';
+export const graphColor1 = "#009E73";
+export const graphColor2 = "#D55E00";
+export const graphColor3 = "#CC79A7";
+export const graphColor4 = "#F0E442";
+export const graphColor5 = "#56B4E9";
+export const graphColor6 = "#FFA500";
+export const graphColor7 = "#00CC99";
+export const graphColor8 = "#8A2BE2";
+export const graphColor9 = "#6B8E23";
+export const graphColor10 = "#1E90FF";
+export const graphColor11 = "#8B008B";
+export const graphColor12 = "#32CD32";
+export const graphColor13 = "#BA55D3";
+export const graphColor14 = "#ADFF2F";
+export const graphColor15 = "#9932CC";
+export const graphColor16 = "#FFD700";
 // graph colors end
 
+export const colorArray = ['#0072B2', '#E69F00', '#009E73', '#D55E00', '#CC79A7', '#9932CC', '#FFD700', '#8B4513', '#00CED1', '#A0522D', '#4682B4', '#CD853F', '#6495ED', '#FF4500', '#2E8B57', '#6A5ACD', '#FF6347','#F0E442', '#56B4E9', '#FFA500', '#00CC99', '#FF7F50', '#8A2BE2', '#6B8E23', '#1E90FF', '#8B008B', '#32CD32', '#BA55D3', '#ADFF2F',  '#5F9EA0', '#DA70D6', '#3CB371', '#9370DB', '#98FB98', '#8B008B', '#48D1CC', '#7FFF00', '#8B0000', '#AFEEEE', '#CD5C5C', '#F08080'];
 
 // graph 1 (Cost Movement by Cost Drivers) dashboard  
 export const options1 = {
@@ -210,7 +222,7 @@ export const data4 = {
         '#fff',
         '#fff',
       ],
-      borderWidth: 2,
+      borderWidth: 1,
     },
   ],
 };

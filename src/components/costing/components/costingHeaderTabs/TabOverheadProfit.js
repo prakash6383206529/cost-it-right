@@ -2,19 +2,24 @@ import React, { useState, useEffect, useContext } from 'react';
 import { useForm, } from "react-hook-form";
 import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, Table, } from 'reactstrap';
-import { getOverheadProfitTabData, isOverheadProfitDataChange, setOverheadProfitData, setSurfaceCostInOverheadProfit } from '../../actions/Costing';
+import { getOverheadProfitTabData, isOverheadProfitDataChange, setOverheadProfitData, setSurfaceCostInOverheadProfit, setSurfaceCostInOverheadProfitRejection, setToolCostInOverheadProfit } from '../../actions/Costing';
 import { costingInfoContext, } from '../CostingDetailStepTwo';
 import { checkForNull, } from '../../../../helper';
 import PartOverheadProfit from '../CostingHeadCosts/OverheadProfit/PartOverheadProfit';
 import AssemblyOverheadProfit from '../CostingHeadCosts/OverheadProfit/AssemblyOverheadProfit';
 import { LEVEL0 } from '../../../../config/constants';
 import { ViewCostingContext } from '../CostingDetails';
+import Toaster from '../../../common/Toaster';
 
 function TabOverheadProfit(props) {
 
   const { handleSubmit, } = useForm();
   const [IsIncludeSurfaceTreatment, setIsIncludeSurfaceTreatment] = useState(false);
+  const [IsIncludeSurfaceTreatmentRejection, setIsIncludeSurfaceTreatmentRejection] = useState(false);
+  const [IsIncludeToolCost, setIsIncludeToolCost] = useState(false);
   const [isPressedST, setIsPressST] = useState(false)
+  const [isPressedSTRejection, setIsPressSTRejection] = useState(false)
+  const [isPressedToolCost, setIsPressToolCost] = useState(false)
   const dispatch = useDispatch()
   const costData = useContext(costingInfoContext);
   const CostingViewMode = useContext(ViewCostingContext);
@@ -30,22 +35,39 @@ function TabOverheadProfit(props) {
   }, [costData]);
 
   const OverheadProfitTabData = useSelector(state => state.costing.OverheadProfitTabData)
+  const { ToolTabData } = useSelector(state => state.costing)
 
   useEffect(() => {
+
     if (OverheadProfitTabData && OverheadProfitTabData.length > 0) {
       if (OverheadProfitTabData[0].IsIncludeSurfaceTreatmentWithOverheadAndProfit !== null && !isPressedST) {
 
         setIsIncludeSurfaceTreatment(OverheadProfitTabData[0].IsIncludeSurfaceTreatmentWithOverheadAndProfit)
+        dispatch(setSurfaceCostInOverheadProfit(OverheadProfitTabData[0].IsIncludeSurfaceTreatmentWithOverheadAndProfit, () => { }))
+      }
+    }
+    if (OverheadProfitTabData && OverheadProfitTabData.length > 0) {
+      if (OverheadProfitTabData[0].IsIncludeSurfaceTreatmentWithRejection !== null && !isPressedSTRejection) {
+
+        setIsIncludeSurfaceTreatmentRejection(OverheadProfitTabData[0].IsIncludeSurfaceTreatmentWithRejection)
+
+      }
+
+      if (OverheadProfitTabData[0].IsIncludeToolCostWithOverheadAndProfit !== null && !isPressedToolCost) {
+        setIsIncludeToolCost(OverheadProfitTabData[0].IsIncludeToolCostWithOverheadAndProfit)
+        dispatch(setToolCostInOverheadProfit(OverheadProfitTabData[0].IsIncludeToolCostWithOverheadAndProfit, () => { }))
+
       }
     }
   }, [OverheadProfitTabData])
+
 
 
   //MANIPULATE TOP HEADER COSTS
   useEffect(() => {
     // CostingViewMode CONDITION IS USED TO AVOID CALCULATION IN VIEWMODE
     if (CostingViewMode === false) {
-      let TopHeaderValues = OverheadProfitTabData && OverheadProfitTabData.length > 0 && OverheadProfitTabData[0].CostingPartDetails !== undefined ? OverheadProfitTabData[0].CostingPartDetails : null;
+      let TopHeaderValues = OverheadProfitTabData && OverheadProfitTabData.length > 0 && OverheadProfitTabData[0]?.CostingPartDetails !== undefined ? OverheadProfitTabData[0]?.CostingPartDetails : null;
       let topHeaderData = {
         NetOverheadProfitCost: TopHeaderValues && (checkForNull(TopHeaderValues.OverheadCost) +
           checkForNull(TopHeaderValues.ProfitCost) +
@@ -206,9 +228,9 @@ function TabOverheadProfit(props) {
           i.CostingPartDetails.CostingProfitDetail = profitObj;
           i.CostingPartDetails.OverheadCost = OverheadCost;
           i.CostingPartDetails.ProfitCost = ProfitCost;
-          i.CostingPartDetails.NetOverheadAndProfitCost = OverheadCost + ProfitCost + checkForNull(i.CostingPartDetails.RejectionCost) +
-            checkForNull(i.CostingPartDetails.ICCCost) +
-            checkForNull(i.CostingPartDetails.PaymentTermCost);
+          i.CostingPartDetails.NetOverheadAndProfitCost = OverheadCost + ProfitCost + checkForNull(i?.CostingPartDetails?.RejectionCost) +
+            checkForNull(i?.CostingPartDetails?.ICCCost) +
+            checkForNull(i?.CostingPartDetails?.PaymentTermCost);
           i.CostingPartDetails.TotalOverheadAndProfitPerAssembly = OverheadCost + ProfitCost;
           i.CostingPartDetails.ModelType = modelType.label;
           i.CostingPartDetails.ModelTypeId = modelType.value;
@@ -221,9 +243,9 @@ function TabOverheadProfit(props) {
           i.CostingPartDetails.CostingProfitDetail = profitObj;
           i.CostingPartDetails.OverheadCost = OverheadCost;
           i.CostingPartDetails.ProfitCost = ProfitCost;
-          i.CostingPartDetails.NetOverheadAndProfitCost = OverheadCost + ProfitCost + checkForNull(i.CostingPartDetails.RejectionCost) +
-            checkForNull(i.CostingPartDetails.ICCCost) +
-            checkForNull(i.CostingPartDetails.PaymentTermCost);
+          i.CostingPartDetails.NetOverheadAndProfitCost = OverheadCost + ProfitCost + checkForNull(i?.CostingPartDetails?.RejectionCost) +
+            checkForNull(i?.CostingPartDetails?.ICCCost) +
+            checkForNull(i?.CostingPartDetails?.PaymentTermCost);
           i.CostingPartDetails.TotalOverheadAndProfitPerAssembly = OverheadCost + ProfitCost;
           i.CostingPartDetails.ModelType = modelType.label;
           i.CostingPartDetails.ModelTypeId = modelType.value;
@@ -273,9 +295,9 @@ function TabOverheadProfit(props) {
 
           i.CostingPartDetails.CostingProfitDetail = profitObj;
           i.CostingPartDetails.ProfitCost = ProfitCost;
-          i.CostingPartDetails.NetOverheadAndProfitCost = OverheadCost + ProfitCost + checkForNull(i.CostingPartDetails.RejectionCost) +
-            checkForNull(i.CostingPartDetails.ICCCost) +
-            checkForNull(i.CostingPartDetails.PaymentTermCost);
+          i.CostingPartDetails.NetOverheadAndProfitCost = OverheadCost + ProfitCost + checkForNull(i?.CostingPartDetails?.RejectionCost) +
+            checkForNull(i?.CostingPartDetails?.ICCCost) +
+            checkForNull(i?.CostingPartDetails?.PaymentTermCost);
           i.CostingPartDetails.TotalOverheadAndProfitPerAssembly = OverheadCost + ProfitCost;
 
           formatData(data, params, i.CostingChildPartDetails)
@@ -284,9 +306,9 @@ function TabOverheadProfit(props) {
 
           i.CostingPartDetails.CostingProfitDetail = profitObj;
           i.CostingPartDetails.ProfitCost = ProfitCost;
-          i.CostingPartDetails.NetOverheadAndProfitCost = OverheadCost + ProfitCost + checkForNull(i.CostingPartDetails.RejectionCost) +
-            checkForNull(i.CostingPartDetails.ICCCost) +
-            checkForNull(i.CostingPartDetails.PaymentTermCost);
+          i.CostingPartDetails.NetOverheadAndProfitCost = OverheadCost + ProfitCost + checkForNull(i?.CostingPartDetails?.RejectionCost) +
+            checkForNull(i?.CostingPartDetails?.ICCCost) +
+            checkForNull(i?.CostingPartDetails?.PaymentTermCost);
           i.CostingPartDetails.TotalOverheadAndProfitPerAssembly = OverheadCost + ProfitCost;
 
         } else {
@@ -325,22 +347,22 @@ function TabOverheadProfit(props) {
         if (i.IsAssemblyPart === true) {
           i.CostingPartDetails.CostingRejectionDetail = rejectionObj;
           i.CostingPartDetails.RejectionCost = rejectionObj.RejectionTotalCost;
-          // i.CostingPartDetails.NetOverheadAndProfitCost = checkForNull(i.CostingPartDetails.OverheadCost) +
-          //   checkForNull(i.CostingPartDetails.ProfitCost) +
-          //   checkForNull(rejectionObj.RejectionTotalCost) +
-          //   checkForNull(i.CostingPartDetails.ICCCost) +
-          //   checkForNull(i.CostingPartDetails.PaymentTermCost);
+          i.CostingPartDetails.NetOverheadAndProfitCost = checkForNull(i?.CostingPartDetails?.OverheadCost) +     // IF PROBLEM IN TOTAL COST OF OVERHEAD PROFIT TAB COMMENT THIS
+            checkForNull(i?.CostingPartDetails?.ProfitCost) +
+            checkForNull(rejectionObj.RejectionTotalCost) +
+            checkForNull(i?.CostingPartDetails?.ICCCost) +
+            checkForNull(i?.CostingPartDetails?.PaymentTermCost);
 
           formatData(rejectionObj, params, i.CostingChildPartDetails)
 
         } else if (i.PartNumber === params.PartNumber && i.BOMLevel === params.BOMLevel) {
           i.CostingPartDetails.CostingRejectionDetail = rejectionObj;
           i.CostingPartDetails.RejectionCost = rejectionObj.RejectionTotalCost;
-          // i.CostingPartDetails.NetOverheadAndProfitCost = checkForNull(i.CostingPartDetails.OverheadCost) +
-          //   checkForNull(i.CostingPartDetails.ProfitCost) +
-          //   checkForNull(rejectionObj.RejectionTotalCost) +
-          //   checkForNull(i.CostingPartDetails.ICCCost) +
-          //   checkForNull(i.CostingPartDetails.PaymentTermCost);
+          i.CostingPartDetails.NetOverheadAndProfitCost = checkForNull(i?.CostingPartDetails?.OverheadCost) +
+            checkForNull(i?.CostingPartDetails?.ProfitCost) +
+            checkForNull(rejectionObj.RejectionTotalCost) +
+            checkForNull(i?.CostingPartDetails?.ICCCost) +
+            checkForNull(i?.CostingPartDetails?.PaymentTermCost);
 
         } else {
           i.IsOpen = false;
@@ -378,16 +400,16 @@ function TabOverheadProfit(props) {
 
           i.CostingPartDetails.ICCCost = ICCObj && ICCObj.NetCost ? checkForNull(ICCObj.NetCost) : 0;
           i.CostingPartDetails.CostingInterestRateDetail = {
-            ...i.CostingPartDetails.CostingInterestRateDetail,
+            ...i?.CostingPartDetails?.CostingInterestRateDetail,
             ICCApplicabilityDetail: ICCObj,
             IsInventoryCarringCost: ICCObj && ICCObj.NetCost ? true : false,
             NetICC: ICCObj && ICCObj.NetCost ? checkForNull(ICCObj.NetCost) : 0,
           };
-          // i.CostingPartDetails.NetOverheadAndProfitCost = checkForNull(i.CostingPartDetails.OverheadCost) +
-          //   checkForNull(i.CostingPartDetails.ProfitCost) +
-          //   checkForNull(i.CostingPartDetails.RejectionCost) +
+          // i?.CostingPartDetails?.NetOverheadAndProfitCost = checkForNull(i?.CostingPartDetails?.OverheadCost) +
+          //   checkForNull(i?.CostingPartDetails?.ProfitCost) +
+          //   checkForNull(i?.CostingPartDetails?.RejectionCost) +
           //   checkForNull(ICCObj.NetCost) +
-          //   checkForNull(i.CostingPartDetails.PaymentTermCost);
+          //   checkForNull(i?.CostingPartDetails?.PaymentTermCost);
 
           formatData(ICCObj, params, i.CostingChildPartDetails)
 
@@ -395,16 +417,16 @@ function TabOverheadProfit(props) {
 
           i.CostingPartDetails.ICCCost = ICCObj && ICCObj.NetCost ? checkForNull(ICCObj.NetCost) : 0;
           i.CostingPartDetails.CostingInterestRateDetail = {
-            ...i.CostingPartDetails.CostingInterestRateDetail,
+            ...i?.CostingPartDetails?.CostingInterestRateDetail,
             ICCApplicabilityDetail: ICCObj,
             IsInventoryCarringCost: ICCObj && ICCObj.NetCost ? true : false,
             NetICC: ICCObj && ICCObj.NetCost ? checkForNull(ICCObj.NetCost) : 0,
           };
-          // i.CostingPartDetails.NetOverheadAndProfitCost = checkForNull(i.CostingPartDetails.OverheadCost) +
-          //   checkForNull(i.CostingPartDetails.ProfitCost) +
-          //   checkForNull(i.CostingPartDetails.RejectionCost) +
+          // i?.CostingPartDetails?.NetOverheadAndProfitCost = checkForNull(i?.CostingPartDetails?.OverheadCost) +
+          //   checkForNull(i?.CostingPartDetails?.ProfitCost) +
+          //   checkForNull(i?.CostingPartDetails?.RejectionCost) +
           //   checkForNull(ICCObj.NetCost) +
-          //   checkForNull(i.CostingPartDetails.PaymentTermCost);
+          //   checkForNull(i?.CostingPartDetails?.PaymentTermCost);
 
         } else {
           i.IsOpen = false;
@@ -444,15 +466,15 @@ function TabOverheadProfit(props) {
 
           i.CostingPartDetails.PaymentTermCost = PaymentTermObj && PaymentTermObj.NetCost ? checkForNull(PaymentTermObj.NetCost) : 0;
           i.CostingPartDetails.CostingInterestRateDetail = {
-            ...i.CostingPartDetails.CostingInterestRateDetail,
+            ...i?.CostingPartDetails?.CostingInterestRateDetail,
             PaymentTermDetail: PaymentTermObj,
             IsPaymentTerms: PaymentTermObj && PaymentTermObj?.NetCost ? true : false,
             NetPaymentTermCost: PaymentTermObj && PaymentTermObj.NetCost ? checkForNull(PaymentTermObj.NetCost) : 0,
           };
-          // i.CostingPartDetails.NetOverheadAndProfitCost = checkForNull(i.CostingPartDetails.OverheadCost) +
-          //   checkForNull(i.CostingPartDetails.ProfitCost) +
-          //   checkForNull(i.CostingPartDetails.RejectionCost) +
-          //   checkForNull(i.CostingPartDetails.ICCCost) +
+          // i?.CostingPartDetails?.NetOverheadAndProfitCost = checkForNull(i?.CostingPartDetails?.OverheadCost) +
+          //   checkForNull(i?.CostingPartDetails?.ProfitCost) +
+          //   checkForNull(i?.CostingPartDetails?.RejectionCost) +
+          //   checkForNull(i?.CostingPartDetails?.ICCCost) +
           //   checkForNull(PaymentTermObj.NetCost);
 
           formatData(PaymentTermObj, params, i.CostingChildPartDetails)
@@ -461,15 +483,15 @@ function TabOverheadProfit(props) {
 
           i.CostingPartDetails.PaymentTermCost = PaymentTermObj && PaymentTermObj.NetCost ? checkForNull(PaymentTermObj.NetCost) : 0;
           i.CostingPartDetails.CostingInterestRateDetail = {
-            ...i.CostingPartDetails.CostingInterestRateDetail,
+            ...i?.CostingPartDetails?.CostingInterestRateDetail,
             PaymentTermDetail: PaymentTermObj,
             IsPaymentTerms: PaymentTermObj && PaymentTermObj?.NetCost ? true : false,
             NetPaymentTermCost: PaymentTermObj && PaymentTermObj.NetCost ? checkForNull(PaymentTermObj.NetCost) : 0,
           };
-          // i.CostingPartDetails.NetOverheadAndProfitCost = checkForNull(i.CostingPartDetails.OverheadCost) +
-          //   checkForNull(i.CostingPartDetails.ProfitCost) +
-          //   checkForNull(i.CostingPartDetails.RejectionCost) +
-          //   checkForNull(i.CostingPartDetails.ICCCost) +
+          // i?.CostingPartDetails?.NetOverheadAndProfitCost = checkForNull(i?.CostingPartDetails?.OverheadCost) +
+          //   checkForNull(i?.CostingPartDetails?.ProfitCost) +
+          //   checkForNull(i?.CostingPartDetails?.RejectionCost) +
+          //   checkForNull(i?.CostingPartDetails?.ICCCost) +
           //   checkForNull(PaymentTermObj.NetCost);
 
         } else {
@@ -495,6 +517,29 @@ function TabOverheadProfit(props) {
     setIsIncludeSurfaceTreatment(!IsIncludeSurfaceTreatment)
     setIsPressST(true)
     dispatch(isOverheadProfitDataChange(true))
+  }
+
+  /**
+  * @method onPressIncludeSurfaceTreatmentRejection
+  * @description SET INCLUDE SURFACE TREATMENT
+  */
+  const onPressIncludeSurfaceTreatmentRejection = () => {
+    dispatch(setSurfaceCostInOverheadProfitRejection(!IsIncludeSurfaceTreatmentRejection, () => { }))
+    setIsIncludeSurfaceTreatmentRejection(!IsIncludeSurfaceTreatmentRejection)
+    setIsPressSTRejection(true)
+    dispatch(isOverheadProfitDataChange(true))
+  }
+
+  const onPressIncludeToolCost = () => {
+    if (ToolTabData[0]?.CostingPartDetails?.CostingToolCostResponse[0]?.ToolCostType && ToolTabData[0].CostingPartDetails.CostingToolCostResponse[0].ToolCostType !== 'Fixed') {
+      Toaster.warning('Tool Maintenance Applicability should be Fixed to add tool cost in overhead & profit.')
+      return false
+    } else {
+      dispatch(setToolCostInOverheadProfit(!IsIncludeToolCost, () => { }))
+      setIsIncludeToolCost(!IsIncludeToolCost)
+      setIsPressToolCost(true)
+      dispatch(isOverheadProfitDataChange(true))
+    }
   }
 
   /**
@@ -541,12 +586,12 @@ function TabOverheadProfit(props) {
                   </Col>
                 } */}
 
-                <Col md="12" className="px-30 py-4 costing-border-x costing-border-top">
+                <Col md="12" className="py-4 overhead-profit-tab d-flex">
                   <label
-                    className={`custom-checkbox mb-0`}
+                    className={`custom-checkbox mb-0 w-fit-content`}
                     onChange={onPressIncludeSurfaceTreatment}
                   >
-                    Include Surface Treatment Cost in Overheads & Profits
+                    Include Surface Treatment Cost in CC for Overhead and Profit
                     <input
                       type="checkbox"
                       checked={IsIncludeSurfaceTreatment}
@@ -558,6 +603,41 @@ function TabOverheadProfit(props) {
                       onChange={onPressIncludeSurfaceTreatment}
                     />
                   </label>
+                  <label
+                    className={`custom-checkbox mb-0 w-fit-content`}
+                    onChange={onPressIncludeSurfaceTreatmentRejection}
+                  >
+                    Include Surface Treatment Cost in CC for Rejection
+                    <input
+                      type="checkbox"
+                      checked={IsIncludeSurfaceTreatmentRejection}
+                      disabled={CostingViewMode ? true : false}
+                    />
+                    <span
+                      className=" before-box"
+                      checked={IsIncludeSurfaceTreatmentRejection}
+                      onChange={onPressIncludeSurfaceTreatmentRejection}
+                    />
+                  </label>
+
+
+                  <label
+                    className={`custom-checkbox mb-0 w-fit-content`}
+                    onChange={onPressIncludeToolCost}
+                  >
+                    Include Tool cost in CC for Overhead and Profit
+                    <input
+                      type="checkbox"
+                      checked={IsIncludeToolCost}
+                      disabled={CostingViewMode ? true : false}
+                    />
+                    <span
+                      className=" before-box"
+                      checked={IsIncludeToolCost}
+                      onChange={onPressIncludeToolCost}
+                    />
+                  </label>
+
                 </Col>
               </Row>
 
@@ -587,6 +667,8 @@ function TabOverheadProfit(props) {
                                   index={index}
                                   item={item}
                                   IsIncludeSurfaceTreatment={IsIncludeSurfaceTreatment}
+                                  IsIncludedSurfaceInRejection={IsIncludeSurfaceTreatmentRejection}
+                                  IsIncludeToolCost={IsIncludeToolCost}
                                   setPartDetails={setPartDetails}
                                   setOverheadDetail={setOverheadDetail}
                                   setProfitDetail={setProfitDetail}
@@ -605,6 +687,8 @@ function TabOverheadProfit(props) {
                                   item={item}
                                   children={item.CostingChildPartDetails}
                                   IsIncludeSurfaceTreatment={IsIncludeSurfaceTreatment}
+                                  IsIncludeSurfaceTreatmentRejection={IsIncludeSurfaceTreatmentRejection}
+                                  IsIncludeToolCost={IsIncludeToolCost}
                                   setPartDetails={setPartDetails}
                                   toggleAssembly={toggleAssembly}
                                   setOverheadDetail={setOverheadDetail}

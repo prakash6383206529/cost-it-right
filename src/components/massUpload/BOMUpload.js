@@ -15,6 +15,8 @@ import { BOMBULKUPLOAD } from '../../config/constants';
 import { checkForSameFileUpload } from '../../helper';
 import { BOMUpload } from '../../config/masterData';
 import LoaderCustom from '../common/LoaderCustom';
+import PopupMsgWrapper from '../common/PopupMsgWrapper';
+import { MESSAGES } from '../../config/message';
 
 class BOMUploadDrawer extends Component {
   constructor(props) {
@@ -27,7 +29,8 @@ class BOMUploadDrawer extends Component {
       faildRecords: false,
       failedData: [],
       uploadfileName: "",
-      bomUploadLoader: false
+      bomUploadLoader: false,
+      showPopup: false
     }
   }
 
@@ -54,7 +57,7 @@ class BOMUploadDrawer extends Component {
   cancel = () => {
     const { reset } = this.props;
     reset();
-    this.toggleDrawer(true)
+    this.toggleDrawer('', true)
   }
 
   /**
@@ -71,6 +74,7 @@ class BOMUploadDrawer extends Component {
     //pass the fileObj as parameter
     if (fileType !== '.xls' && fileType !== '.xlsx') {
       Toaster.warning('File type should be .xls or .xlsx')
+      this.setState({ bomUploadLoader: false })
     } else {
 
       let data = new FormData()
@@ -150,7 +154,7 @@ class BOMUploadDrawer extends Component {
         })
       }
     }
-    this.toggleDrawer(false)
+    this.toggleDrawer('', false)
   }
 
   /**
@@ -178,7 +182,17 @@ class BOMUploadDrawer extends Component {
       });
     }
   }
-
+  cancelHandler = () => {
+    this.cancel('cancel')
+    // this.setState({ showPopup: true })
+  }
+  onPopupConfirm = () => {
+    this.cancel('cancel')
+    this.setState({ showPopup: false })
+  }
+  closePopUp = () => {
+    this.setState({ showPopup: false })
+  }
   /**
   * @method render
   * @description Renders the component
@@ -212,7 +226,7 @@ class BOMUploadDrawer extends Component {
                     <h3>{`${messageLabel} Upload `}</h3>
                   </div>
                   <div
-                    onClick={(e) => this.toggleDrawer(true)}
+                    onClick={(e) => this.toggleDrawer('', true)}
                     className={'close-button right'}>
                   </div>
                 </Col>
@@ -246,7 +260,7 @@ class BOMUploadDrawer extends Component {
                   <button
                     type={'button'}
                     className="reset mr15 cancel-btn"
-                    onClick={this.cancel}
+                    onClick={this.cancelHandler}
                     disabled={setDisable}>
                     <div className={'cancel-icon'}></div> {'Cancel'}
                   </button>
@@ -262,6 +276,9 @@ class BOMUploadDrawer extends Component {
             </form>
           </div>
         </Container>
+        {
+          this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.CANCEL_MASTER_ALERT}`} />
+        }
       </Drawer>
     );
   }

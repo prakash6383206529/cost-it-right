@@ -10,6 +10,7 @@ import { EMPTY_DATA } from "../../../config/constants";
 import { COSTING, } from "../../../config/constants";
 import { renderActionCommon } from '../userUtil';
 import { scrollReset } from '../../../helper/util';
+import { costingTypeLabel } from '../../../config/constants';
 
 class CostingTab extends Component {
   constructor(props) {
@@ -294,58 +295,123 @@ class CostingTab extends Component {
                   </tr>
                 </thead>
                 <tbody>
+                  <tr>
+                    <td>
+                      <h6 className='inner-tab-heading'>Costing Type List</h6>
+                    </td>
+                  </tr>
                   {this.state.Modules &&
                     this.state.Modules.map((item, index) => {
                       if (item.Sequence === 0) return false
                       return (
-                        <tr key={index}>
-                          <td>
-                            {
-                              <label
-                                className="custom-checkbox"
-                                onChange={() => this.moduleHandler(index)}
-                              >
-                                {item.PageName}
-                                <input
-                                  type="checkbox"
-                                  value={"All"}
-                                  checked={this.isCheckModule(item.Actions)}
-                                />
-                                <span
-                                  className=" before-box"
-                                  checked={this.isCheckModule(item.Actions)}
-                                  onChange={() => this.moduleHandler(index)}
-                                />
-                              </label>
-                            }
-                          </td>
-                          <td className="select-all-block">
-                            <label className="custom-checkbox">
+                        <>
+                          {costingTypeLabel.includes(String(item.PageName)) && <tr key={index}>
+                            <td>
                               {
-                                <input
-                                  type="checkbox"
-                                  value={"All"}
-                                  className={
-                                    this.isCheckAll(index, item.Actions)
-                                      ? "selected-box"
-                                      : "not-selected-box"
-                                  }
-                                  checked={this.isCheckAll(
-                                    index,
-                                    item.Actions
-                                  )}
-                                  onClick={() =>
-                                    this.selectAllHandler(index, item.Actions)
-                                  }
-                                />
+                                <label
+                                  className="custom-checkbox"
+                                  onChange={() => this.moduleHandler(index)}
+                                >
+                                  {item.PageName}
+                                  <input
+                                    type="checkbox"
+                                    value={"All"}
+                                    checked={this.isCheckModule(item.Actions)}
+                                  />
+                                  <span
+                                    className=" before-box"
+                                    checked={this.isCheckModule(item.Actions)}
+                                    onChange={() => this.moduleHandler(index)}
+                                  />
+                                </label>
                               }
-                              <span className=" before-box">Select All</span>
-                            </label>
-                          </td>
+                            </td>
+                            <td className="select-all-block">
+                              <label className="custom-checkbox">
+                                {
+                                  <input
+                                    type="checkbox"
+                                    value={"All"}
+                                    className={
+                                      this.isCheckAll(index, item.Actions)
+                                        ? "selected-box"
+                                        : "not-selected-box"
+                                    }
+                                    checked={this.isCheckAll(
+                                      index,
+                                      item.Actions
+                                    )}
+                                    onClick={() =>
+                                      this.selectAllHandler(index, item.Actions)
+                                    }
+                                  />
+                                }
+                                <span className=" before-box">Select All</span>
+                              </label>
+                            </td>
 
-                          {this.renderAction(item.Actions, index)}
-                        </tr>
-                      );
+                            {this.renderAction(item.Actions, index)}
+                          </tr>}
+                        </>);
+                    })}
+                  <tr>
+                    <td>
+                      <h6 className='inner-tab-heading'>Costing Technology List</h6>
+                    </td>
+                  </tr>
+                  {this.state.Modules &&
+                    this.state.Modules.map((item, index) => {
+                      if (item.Sequence === 0) return false
+                      return (
+                        <>
+                          {!costingTypeLabel.includes(String(item.PageName)) && <tr key={index}>
+                            <td>
+                              {
+                                <label
+                                  className="custom-checkbox"
+                                  onChange={() => this.moduleHandler(index)}
+                                >
+                                  {item.PageName}
+                                  <input
+                                    type="checkbox"
+                                    value={"All"}
+                                    checked={this.isCheckModule(item.Actions)}
+                                  />
+                                  <span
+                                    className=" before-box"
+                                    checked={this.isCheckModule(item.Actions)}
+                                    onChange={() => this.moduleHandler(index)}
+                                  />
+                                </label>
+                              }
+                            </td>
+                            <td className="select-all-block">
+                              <label className="custom-checkbox">
+                                {
+                                  <input
+                                    type="checkbox"
+                                    value={"All"}
+                                    className={
+                                      this.isCheckAll(index, item.Actions)
+                                        ? "selected-box"
+                                        : "not-selected-box"
+                                    }
+                                    checked={this.isCheckAll(
+                                      index,
+                                      item.Actions
+                                    )}
+                                    onClick={() =>
+                                      this.selectAllHandler(index, item.Actions)
+                                    }
+                                  />
+                                }
+                                <span className=" before-box">Select All</span>
+                              </label>
+                            </td>
+
+                            {this.renderAction(item.Actions, index)}
+                          </tr>}
+                        </>);
                     })}
                   {this.state.Modules.length === 0 && (
                     <tr>

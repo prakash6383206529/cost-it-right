@@ -130,12 +130,6 @@ class FuelMaster extends Component {
                     {/* {this.props.loading && <Loader/>} */}
                     <ScrollToTop pointProp='go-to-top' />
                     <Row>
-                        <Col sm="4">
-                            <h1>{`Fuel & Power Master`}</h1>
-                        </Col>
-                    </Row>
-
-                    <Row>
                         <Col>
                             <div>
                                 <Nav tabs className="subtabs mt-0">

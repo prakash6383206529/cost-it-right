@@ -3,9 +3,9 @@ import { Container, Row, Col } from 'reactstrap'
 import { useForm, Controller } from 'react-hook-form'
 import Drawer from '@material-ui/core/Drawer'
 import { useDispatch, useSelector } from 'react-redux'
-import { approvalRequestByApprove, rejectRequestByApprove, getAllApprovalUserFilterByDepartment, getAllApprovalDepartment, getReasonSelectList, approvalPushedOnSap, } from '../../../costing/actions/Approval'
-import { TextAreaHookForm, SearchableSelectHookForm, } from '../../../layout/HookFormInputs'
-import { formatRMSimulationObject, getConfigurationKey, loggedInUserId, userDetails } from '../../../../helper'
+import { approvalRequestByApprove, rejectRequestByApprove, getAllApprovalUserFilterByDepartment, getAllApprovalDepartment, getReasonSelectList, approvalPushedOnSap } from '../../../costing/actions/Approval'
+import { TextAreaHookForm, SearchableSelectHookForm } from '../../../layout/HookFormInputs'
+import { formatRMSimulationObject, getConfigurationKey, loggedInUserId, userDetails, userTechnologyLevelDetails } from '../../../../helper'
 import PushButtonDrawer from './PushButtonDrawer'
 import { EMPTY_GUID, INR, FILE_URL, REASON_ID } from '../../../../config/constants'
 import { getSimulationApprovalByDepartment, simulationApprovalRequestByApprove, simulationRejectRequestByApprove, simulationApprovalRequestBySender, saveSimulationForRawMaterial, getAllSimulationApprovalList, uploadSimulationAttachment } from '../../../simulation/actions/Simulation'
@@ -17,17 +17,19 @@ import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css';
 import redcrossImg from '../../../../assests/images/red-cross.png'
 import { getSelectListOfSimulationLinkingTokens } from '../../../simulation/actions/Simulation'
-import { provisional } from '../../../../config/constants'
+import { PROVISIONAL } from '../../../../config/constants'
 import LoaderCustom from '../../../common/LoaderCustom';
 import Toaster from '../../../common/Toaster'
 import PushSection from '../../../common/PushSection'
 import { Redirect } from 'react-router';
+import { getUsersSimulationTechnologyLevelAPI, getUsersTechnologyLevelAPI } from '../../../../actions/auth/AuthActions'
+import { costingTypeIdToApprovalTypeIdFunction } from '../../../common/CommonFunctions'
 
 function ApproveRejectDrawer(props) {
   // ********* INITIALIZE REF FOR DROPZONE ********
   const dropzone = useRef(null);
 
-  const { type, approvalData, IsFinalLevel, isSimulation, dataSend, reasonId, simulationDetail, selectedRowData, costingArr, isSaveDone, costingList, showFinalLevelButtons, Attachements, vendorId, SimulationTechnologyId, SimulationType, isSimulationApprovalListing, apiData } = props
+  const { type, approvalData, IsFinalLevel, isSimulation, dataSend, reasonId, simulationDetail, selectedRowData, costingArr, isSaveDone, costingList, showFinalLevelButtons, Attachements, vendorId, SimulationTechnologyId, SimulationType, isSimulationApprovalListing, apiData, TechnologyId } = props
 
   const userLoggedIn = loggedInUserId()
   const userData = userDetails()
@@ -49,6 +51,7 @@ function ApproveRejectDrawer(props) {
   const [isDisable, setIsDisable] = useState(false)
   const [showListingPage, setShowListingPage] = useState(false)
   const [attachmentLoader, setAttachmentLoader] = useState(false)
+  const [levelDetails, setLevelDetails] = useState({})
 
   const deptList = useSelector((state) => state.approval.approvalDepartmentList)
   const { selectedMasterForSimulation } = useSelector(state => state.simulation)
@@ -60,67 +63,85 @@ function ApproveRejectDrawer(props) {
   }
   useEffect(() => {
     dispatch(getReasonSelectList((res) => { }))
-    // dispatch(getAllApprovalDepartment((res) => { }))
-    /***********************************REMOVE IT AFTER SETTING FROM SIMULATION*******************************/
-    if (!isSimulation) {
-      /************THIS CONDITION SI FOR COSTING*******************/
-      dispatch(getAllApprovalDepartment((res) => {
-        const Data = res.data.SelectList
-        const departObj = Data && Data.filter(item => item.Value === userData.DepartmentId)
+    let levelDetailsTemp = ''
+    setTimeout(() => {
+      // dispatch(getAllApprovalDepartment((res) => { }))
+      /***********************************REMOVE IT AFTER SETTING FROM SIMULATION*******************************/
+      if (!isSimulation) {
+        dispatch(getUsersTechnologyLevelAPI(loggedInUserId(), TechnologyId, (res) => {
+          levelDetailsTemp = userTechnologyLevelDetails(props?.costingTypeId, res?.data?.Data?.TechnologyLevels)
+          setLevelDetails(levelDetailsTemp)
 
-        setValue('dept', { label: departObj[0].Text, value: departObj[0].Value })
-
-        let obj = {
-          LoggedInUserId: userData.LoggedInUserId,
-          DepartmentId: departObj[0]?.Value,
-          TechnologyId: approvalData[0]?.TechnologyId,
-          ReasonId: reasonId
-        }
-
-        dispatch(getAllApprovalUserFilterByDepartment(obj, (res) => {
-          const Data = res.data.DataList[1] ? res.data.DataList[1] : []
-          setValue('dept', { label: Data.DepartmentName, value: Data.DepartmentId })
-          setValue('approver', { label: Data.Text ? Data.Text : '', value: Data.Value ? Data.Value : '', levelId: Data.LevelId ? Data.LevelId : '', levelName: Data.LevelName ? Data.LevelName : '' })
-
-          // setApprover(Data.Text)
-          // setSelectedApprover(Data.Value)
-          // setSelectedApproverLevelId({ levelName: Data.LevelName, levelId: Data.LevelId })
-          // setValue('approver', { label: Data.Text, value: Data.Value })
         }))
-      }))
-    } else {
-      dispatch(getSimulationApprovalByDepartment(res => {
-        const Data = res.data.SelectList
-        const departObj = Data && Data.filter(item => item.Value === (type === 'Sender' ? userData.DepartmentId : simulationDetail.DepartmentId))
-        setValue('dept', { label: departObj[0].Text, value: departObj[0].Value })
-        getApproversList(departObj[0].Value)
 
-      }))
+        dispatch(getAllApprovalDepartment((res) => {
 
-      Attachements && Attachements.map(item => {
-        files.push(item)
-        setFiles(files)
-        setIsOpen(!IsOpen)
-        return null;
-      })
-      let filesList = files && files.map((item) => {
-        item.meta = {}
-        item.meta.id = item.FileId
-        item.meta.status = 'done'
-        return item
-      })
-      // ********** ADD ATTACHMENTS FROM API INTO THE DROPZONE'S PERSONAL DATA STORE **********
-      if (dropzone.current !== null) {
-        dropzone.current.files = filesList
+          const Data = res?.data?.SelectList
+          const departObj = Data && Data.filter(item => item.Value === userData.DepartmentId)
 
+          setValue('dept', { label: departObj && departObj[0].Text, value: departObj && departObj[0].Value })
+
+          let obj = {
+            LoggedInUserId: userData.LoggedInUserId,
+            DepartmentId: departObj && departObj[0]?.Value,
+            TechnologyId: approvalData && approvalData[0]?.TechnologyId,
+            ReasonId: reasonId,
+            ApprovalTypeId: costingTypeIdToApprovalTypeIdFunction(props?.costingTypeId)
+          }
+          dispatch(getAllApprovalUserFilterByDepartment(obj, (res) => {
+            const Data = res.data.DataList[1] ? res.data.DataList[1] : []
+            setValue('dept', { label: Data.DepartmentName, value: Data.DepartmentId })
+            setValue('approver', { label: Data.Text ? Data.Text : '', value: Data.Value ? Data.Value : '', levelId: Data.LevelId ? Data.LevelId : '', levelName: Data.LevelName ? Data.LevelName : '' })
+
+            // setApprover(Data.Text)
+            // setSelectedApprover(Data.Value)
+            // setSelectedApproverLevelId({ levelName: Data.LevelName, levelId: Data.LevelId })
+            // setValue('approver', { label: Data.Text, value: Data.Value })
+          }))
+        }))
+      } else {
+        dispatch(getUsersSimulationTechnologyLevelAPI(loggedInUserId(), selectedMasterForSimulation?.value, (res) => {
+          if (res?.data?.Data) {
+            levelDetailsTemp = userTechnologyLevelDetails(props?.costingTypeId, res?.data?.Data?.TechnologyLevels)
+            setLevelDetails(levelDetailsTemp)
+            dispatch(getSimulationApprovalByDepartment(res => {
+              const Data = res.data.SelectList
+              const departObj = Data && Data.filter(item => item.Value === (type === 'Sender' ? userData.DepartmentId : simulationDetail.DepartmentId))
+              setValue('dept', { label: departObj[0].Text, value: departObj[0].Value })
+              getApproversList(departObj[0].Value, departObj[0].Text, levelDetailsTemp)
+
+            }))
+          }
+        }))
+
+        Attachements && Attachements.map(item => {
+          files.push(item)
+          setFiles(files)
+          setIsOpen(!IsOpen)
+          return null;
+        })
+        let filesList = files && files.map((item) => {
+          item.meta = {}
+          item.meta.id = item.FileId
+          item.meta.status = 'done'
+          return item
+        })
+        // ********** ADD ATTACHMENTS FROM API INTO THE DROPZONE'S PERSONAL DATA STORE **********
+        if (dropzone.current !== null) {
+          dropzone.current.files = filesList
+
+        }
+        if (vendorId !== null && SimulationTechnologyId !== null && type === 'Sender' && !isSimulationApprovalListing) {
+          dispatch(getSelectListOfSimulationLinkingTokens(vendorId, SimulationTechnologyId, () => { }))
+        }
       }
 
       if (vendorId !== null && SimulationTechnologyId !== null && type === 'Sender' && !isSimulationApprovalListing && getConfigurationKey().IsProvisionalSimulation) {
         dispatch(getSelectListOfSimulationLinkingTokens(vendorId, SimulationTechnologyId, () => { }))
       }
-    }
+    }, 300);
 
-    if (SimulationType !== null && SimulationType === provisional) {
+    if (SimulationType !== null && SimulationType === PROVISIONAL) {
       setTokenDropdown(false)
     }
 
@@ -130,7 +151,7 @@ function ApproveRejectDrawer(props) {
 
 
 
-  const getApproversList = (departObj) => {
+  const getApproversList = (departObj, departmentName, levelDetailsTemp) => {
     let values = []
     let approverDropdownValue = []
     let count = 0
@@ -149,7 +170,8 @@ function ApproveRejectDrawer(props) {
             //NEED TO MAKE THIS 2   
             // TechnologyId: isSimulationApprovalListing ? selectedRowData[0].SimulationTechnologyId : simulationDetail.SimulationTechnologyId ? simulationDetail.SimulationTechnologyId : selectedMasterForSimulation.value,
             TechnologyId: item,
-            ReasonId: 0
+            ReasonId: 0,
+            ApprovalTypeId: costingTypeIdToApprovalTypeIdFunction(levelDetailsTemp?.ApprovalTypeId)
           }
 
           dispatch(getAllSimulationApprovalList(obj, (res) => {
@@ -217,17 +239,18 @@ function ApproveRejectDrawer(props) {
           DepartmentId: departObj,
           //NEED TO MAKE THIS 2   
           TechnologyId: isSimulationApprovalListing ? selectedRowData[0].SimulationTechnologyId : simulationDetail.SimulationTechnologyId ? simulationDetail.SimulationTechnologyId : selectedMasterForSimulation.value,
-          ReasonId: 0
+          ReasonId: 0,
+          ApprovalTypeId: costingTypeIdToApprovalTypeIdFunction(levelDetailsTemp?.ApprovalTypeId)
         }
 
         dispatch(getAllSimulationApprovalList(obj, (res) => {
-          const Data = res.data.DataList[1] ? res.data.DataList[1] : []
+          const Data = res && res.data && res?.data?.DataList[1] ? res?.data?.DataList[1] : []
           if (Object.keys(Data).length > 0) {
             setValue('dept', { label: Data.DepartmentName, value: Data.DepartmentId })
           }
           setValue('approver', { label: Data.Text ? Data.Text : '', value: Data.Value ? Data.Value : '', levelId: Data.LevelId ? Data.LevelId : '', levelName: Data.LevelName ? Data.LevelName : '' })
           let tempDropdownList = []
-          res.data.DataList && res.data.DataList.map((item) => {
+          res && res.data && res?.data?.DataList && res?.data?.DataList.map((item) => {
             if (item.Value === '0') return false;
             tempDropdownList.push({
               label: item.Text,
@@ -242,6 +265,8 @@ function ApproveRejectDrawer(props) {
 
             Toaster.warning('User does not exist on next level for selected simulation.')
             setApprovalDropDown([])
+            setValue('dept', { label: departmentName, value: departObj })
+            setValue('approver', '')
             return false
           }
         }))
@@ -333,13 +358,14 @@ function ApproveRejectDrawer(props) {
     if (!isSimulation) {
       /*****************************THIS CONDITION IS FOR COSTING APPROVE OR REJECT CONDITION***********************************/
       let Data = []
+
       approvalData.map(ele => {
         Data.push({
           ApprovalProcessSummaryId: ele.ApprovalProcessSummaryId,
           ApprovalToken: ele.ApprovalNumber,
           LoggedInUserId: userLoggedIn,
-          SenderLevelId: userData.LoggedInLevelId,
-          SenderLevel: userData.LoggedInLevel,
+          SenderLevelId: levelDetails.LevelId,
+          SenderLevel: levelDetails.Level,
           ApproverDepartmentId: dept && dept.value ? dept.value : '',
           ApproverDepartmentName: dept && dept.label ? dept.label : '',
           Approver: approver && approver.value ? approver.value : '',
@@ -360,8 +386,8 @@ function ApproveRejectDrawer(props) {
             if (showFinalLevelButtons) {
               Toaster.success('The costing approved successfully')
               let pushdata = {
-                effectiveDate: dataSend[0].EffectiveDate ? DayTime(dataSend[0].EffectiveDate).format('MM/DD/YYYY') : '',
-                vendorCode: dataSend[0].VendorCode ? dataSend[0].VendorCode : '',
+                effectiveDate: dataSend[0].EffectiveDate ? DayTime(dataSend[0].EffectiveDate).format('YYYY-MM-DD') : '',
+                vendorCode: props?.vendorCodeForSAP ? props?.vendorCodeForSAP : '',
                 materialNumber: dataSend[1].PartNumber,
                 netPrice: dataSend[0].NewPOPrice,
                 plant: dataSend[0].PlantCode ? dataSend[0].PlantCode : dataSend[0].DestinationPlantId ? dataSend[0].DestinationPlantCode : '',
@@ -372,7 +398,8 @@ function ApproveRejectDrawer(props) {
                 purchasingGroup: approvalData[0]?.PurchasingGroup?.label ? approvalData[0]?.PurchasingGroup.label.split('(')[0] : '',
                 purchasingOrg: dataSend[0].CompanyCode ? dataSend[0].CompanyCode : '',
                 CostingId: approvalData[0].CostingId,
-                DecimalOption: approvalData[0].DecimalOption
+                DecimalOption: approvalData[0].DecimalOption,
+                InfoToConditions: props.conditionInfo
                 // Quantity: quantity
                 // effectiveDate: '11/30/2021',
                 // vendorCode: '203670',
@@ -410,8 +437,11 @@ function ApproveRejectDrawer(props) {
         dispatch(rejectRequestByApprove(Data, res => {
           setIsDisable(false)
           if (res?.data?.Result) {
-            Toaster.success('Costing Rejected')
+            Toaster.success(`Costing ${props?.isRFQApproval ? 'Returned' : 'Rejected'}`)
             props.closeDrawer('', 'submit')
+          }
+          if (props?.isRFQApproval) {
+            props?.cancel()
           }
         }))
       }
@@ -419,8 +449,6 @@ function ApproveRejectDrawer(props) {
       /****************************THIS IS FOR SIMUALTION (SAVE,SEND FOR APPROVAL,APPROVE AND REJECT CONDITION)******************************** */
       // THIS OBJ IS FOR SIMULATION APPROVE/REJECT
 
-
-      //lll
       let approverObject = []
       if (isSimulationApprovalListing === true) {
         selectedRowData && selectedRowData.map(item => {
@@ -431,8 +459,8 @@ function ApproveRejectDrawer(props) {
             ApprovalId: item?.ApprovalProcessId,
             ApprovalToken: item?.ApprovalNumber,
             LoggedInUserId: userLoggedIn,
-            SenderLevelId: userData.LoggedInSimulationLevelId,
-            SenderLevel: userData.LoggedInSimulationLevel,
+            SenderLevelId: levelDetails.LevelId,
+            SenderLevel: levelDetails.Level,
             SenderId: userLoggedIn,
             ApproverId: approver && approver.value ? approver.value : '',
             ApproverLevelId: approver && approver.levelId ? approver.levelId : '',
@@ -452,8 +480,8 @@ function ApproveRejectDrawer(props) {
           ApprovalId: simulationDetail?.SimulationApprovalProcessId,
           ApprovalToken: simulationDetail?.Token,
           LoggedInUserId: userLoggedIn,
-          SenderLevelId: userData.LoggedInSimulationLevelId,
-          SenderLevel: userData.LoggedInSimulationLevel,
+          SenderLevelId: levelDetails.LevelId,
+          SenderLevel: levelDetails.Level,
           SenderId: userLoggedIn,
           ApproverId: approver && approver.value ? approver.value : '',
           ApproverLevelId: approver && approver.levelId ? approver.levelId : '',
@@ -487,12 +515,13 @@ function ApproveRejectDrawer(props) {
         senderObj.ApproverLevel = approver && approver.levelName ? approver.levelName : ''
         senderObj.ApproverDepartmentName = dept && dept.label ? dept.label : ''
         senderObj.ApproverId = approver && approver.value ? approver.value : ''
-        senderObj.SenderLevelId = userData.LoggedInSimulationLevelId
+        senderObj.SenderLevelId = levelDetails?.LevelId
+        senderObj.SenderLevel = levelDetails?.Level
         senderObj.SenderId = userLoggedIn
-        senderObj.SenderLevel = userData.LoggedInSimulationLevel
         senderObj.SenderRemark = remark
         senderObj.EffectiveDate = DayTime(simulationDetail?.EffectiveDate).format('YYYY/MM/DD HH:mm')
         senderObj.LoggedInUserId = userLoggedIn
+        senderObj.ApprovalTypeId = costingTypeIdToApprovalTypeIdFunction(levelDetails?.ApprovalTypeId)
         let temp = []
         if (isSimulationApprovalListing === true) {
           selectedRowData && selectedRowData.map(item => {
@@ -622,6 +651,7 @@ function ApproveRejectDrawer(props) {
         LoggedInUserId: loggedInUserId(), // user id
         DepartmentId: value.value,
         TechnologyId: approvalData[0] && approvalData[0].TechnologyId ? approvalData[0].TechnologyId : '00000000-0000-0000-0000-000000000000',
+        ApprovalTypeId: costingTypeIdToApprovalTypeIdFunction(props?.costingTypeId),
       }
     } else {
       // simObj = {
@@ -643,7 +673,7 @@ function ApproveRejectDrawer(props) {
         setApprovalDropDown(tempDropdownList)
       }))
     } else {
-      getApproversList(value.value)
+      getApproversList(value.value, value.label, levelDetails)
       // dispatch(
       //   getAllSimulationApprovalList(simObj, (res) => {
       //     res.data.DataList &&
@@ -678,7 +708,7 @@ function ApproveRejectDrawer(props) {
  */
   const setDisableFalseFunction = () => {
     const loop = Number(dropzone.current.files.length) - Number(files.length)
-    if (Number(loop) === 1) {
+    if (Number(loop) === 1 || Number(dropzone.current.files.length) === Number(files.length)) {
       setIsDisable(false)
       setAttachmentLoader(false)
     }
@@ -779,7 +809,7 @@ function ApproveRejectDrawer(props) {
               <Row className="drawer-heading">
                 <Col>
                   <div className={'header-wrapper left'}>
-                    <h3>{`${isSimulation ? `${type === 'Sender' ? 'Send For Approval' : `${type} Simulation`}` : `${type} Costing`} `}</h3>
+                    <h3>{`${isSimulation ? `${type === 'Sender' ? 'Send For Approval' : `${type} Simulation`}` : `${props?.isRFQApproval ? 'Return' : type} Costing`} `}</h3>
                   </div>
 
                   <div
@@ -904,7 +934,6 @@ function ApproveRejectDrawer(props) {
                               showYearDropdown
                               dateFormat="aa/MM/yyyy"
                               //maxDate={new Date()}
-                              dropdownMode="select"
                               placeholderText="Select date"
                               customClassName="withBorder"
                               className="withBorder"
@@ -929,7 +958,6 @@ function ApproveRejectDrawer(props) {
                                 showYearDropdown
                                 dateFormat="dd/MM/yyyy"
                                 //maxDate={new Date()}
-                                dropdownMode="select"
                                 placeholderText="Select date"
                                 className="withBorder"
                                 autoComplete={"off"}
@@ -1008,7 +1036,13 @@ function ApproveRejectDrawer(props) {
                     control={control}
                     register={register}
                     mandatory={type === 'Approve' ? false : true}
-                    rules={{ required: type === 'Approve' ? false : true }}
+                    rules={{
+                      required: type === 'Approve' ? false : true,
+                      maxLength: {
+                        value: 255,
+                        message: "Remark should be less than 255 words"
+                      },
+                    }}
                     handleChange={handleRemark}
                     //defaultValue={viewRM.RMRate}
                     className=""
@@ -1037,7 +1071,7 @@ function ApproveRejectDrawer(props) {
                               onChangeStatus={handleChangeStatus}
                               PreviewComponent={Preview}
                               // onSubmit={handleImapctSubmit}
-                              accept="*"
+                              accept="image/jpeg,image/jpg,image/png,image/PNG,.xls,.doc,.pdf,.xlsx"
                               initialFiles={[]}
                               maxFiles={2}
                               maxSizeBytes={5000000}

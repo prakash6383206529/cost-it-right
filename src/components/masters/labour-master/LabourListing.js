@@ -162,7 +162,7 @@ class LabourListing extends Component {
     this.props.deleteLabour(ID, (res) => {
       if (res.data.Result === true) {
         Toaster.success(MESSAGES.DELETE_LABOUR_SUCCESS)
-
+        this.setState({ dataCount: 0 })
         //this.getTableListData(null, null, null, null)
         this.filterList()
       }
@@ -322,10 +322,12 @@ class LabourListing extends Component {
    * @method closeBulkUploadDrawer
    * @description CLOSED BULK UPLOAD DRAWER
    */
-  closeBulkUploadDrawer = () => {
-    this.setState({ isBulkUpload: false }, () => {
+
+  closeBulkUploadDrawer = (event, type) => {
+    this.setState({ isBulkUpload: false })
+    if (type !== 'cancel') {
       this.getTableListData(null, null, null, null)
-    })
+    }
   }
 
   /**
@@ -420,7 +422,7 @@ class LabourListing extends Component {
     const defaultColDef = {
       resizable: true,
       filter: true,
-      sortable: true,
+      sortable: false,
       headerCheckboxSelectionFilteredOnly: true,
       checkboxSelection: isFirstColumn
     };
@@ -437,18 +439,13 @@ class LabourListing extends Component {
     return (
       <>
         <div className={`ag-grid-react container-fluid ${DownloadAccessibility ? "show-table-btn no-tab-page" : ""}`} id='go-to-top'>
-          {this.state.isLoader && <LoaderCustom />}
+          {this.state.isLoader && <LoaderCustom customClass="loader-center" />}
           <ScrollToTop pointProp="go-to-top" />
           <form
             onSubmit={handleSubmit(this.onSubmit.bind(this))}
             noValidate
           >
-            <Row>
-              <Col md="12">
-                <h1 className="mb-0">Labour Master</h1>
-              </Col>
-            </Row>
-            <Row className="pt-4 filter-row-large blue-before">
+            <Row className=" filter-row-large blue-before">
 
               <Col md="6" className="search-user-block mb-3">
                 <div className="d-flex justify-content-end bd-highlight w100">
@@ -486,8 +483,9 @@ class LabourListing extends Component {
                       <>
 
                         <ExcelFile filename={'Labour'} fileExtension={'.xls'} element={
-                          <button type="button" className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
+                          <button title={`Download ${this.state.dataCount === 0 ? "All" : "(" + this.state.dataCount + ")"}`} type="button" className={'user-btn mr5'}><div className="download mr-1" ></div>
                             {/* DOWNLOAD */}
+                            {`${this.state.dataCount === 0 ? "All" : "(" + this.state.dataCount + ")"}`}
                           </button>}>
 
                           {this.onBtExport()}
@@ -511,7 +509,6 @@ class LabourListing extends Component {
           <div className={`ag-grid-wrapper height-width-wrapper ${(this.props.labourDataList && this.props.labourDataList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
             <div className="ag-grid-header">
               <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={'off'} onChange={(e) => this.onFilterTextBoxChanged(e)} />
-              <SelectRowWrapper dataCount={dataCount} />
             </div>
             <div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
               {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
@@ -533,14 +530,15 @@ class LabourListing extends Component {
                 rowSelection={'multiple'}
                 onSelectionChanged={this.onRowSelect}
                 frameworkComponents={frameworkComponents}
+                suppressRowClickSelection={true}
               >
                 <AgGridColumn field="IsContractBase" headerName="Employment Terms" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
-                <AgGridColumn field="Vendor" headerName="Vendor(Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                <AgGridColumn field="Plant" headerName="Plant(Code)"></AgGridColumn>
+                <AgGridColumn field="Vendor" headerName="Vendor (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                <AgGridColumn field="Plant" headerName="Plant (Code)"></AgGridColumn>
                 <AgGridColumn field="State" headerName="State"></AgGridColumn>
                 <AgGridColumn field="MachineType" headerName="Machine Type"></AgGridColumn>
                 <AgGridColumn field="LabourType" headerName="Labour Type"></AgGridColumn>
-                <AgGridColumn width={205} field="LabourRate" headerName="Rate Per Person/Annum" cellRenderer={'commonCostFormatter'}></AgGridColumn>
+                <AgGridColumn width={205} field="LabourRate" headerName="Rate per Person/Annum" cellRenderer={'commonCostFormatter'}></AgGridColumn>
                 <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateRenderer'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
                 <AgGridColumn field="LabourId" width={150} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
               </AgGridReact>

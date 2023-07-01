@@ -200,9 +200,6 @@ function RowMaterialMaster(props) {
     return (
         <Container fluid>
             <Row id="go-top-top">
-                {<Col sm="4">
-                    <h1>{`Raw Material Master`}</h1>
-                </Col>}
                 <ScrollToTop pointProp={"go-top-top"} />
             </Row>
             <Row>

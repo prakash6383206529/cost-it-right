@@ -80,7 +80,7 @@ class ViewUserDetails extends Component {
  * @description used to get users technology level listing
  */
   getUsersTechnologyLevelData = (UserId) => {
-    this.props.getUsersTechnologyLevelAPI(UserId, (res) => {
+    this.props.getUsersTechnologyLevelAPI(UserId, 0, (res) => {
       if (res && res.data && res.data.Data) {
 
         let Data = res.data.Data;
@@ -93,7 +93,7 @@ class ViewUserDetails extends Component {
     })
   }
   getUsersSimulationTechnologyLevelData = (UserId) => {
-    this.props.getUsersSimulationTechnologyLevelAPI(UserId, (res) => {
+    this.props.getUsersSimulationTechnologyLevelAPI(UserId, 0, (res) => {
       if (res && res.data && res.data.Data) {
         let Data = res.data.Data;
         let simulationLevel = Data.TechnologyLevels;
@@ -104,7 +104,7 @@ class ViewUserDetails extends Component {
     })
   }
   getUsersMasterLevelData = (UserId) => {
-    this.props.getUsersMasterLevelAPI(UserId, (res) => {
+    this.props.getUsersMasterLevelAPI(UserId, 0, (res) => {
       if (res && res.data && res.data.Data) {
         let Data = res.data.Data;
         let masterLevel = Data.MasterLevels;
@@ -260,10 +260,11 @@ class ViewUserDetails extends Component {
                     <div className={'left-details'}>Mobile No.</div>
                     <div className={'right-details'}>{registerUserData ? registerUserData.Mobile : ''}</div>
                   </Col>
-                  <Col md={'12'}>
-                    <div className={'left-details'}>Phone No.</div>
-                    <div className={'right-details'}>{registerUserData ? registerUserData.PhoneNumber : ''}-{registerUserData ? registerUserData.Extension : ''}</div>
-                  </Col>
+                  {!this.props.RFQUser &&
+                    <Col md={'12'}>
+                      <div className={'left-details'}>Phone No.</div>
+                      <div className={'right-details'}>{registerUserData ? registerUserData.PhoneNumber : ''}-{registerUserData ? registerUserData.Extension : ''}</div>
+                    </Col>}
                 </Row>
                 <Row className="pt-3">
                   <Col md="12">
@@ -292,22 +293,26 @@ class ViewUserDetails extends Component {
                   }
                 </Row>
 
-                <Row className="pt-3 drawer-table-sm">
-                  <Col md="12">
-                    <div className={'left-details'}>
-                      <HeaderTitle
-                        title={'Role & Company:'}
-                        customClass={'role-department-details'} />
-                    </div>
-                    <div className={'right-details pt-2 role-department-container'}>
-                      <div>{registerUserData ? registerUserData.RoleName : ''}</div>(<div title={departmentName} className="departments">{departmentName}</div>)
-                      {/* <div
+
+
+                {!this.props.RFQUser &&
+                  <>
+                    <Row className="pt-3 drawer-table-sm">
+                      <Col md="12">
+                        <div className={'left-details'}>
+                          <HeaderTitle
+                            title={'Role & Department:'}
+                            customClass={'role-department-details'} />
+                        </div>
+                        <div className={'right-details pt-2 role-department-container'}>
+                          <div>{registerUserData ? registerUserData.RoleName : ''}</div>(<div title={departmentName} className="departments">{departmentName}</div>)
+                          {/* <div
                         onClick={this.permissionToggle}
                         className={`${isPermissionOpen ? 'minus-icon' : 'plus-icon'} pull-right`}>
                       </div> */}
-                    </div>
-                  </Col>
-                  {/* {isPermissionOpen &&
+                        </div>
+                      </Col>
+                      {/* {isPermissionOpen &&
                     <Col md="12">
                       <Table className="table table-bordered table table-sm role-depatment" size="sm" >
                         <thead>
@@ -335,142 +340,151 @@ class ViewUserDetails extends Component {
                       </Table>
                     </Col>} */}
 
-                </Row>
-
-                <Row className="pt-3 ">
-                  <Col md="12">
-                    <Row>
-                      <Col md="10">
-                        <HeaderTitle
-                          title={'Costing Approval Level:'}
-                          customClass={'technology-level-details'} />
-                      </Col>
-                      <Col md="2" className='text-right'>
-                        <button onClick={() => this.technologyToggle(COSTING)} className={`btn btn-small-primary-circle ml-1`}>{isTechnologyOpen ? (
-                          <i className="fa fa-minus" ></i>
-                        ) : (
-                          <i className="fa fa-plus"></i>
-                        )}</button>
-                      </Col>
                     </Row>
-                  </Col>
-                  {isTechnologyOpen &&
-                    <Col md="12">
-                      <Table className="table border table table-sm" size="sm" >
-                        <thead>
-                          <tr>
-                            <th className="text-left" >{`Technology`}</th>
-                            <th className="text-left">{`Level`}</th>
-                          </tr>
-                        </thead>
-                        <tbody >
-                          {
-                            this.state.TechnologyLevelGrid &&
-                            this.state.TechnologyLevelGrid.map((item, index) => {
-                              return (
-                                <tr key={index}>
-                                  <td>{item.Technology}</td>
-                                  <td>{item.Level}</td>
-                                </tr>
-                              )
-                            })
-                          }
-                        </tbody>
-                      </Table>
-                      {this.state.TechnologyLevelGrid.length === 0 && <NoContentFound title={EMPTY_DATA} />}
-                    </Col>}
 
-                </Row>
-                <Row className="pt-3 ">
-                  <Col md="12">
-                    <Row>
-                      <Col md="10">
-                        <HeaderTitle
-                          title={'Simulation Approval Level:'}
-                          customClass={'technology-level-details'} />
+                    <Row className="pt-3 ">
+                      <Col md="12">
+                        <Row>
+                          <Col md="10">
+                            <HeaderTitle
+                              title={'Costing Approval Level:'}
+                              customClass={'technology-level-details'} />
+                          </Col>
+                          <Col md="2" className='text-right'>
+                            <button onClick={() => this.technologyToggle(COSTING)} className={`btn btn-small-primary-circle ml-1`}>{isTechnologyOpen ? (
+                              <i className="fa fa-minus" ></i>
+                            ) : (
+                              <i className="fa fa-plus"></i>
+                            )}</button>
+                          </Col>
+                        </Row>
                       </Col>
-                      <Col md="2" className='text-right'>
-                        <button onClick={() => this.technologyToggle(SIMULATION)} className={`btn btn-small-primary-circle ml-1`}>{isSimulationOpen ? (
-                          <i className="fa fa-minus" ></i>
-                        ) : (
-                          <i className="fa fa-plus"></i>
-                        )}</button>
-                      </Col>
-                    </Row>
-                  </Col>
-                  {isSimulationOpen && <Col md="12">
-                    <Table className="table border table table-sm" size="sm" >
-                      <thead>
-                        <tr>
-                          <th className="text-left" >{`Technology`}</th>
-                          <th className="text-left">{`Level`}</th>
-                        </tr>
-                      </thead>
-                      <tbody >
-                        {
-                          this.state.SimulationLevelGrid &&
-                          this.state.SimulationLevelGrid.map((item, index) => {
-                            return (
-                              <tr key={index}>
-                                <td>{item.Technology}</td>
-                                <td>{item.Level}</td>
+                      {isTechnologyOpen &&
+                        <Col md="12">
+                          <Table className="table border table table-sm" size="sm" >
+                            <thead>
+                              <tr>
+                                <th className="text-left" >{`Technology`}</th>
+                                <th className="text-left">{`Approval Type`}</th>
+                                <th className="text-left">{`Level`}</th>
                               </tr>
-                            )
-                          })
-                        }
-                      </tbody>
-                    </Table>
-                    {this.state.SimulationLevelGrid.length === 0 && <NoContentFound title={EMPTY_DATA} />}
-                  </Col>}
+                            </thead>
+                            <tbody >
+                              {
+                                this.state.TechnologyLevelGrid &&
+                                this.state.TechnologyLevelGrid.map((item, index) => {
+                                  return (
+                                    <tr key={index}>
+                                      <td>{item.Technology}</td>
+                                      <td>{item?.ApprovalType}</td>
+                                      <td>{item.Level}</td>
+                                    </tr>
+                                  )
+                                })
+                              }
+                            </tbody>
+                          </Table>
+                          {this.state.TechnologyLevelGrid.length === 0 && <NoContentFound title={EMPTY_DATA} />}
+                        </Col>}
 
-                </Row>
-                {getConfigurationKey().IsMasterApprovalAppliedConfigure &&
-                  <Row className="pt-3 ">
-                    <Col md="12">
-                      <Row>
-                        <Col md="10">
-                          <HeaderTitle
-                            title={'Master Approval Level:'}
-                            customClass={'technology-level-details'} />
-                        </Col>
-                        <Col md="2" className='text-right'>
-                          <button onClick={() => this.technologyToggle(MASTERS)} className={`btn btn-small-primary-circle ml-1`}>{isMasterOpen ? (
-                            <i className="fa fa-minus" ></i>
-                          ) : (
-                            <i className="fa fa-plus"></i>
-                          )}</button>
-                          {/* <a
+                    </Row>
+                    <Row className="pt-3 ">
+                      <Col md="12">
+                        <Row>
+                          <Col md="10">
+                            <HeaderTitle
+                              title={'Simulation Approval Level:'}
+                              customClass={'technology-level-details'} />
+                          </Col>
+                          <Col md="2" className='text-right'>
+                            <button onClick={() => this.technologyToggle(SIMULATION)} className={`btn btn-small-primary-circle ml-1`}>{isSimulationOpen ? (
+                              <i className="fa fa-minus" ></i>
+                            ) : (
+                              <i className="fa fa-plus"></i>
+                            )}</button>
+                          </Col>
+                        </Row>
+                      </Col>
+                      {isSimulationOpen && <Col md="12">
+                        <Table className="table border table table-sm" size="sm" >
+                          <thead>
+                            <tr>
+                              <th className="text-left" >{`Technology`}</th>
+                              <th className="text-left">{`Approval Type`}</th>
+                              <th className="text-left">{`Level`}</th>
+                            </tr>
+                          </thead>
+                          <tbody >
+                            {
+                              this.state.SimulationLevelGrid &&
+                              this.state.SimulationLevelGrid.map((item, index) => {
+                                return (
+                                  <tr key={index}>
+                                    <td>{item.Technology}</td>
+                                    <td>{item?.ApprovalType}</td>
+                                    <td>{item.Level}</td>
+                                  </tr>
+                                )
+                              })
+                            }
+                          </tbody>
+                        </Table>
+                        {this.state.SimulationLevelGrid.length === 0 && <NoContentFound title={EMPTY_DATA} />}
+                      </Col>}
+
+                    </Row>
+                    {getConfigurationKey().IsMasterApprovalAppliedConfigure &&
+                      <Row className="pt-3 ">
+                        <Col md="12">
+                          <Row>
+                            <Col md="10">
+                              <HeaderTitle
+                                title={'Master Approval Level:'}
+                                customClass={'technology-level-details'} />
+                            </Col>
+                            <Col md="2" className='text-right'>
+                              <button onClick={() => this.technologyToggle(MASTERS)} className={`btn btn-small-primary-circle ml-1`}>{isMasterOpen ? (
+                                <i className="fa fa-minus" ></i>
+                              ) : (
+                                <i className="fa fa-plus"></i>
+                              )}</button>
+                              {/* <a
                           onClick={() => this.technologyToggle("Master")}
                           className={`${isSimulationOpen ? 'minus-icon' : 'plus-icon'} pull-right`}></a> */}
+                            </Col>
+                          </Row>
                         </Col>
-                      </Row>
-                    </Col>
-                    {isMasterOpen && <Col md="12">
-                      <Table className="table border table table-sm" size="sm" >
-                        <thead>
-                          <tr>
-                            <th className="text-left" >{`Technology`}</th>
-                            <th className="text-left">{`Level`}</th>
-                          </tr>
-                        </thead>
-                        <tbody >
-                          {
-                            this.state.MasterLevelGrid &&
-                            this.state.MasterLevelGrid.map((item, index) => {
-                              return (
-                                <tr key={index}>
-                                  <td>{item.Master}</td>
-                                  <td>{item.Level}</td>
-                                </tr>
-                              )
-                            })
-                          }
-                        </tbody>
-                      </Table>
-                      {this.state.MasterLevelGrid.length === 0 && <NoContentFound title={EMPTY_DATA} />}
-                    </Col>}
+                        {isMasterOpen && <Col md="12">
+                          <Table className="table border table table-sm" size="sm" >
+                            <thead>
+                              <tr>
+                                <th className="text-left" >{`Technology`}</th>
+                                <th className="text-left">{`Approval Type`}</th>
+                                <th className="text-left">{`Level`}</th>
+                              </tr>
+                            </thead>
+                            <tbody >
+                              {
+                                this.state.MasterLevelGrid &&
+                                this.state.MasterLevelGrid.map((item, index) => {
+                                  return (
+                                    <tr key={index}>
+                                      <td>{item.Master}</td>
+                                      <td>{item?.ApprovalType}</td>
+                                      <td>{item.Level}</td>
+                                    </tr>
+                                  )
+                                })
+                              }
+                            </tbody>
+                          </Table>
+                          {this.state.MasterLevelGrid.length === 0 && <NoContentFound title={EMPTY_DATA} />}
+                        </Col>}
 
-                  </Row>}
+                      </Row>}
+
+                  </>
+                }
                 {/* <Row className="pt-3 drawer-table-sm">
                   <Col md="12">&nbsp;</Col>
                 </Row> */}

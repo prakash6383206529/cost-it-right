@@ -2,13 +2,15 @@ import React, { Fragment, useState, useEffect } from 'react'
 import { Row, Col, Table } from 'reactstrap'
 import { useForm, Controller, useWatch } from 'react-hook-form'
 import { useDispatch, } from 'react-redux'
-import { SearchableSelectHookForm, NumberFieldHookForm, } from '../../../layout/HookFormInputs'
+import { SearchableSelectHookForm, NumberFieldHookForm, TextFieldHookForm, } from '../../../layout/HookFormInputs'
 import NoContentFound from '../../../common/NoContentFound'
 import { EMPTY_DATA } from '../../../../config/constants'
 import { checkForDecimalAndNull, checkForNull, findLostWeight, getConfigurationKey, } from '../../../../helper'
 import Toaster from '../../../common/Toaster'
 import { setPlasticArray } from '../../actions/Costing'
 import { setForgingCalculatorMachiningStockSection } from '../../actions/Costing'
+import TooltipCustom from '../../../common/Tooltip'
+import { number, percentageLimitValidation, checkWhiteSpaces } from "../../../../helper/validation";
 function LossStandardTable(props) {
   const { rmRowData, isLossStandard, isNonFerrous, NonFerrousErrors, disableAll, ferrousErrors, isFerrous } = props
   const trimValue = getConfigurationKey()
@@ -16,6 +18,7 @@ function LossStandardTable(props) {
   const [lossWeight, setLossWeight] = useState('')
   const [disableLossType, setDisableLossType] = useState(false)
   const [disableFlashType, setDisableFlashType] = useState(false)
+  const [lossWeightTooltip, setLossWeightTooltip] = useState()
   const dispatch = useDispatch()
   const { register, control, setValue, getValues, reset, formState: { errors }, } = useForm({
     mode: 'onChange',
@@ -72,6 +75,7 @@ function LossStandardTable(props) {
       setBarCuttingAllowanceLossType(true)
       setIsDisable(false)
       setFlashLossType(false)
+      setLossWeightTooltip(<div>Loss Weight = (0.7857 Bar Diameter<sup>2</sup> * Blade Thickness * Density / 1000000)</div>)
     }
     else if ((value.label === "Flash Loss")) {
 
@@ -84,6 +88,16 @@ function LossStandardTable(props) {
       setBarCuttingAllowanceLossType(false)
       setFlashLossType(false)
       setPercentage(true)
+
+      if (props?.isLossStandard) {
+        setLossWeightTooltip(`Loss Weight = (Percentage * Forged Weight / 100)`)
+      }
+      else if (props?.isFerrous || props?.isNonFerrous) {
+        setLossWeightTooltip(`Loss Weight = (Percentage * Casting Weight / 100)`)
+      }
+      else {
+        setLossWeightTooltip(`Loss Weight = (Percentage * Gross Weight / 100)`)
+      }
     }
     reset({
       LossPercentage: '',
@@ -96,6 +110,7 @@ function LossStandardTable(props) {
       LossWeight: '',
       FlashLoss: '',
     })
+
   }
 
   const handleFlashloss = (value) => {
@@ -105,12 +120,14 @@ function LossStandardTable(props) {
       setUseformula(true)
       setIsDisable(false)
       setPercentage(false)
+      setLossWeightTooltip('Loss Weight = (Length * Breadth * Height * Density / 1000000)')
     }
     else {
 
       setIsDisable(true)
       setPercentage(true)
       setUseformula(false)
+      setLossWeightTooltip('Loss Weight = (Percentage * Forged Weight / 100)')
     }
   }
 
@@ -235,13 +252,20 @@ function LossStandardTable(props) {
     const FlashWidth = checkForNull(getValues('FlashWidth'))
     const BarDiameter = checkForNull(getValues('BarDiameter'))
     const BladeThickness = checkForNull(getValues('BladeThickness'))
+
+
+    if (LossPercentage > 100) {
+
+      return false
+    }
+    setIsEdit(false)
     setDisableLossType(false)
     setFlashLossType(false)
     if (Object.keys(errors).length > 0 || (isFerrous && ('rmGridFields.0.Percentage' in ferrousErrors < 100 && Object.keys(ferrousErrors).length > 0)) || (isNonFerrous && ('castingWeight' in NonFerrousErrors > 0 && Object.keys(NonFerrousErrors).length > 0))) {
       return false
     }
 
-    if (LossWeight === 0 || LossOfType === '') {
+    if (LossWeight === 0 || LossOfType === '' || LossOfType === undefined) {
       Toaster.warning("Please add data first.")
       return false;
     }
@@ -320,6 +344,20 @@ function LossStandardTable(props) {
       FlashLoss: '',
     })
   }
+  const rateTableReset = () => {
+    reset({
+      LossPercentage: '',
+      FlashLength: '',
+      FlashThickness: '',
+      FlashWidth: '',
+      BarDiameter: '',
+      BladeThickness: '',
+      LossOfType: '',
+      LossWeight: '',
+      FlashLoss: '',
+    })
+  }
+
   /**
    * @method editRow
    * @description for filling the row above table for editing
@@ -386,7 +424,7 @@ function LossStandardTable(props) {
     setValue('FlashLoss', '')
     setDisableLossType(false)
     setDisableFlashType(false)
-
+    errors.LossPercentage = {}
   }
   /**
    * @method deleteRow
@@ -622,7 +660,7 @@ function LossStandardTable(props) {
         {percentage &&
           <>
             <Col md="2">
-              <NumberFieldHookForm
+              <TextFieldHookForm
                 label={`Loss (%)`}
                 name={'LossPercentage'}
                 Controller={Controller}
@@ -631,16 +669,11 @@ function LossStandardTable(props) {
                 mandatory={false}
                 rules={{
                   required: false,
-                  pattern: {
-                    //value: /^[0-9]*$/i,
-                    value: /^[0-9]\d*(\.\d+)?$/i,
-                    message: 'Invalid Number.',
-                  },
+                  validate: { number, checkWhiteSpaces, percentageLimitValidation },
                   max: {
                     value: 100,
                     message: 'Percentage cannot be greater than 100'
                   },
-                  // maxLength: 4,
                 }}
                 handleChange={() => { }}
                 defaultValue={''}
@@ -652,11 +685,13 @@ function LossStandardTable(props) {
             </Col>
           </>}
         <Col md="2">
+          {lossWeightTooltip && (props.CostingViewMode || isDisable || disableAll) && <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'loss-weight'} tooltipText={lossWeightTooltip} />}
           <NumberFieldHookForm
             label={`Loss Weight`}
             name={'LossWeight'}
             Controller={Controller}
             control={control}
+            id={'loss-weight'}
             register={register}
             mandatory={false}
             handleChange={(e) => changeinLossWeight(e.target.value)}
@@ -688,14 +723,24 @@ function LossStandardTable(props) {
                 </button>
               </>
             ) : (
-              <button
-                type="button"
-                className={'user-btn mt30 pull-left'}
-                onClick={addRow}
-                disabled={props.CostingViewMode || disableAll}
-              >
-                <div className={'plus'}></div>ADD
-              </button>
+              <>
+                <button
+                  type="button"
+                  className={'user-btn mt30 pull-left'}
+                  onClick={addRow}
+                  disabled={props.CostingViewMode || disableAll}
+                >
+                  <div className={'plus'}></div>ADD
+                </button>
+                <button
+                  type="button"
+                  className={"mr15 ml-1 mt30 reset-btn"}
+                  disabled={props.CostingViewMode || disableAll}
+                  onClick={rateTableReset}
+                >
+                  Reset
+                </button>
+              </>
             )}
           </div>
         </Col>
@@ -737,11 +782,13 @@ function LossStandardTable(props) {
                               <button
                                 className="Edit mr-2"
                                 type={'button'}
+                                title='Edit'
                                 disabled={props.CostingViewMode || disableAll}
                                 onClick={() => editRow(index)}
                               />
                               <button
                                 className="Delete"
+                                title='Delete'
                                 type={'button'}
                                 disabled={props.CostingViewMode || disableAll}
                                 onClick={() => deleteRow(index)}

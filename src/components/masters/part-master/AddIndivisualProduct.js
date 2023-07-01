@@ -16,7 +16,7 @@ import { FILE_URL } from '../../../config/constants';
 import LoaderCustom from '../../common/LoaderCustom';
 import imgRedcross from "../../../assests/images/red-cross.png";
 import { debounce } from 'lodash';
-import { onFocus } from '../../../helper';
+import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 
 class AddIndivisualProduct extends Component {
     constructor(props) {
@@ -40,7 +40,7 @@ class AddIndivisualProduct extends Component {
             isImpactCalculation: false,
             setDisable: false,
             attachmentLoader: false,
-            showErrorOnFocusDate: false
+            showPopup: false
         }
     }
 
@@ -146,7 +146,7 @@ class AddIndivisualProduct extends Component {
     */
     setDisableFalseFunction = () => {
         const loop = Number(this.dropzone.current.files.length) - Number(this.state.files.length)
-        if (Number(loop) === 1) {
+        if (Number(loop) === 1 || Number(this.dropzone.current.files.length) === Number(this.state.files.length)) {
             this.setState({ setDisable: false, attachmentLoader: false })
         }
     }
@@ -251,7 +251,16 @@ class AddIndivisualProduct extends Component {
         this.props.getProductData('', res => { })
         this.props.hideForm(type)
     }
-
+    cancelHandler = () => {
+        this.setState({ showPopup: true })
+    }
+    onPopupConfirm = () => {
+        this.cancel('cancel')
+        this.setState({ showPopup: false })
+    }
+    closePopUp = () => {
+        this.setState({ showPopup: false })
+    }
     /**
     * @method onSubmit
     * @description Used to Submit the form
@@ -369,7 +378,7 @@ class AddIndivisualProduct extends Component {
                                                             name={"ProductName"}
                                                             type="text"
                                                             placeholder={isEditFlag ? '-' : "Enter"}
-                                                            validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength20]}
+                                                            validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80]}
                                                             component={renderText}
                                                             required={true}
                                                             className=""
@@ -489,9 +498,7 @@ class AddIndivisualProduct extends Component {
                                                                     component={renderDatePicker}
                                                                     className="form-control"
                                                                     disabled={isViewMode}
-                                                                    onFocus={() => onFocus(this, true)}
                                                                 />
-                                                                {this.state.showErrorOnFocusDate && this.state.effectiveDate === '' && <div className='text-help mt-1 p-absolute bottom-7'>This field is required.</div>}
                                                             </div>
                                                         </div>
                                                     </Col>
@@ -535,7 +542,7 @@ class AddIndivisualProduct extends Component {
                                                                 ref={this.dropzone}
                                                                 onChangeStatus={this.handleChangeStatus}
                                                                 PreviewComponent={this.Preview}
-                                                                accept="*"
+                                                                accept="image/jpeg,image/jpg,image/png,image/PNG,.xls,.doc,.pdf,.xlsx"
                                                                 initialFiles={this.state.initialFiles}
                                                                 maxFiles={3}
                                                                 maxSizeBytes={2000000}
@@ -611,7 +618,7 @@ class AddIndivisualProduct extends Component {
                                                     <button
                                                         type={"button"}
                                                         className="mr15 cancel-btn"
-                                                        onClick={() => { this.cancel('cancel') }}
+                                                        onClick={this.cancelHandler}
                                                         disabled={setDisable}
                                                     >
                                                         <div className={"cancel-icon"}></div>
@@ -634,6 +641,10 @@ class AddIndivisualProduct extends Component {
                         </div>
                     </div>
                 </div>
+                {
+                    this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.CANCEL_MASTER_ALERT}`} />
+                }
+
             </>
         );
     }

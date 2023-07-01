@@ -152,8 +152,8 @@ function ToolCost(props) {
                           <td>{item.Life}</td>
                           <td>{item.TotalToolCost ? checkForDecimalAndNull(item.TotalToolCost, 4) : 0}</td>
                           <td>
-                            {!CostingViewMode && <button className="Edit mt15 mr-2" type={'button'} onClick={() => editItem(index)} />}
-                            {!CostingViewMode && <button className="Delete mt15" type={'button'} onClick={() => deleteItem(index)} />}
+                            {!CostingViewMode && <button title='Edit' className="Edit mt15 mr-2" type={'button'} onClick={() => editItem(index)} />}
+                            {!CostingViewMode && <button title='Delete' className="Delete mt15" type={'button'} onClick={() => deleteItem(index)} />}
                           </td>
                         </tr>
                       )

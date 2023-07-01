@@ -77,8 +77,7 @@ class CostingSummaryBulkUpload extends Component {
    * @description Renders buttons
    */
     buttonFormatter = (props) => {
-       
-		const row = props?.data;
+        const row = props?.data;
         const status = row.FileUploadStatus
         if (status === PENDING) {
             return (
@@ -102,7 +101,7 @@ class CostingSummaryBulkUpload extends Component {
 
     }
 
-    
+
     /**
   * @method returnExcelColumn
   * @description Used to get excel column names
@@ -172,7 +171,7 @@ class CostingSummaryBulkUpload extends Component {
         const defaultColDef = {
             resizable: true,
             filter: true,
-            sortable: true,
+            sortable: false,
 
         };
         const frameworkComponents = {

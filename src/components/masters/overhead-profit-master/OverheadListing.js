@@ -25,6 +25,8 @@ import _ from 'lodash';
 import SingleDropdownFloationFilter from '../material-master/SingleDropdownFloationFilter';
 import { agGridStatus, getGridHeight, isResetClick } from '../../../actions/Common';
 import SelectRowWrapper from '../../common/SelectRowWrapper';
+import { reactLocalStorage } from 'reactjs-localstorage';
+import { hideCustomerFromExcel } from '../../common/CommonFunctions';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -177,7 +179,7 @@ function OverheadListing(props) {
 
     useEffect(() => {
 
-        if (statusColumnData) {
+        if (statusColumnData?.id) {
             setDisableFilter(false)
             setWarningMessage(true)
             setFloatingFilterData(prevState => ({ ...prevState, OverheadApplicabilityType: encodeURIComponent(statusColumnData.data) }))
@@ -238,7 +240,7 @@ function OverheadListing(props) {
 
 
     const onSearch = () => {
-
+        setNoData(false)
         setWarningMessage(false)
         setIsFilterButtonClicked(true)
         setPageNo(1)
@@ -315,7 +317,8 @@ function OverheadListing(props) {
             isEditFlag: true,
             Id: Id,
             IsVendor: rowData.CostingHead,
-            isViewMode: isViewMode
+            isViewMode: isViewMode,
+            costingTypeId: rowData.CostingTypeId,
         }
         props.getDetails(data);
     }
@@ -338,6 +341,8 @@ function OverheadListing(props) {
         dispatch(deleteOverhead(ID, (res) => {
             if (res.data.Result === true) {
                 Toaster.success(MESSAGES.DELETE_OVERHEAD_SUCCESS);
+                dispatch(setSelectedRowForPagination([]))
+                setDataCount(0)
                 getDataList(null, null, null, null, 0, 10, true, floatingFilterData)
             }
         }))
@@ -549,6 +554,7 @@ function OverheadListing(props) {
     };
 
     const returnExcelColumn = (data = [], TempData) => {
+        let excelData = hideCustomerFromExcel(data, "CustomerName")
         let temp = []
         temp = TempData && TempData.map((item) => {
             if (item.ClientName === null) {
@@ -576,7 +582,7 @@ function OverheadListing(props) {
         return (
 
             <ExcelSheet data={temp} name={OverheadMaster}>
-                {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
+                {excelData && excelData.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
             </ExcelSheet>);
     }
 
@@ -618,7 +624,7 @@ function OverheadListing(props) {
     const defaultColDef = {
         resizable: true,
         filter: true,
-        sortable: true,
+        sortable: false,
         headerCheckboxSelectionFilteredOnly: true,
         checkboxSelection: isFirstColumn
     };
@@ -639,13 +645,11 @@ function OverheadListing(props) {
             {
                 isLoader ? <LoaderCustom customClass={"loader-center"} /> :
                     <div className={`ag-grid-react custom-pagination ${DownloadAccessibility ? "show-table-btn" : ""}`}>
-
+                        {disableDownload && <LoaderCustom message={MESSAGES.DOWNLOADING_MESSAGE} />}
                         <form onSubmit={(onSubmit)} noValidate>
                             <Row className="pt-4 ">
-
                                 <Col md="9" className="search-user-block mb-3 pl-0">
                                     <div className="d-flex justify-content-end bd-highlight w100">
-                                        {disableDownload && <div title={MESSAGES.DOWNLOADING_MESSAGE} className="disabled-overflow"><WarningMessage dClass="ml-4 mt-1" message={MESSAGES.DOWNLOADING_MESSAGE} /></div>}
                                         <div className="warning-message d-flex align-items-center">
                                             {warningMessage && !disableDownload && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
                                             <button disabled={disableFilter} title="Filtered data" type="button" class="user-btn mr5" onClick={() => onSearch()}><div class="filter mr-0"></div></button>
@@ -665,19 +669,15 @@ function OverheadListing(props) {
                                         {
                                             DownloadAccessibility &&
                                             <>
-                                                {disableDownload ? <div className='p-relative mr5'> <LoaderCustom customClass={"download-loader"} /> <button type="button" className={'user-btn'}><div className="download mr-0"></div>
-                                                </button></div> :
-                                                    <>
-                                                        <button type="button" onClick={onExcelDownload} className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
-                                                            {/* DOWNLOAD */}
-                                                        </button>
-                                                        <ExcelFile filename={'Overhead'} fileExtension={'.xls'} element={
-                                                            <button id={'Excel-Downloads-overhead'} className="p-absolute" type="button" >
-                                                            </button>}>
-                                                            {onBtExport()}
-                                                        </ExcelFile>
-                                                    </>
-                                                }
+                                                <button title={`Download ${dataCount === 0 ? "All" : "(" + dataCount + ")"}`} type="button" onClick={onExcelDownload} className={'user-btn mr5'}><div className="download mr-1" ></div>
+                                                    {/* DOWNLOAD */}
+                                                    {`${dataCount === 0 ? "All" : "(" + dataCount + ")"}`}
+                                                </button>
+                                                <ExcelFile filename={'Overhead'} fileExtension={'.xls'} element={
+                                                    <button id={'Excel-Downloads-overhead'} className="p-absolute" type="button" >
+                                                    </button>}>
+                                                    {onBtExport()}
+                                                </ExcelFile>
                                             </>
                                         }
 
@@ -694,7 +694,6 @@ function OverheadListing(props) {
                                 <div className={`ag-grid-wrapper height-width-wrapper report-grid ${(overheadProfitList && overheadProfitList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
                                     <div className="ag-grid-header">
                                         <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
-                                        <SelectRowWrapper dataCount={dataCount} />
                                     </div>
                                     <div className={`ag-theme-material ${isLoader && "max-loader-height"}`}>
                                         {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
@@ -719,9 +718,9 @@ function OverheadListing(props) {
                                             suppressRowClickSelection={true}
                                         >
                                             <AgGridColumn field="CostingHead" headerName="Costing Head" cellRenderer={checkBoxRenderer}></AgGridColumn>
-                                            {(getConfigurationKey().IsPlantRequiredForOverheadProfitInterestRate || getConfigurationKey().IsDestinationPlantConfigure) && <AgGridColumn field="PlantName" headerName="Plant(Code)"></AgGridColumn>}
-                                            <AgGridColumn field="VendorName" headerName="Vendor(Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                                            <AgGridColumn field="ClientName" headerName="Client Name" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                                            {(getConfigurationKey().IsPlantRequiredForOverheadProfitInterestRate || getConfigurationKey().IsDestinationPlantConfigure) && <AgGridColumn field="PlantName" headerName="Plant (Code)"></AgGridColumn>}
+                                            <AgGridColumn field="VendorName" headerName="Vendor (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                                            {(reactLocalStorage.getObject('cbcCostingPermission')) && <AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
                                             <AgGridColumn field="ModelType" headerName="Model Type"></AgGridColumn>
                                             <AgGridColumn field="OverheadApplicabilityType" headerName="Overhead Applicability" floatingFilterComponent="valuesFloatingFilter" floatingFilterComponentParams={floatingFilterOverhead}></AgGridColumn>
                                             <AgGridColumn width={215} field="OverheadPercentage" headerName="Overhead Applicability (%)" cellRenderer={'hyphenFormatter'}></AgGridColumn>

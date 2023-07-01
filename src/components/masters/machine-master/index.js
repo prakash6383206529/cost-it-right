@@ -150,6 +150,7 @@ class MachineMaster extends Component {
     */
     hideMoreDetailsForm = (data = {}, editDetails = {}) => {
 
+
         this.setState({
             isAddMoreDetails: false,
             isMachineRateForm: true,
@@ -190,11 +191,6 @@ class MachineMaster extends Component {
         return (
             <>
                 <div className="container-fluid" id='go-top-top'>
-                    <Row>
-                        <Col sm="4">
-                            <h1>{`Machine Master`}</h1>
-                        </Col>
-                    </Row>
                     <ScrollToTop pointProp={"go-top-top"} />
                     <Row>
                         <Col>

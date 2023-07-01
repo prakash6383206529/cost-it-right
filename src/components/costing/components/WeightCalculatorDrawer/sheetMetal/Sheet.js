@@ -12,6 +12,8 @@ import Toaster from '../../../../common/Toaster'
 import { G, KG, MG, } from '../../../../../config/constants'
 import { AcceptableSheetMetalUOM } from '../../../../../config/masterData'
 import { debounce } from 'lodash'
+import { nonZero } from '../../../../../helper/validation'
+import TooltipCustom from '../../../../common/Tooltip'
 
 function Sheet(props) {
     const WeightCalculatorRequest = props.rmRowData.WeightCalculatorRequest;
@@ -45,7 +47,7 @@ function Sheet(props) {
         SheetLength: WeightCalculatorRequest && WeightCalculatorRequest.LengthOfSheet !== null ? WeightCalculatorRequest.LengthOfSheet : '',
         SheetWeight: WeightCalculatorRequest && WeightCalculatorRequest.WeightOfSheetInUOM !== null ? WeightCalculatorRequest.WeightOfSheetInUOM : '',
         StripWidth: WeightCalculatorRequest && WeightCalculatorRequest.StripWidth !== null ? WeightCalculatorRequest.StripWidth : '',
-        StripsNumber: WeightCalculatorRequest && WeightCalculatorRequest.NoOfStrips !== null ? WeightCalculatorRequest.NoOfStrips : '',
+        StripsNumber: WeightCalculatorRequest && WeightCalculatorRequest.NumberOfStrips !== null ? WeightCalculatorRequest.NumberOfStrips : '',
         BlankSize: WeightCalculatorRequest && WeightCalculatorRequest.BlankSize !== null ? WeightCalculatorRequest.BlankSize : '',
         ComponentPerStrip: WeightCalculatorRequest && WeightCalculatorRequest.ComponentsPerStrip !== null ? WeightCalculatorRequest.ComponentsPerStrip : '',
         NoOfComponent: WeightCalculatorRequest && WeightCalculatorRequest.NumberOfPartsPerSheet !== null ? WeightCalculatorRequest.NumberOfPartsPerSheet : '', // TOTAL COMPONENT PER SHEET
@@ -190,7 +192,8 @@ function Sheet(props) {
     const setNoOfComponent = () => {
         const stripNo = getValues('StripsNumber')
         const componentPerStrip = getValues('ComponentPerStrip')
-        const noOfComponent = stripNo * componentPerStrip
+        const cavity = getValues('Cavity')
+        const noOfComponent = stripNo * componentPerStrip * cavity
         setValue('NoOfComponent', checkForNull(noOfComponent))
     }
 
@@ -209,7 +212,8 @@ function Sheet(props) {
         grossWeight = (sheetWeight / noOfComponent) / cavity
 
         const updatedValue = dataToSend
-        updatedValue.GrossWeight = grossWeight
+        updatedValue.GrossWeight = setValueAccToUOM(grossWeight, UOMDimension.label)
+        updatedValue.newGrossWeight = setValueAccToUOM(grossWeight, UOMDimension.label)
         setTimeout(() => {
             setDataToSend(updatedValue)
             setGrossWeights(grossWeight)
@@ -267,6 +271,9 @@ function Sheet(props) {
                 setIsChangeApplied(false)
             }
         }
+
+        let grossWeight = (dataToSend.newGrossWeight === undefined || dataToSend.newGrossWeight === 0) ? GrossWeight : dataToSend.newGrossWeight
+
         let data = {
             LayoutType: 'Sheet',
             SheetMetalCalculationId: WeightCalculatorRequest && WeightCalculatorRequest.SheetMetalCalculationId ? WeightCalculatorRequest.SheetMetalCalculationId : "0",
@@ -275,23 +282,23 @@ function Sheet(props) {
             CostingRawMaterialDetailId: rmRowData.RawMaterialDetailId,
             RawMaterialIdRef: rmRowData.RawMaterialId,
             LoggedInUserId: loggedInUserId(),
-            RawMaterialCost: dataToSend.GrossWeight * rmRowData.RMRate - (dataToSend.GrossWeight - getValues('FinishWeightOfSheet')) * rmRowData.ScrapRate,
+            RawMaterialCost: grossWeight * rmRowData.RMRate - (grossWeight - getValues('FinishWeightOfSheet')) * rmRowData.ScrapRate,
             UOMForDimensionId: UOMDimension ? UOMDimension.value : '',
             UOMForDimension: UOMDimension ? UOMDimension.label : '',
             Cavity: values.Cavity,
             Thickness: values.SheetThickness,
             LengthOfSheet: values.SheetLength,
-            WeightOfSheetInUOM: dataToSend.SheetWidth,
+            WeightOfSheetInUOM: dataToSend.WeightOfSheet,
             Width: values.SheetWidth,
             StripWidth: values.StripWidth,
-            NoOfStrips: values.StripsNumber,
+            NumberOfStrips: values.StripsNumber,
             BlankSize: values.BlankSize,
             ComponentsPerStrip: values.ComponentPerStrip,
             NumberOfPartsPerSheet: values.NoOfComponent, //TOTAL COMPONENT PER SHEET
             UOMId: rmRowData.UOMId,
             UOM: rmRowData.UOM,
             NetSurfaceArea: values.NetSurfaceArea,
-            GrossWeight: (dataToSend.newGrossWeight === undefined || dataToSend.newGrossWeight === 0) ? GrossWeight : dataToSend.newGrossWeight,
+            GrossWeight: grossWeight,
             FinishWeight: getValues('FinishWeightOfSheet'),
         }
 
@@ -361,6 +368,7 @@ function Sheet(props) {
                                                 value: /^\d{0,4}(\.\d{0,6})?$/i,
                                                 message: 'Maximum length for integer is 4 and for decimal is 6',
                                             },
+                                            validate: { nonZero }
                                         }}
                                         handleChange={() => { }}
                                         defaultValue={''}
@@ -384,6 +392,7 @@ function Sheet(props) {
                                                 value: /^\d{0,4}(\.\d{0,6})?$/i,
                                                 message: 'Maximum length for integer is 4 and for decimal is 6',
                                             },
+                                            validate: { nonZero }
                                         }}
                                         handleChange={() => { }}
                                         defaultValue={''}
@@ -408,6 +417,7 @@ function Sheet(props) {
                                                 value: /^\d{0,4}(\.\d{0,6})?$/i,
                                                 message: 'Maximum length for integer is 4 and for decimal is 6',
                                             },
+                                            validate: { nonZero }
                                         }}
                                         handleChange={() => { }}
                                         defaultValue={''}
@@ -418,9 +428,11 @@ function Sheet(props) {
                                     />
                                 </Col>
                                 <Col md="3">
+                                    <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'sheet-weight'} tooltipText={'Weight of Sheet = (Density * (Thickness * Width * Length)) / 1000'} />
                                     <NumberFieldHookForm
                                         label={`Weight of Sheet(g)`}
                                         name={'SheetWeight'}
+                                        id={'sheet-weight'}
                                         Controller={Controller}
                                         control={control}
                                         register={register}
@@ -467,8 +479,10 @@ function Sheet(props) {
                                     />
                                 </Col>
                                 <Col md="3">
+                                    <TooltipCustom disabledIcon={true} id={'sheet-strips'} tooltipText={'No. of Strips = (Sheet Length / Strip Width)'} />
                                     <NumberFieldHookForm
                                         label={`No. of Strips`}
+                                        id={'sheet-strips'}
                                         name={'StripsNumber'}
                                         Controller={Controller}
                                         control={control}
@@ -497,6 +511,7 @@ function Sheet(props) {
                                                 value: /^\d{0,4}(\.\d{0,6})?$/i,
                                                 message: 'Maximum length for integer is 4 and for decimal is 6',
                                             },
+                                            validate: { nonZero }
                                         }}
                                         handleChange={() => { }}
                                         defaultValue={''}
@@ -507,9 +522,11 @@ function Sheet(props) {
                                     />
                                 </Col>
                                 <Col md="3">
+                                    <TooltipCustom disabledIcon={true} id={'sheet-component-per-strip'} tooltipText={'Components/Strip = (Sheet Width / Blank Size)'} />
                                     <NumberFieldHookForm
                                         label={`Components/Strip`}
                                         name={'ComponentPerStrip'}
+                                        id={'sheet-component-per-strip'}
                                         Controller={Controller}
                                         control={control}
                                         register={register}
@@ -519,22 +536,6 @@ function Sheet(props) {
                                         className=""
                                         customClassName={'withBorder'}
                                         errors={errors.ComponentPerStrip}
-                                        disabled={true}
-                                    />
-                                </Col>
-                                <Col md="3">
-                                    <NumberFieldHookForm
-                                        label={`Total Components/Sheet`}
-                                        name={'NoOfComponent'}
-                                        Controller={Controller}
-                                        control={control}
-                                        register={register}
-                                        mandatory={false}
-                                        handleChange={() => { }}
-                                        defaultValue={''}
-                                        className=""
-                                        customClassName={'withBorder'}
-                                        errors={errors.NoOfComponent}
                                         disabled={true}
                                     />
                                 </Col>
@@ -552,6 +553,7 @@ function Sheet(props) {
                                                 value: /^\d{0,4}(\.\d{0,6})?$/i,
                                                 message: 'Maximum length for integer is 4 and for decimal is 6',
                                             },
+                                            validate: { nonZero }
                                         }}
                                         handleChange={() => { }}
                                         defaultValue={''}
@@ -559,6 +561,24 @@ function Sheet(props) {
                                         customClassName={'withBorder'}
                                         errors={errors.Cavity}
                                         disabled={CostingViewMode ? true : false}
+                                    />
+                                </Col>
+                                <Col md="3">
+                                    <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'total-component'} tooltipText={'Total Component/Sheet = (No. of Strips * Components per Strip * Cavity )'} />
+                                    <NumberFieldHookForm
+                                        label={`Total Components/Sheet`}
+                                        name={'NoOfComponent'}
+                                        id={'total-component'}
+                                        Controller={Controller}
+                                        control={control}
+                                        register={register}
+                                        mandatory={false}
+                                        handleChange={() => { }}
+                                        defaultValue={''}
+                                        className=""
+                                        customClassName={'withBorder'}
+                                        errors={errors.NoOfComponent}
+                                        disabled={true}
                                     />
                                 </Col>
                             </Row>
@@ -607,9 +627,11 @@ function Sheet(props) {
 
                                 </Col>
                                 <Col md="3">
+                                    <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'sheet-gross-weight'} tooltipText={'Gross Weight = (Weight of Sheet / Total Components per Sheet / Cavity)'} />
                                     <NumberFieldHookForm
                                         label={`Gross Weight(${UOMDimension.label})`}
                                         name={'GrossWeight'}
+                                        id={'sheet-gross-weight'}
                                         Controller={Controller}
                                         control={control}
                                         register={register}

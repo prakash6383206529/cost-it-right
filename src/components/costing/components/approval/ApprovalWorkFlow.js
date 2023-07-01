@@ -58,7 +58,7 @@ function ApprovalWorkFlow(props) {
                   </div>
                   {/* top */}
                   <div className="bottom">
-                    <div className="d-flex mb-3">
+                    <div className="d-flex mb-1">
                       <span className="small-grey-text left">Date:</span>
                       <span className=" right">{item.Date ? DayTime(item.Date).format('DD/MM/YYYY') : '-'}</span>
                     </div>

@@ -3,17 +3,14 @@ import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, } from 'reactstrap';
 import { required, number, maxLength6, maxLength80, minLength10, maxLength12, checkWhiteSpaces, acceptAllExceptSingleSpecialCharacter, maxLength15, postiveNumber, maxLength3, checkSpacesInString } from "../../../helper/validation";
-
 import { loggedInUserId } from "../../../helper/auth";
-import { renderNumberInputField, renderText, searchableSelect } from "../../layout/FormInputs";
+import { renderText, renderTextInputField, searchableSelect } from "../../layout/FormInputs";
 import { createPlantAPI, getPlantUnitAPI, updatePlantAPI } from '../actions/Plant';
-import {
-  fetchCountryDataAPI, fetchStateDataAPI, fetchCityDataAPI, fetchSupplierCityDataAPI, getSupplierList,
-  getCityByCountry,
-} from '../../../actions/Common';
+import { fetchCountryDataAPI, fetchStateDataAPI, fetchCityDataAPI, fetchSupplierCityDataAPI, getSupplierList, getCityByCountry, } from '../../../actions/Common';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import Drawer from '@material-ui/core/Drawer';
+import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 
 class AddVBCPlant extends Component {
   constructor(props) {
@@ -27,6 +24,7 @@ class AddVBCPlant extends Component {
       PlantId: '',
       IsActive: true,
       isViewMode: this.props?.isViewMode ? true : false,
+      showPopup: false
     }
   }
 
@@ -36,7 +34,7 @@ class AddVBCPlant extends Component {
   */
   componentDidMount() {
     this.props.fetchCountryDataAPI(() => { })
-    this.props.getSupplierList(() => { })
+    this.props.getSupplierList(this.state.vendorName, () => { })
     this.getDetails()
   }
 
@@ -216,7 +214,16 @@ class AddVBCPlant extends Component {
     this.props.getPlantUnitAPI('', res => { })
     this.toggleDrawer('', type)
   }
-
+  cancelHandler = () => {
+    this.setState({ showPopup: true })
+  }
+  onPopupConfirm = () => {
+    this.cancel('cancel')
+    this.setState({ showPopup: false })
+  }
+  closePopUp = () => {
+    this.setState({ showPopup: false })
+  }
   /**
   * @method onSubmit
   * @description Used to Submit the form
@@ -322,7 +329,7 @@ class AddVBCPlant extends Component {
                     <Field
                       name="VendorId"
                       type="text"
-                      label="Vendor Name"
+                      label="Vendor (Code)"
                       component={searchableSelect}
                       placeholder={"Select Vendor"}
                       options={this.selectType("vendors")}
@@ -377,8 +384,8 @@ class AddVBCPlant extends Component {
                           name={"PhoneNumber"}
                           type="text"
                           placeholder={isViewMode ? '-' : "Enter"}
-                          validate={[postiveNumber, minLength10, maxLength12, checkWhiteSpaces]}
-                          component={renderNumberInputField}
+                          validate={[postiveNumber, minLength10, maxLength12, checkWhiteSpaces, number]}
+                          component={renderTextInputField}
                           //    required={true}
                           maxLength={12}
                           className=""
@@ -527,7 +534,7 @@ class AddVBCPlant extends Component {
                     <button
                       type={"button"}
                       className="mr15 cancel-btn"
-                      onClick={() => { this.cancel('cancel') }}
+                      onClick={this.cancelHandler}
                     >
                       <div className={"cancel-icon"}></div>
                       {"Cancel"}
@@ -546,6 +553,9 @@ class AddVBCPlant extends Component {
             </div>
           </Container>
         </Drawer>
+        {
+          this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.CANCEL_MASTER_ALERT}`} />
+        }
       </>
     );
   }

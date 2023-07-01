@@ -2,9 +2,9 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, } from 'reactstrap';
-import { required, maxLength6, maxLength80, checkWhiteSpaces, minLength10, alphaNumeric, maxLength71, maxLength5, acceptAllExceptSingleSpecialCharacter, maxLength4, postiveNumber, maxLength12, checkSpacesInString } from "../../../helper/validation";
+import { required, maxLength6, maxLength80, checkWhiteSpaces, minLength10, alphaNumeric, maxLength71, maxLength5, acceptAllExceptSingleSpecialCharacter, postiveNumber, maxLength12, checkSpacesInString, postiveNumberForPlantCode, number, maxLength4 } from "../../../helper/validation";
 import { userDetails, loggedInUserId } from "../../../helper/auth";
-import { focusOnError, renderNumberInputField, renderText, searchableSelect } from "../../layout/FormInputs";
+import { focusOnError, renderText, renderTextInputField, searchableSelect } from "../../layout/FormInputs";
 import { createPlantAPI, getPlantUnitAPI, updatePlantAPI, getComapanySelectList } from '../actions/Plant';
 import {
   fetchCountryDataAPI, fetchStateDataAPI, fetchCityDataAPI, fetchSupplierCityDataAPI,
@@ -15,6 +15,8 @@ import { MESSAGES } from '../../../config/message';
 import Drawer from '@material-ui/core/Drawer';
 import LoaderCustom from '../../common/LoaderCustom';
 import { debounce } from 'lodash';
+import { ZBCTypeId } from '../../../config/constants';
+import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 
 class AddZBCPlant extends Component {
   constructor(props) {
@@ -31,7 +33,8 @@ class AddZBCPlant extends Component {
       company: [],
       DropdownChanged: true,
       DataToCheck: [],
-      setDisable: false
+      setDisable: false,
+      showPopup: false
     }
   }
 
@@ -84,7 +87,7 @@ class AddZBCPlant extends Component {
               country: Data.CountryName !== undefined ? { label: Data.CountryName, value: Data.CountryId } : [],
               state: Data.StateName !== undefined ? { label: Data.StateName, value: Data.StateId } : [],
               city: Data.CityName !== undefined ? { label: Data.CityName, value: Data.CityIdRef } : [],
-              company: Data.CompanyName !== undefined ? { label: Data.CompanyName, value: Data.CompanyId } : []
+              company: Data.CompanyName !== undefined ? { label: `${Data.CompanyName}${Data.CompanyCode ? ` (${Data.CompanyCode})` : ''}`, value: Data.CompanyId } : []
             }, () => this.setState({ isLoader: false }))
           }, 500)
         }
@@ -215,7 +218,17 @@ class AddZBCPlant extends Component {
     this.props.getPlantUnitAPI('', res => { })
     this.toggleDrawer('', type)
   }
-
+  cancelHandler = () => {
+    // this.setState({ showPopup: true })
+    this.cancel('cancel')
+  }
+  onPopupConfirm = () => {
+    this.cancel('cancel')
+    this.setState({ showPopup: false })
+  }
+  closePopUp = () => {
+    this.setState({ showPopup: false })
+  }
   toggleDrawer = (event, type) => {
     if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
       return;
@@ -261,7 +274,8 @@ class AddZBCPlant extends Component {
         CityId: city.value,
         EVendorType: 0,
         VendorId: userDetail.ZBCSupplierInfo.VendorId,
-        CompanyId: company.value
+        CompanyId: company.value,
+        CostingTypeId: ZBCTypeId
       }
       this.props.updatePlantAPI(PlantId, updateData, (res) => {
         this.setState({ setDisable: false })
@@ -287,7 +301,8 @@ class AddZBCPlant extends Component {
         CityId: city.value,
         EVendorType: 0,
         VendorId: userDetail.ZBCSupplierInfo.VendorId,
-        CompanyId: company.value
+        CompanyId: company.value,
+        CostingTypeId: ZBCTypeId
       }
 
       this.props.createPlantAPI(formData, (res) => {
@@ -368,7 +383,7 @@ class AddZBCPlant extends Component {
                       name={"PlantCode"}
                       type="text"
                       placeholder={isEditFlag ? '-' : "Enter"}
-                      validate={[required, checkWhiteSpaces, maxLength4, checkSpacesInString, postiveNumber]}
+                      validate={[required, checkWhiteSpaces, checkSpacesInString, postiveNumberForPlantCode, maxLength4]}
                       component={renderText}
                       required={true}
                       className=""
@@ -384,7 +399,7 @@ class AddZBCPlant extends Component {
                       <Field
                         name="CompanyName"
                         type="text"
-                        label="Company Name"
+                        label="Company (Code)"
                         component={searchableSelect}
                         placeholder={isViewMode ? '-' : "Select"}
                         options={this.selectType("Company")}
@@ -410,8 +425,8 @@ class AddZBCPlant extends Component {
                           name={"PhoneNumber"}
                           type="text"
                           placeholder={isViewMode ? '-' : "Enter"}
-                          validate={[postiveNumber, minLength10, maxLength12, checkWhiteSpaces]}
-                          component={renderNumberInputField}
+                          validate={[postiveNumber, minLength10, maxLength12, checkWhiteSpaces, number]}
+                          component={renderTextInputField}
                           maxLength={12}
                           className=""
                           customClassName={"withBorder"}
@@ -424,8 +439,8 @@ class AddZBCPlant extends Component {
                           name={"Extension"}
                           type="text"
                           placeholder={isViewMode ? '-' : "Enter"}
-                          validate={[postiveNumber, maxLength5, checkWhiteSpaces]}
-                          component={renderNumberInputField}
+                          validate={[postiveNumber, maxLength5, checkWhiteSpaces, number]}
+                          component={renderTextInputField}
                           maxLength={5}
                           className=""
                           customClassName={"withBorder"}
@@ -555,7 +570,7 @@ class AddZBCPlant extends Component {
                     <button
                       type={"button"}
                       className=" mr15 cancel-btn"
-                      onClick={() => { this.cancel('cancel') }}
+                      onClick={this.cancelHandler}
                       disabled={setDisable}
                     >
                       <div className={"cancel-icon"}></div>
@@ -576,6 +591,9 @@ class AddZBCPlant extends Component {
             </div>
           </Container>
         </Drawer>
+        {
+          this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.CANCEL_MASTER_ALERT}`} />
+        }
       </>
     );
   }

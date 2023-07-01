@@ -2,13 +2,15 @@ import React, { Fragment, useState, useEffect, useContext } from 'react'
 import { Row, Col } from 'reactstrap'
 import { useForm, Controller, useWatch } from 'react-hook-form'
 import { useDispatch } from 'react-redux'
-import { NumberFieldHookForm, } from '../../../../layout/HookFormInputs'
+import { NumberFieldHookForm, TextFieldHookForm, } from '../../../../layout/HookFormInputs'
 import { checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUserId, } from '../../../../../helper'
 import { costingInfoContext } from '../../CostingDetailStepTwo'
 import { saveMachiningProcessCostCalculationData } from '../../../actions/CostWorking'
 import Toaster from '../../../../common/Toaster'
 import { findProcessCost } from '../../../CostingUtil'
 import { debounce } from 'lodash'
+import TooltipCustom from '../../../../common/Tooltip'
+import { number, percentageLimitValidation, checkWhiteSpaces } from "../../../../../helper/validation";
 
 function UomTimeProcessDefaultCalculator(props) {
     const WeightCalculatorRequest = props.calculatorData.WeightCalculatorRequest
@@ -187,7 +189,7 @@ function UomTimeProcessDefaultCalculator(props) {
             setIsDisable(false)
             if (res.data.Result) {
                 obj.ProcessCalculationId = res.data.Identity
-                Toaster.success('Calculation saved sucessfully.')
+                Toaster.success('Calculation saved successfully.')
                 calculateMachineTime(totalMachiningTime, obj)
             }
         }))
@@ -266,8 +268,10 @@ function UomTimeProcessDefaultCalculator(props) {
                                         </Col>
 
                                         <Col md="4">
+                                            <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'spindle-speed'} tooltipText={'Spindle Speed = (1000 * Cutting Speed) / (π * Cutting Diameter)'} />
                                             <NumberFieldHookForm
                                                 label={`Spindle Speed(rpm)`}
+                                                id={'spindle-speed'}
                                                 name={'spindleSpeed'}
                                                 Controller={Controller}
                                                 control={control}
@@ -341,8 +345,10 @@ function UomTimeProcessDefaultCalculator(props) {
                                         </Col>
 
                                         <Col md="4">
+                                            <TooltipCustom disabledIcon={true} id={'feed'} tooltipText={'Feed = (Spindle Speed * Feed * No. of Tooth)'} />
                                             <NumberFieldHookForm
                                                 label="Feed(mm/min)"
+                                                id={'feed'}
                                                 name={'feedAutoCalculated'}
                                                 Controller={Controller}
                                                 control={control}
@@ -436,9 +442,11 @@ function UomTimeProcessDefaultCalculator(props) {
                                         </Col>
 
                                         <Col md="4">
+                                            <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'total-length-depth'} tooltipText={'Total Length/Depth = (Length / Depth) * (No. of Passes / Holes)'} />
                                             <NumberFieldHookForm
                                                 label={`Total Length/Depth(mm)`}
                                                 name={'totalLengthDepth'}
+                                                id={'total-length-depth'}
                                                 Controller={Controller}
                                                 control={control}
                                                 register={register}
@@ -460,9 +468,11 @@ function UomTimeProcessDefaultCalculator(props) {
                                         </Col>
 
                                         <Col md="4">
+                                            <TooltipCustom disabledIcon={true} id={'cutting-time'} tooltipText={'Cutting Time = (Total Length per Depth / Feed)'} />
                                             <NumberFieldHookForm
                                                 label={`Cutting Time(min)`}
                                                 name={'cuttingTimeMins'}
+                                                id={'cutting-time'}
                                                 Controller={Controller}
                                                 control={control}
                                                 register={register}
@@ -580,9 +590,11 @@ function UomTimeProcessDefaultCalculator(props) {
                                         </Col>
 
                                         <Col md="4">
+                                            <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'total-cycle-min'} tooltipText={'Total Cycle Time(Min) = (Cutting Time + Chip to Chip + Tool non-Cutting + Indexing Table + Loading & Unloading)'} />
                                             <NumberFieldHookForm
                                                 label={`Total Cycle Time(min)`}
                                                 name={'totalCycleTimeMins'}
+                                                id={'total-cycle-min'}
                                                 Controller={Controller}
                                                 control={control}
                                                 register={register}
@@ -597,9 +609,11 @@ function UomTimeProcessDefaultCalculator(props) {
                                         </Col>
 
                                         <Col md="4">
+                                            <TooltipCustom disabledIcon={true} id={'total-cycle-sec'} tooltipText={'Total Cycle Time(Sec) = (Total Cycle Time in Mins * 60)'} />
                                             <NumberFieldHookForm
                                                 label={`Total Cycle Time(sec)`}
                                                 name={'TotalCycleTimeSec'}
+                                                id={'total-cycle-sec'}
                                                 Controller={Controller}
                                                 control={control}
                                                 register={register}
@@ -614,22 +628,19 @@ function UomTimeProcessDefaultCalculator(props) {
                                         </Col>
 
                                         <Col md="4">
-                                            <NumberFieldHookForm
-                                                label={`Efficiency(%)`}
+                                            <TextFieldHookForm
+                                                label={`Efficiency (%)`}
                                                 name={'efficiencyPercentage'}
                                                 Controller={Controller}
                                                 control={control}
                                                 register={register}
                                                 rules={{
                                                     required: true,
-                                                    pattern: {
-                                                        value: /^\d*\.?\d*$/,
-                                                        message: 'Invalid Number.'
-                                                    },
+                                                    validate: { number, checkWhiteSpaces, percentageLimitValidation },
                                                     max: {
                                                         value: 100,
-                                                        message: "Should not be greater than 100"
-                                                    }
+                                                        message: 'Percentage cannot be greater than 100'
+                                                    },
                                                 }}
                                                 mandatory={true}
                                                 handleChange={() => { }}
@@ -642,9 +653,11 @@ function UomTimeProcessDefaultCalculator(props) {
                                         </Col>
 
                                         <Col md="4">
+                                            <TooltipCustom disabledIcon={true} id={'part-hours-pro'} tooltipText={'Parts/Hour = (3600 / Cycle Time) * Efficiency / 100'} />
                                             <NumberFieldHookForm
                                                 label={`Parts/Hour`}
                                                 name={'partsPerHour'}
+                                                id={'part-hours-pro'}
                                                 Controller={Controller}
                                                 control={control}
                                                 register={register}
@@ -659,9 +672,11 @@ function UomTimeProcessDefaultCalculator(props) {
                                         </Col>
 
                                         <Col md="4">
+                                            <TooltipCustom disabledIcon={true} id={'process-cost-machine'} tooltipText={'Process Cost = (Machine Rate / Parts per Hour)'} />
                                             <NumberFieldHookForm
                                                 label={`Process Cost`}
                                                 name={'processCost'}
+                                                id={'process-cost-machine'}
                                                 Controller={Controller}
                                                 control={control}
                                                 register={register}

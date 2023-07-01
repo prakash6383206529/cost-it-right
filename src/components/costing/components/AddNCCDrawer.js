@@ -3,12 +3,15 @@ import { useForm, Controller } from "react-hook-form";
 import { useDispatch, useSelector } from 'react-redux';
 import { Container, Row, Col, } from 'reactstrap';
 import Drawer from '@material-ui/core/Drawer';
-import { SearchableSelectHookForm, } from '../../layout/HookFormInputs';
+import { AsyncSearchableSelectHookForm, SearchableSelectHookForm, } from '../../layout/HookFormInputs';
 import { getPlantSelectListByType } from '../../../actions/Common';
 import { getVBCDetailByVendorId, getZBCDetailByPlantId, } from '../actions/Costing';
-import { EMPTY_GUID_0, ZBC } from '../../../config/constants';
+import { EMPTY_GUID_0, searchCount, ZBC } from '../../../config/constants';
 import { getVendorCode } from '../../../helper/validation';
 import { getVendorWithVendorCodeSelectList } from '../../../actions/Common';
+import { reactLocalStorage } from 'reactjs-localstorage';
+import { autoCompleteDropdown } from '../../common/CommonFunctions';
+import { MESSAGES } from '../../../config/message';
 
 function AddNCCDrawer(props) {
 
@@ -21,14 +24,13 @@ function AddNCCDrawer(props) {
   const [data, setPlantData] = useState({});
   const [selectedPlants, setSelectedPlants] = useState([]);
   const [vendor, setVendor] = useState([]);
-
+  const [vendorName, setVendorName] = useState('')
   const dispatch = useDispatch()
   const plantSelectList = useSelector(state => state.comman.plantSelectList)
   const vendorSelectList = useSelector(state => state.comman.vendorWithVendorCodeSelectList)
 
   useEffect(() => {
     const { nccGrid } = props;
-    dispatch(getVendorWithVendorCodeSelectList(() => { }))
     dispatch(getPlantSelectListByType(ZBC, () => { }))
 
     let tempArr = [];
@@ -37,7 +39,9 @@ function AddNCCDrawer(props) {
       return null;
     })
     setSelectedPlants(tempArr)
-
+    return () => {
+      reactLocalStorage?.setObject('vendorData', [])
+    }
   }, []);
 
   const toggleDrawer = (event) => {
@@ -49,10 +53,10 @@ function AddNCCDrawer(props) {
       ...data,
       VendorCode: Object.keys(vendor).length > 0 ? vendor.VendorCode : '',
       VendorId: Object.keys(vendor).length > 0 ? vendor.VendorId : EMPTY_GUID_0,
-      VendorName: Object.keys(vendor).length > 0 ? vendor.VendorName : '',
+      VendorName: Object.keys(vendor).length > 0 ? `${vendor.VendorName} (${vendor.VendorCode})` : '',
       Vendor: vendor,
+      DestinationPlantName: `${data.DestinationPlantName} (${data.DestinationPlantCode})`
     })
-
   };
 
   /**
@@ -70,16 +74,6 @@ function AddNCCDrawer(props) {
       });
       return temp;
     }
-    if (label === 'Vendor') {
-      // console.log(vendorSelectList, "vendorSelectList");
-      vendorSelectList && vendorSelectList.map(item => {
-        if (item.Value === '0') return false;
-        temp.push({ label: item.Text, value: item.Value })
-        return null;
-      });
-      return temp;
-    }
-
   }
 
   /**
@@ -138,7 +132,34 @@ function AddNCCDrawer(props) {
   const onSubmit = data => {
     toggleDrawer('')
   }
-
+  const filterList = async (inputValue) => {
+    if (inputValue && typeof inputValue === 'string' && inputValue.includes(' ')) {
+      inputValue = inputValue.trim();
+    }
+    const resultInput = inputValue.slice(0, searchCount)
+    if (inputValue?.length >= searchCount && vendorName !== resultInput) {
+      let res
+      res = await getVendorWithVendorCodeSelectList(resultInput)
+      setVendorName(resultInput)
+      let vendorDataAPI = res?.data?.SelectList
+      if (inputValue) {
+        return autoCompleteDropdown(inputValue, vendorDataAPI, false, [], true)
+      } else {
+        return vendorDataAPI
+      }
+    }
+    else {
+      if (inputValue?.length < searchCount) return false
+      else {
+        let VendorData = reactLocalStorage?.getObject('Data')
+        if (inputValue) {
+          return autoCompleteDropdown(inputValue, VendorData, false, [], false)
+        } else {
+          return VendorData
+        }
+      }
+    }
+  };
   /**
   * @method render
   * @description Renders the component
@@ -168,7 +189,7 @@ function AddNCCDrawer(props) {
               <Row className="pl-3">
                 <Col md="12">
                   <SearchableSelectHookForm
-                    label={"Plant"}
+                    label={"Plant (Code)"}
                     name={"Plant"}
                     placeholder={"Select"}
                     Controller={Controller}
@@ -183,19 +204,21 @@ function AddNCCDrawer(props) {
                   />
                 </Col>
                 <Col md="12">
-                  <SearchableSelectHookForm
-                    label={"Vendor"}
+                  <AsyncSearchableSelectHookForm
+                    label={"Vendor (Code)"}
                     name={"Vendor"}
                     placeholder={"Select"}
                     Controller={Controller}
                     control={control}
-                    rules={{ required: false }}
+                    rules={{ required: true }}
                     register={register}
                     defaultValue={vendor.length !== 0 ? vendor : ""}
                     options={renderListing("Vendor")}
                     mandatory={true}
                     handleChange={handleVendorChange}
+                    asyncOptions={filterList}
                     errors={errors.Vendor}
+                    NoOptionMessage={MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN}
                   />
                 </Col>
               </Row>

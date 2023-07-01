@@ -2,6 +2,7 @@ import DayTime from '../components/common/DayTimeWrapper';
 import Toaster from '../components/common/Toaster';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import _ from 'lodash'
+import { NUMBERMAXLENGTH } from '../config/masterData';
 
 export const minLength = min => value =>
     value && value.length < min ? `Min length must be ${min}.` : undefined;
@@ -17,10 +18,14 @@ export const minValue = min => value =>
 export const maxValue = max => value =>
     value && value > max ? `Maximum no of days should be ${max}.` : undefined;
 
+export const maxPercentageValue = max => value =>
+    value && value > max ? `Percentage value should be equal to ${max}.` : undefined;
 
 export const minValue1 = minValue(1);
 export const minValueLessThan1 = minValue(0.1);
 export const maxValue366 = maxValue(366)
+export const maxPercentValue = maxPercentageValue(100)
+export const maxValue100 = maxValue(100)
 
 export const minLength1 = minLength(1);
 export const minLength2 = minLength(2);
@@ -110,12 +115,15 @@ export const required = value =>
 ((typeof value !== 'undefined' && value !== null && value !== "")
     ? undefined : 'This field is required.');
 
+export const requiredDropDown = value =>
+    ('This field is required.');
+
 export const selectRequired = value =>
 ((typeof value !== 'undefined' && value !== null && value !== "")
     ? undefined : 'This field is required.');
 
 export const checkWhiteSpaces = value => {
-    return value && (value.startsWith(' ') || value.endsWith(' ')) ? 'Text should not start and end with space.' : undefined;
+    return value && (String(value)?.startsWith(' ') || String(value)?.endsWith(' ')) ? 'Text should not start and end with space.' : undefined;
 }
 export const checkSpacesInString = value => {
     return value && value.includes('  ') ? 'The field should not contain more than one space.' : undefined;
@@ -145,7 +153,7 @@ export const acceptAllExceptSingleSpecialCharacter = value => {
 }
 // For alphanumeric
 export const excludeOnlySpecialCharacter = value =>
-    value && /^(?=.*[@#$%^&+=]).*$/.test(value)
+    value && /^(?=.*[@#$%^&+=/`:;"'<>?/.,|~!*()]).*$/.test(value)
         ? 'This field do not accept  special character' : undefined;
 
 export const alphabetsOnly = value =>
@@ -369,8 +377,13 @@ export const CheckIsCostingDateSelected = (costingDate) => {
 
 export const strongPassword = value =>
     value && /^(?=.*\d)(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).{6,}$/.test(value)
-        ? ""
+        ? undefined
         : 'Password should contain at-least : | one lower case letter(a-z) | one upper case letter(A-Z) | one digit(0-9) | one special character.';
+
+export const percentageOfNumber = (num, percentage) => {
+    const number = (num == null || isNaN(Number(num)) || num === undefined || num === Infinity || num === -Infinity) ? 0 : Number(num);
+    return (number / 100) * percentage;
+}
 
 //CHECK IS COSTING EFFECTIVE DATE SELECTED
 export const decimalAndNumberValidation = (value) => {
@@ -381,6 +394,61 @@ export const decimalAndNumberValidationBoolean = (value) => {
     return value && !/^\d{0,6}(\.\d{0,6})?$/i.test(value) ? true : false;
 }
 
+export const nonZero = value =>
+    value && (Number(value) === 0)
+        ? 'Invalid Number.' : undefined;
+
+export const decimalNumberLimit6 = value => {
+    let tempValue = value && Number('0' + String(value)?.replace(/^0+/, ''))
+    return tempValue && !/^[0-9][0-9]{0,5}(\.\d{0,6})?$/.test(tempValue)
+        ? 'Maximum length for integer is 6 and for decimal is 6' : undefined;
+}
+
+export const noDecimal = value =>
+    value && !/^\d*$/.test(value)
+        ? 'No Decimal allowed.' : undefined;
+
+export const numberLimit6 = value =>
+    String(value).replace(/^0+/, '') && !/^\d{0,6}?$/.test(String(value)?.replace(/^0+/, ''))
+        ? 'Maximum length for integer is 6.' : undefined;
+
+export const isNumber = value =>
+    value && (isNaN(Number(value)) || Number(value) < 0)
+        ? false : true;
+
+export const percentageLimitValidation = value => {
+    let tempValue = value && Number('0' + String(value)?.replace(/^0+/, ''))
+    return tempValue && !/^[0-9][0-9]{0,2}(\.\d{0,6})?$/.test(tempValue)
+        ? 'Maximum length for integer is 3 and for decimal is 6' : undefined;
+}
+
+export const hashValidation = value =>
+    value && !/^[^#]*$/.test(value)
+        ? 'Input should not contain #.' : undefined;
+
+export const alphaNumericValidation = value =>
+    value && !/[a-zA-Z0-9]$/.test(value)
+        ? 'Input should contain alpha numeric characters only.' : undefined;
+
+export const postiveNumberForPlantCode = value =>
+    String(value).replace(/^0+/, '') && !/^\d{1,4}?$/.test(String(value)?.replace(/^0+/, ''))
+        ? 'Plant Code should be 4 digit integer.' : undefined;
+
+export const NoSignMaxLengthRegex = /^\d{0,6}(\.\d{0,6})?$/i;
+
+export const NoSignNoDecimalRegex = /^\d*$/i;
+
+export const NoSignMaxLengthMessage = `Input should be numeric, and should not exceed ${NUMBERMAXLENGTH} digit before and after decimal.`
+export const NoSignNoDecimalMessage = `Input should be integer.`
+
+
 export const isDateFormatter = value =>
     value && !/^[0-3]?[0-9].[0-3]?[0-9].(?:[0-9]{2})?[0-9]{2}$/.test(value)
         ? false : true;
+export const timeValidation = value =>
+    value && !/^([0-9]*):([0-5]?[0-9])$/.test(value)
+        ? 'Input should not contain #.' : undefined;
+
+export const decimalNumberLimit8 = value =>
+    value && !/^\d{0,8}(\.\d{0,6})?$/.test(value)
+        ? 'Maximum length for integer is 8 and for decimal is 6' : undefined;

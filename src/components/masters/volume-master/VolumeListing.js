@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { Row, Col } from 'reactstrap'
+import { Row, Col, NavItem, TabContent, TabPane, Nav, NavLink, Container } from 'reactstrap'
 import Toaster from '../../common/Toaster'
 import { MESSAGES } from '../../../config/message'
 import { defaultPageSize, EMPTY_DATA } from '../../../config/constants'
@@ -24,7 +24,11 @@ import WarningMessage from '../../common/WarningMessage'
 import { setSelectedRowForPagination } from '../../simulation/actions/Simulation'
 import _ from 'lodash'
 import { disabledClass } from '../../../actions/Common'
-import SelectRowWrapper from '../../common/SelectRowWrapper'
+import { reactLocalStorage } from 'reactjs-localstorage'
+import VolumeBulkUploadDrawer from '../../massUpload/VolumeBulkUploadDrawer'
+import { Drawer } from '@material-ui/core'
+import classnames from 'classnames';
+import { hideCustomerFromExcel } from '../../common/CommonFunctions'
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -107,8 +111,7 @@ function VolumeListing(props) {
   const [shown, setShown] = useState(false);
   const [showVolumeForm, setShowVolumeForm] = useState(false);
   const [data, setData] = useState({ isEditFlag: false, ID: '' });
-  const [isActualBulkUpload, setIsActualBulkUpload] = useState(false);
-  const [isBudgetedBulkUpload, setIsBudgetedBulkUpload] = useState(false);
+  const [bulkUploadBtn, setBulkUploadBtn] = useState(false);
   const [addAccessibility, setAddAccessibility] = useState(false);
   const [editAccessibility, setEditAccessibility] = useState(false);
   const [deleteAccessibility, setDeleteAccessibility] = useState(false);
@@ -121,6 +124,7 @@ function VolumeListing(props) {
   const [isLoader, setIsLoader] = useState(false);
   const [limit, setLimit] = useState(false);
   const [dataCount, setDataCount] = useState(0);
+  const [activeTab, setactiveTab] = useState('1');
 
   //STATES BELOW ARE MADE FOR PAGINATION PURPOSE
   const [disableFilter, setDisableFilter] = useState(true) // STATE MADE FOR CHECKBOX SELECTION
@@ -133,7 +137,7 @@ function VolumeListing(props) {
   const [isFilterButtonClicked, setIsFilterButtonClicked] = useState(false)
   const [currentRowIndex, setCurrentRowIndex] = useState(0)
   const [pageSize, setPageSize] = useState({ pageSize10: true, pageSize50: false, pageSize100: false })
-  const [floatingFilterData, setFloatingFilterData] = useState({ CostingHead: '', Year: '', Month: '', VendorName: '', Plant: '', PartNumber: '', PartName: '', BudgetedQuantity: '', ApprovedQuantity: '', applyPagination: '', skip: '', take: '' })
+  const [floatingFilterData, setFloatingFilterData] = useState({ CostingHead: '', Year: '', Month: '', VendorName: '', Plant: '', PartNumber: '', PartName: '', BudgetedQuantity: '', ApprovedQuantity: '', applyPagination: '', skip: '', take: '', CustomerName: '' })
   const [disableDownload, setDisableDownload] = useState(false)
   const [noData, setNoData] = useState(false)
 
@@ -196,7 +200,9 @@ function VolumeListing(props) {
    */
   const getTableListData = (skip = 0, take = 10, isPagination = true) => {
     if (isPagination === true || isPagination === null) setIsLoader(true)
-    dispatch(getVolumeDataList(skip, take, isPagination, floatingFilterData, (res) => {
+    let dataObj = { ...floatingFilterData }
+    dataObj.IsCustomerDataShow = reactLocalStorage.getObject('cbcCostingPermission')
+    dispatch(getVolumeDataList(skip, take, isPagination, dataObj, (res) => {
       if (isPagination === true || isPagination === null) setIsLoader(false)
 
       if (res && isPagination === false) {
@@ -262,6 +268,9 @@ function VolumeListing(props) {
       if (res.data.Result === true) {
         Toaster.success(MESSAGES.DELETE_VOLUME_SUCCESS)
         getTableListData(0, globalTake, true)
+        gridApi.deselectAll()
+        dispatch(setSelectedRowForPagination([]))
+        setDataCount(0)
       }
     }))
     setShowPopup(false)
@@ -302,52 +311,42 @@ function VolumeListing(props) {
     return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? cellValue : '-';
   }
 
-  /**
-   * @method actualBulkToggle
-   * @description OPEN ACTUAL BULK UPLOAD DRAWER FOR BULK UPLOAD
-   */
-  const actualBulkToggle = () => {
-    setIsActualBulkUpload(true)
-  }
 
   /**
    * @method closeActualBulkUploadDrawer
    * @description CLOSE ACTUAL BULK DRAWER
    */
-  const closeActualBulkUploadDrawer = () => {
-    setIsActualBulkUpload(false)
-    setTimeout(() => {
-      getTableListData(0, globalTake, true)
-    }, 200);
+  const closeBulkUploadDrawer = (event, type) => {
+    setBulkUploadBtn(false)
+    if (type !== 'cancel') {
+      setTimeout(() => {
+        getTableListData(0, globalTake, true)
+      }, 200);
+    }
+  }
+  /**
+   * @method closeActualBulkUploadDrawer
+   * @description CLOSE ACTUAL BULK DRAWER
+   */
+  const closeActualBulkUploadDrawer = (event, type) => {
+    setBulkUploadBtn(false)
+    if (type !== 'cancel') {
+      setTimeout(() => {
+        getTableListData(0, globalTake, true)
+      }, 200);
+    }
   }
 
-  /**
-   * @method budgetedBulkToggle
-   * @description OPEN BUDGETED BULK UPLOAD DRAWER FOR BULK UPLOAD
-   */
-  const budgetedBulkToggle = () => {
-    setIsBudgetedBulkUpload(true)
-  }
-
-  /**
-   * @method closeBudgetedBulkUploadDrawer
-   * @description CLOSE BUDGETED BULK DRAWER
-   */
-  const closeBudgetedBulkUploadDrawer = () => {
-    setIsBudgetedBulkUpload(false)
-    setTimeout(() => {
-      getTableListData(0, globalTake, true)
-    }, 200);
-  }
 
   const formToggle = () => {
     setShowVolumeForm(true)
   }
 
   const returnExcelColumn = (data = [], TempData) => {
+    let excelData = hideCustomerFromExcel(data, "CustomerName")
     return (
       <ExcelSheet data={TempData} name={VolumeMaster}>
-        {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
+        {excelData && excelData.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
       </ExcelSheet>);
   }
 
@@ -369,8 +368,8 @@ function VolumeListing(props) {
       }
       selectedRows = [...selectedRows, ...finalData]
     }
-    let uniqeArrayVolumeApprovedId = _.uniqBy(selectedRows, "VolumeApprovedId")          //UNIQBY FUNCTION IS USED TO FIND THE UNIQUE ELEMENTS & DELETE DUPLICATE ENTRY
-    let uniqeArrayVolumeBudgetedId = _.uniqBy(uniqeArrayVolumeApprovedId, "VolumeBudgetedId")          //UNIQBY FUNCTION IS USED TO FIND THE UNIQUE ELEMENTS & DELETE DUPLICATE ENTRY
+
+    let uniqeArrayVolumeBudgetedId = _.uniqBy(selectedRows, v => [v.VolumeApprovedId, v.VolumeBudgetedId].join())          //UNIQBY FUNCTION IS USED TO FIND THE UNIQUE ELEMENTS & DELETE DUPLICATE ENTRY
     dispatch(setSelectedRowForPagination(uniqeArrayVolumeBudgetedId))              //SETTING CHECKBOX STATE DATA IN REDUCER
     setDataCount(uniqeArrayVolumeBudgetedId.length)
   }
@@ -573,6 +572,14 @@ function VolumeListing(props) {
   const limitHandler = () => {
     setLimit(true)
   };
+  const BulkToggle = () => {
+    setBulkUploadBtn(true)
+  }
+  const toggle = (tab) => {
+    if (activeTab !== tab) {
+      setactiveTab(tab);
+    }
+  }
 
 
   /**
@@ -595,7 +602,7 @@ function VolumeListing(props) {
   const defaultColDef = {
     resizable: true,
     filter: true,
-    sortable: true,
+    sortable: false,
     headerCheckboxSelectionFilteredOnly: true,
     checkboxSelection: isFirstColumn
   };
@@ -604,7 +611,7 @@ function VolumeListing(props) {
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
     if (selectedRowForPagination?.length > 0) {
       selectedRowForPagination.map((item) => {
-        if (item.VolumeId === props.node.data.VolumeId) {
+        if (item.VolumeApprovedId === props.node.data.VolumeApprovedId && item.VolumeBudgetedId === props.node.data.VolumeBudgetedId) {
           props.node.setSelected(true)
         }
         return null
@@ -631,6 +638,9 @@ function VolumeListing(props) {
     )
   }
 
+  const toggleDrawer = () => {
+    setBulkUploadBtn(false)
+  }
   /**
    * @method render
    * @description Renders the component
@@ -641,15 +651,11 @@ function VolumeListing(props) {
         <ScrollToTop pointProp="go-to-top" />
         {isLoader ? <LoaderCustom customClass={"loader-center"} /> :
           <>
+            {disableDownload && <LoaderCustom message={MESSAGES.DOWNLOADING_MESSAGE} customClass="mt-5" />}
             <form noValidate>
-              <Row>
-                <Col md="12"><h1 className="mb-0">Volume Master</h1></Col>
-              </Row>
-              <Row className="pt-4 blue-before">
+              <Row className="blue-before">
                 <Col md="9" className="search-user-block mb-3">
                   <div className="d-flex justify-content-end bd-highlight">
-                    {disableDownload && <div title={MESSAGES.DOWNLOADING_MESSAGE} className="disabled-overflow"><WarningMessage dClass="ml-4 mt-1" message={MESSAGES.DOWNLOADING_MESSAGE} /></div>}
-
                     <div className="warning-message d-flex align-items-center">
                       {warningMessage && !disableDownload && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
                     </div>
@@ -660,6 +666,7 @@ function VolumeListing(props) {
                     ) : (
                       ""
                     )}
+
                     <button
                       type="button"
                       className={"user-btn mr5"}
@@ -678,43 +685,28 @@ function VolumeListing(props) {
                         {/* ADD */}
                       </button>
                     )}
-                    {bulkUploadAccessibility && (
-                      <button
-                        type="button"
-                        className={"user-btn mr5"}
-                        onClick={actualBulkToggle}
-                        title="Actual Volume Upload"
-                      >{"A"}
-                        <div className={"ml5 upload mr-0"}></div>
-                        {/* Actual Upload */}
-                      </button>
-                    )}
-                    {bulkUploadAccessibility && (
-                      <button
-                        type="button"
-                        className={"user-btn mr5"}
-                        onClick={budgetedBulkToggle}
-                        title="Budgeted Volume Upload"
-                      >{"B"}
-                        <div className={"ml5 upload mr-0"}></div>
-                        {/* Budgeted Bulk Upload */}
-                      </button>
-                    )}
+                    {bulkUploadAccessibility && <button
+                      type="button"
+                      className={"user-btn mr5"}
+                      onClick={BulkToggle}
+                      title="Bulk Upload"
+                    >
+                      <div className={"upload mr-0"}></div>
+                      {/* Budgeted Bulk Upload */}
+                    </button>}
+
                     {
                       downloadAccessibility &&
                       <>
-                        {disableDownload ? <div className='p-relative mr5'> <LoaderCustom customClass={"download-loader"} /> <button type="button" className={'user-btn'}><div className="download mr-0"></div>
-                        </button></div> :
-                          <>
-                            <button type="button" onClick={onExcelDownload} className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
-                              {/* DOWNLOAD */}
-                            </button>
-                            <ExcelFile filename={'Volume'} fileExtension={'.xls'} element={
-                              <button id={'Excel-Downloads-volume'} className="p-absolute" type="button" >
-                              </button>}>
-                              {onBtExport()}
-                            </ExcelFile>
-                          </>}
+                        <button title={`Download ${dataCount === 0 ? "All" : "(" + dataCount + ")"}`} type="button" onClick={onExcelDownload} className={'user-btn mr5'}><div className="download mr-1" ></div>
+                          {/* DOWNLOAD */}
+                          {`${dataCount === 0 ? "All" : "(" + dataCount + ")"}`}
+                        </button>
+                        <ExcelFile filename={'Volume'} fileExtension={'.xls'} element={
+                          <button id={'Excel-Downloads-volume'} className="p-absolute" type="button" >
+                          </button>}>
+                          {onBtExport()}
+                        </ExcelFile>
                       </>
                     }
                     <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}>
@@ -728,7 +720,6 @@ function VolumeListing(props) {
             <div className={`ag-grid-wrapper height-width-wrapper  ${(volumeDataList && volumeDataList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
               <div className="ag-grid-header">
                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
-                <SelectRowWrapper dataCount={dataCount} />
               </div>
               <div className={`ag-theme-material ${isLoader && "max-loader-height"}`}>
                 {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
@@ -752,15 +743,18 @@ function VolumeListing(props) {
                   frameworkComponents={frameworkComponents}
                   onFilterModified={onFloatingFilterChanged}
                   onRowSelected={onRowSelect}
+                  suppressRowClickSelection={true}
                 >
                   <AgGridColumn field="CostingHead" headerName="Costing Head" cellRenderer={checkBoxRenderer}></AgGridColumn>
                   <AgGridColumn field="Year" headerName="Year"></AgGridColumn>
                   <AgGridColumn field="Month" headerName="Month"></AgGridColumn>
                   <AgGridColumn field="VendorName" headerName="Vendor (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                  {(reactLocalStorage.getObject('cbcCostingPermission')) && <AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
                   <AgGridColumn field="Plant" headerName="Plant (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                  <AgGridColumn field="PartNumber" headerName="Part Number"></AgGridColumn>
+                  <AgGridColumn field="PartNumber" headerName="Part No. (Revision No.)" width={200}></AgGridColumn>
                   <AgGridColumn field="PartName" headerName="Part Name"></AgGridColumn>
                   <AgGridColumn field="BudgetedQuantity" headerName="Budgeted Quantity"></AgGridColumn>
+                  {/*  <AgGridColumn field="BudgetedPrice" headerName="Budgeted Price"></AgGridColumn>   ONCE CODE DEPLOY FROM BACKEND THEN UNCOMENT THE LINE */}
                   <AgGridColumn field="ApprovedQuantity" headerName="Actual Quantity"></AgGridColumn>
                   <AgGridColumn field="VolumeId" width={120} headerName="Actions" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                 </AgGridReact>
@@ -780,29 +774,81 @@ function VolumeListing(props) {
             </div>
           </>
         }
+        {bulkUploadBtn && <Drawer anchor={"right"} open={bulkUploadBtn}>
+          <Container>
+            <div className='drawer-wrapper volume-drawer'>
+              <Row className="drawer-heading mb-0">
+                <Col>
+                  <div className={'header-wrapper left'}>
+                    <h3>Bulk Upload</h3>
+                  </div>
+                  <div
+                    onClick={toggleDrawer}
+                    className={'close-button right'}>
+                  </div>
+                </Col>
+              </Row>
+              <Row className="">
+                <Col md="12" className=""> <Nav tabs className="subtabs">
+                  <NavItem>
+                    <NavLink className={classnames({ active: activeTab === '1' })} onClick={() => { toggle('1'); }}>
+                      Actual (Monthly)
+                    </NavLink>
+                  </NavItem>
+                  <NavItem>
+                    <NavLink className={classnames({ active: activeTab === '2' })} onClick={() => { toggle('2'); }}>
+                      Budgeted (Monthly)
+                    </NavLink>
+                  </NavItem>
+                  <NavItem>
+                    <NavLink className={classnames({ active: activeTab === '3' })} onClick={() => { toggle('3'); }}>
+                      Actual (Daily)
+                    </NavLink>
+                  </NavItem>
 
-        {isActualBulkUpload && (
-          <BulkUpload
-            isOpen={isActualBulkUpload}
-            closeDrawer={closeActualBulkUploadDrawer}
-            isEditFlag={false}
-            fileName={'ActualVolume'}
-            isZBCVBCTemplate={true}
-            messageLabel={'Volume Actual'}
-            anchor={'right'}
-          />
-        )}
-        {isBudgetedBulkUpload && (
-          <BulkUpload
-            isOpen={isBudgetedBulkUpload}
-            closeDrawer={closeBudgetedBulkUploadDrawer}
-            isEditFlag={false}
-            fileName={'BudgetedVolume'}
-            isZBCVBCTemplate={true}
-            messageLabel={'Volume Budgeted'}
-            anchor={'right'}
-          />
-        )}
+                </Nav></Col>
+                <Col md="12" className='px-0 mt-3'><TabContent activeTab={activeTab}>
+                  {(Number(activeTab) === 1) &&
+                    <TabPane tabId="1">
+                      <BulkUpload
+                        closeDrawer={closeActualBulkUploadDrawer}
+                        isEditFlag={false}
+                        fileName={'Actual Volume'}
+                        isZBCVBCTemplate={true}
+                        messageLabel={'Volume Actual'}
+                        anchor={'right'}
+                        isDrawerfasle={true}
+                      />
+                    </TabPane>}
+                  {(Number(activeTab) === 2) &&
+                    <TabPane tabId="2">
+                      <BulkUpload
+                        closeDrawer={closeActualBulkUploadDrawer}
+                        isEditFlag={false}
+                        fileName={'Budgeted Volume'}
+                        isZBCVBCTemplate={true}
+                        messageLabel={'Volume Budgeted'}
+                        anchor={'right'}
+                        isDrawerfasle={true}
+                      />
+                    </TabPane>}
+                  {(Number(activeTab) === 3) &&
+                    <TabPane tabId="3">
+                      <VolumeBulkUploadDrawer
+                        closeDrawer={closeBulkUploadDrawer}
+                        isEditFlag={false}
+                        fileName={'Volume'}
+                        isZBCVBCTemplate={true}
+                        messageLabel={'Volume'}
+                      />
+                    </TabPane>}
+
+                </TabContent></Col>
+              </Row>
+            </div>
+          </Container>
+
+        </Drawer>}
         {
           showPopup && <PopupMsgWrapper isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${MESSAGES.VOLUME_DELETE_ALERT}`} />
         }

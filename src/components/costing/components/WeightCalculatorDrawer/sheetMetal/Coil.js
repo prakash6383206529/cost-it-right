@@ -12,6 +12,8 @@ import Toaster from '../../../../common/Toaster'
 import { G, KG, MG, } from '../../../../../config/constants'
 import { AcceptableSheetMetalUOM } from '../../../../../config/masterData'
 import { debounce } from 'lodash'
+import { nonZero } from '../../../../../helper/validation'
+import TooltipCustom from '../../../../common/Tooltip'
 
 function Coil(props) {
     const WeightCalculatorRequest = props.rmRowData.WeightCalculatorRequest;
@@ -157,11 +159,12 @@ function Coil(props) {
             cavity: getValues('Cavity')
         }
         grossWeight = calculateWeight(data.density, data.stripWidth, data.thickness, data.pitch) / data.cavity
-        setGrossWeights(setValueAccToUOM(grossWeight, UOMDimension.label))
-        const updatedValue = dataToSend
-        updatedValue.GrossWeight = grossWeight
-        setDataToSend(updatedValue)
         setGrossWeights(grossWeight)
+        const updatedValue = dataToSend
+        updatedValue.GrossWeight = setValueAccToUOM(grossWeight, UOMDimension.label)
+        updatedValue.newGrossWeight = setValueAccToUOM(grossWeight, UOMDimension.label)
+        setDataToSend(updatedValue)
+        // setGrossWeights(grossWeight)
         setValue('GrossWeight', checkForDecimalAndNull(setValueAccToUOM(grossWeight, UOMDimension.label), localStorage.NoOfDecimalForInputOutput))
     }
 
@@ -214,6 +217,10 @@ function Coil(props) {
                 setIsChangeApplied(false)
             }
         }
+
+
+        let grossWeight = (dataToSend.newGrossWeight === undefined || dataToSend.newGrossWeight === 0) ? dataToSend.GrossWeight : dataToSend.newGrossWeight
+
         let data = {
             LayoutType: 'Coil',
             SheetMetalCalculationId: WeightCalculatorRequest && WeightCalculatorRequest.SheetMetalCalculationId ? WeightCalculatorRequest.SheetMetalCalculationId : "0",
@@ -222,7 +229,7 @@ function Coil(props) {
             CostingRawMaterialDetailId: rmRowData.RawMaterialDetailId,
             RawMaterialIdRef: rmRowData.RawMaterialId,
             LoggedInUserId: loggedInUserId(),
-            RawMaterialCost: dataToSend.GrossWeight * rmRowData.RMRate - (dataToSend.GrossWeight - getValues('FinishWeight')) * rmRowData.ScrapRate,
+            RawMaterialCost: grossWeight * rmRowData.RMRate - (grossWeight - getValues('FinishWeight')) * rmRowData.ScrapRate,
             UOMForDimensionId: UOMDimension ? UOMDimension.value : '',
             UOMForDimension: UOMDimension ? UOMDimension.label : '',
             Thickness: values.Thickness,
@@ -233,7 +240,7 @@ function Coil(props) {
             UOMId: rmRowData.UOMId,
             UOM: rmRowData.UOM,
             NetSurfaceArea: values.NetSurfaceArea,
-            GrossWeight: (dataToSend.newGrossWeight === undefined || dataToSend.newGrossWeight === 0) ? dataToSend.GrossWeight : dataToSend.newGrossWeight,
+            GrossWeight: grossWeight,
             FinishWeight: getValues('FinishWeight'),
         }
 
@@ -304,6 +311,7 @@ function Coil(props) {
                                                 value: /^\d{0,4}(\.\d{0,6})?$/i,
                                                 message: 'Maximum length for integer is 4 and for decimal is 6',
                                             },
+                                            validate: { nonZero }
                                         }}
                                         handleChange={() => { }}
                                         defaultValue={''}
@@ -327,6 +335,7 @@ function Coil(props) {
                                                 value: /^\d{0,4}(\.\d{0,6})?$/i,
                                                 message: 'Maximum length for integer is 4 and for decimal is 6',
                                             },
+                                            validate: { nonZero }
                                         }}
                                         handleChange={() => { }}
                                         defaultValue={''}
@@ -350,6 +359,7 @@ function Coil(props) {
                                                 value: /^\d{0,4}(\.\d{0,6})?$/i,
                                                 message: 'Maximum length for integer is 4 and for decimal is 6',
                                             },
+                                            validate: { nonZero }
                                         }}
                                         handleChange={() => { }}
                                         defaultValue={''}
@@ -373,6 +383,7 @@ function Coil(props) {
                                                 value: /^\d{0,4}(\.\d{0,6})?$/i,
                                                 message: 'Maximum length for integer is 4 and for decimal is 6',
                                             },
+                                            validate: { nonZero }
                                         }}
                                         handleChange={() => { }}
                                         defaultValue={''}
@@ -428,9 +439,11 @@ function Coil(props) {
 
                                 </Col>
                                 <Col md="3">
+                                    <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'coil-gross-weight'} tooltipText={'Gross Weight =  (Density * (Thickness * Strip Width * Pitch) / 10)'} />
                                     <NumberFieldHookForm
                                         label={`Gross Weight(${UOMDimension.label})`}
                                         name={'GrossWeight'}
+                                        id={'coil-gross-weight'}
                                         Controller={Controller}
                                         control={control}
                                         register={register}

@@ -3,11 +3,14 @@ import { useForm, Controller } from "react-hook-form";
 import { useDispatch, useSelector } from 'react-redux';
 import { Container, Row, Col, } from 'reactstrap';
 import Drawer from '@material-ui/core/Drawer';
-import { SearchableSelectHookForm, } from '../../layout/HookFormInputs';
+import { AsyncSearchableSelectHookForm, SearchableSelectHookForm, } from '../../layout/HookFormInputs';
 import { getVendorWithVendorCodeSelectList, getPlantBySupplier, getPlantSelectListByType } from '../../../actions/Common';
 import { getVBCDetailByVendorId, } from '../actions/Costing';
 import { getConfigurationKey } from '../../../helper';
-import { EMPTY_GUID_0, ZBC } from '../../../config/constants';
+import { EMPTY_GUID_0, searchCount, ZBC } from '../../../config/constants';
+import { reactLocalStorage } from 'reactjs-localstorage';
+import { autoCompleteDropdown } from '../../common/CommonFunctions';
+import { MESSAGES } from '../../../config/message';
 
 function AddVendorDrawer(props) {
 
@@ -20,7 +23,7 @@ function AddVendorDrawer(props) {
   //dropdown loader 
   const [inputLoader, setInputLoader] = useState(false)
   const [VendorInputLoader, setVendorInputLoader] = useState(false)
-
+  const [vendorName, setVendorName] = useState('')
   const dispatch = useDispatch()
 
   const vendorSelectList = useSelector(state => state.comman.vendorWithVendorCodeSelectList)
@@ -28,11 +31,7 @@ function AddVendorDrawer(props) {
   const plantSelectList = useSelector(state => state.comman.plantSelectList);
 
   useEffect(() => {
-    setVendorInputLoader(true)
     const { vbcVendorGrid } = props;
-    dispatch(getVendorWithVendorCodeSelectList(() => {
-      setVendorInputLoader(false)
-    }))
     dispatch(getPlantSelectListByType(ZBC, () => { }))
 
     let tempArr = [];
@@ -41,6 +40,9 @@ function AddVendorDrawer(props) {
       return null;
     })
     initialConfiguration?.IsDestinationPlantConfigure === false && setSelectedVendors(tempArr)
+    return () => {
+      reactLocalStorage?.setObject('vendorData', [])
+    }
   }, []);
 
   /**
@@ -57,8 +59,9 @@ function AddVendorDrawer(props) {
         ...data,
         DestinationPlantCode: initialConfiguration && initialConfiguration.IsDestinationPlantConfigure ? DestinationPlant.PlantCode : '',
         DestinationPlantId: initialConfiguration && initialConfiguration.IsDestinationPlantConfigure ? DestinationPlant.value : EMPTY_GUID_0,
-        DestinationPlantName: initialConfiguration && initialConfiguration.IsDestinationPlantConfigure ? DestinationPlant.PlantName : '',                 //PlantName
+        DestinationPlantName: initialConfiguration && initialConfiguration.IsDestinationPlantConfigure ? DestinationPlant.label : '',                 //PlantName
         DestinationPlant: DestinationPlant,
+        VendorName: `${data.VendorName} (${data.VendorCode})`
       })
   };
 
@@ -69,15 +72,6 @@ function AddVendorDrawer(props) {
   const renderListing = (label) => {
 
     const temp = [];
-
-    if (label === 'Vendor') {
-      vendorSelectList && vendorSelectList.map(item => {
-        if (item.Value === '0') return false;
-        temp.push({ label: item.Text, value: item.Value })
-        return null;
-      });
-      return temp;
-    }
 
     if (label === 'DestinationPlant') {
       plantSelectList && plantSelectList.map((item) => {
@@ -147,10 +141,39 @@ function AddVendorDrawer(props) {
   }
   const VendorLoaderObj = { isLoader: VendorInputLoader }
   const plantLoaderObj = { isLoader: inputLoader }
+  const filterList = async (inputValue) => {
+    if (inputValue && typeof inputValue === 'string' && inputValue.includes(' ')) {
+      inputValue = inputValue.trim();
+    }
+    const resultInput = inputValue.slice(0, searchCount)
+    if (inputValue?.length >= searchCount && vendorName !== resultInput) {
+      let res
+      res = await getVendorWithVendorCodeSelectList(resultInput)
+      setVendorName(resultInput)
+      let vendorDataAPI = res?.data?.SelectList
+      if (inputValue) {
+        return autoCompleteDropdown(inputValue, vendorDataAPI, false, [], true)
+      } else {
+        return vendorDataAPI
+      }
+    }
+    else {
+      if (inputValue?.length < searchCount) return false
+      else {
+        let VendorData = reactLocalStorage?.getObject('Data')
+        if (inputValue) {
+          return autoCompleteDropdown(inputValue, VendorData, false, [], false)
+        } else {
+          return VendorData
+        }
+      }
+    }
+  };
   /**
   * @method render
   * @description Renders the component
   */
+
   return (
     <div>
       <Drawer
@@ -175,8 +198,8 @@ function AddVendorDrawer(props) {
             <form onSubmit={handleSubmit(onSubmit)}>
               <Row className="pl-3">
                 <Col md="12">
-                  <SearchableSelectHookForm
-                    label={"Vendor"}
+                  <AsyncSearchableSelectHookForm
+                    label={"Vendor (Code)"}
                     name={"Vendor"}
                     placeholder={"Select"}
                     Controller={Controller}
@@ -189,6 +212,8 @@ function AddVendorDrawer(props) {
                     handleChange={handleVendorChange}
                     errors={errors.Vendor}
                     isLoading={VendorLoaderObj}
+                    asyncOptions={filterList}
+                    NoOptionMessage={MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN}
                   />
                 </Col>
 
@@ -196,7 +221,7 @@ function AddVendorDrawer(props) {
 
                   <Col md="12">
                     <SearchableSelectHookForm
-                      label={"Destination Plant"}
+                      label={"Destination Plant (Code)"}
                       name={"DestinationPlant"}
                       placeholder={"Select"}
                       Controller={Controller}

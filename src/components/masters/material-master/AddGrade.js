@@ -132,7 +132,7 @@ class AddGrade extends Component {
 
                 <Col md="12">
                   <Field
-                    label={`RM Grade`}
+                    label={`Grade`}
                     name={"Grade"}
                     type="text"
                     placeholder={"Enter"}

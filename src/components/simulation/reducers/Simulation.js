@@ -21,9 +21,12 @@ import {
     GET_AMMENDENT_STATUS_COSTING,
     GET_MASTER_SELECT_LIST_SIMUALTION,
     SET_SELECTED_ROW_FOR_PAGINATION,
-    GET_SIMULATION_APPROVAL_LIST_DRAFT
+    GET_SIMULATION_APPROVAL_LIST_DRAFT,
 
+    SET_SELECTED_VENDOR_SIMULATION,
+    GET_ALL_MULTI_TECHNOLOGY_COSTING
 } from '../../../config/constants';
+import { tokenStatus, tokenStatusName } from '../../../config/masterData';
 
 const initialState = {
     selectedRowForPagination: [],
@@ -87,6 +90,43 @@ export default function SimulationReducer(state = initialState, action) {
                 } else {
                     // THIS IS FOR PENDINGFORAPPROVAL, AWAITINGFORAPPROVAL, PUSHED, APPROVED, ERROR
                     item.ProvisionalStatus = 'U'
+                }
+                switch (item.Status) {
+                    case tokenStatusName.AWAITING_FOR_APPROVAL:
+                        item.TooltipText = tokenStatus.AwaitingForApproval;
+                        break;
+                    case tokenStatusName.PENDING_FOR_APPROVAL:
+                        item.TooltipText = tokenStatus.PendingForApproval;
+                        break;
+                    case tokenStatusName.DRAFT:
+                        item.TooltipText = tokenStatus.Draft;
+                        break;
+                    case tokenStatusName.APPROVED:
+                        item.TooltipText = tokenStatus.Approved;
+                        break;
+                    case tokenStatusName.REJECTED:
+                        item.TooltipText = tokenStatus.Rejected;
+                        break;
+                    case tokenStatusName.PUSHED:
+                        item.TooltipText = tokenStatus.Pushed;
+                        break;
+                    case tokenStatusName.ERROR:
+                        item.TooltipText = tokenStatus.Error;
+                        break;
+                    case tokenStatusName.HISTORY:
+                        item.TooltipText = tokenStatus.History;
+                        break;
+                    case tokenStatusName.LINKED:
+                        item.TooltipText = tokenStatus.Linked;
+                        break;
+                    case tokenStatusName.PROVISIONAL:
+                        item.TooltipText = tokenStatus.Provisional;
+                        break;
+                    case tokenStatusName.POUPDATED:
+                        item.TooltipText = tokenStatus.POUpdated;
+                        break;
+                    default:
+                        break;
                 }
                 return null;
 
@@ -201,6 +241,19 @@ export default function SimulationReducer(state = initialState, action) {
                 ...state,
                 loading: false,
                 selectedRowForPagination: action.payload
+            }
+
+        case SET_SELECTED_VENDOR_SIMULATION:
+            return {
+                ...state,
+                loading: false,
+                selectedVendorForSimulation: action.payload
+            }
+        case GET_ALL_MULTI_TECHNOLOGY_COSTING:
+            return {
+                ...state,
+                loading: false,
+                multiTechnologyCostinig: action.payload
             }
         default:
             return state;

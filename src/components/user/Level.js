@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Field, reduxForm } from "redux-form";
+import { Field, reduxForm, clearFields } from "redux-form";
 import Toaster from "../common/Toaster";
 import { connect } from "react-redux";
 import { required, checkWhiteSpaces, acceptAllExceptSingleSpecialCharacter, maxLength80, postiveNumber, maxLength2 } from "../../helper/validation";
@@ -15,6 +15,10 @@ import { getConfigurationKey, loggedInUserId } from "../../helper/auth";
 import Drawer from '@material-ui/core/Drawer';
 import { Container, Row, Col, Label, } from 'reactstrap';
 import LoaderCustom from "../common/LoaderCustom";
+import { getApprovalTypeSelectList } from '../../actions/Common'
+import { CUSTOMER_BASED, NEW_COMPONENT, PROVISIONAL } from "../../config/constants";
+import { reactLocalStorage } from "reactjs-localstorage";
+import { costingTypeIdToApprovalTypeIdFunction } from "../common/CommonFunctions";
 
 /**************************************THIS FILE IS FOR ADDING LEVEL MAPPING*****************************************/
 class Level extends Component {
@@ -33,6 +37,7 @@ class Level extends Component {
       level: [],
       levelType: 'Costing',
       dataToCheck: [],
+      approvalTypeObject: [],
     };
   }
 
@@ -42,10 +47,11 @@ class Level extends Component {
   */
   componentDidMount() {
 
+    this.props.getApprovalTypeSelectList(() => { })
     if (this.props.isEditFlag) {
       this.props.getAllLevelAPI(() => { this.setState({ isLoader: this.props.isEditFlag ? true : false }) })
       this.getLevelDetail()
-      this.getLevelMappingDetail()
+      this.getLevelMappingDetails()
     } else {
       if (this.state.levelType === 'Costing') {
         this.props.getAllTechnologyAPI(() => { })
@@ -54,7 +60,7 @@ class Level extends Component {
       }
       this.props.getAllLevelAPI(() => { this.setState({ isLoader: this.props.isEditFlag ? true : false }) })
       this.getLevelDetail()
-      this.getLevelMappingDetail()
+      this.getLevelMappingDetails()
     }
   }
 
@@ -71,15 +77,15 @@ class Level extends Component {
   }
 
   /**
-  * @method getLevelMappingDetail
+  * @method getLevelMappingDetails
   * @description used to get level detail
   */
-  getLevelMappingDetail = () => {
-    const { isShowMappingForm, isEditFlag, TechnologyId, isEditedlevelType } = this.props;
+  getLevelMappingDetails = () => {
+    const { isShowMappingForm, isEditFlag, TechnologyId, isEditedlevelType, approvalTypeId } = this.props;
 
     // WHEN COSTING LEVEL DETAILS GET
     if (isEditFlag && isShowMappingForm && isEditedlevelType === 'Costing') {
-      this.props.getLevelMappingAPI(TechnologyId, (res) => {
+      this.props.getLevelMappingAPI(TechnologyId, approvalTypeId.Costing, (res) => {
 
         if (res && res.data && res.data.Data) {
           let Data = res.data.Data;
@@ -90,9 +96,11 @@ class Level extends Component {
               technology: { label: Data?.Technology, value: Data?.TechnologyId },
               level: { label: Data?.Level, value: Data?.LevelId },
               levelType: isEditedlevelType,
-              isLoader: false
+              isLoader: false,
+
             })
             this.setState({ dataToCheck: this.state.level })
+            this.setState({ approvalTypeObject: { label: Data?.ApprovalType, value: Data?.ApprovalTypeId } })
           }, 500)
         }
       })
@@ -100,7 +108,7 @@ class Level extends Component {
 
     // WHEN SIMULATION LEVEL DETAILS GET
     if (isEditFlag && isShowMappingForm && isEditedlevelType === 'Simulation') {
-      this.props.getSimulationLevel(TechnologyId, (res) => {
+      this.props.getSimulationLevel(TechnologyId, approvalTypeId.Simulation, (res) => {
 
         if (res && res.data && res.data.Data) {
           let Data = res.data.Data;
@@ -114,6 +122,7 @@ class Level extends Component {
               isLoader: false
             })
             this.setState({ dataToCheck: this.state.level })
+            this.setState({ approvalTypeObject: { label: Data?.ApprovalType, value: Data?.ApprovalTypeId } })
           }, 500)
         }
       })
@@ -121,7 +130,7 @@ class Level extends Component {
 
     // WHEN MASTER LEVEL DETAILS GET
     if (isEditFlag && isShowMappingForm && isEditedlevelType === 'Master') {
-      this.props.getMasterLevel(TechnologyId, (res) => {
+      this.props.getMasterLevel(TechnologyId, approvalTypeId.Master, (res) => {
         if (res && res.data && res.data.Data) {
           let Data = res.data.Data;
 
@@ -135,6 +144,7 @@ class Level extends Component {
               isLoader: false
             })
             this.setState({ dataToCheck: this.state.level })
+            this.setState({ approvalTypeObject: { label: Data?.ApprovalType, value: Data?.ApprovalTypeId } })
           }, 500)
         }
       })
@@ -146,7 +156,7 @@ class Level extends Component {
   * @description Used show listing of unit of measurement
   */
   searchableSelectType = (label) => {
-    const { technologyList, levelList, simulationTechnologyList } = this.props;
+    const { technologyList, levelList, simulationTechnologyList, approvalTypeSelectList } = this.props;
     const temp = [];
 
     // RENDER WHEN COSTING TECHNOLOGY LIST IN USE
@@ -195,6 +205,20 @@ class Level extends Component {
       });
       return temp;
     }
+
+    // RENDER WHEN COSTING TECHNOLOGY LIST IN USE
+    if (label === 'ApprovalType') {
+      approvalTypeSelectList && approvalTypeSelectList.map(item => {
+        if (item.Value === '0') return false
+        if (item.Text === PROVISIONAL && this.state.levelType !== 'Simulation') return false
+        if (item.Text === NEW_COMPONENT && this.state.levelType === 'Master') return false
+        if (item.Text === CUSTOMER_BASED && !(reactLocalStorage.getObject('cbcCostingPermission'))) return false
+        temp.push({ label: item.Text, value: item.Value })
+        return null;
+      });
+      return temp;
+    }
+
   }
 
   /**
@@ -206,6 +230,18 @@ class Level extends Component {
       this.setState({ technology: newValue });
     } else {
       this.setState({ technology: [] });
+    }
+  };
+
+  /**
+  * @method approvalTypeHandler
+  * @description Used to handle 
+  */
+  approvalTypeHandler = (newValue, actionMeta) => {
+    if (newValue && newValue !== '') {
+      this.setState({ approvalTypeObject: newValue });
+    } else {
+      this.setState({ approvalTypeObject: [] });
     }
   };
 
@@ -226,13 +262,19 @@ class Level extends Component {
   * @description LEVEL TYPE HANDLING
   */
   onPressRadioLevel = (label) => {
+
+    const fieldsToClear = ['ApprovalType', 'TechnologyId', 'LevelId'];
+    fieldsToClear.forEach(fieldName => {
+      this.props.dispatch(clearFields('Level', false, false, fieldName));
+    });
+
     if (label === 'Costing') {
       this.props.getAllTechnologyAPI(() => { })
     } else if (label === 'Simulation') {
       this.props.getSimulationTechnologySelectList(() => { })
     }
     this.setState({ levelType: label });
-    this.setState({ technology: [], level: [] });
+    this.setState({ technology: [], level: [], approvalTypeObject: [] });
   };
 
   /**
@@ -304,7 +346,7 @@ class Level extends Component {
   onSubmit(values) {
     const { isShowForm, isShowMappingForm, isEditFlag, TechnologyId, reset } = this.props;
 
-    const { technology, level } = this.state;
+    const { technology, level, approvalTypeObject } = this.state;
     this.setState({ isLoader: true })
 
     if (isShowForm) {
@@ -352,7 +394,8 @@ class Level extends Component {
             LevelId: level.value,
             Technology: technology.value,
             Level: level.label,
-            ModifiedBy: loggedInUserId()
+            ModifiedBy: loggedInUserId(),
+            ApprovalTypeId: costingTypeIdToApprovalTypeIdFunction((Number(approvalTypeObject?.value)))
           }
 
           if (this.state.dataToCheck.label === formReq.Level) {
@@ -380,7 +423,8 @@ class Level extends Component {
             LevelId: level.value,
             Technology: technology.value,
             Level: level.label,
-            ModifiedBy: loggedInUserId()
+            ModifiedBy: loggedInUserId(),
+            ApprovalTypeId: costingTypeIdToApprovalTypeIdFunction(Number(approvalTypeObject?.value))
           }
           if (this.state.dataToCheck.label === formReq.Level) {
             this.toggleDrawer('')
@@ -402,7 +446,8 @@ class Level extends Component {
             LevelId: level.value,
             Master: technology.value,
             Level: level.label,
-            ModifiedBy: loggedInUserId()
+            ModifiedBy: loggedInUserId(),
+            ApprovalTypeId: costingTypeIdToApprovalTypeIdFunction(Number(approvalTypeObject?.value))
           }
           if (this.state.dataToCheck.label === formReq.Level) {
             this.toggleDrawer('')
@@ -422,6 +467,8 @@ class Level extends Component {
         let formData = {
           LevelId: level.value,
           TechnologyId: technology.value,
+          ApprovalTypeId: costingTypeIdToApprovalTypeIdFunction(Number(approvalTypeObject?.value))
+
         }
 
         if (this.state.levelType === 'Costing') {
@@ -458,7 +505,8 @@ class Level extends Component {
           let masterData = {
             LevelId: level.value,
             MasterId: technology.value,
-            UserId: loggedInUserId()
+            UserId: loggedInUserId(),
+            ApprovalTypeId: costingTypeIdToApprovalTypeIdFunction(Number(approvalTypeObject?.value))
           }
           // ADD MASTER NEW LEVEL
           this.props.addMasterLevel(masterData, (res) => {
@@ -614,6 +662,23 @@ class Level extends Component {
                       <div className="row pr-0">
                         <div className="input-group  form-group col-md-12 input-withouticon" >
                           <Field
+                            name="ApprovalType"
+                            type="text"
+                            label="Approval Type"
+                            placeholder="Select"
+                            className="w-100"
+                            component={searchableSelect}
+                            options={this.searchableSelectType('ApprovalType')}
+                            //onKeyUp={(e) => this.changeItemDesc(e)}
+                            validate={(this.state.approvalTypeObject == null || this.state.approvalTypeObject.length === 0) ? [required] : []}
+                            required={true}
+                            handleChangeDescription={this.approvalTypeHandler}
+                            valueDescription={this.state.approvalTypeObject}
+                            disabled={isEditFlag ? true : false}
+                          />
+                        </div>
+                        <div className="input-group  form-group col-md-12 input-withouticon" >
+                          <Field
                             name="TechnologyId"
                             type="text"
                             label="Technology/Heads"
@@ -676,7 +741,7 @@ class Level extends Component {
 
                 <LevelTechnologyListing
                     onRef={ref => (this.childMapping = ref)}
-                    getLevelMappingDetail={this.getLevelMappingDetail}
+                    getLevelMappingDetails={this.getLevelMappingDetails}
                 /> */}
           </Container>
         </Drawer>
@@ -691,11 +756,13 @@ class Level extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-const mapStateToProps = ({ auth }) => {
+const mapStateToProps = (state) => {
+  const { auth, comman } = state
   const { technologyList, levelList, simulationTechnologyList } = auth;
+  const { approvalTypeSelectList } = comman;
   let initialValues = {};
 
-  return { technologyList, levelList, simulationTechnologyList, initialValues };
+  return { technologyList, levelList, simulationTechnologyList, initialValues, approvalTypeSelectList };
 };
 
 /**
@@ -721,7 +788,8 @@ export default connect(mapStateToProps, {
   getMastersSelectList,
   addMasterLevel,
   updateMasterLevel,
-  getMasterLevel
+  getMasterLevel,
+  getApprovalTypeSelectList
 })(reduxForm({
   form: 'Level',
   enableReinitialize: true,

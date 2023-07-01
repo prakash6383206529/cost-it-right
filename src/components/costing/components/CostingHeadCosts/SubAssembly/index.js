@@ -6,12 +6,13 @@ import PartCompoment from '../Part';
 import { getRMCCTabData, saveAssemblyBOPHandlingCharge } from '../../../actions/Costing';
 import { checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected, } from '../../../../../helper';
 import AddAssemblyOperation from '../../Drawers/AddAssemblyOperation';
-import { CostingStatusContext, ViewCostingContext } from '../../CostingDetails';
+import { CostingStatusContext, IsNFR, ViewCostingContext } from '../../CostingDetails';
 import { EMPTY_GUID } from '../../../../../config/constants';
 import _ from 'lodash'
 import AddBOPHandling from '../../Drawers/AddBOPHandling';
 import Toaster from '../../../../common/Toaster';
 import { reactLocalStorage } from 'reactjs-localstorage';
+import { useEffect } from 'react';
 
 function AssemblyPart(props) {
   const { children, item, index } = props;
@@ -20,6 +21,7 @@ function AssemblyPart(props) {
   const [Count, setCount] = useState(0);
   const [IsDrawerOpen, setDrawerOpen] = useState(false)
   const [isOpenBOPDrawer, setIsOpenBOPDrawer] = useState(false)
+  const [isBOPExists, setIsBOPExists] = useState(false)
   const { partNumberAssembly } = useSelector(state => state.costing)
   const costingApprovalStatus = useContext(CostingStatusContext);
 
@@ -28,10 +30,15 @@ function AssemblyPart(props) {
   const CostingViewMode = useContext(ViewCostingContext);
   const costData = useContext(costingInfoContext);
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
-  const { CostingEffectiveDate, bomLevel } = useSelector(state => state.costing)
+  const { CostingEffectiveDate, bomLevel, openAllTabs } = useSelector(state => state.costing)
+  const isNFR = useContext(IsNFR);
   const dispatch = useDispatch()
   const toggle = (BOMLevel, PartNumber) => {
     if (CheckIsCostingDateSelected(CostingEffectiveDate)) return false;
+    if (isNFR && !openAllTabs) {
+      Toaster.warning("All Raw Material's price has not added in the Raw Material master against this vendor and plant.")
+      return false;
+    }
     if ((partNumberAssembly !== '' && partNumberAssembly !== PartNumber) ||
       (partNumberAssembly !== '' && partNumberAssembly === PartNumber && bomLevel !== BOMLevel)) {
       Toaster.warning('Close Accordian first.')
@@ -52,12 +59,12 @@ function AssemblyPart(props) {
       dispatch(getRMCCTabData(data, false, (res) => {
         if (res && res.data && res.data.Result) {
           let Data = res.data.DataList[0];
-          if (Data.CostingPartDetails.IsApplyBOPHandlingCharges) {
+          if (Data?.CostingPartDetails?.IsApplyBOPHandlingCharges) {
             let obj = {
-              IsApplyBOPHandlingCharges: Data.CostingPartDetails.IsApplyBOPHandlingCharges,
-              BOPHandlingPercentage: Data.CostingPartDetails.BOPHandlingPercentage,
-              BOPHandlingCharges: Data.CostingPartDetails.BOPHandlingCharges,
-              BOPHandlingChargeApplicability: Data.CostingPartDetails.BOPHandlingChargeApplicability
+              IsApplyBOPHandlingCharges: Data?.CostingPartDetails?.IsApplyBOPHandlingCharges,
+              BOPHandlingPercentage: Data?.CostingPartDetails?.BOPHandlingPercentage,
+              BOPHandlingCharges: Data?.CostingPartDetails?.BOPHandlingCharges,
+              BOPHandlingChargeApplicability: Data?.CostingPartDetails?.BOPHandlingChargeApplicability
             }
             dispatch(saveAssemblyBOPHandlingCharge(obj, () => {
             }))
@@ -87,9 +94,6 @@ function AssemblyPart(props) {
   */
   const DrawerToggle = () => {
     if (CheckIsCostingDateSelected(CostingEffectiveDate)) return false;
-    setTimeout(() => {
-      document.getElementsByClassName('MuiPaper-elevation16')[0].removeAttribute('tabIndex');
-    }, 500);
     setDrawerOpen(true)
   }
 
@@ -120,9 +124,9 @@ function AssemblyPart(props) {
       return <PartCompoment
         index={index}
         item={el}
-        rmData={el.CostingPartDetails.CostingRawMaterialsCost}
-        bopData={el.CostingPartDetails !== null && el.CostingPartDetails.CostingBoughtOutPartCost}
-        ccData={el.CostingPartDetails !== null && el.CostingPartDetails.CostingConversionCost}
+        rmData={el?.CostingPartDetails?.CostingRawMaterialsCost}
+        bopData={el?.CostingPartDetails !== null && el?.CostingPartDetails?.CostingBoughtOutPartCost}
+        ccData={el?.CostingPartDetails !== null && el?.CostingPartDetails?.CostingConversionCost}
         setPartDetails={props.setPartDetails}
         setRMCost={props.setRMCost}
         setBOPCost={props.setBOPCost}
@@ -134,6 +138,11 @@ function AssemblyPart(props) {
     }
     return null
   })
+
+  useEffect(() => {
+    let final = _.map(item && item?.CostingChildPartDetails, 'PartType')
+    setIsBOPExists(final.includes('BOP'))
+  }, [item])
 
   const nestedAssembly = children && children.map(el => {
     if (el.PartType !== 'Sub Assembly') return false;
@@ -177,37 +186,37 @@ function AssemblyPart(props) {
         <div style={{ display: 'contents' }} >
           <td className='part-overflow' onClick={() => toggle(item.BOMLevel, item.PartNumber)}>
             <span title={item && item.PartNumber} className={`part-name ${item && item.PartType !== "Sub Assembly" && item.PartType !== "Assembly" && "L1"}`}>
-              <div className={`${item.CostingPartDetails.IsOpen ? 'Open' : 'Close'}`}></div>{item && item.PartNumber}
+              <div className={`${item?.CostingPartDetails?.IsOpen ? 'Open' : 'Close'}`}></div>{item && item.PartNumber}
             </span>
           </td>
           <td>{item && item.BOMLevel}</td>
           <td>{item && item.PartType}</td>
-          <td>{item?.CostingPartDetails?.TotalRawMaterialsCostWithQuantity ? checkForDecimalAndNull(item.CostingPartDetails.TotalRawMaterialsCostWithQuantity, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
-          <td>{item?.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity ? checkForDecimalAndNull(item.CostingPartDetails.TotalBoughtOutPartCostWithQuantity, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
+          <td>{item?.CostingPartDetails?.TotalRawMaterialsCostWithQuantity ? checkForDecimalAndNull(item?.CostingPartDetails?.TotalRawMaterialsCostWithQuantity, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
+          <td>{item?.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity ? checkForDecimalAndNull(item?.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
           <td>
-            {item?.CostingPartDetails?.TotalConversionCostWithQuantity ? checkForDecimalAndNull(checkForNull(item.CostingPartDetails.TotalConversionCostWithQuantity), initialConfiguration.NoOfDecimalForPrice) : 0}
+            {item?.CostingPartDetails?.TotalConversionCostWithQuantity ? checkForDecimalAndNull(checkForNull(item?.CostingPartDetails?.TotalConversionCostWithQuantity), initialConfiguration.NoOfDecimalForPrice) : 0}
             {
-              (item?.CostingPartDetails?.TotalOperationCostPerAssembly || item.CostingPartDetails?.TotalOperationCostSubAssembly || item.CostingPartDetails.TotalOperationCostComponent) ?
+              (item?.CostingPartDetails?.TotalOperationCostPerAssembly || item?.CostingPartDetails?.TotalOperationCostSubAssembly || item?.CostingPartDetails?.TotalOperationCostComponent) ?
                 <div class="tooltip-n ml-2 assembly-tooltip"><i className="fa fa-info-circle text-primary tooltip-icon"></i>
                   <span class="tooltiptext">
-                    {`Assembly's Conversion Cost:- ${checkForDecimalAndNull(item.CostingPartDetails.TotalOperationCostPerAssembly, initialConfiguration.NoOfDecimalForPrice)}`}
+                    {`Assembly's Conversion Cost:- ${checkForDecimalAndNull(item?.CostingPartDetails?.TotalOperationCostPerAssembly, initialConfiguration.NoOfDecimalForPrice)}`}
                     <br></br>
-                    {`Sub Assembly's Conversion Cost:- ${checkForDecimalAndNull(item.CostingPartDetails?.TotalOperationCostSubAssembly, initialConfiguration.NoOfDecimalForPrice)}`}
+                    {`Sub Assembly's Conversion Cost:- ${checkForDecimalAndNull(item?.CostingPartDetails?.TotalOperationCostSubAssembly, initialConfiguration.NoOfDecimalForPrice)}`}
                     <br></br>
-                    {/* {`Child Parts Conversion Cost:- ${checkForDecimalAndNull(item.CostingPartDetails.TotalConversionCost - item.CostingPartDetails.TotalOperationCostPerAssembly, initialConfiguration.NoOfDecimalForPrice)}`} */}
-                    {`Child Parts Conversion Cost:- ${checkForDecimalAndNull(item.CostingPartDetails.TotalOperationCostComponent, initialConfiguration.NoOfDecimalForPrice)}`}
+                    {/* {`Child Parts Conversion Cost:- ${checkForDecimalAndNull(item?.CostingPartDetails?.TotalConversionCost - item?.CostingPartDetails?.TotalOperationCostPerAssembly, initialConfiguration.NoOfDecimalForPrice)}`} */}
+                    {`Child Parts Conversion Cost:- ${checkForDecimalAndNull(item?.CostingPartDetails?.TotalOperationCostComponent, initialConfiguration.NoOfDecimalForPrice)}`}
                   </span>
                 </div> : ''
             }
           </td>
-          <td>{(item?.PartType === 'Assembly') ? 1 : (item.CostingPartDetails.Quantity ? checkForNull(item.CostingPartDetails.Quantity) : 1)}</td>
-          {/* <td>{item?.CostingPartDetails?.TotalCalculatedRMBOPCCCost ? checkForDecimalAndNull(item.CostingPartDetails.TotalCalculatedRMBOPCCCost, initialConfiguration.NoOfDecimalForPrice) : 0}</td> */}
+          <td>{(item?.PartType === 'Assembly') ? 1 : (item?.CostingPartDetails?.Quantity ? checkForNull(item?.CostingPartDetails?.Quantity) : 1)}</td>
+          {/* <td>{item?.CostingPartDetails?.TotalCalculatedRMBOPCCCost ? checkForDecimalAndNull(item?.CostingPartDetails?.TotalCalculatedRMBOPCCCost, initialConfiguration.NoOfDecimalForPrice) : 0}</td> */}
           <td>{'-'}</td>
-          {/* {costData.IsAssemblyPart && <td>{item?.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity ? checkForDecimalAndNull(item.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity, initialConfiguration.NoOfDecimalForPrice) : 0}</td>} */}
-          {/* {costData.IsAssemblyPart && <td>{item?.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity ? checkForDecimalAndNull(item.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity, initialConfiguration.NoOfDecimalForPrice) : 0}</td>} */}
+          {/* {costData.IsAssemblyPart && <td>{item?.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity ? checkForDecimalAndNull(item?.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity, initialConfiguration.NoOfDecimalForPrice) : 0}</td>} */}
+          {/* {costData.IsAssemblyPart && <td>{item?.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity ? checkForDecimalAndNull(item?.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity, initialConfiguration.NoOfDecimalForPrice) : 0}</td>} */}
           <td>{(item?.PartType === 'Assembly' && (costingApprovalStatus === 'ApprovedByAssembly' || costingApprovalStatus === 'ApprovedByASMSimulation'))
-            ? checkForDecimalAndNull(checkForNull(item.CostingPartDetails.TotalCalculatedRMBOPCCCost), initialConfiguration.NoOfDecimalForPrice) :
-            checkForDecimalAndNull(checkForNull(item.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity), initialConfiguration.NoOfDecimalForPrice)}</td>
+            ? checkForDecimalAndNull(checkForNull(item?.CostingPartDetails?.TotalCalculatedRMBOPCCCost), initialConfiguration.NoOfDecimalForPrice) :
+            checkForDecimalAndNull(checkForNull(item?.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity), initialConfiguration.NoOfDecimalForPrice)}</td>
 
         </div>
         {/* 
@@ -222,12 +231,12 @@ function AssemblyPart(props) {
           <div className='d-flex justify-content-end align-items-center'>
             <div className='d-flex'>
 
-              <button
+              {isBOPExists && <><button
                 type="button"
                 className={'user-btn add-oprn-btn mr-1'}
                 onClick={bopHandlingDrawer}>
                 <div className={`${(item?.CostingPartDetails?.IsApplyBOPHandlingCharges || CostingViewMode || IsLocked) ? 'fa fa-eye pr-1' : 'plus'}`}></div>{`Insert H`}</button>
-
+              </>}
               {checkForNull(item?.CostingPartDetails?.TotalOperationCostPerAssembly) !== 0 ?
                 <button
                   type="button"
@@ -249,11 +258,11 @@ function AssemblyPart(props) {
         {/* <td className="text-right"></td> */}
       </tr>
 
-      {item.CostingPartDetails.IsOpen && nestedPartComponent}
+      {item?.CostingPartDetails?.IsOpen && nestedPartComponent}
 
-      {item.CostingPartDetails.IsOpen && nestedBOP}
+      {item?.CostingPartDetails?.IsOpen && nestedBOP}
 
-      {item.CostingPartDetails.IsOpen && nestedAssembly}
+      {item?.CostingPartDetails?.IsOpen && nestedAssembly}
 
       {IsDrawerOpen && <AddAssemblyOperation
         isOpen={IsDrawerOpen}
@@ -276,6 +285,7 @@ function AssemblyPart(props) {
           ID={''}
           anchor={'right'}
           setBOPCostWithAsssembly={props.setBOPCostWithAsssembly}
+          isAssemblyTechnology={false}
         />
       }
     </ >

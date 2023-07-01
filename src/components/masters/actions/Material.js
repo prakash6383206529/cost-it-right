@@ -22,7 +22,6 @@ import {
     GET_RM_NAME_SELECTLIST,
     GET_MACHINE_DATALIST_SUCCESS,
     GET_GRADELIST_BY_RM_NAME_SELECTLIST,
-    GET_VENDORLIST_BY_VENDORTYPE_SELECTLIST,
     GET_GRADE_SELECTLIST_SUCCESS,
     GET_RAW_MATERIAL_FILTER_DYNAMIC_DATA,
     GET_GRADE_FILTER_BY_RAW_MATERIAL_SELECTLIST,
@@ -41,13 +40,14 @@ import {
     GET_RM_DOMESTIC_LIST,
     GET_ALL_RM_DOMESTIC_LIST,
     GET_RM_IMPORT_LIST,
-    GET_MANAGE_SPECIFICATION, GET_UNASSOCIATED_RM_NAME_SELECTLIST, SET_FILTERED_RM_DATA, GET_RM_APPROVAL_LIST, GET_ALL_MASTER_APPROVAL_DEPARTMENT, GET_ALL_MASTER_APPROVAL_USERS_BY_DEPARTMENT, EMPTY_GUID
+    GET_MANAGE_SPECIFICATION, GET_UNASSOCIATED_RM_NAME_SELECTLIST, SET_FILTERED_RM_DATA, GET_RM_APPROVAL_LIST, GET_ALL_MASTER_APPROVAL_DEPARTMENT, GET_ALL_MASTER_APPROVAL_USERS_BY_DEPARTMENT, EMPTY_GUID, BUDGET_ID, GET_VOLUME_DATA_LIST, GET_RM_SPECIFICATION_LIST_SUCCESS
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
 import Toaster from '../../common/Toaster';
 import { loggedInUserId, userDetails } from '../../../helper';
 import { MESSAGES } from '../../../config/message';
 import { rmQueryParms } from '../masterUtil';
+import { reactLocalStorage } from 'reactjs-localstorage';
 
 /**
  * @method createMaterialAPI
@@ -743,7 +743,7 @@ export function getRawMaterialDetailsDataAPI(RawMaterialDetailsId, callback) {
 export function getRawMaterialDetailsAPI(data, isValid, callback) {
     return (dispatch) => {
         if (isValid) {
-            axios.get(`${API.getRMDomesticDataById}/${data.Id}/${data.IsVendor}`, config())
+            axios.get(`${API.getRMDomesticDataById}/${data.Id}/${data.costingTypeId}`, config())
                 .then((response) => {
                     dispatch({
                         type: GET_RAW_MATERIAL_DETAILS_DATA_SUCCESS,
@@ -979,43 +979,24 @@ export function getGradeListByRawMaterialNameChild(ID, callback) {
  * @method getVendorListByVendorType
  * @description get Vendor list by Vendor Type (RAW MATERIAL OR VBC)
  */
-export function getVendorListByVendorType(isVendor, callback) {
-    return (dispatch) => {
-        const request = axios.get(`${API.getVendorListByVendorType}/${isVendor}`, config());
-        request.then((response) => {
-            if (response.data.Result) {
-                dispatch({
-                    type: GET_VENDORLIST_BY_VENDORTYPE_SELECTLIST,
-                    payload: response.data.SelectList,
-                });
-                callback(response);
-            }
-        }).catch((error) => {
-            dispatch({ type: API_FAILURE, });
-            callback(error);
-            apiErrors(error);
-        });
-    };
+export function getVendorListByVendorType(costingTypeId, vendorName, callback) {
+    return axios.get(`${API.getVendorListByVendorType}?costingTypeId=${costingTypeId}&vendorName=${vendorName}`, config()).catch(error => {
+        apiErrors(error);
+        callback(error);
+        return Promise.reject(error)
+    });
 }
 
 /**
  * @method getVendorWithVendorCodeSelectList
  * @description GET VBC VENDOR WITH VENDOR CODE SELECTLIST
  */
-export function getVendorWithVendorCodeSelectList(callback) {
-    return (dispatch) => {
-        const request = axios.get(API.getVendorWithVendorCodeSelectList, config());
-        request.then((response) => {
-            dispatch({
-                type: GET_VENDORLIST_BY_VENDORTYPE_SELECTLIST,
-                payload: response.data.SelectList,
-            });
-            callback(response)
-        }).catch((error) => {
-            dispatch({ type: API_FAILURE });
-            apiErrors(error);
-        });
-    };
+export function getVendorWithVendorCodeSelectList(vendorName, callback) {
+    return axios.get(`${API.getVendorWithVendorCodeSelectList}?vendorName=${vendorName}`, config()).catch(error => {
+        apiErrors(error);
+        callback(error);
+        return Promise.reject(error)
+    });
 }
 
 /**
@@ -1025,12 +1006,11 @@ export function getVendorWithVendorCodeSelectList(callback) {
 export function getRMDomesticDataList(data, skip, take, isPagination, obj, callback) {
     return (dispatch) => {
 
-        const queryParams = `technology_id=${data.technologyId}&net_landed_min_range=${data.net_landed_min_range}&net_landed_max_range=${data.net_landed_max_range}&NetCost=${obj.NetLandedCost !== undefined ? obj.NetLandedCost : ""}&ListFor=${data.ListFor ? data.ListFor : ''}&StatusId=${data.StatusId ? data.StatusId : ''}&DepartmentCode=${obj.DepartmentName !== undefined ? obj.DepartmentName : ""}`
+        const queryParams = `technology_id=${data.technologyId}&net_landed_min_range=${data.net_landed_min_range}&net_landed_max_range=${data.net_landed_max_range}&NetCost=${obj.NetLandedCost !== undefined ? obj.NetLandedCost : ""}&ListFor=${data.ListFor ? data.ListFor : ''}&StatusId=${data.StatusId ? data.StatusId : ''}&DepartmentCode=${obj.DepartmentName !== undefined ? obj.DepartmentName : ""}&CustomerName=${obj.CustomerName !== undefined ? obj.CustomerName : ''}&FromDate=${(obj.dateArray && obj.dateArray.length > 1) ? obj.dateArray[0] : ""}&ToDate=${(obj.dateArray && obj.dateArray.length > 1) ? obj.dateArray[1] : ""}&IsCustomerDataShow=${reactLocalStorage.getObject('cbcCostingPermission') !== undefined ? reactLocalStorage.getObject('cbcCostingPermission') : false}`
         const queryParamsSecond = rmQueryParms(isPagination, skip, take, obj)
         const request = axios.get(`${API.getRMDomesticDataList}?${queryParams}&${queryParamsSecond}`, config());
         request.then((response) => {
             if (response.data.Result || response.status === 204) {
-                //
                 if (isPagination === true) {
                     dispatch({
                         type: GET_RM_DOMESTIC_LIST,
@@ -1048,7 +1028,6 @@ export function getRMDomesticDataList(data, skip, take, isPagination, obj, callb
         }).catch((error) => {
             dispatch({ type: API_FAILURE, });
             callback(error);
-
             apiErrors(error);
         });
     };
@@ -1117,7 +1096,7 @@ export function updateRMImportAPI(requestData, callback) {
 export function getRMImportDataById(data, isValid, callback) {
     return (dispatch) => {
         if (isValid) {
-            axios.get(`${API.getRMImportDataById}/${data.Id}/${data.IsVendor}`, config())
+            axios.get(`${API.getRMImportDataById}/${data.Id}/${data.costingTypeId}`, config())
                 .then((response) => {
                     dispatch({
                         type: GET_RAW_MATERIAL_DETAILS_DATA_SUCCESS,
@@ -1146,7 +1125,7 @@ export function getRMImportDataById(data, isValid, callback) {
  */
 export function getRMImportDataList(data, skip, take, isPagination, obj, callback) {
     return (dispatch) => {
-        const queryParams = `Currency=${obj.Currency !== undefined ? obj.Currency : ""}&NetCostCurrency=${obj.NetLandedCost !== undefined ? obj.NetLandedCost : ""}&NetCost=${obj.NetLandedCostConversion !== undefined ? obj.NetLandedCostConversion : ""}&technology_id=${data.technologyId}&net_landed_min_range=${data.net_landed_min_range}&net_landed_max_range=${data.net_landed_max_range}&ListFor=${data.ListFor ? data.ListFor : ''}&StatusId=${data.StatusId ? data.StatusId : ''}&DepartmentCode=${obj.DepartmentName !== undefined ? obj.DepartmentName : ""}`
+        const queryParams = `Currency=${obj.Currency !== undefined ? obj.Currency : ""}&NetCostCurrency=${obj.NetLandedCost !== undefined ? obj.NetLandedCost : ""}&NetCost=${obj.NetLandedCostConversion !== undefined ? obj.NetLandedCostConversion : ""}&technology_id=${data.technologyId}&net_landed_min_range=${data.net_landed_min_range}&net_landed_max_range=${data.net_landed_max_range}&ListFor=${data.ListFor ? data.ListFor : ''}&StatusId=${data.StatusId ? data.StatusId : ''}&DepartmentCode=${obj.DepartmentName !== undefined ? obj.DepartmentName : ""}&CustomerName=${obj.CustomerName !== undefined ? obj.CustomerName : ''}&FromDate=${(obj.dateArray && obj.dateArray.length > 1) ? obj.dateArray[0] : ""}&ToDate=${(obj.dateArray && obj.dateArray.length > 1) ? obj.dateArray[1] : ""}&IsCustomerDataShow=${reactLocalStorage.getObject('cbcCostingPermission') !== undefined ? reactLocalStorage.getObject('cbcCostingPermission') : false}`
         const queryParamsSecond = rmQueryParms(isPagination, skip, take, obj)
         const request = axios.get(`${API.getRMImportDataList}?${queryParams}&${queryParamsSecond} `, config());
         request.then((response) => {
@@ -1248,6 +1227,24 @@ export function bulkUploadRMDomesticVBC(data, callback) {
 }
 
 /**
+ * @method bulkUploadRMDomesticCBC
+ * @description upload bulk RM Domestic CBC
+ */
+export function bulkUploadRMDomesticCBC(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.bulkUploadRMDomesticCBC, data, config());
+        request.then((response) => {
+            if (response.status === 200) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+            callback(error);
+        });
+    };
+}
+/**
  * @method bulkfileUploadRM
  * @description upload bulk RM Domestic
  */
@@ -1284,6 +1281,24 @@ export function bulkUploadRMImportZBC(data, callback) {
     };
 }
 
+/**
+ * @method bulkUploadRMImportCBC
+ * @description upload bulk RM Import CBC
+ */
+export function bulkUploadRMImportCBC(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.bulkUploadRMImportCBC, data, config());
+        request.then((response) => {
+            if (response.status === 200) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+            callback(error);
+        });
+    };
+}
 /**
  * @method bulkUploadRMImportVBC
  * @description upload bulk RM Domestic VBC
@@ -1572,7 +1587,7 @@ export function getRMApprovalList(masterId, skip, take, isPagination, obj, callb
     return (dispatch) => {
 
         dispatch({ type: API_REQUEST });
-        const queryParams = `applyPagination=${isPagination}&skip=${skip}&take=${take}&Token=${obj.ApprovalNumber !== undefined ? obj.ApprovalNumber : ""}&CostingHead=${obj.CostingHead !== undefined ? obj.CostingHead : ""}&Technology=${obj.TechnologyName !== undefined ? obj.TechnologyName : ""}&UOM=${obj.UOM !== undefined ? obj.UOM : ""}&EffectiveDate=${obj.EffectiveDate !== undefined ? obj.EffectiveDate : ""}&InitiatedBy=${obj.RequestedBy !== undefined ? obj.RequestedBy : ""}&CreatedBy=${obj.CreatedByName !== undefined ? obj.CreatedByName : ""}&LastApprovedBy=${obj.LastApprovedBy !== undefined ? obj.LastApprovedBy : ""}&Status=${obj.DisplayStatus !== undefined ? obj.DisplayStatus : ""}&BasicRate=${obj.BasicRate !== undefined ? obj.BasicRate : ""}&NetLandedCost=${obj.NetLandedCost !== undefined ? obj.NetLandedCost : ""}&Plant=${obj.Plants !== undefined ? obj.Plants : ""}&Vendor=${obj.VendorName !== undefined ? obj.VendorName : ""}&RMName=${obj.RawMaterial !== undefined ? obj.RawMaterial : ""}&RMGrade=${obj.RMGrade !== undefined ? obj.RMGrade : ""}&RMSpecification=${obj.RMSpec !== undefined ? obj.RMSpec : ""}&RMCategory=${obj.Category !== undefined ? obj.Category : ""}&RMMaterialType=${obj.MaterialType !== undefined ? obj.MaterialType : ""}&RMScrapRate=${obj.ScrapRate !== undefined ? obj.ScrapRate : ""}&RMFreightCost=${obj.RMFreightCost !== undefined ? obj.RMFreightCost : ""}&RMShearingCost=${obj.RMShearingCost !== undefined ? obj.RMShearingCost : ""}&BOPPartNumber=${obj.BoughtOutPartNumber !== undefined ? obj.BoughtOutPartNumber : ""}&BOPPartName=${obj.BoughtOutPartName !== undefined ? obj.BoughtOutPartName : ""}&BOPCategory=${obj.BoughtOutPartCategory !== undefined ? obj.BoughtOutPartCategory : ""}&BOPSpecification=${obj.Specification !== undefined ? obj.Specification : ""}&OperationName=${obj.OperationName !== undefined ? obj.OperationName : ""}&OperationCode=${obj.OperationCode !== undefined ? obj.OperationCode : ""}&MachineNumber=${obj.MachineNumber !== undefined ? obj.MachineNumber : ""}&MachineType=${obj.MachineTypeName !== undefined ? obj.MachineTypeName : ""}&MachineTonnage=${obj.MachineTonnage !== undefined ? obj.MachineTonnage : ""}&MachineProcessName=${obj.ProcessName !== undefined ? obj.ProcessName : ""}&IncoTerm=${obj.IncoTermDescriptionAndInfoTerm !== undefined ? obj.IncoTermDescriptionAndInfoTerm : ""}&PaymentTerm=${obj.PaymentTermDescriptionAndPaymentTerm !== undefined ? obj.PaymentTermDescriptionAndPaymentTerm : ""}`
+        const queryParams = `applyPagination=${isPagination}&skip=${skip}&take=${take}&Token=${obj.ApprovalNumber !== undefined ? obj.ApprovalNumber : ""}&CostingHead=${obj.CostingHead !== undefined ? obj.CostingHead : ""}&Technology=${obj.TechnologyName !== undefined ? obj.TechnologyName : ""}&UOM=${obj.UOM !== undefined ? obj.UOM : ""}&EffectiveDate=${obj.EffectiveDate !== undefined ? obj.EffectiveDate : ""}&InitiatedBy=${obj.RequestedBy !== undefined ? obj.RequestedBy : ""}&CreatedBy=${obj.CreatedByName !== undefined ? obj.CreatedByName : ""}&LastApprovedBy=${obj.LastApprovedBy !== undefined ? obj.LastApprovedBy : ""}&Status=${obj.DisplayStatus !== undefined ? obj.DisplayStatus : ""}&BasicRate=${obj.BasicRate !== undefined ? obj.BasicRate : ""}&NetLandedCost=${obj.NetLandedCost !== undefined ? obj.NetLandedCost : ""}&Plant=${obj.Plants !== undefined ? obj.Plants : ""}&Vendor=${obj.VendorName !== undefined ? obj.VendorName : ""}&RMName=${obj.RawMaterial !== undefined ? obj.RawMaterial : ""}&RMGrade=${obj.RMGrade !== undefined ? obj.RMGrade : ""}&RMSpecification=${obj.RMSpec !== undefined ? obj.RMSpec : ""}&RMCategory=${obj.Category !== undefined ? obj.Category : ""}&RMMaterialType=${obj.MaterialType !== undefined ? obj.MaterialType : ""}&RMScrapRate=${obj.ScrapRate !== undefined ? obj.ScrapRate : ""}&RMFreightCost=${obj.RMFreightCost !== undefined ? obj.RMFreightCost : ""}&RMShearingCost=${obj.RMShearingCost !== undefined ? obj.RMShearingCost : ""}&BOPPartNumber=${obj.BoughtOutPartNumber !== undefined ? obj.BoughtOutPartNumber : ""}&BOPPartName=${obj.BoughtOutPartName !== undefined ? obj.BoughtOutPartName : ""}&BOPCategory=${obj.BoughtOutPartCategory !== undefined ? obj.BoughtOutPartCategory : ""}&BOPSpecification=${obj.Specification !== undefined ? obj.Specification : ""}&OperationName=${obj.OperationName !== undefined ? obj.OperationName : ""}&OperationCode=${obj.OperationCode !== undefined ? obj.OperationCode : ""}&MachineNumber=${obj.MachineNumber !== undefined ? obj.MachineNumber : ""}&MachineType=${obj.MachineTypeName !== undefined ? obj.MachineTypeName : ""}&MachineTonnage=${obj.MachineTonnage !== undefined ? obj.MachineTonnage : ""}&MachineProcessName=${obj.ProcessName !== undefined ? obj.ProcessName : ""}&IsCustomerDataShow=${obj?.IsCustomerDataShow !== undefined ? obj?.IsCustomerDataShow : false}&IncoTerm=${obj.IncoTermDescriptionAndInfoTerm !== undefined ? obj.IncoTermDescriptionAndInfoTerm : ""}&PaymentTerm=${obj.PaymentTermDescriptionAndPaymentTerm !== undefined ? obj.PaymentTermDescriptionAndPaymentTerm : ""}&Currency=${obj.Currency ? obj.Currency : ''}&NumberOfPieces=${obj.NumberOfPieces ? obj.NumberOfPieces : ''}`
         const request = axios.get(`${API.getRMApprovalList}?logged_in_user_id=${loggedInUserId()}&logged_in_user_level_id=${userDetails().LoggedInMasterLevelId}&masterId=${masterId}&${queryParams}`, config());
         request.then((response) => {
             if (response.data.Result || response.status === 204) {
@@ -1749,6 +1764,12 @@ export function getMasterApprovalSummary(tokenNo, approvalProcessId, masterId, c
                             payload: value,
                         })
                         callback(response)
+                    } else if (Number(masterId) === BUDGET_ID) {
+                        dispatch({
+                            type: GET_VOLUME_DATA_LIST,
+                            payload: response.data.Data.ImpactedMasterDataListBudgeting,
+                        })
+                        callback(response)
                     }
                 }
                 else {
@@ -1784,5 +1805,22 @@ export function masterFinalLevelUser(data, callback) {
                 dispatch({ type: API_FAILURE })
                 apiErrors(error)
             })
+    }
+}
+export function clearGradeSelectList(data) {
+    return (dispatch) => {
+        dispatch({
+            type: GET_GRADE_SELECTLIST_SUCCESS,
+            payload: data
+        })
+    }
+}
+
+export function clearSpecificationSelectList(data) {
+    return (dispatch) => {
+        dispatch({
+            type: GET_RM_SPECIFICATION_LIST_SUCCESS,
+            payload: data
+        })
     }
 }

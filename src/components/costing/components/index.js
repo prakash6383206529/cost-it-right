@@ -4,7 +4,7 @@ import { TabContent, TabPane, Nav, NavItem, NavLink, } from 'reactstrap';
 import classnames from 'classnames';
 import CostingDetails from './CostingDetails';
 import CostingSummary from './CostingSummary';
-import { isDataChange, saveAssemblyNumber, saveBOMLevel, savePartNumber, setPartNumberArrayAPICALL, setProcessGroupGrid, storePartNumber } from '../actions/Costing';
+import { isDataChange, saveAssemblyNumber, saveBOMLevel, savePartNumber, setComponentDiscountOtherItemData, setDiscountErrors, setOverheadProfitData, setOverheadProfitErrors, setPartNumberArrayAPICALL, setProcessGroupGrid, setRMCCErrors, setToolsErrors, storePartNumber } from '../actions/Costing';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { useHistory } from "react-router-dom";
 import ApprovalListing from './approval/ApprovalListing';
@@ -15,8 +15,8 @@ function Costing(props) {
 
   let history = useHistory();
   const [activeTab, setActiveTab] = useState('1');
-  const [partInfoStepTwo, setPartInfo] = useState({});
-  const [costingData, setCostingData] = useState({});
+  const [partInfoStepTwo, setPartInfo] = useState(props?.location?.state?.isNFR ? props?.location?.state?.partInfoStepTwo : {});
+  const [costingData, setCostingData] = useState(props?.location?.state?.isNFR ? props?.location?.state?.costingData : {});
   const [costingOptionsSelect, setCostingOptionsSelect] = useState({});
 
   /**
@@ -32,6 +32,12 @@ function Costing(props) {
     dispatch(savePartNumber(''))
     dispatch(saveBOMLevel(''))
     dispatch(saveAssemblyNumber([]))
+    dispatch(setOverheadProfitData([], () => { }))
+    dispatch(setRMCCErrors({}))
+    dispatch(setOverheadProfitErrors({}))
+    dispatch(setToolsErrors({}))
+    dispatch(setDiscountErrors({}))
+    dispatch(setComponentDiscountOtherItemData({}, () => { }))
   }
 
   const dispatch = useDispatch();
@@ -84,7 +90,6 @@ function Costing(props) {
       <div className="user-page container-fluid costing-main-container">
         {/* {this.props.loading && <Loader/>} */}
         <div>
-          <h1>Costing</h1>
           <Nav tabs className="subtabs mt-0">
             <NavItem>
               <NavLink
@@ -127,6 +132,9 @@ function Costing(props) {
                 costingData={costingData}
                 toggle={toggle}
                 costingOptionsSelect={costingOptionsSelect}
+                nfrData={props?.location?.state}
+                isNFR={props?.location?.state?.isNFR}
+                isViewModeCosting={props?.location?.state?.isViewMode}
               />
             </TabPane>
             <TabPane tabId="2">

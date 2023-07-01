@@ -22,11 +22,13 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { getListingForSimulationCombined, setSelectedRowForPagination } from '../../simulation/actions/Simulation';
-import { masterFinalLevelUser } from '../../masters/actions/Material'
 import WarningMessage from '../../common/WarningMessage';
 import { disabledClass } from '../../../actions/Common';
 import _ from 'lodash';
 import SelectRowWrapper from '../../common/SelectRowWrapper';
+import AnalyticsDrawer from '../material-master/AnalyticsDrawer';
+import { reactLocalStorage } from 'reactjs-localstorage';
+import { hideCustomerFromExcel } from '../../common/CommonFunctions';
 
 const ExcelFile = ReactExport.ExcelFile
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -52,15 +54,16 @@ class BOPImportListing extends Component {
             rowData: null,
             sideBar: { toolPanels: ['columns'] },
             showData: false,
-            isLoader: false,
+            isLoader: true,
             showPopup: false,
             deletedId: '',
-            isFinalApprovar: false,
             disableFilter: true,
             disableDownload: false,
-
+            inRangeDate: [],
+            analyticsDrawer: false,
+            selectedRowData: [],
             //states for pagination purpose
-            floatingFilterData: { CostingHead: "", BoughtOutPartNumber: "", BoughtOutPartName: "", BoughtOutPartCategory: "", UOM: "", Specification: "", Plants: "", Vendor: "", BasicRate: "", NetLandedCost: "", EffectiveDateNew: "", Currency: "", DepartmentName: this.props.isSimulation ? userDepartmetList() : "", PaymentTermDescriptionAndPaymentTerm: "", IncoTermDescriptionAndInfoTerm: "" },
+            floatingFilterData: { CostingHead: "", BoughtOutPartNumber: "", BoughtOutPartName: "", BoughtOutPartCategory: "", UOM: "", Specification: "", Plants: "", Vendor: "", BasicRate: "", NetLandedCost: "", EffectiveDateNew: "", Currency: "", DepartmentName: this.props.isSimulation ? userDepartmetList() : "", CustomerName: "", PaymentTermDescriptionAndPaymentTerm: "", IncoTermDescriptionAndInfoTerm: "" },
             warningMessage: false,
             filterModel: {},
             pageNo: 1,
@@ -94,7 +97,7 @@ class BOPImportListing extends Component {
                         this.props?.changeSetLoader(true)
                         this.props.getListingForSimulationCombined(this.props.objectForMultipleSimulation, BOPIMPORT, () => {
                             this.props?.changeSetLoader(false)
-
+                            this.setState({ isLoader: false })
                         })
                     } else {
                         this.getDataList("", 0, "", "", 0, defaultPageSize, true, this.state.floatingFilterData)
@@ -103,17 +106,6 @@ class BOPImportListing extends Component {
                 else {
                     this.getDataList("", 0, "", "", 0, defaultPageSize, true, this.state.floatingFilterData)
                 }
-                let obj = {
-                    MasterId: BOP_MASTER_ID,
-                    DepartmentId: userDetails().DepartmentId,
-                    LoggedInUserLevelId: userDetails().LoggedInMasterLevelId,
-                    LoggedInUserId: loggedInUserId()
-                }
-                this.props.masterFinalLevelUser(obj, (res) => {
-                    if (res?.data?.Result) {
-                        this.setState({ isFinalApprovar: res.data.Data.IsFinalApprovar })
-                    }
-                })
             }
         }, 300);
 
@@ -131,9 +123,20 @@ class BOPImportListing extends Component {
     * @method getDataList
     * @description GET DATALIST OF IMPORT BOP
     */
-    getDataList = (bopFor = '', CategoryId = 0, vendorId = '', plantId = '', skip = 0, take = 100, isPagination = true, dataObj) => {
+    getDataList = (bopFor = '', CategoryId = 0, vendorId = '', plantId = '', skip = 0, take = 100, isPagination = true, dataObj, isReset = false) => {
         if (this.props.isSimulation) {
             this.props?.changeTokenCheckBox(false)
+        }
+
+        if (this.state.filterModel?.EffectiveDateNew && !isReset) {
+            if (this.state.filterModel.EffectiveDateNew.dateTo) {
+                let temp = []
+                temp.push(DayTime(this.state.filterModel.EffectiveDateNew.dateFrom).format('DD/MM/YYYY'))
+                temp.push(DayTime(this.state.filterModel.EffectiveDateNew.dateTo).format('DD/MM/YYYY'))
+
+                dataObj.dateArray = temp
+            }
+
         }
 
         // TO HANDLE FUTURE CONDITIONS LIKE [APPROVED_STATUS, DRAFT_STATUS] FOR MULTIPLE STATUS
@@ -255,6 +258,7 @@ class BOPImportListing extends Component {
             Id: Id,
             IsVendor: rowData.CostingHead,
             isViewMode: isViewMode,
+            costingTypeId: rowData.CostingTypeId,
         }
         this.props.getDetails(data, rowData?.IsBOPAssociated);
     }
@@ -279,6 +283,7 @@ class BOPImportListing extends Component {
             if (res.data.Result === true) {
                 Toaster.success(MESSAGES.BOP_DELETE_SUCCESS);
                 this.resetState()
+                this.setState({ dataCount: 0 })
             }
         });
         this.setState({ showPopup: false })
@@ -293,13 +298,16 @@ class BOPImportListing extends Component {
     bulkToggle = () => {
         this.setState({ isBulkUpload: true })
     }
-
-    closeBulkUploadDrawer = () => {
-        this.setState({ isBulkUpload: false }, () => {
+    closeBulkUploadDrawer = (event, type) => {
+        this.setState({ isBulkUpload: false })
+        if (type !== 'cancel') {
             this.resetState()
-        })
+        }
     }
 
+    showAnalytics = (cell, rowData) => {
+        this.setState({ selectedRowData: rowData, analyticsDrawer: true })
+    }
 
     /**
     * @method renderPaginationShowsTotal
@@ -339,6 +347,8 @@ class BOPImportListing extends Component {
 
         return (
             <>
+
+                <button className="cost-movement" title='Cost Movement' type={'button'} onClick={() => this.showAnalytics(cellValue, rowData)}></button>
                 {ViewAccessibility && <button title='View' className="View" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, rowData, true)} />}
                 {isEditable && <button title='Edit' className="Edit" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, rowData, false)} />}
                 {isDeleteButton && <button title='Delete' className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
@@ -453,6 +463,7 @@ class BOPImportListing extends Component {
     };
 
     returnExcelColumn = (data = [], TempData) => {
+        let excelData = hideCustomerFromExcel(data, "CustomerName")
         let temp = []
         temp = TempData && TempData.map((item) => {
             if (item.Plants === '-') {
@@ -469,7 +480,7 @@ class BOPImportListing extends Component {
         return (
 
             <ExcelSheet data={temp} name={BopImport}>
-                {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
+                {excelData && excelData.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
             </ExcelSheet>);
     }
 
@@ -492,6 +503,7 @@ class BOPImportListing extends Component {
             comparator: function (filterLocalDateAtMidnight, cellValue) {
                 var dateAsString = cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
                 var newDate = filterLocalDateAtMidnight != null ? DayTime(filterLocalDateAtMidnight).format('DD/MM/YYYY') : '';
+                handleDate(newDate)// FOR COSTING BENCHMARK BOP REPORT
                 setDate(newDate)
                 if (dateAsString == null) return -1;
                 var dateParts = dateAsString.split('/');
@@ -519,19 +531,38 @@ class BOPImportListing extends Component {
             this.setState({ floatingFilterData: { ...this.state.floatingFilterData, newDate: date } })
         }
 
+        var handleDate = (newDate) => {
+
+            let temp = this.state.inRangeDate
+            temp.push(newDate)
+            this.setState({ inRangeDate: temp })
+            if (this.props?.benchMark) {
+                this.props?.handleDate(this.state.inRangeDate)
+            }
+            setTimeout(() => {
+                var y = document.getElementsByClassName('ag-radio-button-input');
+                var radioBtn = y[0];
+                radioBtn?.click()
+
+            }, 300);
+        }
+
         const isFirstColumn = (params) => {
             var displayedColumns = params.columnApi.getAllDisplayedColumns();
             var thisIsFirstColumn = displayedColumns[0] === params.column;
             return thisIsFirstColumn;
         }
 
+        const closeAnalyticsDrawer = () => {
+            this.setState({ analyticsDrawer: false })
+        }
 
         const defaultColDef = {
             resizable: true,
             filter: true,
-            sortable: true,
+            sortable: false,
             checkboxSelection: isFirstColumn,
-            headerCheckboxSelection: this.props.isSimulation ? isFirstColumn : false,
+            headerCheckboxSelection: (this.props.isSimulation || this.props.benchMark) ? isFirstColumn : false,
         };
 
         const frameworkComponents = {
@@ -579,22 +610,31 @@ class BOPImportListing extends Component {
                 this.props.apply(uniqueArray, length)
             }
             this.setState({ selectedRowData: selectedRows })
+
+            if (this.props?.benchMark) {
+                let uniqueArrayNew = _.uniqBy(uniqueArray, "CategoryId")
+                if (uniqueArrayNew.length > 1) {
+                    this.props.setSelectedRowForPagination([])
+                    this.state.gridApi.deselectAll()
+                    Toaster.warning("Please select multiple bop's with same category")
+                }
+            }
+
         }
 
 
         return (
             <div className={`ag-grid-react custom-pagination ${DownloadAccessibility ? "show-table-btn" : ""} ${this.props.isSimulation ? 'simulation-height' : 'min-height100vh'}`}>
                 {this.state.isLoader && <LoaderCustom customClass="simulation-Loader" />}
-                <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
-                    <Row className={`pt-4 filter-row-large  ${this.props.isSimulation ? 'simulation-filter zindex-0' : ''}`}>
+                {this.state.disableDownload && <LoaderCustom message={MESSAGES.DOWNLOADING_MESSAGE} />}
+                < form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate >
+                    <Row className={`pt-4  ${this.props?.benchMark ? 'zindex-2' : 'filter-row-large'} ${this.props.isSimulation ? 'simulation-filter zindex-0' : ''}`}>
 
                         <Col md="3" lg="3">
                             <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={'off'} onChange={(e) => this.onFilterTextBoxChanged(e)} />
-                            <SelectRowWrapper dataCount={this.state.dataCount} className="mb-1" />
                         </Col>
                         <Col md="9" lg="9" className=" mb-3">
                             <div className="d-flex justify-content-end bd-highlight w100">
-                                {this.state.disableDownload && <div title={MESSAGES.DOWNLOADING_MESSAGE} className="disabled-overflow"><WarningMessage dClass="ml-4 mt-1" message={MESSAGES.DOWNLOADING_MESSAGE} /></div>}
                                 {this.state.shown ? (
                                     <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => { this.setState({ shown: !this.state.shown }); this.getDataList(); }}>
                                         <div className="cancel-icon-white"></div></button>
@@ -642,8 +682,9 @@ class BOPImportListing extends Component {
                                         </button></div> :
 
                                             <>
-                                                <button type="button" onClick={this.onExcelDownload} className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
+                                                <button title={`Download ${this.state.dataCount === 0 ? "All" : "(" + this.state.dataCount + ")"}`} type="button" onClick={this.onExcelDownload} className={'user-btn mr5'}><div className="download mr-1" ></div>
                                                     {/* DOWNLOAD */}
+                                                    {`${this.state.dataCount === 0 ? "All" : "(" + this.state.dataCount + ")"}`}
                                                 </button>
 
                                                 <ExcelFile filename={'Insert Import'} fileExtension={'.xls'} element={
@@ -704,12 +745,14 @@ class BOPImportListing extends Component {
                                     <AgGridColumn field="UOM" headerName="UOM"></AgGridColumn>
                                     <AgGridColumn field="Currency"></AgGridColumn>
                                     <AgGridColumn field="Specification" headerName="Specification" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                                    <AgGridColumn field="Plants" cellRenderer={'hyphenFormatter'} headerName="Plant(Code)"></AgGridColumn>
-                                    <AgGridColumn field="Vendor" headerName="Vendor(Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                                    <AgGridColumn field="DepartmentName" headerName="Company Code" ></AgGridColumn>
+                                    <AgGridColumn field="Plants" cellRenderer={'hyphenFormatter'} headerName="Plant (Code)"></AgGridColumn>
+                                    <AgGridColumn field="Vendor" headerName="Vendor (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                                    <AgGridColumn field="DepartmentName" headerName="Company (Code)" ></AgGridColumn>
+                                    {(reactLocalStorage.getObject('cbcCostingPermission')) && <AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
                                     <AgGridColumn field="IncoTermDescriptionAndInfoTerm" headerName="Inco Terms" ></AgGridColumn>
                                     <AgGridColumn field="PaymentTermDescriptionAndPaymentTerm" headerName="Payment Terms" ></AgGridColumn>
-                                    {/* <AgGridColumn field="NumberOfPieces" headerName="Minimum Order Quantity"></AgGridColumn> */}
+                                    {/* <AgGridColumn field="DepartmentName" headerName="Department"></AgGridColumn> */}
+                                    <AgGridColumn field="NumberOfPieces" headerName="Minimum Order Quantity"></AgGridColumn>
                                     <AgGridColumn field="BasicRate" headerName="Basic Rate" cellRenderer={'commonCostFormatter'}></AgGridColumn>
                                     <AgGridColumn field="NetLandedCost" headerName="Net Cost (Currency)" cellRenderer='costFormatter'></AgGridColumn>
                                     <AgGridColumn field="NetLandedCostConversion" headerName="Net Cost (INR)" cellRenderer={'commonCostFormatter'}></AgGridColumn>
@@ -733,16 +776,36 @@ class BOPImportListing extends Component {
                         }
                     </Col>
                 </Row>
-                {isBulkUpload && <BulkUpload
-                    isOpen={isBulkUpload}
-                    closeDrawer={this.closeBulkUploadDrawer}
-                    isEditFlag={false}
-                    fileName={'InsertImport'}
-                    isZBCVBCTemplate={true}
-                    messageLabel={'Insert Import'}
-                    anchor={'right'}
-                    isFinalApprovar={this.state.isFinalApprovar}
-                />}
+                {
+                    isBulkUpload && <BulkUpload
+                        isOpen={isBulkUpload}
+                        closeDrawer={this.closeBulkUploadDrawer}
+                        isEditFlag={false}
+                        fileName={'Insert Import'}
+                        isZBCVBCTemplate={true}
+                        messageLabel={'Insert Import'}
+                        anchor={'right'}
+                        masterId={BOP_MASTER_ID}
+                    />
+                }
+
+                {
+                    this.state.analyticsDrawer &&
+                    <AnalyticsDrawer
+                        isOpen={this.state.analyticsDrawer}
+                        ModeId={2}
+                        closeDrawer={closeAnalyticsDrawer}
+                        anchor={"right"}
+                        importEntry={true}
+                        isReport={this.state.analyticsDrawer}
+                        selectedRowData={this.state.selectedRowData}
+                        isSimulation={true}
+                        //cellValue={cellValue}
+                        rowData={this.state.selectedRowData}
+                        import={true}
+                    />
+                }
+
             </div >
         );
     }
@@ -774,7 +837,6 @@ export default connect(mapStateToProps, {
     deleteBOP,
     getAllVendorSelectList,
     getListingForSimulationCombined,
-    masterFinalLevelUser,
     setSelectedRowForPagination,
     disabledClass
 })(reduxForm({

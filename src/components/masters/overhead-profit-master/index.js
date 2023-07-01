@@ -127,11 +127,6 @@ class OverheadProfit extends Component {
         <div className="container-fluid" id='go-to-top'>
           {/* {this.props.loading && <Loader/>} */}
           <ScrollToTop pointProp="go-to-top" />
-          <Row>
-            <Col sm="4">
-              <h1>{`Overhead & Profit Master`}</h1>
-            </Col>
-          </Row>
 
           <Row>
             <Col>

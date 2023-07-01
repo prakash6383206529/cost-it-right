@@ -288,7 +288,7 @@ export const MESSAGES = {
   ADDITIONAL_PERMISSION_ADDED_SUCCESSFULLY: 'Additional permission added successfully',
 
   //MHR
-  MHR_DELETE_ALERT: 'Are you sure you want to delete this machine rate?',
+  MHR_DELETE_ALERT: 'Are you sure,  you want to delete this machine rate?',
   DELETE_MHR_SUCCESS: 'Machine rate deleted successfully',
   MHR_MASTER_ADD_SUCCESS: 'Machine rate added successfully',
   UPDATE_MHR_SUCCESSFULLY: 'Machine rate updated successfully',
@@ -305,11 +305,15 @@ export const MESSAGES = {
   DELETE_VOLUME_SUCCESS: 'Volume deleted successfully',
   VOLUME_UPDATE_SUCCESS: 'Actual/Budget Volume updated successfully',
 
+  //BUDGET MASTER
+  BUDGET_ADD_SUCCESS: 'Budget created successfully',
+  BUDGET_UPDATE_SUCCESS: 'Budget updated successfully',
+
   //CLIENT MASTER
-  CLIENT_ADD_SUCCESS: 'Client added successfully',
-  CLIENT_DELETE_ALERT: 'Are you sure you want to delete this client?',
-  DELETE_CLIENT_SUCCESS: 'Client deleted successfully',
-  CLIENT_UPDATE_SUCCESS: 'Client updated successfully',
+  CLIENT_ADD_SUCCESS: 'Customer added successfully',
+  CLIENT_DELETE_ALERT: 'Are you sure you want to delete this Customer?',
+  DELETE_CLIENT_SUCCESS: 'Customer deleted successfully',
+  CLIENT_UPDATE_SUCCESS: 'Customer updated successfully',
 
   //EXCHANGE MASTER
   EXCHANGE_ADD_SUCCESS: 'Exchange Rate added successfully',
@@ -327,19 +331,35 @@ export const MESSAGES = {
   OVERHEAD_PROFIT_COSTING_SAVE_SUCCESS: 'Overhead & Profit saved successfully.',
   OTHER_DISCOUNT_COSTING_SAVE_SUCCESS: 'Discount & Other Cost saved successfully.',
   PACKAGE_FREIGHT_COSTING_SAVE_SUCCESS: 'Packaging & Freight Cost saved successfully.',
+  FREIGHT_COSTING_SAVE_SUCCESS: 'Freight Cost has been successfully saved.',
   SURFACE_TREATMENT_COSTING_SAVE_SUCCESS: 'Surface Treatment Cost saved successfully.',
   TOOL_TAB_COSTING_SAVE_SUCCESS: 'Tool Cost saved successfully.',
   RMCC_TAB_COSTING_SAVE_SUCCESS: 'RM CC BOP Cost saved successfully.',
   COSTING_DELETE_ALERT: 'Are you sure you want to delete costing?',
+  SIMULATION_TOOLCOST_POPUP_MESSAGE: 'Overhead and Profit will not get change if tool cost is included in overhead and profit in a costing. Do you wish to continue?',
 
+  //RFQ
+  RFQ_ADD_SUCCESS: 'RFQ details added successfully',
+  RFQ_SENT_SUCCESS: 'RFQ raised successfully',
+  RFQ_DETAIL_CANCEL_ALERT: 'Are you sure you want to cancel this RFQ?',
 
   //SIMULATION
   DELETE_SIMULATION_DRAFT_TOKEN: 'Are you sure you want to delete simulation token ?',
 
   // COMMON MESSAGES 
   DOWNLOADING_MESSAGE: 'Please wait while data is downloading',
+  LOADING_MESSAGE: 'Please wait while loading',
+  CANCEL_MASTER_ALERT: 'Are you sure, you want to cancel?',
+  ASYNC_MESSAGE_FOR_DROPDOWN: 'Enter first 3 characters to search data',
 
   //ERROR MESSAGES
   PRICE_VALIDATION_MESSAGE: `Maximum length for integer is ${Number(getConfigurationKey().NoOfDecimalForPrice)} and for decimal is ${Number(getConfigurationKey().NoOfDecimalForPrice)}.`,
-  OTHER_VALIDATION_ERROR_MESSAGE: `Maximum length for integer is ${Number(getConfigurationKey().NoOfDecimalForInputOutput)} and for decimal is ${Number(getConfigurationKey().NoOfDecimalForInputOutput)}.`
+  OTHER_VALIDATION_ERROR_MESSAGE: `Maximum length for integer is ${Number(getConfigurationKey().NoOfDecimalForInputOutput)} and for decimal is ${Number(getConfigurationKey().NoOfDecimalForInputOutput)}.`,
+
+  // NFR
+  NFR_APPROVED: 'NFR is approved successfully',
+  NFR_REJECTED: 'NFR is rejected successfully',
+  NFR_PUSHED: 'NFR is pushed successfully',
+  BOP_RM_PUSHED: 'Pushed successfully to SAP',
+
 }

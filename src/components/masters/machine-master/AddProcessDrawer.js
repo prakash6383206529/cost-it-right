@@ -6,7 +6,6 @@ import { acceptAllExceptSingleSpecialCharacter, checkSpacesInString, checkWhiteS
 import { renderText } from '../../layout/FormInputs'
 import { getMachineSelectList } from '../actions/MachineMaster'
 import { getProcessCode, createProcess, updateProcess, getProcessData, } from '../actions/Process'
-import { getPlantSelectList } from '../../../actions/Common'
 import Toaster from '../../common/Toaster'
 import { MESSAGES } from '../../../config/message'
 import { loggedInUserId } from '../../../helper/auth'
@@ -14,6 +13,7 @@ import Drawer from '@material-ui/core/Drawer'
 import DayTime from '../../common/DayTimeWrapper'
 import LoaderCustom from '../../common/LoaderCustom'
 import { debounce } from 'lodash'
+import PopupMsgWrapper from '../../common/PopupMsgWrapper'
 const selector = formValueSelector('AddProcessDrawer');
 
 class AddProcessDrawer extends Component {
@@ -25,10 +25,10 @@ class AddProcessDrawer extends Component {
       ProcessId: '',
       effectiveDate: '',
       isLoader: false,
-      setDisable: false,
+      setDisable: true,
       DataToChange: [],
       processName: "",
-
+      showPopup: false
     }
   }
 
@@ -39,7 +39,6 @@ class AddProcessDrawer extends Component {
   componentDidMount() {
     if (!(this.props.isEditFlag || this.props.isViewFlag)) {
       this.props.getMachineSelectList(() => { })
-      this.props.getPlantSelectList(() => { })
     }
     this.getData()
   }
@@ -82,17 +81,16 @@ class AddProcessDrawer extends Component {
     let obj = {
       processName: value,
       processCode: ""
-
     }
-    this.setState({ processName: value })
-
-    this.props.getProcessCode(obj, (res) => {
-      if (res && res.data && res.data.Result) {
-        let Data = res.data.DynamicData
-        this.props.change('ProcessCode', Data.ProcessCode)
-      }
-    })
-
+    this.setState({ processName: value, setDisable: false })
+    if (e?.target?.value) {
+      this.props.getProcessCode(obj, (res) => {
+        if (res && res.data && res.data.Result) {
+          let Data = res.data.DynamicData
+          this.props.change('ProcessCode', Data.ProcessCode)
+        }
+      })
+    }
   }
 
   checkProcessCodeUnique = (e) => {
@@ -115,6 +113,10 @@ class AddProcessDrawer extends Component {
       }
     })
 
+  }
+
+  handleProcessName = (e) => {
+    this.setState({ setDisable: true })
   }
 
   /**
@@ -178,7 +180,17 @@ class AddProcessDrawer extends Component {
     // dispatch(reset('AddProcessDrawer'))
     this.toggleDrawer('', '', type)
   }
-
+  cancelHandler = () => {
+    // this.setState({ showPopup: true })
+    this.cancel('cancel')
+  }
+  onPopupConfirm = () => {
+    this.cancel('cancel')
+    this.setState({ showPopup: false })
+  }
+  closePopUp = () => {
+    this.setState({ showPopup: false })
+  }
   /**
    * @method onSubmit
    * @description Used to Submit the form
@@ -270,6 +282,7 @@ class AddProcessDrawer extends Component {
                       validate={[required, acceptAllExceptSingleSpecialCharacter, maxLength80, checkSpacesInString, checkWhiteSpaces]}
                       component={renderText}
                       onBlur={this.checkProcessCode}
+                      onChange={this.handleProcessName}
                       required={true}
                       className=" "
                       customClassName=" withBorder"
@@ -327,7 +340,7 @@ class AddProcessDrawer extends Component {
                       validate={(this.state.selectedPlants == null || this.state.selectedPlants.length === 0) ? [required] : []}
                       component={renderMultiSelectField}
                       mendatory={true}
-                      className="multiselect-with-border"
+                    //className="multiselect-with-border"
                       disabled={false}
                     />
                   </Col> */}
@@ -346,7 +359,7 @@ class AddProcessDrawer extends Component {
                         validate={(this.state.selectedMachine == null || this.state.selectedMachine.length === 0) ? [required] : []}
                         component={renderMultiSelectField}
                         mendatory={true}
-                        className="multiselect-with-border"
+                      //className="multiselect-with-border"
                         disabled={false}
                       />
                     </Col>
@@ -358,8 +371,8 @@ class AddProcessDrawer extends Component {
                     <button
                       type={'button'}
                       className="mr15 cancel-btn"
-                      onClick={() => { this.cancel('cancel') }}
-                      disabled={setDisable}
+                      onClick={this.cancelHandler}
+                      disabled={false}
                     >
                       <div className={"cancel-icon"}></div>
                       {'Cancel'}
@@ -378,6 +391,9 @@ class AddProcessDrawer extends Component {
             </div>
           </Container>
         </Drawer>
+        {
+          this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.CANCEL_MASTER_ALERT}`} />
+        }
       </div>
     )
   }
@@ -418,7 +434,6 @@ export default connect(mapStateToProps, {
   createProcess,
   updateProcess,
   getProcessData,
-  getPlantSelectList,
   getMachineSelectList,
 })(
   reduxForm({

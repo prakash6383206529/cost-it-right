@@ -6,6 +6,7 @@ import {
 import { apiErrors } from '../../../helper/util'
 import { MESSAGES } from '../../../config/message'
 import Toaster from '../../common/Toaster'
+import { reactLocalStorage } from 'reactjs-localstorage'
 
 // const config() = config
 // const config() = {
@@ -278,7 +279,7 @@ export function getApprovalList(filterData, skip, take, isPagination, obj, callb
       payload: [],
     })
     const queryParameter = `isDashboard=${filterData.isDashboard}&logged_in_user_id=${filterData.loggedUser}&logged_in_user_level_id=${filterData.logged_in_user_level_id}&part_number=${filterData.partNo}&created_by=${filterData.createdBy}&requested_by=${filterData.requestedBy}&Status=${obj.DisplayStatus !== undefined ? obj.DisplayStatus : ""}&type_of_costing=''&NCCPartQuantity=${obj.NCCPartQuantity ? obj.NCCPartQuantity : ""}&IsRegularized=${obj.IsRegularized ? obj.IsRegularized : ""}&CostingHead=${obj.CostingHead ? obj.CostingHead : ""}`
-    const queryParamsSecond = `ApprovalNumber=${obj.ApprovalNumber !== undefined ? obj.ApprovalNumber : ""}&CostingNumber=${obj.CostingNumber !== undefined ? obj.CostingNumber : ""}&PartNumber=${obj.PartNumber !== undefined ? obj.PartNumber : ""}&PartName=${obj.PartName !== undefined ? obj.PartName : ""}&Vendor=${obj.VendorName !== undefined ? obj.VendorName : ""}&Plant=${obj.PlantName !== undefined ? obj.PlantName : ""}&Technology=${obj.TechnologyName !== undefined ? obj.TechnologyName : ""}&NewPrice=${obj.NetPOPriceNew !== undefined ? obj.NetPOPriceNew : ""}&OldPrice=${obj.OldPOPrice !== undefined ? obj.OldPOPrice : ""}&Reason=${obj.Reason !== undefined ? obj.Reason : ""}&EffectiveDate=${obj.EffectiveDate !== undefined ? obj.EffectiveDate : ""}&InitiatedBy=${obj.CreatedBy !== undefined ? obj.CreatedBy : ""}&CreatedOn=${obj.CreatedOn !== undefined ? obj.CreatedOn : ""}&LastApprovedBy=${obj.RequestedBy !== undefined ? obj.RequestedBy : ""}&RequestedOn=${obj.RequestedOn !== undefined ? obj.RequestedOn : ""}&applyPagination=${isPagination}&skip=${skip}&take=${take}&CustomerName=${obj.Customer !== undefined ? obj.Customer : ''}`
+    const queryParamsSecond = `ApprovalNumber=${obj.ApprovalNumber !== undefined ? obj.ApprovalNumber : ""}&CostingNumber=${obj.CostingNumber !== undefined ? obj.CostingNumber : ""}&PartNumber=${obj.PartNumber !== undefined ? obj.PartNumber : ""}&PartName=${obj.PartName !== undefined ? obj.PartName : ""}&Vendor=${obj.VendorName !== undefined ? obj.VendorName : ""}&Plant=${obj.PlantName !== undefined ? obj.PlantName : ""}&Technology=${obj.TechnologyName !== undefined ? obj.TechnologyName : ""}&NewPrice=${obj.NetPOPriceNew !== undefined ? obj.NetPOPriceNew : ""}&OldPrice=${obj.OldPOPrice !== undefined ? obj.OldPOPrice : ""}&Reason=${obj.Reason !== undefined ? obj.Reason : ""}&EffectiveDate=${obj.EffectiveDate !== undefined ? obj.EffectiveDate : ""}&InitiatedBy=${obj.CreatedBy !== undefined ? obj.CreatedBy : ""}&CreatedOn=${obj.CreatedOn !== undefined ? obj.CreatedOn : ""}&LastApprovedBy=${obj.RequestedBy !== undefined ? obj.RequestedBy : ""}&RequestedOn=${obj.RequestedOn !== undefined ? obj.RequestedOn : ""}&applyPagination=${isPagination}&skip=${skip}&take=${take}&CustomerName=${obj.Customer !== undefined ? obj.Customer : ''}&IsCustomerDataShow=${reactLocalStorage.getObject('cbcCostingPermission')}`
     const request = axios.get(`${API.getApprovalList}?${queryParameter}&${queryParamsSecond}`, config())
     request
       .then((response) => {
@@ -372,19 +373,19 @@ export function getApprovalSummary(
       `${API.getApprovalSummaryByApprovalNo}/${approvalNumber}/${approvalProcessId}/${loggedInUserId}`, config())
     request
       .then((response) => {
-        if (response.data.Result) {
+        if (response?.data?.Result) {
           dispatch({
             type: GET_APPROVAL_SUMMARY,
-            payload: response.data.Data,
+            payload: response?.data?.Data,
           })
           callback(response)
         } else {
           Toaster.error(MESSAGES.SOME_ERROR)
         }
-      })
-      .catch((error) => {
+      }).catch((error) => {
         dispatch({ type: API_FAILURE })
         apiErrors(error)
+        callback(error)
       })
   }
 }

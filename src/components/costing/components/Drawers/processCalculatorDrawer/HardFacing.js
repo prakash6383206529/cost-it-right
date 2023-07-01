@@ -2,13 +2,13 @@ import React, { Fragment, useState, useEffect, useContext } from 'react'
 import { Row, Col } from 'reactstrap'
 import { useForm, Controller, useWatch } from 'react-hook-form'
 import { useDispatch } from 'react-redux'
-import { NumberFieldHookForm, } from '../../../../layout/HookFormInputs'
+import { NumberFieldHookForm, TextFieldHookForm, } from '../../../../layout/HookFormInputs'
 import { checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUserId, } from '../../../../../helper'
 import { costingInfoContext } from '../../CostingDetailStepTwo'
 import { saveMachiningProcessCostCalculationData } from '../../../actions/CostWorking'
 import Toaster from '../../../../common/Toaster'
 import { debounce } from 'lodash'
-
+import { number, percentageLimitValidation, checkWhiteSpaces } from "../../../../../helper/validation";
 function HardFacing(props) {
     const WeightCalculatorRequest = props.calculatorData.WeightCalculatorRequest
     const costData = useContext(costingInfoContext);
@@ -140,7 +140,7 @@ function HardFacing(props) {
             setIsDisable(false)
             if (res.data.Result) {
                 obj.ProcessCalculationId = res.data.Identity
-                Toaster.success('Calculation saved sucessfully.')
+                Toaster.success('Calculation saved successfully.')
                 calculateMachineTime(totalMachiningTime, obj)
             }
         }))
@@ -237,7 +237,7 @@ function HardFacing(props) {
                                     <Row>
                                         <Col md="4">
                                             <NumberFieldHookForm
-                                                label={`Depth Of Cut(mm)`}
+                                                label={`Depth of Cut(mm)`}
                                                 name={'doc'}
                                                 Controller={Controller}
                                                 control={control}
@@ -504,8 +504,8 @@ function HardFacing(props) {
                                         </Col>
 
                                         <Col md="4">
-                                            <NumberFieldHookForm
-                                                label={`Efficiency(%)`}
+                                            <TextFieldHookForm
+                                                label={`Efficiency (%)`}
                                                 name={'efficiencyPercentage'}
                                                 Controller={Controller}
                                                 control={control}
@@ -514,14 +514,11 @@ function HardFacing(props) {
                                                 handleChange={() => { }}
                                                 rules={{
                                                     required: true,
-                                                    pattern: {
-                                                        value: /^\d*\.?\d*$/,
-                                                        message: 'Invalid Number.'
-                                                    },
+                                                    validate: { number, checkWhiteSpaces, percentageLimitValidation },
                                                     max: {
                                                         value: 100,
-                                                        message: "Should not be greater than 100"
-                                                    }
+                                                        message: 'Percentage cannot be greater than 100'
+                                                    },
                                                 }}
                                                 defaultValue={''}
                                                 className=""

@@ -2,16 +2,17 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import ReactExport from 'react-export-excel';
 import { Field, reduxForm } from "redux-form";
-import { Container, Row, Col, } from 'reactstrap';
+import { Container, Row, Col, Label, } from 'reactstrap';
 import Toaster from '../../common/Toaster';
 import Drawer from '@material-ui/core/Drawer';
-import Dropzone from 'react-dropzone-uploader';
-import { bulkUploadCosting, plasticBulkUploadCosting, machiningBulkUploadCosting } from '../actions/CostWorking'
+import Dropzone from 'react-dropzone-uploader'
+import { bulkUploadCosting, plasticBulkUploadCosting, machiningBulkUploadCosting, corrugatedBoxBulkUploadCosting, assemblyBulkUploadCosting } from '../actions/CostWorking'
 import { TechnologyDropdownBulkUpload } from '../../../config/masterData'
-import { MACHINING_GROUP_BULKUPLOAD, PLASTIC_GROUP_BULKUPLOAD, SHEETMETAL_GROUP_BULKUPLOAD } from '../../../config/constants';
+import { ASSEMBLY, CORRUGATED_BOX, MACHINING_GROUP_BULKUPLOAD, PLASTIC_GROUP_BULKUPLOAD, SHEETMETAL_GROUP_BULKUPLOAD, FILE_URL } from '../../../config/constants';
 import { getCostingTechnologySelectList, } from '../actions/Costing'
 import { searchableSelect } from '../../layout/FormInputs';
 import LoaderCustom from '../../common/LoaderCustom';
+import { loggedInUserId } from '../../../helper';
 
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -24,7 +25,8 @@ class CostingBulkUploadDrawer extends Component {
             fileData: '',
             fileName: '',
             Technology: [],
-            attachmentLoader: false
+            attachmentLoader: false,
+            costingVersion: 'OLD'
         }
     }
 
@@ -154,35 +156,90 @@ class CostingBulkUploadDrawer extends Component {
     }
 
     onSubmit = (value) => {
-
-
         const { fileData } = this.state
+
+        if (fileData.length === 0) {
+            Toaster.warning('Please select a file to upload.')
+            return false
+        }
 
         let data = new FormData()
         data.append('file', fileData)
+        data.append('loggedInUserId', loggedInUserId())
 
         switch (Number(this.state.Technology.value)) {
             case SHEETMETAL_GROUP_BULKUPLOAD:
-                this.props.bulkUploadCosting(data, (res) => {
-                    let Data = res.data[0]
-                    const { files } = this.state
-                    files.push(Data)
+                this.props.bulkUploadCosting(data, this.state.costingVersion, (res) => {
+                    if (res.status === 400) {
+                        let Data = res.data.Data
+                        const withOutTild = Data?.FileURL?.replace("~", "");
+                        const fileURL = `${FILE_URL}${withOutTild}`;
+                        window.open(fileURL, '_blank');
+                    } else {
+                        let Data = res.data[0]
+                        const { files } = this.state
+                        files.push(Data)
+                    }
                 })
                 this.cancel()
                 break;
             case PLASTIC_GROUP_BULKUPLOAD:
-                this.props.plasticBulkUploadCosting(data, (res) => {
-                    let Data = res.data[0]
-                    const { files } = this.state
-                    files.push(Data)
+                this.props.plasticBulkUploadCosting(data, this.state.costingVersion, (res) => {
+                    if (res.status === 400) {
+                        let Data = res.data.Data
+                        const withOutTild = Data?.FileURL?.replace("~", "");
+                        const fileURL = `${FILE_URL}${withOutTild}`;
+                        window.open(fileURL, '_blank');
+                    } else {
+                        let Data = res.data[0]
+                        const { files } = this.state
+                        files.push(Data)
+                    }
                 })
                 this.cancel()
                 break;
             case MACHINING_GROUP_BULKUPLOAD:
-                this.props.machiningBulkUploadCosting(data, (res) => {
-                    let Data = res.data[0]
-                    const { files } = this.state
-                    files.push(Data)
+                this.props.machiningBulkUploadCosting(data, this.state.costingVersion, (res) => {
+                    if (res.status === 400) {
+                        let Data = res.data.Data
+                        const withOutTild = Data?.FileURL?.replace("~", "");
+                        const fileURL = `${FILE_URL}${withOutTild}`;
+                        window.open(fileURL, '_blank');
+                    } else {
+                        let Data = res.data[0]
+                        const { files } = this.state
+                        files.push(Data)
+                    }
+                })
+                this.cancel()
+                break;
+            case CORRUGATED_BOX:
+                this.props.corrugatedBoxBulkUploadCosting(data, (res) => {
+                    if (res.status === 400) {
+                        let Data = res.data.Data
+                        const withOutTild = Data?.FileURL?.replace("~", "");
+                        const fileURL = `${FILE_URL}${withOutTild}`;
+                        window.open(fileURL, '_blank');
+                    } else {
+                        let Data = res.data[0]
+                        const { files } = this.state
+                        files.push(Data)
+                    }
+                })
+                this.cancel()
+                break;
+            case ASSEMBLY:
+                this.props.assemblyBulkUploadCosting(data, (res) => {
+                    if (res.status === 400) {
+                        let Data = res.data.Data
+                        const withOutTild = Data?.FileURL?.replace("~", "");
+                        const fileURL = `${FILE_URL}${withOutTild}`;
+                        window.open(fileURL, '_blank');
+                    } else {
+                        let Data = res.data[0]
+                        const { files } = this.state
+                        files.push(Data)
+                    }
                 })
                 this.cancel()
                 break;
@@ -191,7 +248,10 @@ class CostingBulkUploadDrawer extends Component {
                 break;
         }
     }
+    setCostingVersion = (value) => {
 
+        this.setState({ costingVersion: value })
+    }
 
     render() {
         const { handleSubmit } = this.props
@@ -244,6 +304,35 @@ class CostingBulkUploadDrawer extends Component {
 
                                     </Col> */}
 
+                                    <Row>
+                                        <Col md="12">
+                                            <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
+                                                <input
+                                                    type="radio"
+                                                    name="costingHead"
+                                                    defaultChecked={true}
+                                                    onClick={() =>
+                                                        this.setCostingVersion("OLD")
+                                                    }
+                                                    disabled={false}
+                                                />{" "}
+                                                <span>Old Version</span>
+                                            </Label>
+                                            <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
+                                                <input
+                                                    type="radio"
+                                                    name="costingHead"
+                                                    onClick={() =>
+                                                        this.setCostingVersion("NEW")
+                                                    }
+                                                    disabled={false}
+                                                />{" "}
+                                                <span>New Version</span>
+                                            </Label>
+
+                                        </Col>
+                                    </Row>
+
                                     <Col md="12">
 
                                         <Field
@@ -269,7 +358,7 @@ class CostingBulkUploadDrawer extends Component {
                                                 onChangeStatus={this.handleChangeStatus}
                                                 PreviewComponent={this.Preview}
                                                 onChange={this.fileHandler}
-                                                accept=".xlsx"
+                                                accept="image/jpeg,image/jpg,image/png,image/PNG,.xls,.doc,.pdf,.xlsx"
                                                 initialFiles={this.state.initialFiles}
                                                 maxFiles={1}
                                                 maxSizeBytes={2000000}
@@ -353,7 +442,9 @@ export default connect(mapStateToProps,
         bulkUploadCosting,
         getCostingTechnologySelectList,
         plasticBulkUploadCosting,
-        machiningBulkUploadCosting
+        machiningBulkUploadCosting,
+        corrugatedBoxBulkUploadCosting,
+        assemblyBulkUploadCosting
     })(reduxForm({
         form: 'CostingBulkUploadDrawer',
         enableReinitialize: true,

@@ -3,10 +3,10 @@ import { useState, useEffect, } from 'react';
 import { useDispatch, useSelector } from 'react-redux'
 import { Row, Col, } from 'reactstrap';
 import {
-    deleteRawMaterialAPI, getRMDomesticDataList, masterFinalLevelUser,
+    deleteRawMaterialAPI, getRMDomesticDataList,
 } from '../actions/Material';
-import { checkForDecimalAndNull } from "../../../helper/validation";
-import { APPROVED_STATUS, defaultPageSize, EMPTY_DATA, RMDOMESTIC } from '../../../config/constants';
+import { userDepartmetList } from "../../../helper/auth"
+import { APPROVED_STATUS, defaultPageSize, EMPTY_DATA, RMDOMESTIC, RmDomestic } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
 import Toaster from '../../common/Toaster';
@@ -15,20 +15,21 @@ import DayTime from '../../common/DayTimeWrapper'
 import BulkUpload from '../../massUpload/BulkUpload';
 import LoaderCustom from '../../common/LoaderCustom';
 import { RMDOMESTIC_DOWNLOAD_EXCEl } from '../../../config/masterData';
-import { RM_MASTER_ID, APPROVAL_ID, RmDomestic } from '../../../config/constants'
+import { RM_MASTER_ID, APPROVAL_ID } from '../../../config/constants'
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import ReactExport from 'react-export-excel';
-import { CheckApprovalApplicableMaster, getConfigurationKey, userDepartmetList, loggedInUserId, searchNocontentFilter, userDetails } from '../../../helper';
+import { CheckApprovalApplicableMaster, getConfigurationKey, searchNocontentFilter } from '../../../helper';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { getListingForSimulationCombined, setSelectedRowForPagination } from '../../simulation/actions/Simulation';
 import { disabledClass } from '../../../actions/Common';
 import WarningMessage from '../../common/WarningMessage';
 import { PaginationWrapper } from '../../common/commonPagination';
-import SelectRowWrapper from '../../common/SelectRowWrapper';
+import AnalyticsDrawer from './AnalyticsDrawer'
 import _ from 'lodash';
-import { useRef } from 'react';
+import { reactLocalStorage } from 'reactjs-localstorage';
+import { hideCustomerFromExcel } from '../../common/CommonFunctions';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -51,9 +52,11 @@ function RMDomesticListing(props) {
     const [showPopup, setShowPopup] = useState(false)
     const [deletedId, setDeletedId] = useState('')
     const [showPopupBulk, setShowPopupBulk] = useState(false)
-    const [isFinalLevelUser, setIsFinalLevelUser] = useState(false)
     const [disableFilter, setDisableFilter] = useState(true) // STATE MADE FOR CHECKBOX IN SIMULATION
     const [disableDownload, setDisableDownload] = useState(false)
+    const [dateArray, setDateArray] = useState([])
+    const [analyticsDrawer, setAnalyticsDrawer] = useState(false);
+    const [selectedRowData, setSelectedRowData] = useState([]);
     //STATES BELOW ARE MADE FOR PAGINATION PURPOSE
     const [warningMessage, setWarningMessage] = useState(false)
     const [globalTake, setGlobalTake] = useState(defaultPageSize)
@@ -65,14 +68,32 @@ function RMDomesticListing(props) {
     const [currentRowIndex, setCurrentRowIndex] = useState(0)
     const [noData, setNoData] = useState(false)
     const [dataCount, setDataCount] = useState(0)
+    const [inRangeDate, setinRangeDate] = useState([])
     const [pageSize, setPageSize] = useState({ pageSize10: true, pageSize50: false, pageSize100: false })
     const [floatingFilterData, setFloatingFilterData] = useState({ CostingHead: "", TechnologyName: "", RawMaterial: "", RMGrade: "", RMSpec: "", RawMaterialCode: "", Category: "", MaterialType: "", Plant: "", UOM: "", VendorName: "", BasicRate: "", ScrapRate: "", RMFreightCost: "", RMShearingCost: "", NetLandedCost: "", EffectiveDate: "", DepartmentName: isSimulation ? userDepartmetList() : "" })
 
     var filterParams = {
         comparator: function (filterLocalDateAtMidnight, cellValue) {
+
             var dateAsString = cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
             var newDate = filterLocalDateAtMidnight != null ? DayTime(filterLocalDateAtMidnight).format('DD/MM/YYYY') : '';
-            setFloatingFilterData({ ...floatingFilterData, EffectiveDate: newDate })
+            let temp = inRangeDate
+            temp.push(newDate)
+            setinRangeDate(temp)
+            if (props?.benchMark) {
+                props?.handleDate(inRangeDate)
+            }
+
+            let unique = temp.filter((item, i, ar) => ar.indexOf(item) === i);
+            setDateArray(unique)
+            setFloatingFilterData({ ...floatingFilterData, EffectiveDate: newDate, dateArray: unique })
+            setTimeout(() => {
+                var y = document.getElementsByClassName('ag-radio-button-input');
+                var radioBtn = y[0];
+                radioBtn?.click()
+
+            }, 300);
+
             if (dateAsString == null) return -1;
             var dateParts = dateAsString.split('/');
             var cellDate = new Date(
@@ -92,6 +113,11 @@ function RMDomesticListing(props) {
         },
         browserDatePicker: true,
         minValidYear: 2000,
+        // filterOptions: [
+
+        //     'inRange'
+
+        // ]
     };
 
     useEffect(() => {
@@ -110,6 +136,7 @@ function RMDomesticListing(props) {
                 props?.changeSetLoader(true)
                 dispatch(getListingForSimulationCombined(objectForMultipleSimulation, RMDOMESTIC, (res) => {
                     props?.changeSetLoader(false)
+                    setloader(false)
                 }))
             } else {
                 if (isSimulation) {
@@ -123,21 +150,11 @@ function RMDomesticListing(props) {
 
 
     useEffect(() => {
+        reactLocalStorage.setObject('selectedRow', {})
         if (!props.stopApiCallOnCancel) {
-            let obj = {
-                MasterId: RM_MASTER_ID,
-                DepartmentId: userDetails().DepartmentId,
-                LoggedInUserLevelId: userDetails().LoggedInMasterLevelId,
-                LoggedInUserId: loggedInUserId()
-            }
-            dispatch(masterFinalLevelUser(obj, (res) => {
-                if (res?.data?.Result) {
-                    setIsFinalLevelUser(res.data.Data.IsFinalApprovar)
-                }
-            }))
-
             return () => {
                 dispatch(setSelectedRowForPagination([]))
+                reactLocalStorage.setObject('selectedRow', {})
             }
         }
     }, [])
@@ -147,11 +164,21 @@ function RMDomesticListing(props) {
     * @method hideForm
     * @description HIDE DOMESTIC, IMPORT FORMS
     */
-    const getDataList = (costingHead = null, plantId = null, materialId = null, gradeId = null, vendorId = null, technologyId = 0, skip = 0, take = 100, isPagination = true, dataObj) => {
+    const getDataList = (costingHead = null, plantId = null, materialId = null, gradeId = null, vendorId = null, technologyId = 0, skip = 0, take = 100, isPagination = true, dataObj, isReset = false) => {
         const { isSimulation } = props
+
+        if (filterModel?.EffectiveDate && !isReset) {
+            if (filterModel.EffectiveDate.dateTo) {
+                let temp = []
+                temp.push(DayTime(filterModel.EffectiveDate.dateFrom).format('DD/MM/YYYY'))
+                temp.push(DayTime(filterModel.EffectiveDate.dateTo).format('DD/MM/YYYY'))
+
+                dataObj.dateArray = temp
+            }
+        }
+
         // TO HANDLE FUTURE CONDITIONS LIKE [APPROVED_STATUS, DRAFT_STATUS] FOR MULTIPLE STATUS
         let statusString = [APPROVED_STATUS].join(",")
-
         const filterData = {
             costingHead: isSimulation && filteredRMData && filteredRMData.costingHeadTemp ? filteredRMData.costingHeadTemp.value : costingHead,
             plantId: isSimulation && filteredRMData && filteredRMData.plantId ? filteredRMData.plantId.value : plantId,
@@ -289,7 +316,7 @@ function RMDomesticListing(props) {
 
 
     const onSearch = () => {
-
+        setNoData(false)
         setWarningMessage(false)
         setIsFilterButtonClicked(true)
         setPageNo(1)
@@ -302,6 +329,7 @@ function RMDomesticListing(props) {
 
 
     const resetState = () => {
+        setinRangeDate([])
         setIsFilterButtonClicked(false)
         gridOptions?.columnApi?.resetColumnState(null);
         gridOptions?.api?.setFilterModel(null);
@@ -322,11 +350,15 @@ function RMDomesticListing(props) {
         setPageNo(1)
         setPageNoNew(1)
         setCurrentRowIndex(0)
-        getDataList(null, null, null, null, null, 0, 0, 10, true, floatingFilterData)
+        getDataList(null, null, null, null, null, 0, 0, 10, true, floatingFilterData, true)
         dispatch(setSelectedRowForPagination([]))
         setGlobalTake(10)
         setPageSize(prevState => ({ ...prevState, pageSize10: true, pageSize50: false, pageSize100: false }))
         setDataCount(0)
+        reactLocalStorage.setObject('selectedRow', {})
+        if (isSimulation) {
+            props.isReset()
+        }
     }
 
 
@@ -364,10 +396,11 @@ function RMDomesticListing(props) {
     * @description edit or view material type
     */
     const viewOrEditItemDetails = (Id, rowData = {}, isViewMode) => {
-        let data = {
 
+        let data = {
             isEditFlag: true,
             isViewFlag: isViewMode,
+            costingTypeId: rowData.CostingTypeId,
             Id: Id,
             IsVendor: rowData.CostingHead === 'Vendor Based' ? true : rowData.CostingHead === 'Zero Based' ? false : rowData.CostingHead,
         }
@@ -393,6 +426,7 @@ function RMDomesticListing(props) {
                 Toaster.error(res.data.Message)
             } else if (res && res.data && res.data.Result === true) {
                 Toaster.success(MESSAGES.DELETE_RAW_MATERIAL_SUCCESS);
+                setDataCount(0)
                 resetState()
             }
         }));
@@ -426,12 +460,6 @@ function RMDomesticListing(props) {
             isEditbale = false
         }
 
-        if (EditAccessibility && !rowData.IsRMAssociated) {
-            isEditbale = true
-        } else {
-            isEditbale = false
-        }
-
         if (DeleteAccessibility && !rowData.IsRMAssociated) {
             isDeleteButton = true
         } else {
@@ -440,6 +468,7 @@ function RMDomesticListing(props) {
 
         return (
             <>
+                <button className="mr-1 cost-movement" title='Cost Movement' type={'button'} onClick={() => showAnalytics(cellValue, rowData)}> </button>
                 {ViewRMAccessibility && < button title='View' className="View mr-1" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, true)} />}
                 {isEditbale && <button title='Edit' className="Edit mr-1" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, false)} />}
                 {isDeleteButton && <button title='Delete' className="Delete mr-1" type={'button'} onClick={() => deleteItem(cellValue)} />}
@@ -518,9 +547,11 @@ function RMDomesticListing(props) {
         setisBulkUpload(true);
     }
 
-    const closeBulkUploadDrawer = () => {
+    const closeBulkUploadDrawer = (event, type) => {
         setisBulkUpload(false);
-        resetState()
+        if (type !== 'cancel') {
+            resetState()
+        }
     }
 
     /**
@@ -579,8 +610,8 @@ function RMDomesticListing(props) {
     };
 
     const returnExcelColumn = (data = [], TempData) => {
+        let excelData = hideCustomerFromExcel(data, "CustomerName")
         let temp = []
-
         temp = TempData && TempData.map((item) => {
             if (item.CostingHead === true) {
                 item.CostingHead = 'Vendor Based'
@@ -599,8 +630,8 @@ function RMDomesticListing(props) {
 
         return (
 
-            <ExcelSheet data={temp} name={'RmDomestic'}>
-                {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
+            <ExcelSheet data={temp} name={RmDomestic}>
+                {excelData && excelData.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
             </ExcelSheet>);
     }
 
@@ -657,6 +688,7 @@ function RMDomesticListing(props) {
 
     const onRowSelect = (event) => {
 
+        let selectedRowForPagination = reactLocalStorage.getObject('selectedRow').selectedRow
         var selectedRows = gridApi && gridApi?.getSelectedRows();
         if (selectedRows === undefined || selectedRows === null) {    //CONDITION FOR FIRST RENDERING OF COMPONENT
             selectedRows = selectedRowForPagination
@@ -679,30 +711,40 @@ function RMDomesticListing(props) {
 
         }
 
-
         let uniqeArray = _.uniqBy(selectedRows, "RawMaterialId")          //UNIQBY FUNCTION IS USED TO FIND THE UNIQUE ELEMENTS & DELETE DUPLICATE ENTRY
-        dispatch(setSelectedRowForPagination(uniqeArray))              //SETTING CHECKBOX STATE DATA IN REDUCER
+        reactLocalStorage.setObject('selectedRow', { selectedRow: uniqeArray }) //SETTING CHECKBOX STATE DATA IN LOCAL STORAGE
         setDataCount(uniqeArray.length)
+        dispatch(setSelectedRowForPagination(uniqeArray))
         let finalArr = selectedRows
         let length = finalArr?.length
         let uniqueArray = _.uniqBy(finalArr, "RawMaterialId")
 
-
         if (isSimulation) {
             apply(uniqueArray, length)
+        }
+
+        if (props?.benchMark) {
+            let uniqueArrayNew = _.uniqBy(selectedRows, v => [v.TechnologyId, v.RawMaterial].join())
+
+            if (uniqueArrayNew.length > 1) {
+                dispatch(setSelectedRowForPagination([]))
+                gridApi.deselectAll()
+                Toaster.warning("Technology & Raw material should be same")
+            }
         }
     }
 
     const defaultColDef = {
         resizable: true,
         filter: true,
-        sortable: true,
-        headerCheckboxSelection: isSimulation ? isFirstColumn : false,
+        sortable: false,
+        headerCheckboxSelection: (isSimulation || props?.benchMark) ? isFirstColumn : false,
         headerCheckboxSelectionFilteredOnly: true,
         checkboxSelection: isFirstColumn
     };
 
     const checkBoxRenderer = (props) => {
+        let selectedRowForPagination = reactLocalStorage.getObject('selectedRow').selectedRow
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         if (selectedRowForPagination?.length > 0) {
             selectedRowForPagination.map((item) => {
@@ -715,6 +757,15 @@ function RMDomesticListing(props) {
         } else {
             return cellValue
         }
+    }
+
+    const closeAnalyticsDrawer = () => {
+        setAnalyticsDrawer(false)
+    }
+
+    const showAnalytics = (cell, rowData) => {
+        setSelectedRowData(rowData)
+        setAnalyticsDrawer(true)
     }
 
     const frameworkComponents = {
@@ -736,13 +787,12 @@ function RMDomesticListing(props) {
         <div className={`ag-grid-react ${(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) ? "custom-pagination" : ""} ${DownloadAccessibility ? "show-table-btn" : ""} ${isSimulation ? 'simulation-height' : props?.isMasterSummaryDrawer ? '' : 'min-height100vh'}`}>
             {(loader && !props.isMasterSummaryDrawer) ? <LoaderCustom customClass="simulation-Loader" /> :
                 <>
-
-                    <Row className={`filter-row-large pt-4 ${props?.isSimulation ? 'zindex-0 ' : ''}`}>
+                    {disableDownload && <LoaderCustom message={MESSAGES.DOWNLOADING_MESSAGE} />}
+                    <Row className={`filter-row-large ${props?.isSimulation ? 'zindex-0 ' : ''} ${props?.isMasterSummaryDrawer ? '' : 'pt-4'}`}>
                         <Col md="3" lg="3" className='mb-2'>
                             <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
                         </Col>
                         <Col md="9" lg="9" className="mb-3 d-flex justify-content-end">
-                            {disableDownload && <div title={MESSAGES.DOWNLOADING_MESSAGE} className="disabled-overflow"><WarningMessage dClass="ml-4 mt-1" message={MESSAGES.DOWNLOADING_MESSAGE} /></div>}
                             {
                                 // SHOW FILTER BUTTON ONLY FOR RM MASTER NOT FOR SIMULATION AMD MASTER APPROVAL SUMMARY
                                 (!props.isMasterSummaryDrawer) &&
@@ -792,23 +842,16 @@ function RMDomesticListing(props) {
                                                 {
                                                     DownloadAccessibility &&
                                                     <>
-                                                        {disableDownload ? <div className='p-relative mr5'> <LoaderCustom customClass={"download-loader"} /> <button type="button" className={'user-btn'}><div className="download mr-0"></div>
-                                                        </button></div> :
+                                                        <button title={`Download ${dataCount === 0 ? "All" : "(" + dataCount + ")"}`} type="button" onClick={onExcelDownload} className={'user-btn mr5'}><div className="download mr-1" ></div>
+                                                            {/* DOWNLOAD */}
+                                                            {`${dataCount === 0 ? "All" : "(" + dataCount + ")"}`}
+                                                        </button>
 
-                                                            <>
-                                                                <button type="button" onClick={onExcelDownload} className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
-                                                                    {/* DOWNLOAD */}
-                                                                </button>
-
-                                                                <ExcelFile filename={'RM Domestic'} fileExtension={'.xls'} element={
-                                                                    <button id={'Excel-Downloads-rm-import'} className="p-absolute" type="button" >
-                                                                    </button>}>
-                                                                    {onBtExport()}
-                                                                </ExcelFile>
-
-                                                            </>
-
-                                                        }
+                                                        <ExcelFile filename={'RM Domestic'} fileExtension={'.xls'} element={
+                                                            <button id={'Excel-Downloads-rm-import'} className="p-absolute" type="button" >
+                                                            </button>}>
+                                                            {onBtExport()}
+                                                        </ExcelFile>
                                                     </>
                                                 }
 
@@ -825,8 +868,7 @@ function RMDomesticListing(props) {
                     </Row>
                     <Row>
                         <Col>
-                            <div className={`ag-grid-wrapper ${(props?.isDataInMaster && noData) ? 'master-approval-overlay' : ''} ${(rmDataList && rmDataList?.length <= 0) || noData ? 'overlay-contain' : ''}`}>
-                                <SelectRowWrapper dataCount={dataCount} className="mb-1 mt-n1" />
+                            <div className={`ag-grid-wrapper ${(props?.isDataInMaster && !noData) ? 'master-approval-overlay' : ''} ${(rmDataList && rmDataList?.length <= 0) || noData ? 'overlay-contain' : ''}`}>
                                 <div className={`ag-theme-material ${(loader && !props.isMasterSummaryDrawer) && "max-loader-height"}`}>
                                     {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
                                     <AgGridReact
@@ -851,39 +893,29 @@ function RMDomesticListing(props) {
                                         suppressRowClickSelection={true}
                                     >
                                         <AgGridColumn cellClass="has-checkbox" field="CostingHead" headerName='Costing Head' cellRenderer={checkBoxRenderer}></AgGridColumn>
-
-                                        <AgGridColumn field="TechnologyName" headerName="Technology"></AgGridColumn>
-
-                                        <AgGridColumn field="RawMaterial" headerName="Raw Material"></AgGridColumn>
-
-                                        <AgGridColumn field="RMGrade" headerName="RM Grade"></AgGridColumn>
-
-                                        <AgGridColumn field="RMSpec" headerName="RM Specs"></AgGridColumn>
-
+                                        <AgGridColumn field="TechnologyName" headerName='Technology'></AgGridColumn>
+                                        <AgGridColumn field="RawMaterial" ></AgGridColumn>
+                                        <AgGridColumn field="RMGrade" headerName="Grade"></AgGridColumn>
+                                        <AgGridColumn field="RMSpec" headerName="Spec"></AgGridColumn>
                                         <AgGridColumn field="RawMaterialCode" headerName='Code' cellRenderer='hyphenFormatter'></AgGridColumn>
 
                                         <AgGridColumn field="Category" headerName="Category"></AgGridColumn>
 
                                         <AgGridColumn field="MaterialType" headerName="Material"></AgGridColumn>
 
-                                        <AgGridColumn field="Plant" headerName="Plant(Code)"></AgGridColumn>
+                                        <AgGridColumn field="Plant" headerName="Plant (Code)"></AgGridColumn>
 
-                                        <AgGridColumn field="VendorName" headerName="Vendor(Code)"></AgGridColumn>
-
-                                        <AgGridColumn field="DepartmentName" headerName="Company Code" ></AgGridColumn>
-
-                                        <AgGridColumn field="UOM" headerName="UOM"></AgGridColumn>
-
-                                        <AgGridColumn field="BasicRate" headerName="Basic Rate(INR)" cellRenderer='commonCostFormatter'></AgGridColumn>
-
-                                        <AgGridColumn field="ScrapRate" headerName="Scrap Rate(INR)" cellRenderer='commonCostFormatter'></AgGridColumn>
-
-                                        <AgGridColumn field="RMFreightCost" headerName="Freight Cost(INR)" cellRenderer='commonCostFormatter'></AgGridColumn>
-
-                                        <AgGridColumn field="RMShearingCost" headerName="Shearing Cost(INR)" cellRenderer='commonCostFormatter'></AgGridColumn>
-
-                                        <AgGridColumn field="NetLandedCost" headerName="Net Cost(INR)" cellRenderer='costFormatter'></AgGridColumn>
-
+                                        <AgGridColumn field="VendorName" headerName="Vendor (Code)"></AgGridColumn>
+                                        {/* <AgGridColumn field="DepartmentName" headerName="Department"></AgGridColumn> */}
+                                        <AgGridColumn field="DepartmentName" headerName="Company (Code)" ></AgGridColumn>
+                                        {(reactLocalStorage.getObject('cbcCostingPermission')) && <AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
+                                        <AgGridColumn field="UOM"></AgGridColumn>
+                                        <AgGridColumn field="BasicRate" cellRenderer='commonCostFormatter'></AgGridColumn>
+                                        <AgGridColumn field="ScrapRate" cellRenderer='commonCostFormatter'></AgGridColumn>
+                                        {props.isMasterSummaryDrawer && <AgGridColumn width="140" field="MachiningScrapRate" headerName='Machining Scrap Cost'></AgGridColumn>}
+                                        <AgGridColumn field="RMFreightCost" headerName="Freight Cost" cellRenderer='commonCostFormatter'></AgGridColumn>
+                                        <AgGridColumn field="RMShearingCost" headerName="Shearing Cost" cellRenderer='commonCostFormatter'></AgGridColumn>
+                                        <AgGridColumn field="NetLandedCost" headerName="Net Cost" cellRenderer='costFormatter'></AgGridColumn>
                                         <AgGridColumn field="EffectiveDate" cellRenderer='effectiveDateRenderer' filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
                                         {(!isSimulation && !props.isMasterSummaryDrawer) && <AgGridColumn width={160} field="RawMaterialId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
                                         <AgGridColumn field="VendorId" hide={true}></AgGridColumn>
@@ -914,14 +946,33 @@ function RMDomesticListing(props) {
                         closeDrawer={closeBulkUploadDrawer}
                         isEditFlag={false}
                         densityAlert={densityAlert}
-                        fileName={"RMDomestic"}
+                        fileName={"RM Domestic"}
                         isZBCVBCTemplate={true}
                         messageLabel={"RM Domestic"}
                         anchor={"right"}
-                        isFinalApprovar={isFinalLevelUser}
+                        masterId={RM_MASTER_ID}
                     />
                 )
             }
+
+
+            {
+                analyticsDrawer &&
+                <AnalyticsDrawer
+                    isOpen={analyticsDrawer}
+                    ModeId={1}
+                    closeDrawer={closeAnalyticsDrawer}
+                    anchor={"right"}
+                    isReport={analyticsDrawer}
+                    selectedRowData={selectedRowData}
+                    isSimulation={true}
+                    //cellValue={cellValue}
+                    rowData={selectedRowData}
+                />
+            }
+
+
+
             {
                 showPopup && <PopupMsgWrapper isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${MESSAGES.RAW_MATERIAL_DETAIL_DELETE_ALERT}`} />
             }

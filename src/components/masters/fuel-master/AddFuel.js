@@ -2,9 +2,9 @@ import React, { Component, } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col, Table } from 'reactstrap';
-import { required, checkForDecimalAndNull, positiveAndDecimalNumber, maxLength10, decimalLengthsix } from "../../../helper/validation";
+import { required, checkForDecimalAndNull, positiveAndDecimalNumber, maxLength10, decimalLengthsix, number } from "../../../helper/validation";
 import {
-  searchableSelect, focusOnError, renderNumberInputField,
+  searchableSelect, focusOnError, renderTextInputField,
 } from "../../layout/FormInputs";
 import { getUOMSelectList, fetchStateDataAPI, getAllCity } from '../../../actions/Common';
 import { getFuelByPlant, createFuelDetail, updateFuelDetail, getFuelDetailData, getUOMByFuelId } from '../actions/Fuel';
@@ -20,6 +20,7 @@ import DayTime from '../../common/DayTimeWrapper'
 import { AcceptableFuelUOM } from '../../../config/masterData'
 import LoaderCustom from '../../common/LoaderCustom';
 import { debounce } from 'lodash';
+import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 const selector = formValueSelector('AddFuel');
 
 class AddFuel extends Component {
@@ -51,7 +52,8 @@ class AddFuel extends Component {
         rate: false,
         effectiveDate: false
       },
-      isGridEdit: false
+      isGridEdit: false,
+      showPopup: false
     }
   }
 
@@ -446,7 +448,16 @@ class AddFuel extends Component {
     }
     this.props.hideForm(type)
   }
-
+  cancelHandler = () => {
+    this.setState({ showPopup: true })
+  }
+  onPopupConfirm = () => {
+    this.cancel('cancel')
+    this.setState({ showPopup: false })
+  }
+  closePopUp = () => {
+    this.setState({ showPopup: false })
+  }
   /**
   * @method onSubmit
   * @description Used to Submit the form
@@ -662,8 +673,8 @@ class AddFuel extends Component {
                                 name={"Rate"}
                                 type="text"
                                 placeholder={isViewMode ? '-' : 'Enter'}
-                                validate={[positiveAndDecimalNumber, maxLength10, decimalLengthsix]}
-                                component={renderNumberInputField}
+                                validate={[positiveAndDecimalNumber, maxLength10, decimalLengthsix, number]}
+                                component={renderTextInputField}
                                 required={true}
                                 className=""
                                 customClassName="mb-0 withBorder"
@@ -685,7 +696,6 @@ class AddFuel extends Component {
                                   showMonthDropdown
                                   showYearDropdown
                                   dateFormat="dd/MM/yyyy"
-                                  dropdownMode="select"
                                   placeholderText={isViewMode ? '-' : "Select Date"}
                                   className="withBorder"
                                   autoComplete={"off"}
@@ -759,6 +769,7 @@ class AddFuel extends Component {
                                         <td>
                                           <button
                                             className="Edit mr-2"
+                                            title='Edit'
                                             type={"button"}
                                             disabled={isViewMode || item?.IsAssociated}
                                             onClick={() =>
@@ -767,6 +778,7 @@ class AddFuel extends Component {
                                           />
                                           <button
                                             className="Delete"
+                                            title='Delete'
                                             type={"button"}
                                             disabled={isViewMode || item?.IsAssociated || isGridEdit}
                                             onClick={() =>
@@ -796,7 +808,7 @@ class AddFuel extends Component {
                           <button
                             type={"button"}
                             className="mr15 cancel-btn"
-                            onClick={() => { this.cancel('cancel') }}
+                            onClick={this.cancelHandler}
                             disabled={setDisable}
                           >
                             <div className={"cancel-icon"}></div>
@@ -829,6 +841,9 @@ class AddFuel extends Component {
             />
           )}
         </div>
+        {
+          this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.CANCEL_MASTER_ALERT}`} />
+        }
       </>
     );
   }

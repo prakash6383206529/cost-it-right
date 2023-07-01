@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { BOPImpactDownloadArray, ERImpactDownloadArray, OperationImpactDownloadArray, RMImpactedDownloadArray } from "../../config/masterData";
+import { BOPImpactDownloadArray, ERImpactDownloadArray, MachineImpactDownloadArray, OperationImpactDownloadArray, RMImpactedDownloadArray, STOperationImpactDownloadArray } from "../../config/masterData";
 import { Errorbox } from "../common/ErrorBox";
 import { useDispatch } from 'react-redux';
 import { getAmmendentStatus } from './actions/Simulation'
 import imgRedcross from '../../assests/images/red-cross.png';
 import imgGreencross from '../../assests/images/greenCross.png';
+import DayTime from "../common/DayTimeWrapper";
 
 export const SimulationUtils = (TempData) => {
 
@@ -125,7 +126,7 @@ export const checkForChangeInOverheadProfit3Values = (item) => {
 
 export const impactmasterDownload = (impactedMasterData) => {
     let rmArraySet = [], bopArraySet = []
-    let operationArraySet = [], erArraySet = []
+    let operationArraySet = [], erArraySet = [], surfaceTreatmentArraySet = [], machineArraySet = []
 
     impactedMasterData?.OperationImpactedMasterDataList && impactedMasterData?.OperationImpactedMasterDataList.map((item) => {
         let tempObj = []
@@ -134,30 +135,40 @@ export const impactmasterDownload = (impactedMasterData) => {
         tempObj.push(item.UOM)
         tempObj.push(item.OldOperationRate)
         tempObj.push(item.NewOperationRate)
-        tempObj.push(item.EffectiveDate)
+        tempObj.push(DayTime(item.EffectiveDate).format('DD/MM/YYYY'))
         operationArraySet.push(tempObj)
         return null
     })
 
-    impactedMasterData?.RawMaterialImpactedMasterDataList && impactedMasterData?.RawMaterialImpactedMasterDataList.map((item) => {
-
+    impactedMasterData?.SurfaceTreatmentImpactedMasterDataList && impactedMasterData?.SurfaceTreatmentImpactedMasterDataList.map((item) => {
         let tempObj = []
+        tempObj.push(item.OperationName)
+        tempObj.push(item.OperationCode)
+        tempObj.push(item.UOM)
+        tempObj.push(item.OldOperationRate)
+        tempObj.push(item.NewOperationRate)
+        tempObj.push(DayTime(item.EffectiveDate).format('DD/MM/YYYY'))
+        surfaceTreatmentArraySet.push(tempObj)
+        return null
+    })
 
+    impactedMasterData?.RawMaterialImpactedMasterDataList && impactedMasterData?.RawMaterialImpactedMasterDataList.map((item) => {
+        let tempObj = []
         tempObj.push(item.RawMaterial)
         tempObj.push(item.RMGrade)
         tempObj.push(item.RMSpec)
         tempObj.push(item.RawMaterialCode)
         tempObj.push(item.Category)
+        tempObj.push(item.UOM)
         tempObj.push(item.TechnologyName)
         tempObj.push(item.VendorName)
-        tempObj.push(item.UOM)
         tempObj.push(item.OldBasicRate)
         tempObj.push(item.NewBasicRate)
         tempObj.push(item.OldScrapRate)
         tempObj.push(item.NewScrapRate)
         tempObj.push(item.RMFreightCost)
         tempObj.push(item.RMShearingCost)
-        tempObj.push(item.EffectiveDate)
+        tempObj.push(DayTime(item.EffectiveDate).format('DD/MM/YYYY'))
         rmArraySet.push(tempObj)
         return null
     })
@@ -168,31 +179,40 @@ export const impactmasterDownload = (impactedMasterData) => {
         tempObj.push(item.BoughtOutPartName)
         tempObj.push(item.Category)
         tempObj.push(item.Vendor)
-        tempObj.push(item.PartNumber)
         tempObj.push(item.OldBOPRate)
         tempObj.push(item.NewBOPRate)
-        tempObj.push(item.OldPOPrice)
-        tempObj.push(item.NewPOPrice)
-        tempObj.push(item.EffectiveDate)
+        tempObj.push(DayTime(item.EffectiveDate).format('DD/MM/YYYY'))
         bopArraySet.push(tempObj)
         return null
     })
     impactedMasterData?.ExchangeRateImpactedMasterDataList && impactedMasterData?.ExchangeRateImpactedMasterDataList.map((item) => {
         let tempObj = []
         tempObj.push(item.Currency)
-        tempObj.push(item.CostingNumber)
-        tempObj.push(item.PartNumber)
         tempObj.push(item.BankRate)
         tempObj.push(item.BankCommissionPercentage)
         tempObj.push(item.CustomRate)
         tempObj.push(item.CurrencyExchangeRate)
-        tempObj.push(item.NewExchangeRate)
         tempObj.push(item.OldExchangeRate)
-        tempObj.push(item.EffectiveDate)
+        tempObj.push(item.NewExchangeRate)
+        tempObj.push(DayTime(item.EffectiveDate).format('DD/MM/YYYY'))
         erArraySet.push(tempObj)
         return null
     })
-
+    impactedMasterData?.MachineProcessImpactedMasterDataList && impactedMasterData?.MachineProcessImpactedMasterDataList.map((item) => {
+        let tempObj = []
+        tempObj.push(item.MachineName)
+        tempObj.push(item.MachineNumber)
+        tempObj.push(item.MachineTypeName)
+        tempObj.push(item.ProcessName)
+        tempObj.push(item.ProcessCode)
+        tempObj.push(item.UOM)
+        tempObj.push(item.Vendor)
+        tempObj.push(item.OldMachineRate)
+        tempObj.push(item.NewMachineRate)
+        tempObj.push(DayTime(item.EffectiveDate).format('DD/MM/YYYY'))
+        machineArraySet.push(tempObj)
+        return null
+    })
     const multiDataSet = [
         {
             columns: RMImpactedDownloadArray,
@@ -203,12 +223,20 @@ export const impactmasterDownload = (impactedMasterData) => {
             data: operationArraySet
         }, {
             ySteps: 5,
+            columns: STOperationImpactDownloadArray,
+            data: surfaceTreatmentArraySet
+        }, {
+            ySteps: 5,
             columns: BOPImpactDownloadArray,
             data: bopArraySet
         }, {
             ySteps: 5,
             columns: ERImpactDownloadArray,
             data: erArraySet
+        }, {
+            ySteps: 5,
+            columns: MachineImpactDownloadArray,
+            data: machineArraySet
         }
     ];
     return multiDataSet
@@ -279,8 +307,11 @@ export const ErrorMessage = (props) => {
         else if (ammendmentStatus.startsWith('S')) {
             temp = 'success';
         }
+        else if (!ammendmentStatus) {
+            temp = 'd-none';
+        }
         else {
-            temp = 'd-none'
+            temp = 'error'
         }
         return temp
     }

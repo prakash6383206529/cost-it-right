@@ -4,11 +4,9 @@ import { useForm, Controller, useWatch } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 import Toaster from '../../../../common/Toaster'
 import { saveRawMaterialCalculationForForging } from '../../../actions/CostWorking'
+import { postiveNumber, maxPercentValue } from "../../../../../helper/validation";
 
-import {
-
-  NumberFieldHookForm,
-} from '../../../../layout/HookFormInputs'
+import { NumberFieldHookForm } from '../../../../layout/HookFormInputs'
 import {
   checkForDecimalAndNull,
   checkForNull,
@@ -19,64 +17,32 @@ import {
 import MachiningStockTable from '../MachiningStockTable'
 import LossStandardTable from '../LossStandardTable'
 import { debounce } from 'lodash'
+import TooltipCustom from '../../../../common/Tooltip'
 
 function HotForging(props) {
   const { rmRowData, CostingViewMode, item } = props
   const WeightCalculatorRequest = props.rmRowData.WeightCalculatorRequest
   const defaultValues = {
-    finishedWeight: WeightCalculatorRequest &&
-      WeightCalculatorRequest.FinishWeight !== undefined
-      ? WeightCalculatorRequest.FinishWeight
-      : '',
-    forgedWeight: WeightCalculatorRequest &&
-      WeightCalculatorRequest.ForgedWeight !== undefined
-      ? WeightCalculatorRequest.ForgedWeight
-      : '',
-    BilletDiameter: WeightCalculatorRequest &&
-      WeightCalculatorRequest.BilletDiameter !== undefined
-      ? WeightCalculatorRequest.BilletDiameter
-      : '',
-    BilletLength: WeightCalculatorRequest &&
-      WeightCalculatorRequest.BilletLength !== undefined
-      ? WeightCalculatorRequest.BilletLength
-      : '',
-    InputLength: WeightCalculatorRequest &&
-      WeightCalculatorRequest.InputLength !== undefined
-      ? WeightCalculatorRequest.InputLength
-      : '',
-    NoOfPartsPerLength: WeightCalculatorRequest &&
-      WeightCalculatorRequest.NoOfPartsPerLength !== undefined
-      ? WeightCalculatorRequest.NoOfPartsPerLength
-      : '',
-    EndBitLength: WeightCalculatorRequest &&
-      WeightCalculatorRequest.EndBitLength !== undefined
-      ? WeightCalculatorRequest.EndBitLength
-      : '',
-    EndBitLoss: WeightCalculatorRequest &&
-      WeightCalculatorRequest.EndBitLoss !== undefined
-      ? WeightCalculatorRequest.EndBitLoss
-      : '',
-    TotalInputWeight: WeightCalculatorRequest &&
-      WeightCalculatorRequest.TotalInputWeight !== undefined
-      ? WeightCalculatorRequest.TotalInputWeight
-      : '',
-    ScrapWeight: WeightCalculatorRequest &&
-      WeightCalculatorRequest.ScrapWeight !== undefined
-      ? WeightCalculatorRequest.ScrapWeight
-      : '',
-    ScrapCost: WeightCalculatorRequest &&
-      WeightCalculatorRequest.ScrapCost !== undefined
-      ? WeightCalculatorRequest.ScrapCost
-      : '',
-    ScrapRecoveryPercentage: WeightCalculatorRequest &&
-      WeightCalculatorRequest.RecoveryPercentage !== undefined
-      ? WeightCalculatorRequest.RecoveryPercentage
-      : '',
-    NetRMCostComponent: WeightCalculatorRequest &&
-      WeightCalculatorRequest.RawMaterialCost !== undefined
-      ? WeightCalculatorRequest.RawMaterialCost
-      : ''
+    finishedWeight: WeightCalculatorRequest && WeightCalculatorRequest.FinishWeight !== undefined ? WeightCalculatorRequest.FinishWeight : '',
+    forgedWeight: WeightCalculatorRequest && WeightCalculatorRequest.ForgedWeight !== undefined ? WeightCalculatorRequest.ForgedWeight : '',
+    BilletDiameter: WeightCalculatorRequest && WeightCalculatorRequest.BilletDiameter !== undefined ? WeightCalculatorRequest.BilletDiameter : '',
+    BilletLength: WeightCalculatorRequest && WeightCalculatorRequest.BilletLength !== undefined ? WeightCalculatorRequest.BilletLength : '',
+    InputLength: WeightCalculatorRequest && WeightCalculatorRequest.InputLength !== undefined ? WeightCalculatorRequest.InputLength : '',
+    NoOfPartsPerLength: WeightCalculatorRequest && WeightCalculatorRequest.NoOfPartsPerLength !== undefined ? WeightCalculatorRequest.NoOfPartsPerLength : '',
+    EndBitLength: WeightCalculatorRequest && WeightCalculatorRequest.EndBitLength !== undefined ? WeightCalculatorRequest.EndBitLength : '',
+    EndBitLoss: WeightCalculatorRequest && WeightCalculatorRequest.EndBitLoss !== undefined ? WeightCalculatorRequest.EndBitLoss : '',
+    TotalInputWeight: WeightCalculatorRequest && WeightCalculatorRequest.TotalInputWeight !== undefined ? WeightCalculatorRequest.TotalInputWeight : '',
+    ScrapWeight: WeightCalculatorRequest && WeightCalculatorRequest.ScrapWeight !== undefined ? WeightCalculatorRequest.ScrapWeight : '',
+    ScrapCost: WeightCalculatorRequest && WeightCalculatorRequest.ScrapCost !== undefined ? WeightCalculatorRequest.ScrapCost : '',
+    NetRMCostComponent: WeightCalculatorRequest && WeightCalculatorRequest.RawMaterialCost !== undefined ? WeightCalculatorRequest.RawMaterialCost : '',
+    forgingScrapWeight: WeightCalculatorRequest && WeightCalculatorRequest.ForgingScrapWeight !== undefined ? WeightCalculatorRequest.ForgingScrapWeight : '',
+    machiningScrapWeight: WeightCalculatorRequest && WeightCalculatorRequest.MachiningScrapWeight !== undefined ? WeightCalculatorRequest.MachiningScrapWeight : '',
+    forgingScrapRecoveryPercent: WeightCalculatorRequest && WeightCalculatorRequest.ForgingScrapRecoveryPercentage !== undefined ? WeightCalculatorRequest.ForgingScrapRecoveryPercentage : '',
+    machiningScrapRecoveryPercent: WeightCalculatorRequest && WeightCalculatorRequest.MachiningScrapRecoveryPercentage !== undefined ? WeightCalculatorRequest.MachiningScrapRecoveryPercentage : '',
+    forgingScrapCost: WeightCalculatorRequest && WeightCalculatorRequest.ForgingScrapCost !== undefined ? WeightCalculatorRequest.ForgingScrapCost : '',
+    machiningScrapCost: WeightCalculatorRequest && WeightCalculatorRequest.MachiningScrapCost !== undefined ? WeightCalculatorRequest.MachiningScrapCost : '',
   }
+
   const {
     register,
     handleSubmit,
@@ -90,16 +56,10 @@ function HotForging(props) {
     defaultValues: defaultValues,
   })
   const { forgingCalculatorMachiningStockSectionValue } = useSelector(state => state.costing)
-  useEffect(() => {
 
-  }, [])
-
-  useEffect(() => {
-
-  }, [forgingCalculatorMachiningStockSectionValue])
   const fieldValues = useWatch({
     control,
-    name: ['finishedWeight', 'BilletDiameter', 'BilletLength', 'ScrapRecoveryPercentage'],
+    name: ['finishedWeight', 'BilletDiameter', 'BilletLength', 'ScrapRecoveryPercentage', 'forgingScrapRecoveryPercent', 'machiningScrapRecoveryPercent'],
 
   })
 
@@ -138,13 +98,15 @@ function HotForging(props) {
 
     const finishedWeight = checkForNull(getValues('finishedWeight'))
     const forgedWeight = checkForNull(finishedWeight) + checkForNull(totalMachiningStock)
+    const machiningScrapWeight = forgedWeight - finishedWeight
     let obj = dataSend
     obj.forgedWeight = forgedWeight
+    obj.machiningScrapWeight = machiningScrapWeight
     setDataSend(obj)
     setValue('forgedWeight', checkForDecimalAndNull(forgedWeight, initialConfiguration.NoOfDecimalForInputOutput))
+    setValue('machiningScrapWeight', checkForDecimalAndNull(machiningScrapWeight, initialConfiguration.NoOfDecimalForInputOutput))
     setForgeWeightValue(forgedWeight)
   }
-
 
   /**
      * @method calculateInputLength
@@ -219,11 +181,13 @@ function HotForging(props) {
     const forgedWeight = checkForNull(forgeWeightValue)
     const EndBitLoss = checkForNull(dataSend.EndBitLoss)
     const TotalInputWeight = checkForNull(forgedWeight) + checkForNull(lostWeight) + checkForNull(EndBitLoss)
+    const ForgingScrapWeight = TotalInputWeight - forgedWeight
     let obj = dataSend
     obj.TotalInputWeight = TotalInputWeight
+    obj.ForgingScrapWeight = ForgingScrapWeight
     setDataSend(obj)
     setValue('TotalInputWeight', checkForDecimalAndNull(TotalInputWeight, initialConfiguration.NoOfDecimalForInputOutput))
-
+    setValue('forgingScrapWeight', checkForDecimalAndNull(ForgingScrapWeight, initialConfiguration.NoOfDecimalForInputOutput))
   }
 
   /**
@@ -237,7 +201,11 @@ function HotForging(props) {
     if (!finishedWeight || !TotalInputWeight) {
       return ''
     }
-    const ScrapWeight = TotalInputWeight - finishedWeight
+
+    let ScrapWeight = 0
+    if (TotalInputWeight > finishedWeight) {
+      ScrapWeight = TotalInputWeight - finishedWeight
+    }
     let obj = dataSend
     obj.ScrapWeight = ScrapWeight
 
@@ -250,13 +218,22 @@ function HotForging(props) {
    * @description Calculate Scrap Cost
    */
   const calculateScrapCost = () => {
-    const ScrapRecoveryPercentage = checkForNull(getValues('ScrapRecoveryPercentage'))
-    const ScrapWeight = dataSend.ScrapWeight
-    const ScrapCost = (ScrapWeight * ScrapRecoveryPercentage * rmRowData.ScrapRate) / 100
+    const forgingScrapWeight = checkForNull(getValues('forgingScrapWeight'))
+    const machiningScrapWeight = checkForNull(getValues('machiningScrapWeight'))
+    const forgingScrapRecoveryPercent = checkForNull(getValues('forgingScrapRecoveryPercent'))
+    const machiningScrapRecoveryPercent = checkForNull(getValues('machiningScrapRecoveryPercent'))
+
+    const forgingScrapCost = (forgingScrapWeight * forgingScrapRecoveryPercent) / 100
+    const machiningScrapCost = (machiningScrapWeight * machiningScrapRecoveryPercent) / 100
+    const ScrapCost = forgingScrapCost + machiningScrapCost
     let obj = dataSend
     obj.ScrapCost = ScrapCost
+    obj.forgingScrapCost = forgingScrapCost
+    obj.machiningScrapCost = machiningScrapCost
     setDataSend(obj)
     setValue('ScrapCost', checkForDecimalAndNull(ScrapCost, getConfigurationKey().NoOfDecimalForPrice))
+    setValue('forgingScrapCost', checkForDecimalAndNull(forgingScrapCost, getConfigurationKey().NoOfDecimalForPrice))
+    setValue('machiningScrapCost', checkForDecimalAndNull(machiningScrapCost, getConfigurationKey().NoOfDecimalForPrice))
   }
 
   /**
@@ -302,6 +279,12 @@ function HotForging(props) {
     obj.RecoveryPercentage = getValues('ScrapRecoveryPercentage')
     obj.ScrapCost = dataSend.ScrapCost
     obj.RawMaterialCost = dataSend.NetRMCostComponent
+    obj.MachiningScrapRecoveryPercentage = checkForNull(getValues('machiningScrapRecoveryPercent'))
+    obj.ForgingScrapRecoveryPercentage = checkForNull(getValues('forgingScrapRecoveryPercent'))
+    obj.ForgingScrapWeight = dataSend.ForgingScrapWeight
+    obj.MachiningScrapWeight = dataSend.machiningScrapWeight
+    obj.ForgingScrapCost = dataSend.forgingScrapCost
+    obj.MachiningScrapCost = dataSend.machiningScrapCost
 
     let tempArr = []
     tableVal && tableVal.map(item => (
@@ -419,6 +402,8 @@ function HotForging(props) {
     }
   };
 
+  const inputLengthTooltipMessage = <div>Input Length = (Forged Weight + Loss Weight / 0.7857 * Billet Diameter<sup>2</sup>) * Density / 1000000</div>
+  const endBitLossTooltipMessage = <div>End Bit Loss = (0.7857 * Billet Diameter<sup>2</sup> * End Bit Length * (Density / 1000000) / No. of Part per Length)</div>
   return (
     <Fragment>
       <Row>
@@ -473,6 +458,7 @@ function HotForging(props) {
                 </Row>
 
                 <Col md="3" className='mt10 px-0'>
+                  <TooltipCustom disabledIcon={true} id={'forged-weight'} tooltipText={'Forged Weight = (Total Machining Stock + Finished Weight)'} />
                   <NumberFieldHookForm
                     label={`Forged Weight(Kg)`}
                     name={'forgedWeight'}
@@ -480,6 +466,7 @@ function HotForging(props) {
                     control={control}
                     register={register}
                     mandatory={false}
+                    id={'forged-weight'}
                     handleChange={() => { }}
                     defaultValue={''}
                     className=""
@@ -557,12 +544,14 @@ function HotForging(props) {
                 />
               </Col>
               <Col md="3">
+                <TooltipCustom disabledIcon={true} id={'input-length'} tooltipClass={'weight-of-sheet'} tooltipText={inputLengthTooltipMessage} />
                 <NumberFieldHookForm
                   label={`Input Length(mm)`}
                   name={'InputLength'}
                   Controller={Controller}
                   control={control}
                   register={register}
+                  id={'input-length'}
                   mandatory={false}
                   handleChange={() => { }}
                   defaultValue={''}
@@ -573,6 +562,7 @@ function HotForging(props) {
                 />
               </Col>
               <Col md="3">
+                <TooltipCustom disabledIcon={true} id={'part-per-length'} tooltipClass={'weight-of-sheet'} tooltipText={'No. of Parts per Length(Number) = (Input Bar Length / Input Length) '} />
                 <NumberFieldHookForm
                   label={`No. of Parts per Length`}
                   name={'NoOfPartsPerLength'}
@@ -580,6 +570,7 @@ function HotForging(props) {
                   control={control}
                   register={register}
                   mandatory={false}
+                  id={'part-per-length'}
                   handleChange={() => { }}
                   defaultValue={''}
                   className=""
@@ -589,11 +580,13 @@ function HotForging(props) {
                 />
               </Col>
               <Col md="3">
+                <TooltipCustom disabledIcon={true} id={'end-bit-input'} tooltipClass={'weight-of-sheet'} tooltipText={'End Bit Length = (Input Bar Length - (Input Length * No. of Parts per Length))'} />
                 <NumberFieldHookForm
                   label={`End Bit Length`}
                   name={'EndBitLength'}
                   Controller={Controller}
                   control={control}
+                  id={'end-bit-input'}
                   register={register}
                   mandatory={false}
                   handleChange={() => { }}
@@ -606,12 +599,14 @@ function HotForging(props) {
               </Col>
 
               <Col md="3">
+                <TooltipCustom disabledIcon={true} id={'end-bit-loss'} tooltipClass={'weight-of-sheet'} tooltipText={endBitLossTooltipMessage} />
                 <NumberFieldHookForm
                   label={`End Bit Loss(Kg)`}
                   name={'EndBitLoss'}
                   Controller={Controller}
                   control={control}
                   register={register}
+                  id={'end-bit-loss'}
                   mandatory={false}
                   handleChange={() => { }}
                   defaultValue={''}
@@ -623,11 +618,13 @@ function HotForging(props) {
               </Col>
 
               <Col md="3">
+                <TooltipCustom disabledIcon={true} id={'input-weight'} tooltipClass={'weight-of-sheet'} tooltipText={'Total Input Weight = (Net Loss + Forged Weight + End Bit Loss)'} />
                 <NumberFieldHookForm
                   label={`Total Input Weight(Kg)`}
                   name={'TotalInputWeight'}
                   Controller={Controller}
                   control={control}
+                  id={'input-weight'}
                   register={register}
                   mandatory={false}
                   handleChange={() => { }}
@@ -638,13 +635,135 @@ function HotForging(props) {
                   disabled={true}
                 />
               </Col>
+
               <Col md="3">
+                <TooltipCustom disabledIcon={true} id={'forging-scrap'} tooltipClass={'weight-of-sheet'} tooltipText={' Forging Scrap Weight = (Total Input Weight - Forged weight)'} />
+                <NumberFieldHookForm
+                  label={`Forging Scrap Weight`}
+                  name={'forgingScrapWeight'}
+                  Controller={Controller}
+                  control={control}
+                  register={register}
+                  id={'forging-scrap'}
+                  mandatory={false}
+                  handleChange={() => { }}
+                  defaultValue={''}
+                  className=""
+                  customClassName={'withBorder'}
+                  errors={errors.forgingScrapWeight}
+                  disabled={true}
+                />
+              </Col>
+
+              <Col md="3">
+                <TooltipCustom disabledIcon={true} id={'machining-scrap'} tooltipClass={'weight-of-sheet'} tooltipText={' Machining Scrap Weight = (Forged Weight - Finished Weight)'} />
+                <NumberFieldHookForm
+                  label={`Machining Scrap Weight`}
+                  name={'machiningScrapWeight'}
+                  Controller={Controller}
+                  control={control}
+                  register={register}
+                  id={'machining-scrap'}
+                  mandatory={false}
+                  handleChange={() => { }}
+                  defaultValue={''}
+                  className=""
+                  customClassName={'withBorder'}
+                  errors={errors.machiningScrapWeight}
+                  disabled={true}
+                />
+              </Col>
+
+              <Col md="3">
+
+                <NumberFieldHookForm
+                  label={`Forging Scrap Recovery (%)`}
+                  name={'forgingScrapRecoveryPercent'}
+                  Controller={Controller}
+                  control={control}
+                  register={register}
+                  mandatory={false}
+                  handleChange={() => { }}
+                  rules={{
+                    required: false,
+                    validate: { postiveNumber, maxPercentValue }
+                  }}
+                  defaultValue={''}
+                  className=""
+                  customClassName={'withBorder'}
+                  errors={errors.forgingScrapRecoveryPercent}
+                  disabled={props.CostingViewMode || disableAll ? true : false}
+                />
+              </Col>
+
+              <Col md="3">
+                <NumberFieldHookForm
+                  label={`Machining Scrap Recovery (%)`}
+                  name={'machiningScrapRecoveryPercent'}
+                  Controller={Controller}
+                  control={control}
+                  register={register}
+                  rules={{
+                    required: false,
+                    validate: { postiveNumber, maxPercentValue }
+                  }}
+                  mandatory={false}
+                  handleChange={() => { }}
+                  defaultValue={''}
+                  className=""
+                  customClassName={'withBorder'}
+                  errors={errors.machiningScrapRecoveryPercent}
+                  disabled={props.CostingViewMode || disableAll ? true : false}
+                />
+              </Col>
+
+              <Col md="3">
+                <TooltipCustom disabledIcon={true} id={'forging-scrapCost'} tooltipClass={'weight-of-sheet'} tooltipText={' Forging Scrap Cost = (Forging Scrap Weight * Forging Scrap Recovery (%)) / 100'} />
+                <NumberFieldHookForm
+                  label={`Forging Scrap Cost`}
+                  name={'forgingScrapCost'}
+                  Controller={Controller}
+                  control={control}
+                  register={register}
+                  id={'forging-scrapCost'}
+                  mandatory={false}
+                  handleChange={() => { }}
+                  defaultValue={''}
+                  className=""
+                  customClassName={'withBorder'}
+                  errors={errors.forgingScrapCost}
+                  disabled={true}
+                />
+              </Col>
+
+              <Col md="3">
+                <TooltipCustom disabledIcon={true} id={'machining-scrapCost'} tooltipClass={'weight-of-sheet'} tooltipText={' Machining Scrap Cost = (Machining Scrap Weight * Forging Scrap Recovery (%)) / 100'} />
+                <NumberFieldHookForm
+                  label={`Machining Scrap Cost`}
+                  name={'machiningScrapCost'}
+                  Controller={Controller}
+                  control={control}
+                  register={register}
+                  id={'machining-scrapCost'}
+                  mandatory={false}
+                  handleChange={() => { }}
+                  defaultValue={''}
+                  className=""
+                  customClassName={'withBorder'}
+                  errors={errors.machiningScrapCost}
+                  disabled={true}
+                />
+              </Col>
+
+              <Col md="3">
+                <TooltipCustom disabledIcon={true} id={'scrap-weight'} tooltipText={'Scrap Weight = (Total Input Weight - Finished Weight)'} />
                 <NumberFieldHookForm
                   label={`Scrap Weight(Kg)`}
                   name={'ScrapWeight'}
                   Controller={Controller}
                   control={control}
                   register={register}
+                  id={'scrap-weight'}
                   mandatory={false}
                   handleChange={() => { }}
                   defaultValue={''}
@@ -654,34 +773,9 @@ function HotForging(props) {
                   disabled={true}
                 />
               </Col>
+
               <Col md="3">
-                <NumberFieldHookForm
-                  label={`Scrap Recovery(%)`}
-                  name={'ScrapRecoveryPercentage'}
-                  Controller={Controller}
-                  control={control}
-                  register={register}
-                  mandatory={true}
-                  rules={{
-                    required: true,
-                    pattern: {
-                      value: /^[0-9]\d*(\.\d+)?$/i,
-                      message: 'Invalid Number.',
-                    },
-                    max: {
-                      value: 100,
-                      message: 'Percentage cannot be greater than 100'
-                    },
-                  }}
-                  handleChange={() => { }}
-                  defaultValue={''}
-                  className=""
-                  customClassName={'withBorder'}
-                  errors={errors.ScrapRecoveryPercentage}
-                  disabled={props.CostingViewMode || disableAll ? true : false}
-                />
-              </Col>
-              <Col md="3">
+                <TooltipCustom disabledIcon={true} id={'scrap-cost'} tooltipClass={'weight-of-sheet'} tooltipText={'Scrap Cost = (Forging Scrap Cost + Machining Scrap Cost)'} />
                 <NumberFieldHookForm
                   label={`Scrap Cost`}
                   name={'ScrapCost'}
@@ -689,6 +783,7 @@ function HotForging(props) {
                   control={control}
                   register={register}
                   mandatory={false}
+                  id={'scrap-cost'}
                   handleChange={() => { }}
                   defaultValue={''}
                   className=""
@@ -699,12 +794,14 @@ function HotForging(props) {
               </Col>
 
               <Col md="3">
+                <TooltipCustom disabledIcon={true} id={'rm-cost'} tooltipClass={'weight-of-sheet'} tooltipText={' Net RM Cost = (Total Input Weight * RM Rate - Scrap Cost)'} />
                 <NumberFieldHookForm
                   label={`Net RM Cost/Component`}
                   name={'NetRMCostComponent'}
                   Controller={Controller}
                   control={control}
                   register={register}
+                  id={'rm-cost'}
                   mandatory={false}
                   handleChange={() => { }}
                   defaultValue={''}
@@ -714,6 +811,7 @@ function HotForging(props) {
                   disabled={true}
                 />
               </Col>
+
             </Row>
 
             <div className="mt25 col-md-12 text-right">

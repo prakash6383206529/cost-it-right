@@ -8,7 +8,7 @@ const CalculatorWrapper = () => {
   }
   return (
     <>
-      <button className="CalculatorIcon cr-cl-icon cal-btn" type="buton" title="Calculator" onClick={showCalculator}></button>
+      <button className="CalculatorIcon cr-cl-icon cal-btn d-none" type="buton" title="Calculator" onClick={showCalculator}></button>
       {isShowCal && <div className="calculator-wrapper">
         <Draggable>
           <div>

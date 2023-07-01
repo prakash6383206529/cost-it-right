@@ -28,19 +28,19 @@ class DownloadUploadBOMxls extends React.Component {
   */
   returnExcelColumn = (data = [], TempData) => {
     const { fileName, failedData, isFailedFlag } = this.props;
-
+    let dataList = [...data]
     if (isFailedFlag) {
 
       //BELOW CONDITION TO ADD 'REASON' COLUMN WHILE DOWNLOAD EXCEL SHEET IN CASE OF FAILED
-      let isContentReason = data.filter(d => d.label === 'Reason')
+      let isContentReason = dataList.filter(d => d.label === 'Reason')
       if (isContentReason.length === 0) {
         let addObj = { label: 'Reason', value: 'Reason' }
-        data.push(addObj)
+        dataList.push(addObj)
       }
     }
 
     return (<ExcelSheet data={isFailedFlag ? failedData : TempData} name={fileName}>
-      {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.label} />)}
+      {dataList && dataList.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.label} />)}
     </ExcelSheet>);
   }
 
@@ -58,7 +58,7 @@ class DownloadUploadBOMxls extends React.Component {
 
     // DISPLAY DOWNLOAD FILE BUTTON EXCEPT ZBC AND VBC TEMPLATES
     return (
-      <ExcelFile filename={fileName} fileExtension={'.xls'} element={<button type="button" className={'btn btn-primary pull-right'}><img alt={''} src={require('../../assests/images/download.png')}></img> Download File</button>}>
+      <ExcelFile filename={fileName} fileExtension={'.xls'} element={<button type="button" className={'btn btn-primary pull-right w-100'}><img alt={''} src={require('../../assests/images/download.png')}></img> Download File</button>}>
         {fileName ? this.renderSwitch(fileName) : ''}
       </ExcelFile>
     );

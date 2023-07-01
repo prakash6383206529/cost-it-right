@@ -12,8 +12,13 @@ import PackageAndFreight from '../CostingHeadCosts/PackageAndFreight';
 import Toaster from '../../../common/Toaster';
 import { MESSAGES } from '../../../../config/message';
 import { ViewCostingContext } from '../CostingDetails';
-import { createToprowObjAndSave } from '../../CostingUtil';
+import { createToprowObjAndSave, formatMultiTechnologyUpdate } from '../../CostingUtil';
+import { Link } from 'react-scroll';
+import { IdForMultiTechnology } from '../../../../config/masterData';
 import { debounce } from 'lodash';
+import { updateMultiTechnologyTopAndWorkingRowCalculation } from '../../actions/SubAssembly';
+import { LOGISTICS } from '../../../../config/masterData';
+import { useHistory } from 'react-router';
 
 function TabPackagingFreight(props) {
 
@@ -27,6 +32,10 @@ function TabPackagingFreight(props) {
 
   const { PackageAndFreightTabData, CostingEffectiveDate, ComponentItemDiscountData, RMCCTabData, SurfaceTabData, OverheadProfitTabData, DiscountCostData, ToolTabData, getAssemBOPCharge, checkIsFreightPackageChange } = useSelector(state => state.costing)
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
+  const partType = IdForMultiTechnology.includes(String(costData?.TechnologyId))
+  const { subAssemblyTechnologyArray } = useSelector(state => state.subAssembly)
+  const { ComponentItemData, costingData } = useSelector(state => state.costing)
+  let history = useHistory();
 
   useEffect(() => {
     if (Object.keys(costData).length > 0) {
@@ -42,7 +51,7 @@ function TabPackagingFreight(props) {
   useEffect(() => {
     // CostingViewMode CONDITION IS USED TO AVOID CALCULATION IN VIEWMODE
     if (CostingViewMode === false) {
-      let TopHeaderValues = PackageAndFreightTabData && PackageAndFreightTabData.length > 0 && PackageAndFreightTabData[0].CostingPartDetails !== undefined ? PackageAndFreightTabData[0].CostingPartDetails : null;
+      let TopHeaderValues = PackageAndFreightTabData && PackageAndFreightTabData.length > 0 && PackageAndFreightTabData[0]?.CostingPartDetails !== undefined ? PackageAndFreightTabData[0]?.CostingPartDetails : null;
       let topHeaderData = {
         NetFreightPackagingCost: TopHeaderValues && TopHeaderValues.NetFreightPackagingCost !== null ? checkForNull(TopHeaderValues.NetFreightPackagingCost) : 0,
       }
@@ -72,7 +81,7 @@ function TabPackagingFreight(props) {
       tempArr = arr && arr.map(i => {
 
         i.CostingPartDetails.PackagingNetCost = packageTotalCost(GridData);
-        i.CostingPartDetails.NetFreightPackagingCost = i.CostingPartDetails?.FreightNetCost + packageTotalCost(GridData);
+        i.CostingPartDetails.NetFreightPackagingCost = i?.CostingPartDetails?.FreightNetCost + packageTotalCost(GridData);
         i.CostingPartDetails.CostingPackagingDetail = GridData;
         i.IsChanged = IsChanged;
 
@@ -118,7 +127,7 @@ function TabPackagingFreight(props) {
       tempArr = arr && arr.map(i => {
 
         i.CostingPartDetails.FreightNetCost = freightTotalCost(GridData);
-        i.CostingPartDetails.NetFreightPackagingCost = i.CostingPartDetails?.PackagingNetCost + freightTotalCost(GridData);
+        i.CostingPartDetails.NetFreightPackagingCost = i?.CostingPartDetails?.PackagingNetCost + freightTotalCost(GridData);
         i.CostingPartDetails.CostingFreightDetail = GridData;
         i.IsChanged = IsChanged;
 
@@ -148,7 +157,7 @@ function TabPackagingFreight(props) {
   * @method saveCosting
   * @description SAVE COSTING
   */
-  const saveCosting = debounce(handleSubmit(() => {
+  const saveCosting = debounce((data, e, gotoNextValue) => {
 
     if (checkIsFreightPackageChange) {
 
@@ -156,6 +165,9 @@ function TabPackagingFreight(props) {
       const surfaceTabData = SurfaceTabData[0]
       const overHeadAndProfitTabData = OverheadProfitTabData[0]
       const discountAndOtherTabData = DiscountCostData[0]
+      const packageAndFreightTabData = PackageAndFreightTabData && PackageAndFreightTabData[0]
+      const toolTabData = ToolTabData && ToolTabData[0]
+
       const data = {
         "CostingId": costData.CostingId,
         "PartId": costData.PartId,
@@ -166,32 +178,49 @@ function TabPackagingFreight(props) {
         "TotalCost": netPOPrice,
         "CostingNumber": costData.CostingNumber,
         // "NetPackagingAndFreight": PackageAndFreightTabData && PackageAndFreightTabData[0].NetPackagingAndFreight,
-        "CostingPartDetails": PackageAndFreightTabData && PackageAndFreightTabData[0].CostingPartDetails
+        "CostingPartDetails": PackageAndFreightTabData && PackageAndFreightTabData[0]?.CostingPartDetails
       }
-
-      if (costData.IsAssemblyPart === true) {
-
+      if (costData.IsAssemblyPart === true && !partType) {
         if (!CostingViewMode) {
           let assemblyRequestedData = createToprowObjAndSave(tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, netPOPrice, getAssemBOPCharge, 4, CostingEffectiveDate)
           dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData, res => { }))
         }
       }
 
+      if (partType) {
+        let tempsubAssemblyTechnologyArray = subAssemblyTechnologyArray[0]
+        tempsubAssemblyTechnologyArray.CostingPartDetails.NetFreightPackagingCost = PackageAndFreightTabData && PackageAndFreightTabData[0]?.CostingPartDetails?.NetFreightPackagingCost
+
+        let totalCost = (checkForNull(tempsubAssemblyTechnologyArray?.CostingPartDetails?.TotalCalculatedRMBOPCCCost) +
+          checkForNull(surfaceTabData?.CostingPartDetails?.NetSurfaceTreatmentCost) +
+          checkForNull(tempsubAssemblyTechnologyArray?.CostingPartDetails?.NetFreightPackagingCost) +
+          checkForNull(ToolTabData?.CostingPartDetails?.TotalToolCost) +
+          checkForNull(overHeadAndProfitTabData?.CostingPartDetails?.NetOverheadAndProfitCost) +
+          checkForNull(DiscountCostData?.AnyOtherCost)) -
+          checkForNull(DiscountCostData?.HundiOrDiscountValue)
+
+        let request = formatMultiTechnologyUpdate(tempsubAssemblyTechnologyArray, totalCost, surfaceTabData, overHeadAndProfitTabData, packageAndFreightTabData, toolTabData, DiscountCostData, CostingEffectiveDate)
+        dispatch(updateMultiTechnologyTopAndWorkingRowCalculation(request, res => { }))
+
+      }
+
       dispatch(saveCostingPackageFreightTab(data, res => {
         if (res.data.Result) {
-          Toaster.success(MESSAGES.PACKAGE_FREIGHT_COSTING_SAVE_SUCCESS);
+          Toaster.success(costingData.TechnologyId === LOGISTICS ? MESSAGES.FREIGHT_COSTING_SAVE_SUCCESS : MESSAGES.PACKAGE_FREIGHT_COSTING_SAVE_SUCCESS);
           dispatch(setComponentPackageFreightItemData({}, () => { }))
           InjectDiscountAPICall()
+          if ((costingData?.TechnologyId === LOGISTICS) && gotoNextValue) {
+            props?.toggle('2')
+            history?.push('/costing-summary')
+          }
         }
       }))
     }
-  }), 500)
+  }, 500)
 
 
   const InjectDiscountAPICall = () => {
-    dispatch(saveDiscountOtherCostTab({ ...ComponentItemDiscountData, CallingFrom: 3 }, res => {
-      dispatch(setComponentDiscountOtherItemData({}, () => { }))
-    }))
+    dispatch(saveDiscountOtherCostTab({ ...ComponentItemDiscountData, CallingFrom: 3 }, res => { }))
   }
 
   return (
@@ -218,7 +247,7 @@ function TabPackagingFreight(props) {
                       <thead>
                         <tr>
                           <th className="py-4 align-middle" style={{ width: "33.33%" }}>{`Part Number`}</th>
-                          <th className="py-4 align-middle" style={{ width: "33.33%" }}>{`Net Packaging Cost`}</th>
+                          {costingData.TechnologyId !== LOGISTICS && <th className="py-4 align-middle" style={{ width: "33.33%" }}>{`Net Packaging Cost`}</th>}
                           <th className="py-4 align-middle" style={{ width: "33.33%" }}>{`Net Freight Cost`}</th>
                         </tr>
                       </thead>
@@ -229,7 +258,7 @@ function TabPackagingFreight(props) {
                               <tr class="accordian-row" key={index} >
                                 <td>{item?.PartNumber}</td>
                                 <td>{item?.CostingPartDetails?.PackagingNetCost !== null ? checkForDecimalAndNull(item?.CostingPartDetails?.PackagingNetCost, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
-                                <td>{item?.CostingPartDetails?.FreightNetCost !== null ? checkForDecimalAndNull(item?.CostingPartDetails?.FreightNetCost, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
+                                {costingData.TechnologyId !== LOGISTICS && <td>{item?.CostingPartDetails?.FreightNetCost !== null ? checkForDecimalAndNull(item?.CostingPartDetails?.FreightNetCost, initialConfiguration.NoOfDecimalForPrice) : 0}</td>}
                               </tr>
                               <tr>
                                 <td colSpan={3} className="cr-innerwrap-td">
@@ -253,18 +282,28 @@ function TabPackagingFreight(props) {
                 <div className="col-sm-12 text-right bluefooter-butn sticky-btn-footer packaging-freight-btn-save">
                   {!CostingViewMode && <button
                     type={"button"}
-                    className="submit-button save-btn"
-                    onClick={saveCosting}
+                    className="submit-button mr5 save-btn"
+                    onClick={(data, e) => { handleSubmit(saveCosting(data, e, false)) }}
                   >
                     <div className={"save-icon"}></div>
                     {"Save"}
                   </button>}
+                  {!CostingViewMode && costingData.TechnologyId === LOGISTICS && <button
+                    type="button"
+                    className="submit-button save-btn"
+                    onClick={(data, e) => { handleSubmit(saveCosting(data, e, true)) }}
+                  // disabled={isDisable}
+                  >
+                    {"Next"}
+                    <div className={"next-icon"}></div>
+                  </button>
+                  }
                 </div>
               </form>
-            </div>
-          </Col>
-        </Row>
-      </div>
+            </div >
+          </Col >
+        </Row >
+      </div >
     </>
   );
 };

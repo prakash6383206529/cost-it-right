@@ -3,7 +3,7 @@ import { useForm, Controller } from 'react-hook-form';
 import { useSelector, useDispatch } from 'react-redux';
 import AddOperation from '../../Drawers/AddOperation';
 import { Col, Row, Table } from 'reactstrap';
-import { NumberFieldHookForm, TextAreaHookForm } from '../../../../layout/HookFormInputs';
+import { TextAreaHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs';
 import NoContentFound from '../../../../common/NoContentFound';
 import { EMPTY_DATA, MASS } from '../../../../../config/constants';
 import Toaster from '../../../../common/Toaster';
@@ -12,6 +12,9 @@ import { ViewCostingContext } from '../../CostingDetails';
 import { gridDataAdded, isDataChange, setRMCCErrors, setSelectedIds } from '../../../actions/Costing';
 import WarningMessagge from '../../../../common/WarningMessage'
 import Popup from 'reactjs-popup';
+import TooltipCustom from '../../../../common/Tooltip';
+import { AcceptableOperationUOM, REMARKMAXLENGTH, STRINGMAXLENGTH, TEMPOBJECTOTHEROPERATION } from '../../../../../config/masterData';
+import { number, decimalNumberLimit6, checkWhiteSpaces, noDecimal, numberLimit6 } from "../../../../../helper/validation";
 
 let counter = 0;
 function OperationCostExcludedOverhead(props) {
@@ -29,9 +32,11 @@ function OperationCostExcludedOverhead(props) {
   const [editIndex, setEditIndex] = useState('')
   const [Ids, setIds] = useState([])
   const [isDrawerOpen, setDrawerOpen] = useState(false)
+  const [otherOperationRemark, setOtherOperationRemark] = useState(true)
+  const [headerPinned, setHeaderPinned] = useState(true)
   const CostingViewMode = useContext(ViewCostingContext);
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
-  const { CostingEffectiveDate } = useSelector(state => state.costing)
+  const { CostingEffectiveDate, ErrorObjRMCC } = useSelector(state => state.costing)
 
   useEffect(() => {
     const Params = {
@@ -109,6 +114,10 @@ function OperationCostExcludedOverhead(props) {
   }
 
   const onRemarkPopUpClick = (index) => {
+    setOtherOperationRemark(true)
+    if (errors.OperationGridFields && errors.OperationGridFields[index]?.remarkPopUp !== undefined) {
+      return false
+    }
     let tempArr = []
     let tempData = gridData[index]
     tempData = {
@@ -128,6 +137,10 @@ function OperationCostExcludedOverhead(props) {
 
   const onRemarkPopUpClose = (index) => {
     var button = document.getElementById(`popUppTriggerss${index}`)
+    if (errors && errors.OperationGridFields && errors.OperationGridFields[index].remarkPopUp) {
+      delete errors.OperationGridFields[index].remarkPopUp;
+      setOtherOperationRemark(false)
+    }
     button.click()
   }
 
@@ -157,7 +170,12 @@ function OperationCostExcludedOverhead(props) {
       return true;
     })
     setIds(Ids && Ids.filter(item => item !== OperationId))
+    setValue(`${OperationGridFields}.${index}.remarkPopUp`, '')
     setGridData(tempArr)
+    tempArr && tempArr.map((el, i) => {
+      setValue(`${OperationGridFields}.${i}.remarkPopUp`, el.Remark)
+    })
+
     dispatch(setSelectedIds(Ids && Ids.filter(item => item !== OperationId)))
   }
 
@@ -172,19 +190,13 @@ function OperationCostExcludedOverhead(props) {
   }
 
   const SaveItem = (index) => {
-
+    if (errors?.OperationGridFields && (errors?.OperationGridFields[index]?.Quantity !== undefined && Object.keys(errors?.OperationGridFields[index]?.Quantity).length !== 0)) {
+      return false
+    }
     let operationGridData = gridData[index]
     if (operationGridData.UOM === 'Number') {
-      let isValid = Number.isInteger(Number(operationGridData.Quantity));
       if (operationGridData.Quantity === '0') {
         Toaster.warning('Number should not be zero')
-        return false
-      }
-      if (!isValid) {
-        Toaster.warning('Please enter numeric value')
-        setTimeout(() => {
-          setValue(`${OperationGridFields}[${index}].Quantity`, '')
-        }, 200)
         return false
       }
     }
@@ -196,6 +208,8 @@ function OperationCostExcludedOverhead(props) {
     setEditIndex('')
     setGridData(tempArr)
     setRowObjData({})
+    setValue(`${OperationGridFields}.${index}.Quantity`, tempArr?.Quantity)
+    errors.OperationGridFields = {}
   }
 
   const handleQuantityChange = (event, index) => {
@@ -209,18 +223,6 @@ function OperationCostExcludedOverhead(props) {
       tempData = { ...tempData, Quantity: event.target.value, OperationCost: OperationCost }
       tempArr = Object.assign([...gridData], { [index]: tempData })
       setGridData(tempArr)
-
-    } else {
-      const WithLaboutCost = checkForNull(tempData.Rate) * 0;
-      const WithOutLabourCost = tempData.IsLabourRateExist ? checkForNull(tempData.LabourRate) * tempData.LabourQuantity : 0;
-      const OperationCost = WithLaboutCost + WithOutLabourCost;
-      tempData = { ...tempData, Quantity: 0, OperationCost: OperationCost }
-      tempArr = Object.assign([...gridData], { [index]: tempData })
-      setGridData(tempArr)
-      //Toaster.warning('Please enter valid number.')
-      setTimeout(() => {
-        setValue(`${OperationGridFields}[${index}].Quantity`, '')
-      }, 200)
     }
   }
 
@@ -260,11 +262,14 @@ function OperationCostExcludedOverhead(props) {
    * @method setRMCCErrors
    * @description CALLING TO SET BOP COST FORM'S ERROR THAT WILL USE WHEN HITTING SAVE RMCC TAB API.
    */
+  let temp = ErrorObjRMCC
   if (Object.keys(errors).length > 0 && counter < 2) {
-    dispatch(setRMCCErrors(errors))
+    temp.OperationGridFields = errors.OperationGridFields;
+    dispatch(setRMCCErrors(temp))
     counter++;
   } else if (Object.keys(errors).length === 0 && counter > 0) {
-    dispatch(setRMCCErrors({}))
+    temp.OperationGridFields = {};
+    dispatch(setRMCCErrors(temp))
     counter = 0
   }
 
@@ -282,7 +287,7 @@ function OperationCostExcludedOverhead(props) {
             <Col md="8">
               <div className="left-border">
                 {'Other Operation Cost:'}
-                <WarningMessagge dClass="ml-2" message="Following operation cost excluded from the conversion cost calculations" />
+                <WarningMessagge dClass="ml-2 p-absolute" message="Following operation cost excluded from the conversion cost calculations" />
               </div>
             </Col>
             <Col md={'4'}>
@@ -297,8 +302,8 @@ function OperationCostExcludedOverhead(props) {
             {/*OPERATION COST GRID */}
 
             <Col md="12">
-              <Table className="table cr-brdr-main costing-operation-cost-section" size="sm" >
-                <thead className={`${initialConfiguration && initialConfiguration.IsOperationLabourRateConfigure ? 'header-with-labour-rate' : 'header-without-labour-rate'}`}>
+              <Table className="table cr-brdr-main costing-operation-cost-section p-relative" size="sm" >
+                <thead className={`${initialConfiguration && initialConfiguration.IsOperationLabourRateConfigure ? 'header-with-labour-rate' : 'header-without-labour-rate'} ${headerPinned ? 'sticky-headers' : ''}`}>
                   <tr>
                     <th>{`Operation Name`}</th>
                     <th>{`Operation Code`}</th>
@@ -312,7 +317,7 @@ function OperationCostExcludedOverhead(props) {
                       initialConfiguration.IsOperationLabourRateConfigure &&
                       <th>{`Labour Quantity`}</th>}
                     <th>{`Net Cost`}</th>
-                    <th style={{ textAlign: 'right' }}>{`Action`}</th>
+                    <th><div className='pin-btn-container'><span>Action</span><button title={headerPinned ? 'pin' : 'unpin'} onClick={() => setHeaderPinned(!headerPinned)} className='pinned'><div className={`${headerPinned ? '' : 'unpin'}`}></div></button></div></th>
                   </tr>
                 </thead>
                 <tbody >
@@ -328,24 +333,19 @@ function OperationCostExcludedOverhead(props) {
                             <td>{item.Rate}</td>
                             <td>
                               {
-                                <NumberFieldHookForm
-                                  label=""
+                                <TextFieldHookForm
+                                  label={false}
                                   name={`${OperationGridFields}[${index}].Quantity`}
                                   Controller={Controller}
                                   control={control}
                                   register={register}
                                   mandatory={false}
                                   rules={{
-                                    //required: true,
-                                    pattern: {
-                                      //value: /^[0-9]*$/i,
-                                      value: item.UOM === "Number" ? '' : /^\d*\.?\d*$/,
-                                      message: 'Invalid Number.'
-                                    },
+                                    validate: { number, checkWhiteSpaces, decimalNumberLimit6 },
                                   }}
                                   defaultValue={checkForDecimalAndNull(item.Quantity, initialConfiguration.NoOfDecimalForInputOutput)}
                                   className=""
-                                  customClassName={'withBorder hide-label-inside mb-0'}
+                                  customClassName={'withBorder error-label mb-0'}
                                   handleChange={(e) => {
                                     e.preventDefault()
                                     handleQuantityChange(e, index)
@@ -363,19 +363,19 @@ function OperationCostExcludedOverhead(props) {
                               <td>
                                 {
                                   item.IsLabourRateExist ?
-                                    <NumberFieldHookForm
-                                      label=""
+                                    <TextFieldHookForm
+                                      label={false}
                                       name={`${OperationGridFields}[${index}]LabourQuantity`}
                                       Controller={Controller}
                                       control={control}
                                       register={register}
                                       mandatory={false}
                                       rules={{
-                                        //required: true,
+                                        validate: { number, checkWhiteSpaces, decimalNumberLimit6 },
                                       }}
                                       defaultValue={item.LabourQuantity}
                                       className=""
-                                      customClassName={'withBorder hide-label-inside mb-0'}
+                                      customClassName={'withBorder error-label mb-0'}
                                       handleChange={(e) => {
                                         e.preventDefault()
                                         handleLabourQuantityChange(e, index)
@@ -390,8 +390,8 @@ function OperationCostExcludedOverhead(props) {
                             <td>{netCost(item)}</td>
                             <td>
                               <div className='action-btn-wrapper'>
-                                <button className="SaveIcon mb-0 align-middle" type={'button'} onClick={() => SaveItem(index)} />
-                                <button className="CancelIcon mb-0 align-middle" type={'button'} onClick={() => CancelItem(index)} />
+                                <button title='Save' className="SaveIcon mb-0 align-middle" type={'button'} onClick={() => SaveItem(index)} />
+                                <button title='Discard' className="CancelIcon mb-0 align-middle" type={'button'} onClick={() => CancelItem(index)} />
                               </div>
                             </td>
                           </tr>
@@ -408,13 +408,13 @@ function OperationCostExcludedOverhead(props) {
                             {initialConfiguration &&
                               initialConfiguration.IsOperationLabourRateConfigure &&
                               <td>{item.IsLabourRateExist ? item.LabourQuantity : '-'}</td>}
-                            <td>{netCost(item)}</td>
+                            <td><div className='w-fit' id={`other-operation-cost${index}`}><TooltipCustom disabledIcon={true} id={`other-operation-cost${index}`} customClass="header-tooltip" tooltipText={initialConfiguration && initialConfiguration.IsOperationLabourRateConfigure ? "Net Cost = (Rate * Quantity) + (Labour Rate * Labour Quantity)" : "Net Cost = (Rate * Quantity)"} />  {netCost(item)}</div></td>
                             <td>
                               <div className='action-btn-wrapper'>
-                                {(!CostingViewMode && !IsLocked) && <button className="Edit mb-0 align-middle" type={'button'} onClick={() => editItem(index)} />}
-                                {(!CostingViewMode && !IsLocked) && <button className="Delete mb-0 align-middle" type={'button'} onClick={() => deleteItem(index, item.OtherOperationId)} />}
-                                <Popup trigger={<button id={`popUppTriggerss${index}`} className="Comment-box align-middle" type={'button'} />}
-                                  position="top center">
+                                {(!CostingViewMode && !IsLocked) && <button title='Edit' className="Edit mb-0 align-middle" type={'button'} onClick={() => editItem(index)} />}
+                                {(!CostingViewMode && !IsLocked) && <button title='Delete' className="Delete mb-0 align-middle" type={'button'} onClick={() => deleteItem(index, item.OtherOperationId)} />}
+                                <Popup trigger={<button id={`popUppTriggerss${index}`} title="Remark" className="Comment-box align-middle" type={'button'} />}
+                                  position="top right">
                                   <TextAreaHookForm
                                     label="Remark:"
                                     name={`${OperationGridFields}.${index}.remarkPopUp`}
@@ -423,12 +423,9 @@ function OperationCostExcludedOverhead(props) {
                                     register={register}
                                     mandatory={false}
                                     rules={{
-                                      maxLength: {
-                                        value: 75,
-                                        message: "Remark should be less than 75 word"
-                                      },
+                                      maxLength: otherOperationRemark && REMARKMAXLENGTH
                                     }}
-                                    handleChange={(e) => { }}
+                                    handleChange={(e) => { setOtherOperationRemark(true) }}
                                     defaultValue={item.Remark ?? item.Remark}
                                     className=""
                                     customClassName={"withBorder"}

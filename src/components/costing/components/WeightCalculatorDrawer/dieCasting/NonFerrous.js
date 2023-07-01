@@ -2,12 +2,14 @@ import React, { useState, useEffect, Fragment } from 'react'
 import { Row, Col } from 'reactstrap'
 import { useForm, Controller, useWatch } from 'react-hook-form'
 import { useDispatch } from 'react-redux'
-import { NumberFieldHookForm, } from '../../../../layout/HookFormInputs'
+import { NumberFieldHookForm, TextFieldHookForm, } from '../../../../layout/HookFormInputs'
 import { checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUserId } from '../../../../../helper'
 import LossStandardTable from '../LossStandardTable'
 import { saveRawMaterialCalculationForDieCasting } from '../../../actions/CostWorking'
 import Toaster from '../../../../common/Toaster'
 import { debounce } from 'lodash'
+import TooltipCustom from '../../../../common/Tooltip'
+import { number, percentageLimitValidation, checkWhiteSpaces } from "../../../../../helper/validation";
 
 
 function NonFerrous(props) {
@@ -27,7 +29,7 @@ function NonFerrous(props) {
         scrapWeight: WeightCalculatorRequest && WeightCalculatorRequest.ScrapWeight !== undefined ? WeightCalculatorRequest.ScrapWeight : '',
         rmCost: WeightCalculatorRequest && WeightCalculatorRequest.RMCost !== undefined ? WeightCalculatorRequest.RMCost : '',
         scrapCost: WeightCalculatorRequest && WeightCalculatorRequest.ScrapCost !== undefined ? WeightCalculatorRequest.ScrapCost : '',
-        materialCost: WeightCalculatorRequest && WeightCalculatorRequest.NetRMCost !== undefined ? WeightCalculatorRequest.NetRMCost : '',
+        materialCost: WeightCalculatorRequest && WeightCalculatorRequest.RawMaterialCost !== undefined ? WeightCalculatorRequest.RawMaterialCost : '',
 
     }
 
@@ -157,6 +159,7 @@ function NonFerrous(props) {
         const burningPercent = getValues('burningPercent')
         const cavity = getValues('cavity')
         const burningValue = checkForNull((checkForNull(shotWeight) * checkForNull(burningPercent)) / 100 * cavity)
+
         const updatedValue = dataToSend
         updatedValue.burningValue = burningValue
         setDataToSend(updatedValue)
@@ -259,7 +262,7 @@ function NonFerrous(props) {
                                         </Col>
                                         <Col md="3">
                                             <NumberFieldHookForm
-                                                label={`No. Of Cavity`}
+                                                label={`No. of Cavity`}
                                                 name={'cavity'}
                                                 Controller={Controller}
                                                 control={control}
@@ -281,7 +284,7 @@ function NonFerrous(props) {
                                             />
                                         </Col>
                                         <Col md="3" >
-                                            <NumberFieldHookForm
+                                            <TextFieldHookForm
                                                 label={`Burning (%)`}
                                                 name={'burningPercent'}
                                                 Controller={Controller}
@@ -290,15 +293,11 @@ function NonFerrous(props) {
                                                 mandatory={true}
                                                 rules={{
                                                     required: true,
-                                                    pattern: {
-                                                        value: /^[0-9]\d*(\.\d+)?$/i,
-                                                        message: 'Invalid Number.',
-                                                    },
+                                                    validate: { number, checkWhiteSpaces, percentageLimitValidation },
                                                     max: {
                                                         value: 100,
                                                         message: 'Percentage cannot be greater than 100'
                                                     },
-
                                                 }}
                                                 handleChange={() => { }}
                                                 defaultValue={''}
@@ -309,11 +308,13 @@ function NonFerrous(props) {
                                             />
                                         </Col>
                                         <Col md="3">
+                                            <TooltipCustom disabledIcon={true} id={'buring-nonferrous'} tooltipText={"Burning Value = Shot Weight * (Burning Percentage / 100) * No. of Cavity"} />
                                             <NumberFieldHookForm
                                                 label={`Burning Value`}
                                                 name={'burningValue'}
                                                 Controller={Controller}
                                                 control={control}
+                                                id={'buring-nonferrous'}
                                                 register={register}
                                                 mandatory={true}
                                                 handleChange={() => { }}
@@ -371,9 +372,11 @@ function NonFerrous(props) {
 
                             <Row className={'mt25'}>
                                 <Col md="3" >
+                                    <TooltipCustom disabledIcon={true} id={'gross-weight-nonferrous'} tooltipText={'Gross Weight = (Casting Weight + Net Loss Weight)'} />
                                     <NumberFieldHookForm
                                         label={`Gross Weight(Kg)`}
                                         name={'grossWeight'}
+                                        id={'gross-weight-nonferrous'}
                                         Controller={Controller}
                                         control={control}
                                         register={register}
@@ -421,9 +424,11 @@ function NonFerrous(props) {
                                 </Col>
 
                                 <Col md="3">
+                                    <TooltipCustom disabledIcon={true} id={'scrap-weight-nonferrous'} tooltipText={'Scrap Weight = (Casting Weight - Finished Weight)'} />
                                     <NumberFieldHookForm
                                         label={`Scrap Weight(Kg)`}
                                         name={'scrapWeight'}
+                                        id={'scrap-weight-nonferrous'}
                                         Controller={Controller}
                                         control={control}
                                         register={register}
@@ -440,22 +445,19 @@ function NonFerrous(props) {
                                     />
                                 </Col>
                                 <Col md="3">
-                                    <NumberFieldHookForm
-                                        label={`Scrap Recovery(%)`}
+                                    <TextFieldHookForm
+                                        label={`Scrap Recovery (%)`}
                                         name={'recovery'}
                                         Controller={Controller}
                                         control={control}
                                         register={register}
                                         mandatory={false}
                                         rules={{
-                                            required: false,
-                                            pattern: {
-                                                value: /^\d*\.?\d*$/,
-                                                message: 'Invalid Number.',
-                                            },
+                                            required: true,
+                                            validate: { number, checkWhiteSpaces, percentageLimitValidation },
                                             max: {
                                                 value: 100,
-                                                message: 'Percentage should be less than 100'
+                                                message: 'Percentage cannot be greater than 100'
                                             },
                                         }}
                                         handleChange={() => { }}
@@ -472,9 +474,11 @@ function NonFerrous(props) {
                                 {isHpdc &&
                                     <>
                                         <Col md="3">
+                                            <TooltipCustom disabledIcon={true} id={'-rm-cost-non-ferrous'} tooltipText={'RM Cost = (Gross Weight * RM Rate)'} />
                                             <NumberFieldHookForm
                                                 label={`RM Cost`}
                                                 name={'rmCost'}
+                                                id={'-rm-cost-non-ferrous'}
                                                 Controller={Controller}
                                                 control={control}
                                                 register={register}
@@ -489,10 +493,12 @@ function NonFerrous(props) {
                                         </Col>
                                     </>}
                                 <Col md="3">
+                                    <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'scrap-cost-nonferrous'} tooltipText={'Scrap Cost = (Scrap Weight * Scrap Recovery Percentage * Scrap Rate / 100)'} />
                                     <NumberFieldHookForm
                                         label={`Scrap Cost`}
                                         name={'scrapCost'}
                                         Controller={Controller}
+                                        id={'scrap-cost-nonferrous'}
                                         control={control}
                                         register={register}
                                         mandatory={false}
@@ -506,11 +512,13 @@ function NonFerrous(props) {
                                 </Col>
 
                                 <Col md="3">
+                                    <TooltipCustom disabledIcon={true} id={'net-rm-nonferrous'} tooltipText={'Net RM Cost = (Gross Weight * RM Rate - Scrap Cost)'} />
                                     <NumberFieldHookForm
                                         // Confirm this name from tanmay sir
                                         label={`Net RM Cost`}
                                         name={'materialCost'}
                                         Controller={Controller}
+                                        id={'net-rm-nonferrous'}
                                         control={control}
                                         register={register}
                                         mandatory={false}

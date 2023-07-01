@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, } from 'reactstrap';
-import { alphaNumeric, checkWhiteSpaces, required, } from "../../../helper/validation";
+import { alphaNumeric, checkWhiteSpaces, required, requiredDropDown } from "../../../helper/validation";
 import { renderText, searchableSelect, } from "../../layout/FormInputs";
 import { createFuel } from '../actions/Fuel';
 import Toaster from '../../common/Toaster';
@@ -139,7 +139,7 @@ class AddFuelNameDrawer extends Component {
               <Row className="drawer-heading">
                 <Col>
                   <div className={"header-wrapper left"}>
-                    <h3>{isEditFlag ? "UPDATE FUEL" : "ADD FUEL"}</h3>
+                    <h3>{isEditFlag ? "Update " : "Add "}Fuel</h3>
                   </div>
                   <div
                     onClick={(e) => this.toggleDrawer(e)}
@@ -174,7 +174,7 @@ class AddFuelNameDrawer extends Component {
                     validate={
                       this.state.UOM == null ||
                         this.state.UOM.length === 0
-                        ? [required]
+                        ? [requiredDropDown]
                         : []
                     }
                     required={true}

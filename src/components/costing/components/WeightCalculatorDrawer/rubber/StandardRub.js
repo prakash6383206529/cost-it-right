@@ -10,6 +10,7 @@ import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import { debounce } from 'lodash'
+import TooltipCustom from '../../../../common/Tooltip'
 
 
 
@@ -290,8 +291,8 @@ function StandardRub(props) {
         return (
             <>
 
-                {isEditable && <button className="Edit mr-2 align-middle" type={'button'} onClick={() => editItem(props?.agGridReact?.gridOptions.rowData)} />}
-                {isEditable && <button className="Delete align-middle" type={'button'} onClick={() => deleteItem(props?.agGridReact?.gridOptions.rowData)} />}
+                {isEditable && <button title='Edit' className="Edit mr-2 align-middle" type={'button'} onClick={() => editItem(props?.agGridReact?.gridOptions.rowData)} />}
+                {isEditable && <button title='Delete' className="Delete align-middle" type={'button'} onClick={() => deleteItem(props?.agGridReact?.gridOptions.rowData)} />}
             </>
         )
     };
@@ -300,7 +301,7 @@ function StandardRub(props) {
     const defaultColDef = {
         resizable: true,
         filter: true,
-        sortable: true,
+        sortable: false,
 
     };
 
@@ -451,7 +452,7 @@ function StandardRub(props) {
             e.preventDefault();
         }
     };
-
+    let volumeFormula = <div>Volume = 0.7857 * (Major Diameter<sup>2</sup> - Minor Diameter <sup>2</sup>) * Length</div>
     return (
         <Fragment>
             <Row>
@@ -606,8 +607,10 @@ function StandardRub(props) {
 
 
                                         <Col md="3">
+                                            <TooltipCustom disabledIcon={true} id={'rubber-total-length'} tooltipText={"Total Length = Length + Cutting allowance "} />
                                             <TextFieldHookForm
                                                 label={`Total Length(mm)`}
+                                                id={'rubber-total-length'}
                                                 name={'TotalLength'}
                                                 Controller={Controller}
                                                 control={control}
@@ -632,9 +635,11 @@ function StandardRub(props) {
                                         </Col>
 
                                         <Col md="3">
+                                            <TooltipCustom disabledIcon={true} tooltipClass={'weight-of-sheet'} id={'rubber-volume'} tooltipText={volumeFormula} />
                                             <TextFieldHookForm
                                                 label={UnitFormat()}
                                                 name={'Volume'}
+                                                id={'rubber-volume'}
                                                 Controller={Controller}
                                                 control={control}
                                                 register={register}
@@ -658,9 +663,11 @@ function StandardRub(props) {
                                         </Col>
 
                                         <Col md="3">
+                                            <TooltipCustom disabledIcon={true} id={'rubber-gross-weight'} tooltipText={"Gross Weight = Volume * Density / 1000000"} />
                                             <TextFieldHookForm
                                                 label={`Gross Weight(Kg)`}
                                                 name={'GrossWeight'}
+                                                id={'rubber-gross-weight'}
                                                 Controller={Controller}
                                                 control={control}
                                                 register={register}
@@ -710,9 +717,11 @@ function StandardRub(props) {
                                         </Col>
 
                                         <Col md="3">
+                                            <TooltipCustom disabledIcon={true} id={'rubber-scrap-weight'} tooltipText={"Scrap Weight = Gross Weight - Finished Weight"} />
                                             <TextFieldHookForm
                                                 label={`Scrap Weight(Kg)`}
                                                 name={'ScrapWeight'}
+                                                id={'rubber-scrap-weight'}
                                                 Controller={Controller}
                                                 control={control}
                                                 register={register}
@@ -736,9 +745,11 @@ function StandardRub(props) {
                                         </Col>
 
                                         <Col md="3">
+                                            <TooltipCustom disabledIcon={true} id={'rubber-cost-component'} tooltipClass={'weight-of-sheet'} tooltipText={"Net RM Cost/Component = Gross Weight * RMRate - Scrap Rate * Scrap Weight"} />
                                             <TextFieldHookForm
                                                 label={`Net RM Cost/Component`}
                                                 name={'NetRmCost'}
+                                                id={'rubber-cost-component'}
                                                 Controller={Controller}
                                                 control={control}
                                                 register={register}
@@ -774,7 +785,7 @@ function StandardRub(props) {
                                             onClick={onCancel} // Need to change this cancel functionality
                                             type="submit"
                                             value="CANCEL"
-                                            className="reset ml-10 cancel-btn mt-4"
+                                            className="reset ml-2 cancel-btn mt30"
                                             disabled={props.isEditFlag && Object.keys(rmRowDataState).length > 0 ? false : true}
                                         >
                                             <div className={''}></div>

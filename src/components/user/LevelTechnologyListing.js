@@ -4,7 +4,7 @@ import { Row, Col } from 'reactstrap';
 import { getAllLevelMappingAPI, deleteUserLevelAPI, getSimulationLevelDataList, getMasterLevelDataList } from '../../actions/auth/AuthActions';
 import Toaster from '../common/Toaster';
 import { MESSAGES } from '../../config/message';
-import { EMPTY_DATA } from '../../config/constants';
+import { COSTING, EMPTY_DATA, MASTERS, SIMULATION } from '../../config/constants';
 import NoContentFound from '../common/NoContentFound';
 import LoaderCustom from '../common/LoaderCustom';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
@@ -99,8 +99,8 @@ class LevelTechnologyListing extends Component {
 	 * @method editItemDetails
 	 * @description confirm edit item
 	 */
-	editItemDetails = (Id, levelType) => {
-		this.props.getLevelMappingDetail(Id, levelType)
+	editItemDetails = (Id, levelType, rowData = []) => {
+		this.props.getLevelMappingDetail(Id, levelType, rowData?.ApprovalTypeId)
 	}
 
 	/**
@@ -133,11 +133,12 @@ class LevelTechnologyListing extends Component {
 	}
 	buttonFormatter = (props) => {
 		const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+		const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
 
 		const { EditAccessibility } = this.props;
 		return (
 			<>
-				{EditAccessibility && <button title="Edit" type={'button'} className="Edit " onClick={() => this.editItemDetails(cellValue, 'Costing')} />}
+				{EditAccessibility && <button title="Edit" type={'button'} className="Edit " onClick={() => this.editItemDetails(cellValue, 'Costing', rowData)} />}
 				{/* {DeleteAccessibility && <button type={'button'} className="Delete" onClick={() => this.deleteItem(cell)} />} */}
 			</>
 		)
@@ -150,12 +151,13 @@ class LevelTechnologyListing extends Component {
 	*/
 	simulationButtonFormatter = (props) => {
 		const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+		const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
 
 
 		const { EditAccessibility } = this.props;
 		return (
 			<>
-				{EditAccessibility && <button title="Edit" type={'button'} className="Edit " onClick={() => this.editItemDetails(cellValue, 'Simulation')} />}
+				{EditAccessibility && <button title="Edit" type={'button'} className="Edit " onClick={() => this.editItemDetails(cellValue, 'Simulation', rowData)} />}
 				{/* {DeleteAccessibility && <button type={'button'} className="Delete" onClick={() => this.deleteItem(cell)} />} */}
 			</>
 		)
@@ -166,12 +168,13 @@ class LevelTechnologyListing extends Component {
 	*/
 	masterButtonFormatter = (props) => {
 		const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+		const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
 
 
 		const { EditAccessibility } = this.props;
 		return (
 			<>
-				{EditAccessibility && <button title={"Edit"} type={'button'} className="Edit " onClick={() => this.editItemDetails(cellValue, 'Master')} />}
+				{EditAccessibility && <button title={"Edit"} type={'button'} className="Edit " onClick={() => this.editItemDetails(cellValue, 'Master', rowData)} />}
 				{/* {DeleteAccessibility && <button type={'button'} className="Delete" onClick={() => this.deleteItem(cell)} />} */}
 			</>
 		)
@@ -210,14 +213,17 @@ class LevelTechnologyListing extends Component {
 	}
 
 	levelMappingPagination = (newPageSize) => {
+		this.agGrid1?.current.api.paginationSetPageSize(Number(newPageSize+1))
 		this.agGrid1?.current.api.paginationSetPageSize(Number(newPageSize))
 	};
 
 	simulationPagination = (newPageSize) => {
+		this.agGrid2?.current.api.paginationSetPageSize(Number(newPageSize+1))
 		this.agGrid2?.current.api.paginationSetPageSize(Number(newPageSize))
 	};
 
 	masterPagination = (newPageSize) => {
+		this.agGrid3?.current.api.paginationSetPageSize(Number(newPageSize+1))
 		this.agGrid3?.current.api.paginationSetPageSize(Number(newPageSize))
 	};
 
@@ -231,7 +237,7 @@ class LevelTechnologyListing extends Component {
 		const defaultColDef = {
 			resizable: true,
 			filter: true,
-			sortable: true,
+			sortable: false,
 
 		};
 
@@ -248,7 +254,7 @@ class LevelTechnologyListing extends Component {
 					{this.state.isLoader && <LoaderCustom />}
 					<Row className="levellisting-page">
 						<Col md="12">
-							<h2 className="manage-level-heading">{`Level Mapping`}</h2>
+							<h2 className="manage-level-heading">{`Costing Level Mapping`}</h2>
 						</Col>
 					</Row>
 					<Row className="levellisting-page">
@@ -293,6 +299,7 @@ class LevelTechnologyListing extends Component {
 										frameworkComponents={frameworkComponents}
 									>
 										{/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
+										<AgGridColumn field="ApprovalType" headerName="Approval Type"></AgGridColumn>
 										<AgGridColumn field="Technology" headerName="Technology"></AgGridColumn>
 										<AgGridColumn field="Level" headerName="Highest Approval Level"></AgGridColumn>
 										<AgGridColumn field="TechnologyId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
@@ -345,6 +352,7 @@ class LevelTechnologyListing extends Component {
 										frameworkComponents={frameworkComponents}
 									>
 										{/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
+										<AgGridColumn field="ApprovalType" headerName="Approval Type"></AgGridColumn>
 										<AgGridColumn field="Technology" headerName="Heads"></AgGridColumn>
 										<AgGridColumn field="Level" headerName="Highest Approval Level"></AgGridColumn>
 										<AgGridColumn field="TechnologyId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'simulationButtonFormatter'}></AgGridColumn>
@@ -400,6 +408,7 @@ class LevelTechnologyListing extends Component {
 												frameworkComponents={frameworkComponents}
 											>
 												{/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
+												<AgGridColumn field="ApprovalType" headerName="Approval Type"></AgGridColumn>
 												<AgGridColumn field="Master" headerName="Master"></AgGridColumn>
 												<AgGridColumn field="Level" headerName="Highest Approval Level"></AgGridColumn>
 												<AgGridColumn field="MasterId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'masterButtonFormatter'}></AgGridColumn>

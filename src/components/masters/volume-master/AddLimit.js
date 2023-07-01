@@ -5,10 +5,13 @@ import { Container, Row, Col } from "reactstrap";
 import Drawer from "@material-ui/core/Drawer";
 
 import { getCostingSpecificTechnology } from "../../costing/actions/Costing";
-import { NumberFieldHookForm, SearchableSelectHookForm } from "../../layout/HookFormInputs";
+import { NumberFieldHookForm, SearchableSelectHookForm, TextFieldHookForm } from "../../layout/HookFormInputs";
 import { checkForDecimalAndNull, getConfigurationKey, loggedInUserId } from "../../../helper";
 import Toaster from "../../common/Toaster";
 import { createVolumeLimit, getVolumeLimit, updateVolumeLimit } from "../actions/Volume";
+import PopupMsgWrapper from "../../common/PopupMsgWrapper";
+import { MESSAGES } from "../../../config/message";
+import { number, percentageLimitValidation, checkWhiteSpaces } from "../../../helper/validation";
 
 const AddLimit = (props) => {
     const {
@@ -23,7 +26,8 @@ const AddLimit = (props) => {
 
     const [technology, setTechnology] = useState([]);
     const [dataToChange, setDataToChange] = useState([]);
-    const [isDisable, setIsDisable] = useState(false)
+    const [isDisable, setIsDisable] = useState(false);
+    const [showPopup, setShowPopup] = useState(false)
     const dispatch = useDispatch();
     const technologySelectList = useSelector(
         (state) => state.costing.costingSpecifiTechnology
@@ -112,6 +116,17 @@ const AddLimit = (props) => {
         setTechnology([]);
         props.closeDrawer("", {});
     };
+    const cancelHandler = () => {
+        // setShowPopup(true)
+        cancel('cancel')
+    }
+    const onPopupConfirm = () => {
+        cancel('cancel')
+        setShowPopup(false)
+    }
+    const closePopUp = () => {
+        setShowPopup(false)
+    }
     const onSubmit = (data) => {
         if (isDisable === true) {
             let updatedData = {
@@ -213,14 +228,21 @@ const AddLimit = (props) => {
                                     />
                                 </Col>
                                 <Col md="12">
-                                    <NumberFieldHookForm
+                                    <TextFieldHookForm
                                         label="Max Deviation Limit (%)"
                                         name={"MaxDeviation"}
                                         Controller={Controller}
                                         control={control}
                                         register={register}
                                         mandatory={true}
-                                        rules={{ required: true }}
+                                        rules={{
+                                            required: true,
+                                            validate: { number, checkWhiteSpaces, percentageLimitValidation },
+                                            max: {
+                                                value: 100,
+                                                message: 'Percentage cannot be greater than 100'
+                                            },
+                                        }}
                                         handleChange={handleMaxDeviationLimit}
                                         defaultValue={""}
                                         className=""
@@ -235,7 +257,7 @@ const AddLimit = (props) => {
                                     <button
                                         type={"button"}
                                         className="reset mr15 cancel-btn"
-                                        onClick={cancel}
+                                        onClick={cancelHandler}
                                     >
                                         <div className={"cancel-icon"}></div>
                                         {"Cancel"}
@@ -251,6 +273,9 @@ const AddLimit = (props) => {
                     </div>
                 </Container>
             </Drawer>
+            {
+                showPopup && <PopupMsgWrapper isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${MESSAGES.CANCEL_MASTER_ALERT}`} />
+            }
         </div>
     );
 };

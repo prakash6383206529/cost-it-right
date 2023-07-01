@@ -128,7 +128,6 @@ class AddBOPForm extends Component {
     const { isAddMore, BOPPart } = this.state;
     const { DrawerPartData } = this.props;
 
-
     if (BOPPart.length <= 0) {
       this.setState({ isBOPNoNotSelected: true })      // IF PART NO IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY
       return false
@@ -218,8 +217,8 @@ class AddBOPForm extends Component {
                   cacheOptions
                   loadOptions={promiseOptions}
                   onChange={(e) => this.handleBOPPartChange(e)}
-                  noOptionsMessage={({ inputValue }) => !inputValue ? 'Please enter first few digits to see the Insert numbers' : "No results found"}
-                  onFocus={() => onFocus(this)}
+                  noOptionsMessage={({ inputValue }) => !inputValue ? 'Please enter first few digits to see the BOP numbers' : "No results found"}
+                  onBlur={() => this.setState({ showErrorOnFocus: true })}
                   onKeyDown={(onKeyDown) => {
                     if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
                   }}

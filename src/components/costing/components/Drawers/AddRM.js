@@ -3,26 +3,26 @@ import { useDispatch, useSelector, } from 'react-redux';
 import { useForm } from 'react-hook-form'
 import { Container, Row, Col, } from 'reactstrap';
 import Drawer from '@material-ui/core/Drawer';
-import { getRMDrawerDataList, getRMDrawerVBCDataList } from '../../actions/Costing';
+import { getRMDrawerDataList } from '../../actions/Costing';
 import NoContentFound from '../../../common/NoContentFound';
-import { defaultPageSize, EMPTY_DATA } from '../../../../config/constants';
+import { CBCTypeId, defaultPageSize, EMPTY_DATA, NCCTypeId, NFRTypeId, PFS1TypeId, PFS2TypeId, PFS3TypeId, VBCTypeId, ZBCTypeId } from '../../../../config/constants';
 import Toaster from '../../../common/Toaster';
 import { costingInfoContext } from '../CostingDetailStepTwo';
 import { EMPTY_GUID, ZBC } from '../../../../config/constants';
 import LoaderCustom from '../../../common/LoaderCustom';
-import { getGradeSelectList, getRawMaterialFilterSelectList } from '../../../masters/actions/Material';
-import { checkForDecimalAndNull, getConfigurationKey } from '../../../../helper';
+import { checkForDecimalAndNull, getConfigurationKey, searchNocontentFilter } from '../../../../helper';
 import { isMultipleRMAllow } from '../../../../config/masterData'
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import { PaginationWrapper } from '../../../common/commonPagination';
 import _ from 'lodash';
+import { IsNFR } from '../CostingDetails';
 const gridOptions = {};
 
 function AddRM(props) {
 
-  const { IsApplyMasterBatch, Ids } = props;
+  const { IsApplyMasterBatch, Ids, rmNameList } = props;
   const { handleSubmit } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
@@ -32,6 +32,7 @@ function AddRM(props) {
   const [selectedRowData, setSelectedRowData] = useState([]);
   const [gridApi, setGridApi] = useState(null);
   const [gridColumnApi, setGridColumnApi] = useState(null);
+  const [noData, setNoData] = useState(false);
 
   const dispatch = useDispatch()
 
@@ -39,11 +40,12 @@ function AddRM(props) {
 
   const { rmDrawerList, CostingEffectiveDate } = useSelector(state => state.costing)
   const { initialConfiguration } = useSelector(state => state.auth)
+  const isNFR = useContext(IsNFR);
 
   useEffect(() => {
     setSelectedRowData([])
-    dispatch(getGradeSelectList(res => { }))
-    dispatch(getRawMaterialFilterSelectList(() => { }))
+    // dispatch(getGradeSelectList(res => { }))
+    // dispatch(getRawMaterialFilterSelectList(() => { }))
     getDataList()
   }, []);
 
@@ -110,53 +112,38 @@ function AddRM(props) {
   }
 
   const getDataList = (materialId = null, gradeId = null) => {
-    if (costData.VendorType === ZBC) {
+    const data = {
+      VendorId: costData.VendorId ? costData.VendorId : EMPTY_GUID,
 
-      const data = {
-        TechnologyId: costData?.TechnologyId,
-        PlantId: costData.PlantId,
-        CostingId: costData.CostingId,
-        EffectiveDate: CostingEffectiveDate,
-        material_id: materialId,
-        grade_id: gradeId,
-      }
-      dispatch(getRMDrawerDataList(data, (res) => {
-        if (res && res.status === 200) {
-          let Data = res.data.DataList;
-          setTableDataList(Data)
-        } else if (res && res.response && res.response.status === 412) {
-          setTableDataList([])
-        } else {
-          setTableDataList([])
-        }
-      }))
+      PlantId: (initialConfiguration?.IsDestinationPlantConfigure && (costData.CostingTypeId === VBCTypeId || costData.CostingTypeId === NCCTypeId || costData.CostingTypeId === NFRTypeId || costData.CostingTypeId === PFS1TypeId
+        || costData.CostingTypeId === PFS2TypeId || costData.CostingTypeId === PFS3TypeId)) || costData.CostingTypeId === CBCTypeId ? costData.DestinationPlantId : (costData.CostingTypeId === ZBCTypeId) ? costData.PlantId : EMPTY_GUID,
 
-    } else {
+      TechnologyId: costData?.TechnologyId,
+      VendorPlantId: initialConfiguration?.IsVendorPlantConfigurable ? costData.VendorPlantId : EMPTY_GUID,
+      EffectiveDate: CostingEffectiveDate,
+      CostingId: costData.CostingId,
+      material_id: materialId,
+      grade_id: gradeId,
 
-      const data = {
-        VendorId: costData.VendorId,
-        TechnologyId: costData?.TechnologyId,
-        VendorPlantId: initialConfiguration?.IsVendorPlantConfigurable ? costData.VendorPlantId : EMPTY_GUID,
-        DestinationPlantId: initialConfiguration?.IsDestinationPlantConfigure ? costData.DestinationPlantId : EMPTY_GUID,
-        EffectiveDate: CostingEffectiveDate,
-        CostingId: costData.CostingId,
-        material_id: materialId,
-        grade_id: gradeId,
-      }
-      dispatch(getRMDrawerVBCDataList(data, (res) => {
-        if (res && res.status === 200) {
-          let Data = res.data.DataList;
-          setTableDataList(Data)
-        } else if (res && res.response && res.response.status === 412) {
-          setTableDataList([])
-        } else {
-          setTableDataList([])
-        }
-      }))
+      CostingTypeId: (Number(costData.CostingTypeId) === NFRTypeId || Number(costData.CostingTypeId) === VBCTypeId || Number(costData.CostingTypeId) === PFS1TypeId
+        || Number(costData.CostingTypeId) === PFS2TypeId || Number(costData.CostingTypeId) === PFS3TypeId) ? VBCTypeId : costData.CostingTypeId,
 
+      CustomerId: costData.CustomerId
     }
+    dispatch(getRMDrawerDataList(data, isNFR, rmNameList, (res) => {
+      if (res && res.status === 200) {
+        let Data = res.data.DataList;
+        setTableDataList(Data)
+      } else if (res && res.response && res.response.status === 412) {
+        setTableDataList([])
+      } else {
+        setTableDataList([])
+      }
+    }))
+
 
   }
+
 
 
   const toggleDrawer = (event) => {
@@ -175,10 +162,11 @@ function AddRM(props) {
     return thisIsFirstColumn;
   }
 
+
   const defaultColDef = {
     resizable: true,
     filter: true,
-    sortable: true,
+    sortable: false,
     headerCheckboxSelectionFilteredOnly: true,
     headerCheckboxSelection: isMultipleRMAllow(costData?.TechnologyId) ? isFirstColumn : false,
     checkboxSelection: isFirstColumn
@@ -193,6 +181,11 @@ function AddRM(props) {
 
   };
 
+  const onFloatingFilterChanged = (value) => {
+    if (rmDrawerList.length !== 0) {
+      setNoData(searchNocontentFilter(value, noData))
+    }
+  }
   const onPageSizeChanged = (newPageSize) => {
     gridApi.paginationSetPageSize(Number(newPageSize));
   };
@@ -236,7 +229,7 @@ function AddRM(props) {
               <Row className="drawer-heading">
                 <Col>
                   <div className={'header-wrapper left'}>
-                    <h3>{'ADD RM: '}</h3>
+                    <h3>{'Add RM: '}</h3>
                   </div>
                   <div
                     onClick={cancel}
@@ -293,17 +286,15 @@ function AddRM(props) {
 
               <Row className="mx-0">
                 <Col className="hidepage-size">
-                  <div className={`ag-grid-wrapper height-width-wrapper  min-height-auto ${rmDrawerList && rmDrawerList?.length <= 0 ? "overlay-contain" : ""} `}>
+                  <div className={`ag-grid-wrapper height-width-wrapper  min-height-auto ${(rmDrawerList && rmDrawerList?.length <= 0) || noData ? "overlay-contain" : ""} `}>
                     <div className="ag-grid-header">
                       <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
                       <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}>
                         <div className="refresh mr-0"></div>
                       </button>
                     </div>
-                    <div
-                      className="ag-theme-material"
-                      style={{ height: '100%', width: '100%' }}
-                    >
+                    <div className="ag-theme-material p-relative">
+                      {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found drawer" />}
                       <AgGridReact
                         style={{ height: '100%', width: '100%' }}
                         defaultColDef={defaultColDef}
@@ -326,12 +317,13 @@ function AddRM(props) {
                         frameworkComponents={frameworkComponents}
                         onRowSelected={onRowSelect}
                         isRowSelectable={isRowSelectable}
+                        onFilterModified={onFloatingFilterChanged}
                       >
                         <AgGridColumn field="RawMaterialId" hide={true}></AgGridColumn>
                         <AgGridColumn cellClass="has-checkbox" field="EntryType" headerName="RM Type"  ></AgGridColumn>
                         <AgGridColumn field="RawMaterial" headerName="RM Name"></AgGridColumn>
-                        <AgGridColumn field="RMGrade" headerName="RM Grade"></AgGridColumn>
-                        <AgGridColumn field="RMSpec" headerName="RM Spec"></AgGridColumn>
+                        <AgGridColumn field="RMGrade" headerName="Grade"></AgGridColumn>
+                        <AgGridColumn field="RMSpec" headerName="Spec"></AgGridColumn>
                         <AgGridColumn field="Category" ></AgGridColumn>
                         {costData && costData.VendorType === ZBC && <AgGridColumn dataAlign="center" field="VendorName" headerName="Vendor" ></AgGridColumn>}
                         {costData && costData.VendorType === ZBC && <AgGridColumn dataAlign="center" field="VendorLocation" headerName="Vendor Location" ></AgGridColumn>}

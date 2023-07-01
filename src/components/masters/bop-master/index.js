@@ -154,9 +154,6 @@ class BOPMaster extends Component {
         <div className="container-fluid" id="go-top-top">
           {/* {this.props.loading && <Loader/>} */}
           <Row>
-            <Col sm="4">
-              <h1>{`Insert Master`}</h1>
-            </Col>
             <ScrollToTop pointProp={"go-top-top"} />
           </Row>
 

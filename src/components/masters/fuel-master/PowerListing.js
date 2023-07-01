@@ -153,6 +153,7 @@ class PowerListing extends Component {
         if (res.data.Result === true) {
           Toaster.success(MESSAGES.DELETE_POWER_SUCCESS);
           this.getDataList()
+          this.setState({ dataCount: 0 })
         }
       });
       this.setState({ showPopup: false })
@@ -198,8 +199,11 @@ class PowerListing extends Component {
 * @description Renders buttons
 */
   effectiveDateFormatter = (props) => {
-    const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-    return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
+    let cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+    if (cellValue?.includes('T')) {
+      cellValue = DayTime(cellValue).format('DD/MM/YYYY')
+    }
+    return (!cellValue ? '-' : cellValue)
   }
 
   /**
@@ -242,14 +246,6 @@ class PowerListing extends Component {
     return cellValue != null ? cellValue : '';
   }
 
-  /**
-  * @method effectiveDateFormatter
-  * @description Renders buttons
-  */
-  effectiveDateFormatter = (props) => {
-    const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-    return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
-  }
   renderEffectiveDate = () => {
     return <>Effective <br />Date</>
   }
@@ -268,6 +264,7 @@ class PowerListing extends Component {
   onPressVendor = () => {
     this.setState({
       IsVendor: !this.state.IsVendor,
+      dataCount: 0
     }, () => {
       this.getDataList()
     });
@@ -292,6 +289,8 @@ class PowerListing extends Component {
         item.Plants = ' '
       } if (item.Vendor === '-') {
         item.Vendor = ' '
+      } else if (item?.EffectiveDate?.includes('T')) {
+        item.EffectiveDate = DayTime(item.EffectiveDate).format('DD/MM/YYYY')
       }
       return item
     })
@@ -381,7 +380,7 @@ class PowerListing extends Component {
     const defaultColDef = {
       resizable: true,
       filter: true,
-      sortable: true,
+      sortable: false,
       headerCheckboxSelectionFilteredOnly: true,
       checkboxSelection: isFirstColumn
     };
@@ -447,9 +446,10 @@ class PowerListing extends Component {
                       DownloadAccessibility &&
                       <>
 
-                        <ExcelFile filename={'PowerMaster'} fileExtension={'.xls'} element={
-                          <button type="button" className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
+                        <ExcelFile filename={'Power'} fileExtension={'.xls'} element={
+                          <button title={`Download ${this.state.dataCount === 0 ? "All" : "(" + this.state.dataCount + ")"}`} type="button" className={'user-btn mr5'}><div className="download mr-1" ></div>
                             {/* DOWNLOAD */}
+                            {`${this.state.dataCount === 0 ? "All" : "(" + this.state.dataCount + ")"}`}
                           </button>}>
 
                           {this.onBtExport()}
@@ -476,7 +476,6 @@ class PowerListing extends Component {
               {/* ZBC Listing */}
               <div className="ag-grid-header">
                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={'off'} onChange={(e) => this.onFilterTextBoxChanged(e)} />
-                <SelectRowWrapper dataCount={dataCount} />
               </div>
               <div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
                 {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
@@ -500,9 +499,10 @@ class PowerListing extends Component {
                     onFilterModified={this.onFloatingFilterChanged}
                     onSelectionChanged={this.onRowSelect}
                     frameworkComponents={frameworkComponents}
+                    suppressRowClickSelection={true}
                   >
                     <AgGridColumn field="StateName"></AgGridColumn>
-                    <AgGridColumn field="PlantName"></AgGridColumn>
+                    <AgGridColumn field="PlantName" headerName="Plant (Code)"></AgGridColumn>
                     <AgGridColumn field="NetPowerCostPerUnit" cellRenderer={'costFormatter'}></AgGridColumn>
                     <AgGridColumn field="EffectiveDate" cellRenderer='effectiveDateFormatter' filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
                     <AgGridColumn field="PowerId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
@@ -528,8 +528,8 @@ class PowerListing extends Component {
                     }}
                     frameworkComponents={frameworkComponents}
                   >
-                    <AgGridColumn field="VendorName"></AgGridColumn>
-                    {getConfigurationKey().IsVendorPlantConfigurable && <AgGridColumn field="VendorPlantName"></AgGridColumn>}
+                    <AgGridColumn field="VendorName" headerName="Vendor (Code)"></AgGridColumn>
+                    {getConfigurationKey().IsVendorPlantConfigurable && <AgGridColumn field="VendorPlantName" headerName="Plant (Code)"></AgGridColumn>}
                     <AgGridColumn field="NetPowerCostPerUnit" cellRenderer={'costFormatterForVBC'}></AgGridColumn>
                     <AgGridColumn field="PowerDetailId" headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
                   </AgGridReact>}

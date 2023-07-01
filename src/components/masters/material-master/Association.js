@@ -5,10 +5,11 @@ import { Container, Row, Col, } from 'reactstrap';
 import { searchableSelect } from '../../layout/FormInputs';
 import Drawer from '@material-ui/core/Drawer';
 import { required } from '../../../helper';
-import { getRawMaterialNameChild, getMaterialTypeDataAPI, createAssociation, getRMGradeSelectListByRawMaterial, getMaterialTypeSelectList, getUnassociatedRawMaterail } from '../actions/Material';
+import { getRawMaterialNameChild, getMaterialTypeDataAPI, createAssociation, getRMGradeSelectListByRawMaterial, getMaterialTypeSelectList, getUnassociatedRawMaterail, clearGradeSelectList } from '../actions/Material';
 import { MESSAGES } from '../../../config/message';
 import Toaster from '../../common/Toaster';
 import { debounce } from 'lodash';
+import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 
 class Association extends Component {
     constructor(props) {
@@ -17,7 +18,9 @@ class Association extends Component {
             RawMaterial: [],
             RMGrade: [],
             material: [],
-            setDisable: false
+            setDisable: false,
+            showPopup: false,
+            isDropDownChanged: false,
         }
 
     }
@@ -29,15 +32,13 @@ class Association extends Component {
     }
 
     componentDidMount() {
-        // this.props.getRawMaterialNameChild(() => { })
+        this.props.clearGradeSelectList([])
         // this.props.getMaterialTypeSelectList(() => { })
     }
 
 
     renderListing(label) {
         const { MaterialSelectList, gradeSelectList, unassociatedMaterialList } = this.props;
-
-
         const temp = [];
         if (label === 'RawMaterialName') {
             unassociatedMaterialList && unassociatedMaterialList.map(item => {
@@ -73,7 +74,7 @@ class Association extends Component {
 
         if (newValue && newValue !== '') {
 
-            this.setState({ RawMaterial: newValue, RMGrade: [], }, () => {
+            this.setState({ RawMaterial: newValue, RMGrade: [], isDropDownChanged: true }, () => {
                 const { RawMaterial } = this.state;
 
                 this.props.getRMGradeSelectListByRawMaterial(RawMaterial.value, res => { });
@@ -94,7 +95,7 @@ class Association extends Component {
 
     handleMaterialChange = (newValue) => {
         if (newValue && newValue !== '') {
-            this.setState({ material: newValue })
+            this.setState({ material: newValue, isDropDownChanged: true })
         } else {
             this.setState({ material: [] })
         }
@@ -128,7 +129,20 @@ class Association extends Component {
         }
         this.props.closeDrawer('')
     };
-
+    cancel = () => {
+        if (this.state.isDropDownChanged) {
+            this.setState({ showPopup: true })
+        } else {
+            this.props.closeDrawer('')
+        }
+    }
+    onPopupConfirm = () => {
+        this.props.closeDrawer('')
+        this.setState({ showPopup: false })
+    }
+    closePopUp = () => {
+        this.setState({ showPopup: false })
+    }
     render() {
         const { handleSubmit } = this.props;
         const { setDisable } = this.state
@@ -189,7 +203,7 @@ class Association extends Component {
                                                     <Field
                                                         name="GradeId"
                                                         type="text"
-                                                        label="RM Grade"
+                                                        label="Grade"
                                                         component={searchableSelect}
                                                         placeholder={"Select"}
                                                         options={this.renderListing("RMGrade")}
@@ -230,7 +244,7 @@ class Association extends Component {
                                                 <button
                                                     type={"button"}
                                                     className=" mr15 cancel-btn"
-                                                    onClick={this.toggleDrawer}
+                                                    onClick={this.cancel}
                                                     disabled={setDisable}
                                                 >
                                                     <div className={'cancel-icon'}></div>
@@ -251,6 +265,9 @@ class Association extends Component {
                         </div>
                     </Container>
                 </Drawer>
+                {
+                    this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.CANCEL_MASTER_ALERT}`} />
+                }
             </div>
         );
     }
@@ -280,7 +297,8 @@ export default connect(mapStateToProps, {
     getMaterialTypeDataAPI,
     getRMGradeSelectListByRawMaterial,
     getUnassociatedRawMaterail,
-    createAssociation
+    createAssociation,
+    clearGradeSelectList
 })(reduxForm({
     form: 'Association',
     enableReinitialize: true,

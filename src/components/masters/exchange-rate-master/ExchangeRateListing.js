@@ -24,8 +24,8 @@ import { filterParams } from '../../common/DateFilter'
 import ScrollToTop from '../../common/ScrollToTop';
 import { getListingForSimulationCombined } from '../../simulation/actions/Simulation';
 import { PaginationWrapper } from '../../common/commonPagination';
-import { getConfigurationKey } from '../../../helper';
-import SelectRowWrapper from '../../common/SelectRowWrapper';
+import { reactLocalStorage } from 'reactjs-localstorage';
+import { hideCustomerFromExcel } from '../../common/CommonFunctions';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -72,6 +72,7 @@ class ExchangeRateListing extends Component {
                         this.props?.changeSetLoader(false)
                     })
                 }
+                this.setState({ isLoader: false })
                 if (this.props.selectionForListingMasterAPI === 'Master') {
                     this.getTableListData()
                 }
@@ -171,6 +172,7 @@ class ExchangeRateListing extends Component {
                 Toaster.success(MESSAGES.DELETE_EXCHANGE_SUCCESS);
 
                 this.getTableListData()
+                this.setState({ dataCount: 0 })
             }
         });
         this.setState({ showPopup: false })
@@ -196,8 +198,12 @@ class ExchangeRateListing extends Component {
     * @description Renders buttons
     */
     effectiveDateFormatter = (props) => {
-        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
+        let cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+
+        if (cellValue?.includes('T')) {
+            cellValue = DayTime(cellValue).format('DD/MM/YYYY')
+        }
+        return (!cellValue ? '-' : cellValue)
     }
 
     /**
@@ -276,9 +282,6 @@ class ExchangeRateListing extends Component {
         params.columnApi.getAllColumns().forEach(function (column) {
             allColumnIds.push(column.colId);
         });
-
-        window.screen.width >= 1366 && params.api.sizeColumnsToFit()
-
     };
 
     onPageSizeChanged = (newPageSize) => {
@@ -299,6 +302,7 @@ class ExchangeRateListing extends Component {
 
 
     returnExcelColumn = (data = [], TempData) => {
+        let excelData = hideCustomerFromExcel(data, "customerWithCode")
         let temp = []
         temp = TempData && TempData.map((item) => {
             if (item.BankRate === null) {
@@ -307,13 +311,16 @@ class ExchangeRateListing extends Component {
                 item.BankCommissionPercentage = ' '
             } else if (item.CustomRate === null) {
                 item.CustomRate = ' '
+            } else if (item?.EffectiveDate?.includes('T') || item?.DateOfModification?.includes('T')) {
+                item.EffectiveDate = DayTime(item.EffectiveDate).format('DD/MM/YYYY')
+                item.DateOfModification = DayTime(item.DateOfModification).format('DD/MM/YYYY')
             }
             return item
         })
         return (
 
             <ExcelSheet data={temp} name={ExchangeMaster}>
-                {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
+                {excelData && excelData.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
             </ExcelSheet>);
     }
 
@@ -341,7 +348,7 @@ class ExchangeRateListing extends Component {
     */
     render() {
         const { handleSubmit, } = this.props;
-        const { toggleForm, data, AddAccessibility, DownloadAccessibility, noData, dataCount } = this.state;
+        const { toggleForm, data, AddAccessibility, DownloadAccessibility, noData } = this.state;
 
         if (toggleForm) {
             return (
@@ -360,7 +367,7 @@ class ExchangeRateListing extends Component {
         const defaultColDef = {
             resizable: true,
             filter: true,
-            sortable: true,
+            sortable: false,
             headerCheckboxSelectionFilteredOnly: true,
             checkboxSelection: isFirstColumn
         };
@@ -372,16 +379,9 @@ class ExchangeRateListing extends Component {
                         <ScrollToTop pointProp="go-to-top" />
                         {this.state.isLoader && <LoaderCustom />}
                         <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
-                            {!this.props.isSimulation &&
-                                <Row>
-                                    <Col md="12"><h1 className="mb-0">Exchange Rate Master</h1></Col>
-                                </Row>
-                            }
-
-                            <Row className="pt-4 blue-before zindex-0">
+                            <Row className=" blue-before zindex-0">
                                 <Col md="6">
                                     <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={'off'} onChange={(e) => this.onFilterTextBoxChanged(e)} />
-                                    <SelectRowWrapper dataCount={dataCount} className="mb-n2" />
                                 </Col>
                                 <Col md="6" className=" mb-3">
                                     <div className="d-flex justify-content-end bd-highlight w100">
@@ -402,7 +402,8 @@ class ExchangeRateListing extends Component {
                                                 DownloadAccessibility &&
                                                 <>
                                                     <ExcelFile filename={ExchangeMaster} fileExtension={'.xls'} element={
-                                                        <button type="button" className={'user-btn mr5'} title="Download"><div className="download mr-0"></div></button>}>
+                                                        <button title={`Download ${this.state.dataCount === 0 ? "All" : "(" + this.state.dataCount + ")"}`} type="button" className={'user-btn mr5'} ><div className="download mr-1"></div>
+                                                            {`${this.state.dataCount === 0 ? "All" : "(" + this.state.dataCount + ")"}`}</button>}>
                                                         {this.onBtExport()}
                                                     </ExcelFile>
                                                 </>
@@ -442,12 +443,16 @@ class ExchangeRateListing extends Component {
                                     rowSelection={'multiple'}
                                     onSelectionChanged={this.onRowSelect}
                                     frameworkComponents={this.frameworkComponents}
+                                    suppressRowClickSelection={true}
                                 >
+                                    <AgGridColumn field="CostingHead" headerName="Costing Head" ></AgGridColumn>
+                                    <AgGridColumn field="vendorWithCode" headerName="Vendor (Code)" ></AgGridColumn>
+                                    {reactLocalStorage.getObject('cbcCostingPermission') && <AgGridColumn field="customerWithCode" headerName="Customer (Code)" ></AgGridColumn>}
                                     <AgGridColumn field="Currency" headerName="Currency" minWidth={135}></AgGridColumn>
-                                    <AgGridColumn suppressSizeToFit="true" field="CurrencyExchangeRate" headerName="Exchange Rate(INR)" minWidth={160} cellRenderer={'commonCostFormatter'}></AgGridColumn>
-                                    <AgGridColumn field="BankRate" headerName="Bank Rate(INR)" minWidth={150} cellRenderer={'commonCostFormatter'}></AgGridColumn>
-                                    <AgGridColumn suppressSizeToFit="true" field="BankCommissionPercentage" headerName="Bank Commission % " minWidth={160} cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                                    <AgGridColumn field="CustomRate" headerName="Custom Rate(INR)" minWidth={160} cellRenderer={'commonCostFormatter'}></AgGridColumn>
+                                    <AgGridColumn suppressSizeToFit="true" field="CurrencyExchangeRate" headerName="Exchange Rate (INR)" minWidth={160} cellRenderer={'commonCostFormatter'}></AgGridColumn>
+                                    <AgGridColumn field="BankRate" headerName="Bank Rate (INR)" minWidth={150} cellRenderer={'commonCostFormatter'}></AgGridColumn>
+                                    <AgGridColumn suppressSizeToFit="true" field="BankCommissionPercentage" headerName="Bank Commission (%) " minWidth={160} cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                                    <AgGridColumn field="CustomRate" headerName="Custom Rate (INR)" minWidth={160} cellRenderer={'commonCostFormatter'}></AgGridColumn>
                                     <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer='effectiveDateRenderer' filter="agDateColumnFilter" filterParams={filterParams} minWidth={160}></AgGridColumn>
                                     <AgGridColumn suppressSizeToFit="true" field="DateOfModification" headerName="Date of Modification" cellRenderer='effectiveDateRenderer' filter="agDateColumnFilter" filterParams={filterParams} minWidth={160}></AgGridColumn>
                                     {!this.props.isSimulation && <AgGridColumn suppressSizeToFit="true" field="ExchangeRateId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer='totalValueRenderer' minWidth={160} ></AgGridColumn>}

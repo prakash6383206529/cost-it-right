@@ -12,7 +12,7 @@ import {
   SET_TOOL_PROCESS_WISE_DATALIST, SET_IS_TOOLCOST_USED, TOOL_CATEGORY_SELECTLIST, SET_RMCC_ERRORS, CUSTOM_LOADER_SHOW, CUSTOM_LOADER_HIDE, SET_COSTING_EFFECTIVE_DATE,
   IS_COSTING_EFFECTIVE_DATE_DISABLED, CLOSE_OPEN_ACCORDION, BOP_DRAWER_LIST, SET_CUTOFF_RMC, GET_COSTING_SPECIFIC_TECHNOLOGY, SET_PLASTIC_ARR, SET_ASSEM_BOP_CHARGE,
   CHECK_IS_DATA_CHANGE, SET_ARRAY_FOR_COSTING, CHECK_IS_DISCOUNT_DATA_CHANGE, CHECK_IS_TOOL_DATA_CHANGE, CHECK_IS_OVERHEAD_AND_PROFIT_DATA_CHANGE, CHECK_IS_PACKAGE_AND_FREIGHT_DATA_CHANGE,
-  FORGING_CALCULATOR_MACHININGSTOCK_SECTION, SELECTED_IDS_OF_OPERATION_AND_OTHEROPERATION, SET_MASTER_BATCH_OBJ, SELECTED_IDS_OF_OPERATION, SELECTED_PROCESS_AND_GROUPCODE, SET_PROCESS_ID, SET_PROCESSGROUP_ID, GET_FG_WISE_IMPACT_DATA_FOR_COSTING, SAVE_PART_NUMBER_STOP_API_CALL, SET_PART_NUMBER_ARRAY_API_CALL, SET_MESSAGE_FOR_ASSEMBLY, SET_PROCESS_GROUP_GRID, SAVE_BOM_LEVEL_STOP_API_CALL, IMPORT, SAVE_ASSEMBLY_NUMBER_STOP_API_CALL
+  FORGING_CALCULATOR_MACHININGSTOCK_SECTION, SELECTED_IDS_OF_OPERATION_AND_OTHEROPERATION, SET_MASTER_BATCH_OBJ, SELECTED_IDS_OF_OPERATION, SELECTED_PROCESS_AND_GROUPCODE, SET_PROCESS_ID, SET_PROCESSGROUP_ID, GET_FG_WISE_IMPACT_DATA_FOR_COSTING, SAVE_PART_NUMBER_STOP_API_CALL, SET_PART_NUMBER_ARRAY_API_CALL, SET_MESSAGE_FOR_ASSEMBLY, SET_PROCESS_GROUP_GRID, SAVE_BOM_LEVEL_STOP_API_CALL, IMPORT, SAVE_ASSEMBLY_NUMBER_STOP_API_CALL, SET_ACTIVE_TAB, SET_OVERHEAD_PROFIT_ERRORS, SET_TOOLS_ERRORS, SET_DISCOUNT_ERRORS, SET_SURFACE_COST_FOR_REJECTION_DATA, SET_TOOL_COST_FOR_OVERHEAD_PROFIT, SET_NPV_DATA, NFR_DETAILS_FOR_DISCOUNT, SET_YOY_COST_GRID, SET_OPEN_ALL_TABS, SET_REJECTED_COSTING_VIEW_DATA
 } from '../../../config/constants';
 
 const initialState = {
@@ -48,7 +48,8 @@ const initialState = {
   messageForAssembly: '',
   processGroupGrid: [],
   bomLevel: '',
-  assemblyNumber: []
+  assemblyNumber: [],
+  IsIncludedSurfaceInRejection: false
 }
 
 export default function costingReducer(state = initialState, action) {
@@ -406,12 +407,31 @@ export default function costingReducer(state = initialState, action) {
         ComponentItemDiscountData: action.payload
       }
     case GET_RM_DRAWER_DATA_LIST:
+      // let isNFR = action?.isNFR
+      // let list = []
+      // let rmNameList = action?.rmNameList
+      // let temp = [...action.payload]
+      // let arrayRM = temp && temp.map((item) => {
+      //   item.NetLandedCostCombine = item.EntryType === IMPORT ? item.NetLandedCostConversion : item.NetLandedCost
+      //   item.NetLandedCostCurrency = item.EntryType === IMPORT ? item.NetLandedCost : '-'
+      //   return item
+      // })
+      // if (isNFR) {
+      //   arrayRM && arrayRM?.filter(element => {
+      //     if (rmNameList?.includes(element?.RawMaterial)) {
+      //       list.push(element)
+      //     }
+      //   })
+      // } else {
+      //   list = [...arrayRM]
+      // }
       let temp = [...action.payload]
       let arrayRM = temp && temp.map((item) => {
         item.NetLandedCostCombine = item.EntryType === IMPORT ? item.NetLandedCostConversion : item.NetLandedCost
         item.NetLandedCostCurrency = item.EntryType === IMPORT ? item.NetLandedCost : '-'
         return item
       })
+
       return {
         ...state,
         loading: false,
@@ -643,6 +663,66 @@ export default function costingReducer(state = initialState, action) {
         ...state,
         loading: false,
         assemblyNumber: action.payload
+      }
+    case SET_SURFACE_COST_FOR_REJECTION_DATA:
+      return {
+        ...state,
+        loading: false,
+        IsIncludedSurfaceInRejection: action.payload
+      }
+    case SET_TOOL_COST_FOR_OVERHEAD_PROFIT:
+      return {
+        ...state,
+        loading: false,
+        IsIncludedToolCost: action.payload
+      }
+    case SET_OVERHEAD_PROFIT_ERRORS:
+      return {
+        ...state,
+        loading: false,
+        ErrorObjOverheadProfit: action.payload
+      }
+    case SET_TOOLS_ERRORS:
+      return {
+        ...state,
+        loading: false,
+        ErrorObjTools: action.payload
+      }
+    case SET_DISCOUNT_ERRORS:
+      return {
+        ...state,
+        loading: false,
+        ErrorObjDiscount: action.payload
+      }
+    case SET_YOY_COST_GRID:
+      return {
+        ...state,
+        loading: false,
+        yoyCostGrid: action.payload
+      }
+    case SET_NPV_DATA:
+      return {
+        ...state,
+        loading: false,
+        npvData: action.payload
+      }
+    case NFR_DETAILS_FOR_DISCOUNT:
+      return {
+        ...state,
+        loading: false,
+        nfrDetailsForDiscount: action.payload
+      }
+    case SET_OPEN_ALL_TABS:
+      return {
+        ...state,
+        loading: false,
+        openAllTabs: action.payload
+      }
+    case SET_REJECTED_COSTING_VIEW_DATA:
+      return {
+        ...state,
+        loading: false,
+        viewRejectedCostingDetailData: action.payload,
       }
 
     default:

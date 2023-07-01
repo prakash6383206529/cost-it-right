@@ -8,9 +8,6 @@ import {
     GET_UNIT_PART_DATA_SUCCESS,
     GET_ALL_NEW_PARTS_SUCCESS,
     GET_ALL_NEW_PARTS_SUCCESS_PAGINATION,
-    GET_PART_SELECTLIST_SUCCESS,
-    GET_ASSEMBLY_PART_SELECTLIST,
-    GET_COMPONENT_PART_SELECTLIST,
     GET_BOUGHTOUT_PART_SELECTLIST,
     GET_DRAWER_CHILD_PART_DATA,
     SET_ACTUAL_BOM_DATA,
@@ -156,23 +153,7 @@ export function deletePart(PartId, callback) {
  * @description Used to Part selectlist
  */
 export function getPartSelectList(callback) {
-    return (dispatch) => {
-        //dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getPartSelectList}`, config());
-        request.then((response) => {
-            if (response.data.Result) {
-                dispatch({
-                    type: GET_PART_SELECTLIST_SUCCESS,
-                    payload: response.data.SelectList,
-                });
-                callback(response);
-            }
-        }).catch((error) => {
-            dispatch({ type: API_FAILURE, });
-            callback(error);
-            apiErrors(error);
-        });
-    };
+    return axios.get(`${API.getPartSelectList}`, config());
 }
 
 /**
@@ -414,20 +395,11 @@ export function getSelectListPartType(callback) {
 * @description GET ASSEMBLY PART SELECTLIST
 */
 export function getAssemblyPartSelectList(data, callback) {
-    return (dispatch) => {
-        const request = axios.get(`${API.getAssemblyPartSelectList}?technologyId=${data.technologyId}&effectiveDate=${data.date}`, config());
-        request.then((response) => {
-            dispatch({
-                type: GET_ASSEMBLY_PART_SELECTLIST,
-                payload: response.data.SelectList,
-            });
-            callback(response);
-        }).catch((error) => {
-            dispatch({ type: API_FAILURE });
-            callback(error);
-            apiErrors(error);
-        });
-    };
+    return axios.get(`${API.getAssemblyPartSelectList}?technologyId=${data.technologyId}&effectiveDate=${data.date}&partNumber=${data.partNumber}`, config()).catch(error => {
+        apiErrors(error);
+        callback(error);
+        return Promise.reject(error)
+    });
 }
 
 /**
@@ -435,20 +407,11 @@ export function getAssemblyPartSelectList(data, callback) {
 * @description GET COMPONENT PART SELECTLIST
 */
 export function getComponentPartSelectList(data, callback) {
-    return (dispatch) => {
-        const request = axios.get(`${API.getComponentPartSelectList}?technologyId=${data.technologyId}&effectiveDate=${data.date}`, config());
-        request.then((response) => {
-            dispatch({
-                type: GET_COMPONENT_PART_SELECTLIST,
-                payload: response.data.SelectList,
-            });
-            callback(response);
-        }).catch((error) => {
-            dispatch({ type: API_FAILURE });
-            callback(error);
-            apiErrors(error);
-        });
-    };
+    return axios.get(`${API.getComponentPartSelectList}?technologyId=${data.technologyId}&effectiveDate=${data.date}&partNumber=${data.partNumber}`, config()).catch(error => {
+        apiErrors(error);
+        callback(error);
+        return Promise.reject(error)
+    });
 }
 
 /**

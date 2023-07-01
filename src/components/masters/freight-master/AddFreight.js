@@ -1,29 +1,31 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { Field, reduxForm, formValueSelector } from "redux-form";
-import { Row, Col, Table } from "reactstrap";
-import { required, checkForNull, positiveAndDecimalNumber, maxLength10, checkForDecimalAndNull, decimalLengthFour } from "../../../helper/validation";
-import { renderNumberInputField, searchableSelect } from "../../layout/FormInputs";
+import { Field, reduxForm, formValueSelector, clearFields } from "redux-form";
+import { Row, Col, Table, Label } from "reactstrap";
+import { required, checkForNull, positiveAndDecimalNumber, maxLength10, checkForDecimalAndNull, decimalLengthFour, number } from "../../../helper/validation";
+import { renderTextInputField, searchableSelect } from "../../layout/FormInputs";
 import { fetchSupplierCityDataAPI, getCityByCountry, getAllCity } from "../../../actions/Common";
 import { getVendorWithVendorCodeSelectList } from "../actions/Supplier";
-import { getVendorListByVendorType } from "../actions/Material";
 import {
   createFreight, updateFright, getFreightData, getFreightModeSelectList, getFreigtFullTruckCapacitySelectList, getFreigtRateCriteriaSelectList,
 } from "../actions/Freight";
 import Toaster from "../../common/Toaster";
 import { MESSAGES } from "../../../config/message";
 import { loggedInUserId, userDetails } from "../../../helper/auth";
-import Switch from "react-switch";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import AddVendorDrawer from "../supplier-master/AddVendorDrawer";
 import DayTime from "../../common/DayTimeWrapper"
 import NoContentFound from "../../common/NoContentFound";
-import { EMPTY_DATA, SPACEBAR } from "../../../config/constants";
+import { CBCTypeId, EMPTY_DATA, SPACEBAR, VBCTypeId, ZBCTypeId, searchCount } from "../../../config/constants";
 import LoaderCustom from "../../common/LoaderCustom";
 import { debounce } from "lodash";
 import AsyncSelect from 'react-select/async';
 import { onFocus } from "../../../helper";
+import { getClientSelectList, } from '../actions/Client';
+import { reactLocalStorage } from "reactjs-localstorage";
+import { autoCompleteDropdown } from "../../common/CommonFunctions";
+import PopupMsgWrapper from "../../common/PopupMsgWrapper";
 
 const selector = formValueSelector("AddFreight");
 class AddFreight extends Component {
@@ -54,13 +56,17 @@ class AddFreight extends Component {
       setDisable: false,
       isVendorNameNotSelected: false,
       inputLoader: false,
+      client: [],
+      costingTypeId: ZBCTypeId,
       errorObj: {
         capacity: false,
         criteria: false,
         rate: false,
         effectiveDate: false
       },
-      showErrorOnFocus: false
+      showErrorOnFocus: false,
+      showPopup: false,
+      vendorFilterList: []
     };
   }
   /**
@@ -75,23 +81,40 @@ class AddFreight extends Component {
     if (!(this.props.data.isEditFlag || this.state.isViewMode)) {
       this.props.getAllCity(cityId => {
         this.props.getCityByCountry(cityId, 0, () => { })
+        this.props.getClientSelectList(() => { })
       })
     }
     this.props.getFreightModeSelectList((res) => { });
     this.getDetails();
   }
+  componentWillUnmount() {
+    reactLocalStorage?.setObject('vendorData', [])
+  }
   /**
-   * @method onPressVendor
-   * @description Used for Vendor checked
-   */
-  onPressVendor = () => {
-    this.setState({
-      IsVendor: !this.state.IsVendor,
-      vendorName: [],
+  * @method onPressVendor
+  * @description Used for Vendor checked
+  */
+  onPressVendor = (costingHeadFlag) => {
+    const fieldsToClear = [
+      'Mode',
+      'vendorName',
+      'SourceLocation',
+      'DestinationLocation',
+      'clientName',
+      'Plant',
+      'DestinationPlant',
+    ];
+    fieldsToClear.forEach(fieldName => {
+      this.props.dispatch(clearFields('AddFreight', false, false, fieldName));
     });
-    this.setState({ inputLoader: true })
-    this.props.getVendorListByVendorType(true, () => { this.setState({ inputLoader: false }) });
-  };
+    this.setState({
+      vendorName: [],
+      costingTypeId: costingHeadFlag
+    });
+    if (costingHeadFlag === CBCTypeId) {
+      this.props.getClientSelectList(() => { })
+    }
+  }
   /**
    * @method handleTransportMoodChange
    * @description  used to handle BOP Category Selection
@@ -101,6 +124,17 @@ class AddFreight extends Component {
       this.setState({ TransportMode: newValue });
     } else {
       this.setState({ TransportMode: [] });
+    }
+  };
+  /**
+* @method handleClient
+* @description called
+*/
+  handleClient = (newValue, actionMeta) => {
+    if (newValue && newValue !== '') {
+      this.setState({ client: newValue });
+    } else {
+      this.setState({ client: [] })
     }
   };
   /**
@@ -139,13 +173,14 @@ class AddFreight extends Component {
             this.setState({
               isEditFlag: true,
               // isLoader: false,
-              IsVendor: Data.IsVendor,
+              costingTypeId: Data.CostingTypeId,
               IsLoadingUnloadingApplicable: Data.IsLoadingUnloadingApplicable,
               TransportMode:
                 modeObj && modeObj !== undefined
                   ? { label: modeObj.Text, value: modeObj.Value }
                   : [],
               vendorName: Data.VendorName !== undefined ? { label: Data.VendorName, value: Data.VendorId } : [],
+              client: Data.CustomerName !== undefined ? { label: Data.CustomerName, value: Data.CustomerId } : [],
               sourceLocation: Data.SourceCityName !== undefined ? { label: Data.SourceCityName, value: Data.SourceCityId } : [],
               destinationLocation: Data.DestinationCityName !== undefined ? { label: Data.DestinationCityName, value: Data.DestinationCityId } : [],
               gridTable: GridArray,
@@ -165,17 +200,8 @@ class AddFreight extends Component {
    * @description Used to show type of listing
    */
   renderListing = (label) => {
-    const { vendorListByVendorType, cityList, freightModeSelectList, freightFullTruckCapacitySelectList, freightRateCriteriaSelectList, } = this.props;
+    const { cityList, clientSelectList, freightModeSelectList, freightFullTruckCapacitySelectList, freightRateCriteriaSelectList, } = this.props;
     const temp = [];
-    if (label === "VendorNameList") {
-      vendorListByVendorType &&
-        vendorListByVendorType.map((item) => {
-          if (item.Value === "0") return false;
-          temp.push({ label: item.Text, value: item.Value });
-          return null
-        });
-      return temp;
-    }
     if (label === "SourceLocation") {
       cityList &&
         cityList.map((item) => {
@@ -221,6 +247,14 @@ class AddFreight extends Component {
         });
       return temp;
     }
+    if (label === 'ClientList') {
+      clientSelectList && clientSelectList.map(item => {
+        if (item.Value === '0') return false;
+        temp.push({ label: item.Text, value: item.Value })
+        return null;
+      });
+      return temp;
+    }
   };
   /**
    * @method handleVendorName
@@ -236,11 +270,20 @@ class AddFreight extends Component {
   vendorToggler = () => {
     this.setState({ isOpenVendor: true });
   };
-  closeVendorDrawer = (e = "") => {
-    this.setState({ isOpenVendor: false }, () => {
-      this.props.getVendorListByVendorType(true, () => { });
-    });
-  };
+  async closeVendorDrawer(e = '', formData = {}, type) {
+    if (type === 'submit') {
+      this.setState({ isOpenVendor: false })
+      const res = await getVendorWithVendorCodeSelectList(this.state.vendorName)
+      let vendorDataAPI = res?.data?.SelectList
+      reactLocalStorage?.setObject('vendorData', vendorDataAPI)
+      if (Object.keys(formData).length > 0) {
+        this.setState({ vendorName: { label: `${formData.VendorName} (${formData.VendorCode})`, value: formData.VendorId }, })
+      }
+    }
+    else {
+      this.setState({ isOpenVendor: false })
+    }
+  }
   /**
    * @method handleSourceCity
    * @description called
@@ -284,6 +327,7 @@ class AddFreight extends Component {
     }
     this.setState({ HandleChanged: false })
   };
+
   /**
    * @method criteriaHandler
    * @description called
@@ -338,9 +382,10 @@ class AddFreight extends Component {
       //CONDITION TO CHECK DUPLICATE ENTRY IN GRID
       const isExist = gridTable.findIndex(
         (el) =>
-          el.CapacityId === FullTruckCapacity.value &&
-          el.RateCriteriaId === RateCriteria.value
+          el.Capacity === FullTruckCapacity.value &&
+          el.RateCriteria === RateCriteria.value,
       );
+
       if (isExist !== -1) {
         Toaster.warning("Already added, Please check the values.");
         return false;
@@ -352,7 +397,7 @@ class AddFreight extends Component {
         FullTruckLoadId: "",
         Capacity: FullTruckCapacity.label,
         RateCriteria: RateCriteria.label,
-        EffectiveDate: effectiveDate,
+        EffectiveDate: (DayTime(effectiveDate).isValid() ? DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss') : ''),
         Rate: Rate,
       });
       this.setState(
@@ -401,7 +446,7 @@ class AddFreight extends Component {
     tempData = {
       Capacity: FullTruckCapacity.label,
       RateCriteria: RateCriteria.label,
-      EffectiveDate: effectiveDate,
+      EffectiveDate: (DayTime(effectiveDate).isValid() ? DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss') : ''),
       Rate: Rate,
     };
     tempArray = Object.assign([...gridTable], { [gridEditIndex]: tempData });
@@ -491,16 +536,25 @@ class AddFreight extends Component {
     });
     this.props.hideForm(type);
   };
+  cancelHandler = () => {
+    this.setState({ showPopup: true })
+  }
+  onPopupConfirm = () => {
+    this.cancel('cancel')
+    this.setState({ showPopup: false })
+  }
+  closePopUp = () => {
+    this.setState({ showPopup: false })
+  }
   /**
    * @method onSubmit
    * @description Used to Submit the form
    */
   onSubmit = debounce((values) => {
-    const {
-      IsVendor, TransportMode, vendorName, IsLoadingUnloadingApplicable, sourceLocation, destinationLocation,
-      FreightID, gridTable, isEditFlag, DataToChange, HandleChanged, AddUpdate, DeleteChanged } = this.state;
+    const { TransportMode, vendorName, IsLoadingUnloadingApplicable, sourceLocation, destinationLocation, client,
+      FreightID, gridTable, isEditFlag, DataToChange, HandleChanged, AddUpdate, DeleteChanged, costingTypeId } = this.state;
 
-    if (IsVendor && vendorName.length <= 0) {
+    if (costingTypeId === VBCTypeId && vendorName.length <= 0) {
       this.setState({ isVendorNameNotSelected: true, setDisable: false })      // IF VENDOR NAME IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY AND SAVE BUTTON WILL NOT BE DISABLED
       return false
     }
@@ -543,9 +597,9 @@ class AddFreight extends Component {
     } else {
       this.setState({ setDisable: true })
       const formData = {
-        IsVendor: IsVendor,
+        CostingTypeId: costingTypeId,
         Mode: TransportMode.label,
-        VendorId: IsVendor ? vendorName.value : userDetail.ZBCSupplierInfo.VendorId,
+        VendorId: costingTypeId === VBCTypeId ? vendorName.value : userDetail.ZBCSupplierInfo.VendorId,
         SourceCityId: sourceLocation.value,
         DestinationCityId: destinationLocation.value,
         IsLoadingUnloadingApplicable: IsLoadingUnloadingApplicable,
@@ -554,6 +608,7 @@ class AddFreight extends Component {
         PartTruckLoadRatePerCubicFeet: values.PartTruckLoadRatePerCubicFeet,
         FullTruckLoadDetails: gridTable,
         LoggedInUserId: loggedInUserId(),
+        CustomerId: costingTypeId === CBCTypeId ? client.value : ''
       };
       this.props.createFreight(formData, (res) => {
         this.setState({ setDisable: false })
@@ -577,28 +632,38 @@ class AddFreight extends Component {
    */
   render() {
     const { handleSubmit, initialConfiguration } = this.props;
-    const { isOpenVendor, isEditFlag, isViewMode, setDisable } = this.state;
-
-    const filterList = (inputValue) => {
-      let tempArr = []
-
-      tempArr = this.renderListing("VendorNameList").filter(i =>
-        i.label !== null && i.label.toLowerCase().includes(inputValue.toLowerCase())
-      );
-
-      if (tempArr.length <= 100) {
-        return tempArr
-      } else {
-        return tempArr.slice(0, 100)
+    const { isOpenVendor, isEditFlag, isViewMode, setDisable, costingTypeId } = this.state;
+    const filterList = async (inputValue) => {
+      const { vendorFilterList } = this.state
+      if (inputValue && typeof inputValue === 'string' && inputValue.includes(' ')) {
+        inputValue = inputValue.trim();
+      }
+      const resultInput = inputValue.slice(0, searchCount)
+      if (inputValue?.length >= searchCount && vendorFilterList !== resultInput) {
+        this.setState({ inputLoader: true })
+        let res
+        res = await getVendorWithVendorCodeSelectList(resultInput)
+        this.setState({ inputLoader: false })
+        this.setState({ vendorFilterList: resultInput })
+        let vendorDataAPI = res?.data?.SelectList
+        if (inputValue) {
+          return autoCompleteDropdown(inputValue, vendorDataAPI, false, [], true)
+        } else {
+          return vendorDataAPI
+        }
+      }
+      else {
+        if (inputValue?.length < searchCount) return false
+        else {
+          let VendorData = reactLocalStorage?.getObject('Data')
+          if (inputValue) {
+            return autoCompleteDropdown(inputValue, VendorData, false, [], false)
+          } else {
+            return VendorData
+          }
+        }
       }
     };
-
-    const promiseOptions = inputValue =>
-      new Promise(resolve => {
-        resolve(filterList(inputValue));
-
-
-      });
 
     return (
       <>
@@ -626,25 +691,49 @@ class AddFreight extends Component {
                     >
                       <div className="add-min-height">
                         <Row>
-                          <Col md="4" className="switch mb15">
-                            <label className="switch-level">
-                              <div className={"left-title"}>Zero Based</div>
-                              <Switch
-                                onChange={this.onPressVendor}
-                                checked={this.state.IsVendor}
-                                id="normal-switch"
+                          <Col md="12">
+                            <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
+                              <input
+                                type="radio"
+                                name="costingHead"
+                                checked={
+                                  costingTypeId === ZBCTypeId ? true : false
+                                }
+                                onClick={() =>
+                                  this.onPressVendor(ZBCTypeId)
+                                }
                                 disabled={isEditFlag ? true : false}
-                                background="#4DC771"
-                                onColor="#4DC771"
-                                onHandleColor="#ffffff"
-                                offColor="#4DC771"
-                                uncheckedIcon={false}
-                                checkedIcon={false}
-                                height={20}
-                                width={46}
-                              />
-                              <div className={"right-title"}>Vendor Based</div>
-                            </label>
+                              />{" "}
+                              <span>Zero Based</span>
+                            </Label>
+                            <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
+                              <input
+                                type="radio"
+                                name="costingHead"
+                                checked={
+                                  costingTypeId === VBCTypeId ? true : false
+                                }
+                                onClick={() =>
+                                  this.onPressVendor(VBCTypeId)
+                                }
+                                disabled={isEditFlag ? true : false}
+                              />{" "}
+                              <span>Vendor Based</span>
+                            </Label>
+                            {reactLocalStorage.getObject('cbcCostingPermission') && <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 pt-0 radio-box"} check>
+                              <input
+                                type="radio"
+                                name="costingHead"
+                                checked={
+                                  costingTypeId === CBCTypeId ? true : false
+                                }
+                                onClick={() =>
+                                  this.onPressVendor(CBCTypeId)
+                                }
+                                disabled={isEditFlag ? true : false}
+                              />{" "}
+                              <span>Customer Based</span>
+                            </Label>}
                           </Col>
                         </Row>
                         <Row>
@@ -678,9 +767,9 @@ class AddFreight extends Component {
                               </div>
                             </div>
                           </Col>
-                          {this.state.IsVendor === true && (
+                          {costingTypeId === VBCTypeId && (
                             <Col md="3">
-                              <label>{"Vendor Name"}<span className="asterisk-required">*</span></label>
+                              <label>{"Vendor (Code)"}<span className="asterisk-required">*</span></label>
                               <div className="d-flex justify-space-between align-items-center async-select">
                                 <div className="fullinput-icon p-relative">
                                   {this.state.inputLoader && <LoaderCustom customClass={`input-loader`} />}
@@ -688,11 +777,11 @@ class AddFreight extends Component {
                                     name="vendorName"
                                     ref={this.myRef}
                                     key={this.state.updateAsyncDropdown}
-                                    loadOptions={promiseOptions}
+                                    loadOptions={filterList}
                                     onChange={(e) => this.handleVendorName(e)}
                                     value={this.state.vendorName}
-                                    noOptionsMessage={({ inputValue }) => !inputValue ? "Please enter vendor name/code" : "No results found"}
-                                    isDisabled={(isEditFlag || this.state.inputLoader) ? true : false}
+                                    noOptionsMessage={({ inputValue }) => inputValue.length < 3 ? MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN : "No results found"}
+                                    isDisabled={(isEditFlag) ? true : false}
                                     onKeyDown={(onKeyDown) => {
                                       if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
                                     }}
@@ -707,6 +796,29 @@ class AddFreight extends Component {
                                 )}
                               </div>
                               {((this.state.showErrorOnFocus && this.state.vendorName.length === 0) || this.state.isVendorNameNotSelected) && <div className='text-help mt-1'>This field is required.</div>}
+                            </Col>
+                          )}
+                          {costingTypeId === CBCTypeId && (
+                            <Col md="3">
+                              <Field
+                                name="clientName"
+                                type="text"
+                                label={"Customer (Code)"}
+                                component={searchableSelect}
+                                placeholder={isEditFlag ? '-' : "Select"}
+                                options={this.renderListing("ClientList")}
+                                //onKeyUp={(e) => this.changeItemDesc(e)}
+                                validate={
+                                  this.state.client == null ||
+                                    this.state.client.length === 0
+                                    ? [required]
+                                    : []
+                                }
+                                required={true}
+                                handleChangeDescription={this.handleClient}
+                                valueDescription={this.state.client}
+                                disabled={isEditFlag ? true : false}
+                              />
                             </Col>
                           )}
                           <Col md="3">
@@ -778,8 +890,8 @@ class AddFreight extends Component {
                               name={"LoadingUnloadingCharges"}
                               type="text"
                               placeholder={isViewMode ? '-' : 'Enter'}
-                              validate={[positiveAndDecimalNumber, maxLength10, decimalLengthFour]}
-                              component={renderNumberInputField}
+                              validate={[positiveAndDecimalNumber, maxLength10, decimalLengthFour, number]}
+                              component={renderTextInputField}
                               disabled={isViewMode}
                               className=""
                               customClassName=" withBorder mn-height-auto"
@@ -799,8 +911,8 @@ class AddFreight extends Component {
                               name={"PartTruckLoadRatePerKilogram"}
                               type="text"
                               placeholder={isViewMode ? '-' : 'Enter'}
-                              validate={[positiveAndDecimalNumber, maxLength10, decimalLengthFour]}
-                              component={renderNumberInputField}
+                              validate={[positiveAndDecimalNumber, maxLength10, decimalLengthFour, number]}
+                              component={renderTextInputField}
                               disabled={isViewMode}
                               className=" "
                               customClassName=" withBorder"
@@ -812,8 +924,8 @@ class AddFreight extends Component {
                               name={"PartTruckLoadRatePerCubicFeet"}
                               type="text"
                               placeholder={isViewMode ? '-' : 'Enter'}
-                              validate={[positiveAndDecimalNumber, maxLength10, decimalLengthFour]}
-                              component={renderNumberInputField}
+                              validate={[positiveAndDecimalNumber, maxLength10, decimalLengthFour, number]}
+                              component={renderTextInputField}
                               disabled={isViewMode}
                               className=" "
                               customClassName=" withBorder"
@@ -873,8 +985,8 @@ class AddFreight extends Component {
                               name={"Rate"}
                               type="text"
                               placeholder={isViewMode ? '-' : 'Enter'}
-                              validate={[positiveAndDecimalNumber, maxLength10]}
-                              component={renderNumberInputField}
+                              validate={[positiveAndDecimalNumber, maxLength10, number]}
+                              component={renderTextInputField}
                               required={true}
                               disabled={isViewMode}
                               className=" "
@@ -893,8 +1005,6 @@ class AddFreight extends Component {
                                   showMonthDropdown
                                   showYearDropdown
                                   dateFormat="dd/MM/yyyy"
-                                  //maxDate={new Date()}
-                                  dropdownMode="select"
                                   placeholderText={isViewMode ? '-' : "Select Date"}
                                   className="withBorder"
                                   autoComplete={"off"}
@@ -922,6 +1032,7 @@ class AddFreight extends Component {
                                   <button
                                     type="button"
                                     className={"reset-btn mt30 pull-left mb-2 w-auto px-1"}
+
                                     onClick={this.resetGridData}
                                   >
                                     Cancel
@@ -942,6 +1053,7 @@ class AddFreight extends Component {
                                     type="button"
                                     className={"reset-btn mt30 ml5 pull-left"}
                                     onClick={this.resetGridData}
+                                    disabled={isViewMode}
                                   >
                                     Reset
                                   </button>
@@ -996,7 +1108,7 @@ class AddFreight extends Component {
                           <button
                             type={"button"}
                             className="mr15 cancel-btn"
-                            onClick={() => { this.cancel('cancel') }}
+                            onClick={this.cancelHandler}
                             disabled={setDisable}
                           >
                             <div className={"cancel-icon"}></div>
@@ -1012,16 +1124,19 @@ class AddFreight extends Component {
                           </button>
                         </div>
                       </Row>
-                    </form >
-                  </div >
-                </div >
-              </div >
-            </div >
-          </div >
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          {
+            this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.CANCEL_MASTER_ALERT}`} />
+          }
           {isOpenVendor && (
             <AddVendorDrawer
               isOpen={isOpenVendor}
-              closeDrawer={this.closeVendorDrawer}
+              closeDrawer={this.closeVendorDrawer = this.closeVendorDrawer.bind(this)}
               isEditFlag={false}
               ID={""}
               anchor={"right"}
@@ -1040,10 +1155,10 @@ class AddFreight extends Component {
  */
 function mapStateToProps(state) {
   const fieldsObj = selector(state, "Rate");
-  const { comman, material, freight, auth } = state;
-  const { vendorListByVendorType } = material;
+  const { comman, freight, auth, client } = state;
   const { initialConfiguration } = auth;
-  const { cityList } = comman;
+  const { cityList, vendorWithVendorCodeSelectList } = comman;
+  const { clientSelectList } = client;
   const {
     freightData,
     freightModeSelectList,
@@ -1055,19 +1170,20 @@ function mapStateToProps(state) {
     initialValues = {
       PartTruckLoadRatePerKilogram: freightData.PartTruckLoadRatePerKilogram,
       PartTruckLoadRatePerCubicFeet: freightData.PartTruckLoadRatePerCubicFeet,
-      LoadingUnloadingCharges: freightData.LoadingUnloadingCharges,
+      LoadingUnloadingCharges: freightData.LoadingUnloadingCharges, clientSelectList
     };
   }
   return {
     cityList,
-    vendorListByVendorType,
+    vendorWithVendorCodeSelectList,
     freightModeSelectList,
     freightFullTruckCapacitySelectList,
     freightRateCriteriaSelectList,
     freightData,
     fieldsObj,
     initialValues,
-    initialConfiguration
+    initialConfiguration,
+    clientSelectList
   };
 }
 /**
@@ -1077,7 +1193,6 @@ function mapStateToProps(state) {
  * @param {function} mapDispatchToProps
  */
 export default connect(mapStateToProps, {
-  getVendorListByVendorType,
   getVendorWithVendorCodeSelectList,
   fetchSupplierCityDataAPI,
   createFreight,
@@ -1087,7 +1202,8 @@ export default connect(mapStateToProps, {
   getFreigtFullTruckCapacitySelectList,
   getFreigtRateCriteriaSelectList,
   getCityByCountry,
-  getAllCity
+  getAllCity,
+  getClientSelectList
 })(
   reduxForm({
     form: "AddFreight",

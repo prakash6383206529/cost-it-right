@@ -9,7 +9,7 @@ import { useSelector } from 'react-redux';
 function ViewPackagingAndFreight(props) {
 
   const { packagingData, freightData } = props.packagingAndFreightCost;
-  const { isPDFShow } = props
+  const { isPDFShow, isLogisticsTechnology } = props
 
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
 
@@ -34,7 +34,7 @@ function ViewPackagingAndFreight(props) {
     return <>
       <Row>
         <Col md="12">
-          <div className="left-border">{'Packaging:'}</div>
+          <div className="left-border">{`${isLogisticsTechnology ? 'Freight' : 'Packaging'}:`}</div>
         </Col>
       </Row>
       <Row>
@@ -42,15 +42,13 @@ function ViewPackagingAndFreight(props) {
 
         <Col md="12">
           <Table className="table cr-brdr-main" size="sm">
-            <thead>
-              <tr>
-                <th>{`Packaging Description`}</th>
-                <th>{`Criteria/Applicability`}</th>
-                <th>{`Packaging Type/Percentage`}</th>
+            <tbody>
+            <tr className='thead'>
+                <th>{`${isLogisticsTechnology ? 'Charges' : 'Packaging Description'}`}</th>
+                {!isLogisticsTechnology && <th>{`Criteria/Applicability`}</th>}
+                {!isLogisticsTechnology && <th>{`${isLogisticsTechnology ? 'Freight' : 'Packaging'} Type/Percentage`}</th>}
                 <th className="costing-border-right">{`Cost`}</th>
               </tr>
-            </thead>
-            <tbody>
               {packagingData &&
                 packagingData.map((item, index) => {
                   return (
@@ -58,10 +56,10 @@ function ViewPackagingAndFreight(props) {
                       <td>
                         {item.PackagingDescription ? item.PackagingDescription : '-'}
                       </td>
-                      <td>{item.Applicability ? item.Applicability : '-'}</td>
-                      <td>
+                      {!isLogisticsTechnology && <td>{item.Applicability ? item.Applicability : '-'}</td>}
+                      {!isLogisticsTechnology && <td>
                         {item.IsPackagingCostFixed && item.IsPackagingCostFixed ? item.PackagingCostPercentage : 'Fixed'}
-                      </td>
+                      </td>}
                       <td>
                         {item.PackagingCost ? checkForDecimalAndNull(item.PackagingCost, initialConfiguration.NoOfDecimalForPrice) : '-'}
                       </td>
@@ -93,16 +91,14 @@ function ViewPackagingAndFreight(props) {
 
         <Col md="12">
           <Table className="table cr-brdr-main" size="sm">
-            <thead>
-              <tr>
+            <tbody>
+            <tr className='thead'>
                 <th>{`Freight Type`}</th>
                 <th>{`Criteria`}</th>
                 <th>{`Rate`}</th>
                 <th>{`Quantity`}</th>
                 <th className="costing-border-right">{`Cost`}</th>
               </tr>
-            </thead>
-            <tbody>
               {freightData &&
                 freightData.map((item, index) => {
                   return (
@@ -143,7 +139,7 @@ function ViewPackagingAndFreight(props) {
             <Row className="drawer-heading">
               <Col>
                 <div className={'header-wrapper left'}>
-                  <h3>{'View Packaging & Freight Cost:'}</h3>
+                  <h3>{`${isLogisticsTechnology ? 'View Freight Cost:' : 'View Packaging & Freight Cost:'}`}</h3>
                 </div>
                 <div
                   onClick={(e) => toggleDrawer(e)}
@@ -155,7 +151,7 @@ function ViewPackagingAndFreight(props) {
             <div className="px-3">
               {packageTableData()}
               <div>
-                {freightTableData()}
+                {!isLogisticsTechnology && freightTableData()}
               </div>
             </div>
           </div>
