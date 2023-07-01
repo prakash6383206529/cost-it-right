@@ -61,7 +61,10 @@ function RfqListing(props) {
     const [selectedCostingsToShow, setSelectedCostingsToShow] = useState([])
     const [multipleCostingDetails, setMultipleCostingDetails] = useState([])
     const [uniqueShouldCostingId, setUniqueShouldCostingId] = useState([])
+    const [costingListToShow, setCostingListToShow] = useState([])
     const [selectedRowIndex, setSelectedRowIndex] = useState('')
+    const [index, setIndex] = useState('')
+    const [selectedCostingList, setSelectedCostingList] = useState('')
 
     const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
 
@@ -163,24 +166,16 @@ function RfqListing(props) {
     * @description edit material type
     */
     const approvemDetails = (Id, rowData = {}) => {
-        const arrayOfObjects = viewCostingData
-        const searchArray = _.map(selectedRows, 'CostingId')
-        const matchingItems = searchArray.filter(item =>
-            arrayOfObjects.some(obj => obj.costingId === item)
-        );
-        const isOnlyOnePresent = matchingItems.length === 1;
-        if (!isOnlyOnePresent) {
+        if (index === '') {
             Toaster.warning("You can send only one costing for approval")
             return false
         }
-        let filteredArr = _.map(viewCostingData, 'costingId')
         let arr = []
-        filteredArr.map(item => rowData.filter(el => {
-            if (el.CostingId === item) {
+        rowData.filter(el => {
+            if (el.CostingId === selectedCostingList[0]) {
                 arr.push(el)
             }
-            return null
-        }))
+        })
 
         // let data = {
         //     isEditFlag: true,
@@ -452,6 +447,11 @@ function RfqListing(props) {
         setIsOpen(true)
     }
 
+    const checkCostingSelected = (list, index) => {
+        setIndex(index)
+        setSelectedCostingList(list)
+    }
+
     /**
     * @method buttonFormatter
     * @description Renders buttons
@@ -493,7 +493,6 @@ function RfqListing(props) {
             </>
         )
     };
-
 
     const closeDrawer = () => {
         setAddRfqData({})
@@ -619,6 +618,13 @@ function RfqListing(props) {
     }
 
     const addComparisonDrawerToggle = () => {
+        let arr = []
+        selectedRows && selectedRows?.map(item => {
+            if (item?.CostingId) {
+                arr.push(item?.CostingId)
+            }
+        })
+        setCostingListToShow(arr)
         let temp = []
         let tempObj = {}
         const isApproval = selectedRows.filter(item => item.ShowApprovalButton)
@@ -926,6 +932,9 @@ function RfqListing(props) {
                                 costingIdExist={true}
                                 bestCostObjectFunction={bestCostObjectFunction}
                                 crossButton={hideSummaryHandler}
+                                costingIdList={costingListToShow}
+                                isFromViewRFQ={true}
+                                checkCostingSelected={checkCostingSelected}
                             />
                         )}
                     </div>
