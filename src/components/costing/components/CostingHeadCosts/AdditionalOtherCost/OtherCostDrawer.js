@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useForm, Controller, useWatch } from "react-hook-form";
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Container, Row, Col, Table } from 'reactstrap';
 import Drawer from '@material-ui/core/Drawer';
 import { SearchableSelectHookForm, TextFieldHookForm, } from '../../../../layout/HookFormInputs';
@@ -13,6 +13,8 @@ import TooltipCustom from '../../../../common/Tooltip';
 import { costingInfoContext, netHeadCostContext } from '../../CostingDetailStepTwo';
 import _ from 'lodash'
 import Toaster from '../../../../common/Toaster';
+import { setOtherCostData } from '../../../actions/Costing';
+import OtherCostTable from './OtherCostTable';
 
 function OtherCostDrawer(props) {
 
@@ -27,6 +29,9 @@ function OtherCostDrawer(props) {
 
 
     const { register, handleSubmit, formState: { errors }, control, getValues, setValue } = useForm();
+    const dispatch = useDispatch()
+    const { otherCostData } = useSelector(state => state.costing)
+
 
     const headerCosts = useContext(netHeadCostContext);
     const costData = useContext(costingInfoContext);
@@ -36,7 +41,7 @@ function OtherCostDrawer(props) {
     const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
     const costingHead = useSelector(state => state.comman.costingHead)
     const [isEdit, setIsEdit] = useState(false);
-    const [gridData, setgridData] = useState(props?.otherCostArr?.length > 0 ? props?.otherCostArr : []);
+    const [gridData, setgridData] = useState(otherCostData.gridData);
     const [otherCostTotal, setOtherCostTotal] = useState(props?.otherCostArr?.length > 0 ? calculateSumOfValues(props?.otherCostArr) : 0)
     const [otherCostType, setOtherCostType] = useState([]);
     const [otherCostApplicability, setOtherCostApplicability] = useState([])
@@ -129,6 +134,7 @@ function OtherCostDrawer(props) {
 
     const onFinalSubmit = () => {
         props.closeDrawer('submit', otherCostTotal, gridData)
+        dispatch(setOtherCostData({ gridData: gridData, otherCostTotal: otherCostTotal }))
     }
 
     const validation = () => {
@@ -454,7 +460,7 @@ function OtherCostDrawer(props) {
                                     />
 
                                 </Col>
-                                <Col md="5" className='pt-1'>
+                                <Col md="4" className='pt-1 d-flex'>
                                     {isEdit ? (
                                         <>
                                             <button
@@ -494,70 +500,7 @@ function OtherCostDrawer(props) {
                                     )}
                                 </Col>
                             </Row>
-                            <Col md="12">
-                                <Table className="table mb-0 forging-cal-table" size="sm">
-                                    <thead>
-                                        <tr>
-                                            {initialConfiguration.IsShowCRMHead && <th>{`CRM Head`}</th>}
-                                            <th>{`Other Cost Description`}</th>
-                                            {/* <th>{`Other Cost Type`}</th> */}
-                                            <th>{`Other Cost Applicability`}</th>
-                                            <th>{'Percentage (%)'}</th>
-                                            <th>{`Cost`}</th>
-                                            <th className='text-right'>{`Action`}</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {gridData && gridData.map((item, index) => {
-                                            return (
-                                                <tr key={index} >
-                                                    {initialConfiguration.IsShowCRMHead && <td>{item.CRMHead}</td>}
-                                                    <td>{item.OtherCostDescription}</td>
-                                                    {/* <td>{item.OtherCostType}</td> */}
-                                                    <td>{item?.OtherCostApplicability}</td>
-                                                    <td>{item.PercentageOtherCost}</td>
-                                                    <td>{checkForDecimalAndNull(item.AnyOtherCost, initialConfiguration.NoOfDecimalForPrice)}</td>
-                                                    <td className='text-right'>
-                                                        <button
-                                                            className="Edit"
-                                                            title='Edit'
-                                                            type={"button"}
-                                                            disabled={CostingViewMode}
-                                                            onClick={() =>
-                                                                editItemDetails(index)
-                                                            }
-                                                        />
-                                                        <button
-                                                            className="Delete ml-1"
-                                                            title='Delete'
-                                                            type={"button"}
-                                                            disabled={CostingViewMode}
-                                                            onClick={() =>
-                                                                deleteItem(index)
-                                                            }
-                                                        />
-                                                    </td>
-                                                </tr>
-                                            );
-                                        })}
-
-                                        {gridData.length === 0 ? (
-                                            <tr>
-                                                <td colSpan={"6"}> <NoContentFound title={EMPTY_DATA} /></td>
-                                            </tr>
-                                        ) : (
-                                            <tr className='table-footer'>
-                                                <td colSpan={4} className='text-right'>
-                                                    Total Other Cost:
-                                                </td>
-                                                <td colSpan={3}>
-                                                    {checkForDecimalAndNull(otherCostTotal, initialConfiguration.NoOfDecimalForPrice)}
-                                                </td>
-                                            </tr>
-                                        )}
-                                    </tbody>
-                                </Table>
-                            </Col>
+                            <OtherCostTable editItemDetails={editItemDetails} deleteItem={deleteItem} tableData={{ gridData: gridData, otherCostTotal: otherCostTotal }} actionButton={true} />
                             <Row className="pr-0">
                                 <div className="col-sm-12 text-right">
                                     <button

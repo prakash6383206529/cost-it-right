@@ -2,13 +2,13 @@ import React, { useState, useEffect, Fragment } from 'react'
 import { Row, Col } from 'reactstrap'
 import { useDispatch, useSelector } from 'react-redux'
 import { getApprovalList, } from '../../actions/Approval'
-import { loggedInUserId, userDetails } from '../../../../helper/auth'
+import { getConfigurationKey, loggedInUserId, userDetails } from '../../../../helper/auth'
 import ApprovalSummary from './ApprovalSummary'
 import NoContentFound from '../../../common/NoContentFound'
 import { defaultPageSize, DRAFT, EMPTY_DATA, EMPTY_GUID, ZBCTypeId } from '../../../../config/constants'
 import DayTime from '../../../common/DayTimeWrapper'
 import ApproveRejectDrawer from './ApproveRejectDrawer'
-import { allEqual, checkForNull, formViewData, searchNocontentFilter } from '../../../../helper'
+import { allEqual, checkForDecimalAndNull, checkForNull, formViewData, searchNocontentFilter } from '../../../../helper'
 import { PENDING } from '../../../../config/constants'
 import Toaster from '../../../common/Toaster'
 import imgArrowDown from "../../../../assests/images/arrow-down.svg";
@@ -70,6 +70,7 @@ function ApprovalListing(props) {
   const [noData, setNoData] = useState(false)
   const [pageSize, setPageSize] = useState({ pageSize10: true, pageSize50: false, pageSize100: false })
   const [floatingFilterData, setFloatingFilterData] = useState({ ApprovalNumber: "", CostingNumber: "", PartNumber: "", PartName: "", VendorName: "", PlantName: "", TechnologyName: "", NetPOPriceNew: "", OldPOPriceNew: "", Reason: "", EffectiveDate: "", CreatedBy: "", CreatedOn: "", RequestedBy: "", RequestedOn: "" })
+  const [isSuperAdmin, setIsSuperAdmin] = useState(false)
 
   const isApproval = props.isApproval;
   let approvalGridData = isDashboard ? approvalList : approvalListDraft
@@ -81,6 +82,10 @@ function ApprovalListing(props) {
     component: 'costingApproval',
     location: "costing"
   }
+
+  useEffect(() => {
+    setIsSuperAdmin(userDetails()?.Role === "SuperAdmin")
+  }, [])
 
   useEffect(() => {
     if (props.activeTab === "3" || isDashboard) {
@@ -512,6 +517,10 @@ function ApprovalListing(props) {
     const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
     return !cell ? '-' : cell;
   }
+  const basicRateFormatter = (props) => {
+    const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+    return !cell ? '-' : checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice);
+  }
   const lastApprovalFormatter = (props) => {
     const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
     return cell != null ? cell : '-';
@@ -882,7 +891,8 @@ function ApprovalListing(props) {
     hyperLinkableFormatter: hyperLinkableFormatter,
     reasonFormatter: reasonFormatter,
     lastApprovalFormatter: lastApprovalFormatter,
-    statusFilter: SingleDropdownFloationFilter
+    statusFilter: SingleDropdownFloationFilter,
+    basicRateFormatter: basicRateFormatter
   };
 
   const isRowSelectable = rowNode => rowNode.data ? (rowNode.data.Status === PENDING || rowNode.data.Status === DRAFT) : false
@@ -927,7 +937,7 @@ function ApprovalListing(props) {
                           class="user-btn approval-btn"
                           type='button'
                           onClick={sendForApproval}
-                          disabled={(isDashboard ? (approvalList && approvalList.length === 0) : (approvalListDraft && approvalListDraft.length === 0)) ? true : false}
+                          disabled={((isDashboard ? (approvalList && approvalList.length === 0) : (approvalListDraft && approvalListDraft.length === 0)) || isSuperAdmin) ? true : false}
                         >
                           <div className="send-for-approval mr-0" ></div>
                         </button>}
@@ -984,7 +994,7 @@ function ApprovalListing(props) {
                           <AgGridColumn field="PlantName" cellRenderer='renderPlant' headerName="Plant (Code)"></AgGridColumn>
                           {reactLocalStorage.getObject('cbcCostingPermission') && <AgGridColumn field="Customer" cellRenderer='renderCustomer' headerName="Customer (Code)"></AgGridColumn>}
                           <AgGridColumn field='TechnologyName' headerName="Technology"></AgGridColumn>
-                          {initialConfiguration?.IsBasicRateAndCostingConditionVisible && <AgGridColumn field="BasicRate" cellRenderer='reasonFormatter' headerName="Basic Price"></AgGridColumn>}
+                          {initialConfiguration?.IsBasicRateAndCostingConditionVisible && <AgGridColumn field="BasicRate" cellRenderer='basicRateFormatter' headerName="Basic Price"></AgGridColumn>}
                           <AgGridColumn field="OldPOPriceNew" cellRenderer='oldpriceFormatter' headerName="Existing PO Price"></AgGridColumn>
                           <AgGridColumn field="NetPOPriceNew" cellRenderer='priceFormatter' headerName="Revised PO Price"></AgGridColumn>
                           <AgGridColumn field="NCCPartQuantity" headerName="Quantity" cellRenderer={"reasonFormatter"} ></AgGridColumn>

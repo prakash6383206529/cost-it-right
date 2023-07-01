@@ -17,16 +17,16 @@ function AddToComparisonDrawer(props) {
   const { editObject, isEditFlag, viewMode } = props
 
   const { plantId, plantName, costingId, CostingNumber, index, VendorId, vendorName,
-    vendorPlantName, vendorPlantId, destinationPlantName, customerName, customerId, destinationPlantId, costingTypeId } = editObject
+    vendorPlantName, vendorPlantId, destinationPlantName, customerName, customerId, destinationPlantId, costingTypeId, vendorCode, customerCode } = editObject
 
   const defaultValue = {
     comparisonValue: isEditFlag ? costingTypeId === ZBCTypeId ? 'ZBC' : costingTypeId === VBCTypeId ? 'VBC' : 'CBC' : 'ZBC',
     plant: plantName !== '-' ? { label: plantName, value: plantId } : '',
     costings: isEditFlag ? { label: CostingNumber, value: costingId } : '',
-    vendor: VendorId !== '-' ? { label: vendorName, value: VendorId } : '',
+    vendor: VendorId !== '-' ? { label: `${vendorName} (${vendorCode})`, value: VendorId } : '',
     vendorPlant: vendorPlantId !== '-' ? { label: vendorPlantName, value: vendorPlantId } : '',
     destinationPlant: destinationPlantId !== '-' ? { label: destinationPlantName, value: destinationPlantId } : '',
-    clientName: customerId !== '-' ? { label: customerName, value: customerId } : '',
+    clientName: customerId !== '-' ? { label: `${customerName} (${customerCode})`, value: customerId } : '',
   }
 
   const { register, handleSubmit, control, setValue, formState: { errors }, reset } = useForm({
