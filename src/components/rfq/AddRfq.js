@@ -780,6 +780,8 @@ function AddRfq(props) {
         if (newValue && newValue !== '') {
             // setPartNoDisable(false)
             setValue('partNumber', "")
+            setPartName('')
+            reactLocalStorage.setObject('PartData', [])
             setNfrId(newValue)
         }
     }
