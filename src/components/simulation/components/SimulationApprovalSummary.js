@@ -982,7 +982,7 @@ function SimulationApprovalSummary(props) {
 
             temp.push({
                 CostingId: item.CostingId,
-                effectiveDate: DayTime(simulationDetail.EffectiveDate).format('MM/DD/YYYY'),
+                effectiveDate: DayTime(simulationDetail.EffectiveDate).format('YYYY-MM-DD'),
                 vendorCode: vendor.split(')')[0],
                 materialNumber: item.PartNo,
                 netPrice: item.NewPOPrice,
