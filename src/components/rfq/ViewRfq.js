@@ -935,6 +935,7 @@ function RfqListing(props) {
                                 costingIdList={costingListToShow}
                                 isFromViewRFQ={true}
                                 checkCostingSelected={checkCostingSelected}
+                                disableApproveRejectButton={disableApproveRejectButton}
                             />
                         )}
                     </div>

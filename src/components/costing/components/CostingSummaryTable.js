@@ -47,7 +47,7 @@ import CostingDetailSimulationDrawer from '../../simulation/components/CostingDe
 const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
 
 const CostingSummaryTable = (props) => {
-  const { viewMode, showDetail, technologyId, costingID, showWarningMsg, simulationMode, isApproval, simulationDrawer, customClass, selectedTechnology, master, isSimulationDone, approvalMode, drawerViewMode, costingSummaryMainPage, costingIdExist, costingIdList, notSelectedCostingId, isFromViewRFQ } = props
+  const { viewMode, showDetail, technologyId, costingID, showWarningMsg, simulationMode, isApproval, simulationDrawer, customClass, selectedTechnology, master, isSimulationDone, approvalMode, drawerViewMode, costingSummaryMainPage, costingIdExist, costingIdList, notSelectedCostingId, isFromViewRFQ, disableApproveRejectButton } = props
 
   let history = useHistory();
   const ExcelFile = ReactExport.ExcelFile;
@@ -1367,7 +1367,7 @@ const CostingSummaryTable = (props) => {
                                         </div>}
                                       </>
                                     }
-                                    {!isApproval && !data?.IsApprovalLocked && props?.isRfqCosting && isFromViewRFQ && costingIdList?.includes(data?.costingId) && <div className="custom-check1 d-inline-block">
+                                    {disableApproveRejectButton && !data?.IsApprovalLocked && props?.isRfqCosting && isFromViewRFQ && costingIdList?.includes(data?.costingId) && <div className="custom-check1 d-inline-block">
                                       <label
                                         className="custom-checkbox pl-0 mb-0"
                                         onChange={() => moduleHandler(data?.costingId, 'top', data, index)}
