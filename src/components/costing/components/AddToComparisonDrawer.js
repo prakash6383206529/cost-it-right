@@ -582,7 +582,6 @@ function AddToComparisonDrawer(props) {
           // setIsZbcSelected(true)
           // setisCbcSelected(false)
 
-
           props.closeDrawer('')
         }
       }),

@@ -121,6 +121,10 @@ function ProcessCost(props) {
       BOMLevel: props?.item?.BOMLevel,
       PartNumber: props?.item?.PartNumber,
     }
+    // data.CostingProcessCostResponse && data.CostingProcessCostResponse.map((item, index) => {
+    //   setValue(`${ProcessGridFields}.${index}.Quantity`, item.Quantity)
+    //   setValue(`${ProcessGridFields}.${index}.ProcessCost`, item.ProcessCost)
+    // })
     if (!CostingViewMode && !IsLocked) {
       selectedIds(gridData)
       if (JSON.stringify(gridData) !== JSON.stringify(data && data.CostingProcessCostResponse)) {
@@ -1382,6 +1386,7 @@ function ProcessCost(props) {
                 <tbody>
                   {processGroupGrid &&
                     processGroupGrid.map((item, index) => {
+                      console.log('item: ', item);
                       return (
                         <>
                           <tr key={index}>
@@ -1606,4 +1611,3 @@ function ProcessCost(props) {
 }
 
 export default ProcessCost
-

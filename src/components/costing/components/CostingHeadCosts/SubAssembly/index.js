@@ -6,7 +6,7 @@ import PartCompoment from '../Part';
 import { getCostingLabourDetails, getRMCCTabData, saveAssemblyBOPHandlingCharge, saveAssemblyPartRowCostingCalculation, saveCostingLabourDetails, setRMCCData } from '../../../actions/Costing';
 import { checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected, loggedInUserId, } from '../../../../../helper';
 import AddAssemblyOperation from '../../Drawers/AddAssemblyOperation';
-import { CostingStatusContext, ViewCostingContext } from '../../CostingDetails';
+import { CostingStatusContext, IsNFR, ViewCostingContext } from '../../CostingDetails';
 import { ASSEMBLYNAME, EMPTY_GUID, WACTypeId, ZBCTypeId } from '../../../../../config/constants';
 import _ from 'lodash'
 import AddBOPHandling from '../../Drawers/AddBOPHandling';
@@ -37,10 +37,15 @@ function AssemblyPart(props) {
 
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   const netPOPrice = useContext(NetPOPriceContext);
-  const { DiscountCostData, CostingEffectiveDate, bomLevel, RMCCTabData, SurfaceTabData, OverheadProfitTabData, PackageAndFreightTabData, ToolTabData, getAssemBOPCharge } = useSelector(state => state.costing)
+  const { DiscountCostData, CostingEffectiveDate, bomLevel, RMCCTabData, SurfaceTabData, OverheadProfitTabData, PackageAndFreightTabData, ToolTabData, getAssemBOPCharge, openAllTabs } = useSelector(state => state.costing)
+  const isNFR = useContext(IsNFR);
   const dispatch = useDispatch()
   const toggle = (BOMLevel, PartNumber) => {
     if (CheckIsCostingDateSelected(CostingEffectiveDate)) return false;
+    if (isNFR && !openAllTabs) {
+      Toaster.warning("All Raw Material's price has not added in the Raw Material master against this vendor and plant.")
+      return false;
+    }
     if ((partNumberAssembly !== '' && partNumberAssembly !== PartNumber) ||
       (partNumberAssembly !== '' && partNumberAssembly === PartNumber && bomLevel !== BOMLevel)) {
       Toaster.warning('Close Accordian first.')

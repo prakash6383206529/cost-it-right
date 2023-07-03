@@ -1,3 +1,4 @@
+
 import React, { Component } from "react";
 import { Field, reduxForm } from "redux-form";
 import {
@@ -78,7 +79,7 @@ class Login extends Component {
         let userDetail = formatLoginResult(res.data.Data);
         let departmentList = ''
         const dept = userDetail && userDetail.Department.map((item) => {
-          if (item.Role === 'Group Category Head' || item.Role === 'SuperAdmin') {
+          if (userDetail.Role === 'Group Category Head' || userDetail.Role === 'SuperAdmin') {
             return ''
           } else {
             return item.DepartmentCode

@@ -128,7 +128,6 @@ class UsersListing extends Component {
 				})
 			}
 		})
-
 	}
 
 	onRowSelect = () => {
@@ -495,7 +494,6 @@ class UsersListing extends Component {
 			this.getUsersListData(filterDepartment, filterRole)
 		})
 	}
-
 	formToggle = () => {
 		this.props.formToggle(this.props?.RFQUser)
 	}

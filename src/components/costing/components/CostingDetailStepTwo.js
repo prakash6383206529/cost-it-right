@@ -18,6 +18,7 @@ import { CBCTypeId, NCC, NCCTypeId, NFRTypeId, PFS1TypeId, PFS2TypeId, PFS3TypeI
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { LOGISTICS } from '../../../config/masterData';
 import { Redirect } from 'react-router';
+import { setOpenAllTabs } from '../../masters/nfr/actions/nfr';
 
 export const costingInfoContext = React.createContext()
 export const netHeadCostContext = React.createContext()
@@ -422,6 +423,7 @@ function CostingDetailStepTwo(props) {
       dispatch(setDiscountErrors({}))
       dispatch(setComponentDiscountOtherItemData({}, () => { }))
       dispatch(isDiscountDataChange(false))
+      dispatch(setOpenAllTabs(false))
 
       props.backBtn()
     }

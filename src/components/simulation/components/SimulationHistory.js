@@ -11,6 +11,7 @@ import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import LoaderCustom from '../../common/LoaderCustom'
 import { PaginationWrapper } from '../../common/commonPagination'
 
+
 function SimulationHistory(props) {
 
   const simulationHistory = useSelector(state => state.history.simulationHistory)

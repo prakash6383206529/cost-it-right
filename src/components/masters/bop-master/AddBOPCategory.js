@@ -83,7 +83,7 @@ class AddBOPCategory extends Component {
                                 className="form"
                                 onSubmit={handleSubmit(this.onSubmit.bind(this))}
                                 onKeyDown={(e) => { this.handleKeyDown(e, this.onSubmit.bind(this)); }}
-                                >
+                            >
                                 <Row className="drawer-heading">
                                     <Col>
                                         <div className={'header-wrapper left'}>

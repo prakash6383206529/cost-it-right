@@ -273,6 +273,36 @@ class AddBOPImport extends Component {
     }
   }
 
+  handleIncoTerm = (newValue) => {
+    const { isEditFlag, DataToChange } = this.state
+    if (newValue && newValue !== '') {
+      this.setState({ incoTerm: newValue });
+    } else {
+      this.setState({ incoTerm: [] })
+    }
+    if (isEditFlag && (DataToChange.BoughtOutPartIncoTermId !== newValue.value)) {
+      this.setState({ IsFinancialDataChanged: true })
+    }
+    else if (isEditFlag) {
+      this.setState({ IsFinancialDataChanged: false })
+    }
+  }
+
+  handlePaymentTerm = (newValue) => {
+    const { isEditFlag, DataToChange } = this.state
+    if (newValue && newValue !== '') {
+      this.setState({ paymentTerm: newValue });
+    } else {
+      this.setState({ paymentTerm: [] })
+    }
+    if (isEditFlag && (DataToChange.BoughtOutPartPaymentTermId !== newValue.value)) {
+      this.setState({ IsFinancialDataChanged: true })
+    }
+    else if (isEditFlag) {
+      this.setState({ IsFinancialDataChanged: false })
+    }
+  }
+
   closeApprovalDrawer = (e = '', type) => {
     this.setState({ approveDrawer: false, setDisable: false })
     if (type === 'submit') {
@@ -301,6 +331,9 @@ class AddBOPImport extends Component {
           this.setState({ DataToChange: Data, })
 
           this.props.change('EffectiveDate', DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
+          this.props.change('NetLandedCostCurrency', Data.NetLandedCostConversion ? Data.NetLandedCostConversion : '')
+
+
           this.setState({ minEffectiveDate: Data.EffectiveDate })
           setTimeout(() => {
             this.props.change('NetLandedCostCurrency', Data.NetLandedCostConversion)
@@ -608,6 +641,7 @@ class AddBOPImport extends Component {
 
 
   handleCalculation = () => {
+
     const { fieldsObj, initialConfiguration } = this.props
     const { currency, effectiveDate } = this.state;
     const NoOfPieces = fieldsObj && fieldsObj.NumberOfPieces !== undefined ? fieldsObj.NumberOfPieces : 1; // MAY BE USED LATER IF USED IN CALCULATION

@@ -466,7 +466,7 @@ function Facing(props) {
                         disabled={true}
                       />
                     </Col>
-                    <Col md="3"></Col>
+                    <Col md="4"></Col>
                   </Row>
                 </Col>
 
@@ -497,9 +497,7 @@ function Facing(props) {
                 disabled={props.CostingViewMode || isDisable ? true : false}
                 className="btn-primary save-btn"
               >
-                <div className={'check-icon'}>
-                  <img src={require("../../../../../assests/images/check.png")} alt="check-icon.jpg" />
-                </div>
+                <div className={"save-icon"}></div>
                 {isEditFlag ? 'UPDATE' : 'SAVE'}
               </button>
             </div>

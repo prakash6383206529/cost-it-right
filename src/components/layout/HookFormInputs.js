@@ -226,7 +226,6 @@ export const NumberFieldHookForm = (field) => {
   const className = `form-group inputbox ${field.customClassName ? field.customClassName : ""}`;
   const InputClassName = `form-control ${field.className ? field.className : ""}`;
   const isDisabled = field.disabled === true ? true : false;
-
   return (
     <>
       <div className={className} >
@@ -359,7 +358,6 @@ export const SearchableSelectHookForm = (field) => {
               </button>}
             </div>
           )
-
         }}
       />
 

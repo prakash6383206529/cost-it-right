@@ -1312,6 +1312,22 @@ class AddBOPDomestic extends Component {
                             />
                           </Col>
 
+
+                          <Col md="3">
+                            <Field
+                              label={`Minimum Order Quantity`}
+                              name={"NumberOfPieces"}
+                              type="text"
+                              placeholder={"Enter"}
+                              validate={[postiveNumber, maxLength10]}
+                              component={renderText}
+                              required={false}
+                              className=""
+                              customClassName=" withBorder"
+                              disabled={isViewMode}
+                            />
+                          </Col>
+
                           <Col md="3">
                             <Field
                               label={this.labelWithUOM(this.state.UOM.label ? this.state.UOM.label : 'UOM')}

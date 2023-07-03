@@ -4,6 +4,7 @@ import {
     API,
     API_FAILURE,
     NFR_DETAILS_FOR_DISCOUNT,
+    SET_OPEN_ALL_TABS,
     config,
 
 } from '../../../../config/constants';
@@ -234,9 +235,9 @@ export function saveOutsourcingData(requestData, callback) {
  * @method getNFRCostingOutsourcingDetails
  * @description getNFRCostingOutsourcingDetails
  */
-export function getNFRCostingOutsourcingDetails(baseCostingId, callback) {
+export function getNFRCostingOutsourcingDetails(baseCostingId, nfrRawMaterialAndBoughtOutPartDetailId, callback) {
     return (dispatch) => {
-        const request = axios.get(`${API.getNFRCostingOutsourcingDetails}/${baseCostingId}`, config());
+        const request = axios.get(`${API.getNFRCostingOutsourcingDetails}?baseCostingId=${baseCostingId ? baseCostingId : null}&nfrRawMaterialAndBoughtOutPartDetailId=${nfrRawMaterialAndBoughtOutPartDetailId ? nfrRawMaterialAndBoughtOutPartDetailId : null}`, config());
         request.then((response) => {
             if (response.data.Result || response.status === 204) {
                 callback(response);
@@ -284,5 +285,36 @@ export function getRawMaterialByNFRPart(nfrPartWiseDetailId, callback) {
             callback(error);
             apiErrors(error);
         });
+    };
+}
+
+/**
+ * @method setOpenAll
+ * @description setOpenAll  
+ */
+export function setOpenAllTabs(data) {
+    return (dispatch) => {
+        dispatch({
+            type: SET_OPEN_ALL_TABS,
+            payload: data,
+        });
+    }
+};
+
+/**
+ * @method pushNfrRmBopOnSap
+ * @description push Nfr Rm Bop On Sap
+ */
+export function pushNfrRmBopOnSap(requestData, callback) {
+    return (dispatch) => {
+        axios.post(API.pushNfrRmBopOnSap, requestData, config())
+            .then((response) => {
+                if (response && response.status === 200) {
+                    callback(response);
+                }
+            }).catch((error) => {
+                apiErrors(error);
+                callback(error);
+            });
     };
 }

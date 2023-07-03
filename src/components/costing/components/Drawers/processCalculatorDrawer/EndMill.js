@@ -501,7 +501,7 @@ function EndMill(props) {
                         disabled={true}
                       />
                     </Col>
-                    <Col md="3"></Col>
+                    <Col md="4"></Col>
                   </Row>
                 </Col>
 

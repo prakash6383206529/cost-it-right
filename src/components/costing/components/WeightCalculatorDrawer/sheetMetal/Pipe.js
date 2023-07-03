@@ -27,6 +27,7 @@ function IsolateReRender(control) {
   return values;
 }
 
+
 function Pipe(props) {
 
   const WeightCalculatorRequest = props.rmRowData.WeightCalculatorRequest;

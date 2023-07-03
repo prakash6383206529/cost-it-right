@@ -28,6 +28,7 @@ import { costingTypeIdToApprovalTypeIdFunction } from '../../../common/CommonFun
 import { getMultipleCostingDetails, rfqGetBestCostingDetails } from '../../../rfq/actions/rfq'
 import _ from 'lodash'
 
+
 function ApprovalSummary(props) {
   const { approvalNumber, approvalProcessId } = props.location.state
   const loggedInUser = loggedInUserId()
@@ -64,7 +65,10 @@ function ApprovalSummary(props) {
   const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
   const [uniqueShouldCostingId, setUniqueShouldCostingId] = useState([])
   const [costingIdList, setCostingIdList] = useState([])
+  const [notSelectedCostingId, setNotSelectedCostingId] = useState([])
   const [isRFQ, setisRFQ] = useState(false)
+  const [conditionInfo, setConditionInfo] = useState([])
+  const [vendorCodeForSap, setVendorCodeForSap] = useState('')
 
   const headerName = ['Revision No.', 'Name', 'Existing Cost/Pc', 'Revised Cost/Pc', 'Quantity', 'Impact/Pc', 'Volume/Year', 'Impact/Quarter', 'Impact/Year']
   const parentField = ['PartNumber', '-', 'PartName', '-', '-', '-', 'VariancePerPiece', 'VolumePerYear', 'ImpactPerQuarter', 'ImpactPerYear']
@@ -136,7 +140,13 @@ function ApprovalSummary(props) {
       if (BestCostAndShouldCostDetails?.BestCostId) {
         let temp = []
         let tempObj = {}
-        setCostingIdList(_.map([...BestCostAndShouldCostDetails?.CostingIdList], 'CostingId'))
+        let list = _.map([...BestCostAndShouldCostDetails?.CostingIdList], 'CostingId')
+
+        setCostingIdList(list)
+        const filteredArray = list.filter((id) => id !== CostingId);
+        setNotSelectedCostingId(filteredArray)
+
+
         setUniqueShouldCostingId(_.map(BestCostAndShouldCostDetails?.ShouldCostings, 'CostingId'))
         let costing = [...BestCostAndShouldCostDetails?.ShouldCostings, ...BestCostAndShouldCostDetails?.CostingIdList, { CostingId: CostingId }]
 
@@ -152,13 +162,14 @@ function ApprovalSummary(props) {
               tempObj[0].bestCost = true
               temp.push(tempObj[0])
               let dat = [...temp]
+
               let tempArrToSend = _.uniqBy(dat, 'costingId')
+
               dispatch(setCostingViewData([...tempArrToSend]))
             }))
           }
         }))
       }
-
       setCostingTypeId(CostingTypeId)
       setNccPartQuantity(NCCPartQuantity)
       setIsRegularized(IsRegularized)
@@ -201,6 +212,28 @@ function ApprovalSummary(props) {
         if (res && res.data && res.data.Result) {
           setFinalLevelUser(res.data.Data.IsFinalApprover)
         }
+      }))
+
+      dispatch(getSingleCostingDetails(CostingId, res => {
+        let responseData = res?.data?.Data
+        setVendorCodeForSap(responseData.VendorCode)
+        let conditionArr = []
+        responseData.CostingPartDetails.CostingConditionResponse.forEach((item, index) => {
+          let obj = {
+            Lifnr: responseData.VendorCode,
+            Matnr: responseData.PartNumber,
+            Kschl: item.CostingConditionNumber,
+            Datab: DayTime(responseData.EffectiveDate).format('YYYY-MM-DD'),
+            Datbi: DayTime(responseData.CostingDate).format('YYYY-MM-DD'),
+            Kbetr: item.ConditionCost,
+            Konwa: INR,
+            Kpein: "1",
+            Kmein: "NO"
+          }
+          conditionArr.push(obj)
+        })
+
+        setConditionInfo(conditionArr)
       }))
     }),
 
@@ -245,7 +278,8 @@ function ApprovalSummary(props) {
   ]
 
   const displayCompareCosting = () => {
-    if (uniqueShouldCostingId?.length === 0) {
+
+    if (!isRFQ && uniqueShouldCostingId?.length === 0) {
       dispatch(getSingleCostingDetails(approvalData.CostingId, res => {
         const Data = res.data.Data
         const newObj = formViewData(Data, 'New Costing')
@@ -293,10 +327,10 @@ function ApprovalSummary(props) {
   }
 
   const callPushAPI = debounce(() => {
-    const { netPo, quantity } = getPOPriceAfterDecimal(approvalData?.DecimalOption, dataSend.NewPOPrice ? dataSend.NewPOPrice : 0)
+    const { quantity } = getPOPriceAfterDecimal(approvalData?.DecimalOption, dataSend.NewPOPrice ? dataSend.NewPOPrice : 0)
     let pushdata = {
-      effectiveDate: dataSend[0].EffectiveDate ? DayTime(dataSend[0].EffectiveDate).format('MM/DD/YYYY') : '',
-      vendorCode: dataSend[0].VendorCode ? dataSend[0].VendorCode : '',
+      effectiveDate: dataSend[0].EffectiveDate ? DayTime(dataSend[0].EffectiveDate).format('YYYY-MM-DD') : '',
+      vendorCode: vendorCodeForSap,
       materialNumber: dataSend[1].PartNumber,
       netPrice: dataSend[0].NewPOPrice,
       plant: dataSend[0].PlantCode ? dataSend[0].PlantCode : dataSend[0].DestinationPlantId ? dataSend[0].DestinationPlantCode : '',
@@ -308,7 +342,8 @@ function ApprovalSummary(props) {
       purchasingOrg: dataSend[0].CompanyCode ? dataSend[0].CompanyCode : '',
       CostingId: approvalData.CostingId,
       Quantity: quantity,
-      DecimalOption: approvalData.DecimalOption
+      DecimalOption: approvalData.DecimalOption,
+      InfoToConditions: conditionInfo
       // effectiveDate: '11/30/2021',
       // vendorCode: '203670',
       // materialNumber: 'S07004-003A0Y',
@@ -633,7 +668,7 @@ function ApprovalSummary(props) {
             <Row className="mb-4">
               <Col md="12" className="costing-summary-row">
                 {/* SEND isApproval FALSE WHEN OPENING FROM FGWISE */}
-                {costingSummary && <CostingSummaryTable viewMode={true} costingID={approvalDetails.CostingId} approvalMode={true} isApproval={approvalData.LastCostingId !== EMPTY_GUID ? true : false} simulationMode={false} costingIdExist={true} uniqueShouldCostingId={uniqueShouldCostingId} isRfqCosting={isRFQ} costingIdList={costingIdList} />}
+                {costingSummary && <CostingSummaryTable VendorId={approvalData.VendorId} viewMode={true} costingID={approvalDetails.CostingId} approvalMode={true} isApproval={approvalData.LastCostingId !== EMPTY_GUID ? true : false} simulationMode={false} costingIdExist={true} uniqueShouldCostingId={uniqueShouldCostingId} isRfqCosting={isRFQ} costingIdList={costingIdList} notSelectedCostingId={notSelectedCostingId} />}
               </Col>
             </Row>
             {/* Costing Summary page here */}
@@ -715,6 +750,8 @@ function ApprovalSummary(props) {
           IsPushDrawer={showPushDrawer}
           dataSend={[approvalDetails, partDetail]}
           costingTypeId={costingTypeId}
+          conditionInfo={conditionInfo}
+          vendorCodeForSAP={vendorCodeForSap}
         />
       )}
       {pushButton && (
@@ -724,6 +761,8 @@ function ApprovalSummary(props) {
           dataSend={[approvalDetails, partDetail]}
           anchor={'right'}
           approvalData={[approvalData]}
+          conditionInfo={conditionInfo}
+          vendorCodeForSAP={vendorCodeForSap}
         />
       )}
 

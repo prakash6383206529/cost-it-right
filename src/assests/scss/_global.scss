@@ -1027,7 +1027,7 @@ a:hover {
 
   .ag-row,
   .ag-cell {
-    line-height: 35px;
+    line-height: 35px !important;
     height: 35px !important;
 
     @media screen and (min-width: $middleDesktop) {
@@ -1117,7 +1117,7 @@ a:hover {
 
     .crud-label {
       font-size: $font-14;
-      vertical-align: bottom !important;
+      vertical-align: top !important;
     }
 
     th,

@@ -229,6 +229,8 @@ class SideBar extends Component {
         } else {
           break;
         }
+      case "NFR":
+        return this.renderNFR(module, LandingPageURL);
       default:
         return null
     }

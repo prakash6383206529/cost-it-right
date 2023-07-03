@@ -563,7 +563,7 @@ function ChamferingMiller(props) {
                         disabled={true}
                       />
                     </Col>
-                    <Col md="3"></Col>
+                    <Col md="4"></Col>
                   </Row>
                 </Col>
                 <div className="bluefooter-butn border row">

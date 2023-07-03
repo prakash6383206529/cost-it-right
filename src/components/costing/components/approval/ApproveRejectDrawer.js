@@ -386,8 +386,8 @@ function ApproveRejectDrawer(props) {
             if (showFinalLevelButtons) {
               Toaster.success('The costing approved successfully')
               let pushdata = {
-                effectiveDate: dataSend[0].EffectiveDate ? DayTime(dataSend[0].EffectiveDate).format('MM/DD/YYYY') : '',
-                vendorCode: dataSend[0].VendorCode ? dataSend[0].VendorCode : '',
+                effectiveDate: dataSend[0].EffectiveDate ? DayTime(dataSend[0].EffectiveDate).format('YYYY-MM-DD') : '',
+                vendorCode: props?.vendorCodeForSAP ? props?.vendorCodeForSAP : '',
                 materialNumber: dataSend[1].PartNumber,
                 netPrice: dataSend[0].NewPOPrice,
                 plant: dataSend[0].PlantCode ? dataSend[0].PlantCode : dataSend[0].DestinationPlantId ? dataSend[0].DestinationPlantCode : '',
@@ -398,7 +398,8 @@ function ApproveRejectDrawer(props) {
                 purchasingGroup: approvalData[0]?.PurchasingGroup?.label ? approvalData[0]?.PurchasingGroup.label.split('(')[0] : '',
                 purchasingOrg: dataSend[0].CompanyCode ? dataSend[0].CompanyCode : '',
                 CostingId: approvalData[0].CostingId,
-                DecimalOption: approvalData[0].DecimalOption
+                DecimalOption: approvalData[0].DecimalOption,
+                InfoToConditions: props.conditionInfo
                 // Quantity: quantity
                 // effectiveDate: '11/30/2021',
                 // vendorCode: '203670',

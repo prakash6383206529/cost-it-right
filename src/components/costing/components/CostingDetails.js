@@ -35,6 +35,7 @@ import { IdForMultiTechnology } from '../../../config/masterData';
 import { autoCompleteDropdown } from '../../common/CommonFunctions';
 import { getUOMSelectList } from '../../../actions/Common';
 import { Redirect } from 'react-router';
+import { setOpenAllTabs } from '../../masters/nfr/actions/nfr';
 
 export const ViewCostingContext = React.createContext()
 export const EditCostingContext = React.createContext()
@@ -1450,6 +1451,7 @@ function CostingDetails(props) {
       dispatch(setCostingDataList('setHeaderCostRMCCTab', [], () => { }))
       dispatch(emptyCostingData())
       dispatch(setRMCCBOPCostData([], () => { }))
+      dispatch(setOpenAllTabs(false))
 
     } else {
       setIsLoader(true)

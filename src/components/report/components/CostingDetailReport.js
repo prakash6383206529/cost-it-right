@@ -390,6 +390,7 @@ function ReportListing(props) {
         else {
             newData = data
         }
+
         dispatch(getCostingReport(skip, take, isPagination, newData, isLastWeek, isCallApi, (res) => {
 
             if (res) {
@@ -574,7 +575,7 @@ function ReportListing(props) {
             if (found !== undefined) {
                 getTableData(0, 100, true, floatingFilterData, false, true);
             } else {
-                getTableData(0, 100, true, floatingFilterData, false, false);
+                getTableData(0, 100, true, floatingFilterData, false, true);
             }
         }
         else {

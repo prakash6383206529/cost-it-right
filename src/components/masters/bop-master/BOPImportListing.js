@@ -710,7 +710,7 @@ class BOPImportListing extends Component {
                 </form>
                 <Row>
                     <Col>
-
+                        { }
                         <div className={`ag-grid-wrapper height-width-wrapper ${(this.props.bopImportList && this.props.bopImportList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
                             <div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`} >
                                 {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}

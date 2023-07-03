@@ -342,6 +342,8 @@ function CostingSimulation(props) {
             let downloadList = getListMultipleAndAssembly(Data.SimulatedCostingList, false)
             setDownloadList(downloadList)
 
+        } else {
+            setLoader(false)
         }
     }
 

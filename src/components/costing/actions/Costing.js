@@ -47,6 +47,7 @@ import {
   SET_YOY_COST_GRID_FOR_SAVE,
   SET_OVERHEAD_PROFIT_ICC,
   SET_OTHER_COST,
+  SET_REJECTED_COSTING_VIEW_DATA,
 } from '../../../config/constants'
 import { apiErrors } from '../../../helper/util'
 import { MESSAGES } from '../../../config/message'
@@ -2621,4 +2622,15 @@ export function checkPartNoExistInBop(data, callback) {
       apiErrors(error)
     })
   }
+}
+export const setRejectedCostingViewData = (data) => (dispatch) => {
+  let temp = []
+  // temp.push(VIEW_COSTING_DATA)
+  data.map((val) => (
+    temp.push(val)
+  ))
+  dispatch({
+    type: SET_REJECTED_COSTING_VIEW_DATA,
+    payload: temp,
+  })
 }

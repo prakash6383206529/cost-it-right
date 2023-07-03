@@ -440,9 +440,9 @@ class FuelListing extends Component {
                                 </AgGridReact>
                                 {<PaginationWrapper gridApi={this.gridApi} setPage={this.onPageSizeChanged} />}
                             </div>
-                        </div>
-                    </Col>
-                </Row>
+                        </div >
+                    </Col >
+                </Row >
                 {isBulkUpload && <BulkUpload
                     isOpen={isBulkUpload}
                     closeDrawer={this.closeBulkUploadDrawer}
@@ -450,7 +450,8 @@ class FuelListing extends Component {
                     fileName={'Fuel'}
                     messageLabel={'Fuel'}
                     anchor={'right'}
-                />}
+                />
+                }
                 {
                     this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.FUEL_DELETE_ALERT}`} />
                 }

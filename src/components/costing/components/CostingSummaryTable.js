@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import AddToComparisonDrawer from './AddToComparisonDrawer'
 import {
   setCostingViewData, setCostingApprovalData, getBriefCostingById,
-  storePartNumber, getSingleCostingDetails, createCosting, checkFinalUser
+  storePartNumber, getSingleCostingDetails, createCosting, checkFinalUser, getCostingByVendorAndVendorPlant, setRejectedCostingViewData
 } from '../actions/Costing'
 import ViewBOP from './Drawers/ViewBOP'
 import ViewConversionCost from './Drawers/ViewConversionCost'
@@ -16,7 +16,7 @@ import SendForApproval from './approval/SendForApproval'
 import Toaster from '../../common/Toaster'
 import { checkForDecimalAndNull, checkForNull, checkPermission, formViewData, getTechnologyPermission, loggedInUserId, userDetails, allEqual, getConfigurationKey, getCurrencySymbol, highlightCostingSummaryValue, checkVendorPlantConfigurable, userTechnologyLevelDetails } from '../../../helper'
 import Attachament from './Drawers/Attachament'
-import { BOPDOMESTIC, BOPIMPORT, COSTING, DRAFT, FILE_URL, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, VARIANCE, VBC, ZBC, VIEW_COSTING_DATA, VIEW_COSTING_DATA_LOGISTICS, NCC, EMPTY_GUID, CBC, ZBCTypeId, VBCTypeId, NCCTypeId, CBCTypeId, APPROVED, PENDING, VIEW_COSTING_DATA_TEMPLATE, PFS2TypeId } from '../../../config/constants'
+import { BOPDOMESTIC, BOPIMPORT, COSTING, DRAFT, FILE_URL, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, VARIANCE, VBC, ZBC, VIEW_COSTING_DATA, VIEW_COSTING_DATA_LOGISTICS, NCC, EMPTY_GUID, CBC, ZBCTypeId, VBCTypeId, NCCTypeId, CBCTypeId, APPROVED, PENDING, VIEW_COSTING_DATA_TEMPLATE, PFS2TypeId, REJECTED } from '../../../config/constants'
 import { useHistory } from "react-router-dom";
 import WarningMessage from '../../common/WarningMessage'
 import DayTime from '../../common/DayTimeWrapper'
@@ -41,11 +41,14 @@ import AddNpvCost from './CostingHeadCosts/AdditionalOtherCost/AddNpvCost'
 import { costingTypeIdToApprovalTypeIdFunction } from '../../common/CommonFunctions'
 import CrossIcon from '../../../assests/images/red-cross.png'
 import ViewOtherCostDrawer from './ViewOtherCostDrawer'
+import { getMultipleCostingDetails } from '../../rfq/actions/rfq'
+import CostingDetailSimulationDrawer from '../../simulation/components/CostingDetailSimulationDrawer'
 
 const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
 
 const CostingSummaryTable = (props) => {
-  const { viewMode, showDetail, technologyId, costingID, showWarningMsg, simulationMode, isApproval, simulationDrawer, customClass, selectedTechnology, master, isSimulationDone, approvalMode, drawerViewMode, costingSummaryMainPage, costingIdExist, costingIdList } = props
+  const { viewMode, showDetail, technologyId, costingID, showWarningMsg, simulationMode, isApproval, simulationDrawer, customClass, selectedTechnology, master, isSimulationDone, approvalMode, drawerViewMode, costingSummaryMainPage, costingIdExist, costingIdList, notSelectedCostingId, isFromViewRFQ } = props
+
   let history = useHistory();
   const ExcelFile = ReactExport.ExcelFile;
   const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -104,7 +107,10 @@ const CostingSummaryTable = (props) => {
   const [pieChartLabel, setPieChartLabel] = useState([])
   const [npvIndex, setNpvIndex] = useState(0)
   const [showLabourData, setShowLabourData] = useState(initialConfiguration.IsShowCostingLabour ? initialConfiguration.IsShowCostingLabour : false)
+  const [selectedCheckbox, setSelectedCheckbox] = useState('')
+
   const viewCostingData = useSelector((state) => state.costing.viewCostingDetailData)
+
   const selectedRowRFQ = useSelector((state) => state.rfq.selectedRowRFQ)
 
 
@@ -120,6 +126,7 @@ const CostingSummaryTable = (props) => {
   const [IsNccCosting, setIsNccCosting] = useState(false);
   const [isLogisticsTechnology, setIsLogisticsTechnology] = useState(false);
   const [openNpvDrawer, setNpvDrawer] = useState(false);
+  const [isOpenRejectedCosting, setIsOpenRejectedCosting] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState({
     BOP: false,
     process: false,
@@ -603,6 +610,7 @@ const CostingSummaryTable = (props) => {
    */
   const closeAddComparisonDrawer = (e = '') => {
     setaddComparisonToggle(false)
+    props?.checkCostingSelected([], '')
     setMultipleCostings([])
     setShowWarningMsg(true)
   }
@@ -629,6 +637,7 @@ const CostingSummaryTable = (props) => {
   const closeShowApproval = (e = '', type) => {
     setShowApproval(false)
     setDataSelected([])
+    props?.checkCostingSelected([], '')
     setMultipleCostings([])
 
     if (type === 'Submit') {
@@ -654,7 +663,7 @@ const CostingSummaryTable = (props) => {
     }
   }
 
-  const moduleHandler = (id, check, data) => {
+  const moduleHandler = (id, check, data, index) => {
     if (check === 'top') {                                                            // WHEN USER CLICK ON TOP SEND FOR APPROVAL
       let temp = multipleCostings
 
@@ -669,7 +678,13 @@ const CostingSummaryTable = (props) => {
         setDataSelected(updatedArray)
         checkWarning(updatedArray)
       }
-
+      if (index === selectedCheckbox) {
+        setSelectedCheckbox('')
+        props?.checkCostingSelected(temp, '')
+      } else {
+        setSelectedCheckbox(index)
+        props?.checkCostingSelected(temp, index)
+      }
       setMultipleCostings(temp)
     } else {                                                                          // WHEN USER CLICK ON BOTTOM SEND FOR APPROVAL BUTTON
       setIsWarningFlag(data?.IsApprovalLocked)
@@ -1188,6 +1203,39 @@ const CostingSummaryTable = (props) => {
   const tableDataClass = (data) => {
     return props?.isRfqCosting && data.isRFQFinalApprovedCosting && !isApproval && !data?.bestCost ? 'finalize-cost' : ''
   }
+
+  const closeUserDetails = () => {
+    setIsOpenRejectedCosting(false)
+  }
+
+  const showReturnCosting = (index) => {
+    setLoader(true)
+    dispatch(getCostingByVendorAndVendorPlant(viewCostingData[index]?.partId, viewCostingData[index]?.vendorId, '', viewCostingData[index]?.destinationPlantId, '', VBCTypeId, (res) => {
+      if (res?.data?.Result) {
+        let list = [...res?.data?.DataList]
+        let rejectedCostingList = list.filter(element => element?.DisplayStatus === REJECTED)
+        if (rejectedCostingList && rejectedCostingList.length > 0) {
+
+          dispatch(getMultipleCostingDetails(rejectedCostingList, (res) => {
+            let datalist = []
+            let arrayfromapi = _.map(res, 'data.Data')
+            arrayfromapi && arrayfromapi?.map(item => {
+              datalist.push(formViewData(item)[0])
+            })
+            let finaldata = _.uniqBy([...datalist], 'costingId')
+            dispatch(setRejectedCostingViewData(finaldata))
+            setTimeout(() => {
+              setLoader(false)
+              setIsOpenRejectedCosting(true)
+            }, 200);
+          }))
+        } else {
+          Toaster.warning("Return costing is not available for this vendor.")
+          setLoader(false)
+        }
+      }
+    }))
+  }
   return (
     <Fragment>
       {
@@ -1212,6 +1260,7 @@ const CostingSummaryTable = (props) => {
                       {props.isRfqCosting && !isApproval && <button onClick={() => props?.crossButton()} title='Discard Summary' className='CancelIcon rfq-summary-discard'></button>}
                     </div>
                 }
+
                 {!simulationMode && !props.isRfqCosting && !props.isRfqCosting &&
                   <ReactToPrint
                     bodyClass='mx-2 mt-3 remove-space-border'
@@ -1304,10 +1353,12 @@ const CostingSummaryTable = (props) => {
                                             <input
                                               type="checkbox"
                                               value={"All"}
+                                              id={`checkbox-${index}`}
                                               // disabled={true}
                                               checked={multipleCostings.includes(data?.costingId)}
                                             />
                                             <span
+                                              id={`checkbox-${index}`}
                                               className=" before-box"
                                               checked={multipleCostings.includes(data?.costingId)}
                                               onChange={() => moduleHandler(data?.costingId, 'top', data)}
@@ -1316,6 +1367,23 @@ const CostingSummaryTable = (props) => {
                                         </div>}
                                       </>
                                     }
+                                    {!isApproval && !data?.IsApprovalLocked && props?.isRfqCosting && isFromViewRFQ && costingIdList?.includes(data?.costingId) && <div className="custom-check1 d-inline-block">
+                                      <label
+                                        className="custom-checkbox pl-0 mb-0"
+                                        onChange={() => moduleHandler(data?.costingId, 'top', data, index)}
+                                      >
+                                        <input
+                                          type="checkbox"
+                                          value={"All"}
+                                          checked={(selectedCheckbox === index) ? true : false}
+                                        />
+                                        <span
+                                          className=" before-box"
+                                          checked={(selectedCheckbox === index) ? true : false}
+                                          onChange={() => moduleHandler(data?.costingId, 'top', data, index)}
+                                        />
+                                      </label>
+                                    </div>}
                                     {
                                       (isApproval && data?.CostingHeading !== '-') ? <span>{data?.CostingHeading}</span> :
                                         (data?.bestCost === true) ? "" :
@@ -1342,6 +1410,7 @@ const CostingSummaryTable = (props) => {
                             <td>
                               <span className="d-block">Costing Version</span>
                               <span className="d-block mt-2">PO Price (Effective from)</span>
+                              <span className="d-block">Vendor</span>
                               <span className="d-block">Part Number</span>
                               <span className="d-block">Part Name</span>
                               <span className="d-block">Revision Number</span>
@@ -1350,10 +1419,18 @@ const CostingSummaryTable = (props) => {
                             </td>
                             {viewCostingData &&
                               viewCostingData?.map((data, index) => {
+
                                 return (
                                   <td className={tableDataClass(data)}>
                                     <span className={`d-flex justify-content-between ${(data?.bestCost === true) ? '' : 'bg-grey'} ${drawerDetailPDF ? 'p-0' : ''}`}>
-                                      {(data?.bestCost === true) ? ' ' : `${DayTime(data?.costingDate).format('DD-MM-YYYY')}-${data?.CostingNumber}${props.isRfqCosting ? (costingIdList?.includes(data?.costingId) ? "-Not Selected" : `-${data?.status}`) : props.costingSummaryMainPage ? `-${data?.status}` : ''}`}{' '}
+                                      {(data?.bestCost === true) ? ' ' : `${DayTime(data?.costingDate).format('DD-MM-YYYY')}-${data?.CostingNumber}${props.isRfqCosting ? (notSelectedCostingId?.includes(data?.costingId) ? "-Not Selected" : `-${data?.status}`) : props.costingSummaryMainPage ? `-${data?.status}` : ''}`}{' '}
+                                      {costingIdList?.includes(data?.costingId) && <button
+                                        className="text-primary d-inline-block btn-a"
+                                        onClick={() => showReturnCosting(index)}
+                                        title='View Returned Costing'
+                                      >
+                                        <small>Returned Costing</small>{''}
+                                      </button>}
                                       {
                                         !viewMode &&
                                         <button
@@ -1371,6 +1448,7 @@ const CostingSummaryTable = (props) => {
                                       </span>}
                                     </span>}
                                     {/* USE PART NUMBER KEY HERE */}
+                                    <span className="d-block">{(data?.bestCost === true) ? ' ' : (data?.costingTypeId === VBCTypeId) ? `${data?.vendorName}(${data?.vendorCode})` : ''}</span>
                                     <span className="d-block">{(data?.bestCost === true) ? ' ' : data?.partNumber}</span>
                                     <span className="d-block">{(data?.bestCost === true) ? ' ' : data?.partName}</span>
                                     <span className="d-block">{(data?.bestCost === true) ? ' ' : data?.RevisionNumber}</span>
@@ -2320,6 +2398,20 @@ const CostingSummaryTable = (props) => {
             viewMode={viewMode}
           />
         )
+      }
+      {
+        isOpenRejectedCosting &&
+        <CostingDetailSimulationDrawer
+          isOpen={setIsOpenRejectedCosting}
+          closeDrawer={closeUserDetails}
+          anchor={"right"}
+          isReport={isOpenRejectedCosting}
+          // selectedRowData={selectedRowData}
+          isSimulation={false}
+          simulationDrawer={false}
+          // isReportLoader={isReportLoader}
+          isRejectedSummaryTable={true}
+        />
       }
       {/* DRAWERS FOR VIEW  */}
       {

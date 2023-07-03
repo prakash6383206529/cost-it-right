@@ -34,8 +34,8 @@ function OutsourcingDrawer(props) {
   ]
 
   useEffect(() => {
-    if (props?.CostingId) {
-      dispatch(getNFRCostingOutsourcingDetails(props?.CostingId, (res) => {
+    if (props?.CostingId || props?.outsourcingCostingData?.NfrRawMaterialAndBoughtOutPartDetailId) {
+      dispatch(getNFRCostingOutsourcingDetails(props?.CostingId, props?.outsourcingCostingData?.NfrRawMaterialAndBoughtOutPartDetailId, (res) => {
         if (res?.data?.Data > 0 || res?.status === 200) {
           let data = res?.data?.Data
           const mappedArray = data.NFRCostingOutsourcingDetails.map(detail => ({
@@ -96,10 +96,11 @@ function OutsourcingDrawer(props) {
     }
     let datalist = mapGrid(list)
     let req = {
-      BaseCostingId: props?.CostingId,
+      BaseCostingId: props?.CostingId ? props?.CostingId : null,
       LoggedInUserId: loggedInUserId(),
       OutsourcingCost: totalCost,
-      NFRCostingOutsourcingDetails: datalist
+      NfrRawMaterialAndBoughtOutPartDetailId: props?.outsourcingCostingData?.NfrRawMaterialAndBoughtOutPartDetailId,
+      NFRCostingOutsourcingDetails: datalist,
     }
     dispatch(saveOutsourcingData(req, (res) => {
       props.closeDrawer('submit')

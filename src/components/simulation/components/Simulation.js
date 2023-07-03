@@ -36,6 +36,7 @@ import { autoCompleteDropdown, hideColumnFromExcel } from '../../common/CommonFu
 import { MESSAGES } from '../../../config/message';
 import BDNonAssociatedSimulation from './SimulationPages/BDNonAssociatedSimulation';
 
+
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -444,7 +445,6 @@ function Simulation(props) {
 
     const renderListing = (label) => {
         let temp = []
-
         if (label === 'masters') {
             // temp.push({ label: '-', value: '0' })
             masterList && masterList.map((item) => {

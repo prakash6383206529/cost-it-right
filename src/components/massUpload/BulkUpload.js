@@ -397,6 +397,11 @@ class BulkUpload extends Component {
                                 }
                                 if (fileHeads[i] === 'EffectiveDate' && typeof el === 'number') {
                                     el = getJsDateFromExcel(el)
+                                    const date = new Date();
+                                    const shortDateFormat = date.toLocaleDateString(undefined, { dateStyle: 'short' });
+                                    if (Number(shortDateFormat.charAt(0)) === Number(date.getMonth() + 1)) {
+                                        el = DayTime(el).format('YYYY-MM-DD 00:00:00')
+                                    }
                                 }
                                 if (fileHeads[i] === 'NoOfPcs' && typeof el == 'number') {
                                     el = parseInt(checkForNull(el))
@@ -416,6 +421,17 @@ class BulkUpload extends Component {
                                 } else if (fileName === 'Machine' && fileHeads[i] === 'PlantCode') {
                                     fileHeads[i] = 'DestinationPlantCode'
                                 }
+
+                                if (fileHeads[i] === 'InsertPartNumber') {
+                                    fileHeads[i] = 'BOPPartNumber'
+                                }
+                                if (fileHeads[i] === 'InsertPartName') {
+                                    fileHeads[i] = 'BOPPartName'
+                                }
+                                if (fileHeads[i] === 'InsertCategory') {
+                                    fileHeads[i] = 'BOPCategory'
+                                }
+
                                 obj[fileHeads[i]] = el;
                                 return null;
                             })

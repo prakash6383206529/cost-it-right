@@ -315,7 +315,6 @@ class AddOperation extends Component {
   */
   handleUOM = (newValue) => {
     if (newValue && newValue !== '') {
-
       this.setState({ UOM: newValue, })
     } else {
       this.setState({ UOM: [] })

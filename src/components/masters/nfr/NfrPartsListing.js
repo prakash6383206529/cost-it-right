@@ -12,16 +12,18 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { PaginationWrapper } from '../../common/commonPagination'
-import { checkPermission, searchNocontentFilter } from '../../../helper';
+import { checkPermission, loggedInUserId, searchNocontentFilter } from '../../../helper';
 import DayTime from '../../common/DayTimeWrapper';
 import Attachament from '../../costing/components/Drawers/Attachament';
-import { getNfrPartDetails, nfrDetailsForDiscountAction } from './actions/nfr';
+import { getNfrPartDetails, nfrDetailsForDiscountAction, pushNfrRmBopOnSap } from './actions/nfr';
 import { StatusTooltip, hyphenFormatter } from '../masterUtil';
 import AddNfr from './AddNfr';
 import DrawerTechnologyUpdate from './DrawerTechnologyUpdate';
 import { ASSEMBLY } from '../../../config/masterData';
 import Toaster from '../../common/Toaster';
 import RMDrawer from './RMDrawer';
+import OutsourcingDrawer from './OutsourcingDrawer';
+import WarningMessage from '../../common/WarningMessage';
 const gridOptions = {};
 
 
@@ -51,6 +53,10 @@ function NfrPartsListing(props) {
     const [showDrawer, setShowDrawer] = useState(false)
     const [rmDrawer, setRMDrawer] = useState(false)
     const [rowDataFortechnologyUpdate, setRowDataFortechnologyUpdate] = useState({})
+    const [showOutsourcingDrawer, setShowOutsourcingDrawer] = useState('');
+    const [viewMode, setViewMode] = useState(false);
+    const [showWarning, setShowWarning] = useState(false);
+    const [outsourcingCostingData, setOutsourcingCostingData] = useState({});
     const { topAndLeftMenuData } = useSelector(state => state.auth);
 
     useEffect(() => {
@@ -89,6 +95,20 @@ function NfrPartsListing(props) {
         dispatch(getNfrPartDetails(props?.isFromDiscount ? nfrDetailsForDiscount?.rowData?.NfrId : props?.data?.NfrId, (res) => {
             if (res?.data?.DataList?.length > 0) {
                 setRowData(StatusTooltip(res?.data?.DataList))
+                let data = [...res?.data?.DataList]
+                let showOutsourcing = false
+                data && data?.map(item => {
+                    if (item?.PartType === "Raw Material" && item?.RawMaterialId !== null) {
+                        showOutsourcing = true
+                    } else if (item?.PartType === "Bought Out Part" && item?.BoughtOutPartId !== null) {
+                        showOutsourcing = true
+                    }
+                })
+                if (showOutsourcing) {
+                    setShowWarning(true)
+                } else {
+                    setShowWarning(false)
+                }
             }
             setloader(false)
         }))
@@ -136,6 +156,32 @@ function NfrPartsListing(props) {
     const closePopUp = () => {
         setConfirmPopup(false)
     }
+
+    const formToggle = (data, viewMode) => {
+        // setIndexOuter(indexOuter)
+        // setIndexInside(indexInside)
+        setOutsourcingCostingData(data)
+        setTimeout(() => {
+            setShowOutsourcingDrawer(true)
+            setViewMode(viewMode)
+        }, 300);
+    }
+
+    const pushToSap = (data) => {
+        let obj = {
+            NfrRawMaterialAndBoughtOutPartDetailIds: [
+                data?.NfrRawMaterialAndBoughtOutPartDetailId
+            ],
+            LoggedInUserId: loggedInUserId()
+        }
+        dispatch(pushNfrRmBopOnSap(obj, (res) => {
+            if (res?.data?.Result) {
+                Toaster.success(MESSAGES.BOP_RM_PUSHED)
+            }
+            getDataList()
+        }))
+    }
+
     /**
     * @method buttonFormatter
     * @description Renders buttons
@@ -145,13 +191,22 @@ function NfrPartsListing(props) {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
         let status = rowData?.Status
-
+        let showOutsourcing = false
+        if (rowData?.PartType === "Raw Material" && rowData?.RawMaterialId !== null) {
+            showOutsourcing = true
+        } else if (rowData?.PartType === "Bought Out Part" && rowData?.BoughtOutPartId !== null) {
+            showOutsourcing = true
+        }
+        let showPush = rowData?.IsPushedButtonShow && (rowData?.NetLandedCost !== null || rowData?.NetLandedCost !== 0)
         return (
             <>
-                {<button title='View RM' className="view-masters mr-1" type={'button'} onClick={() => viewRM(rowData)} />}
-                {<button title='View' className="View mr-1" type={'button'} onClick={() => editPartHandler(cellValue, rowData, true)} />}
-                <button title='Edit' className="Edit mr-1" type={'button'} onClick={() => editPartHandler(cellValue, rowData, false)} />
-                <button title='Associate part with technology' className="create-rfq mr-1" type={'button'} onClick={() => associatePartWithTechnology(cellValue, rowData, false)} />
+                {showOutsourcing && !rowData?.IsRmAndBopActionEditable && < button type="button" className={"View mr-1"} onClick={() => { formToggle(rowData, true) }} disabled={false} title="View"></button >}
+                {showOutsourcing && rowData?.IsRmAndBopActionEditable && < button type="button" className={"add-out-sourcing mr-1"} onClick={() => { formToggle(rowData, false) }} disabled={false} title="Add"></button >}
+                {showOutsourcing && showPush && < button type="button" className={"view-masters mr-1"} onClick={() => { pushToSap(rowData) }} disabled={false} title="Push"></button >}
+                {!rowData?.IsRmAndBopActionEditable && !showOutsourcing && <button title='View RM' className="view-masters mr-1" type={'button'} onClick={() => viewRM(rowData)} />}
+                {!rowData?.IsRmAndBopActionEditable && !showOutsourcing && <button title='View' className="View mr-1" type={'button'} onClick={() => editPartHandler(cellValue, rowData, true)} />}
+                {!rowData?.IsRmAndBopActionEditable && !showOutsourcing && <button title='Edit' className="Edit mr-1" type={'button'} onClick={() => editPartHandler(cellValue, rowData, false)} />}
+                {!rowData?.IsRmAndBopActionEditable && !showOutsourcing && <button title='Associate part with technology' className="create-rfq mr-1" type={'button'} onClick={() => associatePartWithTechnology(cellValue, rowData, false)} />}
 
             </>
         )
@@ -265,6 +320,12 @@ function NfrPartsListing(props) {
 
     }
 
+    const closeOutsourcingDrawer = (type) => {
+        if (type === 'submit') {
+            getDataList()
+        }
+        setShowOutsourcingDrawer(false)
+    }
 
     const viewDetails = (UserId) => {
         setViewRfqData(UserId)
@@ -295,6 +356,7 @@ function NfrPartsListing(props) {
     const resetState = () => {
         gridOptions?.columnApi?.resetColumnState(null);
         window.screen.width >= 1920 && gridApi.sizeColumnsToFit();
+        getDataList()
     }
     return (
         <>
@@ -360,6 +422,8 @@ function NfrPartsListing(props) {
                                                 <AgGridColumn field="PartNumber" headerName='Part No.' cellRenderer={hyphenFormatter}></AgGridColumn>
                                                 <AgGridColumn field="PartName" headerName='Part Name' cellRenderer={hyphenFormatter}></AgGridColumn>
                                                 <AgGridColumn field="NumberOfSimulation" headerName='No. of Simulations' cellRenderer={hyphenFormatter}></AgGridColumn>
+                                                <AgGridColumn field="NetLandedCost" headerName='Cost/Rate' cellRenderer={hyphenFormatter}></AgGridColumn>
+                                                <AgGridColumn field="OutsourcingCost" headerName='Outsourcing Cost' cellRenderer={hyphenFormatter}></AgGridColumn>
                                                 <AgGridColumn field="CreatedOn" headerName='Created On' cellRenderer={dateFormater}></AgGridColumn>
                                                 <AgGridColumn field="PushedOn" headerName='Pushed On' cellRenderer={dateFormater}></AgGridColumn>
                                                 <AgGridColumn field="Status" tooltipField="tooltipText" headerName="Status" cellClass="text-center" minWidth={170} cellRenderer="statusFormatter"></AgGridColumn>
@@ -368,6 +432,9 @@ function NfrPartsListing(props) {
                                             <PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} globalTake={10} />
                                         </div>
                                     </div>
+                                </Col>
+                                <Col md="12" className='justify-content-end d-flex'>
+                                    {showWarning && <WarningMessage dClass="mt-2" message={'Please add RM/BOP price in master, to add outsourcing cost and push the price on SAP'} />}
                                 </Col>
                             </Row>
 
@@ -380,7 +447,15 @@ function NfrPartsListing(props) {
 
                 </div >
             }
-
+            {showOutsourcingDrawer &&
+                <OutsourcingDrawer
+                    isOpen={showOutsourcingDrawer}
+                    closeDrawer={closeOutsourcingDrawer}
+                    anchor={'right'}
+                    outsourcingCostingData={outsourcingCostingData}
+                    viewMode={viewMode}
+                // CostingId={OutsourcingCostingData?.CostingId}
+                />}
             {
                 attachment && (
                     <Attachament

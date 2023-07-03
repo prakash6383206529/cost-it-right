@@ -12,12 +12,11 @@ import { isToolDataChange, setComponentToolItemData, setToolsErrors } from '../.
 import { ViewCostingContext } from '../../CostingDetails';
 import { costingInfoContext, netHeadCostContext } from '../../CostingDetailStepTwo';
 import { fetchCostingHeadsAPI } from '../../../../../actions/Common';
-import WarningMessage from '../../../../common/WarningMessage';
 import { debounce } from 'lodash';
 import { IdForMultiTechnology } from '../../../../../config/masterData';
 import TooltipCustom from '../../../../common/Tooltip';
 import { errorCheckObject } from '../../../CostingUtil';
-import { number, decimalNumberLimit6, checkWhiteSpaces, NoSignNoDecimalMessage, isNumber, percentageLimitValidation, decimalNumberLimit8 } from "../../../../../helper/validation";
+import { number, decimalNumberLimit6, checkWhiteSpaces, percentageLimitValidation, decimalNumberLimit8 } from "../../../../../helper/validation";
 
 let counter = 0;
 function Tool(props) {
@@ -62,7 +61,6 @@ function Tool(props) {
   const { costingData } = useSelector(state => state.costing)
 
   const [toolObj, setToolObj] = useState(data?.CostingPartDetails?.CostingToolCostResponse[0])
-  const [errorMessage, setErrorMessage] = useState('')
   const CostingViewMode = useContext(ViewCostingContext);
   const costData = useContext(costingInfoContext);
   const [percentageLimit, setPercentageLimit] = useState(false);

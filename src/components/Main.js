@@ -398,7 +398,6 @@ class Main extends Component {
                   </Switch>
                 </div>
               </div>
-
             </div>
           </div>
           {!this.state.visibelPageNotFound && (

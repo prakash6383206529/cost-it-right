@@ -679,5 +679,4 @@ function RMSimulation(props) {
     );
 }
 
-
 export default RMSimulation;
