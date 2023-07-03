@@ -191,16 +191,19 @@ function SimulationApprovalListing(props) {
         isDashboard && dispatch(dashboardTabLock(true))
         let obj = { ...dataObj }
         dispatch(getSimulationApprovalList(filterData, skip, take, isPagination, dataObj, IsCustomerDataShow, (res) => {
-            if (res?.data?.DataList?.length === 0) {
+            if (res?.status === 204) {
                 setTotalRecordCount(0)
                 setPageNo(0)
+                setNoData(true)
+                setIsLoader(false)
+                dispatch(dashboardTabLock(false))
             }
             if (res?.data?.Result) {
                 setIsLoader(false)
                 dispatch(dashboardTabLock(false))
                 let isReset = true
                 if (res) {
-                    if (res && res.status === 204) {
+                    if (res && res?.status === 204) {
                         setTotalRecordCount(0)
                         setPageNo(0)
                     }
