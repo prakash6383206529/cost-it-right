@@ -965,7 +965,7 @@ class AddOperation extends Component {
                     </Row>
                     <Row>
 
-                      <Col md="3">
+                      {getConfigurationKey().IsShowDetailedBreakup && <Col md="3">
                         <Field
                           name="operationType"
                           type="text"
@@ -979,7 +979,7 @@ class AddOperation extends Component {
                           valueDescription={this.state.operationType}
                           disabled={isViewMode || isEditFlag ? true : false}
                         />
-                      </Col>
+                      </Col>}
 
                       <Col md="3">
                         <Field
@@ -1231,7 +1231,7 @@ class AddOperation extends Component {
                         </label>
                       </Col>
                       <Col md="4">
-                        {(!isEditFlag || (isEditFlag && this.state.isDetailEntry)) && < button
+                        {(!isEditFlag || (isEditFlag && this.state.isDetailEntry)) && getConfigurationKey().IsShowDetailedBreakup && < button
                           type="button"
                           className={'user-btn '}
                           disabled={false}
