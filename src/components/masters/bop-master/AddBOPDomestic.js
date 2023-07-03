@@ -92,8 +92,9 @@ class AddBOPDomestic extends Component {
       levelDetails: {},
       noApprovalCycle: false,
       vendorFilterList: [],
+      isClientVendorBOP: false,
       uomIsNo: false,
-      isClientVendorBOP: false
+      CostingTypePermission: false
     }
   }
 
@@ -151,13 +152,13 @@ class AddBOPDomestic extends Component {
       this.setState({ finalApprovalLoader: true })
       this.props.checkFinalUser(obj, (res) => {
         if (res?.data?.Result) {
-          this.setState({ isFinalApprovar: res?.data?.Data?.IsFinalApprover })
+          this.setState({ isFinalApprovar: res?.data?.Data?.IsFinalApprover, CostingTypePermission: true })
           this.setState({ finalApprovalLoader: false })
         }
       })
       this.setState({ noApprovalCycle: false })
     } else {
-      this.setState({ noApprovalCycle: true })
+      this.setState({ noApprovalCycle: true, CostingTypePermission: false })
     }
   }
 
@@ -860,7 +861,7 @@ class AddBOPDomestic extends Component {
   */
   render() {
     const { handleSubmit, isBOPAssociated, initialConfiguration } = this.props;
-    const { isCategoryDrawerOpen, isOpenVendor, costingTypeId, isOpenUOM, isEditFlag, isViewMode, setDisable, noApprovalCycle, isClientVendorBOP } = this.state;
+    const { isCategoryDrawerOpen, isOpenVendor, costingTypeId, isOpenUOM, isEditFlag, isViewMode, setDisable, noApprovalCycle, isClientVendorBOP, CostingTypePermission } = this.state;
     const filterList = async (inputValue) => {
       const { vendorFilterList } = this.state
       if (inputValue && typeof inputValue === 'string' && inputValue.includes(' ')) {
@@ -1426,7 +1427,7 @@ class AddBOPDomestic extends Component {
                             {"Cancel"}
                           </button>
 
-                          {!isViewMode && (CheckApprovalApplicableMaster(BOP_MASTER_ID) === true && !this.state.isFinalApprovar) && initialConfiguration.IsMasterApprovalAppliedConfigure ?
+                          {(!isViewMode && (CheckApprovalApplicableMaster(BOP_MASTER_ID) === true && !this.state.isFinalApprovar) && initialConfiguration.IsMasterApprovalAppliedConfigure) || !CostingTypePermission ?
                             <button type="submit"
                               class="user-btn approval-btn save-btn mr5"
                               disabled={isViewMode || setDisable || noApprovalCycle}
