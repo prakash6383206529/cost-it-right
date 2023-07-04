@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Field, reduxForm } from "redux-form";
+import { Field, reduxForm, clearFields } from "redux-form";
 import { Row, Col } from 'reactstrap';
 import { required, checkWhiteSpaces, alphaNumeric, acceptAllExceptSingleSpecialCharacter, maxLength20, maxLength80, maxLength85, maxLength512, checkSpacesInString, minLength3 } from "../../../helper/validation";
 import { getConfigurationKey, loggedInUserId } from "../../../helper/auth";
@@ -136,8 +136,7 @@ class AddIndivisualPart extends Component {
           this.setState({ disablePartName: true, minEffectiveDate: finalData.EffectiveDate, TechnologySelected: { label: finalData.Technology, value: finalData.TechnologyId } })
         } else {
           this.props.change("Description", "")
-          this.props.change("PartName", "")
-          this.props.change("TechnologyId", '')
+          this.props.dispatch(clearFields('AddIndivisualPart', false, false, 'PartName'));
           this.setState({ disablePartName: false, minEffectiveDate: "", TechnologySelected: [] })
         }
       })
