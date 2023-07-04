@@ -1530,16 +1530,15 @@ function AddRfq(props) {
                                                                 onChange={handleChangeDateAndTime}
                                                                 showMonthDropdown
                                                                 showYearDropdown
-                                                                showTimeSelect
                                                                 minDate={new Date()}
                                                                 timeFormat='HH:mm'
                                                                 dateFormat="dd/MM/yyyy HH:mm"
                                                                 minTime={setHours(setMinutes(new Date(), minMinutes), minHours)}
                                                                 maxTime={setHours(setMinutes(new Date(), 59), 23)}
-                                                                timeIntervals={30}
                                                                 placeholderText="Select"
                                                                 className="withBorder "
                                                                 autoComplete={'off'}
+                                                                showTimeInput={true}
                                                                 errors={errors.startPlanDate}
                                                                 disabledKeyboardNavigation
                                                                 onChangeRaw={(e) => e.preventDefault()}
