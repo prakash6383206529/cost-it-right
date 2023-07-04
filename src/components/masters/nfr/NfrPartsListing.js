@@ -98,9 +98,9 @@ function NfrPartsListing(props) {
                 let data = [...res?.data?.DataList]
                 let showOutsourcing = false
                 data && data?.map(item => {
-                    if (item?.PartType === "Raw Material" && item?.RawMaterialId !== null) {
+                    if (item?.PartType === "Raw Material") {
                         showOutsourcing = true
-                    } else if (item?.PartType === "Bought Out Part" && item?.BoughtOutPartId !== null) {
+                    } else if (item?.PartType === "Bought Out Part") {
                         showOutsourcing = true
                     }
                 })
@@ -202,7 +202,7 @@ function NfrPartsListing(props) {
             <>
                 {showOutsourcing && !rowData?.IsRmAndBopActionEditable && < button type="button" className={"View mr-1"} onClick={() => { formToggle(rowData, true) }} disabled={false} title="View"></button >}
                 {showOutsourcing && rowData?.IsRmAndBopActionEditable && < button type="button" className={"add-out-sourcing mr-1"} onClick={() => { formToggle(rowData, false) }} disabled={false} title="Add"></button >}
-                {showOutsourcing && showPush && < button type="button" className={"view-masters mr-1"} onClick={() => { pushToSap(rowData) }} disabled={false} title="Push"></button >}
+                {showOutsourcing && < button type="button" className={"view-masters mr-1"} onClick={() => { pushToSap(rowData) }} disabled={!showPush} title="Please add RM/BOP price in master, to add outsourcing cost and push the price on SAP"></button >}
                 {!rowData?.IsRmAndBopActionEditable && !showOutsourcing && <button title='View RM' className="view-masters mr-1" type={'button'} onClick={() => viewRM(rowData)} />}
                 {!rowData?.IsRmAndBopActionEditable && !showOutsourcing && <button title='View' className="View mr-1" type={'button'} onClick={() => editPartHandler(cellValue, rowData, true)} />}
                 {!rowData?.IsRmAndBopActionEditable && !showOutsourcing && <button title='Edit' className="Edit mr-1" type={'button'} onClick={() => editPartHandler(cellValue, rowData, false)} />}
