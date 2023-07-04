@@ -742,7 +742,14 @@ function ReportListing(props) {
     }
 
     const returnExcelColumn = (data = [], TempData) => {
-        return (<ExcelSheet data={TempData} name={ReportMaster}>
+        let temp = []
+        temp = TempData && TempData.map((item) => {
+            if (item?.EffectiveDate?.includes('T')) {
+                item.EffectiveDate = DayTime(item.EffectiveDate).format('DD/MM/YYYY')
+            }
+            return item
+        })
+        return (<ExcelSheet data={temp} name={ReportMaster}>
             {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} />)}
         </ExcelSheet>);
     }
