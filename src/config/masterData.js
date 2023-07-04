@@ -911,7 +911,20 @@ export const ZBCOperation = [
     { label: 'InterestAndDepriciationCRMHead', value: 'InterestAndDepriciationCRMHead' },
     { label: 'InterestAndDepriciationCost', value: 'InterestAndDepriciationCost' }
 ]
+export const ZBCOperationSmallForm = [
 
+    { label: 'DestinationPlant', value: 'DestinationPlant', }, //*
+    { label: 'DestinationPlantCode', value: 'DestinationPlantCode', }, //*
+    { label: 'OperationName', value: 'OperationName' },
+    { label: 'Description', value: 'Description' },
+    { label: 'UOM', value: 'UOM', }, //*
+    { label: 'LabourRate', value: 'LabourRate', }, //NOUI
+    { label: 'SurfaceTreatmentOperation', value: 'SurfaceTreatmentOperation' },
+    { label: 'LabourRatePerUOM', value: 'LabourRatePerUOM' },
+    { label: 'Technology', value: 'Technology' },
+    { label: 'Remark', value: 'Remark' },
+    { label: 'EffectiveDate', value: 'EffectiveDate' },
+]
 
 
 export const ZBCOperationTempData = [
@@ -1183,6 +1196,22 @@ export const VBCOperation = [
     { label: 'InterestAndDepriciationCRMHead', value: 'InterestAndDepriciationCRMHead' },
     { label: 'InterestAndDepriciationCost', value: 'InterestAndDepriciationCost' }
 
+]
+export const VBCOperationSmallForm = [
+    { label: 'VendorName', value: 'VendorName', }, //*
+    { label: 'VendorCode', value: 'VendorCode', }, //*
+    { label: 'DestinationPlant', value: 'DestinationPlant', }, //*
+    { label: 'DestinationPlantCode', value: 'DestinationPlantCode', }, //*
+    { label: 'OperationName', value: 'OperationName' },
+    { label: 'Description', value: 'Description' },
+    { label: 'UOM', value: 'UOM', }, //*
+    { label: 'LabourRate', value: 'LabourRate', }, //NOUI
+    { label: 'SurfaceTreatmentOperation', value: 'SurfaceTreatmentOperation' },
+    { label: 'LabourRatePerUOM', value: 'LabourRatePerUOM' },
+    { label: 'Technology', value: 'Technology' },
+    { label: 'Remark', value: 'Remark' },
+    { label: 'Plant', value: 'Plant' },
+    { label: 'EffectiveDate', value: 'EffectiveDate' },
 ]
 
 export const VBCOperationTempData = [
@@ -1463,6 +1492,24 @@ export const CBCOperation = [
     { label: 'IncludeInterestRateAndDepriciationInRjectionAndProfit', value: 'IncludeInterestRateAndDepriciationInRjectionAndProfit' },
     { label: 'InterestAndDepriciationCRMHead', value: 'InterestAndDepriciationCRMHead' },
     { label: 'InterestAndDepriciationCost', value: 'InterestAndDepriciationCost' }
+
+]
+export const CBCOperationSmallForm = [
+
+    { label: 'CustomerName', value: 'CustomerName' },
+    { label: 'CustomerCode', value: 'CustomerCode', }, //*
+    { label: 'DestinationPlant', value: 'DestinationPlant', }, //*
+    { label: 'DestinationPlantCode', value: 'DestinationPlantCode', }, //*
+    { label: 'OperationName', value: 'OperationName' },
+    { label: 'Description', value: 'Description' },
+    { label: 'UOM', value: 'UOM', }, //*
+    { label: 'LabourRate', value: 'LabourRate', }, //NOUI
+    { label: 'SurfaceTreatmentOperation', value: 'SurfaceTreatmentOperation' },
+    { label: 'LabourRatePerUOM', value: 'LabourRatePerUOM' },
+    { label: 'Technology', value: 'Technology' },
+    { label: 'Remark', value: 'Remark' },
+    { label: 'Plant', value: 'Plant' },
+    { label: 'EffectiveDate', value: 'EffectiveDate' },
 ]
 
 export const CBCOperationTempData = [
