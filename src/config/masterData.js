@@ -6667,5 +6667,9 @@ export const typePercentageAndFixed = [
     { label: 'Fixed', value: 'Fixed' },
     { label: 'Percentage', value: 'Percentage' },
 ];
+export const associationDropdownList = [
+    { label: 'Associated', value: 'Associated' },
+    { label: 'Non Associated', value: 'Non Associated' },
+]
 export const NON_ASSOCIATED = "Non Associated"
 export const ASSOCIATED = "Associated"
