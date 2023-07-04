@@ -160,9 +160,9 @@ function BOPCost(props) {
   * @method closeDrawer
   * @description HIDE RM DRAWER
   */
-  const closeDrawer = (e = '', rowData = {}) => {
+  const closeDrawer = (e = '', rowData = []) => {
 
-    if (Object.keys(rowData).length > 0) {
+    if (rowData.length > 0) {
 
       let rowArray = rowData && rowData.map(el => {
         return {
