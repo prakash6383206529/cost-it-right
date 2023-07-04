@@ -462,7 +462,7 @@ export const DatePickerHookForm = (field) => {
             render={({ field: { onChange, onBlur, value, name } }) => (
 
               // return (
-              <ReactDatePicker
+              <DatePicker
                 {...field}
                 {...register}
                 name={name}
