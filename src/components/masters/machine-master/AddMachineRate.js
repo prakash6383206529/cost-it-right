@@ -771,7 +771,7 @@ class AddMachineRate extends Component {
         processName: [],
         UOM: isProcessGroup ? UOM : [],
         lockUOMAndRate: isProcessGroup
-      }, () => this.props.change('MachineRate', isProcessGroup ? MachineRate : 0));
+      }, () => this.props.change('MachineRate', isProcessGroup ? MachineRate : ''));
       this.setState({ DropdownChange: false, errorObj: { processName: false, processUOM: false, machineRate: false } })
     }, 200);
   }
@@ -830,7 +830,7 @@ class AddMachineRate extends Component {
       processGridEditIndex: '',
       isEditIndex: false,
 
-    }, () => this.props.change('MachineRate', isProcessGroup ? MachineRate : 0));
+    }, () => this.props.change('MachineRate', isProcessGroup ? MachineRate : ''));
   };
 
   /**
@@ -890,7 +890,7 @@ class AddMachineRate extends Component {
       UOM: tempData.length === 0 ? [] : !this.state.lockUOMAndRate ? [] : UOM,
       isEditIndex: false,
       processName: [],
-    }, () => this.props.change('MachineRate', tempData.length === 0 ? 0 : this.props.fieldsObj.MachineRate))
+    }, () => this.props.change('MachineRate', tempData.length === 0 ? '' : this.props.fieldsObj.MachineRate))
     this.setState({ DropdownChange: false })
   }
 
