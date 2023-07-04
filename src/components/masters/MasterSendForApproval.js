@@ -186,16 +186,15 @@ function MasterSendForApproval(props) {
             switch (masterId) {
                 case 1:                        // CASE 1 FOR RAW MATERIAL
                     if (isBulkUpload) {
-                        approvalData && approvalData.map(item => {
-                            approvalObj.RawMaterialId = item.RawMaterialId
-                            approvalObj.CostingTypeId = item.CostingTypeId
-                            return null
-                        })
+                        senderObj.MasterIdList = approvalData.map(item => item?.RawMaterialId)
+                        senderObj.MasterCreateRequest = {
+                            CreateRawMaterial: {}
+                        }
                     } else {
-                        approvalObj.RawMaterialId = EMPTY_GUID
-                    }
-                    senderObj.MasterCreateRequest = {
-                        CreateRawMaterial: approvalObj
+                        senderObj.MasterIdList = []
+                        senderObj.MasterCreateRequest = {
+                            CreateRawMaterial: approvalObj
+                        }
                     }
                     senderObj.ApprovalMasterId = RMTYPE
 
@@ -212,10 +211,16 @@ function MasterSendForApproval(props) {
 
 
                 case 2:  //CASE 2 FOR BOP
-
-                    approvalObj.BoughtOutPartId = isBulkUpload ? approvalData && approvalData.map(item => item.BoughtOutPartId) : EMPTY_GUID;
-                    senderObj.MasterCreateRequest = {
-                        CreateBoughtOutPart: approvalObj
+                    if (isBulkUpload) {
+                        senderObj.MasterIdList = approvalData.map(item => item?.BoughtOutPartId)
+                        senderObj.MasterCreateRequest = {
+                            CreateBoughtOutPart: {}
+                        }
+                    } else {
+                        senderObj.MasterIdList = []
+                        senderObj.MasterCreateRequest = {
+                            CreateRaCreateBoughtOutPartwMaterial: approvalObj
+                        }
                     }
                     senderObj.ApprovalMasterId = BOPTYPE
 
@@ -232,18 +237,19 @@ function MasterSendForApproval(props) {
 
                 case 3:  //CASE 3 FOR OPERATIONS
 
+
                     if (isBulkUpload) {
-                        approvalData && approvalData.map(item => {
-                            approvalObj.OperationId = item.OperationId
-                            approvalObj.CostingTypeId = item.CostingTypeId
-                            return null
-                        })
+                        senderObj.MasterIdList = approvalData.map(item => item?.OperationId)
+                        senderObj.MasterCreateRequest = {
+                            CreateOperationRequest: {}
+                        }
                     } else {
-                        approvalObj.OperationId = EMPTY_GUID
+                        senderObj.MasterIdList = []
+                        senderObj.MasterCreateRequest = {
+                            CreateOperationRequest: approvalObj
+                        }
                     }
-                    senderObj.MasterCreateRequest = {
-                        CreateOperationRequest: approvalObj
-                    }
+
                     senderObj.ApprovalMasterId = OPERATIONTYPE
 
                     //THIS CONDITION IS FOR SIMULATION SEND FOR APPROVAL
@@ -259,27 +265,44 @@ function MasterSendForApproval(props) {
 
                 case 4:  //CASE 4 FOR MACHINE
 
+                    // if (isBulkUpload) {
+                    //     approvalData && approvalData.map(item => {
+                    //         tempArray.push({ MachineId: item.MachineId, IsImportEntery: item.EnteryType === 'Domestic' ? false : true, MachineRequest: {}, CostingTypeId: item.CostingTypeId })
+                    //         return null
+                    //     })
+                    // } else {
+                    //     tempArray.push({ MachineId: EMPTY_GUID, IsImportEntery: IsImportEntery, MachineRequest: approvalObj })
+                    // }
                     if (isBulkUpload) {
-                        approvalData && approvalData.map(item => {
-                            tempArray.push({ MachineId: item.MachineId, IsImportEntery: item.EnteryType === 'Domestic' ? false : true, MachineRequest: {}, CostingTypeId: item.CostingTypeId })
-                            return null
-                        })
-                    } else {
-                        tempArray.push({ MachineId: EMPTY_GUID, IsImportEntery: IsImportEntery, MachineRequest: approvalObj })
-                    }
-
-
-                    if (props.detailEntry) {
+                        senderObj.MasterIdList = approvalData.map(item => item?.MachineId)
+                        senderObj.MasterCreateRequest = {
+                            CreateRawMaterial: {}
+                        }
+                    } else if (props.detailEntry) {
+                        senderObj.MasterIdList = []
                         senderObj.MasterCreateRequest = {
                             MachineDetailsRequest: approvalObj,
                             IsDetailedEntry: true
                         }
                     } else {
+                        senderObj.MasterIdList = []
                         senderObj.MasterCreateRequest = {
                             MachineBasicRequest: approvalObj,
                             IsDetailedEntry: false
                         }
                     }
+
+                    // if (props.detailEntry) {
+                    //     senderObj.MasterCreateRequest = {
+                    //         MachineDetailsRequest: approvalObj,
+                    //         IsDetailedEntry: true
+                    //     }
+                    // } else {
+                    //     senderObj.MasterCreateRequest = {
+                    //         MachineBasicRequest: approvalObj,
+                    //         IsDetailedEntry: false
+                    //     }
+                    // }
                     senderObj.ApprovalMasterId = MACHINETYPE
 
                     //THIS CONDITION IS FOR SIMULATION SEND FOR APPROVAL
@@ -327,9 +350,18 @@ function MasterSendForApproval(props) {
                         BudgetingPartCostingDetails: approvalObj.BudgetingPartCostingDetails,
                         ConditionsData: approvalObj.conditionTableData
                     }
-                    senderObj.MasterCreateRequest = {
-                        CreateBudgeting: obj
+                    if (isBulkUpload) {
+                        senderObj.MasterIdList = approvalData.map(item => item?.RawMaterialId)
+                        senderObj.MasterCreateRequest = {
+                            CreateBudgeting: {}
+                        }
+                    } else {
+                        senderObj.MasterIdList = []
+                        senderObj.MasterCreateRequest = {
+                            CreateBudgeting: obj
+                        }
                     }
+
                     senderObj.ApprovalMasterId = BUDGETTYPE
 
                     //THIS CONDITION IS FOR SIMULATION SEND FOR APPROVAL
