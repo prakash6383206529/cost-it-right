@@ -98,9 +98,9 @@ function NfrPartsListing(props) {
                 let data = [...res?.data?.DataList]
                 let showOutsourcing = false
                 data && data?.map(item => {
-                    if (item?.PartType === "Raw Material" && item?.RawMaterialId !== null) {
+                    if (item?.PartType === "Raw Material") {
                         showOutsourcing = true
-                    } else if (item?.PartType === "Bought Out Part" && item?.BoughtOutPartId !== null) {
+                    } else if (item?.PartType === "Bought Out Part") {
                         showOutsourcing = true
                     }
                 })
