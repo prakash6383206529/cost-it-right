@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { reduxForm, } from "redux-form";
 import { Row, Col, } from 'reactstrap';
-import { APPROVED_STATUS, defaultPageSize, EMPTY_DATA, MACHINERATE, MACHINE_MASTER_ID } from '../../../config/constants';
+import { APPROVED_STATUS, defaultPageSize, EMPTY_DATA, MACHINERATE, MACHINE_MASTER_ID, FILE_URL } from '../../../config/constants';
 import { getMachineDataList, deleteMachine, copyMachine, getProcessGroupByMachineId } from '../actions/MachineMaster';
 import { getTechnologySelectList } from '../../../actions/Common';
 import NoContentFound from '../../common/NoContentFound';
@@ -30,6 +30,7 @@ import { disabledClass } from '../../../actions/Common';
 import AnalyticsDrawer from '../material-master/AnalyticsDrawer';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { hideCustomerFromExcel } from '../../common/CommonFunctions';
+import Attachament from '../../costing/components/Drawers/Attachament';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -78,6 +79,8 @@ class MachineRateListing extends Component {
             noData: false,
             dataCount: 0,
             inRangeDate: [],
+            attachment: false,
+            viewAttachment: []
         }
     }
 
@@ -452,7 +455,42 @@ class MachineRateListing extends Component {
         const value = row.CostingHead === 'VBC' ? row.DestinationPlant : row.Plants
         return value
     }
+    viewAttachmentData = (index) => {
+        this.setState({ viewAttachment: true, attachment: true })
+    }
+    closeAttachmentDrawer = (e = '') => {
+        this.setState({ attachment: false })
+    }
+    attachmentFormatter = (props) => {
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        let files = row?.Attachements
+        if (files.length === 0) {
+            return '-'
+        }
+        return (
+            <>
+                <div className={"attachment images"}>
+                    {files && files.length === 1 ?
+                        files.map((f) => {
+                            const withOutTild = f.FileURL?.replace("~", "");
+                            const fileURL = `${FILE_URL}${withOutTild}`;
+                            return (
+                                <a href={fileURL} target="_blank" rel="noreferrer">
+                                    {f.OriginalFileName}
+                                </a>
+                            )
 
+                        }) : <button
+                            type='button'
+                            title='View Attachment'
+                            className='btn-a pl-0'
+                            onClick={() => this.viewAttachmentData(row)}
+                        >View Attachment</button>}
+                </div>
+            </>
+        )
+
+    }
     bulkToggle = () => {
         this.setState({ isBulkUpload: true })
     }
@@ -643,7 +681,8 @@ class MachineRateListing extends Component {
             costingHeadRenderer: this.costingHeadFormatter,
             customNoRowsOverlay: NoContentFound,
             hyphenFormatter: this.hyphenFormatter,
-            renderPlantFormatter: this.renderPlantFormatter
+            renderPlantFormatter: this.renderPlantFormatter,
+            attachmentFormatter: this.attachmentFormatter,
         };
 
 
@@ -800,6 +839,8 @@ class MachineRateListing extends Component {
                                     <AgGridColumn field="MachineRate" headerName="Machine Rate"></AgGridColumn>
                                     <AgGridColumn field="EffectiveDateNew" headerName="Effective Date" cellRenderer={'effectiveDateRenderer'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
                                     {!isSimulation && !this.props?.isMasterSummaryDrawer && <AgGridColumn field="MachineId" width={230} cellClass={"actions-wrapper"} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
+                                    {this.props.isMasterSummaryDrawer && <AgGridColumn field="Attachments" headerName='Attachments' cellRenderer={'attachmentFormatter'}></AgGridColumn>}
+                                    {this.props.isMasterSummaryDrawer && <AgGridColumn field="Remark" tooltipField="Remark" ></AgGridColumn>}
                                 </AgGridReact>
                                 <div className='button-wrapper'>
                                     {!this.state.isLoader && <PaginationWrapper gridApi={this.gridApi} setPage={this.onPageSizeChanged} globalTake={this.state.globalTake} />}
@@ -847,7 +888,17 @@ class MachineRateListing extends Component {
                         rowData={this.state.selectedRowData}
                     />
                 }
-
+                {
+                    this.state.attachment && (
+                        <Attachament
+                            isOpen={this.state.attachment}
+                            index={this.state.viewAttachment}
+                            closeDrawer={this.closeAttachmentDrawer}
+                            anchor={'right'}
+                            gridListing={true}
+                        />
+                    )
+                }
 
 
                 {

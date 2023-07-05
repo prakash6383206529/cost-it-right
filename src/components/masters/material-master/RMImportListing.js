@@ -3,7 +3,7 @@ import { Row, Col, } from 'reactstrap';
 import {
   deleteRawMaterialAPI, getAllRMDataList
 } from '../actions/Material';
-import { APPROVED_STATUS, defaultPageSize, EMPTY_DATA, ENTRY_TYPE_IMPORT, RMIMPORT } from '../../../config/constants';
+import { APPROVED_STATUS, defaultPageSize, EMPTY_DATA, ENTRY_TYPE_IMPORT, FILE_URL, RMIMPORT } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
 import Toaster from '../../common/Toaster';
@@ -31,6 +31,7 @@ import { disabledClass } from '../../../actions/Common';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import AnalyticsDrawer from './AnalyticsDrawer';
 import { hideCustomerFromExcel } from '../../common/CommonFunctions';
+import Attachament from '../../costing/components/Drawers/Attachament';
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -74,7 +75,8 @@ function RMImportListing(props) {
   const [dataCount, setDataCount] = useState(0)
   const [inRangeDate, setinRangeDate] = useState([])
   const [dateArray, setDateArray] = useState([])
-
+  const [attachment, setAttachment] = useState(false);
+  const [viewAttachment, setViewAttachment] = useState([])
   var filterParams = {
     comparator: function (filterLocalDateAtMidnight, cellValue) {
       var dateAsString = cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
@@ -764,7 +766,43 @@ function RMImportListing(props) {
     checkboxSelection: isFirstColumn
   };
 
+  const viewAttachmentData = (index) => {
+    setAttachment(true)
+    setViewAttachment(index)
+  }
+  const closeAttachmentDrawer = (e = '') => {
+    setAttachment(false)
+  }
+  const attachmentFormatter = (props) => {
+    const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+    let files = row?.Attachements
+    if (files.length === 0) {
+      return '-'
+    }
+    return (
+      <>
+        <div className={"attachment images"}>
+          {files && files.length === 1 ?
+            files.map((f) => {
+              const withOutTild = f.FileURL?.replace("~", "");
+              const fileURL = `${FILE_URL}${withOutTild}`;
+              return (
+                <a href={fileURL} target="_blank" rel="noreferrer">
+                  {f.OriginalFileName}
+                </a>
+              )
 
+            }) : <button
+              type='button'
+              title='View Attachment'
+              className='btn-a pl-0'
+              onClick={() => viewAttachmentData(row)}
+            >View Attachment</button>}
+        </div>
+      </>
+    )
+
+  }
   const frameworkComponents = {
     totalValueRenderer: buttonFormatter,
     effectiveDateRenderer: effectiveDateFormatter,
@@ -776,7 +814,8 @@ function RMImportListing(props) {
     statusFormatter: statusFormatter,
     hyphenFormatter: hyphenFormatter,
     checkBoxRenderer: checkBoxRenderer,
-    currencyFormatter: currencyFormatter
+    currencyFormatter: currencyFormatter,
+    attachmentFormatter: attachmentFormatter,
 
   };
 
@@ -913,6 +952,8 @@ function RMImportListing(props) {
                     <AgGridColumn field="VendorId" hide={true}></AgGridColumn>
 
                     <AgGridColumn field="TechnologyId" hide={true}></AgGridColumn>
+                    {props.isMasterSummaryDrawer && <AgGridColumn field="Attachments" headerName='Attachments' cellRenderer='attachmentFormatter'></AgGridColumn>}
+                    {props.isMasterSummaryDrawer && <AgGridColumn field="Remark" tooltipField="Remark" ></AgGridColumn>}
                   </AgGridReact>
                   <div className='button-wrapper'>
                     {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} globalTake={globalTake} />}
@@ -964,8 +1005,17 @@ function RMImportListing(props) {
           import={true}
         />
       }
-
-
+      {
+        attachment && (
+          <Attachament
+            isOpen={attachment}
+            index={viewAttachment}
+            closeDrawer={closeAttachmentDrawer}
+            anchor={'right'}
+            gridListing={true}
+          />
+        )
+      }
 
       {
         showPopup && <PopupMsgWrapper isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${MESSAGES.RAW_MATERIAL_DETAIL_DELETE_ALERT}`} />
