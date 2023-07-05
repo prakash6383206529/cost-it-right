@@ -218,7 +218,7 @@ function MasterSendForApproval(props) {
                     } else {
                         senderObj.MasterIdList = []
                         senderObj.MasterCreateRequest = {
-                            CreateRaCreateBoughtOutPartwMaterial: approvalObj
+                            CreateBoughtOutPart: approvalObj
                         }
                     }
                     senderObj.ApprovalMasterId = BOPTYPE
