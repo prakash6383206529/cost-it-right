@@ -786,7 +786,7 @@ class BOPImportListing extends Component {
                                     <AgGridColumn field="NetLandedCostConversion" headerName="Net Cost (INR)" cellRenderer={'commonCostFormatter'}></AgGridColumn>
                                     <AgGridColumn field="EffectiveDateNew" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
                                     {!this.props.isSimulation && <AgGridColumn field="BoughtOutPartId" width={160} headerName="Action" cellClass={"actions-wrapper"} type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
-                                    {this.props.isMasterSummaryDrawer && <AgGridColumn field="Attachments" headerName='Attachments' cellRenderer={'attachmentFormatter'}></AgGridColumn>}
+                                    {this.props.isMasterSummaryDrawer && <AgGridColumn field="Attachements" headerName='Attachments' cellRenderer={'attachmentFormatter'}></AgGridColumn>}
                                     {this.props.isMasterSummaryDrawer && <AgGridColumn field="Remark" tooltipField="Remark" ></AgGridColumn>}
                                 </AgGridReact>
                                 <div className='button-wrapper'>
