@@ -57,8 +57,8 @@ function Attachament(props) {
 
               </Col> :
                 <Col md="12">
-                  {(Data.Attachments || Data.Attachements) &&
-                    (Data.Attachments || Data.Attachements).map((f) => {
+                  {(Data.attachment || Data.Attachements) &&
+                    (Data.attachment || Data.Attachements).map((f) => {
                       const withOutTild = f.FileURL
                         ? f.FileURL.replace('~', '')
                         : ''
