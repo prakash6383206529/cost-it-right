@@ -62,23 +62,23 @@ function SummaryDrawer(props) {
             setLoader(false)
             if (Number(props.masterId) === RM_MASTER_ID) {
                 CostingTypeId = Data.ImpactedMasterDataList.RawMaterialListResponse[0]?.CostingTypeId
-                setFiles(Data.ImpactedMasterDataList.RawMaterialListResponse[0].Files)
+                setFiles(Data.ImpactedMasterDataList.RawMaterialListResponse[0].Attachements)
                 Data.ImpactedMasterDataList?.RawMaterialListResponse.length > 0 ? setIsDataInMaster(true) : setIsDataInMaster(false);
             } else if (Number(props.masterId) === BOP_MASTER_ID) {
                 CostingTypeId = Data.ImpactedMasterDataList.BOPDomesticListResponse[0]?.CostingTypeId
-                setFiles(Data.ImpactedMasterDataList.BOPDomesticListResponse[0].Files)
+                setFiles(Data.ImpactedMasterDataList.BOPDomesticListResponse[0].Attachements)
                 Data.ImpactedMasterDataList?.length > 0 ? setIsDataInMaster(true) : setIsDataInMaster(false);
             } else if (Number(props.masterId) === OPERATIONS_ID) {
                 CostingTypeId = Data.ImpactedMasterDataList.OperationListResponse[0]?.CostingTypeId
-                setFiles(Data.ImpactedMasterDataList.OperationListResponse[0].Files)
+                setFiles(Data.ImpactedMasterDataList.OperationListResponse[0].Attachements)
                 Data.ImpactedMasterDataList?.length > 0 ? setIsDataInMaster(true) : setIsDataInMaster(false);
             } else if (Number(props.masterId) === MACHINE_MASTER_ID) {
                 CostingTypeId = Data.ImpactedMasterDataList.MachineListResponse[0]?.CostingTypeId
-                setFiles(Data.ImpactedMasterDataList.MachineListResponse[0].Files)
+                setFiles(Data.ImpactedMasterDataList.MachineListResponse[0].Attachements)
                 Data.ImpactedMasterDataList?.length > 0 ? setIsDataInMaster(true) : setIsDataInMaster(false);
             } else if (Number(props.masterId) === BUDGET_ID) {
                 CostingTypeId = Data.ImpactedMasterDataList.BudgetListResponse[0]?.CostingHeadId
-                setFiles(Data.ImpactedMasterDataList.BudgetingListResponse[0].Files)
+                setFiles(Data.ImpactedMasterDataList.BudgetingListResponse[0].Attachements)
                 Data.ImpactedMasterDataList?.length > 0 ? setIsDataInMaster(true) : setIsDataInMaster(false);
             }
             setCostingTypeId(CostingTypeId)
@@ -165,32 +165,6 @@ function SummaryDrawer(props) {
                                 {isBudgetApproval &&
                                     <BudgetListing isMasterSummaryDrawer={true} selectionForListingMasterAPI='Master' />}
 
-                                {files?.length > 0 && <Row>
-                                    <Col md="12" className='mt-2'>
-                                        <h5 className="left-border">Attachments:</h5>
-                                    </Col>
-                                    <Col md="12">
-                                        <div className={"attachment-wrapper mt-0"}>
-
-                                            {files &&
-                                                files.map((f) => {
-                                                    const withOutTild = f.FileURL?.replace(
-                                                        "~",
-                                                        ""
-                                                    );
-                                                    const fileURL = `${FILE_URL}${withOutTild}`;
-                                                    return (
-                                                        <div className={"attachment images"}>
-                                                            <a href={fileURL} target="_blank" rel="noreferrer" title={f.OriginalFileName}>
-                                                                {f.OriginalFileName}
-                                                            </a>
-
-                                                        </div>
-                                                    );
-                                                })}
-                                        </div>
-                                    </Col>
-                                </Row>}
                             </Col>
 
 
