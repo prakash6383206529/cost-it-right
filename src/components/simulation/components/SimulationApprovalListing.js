@@ -194,7 +194,6 @@ function SimulationApprovalListing(props) {
             if (res?.status === 204) {
                 setTotalRecordCount(0)
                 setPageNo(0)
-                setNoData(true)
                 setIsLoader(false)
                 dispatch(dashboardTabLock(false))
             }
