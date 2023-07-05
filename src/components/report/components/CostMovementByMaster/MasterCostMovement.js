@@ -5,7 +5,7 @@ import { Controller, useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { Col, Row } from 'reactstrap';
-import { fetchPlantDataAPI, fetchSpecificationDataAPI, getApprovalTypeSelectList, getPlantSelectListByType, getRawMaterialCategory, getVendorNameByVendorSelectList } from '../../../../actions/Common';
+import { fetchSpecificationDataAPI, getApprovalTypeSelectList, getPlantSelectListByType, getRawMaterialCategory, getVendorNameByVendorSelectList } from '../../../../actions/Common';
 import { searchCount, VBC_VENDOR_TYPE, VBCTypeId, ZBC } from '../../../../config/constants';
 import { MESSAGES } from '../../../../config/message';
 import { loggedInUserId } from '../../../../helper';
@@ -69,7 +69,6 @@ function MasterCostMovement() {
         dispatch(getSelectListOfMasters(() => { }))
         dispatch(getApprovalTypeSelectList(() => { }))
         dispatch(getCostingSpecificTechnology(loggedInUserId(), () => { }))
-        dispatch(fetchPlantDataAPI(() => { }))
         dispatch(getPlantSelectListByType(ZBC, () => { }))
     }, [])
     const { handleSubmit, control, register, getValues, setValue, formState: { errors } } = useForm({
