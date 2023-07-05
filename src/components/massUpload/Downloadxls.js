@@ -90,6 +90,9 @@ export const checkVendorPlantConfig = (excelData, type = '') => {
             if (el.value === 'DestinationPlantCode') return false;
             if (el.value === 'PlantCode') return false;
         }
+        if (getConfigurationKey().IsShowClientVendorBOP === false) {
+            if (el.value === 'IsClientVendorBOP') return false;
+        }
         return true;
     })
 }
