@@ -246,7 +246,7 @@ function RMImportListing(props) {
                 }
               } else {
 
-                if (prop !== "DepartmentName" && floatingFilterData[prop] !== "") {
+                if (prop !== "DepartmentName" && prop !== 'RawMaterialEntryType' && floatingFilterData[prop] !== "") {
                   isReset = false
                 }
               }
