@@ -3,7 +3,7 @@ import { useForm, Controller } from "react-hook-form";
 import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, Tooltip, } from 'reactstrap';
 import { AsyncSearchableSelectHookForm, SearchableSelectHookForm, TextAreaHookForm, TextFieldHookForm } from '.././layout/HookFormInputs'
-import { getReporterList, fetchPlantDataAPI, getVendorNameByVendorSelectList, getPlantSelectListByType, fetchSpecificationDataAPI } from '../.././actions/Common';
+import { getReporterList, getVendorNameByVendorSelectList, getPlantSelectListByType, fetchSpecificationDataAPI } from '../.././actions/Common';
 import { getCostingSpecificTechnology, } from '../costing/actions/Costing'
 import { addDays, loggedInUserId } from '../.././helper';
 import { postiveNumber, maxLength10, nonZero, checkForNull } from '../.././helper/validation'
@@ -115,9 +115,7 @@ function AddRfq(props) {
         const { vbcVendorGrid } = props;
         dispatch(getPlantSelectListByType(ZBC, () => { }))
         dispatch(getRawMaterialNameChild(() => { }))
-        dispatch(fetchPlantDataAPI(() => { }))
         dispatch(getNfrSelectList(() => { }))
-        dispatch(getPlantSelectListByType(ZBC, () => { }))
 
         let tempArr = [];
         vbcVendorGrid && vbcVendorGrid.map(el => {
