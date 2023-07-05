@@ -735,6 +735,8 @@ function ApprovalSummary(props) {
           showFinalLevelButtons={showFinalLevelButtons}
           costingTypeId={costingTypeId}
           TechnologyId={approvalData?.TechnologyId}
+          conditionInfo={conditionInfo}
+          vendorCodeForSAP={vendorCodeForSap}
         />
       )}
       {rejectDrawer && (
