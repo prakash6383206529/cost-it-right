@@ -610,7 +610,9 @@ const CostingSummaryTable = (props) => {
    */
   const closeAddComparisonDrawer = (e = '') => {
     setaddComparisonToggle(false)
-    props?.checkCostingSelected([], '')
+    if (props.isRfqCosting) {
+      props?.checkCostingSelected([], '')
+    }
     setMultipleCostings([])
     setShowWarningMsg(true)
   }
@@ -637,7 +639,9 @@ const CostingSummaryTable = (props) => {
   const closeShowApproval = (e = '', type) => {
     setShowApproval(false)
     setDataSelected([])
-    props?.checkCostingSelected([], '')
+    if (props.isRfqCosting) {
+      props?.checkCostingSelected([], '')
+    }
     setMultipleCostings([])
 
     if (type === 'Submit') {
@@ -678,12 +682,14 @@ const CostingSummaryTable = (props) => {
         setDataSelected(updatedArray)
         checkWarning(updatedArray)
       }
-      if (index === selectedCheckbox) {
-        setSelectedCheckbox('')
-        props?.checkCostingSelected(temp, '')
-      } else {
-        setSelectedCheckbox(index)
-        props?.checkCostingSelected(temp, index)
+      if (props.isRfqCosting) {
+        if (index === selectedCheckbox) {
+          setSelectedCheckbox('')
+          props?.checkCostingSelected(temp, '')
+        } else {
+          setSelectedCheckbox(index)
+          props?.checkCostingSelected(temp, index)
+        }
       }
       setMultipleCostings(temp)
     } else {                                                                          // WHEN USER CLICK ON BOTTOM SEND FOR APPROVAL BUTTON
