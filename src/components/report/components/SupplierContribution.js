@@ -367,7 +367,7 @@ function SupplierContributionReport(props) {
     return (
 
         <div className="p-relative">{reportListing &&
-            < div className="container-fluid custom-pagination report-listing-page ag-grid-react" >
+            < div className="container-fluid custom-pagination report-listing-page supplier-contribution ag-grid-react" >
                 <form noValidate >
                     {!hideSideBarNavbar && <Row className=" mb-2">
                         <Col md="3" className="form-group mb-0">
