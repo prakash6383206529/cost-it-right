@@ -787,8 +787,12 @@ function AddRfq(props) {
         }
         setPartName('')
         setState(false)
+        setShowTooltip(false)
         setTimeout(() => {
             setState(true)
+            setTimeout(() => {
+                setShowTooltip(true)
+            }, 250);
         }, 500);
         reactLocalStorage.setObject('PartData', [])
 
