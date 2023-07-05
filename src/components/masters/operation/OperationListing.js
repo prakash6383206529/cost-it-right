@@ -825,7 +825,7 @@ class OperationListing extends Component {
                                 <AgGridColumn field="Rate" headerName="Rate (INR)" cellRenderer={'commonCostFormatter'}></AgGridColumn>
                                 <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
                                 {!isSimulation && !this.props?.isMasterSummaryDrawer && <AgGridColumn field="OperationId" cellClass={"actions-wrapper"} width={150} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
-                                {this.props.isMasterSummaryDrawer && <AgGridColumn field="Attachments" headerName='Attachments' cellRenderer={'attachmentFormatter'}></AgGridColumn>}
+                                {this.props.isMasterSummaryDrawer && <AgGridColumn field="Attachements" headerName='Attachments' cellRenderer={'attachmentFormatter'}></AgGridColumn>}
                                 {this.props.isMasterSummaryDrawer && <AgGridColumn field="Remark" tooltipField="Remark" ></AgGridColumn>}
                             </AgGridReact>
                             <div className='button-wrapper'>
