@@ -384,59 +384,6 @@ function Rejection(props) {
                     />
                 </Col>}
 
-                {
-                    <Popup className='rm-popup' trigger={<button id={`popUpTriggerRejection`} title="Remark" className="Comment-box" type={'button'} />}
-                        position="top right">
-                        <TextAreaHookForm
-                            label="Remark:"
-                            name={`rejectionRemark`}
-                            Controller={Controller}
-                            control={control}
-                            register={register}
-                            mandatory={false}
-                            rules={{
-                                maxLength: REMARKMAXLENGTH
-                            }}
-                            handleChange={() => { }}
-                            className=""
-                            customClassName={"withBorder"}
-                            errors={errors.rejectionRemark}
-                            disabled={CostingViewMode}
-                            hidden={false}
-                        />
-                        <Row>
-                            <Col md="12" className='remark-btn-container'>
-                                <button className='submit-button mr-2' disabled={(CostingViewMode) ? true : false} onClick={() => onRemarkPopUpClickRejection()} > <div className='save-icon'></div> </button>
-                                <button className='reset' onClick={() => onRemarkPopUpCloseRejection()} > <div className='cancel-icon'></div></button>
-                            </Col>
-                        </Row>
-                    </Popup>
-
-                }
-
-
-            </Row>
-            <Row className="costing-border-inner-section border-bottom-none m-0">
-                <Col md="3">
-                    <span className="head-text">
-                        Applicability
-                    </span>
-                </Col>
-                <Col md="3">
-                    <span className="head-text">
-                        {applicability.label !== 'Fixed' ? 'Rejection (%)' : 'Rejection'}
-                    </span>
-                </Col>
-                {applicability.label !== 'Fixed' && <Col md="3">
-                    <span className="head-text">
-                        Cost (Applicability)
-                    </span>
-                </Col>}
-                <Col md={applicability.label === 'Fixed' ? '6' : '3'}>
-                    <span className="head-text">
-                        Net Rejection
-                    </span>
-                </Col>
             </Row>
             <Row>
                 <Col md="11" className='first-section'>
