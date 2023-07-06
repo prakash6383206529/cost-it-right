@@ -426,13 +426,13 @@ class BulkUpload extends Component {
                                 }
 
                                 if (fileHeads[i] === 'InsertPartNumber') {
-                                    fileHeads[i] = 'BOPPartNumber'
+                                    fileHeads[i] = 'BoughtOutPartNumber'
                                 }
                                 if (fileHeads[i] === 'InsertPartName') {
-                                    fileHeads[i] = 'BOPPartName'
+                                    fileHeads[i] = 'BoughtOutPartName'
                                 }
                                 if (fileHeads[i] === 'InsertCategory') {
-                                    fileHeads[i] = 'BOPCategory'
+                                    fileHeads[i] = 'CategoryName'
                                 }
 
                                 obj[fileHeads[i]] = el;
@@ -541,7 +541,7 @@ class BulkUpload extends Component {
                 this.responseHandler(res)
             });
 
-        } else if (fileName === 'BOP Domestic' || fileName === 'BOP Import') {
+        } else if (fileName === 'BOP Domestic' || fileName === 'BOP Import' || fileName === 'Insert Domestic' || fileName === 'Insert Import') {
             this.props.bulkUploadBOP(masterUploadData, (res) => {
                 this.setState({ setDisable: false })
                 this.responseHandler(res)
@@ -600,40 +600,6 @@ class BulkUpload extends Component {
             });
         } else if (fileName === 'Part Component') {
             this.props.partComponentBulkUpload(uploadData, (res) => {
-                this.setState({ setDisable: false })
-                this.responseHandler(res)
-            });
-
-        } else if ((fileName === 'BOP Domestic' || fileName === 'Insert Domestic') && costingTypeId === ZBCTypeId) {
-            this.props.bulkUploadBOPDomesticZBC(masterUploadData, (res) => {
-                this.setState({ setDisable: false })
-                this.responseHandler(res)
-            });
-
-        } else if ((fileName === 'BOP Domestic' || fileName === 'Insert Domestic') && costingTypeId === VBCTypeId) {
-            this.props.bulkUploadBOPDomesticVBC(masterUploadData, (res) => {
-                this.setState({ setDisable: false })
-                this.responseHandler(res)
-            });
-        } else if ((fileName === 'BOP Domestic' || fileName === 'Insert Domestic') && costingTypeId === CBCTypeId) {
-            this.props.bulkUploadBOPDomesticCBC(masterUploadData, (res) => {
-                this.setState({ setDisable: false })
-                this.responseHandler(res)
-            });
-
-        } else if ((fileName === 'BOP Import' || fileName === 'Insert Import') && costingTypeId === ZBCTypeId) {
-            this.props.bulkUploadBOPImportZBC(masterUploadData, (res) => {
-                this.setState({ setDisable: false })
-                this.responseHandler(res)
-            });
-
-        } else if ((fileName === 'BOP Import' || fileName === 'Insert Import') && costingTypeId === VBCTypeId) {
-            this.props.bulkUploadBOPImportVBC(masterUploadData, (res) => {
-                this.setState({ setDisable: false })
-                this.responseHandler(res)
-            });
-        } else if ((fileName === 'BOP Import' || fileName === 'Insert Import') && costingTypeId === CBCTypeId) {
-            this.props.bulkUploadBOPImportCBC(masterUploadData, (res) => {
                 this.setState({ setDisable: false })
                 this.responseHandler(res)
             });
