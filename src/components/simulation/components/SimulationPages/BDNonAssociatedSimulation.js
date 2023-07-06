@@ -193,12 +193,17 @@ function BDNonAssociatedSimulation(props) {
 
     const percentageFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        let cellValue = cell
+        if (cell && cell > 100) {
+            Toaster.warning("Percentage should be less than 100")
+            cellValue = 0
+        }
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        const value = beforeSaveCell(cell)
+        const value = beforeSaveCell(cellValue)
         return (
             <>
                 {
-                    <span className={`${!isbulkUpload ? 'form-control' : ''}`} >{cell && value ? Number(cell) : (row?.Percentage ? row?.Percentage : 0)} </span>
+                    <span className={`${!isbulkUpload ? 'form-control' : ''}`} >{cell && value ? Number(cellValue) : (row?.Percentage ? row?.Percentage : 0)} </span>
                 }
 
             </>
