@@ -118,7 +118,7 @@ class BOPDomesticListing extends Component {
         }
 
         // TO HANDLE FUTURE CONDITIONS LIKE [APPROVED_STATUS, DRAFT_STATUS] FOR MULTIPLE STATUS
-        let statusString = [APPROVED_STATUS].join(",")
+        let statusString = [this.props?.approvalStatus].join(",")
 
         const filterData = {
             bop_for: bopFor,
@@ -686,6 +686,7 @@ class BOPDomesticListing extends Component {
                 }
             }
         }
+        console.log('this.props?.approvalStatus: ', this.props?.approvalStatus);
 
         return (
 
@@ -770,7 +771,7 @@ class BOPDomesticListing extends Component {
                     <Col>
 
                         <div className={`ag-grid-wrapper ${this.props?.isDataInMaster && !noData ? 'master-approval-overlay' : ''} ${(this.props.bopDomesticList && this.props.bopDomesticList?.length <= 0) || noData ? 'overlay-contain' : ''}`}>
-                            <div className={`ag-theme-material ${(this.state.isLoader && !this.props.isMasterSummaryDrawer) && "max-loader-height"}`}>
+                            <div className={`ag-theme-material p-relative ${(this.state.isLoader && !this.props.isMasterSummaryDrawer) && "max-loader-height"}`}>
                                 {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found bop-drawer" />}
                                 <AgGridReact
                                     defaultColDef={defaultColDef}

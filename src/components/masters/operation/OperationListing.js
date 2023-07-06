@@ -166,7 +166,7 @@ class OperationListing extends Component {
 
         const { isMasterSummaryDrawer } = this.props
         // TO HANDLE FUTURE CONDITIONS LIKE [APPROVED_STATUS, DRAFT_STATUS] FOR MULTIPLE STATUS
-        let statusString = [APPROVED_STATUS].join(",")
+        let statusString = [this.props?.approvalStatus].join(",")
 
         let filterData = {
             operation_for: operation_for,

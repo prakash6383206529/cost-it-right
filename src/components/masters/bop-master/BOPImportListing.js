@@ -142,7 +142,7 @@ class BOPImportListing extends Component {
         }
 
         // TO HANDLE FUTURE CONDITIONS LIKE [APPROVED_STATUS, DRAFT_STATUS] FOR MULTIPLE STATUS
-        let statusString = [APPROVED_STATUS].join(",")
+        let statusString = [this.props?.approvalStatus].join(",")
 
         const filterData = {
             bop_for: bopFor,
@@ -743,7 +743,7 @@ class BOPImportListing extends Component {
                     <Col>
 
                         <div className={`ag-grid-wrapper height-width-wrapper ${(this.props.bopImportList && this.props.bopImportList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
-                            <div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`} >
+                            <div className={`ag-theme-material p-relative ${this.state.isLoader && "max-loader-height"}`} >
                                 {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
                                 <AgGridReact
                                     defaultColDef={defaultColDef}

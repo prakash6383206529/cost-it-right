@@ -1720,7 +1720,8 @@ export const PENDING_FOR_APPROVAL_ID = 2
 export const AWAITING_APPROVAL_ID = 6
 
 // MASTER APPROVAL STATUS ID
-export const APPROVED_STATUS = '3,5'
+export const APPROVED_STATUS = '3'
+export const APPROVED_STATUS_MASTER = '3,5'
 
 //DECIMAL VALUES FOR PRICE
 export const TWO_DECIMAL_PRICE = 2
@@ -2572,4 +2573,4 @@ export const RAW_MATERIAL_VENDOR_TYPE = Number(reactLocalStorage.getObject('vend
 export const VBC_VENDOR_TYPE = Number(reactLocalStorage.getObject('vendortype')[VENDOR_TYPE_VBC])
 
 //VERSION 
-export const VERSION = "V2.1.191";
+export const VERSION = "V2.1.192";
