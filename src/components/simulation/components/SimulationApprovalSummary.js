@@ -997,20 +997,21 @@ function SimulationApprovalSummary(props) {
             const vendor = item.VendorName.split('(')[1]
 
             temp.push({
-                CostingId: item.CostingId,
-                effectiveDate: DayTime(simulationDetail.EffectiveDate).format('YYYY-MM-DD'),
-                vendorCode: vendor.split(')')[0],
-                materialNumber: item.PartNo,
-                netPrice: item.NewPOPrice,
-                plant: item.PlantCode ? item.PlantCode : '1511',
+                CostingId: item?.CostingId,
+                BoughtOutPartId: item?.BoughtOutPartId,
+                effectiveDate: DayTime(simulationDetail?.EffectiveDate).format('YYYY-MM-DD'),
+                vendorCode: vendor?.split(')')[0],
+                materialNumber: item?.PartNo,
+                netPrice: item?.NewPOPrice,
+                plant: item?.PlantCode ? item?.PlantCode : '1511',
                 currencyKey: INR,
                 basicUOM: 'NO',
-                purchasingOrg: item.DepartmentCode,
+                purchasingOrg: item?.DepartmentCode,
                 purchasingGroup: '',
                 materialGroup: '',
                 taxCode: 'YW',
-                TokenNumber: simulationDetail.Token,
-                DecimalOption: simulationDetail.DecimalOption
+                TokenNumber: simulationDetail?.Token,
+                DecimalOption: simulationDetail?.DecimalOption
             })
         })
 
