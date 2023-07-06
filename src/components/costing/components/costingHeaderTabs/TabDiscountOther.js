@@ -543,6 +543,14 @@ function TabDiscountOther(props) {
     }
   }
 
+  const onCRMHeadChangeDiscount = (e) => {
+    if (e) {
+      setDiscountObj({
+        ...discountObj,
+        DiscountCRMHead: e?.label
+      })
+    }
+  }
 
   /**
   * @method onPressChangeCurrency
@@ -1175,23 +1183,42 @@ function TabDiscountOther(props) {
                     {
                       initialConfiguration.IsShowCRMHead && <Col md="3">
                         <SearchableSelectHookForm
-                          label={'Discount Applicability'}
-                          name={'DiscountCostApplicability'}
-                          placeholder={'Select'}
+                          name={`crmHeadDiscount`}
+                          type="text"
+                          label="CRM Head"
+                          errors={errors.crmHeadDiscount}
                           Controller={Controller}
                           control={control}
-                          rules={{ required: false }}
                           register={register}
-                          defaultValue={discountCostApplicability.length !== 0 ? discountCostApplicability : ''}
-                          options={renderListing('Applicability')}
                           mandatory={false}
-                          disabled={CostingViewMode ? true : false}
-                          handleChange={handleDiscountApplicabilityChange}
-                          errors={errors.DiscountCostApplicability}
-                          buttonCross={resetData('discount')}
+                          rules={{
+                            required: false,
+                          }}
+                          placeholder={'Select'}
+                          options={CRMHeads}
+                          required={false}
+                          handleChange={onCRMHeadChangeDiscount}
+                          disabled={CostingViewMode}
                         />
-                      </Col>
-                    }
+                      </Col>}
+                    <Col md="3">
+                      <SearchableSelectHookForm
+                        label={'Discount Applicability'}
+                        name={'DiscountCostApplicability'}
+                        placeholder={'Select'}
+                        Controller={Controller}
+                        control={control}
+                        rules={{ required: false }}
+                        register={register}
+                        defaultValue={discountCostApplicability.length !== 0 ? discountCostApplicability : ''}
+                        options={renderListing('Applicability')}
+                        mandatory={false}
+                        disabled={CostingViewMode ? true : false}
+                        handleChange={handleDiscountApplicabilityChange}
+                        errors={errors.DiscountCostApplicability}
+                        buttonCross={resetData('discount')}
+                      />
+                    </Col>
                     {
                       <Col md="3">
                         <TextFieldHookForm
