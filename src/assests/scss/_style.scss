@@ -9026,3 +9026,10 @@ div[col-id="ApprovalNumber"] {
 .dashboard-loader {
   min-height: 400px;
 }
+
+.bottom-disabled-date:disabled {
+  height: 32px !important;
+  max-width: 130px;
+  border-color: #b9b9b980 !important;
+  margin-right: 10px;
+}
