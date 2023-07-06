@@ -329,6 +329,7 @@ class ExchangeRateListing extends Component {
     }
 
     resetState() {
+        this.setState({ noData: false })
         this.state.gridApi.deselectAll()
         gridOptions.columnApi.resetColumnState();
         gridOptions.api.setFilterModel(null);

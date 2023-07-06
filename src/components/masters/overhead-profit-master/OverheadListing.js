@@ -254,6 +254,7 @@ function OverheadListing(props) {
 
 
     const resetState = () => {
+        setNoData(false)
         dispatch(agGridStatus("", ""))
         dispatch(isResetClick(true, "applicablity"))
         setIsFilterButtonClicked(false)
