@@ -421,15 +421,7 @@ class BulkUpload extends Component {
                                     fileHeads[i] = 'ScrapRate'
                                 }
 
-                                if (fileHeads[i] === 'InsertPartNumber') {
-                                    fileHeads[i] = 'BOPPartNumber'
-                                }
-                                if (fileHeads[i] === 'InsertPartName') {
-                                    fileHeads[i] = 'BOPPartName'
-                                }
-                                if (fileHeads[i] === 'InsertCategory') {
-                                    fileHeads[i] = 'BOPCategory'
-                                }
+
 
                                 obj[fileHeads[i]] = el;
                                 return null;
