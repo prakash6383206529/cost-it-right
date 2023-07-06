@@ -43,24 +43,6 @@
     }
 }
 
-.parent-container {
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-
-    .child-container {
-        margin-left: 1rem;
-
-        &:first-child,
-        &:last-child {
-            margin-left: 0;
-        }
-    }
-
-    .apply {
-        margin-left: 1rem;
-    }
-}
 
 .defualt-input-value {
     height: 28px !important;
