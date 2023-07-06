@@ -473,15 +473,15 @@ class BOPDomesticListing extends Component {
 
     }
     viewAttachmentData = (index) => {
-        this.setState({ viewAttachment: true, attachment: true })
+        this.setState({ viewAttachment: index, attachment: true })
     }
     closeAttachmentDrawer = (e = '') => {
         this.setState({ attachment: false })
     }
     attachmentFormatter = (props) => {
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const row = props?.data;
         let files = row?.Attachements
-        if (files.length === 0) {
+        if (files && files?.length === 0) {
             return '-'
         }
         return (
