@@ -238,7 +238,7 @@ function RMDomesticListing(props) {
                                 }
                             } else {
 
-                                if (prop !== "DepartmentName" && floatingFilterData[prop] !== "") {
+                                if (prop !== "DepartmentName" && prop !== 'RawMaterialEntryType' && floatingFilterData[prop] !== "") {
                                     isReset = false
                                 }
                             }
@@ -941,7 +941,7 @@ function RMDomesticListing(props) {
                                         {(!isSimulation && !props.isMasterSummaryDrawer) && <AgGridColumn width={160} field="RawMaterialId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
                                         <AgGridColumn field="VendorId" hide={true}></AgGridColumn>
                                         <AgGridColumn field="TechnologyId" hide={true}></AgGridColumn>
-                                        {props.isMasterSummaryDrawer && <AgGridColumn field="Attachments" headerName='Attachments' cellRenderer='attachmentFormatter'></AgGridColumn>}
+                                        {props.isMasterSummaryDrawer && <AgGridColumn field="Attachements" headerName='Attachments' cellRenderer='attachmentFormatter'></AgGridColumn>}
                                         {props.isMasterSummaryDrawer && <AgGridColumn field="Remark" tooltipField="Remark" ></AgGridColumn>}
                                     </AgGridReact>
                                     <div className='button-wrapper'>

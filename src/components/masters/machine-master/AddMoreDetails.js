@@ -3720,7 +3720,7 @@ class AddMoreDetails extends Component {
                                   name={this.props.fieldsObj.TotalFuelCostPerYear === 0 ? '-' : "TotalFuelCostPerYear"}
                                   type="text"
                                   placeholder={'-'}
-                                  validate={[number, postiveNumber]}
+                                  validate={[number]}
                                   component={renderText}
                                   //required={true}
                                   disabled={true}
