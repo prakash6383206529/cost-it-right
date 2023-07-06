@@ -72,6 +72,7 @@ function AddNfr(props) {
     const [indexOuter, setIndexOuter] = useState('');
     const [indexInside, setIndexInside] = useState('');
 
+
     const [costingObj, setCostingObj] = useState({
         item: {},
         index: []
@@ -89,6 +90,10 @@ function AddNfr(props) {
     const [existingGroupNameVersion, setExistingGroupNameVersion] = useState('')
     const [topGroupNotAdded, setTopGroupNotAdded] = useState(false)
     const [disableSaveButton, setDisableSaveButton] = useState(false)
+    const [plantName, setPlantName] = useState('')
+    const [NFRNumber, setNFRNumber] = useState('')
+    const [nfrPartNumber, setNfrPartNumber] = useState('')
+    const [partName, setPartName] = useState('')
 
     const { register, setValue, getValues, control, formState: { errors }, } = useForm({
         mode: 'onChange',
@@ -156,7 +161,8 @@ function AddNfr(props) {
                         IsShowEditButtonForPFS: item.IsShowEditButtonForPFS
                     };
                 });
-                setValue('Plant', `${res?.data?.Data?.PlantName} (${res?.data?.Data?.PlantCode})`);
+
+                setPlantName(`${res?.data?.Data?.PlantName} (${res?.data?.Data?.PlantCode})`)
                 let nfrVersion = res?.data?.Data?.NfrVersion
                 setExistingGroupNameVersion(nfrVersion)
                 if (!_.map(newArray, 'groupName')?.includes(nfrVersion)) {
@@ -248,9 +254,9 @@ function AddNfr(props) {
     // Sets the initial values of the form fields based on the nfrData prop.
     useEffect(() => {
         if (nfrData) {
-            setValue('NfrId', props?.NfrNumber);
-            setValue('PartNo', nfrData?.PartNumber);
-            setValue('PartName', nfrData?.PartName);
+            setNFRNumber(props?.NfrNumber)
+            setNfrPartNumber(nfrData?.PartNumber)
+            setPartName(nfrData?.PartName)
         }
     }, [nfrData, props?.NfrNumber]);
 
@@ -772,81 +778,34 @@ function AddNfr(props) {
         <>
             {(loader && <LoaderCustom customClass="pdf-loader" />)}
             {props.showAddNfr && <div>
-                <Row className='mb-2'>
-                    <Col md="4">
-                        <h1>Create Estimation</h1>
-                    </Col>
-                    <Col md="8"><div className="parent-container">
-                        <div className="child-container">
-                            <TextFieldHookForm
-                                label="NFR Id:"
-                                name={"NfrId"}
-                                Controller={Controller}
-                                control={control}
-                                register={register}
-                                mandatory={false}
-                                handleChange={() => { }}
-                                defaultValue={() => { }}
-                                className=""
-                                customClassName={"withBorder nfr-inputs"}
-                                disabled={true}
-                                title={props?.NfrNumber}
-                            />
-                        </div>
-                        <div className="child-container">
-                            <TextFieldHookForm
-                                label="Plant.:"
-                                name={"Plant"}
-                                Controller={Controller}
-                                control={control}
-                                register={register}
-                                mandatory={false}
-                                handleChange={() => { }}
-                                defaultValue={() => { }}
-                                className=""
-                                title={`${nfrPartDetail?.PlantName} (${nfrPartDetail?.PlantCode})`}
-                                customClassName={"withBorder nfr-inputs  custom-min-width-100px"}
-                                disabled={true}
-                            />
-                        </div>
-                        <div className="child-container">
-                            <TextFieldHookForm
-                                label="Part No.:"
-                                name={"PartNo"}
-                                Controller={Controller}
-                                control={control}
-                                register={register}
-                                mandatory={false}
-                                handleChange={() => { }}
-                                defaultValue={() => { }}
-                                className=""
-                                customClassName={"withBorder nfr-inputs"}
-                                disabled={true}
-                                title={nfrData?.PartNumber}
-                            />
-                        </div>
-                        <div className="child-container">
-                            <TextFieldHookForm
-                                label="Part Name:"
-                                name={"PartName"}
-                                Controller={Controller}
-                                control={control}
-                                register={register}
-                                mandatory={false}
-                                handleChange={() => { }}
-                                defaultValue={() => { }}
-                                className=""
-                                customClassName={"withBorder nfr-inputs"}
-                                disabled={true}
-                                title={nfrData?.PartName}
-                            />
-                        </div>
-                        <div className="child-container">
-                            <button type="button" className={"apply"} onClick={onBackButton}>
-                                <div className={'back-icon'}></div>Back
-                            </button>
-                        </div>
-                    </div>
+                <div className='mb-2 d-flex justify-content-between'>
+                    <h1>Create Estimation</h1>
+                    <button type="button" className={"apply mt-1"} onClick={onBackButton}>
+                        <div className={'back-icon'}></div>Back
+                    </button>
+                </div>
+                <Row>
+                    <Col md="12">
+                        <Table className='border cr-brdr-main sub-table' responsive>
+                            <thead>
+                                <tr>
+                                    <th>NFR Number</th>
+                                    <th>Part Number</th>
+                                    <th>Part Name</th>
+                                    <th>Plant (Code)</th>
+                                    <th>Current Group</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>{NFRNumber}</td>
+                                    <td>{nfrPartNumber}</td>
+                                    <td>{partName}</td>
+                                    <td>{plantName}</td>
+                                    <td>{existingGroupNameVersion}</td>
+                                </tr>
+                            </tbody>
+                        </Table>
                     </Col>
                 </Row>
                 <HeaderTitle className="border-bottom"
