@@ -82,7 +82,6 @@ function BDNonAssociatedSimulation(props) {
             setMaxDate(maxDate)
         }
     }, [list])
-
     const verifySimulation = debounce(() => {
         if (!isEffectiveDateSelected) {
             setIsWarningMessageShow(true)
@@ -103,7 +102,6 @@ function BDNonAssociatedSimulation(props) {
         // }
 
         let tempArr = []
-        console.log(list, "list");
         list && list.map(item => {
             if ((item?.Percentage !== '') && (checkForNull(item?.Percentage) !== 0)) {
                 let tempObj = {}
@@ -128,31 +126,23 @@ function BDNonAssociatedSimulation(props) {
                 if (checkForNull(tempObj.OldNetLandedCost) === checkForNull(tempObj.NewNetLandedCost)) {
                     return false
                 }
-                console.log('tempObj: ', tempObj);
                 tempArr.push(tempObj)
             }
             return null;
         })
 
-        console.log(tempArr, "tempArr");
 
-        let basicRateCount = 0
-
-        tempArr && tempArr.map((li) => {
-
-            if (Number(li.OldBOPRate) === Number(li.NewBOPRate)) {
-                basicRateCount = basicRateCount + 1
+        let check = 0
+        tempArr && tempArr?.map(item => {
+            if (checkForNull(item?.OldNetLandedCost) !== checkForNull(item?.NewNetLandedCost)) {
+                check = check + 1
             }
-            return null;
         })
-
-        console.log(tempArr, "tempArr");
-        if (basicRateCount === list.length) {
-            Toaster.warning('There is no changes in net cost. Please change, then run simulation')
+        if (check === 0) {
+            Toaster.warning("There is no changes in net cost. Please change, then run simulation")
             return false
         }
         setIsDisable(true)
-        basicRateCount = 0
         obj.SimulationIds = tokenForMultiSimulation
         obj.SimulationBoughtOutPart = tempArr
         obj.EffectiveDate = DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss')
