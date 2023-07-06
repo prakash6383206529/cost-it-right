@@ -101,7 +101,9 @@ function BDNonAssociatedSimulation(props) {
         // if (filteredRMData.plantId && filteredRMData.plantId.value) {
         //     obj.PlantId = filteredRMData.plantId ? filteredRMData.plantId.value : ''
         // }
+
         let tempArr = []
+        console.log(list, "list");
         list && list.map(item => {
             if ((item?.Percentage !== '') && (checkForNull(item?.Percentage) !== 0)) {
                 let tempObj = {}
@@ -109,8 +111,8 @@ function BDNonAssociatedSimulation(props) {
                 tempObj.BoughtOutPartId = item.BoughtOutPartId
                 tempObj.OldBOPRate = item.BasicRate
                 tempObj.NewBOPRate = val
-                tempObj.OldNetLandedCost = checkForNull(item.BasicRate)
-                tempObj.NewNetLandedCost = checkForNull(val)
+                tempObj.OldNetLandedCost = checkForNull(item.BasicRate) / checkForNull(item.NumberOfPieces)
+                tempObj.NewNetLandedCost = checkForNull(val) / checkForNull(item.NumberOfPieces)
                 tempObj.PercentageChange = checkForNull(item.Percentage)
                 if (checkForNull(tempObj.OldNetLandedCost) === checkForNull(tempObj.NewNetLandedCost)) {
                     return false
@@ -121,15 +123,18 @@ function BDNonAssociatedSimulation(props) {
                 tempObj.BoughtOutPartId = item.BoughtOutPartId
                 tempObj.OldBOPRate = item.BasicRate
                 tempObj.NewBOPRate = item.NewBasicRate
-                tempObj.OldNetLandedCost = checkForNull(item.BasicRate)
-                tempObj.NewNetLandedCost = checkForNull(item.NewBasicRate)
+                tempObj.OldNetLandedCost = checkForNull(item.BasicRate) / checkForNull(item.NumberOfPieces)
+                tempObj.NewNetLandedCost = checkForNull(item.NewBasicRate) / checkForNull(item.NumberOfPieces)
                 if (checkForNull(tempObj.OldNetLandedCost) === checkForNull(tempObj.NewNetLandedCost)) {
                     return false
                 }
+                console.log('tempObj: ', tempObj);
                 tempArr.push(tempObj)
             }
             return null;
         })
+
+        console.log(tempArr, "tempArr");
 
         let basicRateCount = 0
 
@@ -141,6 +146,7 @@ function BDNonAssociatedSimulation(props) {
             return null;
         })
 
+        console.log(tempArr, "tempArr");
         if (basicRateCount === list.length) {
             Toaster.warning('There is no changes in net cost. Please change, then run simulation')
             return false
@@ -183,7 +189,6 @@ function BDNonAssociatedSimulation(props) {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         return (isbulkUpload ? row['Customer (Code)'] : row.CustomerName);
     }
-
     const newBasicRateFormatter = (props) => {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         let returnValue = ''
@@ -279,9 +284,9 @@ function BDNonAssociatedSimulation(props) {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         let returnValue = ''
         if ((row?.Percentage !== '') && (checkForNull(row?.Percentage) !== 0)) {
-            returnValue = row?.BasicRate + (row?.BasicRate * row?.Percentage / 100)
+            returnValue = (row?.BasicRate + (row?.BasicRate * row?.Percentage / 100)) / checkForNull(row.NumberOfPieces)
         } else {
-            returnValue = row.NewBasicRate
+            returnValue = (row.NewBasicRate) / checkForNull(row.NumberOfPieces)
         }
 
         return returnValue
@@ -290,7 +295,7 @@ function BDNonAssociatedSimulation(props) {
     const OldcostFormatter = (props) => {
         const row = props?.data;
         if (!row.BasicRate || row.BasicRate === '') return ''
-        return row.BasicRate != null ? checkForDecimalAndNull(Number(row.BasicRate), getConfigurationKey().NoOfDecimalForPrice) : ''
+        return row.BasicRate != null ? checkForDecimalAndNull(Number(row.BasicRate) / checkForNull(row.NumberOfPieces), getConfigurationKey().NoOfDecimalForPrice) : ''
     }
 
     const revisedBasicRateHeader = (props) => {
@@ -395,9 +400,9 @@ function BDNonAssociatedSimulation(props) {
         let row = params.data
         let valueReturn = ''
         if ((row?.Percentage !== '') && (checkForNull(row?.Percentage) !== 0)) {
-            valueReturn = row?.BasicRate + (row?.BasicRate * row?.Percentage / 100)
+            valueReturn = (row?.BasicRate + (row?.BasicRate * row?.Percentage / 100)) / checkForNull(row.NumberOfPieces)
         } else {
-            valueReturn = row?.NewBasicRate
+            valueReturn = (row?.NewBasicRate) / checkForNull(row.NumberOfPieces)
         }
         return valueReturn;
     };
@@ -540,12 +545,13 @@ function BDNonAssociatedSimulation(props) {
                                             onFilterModified={onFloatingFilterChanged}
                                         >
                                             {/* <AgGridColumn field="Technologies" editable='false' headerName="Technology" minWidth={190}></AgGridColumn> */}
-                                            <AgGridColumn field="BoughtOutPartNumber" editable='false' headerName="BOP Part No NON ASSOCIATION" minWidth={140}></AgGridColumn>
+                                            <AgGridColumn field="BoughtOutPartNumber" editable='false' headerName="BOP Part No." minWidth={140}></AgGridColumn>
                                             <AgGridColumn field="BoughtOutPartName" editable='false' headerName="BOP Part Name" minWidth={140}></AgGridColumn>
                                             {<AgGridColumn field="BoughtOutPartCategory" editable='false' headerName="BOP Category" minWidth={140}></AgGridColumn>}
                                             {list[0].CostingTypeId !== CBCTypeId && <AgGridColumn field="Vendor" editable='false' headerName="Vendor (Code)" minWidth={140} cellRenderer='vendorFormatter'></AgGridColumn>}
                                             {list[0].CostingTypeId === CBCTypeId && <AgGridColumn field="CustomerName" editable='false' headerName="Customer (Code)" minWidth={140} cellRenderer='customerFormatter'></AgGridColumn>}
                                             {<AgGridColumn field="Plants" editable='false' headerName="Plant (Code)" minWidth={140} cellRenderer='plantFormatter'></AgGridColumn>}
+                                            {<AgGridColumn field="NumberOfPieces" editable='false' headerName="Min Order Quantity" minWidth={140} ></AgGridColumn>}
 
                                             <AgGridColumn headerClass="justify-content-center" cellClass="text-center" headerName={Number(selectedMasterForSimulation?.value) === 5 ? "Basic Rate (Currency)" : "Basic Rate (INR)"} marryChildren={true} width={240}>
                                                 <AgGridColumn width={120} field="BasicRate" editable='false' cellRenderer='oldBasicRateFormatter' headerName="Existing" colId="BasicRate"></AgGridColumn>

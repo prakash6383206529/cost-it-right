@@ -197,21 +197,40 @@ function VerifySimulation(props) {
                     break;
                 case Number(BOPDOMESTIC):
 
-                    dispatch(getVerifyBoughtOutPartSimulationList(props.token, (res) => {
-                        if (res.data.Result) {
-                            const data = res.data.Data
-                            if (data.simulationBoughtOutPartImpactedCostings.length === 0) {
-                                Toaster.warning('No approved costing exist for this bought out part.')
-                                setHideRunButton(true)
-                                return false
+                    if (isMasterAssociatedWithCosting) {
+                        dispatch(getVerifyBoughtOutPartSimulationList(props.token, (res) => {
+                            if (res.data.Result) {
+                                const data = res.data.Data
+                                if (data.simulationBoughtOutPartImpactedCostings.length === 0) {
+                                    Toaster.warning('No approved costing exist for this bought out part.')
+                                    setHideRunButton(true)
+                                    return false
+                                }
+                                setTokenNo(data.TokenNumber)
+                                setSimualtionId(data.SimulationId)
+                                setSimulationTechnologyId(data.SimulationtechnologyId)
+                                setHideRunButton(false)
+                                setEffectiveDate(data.EffectiveDate)
                             }
-                            setTokenNo(data.TokenNumber)
-                            setSimualtionId(data.SimulationId)
-                            setSimulationTechnologyId(data.SimulationtechnologyId)
-                            setHideRunButton(false)
-                            setEffectiveDate(data.EffectiveDate)
-                        }
-                    }))
+                        }))
+                    } else {
+                        dispatch(getAllSimulationBoughtOutPart(props.token, (res) => {
+                            if (res.data.Result) {
+                                const data = res.data.Data
+                                if (data.SimulationBoughtOutPart.length === 0) {
+                                    Toaster.warning('No approved bought out part.')
+                                    setHideRunButton(true)
+                                    return false
+                                }
+                                setTokenNo(data.TokenNumber)
+                                setSimualtionId(data.SimulationId)
+                                setSimulationTechnologyId(data.SimulationTechnologyId)
+                                setHideRunButton(false)
+                                setEffectiveDate(data.EffectiveDate)
+                            }
+
+                        }))
+                    }
                     break;
                 case Number(BOPIMPORT):
 
@@ -759,8 +778,10 @@ function VerifySimulation(props) {
                                             {isRMDomesticOrRMImport === true && <AgGridColumn width={120} field="RMGrade" headerName="Grade" ></AgGridColumn>}
                                             {isMachineRate && <AgGridColumn width={145} field="ProcessName" headerName="Process Name"></AgGridColumn>}
                                             {isMachineRate && <AgGridColumn width={150} field="MachineNumber" headerName="Machine Number"></AgGridColumn>}
-                                            {isBOPDomesticOrImport === true && <AgGridColumn width={130} field="BoughtOutPartCode" headerName="BOP Number"></AgGridColumn>}
-                                            {isBOPDomesticOrImport === true && <AgGridColumn width={130} field="BoughtOutPartName" headerName="BOP Name"></AgGridColumn>}
+                                            {/* {isBOPDomesticOrImport === true && <AgGridColumn width={130} field="BoughtOutPartNumber" headerName="BOP Number"></AgGridColumn>}
+                                            {isBOPDomesticOrImport === true && <AgGridColumn width={130} field="BoughtOutPartName" headerName="BOP Name"></AgGridColumn>} */}
+                                            {isBOPDomesticOrImport === true && <AgGridColumn width={130} field="BoughtOutPartNumber" headerName="Insert Number" cellRenderer={"bopNumberFormatter"}></AgGridColumn>}
+                                            {isBOPDomesticOrImport === true && <AgGridColumn width={130} field="BoughtOutPartName" headerName="Insert Name"></AgGridColumn>}
                                             {isSurfaceTreatmentOrOperation === true && <AgGridColumn width={185} field="OperationName" headerName="Operation Name"></AgGridColumn>}
                                             {isSurfaceTreatmentOrOperation === true && <AgGridColumn width={185} field="OperationCode" headerName="Operation Code"></AgGridColumn>}
                                             {!isMultiTechnology && verifyList && verifyList[0]?.CostingHeadId !== CBCTypeId && <AgGridColumn width={140} field="VendorName" cellRenderer='renderVendor' headerName="Vendor (Code)"></AgGridColumn>}
@@ -771,9 +792,8 @@ function VerifySimulation(props) {
                                             {isSurfaceTreatmentOrOperation === true && <AgGridColumn width={185} field="OldOperationRate" headerName="Existing Rate"></AgGridColumn>}
                                             {isSurfaceTreatmentOrOperation === true && <AgGridColumn width={185} field="NewOperationRate" headerName="Revised Rate"></AgGridColumn>}
 
-                                            {isBOPDomesticOrImport === true && <AgGridColumn width={130} field="BoughtOutPartCode" headerName="Insert Number"></AgGridColumn>}
-                                            {isBOPDomesticOrImport === true && <AgGridColumn width={130} field="BoughtOutPartName" headerName="Insert Name"></AgGridColumn>}
-                                            {isBOPDomesticOrImport === true && <AgGridColumn width={145} field="OldBoughtOutPartRate" headerName="Existing Basic Rate"></AgGridColumn>}
+
+                                            {isBOPDomesticOrImport === true && <AgGridColumn width={145} field="OldBoughtOutPartRate" headerName="Existing Basic Rate" cellRenderer={existingBasicFormatter}></AgGridColumn>}
                                             {isBOPDomesticOrImport === true && <AgGridColumn width={150} field="NewBoughtOutPartRate" cellRenderer='newBRFormatter' headerName="Revised Basic Rate"></AgGridColumn>}
 
                                             {isMachineRate && <AgGridColumn width={145} field="OldMachineRate" headerName="Existing Machine Rate"></AgGridColumn>}
@@ -847,6 +867,7 @@ function VerifySimulation(props) {
                 simulationDrawer &&
                 <RunSimulationDrawer
                     tokenNo={tokenNo}
+                    simulationTechnologyId={simulationTechnologyId}
                     vendorId={vendorId}
                     isOpen={simulationDrawer}
                     closeDrawer={closeDrawer}
