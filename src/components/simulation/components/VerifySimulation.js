@@ -882,6 +882,7 @@ function VerifySimulation(props) {
                                 autoComplete={'off'}
                                 disabledKeyboardNavigation
                                 disabled={true}
+                                className='form-control bottom-disabled-date'
                             />}
                             <button onClick={runSimulation} type="submit" className="user-btn mr5 save-btn"                    >
                                 <div className={"Run-icon"}>
