@@ -773,9 +773,9 @@ function RMImportListing(props) {
     setAttachment(false)
   }
   const attachmentFormatter = (props) => {
-    const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+    const row = props?.data;
     let files = row?.Attachements
-    if (files.length === 0) {
+    if (files && files?.length === 0) {
       return '-'
     }
     return (
