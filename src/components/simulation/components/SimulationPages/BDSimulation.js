@@ -124,8 +124,8 @@ function BDSimulation(props) {
                 tempObj.BoughtOutPartId = item.BoughtOutPartId
                 tempObj.OldBOPRate = item.BasicRate
                 tempObj.NewBOPRate = item.NewBasicRate
-                tempObj.OldNetLandedCost = checkForNull(item.BasicRate)
-                tempObj.NewNetLandedCost = checkForNull(item.NewBasicRate)
+                tempObj.OldNetLandedCost = checkForNull(item.BasicRate) / checkForNull(item.NumberOfPieces)
+                tempObj.NewNetLandedCost = checkForNull(item.NewBasicRate) / checkForNull(item.NumberOfPieces)
                 tempArr.push(tempObj)
             }
             return null;
@@ -257,10 +257,10 @@ function BDSimulation(props) {
             return row.NewNetBoughtOutPartCost ? row.NewNetBoughtOutPartCost : '-'
         } else {
             if (!row.NewBasicRate || Number(row.BasicRate) === Number(row.NewBasicRate) || row.NewBasicRate === '') return ''
-            const BasicRate = Number(row.BasicRate)
-            const NewBasicRate = Number(row.NewBasicRate)
+            const BasicRate = Number(row.BasicRate) / Number(row.NumberOfPieces)
+            const NewBasicRate = Number(row.NewBasicRate) / Number(row.NumberOfPieces)
             const classGreen = (BasicRate < NewBasicRate) ? 'red-value form-control' : (BasicRate > NewBasicRate) ? 'green-value form-control' : 'form-class'
-            return row.NewBasicRate != null ? <span className={classGreen}>{checkForDecimalAndNull(Number(row.NewBasicRate), getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
+            return row.NewBasicRate != null ? <span className={classGreen}>{checkForDecimalAndNull(Number(row.NewBasicRate) / Number(row.NumberOfPieces), getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
         }
     }
 
@@ -490,7 +490,7 @@ function BDSimulation(props) {
                                             {!isImpactedMaster && list[0].CostingTypeId !== CBCTypeId && <AgGridColumn field="Vendor" editable='false' headerName="Vendor (Code)" minWidth={140} cellRenderer='vendorFormatter'></AgGridColumn>}
                                             {!isImpactedMaster && list[0].CostingTypeId === CBCTypeId && <AgGridColumn field="CustomerName" editable='false' headerName="Customer (Code)" minWidth={140} cellRenderer='customerFormatter'></AgGridColumn>}
                                             {!isImpactedMaster && <AgGridColumn field="Plants" editable='false' headerName="Plant (Code)" minWidth={140} cellRenderer='plantFormatter'></AgGridColumn>}
-
+                                            {<AgGridColumn field="NumberOfPieces" editable='false' headerName="Min Order Quantity" minWidth={140} ></AgGridColumn>}
                                             <AgGridColumn headerClass="justify-content-center" cellClass="text-center" headerName={Number(selectedMasterForSimulation?.value) === 5 ? "Basic Rate (Currency)" : "Basic Rate (INR)"} marryChildren={true} width={240}>
                                                 <AgGridColumn width={120} field="BasicRate" editable='false' cellRenderer='oldBasicRateFormatter' headerName="Existing" colId="BasicRate"></AgGridColumn>
                                                 <AgGridColumn width={120} cellRenderer='newBasicRateFormatter' editable={!isImpactedMaster} onCellValueChanged='cellChange' field="NewBasicRate" headerName="Revised" colId='NewBasicRate' headerComponent={'revisedBasicRateHeader'}></AgGridColumn>
