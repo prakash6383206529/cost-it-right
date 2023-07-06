@@ -445,6 +445,7 @@ function BudgetListing(props) {
     }
 
     const resetState = () => {
+        setNoData(false)
         gridOptions.columnApi.resetColumnState();
         gridOptions.api.setFilterModel(null);
         if (props.isMasterSummaryDrawer === false) {
