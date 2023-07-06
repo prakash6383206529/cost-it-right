@@ -1123,7 +1123,7 @@ function AddRfq(props) {
                                         </Col> */}
                                         <Col md="3">
                                             <SearchableSelectHookForm
-                                                label={"NFR Id"}
+                                                label={"NFR No."}
                                                 name={"nfrId"}
                                                 placeholder={"Select"}
                                                 Controller={Controller}
