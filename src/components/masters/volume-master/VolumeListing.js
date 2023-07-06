@@ -544,6 +544,7 @@ function VolumeListing(props) {
   }
 
   const resetState = () => {
+    setNoData(false)
     gridApi.deselectAll()
     gridOptions.columnApi.resetColumnState();
     gridOptions.api.setFilterModel(null);
