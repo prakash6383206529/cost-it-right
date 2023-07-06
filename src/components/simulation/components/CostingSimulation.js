@@ -315,8 +315,11 @@ function CostingSimulation(props) {
                         uniqeArray.push(item);                                   //  ALSO PUSH ITEM IN ARRAY WHICH BECOMES UNIQUE FROM COSTING NUMBER
                     }
                 }
+            } else {
+                uniqeArray = [...Data.SimulationBoughtOutPart]
             }
             let simulationList = isMasterAssociatedWithCosting ? Data?.SimulatedCostingList : Data?.SimulationBoughtOutPart
+            console.log('simulationList: ', simulationList);
             setTokenNo(tokenNo)
             setAPIData(tempArrayCosting)
             setCostingArr(tempArrayCosting)
@@ -324,20 +327,20 @@ function CostingSimulation(props) {
             setLoader(false)
             let tempObj = {}
             tempObj.EffectiveDate = Data.EffectiveDate
-            tempObj.CostingHead = Data?.SimulatedCostingList[0]?.CostingHead
+            tempObj.CostingHead = simulationList[0]?.CostingHead
             tempObj.SimulationHeadId = Data.SimulationHeadId
-            tempObj.CostingHead = Data?.SimulatedCostingList[0]?.CostingHead
             tempObj.SimulationAppliedOn = Data.SimulationAppliedOn
-            tempObj.Technology = Data.SimulatedCostingList[0].Technology
-            tempObj.Vendor = Data.SimulatedCostingList[0].VendorName
+            tempObj.Technology = simulationList[0]?.Technology
+            tempObj.Vendor = simulationList[0]?.VendorName
             tempObj.TotalImpactPerQuarter = Data.TotalImpactPerQuarter
-            tempObj.CustomerName = Data.SimulatedCostingList[0].CustomerName
-            tempObj.BudgetedPriceImpactPerQuarter = Data?.SimulatedCostingList[0]?.BudgetedPriceImpactPerQuarter
+            tempObj.CustomerName = simulationList[0]?.CustomerName
+            tempObj.BudgetedPriceImpactPerQuarter = simulationList[0]?.BudgetedPriceImpactPerQuarter
             setAmendmentDetails(tempObj)
 
             //LISTING
             // SECOND PARAMETER TRUE | TO SAVE UNIQUE LIST OF NON REQUIRED COSTING(COMPONENT COSTING OF ASSEMBLY'S CHILD)  
             const list = getListMultipleAndAssembly(uniqeArray, true)
+            console.log('list: ', list);
             setTableData(list)
 
             //DOWNLOAD

@@ -858,7 +858,7 @@ class AddBOPImport extends Component {
       SourceLocation: sourceLocation.value,
       EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
       BasicRate: values.BasicRate,
-      NumberOfPieces: 1,
+      NumberOfPieces: values.NumberOfPieces,
       NetLandedCost: this.state.netLandedcost,
       Remark: values.Remark,
       IsActive: true,
