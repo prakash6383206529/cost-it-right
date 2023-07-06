@@ -118,7 +118,7 @@ class BOPDomesticListing extends Component {
         }
 
         // TO HANDLE FUTURE CONDITIONS LIKE [APPROVED_STATUS, DRAFT_STATUS] FOR MULTIPLE STATUS
-        let statusString = [APPROVED_STATUS].join(",")
+        let statusString = [this.props?.approvalStatus].join(",")
 
         const filterData = {
             bop_for: bopFor,
@@ -746,6 +746,7 @@ class BOPDomesticListing extends Component {
                 }
             }
         }
+        console.log('this.props?.approvalStatus: ', this.props?.approvalStatus);
 
         return (
 

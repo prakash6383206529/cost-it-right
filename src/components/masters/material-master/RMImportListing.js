@@ -184,7 +184,7 @@ function RMImportListing(props) {
     }
 
     // TO HANDLE FUTURE CONDITIONS LIKE [APPROVED_STATUS, DRAFT_STATUS] FOR MULTIPLE STATUS
-    let statusString = [APPROVED_STATUS].join(",")
+    let statusString = [props?.approvalStatus].join(",")
 
     const filterData = {
       costingHead: isSimulation && filteredRMData && filteredRMData.costingHeadTemp ? filteredRMData.costingHeadTemp.value : costingHead,

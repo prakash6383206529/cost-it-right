@@ -6,7 +6,7 @@ import { Row, Col } from 'reactstrap'
 import { Controller, useForm } from 'react-hook-form';
 import { getSelectListOfMasters, setMasterForSimulation } from '../../simulation/actions/Simulation'
 import { useDispatch, useSelector } from 'react-redux';
-import { BOPDOMESTIC, BOPIMPORT, EXCHNAGERATE, MACHINERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT } from '../../../config/constants'
+import { APPROVED_STATUS, BOPDOMESTIC, BOPIMPORT, EXCHNAGERATE, MACHINERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT } from '../../../config/constants'
 import { getCostingTechnologySelectList } from '../../costing/actions/Costing'
 import MachineRateListing from '../../masters/machine-master/MachineRateListing'
 import BOPDomesticListing from '../../masters/bop-master/BOPDomesticListing'
@@ -105,21 +105,21 @@ function CostingBenchmarkReport(props) {
 
         switch (value.value) {
             case RMDOMESTIC:
-                return (<RMDomesticListing isSimulation={false} technology={technology.value} selectionForListingMasterAPI='Master' handleDate={handleDate} benchMark={true} />)
+                return (<RMDomesticListing isSimulation={false} technology={technology.value} selectionForListingMasterAPI='Master' handleDate={handleDate} benchMark={true} approvalStatus={APPROVED_STATUS} />)
             case RMIMPORT:
-                return (<RMImportListing isSimulation={false} technology={0} selectionForListingMasterAPI='Master' handleDate={handleDate} benchMark={true} />)
+                return (<RMImportListing isSimulation={false} technology={0} selectionForListingMasterAPI='Master' handleDate={handleDate} benchMark={true} approvalStatus={APPROVED_STATUS} />)
             case MACHINERATE:
-                return (<MachineRateListing isMasterSummaryDrawer={false} isSimulation={false} technology={0} selectionForListingMasterAPI='Master' benchMark={true} handleDate={handleDate} />)
+                return (<MachineRateListing isMasterSummaryDrawer={false} isSimulation={false} technology={0} selectionForListingMasterAPI='Master' benchMark={true} handleDate={handleDate} approvalStatus={APPROVED_STATUS} />)
             case BOPDOMESTIC:
-                return (<BOPDomesticListing isSimulation={false} technology={technology.value} selectionForListingMasterAPI='Master' isMasterSummaryDrawer={false} handleDate={handleDate} benchMark={true} />)
+                return (<BOPDomesticListing isSimulation={false} technology={technology.value} selectionForListingMasterAPI='Master' isMasterSummaryDrawer={false} handleDate={handleDate} benchMark={true} approvalStatus={APPROVED_STATUS} />)
             case BOPIMPORT:
-                return (<BOPImportListing isSimulation={false} technology={technology.value} selectionForListingMasterAPI='Master' isMasterSummaryDrawer={false} handleDate={handleDate} benchMark={true} />)
+                return (<BOPImportListing isSimulation={false} technology={technology.value} selectionForListingMasterAPI='Master' isMasterSummaryDrawer={false} handleDate={handleDate} benchMark={true} approvalStatus={APPROVED_STATUS} />)
             case EXCHNAGERATE:
-                return (<ExchangeRateListing isSimulation={true} technology={technology.value} selectionForListingMasterAPI='Master' />)
+                return (<ExchangeRateListing isSimulation={true} technology={technology.value} selectionForListingMasterAPI='Master' approvalStatus={APPROVED_STATUS} />)
             case OPERATIONS:
-                return (<OperationListing isSimulation={false} technology={null} selectionForListingMasterAPI='Master' stopAPICall={false} isMasterSummaryDrawer={false} benchMark={true} handleDate={handleDate} />)
+                return (<OperationListing isSimulation={false} technology={null} selectionForListingMasterAPI='Master' stopAPICall={false} isMasterSummaryDrawer={false} benchMark={true} handleDate={handleDate} approvalStatus={APPROVED_STATUS} />)
             case SURFACETREATMENT:
-                return (<OperationListing isSimulation={false} technology={null} selectionForListingMasterAPI='Master' stopAPICall={false} isMasterSummaryDrawer={false} isOperationST={SURFACETREATMENT} benchMark={true} handleDate={handleDate} />)
+                return (<OperationListing isSimulation={false} technology={null} selectionForListingMasterAPI='Master' stopAPICall={false} isMasterSummaryDrawer={false} isOperationST={SURFACETREATMENT} benchMark={true} handleDate={handleDate} approvalStatus={APPROVED_STATUS} />)
             default:
                 return <div className="empty-table-paecholder" />;
         }
@@ -193,7 +193,7 @@ function CostingBenchmarkReport(props) {
         <div className="container-fluid simulation-page">
             {
                 !showEditTable &&
-                <div className="simulation-main p-relative mt-3">      
+                <div className="simulation-main p-relative mt-3">
 
                     <Row>
                         <Col md="12" className="filter-block">
@@ -225,13 +225,13 @@ function CostingBenchmarkReport(props) {
                     {loader && < LoaderCustom />}
                     {showMasterList && renderModule(master)}
                     <div className='p-relative'>
-                    <Row>
-                        {cancelButton && <Col md="12" className='mb-2'>
-                            <button type="button" className={`apply float-right`} onClick={cancelReport}> <div className={'back-icon'}></div>Back</button>
-                        </Col>}
-                    </Row>
-                    {showInsight && renderInsights(master)}
-                        </div>
+                        <Row>
+                            {cancelButton && <Col md="12" className='mb-2'>
+                                <button type="button" className={`apply float-right`} onClick={cancelReport}> <div className={'back-icon'}></div>Back</button>
+                            </Col>}
+                        </Row>
+                        {showInsight && renderInsights(master)}
+                    </div>
                     {blueDivison && runReportButton &&
                         <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer sticky-btn-footer">
                             <div className="col-sm-12 text-right bluefooter-butn mt-3">
