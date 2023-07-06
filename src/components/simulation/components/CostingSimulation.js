@@ -762,7 +762,7 @@ function CostingSimulation(props) {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         let value = row?.OldBOPRate - row?.NewBOPRate
-        return cell != null ? value : '-';
+        return cell != null ? checkForDecimalAndNull(value, getConfigurationKey().NoOfDecimalForPrice) : '-';
     }
 
     const oldSTFormatter = (props) => {
