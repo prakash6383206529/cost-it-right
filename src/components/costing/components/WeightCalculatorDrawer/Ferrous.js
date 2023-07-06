@@ -235,13 +235,13 @@ function Ferrous(props) {
             if (res.data.Result) {
                 obj.WeightCalculationId = res.data.Identity
                 Toaster.success("Calculation saved successfully")
-                props.toggleDrawer('', obj)
+                props.toggleDrawer('ferrous', obj)
             }
         }))
     }), 500);
 
     const onCancel = () => {
-        props.toggleDrawer('')
+        props.toggleDrawer('cancel')
     }
 
     const handleKeyDown = function (e) {
