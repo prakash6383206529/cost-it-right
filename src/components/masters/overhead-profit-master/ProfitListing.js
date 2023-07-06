@@ -262,13 +262,13 @@ function ProfitListing(props) {
 
 
     const resetState = () => {
+        setNoData(false)
         dispatch(agGridStatus("", ""))
         dispatch(isResetClick(true, "applicablity"))
         setIsFilterButtonClicked(false)
         gridApi.deselectAll()
         gridOptions?.columnApi?.resetColumnState(null);
         gridOptions?.api?.setFilterModel(null);
-
         for (var prop in floatingFilterData) {
             floatingFilterData[prop] = ""
 
@@ -284,6 +284,7 @@ function ProfitListing(props) {
         setGlobalTake(10)
         setPageSize(prevState => ({ ...prevState, pageSize10: true, pageSize50: false, pageSize100: false }))
         setDataCount(0)
+
     }
 
 
