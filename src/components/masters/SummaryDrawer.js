@@ -10,7 +10,7 @@ import { Fragment } from 'react';
 import MasterSendForApproval from './MasterSendForApproval';
 import LoaderCustom from '../common/LoaderCustom';
 import OperationListing from './operation/OperationListing'
-import { BOP_MASTER_ID, RM_MASTER_ID, OPERATIONS_ID, MACHINE_MASTER_ID, FILE_URL, BUDGET_ID } from '../../config/constants';
+import { BOP_MASTER_ID, RM_MASTER_ID, OPERATIONS_ID, MACHINE_MASTER_ID, FILE_URL, BUDGET_ID, APPROVED_STATUS } from '../../config/constants';
 import MachineRateListing from './machine-master/MachineRateListing';
 import { loggedInUserId, userDetails, userTechnologyDetailByMasterId } from '../../helper';
 import { checkFinalUser } from '../costing/actions/Costing';
@@ -153,15 +153,15 @@ function SummaryDrawer(props) {
 
 
                                 {isRMApproval &&
-                                    <RMDomesticListing isMasterSummaryDrawer={true} selectionForListingMasterAPI='Master' isDataInMaster={isDataInMaster} />}
+                                    <RMDomesticListing isMasterSummaryDrawer={true} selectionForListingMasterAPI='Master' isDataInMaster={isDataInMaster} approvalStatus={APPROVED_STATUS} />}
                                 {isBOPApproval &&
-                                    <BOPDomesticListing isMasterSummaryDrawer={true} selectionForListingMasterAPI='Master' isDataInMaster={isDataInMaster} />}
+                                    <BOPDomesticListing isMasterSummaryDrawer={true} selectionForListingMasterAPI='Master' isDataInMaster={isDataInMaster} approvalStatus={APPROVED_STATUS} />}
 
                                 {isOperationApproval &&
-                                    <OperationListing isMasterSummaryDrawer={true} selectionForListingMasterAPI='Master' isDataInMaster={isDataInMaster} stopAPICall={false} />}
+                                    <OperationListing isMasterSummaryDrawer={true} selectionForListingMasterAPI='Master' isDataInMaster={isDataInMaster} stopAPICall={false} approvalStatus={APPROVED_STATUS} />}
 
                                 {isMachineApproval &&
-                                    <MachineRateListing isMasterSummaryDrawer={true} selectionForListingMasterAPI='Master' isDataInMaster={isDataInMaster} />}
+                                    <MachineRateListing isMasterSummaryDrawer={true} selectionForListingMasterAPI='Master' isDataInMaster={isDataInMaster} approvalStatus={APPROVED_STATUS} />}
                                 {isBudgetApproval &&
                                     <BudgetListing isMasterSummaryDrawer={true} selectionForListingMasterAPI='Master' />}
 

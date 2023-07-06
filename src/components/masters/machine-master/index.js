@@ -7,7 +7,7 @@ import AddMachineRate from './AddMachineRate';
 import AddMoreDetails from './AddMoreDetails';
 import ProcessListing from './ProcessListing';
 import { checkPermission } from '../../../helper/util';
-import { MACHINE, MACHINE_MASTER_ID, MASTERS, } from '../../../config/constants';
+import { APPROVED_STATUS_MASTER, MACHINE, MACHINE_MASTER_ID, MASTERS, } from '../../../config/constants';
 import ScrollToTop from '../../common/ScrollToTop';
 import { CheckApprovalApplicableMaster } from "../../../helper";
 import CommonApproval from '../material-master/CommonApproval';
@@ -232,6 +232,7 @@ class MachineMaster extends Component {
                                                 isMasterSummaryDrawer={false}
                                                 stopApiCallOnCancel={this.state.stopApiCallOnCancel}
                                                 selectionForListingMasterAPI='Master'
+                                                approvalStatus={APPROVED_STATUS_MASTER}
                                             />
                                         </TabPane>}
 

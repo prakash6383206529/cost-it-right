@@ -128,7 +128,7 @@ class MachineRateListing extends Component {
         }
 
         // TO HANDLE FUTURE CONDITIONS LIKE [APPROVED_STATUS, DRAFT_STATUS] FOR MULTIPLE STATUS
-        let statusString = [APPROVED_STATUS].join(",")
+        let statusString = [this.props?.approvalStatus].join(",")
 
         const filterData = {
             costing_head: costing_head,
