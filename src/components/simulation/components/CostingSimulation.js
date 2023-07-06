@@ -319,7 +319,6 @@ function CostingSimulation(props) {
                 uniqeArray = [...Data.SimulationBoughtOutPart]
             }
             let simulationList = isMasterAssociatedWithCosting ? Data?.SimulatedCostingList : Data?.SimulationBoughtOutPart
-            console.log('simulationList: ', simulationList);
             setTokenNo(tokenNo)
             setAPIData(tempArrayCosting)
             setCostingArr(tempArrayCosting)
@@ -340,7 +339,6 @@ function CostingSimulation(props) {
             //LISTING
             // SECOND PARAMETER TRUE | TO SAVE UNIQUE LIST OF NON REQUIRED COSTING(COMPONENT COSTING OF ASSEMBLY'S CHILD)  
             const list = getListMultipleAndAssembly(uniqeArray, true)
-            console.log('list: ', list);
             setTableData(list)
 
             //DOWNLOAD
@@ -1381,6 +1379,8 @@ function CostingSimulation(props) {
                                                         {isSimulationWithOutCosting && <AgGridColumn width={130} field="Technology" headerName='Technology'></AgGridColumn>}
                                                         {isSimulationWithOutCosting && <AgGridColumn width={110} field="ECNNumber" headerName='ECN No.' cellRenderer='ecnFormatter'></AgGridColumn>}
                                                         {isSimulationWithOutCosting && <AgGridColumn width={130} field="RevisionNumber" headerName='Revision No.' cellRenderer='revisionFormatter'></AgGridColumn>}
+                                                        {isSimulationWithOutCosting && <AgGridColumn width={130} field="SANumber" headerName='SA Number' editable={true}></AgGridColumn>}
+                                                        {isSimulationWithOutCosting && <AgGridColumn width={130} field="LineNumber" headerName='Line Number' editable={true}></AgGridColumn>}
 
                                                         {((isMachineRate || showMachineRateColumn) && !isMultipleMasterSimulation) && <AgGridColumn width={140} field="ProcessName" headerName='Process Name' cellRenderer='processFormatter'></AgGridColumn>}
                                                         {((isMachineRate || showMachineRateColumn) && !isMultipleMasterSimulation) && <AgGridColumn width={140} field="ProcessCode" headerName='Process Code' cellRenderer='processFormatter'></AgGridColumn>}

@@ -152,11 +152,15 @@ function SimulationApprovalSummary(props) {
         dispatch(getApprovalSimulatedCostingSummary(reqParams, res => {
             const { SimulationSteps, SimulatedCostingList, SimulationApprovalProcessId, Token, NumberOfCostings, IsSent, IsFinalLevelButtonShow,
                 IsPushedButtonShow, SimulationTechnologyId, SimulationApprovalProcessSummaryId, DepartmentCode, EffectiveDate, SimulationId, MaterialGroup, PurchasingGroup, DecimalOption,
-                SenderReason, ImpactedMasterDataList, AmendmentDetails, Attachements, SenderReasonId, DepartmentId, TotalImpactPerQuarter, SimulationHeadId, TotalBudgetedPriceImpactPerQuarter } = res.data.Data
-
-            let uniqueArr = _.uniqBy(SimulatedCostingList, function (o) {
-                return o.CostingId;
-            });
+                SenderReason, ImpactedMasterDataList, AmendmentDetails, Attachements, SenderReasonId, DepartmentId, TotalImpactPerQuarter, SimulationHeadId, TotalBudgetedPriceImpactPerQuarter, IsSimulationWithOutCosting } = res.data.Data
+            let uniqueArr
+            if (IsSimulationWithOutCosting) {
+                uniqueArr = SimulatedCostingList
+            } else {
+                uniqueArr = _.uniqBy(SimulatedCostingList, function (o) {
+                    return o.CostingId;
+                });
+            }
             setCostingSummary(false)
             setTimeout(() => {
                 setCostingSummary(true)
