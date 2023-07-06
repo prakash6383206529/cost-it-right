@@ -416,6 +416,7 @@ function ReportListing(props) {
                     }
                     // Sets the filter model via the grid API
                     isReset ? (gridOptions?.api?.setFilterModel({})) : (gridOptions?.api?.setFilterModel(filterModel))
+                    isReset ? setFilterModel({}) : setFilterModel(filterModel)
                 }, 300);
 
                 setTimeout(() => {
