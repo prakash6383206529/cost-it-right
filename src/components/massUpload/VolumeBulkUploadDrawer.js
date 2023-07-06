@@ -32,34 +32,6 @@ class VolumeBulkUploadDrawer extends Component {
         }
     }
 
-    // called every time a file's `status` changes
-    handleChangeStatus = ({ meta, file }, status) => {
-
-        const { files } = this.state
-        let fileObj = files[0];
-
-        let data = new FormData()
-        data.append('file', fileObj)
-
-        this.setState({ attachmentLoader: true })
-        if (status === 'removed') {
-            const removedFileName = file.name
-            let tempArr = files.filter(
-                (item) => item.OriginalFileName !== removedFileName,
-            )
-            this.setState({ files: tempArr })
-        }
-
-        if (status === 'done') {
-
-            this.setState({ fileName: file.name, fileData: file, attachmentLoader: false })
-
-        }
-
-        if (status === 'rejected_file_type') {
-            Toaster.warning('Allowed only xlsx files.')
-        }
-    }
 
     toggleDrawer = (event, type) => {
         if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
@@ -140,32 +112,74 @@ class VolumeBulkUploadDrawer extends Component {
                     Toaster.warning('Please select file of same Master')
                     return false
                 }
+                let fileData = [];
+                resp.rows.map((val, index) => {
+                    if (index > 0 && val?.length > 0) {
+                        // BELOW CODE FOR HANDLE EMPTY CELL VALUE
+                        const i = val.findIndex(e => e === undefined);
+                        if (i !== -1) {
+                            val[i] = '';
+                        }
+
+                        let obj = {}
+                        val.map((el, i) => {
+                            obj[fileHeads[i]] = el;
+                            return null;
+                        })
+                        fileData.push(obj)
+                        obj = {}
+                    }
+                    return null;
+                })
                 this.setState({
                     cols: resp.cols,
                     rows: resp.rows,
                     uploadfileName: uploadfileName,
+                    fileData: fileData
                 });
             });
         }
     }
-
-    onSubmit = (value) => {
-
-        const { fileData } = this.state
-        let data = new FormData()
-        data.append('file', fileData)
-        data.append('loggedInUserId', loggedInUserId())
-        if (fileData.length === 0) {
-            Toaster.warning('Please select a file to upload.')
-            return false
+    responseHandler = (res) => {
+        if (res?.data) {
+            let Data = res?.data?.Data;
+            if (Data[0]?.CountSucceeded > 0) {
+                Toaster.success(`${Data[0].CountSucceeded} uploaded successfully`)
+            }
+            if (Data[0]?.CountFailed > 0) {
+                Toaster.warning(res.data.Message);
+                this.setState({
+                    failedData: Data[0].FaildRecords,
+                    faildRecords: true,
+                })
+            }
         }
+        this.toggleDrawer('', false)
+    }
+
+    onSubmit = () => {
+        const { fileData } = this.state;
+
+        if (!fileData) {
+            Toaster.warning('Please select a file to upload.');
+            return false;
+        }
+
+        const file = new Blob([JSON.stringify(fileData)], { type: 'application/json' });
+
+        const data = new FormData();
+        data.append('file', file, 'data.json');
+        data.append('loggedInUserId', loggedInUserId());
+
         if (this.props.fileName === 'Volume') {
             this.props.bulkUploadVolume(data, (res) => {
-                let Data = res.data[0]
-                const { files } = this.state
-                files.push(Data)
-            })
-            this.toggleDrawer('', 'save')
+
+                let Data = res && res.data && res.data[0];
+                const { files } = this.state;
+                files.push(Data);
+                this.responseHandler(res);
+            });
+            this.toggleDrawer('', 'save');
         }
     }
     onBtExport = () => {

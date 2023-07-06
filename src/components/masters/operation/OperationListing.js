@@ -5,7 +5,7 @@ import { Row, Col, } from 'reactstrap';
 import { focusOnError } from "../../layout/FormInputs";
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
-import { EMPTY_DATA, OPERATIONS, SURFACETREATMENT, defaultPageSize, APPROVED_STATUS } from '../../../config/constants';
+import { EMPTY_DATA, OPERATIONS, SURFACETREATMENT, defaultPageSize, APPROVED_STATUS, FILE_URL } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import { getOperationsDataList, deleteOperationAPI, setOperationList } from '../actions/OtherOperation';
 import AddOperation from './AddOperation';
@@ -31,6 +31,7 @@ import SelectRowWrapper from '../../common/SelectRowWrapper';
 import AnalyticsDrawer from '../material-master/AnalyticsDrawer';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { hideCustomerFromExcel } from '../../common/CommonFunctions';
+import Attachament from '../../costing/components/Drawers/Attachament';
 
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -79,7 +80,9 @@ class OperationListing extends Component {
             pageSize: { pageSize10: true, pageSize50: false, pageSize100: false },
             globalTake: defaultPageSize,
             noData: false,
-            dataCount: 0
+            dataCount: 0,
+            attachment: false,
+            viewAttachment: []
         }
     }
     componentDidMount() {
@@ -163,7 +166,7 @@ class OperationListing extends Component {
 
         const { isMasterSummaryDrawer } = this.props
         // TO HANDLE FUTURE CONDITIONS LIKE [APPROVED_STATUS, DRAFT_STATUS] FOR MULTIPLE STATUS
-        let statusString = [APPROVED_STATUS].join(",")
+        let statusString = [this.props?.approvalStatus].join(",")
 
         let filterData = {
             operation_for: operation_for,
@@ -429,7 +432,42 @@ class OperationListing extends Component {
 
         return (data !== ' ' ? data : '-');
     }
+    viewAttachmentData = (index) => {
+        this.setState({ viewAttachment: true, attachment: true })
+    }
+    closeAttachmentDrawer = (e = '') => {
+        this.setState({ attachment: false })
+    }
+    attachmentFormatter = (props) => {
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        let files = row?.Attachements
+        if (files.length === 0) {
+            return '-'
+        }
+        return (
+            <>
+                <div className={"attachment images"}>
+                    {files && files.length === 1 ?
+                        files.map((f) => {
+                            const withOutTild = f.FileURL?.replace("~", "");
+                            const fileURL = `${FILE_URL}${withOutTild}`;
+                            return (
+                                <a href={fileURL} target="_blank" rel="noreferrer">
+                                    {f.OriginalFileName}
+                                </a>
+                            )
 
+                        }) : <button
+                            type='button'
+                            title='View Attachment'
+                            className='btn-a pl-0'
+                            onClick={() => this.viewAttachmentData(row)}
+                        >View Attachment</button>}
+                </div>
+            </>
+        )
+
+    }
 
     formToggle = () => {
 
@@ -665,7 +703,8 @@ class OperationListing extends Component {
             renderPlantFormatter: this.renderPlantFormatter,
             effectiveDateFormatter: this.effectiveDateFormatter,
             hyphenFormatter: this.hyphenFormatter,
-            commonCostFormatter: this.commonCostFormatter
+            commonCostFormatter: this.commonCostFormatter,
+            attachmentFormatter: this.attachmentFormatter,
         };
         return (
             <div className={`${isSimulation ? 'simulation-height' : this.props?.isMasterSummaryDrawer ? '' : 'min-height100vh'}`}>
@@ -786,6 +825,8 @@ class OperationListing extends Component {
                                 <AgGridColumn field="Rate" headerName="Rate (INR)" cellRenderer={'commonCostFormatter'}></AgGridColumn>
                                 <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
                                 {!isSimulation && !this.props?.isMasterSummaryDrawer && <AgGridColumn field="OperationId" cellClass={"actions-wrapper"} width={150} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
+                                {this.props.isMasterSummaryDrawer && <AgGridColumn field="Attachements" headerName='Attachments' cellRenderer={'attachmentFormatter'}></AgGridColumn>}
+                                {this.props.isMasterSummaryDrawer && <AgGridColumn field="Remark" tooltipField="Remark" ></AgGridColumn>}
                             </AgGridReact>
                             <div className='button-wrapper'>
                                 {!this.state.isLoader && <PaginationWrapper gridApi={this.gridApi} setPage={this.onPageSizeChanged} globalTake={this.state.globalTake} />}
@@ -827,7 +868,17 @@ class OperationListing extends Component {
                             rowData={this.state.selectedRowDataAnalytics}
                         />
                     }
-
+                    {
+                        this.state.attachment && (
+                            <Attachament
+                                isOpen={this.state.attachment}
+                                index={this.state.viewAttachment}
+                                closeDrawer={this.closeAttachmentDrawer}
+                                anchor={'right'}
+                                gridListing={true}
+                            />
+                        )
+                    }
 
                 </div>
                 {

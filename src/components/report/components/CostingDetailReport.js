@@ -402,6 +402,7 @@ function ReportListing(props) {
                     }
                     // Sets the filter model via the grid API
                     isReset ? (gridOptions?.api?.setFilterModel({})) : (gridOptions?.api?.setFilterModel(filterModel))
+                    isReset ? setFilterModel({}) : setFilterModel(filterModel)
                 }, 300);
 
                 setTimeout(() => {
@@ -742,7 +743,14 @@ function ReportListing(props) {
     }
 
     const returnExcelColumn = (data = [], TempData) => {
-        return (<ExcelSheet data={TempData} name={ReportMaster}>
+        let temp = []
+        temp = TempData && TempData.map((item) => {
+            if (item?.EffectiveDate?.includes('T')) {
+                item.EffectiveDate = DayTime(item.EffectiveDate).format('DD/MM/YYYY')
+            }
+            return item
+        })
+        return (<ExcelSheet data={temp} name={ReportMaster}>
             {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} />)}
         </ExcelSheet>);
     }
