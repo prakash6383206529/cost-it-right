@@ -4900,6 +4900,7 @@ export const SIMULATIONAPPROVALSUMMARYDOWNLOADBOPWITHOUTCOSTING = [
     { label: "Part Name", value: "PartName" },
     { label: "Vendor (Code)", value: "VendorName" },
     { label: "Plant (Code)", value: "PlantName" },
+    { label: "Percentage", value: "PercentageChange" },
     { label: "Existing BOP Cost", value: "OldNetBoughtOutPartCost" },
     { label: "Revised BOP Cost", value: "NewNetBoughtOutPartCost" },
     { label: "Variance (BOP Cost)", value: "NetBoughtOutPartCostVariance" },
