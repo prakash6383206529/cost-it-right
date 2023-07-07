@@ -952,6 +952,7 @@ export const ZBCOperationSmallForm = [
     { label: 'Rate', value: 'Rate', }, //*
     { label: 'EffectiveDate', value: 'EffectiveDate', }, //NOUI
     { label: 'SurfaceTreatmentOperation', value: 'SurfaceTreatmentOperation' },
+    { label: 'LabourRate', value: 'LabourRate', }, //NOUI
     { label: 'Remark', value: 'Remark', },
 
 ]
@@ -1243,6 +1244,7 @@ export const VBCOperationSmallForm = [
     { label: 'Rate', value: 'Rate', }, //
     { label: 'EffectiveDate', value: 'EffectiveDate', }, //*
     { label: 'SurfaceTreatmentOperation', value: 'SurfaceTreatmentOperation' },
+    { label: 'LabourRate', value: 'LabourRate', }, //NOUI
     { label: 'Remark', value: 'Remark', },
 
 ]
@@ -1540,6 +1542,7 @@ export const CBCOperationSmallForm = [
     { label: 'Rate', value: 'Rate', }, //
     { label: 'EffectiveDate', value: 'EffectiveDate', }, //*
     { label: 'SurfaceTreatmentOperation', value: 'SurfaceTreatmentOperation' },
+    { label: 'LabourRate', value: 'LabourRate', }, //NOUI
     { label: 'Remark', value: 'Remark', },
 ]
 
