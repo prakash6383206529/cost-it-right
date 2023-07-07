@@ -50,6 +50,7 @@ import {
   SET_YOY_COST_GRID_FOR_SAVE,
   SET_OVERHEAD_PROFIT_ICC,
   SET_OTHER_COST,
+  RESET_EXCHANGE_RATE_DATA
 } from '../../../config/constants'
 import { apiErrors } from '../../../helper/util'
 import { MESSAGES } from '../../../config/message'
@@ -2645,3 +2646,6 @@ export function checkPartNoExistInBop(data, callback) {
     })
   }
 }
+export const resetExchangeRateData = () => ({
+  type: RESET_EXCHANGE_RATE_DATA,
+});
