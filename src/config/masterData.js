@@ -918,17 +918,17 @@ export const ZBCOperation = [
 ]
 export const ZBCOperationSmallForm = [
 
+    { label: 'Technology', value: 'Technology', }, //*
+    { label: 'OperationName', value: 'OperationName', }, //*
+    { label: 'Description', value: 'Description', },
     { label: 'DestinationPlant', value: 'DestinationPlant', }, //*
     { label: 'DestinationPlantCode', value: 'DestinationPlantCode', }, //*
-    { label: 'OperationName', value: 'OperationName' },
-    { label: 'Description', value: 'Description' },
     { label: 'UOM', value: 'UOM', }, //*
-    { label: 'LabourRate', value: 'LabourRate', }, //NOUI
+    { label: 'Rate', value: 'Rate', }, //*
+    { label: 'EffectiveDate', value: 'EffectiveDate', }, //NOUI
     { label: 'SurfaceTreatmentOperation', value: 'SurfaceTreatmentOperation' },
-    { label: 'LabourRatePerUOM', value: 'LabourRatePerUOM' },
-    { label: 'Technology', value: 'Technology' },
-    { label: 'Remark', value: 'Remark' },
-    { label: 'EffectiveDate', value: 'EffectiveDate' },
+    { label: 'Remark', value: 'Remark', },
+
 ]
 
 
@@ -1002,11 +1002,13 @@ export const ZBCOperationTempData = [
     {
         "DestinationPlant": "Houston",
         "DestinationPlantCode": "HOU-123",
+        'Plant': 'Manesar',
+        'PlantCode': 'Systematix01',
         "OperationName": "Assembly",
         "Description": "Final product assembly",
         "UOM": "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram",
         "LabourRate": "25.50",
-        "SurfaceTreatmentOperation": "No",
+        "SurfaceTreatmentOperation": "Yes or No",
         "Rate": "100.00",
         "LabourRatePerUOM": "2.00",
         'Technology': 'Plastic',
@@ -1066,11 +1068,13 @@ export const ZBCOperationTempData = [
     {
         "DestinationPlant": "Plant B",
         "DestinationPlantCode": "PLT-B",
+        'PlantCode': 'Systematix01',
+        'Plant': 'Manesar',
         "OperationName": "Molding",
         "Description": "Injection molding process",
         "UOM": "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram",
         "LabourRate": "40",
-        "SurfaceTreatmentOperation": "No",
+        "SurfaceTreatmentOperation": "Yes or No",
         "Rate": "150",
         "LabourRatePerUOM": "0.3",
         "Technology": "Rubber",
@@ -1203,20 +1207,19 @@ export const VBCOperation = [
 
 ]
 export const VBCOperationSmallForm = [
+    { label: 'Technology', value: 'Technology', }, //*
+    { label: 'OperationName', value: 'OperationName', }, //*
+    { label: 'Description', value: 'Description', },
     { label: 'VendorName', value: 'VendorName', }, //*
     { label: 'VendorCode', value: 'VendorCode', }, //*
     { label: 'DestinationPlant', value: 'DestinationPlant', }, //*
     { label: 'DestinationPlantCode', value: 'DestinationPlantCode', }, //*
-    { label: 'OperationName', value: 'OperationName' },
-    { label: 'Description', value: 'Description' },
     { label: 'UOM', value: 'UOM', }, //*
-    { label: 'LabourRate', value: 'LabourRate', }, //NOUI
+    { label: 'Rate', value: 'Rate', }, //
+    { label: 'EffectiveDate', value: 'EffectiveDate', }, //*
     { label: 'SurfaceTreatmentOperation', value: 'SurfaceTreatmentOperation' },
-    { label: 'LabourRatePerUOM', value: 'LabourRatePerUOM' },
-    { label: 'Technology', value: 'Technology' },
-    { label: 'Remark', value: 'Remark' },
-    { label: 'Plant', value: 'Plant' },
-    { label: 'EffectiveDate', value: 'EffectiveDate' },
+    { label: 'Remark', value: 'Remark', },
+
 ]
 
 export const VBCOperationTempData = [
@@ -1300,7 +1303,7 @@ export const VBCOperationTempData = [
         'UOM': 'Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram',
         'Rate': 30,
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
-        "SurfaceTreatmentOperation": "No",
+        "SurfaceTreatmentOperation": "Yes or No",
         'LabourRate': 6,
         'Remark': 'Remark',
         "LabourRatePerUOM": 24,
@@ -1369,7 +1372,7 @@ export const VBCOperationTempData = [
         'UOM': 'Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram',
         'Rate': 35,
         'EffectiveDate': DayTime().format('DD-MM-YYYY'),
-        'SurfaceTreatmentOperation': 'Yes',
+        'SurfaceTreatmentOperation': "Yes or No",
         'LabourRate': 10,
         'Remark': 'Remark',
         'LabourRatePerUOM': 25,
@@ -1501,20 +1504,18 @@ export const CBCOperation = [
 ]
 export const CBCOperationSmallForm = [
 
+    { label: 'Technology', value: 'Technology', }, //*
+    { label: 'OperationName', value: 'OperationName', }, //*
+    { label: 'Description', value: 'Description', },
     { label: 'CustomerName', value: 'CustomerName' },
     { label: 'CustomerCode', value: 'CustomerCode', }, //*
     { label: 'DestinationPlant', value: 'DestinationPlant', }, //*
     { label: 'DestinationPlantCode', value: 'DestinationPlantCode', }, //*
-    { label: 'OperationName', value: 'OperationName' },
-    { label: 'Description', value: 'Description' },
     { label: 'UOM', value: 'UOM', }, //*
-    { label: 'LabourRate', value: 'LabourRate', }, //NOUI
+    { label: 'Rate', value: 'Rate', }, //
+    { label: 'EffectiveDate', value: 'EffectiveDate', }, //*
     { label: 'SurfaceTreatmentOperation', value: 'SurfaceTreatmentOperation' },
-    { label: 'LabourRatePerUOM', value: 'LabourRatePerUOM' },
-    { label: 'Technology', value: 'Technology' },
-    { label: 'Remark', value: 'Remark' },
-    { label: 'Plant', value: 'Plant' },
-    { label: 'EffectiveDate', value: 'EffectiveDate' },
+    { label: 'Remark', value: 'Remark', },
 ]
 
 export const CBCOperationTempData = [
@@ -1599,7 +1600,7 @@ export const CBCOperationTempData = [
         'UOM': 'Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram',
         'Rate': 70,
         'EffectiveDate': DayTime().format('DD-MM-YYYY'),
-        'SurfaceTreatmentOperation': 'Yes',
+        'SurfaceTreatmentOperation': "Yes or No",
         'LabourRate': 7,
         'Remark': 'Remark 2',
         'LabourRatePerUOM': '8',
@@ -1665,7 +1666,7 @@ export const CBCOperationTempData = [
         'UOM': 'Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram',
         'Rate': 90,
         'EffectiveDate': DayTime().format('DD-MM-YYYY'),
-        'SurfaceTreatmentOperation': 'No',
+        'SurfaceTreatmentOperation': "Yes or No",
         'LabourRate': 8,
         'Remark': 'Remark 3',
         'LabourRatePerUOM': '9',
