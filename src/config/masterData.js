@@ -6968,5 +6968,5 @@ export const associationDropdownList = [
     { label: 'Not associated with costing', value: 'Not associated with costing' },
 ]
 
-export const NON_ASSOCIATED = "'Not associated with costing"
+export const NON_ASSOCIATED = "Not associated with costing"
 export const ASSOCIATED = "Associated with costing"
