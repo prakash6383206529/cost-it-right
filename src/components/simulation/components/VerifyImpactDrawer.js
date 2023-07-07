@@ -207,7 +207,8 @@ function VerifyImpactDrawer(props) {
                   </Row>
                 </>
               }
-              {(CostingTypeId === VBCTypeId) && <>
+              {/* HIDE FOR @MIL START*/}
+              {/* {(CostingTypeId === VBCTypeId) && <>
                 <Row className="mb-3 pr-0 mx-0">
                   <Col md="6"> <HeaderTitle title={'Last Revision Data:'} /></Col>
                   <Col md="6">
@@ -226,12 +227,10 @@ function VerifyImpactDrawer(props) {
                     <div align="center">
                       {editWarning && <NoContentFound title={"There is no data for the Last Revision."} />}
                     </div>
-                    {/* {costingDrawer && lastRevisionDataAcc && <div align="center">
-                    <NoContentFound title={"There is no data for the Last Revision."} />
-                  </div>} */}
                   </div>
                 </Row>
-              </>}
+              </>} */}
+              {/* HIDE FOR @MIL END*/}
             </form>
           </div>
         </Container>

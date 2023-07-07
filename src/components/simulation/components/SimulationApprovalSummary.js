@@ -1426,8 +1426,8 @@ function SimulationApprovalSummary(props) {
                                 </div>
                             </div>
                         </Row>
-
-                        {simulationDetail?.SimulationHeadId === VBCTypeId && <>
+                        {/* HIDE FOR @MIL START*/}
+                        {/* {simulationDetail?.SimulationHeadId === VBCTypeId && <>
                             <Row className="mb-4 reset-btn-container">
                                 <Col md="6"><div className="left-border">{'Last Revision Data:'}</div></Col>
                                 <Col md="6" className="text-right">
@@ -1455,7 +1455,8 @@ function SimulationApprovalSummary(props) {
                                     </>
                                 }
                             </Row>
-                        </>}
+                        </>} */}
+                        {/* HIDE FOR @MIL END*/}
                         {showViewAssemblyDrawer &&
                             <ViewAssembly
                                 isOpen={showViewAssemblyDrawer}
