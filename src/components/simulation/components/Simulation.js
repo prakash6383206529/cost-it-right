@@ -35,6 +35,7 @@ import { reactLocalStorage } from 'reactjs-localstorage';
 import { autoCompleteDropdown, hideColumnFromExcel } from '../../common/CommonFunctions';
 import { MESSAGES } from '../../../config/message';
 import BDNonAssociatedSimulation from './SimulationPages/BDNonAssociatedSimulation';
+import TooltipCustom from '../../common/Tooltip';
 
 
 const ExcelFile = ReactExport.ExcelFile;
@@ -1093,7 +1094,7 @@ function Simulation(props) {
                                 {(String(selectedMasterForSimulation?.value) === BOPDOMESTIC || String(selectedMasterForSimulation?.value) === BOPIMPORT) &&
                                     <div className="d-inline-flex justify-content-start align-items-center mr-3">
                                         <div className="flex-fills label">Association:</div>
-                                        <div className="flex-fills hide-label pl-0">
+                                        <div className="flex-fills hide-label pl-0 d-flex mr-3">
                                             <SearchableSelectHookForm
                                                 label={''}
                                                 name={'Association'}
@@ -1108,6 +1109,7 @@ function Simulation(props) {
                                                 handleChange={handleAssociationChange}
                                                 errors={errors.Masters}
                                             />
+                                            <TooltipCustom id="association-tooltip" width="310px" tooltipText='To run a simulation on BOPs associated with costing, please select "Associate with Costing". Otherwise, select "Not Associate with Costing"' />
                                         </div>
                                     </div>
                                 }
