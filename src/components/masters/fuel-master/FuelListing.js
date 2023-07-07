@@ -13,7 +13,7 @@ import DayTime from '../../common/DayTimeWrapper'
 import BulkUpload from '../../massUpload/BulkUpload';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import LoaderCustom from '../../common/LoaderCustom';
-import { checkForDecimalAndNull, getConfigurationKey, searchNocontentFilter } from '../../../helper';
+import { checkForDecimalAndNull, searchNocontentFilter } from '../../../helper';
 import { FuelMaster } from '../../../config/constants';
 import { FUELLISTING_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import ReactExport from 'react-export-excel';
@@ -24,7 +24,6 @@ import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { filterParams } from '../../common/DateFilter'
 import { PaginationWrapper } from '../../common/commonPagination';
 import Toaster from '../../common/Toaster';
-import SelectRowWrapper from '../../common/SelectRowWrapper';
 
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -308,7 +307,7 @@ class FuelListing extends Component {
     */
     render() {
         const { handleSubmit, AddAccessibility, BulkUploadAccessibility, DownloadAccessibility } = this.props;
-        const { isBulkUpload, noData, dataCount } = this.state;
+        const { isBulkUpload, noData } = this.state;
         const ExcelFile = ReactExport.ExcelFile;
 
         const isFirstColumn = (params) => {
@@ -330,7 +329,7 @@ class FuelListing extends Component {
             totalValueRenderer: this.buttonFormatter,
             effectiveDateRenderer: this.effectiveDateFormatter,
             customNoRowsOverlay: NoContentFound,
-            commonCostFormatter: this.commonCostFormatter
+            commonCostFormatter: this.commonCostFormatter,
         };
 
 
@@ -428,13 +427,16 @@ class FuelListing extends Component {
                                     onFilterModified={this.onFloatingFilterChanged}
                                     suppressRowClickSelection={true}
                                 >
-                                    <AgGridColumn field="FuelName" headerName="Fuel" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
+                                    <AgGridColumn field="FuelName" headerName="Fuel" width={250} cellRenderer={'costingHeadFormatter'}></AgGridColumn>
                                     <AgGridColumn field="UnitOfMeasurementName" headerName="UOM"></AgGridColumn>
                                     <AgGridColumn field="StateName" headerName="State"></AgGridColumn>
                                     <AgGridColumn field="Rate" headerName="Rate (INR)" cellRenderer={'commonCostFormatter'}></AgGridColumn>
+                                    <AgGridColumn field="PlantWithCode" headerName="Plant (Code)"></AgGridColumn>
+                                    <AgGridColumn field="VendorWithCode" headerName="Vendor (Code)"></AgGridColumn>
+                                    <AgGridColumn field="CustomerWithCode" headerName="Customer (Code)" ></AgGridColumn>
                                     <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateRenderer'}></AgGridColumn>
                                     <AgGridColumn field="ModifiedDate" minWidth={170} headerName="Date of Modification" cellRenderer={'effectiveDateRenderer'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
-                                    <AgGridColumn field="FuelDetailId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                                    <AgGridColumn field="FuelDetailId" width={300} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                                 </AgGridReact>
                                 {<PaginationWrapper gridApi={this.gridApi} setPage={this.onPageSizeChanged} />}
                             </div>

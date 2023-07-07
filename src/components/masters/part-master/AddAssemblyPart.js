@@ -118,6 +118,7 @@ class AddAssemblyPart extends Component {
             return productArray
           })
           this.props.change('EffectiveDate', DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
+          this.props.change('SAPCode', Data.SAPCode ?? '')
           this.setState({ minEffectiveDate: Data.LatestEffectiveDate })
 
           this.setState({ DataToCheck: Data })
@@ -170,16 +171,10 @@ class AddAssemblyPart extends Component {
     setTimeout(() => {
       this.setState({ convertPartToAssembly: !this.state.convertPartToAssembly })
     }, 200);
-
-    this.props.change("EffectiveDate", "")
-    this.props.change("ECNNumber", "")
-    this.props.change("DrawingNumber", "")
-    this.props.change("RevisionNumber", "")
-    this.props.change("AssemblyPartNumber", "")
-    this.props.change("AssemblyPartName", "")
-    this.props.change("BOMNumber", "")
-    this.props.change("Description", "")
-    this.props.change("Remark", "")
+    let fields = ['EffectiveDate', 'ECNNumber', 'DrawingNumber', 'RevisionNumber', 'AssemblyPartNumber', 'AssemblyPartName', 'BOMNumber', 'SAPCode', 'Description', 'Remark'];
+    fields.forEach(field => {
+      this.props.change(field, "")
+    })
     this.setState({ ProductGroup: [], BOMViewerData: [] })
     this.setState({ minEffectiveDate: "", warningMessage: false, warningMessageTechnology: false, TechnologySelected: [] })
     this.setState({ partAssembly: { ...this.state.partAssembly, convertPartToAssembly: false } })
@@ -233,6 +228,7 @@ class AddAssemblyPart extends Component {
           this.props.change("RevisionNumber", Data?.RevisionNumber)
           this.props.change("AssemblyPartNumber", Data?.PartNumber)
           this.props.change("AssemblyPartName", Data?.PartName)
+          this.props.change("SAPCode", Data?.SAPCode)
           this.props.change("BOMNumber", '')
           this.props.change("Description", Data?.Description)
           this.props.change("Remark", Data?.Remark)
@@ -642,7 +638,7 @@ class AddAssemblyPart extends Component {
   * @description Used to Submit the form
   */
   onSubmit = debounce((values) => {
-    const { PartId, isEditFlag, selectedPlants, BOMViewerData, files, avoidAPICall, DataToCheck, DropdownChanged, ProductGroup, BOMChanged, convertPartToAssembly } = this.state;
+    const { PartId, isEditFlag, selectedPlants, BOMViewerData, files, avoidAPICall, DataToCheck, DropdownChanged, ProductGroup, BOMChanged, convertPartToAssembly, uploadAttachements } = this.state;
     const { partData, initialConfiguration } = this.props;
 
     let plantArray = selectedPlants && selectedPlants.map((item) => ({ PlantName: item.Text, PlantId: item.Value, PlantCode: '' }))
@@ -682,8 +678,8 @@ class AddAssemblyPart extends Component {
 
       if (!DropdownChanged && String(DataToCheck.AssemblyPartName) === String(values.AssemblyPartName) && !isGroupCodeChange && String(DataToCheck.Description) === String(values.Description) &&
         String(DataToCheck.ECNNumber) === String(values.ECNNumber) && String(DataToCheck.RevisionNumber) === String(values.RevisionNumber) &&
-        String(DataToCheck.DrawingNumber) === String(values.DrawingNumber) && String(DataToCheck.Remark) === String(values.Remark) && BOMChanged === false && String(DataToCheck.Attachements) === String(values.Attachements)) {
-        this.cancel()
+        String(DataToCheck.DrawingNumber) === String(values.DrawingNumber) && String(DataToCheck.Remark) === String(values.Remark) && String(DataToCheck.SAPCode) === String(values.SAPCode) && BOMChanged === false && uploadAttachements) {
+        this.cancel('cancel')
         return false;
       }
 
@@ -729,6 +725,7 @@ class AddAssemblyPart extends Component {
         GroupCode: values.GroupCode,
         EffectiveDate: DayTime(this.state.effectiveDate).format('YYYY-MM-DD'),
         Remark: values.Remark,
+        SAPCode: values.SAPCode,
         Plants: plantArray,
         Attachements: updatedFiles,
         ChildParts: childPartArray,
@@ -774,6 +771,7 @@ class AddAssemblyPart extends Component {
         BOMNumber: values.BOMNumber,
         Remark: values.Remark,
         Description: values.Description,
+        SAPCode: values.SAPCode,
         ECNNumber: values.ECNNumber,
         EffectiveDate: DayTime(this.state.effectiveDate).format('YYYY-MM-DD'),
         RevisionNumber: values.RevisionNumber,
@@ -1061,9 +1059,6 @@ class AddAssemblyPart extends Component {
                             onChange={e => this.isFieldChange(e.target.value, 'Drawing')}
                           />
                         </Col>
-                      </Row>
-
-                      <Row>
                         {initialConfiguration?.IsProductMasterConfigurable ? (
                           // initialConfiguration.IsGroupCodeDisplay && (
                           <Col md="3">
@@ -1099,6 +1094,24 @@ class AddAssemblyPart extends Component {
                             />
                           </Col>
                         }
+                      </Row>
+
+                      <Row>
+                        {initialConfiguration?.IsSAPCodeRequired && <Col md="3">
+                          <Field
+                            label={`SAP Code`}
+                            name={"SAPCode"}
+                            type="text"
+                            placeholder={isEditFlag ? '-' : "Enter"}
+                            validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength20, checkSpacesInString]}
+                            component={renderText}
+                            required={true}
+                            onChange={() => { }}
+                            className=""
+                            customClassName={"withBorder"}
+                            disabled={(isViewMode || (isEditFlag && !this.state.isBomEditable)) ? true : false}
+                          />
+                        </Col>}
 
                         {/* 
                         //WORK IN PROGRESS DONT DELETE */}
@@ -1121,7 +1134,6 @@ class AddAssemblyPart extends Component {
                           />
                           {this.state.warningMessageTechnology && !isViewMode && <WarningMessage dClass="assembly-view-bom-wrapper mt-2" message={`Please reset the BOM to change the technology`} />}
                         </Col>
-
                         <Col md="3">
                           <div className="form-group">
                             <div className="inputbox date-section">

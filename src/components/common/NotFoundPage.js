@@ -49,15 +49,15 @@ class NotFoundPage extends Component {
                 <h1 className="fw-500 mt-20 ">Page not found</h1>
                 <h5 className="fw-500">
                   Oops. There was an error, please try again later.
-                  </h5>
+                </h5>
                 <p className=" mt-15">
                   The server encountered an internal server error and was
                   unable to complete your request.
-                  </p>
+                </p>
                 <div className="mg-b-40">
                   <a href="/" className="btn btn-primary">
                     Back to Home
-                    </a>
+                  </a>
                 </div>
               </div>
             </div>

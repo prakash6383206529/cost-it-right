@@ -62,6 +62,10 @@ function AddNpvCost(props) {
     }
 
     const handleNpvChange = (value) => {
+        setValue('NpvPercentage', '')
+        setValue('Quantity', '')
+        setValue('Total', '')
+        setTotalCost('')
         setDisableAllFields(false)
         setDisableTotalCost(false)
         setDisableNpvPercentage(false)

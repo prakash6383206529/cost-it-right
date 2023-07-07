@@ -1,4 +1,4 @@
-@import "cssVariable.scss";
+@import './abstracts/variable.scss';
 
 // THIS IS FOR COST RATIO REPORT LISTING UI, ALSO WE WILL USE SAME UI FOR OTHER REPORT AS NEED AND CODE USABLITY
 .costing-ratio-report {
@@ -90,6 +90,15 @@
 .cost-ratio-report {
     min-height: calc(100vh - 315px);
 
+    .react-datepicker-popper {
+        @extend .zindex-12;
+    }
+}
+
+.supplier-contribution {
+    .react-datepicker-popper {
+        @extend .zindex-12;
+    }
 }
 
 .h-298 {
@@ -108,19 +117,7 @@
     // }
 }
 
-.report-btn-back {
-    margin-right: 50px;
-}
 
-.goat-given {
-    td {
-        width: 33% !important;
-
-        span {
-            font-size: 14px;
-        }
-    }
-}
 
 .master-movement-report {
     min-height: calc(100vh - 268px);
@@ -158,12 +155,65 @@
     }
 }
 
-.goat-given {
-    td {
-        width: 33% !important;
 
-        span {
-            font-size: 14px;
+.product-rollout-container {
+
+    // background-color: $primaryBackground;
+    .seprate-box {
+        background-color: $primaryBackground;
+        box-shadow: 0 3px 5px rgba(55, 0, 0, 0.15), 0 0px 0px rgba(0, 0, 0, 0.02);
+        padding: 10px;
+        margin-bottom: 20px;
+    }
+
+    .given-report {
+        // border-right: 1px solid $agGridBorder;
+        border-left: 1px solid $agGridBorder;
+    }
+
+    .got-report {
+        border-left: 1px solid $agGridBorder;
+    }
+
+    .got-given-header {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-weight: 500;
+        min-height: 45px;
+        font-size: 14px;
+        border: 1px solid $agGridBorder;
+        border-bottom: none;
+    }
+}
+
+.got-given-summary-container {
+    display: grid;
+    grid-template-columns: 51% 160px 39.5%;
+
+    @media screen and (max-width:$middleDesktop) {
+        grid-template-columns: 46.2% 160px 39.5%;
+    }
+
+    .ag-paging-panel {
+        display: none;
+    }
+
+}
+
+.pipd-report-grid {
+    .ag-theme-material {
+        @for $i from 1 through 7 {
+
+            [row-id~="#{($i * 3) - 1}"] {
+                [col-id="Name"] {
+                    border-bottom: 1px solid $agGridBorder !important;
+                }
+            }
         }
     }
+}
+
+.highlight-row {
+    font-weight: 600 !important;
 }

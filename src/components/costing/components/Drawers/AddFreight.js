@@ -8,7 +8,7 @@ import Toaster from '../../../common/Toaster';
 import Drawer from '@material-ui/core/Drawer';
 import { TextFieldHookForm, SearchableSelectHookForm } from '../../../layout/HookFormInputs';
 import { calculatePercentage, checkForDecimalAndNull, checkForNull, getConfigurationKey } from '../../../../helper';
-import { Fixed, FullTruckLoad, PartTruckLoad, Percentage } from '../../../../config/constants';
+import { CRMHeads, Fixed, FullTruckLoad, PartTruckLoad, Percentage } from '../../../../config/constants';
 import { number, percentageLimitValidation, checkWhiteSpaces, decimalNumberLimit6 } from "../../../../helper/validation";
 
 function AddFreight(props) {
@@ -23,6 +23,7 @@ function AddFreight(props) {
     Rate: rowObjData && rowObjData.Rate !== undefined ? rowObjData.Rate : '',
     Quantity: rowObjData && rowObjData.Quantity !== undefined ? rowObjData.Quantity : '',
     FreightCost: rowObjData && rowObjData.FreightCost !== undefined ? rowObjData.FreightCost : '',
+    crmHeadFreight: rowObjData && rowObjData.FreightCRMHead !== undefined ? { label: rowObjData.FreightCRMHead, value: 1 } : '',
   }
 
   const { register, handleSubmit, control, setValue, getValues, reset, formState: { errors } } = useForm({
@@ -31,6 +32,7 @@ function AddFreight(props) {
     defaultValues: isEditFlag ? defaultValues : {},
   });
 
+  const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   const dispatch = useDispatch()
 
   const headCostData = useContext(netHeadCostContext)
@@ -330,6 +332,7 @@ function AddFreight(props) {
       Freight: '',
       EFreightLoadType: freightType,
       FreightType: freightTypeText,
+      FreightCRMHead: data.crmHeadFreight ? data.crmHeadFreight.label : ''
     }
     toggleDrawer('', formData)
   }
@@ -551,6 +554,28 @@ function AddFreight(props) {
                       disabled={freightType !== Fixed ? true : false}
                     />
                   </Col>
+
+                  {initialConfiguration.IsShowCRMHead && <Col md="12">
+                    <SearchableSelectHookForm
+                      name={`crmHeadFreight`}
+                      type="text"
+                      label="CRM Head"
+                      errors={`${errors.crmHeadFreight}`}
+                      Controller={Controller}
+                      control={control}
+                      register={register}
+                      mandatory={false}
+                      rules={{
+                        required: false,
+                      }}
+                      placeholder={'Select'}
+                      options={CRMHeads}
+                      required={false}
+                      handleChange={() => { }}
+                      disabled={false}
+                    />
+                  </Col>
+                  }
                 </Row>
 
                 <Row className="sf-btn-footer no-gutters justify-content-between ml-0">

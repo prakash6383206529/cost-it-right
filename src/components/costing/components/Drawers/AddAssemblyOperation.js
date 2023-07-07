@@ -85,7 +85,10 @@ function AddAssemblyOperation(props) {
       checkForNull(costPerPieceTotal) +
       checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.TotalBoughtOutPartCost) +
       checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.TotalProcessCost) +
-      checkForNull(totalOperationCost)
+      checkForNull(totalOperationCost) +
+      checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.NetLabourCost) +
+      checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.IndirectLaborCost) +
+      checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.StaffCost)
     tempsubAssemblyTechnologyArray[0].CostingPartDetails.TotalOperationCost = totalOperationCost ? totalOperationCost : 0;
 
     dispatch(setSubAssemblyTechnologyArray(tempsubAssemblyTechnologyArray, res => { }))
@@ -100,7 +103,7 @@ function AddAssemblyOperation(props) {
     const tabData = RMCCTabData[0]
     const surfaceTabData = SurfaceTabData && SurfaceTabData[0]
     const overHeadAndProfitTabData = OverheadProfitTabData[0]
-    const discountAndOtherTabData = DiscountCostData[0]
+    const discountAndOtherTabData = DiscountCostData
     const packageAndFreightTabData = PackageAndFreightTabData && PackageAndFreightTabData[0]
     const toolTabData = ToolTabData && ToolTabData[0]
 
@@ -150,6 +153,12 @@ function AddAssemblyOperation(props) {
       "IsSubAssemblyComponentPart": costData.IsAssemblyPart,
       "NetOperationCostPerAssembly": item?.CostingPartDetails?.TotalOperationCostPerAssembly,
       "NetToolCostPerAssembly": item?.CostingPartDetails?.TotalToolCostPerAssembly,
+      "NetLabourCost": item.NetLabourCost,
+      "IndirectLaborCost": item.IndirectLaborCost,
+      "StaffCost": item.StaffCost,
+      "StaffCostPercentage": item.StaffCostPercentage,
+      "IndirectLaborCostPercentage": item.IndirectLaborCostPercentage,
+
       "CostingPartDetails": {
         "CostingId": item.CostingId,
         "CostingNumber": item.CostingNumber,

@@ -15,7 +15,7 @@ import { checkForDecimalAndNull, getConfigurationKey } from '../../../helper';
 
 
 function VerifyImpactDrawer(props) {
-  const { SimulationTechnologyIdState, simulationId, vendorIdState, EffectiveDate, CostingTypeId, amendmentDetails, dataForAssemblyImpactInVerifyImpact, assemblyImpactButtonTrue, costingDrawer } = props
+  const { SimulationTechnologyIdState, simulationId, vendorIdState, EffectiveDate, CostingTypeId, amendmentDetails, dataForAssemblyImpactInVerifyImpact, assemblyImpactButtonTrue, costingDrawer, isSimulationWithOutCosting } = props
   const [impactedMasterDataListForLastRevisionData, setImpactedMasterDataListForLastRevisionData] = useState([])
   const [impactedMasterDataListForImpactedMaster, setImpactedMasterDataListForImpactedMaster] = useState([])
   const [showAssemblyWise, setShowAssemblyWise] = useState(false)
@@ -106,7 +106,7 @@ function VerifyImpactDrawer(props) {
                     <tbody>
                       <tr>
                         {CostingTypeId !== CBCTypeId && <th>Vendor (Code):</th>}
-                        <th>Technology:</th>
+                        {isSimulationWithOutCosting ? <th>Technology:</th> : <th>Association:</th>}
                         <th>Master:</th>
                         <th>Costing Head:</th>
                         {CostingTypeId === CBCTypeId && <th>CUSTOMER:</th>}
@@ -118,7 +118,7 @@ function VerifyImpactDrawer(props) {
                     <tbody>
                       <tr>
                         {CostingTypeId !== CBCTypeId && <td>{amendmentDetails.Vendor}</td>}
-                        <td>{amendmentDetails.Technology}</td>
+                        {isSimulationWithOutCosting ? <td>{amendmentDetails.Technology}</td> : <td>{'Non Associated'}</td>}
                         <td>{amendmentDetails.SimulationAppliedOn}</td>
                         <td>{amendmentDetails.CostingHead}</td>
                         {CostingTypeId === CBCTypeId && <td>{amendmentDetails.CustomerName}</td>}
@@ -207,7 +207,8 @@ function VerifyImpactDrawer(props) {
                   </Row>
                 </>
               }
-              {(CostingTypeId === VBCTypeId) && <>
+              {/* HIDE FOR @MIL START*/}
+              {/* {(CostingTypeId === VBCTypeId) && <>
                 <Row className="mb-3 pr-0 mx-0">
                   <Col md="6"> <HeaderTitle title={'Last Revision Data:'} /></Col>
                   <Col md="6">
@@ -226,12 +227,10 @@ function VerifyImpactDrawer(props) {
                     <div align="center">
                       {editWarning && <NoContentFound title={"There is no data for the Last Revision."} />}
                     </div>
-                    {/* {costingDrawer && lastRevisionDataAcc && <div align="center">
-                    <NoContentFound title={"There is no data for the Last Revision."} />
-                  </div>} */}
                   </div>
                 </Row>
-              </>}
+              </>} */}
+              {/* HIDE FOR @MIL END*/}
             </form>
           </div>
         </Container>

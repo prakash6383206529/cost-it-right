@@ -3,9 +3,9 @@ import { useForm, Controller } from 'react-hook-form';
 import { useSelector, useDispatch } from 'react-redux';
 import AddOperation from '../../Drawers/AddOperation';
 import { Col, Row, Table } from 'reactstrap';
-import { TextAreaHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs';
+import { SearchableSelectHookForm, TextAreaHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs';
 import NoContentFound from '../../../../common/NoContentFound';
-import { ASSEMBLYNAME, EMPTY_DATA, MASS } from '../../../../../config/constants';
+import { EMPTY_DATA, MASS, CRMHeads } from '../../../../../config/constants';
 import Toaster from '../../../../common/Toaster';
 import { checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected } from '../../../../../helper';
 import { ViewCostingContext } from '../../CostingDetails';
@@ -17,6 +17,7 @@ import TooltipCustom from '../../../../common/Tooltip';
 import { AcceptableOperationUOM, STRINGMAXLENGTH, TEMPOBJECTOPERATION } from '../../../../../config/masterData';
 import { required, maxLength15 } from "../../../../../helper/validation";
 import { number, decimalNumberLimit6, checkWhiteSpaces, alphaNumericValidation, noDecimal, numberLimit6 } from "../../../../../helper/validation";
+import { swappingLogicCommon } from '../../../CostingUtil';
 
 let counter = 0;
 function OperationCost(props) {
@@ -27,6 +28,7 @@ function OperationCost(props) {
     mode: 'onChange',
     reValidateMode: 'onChange',
   });
+  let dragEnd;
 
   const dispatch = useDispatch()
   const [gridData, setGridData] = useState(props.data ? props.data : [])
@@ -175,6 +177,17 @@ function OperationCost(props) {
     button.click()
   }
 
+  const onCRMHeadChange = (e, index) => {
+    let tempArr = []
+    let tempData = gridData[index]
+    tempData = {
+      ...tempData,
+      OperationCRMHead: e?.label
+    }
+    tempArr = Object.assign([...gridData], { [index]: tempData })
+    setGridData(tempArr)
+  }
+
   const onRemarkPopUpClose = (index) => {
     var button = document.getElementById(`popUpTriggerss${props.IsAssemblyCalculation}${index}`)
     if (errors && errors.OperationGridFields && errors.OperationGridFields[index].remarkPopUp) {
@@ -299,6 +312,25 @@ function OperationCost(props) {
     counter = 0
   }
 
+  const onMouseLeave = (e) => {
+    dragEnd = e?.target?.title
+
+  }
+
+  const onDragComplete = (e) => {   //SWAPPING ROWS LOGIC FOR PROCESS
+    let dragStart = e?.target?.title
+
+    if (dragEnd && dragStart && (String(dragStart) !== String(dragEnd))) {
+      let finalTemp = swappingLogicCommon(gridData, dragStart, dragEnd, e) //COMMON SWAPPING LOGIC
+      setGridData(finalTemp)
+      finalTemp && finalTemp.map((el, index) => {
+        // Update field values
+        setValue(`crmHeadOperation${index}`, { label: el.OperationCRMHead, value: index })
+        return null
+      })
+    }
+  }
+
   const OperationGridFields = 'OperationGridFields';
 
   /**
@@ -327,7 +359,7 @@ function OperationCost(props) {
             {/*OPERATION COST GRID */}
 
             <Col md="12">
-              <Table className="table cr-brdr-main costing-operation-cost-section p-relative" size="sm" >
+              <Table className="table cr-brdr-main costing-operation-cost-section p-relative" size="sm" onDragOver={onMouseLeave} onDragEnd={onDragComplete}>
                 <thead className={`${initialConfiguration && initialConfiguration.IsOperationLabourRateConfigure ? 'header-with-labour-rate' : 'header-without-labour-rate'} ${headerPinned ? 'sticky-headers' : ''}`}>
                   <tr>
                     <th>{`Operation Name`}</th>
@@ -342,6 +374,7 @@ function OperationCost(props) {
                       initialConfiguration.IsOperationLabourRateConfigure &&
                       <th>{`Labour Quantity`}</th>}
                     <th>{`Net Cost`}</th>
+                    {initialConfiguration.IsShowCRMHead && <th>{`CRM Head`}</th>}
                     <th><div className='pin-btn-container'><span>Action</span><button title={headerPinned ? 'pin' : 'unpin'} onClick={() => setHeaderPinned(!headerPinned)} className='pinned'><div className={`${headerPinned ? '' : 'unpin'}`}></div></button></div></th>
                   </tr>
                 </thead>
@@ -352,7 +385,7 @@ function OperationCost(props) {
                       return (
                         editIndex === index ?
                           <tr key={index}>
-                            <td className='text-overflow'><span title={item.OperationName}>{item.OperationName}</span> </td>
+                            <td className='text-overflow'><span title={item.OperationName + index} draggable={CostingViewMode ? false : true} >{item.OperationName}</span> </td>
                             <td>{item.OperationCode}</td>
                             <td>{item.UOM}</td>
                             <td>{item.Rate}</td>
@@ -413,6 +446,28 @@ function OperationCost(props) {
                                 }
                               </td>}
                             <td>{netCost(item)}</td>
+                            {initialConfiguration.IsShowCRMHead && <td>
+                              <SearchableSelectHookForm
+                                name={`crmHeadOperation${index}`}
+                                type="text"
+                                label="CRM Head"
+                                errors={`${errors.crmHeadOperation}${index}`}
+                                Controller={Controller}
+                                control={control}
+                                register={register}
+                                mandatory={false}
+                                rules={{
+                                  required: false,
+                                }}
+                                placeholder={'Select'}
+                                customClassName="costing-selectable-dropdown"
+                                defaultValue={item.OperationCRMHead ? { label: item.OperationCRMHead, value: index } : ''}
+                                options={CRMHeads}
+                                required={false}
+                                handleChange={(e) => { onCRMHeadChange(e, index) }}
+                                disabled={CostingViewMode}
+                              />
+                            </td>}
                             <td>
                               <div className='action-btn-wrapper'>
                                 <button title='Save' className="SaveIcon mb-0 align-middle" type={'button'} onClick={() => SaveItem(index)} />
@@ -422,7 +477,7 @@ function OperationCost(props) {
                           </tr>
                           :
                           <tr key={index}>
-                            <td className='text-overflow'><span title={item.OperationName}>{item.OperationName}</span> </td>
+                            <td className='text-overflow'><span title={item.OperationName + index} draggable={CostingViewMode ? false : true}>{item.OperationName}</span> </td>
                             <td>{item.OperationCode}</td>
                             <td>{item.UOM}</td>
                             <td>{item.Rate}</td>
@@ -434,6 +489,28 @@ function OperationCost(props) {
                               initialConfiguration.IsOperationLabourRateConfigure &&
                               <td>{item.IsLabourRateExist ? item.LabourQuantity : '-'}</td>}
                             <td><div className='w-fit' id={`operation-cost${index}`}><TooltipCustom disabledIcon={true} id={`operation-cost${index}`} tooltipText={initialConfiguration && initialConfiguration.IsOperationLabourRateConfigure ? "Net Cost = (Rate * Quantity) + (Labour Rate * Labour Quantity)" : "Net Cost = (Rate * Quantity)"} />{netCost(item)}</div></td>
+                            {initialConfiguration.IsShowCRMHead && <td>
+                              <SearchableSelectHookForm
+                                name={`crmHeadOperation${index}`}
+                                type="text"
+                                label="CRM Head"
+                                errors={`${errors.crmHeadOperation}${index}`}
+                                Controller={Controller}
+                                control={control}
+                                register={register}
+                                mandatory={false}
+                                rules={{
+                                  required: false,
+                                }}
+                                placeholder={'Select'}
+                                customClassName="costing-selectable-dropdown"
+                                defaultValue={item.OperationCRMHead ? { label: item.OperationCRMHead, value: index } : ''}
+                                options={CRMHeads}
+                                required={false}
+                                handleChange={(e) => { onCRMHeadChange(e, index) }}
+                                disabled={CostingViewMode}
+                              />
+                            </td>}
                             <td>
                               <div className='action-btn-wrapper'>
                                 {(!CostingViewMode && !IsLocked) && <button title='Edit' className="Edit mb-0 align-middle" type={'button'} onClick={() => editItem(index)} />}

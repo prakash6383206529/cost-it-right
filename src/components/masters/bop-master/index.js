@@ -6,7 +6,7 @@ import AddBOPDomestic from './AddBOPDomestic';
 import AddBOPImport from './AddBOPImport';
 import BOPDomesticListing from './BOPDomesticListing';
 import BOPImportListing from './BOPImportListing';
-import { BOP, BOP_MASTER_ID, MASTERS } from '../../../config/constants';
+import { APPROVED_STATUS_MASTER, BOP, BOP_MASTER_ID, MASTERS } from '../../../config/constants';
 import { checkPermission } from '../../../helper/util';
 import SOBListing from './SOBListing';
 import ScrollToTop from '../../common/ScrollToTop';
@@ -220,6 +220,7 @@ class BOPMaster extends Component {
                       isMasterSummaryDrawer={false}
                       selectionForListingMasterAPI='Master'
                       stopApiCallOnCancel={this.state.stopApiCallOnCancel}
+                      approvalStatus={APPROVED_STATUS_MASTER}
                     />
                   </TabPane>
                 )}
@@ -237,6 +238,7 @@ class BOPMaster extends Component {
                       DownloadAccessibility={this.state.DownloadAccessibility}
                       stopApiCallOnCancel={this.state.stopApiCallOnCancel}
                       selectionForListingMasterAPI='Master'
+                      approvalStatus={APPROVED_STATUS_MASTER}
                     />
                   </TabPane>
                 )}

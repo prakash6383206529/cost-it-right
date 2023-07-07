@@ -1,9 +1,9 @@
 import React from 'react';
 import { Row, Col, } from 'reactstrap';
 import {
-  deleteRawMaterialAPI, getRMImportDataList, masterFinalLevelUser
+  deleteRawMaterialAPI, getAllRMDataList
 } from '../actions/Material';
-import { APPROVED_STATUS, defaultPageSize, EMPTY_DATA, RMIMPORT } from '../../../config/constants';
+import { APPROVED_STATUS, defaultPageSize, EMPTY_DATA, ENTRY_TYPE_IMPORT, FILE_URL, RMIMPORT } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
 import Toaster from '../../common/Toaster';
@@ -17,7 +17,7 @@ import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
-import { CheckApprovalApplicableMaster, getConfigurationKey, loggedInUserId, searchNocontentFilter, userDepartmetList, userDetails, } from '../../../helper';
+import { CheckApprovalApplicableMaster, getConfigurationKey, searchNocontentFilter, userDepartmetList, userDetails, } from '../../../helper';
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'react-redux';
@@ -31,6 +31,7 @@ import { disabledClass } from '../../../actions/Common';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import AnalyticsDrawer from './AnalyticsDrawer';
 import { hideCustomerFromExcel } from '../../common/CommonFunctions';
+import Attachament from '../../costing/components/Drawers/Attachament';
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -69,12 +70,13 @@ function RMImportListing(props) {
   const [isFilterButtonClicked, setIsFilterButtonClicked] = useState(false)
   const [currentRowIndex, setCurrentRowIndex] = useState(0)
   const [pageSize, setPageSize] = useState({ pageSize10: true, pageSize50: false, pageSize100: false })
-  const [floatingFilterData, setFloatingFilterData] = useState({ CostingHead: "", TechnologyName: "", RawMaterial: "", RMGrade: "", RMSpec: "", RawMaterialCode: "", Category: "", MaterialType: "", Plant: "", UOM: "", VendorName: "", BasicRate: "", ScrapRate: "", RMFreightCost: "", RMShearingCost: "", NetLandedCost: "", EffectiveDate: "", DepartmentName: isSimulation ? userDepartmetList() : "", CustomerName: "" })
+  const [floatingFilterData, setFloatingFilterData] = useState({ CostingHead: "", TechnologyName: "", RawMaterialName: "", RawMaterialGradeName: "", RawMaterialSpecificationName: "", RawMaterialCode: "", Category: "", MaterialType: "", DestinationPlantName: "", UnitOfMeasurementName: "", VendorName: "", BasicRatePerUOM: "", ScrapRate: "", RMFreightCost: "", RMShearingCost: "", NetLandedCost: "", EffectiveDate: "", DepartmentName: isSimulation ? userDepartmetList() : "", CustomerName: "" })
   const [noData, setNoData] = useState(false)
   const [dataCount, setDataCount] = useState(0)
   const [inRangeDate, setinRangeDate] = useState([])
   const [dateArray, setDateArray] = useState([])
-
+  const [attachment, setAttachment] = useState(false);
+  const [viewAttachment, setViewAttachment] = useState([])
   var filterParams = {
     comparator: function (filterLocalDateAtMidnight, cellValue) {
       var dateAsString = cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
@@ -182,7 +184,7 @@ function RMImportListing(props) {
     }
 
     // TO HANDLE FUTURE CONDITIONS LIKE [APPROVED_STATUS, DRAFT_STATUS] FOR MULTIPLE STATUS
-    let statusString = [APPROVED_STATUS].join(",")
+    let statusString = [props?.approvalStatus].join(",")
 
     const filterData = {
       costingHead: isSimulation && filteredRMData && filteredRMData.costingHeadTemp ? filteredRMData.costingHeadTemp.value : costingHead,
@@ -202,9 +204,10 @@ function RMImportListing(props) {
     if (isPagination === true) {
       setloader(true)
     }
+    dataObj.RawMaterialEntryType = Number(ENTRY_TYPE_IMPORT)
     //THIS CONDTION IS FOR IF THIS COMPONENT IS RENDER FROM MASTER APPROVAL SUMMARY IN THIS NO GET API
     if (!props.isMasterSummaryDrawer) {
-      dispatch(getRMImportDataList(filterData, skip, take, isPagination, dataObj, (res) => {
+      dispatch(getAllRMDataList(filterData, skip, take, isPagination, dataObj, true, (res) => {
 
         if (isSimulation) {
           props?.changeTokenCheckBox(true)
@@ -243,7 +246,7 @@ function RMImportListing(props) {
                 }
               } else {
 
-                if (prop !== "DepartmentName" && floatingFilterData[prop] !== "") {
+                if (prop !== "DepartmentName" && prop !== 'RawMaterialEntryType' && floatingFilterData[prop] !== "") {
                   isReset = false
                 }
               }
@@ -772,7 +775,43 @@ function RMImportListing(props) {
     checkboxSelection: isFirstColumn
   };
 
+  const viewAttachmentData = (index) => {
+    setAttachment(true)
+    setViewAttachment(index)
+  }
+  const closeAttachmentDrawer = (e = '') => {
+    setAttachment(false)
+  }
+  const attachmentFormatter = (props) => {
+    const row = props?.data;
+    let files = row?.Attachements
+    if (files && files?.length === 0) {
+      return '-'
+    }
+    return (
+      <>
+        <div className={"attachment images"}>
+          {files && files.length === 1 ?
+            files.map((f) => {
+              const withOutTild = f.FileURL?.replace("~", "");
+              const fileURL = `${FILE_URL}${withOutTild}`;
+              return (
+                <a href={fileURL} target="_blank" rel="noreferrer">
+                  {f.OriginalFileName}
+                </a>
+              )
 
+            }) : <button
+              type='button'
+              title='View Attachment'
+              className='btn-a pl-0'
+              onClick={() => viewAttachmentData(row)}
+            >View Attachment</button>}
+        </div>
+      </>
+    )
+
+  }
   const frameworkComponents = {
     totalValueRenderer: buttonFormatter,
     effectiveDateRenderer: effectiveDateFormatter,
@@ -785,11 +824,9 @@ function RMImportListing(props) {
     hyphenFormatter: hyphenFormatter,
     companyFormatter: companyFormatter,
     checkBoxRenderer: checkBoxRenderer,
-    checkBoxRenderer: checkBoxRenderer,
-    currencyFormatter: currencyFormatter
+    currencyFormatter: currencyFormatter,
+    attachmentFormatter: attachmentFormatter,
   }
-
-
 
   return (
     <div className={`ag-grid-react custom-pagination ${isSimulation ? 'simulation-height' : 'min-height100vh'}  ${DownloadAccessibility ? "show-table-btn" : ""}`}>
@@ -899,22 +936,20 @@ function RMImportListing(props) {
                   >
                     <AgGridColumn cellClass="has-checkbox" field="CostingHead" headerName='Costing Head' cellRenderer={checkBoxRenderer}></AgGridColumn>
                     <AgGridColumn field="TechnologyName" headerName='Technology'></AgGridColumn>
-                    <AgGridColumn field="RawMaterial" ></AgGridColumn>
-                    <AgGridColumn field="RMGrade" headerName='Grade'></AgGridColumn>
-                    <AgGridColumn field="RMSpec" headerName='Spec'></AgGridColumn>
+                    <AgGridColumn field="RawMaterialName" headerName='RawMaterial' ></AgGridColumn>
+                    <AgGridColumn field="RawMaterialGradeName" headerName='Grade'></AgGridColumn>
+                    <AgGridColumn field="RawMaterialSpecificationName" headerName='Spec'></AgGridColumn>
                     <AgGridColumn field="RawMaterialCode" headerName='Code' cellRenderer='hyphenFormatter'></AgGridColumn>
                     <AgGridColumn field="Category"></AgGridColumn>
                     <AgGridColumn field="MaterialType"></AgGridColumn>
-                    <AgGridColumn field="Plant" headerName="Plant(Code)"></AgGridColumn>
-                    <AgGridColumn field="VendorName" headerName="Vendor(Code)"></AgGridColumn>
-
+                    {/* @Samrudhi */}
+                    <AgGridColumn field="DestinationPlantName" headerName="Plant (Code)"></AgGridColumn>
+                    <AgGridColumn field="VendorName" headerName="Vendor (Code)"></AgGridColumn>
+                    {reactLocalStorage.getObject('cbcCostingPermission') && <AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
                     <AgGridColumn field="DepartmentName" headerName="Company (Code)"></AgGridColumn>
-                    {(reactLocalStorage.getObject('cbcCostingPermission')) && <AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
-                    {/* <AgGridColumn field="DepartmentName" headerName="Department"></AgGridColumn> */}
-                    <AgGridColumn field="UOM"></AgGridColumn>
-
+                    <AgGridColumn field="UnitOfMeasurementName" headerName='UOM'></AgGridColumn>
                     <AgGridColumn field="Currency" cellRenderer={"currencyFormatter"}></AgGridColumn>
-                    <AgGridColumn field="BasicRate" cellRenderer='commonCostFormatter'></AgGridColumn>
+                    <AgGridColumn field="BasicRatePerUOM" headerName='BasicRate' cellRenderer='commonCostFormatter'></AgGridColumn>
                     <AgGridColumn field="ScrapRate" cellRenderer='commonCostFormatter'></AgGridColumn>
                     {props.isMasterSummaryDrawer && <AgGridColumn width="140" field="MachiningScrapRate" headerName='Machining Scrap Cost'></AgGridColumn>}
                     <AgGridColumn field="RMFreightCost" headerName="Freight Cost" cellRenderer='commonCostFormatter'></AgGridColumn>
@@ -928,6 +963,8 @@ function RMImportListing(props) {
                     <AgGridColumn field="VendorId" hide={true}></AgGridColumn>
 
                     <AgGridColumn field="TechnologyId" hide={true}></AgGridColumn>
+                    {props.isMasterSummaryDrawer && <AgGridColumn field="Attachements" headerName='Attachments' cellRenderer='attachmentFormatter'></AgGridColumn>}
+                    {props.isMasterSummaryDrawer && <AgGridColumn field="Remark" tooltipField="Remark" ></AgGridColumn>}
                   </AgGridReact>
                   <div className='button-wrapper'>
                     {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} globalTake={globalTake} />}
@@ -958,6 +995,7 @@ function RMImportListing(props) {
             messageLabel={"RM Import"}
             anchor={"right"}
             masterId={RM_MASTER_ID}
+            typeOfEntryId={ENTRY_TYPE_IMPORT}
           />
         )
       }
@@ -978,8 +1016,17 @@ function RMImportListing(props) {
           import={true}
         />
       }
-
-
+      {
+        attachment && (
+          <Attachament
+            isOpen={attachment}
+            index={viewAttachment}
+            closeDrawer={closeAttachmentDrawer}
+            anchor={'right'}
+            gridListing={true}
+          />
+        )
+      }
 
       {
         showPopup && <PopupMsgWrapper isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${MESSAGES.RAW_MATERIAL_DETAIL_DELETE_ALERT}`} />

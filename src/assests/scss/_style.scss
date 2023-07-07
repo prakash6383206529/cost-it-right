@@ -1,15 +1,4 @@
-@import "./cssVariable.scss";
-@import "./icons.scss";
-
-@font-face {
-  font-family: "icomoon";
-  src: url("fonts/icomoon.eot?mx6nlh");
-  src: url("fonts/icomoon.eot?mx6nlh#iefix") format("embedded-opentype"),
-    url("fonts/icomoon.ttf?mx6nlh") format("truetype"), url("fonts/icomoon.woff?mx6nlh") format("woff"),
-    url("fonts/icomoon.svg?mx6nlh#icomoon") format("svg");
-  font-weight: normal;
-  font-style: normal;
-}
+@import "./abstracts/variable.scss";
 
 [class^="icon-"],
 [class*=" icon-"] {
@@ -789,7 +778,7 @@ input.form-control {
 }
 
 .blue-box {
-  padding: 0 15px 30px;
+  padding: 20px 15px 30px;
   background-color: #EDF0F5;
 }
 
@@ -1152,8 +1141,8 @@ button.user-btn.pull-right {
 .content-page .cr-subtabs-head.nav-tabs .nav-link:hover {
   border-top: #d62c8c 2px solid;
   border-radius: 0;
-  border-bottom: 0;
-  background-color: #fff;
+  border-bottom: 0 !important;
+  background-color: #fff !important;
 }
 
 //  START Forging costing calculator
@@ -2398,7 +2387,11 @@ input:disabled {
 }
 
 .add-min-height {
-  min-height: calc(100vh - 263px);
+  min-height: calc(100vh - 303px);
+
+  @media screen and (max-width: $middleDesktop) {
+    min-height: calc(100vh - 253px);
+  }
 
   &.mb-3.sm-edit-page {
     min-height: calc(100vh - 332px);
@@ -3135,7 +3128,7 @@ button:disabled,
   position: relative;
 
   .pie-chart-inner {
-    min-width: 300px;
+    min-width: 350px;
     background-color: #e4e9f0;
     color: #3d4465;
     text-align: center;
@@ -3592,7 +3585,7 @@ body {
 .overhead-profit-tab-costing {
   .form-control[disabled] {
     max-width: 280px;
-    width: 280px;
+    width: auto;
 
     @media screen and (max-width:$middleDesktop) {
       width: auto;
@@ -3608,7 +3601,7 @@ body {
   .form-group.inputbox.withBorder {
     input.form-control {
       max-width: 280px;
-      width: 280px;
+      width: auto;
 
       @media screen and (max-width:$middleDesktop) {
         width: auto;
@@ -6958,8 +6951,7 @@ body {
   .simulation-main {
     .filter-block {
       .flex-fills:last-child {
-        min-width: 230px;
-        max-width: 255px;
+        max-width: 200px;
         width: auto;
       }
     }
@@ -8261,6 +8253,44 @@ body {
   }
 }
 
+.simple-pdf {
+  .table-responsive {
+    min-width: 100% !important;
+    overflow: unset !important;
+
+    .table-responsive {
+      overflow: unset !important;
+    }
+
+    table {
+      min-width: 100%;
+    }
+
+    .approval-summary-headers,
+    .header-name,
+    .header-name-left {
+      background-color: #ececec !important;
+    }
+  }
+
+  .background-light-blue {
+    background: #9fcffc !important;
+
+    th {
+      word-spacing: 1px;
+
+      print-color-adjust: exact;
+      -webkit-print-color-adjust: exact;
+    }
+
+    td {
+      padding-right: 20px;
+      print-color-adjust: exact;
+      -webkit-print-color-adjust: exact;
+    }
+  }
+}
+
 .remove-space-border {
   .table-responsive {
     overflow: hidden;
@@ -9025,23 +9055,6 @@ table.group-process-table {
   background-color: #fff;
 }
 
-.rfq-part-list {
-  @function calculateRowId($i) {
-    @return ($i * 5) - 1;
-  }
-
-  @for $i from 1 through 50 {
-    [row-id~="#{calculateRowId($i)}"] {
-      @for $j from 0 through 11 {
-
-        [col-id="PartNumber"],
-        [aria-colindex="#{$j}"] {
-          border-bottom: 1px solid $agGridBorder !important;
-        }
-      }
-    }
-  }
-}
 
 .right-tooltip {
   .tooltip {
@@ -9069,6 +9082,7 @@ table.group-process-table {
 
 .table-footer {
   background-color: $tableFooterBackground;
+  font-weight: 500 !important;
 }
 
 div[col-id="ApprovalNumber"] {
@@ -9081,4 +9095,16 @@ div[col-id="ApprovalNumber"] {
 
 .dashboard-loader {
   min-height: 400px;
+}
+
+.bottom-disabled-date:disabled {
+  height: 32px !important;
+  max-width: 130px;
+  border-color: #b9b9b980 !important;
+  margin-right: 10px;
+}
+
+#association-tooltip {
+  top: 7px;
+  left: 20px;
 }

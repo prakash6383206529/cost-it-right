@@ -195,7 +195,12 @@ function Pipe(props) {
    * @description CALCULATE INNER DIAMETER
    */
   const calculateInnerDiameter = () => {
-    const ID = checkForNull(fieldValues.OuterDiameter) - 2 * checkForNull(convertmmTocm(fieldValues.Thickness));
+    let ID = checkForNull(fieldValues.OuterDiameter) - 2 * checkForNull(convertmmTocm(fieldValues.Thickness));
+
+    if (ID < 0) {
+      Toaster.warning('Inner diameter cannot be negetive')
+      ID = 0
+    }
     setValue('InnerDiameter', checkForDecimalAndNull(ID, localStorage.NoOfDecimalForInputOutput))
     const updatedValue = dataToSend
     updatedValue.InnerDiameter = ID

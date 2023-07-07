@@ -10,6 +10,7 @@ import {
     GET_COST_RATIO_REPORT,
     GET_REPORT_FORM_GRID_DATA
 } from '../../../config/constants';
+import { apiErrors } from '../../../helper';
 
 import { userDepartmetList } from '../../../helper';
 
@@ -327,4 +328,108 @@ export function getPoamImpactReport(data, callback) {
 
     };
 
+}
+
+export function getRMCostMovement(data, callback) {
+
+    return (dispatch) => {
+        const request = axios.post(`${API.getRMCostMovement}`, data, config());
+        request.then((response) => {
+            callback(response);
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE, });
+            callback(error);
+            apiErrors(error);
+        });
+
+    };
+
+}
+export function getBOPCostMovement(data, callback) {
+
+    return (dispatch) => {
+        const request = axios.post(`${API.getBOPCostMovement}`, data, config());
+        request.then((response) => {
+            callback(response);
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE, });
+            callback(error);
+            apiErrors(error);
+        });
+
+    };
+
+}
+export function getOperationMovement(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(`${API.getOperationMovement}`, data, config());
+        request.then((response) => {
+            callback(response);
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE, });
+            callback(error);
+            apiErrors(error);
+        });
+
+    };
+
+}
+export function getMachineProcessMovement(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(`${API.getMachineProcessMovement}`, data, config());
+        request.then((response) => {
+            callback(response);
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE, });
+            callback(error);
+            apiErrors(error);
+        });
+
+    };
+
+}
+
+export function getGotAndGivenDetails(data, callback) {
+
+    return (dispatch) => {
+        const request = axios.get(`${API.getGotAndGivenDetails}?plantId=${data.plantId}&partId=${data.partId}&productCategoryId=${data.productCategoryId}&isRequestForSummary=${data.isRequestForSummary}`, config(),)
+        request.then((response) => {
+            if (response) {
+                callback(response)
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE })
+            // apiErrors(error)
+        })
+    }
+}
+
+export function getCostingGotAndGivenDetails(data, callback) {
+
+    return (dispatch) => {
+        const request = axios.get(`${API.getCostingGotAndGivenDetails}?plantId=${data.plantId}&partId=${data.partId}&vendorId=${data.vendorId}&customerId=${data.customerId}&effectiveDate=${data.effectiveDate}`, config(),)
+        request.then((response) => {
+            if (response) {
+                callback(response)
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE })
+            apiErrors(error)
+        })
+    }
+}
+
+export function getPlantWiseGotAndGivenDetails(data, callback) {
+
+    return (dispatch) => {
+        const request = axios.get(`${API.getPlantWiseGotAndGivenDetails}?plantId=${data.plantId}&vendorId=${null}&customerId=${null}&technologyId=${null}&effectiveDate=${data.effectiveDate}`, config(),)
+        request.then((response) => {
+            if (response) {
+                callback(response)
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE })
+            apiErrors(error)
+        })
+    }
 }

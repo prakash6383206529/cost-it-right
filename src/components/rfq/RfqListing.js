@@ -346,6 +346,7 @@ function RfqListing(props) {
     const frameworkComponents = {
         totalValueRenderer: buttonFormatter,
         linkableFormatter: linkableFormatter,
+        customNoRowsOverlay: NoContentFound,
         quotationReceiveFormatter: quotationReceiveFormatter,
         attachmentFormatter: attachmentFormatter,
         statusFormatter: statusFormatter,
@@ -435,8 +436,8 @@ function RfqListing(props) {
                                                 <AgGridColumn field="VisibilityDuration" width={"150px"} headerName='Visibility Duration' cellRenderer='dashFormatter'></AgGridColumn>
                                                 <AgGridColumn field="LastSubmissionDate" width={"160px"} headerName='Last Submission Date' cellRenderer='dateFormatter'></AgGridColumn>
                                                 <AgGridColumn field="QuotationNumber" headerName='Attachments' cellRenderer='attachmentFormatter'></AgGridColumn>
-                                                <AgGridColumn field="Status" headerName="Status" tooltipField="tooltipText" cellClass="text-center" minWidth={170} cellRenderer="statusFormatter"></AgGridColumn>
-                                                {<AgGridColumn field="QuotationId" width={180} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
+                                                <AgGridColumn field="Status" headerName="Status" tooltipField="tooltipText" cellClass="text-center" headerClass={"text-center"} minWidth={170} cellRenderer="statusFormatter"></AgGridColumn>
+                                                {<AgGridColumn field="QuotationId" width={180} headerName="Action" type="rightAligned" cellClass={"rfq-listing-action"} floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
 
                                             </AgGridReact>
                                             <PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} globalTake={10} />

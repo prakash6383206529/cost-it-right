@@ -37,7 +37,7 @@ function PurchaseProvisionReport(props) {
         <>
             {!purchaseProvisionListing && <div className="container-fluid ag-grid-react">
                 <h1 className="mb-0">Purchase Provision Report</h1>
-                <CostReportForm isDateMandatory={true} isDataClear={isDataClear} showVendor={true} isPlantRequired={true} />
+                <CostReportForm isDateMandatory={true} isDataClear={isDataClear} showVendor={true} isPlantRequired={true} isSaleAndPurchase={true} />
                 <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
                     <Col md="12" className="text-right bluefooter-butn mt-3">
                         <div className="d-flex justify-content-end bd-highlight w100 my-2 align-items-center">

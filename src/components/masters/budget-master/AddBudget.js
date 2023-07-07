@@ -3,11 +3,11 @@ import { useDispatch, useSelector } from 'react-redux'
 import { Row, Col, Label, Button, Tooltip } from 'reactstrap'
 import { checkForDecimalAndNull, checkForNull } from '../../../helper/validation'
 import { getFinancialYearSelectList, getPartSelectListWtihRevNo, } from '../actions/Volume'
-import { getCurrencySelectList, getPlantSelectListByType } from '../../../actions/Common'
+import { getCurrencySelectList, getPlantSelectListByType, getVendorNameByVendorSelectList } from '../../../actions/Common'
 import Toaster from '../../common/Toaster'
 import { MESSAGES } from '../../../config/message'
 import { getConfigurationKey, loggedInUserId, userDetails } from '../../../helper/auth'
-import { BUDGET_ID, CBCTypeId, searchCount, SPACEBAR, VBCTypeId, ZBC, ZBCTypeId } from '../../../config/constants'
+import { BUDGET_ID, CBCTypeId, searchCount, SPACEBAR, VBC_VENDOR_TYPE, VBCTypeId, ZBC, ZBCTypeId } from '../../../config/constants'
 import LoaderCustom from '../../common/LoaderCustom'
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
@@ -30,7 +30,6 @@ import MasterSendForApproval from '../MasterSendForApproval'
 import { userTechnologyDetailByMasterId } from '../../../helper'
 import { getUsersMasterLevelAPI } from '../../../actions/auth/AuthActions'
 import PopupMsgWrapper from '../../common/PopupMsgWrapper'
-import { getVendorWithVendorCodeSelectList } from '../actions/Material'
 
 const gridOptions = {};
 
@@ -629,7 +628,6 @@ function AddBudget(props) {
                 CurrencyId: currency.value,
                 Currency: currency.label,
                 ConditionsData: conditionTableData
-
             }
 
 
@@ -685,7 +683,7 @@ function AddBudget(props) {
         if (inputValue?.length >= searchCount && vendorFilter !== resultInput) {
             setInputLoader(true)
             let res
-            res = await getVendorWithVendorCodeSelectList(resultInput)
+            res = await getVendorNameByVendorSelectList(VBC_VENDOR_TYPE, resultInput)
 
             setInputLoader(false)
             setVendorFilter(resultInput)

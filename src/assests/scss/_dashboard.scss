@@ -1,22 +1,27 @@
-@import "../commonCss/cssVariable.scss";
+@import './abstracts/variable.scss';
+
 .master-tabs-row {
   margin-left: -25px !important;
+
   .master-tabs {
     .subtabs {
       border-bottom: none !important;
       padding-top: 34px;
-      height: calc( 100% - 85px);
+      height: calc(100% - 85px);
       display: block;
       background-color: $tabsBackgroundColor;
       margin-top: 0;
+
       .nav-item {
         width: 100%;
         margin-right: 0 !important;
+
         a.nav-link {
           border-right: 2px solid transparent;
           padding-top: 10px;
           color: $lightBack;
           font-weight: 500;
+
           &.active,
           &:hover {
             border-bottom: none !important;

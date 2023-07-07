@@ -227,7 +227,7 @@ export function getAllUserDataAPI(data, callback) {
             .then((response) => {
                 dispatch({
                     type: GET_USER_DATA_SUCCESS,
-                    payload: response.data.DataList,
+                    payload: response.status === 200 ? response.data.DataList : [],
                 });
                 callback(response);
             }).catch((error) => {
@@ -974,7 +974,7 @@ export function getSimulationLevelDataList(callback) {
 }
 
 /**
- * @method fetchPlantDataAPI
+ * @method getAllTechnologyAPI
  * @description Used to fetch plant list
  */
 export function getAllTechnologyAPI(callback, data) {

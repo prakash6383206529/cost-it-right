@@ -58,7 +58,7 @@ function OverheadListing(props) {
     const [noData, setNoData] = useState(false)
     const [dataCount, setDataCount] = useState(0)
     const [pageSize, setPageSize] = useState({ pageSize10: true, pageSize50: false, pageSize100: false })
-    const [floatingFilterData, setFloatingFilterData] = useState({ CostingHead: "", TechnologyName: "", RawMaterial: "", RMGrade: "", RMSpec: "", RawMaterialCode: "", Category: "", MaterialType: "", Plant: "", UOM: "", VendorName: "", BasicRate: "", ScrapRate: "", RMFreightCost: "", RMShearingCost: "", NetLandedCost: "", EffectiveDateNew: "", })
+    const [floatingFilterData, setFloatingFilterData] = useState({ CostingHead: "", TechnologyName: "", RawMaterial: "", RMGrade: "", RMSpec: "", RawMaterialCode: "", Category: "", MaterialType: "", Plant: "", UOM: "", VendorName: "", BasicRate: "", ScrapRate: "", RMFreightCost: "", RMShearingCost: "", NetLandedCost: "", EffectiveDateNew: "", RawMaterialName: "", RawMaterialGrade: "" })
     let overheadProfitList = useSelector((state) => state.overheadProfit.overheadProfitList)
     let overheadProfitListAll = useSelector((state) => state.overheadProfit.overheadProfitListAll)
     const { selectedRowForPagination } = useSelector((state => state.simulation))
@@ -253,6 +253,7 @@ function OverheadListing(props) {
 
 
     const resetState = () => {
+        setNoData(false)
         dispatch(agGridStatus("", ""))
         dispatch(isResetClick(true, "applicablity"))
         setIsFilterButtonClicked(false)
@@ -574,16 +575,18 @@ function OverheadListing(props) {
             }
             if (item?.EffectiveDate?.includes('T')) {
                 item.EffectiveDate = DayTime(item.EffectiveDate).format('DD/MM/YYYY')
-
             }
-
             return item
         })
-        return (
-
-            <ExcelSheet data={temp} name={OverheadMaster}>
-                {excelData && excelData.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
-            </ExcelSheet>);
+        const isShowRawMaterial = getConfigurationKey().IsShowRawMaterialInOverheadProfitAndICC
+        const excelColumns = excelData && excelData.map((ele, index) => {
+            if ((ele.label === 'Raw Material Name' || ele.label === 'Raw Material Grade') && !isShowRawMaterial) {
+                return null // hide column
+            } else {
+                return <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />
+            }
+        }).filter(Boolean) // remove null columns
+        return <ExcelSheet data={temp} name={OverheadMaster}>{excelColumns}</ExcelSheet>
     }
 
     const onFilterTextBoxChanged = (e) => {
@@ -718,6 +721,8 @@ function OverheadListing(props) {
                                             suppressRowClickSelection={true}
                                         >
                                             <AgGridColumn field="CostingHead" headerName="Costing Head" cellRenderer={checkBoxRenderer}></AgGridColumn>
+                                            {getConfigurationKey().IsShowRawMaterialInOverheadProfitAndICC && <AgGridColumn field="RawMaterialName" headerName='Raw Material Name'></AgGridColumn>}
+                                            {getConfigurationKey().IsShowRawMaterialInOverheadProfitAndICC && <AgGridColumn field="RawMaterialGrade" headerName="Raw Material Grade"></AgGridColumn>}
                                             {(getConfigurationKey().IsPlantRequiredForOverheadProfitInterestRate || getConfigurationKey().IsDestinationPlantConfigure) && <AgGridColumn field="PlantName" headerName="Plant (Code)"></AgGridColumn>}
                                             <AgGridColumn field="VendorName" headerName="Vendor (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                             {(reactLocalStorage.getObject('cbcCostingPermission')) && <AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>}

@@ -1,0 +1,23 @@
+@import "./_variable.scss";
+
+@mixin icons($path, $width: 26px, $height: 26px, $background-size: contain, $shadowColor: transparent, $borderColor: transparent) {
+    background: transparent url($path) 0% 0% no-repeat padding-box;
+    width: $width;
+    height: $height;
+    opacity: 1;
+    background-size: $background-size;
+    border: none;
+
+    &:focus {
+        box-shadow: 0 0 5px $shadowColor !important;
+        border: 1px solid $borderColor !important;
+
+    }
+}
+
+@mixin extra-icon-styles {
+    margin: 0 auto;
+    color: #3d4465;
+    font-size: 14px;
+    margin-bottom: 5px;
+}

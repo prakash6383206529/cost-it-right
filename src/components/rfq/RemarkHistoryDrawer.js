@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Container, Row, Col, } from 'reactstrap';
 import Drawer from '@material-ui/core/Drawer';
 import { NumberFieldHookForm, SearchableSelectHookForm, TextAreaHookForm, } from '.././layout/HookFormInputs'
-import { getVendorWithVendorCodeSelectList, getReporterList, fetchPlantDataAPI } from '../.././actions/Common';
+import { getVendorWithVendorCodeSelectList, getReporterList } from '../.././actions/Common';
 import { getCostingSpecificTechnology, getPartSelectListByTechnology, } from '../costing/actions/Costing'
 import { checkForDecimalAndNull, getConfigurationKey, loggedInUserId } from '../.././helper';
 import { EMPTY_DATA, FILE_URL } from '../.././config/constants';

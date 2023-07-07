@@ -62,7 +62,7 @@ function ProfitListing(props) {
     const [currentRowIndex, setCurrentRowIndex] = useState(0)
     const [dataCount, setDataCount] = useState(0)
     const [pageSize, setPageSize] = useState({ pageSize10: true, pageSize50: false, pageSize100: false })
-    const [floatingFilterData, setFloatingFilterData] = useState({ CostingHead: "", TechnologyName: "", RawMaterial: "", RMGrade: "", RMSpec: "", RawMaterialCode: "", Category: "", MaterialType: "", Plant: "", UOM: "", VendorName: "", BasicRate: "", ScrapRate: "", RMFreightCost: "", RMShearingCost: "", NetLandedCost: "", EffectiveDateNew: "", })
+    const [floatingFilterData, setFloatingFilterData] = useState({ CostingHead: "", TechnologyName: "", RawMaterial: "", RMGrade: "", RMSpec: "", RawMaterialCode: "", Category: "", MaterialType: "", Plant: "", UOM: "", VendorName: "", BasicRate: "", ScrapRate: "", RMFreightCost: "", RMShearingCost: "", NetLandedCost: "", EffectiveDateNew: "", RawMaterialName: "", RawMaterialGrade: "" })
     let overheadProfitList = useSelector((state) => state.overheadProfit.overheadProfitList)
     let overheadProfitListAll = useSelector((state) => state.overheadProfit.overheadProfitListAll)
     const statusColumnData = useSelector((state) => state.comman.statusColumnData);
@@ -262,13 +262,13 @@ function ProfitListing(props) {
 
 
     const resetState = () => {
+        setNoData(false)
         dispatch(agGridStatus("", ""))
         dispatch(isResetClick(true, "applicablity"))
         setIsFilterButtonClicked(false)
         gridApi.deselectAll()
         gridOptions?.columnApi?.resetColumnState(null);
         gridOptions?.api?.setFilterModel(null);
-
         for (var prop in floatingFilterData) {
             floatingFilterData[prop] = ""
 
@@ -284,6 +284,7 @@ function ProfitListing(props) {
         setGlobalTake(10)
         setPageSize(prevState => ({ ...prevState, pageSize10: true, pageSize50: false, pageSize100: false }))
         setDataCount(0)
+
     }
 
 
@@ -595,12 +596,16 @@ function ProfitListing(props) {
             }
             return item
         })
-        return (
-            <ExcelSheet data={temp} name={ProfitMaster}>
-                {excelData && excelData.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
-            </ExcelSheet>);
+        const isShowRawMaterial = getConfigurationKey().IsShowRawMaterialInOverheadProfitAndICC
+        const excelColumns = excelData && excelData.map((ele, index) => {
+            if ((ele.label === 'Raw Material Name' || ele.label === 'Raw Material Grade') && !isShowRawMaterial) {
+                return null // hide column
+            } else {
+                return <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />
+            }
+        }).filter(Boolean) // remove null columns
+        return <ExcelSheet data={temp} name={ProfitMaster}>{excelColumns}</ExcelSheet>
     }
-
     const onFilterTextBoxChanged = (e) => {
         gridApi.setQuickFilter(e.target.value);
     }
@@ -732,6 +737,8 @@ function ProfitListing(props) {
                                         //onFilterModified={(e) => { setNoData(searchNocontentFilter(e)) }}
                                         >
                                             <AgGridColumn field="CostingHead" headerName="Costing Head" cellRenderer={checkBoxRenderer}></AgGridColumn>
+                                            {getConfigurationKey().IsShowRawMaterialInOverheadProfitAndICC && <AgGridColumn field="RawMaterialName" headerName='Raw Material Name'></AgGridColumn>}
+                                            {getConfigurationKey().IsShowRawMaterialInOverheadProfitAndICC && <AgGridColumn field="RawMaterialGrade" headerName="Raw Material Grade"></AgGridColumn>}
                                             {(getConfigurationKey().IsPlantRequiredForOverheadProfitInterestRate || getConfigurationKey().IsDestinationPlantConfigure) && <AgGridColumn field="PlantName" headerName="Plant (Code)"></AgGridColumn>}
                                             <AgGridColumn field="VendorName" headerName="Vendor (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                             {(reactLocalStorage.getObject('cbcCostingPermission')) && <AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>}

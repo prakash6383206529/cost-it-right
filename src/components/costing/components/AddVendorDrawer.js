@@ -4,10 +4,10 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Container, Row, Col, } from 'reactstrap';
 import Drawer from '@material-ui/core/Drawer';
 import { AsyncSearchableSelectHookForm, SearchableSelectHookForm, } from '../../layout/HookFormInputs';
-import { getVendorWithVendorCodeSelectList, getPlantBySupplier, getPlantSelectListByType } from '../../../actions/Common';
+import { getPlantBySupplier, getPlantSelectListByType, getVendorNameByVendorSelectList } from '../../../actions/Common';
 import { getVBCDetailByVendorId, } from '../actions/Costing';
 import { getConfigurationKey } from '../../../helper';
-import { EMPTY_GUID_0, searchCount, ZBC } from '../../../config/constants';
+import { EMPTY_GUID_0, searchCount, VBC_VENDOR_TYPE, ZBC } from '../../../config/constants';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { autoCompleteDropdown } from '../../common/CommonFunctions';
 import { MESSAGES } from '../../../config/message';
@@ -148,7 +148,7 @@ function AddVendorDrawer(props) {
     const resultInput = inputValue.slice(0, searchCount)
     if (inputValue?.length >= searchCount && vendorName !== resultInput) {
       let res
-      res = await getVendorWithVendorCodeSelectList(resultInput)
+      res = await getVendorNameByVendorSelectList(VBC_VENDOR_TYPE, resultInput)
       setVendorName(resultInput)
       let vendorDataAPI = res?.data?.SelectList
       if (inputValue) {

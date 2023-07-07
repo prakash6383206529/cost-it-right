@@ -10,8 +10,6 @@ import $ from 'jquery';
 import NoContentFound from '../../common/NoContentFound';
 import {
     getSupplierDataList, activeInactiveVendorStatus, deleteSupplierAPI,
-    getVendorsByVendorTypeID,
-    getVendorTypeByVendorSelectList
 } from '../actions/Supplier';
 import Switch from "react-switch";
 import BulkUpload from '../../massUpload/BulkUpload';
@@ -380,50 +378,6 @@ class VendorListing extends Component {
         this.setState({ showPopupToggle: false })
     }
     /**
-    * @method handleVendorType
-    * @description Used to handle vendor type
-    */
-    handleVendorType = (newValue, actionMeta) => {
-        if (newValue && newValue !== '') {
-            this.setState({ vendorType: newValue, }, () => {
-                const { vendorType } = this.state;
-                this.props.getVendorsByVendorTypeID(vendorType.value, this.state.vendorName, (res) => { })
-            });
-        } else {
-            this.setState({ vendorType: [], }, () => {
-                this.props.getAllVendorSelectList()
-            })
-        }
-    };
-
-    /**
-    * @method handleVendorName
-    * @description Used to handle vendor name
-    */
-    handleVendorName = (newValue, actionMeta) => {
-        if (newValue && newValue !== '') {
-            this.setState({ vendorName: newValue, }, () => {
-                const { vendorName } = this.state;
-                this.props.getVendorTypeByVendorSelectList(vendorName.value)
-            });
-        } else {
-            this.setState({ vendorName: [], })
-        }
-    };
-
-    /**
-    * @method countryHandler
-    * @description Used to handle country
-    */
-    countryHandler = (newValue, actionMeta) => {
-        if (newValue && newValue !== '') {
-            this.setState({ country: newValue, });
-        } else {
-            this.setState({ country: [], })
-        }
-    };
-
-    /**
     * @method statusButtonFormatter
     * @description Renders buttons
     */
@@ -685,7 +639,7 @@ class VendorListing extends Component {
                 {this.state.disableDownload && <LoaderCustom message={MESSAGES.DOWNLOADING_MESSAGE} customClass="mt-5" />}
                 {this.state.isLoader && <LoaderCustom customClass={"loader-center"} />}
 
-                <Row className="pb-4 no-filter-row zindex-2">
+                <Row className="pb-4 mb-3 no-filter-row zindex-2">
                     <Col md="3"> <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={'off'} onChange={(e) => this.onFilterTextBoxChanged(e)} /></Col>
                     <Col md="9">
                         <div className="d-flex justify-content-end bd-highlight w100 ">
@@ -859,8 +813,6 @@ export default connect(mapStateToProps, {
     getSupplierDataList,
     activeInactiveVendorStatus,
     deleteSupplierAPI,
-    getVendorsByVendorTypeID,
-    getVendorTypeByVendorSelectList,
     setSelectedRowForPagination,
     disabledClass,
     isResetClick

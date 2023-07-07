@@ -5,13 +5,13 @@ import { Row, Col, Label, Tooltip } from 'reactstrap'
 import { required } from '../../../helper/validation'
 import { searchableSelect } from '../../layout/FormInputs'
 import { createVolume, updateVolume, getVolumeData, getFinancialYearSelectList, getPartSelectListWtihRevNo, } from '../actions/Volume'
-import { getPlantSelectListByType, getPlantBySupplier, getVendorWithVendorCodeSelectList } from '../../../actions/Common'
+import { getPlantSelectListByType, getPlantBySupplier, getVendorNameByVendorSelectList } from '../../../actions/Common'
 import { getPartSelectList } from '../actions/Part'
 import Toaster from '../../common/Toaster'
 import { MESSAGES } from '../../../config/message'
 import { getConfigurationKey, loggedInUserId, userDetails } from '../../../helper/auth'
 import AddVendorDrawer from '../supplier-master/AddVendorDrawer'
-import { CBCTypeId, SPACEBAR, VBCTypeId, ZBC, ZBCTypeId, searchCount } from '../../../config/constants'
+import { CBCTypeId, searchCount, SPACEBAR, VBC_VENDOR_TYPE, VBCTypeId, ZBC, ZBCTypeId } from '../../../config/constants'
 import LoaderCustom from '../../common/LoaderCustom'
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
@@ -288,7 +288,7 @@ class AddVolume extends Component {
   async closeVendorDrawer(e = '', formData = {}, type) {
     if (type === 'submit') {
       this.setState({ isOpenVendor: false })
-      const res = await getVendorWithVendorCodeSelectList(this.state.vendorName)
+      const res = await getVendorNameByVendorSelectList(VBC_VENDOR_TYPE, this.state.vendorName)
       let vendorDataAPI = res?.data?.SelectList
       reactLocalStorage?.setObject('vendorData', vendorDataAPI)
       if (Object.keys(formData).length > 0) {
@@ -403,7 +403,7 @@ class AddVolume extends Component {
 
   deleteItem = (ID) => {
     const { tableData } = this.state;
-    this.setState({ isLoader: true })
+    this.setState({ isLoader: true, showTooltip: false })
     let tempData = tableData.filter((item, i) => {
       if (item.VolumeApprovedDetailId === ID) {
         item.BudgetedQuantity = 0
@@ -712,7 +712,7 @@ class AddVolume extends Component {
       if (inputValue?.length >= searchCount && vendorFilter !== resultInput) {
         this.setState({ inputLoader: true })
         let res
-        res = await getVendorWithVendorCodeSelectList(resultInput)
+        res = await getVendorNameByVendorSelectList(VBC_VENDOR_TYPE, resultInput)
         this.setState({ inputLoader: false })
         this.setState({ vendorFilter: resultInput })
         let vendorDataAPI = res?.data?.SelectList
@@ -1030,8 +1030,8 @@ class AddVolume extends Component {
                             <Col>
                               <div className={`ag-grid-wrapper add-volume-table  ${this.state.tableData && this.state.tableData?.length <= 0 ? "overlay-contain" : ""}`} style={{ width: '100%', height: '100%' }}>
                                 {/* <Col md="12"> */}
-                                {this.state.showTooltip && <Tooltip className="rfq-tooltip-left" placement={"top"} isOpen={this.state.viewTooltipBudgeted} toggle={tooltipToggleBudgeted} target={"budgeted-tooltip"} >{"To add budgeted quantity please double click on the field."}</Tooltip>}
-                                {this.state.showTooltip && <Tooltip className="rfq-tooltip-left" placement={"top"} isOpen={this.state.viewTooltipActual} toggle={tooltipToggleActual} target={"actual-tooltip"} >{"To add actual quantity please double click on the field."}</Tooltip>}
+                                {this.state.showTooltip && <Tooltip className="rfq-tooltip-left" placement={"top"} isOpen={this.state.viewTooltipBudgeted} toggle={tooltipToggleBudgeted} target={"budgeted-tooltip"} >{"To edit budgeted quantity please double click on the field."}</Tooltip>}
+                                {this.state.showTooltip && <Tooltip className="rfq-tooltip-left" placement={"top"} isOpen={this.state.viewTooltipActual} toggle={tooltipToggleActual} target={"actual-tooltip"} >{"To edit actual quantity please double click on the field."}</Tooltip>}
                                 <div
                                   className="ag-theme-material"
                                 >
@@ -1159,7 +1159,6 @@ export default connect(mapStateToProps, {
   getVolumeData,
   getFinancialYearSelectList,
   getPartSelectList,
-  getVendorWithVendorCodeSelectList,
   getClientSelectList
 })(
   reduxForm({

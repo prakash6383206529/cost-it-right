@@ -5,7 +5,6 @@ import { connect } from "react-redux";
 import { Loader } from "../../common/Loader";
 import { required, checkWhiteSpaces, acceptAllExceptSingleSpecialCharacter, maxLength26, } from "../../../helper/validation";
 import { renderText } from "../../layout/FormInputs";
-import "../UserRegistration.scss";
 import {
 	addRoleAPI, getAllRoleAPI, getRoleDataAPI, updateRoleAPI, setEmptyRoleDataAPI,
 	getActionHeadsSelectList, getModuleActionInit,

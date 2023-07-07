@@ -347,11 +347,15 @@ class InterestRateListing extends Component {
       }
       return item
     })
-    return (
-
-      <ExcelSheet data={temp} name={InterestMaster}>
-        {excelData && excelData.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
-      </ExcelSheet>);
+    const isShowRawMaterial = getConfigurationKey().IsShowRawMaterialInOverheadProfitAndICC
+    const excelColumns = excelData && excelData.map((ele, index) => {
+      if ((ele.label === 'Raw Material Name' || ele.label === 'Raw Material Grade') && !isShowRawMaterial) {
+        return null // hide column
+      } else {
+        return <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />
+      }
+    }).filter(Boolean) // remove null columns
+    return <ExcelSheet data={temp} name={InterestMaster}>{excelColumns}</ExcelSheet>
   }
 
   onFilterTextBoxChanged(e) {
@@ -512,6 +516,8 @@ class InterestRateListing extends Component {
                   doesExternalFilterPass={this.doesExternalFilterPass}
                 >
                   <AgGridColumn width={180} field="CostingHead" headerName="Costing Head" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
+                  {getConfigurationKey().IsShowRawMaterialInOverheadProfitAndICC && <AgGridColumn field="RawMaterialName" headerName='Raw Material Name'></AgGridColumn>}
+                  {getConfigurationKey().IsShowRawMaterialInOverheadProfitAndICC && <AgGridColumn field="RawMaterialGrade" headerName="Raw Material Grade"></AgGridColumn>}
                   {(getConfigurationKey().IsPlantRequiredForOverheadProfitInterestRate || getConfigurationKey().IsDestinationPlantConfigure) && <AgGridColumn field="PlantName" headerName="Plant (Code)"></AgGridColumn>}
                   <AgGridColumn field="VendorName" headerName="Vendor (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                   {reactLocalStorage.getObject('cbcCostingPermission') && <AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>}

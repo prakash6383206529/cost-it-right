@@ -4,7 +4,7 @@ import "./formInputs.scss";
 import AsyncSelect from 'react-select/async';
 import LoaderCustom from "../common/LoaderCustom";
 import { SPACEBAR } from "../../config/constants";
-import DatePicker from 'react-datepicker'
+import DatePicker, { ReactDatePicker } from 'react-datepicker'
 
 export const TextFieldHooks = (input) => {
 
@@ -39,7 +39,7 @@ export const TextFieldHooks = (input) => {
 const errorFunc = (errors, field) => {
   switch (errors?.type) {
     case "maxLength":
-      return <div className="text-help">{field?.rules?.maxLength?.message}</div>
+      return <div className="text-help">{field?.rules?.maxLength?.message ?? `Maximum length is ${field?.rules?.maxLength}`}</div>
 
     case "required":
       return <div className="text-help">This field is required</div>
@@ -442,9 +442,9 @@ export const TextAreaHookForm = (field) => {
 */
 export const DatePickerHookForm = (field) => {
   const {
-    label, Controller, control, register, name, defaultValue, mandatory, errors, rules, placeholder, handleChange } = field
+    label, Controller, control, register, name, defaultValue, mandatory, errors, rules, placeholder, handleChange, buttonCross } = field
   //const className = `form-group inputbox ${field.customClassName ? field.customClassName : ""} ${touched && error ? "has-danger" : ""}`;
-  const className = `form-group inputbox ${field.customClassName ? field.customClassName : ''}`
+  const className = `form-group inputbox ${field.customClassName ? field.customClassName : ''} ${buttonCross ? 'cross-btn-container' : ''}`
   const isDisabled = field.disabled === true ? true : false
   return (
     <React.Fragment>
@@ -452,44 +452,49 @@ export const DatePickerHookForm = (field) => {
         <label>
           {label} {mandatory && mandatory === true ? (<span className="asterisk-required">*</span>) : ("")}{" "}
         </label>
-        <Controller
-          name={name}
-          control={control}
-          rules={rules}
-          {...register}
-          defaultValue={defaultValue}
-          render={({ field: { onChange, onBlur, value, name } }) => (
+        <div className="p-relative pr-0">
+          <Controller
+            name={name}
+            control={control}
+            rules={rules}
+            {...register}
+            defaultValue={defaultValue}
+            render={({ field: { onChange, onBlur, value, name } }) => (
 
-            // return (
-            <DatePicker
-              {...field}
-              {...register}
-              name={name}
-              value={value}
-              dateFormat="dd/MM/yyyy"
-              placeholderText={placeholder}
-              //maxDate={new Date()}
-              //minDate={new Date()}
-              showMonthDropdown
-              showYearDropdown
-              readonly="readonly"
-              onBlur={() => null}
-              selected={value}
-              className={field.className}
-              onChange={(e) => {
-                onChange(e)
-                handleChange(e)
-                // onselect(e)
-              }}
-              autoComplete={field.autoComplete}
-              disabledKeyboardNavigation
-              disabled={isDisabled}
-            />
-            // )
-          )}
-        />
-        {errors && errors.type === 'required' ? <div className="text-help">This field is required</div>
-          : errors && errors.type !== 'required' ? <div className="text-help">{(errors.message || errors.type)}</div> : ''}
+              // return (
+              <DatePicker
+                {...field}
+                {...register}
+                name={name}
+                value={value}
+                dateFormat="dd/MM/yyyy"
+                placeholderText={placeholder}
+                //maxDate={new Date()}
+                //minDate={new Date()}
+                showMonthDropdown
+                showYearDropdown
+                readonly="readonly"
+                onBlur={() => null}
+                selected={value}
+                className={field.className}
+                onChange={(e) => {
+                  onChange(e)
+                  handleChange(e)
+                  // onselect(e)
+                }}
+                autoComplete={field.autoComplete}
+                disabledKeyboardNavigation
+                disabled={isDisabled}
+              />
+              // )
+            )}
+          />
+          {buttonCross && <button type="button" className={'btn-cross'} disabled={isDisabled} onClick={buttonCross}>
+            <div className='cross-light'></div>
+          </button>}
+          {errors && errors.type === 'required' ? <div className="text-help">This field is required</div>
+            : errors && errors.type !== 'required' ? <div className="text-help">{(errors.message || errors.type)}</div> : ''}
+        </div>
       </div>
     </React.Fragment>
   )
@@ -597,7 +602,7 @@ export const RadioHookForm = (field) => {
 
 export const AsyncSearchableSelectHookForm = (field) => {
   const { name, label, Controller, mandatory, disabled, handleChange, rules, placeholder, defaultValue,
-    control, errors, register, isLoading, customClassName, asyncOptions, NoOptionMessage } = field;
+    control, errors, register, isLoading, customClassName, asyncOptions, NoOptionMessage, isMulti, buttonCross } = field;
 
   let isLoader = (isLoading && isLoading?.isLoader === true) ? true : false;
   let isLoaderClass = isLoading && isLoading?.isLoader ? isLoading?.isLoaderClass !== undefined ? isLoading?.isLoaderClass : '' : '';
@@ -617,7 +622,7 @@ export const AsyncSearchableSelectHookForm = (field) => {
         defaultValue={defaultValue}
         render={({ field: { onChange, onBlur, value, name } }) => {
           return (
-            <div className={`${isLoader ? "p-relative" : ''}`}>
+            <div className={`${isLoader ? "p-relative" : ''} ${buttonCross ? 'cross-btn-container' : ''}`}>
               <AsyncSelect
                 {...field}
                 {...register}
@@ -642,6 +647,9 @@ export const AsyncSearchableSelectHookForm = (field) => {
                 }}
               />
               {isLoader && <LoaderCustom customClass={`input-loader ${isLoaderClass}`} />}
+              {buttonCross && <button type="button" className={'btn-cross'} disabled={disabled} onClick={buttonCross}>
+                <div className='cross-light'></div>
+              </button>}
             </div>
           )
 

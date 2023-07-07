@@ -49,6 +49,7 @@ function OperationSTSimulation(props) {
     const [noData, setNoData] = useState(false);
     const [showTooltip, setShowTooltip] = useState(false)
     const [basicRateviewTooltip, setBasicRateViewTooltip] = useState(false)
+    const [textFilterSearch, setTextFilterSearch] = useState('')
     const gridRef = useRef();
 
     const { register, control, setValue, formState: { errors }, } = useForm({
@@ -244,6 +245,7 @@ function OperationSTSimulation(props) {
 
     const onFilterTextBoxChanged = (e) => {
         gridApi.setQuickFilter(e.target.value);
+        setTextFilterSearch(e?.target?.value)
     }
 
     const NewcostFormatter = (props) => {
@@ -357,6 +359,7 @@ function OperationSTSimulation(props) {
         gridOptions?.columnApi?.resetColumnState();
         gridOptions?.api?.setFilterModel(null);
         gridRef.current.api.sizeColumnsToFit();
+        setTextFilterSearch('')
     }
 
     const basicRatetooltipToggle = () => {
@@ -394,11 +397,11 @@ function OperationSTSimulation(props) {
                                     <div className={`ag-grid-wrapper height-width-wrapper ${(list && list?.length <= 0) || noData ? "overlay-contain" : ""}`}>
                                         <div className="ag-grid-header d-flex align-items-center justify-content-between">
                                             <div className='d-flex align-items-center'>
-                                                <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
+                                                <input type="text" className="form-control table-search" id="filter-text-box" value={textFilterSearch} placeholder="Search " autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
                                                 <button type="button" className="user-btn float-right mr-2" title="Reset Grid" onClick={() => resetState()}>
                                                     <div className="refresh mr-0"></div>
                                                 </button>
-                                                <ExcelFile filename={'Impacted Master Data'} fileExtension={'.xls'} element={
+                                                <ExcelFile filename={`${props.lastRevision ? 'Last Revision Data' : 'Impacted Master Data'}`} fileExtension={'.xls'} element={
                                                     <button title="Download" type="button" className={'user-btn'} ><div className="download mr-0"></div></button>}>
                                                     {onBtExport()}
                                                 </ExcelFile>

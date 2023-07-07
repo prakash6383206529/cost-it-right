@@ -423,13 +423,15 @@ function RfqListing(props) {
         setShowPopup(false)
     }
 
-    const closeUserDetails = () => {
+    const closeUserDetails = (e = '', type) => {
         setIsOpen(false)
-        setloader(true)
-        setTimeout(() => {
-            dispatch(setCostingViewData([...multipleCostingDetails]))
-            setloader(false)
-        }, 200);
+        if (type !== false) {
+            setloader(true)
+            setTimeout(() => {
+                dispatch(setCostingViewData([...multipleCostingDetails]))
+                setloader(false)
+            }, 200);
+        }
     }
 
     const viewCostingDetail = (rowData) => {
@@ -494,12 +496,14 @@ function RfqListing(props) {
         )
     };
 
-    const closeDrawer = () => {
+
+    const closeDrawer = (e = '', type) => {
         setAddRfqData({})
         setAddRfq(false)
         setRejectDrawer(false)
-        getDataList()
-
+        if (type !== 'cancel') {
+            getDataList()
+        }
     }
 
     const closeRemarkDrawer = (type) => {
@@ -699,7 +703,7 @@ function RfqListing(props) {
         resizable: true,
         filter: true,
         sortable: false,
-        headerCheckboxSelection: true ? isFirstColumn : false,
+        headerCheckboxSelection: false,
         headerCheckboxSelectionFilteredOnly: true,
         checkboxSelection: isFirstColumn,
         hyphenFormatter: hyphenFormatter
@@ -830,7 +834,7 @@ function RfqListing(props) {
                                             enableBrowserTooltips={true}
                                         >
                                             <AgGridColumn cellClass={cellClass} field="PartNo" tooltipField="PartNo" headerName='Part No' cellRenderer={'partNumberFormatter'}></AgGridColumn>
-                                            <AgGridColumn field="NfrNumber" headerName='NFR Id' ></AgGridColumn>
+                                            <AgGridColumn field="NfrNumber" headerName='NFR No.' ></AgGridColumn>
                                             <AgGridColumn field="TechnologyName" headerName='Technology'></AgGridColumn>
                                             <AgGridColumn field="VendorName" tooltipField="VendorName" headerName='Vendor (Code)'></AgGridColumn>
                                             <AgGridColumn field="PlantName" tooltipField="PlantName" headerName='Plant (Code)'></AgGridColumn>
@@ -913,10 +917,7 @@ function RfqListing(props) {
                         isEditFlag={isEdit}
                         closeDrawer={closeDrawer}
                     />
-
                 }
-
-
 
                 {
                     <div id='rfq-compare-drawer'>
@@ -935,6 +936,7 @@ function RfqListing(props) {
                                 costingIdList={costingListToShow}
                                 isFromViewRFQ={true}
                                 checkCostingSelected={checkCostingSelected}
+                                disableApproveRejectButton={disableApproveRejectButton}
                             />
                         )}
                     </div>

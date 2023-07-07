@@ -135,6 +135,11 @@ function NonFerrous(props) {
             scrapWeight = checkForNull(castingWeight) - checkForNull(finishedWeight) //FINAL Casting Weight - FINISHED WEIGHT
 
         }
+
+        if (scrapWeight < 0) {
+            Toaster.warning('Scrap weight cannot be negetive')
+            scrapWeight = 0
+        }
         const recovery = checkForNull(Number(getValues('recovery')) / 100)
         const rmCost = checkForNull(grossWeight) * checkForNull(rmRowData.RMRate) //FINAL GROSS WEIGHT - RMRATE
         const scrapCost = checkForNull(checkForNull(scrapWeight) * checkForNull(rmRowData.ScrapRate) * recovery)

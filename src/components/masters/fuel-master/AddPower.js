@@ -1,21 +1,19 @@
 import React, { Component, } from 'react';
 import { connect } from 'react-redux';
-import { Field, reduxForm, formValueSelector } from "redux-form";
-import { Row, Col, Table } from 'reactstrap';
+import { Field, reduxForm, formValueSelector, clearFields } from "redux-form";
+import { Row, Col, Table, Label } from 'reactstrap';
 import { required, checkForNull, getVendorCode, checkForDecimalAndNull, positiveAndDecimalNumber, maxLength10, decimalLengthFour, decimalLengthThree, number, maxPercentValue, checkWhiteSpaces, percentageLimitValidation } from "../../../helper/validation";
 import { searchableSelect, renderMultiSelectField, focusOnError, renderDatePicker, renderText, renderTextInputField } from "../../layout/FormInputs";
-import { getPowerTypeSelectList, getUOMSelectList, getPlantBySupplier, getAllCity, fetchStateDataAPI } from '../../../actions/Common';
-import { getVendorWithVendorCodeSelectList, } from '../actions/Supplier';
+import { getPowerTypeSelectList, getUOMSelectList, getPlantBySupplier, getAllCity, fetchStateDataAPI, getVendorNameByVendorSelectList } from '../../../actions/Common';
 import {
   getFuelByPlant, createPowerDetail, updatePowerDetail, getPlantListByState, createVendorPowerDetail, updateVendorPowerDetail, getDieselRateByStateAndUOM,
   getPowerDetailData, getVendorPowerDetailData,
 } from '../actions/Fuel';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
-import { GENERATOR_DIESEL, searchCount, SPACEBAR, } from '../../../config/constants';
+import { CBCTypeId, GENERATOR_DIESEL, searchCount, SPACEBAR, VBC_VENDOR_TYPE, VBCTypeId, ZBCTypeId, } from '../../../config/constants';
 import { EMPTY_DATA } from '../../../config/constants'
 import { loggedInUserId } from "../../../helper/auth";
-import Switch from "react-switch";
 import "react-datepicker/dist/react-datepicker.css";
 import NoContentFound from '../../common/NoContentFound';
 import AddVendorDrawer from '../supplier-master/AddVendorDrawer';
@@ -28,6 +26,7 @@ import AsyncSelect from 'react-select/async';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { autoCompleteDropdown } from '../../common/CommonFunctions';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
+import { getClientSelectList, } from '../actions/Client';
 
 const selector = formValueSelector('AddPower');
 
@@ -55,6 +54,7 @@ class AddPower extends Component {
       vendorName: [],
       VendorCode: '',
       vendorLocation: [],
+      isDetailEntry: false,
 
       isOpenVendor: false,
 
@@ -90,7 +90,9 @@ class AddPower extends Component {
       },
       showErrorOnFocus: false,
       showPopup: false,
-      vendorFilterList: []
+      vendorFilterList: [],
+      costingTypeId: ZBCTypeId,
+      client: [],
     }
   }
 
@@ -110,6 +112,7 @@ class AddPower extends Component {
       this.props.getPlantListByState('', () => { })
       this.props.getPlantBySupplier('', () => { })
       this.props.getPowerDetailData('', () => { })
+      this.props.getClientSelectList(() => { })
     }
     this.getDetails();
   }
@@ -289,7 +292,7 @@ class AddPower extends Component {
         isEditFlagForStateElectricity: true
       })
     }
-    if (data && data.isEditFlag && data.IsVendor) {
+    if (data && data.isEditFlag && data.IsVendor && false) {
       this.setState({
         isEditFlag: false,
         isLoader: true,
@@ -315,7 +318,7 @@ class AddPower extends Component {
         }
       })
 
-    } else if (data && data.isEditFlag && data.IsVendor === false) {
+    } else if (data && data.isEditFlag) {
       this.setState({
         isEditFlag: false,
         isLoader: true,
@@ -368,7 +371,15 @@ class AddPower extends Component {
               StateName: Data.StateName !== undefined ? { label: Data.StateName, value: Data.StateId } : [],
               effectiveDate: DayTime(Data.EffectiveDate),
               powerGrid: tempArray,
+              isDetailEntry: Data.IsDetailedForm,
+              costingTypeId: Data.CostingTypeId,
+              client: { label: `${Data.CustomerName} (${Data.CustomerCode})`, value: Data.CustomerId }
             }, () => this.setState({ isLoader: false }))
+
+            if (!Data.IsDetailedForm) {
+              this.props.change('NetPowerCostPerUnit', Data.NetPowerCostPerUnit)
+            }
+
           }, 200)
         }
       })
@@ -388,11 +399,30 @@ class AddPower extends Component {
   * @method onPressVendor
   * @description Used for Vendor checked
   */
-  onPressVendor = () => {
-    this.setState({
-      IsVendor: !this.state.IsVendor,
-      vendorName: [],
+  onPressVendor = (costingHeadFlag) => {
+    const fieldsToClear = [
+      'plant',
+      'clientName',
+      'DestinationSupplierId',
+      'Fuel',
+      'CityId',
+      'UnitOfMeasurementId',
+      'CountryId',
+      'StateId',
+      'Rate',
+      'EffectiveDate',
+
+    ];
+    fieldsToClear.forEach(fieldName => {
+      this.props.dispatch(clearFields('AddFuel', false, false, fieldName));
     });
+    this.setState({
+      vendorName: [],
+      costingTypeId: costingHeadFlag
+    });
+    if (costingHeadFlag === CBCTypeId) {
+      // this.props.getClientSelectList(() => { })
+    }
   }
 
   /**
@@ -419,7 +449,7 @@ class AddPower extends Component {
   async closeVendorDrawer(e = '', formData = {}, type) {
     if (type === 'submit') {
       this.setState({ isOpenVendor: false })
-      const res = await getVendorWithVendorCodeSelectList(this.state.vendorName)
+      const res = await getVendorNameByVendorSelectList(VBC_VENDOR_TYPE, this.state.vendorName)
       let vendorDataAPI = res?.data?.SelectList
       reactLocalStorage?.setObject('vendorData', vendorDataAPI)
       if (Object.keys(formData).length > 0) {
@@ -464,6 +494,12 @@ class AddPower extends Component {
     });
   };
 
+  onNetCostChange = (e) => {
+    if (e.target.value) {
+      this.setState({ DropdownChanged: false })
+    }
+  }
+
   /**
   * @method handleSource
   * @description called
@@ -493,16 +529,17 @@ class AddPower extends Component {
   handleUOM = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
       this.setState({ UOM: newValue, }, () => {
-        const { StateName, UOM } = this.state;
+        const { StateName, UOM, effectiveDate, client, selectedPlants, vendorName } = this.state;
 
         if (StateName.length === 0) {
           Toaster.warning("Please select state first.")
           return false
         }
-        let data = { StateID: StateName.value, UOMID: UOM.value }
+
+        let data = { StateID: StateName.value, UOMID: UOM.value, plantId: selectedPlants[0].Value, vendorId: vendorName.value, customerId: client.value, effectiveDate: DayTime(effectiveDate).format('DD/MM/YYYY') }
         this.props.getDieselRateByStateAndUOM(data, (res) => {
-          let DynamicData = res.data.DynamicData;
-          this.props.change('CostPerUnitOfMeasurement', DynamicData.FuelRate)
+          let DynamicData = res?.data?.DynamicData;
+          this.props.change('CostPerUnitOfMeasurement', DynamicData?.FuelRate)
         })
       })
     } else {
@@ -927,7 +964,7 @@ class AddPower extends Component {
         isEditIndex: true,
         isEditSEBIndex: false,
         source: { label: tempData.SourcePowerType, value: tempData.SourcePowerType },
-        UOM: (UOMObj && UOMObj !== undefined && tempData.SourcePowerType === GENERATOR_DIESEL) ? { label: UOMObj.Text, value: UOMObj.Value } : [],
+        UOM: (UOMObj && UOMObj !== undefined && tempData.SourcePowerType === GENERATOR_DIESEL) ? { label: UOMObj.Display, value: UOMObj.Value } : [],
       }, () => {
         this.props.change('AssetCost', tempData.AssetCost)
         this.props.change('AnnualCost', tempData.AnnualCost)
@@ -1005,7 +1042,7 @@ class AddPower extends Component {
   * @description Used to show type of listing
   */
   renderListing = (label) => {
-    const { powerTypeSelectList, UOMSelectList, plantSelectList, stateList } = this.props;
+    const { powerTypeSelectList, UOMSelectList, plantSelectList, stateList, clientSelectList } = this.props;
     const temp = [];
 
     if (label === 'state') {
@@ -1040,6 +1077,15 @@ class AddPower extends Component {
       powerTypeSelectList && powerTypeSelectList.map(item => {
         if (item.Value === '0') return false;
         if (this.findSourceType(item.Value, this.state.powerGrid)) return false;
+        temp.push({ label: item.Text, value: item.Value })
+        return null;
+      });
+      return temp;
+    }
+
+    if (label === 'ClientList') {
+      clientSelectList && clientSelectList.map(item => {
+        if (item.Value === '0') return false;
         temp.push({ label: item.Text, value: item.Value })
         return null;
       });
@@ -1088,7 +1134,7 @@ class AddPower extends Component {
   onSubmit = debounce((values) => {
     const { isEditFlag, PowerDetailID, IsVendor, VendorCode, selectedPlants, StateName, powerGrid,
       effectiveDate, vendorName, DataToChangeVendor, DataToChangeZ, DropdownChanged,
-      handleChange, DeleteChanged, AddChanged } = this.state;
+      handleChange, DeleteChanged, AddChanged, costingTypeId, isDetailEntry, client } = this.state;
 
     if (IsVendor && vendorName.length <= 0) {
       this.setState({ isVendorNameNotSelected: true, setDisable: false })      // IF VENDOR NAME IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY AND SAVE BUTTON WILL NOT BE DISABLED
@@ -1097,7 +1143,7 @@ class AddPower extends Component {
     const NetPowerCostPerUnit = powerGrid && powerGrid.reduce((accummlator, el) => {
       return accummlator + checkForNull(el.CostPerUnit * el.PowerContributionPercentage / 100);
     }, 0)
-    if (!IsVendor && checkForNull(NetPowerCostPerUnit) === 0) {
+    if (!IsVendor && checkForNull(NetPowerCostPerUnit) === 0 && isDetailEntry) {
       Toaster.warning('Net Contribution value should not be 0.')
       return false
     }
@@ -1109,7 +1155,7 @@ class AddPower extends Component {
     let selfGridDataArray = powerGrid && powerGrid.filter(el => el.SourcePowerType !== 'SEB')
 
     if (isEditFlag) {
-      if (IsVendor) {
+      if (IsVendor && false) {
         if (DataToChangeVendor.NetPowerCostPerUnit === values.NetPowerCostPerUnit) {
           this.cancel('cancel')
           return false
@@ -1121,7 +1167,7 @@ class AddPower extends Component {
           VendorName: vendorName.label,
           VendorCode: VendorCode,
           NetPowerCostPerUnit: values.NetPowerCostPerUnit,
-          IsVendor: IsVendor,
+          IsVendor: costingTypeId === VBCTypeId,
           IsActive: true,
           CreatedDate: '',
           LoggedInUserId: loggedInUserId(),
@@ -1158,20 +1204,28 @@ class AddPower extends Component {
           sebGrid.AvgUnitConsumptionPerMonth === values.AvgUnitConsumptionPerMonth && sebGrid.MaxDemandChargesKW === values.MaxDemandChargesKW &&
           sebGrid.MeterRentAndOtherChargesPerAnnum === values.MeterRentAndOtherChargesPerAnnum && sebGrid.DutyChargesAndFCA === values.DutyChargesAndFCA
           && sebGrid.PowerContributaionPersentage === values.SEBPowerContributaion)) && addRow === 0 && count === selfGridDataArray.length && handleChange && DeleteChanged) {
-          this.cancel('cancel')
-          return false
+
+          if ((!isDetailEntry && DropdownChanged) || (isDetailEntry)) {
+
+            this.cancel('cancel')
+            return false
+          }
         }
 
         this.setState({ setDisable: true })
         let requestData = {
           PowerId: PowerDetailID,
           PlantId: plantArray && plantArray[0]?.PlantId,
-          IsVendor: IsVendor,
+          IsVendor: costingTypeId === VBCTypeId,
+          CostingTypeId: costingTypeId,
+          IsDetailedForm: isDetailEntry,
+          CustomerId: client.value,
+          VendorId: vendorName.value,
           Plants: plantArray,
           StateId: StateName.value,
           StateName: StateName.label,
           IsActive: true,
-          NetPowerCostPerUnit: NetPowerCostPerUnit,
+          NetPowerCostPerUnit: isDetailEntry ? NetPowerCostPerUnit : this.props.fieldsObj.NetPowerCostPerUnit,
           VendorPlant: [],
           EffectiveDate: effectiveDate,
           SEBChargesDetails: [
@@ -1205,13 +1259,14 @@ class AddPower extends Component {
       }
 
     } else {
-      if (IsVendor) {
+      if (IsVendor && false) {
 
         this.setState({ setDisable: true })
         const vendorPowerData = {
           VendorId: vendorName.value,
+          CostingTypeId: costingTypeId,
           NetPowerCostPerUnit: values.NetPowerCostPerUnit,
-          IsVendor: IsVendor,
+          IsVendor: costingTypeId === VBCTypeId,
           LoggedInUserId: loggedInUserId(),
         }
         this.props.createVendorPowerDetail(vendorPowerData, (res) => {
@@ -1226,11 +1281,14 @@ class AddPower extends Component {
 
         this.setState({ setDisable: true })
         const formData = {
-          IsVendor: IsVendor,
+          CostingTypeId: costingTypeId,
+          IsDetailedForm: isDetailEntry,
+          CustomerId: client.value,
+          VendorId: vendorName.value,
           PlantId: plantArray && plantArray[0]?.PlantId,
           Plants: plantArray,
           StateId: StateName.value,
-          NetPowerCostPerUnit: NetPowerCostPerUnit,
+          NetPowerCostPerUnit: isDetailEntry ? NetPowerCostPerUnit : this.props.fieldsObj.NetPowerCostPerUnit,
           VendorPlant: [],
           EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
           SEBChargesDetails: [
@@ -1271,6 +1329,19 @@ class AddPower extends Component {
     }
   };
 
+  isDetailEntryChange = () => {
+    this.setState({ isDetailEntry: !this.state.isDetailEntry })
+
+  }
+
+  handleClient = (newValue, actionMeta) => {
+    if (newValue && newValue !== '') {
+      this.setState({ client: newValue });
+    } else {
+      this.setState({ client: [] })
+    }
+  };
+
   /**
   * @method render
   * @description Renders the component
@@ -1278,7 +1349,7 @@ class AddPower extends Component {
   render() {
     const { handleSubmit, initialConfiguration } = this.props;
     const { isEditFlag, source, isOpenVendor, isCostPerUnitConfigurable, isEditFlagForStateElectricity,
-      checkPowerContribution, netContributionValue, isViewMode, setDisable } = this.state;
+      checkPowerContribution, netContributionValue, isViewMode, setDisable, costingTypeId, isDetailEntry } = this.state;
     const filterList = async (inputValue) => {
       const { vendorFilterList } = this.state
       if (inputValue && typeof inputValue === 'string' && inputValue.includes(' ')) {
@@ -1287,7 +1358,7 @@ class AddPower extends Component {
       const resultInput = inputValue.slice(0, searchCount)
       if (inputValue?.length >= searchCount && vendorFilterList !== resultInput) {
         let res
-        res = await getVendorWithVendorCodeSelectList(resultInput)
+        res = await getVendorNameByVendorSelectList(VBC_VENDOR_TYPE, resultInput)
         this.setState({ vendorFilterList: resultInput })
         let vendorDataAPI = res?.data?.SelectList
         if (inputValue) {
@@ -1331,84 +1402,233 @@ class AddPower extends Component {
                   >
                     <div className="add-min-height">
                       <Row>
-                        <Col md="4" className="switch mb15">
-                          <label className="switch-level">
-                            <div className={'left-title'}>Zero Based</div>
-                            <Switch
-                              onChange={this.onPressVendor}
-                              checked={this.state.IsVendor}
-                              id="normal-switch"
+
+                        <Col md="12">
+                          <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
+                            <input
+                              type="radio"
+                              name="costingHead"
+                              checked={
+                                costingTypeId === ZBCTypeId ? true : false
+                              }
+                              onClick={() =>
+                                this.onPressVendor(ZBCTypeId)
+                              }
                               disabled={isEditFlag ? true : false}
-                              background="#4DC771"
-                              onColor="#4DC771"
-                              onHandleColor="#ffffff"
-                              offColor="#4DC771"
-                              uncheckedIcon={false}
-                              checkedIcon={false}
-                              height={20}
-                              width={46}
+                            />{" "}
+                            <span>Zero Based</span>
+                          </Label>
+                          <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
+                            <input
+                              type="radio"
+                              name="costingHead"
+                              checked={
+                                costingTypeId === VBCTypeId ? true : false
+                              }
+                              onClick={() =>
+                                this.onPressVendor(VBCTypeId)
+                              }
+                              disabled={isEditFlag ? true : false}
+                            />{" "}
+                            <span>Vendor Based</span>
+                          </Label>
+                          {<Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 pt-0 radio-box"} check>
+                            <input
+                              type="radio"
+                              name="costingHead"
+                              checked={
+                                costingTypeId === CBCTypeId ? true : false
+                              }
+                              onClick={() =>
+                                this.onPressVendor(CBCTypeId)
+                              }
+                              disabled={isEditFlag ? true : false}
+                            />{" "}
+                            <span>Customer Based</span>
+                          </Label>}
+                        </Col>
+                      </Row>
+
+
+                      <Row>
+                        <Col md="12" className="filter-block">
+                          <div className=" mb-2">
+                            <h5>{'Power For:'}</h5>
+                          </div>
+                        </Col>
+                        {<Col md="3">
+                          <div className="d-flex justify-space-between align-items-center inputwith-icon">
+                            <div className="fullinput-icon">
+                              <Field
+                                name="state"
+                                type="text"
+                                label="State"
+                                component={searchableSelect}
+                                placeholder={isEditFlag ? '-' : 'Select'}
+                                options={this.renderListing('state')}
+                                validate={(this.state.StateName == null || this.state.StateName.length === 0) ? [required] : []}
+                                required={true}
+                                handleChangeDescription={this.handleState}
+                                valueDescription={this.state.StateName}
+                                disabled={isEditFlag ? true : false}
+                              />
+                            </div>
+                          </div>
+                        </Col>}
+
+
+                        {costingTypeId === VBCTypeId && <Col md="3">
+                          <label>{"Vendor (Code)"}<span className="asterisk-required">*</span></label>
+                          <div className="d-flex justify-space-between align-items-center async-select">
+                            <div className="fullinput-icon p-relative">
+                              {this.state.inputLoader && <LoaderCustom customClass={`input-loader`} />}
+                              <AsyncSelect
+                                name="vendorName"
+                                ref={this.myRef}
+                                key={this.state.updateAsyncDropdown}
+                                loadOptions={filterList}
+                                onChange={(e) => this.handleVendorName(e)}
+                                value={this.state.vendorName}
+                                noOptionsMessage={({ inputValue }) => inputValue.length < 3 ? MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN : "No results found"}
+                                isDisabled={isEditFlag ? true : false}
+                                onKeyDown={(onKeyDown) => {
+                                  if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
+                                }}
+                                onFocus={() => onFocus(this)}
+                              />
+                            </div>
+                            {!isEditFlag && (
+                              <div
+                                onClick={this.vendorToggler}
+                                className={"plus-icon-square  right"}
+                              ></div>
+                            )}
+                          </div>
+                          {((this.state.showErrorOnFocus && this.state.vendorName.length === 0) || this.state.isVendorNameNotSelected) && <div className='text-help mt-1'>This field is required.</div>}
+                        </Col>}
+
+
+                        {costingTypeId === CBCTypeId && (
+                          <Col md="3">
+                            <Field
+                              name="clientName"
+                              type="text"
+                              label={"Customer (Code)"}
+                              component={searchableSelect}
+                              placeholder={isEditFlag ? '-' : "Select"}
+                              options={this.renderListing("ClientList")}
+                              //onKeyUp={(e) => this.changeItemDesc(e)}
+                              validate={
+                                this.state.client == null ||
+                                  this.state.client.length === 0
+                                  ? [required]
+                                  : []
+                              }
+                              required={true}
+                              handleChangeDescription={this.handleClient}
+                              valueDescription={this.state.client}
+                              disabled={isEditFlag ? true : false}
                             />
-                            <div className={'right-title'}>Vendor Based</div>
+                          </Col>
+                        )}
+
+
+
+                        <Col md="3">
+                          <div className="d-flex justify-space-between align-items-center inputwith-icon">
+                            <div className="fullinput-icon">
+                              <Field
+                                label="Plant (Code)"
+                                name="Plant"
+                                title={showDataOnHover(this.state.selectedPlants)}
+                                placeholder="Select"
+                                selection={(this.state.selectedPlants == null || this.state.selectedPlants.length === 0) ? [] : this.state.selectedPlants}
+                                options={this.renderListing('plant')}
+                                selectionChanged={this.handlePlants}
+                                optionValue={option => option.Value}
+                                optionLabel={option => option.Text}
+                                component={renderMultiSelectField}
+                                validate={
+                                  this.state.selectedPlants == null || this.state.selectedPlants.length === 0 ? [required] : []}
+                                mendatory={true}
+                                required={true}
+                                className="multiselect-with-border"
+                                disabled={isEditFlag ? true : false}
+                              />
+                            </div>
+                          </div>
+                        </Col>
+
+                        <Col md="3">
+                          <div className="d-flex justify-space-between align-items-center inputwith-icon date-filed">
+                            <div className="fullinput-icon">
+                              <div className="form-group">
+                                <div className="inputbox date-section form-group">
+                                  <Field
+                                    label="Effective Date"
+                                    name="EffectiveDate"
+                                    onChange={this.handleEffectiveDateChange}
+                                    type="text"
+                                    validate={[required]}
+                                    autoComplete={'off'}
+                                    required={true}
+                                    changeHandler={(e) => { }}
+                                    component={renderDatePicker}
+                                    className="form-control"
+                                    disabled={(isEditFlag || isViewMode) ? true : false}
+                                    placeholder={isViewMode ? '-' : "Select Date"}
+                                    onFocus={() => onFocus(this, true)}
+                                  />
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </Col>
+
+                        {!isDetailEntry && < Col md="3">
+                          <div className="d-flex justify-space-between align-items-center inputwith-icon">
+                            <div className="fullinput-icon">
+                              <Field
+                                label={`Net Cost/Unit (INR)`}
+                                name={"NetPowerCostPerUnit"}
+                                type="text"
+                                placeholder={isViewMode ? '-' : 'Enter'}
+                                validate={[required, positiveAndDecimalNumber, maxLength10, decimalLengthFour, number]}
+                                component={renderTextInputField}
+                                onChange={this.onNetCostChange}
+                                required={true}
+                                className=""
+                                customClassName=" withBorder"
+                                disabled={isViewMode}
+                              />
+                            </div>
+                          </div>
+                        </Col>}
+
+                        <Col md="6" className={(costingTypeId === ZBCTypeId || isDetailEntry) ? "" : "mt30 pt-1"}>
+                          <label
+                            className={`custom-checkbox w-auto ${isDetailEntry ? 'mb-3' : ''}`}
+                            onChange={this.isDetailEntryChange}
+                          >
+                            Add More Details
+                            <input
+                              type="checkbox"
+                              checked={this.state.isDetailEntry}
+                              disabled={isViewMode || isEditFlag}
+                            />
+                            <span
+                              className=" before-box p-0"
+                              checked={this.state.isDetailEntry}
+                              onChange={this.isDetailEntryChange}
+                            />
                           </label>
                         </Col>
                       </Row>
 
-                      <Row>
-                        {this.state.IsVendor &&
-                          <>
-                            <Col md="3">
 
-                              <label>{"Vendor (Code)"}<span className="asterisk-required">*</span></label>
-                              <div className="d-flex justify-space-between align-items-center async-select">
-                                <div className="fullinput-icon p-relative">
-                                  {this.state.inputLoader && <LoaderCustom customClass={`input-loader`} />}
-                                  <AsyncSelect
-                                    name="vendorName"
-                                    ref={this.myRef}
-                                    key={this.state.updateAsyncDropdown}
-                                    loadOptions={filterList}
-                                    onChange={(e) => this.handleVendorName(e)}
-                                    value={this.state.vendorName}
-                                    noOptionsMessage={({ inputValue }) => inputValue.length < 3 ? MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN : "No results found"}
-                                    isDisabled={isEditFlag ? true : false}
-                                    onKeyDown={(onKeyDown) => {
-                                      if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
-                                    }}
-                                    onFocus={() => onFocus(this)}
-                                  />
-                                </div>
-                                {!isEditFlag && (
-                                  <div
-                                    onClick={this.vendorToggler}
-                                    className={"plus-icon-square  right"}
-                                  ></div>
-                                )}
-                              </div>
-                              {((this.state.showErrorOnFocus && this.state.vendorName.length === 0) || this.state.isVendorNameNotSelected) && <div className='text-help mt-1'>This field is required.</div>}
-                            </Col>
-                            <Col md="3">
-                              <div className="d-flex justify-space-between align-items-center inputwith-icon">
-                                <div className="fullinput-icon">
-                                  <Field
-                                    label={`Net Cost/Unit (INR)`}
-                                    name={"NetPowerCostPerUnit"}
-                                    type="text"
-                                    placeholder={isViewMode ? '-' : 'Enter'}
-                                    validate={[required, positiveAndDecimalNumber, maxLength10, decimalLengthFour, number]}
-                                    component={renderTextInputField}
-                                    required={true}
-                                    className=""
-                                    customClassName=" withBorder"
-                                    disabled={isViewMode}
-                                  />
-                                </div>
-                              </div>
-                            </Col>
-                          </>}
-                      </Row>
-
-                      {!this.state.IsVendor &&
+                      {isDetailEntry &&
                         <>
+                          {/* {check here @ashok} */}
                           <Row>
                             <Col md="12" className="filter-block">
                               <div className=" mb-2">
@@ -2031,17 +2251,19 @@ class AddPower extends Component {
               </div>
             </div>
           </div>
-        </div>
+        </div >
         {
           this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.CANCEL_MASTER_ALERT}`} />
         }
-        {isOpenVendor && <AddVendorDrawer
-          isOpen={isOpenVendor}
-          closeDrawer={this.closeVendorDrawer = this.closeVendorDrawer.bind(this)}
-          isEditFlag={false}
-          ID={''}
-          anchor={'right'}
-        />}
+        {
+          isOpenVendor && <AddVendorDrawer
+            isOpen={isOpenVendor}
+            closeDrawer={this.closeVendorDrawer = this.closeVendorDrawer.bind(this)}
+            isEditFlag={false}
+            ID={''}
+            anchor={'right'}
+          />
+        }
       </>
     );
   }
@@ -2053,17 +2275,18 @@ class AddPower extends Component {
 * @param {*} state
 */
 function mapStateToProps(state) {
-  const { comman, fuel, supplier, auth } = state;
+  const { comman, fuel, supplier, auth, client } = state;
   const fieldsObj = selector(state, 'MinDemandKWPerMonth', 'DemandChargesPerKW', 'AvgUnitConsumptionPerMonth',
     'UnitConsumptionPerAnnum', 'MaxDemandChargesKW', 'SEBCostPerUnit', 'MeterRentAndOtherChargesPerAnnum',
     'DutyChargesAndFCA', 'TotalUnitCharges', 'SEBPowerContributaion', 'AssetCost', 'AnnualCost',
     'CostPerUnitOfMeasurement', 'UnitGeneratedPerUnitOfFuel', 'UnitGeneratedPerAnnum', 'SelfGeneratedCostPerUnit',
-    'SelfPowerContribution');
+    'SelfPowerContribution', 'NetPowerCostPerUnit');
 
   const { powerTypeSelectList, UOMSelectList, filterPlantList, stateList } = comman;
   const { vendorWithVendorCodeSelectList } = supplier;
   const { plantSelectList, powerData } = fuel;
   const { initialConfiguration } = auth;
+  const { clientSelectList } = client;
   // 
   let initialValues = {};
   if (powerData && powerData.SEBChargesDetails && powerData.SEBChargesDetails.length > 0) {
@@ -2084,7 +2307,7 @@ function mapStateToProps(state) {
 
   return {
     vendorWithVendorCodeSelectList, powerTypeSelectList, UOMSelectList, filterPlantList,
-    plantSelectList, powerData, initialValues, fieldsObj, initialConfiguration, stateList
+    plantSelectList, powerData, initialValues, fieldsObj, initialConfiguration, stateList, clientSelectList
   }
 }
 
@@ -2105,11 +2328,11 @@ export default connect(mapStateToProps, {
   updateVendorPowerDetail,
   getPlantListByState,
   getDieselRateByStateAndUOM,
-  getVendorWithVendorCodeSelectList,
   getPowerDetailData,
   getVendorPowerDetailData,
   getAllCity,
-  fetchStateDataAPI
+  fetchStateDataAPI,
+  getClientSelectList,
 })(reduxForm({
   form: 'AddPower',
   enableReinitialize: true,

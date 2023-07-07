@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Field, reduxForm } from "redux-form";
+import { Field, reduxForm, clearFields } from "redux-form";
 import { Row, Col } from 'reactstrap';
 import { required, checkWhiteSpaces, alphaNumeric, acceptAllExceptSingleSpecialCharacter, maxLength20, maxLength80, maxLength85, maxLength512, checkSpacesInString, minLength3 } from "../../../helper/validation";
 import { getConfigurationKey, loggedInUserId } from "../../../helper/auth";
@@ -87,6 +87,7 @@ class AddIndivisualPart extends Component {
           })
           this.setState({ DataToCheck: Data })
           this.props.change("EffectiveDate", DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
+          this.props.change("SAPCode", Data.SAPCode ?? '')
           this.setState({ minEffectiveDate: Data.LatestEffectiveDate })
 
           setTimeout(() => {
@@ -133,8 +134,7 @@ class AddIndivisualPart extends Component {
           this.setState({ disablePartName: true, minEffectiveDate: finalData.EffectiveDate, TechnologySelected: { label: finalData.Technology, value: finalData.TechnologyId } })
         } else {
           this.props.change("Description", "")
-          this.props.change("PartName", "")
-          this.props.change("TechnologyId", '')
+          this.props.dispatch(clearFields('AddIndivisualPart', false, false, 'PartName'));
           this.setState({ disablePartName: false, minEffectiveDate: "", TechnologySelected: [] })
         }
       })
@@ -349,7 +349,7 @@ class AddIndivisualPart extends Component {
       if (DropdownChanged && String(DataToCheck.PartName) === String(values.PartName) && String(DataToCheck.Description) === String(values.Description) &&
         JSON.stringify(DataToCheck.GroupCodeList) === JSON.stringify(values.GroupCode) && String(DataToCheck.ECNNumber) === String(values.ECNNumber) &&
         String(DataToCheck.RevisionNumber) === String(values.RevisionNumber) && String(DataToCheck.DrawingNumber) === String(values.DrawingNumber)
-        && String(DataToCheck.Remark) === String(values.Remark) && !isGroupCodeChange && uploadAttachements) {
+        && String(DataToCheck.Remark) === String(values.Remark) && String(DataToCheck.SAPCode) === String(values.SAPCode) && !isGroupCodeChange && uploadAttachements) {
         this.cancel('submit')
         return false;
       }
@@ -366,8 +366,11 @@ class AddIndivisualPart extends Component {
         String(DataToCheck.RevisionNumber) !== String(values.RevisionNumber) || String(DataToCheck.DrawingNumber) !== String(values.DrawingNumber)
         || String(oldProductGroup) !== String(ProductGroup))) {
         // IF THERE ARE CHANGES ,THEN REVISION NO SHOULD BE CHANGED
-        if (String(DataToCheck.RevisionNumber).toLowerCase() === String(values.RevisionNumber).toLowerCase() || DayTime(DataToCheck.EffectiveDate).format('YYYY-MM-DD HH:mm:ss') === DayTime(this.state.effectiveDate).format('YYYY-MM-DD HH:mm:ss') || String(DataToCheck.ECNNumber).toLowerCase() === String(values.ECNNumber).toLowerCase()) {
-          Toaster.warning('Please edit Revision no, ECN no, and Effective date')
+        if (DayTime(DataToCheck.EffectiveDate).format('YYYY-MM-DD HH:mm:ss') === DayTime(this.state.effectiveDate).format('YYYY-MM-DD HH:mm:ss')) {
+          Toaster.warning('Please edit Revision no or ECN no, and Effective date')
+          return false
+        } else if ((DayTime(DataToCheck.EffectiveDate).format('YYYY-MM-DD HH:mm:ss') !== DayTime(this.state.effectiveDate).format('YYYY-MM-DD HH:mm:ss')) && (String(DataToCheck.RevisionNumber).toLowerCase() === String(values.RevisionNumber).toLowerCase() && String(DataToCheck.ECNNumber).toLowerCase() === String(values.ECNNumber).toLowerCase())) {
+          Toaster.warning('Please edit Revision no or ECN no, and Effective date')
           return false
         } else {
           isStructureChanges = true
@@ -388,6 +391,7 @@ class AddIndivisualPart extends Component {
         PartId: PartId,
         PartName: values.PartName,
         PartNumber: values.PartNumber,
+        SAPCode: values.SAPCode,
         Description: values.Description,
         ECNNumber: values.ECNNumber,
         RevisionNumber: values.RevisionNumber,
@@ -422,6 +426,7 @@ class AddIndivisualPart extends Component {
         Remark: values.Remark,
         PartNumber: values.PartNumber,
         PartName: values.PartName,
+        SAPCode: values.SAPCode,
         Description: values.Description,
         ECNNumber: values.ECNNumber,
         EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD'),
@@ -629,7 +634,21 @@ class AddIndivisualPart extends Component {
                               disabled={(isViewMode) || (!isEditFlag && this.state.disablePartName) || (isEditFlag && !((isEditFlag && this.state.IsTechnologyUpdateRequired) || (isEditFlag && this.state.isBomEditable)))}
                             />
                           </Col>
-
+                          {initialConfiguration?.IsSAPCodeRequired && <Col md="3">
+                            <Field
+                              label={`SAP Code`}
+                              name={"SAPCode"}
+                              type="text"
+                              placeholder={isEditFlag ? '-' : "Enter"}
+                              validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength20, checkSpacesInString]}
+                              component={renderText}
+                              required={true}
+                              onChange={() => { }}
+                              className=""
+                              customClassName={"withBorder"}
+                              disabled={(isViewMode || (isEditFlag && !this.state.isBomEditable)) ? true : false}
+                            />
+                          </Col>}
 
                           <Col md="3">
                             <div className="form-group">

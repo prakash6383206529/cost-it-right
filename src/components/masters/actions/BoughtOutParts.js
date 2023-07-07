@@ -32,9 +32,9 @@ import { reactLocalStorage } from 'reactjs-localstorage';
  * @method createBOPAPI
  * @description create baught out parts master
  */
-export function createBOPDomestic(data, callback) {
+export function createBOP(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.createBOPDomestic, data, config());
+        const request = axios.post(API.createBOP, data, config());
         request.then((response) => {
             if (response.data.Result) {
                 callback(response);
@@ -48,29 +48,10 @@ export function createBOPDomestic(data, callback) {
 }
 
 /**
- * @method createBOPImport
- * @description create BOP Import
- */
-export function createBOPImport(data, callback) {
-    return (dispatch) => {
-        const request = axios.post(API.createBOPImport, data, config());
-        request.then((response) => {
-            if (response.data.Result) {
-                callback(response);
-            }
-        }).catch((error) => {
-            dispatch({ type: API_FAILURE });
-            apiErrors(error);
-            callback(error);
-        });
-    };
-}
-
-/**
- * @method getBOPDomesticDataList
+ * @method getBOPDataList
  * @description get all BOP Domestic Data list.
  */
-export function getBOPDomesticDataList(data, skip, take, isPagination, obj, callback) {
+export function getBOPDataList(data, skip, take, isPagination, obj, isImport, callback) {
     return (dispatch) => {
         // dispatch({ type: API_REQUEST});
         if (isPagination === true) {
@@ -79,14 +60,14 @@ export function getBOPDomesticDataList(data, skip, take, isPagination, obj, call
                 payload: undefined
             })
         }
-        const queryParams = `bop_for=${data.bop_for}&NetCost=${obj.NetLandedCost !== undefined ? obj.NetLandedCost : ""}&ListFor=${data.ListFor ? data.ListFor : ''}&StatusId=${data.StatusId ? data.StatusId : ''}&DepartmentCode=${obj.DepartmentName !== undefined ? obj.DepartmentName : ""}&CustomerName=${obj.CustomerName !== undefined ? obj.CustomerName : ''}&FromDate=${(obj.dateArray && obj.dateArray.length > 1) ? obj.dateArray[0] : ""}&ToDate=${(obj.dateArray && obj.dateArray.length > 1) ? obj.dateArray[1] : ""}&IsCustomerDataShow=${reactLocalStorage.getObject('cbcCostingPermission') !== undefined ? reactLocalStorage.getObject('cbcCostingPermission') : false}&NumberOfPieces=${obj.NumberOfPieces ? obj.NumberOfPieces : ''}`
+        const queryParams = `bop_for=${data.bop_for}&NetCost=${obj.NetLandedCost !== undefined ? obj.NetLandedCost : ""}&ListFor=${data.ListFor ? data.ListFor : ''}&StatusId=${data.StatusId ? data.StatusId : ''}&DepartmentCode=${obj.DepartmentName !== undefined ? obj.DepartmentName : ""}&CustomerName=${obj.CustomerName !== undefined ? obj.CustomerName : ''}&FromDate=${(obj.dateArray && obj.dateArray.length > 1) ? obj.dateArray[0] : ""}&ToDate=${(obj.dateArray && obj.dateArray.length > 1) ? obj.dateArray[1] : ""}&IsCustomerDataShow=${reactLocalStorage.getObject('cbcCostingPermission') !== undefined ? reactLocalStorage.getObject('cbcCostingPermission') : false}&NumberOfPieces=${obj.NumberOfPieces ? obj.NumberOfPieces : ''}&IsBOPAssociated=${data?.IsBOPAssociated}`
         const queryParamsSecond = bopQueryParms(isPagination, skip, take, obj)
-        const request = axios.get(`${API.getBOPDomesticDataList}?${queryParams}&${queryParamsSecond}`, config());
+        const request = axios.get(`${API.getBOPDataList}?${queryParams}&${queryParamsSecond}`, config());
         request.then((response) => {
             if (response.data.Result || response.status === 204) {
                 if (isPagination === true) {
                     dispatch({
-                        type: GET_BOP_DOMESTIC_DATA_LIST,
+                        type: isImport ? GET_BOP_IMPORT_DATA_LIST : GET_BOP_DOMESTIC_DATA_LIST,
                         payload: response.status === 204 ? [] : response.data.DataList
                     })
                 } else {
@@ -112,7 +93,8 @@ export function getBOPDomesticDataList(data, skip, take, isPagination, obj, call
 export function getBOPImportDataList(data, skip, take, isPagination, obj, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        const queryParams = `bop_for=${data.bop_for}&Currency=${obj.Currency !== undefined ? obj.Currency : ""}&NetCostCurrency=${obj.NetLandedCost !== undefined ? obj.NetLandedCost : ""}&NetCost=${obj.NetLandedCostConversion !== undefined ? obj.NetLandedCostConversion : ""}&ListFor=${data.ListFor ? data.ListFor : ''}&StatusId=${data.StatusId ? data.StatusId : ''}&DepartmentCode=${obj.DepartmentCode !== undefined ? obj.DepartmentCode : ""}&CustomerName=${obj.CustomerName !== undefined ? obj.CustomerName : ''}&FromDate=${(obj.dateArray && obj.dateArray.length > 1) ? obj.dateArray[0] : ""}&ToDate=${(obj.dateArray && obj.dateArray.length > 1) ? obj.dateArray[1] : ""}&IsCustomerDataShow=${reactLocalStorage.getObject('cbcCostingPermission') !== undefined ? reactLocalStorage.getObject('cbcCostingPermission') : false}&IncoTerm=${obj.IncoTermDescriptionAndInfoTerm}&PaymentTerm=${obj.PaymentTermDescriptionAndPaymentTerm}&NumberOfPieces=${obj.NumberOfPieces ? obj.NumberOfPieces : ''}`
+        // check here @samrudhi
+        const queryParams = `Currency=${obj.Currency !== undefined ? obj.Currency : ""}&NetCostCurrency=${obj.NetLandedCost !== undefined ? obj.NetLandedCost : ""}&NetCost=${obj.NetLandedCostConversion !== undefined ? obj.NetLandedCostConversion : ""}&ListFor=${data.ListFor ? data.ListFor : ''}&StatusId=${data.StatusId ? data.StatusId : ''}&DepartmentCode=${obj.DepartmentCode !== undefined ? obj.DepartmentCode : ""}&CustomerName=${obj.CustomerName !== undefined ? obj.CustomerName : ''}&FromDate=${(obj.dateArray && obj.dateArray.length > 1) ? obj.dateArray[0] : ""}&ToDate=${(obj.dateArray && obj.dateArray.length > 1) ? obj.dateArray[1] : ""}&IsCustomerDataShow=${reactLocalStorage.getObject('cbcCostingPermission') !== undefined ? reactLocalStorage.getObject('cbcCostingPermission') : false}&IncoTerm=${obj.IncoTermDescriptionAndInfoTerm}&PaymentTerm=${obj.PaymentTermDescriptionAndPaymentTerm}`
         const queryParamsSecond = bopQueryParms(isPagination, skip, take, obj)
         const request = axios.get(`${API.getBOPImportDataList}?${queryParams}&${queryParamsSecond}`, config());
         request.then((response) => {
@@ -218,13 +200,13 @@ export function deleteBOP(Id, callback) {
 }
 
 /**
- * @method updateBOPDomestic
+ * @method updateBOP
  * @description update BOP Domestic
  */
-export function updateBOPDomestic(requestData, callback) {
+export function updateBOP(requestData, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.put(`${API.updateBOPDomestic}`, requestData, config())
+        axios.put(`${API.updateBOP}`, requestData, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -234,25 +216,6 @@ export function updateBOPDomestic(requestData, callback) {
             });
     };
 }
-
-/**
- * @method updateBOPImport
- * @description update BOP Import
- */
-export function updateBOPImport(requestData, callback) {
-    return (dispatch) => {
-        dispatch({ type: API_REQUEST });
-        axios.put(`${API.updateBOPImport}`, requestData, config())
-            .then((response) => {
-                callback(response);
-            }).catch((error) => {
-                apiErrors(error);
-                dispatch({ type: API_FAILURE });
-                callback(error);
-            });
-    };
-}
-
 
 /**
  * @method createBOPCategory
@@ -285,48 +248,6 @@ export function getBOPCategorySelectList(callback) {
             if (response.data.Result) {
                 dispatch({
                     type: GET_BOP_CATEGORY_SELECTLIST_SUCCESS,
-                    payload: response.data.SelectList,
-                });
-                callback(response);
-            }
-        }).catch((error) => {
-            dispatch({ type: API_FAILURE, });
-            apiErrors(error);
-        });
-    };
-}
-
-/**
- * @method getAllVendorSelectList
- * @description GET ALL VENDORS SELECTLIST
- */
-export function getAllVendorSelectList() {
-    return (dispatch) => {
-        const request = axios.get(API.getAllVendorSelectList, config());
-        request.then((response) => {
-            dispatch({
-                type: GET_ALL_VENDOR_SELECTLIST_SUCCESS,
-                payload: response.data.SelectList,
-            });
-        }).catch((error) => {
-            dispatch({ type: API_FAILURE });
-            apiErrors(error);
-        });
-    };
-}
-
-/**
-* @method getPlantSelectList
-* @description Used to get select list of Vendor's
-*/
-export function getPlantSelectList(callback) {
-    return (dispatch) => {
-        dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getPlantSelectList}`, config());
-        request.then((response) => {
-            if (response.data.Result) {
-                dispatch({
-                    type: GET_PLANT_SELECTLIST_SUCCESS,
                     payload: response.data.SelectList,
                 });
                 callback(response);
@@ -398,12 +319,12 @@ export function fileDeleteBOPDomestic(data, callback) {
 }
 
 /**
- * @method bulkUploadBOPDomesticZBC
+ * @method bulkUploadBOP
  * @description upload bulk BOP Domestic ZBC
  */
-export function bulkUploadBOPDomesticZBC(data, callback) {
+export function bulkUploadBOP(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.bulkUploadBOPDomesticZBC, data, config());
+        const request = axios.post(API.bulkUploadBOP, data, config());
         request.then((response) => {
             if (response.status === 200) {
                 callback(response);
@@ -415,6 +336,8 @@ export function bulkUploadBOPDomesticZBC(data, callback) {
         });
     };
 }
+
+// check here @samrudhi
 
 /**
  * @method bulkUploadBOPDomesticVBC
@@ -507,6 +430,7 @@ export function bulkUploadBOPImportCBC(data, callback) {
         });
     };
 }
+
 /**
  * @method getManageBOPSOBDataList
  * @description get all BOP SOB Data list.
@@ -606,62 +530,6 @@ export function updateBOPSOBVendors(requestData, callback) {
     };
 }
 
-
-
-/*
-@method getBOPApprovalList
-
-**/
-export function getBOPApprovalList(callback) {
-
-    return (dispatch) => {
-
-        dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getBOPApprovalList}?logged_in_user_id=${loggedInUserId()}&logged_in_user_level_id=${userDetails().LoggedInMasterLevelId}&masterId=2`, config());
-        request.then((response) => {
-            if (response.data.Result || response.status === 204) {
-                //
-                dispatch({
-                    type: GET_BOP_APPROVAL_LIST,
-                    payload: response.status === 204 ? [] : response.data.DataList
-                    // payload: JSON.data.DataList
-                })
-                callback(response);
-            }
-        }).catch((error) => {
-            dispatch({ type: API_FAILURE, });
-            callback(error);
-            apiErrors(error)
-        });
-    };
-}
-
-
-
-/**
- * @method masterApprovalRequestBySenderBop
- * @description When sending bop for approval for the first time
- * 
- */
-export function masterApprovalRequestBySenderBop(data, callback) {
-    return (dispatch) => {
-        const request = axios.post(API.masterSendToApproverBop, data, config())
-        request.then((response) => {
-            if (response.data.Result) {
-                callback(response)
-            } else {
-                dispatch({ type: API_FAILURE })
-                if (response.data.Message) {
-                    Toaster.error(response.data.Message)
-                }
-            }
-        }).catch((error) => {
-            callback(error)
-            dispatch({ type: API_FAILURE })
-            apiErrors(error)
-        })
-    }
-}
 /**
  * @method getIncoSelectList
  * @description Used to get Inco terms selectlist

@@ -62,7 +62,6 @@ function AddAssemblyProcess(props) {
     const tabData = RMCCTabData && RMCCTabData[0]
     const surfaceTabData = SurfaceTabData && SurfaceTabData[0]
     const overHeadAndProfitTabData = OverheadProfitTabData && OverheadProfitTabData[0]
-    const discountAndOtherTabData = DiscountCostData && DiscountCostData[0]
     const packageAndFreightTabData = PackageAndFreightTabData && PackageAndFreightTabData[0]
     const toolTabData = ToolTabData && ToolTabData[0]
 

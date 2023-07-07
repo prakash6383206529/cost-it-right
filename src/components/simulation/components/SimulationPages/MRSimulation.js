@@ -50,6 +50,7 @@ function MRSimulation(props) {
     const [noData, setNoData] = useState(false);
     const [showTooltip, setShowTooltip] = useState(false)
     const [basicRateviewTooltip, setBasicRateViewTooltip] = useState(false)
+    const [textFilterSearch, setTextFilterSearch] = useState('')
     const gridRef = useRef();
 
 
@@ -218,9 +219,11 @@ function MRSimulation(props) {
 
     const onFilterTextBoxChanged = (e) => {
         gridApi.setQuickFilter(e.target.value);
+        setTextFilterSearch(e?.target?.value)
     }
 
     const resetState = () => {
+        setTextFilterSearch('')
         gridApi?.setQuickFilter('');
         gridOptions?.columnApi?.resetColumnState();
         gridOptions?.api?.setFilterModel(null);
@@ -405,11 +408,11 @@ function MRSimulation(props) {
                                     <div className="ag-grid-wrapper height-width-wrapper">
                                         <div className="ag-grid-header d-flex align-items-center justify-content-between">
                                             <div className='d-flex align-items-center'>
-                                                <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
+                                                <input type="text" className="form-control table-search" id="filter-text-box" value={textFilterSearch} placeholder="Search " autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
                                                 <button type="button" className="user-btn float-right mr-2" title="Reset Grid" onClick={() => resetState()}>
                                                     <div className="refresh mr-0"></div>
                                                 </button>
-                                                <ExcelFile filename={'Impacted Master Data'} fileExtension={'.xls'} element={
+                                                <ExcelFile filename={`${props.lastRevision ? 'Last Revision Data' : 'Impacted Master Data'}`} fileExtension={'.xls'} element={
                                                     <button title="Download" type="button" className={'user-btn'} ><div className="download mr-0"></div></button>}>
                                                     {onBtExport()}
                                                 </ExcelFile>
@@ -458,7 +461,7 @@ function MRSimulation(props) {
                                                 {!isImpactedMaster && <div className={`d-flex align-items-center simulation-label-container`}>
                                                     <div className='d-flex pl-3'>
                                                         <label>Technology: </label>
-                                                        <p className='technology ml-1' title={list[0].Technologies}>{list[0].Technologies}</p>
+                                                        <p className='technology ml-1' title={list[0].Technology}>{list[0].Technology}</p>
                                                     </div>
                                                     {list[0].CostingTypeId !== CBCTypeId && <div className='d-flex pl-3'>
                                                         <label className='mr-1'>Vendor (Code):</label>
@@ -495,7 +498,7 @@ function MRSimulation(props) {
                                                 rowSelection={'multiple'}
                                                 onCellValueChanged={onCellValueChanged}
                                             >
-                                                {!isImpactedMaster && <AgGridColumn field="Technologies" editable='false' headerName="Technology" minWidth={190}></AgGridColumn>}
+                                                {!isImpactedMaster && <AgGridColumn field="Technology" editable='false' headerName="Technology" minWidth={190}></AgGridColumn>}
                                                 {costingAndPartNo && <AgGridColumn field="CostingNumber" editable='false' headerName="Costing No" minWidth={190}></AgGridColumn>}
                                                 {costingAndPartNo && <AgGridColumn field="PartNo" editable='false' headerName="Part No" minWidth={190}></AgGridColumn>}
                                                 <AgGridColumn field="MachineName" editable='false' headerName="Machine Name" minWidth={140}></AgGridColumn>
@@ -506,7 +509,7 @@ function MRSimulation(props) {
                                                 {
                                                     !isImpactedMaster &&
                                                     <>
-                                                        <AgGridColumn field="Plants" editable='false' headerName="Plant (Code)" minWidth={190} cellRenderer='plantFormatter'></AgGridColumn>
+                                                        <AgGridColumn field="Plant" editable='false' headerName="Plant (Code)" minWidth={190} cellRenderer='plantFormatter'></AgGridColumn>
 
                                                     </>
                                                 }
@@ -514,7 +517,7 @@ function MRSimulation(props) {
                                                     <AgGridColumn width={120} field="MachineRate" editable='false' headerName="Existing" cellRenderer='oldRateFormatter' colId="MachineRate"></AgGridColumn>
                                                     <AgGridColumn width={120} cellRenderer='newRateFormatter' editable={!isImpactedMaster} field="NewMachineRate" headerName="Revised" colId='NewMachineRate' headerComponent={'revisedBasicRateHeader'}></AgGridColumn>
                                                 </AgGridColumn>
-                                                <AgGridColumn field="EffectiveDate" headerName="Effective Date" editable='false' minWidth={190} cellRenderer='effectiveDateRenderer'></AgGridColumn>
+                                                <AgGridColumn field="EffectiveDate" headerName={props.isImpactedMaster ? "Current Process Effective date" : "Effective Date"} editable='false' minWidth={190} cellRenderer='effectiveDateRenderer'></AgGridColumn>
                                                 <AgGridColumn field="CostingId" hide={true}></AgGridColumn>
 
                                             </AgGridReact >}

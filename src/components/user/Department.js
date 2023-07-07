@@ -5,7 +5,7 @@ import { connect } from "react-redux";
 import { Loader } from "../common/Loader";
 import { required, checkWhiteSpaces, acceptAllExceptSingleSpecialCharacter, checkSpacesInString, excludeOnlySpecialCharacter, maxLength50, hashValidation, maxLength75 } from "../../helper/validation";
 import { focusOnError, renderText } from "../layout/FormInputs";
-import "./UserRegistration.scss";
+
 import { addDepartmentAPI, getDepartmentAPI, setEmptyDepartmentAPI, updateDepartmentAPI, addCompanyAPI, updateCompanyAPI } from "../../actions/auth/AuthActions";
 import { MESSAGES } from "../../config/message";
 import { Container, Row, Col } from 'reactstrap';

@@ -5,8 +5,8 @@ import AddRM from '../../Drawers/AddRM'
 import { costingInfoContext } from '../../CostingDetailStepTwo'
 import NoContentFound from '../../../../common/NoContentFound'
 import { useDispatch, useSelector } from 'react-redux'
-import { EMPTY_DATA } from '../../../../../config/constants'
-import { TextFieldHookForm, TextAreaHookForm } from '../../../../layout/HookFormInputs'
+import { CRMHeads, EMPTY_DATA } from '../../../../../config/constants'
+import { TextFieldHookForm, TextAreaHookForm, SearchableSelectHookForm } from '../../../../layout/HookFormInputs'
 import Toaster from '../../../../common/Toaster'
 import { calculateNetLandedCost, calculatePercentage, calculatePercentageValue, checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected, getConfigurationKey, isRMDivisorApplicable } from '../../../../../helper'
 import OpenWeightCalculator from '../../WeightCalculatorDrawer'
@@ -59,11 +59,14 @@ function RawMaterialCost(props) {
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   const { CostingEffectiveDate, ErrorObjRMCC } = useSelector(state => state.costing)
   const [showPopup, setShowPopup] = useState(false)
+  const [showPopupDelete, setShowPopupDelete] = useState(false)
   const [masterBatch, setMasterBatch] = useState(false)
   const [remarkError, setRemarkError] = useState(true)
   const [forgingInfoIcon, setForgingInfoIcon] = useState({})
   const [rmNameList, setRMNameList] = useState([])
   const [inputValue, setInputValue] = useState('');
+  const [deleteIndex, setDeleteIndex] = useState('');
+  const [isMultiCalculatorData, setIsMultiCalculatorData] = useState(false);
   const [dataFromAPI, setDataFromAPI] = useState([
     {
       "RawMaterialId": "c9132533-1e8a-40b0-bf3f-d6b616afdf5a",
@@ -175,7 +178,16 @@ function RawMaterialCost(props) {
         return setGridLength(0)
       case 'Plastic':
         return setGridLength(0)
+      case 'Ferrous Casting':
       case 'Rubber':
+        if (props.data && props.data[0]?.RawMaterialCalculatorId) {
+          setIsMultiCalculatorData(true)
+          let arr = [...gridData]
+          arr[0].WeightCalculationId = arr[0].RawMaterialCalculatorId
+          setGridData(arr)
+        } else {
+          setIsMultiCalculatorData(false)
+        }
         return setGridLength(3)
       case 'Forgining':
         return setGridLength(0)
@@ -183,6 +195,7 @@ function RawMaterialCost(props) {
         return setGridLength(0)
     }
   }, [])
+
 
   useEffect(() => {
     setRMNameList(_.map(dataFromAPI, 'RMName'))
@@ -196,6 +209,10 @@ function RawMaterialCost(props) {
         PartNumber: props.item.PartNumber,
       }
       if (!CostingViewMode && !IsLocked) {
+
+        if (gridData && (costData.TechnologyName === 'Rubber' || costData.TechnologyName === 'Ferrous Casting') && !isMultiCalculatorData) {
+          item.CostingPartDetails.RawMaterialCalculatorId = 0
+        }
 
         props.setRMCost(gridData, Params, item)
         if (JSON.stringify(gridData) !== JSON.stringify(props.data)) {
@@ -229,7 +246,7 @@ function RawMaterialCost(props) {
   const DrawerToggle = () => {
     if (CheckIsCostingDateSelected(CostingEffectiveDate)) return false;
 
-    if ((Object.keys(gridData).length > 0 && gridData[0].WeightCalculationId !== null && Number(costData?.TechnologyId) === Number(Ferrous_Casting))) {
+    if ((Object.keys(gridData).length > 0 && gridData[0].WeightCalculationId !== null && isMultiCalculatorData && (Number(costData?.TechnologyId) === Number(Ferrous_Casting) || Number(costData?.TechnologyId) === Number(RUBBER)))) {
       setShowPopup(true)
       setDrawerOpen(false)
     }
@@ -387,6 +404,13 @@ function RawMaterialCost(props) {
    * @description HIDE WEIGHT CALCULATOR DRAWER
    */
   const closeWeightDrawer = (e = '', weightData = {}, originalWeight = {}) => {
+
+    dispatch(setFerrousCalculatorReset(false))
+
+    if (String(e) === String('rubber') || String(e) === String('ferrous')) {
+      setIsMultiCalculatorData(true)
+    }
+
     setInputDiameter(weightData.Diameter)
     setWeight(weightData, originalWeight)
     setWeightDrawerOpen(false)
@@ -843,6 +867,7 @@ function RawMaterialCost(props) {
    * @description SET WEIGHT IN RM
    */
   const setWeight = (weightData, originalWeight) => {
+
     let tempArr = []
     let tempData = gridData[editIndex]
     let grossWeight
@@ -935,6 +960,36 @@ function RawMaterialCost(props) {
           })
         }, 500)
       }
+
+      if (Number(costData?.TechnologyId) === Number(RUBBER)) {
+        gridData && gridData.map((item, index) => {
+          item.FinishWeight = weightData.CostingRubberCalculationRawMaterials[index].FinishWeight ? weightData.CostingRubberCalculationRawMaterials[index].FinishWeight : 0
+          item.GrossWeight = weightData.CostingRubberCalculationRawMaterials[index].GrossWeight ? weightData.CostingRubberCalculationRawMaterials[index].GrossWeight : 0
+          item.NetLandedCost = index === 0 ? weightData.RawMaterialCost : 0
+          item.WeightCalculatorRequest = weightData
+          item.WeightCalculationId = weightData.WeightCalculationId
+          item.RawMaterialCalculatorId = weightData.WeightCalculationId
+          item.IsCalculatedEntry = true
+          item.IsCalculaterAvailable = true
+          item.CutOffRMC = CutOffRMC
+          item.ScrapRecoveryPercentage = RecoveryPercentage
+          item.ScrapWeight = weightData?.CostingRubberCalculationRawMaterials[index]?.ScrapWeight ? weightData?.CostingRubberCalculationRawMaterials[index]?.ScrapWeight : 0
+          item.Percentage = weightData.CostingRubberCalculationRawMaterials[index].Percentage
+          return item
+        })
+
+        setTimeout(() => {
+          setGridData(gridData)
+          gridData && gridData.map((item, index) => {
+            setValue(`${rmGridFields}.${index}.GrossWeight`, checkForDecimalAndNull((weightData.CostingRubberCalculationRawMaterials[index].GrossWeight), getConfigurationKey().NoOfDecimalForInputOutput))
+            setValue(`${rmGridFields}.${index}.FinishWeight`, checkForDecimalAndNull(weightData.CostingRubberCalculationRawMaterials[index].FinishWeight, getConfigurationKey().NoOfDecimalForInputOutput))
+            setValue(`${rmGridFields}.${index}.ScrapRecoveryPercentage`, checkForDecimalAndNull(RecoveryPercentage, getConfigurationKey().NoOfDecimalForInputOutput))
+            // setValue(`${rmGridFields}.${index}.NetRMCost`, checkForDecimalAndNull(NetRMCost, getConfigurationKey().NoOfDecimalForInputOutput))
+            setValue(`${rmGridFields}.${index}.ScrapWeight`, checkForDecimalAndNull((weightData?.CostingRubberCalculationRawMaterials[index]?.ScrapWeight), getConfigurationKey().NoOfDecimalForInputOutput))
+            return null
+          })
+        }, 500)
+      }
     }
   }
 
@@ -951,6 +1006,47 @@ function RawMaterialCost(props) {
       }
       return null;
     })
+  }
+
+
+  const onPopupConfirmDelete = () => {
+
+    dispatch(setFerrousCalculatorReset(true))
+    setIsMultiCalculatorData(false)
+    let tempList = [...gridData]
+    tempList && tempList.map((item, index) => {
+      item.NetLandedCost = ''
+      item.ScrapWeight = ''
+      item.WeightCalculationId = 0
+      item.RawMaterialCalculatorId = 0
+      item.FinishWeight = 0
+      item.GrossWeight = 0
+      item.ScrapWeight = 0
+      item.WeightCalculatorRequest = {}
+      setValue(`${rmGridFields}.${index}.GrossWeight`, '')     //COMMENT
+      setValue(`${rmGridFields}.${index}.FinishWeight`, '')
+      return item
+    })
+    setShowPopupDelete(false)
+    setGridData(tempList)
+
+    setTimeout(() => {
+      setConfirmPopup(true)
+      deleteItem(deleteIndex)
+    }, 200);
+
+  }
+
+  const deleteMultiple = (index) => {
+
+    if ((Object.keys(gridData).length > 0 && gridData[0].WeightCalculationId !== null && isMultiCalculatorData && (Number(costData?.TechnologyId) === Number(Ferrous_Casting) || Number(costData?.TechnologyId) === Number(RUBBER)))) {
+      setShowPopupDelete(true)
+      setDeleteIndex(index)
+    } else {
+      setDeleteIndex('')
+      setShowPopupDelete(false)
+      deleteItem(index)
+    }
   }
 
   const deleteItem = (index) => {
@@ -1003,6 +1099,17 @@ function RawMaterialCost(props) {
     }
     var button = document.getElementById(`popUpTrigger${index}`)
     button.click()
+  }
+
+  const onCRMHeadChange = (e, index) => {
+    let tempArr = []
+    let tempData = gridData[index]
+    tempData = {
+      ...tempData,
+      RawMaterialCRMHead: e?.label
+    }
+    tempArr = Object.assign([...gridData], { [index]: tempData })
+    setGridData(tempArr)
   }
 
   const onRemarkPopUpClose = (index) => {
@@ -1175,26 +1282,35 @@ function RawMaterialCost(props) {
     }
     return isShow;
   }
+
   const onPopupConfirm = () => {
     dispatch(setFerrousCalculatorReset(true))
+    setIsMultiCalculatorData(false)
     let tempList = [...gridData]
     tempList && tempList.map((item, index) => {
       item.NetLandedCost = ''
       item.ScrapWeight = ''
+      item.WeightCalculationId = 0
+      item.RawMaterialCalculatorId = 0
+      item.FinishWeight = 0
+      item.GrossWeight = 0
+      item.ScrapWeight = 0
+      item.WeightCalculatorRequest = {}
       setValue(`${rmGridFields}.${index}.GrossWeight`, '')     //COMMENT
       setValue(`${rmGridFields}.${index}.FinishWeight`, '')
       return item
     })
+    setShowPopup(false)
     setGridData(tempList)
     setTimeout(() => {
       setConfirmPopup(true)
       setDrawerOpen(true)
-      setShowPopup(false)
     }, 200);
-
   }
+
   const closePopUp = () => {
     setShowPopup(false)
+    setShowPopupDelete(false)
   }
 
   /**
@@ -1303,6 +1419,7 @@ function RawMaterialCost(props) {
                       <th className='scrap-weight'>Scrap Weight </th>
                       {/* //Add i here for MB+ */}
                       <th className='net-rm-cost'>{`Net RM Cost ${isRMDivisorApplicable(costData.TechnologyName) ? '/(' + RMDivisor + ')' : ''}`}  </th>
+                      {initialConfiguration.IsShowCRMHead && <th>{'CRM Head'}</th>}
                       <th style={{ textAlign: "right" }}>{`Action`}</th>
                     </tr>
                   </thead>
@@ -1347,7 +1464,7 @@ function RawMaterialCost(props) {
                                     handleGrossWeightChange(e?.target?.value, index)
                                   }}
                                   errors={errors && errors.rmGridFields && errors.rmGridFields[index] !== undefined ? errors.rmGridFields[index].GrossWeight : ''}
-                                  disabled={(CostingViewMode || IsLocked || item?.dataFromNFRAPI) ? true : false}
+                                  disabled={(CostingViewMode || IsLocked || isMultiCalculatorData || item?.dataFromNFRAPI) ? true : false}
                                 />
                               </div>
                             </td>
@@ -1372,7 +1489,7 @@ function RawMaterialCost(props) {
                                     handleFinishWeightChange(e?.target?.value, index)
                                   }}
                                   errors={errors && errors.rmGridFields && errors.rmGridFields[index] !== undefined ? errors.rmGridFields[index].FinishWeight : ''}
-                                  disabled={(CostingViewMode || IsLocked || (!initialConfiguration?.IsCopyCostingFinishAndGrossWeightEditable && item.IsRMCopied) || item?.dataFromNFRAPI) ? true : false}
+                                  disabled={(CostingViewMode || IsLocked || isMultiCalculatorData || item?.dataFromNFRAPI || (!initialConfiguration?.IsCopyCostingFinishAndGrossWeightEditable && item.IsRMCopied)) ? true : false}
                                 />
                               </div>
                             </td>
@@ -1421,13 +1538,34 @@ function RawMaterialCost(props) {
                                 {index === 0 && (item.RawMaterialCalculatorId !== '' && item?.RawMaterialCalculatorId > 0) && costData?.TechnologyId === Ferrous_Casting && <TooltipCustom id={`forging-tooltip${index}`} customClass={"mt-1 ml-2"} tooltipText={`This is RMC of all RM present in alloy.`} />}
                               </div>
                             </td>
+                            {initialConfiguration.IsShowCRMHead && <td>
+                              <SearchableSelectHookForm
+                                name={`crmHeadRm${index}`}
+                                type="text"
+                                label="CRM Head"
+                                errors={`${errors.crmHeadRm}${index}`}
+                                Controller={Controller}
+                                control={control}
+                                register={register}
+                                mandatory={false}
+                                rules={{
+                                  required: false,
+                                }}
+                                defaultValue={item.RawMaterialCRMHead ? { label: item.RawMaterialCRMHead, value: index } : ''}
+                                placeholder={'Select'}
+                                options={CRMHeads}
+                                customClassName="costing-selectable-dropdown"
+                                required={false}
+                                handleChange={(e) => { onCRMHeadChange(e, index) }}
+                                disabled={CostingViewMode}
+                              /></td>}
                             <td>
                               <div className='action-btn-wrapper'>
                                 {!CostingViewMode && !IsLocked && (item.IsRMCopied ? (initialConfiguration.IsCopyCostingFinishAndGrossWeightEditable ? true : false) : true) && !dataInNFRAPI && < button
                                   className="Delete "
                                   title='Delete'
                                   type={'button'}
-                                  onClick={() => deleteItem(index)}
+                                  onClick={() => (costData?.TechnologyId === Ferrous_Casting || costData?.TechnologyId === RUBBER) ? deleteMultiple(index) : deleteItem(index)}
                                 />}
                                 <Popup className='rm-popup' trigger={<button id={`popUpTrigger${index}`} title="Remark" className="Comment-box" type={'button'} />}
                                   position="top right">
@@ -1614,6 +1752,9 @@ function RawMaterialCost(props) {
 
             {
               showPopup && <PopupMsgWrapper isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`If you add New RM all the calculations will be reset`} />
+            }
+            {
+              showPopupDelete && <PopupMsgWrapper isOpen={showPopupDelete} closePopUp={closePopUp} confirmPopup={onPopupConfirmDelete} message={`If you delete RM all the calculations will be reset`} />
             }
           </form>
         </div>
