@@ -48,6 +48,7 @@ import {
   SET_OVERHEAD_PROFIT_ICC,
   SET_OTHER_COST,
   SET_REJECTED_COSTING_VIEW_DATA,
+  RESET_EXCHANGE_RATE_DATA
 } from '../../../config/constants'
 import { apiErrors } from '../../../helper/util'
 import { MESSAGES } from '../../../config/message'
@@ -2634,3 +2635,6 @@ export const setRejectedCostingViewData = (data) => (dispatch) => {
     payload: temp,
   })
 }
+export const resetExchangeRateData = () => ({
+  type: RESET_EXCHANGE_RATE_DATA,
+});
