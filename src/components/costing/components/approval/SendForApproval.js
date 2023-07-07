@@ -699,7 +699,7 @@ const SendForApproval = (props) => {
         open={props.isOpen}
       // onClose={(e) => toggleDrawer(e)}
       ><div className="container">
-          <div className={"drawer-wrapper drawer-md"}>
+          <div className={"drawer-wrapper layout-width-900px"}>
             <Row className="drawer-heading ">
               <Col>
                 <div className={"header-wrapper left"}>
