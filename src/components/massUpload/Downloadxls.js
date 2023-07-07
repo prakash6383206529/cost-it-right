@@ -139,7 +139,7 @@ class Downloadxls extends React.Component {
             case 'RM Import':
                 return this.returnExcelColumn(checkRM_Process_OperationConfigurable(RMImportZBC), RMImportZBCTempData);
             case 'Operation':
-                return this.returnExcelColumn((getConfigurationKey().IsShowDetailedBreakup ? ZBCOperation : ZBCOperationSmallForm), ZBCOperationTempData);
+                return this.returnExcelColumn((getConfigurationKey().IsShowDetailedBreakup ? ZBCOperation : checkLabourRateConfigure(ZBCOperationSmallForm)), ZBCOperationTempData);
             case 'Machine':
                 return this.returnExcelColumn(checkVendorPlantConfig(MachineZBC), MachineZBCTempData);
             case ZBCADDMORE:
@@ -178,7 +178,7 @@ class Downloadxls extends React.Component {
             case 'RM Import':
                 return this.returnExcelColumn(checkVendorPlantConfig(RMImportVBC), RMImportVBCTempData);
             case 'Operation':
-                return this.returnExcelColumn((getConfigurationKey().IsShowDetailedBreakup ? VBCOperation : VBCOperationSmallForm), VBCOperationTempData);
+                return this.returnExcelColumn((getConfigurationKey().IsShowDetailedBreakup ? VBCOperation : checkLabourRateConfigure(VBCOperationSmallForm)), VBCOperationTempData);
             case 'Machine':
                 return this.returnExcelColumn(checkVendorPlantConfig(MachineVBC), MachineVBCTempData);
             case 'Insert Domestic':
@@ -212,7 +212,7 @@ class Downloadxls extends React.Component {
             case 'RM Import':
                 return this.returnExcelColumn(checkVendorPlantConfig(RMImportCBC, CBCTypeId), RMImportCBCTempData);
             case 'Operation':
-                return this.returnExcelColumn((getConfigurationKey().IsShowDetailedBreakup ? CBCOperation : CBCOperationSmallForm), CBCOperationTempData);
+                return this.returnExcelColumn((getConfigurationKey().IsShowDetailedBreakup ? CBCOperation : checkLabourRateConfigure(CBCOperationSmallForm)), CBCOperationTempData);
             case 'Machine':
                 return this.returnExcelColumn(checkVendorPlantConfig(MachineCBC, CBCTypeId), MachineCBCTempData);
             case 'Insert Domestic':
