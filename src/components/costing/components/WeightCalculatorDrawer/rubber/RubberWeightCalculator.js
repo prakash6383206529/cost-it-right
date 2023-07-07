@@ -252,13 +252,13 @@ function RubberWeightCalculator(props) {
                 obj.WeightCalculationId = res.data.Identity
                 Toaster.success("Calculation saved successfully")
                 obj.RawMaterialCost = obj.NetRawMaterialCost
-                props.toggleDrawer('', obj)
+                props.toggleDrawer('rubber', obj)
             }
         }))
     }), 500);
 
     const onCancel = () => {
-        props.toggleDrawer('')
+        props.toggleDrawer('cancel')
     }
 
     const handleKeyDown = function (e) {
