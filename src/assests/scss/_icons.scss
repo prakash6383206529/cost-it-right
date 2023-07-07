@@ -73,6 +73,12 @@
     @include icons("../../images/Comment-box.svg", $borderColor: #cef2fb, $shadowColor: #0cbeeb);
 }
 
+.pushed-action-btn {
+    @include icons("../../images/pushed-sap.png", $borderColor: #cef2fb, $shadowColor: #0cbeeb);
+    @include extra-icon-styles;
+    border-radius: 3px
+}
+
 .pie-chart {
     @include icons("../../images/pie-chart.svg");
 }
