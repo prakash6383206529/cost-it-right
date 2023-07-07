@@ -697,7 +697,7 @@ function SimulationApprovalSummary(props) {
 
     const percentageFormatter = (props) => {
         const cell = props?.value;
-        return cell != null ? checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice) : ''
+        return cell != null ? checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice) : '-'
     }
 
     const viewAssembly = (cell, row, rowIndex) => {
@@ -1238,8 +1238,8 @@ function SimulationApprovalSummary(props) {
                                                                 {isMasterAssociatedWithCosting && <AgGridColumn width={150} field="ECNNumber" headerName='ECN No.' cellRenderer='ecnFormatter'></AgGridColumn>}
                                                                 {isMasterAssociatedWithCosting && <AgGridColumn width={150} field="RevisionNumber" headerName='Revision No.' cellRenderer='revisionFormatter'></AgGridColumn>}
                                                                 {costingList[0]?.CostingHeadId !== CBCTypeId && <AgGridColumn width={150} field="VendorName" headerName="Vendor (Code)"></AgGridColumn>}
-                                                                <AgGridColumn width={150} field="SANumber" headerName="SA Number"></AgGridColumn>
-                                                                <AgGridColumn width={150} field="LineNumber" headerName="Line Number"></AgGridColumn>
+                                                                {isMasterAssociatedWithCosting && <AgGridColumn width={150} field="SANumber" headerName="SA Number"></AgGridColumn>}
+                                                                {isMasterAssociatedWithCosting && <AgGridColumn width={150} field="LineNumber" headerName="Line Number"></AgGridColumn>}
                                                                 {costingList[0]?.CostingHeadId === CBCTypeId && <AgGridColumn width={150} field="CustomerName" headerName="Customer (Code)"></AgGridColumn>}
                                                                 {String(SimulationTechnologyId) !== EXCHNAGERATE && <AgGridColumn width={150} field="PlantName" headerName='Plant (Code)' cellRenderer={'plantFormatter'} ></AgGridColumn>}
                                                                 {isMasterAssociatedWithCosting && <AgGridColumn width={140} field="BudgetedPrice" headerName='Budgeted Price' cellRenderer='impactPerQuarterFormatter'></AgGridColumn>}
