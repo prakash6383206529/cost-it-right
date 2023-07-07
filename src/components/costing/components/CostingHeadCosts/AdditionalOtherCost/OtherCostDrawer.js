@@ -14,7 +14,7 @@ import { costingInfoContext, netHeadCostContext } from '../../CostingDetailStepT
 import _ from 'lodash'
 import Toaster from '../../../../common/Toaster';
 import { setOtherCostData } from '../../../actions/Costing';
-import OtherCostTable from './OtherCosttTable';
+import OtherCostTable from './OtherCostTable';
 
 function OtherCostDrawer(props) {
 
