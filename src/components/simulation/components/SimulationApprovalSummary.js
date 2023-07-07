@@ -1003,7 +1003,7 @@ function SimulationApprovalSummary(props) {
                 vendorCode: vendor?.split(')')[0],
                 materialNumber: item?.PartNo,
                 netPrice: item?.NewPOPrice,
-                plant: item?.PlantCode ? item?.PlantCode : '1511',
+                plant: item?.PlantCode ? item?.PlantCode : null,
                 currencyKey: INR,
                 basicUOM: 'NO',
                 purchasingOrg: item?.DepartmentCode,
