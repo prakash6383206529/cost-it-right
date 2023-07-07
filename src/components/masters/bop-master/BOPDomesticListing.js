@@ -686,7 +686,6 @@ class BOPDomesticListing extends Component {
                 }
             }
         }
-        console.log('this.props?.approvalStatus: ', this.props?.approvalStatus);
 
         return (
 
