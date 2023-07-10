@@ -256,6 +256,8 @@ function Simulation(props) {
         let templateArray
         if (!reactLocalStorage.getObject('cbcCostingPermission')) {
             templateArray = hideColumnFromExcel(data, 'CustomerName')
+        } else if (isMasterAssociatedWithCosting) {
+            templateArray = hideColumnFromExcel(data, 'Percentage')
         } else {
             templateArray = data
         }
@@ -1187,6 +1189,7 @@ function Simulation(props) {
                     closeDrawer={closeDrawer}
                     anchor={"right"}
                     master={master}
+                    isMasterAssociatedWithCosting={isMasterAssociatedWithCosting}
                 />
             }
         </div >
