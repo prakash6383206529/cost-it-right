@@ -247,7 +247,7 @@ class CostingSummaryBulkUpload extends Component {
                                     <AgGridColumn field="CorrectCostingCount" headerName="No. of Correct Row"></AgGridColumn>
                                     <AgGridColumn field="IncorrectCostingCount" headerName="No. of Incorrect Row"></AgGridColumn>
                                     <AgGridColumn field="OriginalFileName" headerName="File Name"></AgGridColumn>
-                                    <AgGridColumn minWidth="230" field="CostingBulkUploadFileId" headerName="Actions" cellRenderer='totalValueRenderer'></AgGridColumn>
+                                    <AgGridColumn minWidth="230" field="CostingBulkUploadFileId" cellClass="ag-grid-action-container" headerName="Actions" cellRenderer='totalValueRenderer'></AgGridColumn>
                                 </AgGridReact>
                                 {<PaginationWrapper gridApi={this.gridApi} setPage={this.onPageSizeChanged} />}
                             </div>

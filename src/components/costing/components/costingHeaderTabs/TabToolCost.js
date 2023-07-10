@@ -545,7 +545,7 @@ function TabToolCost(props) {
                               <AgGridColumn field="Life" headerName="Life"></AgGridColumn>
                               {/* NET TOOL COST */}
                               <AgGridColumn field="NetToolCost" headerName="Net Tool Cost" cellRenderer={'decimalFormatter'}></AgGridColumn>
-                              <AgGridColumn width={160} field="Life" headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                              <AgGridColumn width={160} field="Life" cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
                             </AgGridReact>
                             {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />}
                           </div>
