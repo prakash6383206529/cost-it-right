@@ -64,7 +64,7 @@ const OtherCostTable = (props) => {
                         </tr>
                     ) : (
                         <tr className='table-footer'>
-                            <td colSpan={4} className='text-right'>
+                            <td colSpan={initialConfiguration.IsShowCRMHead ? 4 : 3} className='text-right'>
                                 Total Other Cost:
                             </td>
                             <td colSpan={3}>
