@@ -30,7 +30,7 @@ import { rfqSaveBestCosting } from '../../../rfq/actions/rfq'
 
 const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
 const SendForApproval = (props) => {
-  const { isApprovalisting, selectedRows } = props
+  const { isApprovalisting, selectedRows, mandatoryRemark } = props
   const dispatch = useDispatch()
   const { register, handleSubmit, control, setValue, getValues, formState: { errors } } = useForm({
     mode: 'onChange',
@@ -1023,7 +1023,8 @@ const SendForApproval = (props) => {
                           Controller={Controller}
                           control={control}
                           register={register}
-                          mandatory={false}
+                          mandatory={mandatoryRemark ? true : false}
+                          rules={{ required: mandatoryRemark ? true : false }}
                           handleChange={() => { }}
                           defaultValue={""}
                           className=""
