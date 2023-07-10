@@ -1918,6 +1918,8 @@ export const VIEW_COSTING_DATA = {
   status: 'Status',
   rm: 'RM-Grade',
   rmRate: 'RM Rate',
+  castingWeight: 'Casting Weight',
+  meltingLoss: 'Melting Loss',
   scrapRate: 'Scrap Rate',
   gWeight: 'Gross Weight',
   fWeight: 'Finish Weight',
