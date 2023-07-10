@@ -327,7 +327,6 @@ function ApprovalSummary(props) {
   }
 
   const callPushAPI = debounce(() => {
-    const { quantity } = getPOPriceAfterDecimal(approvalData?.DecimalOption, dataSend.NewPOPrice ? dataSend.NewPOPrice : 0)
     let pushdata = {
       effectiveDate: dataSend[0].EffectiveDate ? DayTime(dataSend[0].EffectiveDate).format('YYYY-MM-DD') : '',
       vendorCode: vendorCodeForSap,
@@ -341,7 +340,6 @@ function ApprovalSummary(props) {
       purchasingGroup: '',
       purchasingOrg: dataSend[0].CompanyCode ? dataSend[0].CompanyCode : '',
       CostingId: approvalData.CostingId,
-      Quantity: quantity,
       DecimalOption: approvalData.DecimalOption,
       InfoToConditions: conditionInfo,
       TokenNumber: approvalData?.ApprovalNumber
