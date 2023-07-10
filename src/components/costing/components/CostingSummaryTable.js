@@ -1017,7 +1017,7 @@ const CostingSummaryTable = (props) => {
       item.otherDiscountApplicablity = Array.isArray(item?.CostingPartDetails?.DiscountCostDetails) && item?.CostingPartDetails?.DiscountCostDetails.length > 0 ? item?.CostingPartDetails?.DiscountCostDetails[0].ApplicabilityType : ''
       item.otherDiscountValuePercent = Array.isArray(item?.CostingPartDetails?.DiscountCostDetails) && item?.CostingPartDetails?.DiscountCostDetails.length > 0 ? item?.CostingPartDetails?.DiscountCostDetails[0].Value : ''
       item.otherDiscountCost = Array.isArray(item?.CostingPartDetails?.DiscountCostDetails) && item?.CostingPartDetails?.DiscountCostDetails.length > 0 ? item?.CostingPartDetails?.DiscountCostDetails[0].NetCost : ''
-      item.currencyTitle = item.currency && item.currency.currencyTitle
+      item.currencyTitle = item.currency && item?.currency?.currencyTitle
     })
 
     let masterDataArray = []
