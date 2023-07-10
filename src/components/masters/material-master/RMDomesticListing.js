@@ -917,6 +917,7 @@ function RMDomesticListing(props) {
                                         onRowSelected={onRowSelect}
                                         onFilterModified={onFloatingFilterChanged}
                                         suppressRowClickSelection={true}
+                                        enableBrowserTooltips={true}
                                     >
                                         <AgGridColumn cellClass="has-checkbox" field="CostingHead" headerName='Costing Head' cellRenderer={checkBoxRenderer}></AgGridColumn>
                                         <AgGridColumn field="TechnologyName" headerName='Technology'></AgGridColumn>
