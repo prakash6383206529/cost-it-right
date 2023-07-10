@@ -98,7 +98,7 @@ function TabDiscountOther(props) {
     // CostingViewMode CONDITION IS USED TO AVOID CALCULATION IN VIEWMODE
     if (CostingViewMode === false) {
       if (props.activeTab !== '6') {
-
+        // Basic Rate (INR) = Total Cost + Total Other Cost
         setValue('BasicRateINR', discountObj !== undefined && checkForDecimalAndNull((netPOPrice - netPOPrice * calculatePercentage(discountObj?.HundiOrDiscountPercentage) - (totalNpvCost + totalConditionCost)), initialConfiguration?.NoOfDecimalForPrice))
         setValue('NetPOPriceINR', discountObj !== undefined && checkForDecimalAndNull((netPOPrice - netPOPrice * calculatePercentage(discountObj?.HundiOrDiscountPercentage)), initialConfiguration?.NoOfDecimalForPrice))
         setValue('HundiOrDiscountPercentage', discountObj !== undefined && discountObj?.HundiOrDiscountPercentage !== null ? discountObj?.HundiOrDiscountPercentage : '')
@@ -1257,10 +1257,12 @@ function TabDiscountOther(props) {
                       />
                     </Col>
                     <Col md="3">
+                      <TooltipCustom disabledIcon={true} width="280px" id="basic-rate" tooltipText={"Basic Rate (INR) = (Total Cost + Total Other Cost) - Hundi/Discount Value"} />
                       <TextFieldHookForm
                         label="Basic Price (INR)"
                         name={'BasicRateINR'}
                         Controller={Controller}
+                        id="basic-rate"
                         control={control}
                         register={register}
                         mandatory={false}
@@ -1381,11 +1383,13 @@ function TabDiscountOther(props) {
                   />
                   }
                   <Row className="mt-2">
+                    <TooltipCustom disabledIcon={true} width="280px" id="net-po-price" tooltipText={"Net PO Price (INR) = Basic Rate (INR) + Total Costing Condition Cost + Total NPV Cost"} />
                     <Col md="3">
                       <TextFieldHookForm
                         label="Net PO Price (INR)"
                         name={'NetPOPriceINR'}
                         Controller={Controller}
+                        id="net-po-price"
                         control={control}
                         register={register}
                         mandatory={false}
