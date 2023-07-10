@@ -5414,6 +5414,7 @@ export const RM_IMPACT_DOWNLOAD_EXCEl = [
 export const BOP_IMPACT_DOWNLOAD_EXCEl = [
     { label: "BOP Part No", value: "BoughtOutPartNumber", },
     { label: "BOP Part Name", value: "BoughtOutPartName", },
+    { label: "Min Order Quantity", value: "Quantity", },
     { label: "Existing Basic Rate", value: "OldBOPRate", },
     { label: "Revised Basic Rate", value: "NewBOPRate", },
     { label: "Existing Net Cost", value: "OldNetBoughtOutPartCost", },
