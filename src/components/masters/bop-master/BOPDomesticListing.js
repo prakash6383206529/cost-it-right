@@ -854,6 +854,7 @@ class BOPDomesticListing extends Component {
                                     onRowSelected={onRowSelect}
                                     onFilterModified={this.onFloatingFilterChanged}
                                     suppressRowClickSelection={true}
+                                    enableBrowserTooltips={true}
                                 >
                                     <AgGridColumn field="CostingHead" headerName="Costing Head" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
                                     <AgGridColumn field="BoughtOutPartNumber" headerName="Insert Part No."></AgGridColumn>
