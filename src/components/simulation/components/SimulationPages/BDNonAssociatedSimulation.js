@@ -64,7 +64,9 @@ function BDNonAssociatedSimulation(props) {
 
     useEffect(() => {
         list && list?.map(item => {
-            item.NewBasicRate = item.BasicRate
+            if (!isbulkUpload) {
+                item.NewBasicRate = item.BasicRate
+            }
             item.OldNetLandedCost = item.NetLandedCost
             item.NewNetLandedCost = item.NetLandedCost
         })

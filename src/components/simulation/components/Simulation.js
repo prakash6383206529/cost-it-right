@@ -565,7 +565,7 @@ function Simulation(props) {
     const closeDrawer = (e = '', tableData = {}, correctRow = 0, NoOfRowsWithoutChange = 0, isSaveButtonClicked) => {
         setShowDrawer(false)
         if (Object.keys(tableData).length > 0 && isSaveButtonClicked === true) {
-            setTableData(tableData)
+            setTableData([...tableData])
             setRowCount({ correctRow: correctRow, NoOfRowsWithoutChange: NoOfRowsWithoutChange })
             setShowEditTable(true)
             setIsBulkUpload(true)
