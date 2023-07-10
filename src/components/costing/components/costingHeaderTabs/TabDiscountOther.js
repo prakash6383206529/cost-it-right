@@ -1275,7 +1275,7 @@ function TabDiscountOther(props) {
                       />
                     </Col>
                     <Col md="3">
-                      <TooltipCustom disabledIcon={true} width="280px" id="basic-rate" tooltipText={"Basic Rate (INR) = (Total Cost + Total Other Cost) - Hundi/Discount Value"} />
+                      <TooltipCustom disabledIcon={true} width="280px" id="basic-rate" tooltipText={"Basic Rate = (Total Cost + Total Other Cost) - Hundi/Discount Value"} />
                       <TextFieldHookForm
                         label="Basic Price (INR)"
                         name={'BasicRateINR'}
@@ -1437,7 +1437,7 @@ function TabDiscountOther(props) {
                   />
                   }
                   <Row className="mt-2">
-                    <TooltipCustom disabledIcon={true} width="280px" id="net-po-price" tooltipText={"Net PO Price (INR) = Basic Rate (INR) + Total Costing Condition Cost + Total NPV Cost"} />
+                    <TooltipCustom disabledIcon={true} width="280px" id="net-po-price" tooltipText={"Net PO Price = Basic Rate + Total Costing Condition Cost + Total NPV Cost"} />
                     <Col md="3">
                       <TextFieldHookForm
                         label="Net PO Price (INR)"
