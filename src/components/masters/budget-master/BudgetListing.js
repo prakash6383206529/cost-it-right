@@ -635,6 +635,7 @@ function BudgetListing(props) {
                                     onFilterModified={onFloatingFilterChanged}
                                     onRowSelected={onRowSelect}
                                     suppressRowClickSelection={true}
+                                    enableBrowserTooltips={true}
                                 >
                                     <AgGridColumn field="CostingHead" headerName="Costing Head" cellRenderer={checkBoxRenderer}></AgGridColumn>
                                     <AgGridColumn field="FinancialYear" headerName="Financial Year"></AgGridColumn>
