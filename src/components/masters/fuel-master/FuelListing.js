@@ -247,7 +247,7 @@ class FuelListing extends Component {
 
     onGridReady = (params) => {
         this.gridApi = params.api;
-        this.gridApi.sizeColumnsToFit();
+        window.screen.width >= 1600 && params.api.sizeColumnsToFit();
         this.setState({ gridApi: params.api, gridColumnApi: params.columnApi })
         params.api.paginationGoToPage(0);
     };
