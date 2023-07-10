@@ -7,7 +7,6 @@ import {
   logoutUserAPI, getMenuByUser, getModuleSelectList, getPermissionByUser, getMenu,
   getTopAndLeftMenuData
 } from '../../actions/auth/AuthActions';
-import "./NavBar.scss";
 import { Loader } from "../common/Loader";
 import masterImage from '../../assests/images/list.svg'
 import masterActive from '../../assests/images/masters-active.svg'
@@ -222,6 +221,8 @@ class SideBar extends Component {
         return this.renderUser(module, LandingPageURL);
       case "Audit":
         return this.renderAudit(module, LandingPageURL);
+      case "NFR":
+        return this.renderNFR(module, LandingPageURL);
       case "RFQ":
         if (getConfigurationKey().IsRFQConfigured) {
           return this.renderRFQ(module, LandingPageURL);

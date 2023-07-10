@@ -3,7 +3,7 @@ import { Container, Row, Col, } from 'reactstrap';
 import Drawer from '@material-ui/core/Drawer';
 import { useDispatch } from 'react-redux'
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
-import { EMPTY_DATA } from '../../../config/constants'
+import { EMPTY_DATA, MASTER_MOVEMENT_REPORT } from '../../../config/constants'
 import { Costmovementgraph } from '../../dashboard/CostMovementGraph'
 import { primaryColor, secondryColor } from '../../dashboard/ChartsDashboard'
 import { Line } from 'react-chartjs-2';
@@ -13,7 +13,12 @@ import RenderGraphList from '../../common/RenderGraphList';
 import HeaderTitle from '../../common/HeaderTitle';
 import { PaginationWrapper } from '../../common/commonPagination';
 import { getConfigurationKey, getCurrencySymbol } from '../../../helper';
-
+import ReactExport from 'react-export-excel';
+import { BOP_DOMESTIC_TEMPLATE, BOP_IMPORT_TEMPLATE, MACHINE_TEMPLATE, OPERATION_TEMPLATE, RM_DOMESTIC_TEMPLATE, RM_IMPORT_TEMPLATE } from '../../report/ExcelTemplate';
+const ExcelFile = ReactExport.ExcelFile;
+const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
+const gridOptions = {};
 
 function AnalyticsDrawer(props) {
 
@@ -36,10 +41,10 @@ function AnalyticsDrawer(props) {
     const [dateRangeArray, setDateRangeArray] = useState([])
     const [netLandedCostArray, setNetLandedCostArray] = useState([])
     const [gridApi, setGridApi] = useState(null);
+    const [gridColumnApi, setgridColumnApi] = useState(null);
 
 
     useEffect(() => {
-
         setUomValue(props.rowData?.UOM)
         let obj = {}
         obj.ModeId = props.ModeId
@@ -76,8 +81,6 @@ function AnalyticsDrawer(props) {
 
     }, [])
 
-
-    const gridOptions = {};
 
     const valueChanged = (event) => {
 
@@ -149,10 +152,11 @@ function AnalyticsDrawer(props) {
 
 
     const effectiveDateFormatter = (props) => {
-        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
-
-
+        let cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        if (cellValue?.includes('T')) {
+            cellValue = DayTime(cellValue).format('DD/MM/YYYY')
+        }
+        return (!cellValue ? '-' : cellValue)
     }
     const onPageSizeChanged = (newPageSize) => {
         gridApi.paginationSetPageSize(Number(newPageSize));
@@ -164,10 +168,10 @@ function AnalyticsDrawer(props) {
     };
 
     const onGridReady = (params) => {
-        // this.setState({ gridApi: params.api, gridColumnApi: params.columnApi })
         params.api.paginationGoToPage(0);
         setGridApi(params.api)
         params.api.sizeColumnsToFit();
+        setgridColumnApi(params.columnApi);
     };
 
     const hyphenFormatter = (props) => {
@@ -209,7 +213,37 @@ function AnalyticsDrawer(props) {
         }
 
     }
+    const renderColumn = () => {
+        switch (ModeId) {
+            case 1:
+                return returnExcelColumn(importEntry ? RM_IMPORT_TEMPLATE : RM_DOMESTIC_TEMPLATE, gridData)
+            case 2:
+                return returnExcelColumn(importEntry ? BOP_IMPORT_TEMPLATE : BOP_DOMESTIC_TEMPLATE, gridData)
+            case 3:
+                return returnExcelColumn(OPERATION_TEMPLATE, gridData)
+            case 4:
+                return returnExcelColumn(MACHINE_TEMPLATE, gridData)
+            default:
+                return null
+        }
+    }
 
+    const returnExcelColumn = (data = [], TempData) => {
+        let temp = []
+        temp = TempData && TempData.map((item) => {
+            if (item.EffectiveDate?.includes('T')) {
+                item.EffectiveDate = DayTime(item.EffectiveDate).format('DD/MM/YYYY')
+            }
+            return item
+        })
+        return (<ExcelSheet data={temp} name={MASTER_MOVEMENT_REPORT}>
+            {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} />)}
+        </ExcelSheet>);
+    }
+    const resetState = () => {
+        gridOptions?.columnApi?.resetColumnState();
+        gridOptions?.api?.setFilterModel(null);
+    }
     return (
         <div>
             {<>
@@ -240,7 +274,15 @@ function AnalyticsDrawer(props) {
                                     <HeaderTitle customClass="mb-0"
                                         title={ModeId === 1 ? `RM Code : ${rowData?.RawMaterialCode} ` : (ModeId === 2 ? `BOP No. : ${rowData?.BoughtOutPartNumber}` : ModeId === 3 ? `Operation Code : ${rowData?.OperationCode} ` : `Machine No. : ${rowData?.MachineNumber}`)}
                                     />
-                                    <RenderGraphList valueChanged={valueChanged} />
+                                    <div className='d-flex align-items-center'>
+                                        {showList && <ExcelFile filename={MASTER_MOVEMENT_REPORT} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div></button>}>
+                                            {renderColumn()}
+                                        </ExcelFile>}
+                                        {showList && <button type="button" className="user-btn mr5" title="Reset Grid" onClick={() => resetState()}>
+                                            <div className="refresh mr-0"></div>
+                                        </button>}
+                                        <RenderGraphList valueChanged={valueChanged} />
+                                    </div>
                                     {/* <h7>{ModeId === 1 ? `RM Code : ${rowData?.RawMaterialCode} ` : (ModeId === 2 ? `BOP No. : ${rowData?.BoughtOutPartNumber}` : ModeId === 3 ? `Operation Code : ${rowData?.OperationCode} ` : `Machine No. : ${rowData?.MachineNumber}`)}</h7> */}
                                 </div>
                                 {showList &&
@@ -285,7 +327,6 @@ function AnalyticsDrawer(props) {
                                                             {ModeId === 1 && <AgGridColumn field="RMShearingCost" headerName="Shearing Cost" cellRenderer={hyphenFormatter} ></AgGridColumn>}
                                                             {<AgGridColumn field="UnitOfMeasurement" headerName="UOM" cellRenderer={hyphenFormatter}></AgGridColumn>}
                                                             {<AgGridColumn field="NetLandedCost" headerName={props.import ? "Net Landed (Currency)" : "Net Landed (Total)"} cellRenderer={hyphenFormatter} ></AgGridColumn>}
-
                                                             {(ModeId === 1 || ModeId === 2) && importEntry && <AgGridColumn field="NetLandedCostCurrency" headerName="Net Landed Total (INR)" cellRenderer={hyphenFormatter} ></AgGridColumn>}
                                                             {<AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer='effectiveDateRenderer'></AgGridColumn>}
 

@@ -17,7 +17,7 @@ import {
   saveDiscountOtherCostTab, setComponentDiscountOtherItemData, setCostingEffectiveDate, CloseOpenAccordion, saveAssemblyPartRowCostingCalculation, isDataChange, saveAssemblyOverheadProfitTab, isToolDataChange, isOverheadProfitDataChange,
 } from '../../actions/Costing';
 import { checkForNull, CheckIsCostingDateSelected, loggedInUserId } from '../../../../helper';
-import { LEVEL1 } from '../../../../config/constants';
+import { LEVEL1, WACTypeId } from '../../../../config/constants';
 import { EditCostingContext, ViewCostingContext, CostingStatusContext, IsNFR } from '../CostingDetails';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -129,6 +129,7 @@ function CostingHeaderTabs(props) {
 
     // USED FOR OVERHEAD AND PROFIT WHEN CLICKED ON OTHER TABS WITHOUT SAVING
     if (!CostingViewMode && Object.keys(ComponentItemOverheadData).length > 0 && ComponentItemOverheadData.IsOpen !== false && activeTab !== '3' & checkIsOverheadProfitChange) {
+      const discountAndOtherTabData = DiscountCostData
 
       let reqData = {
         "CostingId": ComponentItemOverheadData.CostingId,
@@ -154,6 +155,7 @@ function CostingHeaderTabs(props) {
             checkForNull(ComponentItemOverheadData?.CostingPartDetails?.ICCCost) +
             checkForNull(ComponentItemOverheadData?.CostingPartDetails?.PaymentTermCost),
         },
+        "BasicRate": discountAndOtherTabData?.BasicRateINR,
       }
       if (ComponentItemOverheadData.IsAssemblyPart) {
         dispatch(saveAssemblyOverheadProfitTab(reqData, res => {
@@ -172,6 +174,7 @@ function CostingHeaderTabs(props) {
 
 
     }
+    const discountAndOtherTabData = DiscountCostData
 
     // USED FOR PACKAGE AND FREIGHT WHEN CLICKED ON OTHER TABS WITHOUT SAVING
     if (!CostingViewMode && Object.keys(ComponentItemPackageFreightData).length > 0 && ComponentItemPackageFreightData.IsChanged === true && activeTab !== '4' && Object.keys(ComponentItemPackageFreightData).length > 0 && ComponentItemPackageFreightData.IsChanged === true && checkIsFreightPackageChange) {
@@ -187,6 +190,7 @@ function CostingHeaderTabs(props) {
         "CostingNumber": costData.CostingNumber,
         //"NetPackagingAndFreight": ComponentItemPackageFreightData.NetPackagingAndFreight,
         "CostingPartDetails": ComponentItemPackageFreightData?.CostingPartDetails,
+        "BasicRate": discountAndOtherTabData?.BasicRateINR,
       }
       dispatch(saveCostingPackageFreightTab(data, res => {
         callAssemblyAPi(4)
@@ -209,6 +213,7 @@ function CostingHeaderTabs(props) {
         "CostingPartDetails": ComponentItemToolData?.CostingPartDetails,
         "EffectiveDate": CostingEffectiveDate,
         "TotalCost": netPOPrice,
+        "BasicRate": discountAndOtherTabData?.BasicRateINR,
       }
       dispatch(saveToolTab(data, res => {
         callAssemblyAPi(5)
@@ -470,7 +475,7 @@ function CostingHeaderTabs(props) {
           </Nav>
           <TabContent activeTab={activeTab}>
             <TabPane tabId="1">
-              {IdForMultiTechnology.includes(String(costingData?.TechnologyId)) ? <TabAssemblyTechnology
+              {IdForMultiTechnology.includes(String(costingData?.TechnologyId)) || (costingData.CostingTypeId === WACTypeId) ? <TabAssemblyTechnology
                 setHeaderCost={props.setHeaderCost}
                 backBtn={props.backBtn}
                 activeTab={activeTab}

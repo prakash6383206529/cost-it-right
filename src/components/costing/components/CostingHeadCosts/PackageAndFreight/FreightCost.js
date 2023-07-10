@@ -116,6 +116,7 @@ function FreightCost(props) {
                       <th>{`Rate/Percentage`}</th>
                       <th>{`Quantity`}</th>
                       <th>{`Cost`}</th>
+                      {initialConfiguration.IsShowCRMHead && <th>{`CRM Head`}</th>}
                       <th style={{ width: "130px", textAlign: "right" }}>{`Action`}</th>
                     </tr>
                   </thead>
@@ -137,6 +138,7 @@ function FreightCost(props) {
                             <td>{item.EFreightLoadType === Fixed ? '-' : (item.EFreightLoadType === Percentage ? item.Rate : '-')}</td>
                             <td>{item.EFreightLoadType === Fixed || item.EFreightLoadType === Percentage ? '-' : item.Quantity}</td>
                             <td>{checkForDecimalAndNull(item.FreightCost, initialConfiguration.NoOfDecimalForPrice)}</td>
+                            {initialConfiguration.IsShowCRMHead && <td>{item?.FreightCRMHead}</td>}
                             <td style={{ textAlign: "right" }}>
                               {!CostingViewMode && <button title='Edit' className="Edit mt15 mr5" type={'button'} onClick={() => editItem(index)} />}
                               {!CostingViewMode && <button title='Delete' className="Delete mt15" type={'button'} onClick={() => deleteItem(index)} />}

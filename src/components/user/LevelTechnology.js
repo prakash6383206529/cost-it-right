@@ -4,7 +4,7 @@ import Toaster from "../common/Toaster";
 import { connect } from "react-redux";
 import { Loader } from "../common/Loader";
 import { searchableSelect, focusOnError } from "../layout/FormInputs";
-import "./UserRegistration.scss";
+
 import { setApprovalLevelForTechnology, getAllTechnologyAPI, getAllLevelAPI } from "../../actions/auth/AuthActions";
 import { MESSAGES } from "../../config/message";
 

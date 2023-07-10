@@ -2,11 +2,9 @@ import React from 'react';
 import { useState, useEffect, } from 'react';
 import { useDispatch, useSelector } from 'react-redux'
 import { Row, Col, } from 'reactstrap';
-import {
-    deleteRawMaterialAPI, getRMDomesticDataList,
-} from '../actions/Material';
+import { deleteRawMaterialAPI, getAllRMDataList, getRMDomesticDataList } from '../actions/Material';
 import { userDepartmetList } from "../../../helper/auth"
-import { APPROVED_STATUS, defaultPageSize, EMPTY_DATA, RMDOMESTIC, RmDomestic } from '../../../config/constants';
+import { APPROVED_STATUS, defaultPageSize, EMPTY_DATA, ENTRY_TYPE_DOMESTIC, FILE_URL, RMDOMESTIC, RmDomestic } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
 import Toaster from '../../common/Toaster';
@@ -30,6 +28,7 @@ import AnalyticsDrawer from './AnalyticsDrawer'
 import _ from 'lodash';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { hideCustomerFromExcel } from '../../common/CommonFunctions';
+import Attachament from '../../costing/components/Drawers/Attachament';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -70,8 +69,9 @@ function RMDomesticListing(props) {
     const [dataCount, setDataCount] = useState(0)
     const [inRangeDate, setinRangeDate] = useState([])
     const [pageSize, setPageSize] = useState({ pageSize10: true, pageSize50: false, pageSize100: false })
-    const [floatingFilterData, setFloatingFilterData] = useState({ CostingHead: "", TechnologyName: "", RawMaterial: "", RMGrade: "", RMSpec: "", RawMaterialCode: "", Category: "", MaterialType: "", Plant: "", UOM: "", VendorName: "", BasicRate: "", ScrapRate: "", RMFreightCost: "", RMShearingCost: "", NetLandedCost: "", EffectiveDate: "", DepartmentName: isSimulation ? userDepartmetList() : "" })
-
+    const [floatingFilterData, setFloatingFilterData] = useState({ CostingHead: "", TechnologyName: "", RawMaterialName: "", RawMaterialGradeName: "", RawMaterialSpecificationName: "", RawMaterialCode: "", Category: "", MaterialType: "", DestinationPlantName: "", UnitOfMeasurementName: "", VendorName: "", BasicRatePerUOM: "", ScrapRate: "", RMFreightCost: "", RMShearingCost: "", NetLandedCost: "", EffectiveDate: "", DepartmentName: isSimulation ? userDepartmetList() : "" })
+    const [attachment, setAttachment] = useState(false);
+    const [viewAttachment, setViewAttachment] = useState([])
     var filterParams = {
         comparator: function (filterLocalDateAtMidnight, cellValue) {
 
@@ -178,7 +178,7 @@ function RMDomesticListing(props) {
         }
 
         // TO HANDLE FUTURE CONDITIONS LIKE [APPROVED_STATUS, DRAFT_STATUS] FOR MULTIPLE STATUS
-        let statusString = [APPROVED_STATUS].join(",")
+        let statusString = [props?.approvalStatus].join(",")
         const filterData = {
             costingHead: isSimulation && filteredRMData && filteredRMData.costingHeadTemp ? filteredRMData.costingHeadTemp.value : costingHead,
             plantId: isSimulation && filteredRMData && filteredRMData.plantId ? filteredRMData.plantId.value : plantId,
@@ -197,8 +197,9 @@ function RMDomesticListing(props) {
         if (isPagination === true) {
             setloader(true)
         }
+        dataObj.RawMaterialEntryType = Number(ENTRY_TYPE_DOMESTIC)
         if (!props.isMasterSummaryDrawer) {
-            dispatch(getRMDomesticDataList(filterData, skip, take, isPagination, dataObj, (res) => {
+            dispatch(getAllRMDataList(filterData, skip, take, isPagination, dataObj, false, (res) => {
                 // apply(selectedRowForPagination, selectedRowForPagination.length)
                 if (isSimulation) {
                     props?.changeTokenCheckBox(true)
@@ -238,7 +239,7 @@ function RMDomesticListing(props) {
                                 }
                             } else {
 
-                                if (prop !== "DepartmentName" && floatingFilterData[prop] !== "") {
+                                if (prop !== "DepartmentName" && prop !== 'RawMaterialEntryType' && floatingFilterData[prop] !== "") {
                                     isReset = false
                                 }
                             }
@@ -767,7 +768,43 @@ function RMDomesticListing(props) {
         setSelectedRowData(rowData)
         setAnalyticsDrawer(true)
     }
+    const viewAttachmentData = (index) => {
+        setAttachment(true)
+        setViewAttachment(index)
+    }
+    const closeAttachmentDrawer = (e = '') => {
+        setAttachment(false)
+    }
+    const attachmentFormatter = (props) => {
+        const row = props?.data;
+        let files = row?.Attachements
+        if (files && files?.length === 0) {
+            return '-'
+        }
+        return (
+            <>
+                <div className={"attachment images"}>
+                    {files && files.length === 1 ?
+                        files.map((f) => {
+                            const withOutTild = f.FileURL?.replace("~", "");
+                            const fileURL = `${FILE_URL}${withOutTild}`;
+                            return (
+                                <a href={fileURL} target="_blank" rel="noreferrer">
+                                    {f.OriginalFileName}
+                                </a>
+                            )
 
+                        }) : <button
+                            type='button'
+                            title='View Attachment'
+                            className='btn-a pl-0'
+                            onClick={() => viewAttachmentData(row)}
+                        >View Attachment</button>}
+                </div>
+            </>
+        )
+
+    }
     const frameworkComponents = {
         totalValueRenderer: buttonFormatter,
         effectiveDateRenderer: effectiveDateFormatter,
@@ -778,7 +815,8 @@ function RMDomesticListing(props) {
         statusFormatter: statusFormatter,
         hyphenFormatter: hyphenFormatter,
         companyFormatter: companyFormatter,
-        checkBoxRenderer: checkBoxRenderer
+        checkBoxRenderer: checkBoxRenderer,
+        attachmentFormatter: attachmentFormatter,
 
     }
 
@@ -894,23 +932,20 @@ function RMDomesticListing(props) {
                                     >
                                         <AgGridColumn cellClass="has-checkbox" field="CostingHead" headerName='Costing Head' cellRenderer={checkBoxRenderer}></AgGridColumn>
                                         <AgGridColumn field="TechnologyName" headerName='Technology'></AgGridColumn>
-                                        <AgGridColumn field="RawMaterial" ></AgGridColumn>
-                                        <AgGridColumn field="RMGrade" headerName="Grade"></AgGridColumn>
-                                        <AgGridColumn field="RMSpec" headerName="Spec"></AgGridColumn>
+                                        <AgGridColumn field="RawMaterialName" headerName='RawMaterial'></AgGridColumn>
+                                        <AgGridColumn field="RawMaterialGradeName" headerName="Grade"></AgGridColumn>
+                                        <AgGridColumn field="RawMaterialSpecificationName" headerName="Spec"></AgGridColumn>
                                         <AgGridColumn field="RawMaterialCode" headerName='Code' cellRenderer='hyphenFormatter'></AgGridColumn>
 
-                                        <AgGridColumn field="Category" headerName="Category"></AgGridColumn>
-
-                                        <AgGridColumn field="MaterialType" headerName="Material"></AgGridColumn>
-
-                                        <AgGridColumn field="Plant" headerName="Plant (Code)"></AgGridColumn>
-
+                                        {/* {we have resolved the commit by @Samrudhi} */}
+                                        <AgGridColumn field="Category"></AgGridColumn>
+                                        <AgGridColumn field="MaterialType"></AgGridColumn>
+                                        <AgGridColumn field="DestinationPlantName" headerName="Plant (Code)"></AgGridColumn>
                                         <AgGridColumn field="VendorName" headerName="Vendor (Code)"></AgGridColumn>
-                                        {/* <AgGridColumn field="DepartmentName" headerName="Department"></AgGridColumn> */}
-                                        <AgGridColumn field="DepartmentName" headerName="Company (Code)" ></AgGridColumn>
-                                        {(reactLocalStorage.getObject('cbcCostingPermission')) && <AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
-                                        <AgGridColumn field="UOM"></AgGridColumn>
-                                        <AgGridColumn field="BasicRate" cellRenderer='commonCostFormatter'></AgGridColumn>
+                                        <AgGridColumn field="DepartmentName" headerName="Company (Code)"></AgGridColumn>
+                                        {reactLocalStorage.getObject('cbcCostingPermission') && <AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
+                                        <AgGridColumn field="UnitOfMeasurementName" headerName='UOM'></AgGridColumn>
+                                        <AgGridColumn field="BasicRatePerUOM" headerName='BasicRate' cellRenderer='commonCostFormatter'></AgGridColumn>
                                         <AgGridColumn field="ScrapRate" cellRenderer='commonCostFormatter'></AgGridColumn>
                                         {props.isMasterSummaryDrawer && <AgGridColumn width="140" field="MachiningScrapRate" headerName='Machining Scrap Cost'></AgGridColumn>}
                                         <AgGridColumn field="RMFreightCost" headerName="Freight Cost" cellRenderer='commonCostFormatter'></AgGridColumn>
@@ -920,6 +955,8 @@ function RMDomesticListing(props) {
                                         {(!isSimulation && !props.isMasterSummaryDrawer) && <AgGridColumn width={160} field="RawMaterialId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
                                         <AgGridColumn field="VendorId" hide={true}></AgGridColumn>
                                         <AgGridColumn field="TechnologyId" hide={true}></AgGridColumn>
+                                        {props.isMasterSummaryDrawer && <AgGridColumn field="Attachements" headerName='Attachments' cellRenderer='attachmentFormatter'></AgGridColumn>}
+                                        {props.isMasterSummaryDrawer && <AgGridColumn field="Remark" tooltipField="Remark" ></AgGridColumn>}
                                     </AgGridReact>
                                     <div className='button-wrapper'>
                                         {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} globalTake={globalTake} />}
@@ -933,10 +970,10 @@ function RMDomesticListing(props) {
                                             </div>
                                         }
                                     </div>
-                                </div>
-                            </div>
-                        </Col>
-                    </Row>
+                                </div >
+                            </div >
+                        </Col >
+                    </Row >
                 </>
             }
             {
@@ -951,6 +988,7 @@ function RMDomesticListing(props) {
                         messageLabel={"RM Domestic"}
                         anchor={"right"}
                         masterId={RM_MASTER_ID}
+                        typeOfEntryId={ENTRY_TYPE_DOMESTIC}
                     />
                 )
             }
@@ -971,7 +1009,17 @@ function RMDomesticListing(props) {
                 />
             }
 
-
+            {
+                attachment && (
+                    <Attachament
+                        isOpen={attachment}
+                        index={viewAttachment}
+                        closeDrawer={closeAttachmentDrawer}
+                        anchor={'right'}
+                        gridListing={true}
+                    />
+                )
+            }
 
             {
                 showPopup && <PopupMsgWrapper isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${MESSAGES.RAW_MATERIAL_DETAIL_DELETE_ALERT}`} />

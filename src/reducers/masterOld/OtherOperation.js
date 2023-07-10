@@ -13,9 +13,6 @@ import {
     GET_OPERATION_SUCCESS,
     GET_UNIT_OPERATION_DATA_SUCCESS,
     GET_CED_OTHER_OPERATION_BY_SUPPLIER_SUCCESS,
-    GET_OPERATION_SELECTLIST_SUCCESS,
-    GET_INITIAL_VENDOR_WITH_VENDOR_CODE_SELECTLIST,
-    GET_INITIAL_TECHNOLOGY_SELECTLIST,
 } from '../../config/constants';
 
 const initialState = {
@@ -105,24 +102,6 @@ export default function OtherOperationReducer(state = initialState, action) {
                 ...state,
                 loading: false,
                 cedOperationData: action.payload
-            };
-        case GET_OPERATION_SELECTLIST_SUCCESS:
-            return {
-                ...state,
-                loading: false,
-                filterOperation: { ...state.filterOperation, operations: action.payload }
-            };
-        case GET_INITIAL_VENDOR_WITH_VENDOR_CODE_SELECTLIST:
-            return {
-                ...state,
-                loading: false,
-                filterOperation: { ...state.filterOperation, vendors: action.payload }
-            };
-        case GET_INITIAL_TECHNOLOGY_SELECTLIST:
-            return {
-                ...state,
-                loading: false,
-                filterOperation: { ...state.filterOperation, technology: action.payload }
             };
         default:
             return state;

@@ -8,25 +8,23 @@ import {
   deletePowerDetail, deleteVendorPowerDetail,
 } from '../actions/Fuel';
 import { getPlantBySupplier } from '../../../actions/Common';
-import { defaultPageSize, EMPTY_DATA } from '../../../config/constants';
+import { EMPTY_DATA } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
 import Toaster from '../../common/Toaster';
-import Switch from "react-switch";
 import DayTime from '../../common/DayTimeWrapper'
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
 import LoaderCustom from '../../common/LoaderCustom';
 import { PowerMaster } from '../../../config/constants';
 import ReactExport from 'react-export-excel';
-import { POWERLISTING_DOWNLOAD_EXCEl, POWERLISTING_VENDOR_DOWNLOAD_EXCEL } from '../../../config/masterData';
+import { POWERLISTING_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
-import { getConfigurationKey, searchNocontentFilter } from '../../../helper';
+import { searchNocontentFilter } from '../../../helper';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { PaginationWrapper } from '../../common/commonPagination';
-import SelectRowWrapper from '../../common/SelectRowWrapper';
 
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -317,13 +315,8 @@ class PowerListing extends Component {
   onBtExport = () => {
     let tempArr = []
     tempArr = this.state.gridApi && this.state.gridApi?.getSelectedRows()
-    if (this.state.IsVendor) {
-      tempArr = (tempArr && tempArr.length > 0) ? tempArr : (this.props.vendorPowerDataList ? this.props.vendorPowerDataList : [])
-      return this.returnExcelColumn(POWERLISTING_VENDOR_DOWNLOAD_EXCEL, tempArr)
-    } else {
-      tempArr = (tempArr && tempArr.length > 0) ? tempArr : (this.props.powerDataList ? this.props.powerDataList : [])
-      return this.returnExcelColumn(POWERLISTING_DOWNLOAD_EXCEl, tempArr)
-    }
+    tempArr = (tempArr && tempArr.length > 0) ? tempArr : (this.props.powerDataList ? this.props.powerDataList : [])
+    return this.returnExcelColumn(POWERLISTING_DOWNLOAD_EXCEl, tempArr)
   };
 
   onFilterTextBoxChanged(e) {
@@ -342,7 +335,7 @@ class PowerListing extends Component {
   */
   render() {
     const { handleSubmit, AddAccessibility, DownloadAccessibility } = this.props;
-    const { isEditFlag, noData, dataCount } = this.state;
+    const { noData } = this.state;
     const ExcelFile = ReactExport.ExcelFile;
 
     var filterParams = {
@@ -394,31 +387,9 @@ class PowerListing extends Component {
 
     return (
 
-      <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""}`}>
+      <div className={`ag-grid-react pt-4 ${DownloadAccessibility ? "show-table-btn" : ""}`}>
         {this.state.isLoader && <LoaderCustom />}
         <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
-          <Row className="pt-4">
-            <Col md="4" className="switch mb-1">
-              <label className="switch-level">
-                <div className={"left-title"}>Zero Based</div>
-                <Switch
-                  onChange={this.onPressVendor}
-                  checked={this.state.IsVendor}
-                  id="normal-switch"
-                  disabled={isEditFlag ? true : false}
-                  background="#4DC771"
-                  onColor="#4DC771"
-                  onHandleColor="#ffffff"
-                  offColor="#4DC771"
-                  uncheckedIcon={false}
-                  checkedIcon={false}
-                  height={20}
-                  width={46}
-                />
-                <div className={"right-title"}>Vendor Based</div>
-              </label>
-            </Col>
-          </Row>
           <Row>
 
             <Col md="6" className="search-user-block mb-3">
@@ -479,6 +450,7 @@ class PowerListing extends Component {
               </div>
               <div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
                 {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
+                {/* check here @ashok full ag grid*/}
                 {!this.state.IsVendor &&
                   <AgGridReact
                     defaultColDef={defaultColDef}
@@ -501,37 +473,14 @@ class PowerListing extends Component {
                     frameworkComponents={frameworkComponents}
                     suppressRowClickSelection={true}
                   >
+                    <AgGridColumn field="CostingType"></AgGridColumn>
                     <AgGridColumn field="StateName"></AgGridColumn>
-                    <AgGridColumn field="PlantName" headerName="Plant (Code)"></AgGridColumn>
+                    <AgGridColumn field="PlantWithCode" headerName="Plant (Code)"></AgGridColumn>
+                    <AgGridColumn field="VendorWithCode" headerName="Vendor (Code)" ></AgGridColumn>
+                    <AgGridColumn field="CustomerWithCode" headerName="Customer (Code)" ></AgGridColumn>
                     <AgGridColumn field="NetPowerCostPerUnit" cellRenderer={'costFormatter'}></AgGridColumn>
                     <AgGridColumn field="EffectiveDate" cellRenderer='effectiveDateFormatter' filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
                     <AgGridColumn field="PowerId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
-                  </AgGridReact>}
-
-                {/* VBC Listing */}
-                {this.state.IsVendor &&
-                  <AgGridReact
-                    defaultColDef={defaultColDef}
-                    domLayout='autoHeight'
-                    floatingFilter={true}
-                    // columnDefs={c}
-                    rowData={this.props.vendorPowerDataList}
-                    pagination={true}
-                    paginationPageSize={defaultPageSize}
-                    onGridReady={this.onGridReady}
-                    gridOptions={gridOptions}
-                    loadingOverlayComponent={'customLoadingOverlay'}
-                    noRowsOverlayComponent={'customNoRowsOverlay'}
-                    noRowsOverlayComponentParams={{
-                      title: EMPTY_DATA,
-                      imagClass: 'imagClass power-listing'
-                    }}
-                    frameworkComponents={frameworkComponents}
-                  >
-                    <AgGridColumn field="VendorName" headerName="Vendor (Code)"></AgGridColumn>
-                    {getConfigurationKey().IsVendorPlantConfigurable && <AgGridColumn field="VendorPlantName" headerName="Plant (Code)"></AgGridColumn>}
-                    <AgGridColumn field="NetPowerCostPerUnit" cellRenderer={'costFormatterForVBC'}></AgGridColumn>
-                    <AgGridColumn field="PowerDetailId" headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
                   </AgGridReact>}
                 {<PaginationWrapper gridApi={this.gridApi} setPage={this.onPageSizeChanged} />}
               </div>

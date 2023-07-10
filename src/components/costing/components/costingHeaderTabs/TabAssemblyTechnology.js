@@ -63,12 +63,13 @@ function TabAssemblyTechnology(props) {
     if (CostingViewMode === false) {
       let TopHeaderValues = subAssemblyTechnologyArray && subAssemblyTechnologyArray.length > 0 && subAssemblyTechnologyArray[0]?.CostingPartDetails !== undefined ? subAssemblyTechnologyArray[0]?.CostingPartDetails : null;
       let topHeaderData = {};
+      let TotalLabourCost = checkForNull(TopHeaderValues?.NetLabourCost) + checkForNull(TopHeaderValues?.IndirectLaborCost) + checkForNull(TopHeaderValues?.StaffCost)
       topHeaderData = {
         NetRawMaterialsCost: TopHeaderValues?.NetChildPartsCost ? TopHeaderValues.NetChildPartsCost : 0,
         NetBoughtOutPartCost: TopHeaderValues?.TotalBoughtOutPartCost ? TopHeaderValues.TotalBoughtOutPartCost : 0,
-        NetConversionCost: (TopHeaderValues?.TotalOperationCost || TopHeaderValues?.TotalProcessCost) ? (checkForNull(TopHeaderValues?.TotalProcessCost) + checkForNull(TopHeaderValues?.TotalOperationCost)) : 0,
+        NetConversionCost: (TopHeaderValues?.TotalOperationCost || TopHeaderValues?.TotalProcessCost || TotalLabourCost) ? (checkForNull(TopHeaderValues?.TotalProcessCost) + checkForNull(TopHeaderValues?.TotalOperationCost) + checkForNull(TotalLabourCost)) : 0,
         NetToolsCost: TopHeaderValues?.TotalToolCost ? TopHeaderValues.TotalToolCost : 0,
-        NetTotalRMBOPCC: TopHeaderValues?.TotalCalculatedRMBOPCCCost ? TopHeaderValues.TotalCalculatedRMBOPCCCost : 0,
+        NetTotalRMBOPCC: (TopHeaderValues?.TotalCalculatedRMBOPCCCost) ? TopHeaderValues.TotalCalculatedRMBOPCCCost : 0,
         OtherOperationCost: TopHeaderValues?.CostingConversionCost?.OtherOperationCostTotal ? TopHeaderValues.CostingConversionCost.OtherOperationCostTotal : 0,   //HELP
         ProcessCostTotal: TopHeaderValues?.TotalProcessCost ? TopHeaderValues?.TotalProcessCost : 0,
         OperationCostTotal: TopHeaderValues?.TotalOperationCost ? TopHeaderValues?.TotalOperationCost : 0,
@@ -76,6 +77,7 @@ function TabAssemblyTechnology(props) {
         TotalOperationCostSubAssembly: TopHeaderValues?.TotalOperationCostSubAssembly ? TopHeaderValues.TotalOperationCostSubAssembly : 0,
         TotalOtherOperationCostPerAssembly: TopHeaderValues?.TotalOtherOperationCostPerAssembly ? checkForNull(TopHeaderValues.TotalOtherOperationCostPerAssembly) : 0
       }
+
       props.setHeaderCost(topHeaderData)
     }
   }, [subAssemblyTechnologyArray]);
@@ -253,6 +255,38 @@ function TabAssemblyTechnology(props) {
    */
   const onSubmit = (values) => { }
 
+  const setAssemblyLabourCost = (data) => {
+    let tempsubAssemblyTechnologyArray = subAssemblyTechnologyArray
+    tempsubAssemblyTechnologyArray[0].NetLabourCost = checkForNull(data.NetLabourCost)
+    tempsubAssemblyTechnologyArray[0].IndirectLaborCost = checkForNull(data.IndirectLaborCost)
+    tempsubAssemblyTechnologyArray[0].StaffCost = checkForNull(data.StaffCost)
+    tempsubAssemblyTechnologyArray[0].StaffCostPercentage = checkForNull(data.StaffCostPercentage)
+    tempsubAssemblyTechnologyArray[0].IndirectLaborCostPercentage = checkForNull(data.IndirectLaborCostPercentage)
+    tempsubAssemblyTechnologyArray[0].TotalLabourCost = checkForNull(data.NetLabourCost) + checkForNull(data.IndirectLaborCost) + checkForNull(data.StaffCost)
+    tempsubAssemblyTechnologyArray[0].CostingPartDetails.NetLabourCost = checkForNull(data.NetLabourCost)
+    tempsubAssemblyTechnologyArray[0].CostingPartDetails.IndirectLaborCost = checkForNull(data.IndirectLaborCost)
+    tempsubAssemblyTechnologyArray[0].CostingPartDetails.StaffCost = checkForNull(data.StaffCost)
+    tempsubAssemblyTechnologyArray[0].CostingPartDetails.StaffCostPercentage = checkForNull(data.StaffCostPercentage)
+    tempsubAssemblyTechnologyArray[0].CostingPartDetails.IndirectLaborCostPercentage = checkForNull(data.IndirectLaborCostPercentage)
+    tempsubAssemblyTechnologyArray[0].CostingPartDetails.TotalLabourCost = checkForNull(data.NetLabourCost) + checkForNull(data.IndirectLaborCost) + checkForNull(data.StaffCost)
+
+    let costPerPieceTotal = 0
+    let CostPerAssemblyBOPTotal = 0
+    tempsubAssemblyTechnologyArray[0].CostingChildPartDetails && tempsubAssemblyTechnologyArray[0]?.CostingChildPartDetails.map((item) => {
+      costPerPieceTotal = checkForNull(costPerPieceTotal) + checkForNull(item?.CostingPartDetails?.NetChildPartsCostWithQuantity)
+      CostPerAssemblyBOPTotal = checkForNull(CostPerAssemblyBOPTotal) + checkForNull(item?.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity)
+      return null
+    })
+
+    tempsubAssemblyTechnologyArray[0].CostingPartDetails.TotalCalculatedRMBOPCCCost =
+      checkForNull(costPerPieceTotal) +
+      checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.TotalBoughtOutPartCost) +
+      checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.TotalProcessCost) +
+      checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.TotalOperationCost) +
+      checkForNull(data.NetLabourCost) + checkForNull(data.IndirectLaborCost) + checkForNull(data.StaffCost)
+    dispatch(setSubAssemblyTechnologyArray(tempsubAssemblyTechnologyArray, res => { }))
+  }
+
   return (
     <>
       <div className="login-container signup-form" id="rm-cc-costing-header">
@@ -304,6 +338,7 @@ function TabAssemblyTechnology(props) {
                                   children={item.CostingChildPartDetails}
                                   subAssembId={item.CostingId}
                                   setOperationCostFunction={setOperationCostFunction}
+                                  setAssemblyLabourCost={setAssemblyLabourCost}
                                 />
                               </>
                             )

@@ -45,7 +45,10 @@ import {
   SET_NPV_DATA,
   SET_YOY_COST_GRID,
   SET_YOY_COST_GRID_FOR_SAVE,
+  SET_OVERHEAD_PROFIT_ICC,
+  SET_OTHER_COST,
   SET_REJECTED_COSTING_VIEW_DATA,
+  RESET_EXCHANGE_RATE_DATA
 } from '../../../config/constants'
 import { apiErrors } from '../../../helper/util'
 import { MESSAGES } from '../../../config/message'
@@ -188,10 +191,10 @@ export function getExistingCosting(PartId, callback) {
  * @method updateZBCSOBDetail
  * @description UPDATE ZBC SOB DETAILS
  */
-export function updateZBCSOBDetail(requestData, callback) {
+export function updateSOBDetail(requestData, callback) {
   return (dispatch) => {
     dispatch({ type: API_REQUEST })
-    axios.put(`${API.updateZBCSOBDetail}`, requestData, config())
+    axios.put(`${API.updateSOBDetail}`, requestData, config())
       .then((response) => {
         callback(response)
       }).catch((error) => {
@@ -838,7 +841,8 @@ export function setOverheadProfitData(TabData, callback) {
 export function getOverheadProfitDataByModelType(data, callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
-    const request = axios.get(`${API.getOverheadProfitDataByModelType}/${data.ModelTypeId}/${data.VendorId}/${data.EffectiveDate}/${data.costingTypeId}/${data.plantId}/${data.customerId}`, config(),)
+    let queryParams = `modelTypeId=${data.ModelTypeId}&vendorId=${data.VendorId}&effectiveDate=${data.EffectiveDate}&costingTypeId=${data.costingTypeId}&plantId=${data.plantId}&customerId=${data.customerId}&rawMaterialGradeId=${data.rawMaterialGradeId}&rawMaterialChildId=${data.rawMaterialChildId}&technologyId=${data.technologyId}`
+    const request = axios.get(`${API.getOverheadProfitDataByModelType}?${queryParams}`, config(),)
     request.then((response) => {
       if (response.data.Result) {
         callback(response)
@@ -911,7 +915,7 @@ export function saveComponentOverheadProfitTab(data, callback) {
 export function getInventoryDataByHeads(data, callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
-    const request = axios.get(`${API.getInventoryDataByHeads}?vendorId=${data?.VendorId}&costingTypeId=${data?.costingTypeId}&plantId=${data?.plantId}&effectiveDate=${data?.effectiveDate}&customerId=${data.customerId}`, config());
+    const request = axios.get(`${API.getInventoryDataByHeads}?vendorId=${data?.VendorId}&costingTypeId=${data?.costingTypeId}&plantId=${data?.plantId}&effectiveDate=${data?.effectiveDate}&customerId=${data.customerId}&rawMaterialGradeId=${data.rawMaterialGradeId}&rawMaterialChildId=${data.rawMaterialChildId}&technologyId=${null}`, config());
     request
       .then((response) => {
         callback(response)
@@ -932,7 +936,7 @@ export function getPaymentTermsDataByHeads(data, callback) {
 
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
-    const request = axios.get(`${API.getPaymentTermsDataByHeads}?vendorId=${data?.VendorId}&costingTypeId=${data?.costingTypeId}&plantId=${data?.plantId}&effectiveDate=${data?.effectiveDate}&customerId=${data.customerId}`, config());
+    const request = axios.get(`${API.getPaymentTermsDataByHeads}?vendorId=${data?.VendorId}&costingTypeId=${data?.costingTypeId}&plantId=${data?.plantId}&effectiveDate=${data?.effectiveDate}&customerId=${data.customerId}&rawMaterialGradeId=${data.rawMaterialGradeId}&rawMaterialChildId=${data.rawMaterialChildId}&technologyId=${data.technologyId}`, config());
 
     request.then((response) => {
       callback(response)
@@ -1204,7 +1208,7 @@ export function getExchangeRateByCurrency(currency, costingHeadId, effectiveDate
       }
     }).catch((error) => {
       dispatch({ type: API_FAILURE });
-      callback(error);
+      // callback(error);
       apiErrors(error);
     });
   };
@@ -2414,6 +2418,16 @@ export function setToolCostInOverheadProfit(IsIncluded, callback) {
   }
 };
 
+export function setIncludeOverheadProfitIcc(IsIncluded, callback) {
+  return (dispatch) => {
+    dispatch({
+      type: SET_OVERHEAD_PROFIT_ICC,
+      payload: IsIncluded,
+    });
+    callback();
+  }
+};
+
 /**
  * @method createCosting
  * @description CREATE ZBC COSTING
@@ -2479,6 +2493,17 @@ export function setNPVData(data) {
     });
   }
 };
+export function setOtherCostData(data) {
+  console.log('data: ', data);
+  return (dispatch) => {
+    dispatch({
+      type: SET_OTHER_COST,
+      payload: data,
+    });
+  }
+};
+
+
 
 /**
  * @method setYOYCostGrid
@@ -2521,10 +2546,9 @@ export function getYOYCostList(data, callback) {
   }
 }
 
-
-export function createPFS2Costing(data, callback) {
+export function saveCostingLabourDetails(data, callback) {
   return (dispatch) => {
-    const request = axios.post(API.createPFS2Costing, data, config())
+    const request = axios.post(API.saveCostingLabourDetails, data, config())
     request.then((response) => {
       if (response.data.Result) {
         callback(response)
@@ -2536,6 +2560,70 @@ export function createPFS2Costing(data, callback) {
   }
 }
 
+
+export function createPFS2Costing(data, callback) {
+  return (dispatch) => {
+    const request = axios.post(API.createPFS2Costing, data, config())
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response)
+      }
+    }).catch((error) => {
+      callback(error)
+      dispatch({ type: API_FAILURE })
+      apiErrors(error)
+    })
+  }
+}
+
+export function getCostingLabourDetails(data, callback) {
+  return (dispatch) => {
+    const queryParams = `costingId=${data}`
+    const request = axios.get(`${API.getCostingLabourDetails}?${queryParams}`, config())
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response)
+      }
+    }).catch((error) => {
+      callback(error)
+      dispatch({ type: API_FAILURE })
+      apiErrors(error)
+    })
+  }
+}
+
+export function getLabourDetailsByFilter(data, callback) {
+  return (dispatch) => {
+    const queryParams = `effectiveDate=${data.effectiveDate ? data.effectiveDate : ''}&costingHeadId=${data.costingHeadId ? data.costingHeadId : ''}&partId=${data.partId ? data.partId : ''}&plant_id=${data.plantId ? data.plantId : ''}&vendorId=${data.vendorId ? data.vendorId : ''}&customerId=${data.customerId ? data.customerId : ''}&machine_type_id=${0}&state_id=${0}&labour_type_id=${0}`
+    const request = axios.get(`${API.getLabourDetailsByFilter}?${queryParams}`, config())
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response)
+      }
+    }).catch((error) => {
+      callback(error)
+      dispatch({ type: API_FAILURE })
+      apiErrors(error)
+    })
+  }
+}
+
+
+export function checkPartNoExistInBop(data, callback) {
+  return (dispatch) => {
+    const queryParams = `partNumber=${data.partNumber}&plantId=${data.plantId}&vendorId=${data.vendorId}&customerId=${data.customerId}`
+    const request = axios.get(`${API.checkPartNoExistInBop}?${queryParams}`, config())
+    request.then((response) => {
+      if (response.data) {
+        callback(response)
+      }
+    }).catch((error) => {
+      callback(error)
+      dispatch({ type: API_FAILURE })
+      apiErrors(error)
+    })
+  }
+}
 export const setRejectedCostingViewData = (data) => (dispatch) => {
   let temp = []
   // temp.push(VIEW_COSTING_DATA)
@@ -2547,3 +2635,6 @@ export const setRejectedCostingViewData = (data) => (dispatch) => {
     payload: temp,
   })
 }
+export const resetExchangeRateData = () => ({
+  type: RESET_EXCHANGE_RATE_DATA,
+});

@@ -11,6 +11,7 @@ import WarningMessage from '../../../../common/WarningMessage';
 import TooltipCustom from '../../../../common/Tooltip';
 import { number, decimalNumberLimit6, checkWhiteSpaces, percentageLimitValidation } from "../../../../../helper/validation";
 import { NUMBERMAXLENGTH } from '../../../../../config/masterData';
+import { CRMHeads } from '../../../../../config/constants';
 
 function TransportationCost(props) {
 
@@ -32,6 +33,7 @@ function TransportationCost(props) {
   const [transportCost, setTransportCost] = useState(checkForNull(data?.TransportationCost))
   const [reRenderComponent, setReRenderComponent] = useState(false)
   const [count, setCount] = useState(0)
+  const [crmHead, setCrmHead] = useState('')
 
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
 
@@ -46,6 +48,7 @@ function TransportationCost(props) {
       setValue('UOM', data && data.UOM !== undefined ? { label: data.UOM, value: data.UOMId } : [])
       setValue('Quantity', data && data.Quantity !== undefined ? data.Quantity : 0)
       setValue('Rate', data && data.Rate !== undefined ? data.Rate : 0)
+      setValue('crmHeadTransportation', data && data.TransportationCRMHead !== undefined ? { label: data.TransportationCRMHead, value: 1 } : '')
       setValue('TransportationCost', data && data.TransportationCost !== undefined ? checkForDecimalAndNull(data.TransportationCost, initialConfiguration.NoOfDecimalForPrice) : 0)
       // setRate(data && data.Rate !== undefined ? data.Rate : 0)
       // setUOM(data && data.UOMId !== undefined ? { label: data.UOM, value: data.UOMId } : [])
@@ -68,6 +71,7 @@ function TransportationCost(props) {
       Rate: getValues('Rate'),
       Quantity: getValues('Quantity'),
       TransportationCost: transportCost,
+      TransportationCRMHead: crmHead
     }
 
     const Params = {
@@ -87,7 +91,7 @@ function TransportationCost(props) {
       }
     }
 
-  }, [uom, Rate, Quantity, transportCost, reRenderComponent]);
+  }, [uom, Rate, Quantity, transportCost, reRenderComponent, crmHead]);
 
   useEffect(() => {
     dispatch(getUOMSelectList(() => { }))
@@ -112,6 +116,10 @@ function TransportationCost(props) {
     errors.TransportationCost = {}
     errors.Rate = {}
     errors.Quantity = {}
+  }
+
+  const onCRMHeadChange = (e) => {
+    setCrmHead(e?.label)
   }
 
   const handleRateChange = (event) => {
@@ -270,6 +278,27 @@ function TransportationCost(props) {
             </Row>
 
             <Row>
+              {initialConfiguration.IsShowCRMHead && <Col md="3">
+                <SearchableSelectHookForm
+                  name={`crmHeadTransportation`}
+                  type="text"
+                  label="CRM Head"
+                  errors={`${errors.crmHeadTransportation}`}
+                  Controller={Controller}
+                  control={control}
+                  register={register}
+                  mandatory={false}
+                  rules={{
+                    required: false,
+                  }}
+                  defaultValue={item.TransportationCRMHead ? { label: item.TransportationCRMHead, value: 1 } : ''}
+                  placeholder={'Select'}
+                  options={CRMHeads}
+                  required={false}
+                  handleChange={onCRMHeadChange}
+                  disabled={CostingViewMode}
+                />
+              </Col>}
               <Col md="3">
                 <SearchableSelectHookForm
                   label={'Type'}
@@ -339,7 +368,7 @@ function TransportationCost(props) {
                 />
 
               </Col>
-              <Col md="3">{TransportationType !== 'Fixed' && <TooltipCustom disabledIcon={true} id="operation-cost" tooltipText={TransportationType === 'Percentage' ? "Cost = (Operation cost * Percentage)/100" : "Cost = (Rate * Quantity)"} />}
+              <Col md="3">{TransportationType !== 'Fixed' && <TooltipCustom disabledIcon={true} id="operation-cost" tooltipText={TransportationType === 'Percentage' ? "Cost = (Operation Cost * Percentage)/100" : "Cost = (Rate * Quantity)"} />}
                 <TextFieldHookForm
                   label="Cost"
                   id="operation-cost"

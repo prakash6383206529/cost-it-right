@@ -63,25 +63,6 @@ class ProcessListing extends Component {
     }, 300);
   }
 
-  getDataList = (plant_id = '', machine_id = '') => {
-    const filterData = {
-      plant_id: plant_id,
-      machine_id: machine_id,
-    }
-    this.setState({ isLoader: true })
-    this.props.getProcessDataList(filterData, (res) => {
-      this.setState({ isLoader: false })
-      if (res && res.status === 200) {
-        let Data = res.data.DataList;
-        this.setState({ tableData: Data })
-      } else if (res && res.response && res.response.status === 412) {
-        this.setState({ tableData: [] })
-      } else {
-        this.setState({ tableData: [] })
-      }
-    })
-  }
-
   /**
   * @method handlePlant
   * @description  PLANT FILTER
@@ -155,10 +136,10 @@ class ProcessListing extends Component {
     return cell ? 'VBC' : 'ZBC';
   }
 
-  getDataList = (plant_id = '', machine_id = '') => {
+  getDataList = (ProcessName = '', ProcessCode = '') => {
     const filterData = {
-      plant_id: plant_id,
-      machine_id: machine_id,
+      ProcessName: ProcessName,
+      ProcessCode: ProcessCode,
     }
     this.setState({ isLoader: true })
     this.props.getProcessDataList(filterData, (res) => {
@@ -637,8 +618,8 @@ class ProcessListing extends Component {
  * @param {*} state
  */
 function mapStateToProps({ process }) {
-  const { filterSelectList, processList } = process
-  return { filterSelectList, processList }
+  const { processList } = process
+  return { processList }
 }
 
 /**

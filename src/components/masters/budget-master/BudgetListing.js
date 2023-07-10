@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Row, Col, TabContent, Nav, Container } from 'reactstrap'
 import { MESSAGES } from '../../../config/message'
-import { defaultPageSize, EMPTY_DATA } from '../../../config/constants'
+import { defaultPageSize, EMPTY_DATA, FILE_URL } from '../../../config/constants'
 import NoContentFound from '../../common/NoContentFound'
 import { getBudgetDataList, getPartCostingHead, } from '../actions/Budget'
 import { BUDGET_DOWNLOAD_EXCEl } from '../../../config/masterData'
@@ -23,6 +23,7 @@ import { disabledClass } from '../../../actions/Common'
 import { reactLocalStorage } from 'reactjs-localstorage'
 import { Drawer } from '@material-ui/core'
 import AddBudget from './AddBudget'
+import Attachament from '../../costing/components/Drawers/Attachament'
 
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -62,6 +63,8 @@ function BudgetListing(props) {
     const [floatingFilterData, setFloatingFilterData] = useState({ CostingHead: '', Year: '', Month: '', VendorName: '', Plant: '', PartNumber: '', PartName: '', BudgetedQuantity: '', ApprovedQuantity: '', applyPagination: '', skip: '', take: '', CustomerName: '' })
     const [disableDownload, setDisableDownload] = useState(false)
     const [noData, setNoData] = useState(false)
+    const [attachment, setAttachment] = useState(false);
+    const [viewAttachment, setViewAttachment] = useState([])
 
     const { topAndLeftMenuData } = useSelector(state => state.auth);
     const { volumeDataList, volumeDataListForDownload } = useSelector(state => state.volume);
@@ -198,7 +201,43 @@ function BudgetListing(props) {
         const cellValue = props?.value;
         return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? cellValue : '-';
     }
+    const viewAttachmentData = (index) => {
+        setAttachment(true)
+        setViewAttachment(index)
+    }
+    const closeAttachmentDrawer = (e = '') => {
+        setAttachment(false)
+    }
+    const attachmentFormatter = (props) => {
+        const row = props?.data;
+        let files = row?.Attachements
+        if (files && files?.length === 0) {
+            return '-'
+        }
+        return (
+            <>
+                <div className={"attachment images"}>
+                    {files && files.length === 1 ?
+                        files.map((f) => {
+                            const withOutTild = f.FileURL?.replace("~", "");
+                            const fileURL = `${FILE_URL}${withOutTild}`;
+                            return (
+                                <a href={fileURL} target="_blank" rel="noreferrer">
+                                    {f.OriginalFileName}
+                                </a>
+                            )
 
+                        }) : <button
+                            type='button'
+                            title='View Attachment'
+                            className='btn-a pl-0'
+                            onClick={() => viewAttachmentData(row)}
+                        >View Attachment</button>}
+                </div>
+            </>
+        )
+
+    }
 
     const formToggle = () => {
         setShowBudgetForm(true)
@@ -406,6 +445,7 @@ function BudgetListing(props) {
     }
 
     const resetState = () => {
+        setNoData(false)
         gridOptions.columnApi.resetColumnState();
         gridOptions.api.setFilterModel(null);
         if (props.isMasterSummaryDrawer === false) {
@@ -482,6 +522,7 @@ function BudgetListing(props) {
         totalValueRenderer: buttonFormatter,
         customNoRowsOverlay: NoContentFound,
         hyphenFormatter: hyphenFormatter,
+        attachmentFormatter: attachmentFormatter,
     };
 
     if (showBudgetForm) {
@@ -497,7 +538,7 @@ function BudgetListing(props) {
     const toggleDrawer = () => {
         setBulkUploadBtn(false)
     }
-    /**
+    /**s
      * @method render
      * @description Renders the component
      */
@@ -605,6 +646,8 @@ function BudgetListing(props) {
                                     <AgGridColumn field="vendorNameWithCode" headerName="Vendor (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                     <AgGridColumn field="customerNameWithCode" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                     {!props?.isMasterSummaryDrawer && <AgGridColumn field="BudgetingId" width={120} headerName="Actions" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
+                                    {props.isMasterSummaryDrawer && <AgGridColumn field="Attachements" headerName='Attachments' cellRenderer='attachmentFormatter'></AgGridColumn>}
+                                    {props.isMasterSummaryDrawer && <AgGridColumn field="Remark" tooltipField="Remark" ></AgGridColumn>}
                                 </AgGridReact>
                                 <div className='button-wrapper'>
                                     {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} globalTake={globalTake} />}
@@ -655,7 +698,17 @@ function BudgetListing(props) {
                     </Container>
 
                 </Drawer>}
-
+                {
+                    attachment && (
+                        <Attachament
+                            isOpen={attachment}
+                            index={viewAttachment}
+                            closeDrawer={closeAttachmentDrawer}
+                            anchor={'right'}
+                            gridListing={true}
+                        />
+                    )
+                }
             </div>
         </>
     )

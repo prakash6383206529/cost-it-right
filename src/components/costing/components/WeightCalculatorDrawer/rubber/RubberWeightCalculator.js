@@ -28,7 +28,7 @@ function RubberWeightCalculator(props) {
         scrapCost: WeightCalculatorRequest && WeightCalculatorRequest.ScrapCost !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.ScrapCost, getConfigurationKey().NoOfDecimalForPrice) : '',
     }
 
-    const [dataToSend, setDataToSend] = useState(WeightCalculatorRequest)
+    const [dataToSend, setDataToSend] = useState({ ...WeightCalculatorRequest })
     const { rmRowData, rmData, CostingViewMode, item } = props
     const [isEdit, setIsEdit] = useState(false)
     const [editIndex, setEditIndex] = useState('')
@@ -37,6 +37,7 @@ function RubberWeightCalculator(props) {
     const [additionalCostType, setAdditionalCostType] = useState('')
     const [totalAdditionalRmCost, setTotalAdditionalRmCost] = useState('')
     const [rejectionCostType, setRejectionCostType] = useState('')
+    const [disablePercentFields, setDisablePercentFields] = useState(false)
 
     const rmGridFields = 'rmGridFields';
     const { register, control, setValue, handleSubmit, getValues, reset, formState: { errors }, } = useForm({
@@ -47,7 +48,7 @@ function RubberWeightCalculator(props) {
 
     useEffect(() => {
         if (WeightCalculatorRequest) {
-            setTableData(WeightCalculatorRequest.CostingRubberAdditionalRawMaterial)
+            setTableData(WeightCalculatorRequest.CostingRubberAdditionalRawMaterial ? WeightCalculatorRequest.CostingRubberAdditionalRawMaterial : [])
             setRejectionCostType({ label: WeightCalculatorRequest.RejectionType, value: 5 })
             setTimeout(() => {
                 setValue('grossRMRate', WeightCalculatorRequest.GrossRMRate ? checkForDecimalAndNull(WeightCalculatorRequest.GrossRMRate, getConfigurationKey().NoOfDecimalForPrice) : '')
@@ -57,6 +58,8 @@ function RubberWeightCalculator(props) {
                 setValue('rmCost', WeightCalculatorRequest.RawMaterialCost ? checkForDecimalAndNull(WeightCalculatorRequest.RawMaterialCost, getConfigurationKey().NoOfDecimalForPrice) : '')
                 setValue('scrapWeight', WeightCalculatorRequest.RawMaterialScrapWeight ? checkForDecimalAndNull(WeightCalculatorRequest.RawMaterialScrapWeight, getConfigurationKey().NoOfDecimalForPrice) : '')
                 setValue('NetScrapRate', WeightCalculatorRequest && WeightCalculatorRequest.NetScrapRate !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.NetScrapRate, getConfigurationKey().NoOfDecimalForPrice) : '')
+                setValue('rejectionCost', WeightCalculatorRequest && WeightCalculatorRequest.RejectionCost !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.RejectionCost, getConfigurationKey().NoOfDecimalForPrice) : '')
+                setValue('netRmc', WeightCalculatorRequest && WeightCalculatorRequest.NetRawMaterialCost !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.NetRawMaterialCost, getConfigurationKey().NoOfDecimalForPrice) : '',)
                 setDataToSend(WeightCalculatorRequest)
             }, 500);
         }
@@ -68,18 +71,26 @@ function RubberWeightCalculator(props) {
             return accummlator + checkForNull(el.NetCost)
         }, 0)
 
-        setTotalAdditionalRmCost(Number(total))
+        setTotalAdditionalRmCost(Number(checkForNull(total)))
         let grossRmRate = checkForNull(Number(getValues('grossRMRate')))
         setValue('netTotalRmRate', checkForDecimalAndNull(Number(grossRmRate) + Number(total), getConfigurationKey().NoOfDecimalForPrice))
         let obj = { ...dataToSend }
         obj.NetRMRate = Number(grossRmRate) + Number(total)
         setDataToSend(obj)
+
+        if (tableData && tableData.length === 0) {
+            setDisablePercentFields(false)
+        } else {
+            setDisablePercentFields(true)
+        }
+
+        checkRejection()
     }, [tableData])
 
 
     const fieldValues = useWatch({
         control,
-        name: ['finishedWeight', 'grossWeight', 'scrapRecoveryPercentage'],
+        name: ['finishedWeight', 'grossWeight', 'scrapRecoveryPercentage', 'netTotalRmRate'],
     })
 
     const dropDown = [
@@ -104,6 +115,7 @@ function RubberWeightCalculator(props) {
     useEffect(() => {
         if (!CostingViewMode) {
             calculateScrapWeight()
+            checkRejection()
         }
     }, [fieldValues])
 
@@ -113,7 +125,7 @@ function RubberWeightCalculator(props) {
         let grossWeight = checkForNull(Number(getValues('grossWeight')))
         let finishedWeight = checkForNull(Number(getValues('finishedWeight')))
         let scrapRecoveryPercentage = checkForNull(Number(getValues('scrapRecoveryPercentage'))) / 100
-        let scrapRate = checkForNull(Number(getValues('NetScrapRate'))) / 100
+        let scrapRate = checkForNull(Number(getValues('NetScrapRate')))
         let netRmRate = checkForNull(Number(getValues('netTotalRmRate')))
 
         if (grossWeight) {
@@ -126,7 +138,7 @@ function RubberWeightCalculator(props) {
             let rmCost = ((grossWeight * netRmRate) - checkForNull(Number(scrapCost)))
             setValue('rmCost', checkForDecimalAndNull(rmCost, getConfigurationKey().NoOfDecimalForPrice))
 
-            let obj = { ...dataToSend }
+            let obj = dataToSend
             obj.ScrapCost = scrapCost
             obj.RawMaterialScrapWeight = scrapWeight
             obj.RawMaterialCost = rmCost
@@ -164,6 +176,7 @@ function RubberWeightCalculator(props) {
         }, 0)
         let obj = { ...dataToSend }
         obj.GrossRMRate = grossRMRate
+        obj.NetRMRate = Number(grossRMRate) + Number(totalAdditionalRmCost)
         setDataToSend(obj)
         setValue('grossRMRate', checkForDecimalAndNull(grossRMRate, getConfigurationKey().NoOfDecimalForInputOutput))
         setValue('applicablityAdditional', checkForDecimalAndNull(grossRMRate, getConfigurationKey().NoOfDecimalForInputOutput))
@@ -187,7 +200,7 @@ function RubberWeightCalculator(props) {
     const calcForOutside = () => {
         let temp = [...rmData]
         temp && temp.map((item, index) => {
-            item.GrossWeight = calculatePercentageValue(dataToSend?.totalGrossWeight, getValues(`rmGridFields.${index}.Percentage`))
+            item.GrossWeight = calculatePercentageValue(getValues('grossWeight'), getValues(`rmGridFields.${index}.Percentage`))
             item.ScrapWeight = calculatePercentageValue(dataToSend?.scrapCost, getValues(`rmGridFields.${index}.Percentage`))
             item.FinishWeight = calculatePercentageValue(getValues('finishedWeight'), getValues(`rmGridFields.${index}.Percentage`))
             return item
@@ -210,7 +223,6 @@ function RubberWeightCalculator(props) {
         obj.RawMaterialIdRef = rmRowData?.RawMaterialId
         obj.GrossRMRate = dataToSend.GrossRMRate
         obj.AdditionalRMRate = totalAdditionalRmCost
-
         obj.NetRMRate = dataToSend.NetRMRate ? dataToSend.NetRMRate : 0
         obj.NetScrapRate = checkForNull(Number(getValues('NetScrapRate')))
         obj.ScrapCost = dataToSend.ScrapCost ? dataToSend.ScrapCost : 0
@@ -220,10 +232,9 @@ function RubberWeightCalculator(props) {
         obj.RawMaterialScrapWeight = dataToSend.RawMaterialScrapWeight ? dataToSend.RawMaterialScrapWeight : 0
         obj.RawMaterialCost = dataToSend.RawMaterialCost ? dataToSend.RawMaterialCost : 0
         obj.NetRawMaterialCost = dataToSend.NetRawMaterialCost ? dataToSend.NetRawMaterialCost : 0
-        obj.RejectionCost = 0
         obj.RejectionValue = checkForNull(Number(getValues('rejectionValue')))
         obj.RejectionType = rejectionCostType ? rejectionCostType.label : ''
-
+        obj.RejectionCost = dataToSend.RejectionCost
         obj.CostingRubberAdditionalRawMaterial = tableData
 
         let tempArray = []
@@ -237,17 +248,17 @@ function RubberWeightCalculator(props) {
         obj.CostingRubberCalculationRawMaterials = tempArray
 
         dispatch(saveRawMaterialCalculationForRubberCompound(obj, res => {
-            if (res.data.Result) {
+            if (res?.data?.Result) {
                 obj.WeightCalculationId = res.data.Identity
                 Toaster.success("Calculation saved successfully")
                 obj.RawMaterialCost = obj.NetRawMaterialCost
-                props.toggleDrawer('', obj)
+                props.toggleDrawer('rubber', obj)
             }
         }))
     }), 500);
 
     const onCancel = () => {
-        props.toggleDrawer('')
+        props.toggleDrawer('cancel')
     }
 
     const handleKeyDown = function (e) {
@@ -266,9 +277,9 @@ function RubberWeightCalculator(props) {
 
             if (value && applicablityCost) {
                 if (String(e.label) === String('Fixed')) {
-                    setValue('netCostAdditional', checkForDecimalAndNull(value + applicablityCost, getConfigurationKey().NoOfDecimalForPrice))
+                    setValue('netCostAdditional', checkForDecimalAndNull(value, getConfigurationKey().NoOfDecimalForPrice))
                 } else {
-                    setValue('netCostAdditional', checkForDecimalAndNull(applicablityCost + (value / 100), getConfigurationKey().NoOfDecimalForPrice))
+                    setValue('netCostAdditional', checkForDecimalAndNull(((value * applicablityCost) / 100), getConfigurationKey().NoOfDecimalForPrice))
                 }
             }
         }
@@ -281,10 +292,21 @@ function RubberWeightCalculator(props) {
         let applicablityCost = checkForNull(Number(getValues('applicablityAdditional')))
 
         if (String(additionalCostType.label) === String('Fixed')) {
-            setValue('netCostAdditional', checkForDecimalAndNull(value + applicablityCost, getConfigurationKey().NoOfDecimalForPrice))
+            setValue('netCostAdditional', checkForDecimalAndNull(value, getConfigurationKey().NoOfDecimalForPrice))
 
         } else {
-            setValue('netCostAdditional', checkForDecimalAndNull(applicablityCost + (value / 100), getConfigurationKey().NoOfDecimalForPrice))
+
+            if (value > 100) {
+                Toaster.warning('Percentage value should not be greater than 100')
+                setTimeout(() => {
+                    setValue('valueAdditional', 0)
+                    handleValueChange({ target: { value: 0 } })
+                }, 100);
+                return false
+
+            } else {
+                setValue('netCostAdditional', checkForDecimalAndNull(((value * applicablityCost) / 100), getConfigurationKey().NoOfDecimalForPrice))
+            }
         }
     }
 
@@ -301,10 +323,24 @@ function RubberWeightCalculator(props) {
             if (value && rmCost) {
                 if (String(e.label) === String('Fixed')) {
                     setValue('netRmc', checkForDecimalAndNull(value + rmCost, getConfigurationKey().NoOfDecimalForPrice))
+                    setValue('rejectionCost', checkForDecimalAndNull(value, getConfigurationKey().NoOfDecimalForPrice))
                     obj.NetRawMaterialCost = value + rmCost
+                    obj.RejectionCost = value
                 } else {
-                    setValue('netRmc', checkForDecimalAndNull(rmCost + (value / 100), getConfigurationKey().NoOfDecimalForPrice))
-                    obj.NetRawMaterialCost = rmCost + (value / 100)
+
+                    if (value > 100) {
+                        Toaster.warning('Percentage value should not be greater than 100')
+                        setTimeout(() => {
+                            setValue('rejectionValue', 0)
+                            handleValueChangeRejection({ target: { value: 0 } })
+                        }, 100);
+                        return false
+                    } else {
+                        setValue('netRmc', checkForDecimalAndNull(rmCost + ((value / 100) * rmCost), getConfigurationKey().NoOfDecimalForPrice))
+                        setValue('rejectionCost', checkForDecimalAndNull((value / 100) * rmCost, getConfigurationKey().NoOfDecimalForPrice))
+                        obj.NetRawMaterialCost = rmCost + ((value / 100) * rmCost)
+                        obj.RejectionCost = ((value / 100) * rmCost)
+                    }
                 }
                 setDataToSend(obj)
             }
@@ -322,7 +358,9 @@ function RubberWeightCalculator(props) {
 
             if (String(rejectionCostType.label) === String('Fixed')) {
                 setValue('netRmc', checkForDecimalAndNull(value + rmCost, getConfigurationKey().NoOfDecimalForPrice))
+                setValue('rejectionCost', checkForDecimalAndNull(value, getConfigurationKey().NoOfDecimalForPrice))
                 obj.NetRawMaterialCost = value + rmCost
+                obj.RejectionCost = value
 
             } else {
 
@@ -334,14 +372,51 @@ function RubberWeightCalculator(props) {
                     }, 100);
                     return false
                 } else {
-                    setValue('netRmc', checkForDecimalAndNull(rmCost + (value / 100), getConfigurationKey().NoOfDecimalForPrice))
-                    obj.NetRawMaterialCost = rmCost + (value / 100)
+                    setValue('rejectionCost', checkForDecimalAndNull((value / 100) * rmCost, getConfigurationKey().NoOfDecimalForPrice))
+                    setValue('netRmc', checkForDecimalAndNull(rmCost + ((value / 100) * rmCost), getConfigurationKey().NoOfDecimalForPrice))
+                    obj.NetRawMaterialCost = rmCost + ((value / 100) * rmCost)
+                    obj.RejectionCost = ((value / 100) * rmCost)
                 }
             }
             setDataToSend(obj)
         }
     }
 
+
+    const checkRejection = () => {
+
+        let value = checkForNull(Number(getValues('rejectionValue')))
+        let rmCost = checkForNull(Number(getValues('rmCost')))
+        let obj = dataToSend
+
+        if (value && rmCost && rejectionCostType) {
+            if (String(rejectionCostType.label) === String('Fixed')) {
+                setValue('netRmc', checkForDecimalAndNull(value + rmCost, getConfigurationKey().NoOfDecimalForPrice))
+                setValue('rejectionCost', checkForDecimalAndNull(value, getConfigurationKey().NoOfDecimalForPrice))
+                obj.NetRawMaterialCost = value + rmCost
+                obj.RejectionCost = value
+            } else {
+                if (value > 100) {
+                    Toaster.warning('Percentage value should not be greater than 100')
+                    setTimeout(() => {
+                        setValue('rejectionValue', 0)
+                        handleValueChangeRejection({ target: { value: 0 } })
+                    }, 100);
+                    return false
+                } else {
+                    setValue('netRmc', checkForDecimalAndNull(rmCost + ((value / 100) * rmCost), getConfigurationKey().NoOfDecimalForPrice))
+                    setValue('rejectionCost', checkForDecimalAndNull((value / 100) * rmCost, getConfigurationKey().NoOfDecimalForPrice))
+                    obj.NetRawMaterialCost = rmCost + ((value / 100) * rmCost)
+                    obj.RejectionCost = ((value / 100) * rmCost)
+                }
+            }
+            setDataToSend(obj)
+        } else {
+
+            setValue('netRmc', checkForDecimalAndNull(rmCost, getConfigurationKey().NoOfDecimalForPrice))
+            obj.NetRawMaterialCost = rmCost
+        }
+    }
 
     const resetTable = (e) => {
         setValue('description', '')
@@ -398,7 +473,7 @@ function RubberWeightCalculator(props) {
             return Number(accummlator) + Number(checkForNull(el.NetCost))
         }, 0)
 
-        return total
+        return checkForDecimalAndNull(total, getConfigurationKey().NoOfDecimalForPrice)
     }
 
     const editRow = (index) => {
@@ -419,6 +494,22 @@ function RubberWeightCalculator(props) {
             let grossWeight = checkForNull(Number(getValues('grossWeight')))
 
             if (finishWeight > grossWeight) {
+                Toaster.warning('Finish weight cannot be greater than gross weight')
+                setTimeout(() => {
+                    setValue('finishedWeight', 0)
+                }, 100);
+                return false
+            }
+        }
+    }
+
+    const handleGrossWeight = (e) => {
+
+        if (e) {
+            let grossWeight = Number(checkForNull(e.target.value))
+            let finishedWeight = checkForNull(Number(getValues('finishedWeight')))
+
+            if (finishedWeight > grossWeight) {
                 Toaster.warning('Finish weight cannot be greater than gross weight')
                 setTimeout(() => {
                     setValue('finishedWeight', 0)
@@ -483,7 +574,7 @@ function RubberWeightCalculator(props) {
                                                             customClassName={'withBorder'}
                                                             handleChange={(e) => { percentageChange(e) }}
                                                             errors={errors && errors.rmGridFields && errors.rmGridFields[index] !== undefined ? errors.rmGridFields[index].Percentage : ''}
-                                                            disabled={props.isEditFlag ? false : true}
+                                                            disabled={props.CostingViewMode || disablePercentFields}
                                                         />
                                                     </td>
                                                 </tr>
@@ -495,7 +586,7 @@ function RubberWeightCalculator(props) {
                             </Table>
                             <Row className={"mx-0"}>
                                 <Col md="3">
-                                    <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'rm-rate-ferrous'} tooltipText={'Net RM Rate = (RM1 Rate * Percentage / 100) + (RM2 Rate * Percentage / 100) + ....'} />
+                                    <TooltipCustom width={"240px"} disabledIcon={true} id={'rm-rate-ferrous'} tooltipText={'Net RM Rate = (RM1 Rate * Percentage / 100) + (RM2 Rate * Percentage / 100) + ....'} />
                                     <NumberFieldHookForm
                                         label={`Gross RM Rate`}
                                         name={'grossRMRate'}
@@ -529,7 +620,7 @@ function RubberWeightCalculator(props) {
                                             Controller={Controller}
                                             control={control}
                                             register={register}
-                                            mandatory={false}
+                                            mandatory={true}
                                             rules={{
                                                 required: false,
                                                 validate: { checkWhiteSpaces },
@@ -543,7 +634,7 @@ function RubberWeightCalculator(props) {
                                         />
                                     </Col>
 
-                                    <Col md="2">
+                                    <Col md="3">
                                         <SearchableSelectHookForm
                                             label={`Type`}
                                             name={'additionalCostType'}
@@ -551,7 +642,7 @@ function RubberWeightCalculator(props) {
                                             Controller={Controller}
                                             control={control}
                                             register={register}
-                                            mandatory={false}
+                                            mandatory={true}
                                             options={dropDown}
                                             handleChange={handleType}
                                             defaultValue={''}
@@ -562,7 +653,7 @@ function RubberWeightCalculator(props) {
                                         />
                                     </Col>
 
-                                    <Col md="2">
+                                    <Col md="3">
                                         <NumberFieldHookForm
                                             label={`Value`}
                                             id={'valueAdditional'}
@@ -570,15 +661,13 @@ function RubberWeightCalculator(props) {
                                             Controller={Controller}
                                             control={control}
                                             register={register}
-                                            mandatory={false}
+                                            mandatory={true}
                                             rules={{
                                                 required: false,
                                                 pattern: {
-
-                                                    value: /^[0-9]\d*(\.\d+)?$/i,
-                                                    message: 'Invalid Number.',
+                                                    value: /^\d{0,4}(\.\d{0,7})?$/i,
+                                                    message: 'Maximum length for integer is 4 and for decimal is 7',
                                                 },
-
                                             }}
                                             handleChange={handleValueChange}
                                             defaultValue={''}
@@ -589,7 +678,8 @@ function RubberWeightCalculator(props) {
                                         />
                                     </Col>
 
-                                    <Col md="2">
+                                    <Col md="3">
+                                        <TooltipCustom disabledIcon={true} width={"230px"} id={'applicablityAdditional'} tooltipText={`Applicablity Cost = Gross RM Rate`} />
                                         <NumberFieldHookForm
                                             label={`Applicablity Cost`}
                                             id={'applicablityAdditional'}
@@ -616,7 +706,8 @@ function RubberWeightCalculator(props) {
                                         />
                                     </Col>
 
-                                    <Col md="2">
+                                    <Col md="3">
+                                        <TooltipCustom disabledIcon={true} id={'netCostAdditional'} tooltipText={`Net Cost = Value${additionalCostType.label === 'Fixed' ? "" : " * Applicablity Cost / 100"}`} />
                                         <NumberFieldHookForm
                                             label={`Net Cost`}
                                             id={'netCostAdditional'}
@@ -643,8 +734,8 @@ function RubberWeightCalculator(props) {
                                         />
                                     </Col>
 
-                                    <Col md="3" className="pr-0 mb-3">
-                                        <div className='mt5'>
+                                    <Col md="3" className="pr-0 mt-4">
+                                        <div className='mt8'>
                                             {isEdit ? (
                                                 <>
                                                     <button
@@ -652,7 +743,7 @@ function RubberWeightCalculator(props) {
                                                         className={'btn btn-primary pull-left mr5'}
                                                         onClick={() => addRow()}
                                                     >
-                                                        Update
+                                                        <div className={"plus"}></div>Update
                                                     </button>
 
                                                     <button
@@ -687,13 +778,12 @@ function RubberWeightCalculator(props) {
                                     </Col>
 
                                     <Col md="12">
-                                        <Table className="table mb-0 forging-cal-table" size="sm">
+                                        <Table className="table border" size="sm">
                                             <thead>
                                                 <tr>
                                                     <th>{`Description`}</th>
                                                     {<th>{`Type`}</th>}
                                                     {<th>{`Value`}</th>}
-                                                    {<th>{`Applicablity Cost`}</th>}
                                                     {<th>{`Net Cost`}</th>}
                                                     <th>{`Actions`}</th>
                                                 </tr>
@@ -707,7 +797,6 @@ function RubberWeightCalculator(props) {
                                                                     <td>{item.Description ? item.Description : '-'} </td>
                                                                     {<td>{item.Type ? item.Type : '-'}</td>}
                                                                     {<td>{checkForDecimalAndNull(item.Value, getConfigurationKey().NoOfDecimalForInputOutput) !== null ? checkForDecimalAndNull(item.Value, getConfigurationKey().NoOfDecimalForInputOutput) : '-'}</td>}
-                                                                    {<td>{checkForDecimalAndNull(item.ApplicabilityCost, getConfigurationKey().NoOfDecimalForInputOutput) !== null ? checkForDecimalAndNull(item.ApplicabilityCost, getConfigurationKey().NoOfDecimalForInputOutput) : '-'}</td>}
                                                                     {<td>{checkForDecimalAndNull(item.NetCost, getConfigurationKey().NoOfDecimalForInputOutput) !== null ? checkForDecimalAndNull(item.NetCost, getConfigurationKey().NoOfDecimalForInputOutput) : '-'}</td>}
 
                                                                     <td>
@@ -734,31 +823,33 @@ function RubberWeightCalculator(props) {
                                                             </Fragment>
                                                         )
                                                     })}
-                                                {tableData && tableData.length === 0 && (
+                                                {tableData && tableData.length === 0 ? (
                                                     <tr>
                                                         <td colspan="15">
                                                             <NoContentFound title={EMPTY_DATA} />
                                                         </td>
                                                     </tr>
-                                                )}
+                                                ) : <tr className='table-footer font-weight-500'>
+                                                    <td colspan="3" className="text-right">
+                                                        Total Additional RM Cost :
+                                                    </td>
+                                                    <td colspan="2">
+                                                        {(getTotal(tableData))}
+                                                    </td>
+                                                </tr>}
                                             </tbody>
-
                                         </Table>
-                                        <div className="col-md-12 text-right bluefooter-butn border">
-                                            <span className="w-50 d-inline-block">
-                                                {`Total Additional RM Cost : `}
-                                                {checkForDecimalAndNull(getTotal(tableData), trim)}
-                                            </span>
-                                        </div>
                                     </Col>
                                 </Row>
                             </Fragment>
 
                             <Row className={'mt25 mx-0'}>
                                 <Col md="3" >
+                                    <TooltipCustom disabledIcon={true} width={"240px"} id={'netTotalRmRate'} tooltipText={`Net RM Rate = Gross RM Rate + Total Additional RM Cost`} />
                                     <NumberFieldHookForm
                                         label={`Net RM Rate`}
                                         name={'netTotalRmRate'}
+                                        id={'netTotalRmRate'}
                                         Controller={Controller}
                                         control={control}
                                         register={register}
@@ -782,9 +873,11 @@ function RubberWeightCalculator(props) {
                                 </Col>
 
                                 <Col md="3" >
+                                    <TooltipCustom width={"240px"} disabledIcon={true} id={'NetScrapRate'} tooltipText={'Net Scrap Rate = (RM1 Scrap Rate * Percentage / 100) + (RM2 Scrap Rate * Percentage / 100) + ....'} />
                                     <NumberFieldHookForm
                                         label={`Net Scrap Rate`}
                                         name={'NetScrapRate'}
+                                        id={'NetScrapRate'}
                                         Controller={Controller}
                                         control={control}
                                         register={register}
@@ -807,16 +900,21 @@ function RubberWeightCalculator(props) {
                                 </Col>
 
                                 <Col md="3">
-                                    <TooltipCustom disabledIcon={true} id={'scrap-weight-ferrous'} tooltipText={'Scrap Weight = (Casting Weight - Finished Weight)'} />
                                     <NumberFieldHookForm
                                         label={`Gross Weight (Kg)`}
                                         name={'grossWeight'}
-                                        id={'scrap-weight-ferrous'}
                                         Controller={Controller}
                                         control={control}
                                         register={register}
-                                        mandatory={false}
-                                        handleChange={() => { }}
+                                        mandatory={true}
+                                        rules={{
+                                            required: true,
+                                            pattern: {
+                                                value: /^\d{0,4}(\.\d{0,7})?$/i,
+                                                message: 'Maximum length for integer is 4 and for decimal is 7',
+                                            },
+                                        }}
+                                        handleChange={handleGrossWeight}
                                         className=""
                                         customClassName={'withBorder'}
                                         errors={errors.grossWeight}
@@ -832,14 +930,15 @@ function RubberWeightCalculator(props) {
                                         Controller={Controller}
                                         control={control}
                                         register={register}
-                                        mandatory={false}
+                                        mandatory={true}
                                         rules={{
                                             required: true,
-                                            validate: { number, checkWhiteSpaces },
-
+                                            pattern: {
+                                                value: /^\d{0,4}(\.\d{0,7})?$/i,
+                                                message: 'Maximum length for integer is 4 and for decimal is 7',
+                                            },
                                         }}
                                         handleChange={handleFinishWeight}
-
                                         className=""
                                         customClassName={'withBorder'}
                                         errors={errors.finishedWeight}
@@ -848,11 +947,11 @@ function RubberWeightCalculator(props) {
                                 </Col>
 
                                 <Col md="3">
-                                    <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'scrap-cost-ferrous'} tooltipText={'Scrap Cost = (Scrap Weight * Scrap Recovery Percentage * Scrap Rate / 100)'} />
+                                    <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'scrap-weight'} tooltipText={'Scrap weight = (Gross weight - Finish weight)'} />
                                     <NumberFieldHookForm
                                         label={`Scrap Weight (Kg)`}
                                         name={'scrapWeight'}
-                                        id={'scrap-cost-ferrous'}
+                                        id={'scrap-weight'}
                                         Controller={Controller}
                                         control={control}
                                         register={register}
@@ -866,17 +965,15 @@ function RubberWeightCalculator(props) {
                                 </Col>
 
                                 <Col md="3">
-                                    <TooltipCustom disabledIcon={true} id={'net-rm-ferrous'} tooltipText={'Net RM Cost = (Gross Weight * RM Rate - Scrap Cost)'} />
                                     <NumberFieldHookForm
                                         label={`Scrap Recovery Percentage`}
                                         name={'scrapRecoveryPercentage'}
-                                        id={'net-rm-ferrous'}
                                         Controller={Controller}
                                         control={control}
                                         register={register}
                                         mandatory={false}
                                         rules={{
-                                            required: true,
+                                            required: false,
                                             validate: { number, checkWhiteSpaces, percentageLimitValidation },
                                             max: {
                                                 value: 100,
@@ -884,8 +981,6 @@ function RubberWeightCalculator(props) {
                                             },
                                         }}
                                         handleChange={() => { }}
-                                        defaultValue={
-                                            WeightCalculatorRequest.NetRMCost ?? WeightCalculatorRequest.NetRMCost}
                                         className=""
                                         customClassName={'withBorder'}
                                         errors={errors.scrapRecoveryPercentage}
@@ -894,11 +989,11 @@ function RubberWeightCalculator(props) {
                                 </Col>
 
                                 <Col md="3">
-                                    <TooltipCustom disabledIcon={true} id={'net-rm-ferrous'} tooltipText={'Net RM Cost = (Gross Weight * RM Rate - Scrap Cost)'} />
+                                    <TooltipCustom disabledIcon={true} id={'scrapcost'} tooltipText={'Scrap cost = (Net Scrap Rate*Scrap Weight*Scrap Recovery Percentage)/100'} />
                                     <NumberFieldHookForm
                                         label={`Scrap Cost`}
                                         name={'scrapCost'}
-                                        id={'net-rm-ferrous'}
+                                        id={'scrapcost'}
                                         Controller={Controller}
                                         control={control}
                                         register={register}
@@ -912,11 +1007,11 @@ function RubberWeightCalculator(props) {
                                 </Col>
 
                                 <Col md="3">
-                                    <TooltipCustom disabledIcon={true} id={'net-rm-ferrous'} tooltipText={'Net RM Cost = (Gross Weight * RM Rate - Scrap Cost)'} />
+                                    <TooltipCustom disabledIcon={true} id={'rmcost'} tooltipText={'RM Cost = (Gross Weight *Net RM Rate)-Scrap Cost '} />
                                     <NumberFieldHookForm
                                         label={`RM Cost`}
                                         name={'rmCost'}
-                                        id={'net-rm-ferrous'}
+                                        id={'rmcost'}
                                         Controller={Controller}
                                         control={control}
                                         register={register}
@@ -937,7 +1032,7 @@ function RubberWeightCalculator(props) {
                                     </div>
                                 </Col>
 
-                                <Col md="2">
+                                <Col md="3">
                                     <SearchableSelectHookForm
                                         label={`Rejection type`}
                                         name={'rejectionType'}
@@ -956,7 +1051,7 @@ function RubberWeightCalculator(props) {
                                     />
                                 </Col>
 
-                                <Col md="2">
+                                <Col md="3">
                                     <NumberFieldHookForm
                                         label={`Rejection value`}
                                         id={'rejectionValue'}
@@ -968,11 +1063,9 @@ function RubberWeightCalculator(props) {
                                         rules={{
                                             required: false,
                                             pattern: {
-
-                                                value: /^[0-9]\d*(\.\d+)?$/i,
-                                                message: 'Invalid Number.',
+                                                value: /^\d{0,4}(\.\d{0,7})?$/i,
+                                                message: 'Maximum length for integer is 4 and for decimal is 7',
                                             },
-
                                         }}
                                         handleChange={handleValueChangeRejection}
                                         defaultValue={''}
@@ -984,7 +1077,35 @@ function RubberWeightCalculator(props) {
                                 </Col>
 
 
-                                <Col md="2">
+                                <Col md="3">
+                                    <TooltipCustom disabledIcon={true} id={'rejectionCost'} tooltipText={`Rejection Cost = Rejection Value${rejectionCostType === 'Fixed' ? "" : " * RM Cost / 100"}`} />
+                                    <NumberFieldHookForm
+                                        label={`Rejection Cost`}
+                                        id={'rejectionCost'}
+                                        name={'rejectionCost'}
+                                        Controller={Controller}
+                                        control={control}
+                                        register={register}
+                                        mandatory={false}
+                                        rules={{
+                                            required: false,
+                                            pattern: {
+                                                value: /^\d{0,4}(\.\d{0,7})?$/i,
+                                                message: 'Maximum length for integer is 4 and for decimal is 7',
+                                            },
+                                        }}
+                                        handleChange={handleValueChangeRejection}
+                                        defaultValue={''}
+                                        className=""
+                                        customClassName={'withBorder'}
+                                        errors={errors.rejectionCost}
+                                        disabled={true}
+                                    />
+                                </Col>
+
+
+                                <Col md="3">
+                                    <TooltipCustom width={"240px"} disabledIcon={true} id={'netRmc'} tooltipText={'Net RMC = RM Cost + Rejection Cost'} />
                                     <NumberFieldHookForm
                                         label={`Net RMC`}
                                         id={'netRmc'}

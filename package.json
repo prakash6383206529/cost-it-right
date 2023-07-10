@@ -15,6 +15,7 @@
     "classnames": "^2.3.1",
     "crypto-js": "^4.1.1",
     "css-what": "^5.0.1",
+    "date-fns": "^2.30.0",
     "dayjs": "^1.10.7",
     "dotenv": "^8.2.0",
     "flowpoints": "^1.0.18",

@@ -620,8 +620,8 @@ function ApprovalSummary(props) {
                 />
               </Col>
             </Row> */}
-
-            {approvalDetails.CostingTypeId === VBCTypeId && <>
+            {/* HIDE FOR @MIL START*/}
+            {/* {approvalDetails.CostingTypeId === VBCTypeId && <>
               <Row className="mb-3">
                 <Col md="6"><div className="left-border">{'Last Revision Data:'}</div></Col>
                 <Col md="6">
@@ -642,12 +642,10 @@ function ApprovalSummary(props) {
                   <div align="center">
                     {editWarning && <NoContentFound title={"There is no data for the Last Revision."} />}
                   </div>
-                  {/* {costingDrawer && lastRevisionDataAcc && <div align="center">
-                    <NoContentFound title={"There is no data for the Last Revision."} />
-                  </div>} */}
                 </div>
               </Row>
-            </>}
+            </>} */}
+            {/* HIDE FOR @MIL END*/}
             <Row>
               <Col md="10">
                 <div className="left-border">{'Costing Summary:'}</div>

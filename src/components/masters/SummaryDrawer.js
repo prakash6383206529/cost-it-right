@@ -10,7 +10,7 @@ import { Fragment } from 'react';
 import MasterSendForApproval from './MasterSendForApproval';
 import LoaderCustom from '../common/LoaderCustom';
 import OperationListing from './operation/OperationListing'
-import { BOP_MASTER_ID, RM_MASTER_ID, OPERATIONS_ID, MACHINE_MASTER_ID, FILE_URL, BUDGET_ID } from '../../config/constants';
+import { BOP_MASTER_ID, RM_MASTER_ID, OPERATIONS_ID, MACHINE_MASTER_ID, FILE_URL, BUDGET_ID, APPROVED_STATUS } from '../../config/constants';
 import MachineRateListing from './machine-master/MachineRateListing';
 import { loggedInUserId, userDetails, userTechnologyDetailByMasterId } from '../../helper';
 import { checkFinalUser } from '../costing/actions/Costing';
@@ -61,25 +61,25 @@ function SummaryDrawer(props) {
             setApprovalDetails({ IsSent: Data.IsSent, IsFinalLevelButtonShow: Data.IsFinalLevelButtonShow, ApprovalProcessId: Data.ApprovalProcessId, MasterApprovalProcessSummaryId: Data.ApprovalProcessSummaryId, Token: Data.Token, MasterId: Data.MasterId })
             setLoader(false)
             if (Number(props.masterId) === RM_MASTER_ID) {
-                CostingTypeId = Data.ImpactedMasterDataList[0]?.CostingTypeId
-                setFiles(Data.ImpactedMasterDataList[0].Files)
-                Data.ImpactedMasterDataList?.length > 0 ? setIsDataInMaster(true) : setIsDataInMaster(false);
+                CostingTypeId = Data.ImpactedMasterDataList.RawMaterialListResponse[0]?.CostingTypeId
+                setFiles(Data.ImpactedMasterDataList.RawMaterialListResponse[0].Attachements)
+                Data.ImpactedMasterDataList?.RawMaterialListResponse.length > 0 ? setIsDataInMaster(true) : setIsDataInMaster(false);
             } else if (Number(props.masterId) === BOP_MASTER_ID) {
-                CostingTypeId = Data.ImpactedMasterDataListBOP[0]?.CostingTypeId
-                setFiles(Data.ImpactedMasterDataListBOP[0].Files)
-                Data.ImpactedMasterDataListBOP?.length > 0 ? setIsDataInMaster(true) : setIsDataInMaster(false);
+                CostingTypeId = Data.ImpactedMasterDataList.BOPDomesticListResponse[0]?.CostingTypeId
+                setFiles(Data.ImpactedMasterDataList.BOPDomesticListResponse[0].Attachements)
+                Data.ImpactedMasterDataList?.length > 0 ? setIsDataInMaster(true) : setIsDataInMaster(false);
             } else if (Number(props.masterId) === OPERATIONS_ID) {
-                CostingTypeId = Data.ImpactedMasterDataListOperation[0]?.CostingTypeId
-                setFiles(Data.ImpactedMasterDataListOperation[0].Files)
-                Data.ImpactedMasterDataListOperation?.length > 0 ? setIsDataInMaster(true) : setIsDataInMaster(false);
+                CostingTypeId = Data.ImpactedMasterDataList.OperationListResponse[0]?.CostingTypeId
+                setFiles(Data.ImpactedMasterDataList.OperationListResponse[0].Attachements)
+                Data.ImpactedMasterDataList?.length > 0 ? setIsDataInMaster(true) : setIsDataInMaster(false);
             } else if (Number(props.masterId) === MACHINE_MASTER_ID) {
-                CostingTypeId = Data.ImpactedMasterDataListMachine[0]?.CostingTypeId
-                setFiles(Data.ImpactedMasterDataListMachine[0].Files)
-                Data.ImpactedMasterDataListMachine?.length > 0 ? setIsDataInMaster(true) : setIsDataInMaster(false);
+                CostingTypeId = Data.ImpactedMasterDataList.MachineListResponse[0]?.CostingTypeId
+                setFiles(Data.ImpactedMasterDataList.MachineListResponse[0].Attachements)
+                Data.ImpactedMasterDataList?.length > 0 ? setIsDataInMaster(true) : setIsDataInMaster(false);
             } else if (Number(props.masterId) === BUDGET_ID) {
-                CostingTypeId = Data.ImpactedMasterDataListBudgeting[0]?.CostingHeadId
-                setFiles(Data.ImpactedMasterDataListBudgeting[0].Files)
-                Data.ImpactedMasterDataListBudgeting?.length > 0 ? setIsDataInMaster(true) : setIsDataInMaster(false);
+                CostingTypeId = Data.ImpactedMasterDataList.BudgetListResponse[0]?.CostingHeadId
+                setFiles(Data.ImpactedMasterDataList.BudgetingListResponse[0].Attachements)
+                Data.ImpactedMasterDataList?.length > 0 ? setIsDataInMaster(true) : setIsDataInMaster(false);
             }
             setCostingTypeId(CostingTypeId)
             Data.NumberOfMaster > 0 ? setIsDataInMaster(true) : setIsDataInMaster(false);
@@ -153,44 +153,18 @@ function SummaryDrawer(props) {
 
 
                                 {isRMApproval &&
-                                    <RMDomesticListing isMasterSummaryDrawer={true} selectionForListingMasterAPI='Master' isDataInMaster={isDataInMaster} />}
+                                    <RMDomesticListing isMasterSummaryDrawer={true} selectionForListingMasterAPI='Master' isDataInMaster={isDataInMaster} approvalStatus={APPROVED_STATUS} />}
                                 {isBOPApproval &&
-                                    <BOPDomesticListing isMasterSummaryDrawer={true} selectionForListingMasterAPI='Master' isDataInMaster={isDataInMaster} />}
+                                    <BOPDomesticListing isMasterSummaryDrawer={true} selectionForListingMasterAPI='Master' isDataInMaster={isDataInMaster} approvalStatus={APPROVED_STATUS} />}
 
                                 {isOperationApproval &&
-                                    <OperationListing isMasterSummaryDrawer={true} selectionForListingMasterAPI='Master' isDataInMaster={isDataInMaster} stopAPICall={false} />}
+                                    <OperationListing isMasterSummaryDrawer={true} selectionForListingMasterAPI='Master' isDataInMaster={isDataInMaster} stopAPICall={false} approvalStatus={APPROVED_STATUS} />}
 
                                 {isMachineApproval &&
-                                    <MachineRateListing isMasterSummaryDrawer={true} selectionForListingMasterAPI='Master' isDataInMaster={isDataInMaster} />}
+                                    <MachineRateListing isMasterSummaryDrawer={true} selectionForListingMasterAPI='Master' isDataInMaster={isDataInMaster} approvalStatus={APPROVED_STATUS} />}
                                 {isBudgetApproval &&
                                     <BudgetListing isMasterSummaryDrawer={true} selectionForListingMasterAPI='Master' />}
 
-                                {files?.length > 0 && <Row>
-                                    <Col md="12" className='mt-2'>
-                                        <h5 className="left-border">Attachments:</h5>
-                                    </Col>
-                                    <Col md="12">
-                                        <div className={"attachment-wrapper mt-0"}>
-
-                                            {files &&
-                                                files.map((f) => {
-                                                    const withOutTild = f.FileURL?.replace(
-                                                        "~",
-                                                        ""
-                                                    );
-                                                    const fileURL = `${FILE_URL}${withOutTild}`;
-                                                    return (
-                                                        <div className={"attachment images"}>
-                                                            <a href={fileURL} target="_blank" rel="noreferrer" title={f.OriginalFileName}>
-                                                                {f.OriginalFileName}
-                                                            </a>
-
-                                                        </div>
-                                                    );
-                                                })}
-                                        </div>
-                                    </Col>
-                                </Row>}
                             </Col>
 
 

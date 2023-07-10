@@ -17,7 +17,7 @@ import { getLabourTypeByMachineTypeSelectList } from '../actions/Labour';
 import { getFuelByPlant, } from '../actions/Fuel';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
-import { EMPTY_DATA, EMPTY_GUID, TIME, ZBCTypeId, VBCTypeId, CBCTypeId } from '../../../config/constants'
+import { EMPTY_DATA, EMPTY_GUID, TIME, ZBCTypeId, VBCTypeId, CBCTypeId, CRMHeads } from '../../../config/constants'
 import { loggedInUserId, userDetails, getConfigurationKey } from "../../../helper/auth";
 import Switch from "react-switch";
 import Dropzone from 'react-dropzone-uploader';
@@ -29,7 +29,7 @@ import HeaderTitle from '../../common/HeaderTitle';
 import AddMachineTypeDrawer from './AddMachineTypeDrawer';
 import AddProcessDrawer from './AddProcessDrawer';
 import NoContentFound from '../../common/NoContentFound';
-import { calculatePercentage, CheckApprovalApplicableMaster, displayUOM, userTechnologyDetailByMasterId } from '../../../helper';
+import { calculatePercentage, CheckApprovalApplicableMaster, compareObjects, displayUOM, userTechnologyDetailByMasterId } from '../../../helper';
 import EfficiencyDrawer from './EfficiencyDrawer';
 import DayTime from '../../common/DayTimeWrapper'
 import { AcceptableMachineUOM } from '../../../config/masterData'
@@ -138,7 +138,15 @@ class AddMoreDetails extends Component {
       levelDetails: {},
       noApprovalCycle: false,
       selectedCustomer: [],
-      selectedVedor: []
+      selectedVedor: [],
+      costingTypeId: ZBCTypeId,
+      vendorId: null,
+      customerId: null,
+      IsSendForApproval: false,
+      LabourCRMHead: '',
+      crmHeads: {},
+      updateCrmHeadObj: {},
+      CostingTypePermission: false
     }
     this.dropzone = React.createRef();
   }
@@ -205,20 +213,20 @@ class AddMoreDetails extends Component {
       this.setState({ finalApprovalLoader: true })
       this.props.checkFinalUser(obj, (res) => {
         if (res?.data?.Result) {
-          this.setState({ isFinalApprovar: res?.data?.Data?.IsFinalApprover })
+          this.setState({ isFinalApprovar: res?.data?.Data?.IsFinalApprover, CostingTypePermission: true })
           this.setState({ finalApprovalLoader: false })
         }
       })
       this.setState({ noApprovalCycle: false })
     } else {
-      this.setState({ noApprovalCycle: true })
+      this.setState({ noApprovalCycle: true, CostingTypePermission: false })
     }
   }
 
   UNSAFE_componentWillReceiveProps(nextProps) {
 
     if (nextProps.data !== this.props.data) {
-      const { fieldsObj, machineType, selectedPlants, selectedTechnology, selectedCustomer, selectedVedor, costingTypeId } = nextProps.data;
+      const { fieldsObj, machineType, selectedPlants, selectedTechnology, selectedCustomer, selectedVedor, costingTypeId, vendorName, client } = nextProps.data;
       if (Object.keys(selectedPlants)?.length > 0) {
         this.handlePlants(selectedPlants)
         if (machineType.value) {
@@ -230,13 +238,14 @@ class AddMoreDetails extends Component {
           this.props.getLabourTypeByMachineTypeSelectList(data, () => { })
         }
       }
-      this.props.change('MachineName', fieldsObj?.MachineName)
-      this.props.change('MachineNumber', fieldsObj?.MachineNumber)
-      this.props.change('TonnageCapacity', fieldsObj?.TonnageCapacity)
-      this.props.change('Description', fieldsObj?.Description)
-      this.props.change('Specification', fieldsObj?.Specification)
-      fieldsObj.EffectiveDate && this.props.change('EffectiveDate', fieldsObj.EffectiveDate)
 
+      this.setState({ costingTypeId: costingTypeId, vendorId: vendorName.value ? vendorName.value : '', customerId: client.value ? client.value : '' })
+      this.props.change('MachineName', fieldsObj.MachineName)
+      this.props.change('MachineNumber', fieldsObj.MachineNumber)
+      this.props.change('TonnageCapacity', fieldsObj.TonnageCapacity)
+      this.props.change('Description', fieldsObj.Description)
+      this.props.change('Specification', fieldsObj.Specification)
+      fieldsObj.EffectiveDate && this.props.change('EffectiveDate', fieldsObj.EffectiveDate)
 
       setTimeout(() => {
         this.setState({ selectedPlants: selectedPlants, })
@@ -391,8 +400,8 @@ class AddMoreDetails extends Component {
                 LabourCostPerAnnum: el.LabourCostPerAnnum,
                 NumberOfLabour: el.NumberOfLabour,
                 LabourCost: el.LabourCost,
-                LabourDetailId: el.LabourDetailId
-
+                LabourDetailId: el.LabourDetailId,
+                LabourCRMHead: el.LabourCRMHead
               }
             })
 
@@ -408,6 +417,19 @@ class AddMoreDetails extends Component {
               }
             })
 
+            let crmHeadObj = {}
+            crmHeadObj.LoanCRMHead = Data.LoanCRMHead ? Data.LoanCRMHead : ''
+            crmHeadObj.InterestCRMHead = Data.InterestCRMHead ? Data.InterestCRMHead : ''
+            crmHeadObj.WorkingShiftCRMHead = Data.WorkingShiftCRMHead ? Data.WorkingShiftCRMHead : ''
+            crmHeadObj.DepreciationCRMHead = Data.DepreciationCRMHead ? Data.DepreciationCRMHead : ''
+            crmHeadObj.AnnualMaintanceCRMHead = Data.AnnualMaintanceCRMHead ? Data.AnnualMaintanceCRMHead : ''
+            crmHeadObj.AnnualConsumableCRMHead = Data.AnnualConsumableCRMHead ? Data.AnnualConsumableCRMHead : ''
+            crmHeadObj.AnnualInsuranceCRMHead = Data.AnnualInsuranceCRMHead ? Data.AnnualInsuranceCRMHead : ''
+            crmHeadObj.BuildingCRMHead = Data.BuildingCRMHead ? Data.BuildingCRMHead : ''
+            crmHeadObj.MachineFloorCRMHead = Data.MachineFloorCRMHead ? Data.MachineFloorCRMHead : ''
+            crmHeadObj.OtherYearlyCRMHead = Data.OtherYearlyCRMHead ? Data.OtherYearlyCRMHead : ''
+            crmHeadObj.PowerCRMHead = Data.PowerCRMHead ? Data.PowerCRMHead : ''
+            crmHeadObj.FuelCRMHead = Data.FuelCRMHead ? Data.FuelCRMHead : ''
 
             this.setState({
               IsFinancialDataChanged: false,
@@ -418,8 +440,6 @@ class AddMoreDetails extends Component {
               selectedTechnology: [{ label: Data.Technology && Data.Technology[0].Technology, value: Data.Technology && Data.Technology[0].TechnologyId }],
               selectedPlants: { label: Data.Plant[0].PlantName, value: Data.Plant[0].PlantId },
               machineType: machineTypeObj && machineTypeObj !== undefined ? { label: machineTypeObj.Text, value: machineTypeObj.Value } : [],
-              shiftType: shiftObj && shiftObj !== undefined ? { label: shiftObj.Text, value: shiftObj.Value } : [],
-              depreciationType: depreciationObj && depreciationObj !== undefined ? { label: depreciationObj.Text, value: depreciationObj.Value } : [],
               DateOfPurchase: DayTime(Data.DateOfPurchase).isValid() === true ? new Date(DayTime(Data.DateOfPurchase)) : '',
               IsAnnualMaintenanceFixed: Data.IsMaintanceFixed,
               IsAnnualConsumableFixed: Data.IsConsumableFixed,
@@ -438,6 +458,8 @@ class AddMoreDetails extends Component {
               FuelEntryId: Data?.FuelEntryId,
               powerId: Data?.PowerId,
               machineFullValue: { FuelCostPerUnit: Data?.FuelCostPerUnit, PowerCostPerUnit: Data?.PowerCostPerUnit },
+              crmHeads: crmHeadObj,
+              updateCrmHeadObj: crmHeadObj,
               IsIncludeMachineRateDepreciation: Data?.IsIncludeMachineCost
             }, () => this.props.change('MachineRate', (this.state.isProcessGroup && !this.state.isViewMode) ? Data.MachineProcessRates[0].MachineRate : ''))
           }, 2000)
@@ -571,7 +593,13 @@ class AddMoreDetails extends Component {
         })
         if (effectiveDate) {
           setTimeout(() => {
-            this.props.getPowerCostUnit(newValue?.value, effectiveDate, res => {
+            let obj = {}
+            obj.plantId = newValue?.value
+            obj.effectiveDate = effectiveDate
+            obj.costingTypeId = this.state.costingTypeId ? this.state.costingTypeId : ''
+            obj.vendorId = this.state.vendorId ? this.state.vendorId : ''
+            obj.customerId = this.state.customerId ? this.state.customerId : ''
+            this.props.getPowerCostUnit(obj, res => {
               let Data = res?.data?.DynamicData;
               if (res && res.data && res.data.Message !== '') {
                 Toaster.warning(res.data.Message)
@@ -825,7 +853,13 @@ class AddMoreDetails extends Component {
 
     if (Object.keys(selectedPlants)?.length > 0) {
       setTimeout(() => {
-        this.props.getPowerCostUnit(selectedPlants?.value, date, res => {
+        let obj = {}
+        obj.plantId = this.state.selectedPlants?.value
+        obj.effectiveDate = date
+        obj.costingTypeId = this.state.costingTypeId ? this.state.costingTypeId : ''
+        obj.vendorId = this.state.vendorId ? this.state.vendorId : ''
+        obj.customerId = this.state.customerId ? this.state.customerId : ''
+        this.props.getPowerCostUnit(obj, res => {
           let Data = res?.data?.DynamicData;
           if (res && res.data && res.data.Message !== '') {
             Toaster.warning(res.data.Message)
@@ -931,10 +965,15 @@ class AddMoreDetails extends Component {
     this.setState({ IsUsesSolarPower: !this.state.IsUsesSolarPower, }, () => {
       const { IsUsesSolarPower, selectedPlants, machineFullValue, effectiveDate } = this.state;
       // if (IsUsesSolarPower) {
-
       if (selectedPlants) {
         setTimeout(() => {
-          this.props.getPowerCostUnit(selectedPlants?.value, effectiveDate, res => {
+          let obj = {}
+          obj.plantId = selectedPlants?.value
+          obj.effectiveDate = effectiveDate
+          obj.costingTypeId = this.state.costingTypeId ? this.state.costingTypeId : ''
+          obj.vendorId = this.state.vendorId ? this.state.vendorId : ''
+          obj.customerId = this.state.customerId ? this.state.customerId : ''
+          this.props.getPowerCostUnit(obj, res => {
             let Data = res.data.DynamicData;
             if (res && res.data && res.data.Message !== '') {
               Toaster.warning(res.data.Message)
@@ -995,6 +1034,11 @@ class AddMoreDetails extends Component {
     }
   };
 
+  handleLabourCrmHead = (value) => {
+    this.setState({ LabourCRMHead: value })
+
+  }
+
   componentDidUpdate(prevProps, prevState) {
     const { initialConfiguration } = this.props
     if (this.props.fieldsObj !== prevProps.fieldsObj) {
@@ -1015,7 +1059,7 @@ class AddMoreDetails extends Component {
   /**
   * @method totalCost
   * @description called
-  * 
+  *
   */
   totalCost = () => {
 
@@ -1285,7 +1329,7 @@ class AddMoreDetails extends Component {
     } else {
       TotalMachineCostPerAnnum = checkForNull(fieldsObj.RateOfInterestValue) + checkForNull(fieldsObj.DepreciationAmount) + checkForDecimalAndNull(fieldsObj.TotalMachineCostPerAnnum) + checkForNull(fieldsObj.TotalFuelCostPerYear) + checkForNull(fieldsObj.TotalPowerCostPerYear) + checkForNull(this.calculateTotalLabourCost())
     }
-    // 
+    //
     if (UOM.type === TIME) {
 
       if (UOM.uom === "Hours") {
@@ -1313,7 +1357,7 @@ class AddMoreDetails extends Component {
   * @description ADDING VALUE IN LABOUR TABLE GRID
   */
   labourTableHandler = () => {
-    const { labourType, labourGrid } = this.state;
+    const { labourType, labourGrid, LabourCRMHead } = this.state;
     const { fieldsObj } = this.props
 
     if (labourType.length === 0 && (fieldsObj.NumberOfLabour === undefined || Number(fieldsObj.NumberOfLabour) === 0)) {
@@ -1354,7 +1398,8 @@ class AddMoreDetails extends Component {
       LabourCostPerAnnum: LabourPerCost,
       NumberOfLabour: NumberOfLabour,
       LabourCost: TotalLabourCost,
-      LabourDetailId: this.state.labourDetailId
+      LabourDetailId: this.state.labourDetailId,
+      LabourCRMHead: LabourCRMHead ? LabourCRMHead.label : '-'
     })
     if (tempArray?.length > 0) {
       this.setState({ disableMachineType: true })
@@ -1365,7 +1410,8 @@ class AddMoreDetails extends Component {
     this.setState({
       labourGrid: tempArray,
       labourType: [],
-      LabourDetailId: ''
+      LabourDetailId: '',
+      LabourCRMHead: ''
     }, () => {
       this.props.change('LabourCostPerAnnum', '')
       this.props.change('NumberOfLabour', '')
@@ -1379,7 +1425,7 @@ class AddMoreDetails extends Component {
    * @description UPDATE LABOUR GRID
   */
   updateLabourGrid = () => {
-    const { labourType, labourGrid, labourGridEditIndex } = this.state;
+    const { labourType, labourGrid, labourGridEditIndex, LabourCRMHead } = this.state;
     const { fieldsObj } = this.props
 
     //CONDITION TO SKIP DUPLICATE ENTRY IN GRID
@@ -1413,7 +1459,8 @@ class AddMoreDetails extends Component {
       LabourCostPerAnnum: LabourPerCost,
       NumberOfLabour: NumberOfLabour,
       LabourCost: TotalLabourCost,
-      LabourDetailId: this.state.labourDetailId
+      LabourDetailId: this.state.labourDetailId,
+      LabourCRMHead: LabourCRMHead ? LabourCRMHead.label : '-'
     }
 
     tempArray = Object.assign([...labourGrid], { [labourGridEditIndex]: tempData })
@@ -1423,6 +1470,7 @@ class AddMoreDetails extends Component {
       labourType: [],
       labourGridEditIndex: '',
       isEditLabourIndex: false,
+      LabourCRMHead: ''
     }, () => {
       this.props.change('LabourCostPerAnnum', '')
       this.props.change('NumberOfLabour', '')
@@ -1440,6 +1488,7 @@ class AddMoreDetails extends Component {
       labourType: [],
       labourGridEditIndex: '',
       isEditLabourIndex: false,
+      LabourCRMHead: ''
     }, () => {
       this.props.change('LabourCostPerAnnum', '')
       this.props.change('NumberOfLabour', '')
@@ -1459,6 +1508,7 @@ class AddMoreDetails extends Component {
       labourGridEditIndex: index,
       isEditLabourIndex: true,
       labourType: { label: tempData.labourTypeName, value: tempData.labourTypeId },
+      LabourCRMHead: { label: tempData.LabourCRMHead, value: index }
     }, () => {
       this.props.change('LabourCostPerAnnum', tempData.LabourCostPerAnnum)
       this.props.change('NumberOfLabour', tempData.NumberOfLabour)
@@ -1499,7 +1549,7 @@ class AddMoreDetails extends Component {
 
   /**
    * @method processTableHandler
-   * @description ADDING PROCESS IN PROCESS TABLE 
+   * @description ADDING PROCESS IN PROCESS TABLE
   */
   processTableHandler = () => {
     const { processName, UOM, processGrid, isProcessGroup, machineType, selectedPlants, effectiveDate } = this.state;
@@ -1888,11 +1938,9 @@ class AddMoreDetails extends Component {
     // For cancel of mpre detail form to reset form in addMachine form
     data.cancelFlag = true
     data.isFinalApprovar = this.state.isFinalApprovar
-    data.isViewFlag = this.state.isViewFlag
+    data.isViewFlag = true
     /* IF CANCEL IS CLICKED AND MACHINE FORM IS IN EDIT FORM CONTAINING VALUE */
     if (editDetails.isIncompleteMachine || this.state.isEditFlag) {
-
-
       data.Id = this.state.MachineID ? this.state.MachineID : editDetails.Id
       data.isEditFlag = true
       this.props.hideMoreDetailsForm({}, data)
@@ -1921,7 +1969,7 @@ class AddMoreDetails extends Component {
 
     const { isEditFlag, MachineID, selectedTechnology, selectedPlants, machineType, remarks, files, DateOfPurchase,
       IsAnnualMaintenanceFixed, IsAnnualConsumableFixed, IsInsuranceFixed, IsUsesFuel, fuelType,
-      labourGrid, processGrid, machineFullValue, effectiveDate, IsFinancialDataChanged, powerId, IsUsesSolarPower, powerIdFromAPI } = this.state;
+      labourGrid, processGrid, machineFullValue, effectiveDate, IsFinancialDataChanged, powerId, IsUsesSolarPower, powerIdFromAPI, crmHeads } = this.state;
 
     if (this.state.processGrid.length === 0) {
 
@@ -1939,6 +1987,7 @@ class AddMoreDetails extends Component {
     let updatedFiles = files.map((file) => ({ ...file, ContextId: MachineID }))
 
     let requestData = {
+      IsSendForApproval: CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true && !this.state.isFinalApprovar,
       CostingTypeId: this.state.CostingTypeId,
       MachineId: MachineID,
       Manufacture: values.Manufacture,
@@ -1952,7 +2001,7 @@ class AddMoreDetails extends Component {
       DepreciationType: this.state.depreciationType ? this.state.depreciationType.value : '',
       DepreciationRatePercentage: values.DepreciationRatePercentage,
       LifeOfAssetPerYear: values.LifeOfAssetPerYear,
-      CastOfScrap: values.CastOfScrap,
+      CostOfScrap: values.CastOfScrap,
       DateOfPurchase: DayTime(DateOfPurchase).format('YYYY-MM-DD HH:mm:ss'),
       DepreciationAmount: machineFullValue.depreciationAmount,
       WorkingShift: this.state.shiftType ? this.state.shiftType.value : '',
@@ -2009,8 +2058,9 @@ class AddMoreDetails extends Component {
       LoggedInUserId: loggedInUserId(),
       MachineProcessRates: processGrid,
       Technology: (technologyArray.length > 0 && technologyArray[0]?.Technology !== undefined) ? technologyArray : [{ Technology: selectedTechnology.label ? selectedTechnology.label : selectedTechnology[0].label, TechnologyId: selectedTechnology.value ? selectedTechnology.value : selectedTechnology[0].value }],
-      Plant: [{ PlantId: selectedPlants.value, PlantName: selectedPlants.label }],
+      Plant: this.state.CostingTypeId === ZBCTypeId ? [{ PlantId: selectedPlants.value, PlantName: selectedPlants.label }] : [],
       selectedPlants: selectedPlants,
+      DestinationPlantId: this.state.CostingTypeId !== ZBCTypeId ? selectedPlants.value : null,
       Attachements: updatedFiles,
       VendorPlant: [],
       IsForcefulUpdated: true,
@@ -2019,10 +2069,22 @@ class AddMoreDetails extends Component {
       IsFinancialDataChanged: this.state.isDateChange ? true : false,
       IsIncludeMachineCost: IsIncludeMachineRateDepreciation,
       PowerEntryId: powerIdFromAPI,
-      CustomerId: this.state.CostingTypeId === CBCTypeId ? this.state.selectedCustomer.value : "00000000-0000-0000-0000-000000000000",
+      CustomerId: this.state.CostingTypeId === CBCTypeId ? this.state.selectedCustomer.value : null,
       CustomerName: this.state.CostingTypeId === CBCTypeId ? this.state.selectedCustomer.label : "",
       selectedCustomer: this.state.selectedCustomer,
-      selectedVedor: this.state.selectedVedor
+      selectedVedor: this.state.selectedVedor,
+      LoanCRMHead: crmHeads.LoanCRMHead ? crmHeads.LoanCRMHead : '',
+      InterestCRMHead: crmHeads.InterestCRMHead ? crmHeads.InterestCRMHead : '',
+      WorkingShiftCRMHead: crmHeads.WorkingShiftCRMHead ? crmHeads.WorkingShiftCRMHead : '',
+      DepreciationCRMHead: crmHeads.DepreciationCRMHead ? crmHeads.DepreciationCRMHead : '',
+      AnnualMaintanceCRMHead: crmHeads.AnnualMaintanceCRMHead ? crmHeads.AnnualMaintanceCRMHead : '',
+      AnnualConsumableCRMHead: crmHeads.AnnualConsumableCRMHead ? crmHeads.AnnualConsumableCRMHead : '',
+      AnnualInsuranceCRMHead: crmHeads.AnnualInsuranceCRMHead ? crmHeads.AnnualInsuranceCRMHead : '',
+      BuildingCRMHead: crmHeads.BuildingCRMHead ? crmHeads.BuildingCRMHead : '',
+      MachineFloorCRMHead: crmHeads.MachineFloorCRMHead ? crmHeads.MachineFloorCRMHead : '',
+      OtherYearlyCRMHead: crmHeads.OtherYearlyCRMHead ? crmHeads.OtherYearlyCRMHead : '',
+      PowerCRMHead: crmHeads.PowerCRMHead ? crmHeads.PowerCRMHead : '',
+      FuelCRMHead: crmHeads.FuelCRMHead ? crmHeads.FuelCRMHead : ''
       // LabourDetailId: labourType.value
     }
 
@@ -2077,11 +2139,17 @@ class AddMoreDetails extends Component {
     //       if (isEditFlag) {
 
     //       }
-    // } 
+    // }
     else {
       // EXECUTED WHEN:- ADD MORE MACHINE DETAIL CALLED FROM ADDMACHINERATE.JS FILE
+      if (CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true && !this.state.isFinalApprovar) {
+        this.setState({ IsSendForApproval: true })
+      } else {
+        this.setState({ IsSendForApproval: false })
+      }
 
       const formData = {
+        IsSendForApproval: CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true && !this.state.isFinalApprovar,
         CostingTypeId: this.state.CostingTypeId,
         MachineId: MachineID,
         Manufacture: values.Manufacture,
@@ -2095,7 +2163,7 @@ class AddMoreDetails extends Component {
         DepreciationType: this.state.depreciationType ? this.state.depreciationType.value : '',
         DepreciationRatePercentage: values.DepreciationRatePercentage,
         LifeOfAssetPerYear: values.LifeOfAssetPerYear,
-        CastOfScrap: values.CastOfScrap,
+        CostOfScrap: values.CastOfScrap,
         DateOfPurchase: DayTime(DateOfPurchase).format('YYYY-MM-DD HH:mm:ss'),
         DepreciationAmount: machineFullValue.depreciationAmount,
         WorkingShift: this.state.shiftType ? this.state.shiftType.value : '',
@@ -2151,8 +2219,9 @@ class AddMoreDetails extends Component {
         LoggedInUserId: loggedInUserId(),
         MachineProcessRates: processGrid,
         Technology: (technologyArray.length > 0 && technologyArray[0]?.Technology !== undefined) ? technologyArray : [{ Technology: selectedTechnology.label ? selectedTechnology.label : selectedTechnology[0].label, TechnologyId: selectedTechnology.value ? selectedTechnology.value : selectedTechnology[0].value }],
-        Plant: [{ PlantId: selectedPlants.value, PlantName: selectedPlants.label }],
+        Plant: this.state.CostingTypeId === ZBCTypeId ? [{ PlantId: selectedPlants.value, PlantName: selectedPlants.label }] : [],
         selectedPlants: selectedPlants,
+        DestinationPlantId: this.state.CostingTypeId !== ZBCTypeId ? selectedPlants.value : null,
         Attachements: files,
         VendorPlant: [],
         EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
@@ -2162,20 +2231,30 @@ class AddMoreDetails extends Component {
         FuelEntryId: this.state.FuelEntryId,
         IsIncludeMachineCost: IsIncludeMachineRateDepreciation,
         PowerEntryId: powerIdFromAPI,
-        CustomerId: this.state.CostingTypeId === CBCTypeId ? this.state.selectedCustomer.value : "00000000-0000-0000-0000-000000000000",
+        CustomerId: this.state.CostingTypeId === CBCTypeId ? this.state.selectedCustomer.value : null,
         CustomerName: this.state.CostingTypeId === CBCTypeId ? this.state.selectedCustomer.label : "",
+        selectedCustomer: this.state.selectedCustomer ? this.state.selectedCustomer : '',
+        selectedVedor: this.state.selectedVedor,
+        LoanCRMHead: crmHeads.LoanCRMHead ? crmHeads.LoanCRMHead : '',
+        InterestCRMHead: crmHeads.InterestCRMHead ? crmHeads.InterestCRMHead : '',
+        WorkingShiftCRMHead: crmHeads.WorkingShiftCRMHead ? crmHeads.WorkingShiftCRMHead : '',
+        DepreciationCRMHead: crmHeads.DepreciationCRMHead ? crmHeads.DepreciationCRMHead : '',
+        AnnualMaintanceCRMHead: crmHeads.AnnualMaintanceCRMHead ? crmHeads.AnnualMaintanceCRMHead : '',
+        AnnualConsumableCRMHead: crmHeads.AnnualConsumableCRMHead ? crmHeads.AnnualConsumableCRMHead : '',
+        AnnualInsuranceCRMHead: crmHeads.AnnualInsuranceCRMHead ? crmHeads.AnnualInsuranceCRMHead : '',
+        BuildingCRMHead: crmHeads.BuildingCRMHead ? crmHeads.BuildingCRMHead : '',
+        MachineFloorCRMHead: crmHeads.MachineFloorCRMHead ? crmHeads.MachineFloorCRMHead : '',
+        OtherYearlyCRMHead: crmHeads.OtherYearlyCRMHead ? crmHeads.OtherYearlyCRMHead : '',
+        PowerCRMHead: crmHeads.PowerCRMHead ? crmHeads.PowerCRMHead : '',
+        FuelCRMHead: crmHeads.FuelCRMHead ? crmHeads.FuelCRMHead : ''
       }
 
-      let obj = {}
       let finalObj = {
-
+        ...formData,
         MachineProcessRates: processGrid,
         EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
         MachineId: MachineID,
         IsVendor: false,
-        MachineZBCRequest: formData,
-        MachineVBCRequest: obj,
-
       }
 
       if (CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true && !this.state.isFinalApprovar) {
@@ -2389,6 +2468,59 @@ class AddMoreDetails extends Component {
     this.handleProcessCalculation()
   }
 
+  handleCRMHeads = (value, name) => {
+
+    let currentCrmHead = value && value.label
+    let { crmHeads } = this.state
+    let obj = { ...crmHeads }
+    switch (String(name)) {
+      case "LoanCRMHead":
+        obj.LoanCRMHead = currentCrmHead
+        break;
+      case "InterestCRMHead":
+        obj.InterestCRMHead = currentCrmHead
+        break;
+      case "FuelCRMHead":
+        obj.FuelCRMHead = currentCrmHead
+        break;
+      case "WorkingShiftCRMHead":
+        obj.WorkingShiftCRMHead = currentCrmHead
+        break;
+      case "DepreciationCRMHead":
+        obj.DepreciationCRMHead = currentCrmHead
+        break;
+      case "AnnualMaintanceCRMHead":
+        obj.AnnualMaintanceCRMHead = currentCrmHead
+        break;
+      case "AnnualConsumableCRMHead":
+        obj.AnnualConsumableCRMHead = currentCrmHead
+        break;
+      case "AnnualInsuranceCRMHead":
+        obj.AnnualInsuranceCRMHead = currentCrmHead
+        break;
+      case "BuildingCRMHead":
+        obj.BuildingCRMHead = currentCrmHead
+        break;
+      case "MachineFloorCRMHead":
+        obj.MachineFloorCRMHead = currentCrmHead
+        break;
+      case "OtherYearlyCRMHead":
+        obj.OtherYearlyCRMHead = currentCrmHead
+        break;
+      case "PowerCRMHead":
+        obj.PowerCRMHead = currentCrmHead
+        break;
+      default:
+    }
+    this.setState({ crmHeads: obj })
+
+    if (this.state.isEditFlag && !compareObjects(obj, this.state.updateCrmHeadObj)) {
+      this.setState({ IsFinancialDataChanged: true })
+
+    }
+  }
+
+
   /**
   * @method render
   * @description Renders the component
@@ -2396,7 +2528,7 @@ class AddMoreDetails extends Component {
   render() {
     const { handleSubmit, initialConfiguration, isMachineAssociated } = this.props;
     const { isLoader, isOpenAvailability, isEditFlag, isViewMode, isOpenMachineType, isOpenProcessDrawer,
-      isLoanOpen, isWorkingOpen, isDepreciationOpen, isVariableCostOpen, disableMachineType, isViewFlag, isPowerOpen, isLabourOpen, isProcessOpen, UniqueProcessId, isProcessGroupOpen, disableAllForm, UOMName, noApprovalCycle } = this.state;
+      isLoanOpen, isWorkingOpen, isDepreciationOpen, isVariableCostOpen, disableMachineType, isViewFlag, isPowerOpen, isLabourOpen, isProcessOpen, UniqueProcessId, isProcessGroupOpen, disableAllForm, UOMName, noApprovalCycle, CostingTypePermission } = this.state;
     return (
       <>
         {(isLoader || this.state.finalApprovalLoader) && <LoaderCustom />}
@@ -2590,7 +2722,7 @@ class AddMoreDetails extends Component {
                           name={"YearOfManufacturing"}
                           //type="text"
                           showYearPicker
-                          selected={this.state.manufactureYear}                       
+                          selected={this.state.manufactureYear}
                           onSelect={this.handleYearChange}
                           placeholder={disableAllForm ? '-' :'Enter'}
                           // dateFormat={'yyyy'}
@@ -2619,7 +2751,7 @@ class AddMoreDetails extends Component {
                             required: false,
                           }}
                           //maxDate={new Date()}
-                          
+
                           placeholder={disableAllForm ? '-' :'Enter'}
                           className="withBorder"
                           autoComplete={'off'}
@@ -2754,6 +2886,21 @@ class AddMoreDetails extends Component {
                         {
                           isLoanOpen &&
                           <div className="accordian-content row mx-0 w-100">
+                            {getConfigurationKey().IsShowCRMHead && <Col md="3">
+                              <Field
+                                name="LoanCRMHead"
+                                type="text"
+                                label="CRM Head"
+                                component={searchableSelect}
+                                placeholder={('Select')}
+                                options={CRMHeads}
+                                required={false}
+                                handleChangeDescription={(e) => this.handleCRMHeads(e, 'LoanCRMHead')}
+                                disabled={isViewFlag}
+                                valueDescription={{ label: this.state.crmHeads?.LoanCRMHead, value: 1 }}
+                              />
+                            </Col>}
+
                             <Col md="4">
                               <Field
                                 label={`Loan (%)`}
@@ -2784,6 +2931,21 @@ class AddMoreDetails extends Component {
                                 customClassName="withBorder"
                               />
                             </Col>
+
+                            {getConfigurationKey().IsShowCRMHead && <Col md="3">
+                              <Field
+                                name="InterestCRMHead"
+                                type="text"
+                                label="CRM Head"
+                                component={searchableSelect}
+                                placeholder={('Select')}
+                                options={CRMHeads}
+                                required={false}
+                                handleChangeDescription={(e) => this.handleCRMHeads(e, 'InterestCRMHead')}
+                                disabled={isViewFlag}
+                                valueDescription={{ label: this.state.crmHeads?.InterestCRMHead, value: 2 }}
+                              />
+                            </Col>}
 
                             <Col md="4">
                               <Field
@@ -2868,6 +3030,21 @@ class AddMoreDetails extends Component {
                         {
                           isWorkingOpen &&
                           <div className="accordian-content row mx-0 w-100">
+                            {getConfigurationKey().IsShowCRMHead && <Col md="3">
+                              <Field
+                                name="WorkingShiftCRMHead"
+                                type="text"
+                                label="CRM Head"
+                                component={searchableSelect}
+                                placeholder={('Select')}
+                                options={CRMHeads}
+                                required={false}
+                                handleChangeDescription={(e) => this.handleCRMHeads(e, 'WorkingShiftCRMHead')}
+                                disabled={isViewFlag}
+                                valueDescription={{ label: this.state.crmHeads?.WorkingShiftCRMHead, value: 3 }}
+                              />
+                            </Col>}
+
                             <Col md="3">
                               <Field
                                 name="WorkingShift"
@@ -2971,6 +3148,22 @@ class AddMoreDetails extends Component {
                         {
                           isDepreciationOpen &&
                           <div className="accordian-content row mx-0 w-100">
+
+                            {getConfigurationKey().IsShowCRMHead && <Col md="3">
+                              <Field
+                                name="DepreciationCRMHead"
+                                type="text"
+                                label="CRM Head"
+                                component={searchableSelect}
+                                placeholder={('Select')}
+                                options={CRMHeads}
+                                required={false}
+                                handleChangeDescription={(e) => this.handleCRMHeads(e, 'DepreciationCRMHead')}
+                                disabled={isViewFlag}
+                                valueDescription={{ label: this.state.crmHeads?.DepreciationCRMHead, value: 4 }}
+                              />
+                            </Col>}
+
                             <Col md="3">
                               <Field
                                 name="DepreciationTypeId"
@@ -3093,6 +3286,22 @@ class AddMoreDetails extends Component {
                         </Col>
                         {
                           isVariableCostOpen && <div className="accordian-content row mx-0 w-100">
+
+                            {getConfigurationKey().IsShowCRMHead && <Col md="3">
+                              <Field
+                                name="AnnualMaintanceCRMHead"
+                                type="text"
+                                label="CRM Head"
+                                component={searchableSelect}
+                                placeholder={('Select')}
+                                options={CRMHeads}
+                                required={false}
+                                handleChangeDescription={(e) => this.handleCRMHeads(e, 'AnnualMaintanceCRMHead')}
+                                disabled={isViewFlag}
+                                valueDescription={{ label: this.state.crmHeads?.AnnualMaintanceCRMHead, value: 5 }}
+                              />
+                            </Col>}
+
                             <Col md={`${this.state.IsAnnualMaintenanceFixed ? 2 : 3}`} className="switch mb15">
                               <label>Annual Maintenance</label>
                               <label className="switch-level mt-2">
@@ -3144,6 +3353,22 @@ class AddMoreDetails extends Component {
                                 customClassName="withBorder"
                               />
                             </Col>
+
+                            {getConfigurationKey().IsShowCRMHead && <Col md="3">
+                              <Field
+                                name="AnnualConsumableCRMHead"
+                                type="text"
+                                label="CRM Head"
+                                component={searchableSelect}
+                                placeholder={('Select')}
+                                options={CRMHeads}
+                                required={false}
+                                handleChangeDescription={(e) => this.handleCRMHeads(e, 'AnnualConsumableCRMHead')}
+                                disabled={isViewFlag}
+                                valueDescription={{ label: this.state.crmHeads?.AnnualConsumableCRMHead, value: 6 }}
+                              />
+                            </Col>}
+
                             <Col md={`${this.state.IsAnnualConsumableFixed ? 2 : 3}`} className="switch mb15">
                               <label>Annual Consumable</label>
                               <label className="switch-level mt-2">
@@ -3197,6 +3422,22 @@ class AddMoreDetails extends Component {
                               />
                             </Col>
 
+
+                            {getConfigurationKey().IsShowCRMHead && <Col md="3">
+                              <Field
+                                name="AnnualInsuranceCRMHead"
+                                type="text"
+                                label="CRM Head"
+                                component={searchableSelect}
+                                placeholder={('Select')}
+                                options={CRMHeads}
+                                required={false}
+                                handleChangeDescription={(e) => this.handleCRMHeads(e, 'AnnualInsuranceCRMHead')}
+                                disabled={isViewFlag}
+                                valueDescription={{ label: this.state.crmHeads?.AnnualInsuranceCRMHead, value: 7 }}
+                              />
+                            </Col>}
+
                             <Col md={`${this.state.IsInsuranceFixed ? 2 : 3}`} className="switch mb15">
                               <label>Insurance</label>
                               <label className="switch-level mt-2">
@@ -3248,6 +3489,22 @@ class AddMoreDetails extends Component {
                                 customClassName="withBorder"
                               />
                             </Col>
+
+                            {getConfigurationKey().IsShowCRMHead && <Col md="3">
+                              <Field
+                                name="BuildingCRMHead"
+                                type="text"
+                                label="CRM Head"
+                                component={searchableSelect}
+                                placeholder={('Select')}
+                                options={CRMHeads}
+                                required={false}
+                                handleChangeDescription={(e) => this.handleCRMHeads(e, 'BuildingCRMHead')}
+                                disabled={isViewFlag}
+                                valueDescription={{ label: this.state.crmHeads?.BuildingCRMHead, value: 8 }}
+                              />
+                            </Col>}
+
                             <Col md="3">
                               <Field
                                 label={`Building Cost/Sq Ft/Annum`}
@@ -3262,6 +3519,22 @@ class AddMoreDetails extends Component {
                                 customClassName="withBorder"
                               />
                             </Col>
+
+                            {getConfigurationKey().IsShowCRMHead && <Col md="3">
+                              <Field
+                                name="MachineFloorCRMHead"
+                                type="text"
+                                label="CRM Head"
+                                component={searchableSelect}
+                                placeholder={('Select')}
+                                options={CRMHeads}
+                                required={false}
+                                handleChangeDescription={(e) => this.handleCRMHeads(e, 'MachineFloorCRMHead')}
+                                disabled={isViewFlag}
+                                valueDescription={{ label: this.state.crmHeads?.MachineFloorCRMHead, value: 9 }}
+                              />
+                            </Col>}
+
                             <Col md="3">
                               <Field
                                 label={`Machine Floor Area(Sq Ft)`}
@@ -3293,6 +3566,22 @@ class AddMoreDetails extends Component {
                                 customClassName="withBorder"
                               />
                             </Col>
+
+                            {getConfigurationKey().IsShowCRMHead && <Col md="3">
+                              <Field
+                                name="OtherYearlyCRMHead"
+                                type="text"
+                                label="CRM Head"
+                                component={searchableSelect}
+                                placeholder={('Select')}
+                                options={CRMHeads}
+                                required={false}
+                                handleChangeDescription={(e) => this.handleCRMHeads(e, 'OtherYearlyCRMHead')}
+                                disabled={isViewFlag}
+                                valueDescription={{ label: this.state.crmHeads?.OtherYearlyCRMHead, value: 10 }}
+                              />
+                            </Col>}
+
                             <Col md="3">
                               <Field
                                 label={`Other Yearly Cost(INR)`}
@@ -3366,6 +3655,21 @@ class AddMoreDetails extends Component {
                           </Col>
                           {this.state.IsUsesFuel &&
                             <>
+                              {getConfigurationKey().IsShowCRMHead && <Col md="3">
+                                <Field
+                                  name="FuelCRMHead"
+                                  type="text"
+                                  label="CRM Head"
+                                  component={searchableSelect}
+                                  placeholder={('Select')}
+                                  options={CRMHeads}
+                                  required={false}
+                                  handleChangeDescription={(e) => this.handleCRMHeads(e, 'FuelCRMHead')}
+                                  disabled={isViewFlag}
+                                  valueDescription={{ label: this.state.crmHeads?.FuelCRMHead, value: 11 }}
+                                />
+                              </Col>}
+
                               <Col md="3">
                                 <Field
                                   name="FuelTypeId"
@@ -3416,7 +3720,7 @@ class AddMoreDetails extends Component {
                                   name={this.props.fieldsObj.TotalFuelCostPerYear === 0 ? '-' : "TotalFuelCostPerYear"}
                                   type="text"
                                   placeholder={'-'}
-                                  validate={[number, postiveNumber]}
+                                  validate={[number]}
                                   component={renderText}
                                   //required={true}
                                   disabled={true}
@@ -3428,6 +3732,21 @@ class AddMoreDetails extends Component {
 
                           {!this.state.IsUsesFuel &&
                             <>
+                              {getConfigurationKey().IsShowCRMHead && <Col md="3">
+                                <Field
+                                  name="PowerCRMHead"
+                                  type="text"
+                                  label="CRM Head"
+                                  component={searchableSelect}
+                                  placeholder={('Select')}
+                                  options={CRMHeads}
+                                  required={false}
+                                  handleChangeDescription={(e) => this.handleCRMHeads(e, 'PowerCRMHead')}
+                                  disabled={isViewFlag}
+                                  valueDescription={{ label: this.state.crmHeads?.PowerCRMHead, value: 12 }}
+                                />
+                              </Col>
+                              }
                               <Col md="3">
                                 <Field
                                   label={`Efficiency (%)`}
@@ -3541,6 +3860,22 @@ class AddMoreDetails extends Component {
                         </Col>
                         {
                           isLabourOpen && <div className="accordian-content row mx-0 w-100">
+
+                            {getConfigurationKey().IsShowCRMHead && <Col md="3">
+                              <Field
+                                name="LabourCRMHead"
+                                type="text"
+                                label="CRM Head"
+                                component={searchableSelect}
+                                placeholder={('Select')}
+                                options={CRMHeads}
+                                required={false}
+                                handleChangeDescription={this.handleLabourCrmHead}
+                                valueDescription={this.state.LabourCRMHead}
+                                disabled={isViewFlag}
+                              />
+                            </Col>}
+
                             <Col md="3" className='p-relative'>
                               <Field
                                 name="LabourTypeIds"
@@ -3643,6 +3978,7 @@ class AddMoreDetails extends Component {
                               <Table className="table border" size="sm" >
                                 <thead>
                                   <tr>
+                                    {getConfigurationKey().IsShowCRMHead && <th>{`CRM Head`}</th>}
                                     <th>{`Labour Type`}</th>
                                     <th>{`Cost/Annum(INR)`}</th>
                                     <th>{`No. of People`}</th>
@@ -3657,6 +3993,7 @@ class AddMoreDetails extends Component {
                                     this.state.labourGrid.map((item, index) => {
                                       return (
                                         <tr key={index}>
+                                          {getConfigurationKey().IsShowCRMHead && <td>{item.LabourCRMHead}</td>}
                                           <td>{item.labourTypeName}</td>
                                           <td>{item.LabourCostPerAnnum}</td>
                                           <td>{item.NumberOfLabour}</td>
@@ -3992,7 +4329,7 @@ class AddMoreDetails extends Component {
 
 
 
-                        {!isViewMode && (CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true && !this.state.isFinalApprovar) && initialConfiguration.IsMasterApprovalAppliedConfigure ?
+                        {(!isViewMode && (CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true && !this.state.isFinalApprovar) && initialConfiguration.IsMasterApprovalAppliedConfigure) || !CostingTypePermission ?
                           <button type="submit"
                             class="user-btn approval-btn save-btn mr5"
 
@@ -4061,12 +4398,14 @@ class AddMoreDetails extends Component {
               closeDrawer={this.closeApprovalDrawer}
               isEditFlag={false}
               masterId={MACHINE_MASTER_ID}
+              detailEntry={true}
               type={'Sender'}
               anchor={"right"}
               approvalObj={this.state.approvalObj}
               isBulkUpload={false}
               IsImportEntery={false}
               costingTypeId={this.state.CostingTypeId}
+              levelDetails={this.state.levelDetails}
             />
           )
         }
@@ -4091,7 +4430,9 @@ function mapStateToProps(state) {
     'BuildingCostPerSquareFeet', 'MachineFloorAreaPerSquareFeet', 'AnnualAreaCost', 'OtherYearlyCost', 'TotalMachineCostPerAnnum',
     'UtilizationFactorPercentage', 'PowerRatingPerKW', 'PowerCostPerUnit', 'TotalPowerCostPerYear', 'TotalPowerCostPerHour',
     'FuelCostPerUnit', 'ConsumptionPerYear', 'TotalFuelCostPerYear',
-    'NumberOfLabour', 'LabourCost', 'OutputPerHours', 'OutputPerYear', 'MachineRate', 'DateOfPurchase', 'Description', 'Specification');
+    'NumberOfLabour', 'LabourCost', 'OutputPerHours', 'OutputPerYear', 'MachineRate', 'DateOfPurchase', 'Description', 'Specification', 'LoanCRMHead',
+    'InterestCRMHead', 'WorkingShiftCRMHead', 'DepreciationCRMHead', 'AnnualMaintanceCRMHead', 'AnnualConsumableCRMHead', 'AnnualInsuranceCRMHead', 'BuildingCRMHead',
+    'MachineFloorCRMHead', 'OtherYearlyCRMHead', 'PowerCRMHead', 'FuelCRMHead');
 
   const { technologySelectList, plantSelectList, UOMSelectList,
     ShiftTypeSelectList, DepreciationTypeSelectList, } = comman;
@@ -4101,6 +4442,7 @@ function mapStateToProps(state) {
   const { vendorListByVendorType } = material;
   const { fuelDataByPlant } = fuel;
   const { initialConfiguration, userMasterLevelAPI } = auth;
+
   let initialValues = {};
   if (machineData && machineData !== undefined) {
     initialValues = {
@@ -4128,7 +4470,7 @@ function mapStateToProps(state) {
       NumberOfWorkingHoursPerYear: machineData.NumberOfWorkingHoursPerYear,
       DepreciationRatePercentage: machineData.DepreciationRatePercentage,
       LifeOfAssetPerYear: machineData.LifeOfAssetPerYear,
-      CastOfScrap: machineData.CastOfScrap,
+      CastOfScrap: machineData.CostOfScrap,
       DepreciationAmount: machineData.DepreciationAmount,
       AnnualMaintancePercentage: machineData.AnnualMaintancePercentage,
       AnnualMaintanceAmount: machineData.AnnualMaintanceAmount,

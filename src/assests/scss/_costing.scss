@@ -1,4 +1,4 @@
-@import "cssVariable.scss";
+@import './abstracts/variable.scss';
 
 .costing-raw-material-section {
 
@@ -123,6 +123,10 @@
 .costing-operation-cost-section {
   @extend .costing-raw-material-section;
 
+  .text-help {
+    position: absolute
+  }
+
   .header-without-labour-rate {
     th {
 
@@ -164,6 +168,10 @@
       }
     }
   }
+
+  .text-help {
+    position: absolute
+  }
 }
 
 .costing-bop-cost-section {
@@ -178,11 +186,13 @@
         width: 15%;
       }
 
-      &:nth-child(6) {
+      &:nth-child(6),
+      &:nth-child(7),
+      &:nth-child(8) {
         width: 11%;
       }
 
-      &:nth-child(7) {
+      &:nth-child(9) {
         text-align: right;
         width: 7%;
         min-width: 130px;
@@ -212,6 +222,10 @@
 
 .costing-surface-section {
   @extend .costing-raw-material-section;
+
+  .text-help {
+    position: absolute;
+  }
 }
 
 @media screen and (min-width: $middleDesktop) {
@@ -448,6 +462,11 @@
 .overhead-profit-tab {
   border-left: 1px solid $borderColor;
   border-right: 1px solid $borderColor;
+
+  @media screen and (max-width: $middleDesktop) {
+    display: grid;
+    grid-template-columns: auto auto;
+  }
 }
 
 .costing-main-container {
@@ -523,4 +542,82 @@
   width: 32px;
   height: 32px;
   margin: 0;
+}
+
+.first-section {
+  padding-right: 0 !important;
+}
+
+.second-section {
+  padding: 0;
+
+  .costing-border-inner-section {
+    border-left: none !important;
+    height: 100%;
+
+    .col-md-12 {
+      margin-bottom: 1px !important;
+      text-align: right;
+
+      &:last-child {
+        height: calc(100% - 45px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+    }
+  }
+}
+
+.costing-selectable-dropdown {
+  margin-bottom: 0 !important;
+  min-width: 120px;
+
+  .multi-select-container__indicators,
+  .multi-select-container__control {
+    min-height: calc(38px * 80 / 100) !important;
+    height: calc(38px * 80 / 100) !important;
+  }
+}
+
+.costing-selectable-dropdown {
+  margin-bottom: 0 !important;
+  min-width: 120px;
+
+  .multi-select-container__indicators,
+  .multi-select-container__control {
+    min-height: calc(38px * 80 / 100) !important;
+    height: calc(38px * 80 / 100) !important;
+  }
+}
+
+.rfq-summary-discard {
+  width: 32px;
+  height: 32px;
+  margin: 0;
+}
+
+.first-section {
+  padding-right: 0 !important;
+}
+
+.second-section {
+  padding: 0;
+
+  .costing-border-inner-section {
+    border-left: none !important;
+    height: 100%;
+
+    .col-md-12 {
+      margin-bottom: 1px;
+      text-align: right;
+
+      &:last-child {
+        height: calc(100% - 45px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+    }
+  }
 }

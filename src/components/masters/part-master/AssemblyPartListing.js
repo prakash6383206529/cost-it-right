@@ -302,7 +302,7 @@ class AssemblyPartListing extends Component {
     */
     render() {
         const { isOpenVisualDrawer, isBulkUpload, noData } = this.state;
-        const { AddAccessibility, BulkUploadAccessibility, DownloadAccessibility } = this.props;
+        const { AddAccessibility, BulkUploadAccessibility, DownloadAccessibility, initialConfiguration } = this.props;
 
         const isFirstColumn = (params) => {
             var displayedColumns = params.columnApi.getAllDisplayedColumns();
@@ -406,6 +406,7 @@ class AssemblyPartListing extends Component {
                             <AgGridColumn field="BOMNumber" headerName="BOM No."></AgGridColumn>
                             <AgGridColumn field="PartNumber" headerName="Part No."></AgGridColumn>
                             <AgGridColumn field="PartName" headerName="Name"></AgGridColumn>
+                            {initialConfiguration?.IsSAPCodeRequired && <AgGridColumn field="SAPCode" headerName="SAP Code" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
                             <AgGridColumn field="NumberOfParts" headerName="No. of Child Parts"></AgGridColumn>
                             <AgGridColumn field="BOMLevelCount" headerName="BOM Level Count"></AgGridColumn>
                             <AgGridColumn field="ECNNumber" headerName="ECN No." cellRenderer={'hyphenFormatter'}></AgGridColumn>

@@ -4,7 +4,7 @@ import { useForm, Controller, useWatch } from 'react-hook-form';
 import { Col, Row, Table } from 'reactstrap';
 import { SearchableSelectHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs';
 import NoContentFound from '../../../../common/NoContentFound';
-import { EMPTY_DATA } from '../../../../../config/constants';
+import { CRMHeads, EMPTY_DATA } from '../../../../../config/constants';
 import Toaster from '../../../../common/Toaster';
 import { calculatePercentage, checkForDecimalAndNull, checkForNull } from '../../../../../helper';
 import AddTool from '../../Drawers/AddTool';
@@ -41,7 +41,8 @@ function Tool(props) {
     maintanencePercentage: ObjectForOverAllApplicability && ObjectForOverAllApplicability.ToolMaintenancePercentage !== undefined ? checkForDecimalAndNull(ObjectForOverAllApplicability.ToolMaintenancePercentage, initialConfiguration.NoOfDecimalForPrice) : '',
     MaintananceCostApplicability: ObjectForOverAllApplicability && ObjectForOverAllApplicability.ToolApplicabilityCost !== undefined ? checkForDecimalAndNull(ObjectForOverAllApplicability.ToolApplicabilityCost, initialConfiguration.NoOfDecimalForPrice) : '',
     ToolAmortizationCost: ObjectForOverAllApplicability && ObjectForOverAllApplicability.ToolAmortizationCost !== undefined ? checkForDecimalAndNull(ObjectForOverAllApplicability.ToolAmortizationCost, initialConfiguration.NoOfDecimalForPrice) : '',
-    maintanenceToolCost: (ObjectForOverAllApplicability && ObjectForOverAllApplicability.ToolMaintenanceCost !== undefined && ObjectForOverAllApplicability.ToolCostType === 'Fixed') ? checkForDecimalAndNull(ObjectForOverAllApplicability.ToolMaintenanceCost, initialConfiguration.NoOfDecimalForPrice) : ''
+    maintanenceToolCost: (ObjectForOverAllApplicability && ObjectForOverAllApplicability.ToolMaintenanceCost !== undefined && ObjectForOverAllApplicability.ToolCostType === 'Fixed') ? checkForDecimalAndNull(ObjectForOverAllApplicability.ToolMaintenanceCost, initialConfiguration.NoOfDecimalForPrice) : '',
+    crmHeadTool: ObjectForOverAllApplicability && ObjectForOverAllApplicability.ToolCRMHead && { label: ObjectForOverAllApplicability.ToolCRMHead, value: 1 }
   }
 
   const { register, handleSubmit, control, setValue, getValues, formState: { errors } } = useForm({
@@ -170,7 +171,8 @@ function Tool(props) {
         "ToolMaintenancePercentage": toolObj.MaintanencePercentage,
         "ToolApplicabilityCost": toolObj.ToolApplicabilityCost,
         "ToolAmortizationCost": ToolAmortizationCost,
-        "IsCostForPerAssembly": null
+        "IsCostForPerAssembly": null,
+        "ToolCRMHead": getValues('crmHeadTool') ? getValues('crmHeadTool').label : ''
       }
 
       let tempArr = Object.assign([...gridData], { [zeroIndex]: rowArray })
@@ -188,6 +190,17 @@ function Tool(props) {
   * @method handleToolCostChange
   * @description HANDLE TOOL COST CHANGE
   */
+  const onCRMHeadChange = (event) => {
+    if ((event?.label)) {
+      const zeroIndex = 0;
+      let rowArray = gridData[zeroIndex]
+      rowArray.ToolCRMHead = event?.label
+      let tempArr = Object.assign([...gridData], { [zeroIndex]: rowArray })
+      setGridData(tempArr)
+      dispatch(isToolDataChange(true))
+    }
+  }
+
   const handleToolCostChange = (event) => {
 
     if (!isNaN(event.target.value)) {
@@ -219,7 +232,8 @@ function Tool(props) {
         "ToolMaintenancePercentage": toolObj.MaintanencePercentage,
         "ToolApplicabilityCost": toolObj.ToolApplicabilityCost,
         "ToolAmortizationCost": ToolAmortizationCost,
-        "IsCostForPerAssembly": null
+        "IsCostForPerAssembly": null,
+        "ToolCRMHead": getValues('crmHeadTool') ? getValues('crmHeadTool').label : ''
       }
       let tempArr = Object.assign([...gridData], { [zeroIndex]: rowArray })
       setGridData(tempArr)
@@ -263,7 +277,8 @@ function Tool(props) {
         "ToolMaintenancePercentage": toolObj.MaintanencePercentage,
         "ToolApplicabilityCost": toolObj.ToolApplicabilityCost,
         "ToolAmortizationCost": ToolAmortizationCost,
-        "IsCostForPerAssembly": null
+        "IsCostForPerAssembly": null,
+        "ToolCRMHead": getValues('crmHeadTool') ? getValues('crmHeadTool').label : ''
       }
       let tempArr = Object.assign([...gridData], { [zeroIndex]: rowArray })
       setGridData(tempArr)
@@ -532,7 +547,8 @@ function Tool(props) {
       "ToolMaintenancePercentage": maintanencePercentage,
       "ToolApplicabilityCost": applicabilityCost,
       "ToolAmortizationCost": ToolAmortizationCost,
-      "IsCostForPerAssembly": null
+      "IsCostForPerAssembly": null,
+      "ToolCRMHead": getValues('crmHeadTool') ? getValues('crmHeadTool').label : ''
     }
 
     let tempArr = Object.assign([...gridData], { [zeroIndex]: rowArray })
@@ -556,6 +572,7 @@ function Tool(props) {
     setValue('Life', 0)
     setValue('ToolAmortizationCost', 0)
     setValue('NetToolCost', 0)
+    setValue('crmHeadTool', '')
 
   }
 
@@ -845,6 +862,28 @@ function Tool(props) {
                       disabled={true}
                     />
                   </Col>
+
+                  {initialConfiguration.IsShowCRMHead && <Col md="3">
+                    <SearchableSelectHookForm
+                      name={`crmHeadTool`}
+                      type="text"
+                      label="CRM Head"
+                      errors={`${errors.crmHeadTool}`}
+                      Controller={Controller}
+                      control={control}
+                      register={register}
+                      mandatory={false}
+                      rules={{
+                        required: false,
+                      }}
+                      //defaultValue={item.RawMaterialCRMHead ? { label: item.RawMaterialCRMHead, value: index } : ''}
+                      placeholder={'Select'}
+                      options={CRMHeads}
+                      required={false}
+                      handleChange={onCRMHeadChange}
+                      disabled={CostingViewMode}
+                    />
+                  </Col>}
                 </>
               }
 

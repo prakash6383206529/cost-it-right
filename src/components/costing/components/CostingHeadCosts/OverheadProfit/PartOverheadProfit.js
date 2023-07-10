@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { checkForDecimalAndNull, checkForNull, loggedInUserId } from '../../../../../helper';
 import {
   getOverheadProfitTabData, saveComponentOverheadProfitTab, setComponentOverheadItemData,
-  saveDiscountOtherCostTab, setComponentDiscountOtherItemData, isOverheadProfitDataChange
+  saveDiscountOtherCostTab, isOverheadProfitDataChange
 } from '../../../actions/Costing';
 import { costingInfoContext, NetPOPriceContext } from '../../CostingDetailStepTwo';
 import OverheadProfit from '.';
@@ -73,6 +73,7 @@ function PartOverheadProfit(props) {
         "IsIncludeSurfaceTreatmentWithOverheadAndProfit": props.IsIncludeSurfaceTreatment,
         "IsIncludeSurfaceTreatmentWithRejection": props.IsIncludedSurfaceInRejection,
         "IsIncludeToolCostWithOverheadAndProfit": props.IsIncludeToolCost,
+        "IsIncludeOverheadAndProfitInICC": props.IncludeOverheadProfitInIcc,
         "NetOverheadAndProfitCost": checkForNull(item?.CostingPartDetails?.OverheadCost) + checkForNull(item?.CostingPartDetails?.RejectionCost) + checkForNull(item?.CostingPartDetails?.ProfitCost) + checkForNull(item?.CostingPartDetails?.ICCCost) + checkForNull(item?.CostingPartDetails?.PaymentTermCost),
         "CostingPartDetails": {
           ...item?.CostingPartDetails,

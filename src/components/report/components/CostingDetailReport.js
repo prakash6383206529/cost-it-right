@@ -416,6 +416,7 @@ function ReportListing(props) {
                     }
                     // Sets the filter model via the grid API
                     isReset ? (gridOptions?.api?.setFilterModel({})) : (gridOptions?.api?.setFilterModel(filterModel))
+                    isReset ? setFilterModel({}) : setFilterModel(filterModel)
                 }, 300);
 
                 setTimeout(() => {
@@ -816,7 +817,14 @@ function ReportListing(props) {
     }
 
     const returnExcelColumn = (data = [], TempData) => {
-        return (<ExcelSheet data={TempData} name={ReportMaster}>
+        let temp = []
+        temp = TempData && TempData.map((item) => {
+            if (item?.EffectiveDate?.includes('T')) {
+                item.EffectiveDate = DayTime(item.EffectiveDate).format('DD/MM/YYYY')
+            }
+            return item
+        })
+        return (<ExcelSheet data={temp} name={ReportMaster}>
             {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} />)}
         </ExcelSheet>);
     }
@@ -965,7 +973,7 @@ function ReportListing(props) {
 
 
             <div className={`ag-grid-wrapper height-width-wrapper  ${(reportListingDataStateArray && reportListingDataStateArray?.length <= 0) || noData ? "overlay-contain" : ""}`}>
-                {isLoader ? <LoaderCustom customClass={"loader-center"} /> :
+                {isLoader ? <LoaderCustom customClass={"loader-center mt-n2"} /> :
 
                     <div className={`ag-theme-material report-grid mt-2 ${isLoader && "max-loader-height"}`}>
                         {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}

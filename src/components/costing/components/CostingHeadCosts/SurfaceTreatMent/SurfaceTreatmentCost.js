@@ -2,9 +2,9 @@ import React, { useState, useEffect, useContext } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { useSelector, useDispatch } from 'react-redux';
 import { Col, Row, Table } from 'reactstrap';
-import { TextFieldHookForm } from '../../../../layout/HookFormInputs';
+import { SearchableSelectHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs';
 import NoContentFound from '../../../../common/NoContentFound';
-import { EMPTY_DATA } from '../../../../../config/constants';
+import { CRMHeads, EMPTY_DATA } from '../../../../../config/constants';
 import Toaster from '../../../../common/Toaster';
 import { checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected } from '../../../../../helper';
 import AddSurfaceTreatment from '../../Drawers/AddSurfaceTreatment';
@@ -13,6 +13,7 @@ import { ViewCostingContext } from '../../CostingDetails'
 import { reactLocalStorage } from 'reactjs-localstorage';
 import TooltipCustom from '../../../../common/Tooltip';
 import { number, checkWhiteSpaces, decimalNumberLimit6, noDecimal, numberLimit6 } from "../../../../../helper/validation";
+import { swappingLogicCommon } from '../../../CostingUtil';
 
 function SurfaceTreatmentCost(props) {
   const { item } = props
@@ -26,6 +27,7 @@ function SurfaceTreatmentCost(props) {
     reValidateMode: 'onChange',
   });
 
+  let dragEnd;
   const dispatch = useDispatch()
 
   const [gridData, setGridData] = useState(surfaceData && surfaceData?.CostingPartDetails?.SurfaceTreatmentDetails)
@@ -199,6 +201,37 @@ function SurfaceTreatmentCost(props) {
     }
   }
 
+  const onCRMHeadChange = (e, index) => {
+    let tempArr = []
+    let tempData = gridData[index]
+    tempData = {
+      ...tempData,
+      SurfaceTreatmentCRMHead: e?.label
+    }
+    tempArr = Object.assign([...gridData], { [index]: tempData })
+    setGridData(tempArr)
+  }
+
+  const onMouseLeave = (e) => {
+    dragEnd = e?.target?.title
+
+  }
+
+  const onDragComplete = (e) => {   //SWAPPING ROWS LOGIC FOR PROCESS
+    let dragStart = e?.target?.title
+
+    if (dragEnd && dragStart && (String(dragStart) !== String(dragEnd))) {
+      let finalTemp = swappingLogicCommon(gridData, dragStart, dragEnd, e) //COMMON SWAPPING LOGIC
+      setGridData(finalTemp)
+      finalTemp && finalTemp.map((el, index) => {
+        // Update field values
+        setValue(`crmHeadSurface${index}`, { label: el.SurfaceTreatmentCRMHead, value: index })
+        return null
+      })
+    }
+  }
+
+
   const OperationGridFields = 'OperationGridFields';
 
   /**
@@ -228,7 +261,7 @@ function SurfaceTreatmentCost(props) {
             {/*OPERATION COST GRID */}
 
             <Col md="12">
-              <Table className="cr-brdr-main costing-surface-section" size="sm" >
+              <Table className="cr-brdr-main costing-surface-section" size="sm" onDragOver={onMouseLeave} onDragEnd={onDragComplete} >
                 <thead>
                   <tr>
                     <th>{`Operation Name`}</th>
@@ -240,6 +273,7 @@ function SurfaceTreatmentCost(props) {
                     {initialConfiguration &&
                       initialConfiguration.IsOperationLabourRateConfigure && <th>{`Labour Quantity`}</th>}
                     <th>{`Cost`}</th>
+                    {initialConfiguration.IsShowCRMHead && <th>{`CRM Head`}</th>}
                     <th style={{ textAlign: "right" }}>{`Action`}</th>
                   </tr>
                 </thead>
@@ -249,7 +283,7 @@ function SurfaceTreatmentCost(props) {
                       return (
                         editIndex === index ?
                           <tr key={index}>
-                            <td className='text-overflow'><span title={item.OperationName}>{item.OperationName}</span> </td>
+                            <td className='text-overflow'><span title={item.OperationName + index} draggable={CostingViewMode ? false : true}>{item.OperationName}</span> </td>
                             <td style={{ width: 200 }}>
                               {
                                 <TextFieldHookForm
@@ -307,6 +341,28 @@ function SurfaceTreatmentCost(props) {
                                 }
                               </td>}
                             <td>{item.SurfaceTreatmentCost ? checkForDecimalAndNull(item.SurfaceTreatmentCost, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
+                            {initialConfiguration.IsShowCRMHead && <td width={220}>
+                              <SearchableSelectHookForm
+                                name={`crmHeadSurface${index}`}
+                                type="text"
+                                label={false}
+                                errors={`${errors.crmHeadSurface}${index}`}
+                                Controller={Controller}
+                                control={control}
+                                register={register}
+                                mandatory={false}
+                                rules={{
+                                  required: false,
+                                }}
+                                placeholder={'Select'}
+                                customClassName="costing-selectable-dropdown"
+                                defaultValue={item.SurfaceTreatmentCRMHead ? { label: item.SurfaceTreatmentCRMHead, value: index } : ''}
+                                options={CRMHeads}
+                                required={false}
+                                handleChange={(e) => { onCRMHeadChange(e, index) }}
+                                disabled={CostingViewMode}
+                              />
+                            </td>}
                             <td>
                               <div className='action-btn-wrapper'>
                                 <button title='Save' className="SaveIcon" type={'button'} disabled={CostingViewMode ? true : false} onClick={() => SaveItem(index)} />
@@ -316,7 +372,7 @@ function SurfaceTreatmentCost(props) {
                           </tr>
                           :
                           <tr key={index}>
-                            <td className='text-overflow'><span title={item.OperationName}>{item.OperationName}</span></td>
+                            <td className='text-overflow'><span title={item.OperationName + index} draggable={CostingViewMode ? false : true}>{item.OperationName}</span></td>
                             <td style={{ width: 200 }}>{item.SurfaceArea}</td>
                             <td>{item.UOM}</td>
                             <td>{item.RatePerUOM}</td>
@@ -325,6 +381,27 @@ function SurfaceTreatmentCost(props) {
                             {initialConfiguration &&
                               initialConfiguration.IsOperationLabourRateConfigure && <td>{item.IsLabourRateExist ? item.LabourQuantity : '-'}</td>}
                             <td><div className='w-fit' id={`surface-cost${index}`}><TooltipCustom disabledIcon={true} customClass="header-tooltip" id={`surface-cost${index}`} tooltipText={initialConfiguration && initialConfiguration.IsOperationLabourRateConfigure ? "Net Cost = (Surface Area * Rate) + (Labour Rate * Labour Quantity)" : "Net Cost = (Surface Area * Rate)"} />{item.SurfaceTreatmentCost ? checkForDecimalAndNull(item.SurfaceTreatmentCost, initialConfiguration.NoOfDecimalForPrice) : 0}</div></td>
+                            {initialConfiguration.IsShowCRMHead && <td>
+                              <SearchableSelectHookForm
+                                name={`crmHeadSurface${index}`}
+                                type="text"
+                                label={false}
+                                errors={`${errors.crmHeadSurface}${index}`}
+                                control={control}
+                                register={register}
+                                mandatory={false}
+                                rules={{
+                                  required: false,
+                                }}
+                                placeholder={'Select'}
+                                customClassName={'withBorder error-label mn-height-auto mb-0 surface-treament'}
+                                defaultValue={item.SurfaceTreatmentCRMHead ? { label: item.SurfaceTreatmentCRMHead, value: index } : ''}
+                                options={CRMHeads}
+                                required={false}
+                                handleChange={(e) => { onCRMHeadChange(e, index) }}
+                                disabled={CostingViewMode}
+                              />
+                            </td>}
                             <td>
                               <div className='action-btn-wrapper'>
                                 <button title='Edit' className="Edit" type={'button'} disabled={(CostingViewMode || IsLocked) ? true : false} onClick={() => editItem(index)} />

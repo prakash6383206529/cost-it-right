@@ -32,7 +32,7 @@ function RubberCalciTab(props) {
             return
         }
 
-        props.toggleDrawer('', weightData, originalWeight)
+        props.toggleDrawer(event, weightData, originalWeight)
     }
 
 

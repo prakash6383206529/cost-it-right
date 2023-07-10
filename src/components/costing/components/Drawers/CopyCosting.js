@@ -352,6 +352,7 @@ function CopyCosting(props) {
     if (isFromVbc || isFromNcc) {
       const plantCode = value.fromVendorPlant && value.fromVendorPlant.label?.split('(')
       const vendorCode = value.fromVendorName && value.fromVendorName.label?.split('(')
+      const toPlantCode = value.toDestinationPlant && value.toDestinationPlant.label?.split('(')
       obj.CostingId = type === VBCTypeId ? value.fromVbccostingId.value : value.fromNcccostingId.value
       obj.CostingNumber = type === VBCTypeId ? `${value.fromVbccostingId.label?.split(' ')[0]}` : `${value.fromNcccostingId.label?.split(' ')[0]}`
       obj.FromVendorId = value.fromVendorName.value
@@ -359,6 +360,7 @@ function CopyCosting(props) {
       obj.FromVendorPlantId = value.fromVendorPlant && value.fromVendorPlant.value
       obj.FromVendorPlantCode = plantCode && plantCode[1] && plantCode[1]?.split(')')[0]
       obj.FromPlantCode = ''
+      obj.ToPlantCode = toPlantCode[1].split(')')[0]
       obj.FromPlantId = '00000000-0000-0000-0000-000000000000'
     }
     //COPY TO VBC

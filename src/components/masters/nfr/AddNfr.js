@@ -6,18 +6,19 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Redirect, useHistory } from 'react-router';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { Col, Row, Table } from 'reactstrap';
-import { getVendorWithVendorCodeSelectList } from '../../../actions/Common';
-import { EMPTY_DATA, NFRTypeId, searchCount, DRAFT, DRAFTID, REJECTEDID } from '../../../config/constants';
+import { getVendorNameByVendorSelectList } from '../../../actions/Common';
+import { EMPTY_DATA, NFRTypeId, searchCount, DRAFT, DRAFTID, REJECTEDID, VBC_VENDOR_TYPE } from '../../../config/constants';
 import { autoCompleteDropdown } from '../../common/CommonFunctions';
 import HeaderTitle from '../../common/HeaderTitle';
 import NoContentFound from '../../common/NoContentFound';
 import Toaster from '../../common/Toaster';
-import { AsyncSearchableSelectHookForm, SearchableSelectHookForm, TextFieldHookForm } from '../../layout/HookFormInputs';
+import { AsyncSearchableSelectHookForm, NumberFieldHookForm, SearchableSelectHookForm, TextFieldHookForm } from '../../layout/HookFormInputs';
 import { getNFRPartWiseGroupDetail, saveNFRCostingInfo, saveNFRGroupDetails } from './actions/nfr';
 import { checkForNull, checkVendorPlantConfigurable, loggedInUserId, userDetails, userTechnologyLevelDetails } from '../../../helper';
-import { createCosting, deleteDraftCosting, getBriefCostingById } from '../../costing/actions/Costing';
+import { createCosting, deleteDraftCosting, getBriefCostingById, storePartNumber } from '../../costing/actions/Costing';
 import ApprovalDrawer from './ApprovalDrawer';
 import TooltipCustom from '../../common/Tooltip'
+import { dataLiist } from '../../../config/masterData';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { MESSAGES } from '../../../config/message';
 import { getUsersTechnologyLevelAPI } from '../../../actions/auth/AuthActions';
@@ -71,6 +72,7 @@ function AddNfr(props) {
     const [indexOuter, setIndexOuter] = useState('');
     const [indexInside, setIndexInside] = useState('');
 
+
     const [costingObj, setCostingObj] = useState({
         item: {},
         index: []
@@ -88,6 +90,10 @@ function AddNfr(props) {
     const [existingGroupNameVersion, setExistingGroupNameVersion] = useState('')
     const [topGroupNotAdded, setTopGroupNotAdded] = useState(false)
     const [disableSaveButton, setDisableSaveButton] = useState(false)
+    const [plantName, setPlantName] = useState('')
+    const [NFRNumber, setNFRNumber] = useState('')
+    const [nfrPartNumber, setNfrPartNumber] = useState('')
+    const [partName, setPartName] = useState('')
 
     const { register, setValue, getValues, control, formState: { errors }, } = useForm({
         mode: 'onChange',
@@ -155,7 +161,8 @@ function AddNfr(props) {
                         IsShowEditButtonForPFS: item.IsShowEditButtonForPFS
                     };
                 });
-                setValue('Plant', `${res?.data?.Data?.PlantName} (${res?.data?.Data?.PlantCode})`);
+
+                setPlantName(`${res?.data?.Data?.PlantName} (${res?.data?.Data?.PlantCode})`)
                 let nfrVersion = res?.data?.Data?.NfrVersion
                 setExistingGroupNameVersion(nfrVersion)
                 if (!_.map(newArray, 'groupName')?.includes(nfrVersion)) {
@@ -247,9 +254,9 @@ function AddNfr(props) {
     // Sets the initial values of the form fields based on the nfrData prop.
     useEffect(() => {
         if (nfrData) {
-            setValue('NfrId', props?.NfrNumber);
-            setValue('PartNo', nfrData?.PartNumber);
-            setValue('PartName', nfrData?.PartName);
+            setNFRNumber(props?.NfrNumber)
+            setNfrPartNumber(nfrData?.PartNumber)
+            setPartName(nfrData?.PartName)
         }
     }, [nfrData, props?.NfrNumber]);
 
@@ -609,7 +616,7 @@ function AddNfr(props) {
         const resultInput = inputValue.slice(0, searchCount)
         if (inputValue?.length >= searchCount && vendor !== resultInput) {
             let res
-            res = await getVendorWithVendorCodeSelectList(resultInput)
+            res = await getVendorNameByVendorSelectList(VBC_VENDOR_TYPE, resultInput)
             setVendor(resultInput)
             let vendorDataAPI = res?.data?.SelectList
             if (inputValue) {
@@ -771,81 +778,34 @@ function AddNfr(props) {
         <>
             {(loader && <LoaderCustom customClass="pdf-loader" />)}
             {props.showAddNfr && <div>
-                <Row className='mb-2'>
-                    <Col md="4">
-                        <h1>Create Estimation</h1>
-                    </Col>
-                    <Col md="8"><div className="parent-container">
-                        <div className="child-container">
-                            <TextFieldHookForm
-                                label="NFR Id:"
-                                name={"NfrId"}
-                                Controller={Controller}
-                                control={control}
-                                register={register}
-                                mandatory={false}
-                                handleChange={() => { }}
-                                defaultValue={() => { }}
-                                className=""
-                                customClassName={"withBorder nfr-inputs"}
-                                disabled={true}
-                                title={props?.NfrNumber}
-                            />
-                        </div>
-                        <div className="child-container">
-                            <TextFieldHookForm
-                                label="Plant.:"
-                                name={"Plant"}
-                                Controller={Controller}
-                                control={control}
-                                register={register}
-                                mandatory={false}
-                                handleChange={() => { }}
-                                defaultValue={() => { }}
-                                className=""
-                                title={`${nfrPartDetail?.PlantName} (${nfrPartDetail?.PlantCode})`}
-                                customClassName={"withBorder nfr-inputs  custom-min-width-100px"}
-                                disabled={true}
-                            />
-                        </div>
-                        <div className="child-container">
-                            <TextFieldHookForm
-                                label="Part No.:"
-                                name={"PartNo"}
-                                Controller={Controller}
-                                control={control}
-                                register={register}
-                                mandatory={false}
-                                handleChange={() => { }}
-                                defaultValue={() => { }}
-                                className=""
-                                customClassName={"withBorder nfr-inputs"}
-                                disabled={true}
-                                title={nfrData?.PartNumber}
-                            />
-                        </div>
-                        <div className="child-container">
-                            <TextFieldHookForm
-                                label="Part Name:"
-                                name={"PartName"}
-                                Controller={Controller}
-                                control={control}
-                                register={register}
-                                mandatory={false}
-                                handleChange={() => { }}
-                                defaultValue={() => { }}
-                                className=""
-                                customClassName={"withBorder nfr-inputs"}
-                                disabled={true}
-                                title={nfrData?.PartName}
-                            />
-                        </div>
-                        <div className="child-container">
-                            <button type="button" className={"apply"} onClick={onBackButton}>
-                                <div className={'back-icon'}></div>Back
-                            </button>
-                        </div>
-                    </div>
+                <div className='mb-2 d-flex justify-content-between'>
+                    <h1>Create Estimation</h1>
+                    <button type="button" className={"apply mt-1"} onClick={onBackButton}>
+                        <div className={'back-icon'}></div>Back
+                    </button>
+                </div>
+                <Row>
+                    <Col md="12">
+                        <Table className='border cr-brdr-main sub-table' responsive>
+                            <thead>
+                                <tr>
+                                    <th>NFR Number</th>
+                                    <th>Part Number</th>
+                                    <th>Part Name</th>
+                                    <th>Plant (Code)</th>
+                                    <th>Current Group</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>{NFRNumber}</td>
+                                    <td>{nfrPartNumber}</td>
+                                    <td>{partName}</td>
+                                    <td>{plantName}</td>
+                                    <td>{existingGroupNameVersion}</td>
+                                </tr>
+                            </tbody>
+                        </Table>
                     </Col>
                 </Row>
                 <HeaderTitle className="border-bottom"
@@ -933,8 +893,8 @@ function AddNfr(props) {
                                 <th>Outsourcing Cost</th>
                                 <th className='text-right'>Action</th>
                                 <th className="table-record">Row Action</th>
-                            </tr>
-                        </thead>
+                            </tr >
+                        </thead >
                         <tbody>
                             {rowData?.map((item, indexOuter) => (
                                 <React.Fragment key={item?.groupName}>
@@ -1015,21 +975,27 @@ function AddNfr(props) {
                                                         {!isViewEstimation && item?.CostingOptions?.length === 0 && dataItem?.SelectedCostingVersion && <button title='Discard' className="CancelIcon" type={'button'} onClick={() => deleteRowItem(indexInside)} />}
                                                     </>}
                                             </div></td>
-                                            {indexInside === 0 && (
-                                                <td rowSpan={item?.data.length} className="table-record">
-                                                    <button className="Edit" type={"button"} title={"Edit Costing"} onClick={() => editRow(item, indexInside)} disabled={isViewEstimation || (!item?.isRowActionEditable && !item?.IsShowEditButtonForPFS)} />
-                                                    {/* <button className="Delete All ml-1" title={"Delete Costing"} type={"button"} onClick={() => deleteRow(item, indexInside)} disabled={isViewEstimation || item?.statusId !== DRAFTID} /> */}
-                                                </td>
-                                            )}
-                                        </tr>
-                                    ))}
-                                </React.Fragment>
-                            ))}
-                            {rowData.length === 0 && (<tr>
-                                <td colSpan={8} className="text-center"><NoContentFound title={EMPTY_DATA} /></td>
-                            </tr>)}
-                        </tbody>
-                    </Table>
+                                            {
+                                                indexInside === 0 && (
+                                                    <td rowSpan={item?.data.length} className="table-record">
+                                                        <button className="Edit" type={"button"} title={"Edit Costing"} onClick={() => editRow(item, indexInside)} disabled={isViewEstimation || (!item?.isRowActionEditable && !item?.IsShowEditButtonForPFS)} />
+                                                        {/* <button className="Delete All ml-1" title={"Delete Costing"} type={"button"} onClick={() => deleteRow(item, indexInside)} disabled={isViewEstimation || item?.statusId !== DRAFTID} /> */}
+                                                    </td>
+                                                )
+                                            }
+                                        </tr >
+                                    ))
+                                    }
+                                </React.Fragment >
+                            ))
+                            }
+                            {
+                                rowData.length === 0 && (<tr>
+                                    <td colSpan={8} className="text-center"><NoContentFound title={EMPTY_DATA} /></td>
+                                </tr>)
+                            }
+                        </tbody >
+                    </Table >
                     <Row>
                         <Col md="12" className='text-right'>
                             <button
@@ -1041,26 +1007,28 @@ function AddNfr(props) {
                                 <div className={"save-icon"}></div>
                                 Save
                             </button>
-                            {isFinalApproverShowButton && <button
-                                className='user-btn'
-                                type='button'
-                                onClick={sendForApproval}
-                                disabled={isViewEstimation || sendForApprovalButtonDisable || allCostingNotSelected || topGroupNotAdded}
-                            >
-                                <div className="send-for-approval"></div>
-                                Send for Approval
-                            </button>}
+                            {
+                                isFinalApproverShowButton && <button
+                                    className='user-btn'
+                                    type='button'
+                                    onClick={sendForApproval}
+                                    disabled={isViewEstimation || sendForApprovalButtonDisable || allCostingNotSelected || topGroupNotAdded}
+                                >
+                                    <div className="send-for-approval"></div>
+                                    Send for Approval
+                                </button>
+                            }
                             <div>
                                 {editWarning && <WarningMessage dClass="mr-3" message={filterStatus} />}
                             </div>
                             {
                                 showPopup && <PopupMsgWrapper isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${MESSAGES.COSTING_DELETE_ALERT}`} />
                             }
-                        </Col>
-                    </Row>
+                        </Col >
+                    </Row >
 
-                </div>
-            </div>}
+                </div >
+            </div >}
 
             {
                 showDrawer &&
@@ -1075,13 +1043,15 @@ function AddNfr(props) {
                     levelDetails={levelDetails}
                 />
             }
-            {showOutsourcingDrawer &&
+            {
+                showOutsourcingDrawer &&
                 <OutsourcingDrawer
                     isOpen={showOutsourcingDrawer}
                     closeDrawer={closeOutsourcingDrawer}
                     anchor={'right'}
                     CostingId={OutsourcingCostingData?.CostingId}
-                />}
+                />
+            }
         </>
     );
 }

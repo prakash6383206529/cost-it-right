@@ -69,7 +69,7 @@ class AddFuelNameDrawer extends Component {
       }
       // this.props.reset()
       this.props.createFuel(reqData, (res) => {
-        if (res.data.Result === true) {
+        if (res?.data?.Result === true) {
           Toaster.success(MESSAGES.FUEL_ADD_SUCCESS);
           this.toggleDrawer('', reqData);
         }

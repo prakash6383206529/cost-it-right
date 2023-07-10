@@ -4,7 +4,7 @@ import { Container, Row, Col, } from 'reactstrap';
 import { getSurfaceTreatmentDrawerDataList } from '../../actions/Costing';
 import { costingInfoContext } from '../CostingDetailStepTwo';
 import NoContentFound from '../../../common/NoContentFound';
-import { CBCTypeId, defaultPageSize, EMPTY_DATA, NCCTypeId, NFRTypeId, PFS1TypeId, PFS2TypeId, PFS3TypeId, VBCTypeId, ZBCTypeId } from '../../../../config/constants';
+import { CBCTypeId, defaultPageSize, EMPTY_DATA, NCCTypeId, NFRTypeId, PFS1TypeId, PFS2TypeId, PFS3TypeId, WACTypeId, VBCTypeId, VBC, ZBCTypeId } from '../../../../config/constants';
 import Toaster from '../../../common/Toaster';
 import Drawer from '@material-ui/core/Drawer';
 import { EMPTY_GUID } from '../../../../config/constants';
@@ -54,7 +54,7 @@ function AddSurfaceTreatment(props) {
       PlantId: (initialConfiguration?.IsDestinationPlantConfigure && (costData.CostingTypeId === VBCTypeId || costData.CostingTypeId === NCCTypeId || costData.CostingTypeId === NFRTypeId
         || costData.CostingTypeId === PFS1TypeId || costData.CostingTypeId === PFS2TypeId || costData.CostingTypeId === PFS3TypeId)) || costData.CostingTypeId === CBCTypeId ? costData.DestinationPlantId : (costData.CostingTypeId === ZBCTypeId) ? costData.PlantId : EMPTY_GUID,
       CostingTypeId: (Number(costData.CostingTypeId) === NFRTypeId || Number(costData.CostingTypeId) === VBCTypeId ||
-        Number(costData.CostingTypeId) === PFS1TypeId || Number(costData.CostingTypeId) === PFS2TypeId || Number(costData.CostingTypeId) === PFS3TypeId) ? VBCTypeId : costData.CostingTypeId,
+        Number(costData.CostingTypeId) === PFS1TypeId || Number(costData.CostingTypeId) === PFS2TypeId || Number(costData.CostingTypeId) === PFS3TypeId) ? VBCTypeId : Number(costData.CostingTypeId) === WACTypeId ? ZBCTypeId : costData.CostingTypeId,
       CustomerId: costData.CustomerId
     }
     dispatch(getSurfaceTreatmentDrawerDataList(data, (res) => {

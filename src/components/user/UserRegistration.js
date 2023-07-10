@@ -16,12 +16,11 @@ import {
   getPermissionByUser, getUsersTechnologyLevelAPI, setUserAdditionalPermission, setUserTechnologyLevelForCosting, updateUserTechnologyLevelForCosting,
   getLevelByTechnology, getSimulationTechnologySelectList, getSimualationLevelByTechnology, getUsersSimulationTechnologyLevelAPI, getMastersSelectList, getUsersMasterLevelAPI, getMasterLevelDataList, getMasterLevelByMasterId, registerRfqUser, updateRfqUser
 } from "../../actions/auth/AuthActions";
-import { getAllCities, getCityByCountry, getAllCity, getVendorWithVendorCodeSelectList, getReporterList, getApprovalTypeSelectList } from "../../actions/Common";
+import { getAllCities, getCityByCountry, getAllCity, getReporterList, getApprovalTypeSelectList, getVendorNameByVendorSelectList } from "../../actions/Common";
 import { MESSAGES } from "../../config/message";
 import { getConfigurationKey, loggedInUserId } from "../../helper/auth";
 import { Table, Button, Row, Col } from 'reactstrap';
-import "./UserRegistration.scss";
-import { EMPTY_DATA, IV, IVRFQ, KEY, KEYRFQ, searchCount } from "../../config/constants";
+import { EMPTY_DATA, IV, IVRFQ, KEY, KEYRFQ, VBC_VENDOR_TYPE, searchCount } from "../../config/constants";
 import NoContentFound from "../common/NoContentFound";
 import HeaderTitle from "../common/HeaderTitle";
 import PermissionsTabIndex from "./RolePermissions/PermissionsTabIndex";
@@ -1304,10 +1303,12 @@ function UserRegistration(props) {
     else {
 
       dispatch(updateUserAPI(updatedData, (res) => {
-        if (res.data.Result) {
+        if (res?.data?.Result) {
           Toaster.success(MESSAGES.UPDATE_USER_SUCCESSFULLY)
+          cancel();
         }
-        cancel();
+        setIsLoader(false)
+        setShowPopup(false)
       }))
     }
 
@@ -1325,11 +1326,17 @@ function UserRegistration(props) {
    * @returns {{}}
    */
   const onSubmit = (values) => {
+
+    let forcefulUpdate = false
     if (isEditFlag && !isForcefulUpdate) {
       if (JSON.stringify(Modules) !== JSON.stringify(oldModules) || JSON.stringify(oldHeadLevelGrid) !== JSON.stringify(HeadLevelGrid) || JSON.stringify(oldMasterLevelGrid) !== JSON.stringify(masterLevelGrid) || JSON.stringify(oldTechnologyLevelGrid) !== JSON.stringify(TechnologyLevelGrid)) {
         setIsForcefulUpdate(true)
+        forcefulUpdate = true
       }
-      else { setIsForcefulUpdate(false) }
+      else {
+        forcefulUpdate = false
+        setIsForcefulUpdate(false)
+      }
     }
     const { reset } = props;
     const userDetails = JSON.parse(localStorage.getItem('userDetail'))
@@ -1406,7 +1413,7 @@ function UserRegistration(props) {
 
     if (isEditFlag) {
       let updatedData = {
-        IsForcefulUpdated: isForcefulUpdate,
+        IsForcefulUpdated: isForcefulUpdate ? isForcefulUpdate : forcefulUpdate,
         UserId: UserId,
         FullName: `${values.FirstName ? values.FirstName.trim() : ''} ${values.LastName ? values.LastName.trim() : ''}`,
         LevelId: registerUserData?.LevelId,
@@ -1500,10 +1507,12 @@ function UserRegistration(props) {
         else {
           reset();
           dispatch(updateUserAPI(updatedData, (res) => {
-            if (res.data.Result) {
+            if (res?.data?.Result) {
               Toaster.success(MESSAGES.UPDATE_USER_SUCCESSFULLY)
+              cancel();
             }
-            cancel();
+            setIsLoader(false)
+            setShowPopup(false)
           }))
         }
 
@@ -1595,7 +1604,7 @@ function UserRegistration(props) {
     const resultInput = inputValue.slice(0, searchCount)
     if (inputValue?.length >= searchCount && vendor !== resultInput) {
       let res
-      res = await getVendorWithVendorCodeSelectList(resultInput)
+      res = await getVendorNameByVendorSelectList(VBC_VENDOR_TYPE, resultInput)
       setVendor(resultInput)
       let vendorDataAPI = res?.data?.SelectList
       if (inputValue) {

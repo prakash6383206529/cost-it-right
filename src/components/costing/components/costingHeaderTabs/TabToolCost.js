@@ -256,7 +256,7 @@ function TabToolCost(props) {
       const tabData = RMCCTabData[0]
       const surfaceTabData = SurfaceTabData[0]
       const overHeadAndProfitTabData = OverheadProfitTabData[0]
-      const discountAndOtherTabData = DiscountCostData[0]
+      const discountAndOtherTabData = DiscountCostData
       const packageAndFreightTabData = PackageAndFreightTabData && PackageAndFreightTabData[0]
       const toolTabData = ToolTabData && ToolTabData[0]
 
@@ -270,6 +270,7 @@ function TabToolCost(props) {
         "ToolCost": ToolTabData.TotalToolCost,
         "CostingPartDetails": ToolTabData && ToolTabData[0]?.CostingPartDetails,
         "TotalCost": netPOPrice,
+        "BasicRate": discountAndOtherTabData?.BasicRateINR,
       }
       if (costData.IsAssemblyPart === true && !partType) {
 

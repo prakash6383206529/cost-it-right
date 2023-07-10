@@ -55,7 +55,7 @@ function OpenWeightCalculator(props) {
     if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
       return
     }
-    props.closeDrawer('', weightData, originalWeight)
+    props.closeDrawer(event, weightData, originalWeight)
   }
 
   /**

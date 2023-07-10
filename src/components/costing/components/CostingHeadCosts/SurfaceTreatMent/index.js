@@ -149,7 +149,7 @@ function SurfaceTreatment(props) {
       const tabData = RMCCTabData && RMCCTabData[0]
       const surfaceTabData = SurfaceTabData && SurfaceTabData[0]
       const overHeadAndProfitTabData = OverheadProfitTabData && OverheadProfitTabData[0]
-      const discountAndOtherTabData = DiscountCostData && DiscountCostData[0]
+      const discountAndOtherTabData = DiscountCostData
       const packageAndFreightTabData = PackageAndFreightTabData && PackageAndFreightTabData[0]
       const toolTabData = ToolTabData && ToolTabData[0]
 
@@ -163,7 +163,8 @@ function SurfaceTreatment(props) {
         "EffectiveDate": CostingEffectiveDate,
         "LoggedInUserId": loggedInUserId(),
         // THIS CONDITION IS USED FOR ASSEMBLY COSTING ,IN ASSEMBLY COSTING TOTAL COST IS SUM OF RMCCTAB DATA + SURFACE TREATEMNT TAB DATA OF THAT PART NUMBER (FOR PART/COMPONENT &ASSEMBLY KEY IS DIFFERENT)
-        "TotalCost": totalCostAPI,
+        "TotalCost": totalCostAPI + discountAndOtherTabData?.totalNpvCost + discountAndOtherTabData?.totalConditionCost,
+        "BasicRate": totalCostAPI,
         "CostingPartDetails": {
           "CostingDetailId": "00000000-0000-0000-0000-000000000000",
           "NetSurfaceTreatmentCost": item?.CostingPartDetails?.NetSurfaceTreatmentCost,
