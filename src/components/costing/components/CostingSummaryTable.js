@@ -992,6 +992,7 @@ const CostingSummaryTable = (props) => {
       item.otherDiscountApplicablity = Array.isArray(item?.CostingPartDetails?.DiscountCostDetails) && item?.CostingPartDetails?.DiscountCostDetails.length > 0 ? item?.CostingPartDetails?.DiscountCostDetails[0].ApplicabilityType : ''
       item.otherDiscountValuePercent = Array.isArray(item?.CostingPartDetails?.DiscountCostDetails) && item?.CostingPartDetails?.DiscountCostDetails.length > 0 ? item?.CostingPartDetails?.DiscountCostDetails[0].Value : ''
       item.otherDiscountCost = Array.isArray(item?.CostingPartDetails?.DiscountCostDetails) && item?.CostingPartDetails?.DiscountCostDetails.length > 0 ? item?.CostingPartDetails?.DiscountCostDetails[0].NetCost : ''
+      item.currencyTitle = item.currency && item?.currency?.currencyTitle
     })
 
     let masterDataArray = []
@@ -1538,7 +1539,7 @@ const CostingSummaryTable = (props) => {
                                       </span >}
                                       {
                                         data?.technologyId === DIE_CASTING && <span className={`d-block small-grey-text ${isApproval && viewCostingData?.length > 1 && highlightCostingSummaryValue(viewCostingData[0]?.MeltingLoss, viewCostingData[1]?.MeltingLoss)}`}>
-                                          {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.IsAssemblyCosting === true ? "Multiple RM" : <span title={`${checkForDecimalAndNull(data?.netRMCostView[0]?.MeltingLoss, initialConfiguration.NoOfDecimalForPrice)}(${(data?.netRMCostView[0]?.LossPercentage ? data?.netRMCostView[0]?.LossPercentage : 0)}%)`}>{`${checkForDecimalAndNull(data?.netRMCostView[0]?.MeltingLoss, initialConfiguration.NoOfDecimalForPrice)}(${(data?.netRMCostView[0]?.LossPercentage ? data?.netRMCostView[0]?.LossPercentage : 0)}%)`}</span> : '-')}
+                                          {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.IsAssemblyCosting === true ? "Multiple RM" : <span title={`${checkForDecimalAndNull(data?.netRMCostView[0]?.MeltingLoss, initialConfiguration.NoOfDecimalForPrice)} (${(data?.netRMCostView[0]?.LossPercentage ? data?.netRMCostView[0]?.LossPercentage : 0)}%)`}>{`${checkForDecimalAndNull(data?.netRMCostView[0]?.MeltingLoss, initialConfiguration.NoOfDecimalForPrice)} (${(data?.netRMCostView[0]?.LossPercentage ? data?.netRMCostView[0]?.LossPercentage : 0)}%)`}</span> : '-')}
                                           {/* {data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.fWeight, initialConfiguration.NoOfDecimalForInputOutput) : ''} */}
                                         </span>
                                       }

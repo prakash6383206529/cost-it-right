@@ -202,11 +202,10 @@ function BDNonAssociatedSimulation(props) {
             cellValue = 0
         }
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        const value = beforeSaveCell(cellValue)
         return (
             <>
                 {
-                    <span className={`${!isbulkUpload ? 'form-control' : ''}`} >{cell && value ? Number(cellValue) : (row?.Percentage ? row?.Percentage : 0)} </span>
+                    <span className={`${!isbulkUpload ? 'form-control' : ''}`} >{cell ? Number(cellValue) : (row?.Percentage ? row?.Percentage : 0)} </span>
                 }
 
             </>
@@ -281,7 +280,7 @@ function BDNonAssociatedSimulation(props) {
     const NewcostFormatter = (props) => {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         let returnValue = ''
-        if ((row?.Percentage !== '') && (checkForNull(row?.Percentage) !== 0)) {
+        if ((row?.Percentage !== '') && (checkForNull(row?.Percentage) !== 0) && checkForNull(row?.Percentage) < 100) {
             returnValue = row?.BasicRate + (row?.BasicRate * row?.Percentage / 100)
         } else {
             returnValue = row.NewBasicRate

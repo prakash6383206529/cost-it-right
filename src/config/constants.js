@@ -1480,6 +1480,7 @@ export const SET_SURFACE_COST_FOR_REJECTION_DATA = 'SET_SURFACE_COST_FOR_REJECTI
 export const SET_OVERHEAD_PROFIT_ERRORS = 'SET_OVERHEAD_PROFIT_ERRORS'
 export const SET_TOOLS_ERRORS = 'SET_TOOLS_ERRORS'
 export const SET_DISCOUNT_ERRORS = 'SET_DISCOUNT_ERRORS'
+export const RESET_EXCHANGE_RATE_DATA = 'RESET_EXCHANGE_RATE_DATA'
 
 // YOY
 export const SET_YOY_COST_GRID = 'SET_YOY_COST_GRID'
@@ -1894,6 +1895,8 @@ export const VIEW_COSTING_DATA = {
   status: 'Status',
   rm: 'RM-Grade',
   rmRate: 'RM Rate',
+  castingWeight: 'Casting Weight',
+  meltingLoss: 'Melting Loss',
   scrapRate: 'Scrap Rate',
   gWeight: 'Gross Weight',
   fWeight: 'Finish Weight',

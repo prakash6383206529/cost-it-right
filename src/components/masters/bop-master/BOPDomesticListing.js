@@ -686,7 +686,6 @@ class BOPDomesticListing extends Component {
                 }
             }
         }
-        console.log('this.props?.approvalStatus: ', this.props?.approvalStatus);
 
         return (
 
@@ -793,6 +792,7 @@ class BOPDomesticListing extends Component {
                                     onRowSelected={onRowSelect}
                                     onFilterModified={this.onFloatingFilterChanged}
                                     suppressRowClickSelection={true}
+                                    enableBrowserTooltips={true}
                                 >
                                     <AgGridColumn field="CostingHead" headerName="Costing Head" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
                                     <AgGridColumn field="BoughtOutPartNumber" headerName="BOP Part No."></AgGridColumn>

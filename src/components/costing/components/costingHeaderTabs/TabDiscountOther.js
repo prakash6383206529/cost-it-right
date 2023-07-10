@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, Table, } from 'reactstrap';
 import {
   getDiscountOtherCostTabData, saveDiscountOtherCostTab, fileUploadCosting, fileDeleteCosting,
-  getExchangeRateByCurrency, setDiscountCost, setComponentDiscountOtherItemData, saveAssemblyPartRowCostingCalculation, saveAssemblyBOPHandlingCharge, setDiscountErrors, gridDataAdded, isDiscountDataChange, setNPVData, setPOPrice,
+  getExchangeRateByCurrency, setDiscountCost, setComponentDiscountOtherItemData, saveAssemblyPartRowCostingCalculation, saveAssemblyBOPHandlingCharge, setDiscountErrors, gridDataAdded, isDiscountDataChange, setNPVData, setPOPrice, resetExchangeRateData, setOtherCostData
 } from '../../actions/Costing';
 import { getConditionDetails, getCurrencySelectList, getNpvDetails, saveCostingDetailCondition, saveCostingDetailNpv, } from '../../../../actions/Common';
 import { costingInfoContext, netHeadCostContext, NetPOPriceContext } from '../CostingDetailStepTwo';
@@ -98,7 +98,7 @@ function TabDiscountOther(props) {
     // CostingViewMode CONDITION IS USED TO AVOID CALCULATION IN VIEWMODE
     if (CostingViewMode === false) {
       if (props.activeTab !== '6') {
-
+        // Basic Rate (INR) = Total Cost + Total Other Cost
         setValue('BasicRateINR', discountObj !== undefined && checkForDecimalAndNull((netPOPrice - netPOPrice * calculatePercentage(discountObj?.HundiOrDiscountPercentage) - (totalNpvCost + totalConditionCost)), initialConfiguration?.NoOfDecimalForPrice))
         setValue('NetPOPriceINR', discountObj !== undefined && checkForDecimalAndNull((netPOPrice - netPOPrice * calculatePercentage(discountObj?.HundiOrDiscountPercentage)), initialConfiguration?.NoOfDecimalForPrice))
         setValue('HundiOrDiscountPercentage', discountObj !== undefined && discountObj?.HundiOrDiscountPercentage !== null ? discountObj?.HundiOrDiscountPercentage : '')
@@ -226,7 +226,6 @@ function TabDiscountOther(props) {
         }
       ]
 
-
       let data = {
         "CostingId": costData?.CostingId,
         "PartId": costData?.PartId,
@@ -303,7 +302,9 @@ function TabDiscountOther(props) {
 
             setEffectiveDate(DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
             let temp = []
+            let otherTotalCost = 0
             Data?.CostingPartDetails?.OtherCostDetails && Data?.CostingPartDetails?.OtherCostDetails.map((item) => {
+              otherTotalCost = Number(otherTotalCost) + Number(item.NetCost)
               let obj = {}
               obj.OtherCostDescription = item.Description
               obj.OtherCostApplicability = item.ApplicabilityType
@@ -315,6 +316,7 @@ function TabDiscountOther(props) {
             })
 
             setOtherCostArray(temp)
+            dispatch(setOtherCostData({ gridData: temp, otherCostTotal: otherTotalCost }))
 
             setDiscountCostApplicability({ label: costDetail.DiscountCostDetails[0].ApplicabilityType, value: costDetail.DiscountCostDetails[0].ApplicabilityType })
             setValue('DiscountCostApplicability', { label: costDetail.DiscountCostDetails[0].ApplicabilityType, value: costDetail.DiscountCostDetails[0].ApplicabilityType })
@@ -416,7 +418,7 @@ function TabDiscountOther(props) {
       if (hundiscountType.value === 'Percentage') {
         setValue('HundiOrDiscountValue', DiscountCostData && checkForDecimalAndNull(DiscountCostData.HundiOrDiscountValue, initialConfiguration?.NoOfDecimalForPrice))
       }
-      if (IsCurrencyChange && ExchangeRateData !== undefined && ExchangeRateData.CurrencyExchangeRate !== undefined) {
+      if (IsCurrencyChange && ExchangeRateData && ExchangeRateData !== undefined && ExchangeRateData.CurrencyExchangeRate !== undefined) {
         let poPriceOtherCurrency = (getValues('Currency') === '') ? 0 : (DiscountCostData && netPOPrice / ExchangeRateData.CurrencyExchangeRate)
         setValue('NetPOPriceOtherCurrency', checkForDecimalAndNull(poPriceOtherCurrency, initialConfiguration?.NoOfDecimalForPrice))
         setNetPoPriceCurrencyState(DiscountCostData && netPOPrice / ExchangeRateData.CurrencyExchangeRate)
@@ -546,6 +548,7 @@ function TabDiscountOther(props) {
     setNetPoPriceCurrencyState(0)
     setShowWarning(false)
     dispatch(isDiscountDataChange(true))
+    dispatch(resetExchangeRateData());
   }
 
   /**
@@ -1254,10 +1257,12 @@ function TabDiscountOther(props) {
                       />
                     </Col>
                     <Col md="3">
+                      <TooltipCustom disabledIcon={true} width="280px" id="basic-rate" tooltipText={"Basic Rate = (Total Cost + Total Other Cost) - Hundi/Discount Value"} />
                       <TextFieldHookForm
                         label="Basic Price (INR)"
                         name={'BasicRateINR'}
                         Controller={Controller}
+                        id="basic-rate"
                         control={control}
                         register={register}
                         mandatory={false}
@@ -1378,11 +1383,13 @@ function TabDiscountOther(props) {
                   />
                   }
                   <Row className="mt-2">
+                    <TooltipCustom disabledIcon={true} width="280px" id="net-po-price" tooltipText={"Net PO Price = Basic Rate + Total Costing Condition Cost + Total NPV Cost"} />
                     <Col md="3">
                       <TextFieldHookForm
                         label="Net PO Price (INR)"
                         name={'NetPOPriceINR'}
                         Controller={Controller}
+                        id="net-po-price"
                         control={control}
                         register={register}
                         mandatory={false}
