@@ -65,6 +65,7 @@ function RfqListing(props) {
     const [selectedRowIndex, setSelectedRowIndex] = useState('')
     const [index, setIndex] = useState('')
     const [selectedCostingList, setSelectedCostingList] = useState('')
+    const [mandatoryRemark, setMandatoryRemark] = useState(false)
 
     const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
 
@@ -170,13 +171,28 @@ function RfqListing(props) {
             Toaster.warning("You can send only one costing for approval")
             return false
         }
+        let list = [...viewCostingData]
+        let data = list?.filter(element => element?.costingId !== "-")
+        let val = data[2]?.poPrice
+        let costingId
+        data && data?.map((item, index) => {
+            if (val > item?.poPrice) {
+                val = item?.poPrice
+                costingId = item?.costingId
+            }
+        })
+
         let arr = []
         rowData.filter(el => {
             if (el.CostingId === selectedCostingList[0]) {
                 arr.push(el)
             }
         })
-
+        if (selectedCostingList[0] !== costingId) {
+            setMandatoryRemark(true)
+        } else {
+            setMandatoryRemark(false)
+        }
         // let data = {
         //     isEditFlag: true,
         //     rowData: rowData,
@@ -872,6 +888,7 @@ function RfqListing(props) {
                             technologyId={technologyId}
                             cancel={cancel}
                             selectedRows={selectedRows}
+                            mandatoryRemark={mandatoryRemark}
                         />
                     )
                 }

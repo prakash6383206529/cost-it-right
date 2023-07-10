@@ -399,7 +399,8 @@ function ApproveRejectDrawer(props) {
                 purchasingOrg: dataSend[0].CompanyCode ? dataSend[0].CompanyCode : '',
                 CostingId: approvalData[0].CostingId,
                 DecimalOption: approvalData[0].DecimalOption,
-                InfoToConditions: props.conditionInfo
+                InfoToConditions: props.conditionInfo,
+                TokenNumber: approvalData[0]?.ApprovalNumber
                 // Quantity: quantity
                 // effectiveDate: '11/30/2021',
                 // vendorCode: '203670',
