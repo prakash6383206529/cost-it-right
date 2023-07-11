@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Row, Col, Table } from 'reactstrap'
-import { checkForDecimalAndNull, checkVendorPlantConfigurable, formViewData, getConfigurationKey, loggedInUserId } from '../../../../helper'
-import { getApprovalSummary } from '../../actions/Approval'
-import { getSingleCostingDetails, setCostingViewData, storePartNumber, sapPushedCostingInitialMoment, checkFinalUser } from '../../actions/Costing'
+import { checkForDecimalAndNull, checkVendorPlantConfigurable, formViewData, getConfigurationKey, loggedInUserId, getPOPriceAfterDecimal } from '../../../../helper'
+import { approvalPushedOnSap, getApprovalSummary } from '../../actions/Approval'
+import { checkFinalUser, getSingleCostingDetails, setCostingViewData, storePartNumber } from '../../actions/Costing'
 import ApprovalWorkFlow from './ApprovalWorkFlow'
 import ApproveRejectDrawer from './ApproveRejectDrawer'
 import CostingSummaryTable from '../CostingSummaryTable'
@@ -13,17 +13,21 @@ import ViewDrawer from './ViewDrawer'
 import PushButtonDrawer from './PushButtonDrawer'
 import { Redirect } from 'react-router'
 import LoaderCustom from '../../../common/LoaderCustom';
-import { Fgwiseimactdata } from '../../../simulation/components/FgWiseImactData'
 import CalculatorWrapper from '../../../common/Calculator/CalculatorWrapper'
-import { CBCTypeId, EMPTY_GUID, NCCTypeId, VBC, VBCTypeId, ZBCTypeId } from '../../../../config/constants'
+import { debounce } from 'lodash'
+import { INR } from '../../../../config/constants'
+import { Fgwiseimactdata } from '../../../simulation/components/FgWiseImactData'
+import { CBCTypeId, EMPTY_GUID, NCC, NCCTypeId, VBC, VBCTypeId, ZBCTypeId } from '../../../../config/constants'
 import { Impactedmasterdata } from '../../../simulation/components/ImpactedMasterData'
 import NoContentFound from '../../../common/NoContentFound'
 import { getLastSimulationData } from '../../../simulation/actions/Simulation'
 import Toaster from '../../../common/Toaster'
-import { ErrorMessage } from '../../../simulation/SimulationUtils'
 import PopupMsgWrapper from '../../../common/PopupMsgWrapper'
 import { reactLocalStorage } from 'reactjs-localstorage'
 import { costingTypeIdToApprovalTypeIdFunction } from '../../../common/CommonFunctions'
+import { getMultipleCostingDetails, rfqGetBestCostingDetails } from '../../../rfq/actions/rfq'
+import _ from 'lodash'
+
 
 function ApprovalSummary(props) {
   const { approvalNumber, approvalProcessId } = props.location.state
@@ -46,14 +50,12 @@ function ApprovalSummary(props) {
   const [viewButton, setViewButton] = useState(false)
   const [pushButton, setPushButton] = useState(false)
   const [isLoader, setIsLoader] = useState(false);
-  const [fgWiseAcc, setFgWiseAcc] = useState(true)
-  const [costingIdArray, setCostingIdArray] = useState({})
+  const [fgWiseAcc, setFgWiseAcc] = useState(false)
   const [lastRevisionDataAcc, setLastRevisionDataAcc] = useState(false)
   const [editWarning, setEditWarning] = useState(false)
   const [finalLevelUser, setFinalLevelUser] = useState(false)
   const [impactedMasterDataListForLastRevisionData, setImpactedMasterDataListForLastRevisionData] = useState([])
   const [masterIdForLastRevision, setMasterIdForLastRevision] = useState('')
-  const [fgWise, setFgWise] = useState(false)
   const [IsRegularizationLimit, setIsRegularizationLimit] = useState(false)
   const [showPopup, setShowPopup] = useState(false)
   const [costingHead, setCostingHead] = useState("")
@@ -62,16 +64,18 @@ function ApprovalSummary(props) {
   const [costingTypeId, setCostingTypeId] = useState("")
   const [approvalTypeId, setApprovalTypeId] = useState("")
   const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
-  const [accDisable, setAccDisable] = useState(false)
+  const [uniqueShouldCostingId, setUniqueShouldCostingId] = useState([])
+  const [costingIdList, setCostingIdList] = useState([])
+  const [notSelectedCostingId, setNotSelectedCostingId] = useState([])
+  const [isRFQ, setisRFQ] = useState(false)
+  const [conditionInfo, setConditionInfo] = useState([])
+  const [vendorCodeForSap, setVendorCodeForSap] = useState('')
 
   const headerName = ['Revision No.', 'Name', 'Existing Cost/Pc', 'Revised Cost/Pc', 'Quantity', 'Impact/Pc', 'Volume/Year', 'Impact/Quarter', 'Impact/Year']
   const parentField = ['PartNumber', '-', 'PartName', '-', '-', '-', 'VariancePerPiece', 'VolumePerYear', 'ImpactPerQuarter', 'ImpactPerYear']
   const childField = ['PartNumber', 'ECNNumber', 'PartName', 'ExistingCost', 'RevisedCost', 'Quantity', 'VariancePerPiece', '-', '-', '-']
   useEffect(() => {
-
     approvalSummaryHandler()
-
-
   }, [])
 
   useEffect(() => {
@@ -84,8 +88,7 @@ function ApprovalSummary(props) {
           RawMaterialImpactedMasterDataList: [],
           BoughtOutPartImpactedMasterDataList: [],
           SurfaceTreatmentImpactedMasterDataList: [],
-          MachineProcessImpactedMasterDataList: [],
-          CombinedProcessImpactedMasterDataList: []
+          MachineProcessImpactedMasterDataList: []
         }
         let masterId
         let Data = []
@@ -112,8 +115,7 @@ function ApprovalSummary(props) {
       impactedMasterDataListForLastRevisionData?.ExchangeRateImpactedMasterDataList?.length <= 0 &&
       impactedMasterDataListForLastRevisionData?.BoughtOutPartImpactedMasterDataList?.length <= 0 &&
       impactedMasterDataListForLastRevisionData?.SurfaceTreatmentImpactedMasterDataList?.length <= 0 &&
-      impactedMasterDataListForLastRevisionData?.MachineProcessImpactedMasterDataList <= 0 &&
-      impactedMasterDataListForLastRevisionData?.CombinedProcessImpactedMasterDataList?.length <= 0
+      impactedMasterDataListForLastRevisionData?.MachineProcessImpactedMasterDataList <= 0
     if (lastRevisionDataAcc && check) {
       Toaster.warning('There is no data for the Last Revision.')
       setEditWarning(true)
@@ -128,14 +130,53 @@ function ApprovalSummary(props) {
 
       const { PartDetails, ApprovalDetails, ApprovalLevelStep, DepartmentId, Technology, ApprovalProcessId,
         ApprovalProcessSummaryId, ApprovalNumber, IsSent, IsFinalLevelButtonShow, IsPushedButtonShow,
-        CostingId, PartId, LastCostingId, PartNumber, DepartmentCode, VendorId, IsRegularizationLimitCrossed, CostingHead, NCCPartQuantity, IsRegularized, CostingTypeId, DecimalOption, ApprovalTypeId } = res?.data?.Data?.Costings[0];
+        CostingId, PartId, LastCostingId, DecimalOption, VendorId, IsRegularizationLimitCrossed, CostingHead, NCCPartQuantity, IsRegularized, ApprovalTypeId, CostingTypeId, BestCostAndShouldCostDetails } = res?.data?.Data?.Costings[0];
+      setApprovalTypeId(ApprovalTypeId)
+
+      // let BestCostAndShouldCostDetails = {
+      //   ShouldCostings: [{ CostingId: "aae83b68-128d-4ade-b446-cd2407d6c1c2" }],
+      //   CostingIdList: [{ CostingId: "4a3dc510-ae1c-478a-969a-3fa7c1820d62" }, { CostingId: "2d49ced2-dc50-4e63-b2b9-ed74dd44fb24" }],
+      //   BestCostId: "24f21230-003d-4c1d-92d2-5d4fb48de80e"
+      // }
+      setisRFQ(BestCostAndShouldCostDetails?.BestCostId ? true : false)
+      if (BestCostAndShouldCostDetails?.BestCostId) {
+        let temp = []
+        let tempObj = {}
+        let list = _.map([...BestCostAndShouldCostDetails?.CostingIdList], 'CostingId')
+
+        setCostingIdList(list)
+        const filteredArray = list.filter((id) => id !== CostingId);
+        setNotSelectedCostingId(filteredArray)
+
+
+        setUniqueShouldCostingId(_.map(BestCostAndShouldCostDetails?.ShouldCostings, 'CostingId'))
+        let costing = [...BestCostAndShouldCostDetails?.ShouldCostings, ...BestCostAndShouldCostDetails?.CostingIdList, { CostingId: CostingId }]
+
+        dispatch(getMultipleCostingDetails(costing, (res) => {
+          if (res) {
+            res.map((item) => {
+              tempObj = formViewData(item?.data?.Data)
+              temp.push(tempObj[0])
+              return null
+            })
+            dispatch(rfqGetBestCostingDetails(BestCostAndShouldCostDetails?.BestCostId, (res) => {
+              tempObj = formViewData(res?.data?.Data, '', true)
+              tempObj[0].bestCost = true
+              temp.push(tempObj[0])
+              let dat = [...temp]
+
+              let tempArrToSend = _.uniqBy(dat, 'costingId')
+
+              dispatch(setCostingViewData([...tempArrToSend]))
+            }))
+          }
+        }))
+      }
       setCostingTypeId(CostingTypeId)
       setNccPartQuantity(NCCPartQuantity)
       setIsRegularized(IsRegularized)
       setCostingHead(CostingHead)
       const technologyId = res?.data?.Data?.Costings[0].PartDetails.TechnologyId
-      const Data = res?.data?.Data?.Costings[0].ApprovalDetails[0]
-
       setIsRegularizationLimit(IsRegularizationLimitCrossed ? IsRegularizationLimitCrossed : false)
       setIsLoader(false)
       dispatch(storePartNumber({ partId: PartId }))
@@ -154,72 +195,49 @@ function ApprovalSummary(props) {
         ApprovalNumber: ApprovalNumber,
         CostingId: CostingId,
         ReasonId: ApprovalDetails[0].ReasonId,
+        DecimalOption: DecimalOption,
         LastCostingId: LastCostingId,
-        PartNumber: PartNumber,
-        VendorCode: Data.VendorCode,
-        VendorName: Data.VendorName,
-        Plant: Data.TypeOfCosting === 'VBC' ? Data.DestinationPlantCode : Data.PlantCode,
-        DepartmentCode: DepartmentCode,
-        NewPOPrice: Data.NewPOPrice,
         EffectiveDate: ApprovalDetails[0].EffectiveDate,
         VendorId: VendorId
       })
-      let requestArray = []
-      let requestObject = {}
-
-      let costingObject = {}
-      costingObject.CostingId = CostingId
-      requestArray.push(costingObject)
-      requestObject.IsCreate = false
-      requestObject.CostingIds = requestArray
-      setCostingIdArray(requestObject)
-
 
       let obj = {
         DepartmentId: DepartmentId,
         UserId: loggedInUserId(),
         TechnologyId: technologyId,
         Mode: 'costing',
-        approvalTypeId: costingTypeIdToApprovalTypeIdFunction(ApprovalTypeId)
+        approvalTypeId: costingTypeIdToApprovalTypeIdFunction(CostingTypeId)
       }
       dispatch(checkFinalUser(obj, res => {
         if (res && res.data && res.data.Result) {
           setFinalLevelUser(res.data.Data.IsFinalApprover)
         }
       }))
+
+      dispatch(getSingleCostingDetails(CostingId, res => {
+        let responseData = res?.data?.Data
+        setVendorCodeForSap(responseData.VendorCode)
+        let conditionArr = []
+        responseData.CostingPartDetails.CostingConditionResponse.forEach((item, index) => {
+          let obj = {
+            Lifnr: responseData.VendorCode,
+            Matnr: responseData.PartNumber,
+            Kschl: item.CostingConditionNumber,
+            Datab: DayTime(responseData.EffectiveDate).format('YYYY-MM-DD'),
+            Datbi: DayTime(responseData.CostingDate).format('YYYY-MM-DD'),
+            Kbetr: item.ConditionCost,
+            Konwa: INR,
+            Kpein: "1",
+            Kmein: "NO"
+          }
+          conditionArr.push(obj)
+        })
+
+        setConditionInfo(conditionArr)
+      }))
     }),
 
     )
-  }
-
-  const handlePushButton = () => {
-    // ********** THIS FUNCTION WILL GET CALLED WHEN PUSH BUTTON IS CLICKED **********
-    let requestObject = {
-      "AmmendentDataRequests": [
-        {
-          "CostingId": approvalData.CostingId,
-          "Vendor": approvalData.VendorCode,
-          "PurchasingGroup": approvalData.DepartmentCode,
-          "Plant": approvalData.Plant,
-          "MaterialCode": approvalData?.PartNumber,
-          "NewPOPrice": approvalData.NewPOPrice,
-          "EffectiveDate": approvalData.EffectiveDate,
-          "TokenNumber": String(approvalData.ApprovalNumber)
-        }
-      ],
-      "LoggedInUserId": loggedInUser
-    }
-
-    dispatch(sapPushedCostingInitialMoment(requestObject, res => {
-      let status = 200
-      if ('response' in res) {
-        status = res && res?.response?.status
-      }
-      if (status !== undefined && status === 200) {
-        Toaster.success('Repush has been done successfully')
-      }
-      setShowListing(true)
-    }))
   }
 
   const closeDrawer = (e = '', type) => {
@@ -254,41 +272,37 @@ function ApprovalSummary(props) {
       }
     }
   }
+  const dataSend = [
+    approvalDetails,
+    partDetail
+  ]
 
   const displayCompareCosting = () => {
 
-    dispatch(getSingleCostingDetails(approvalData.CostingId, res => {
-      const Data = res.data.Data
-      const newObj = formViewData(Data, 'New Costing')
-      let finalObj = []
-      if (approvalData.LastCostingId !== EMPTY_GUID && approvalData.LastCostingId !== undefined && approvalData.LastCostingId !== null) {
-        dispatch(getSingleCostingDetails(approvalData.LastCostingId, response => {
-          const oldData = response.data.Data
-          const oldObj = formViewData(oldData, 'Old Costing')
-          finalObj = [oldObj[0], newObj[0]]
-          dispatch(setCostingViewData(finalObj))
+    if (!isRFQ && uniqueShouldCostingId?.length === 0) {
+      dispatch(getSingleCostingDetails(approvalData.CostingId, res => {
+        const Data = res.data.Data
+        const newObj = formViewData(Data, 'New Costing')
+        let finalObj = []
+        if (approvalData.LastCostingId !== EMPTY_GUID && approvalData.LastCostingId !== undefined && approvalData.LastCostingId !== null) {
+          dispatch(getSingleCostingDetails(approvalData.LastCostingId, response => {
+            const oldData = response.data.Data
+            const oldObj = formViewData(oldData, 'Old Costing')
+            finalObj = [oldObj[0], newObj[0]]
+            dispatch(setCostingViewData(finalObj))
+            setCostingSummary(!costingSummary)
+          }))
+        } else {
+
+          dispatch(setCostingViewData(newObj))
           setCostingSummary(!costingSummary)
-        }))
-      } else {
+        }
 
-        dispatch(setCostingViewData(newObj))
-        setCostingSummary(!costingSummary)
-      }
+      }))
+    } else {
+      setCostingSummary(!costingSummary)
+    }
 
-    }))
-
-  }
-
-  const displayCompareCostingFgWise = (CostingApprovalProcessSummaryId) => {
-    setFgWise(true)
-    dispatch(getSingleCostingDetails(CostingApprovalProcessSummaryId, res => {
-      const Data = res.data.Data
-      const newObj = formViewData(Data)
-      dispatch(setCostingViewData(newObj))
-      setTimeout(() => {
-        setCostingSummary(true)
-      }, 500);
-    }))
   }
 
   const onApproveButtonClick = () => {
@@ -312,10 +326,49 @@ function ApprovalSummary(props) {
     return <Redirect to="/approval-listing" />
   }
 
-  // WHEN FGWISE API IS PENDING THEN THIS CODE WILL MOUNT FOR DISABLED FGWISE ACCORDION
-  const fgWiseAccDisable = (data) => {
-    setAccDisable(data)
-  }
+  const callPushAPI = debounce(() => {
+    let pushdata = {
+      effectiveDate: dataSend[0].EffectiveDate ? DayTime(dataSend[0].EffectiveDate).format('YYYY-MM-DD') : '',
+      vendorCode: vendorCodeForSap,
+      materialNumber: dataSend[1].PartNumber,
+      netPrice: dataSend[0].NewPOPrice,
+      plant: dataSend[0].PlantCode ? dataSend[0].PlantCode : dataSend[0].DestinationPlantId ? dataSend[0].DestinationPlantCode : '',
+      currencyKey: dataSend[0].Currency ? dataSend[0].Currency : INR,
+      materialGroup: '',
+      taxCode: 'YW',
+      basicUOM: "NO",
+      purchasingGroup: '',
+      purchasingOrg: dataSend[0].CompanyCode ? dataSend[0].CompanyCode : '',
+      CostingId: approvalData.CostingId,
+      DecimalOption: approvalData.DecimalOption,
+      InfoToConditions: conditionInfo,
+      TokenNumber: approvalData?.ApprovalNumber
+      // effectiveDate: '11/30/2021',
+      // vendorCode: '203670',
+      // materialNumber: 'S07004-003A0Y',
+      // materialGroup: 'M089',
+      // taxCode: 'YW',
+      // plant: '1401',
+      // netPrice: '30.00',
+      // currencyKey: 'INR',
+      // basicUOM: 'NO',
+      // purchasingOrg: 'MRPL',
+      // purchasingGroup: 'O02'
+
+    }
+    // let obj = {
+    //   LoggedInUserId: loggedInUserId(),
+    //   Request: [pushdata]
+    // }
+    // dispatch(approvalPushedOnSap(obj, res => {
+    //   if (res && res.status && (res.status === 200 || res.status === 204)) {
+    //     Toaster.success('Approval pushed successfully.')
+    //   }
+    // }))
+    setShowListing(true)
+
+  }, 500)
+
   return (
 
     <>
@@ -324,8 +377,8 @@ function ApprovalSummary(props) {
         showListing === false &&
         <>
           {isLoader && <LoaderCustom />}
+          {/* <ErrorMessage approvalNumber={approvalNumber} /> */}
           <div className="container-fluid approval-summary-page">
-            <ErrorMessage approvalNumber={approvalNumber} costingIdArray={costingIdArray} />
             <h2 className="heading-main">Approval Summary</h2>
             <Row>
               <Col md="8">
@@ -483,11 +536,7 @@ function ApprovalSummary(props) {
                         {approvalDetails.NewPOPrice !== null ? checkForDecimalAndNull(approvalDetails.NewPOPrice, initialConfiguration?.NoOfDecimalForPrice) : '-'}
                       </td>
                       <td>
-                        {approvalDetails.Variance !== null ?
-                          <div>
-                            {approvalDetails.Variance ? (approvalDetails.OldPOPrice > approvalDetails.NewPOPrice ? <span className='positive-sign'>-</span> : <span className='positive-sign'>+</span>) : ''}
-                            {Math.abs(checkForDecimalAndNull(approvalDetails.Variance, initialConfiguration?.NoOfDecimalForPrice))}</div>
-                          : '-'}
+                        {approvalDetails.Variance !== null ? checkForDecimalAndNull(approvalDetails.Variance, initialConfiguration?.NoOfDecimalForPrice) : '-'}
                       </td>
                       {approvalDetails.CostingTypeId !== NCCTypeId && <td>
                         {approvalDetails.ConsumptionQuantity !== null ? approvalDetails.ConsumptionQuantity : '-'}
@@ -543,11 +592,13 @@ function ApprovalSummary(props) {
                 </Table>
               </Col>
             </Row>
+            {/* THIS SHOULD BE COMMENTED IN MINDA */}
+            {/* 
             <Row className="mb-3">
               <Col md="6"> <div className="left-border">{'FG wise Impact:'}</div></Col>
               <Col md="6">
                 <div className={'right-details'}>
-                  <button className="btn btn-small-primary-circle ml-1 float-right" type="button" disabled={accDisable} onClick={() => { setFgWiseAcc(!fgWiseAcc) }}>
+                  <button className="btn btn-small-primary-circle ml-1 float-right" type="button" onClick={() => { setFgWiseAcc(!fgWiseAcc) }}>
                     {fgWiseAcc ? (
                       <i className="fa fa-minus"></i>
                     ) : (
@@ -557,8 +608,8 @@ function ApprovalSummary(props) {
                 </div>
               </Col>
             </Row>
-
-            {fgWiseAcc && <Row className="mb-3">
+           
+           {fgWiseAcc && <Row className="mb-3">
               <Col md="12">
                 <Fgwiseimactdata
                   headerName={headerName}
@@ -566,16 +617,11 @@ function ApprovalSummary(props) {
                   childField={childField}
                   impactType={'FgWise'}
                   approvalSummaryTrue={true}
-                  costingId={approvalData.CostingId}
-                  DisplayCompareCostingFgWise={displayCompareCostingFgWise}
-                  costingIdArray={costingIdArray}
-                  isVerifyImpactDrawer={false}
-                  fgWiseAccDisable={fgWiseAccDisable}
-                  tooltipEffectiveDate={partDetail.EffectiveDate ? DayTime(partDetail.EffectiveDate).format('DD/MM/YYYY') : '-'}
                 />
               </Col>
-            </Row>}
-            {approvalDetails.CostingTypeId === VBCTypeId && <>
+            </Row> */}
+            {/* HIDE FOR @MIL START*/}
+            {/* {approvalDetails.CostingTypeId === VBCTypeId && <>
               <Row className="mb-3">
                 <Col md="6"><div className="left-border">{'Last Revision Data:'}</div></Col>
                 <Col md="6">
@@ -596,12 +642,10 @@ function ApprovalSummary(props) {
                   <div align="center">
                     {editWarning && <NoContentFound title={"There is no data for the Last Revision."} />}
                   </div>
-                  {/* {costingDrawer && lastRevisionDataAcc && <div align="center">
-                    <NoContentFound title={"There is no data for the Last Revision."} />
-                  </div>} */}
                 </div>
               </Row>
-            </>}
+            </>} */}
+            {/* HIDE FOR @MIL END*/}
             <Row>
               <Col md="10">
                 <div className="left-border">{'Costing Summary:'}</div>
@@ -618,9 +662,10 @@ function ApprovalSummary(props) {
                 </div>
               </Col>
             </Row>
-            <Row className="mb-4" id='compare-costing'>
+            <Row className="mb-4">
               <Col md="12" className="costing-summary-row">
-                {costingSummary && <CostingSummaryTable viewMode={true} costingID={approvalDetails.CostingId} approvalMode={true} isApproval={(approvalData.LastCostingId === EMPTY_GUID || fgWise) ? false : true} simulationMode={false} costingIdExist={true} />}
+                {/* SEND isApproval FALSE WHEN OPENING FROM FGWISE */}
+                {costingSummary && <CostingSummaryTable VendorId={approvalData.VendorId} viewMode={true} costingID={approvalDetails.CostingId} approvalMode={true} isApproval={approvalData.LastCostingId !== EMPTY_GUID ? true : false} simulationMode={false} costingIdExist={true} uniqueShouldCostingId={uniqueShouldCostingId} isRfqCosting={isRFQ} costingIdList={costingIdList} notSelectedCostingId={notSelectedCostingId} />}
               </Col>
             </Row>
             {/* Costing Summary page here */}
@@ -649,27 +694,14 @@ function ApprovalSummary(props) {
               </div>
             </Row>
           }
-          {
-            showPushButton &&
-            <Row className="sf-btn-footer no-gutters justify-content-between">
-              <div className="col-sm-12 text-right bluefooter-butn">
-                <Fragment>
-                  <button type="submit" className="submit-button mr5 save-btn" onClick={() => handlePushButton()}>
-                    <div className={"save-icon"}></div>
-                    {"Repush"}
-                  </button>
-                </Fragment>
-              </div>
-            </Row>
-          }
           {/* {
             showPushButton &&
             <Row className="sf-btn-footer no-gutters justify-content-between">
               <div className="col-sm-12 text-right bluefooter-butn">
                 <Fragment>
-                  <button type="submit" className="submit-button mr5 save-btn" onClick={() => setPushButton(true)}>
+                  <button type="submit" className="submit-button mr5 save-btn" onClick={() => callPushAPI()}>
                     <div className={"save-icon"}></div>
-                    {"Push"}
+                    {"Repush"}
                   </button>
                 </Fragment>
               </div>
@@ -697,9 +729,12 @@ function ApprovalSummary(props) {
           IsFinalLevel={!finalLevelUser}
           IsPushDrawer={showPushDrawer}
           dataSend={[approvalDetails, partDetail]}
+          showFinalLevelButtons={showFinalLevelButtons}
           costingTypeId={costingTypeId}
           approvalTypeId={approvalTypeId}
           TechnologyId={approvalData?.TechnologyId}
+          conditionInfo={conditionInfo}
+          vendorCodeForSAP={vendorCodeForSap}
         />
       )}
       {rejectDrawer && (
@@ -715,7 +750,8 @@ function ApprovalSummary(props) {
           IsPushDrawer={showPushDrawer}
           dataSend={[approvalDetails, partDetail]}
           costingTypeId={costingTypeId}
-          approvalTypeId={approvalTypeId}
+          conditionInfo={conditionInfo}
+          vendorCodeForSAP={vendorCodeForSap}
         />
       )}
       {pushButton && (
@@ -725,6 +761,8 @@ function ApprovalSummary(props) {
           dataSend={[approvalDetails, partDetail]}
           anchor={'right'}
           approvalData={[approvalData]}
+          conditionInfo={conditionInfo}
+          vendorCodeForSAP={vendorCodeForSap}
         />
       )}
 
