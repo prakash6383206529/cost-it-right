@@ -329,6 +329,7 @@ function RMDomesticListing(props) {
 
 
     const resetState = () => {
+        setNoData(false)
         setinRangeDate([])
         setIsFilterButtonClicked(false)
         setNoData(false)
