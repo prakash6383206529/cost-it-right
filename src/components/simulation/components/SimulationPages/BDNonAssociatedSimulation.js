@@ -184,7 +184,7 @@ function BDNonAssociatedSimulation(props) {
     const newBasicRateFormatter = (props) => {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         let returnValue = ''
-        if ((row?.Percentage !== '') && (checkForNull(row?.Percentage) !== 0) && checkForNull(row?.Percentage) < 100) {
+        if ((row?.Percentage !== '') && (checkForNull(row?.Percentage) !== 0) && checkForNull(row?.Percentage) <= 100) {
             returnValue = row?.BasicRate + (row?.BasicRate * row?.Percentage / 100)
         } else {
             returnValue = row.NewBasicRate
@@ -279,7 +279,7 @@ function BDNonAssociatedSimulation(props) {
     const NewcostFormatter = (props) => {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         let returnValue = ''
-        if ((row?.Percentage !== '') && (checkForNull(row?.Percentage) !== 0) && checkForNull(row?.Percentage) < 100) {
+        if ((row?.Percentage !== '') && (checkForNull(row?.Percentage) !== 0) && checkForNull(row?.Percentage) <= 100) {
             returnValue = (row?.BasicRate + (row?.BasicRate * row?.Percentage / 100)) / checkForNull(row.NumberOfPieces)
         } else {
             returnValue = (row.NewBasicRate) / checkForNull(row.NumberOfPieces)
@@ -384,7 +384,7 @@ function BDNonAssociatedSimulation(props) {
     const ageValueGetter = (params) => {
         let row = params.data
         let valueReturn = ''
-        if ((row?.Percentage !== '') && (checkForNull(row?.Percentage) !== 0) && checkForNull(row?.Percentage) < 100) {
+        if ((row?.Percentage !== '') && (checkForNull(row?.Percentage) !== 0) && checkForNull(row?.Percentage) <= 100) {
             valueReturn = row?.BasicRate + (row?.BasicRate * row?.Percentage / 100)
         } else {
             valueReturn = row?.NewBasicRate
@@ -395,7 +395,7 @@ function BDNonAssociatedSimulation(props) {
     const ageValueGetterLanded = (params) => {
         let row = params.data
         let valueReturn = ''
-        if ((row?.Percentage !== '') && (checkForNull(row?.Percentage) !== 0) && checkForNull(row?.Percentage) < 100) {
+        if ((row?.Percentage !== '') && (checkForNull(row?.Percentage) !== 0) && checkForNull(row?.Percentage) <= 100) {
             valueReturn = (row?.BasicRate + (row?.BasicRate * row?.Percentage / 100)) / checkForNull(row.NumberOfPieces)
         } else {
             valueReturn = (row?.NewBasicRate) / checkForNull(row.NumberOfPieces)

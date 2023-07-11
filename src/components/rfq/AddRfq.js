@@ -1121,6 +1121,25 @@ function AddRfq(props) {
                                             // isLoading={VendorLoaderObj}
                                             />
                                         </Col> */}
+                                        {/* <Col md="3">
+                                            <SearchableSelectHookForm
+                                                label={"NFR No."}
+                                                name={"nfrId"}
+                                                placeholder={"Select"}
+                                                Controller={Controller}
+                                                control={control}
+                                                rules={{ required: false }}
+                                                register={register}
+                                                defaultValue={nfrId?.length !== 0 ? nfrId : ""}
+                                                options={renderListing("nfrId")}
+                                                mandatory={false}
+                                                handleChange={handleNfrChnage}
+                                                errors={errors.nfrId}
+                                                disabled={((dataProps?.isViewFlag || dataProps?.isEditFlag) ? true : false)
+                                                    || (partList?.length !== 0)}
+                                            // isLoading={VendorLoaderObj}
+                                            />
+                                        </Col> */}
                                         <Col md="3">
                                             <SearchableSelectHookForm
                                                 label={"NFR No."}
@@ -1297,7 +1316,7 @@ function AddRfq(props) {
                                                         disabled={dataProps?.isAddFlag ? partNoDisable : (dataProps?.isViewFlag || !isEditAll)}
                                                     // errors={`${indexInside} CostingVersion`}
                                                     />
-                                                </Col >
+                                                </Col>
                                             </>}
                                         {/* <Col md="3">
                                             <NumberFieldHookForm

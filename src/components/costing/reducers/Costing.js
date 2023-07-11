@@ -742,6 +742,18 @@ export default function costingReducer(state = initialState, action) {
         ...state,
         ExchangeRateData: null, // or set it to an appropriate empty value
       }
+    case SET_OPEN_ALL_TABS:
+      return {
+        ...state,
+        loading: false,
+        openAllTabs: action.payload
+      }
+    case SET_REJECTED_COSTING_VIEW_DATA:
+      return {
+        ...state,
+        loading: false,
+        viewRejectedCostingDetailData: action.payload,
+      }
 
     default:
       return state
