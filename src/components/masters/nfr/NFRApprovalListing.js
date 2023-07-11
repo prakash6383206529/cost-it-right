@@ -230,9 +230,9 @@ function NFRApprovalListing(props) {
                                             frameworkComponents={frameworkComponents}
                                         >
                                             <AgGridColumn cellClass="has-checkbox" field="ApprovalToken" cellRenderer='linkableFormatter' headerName="Token No."></AgGridColumn>
-                                            <AgGridColumn field="NfrNumber" headerName="Nfr Number" cellRenderer='hyphenFormatter' ></AgGridColumn>
+                                            <AgGridColumn field="NfrNumber" headerName="NFR Number" cellRenderer='hyphenFormatter' ></AgGridColumn>
                                             <AgGridColumn field="GroupName" headerName="Group Name"  ></AgGridColumn>
-                                            <AgGridColumn field="PartNumber" headerName='Part No (Revision No)'></AgGridColumn>
+                                            <AgGridColumn field="PartNumber" headerName='Part No. (Revision No.)'></AgGridColumn>
                                             <AgGridColumn field="ProductCode" headerName="Product Code" cellRenderer='hyphenFormatter'></AgGridColumn>
                                             <AgGridColumn field="InitiatedByName" headerName="Initiated By" cellRenderer='hyphenFormatter'></AgGridColumn>
                                             <AgGridColumn field="CreatedByName" headerName=" Created By" cellRenderer='hyphenFormatter'></AgGridColumn>
