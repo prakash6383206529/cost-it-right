@@ -64,7 +64,9 @@ function BDNonAssociatedSimulation(props) {
 
     useEffect(() => {
         list && list?.map(item => {
-            item.NewBasicRate = item.BasicRate
+            if (!isbulkUpload) {
+                item.NewBasicRate = item.BasicRate
+            }
             item.OldNetLandedCost = item.NetLandedCost
             item.NewNetLandedCost = item.NetLandedCost
         })
@@ -131,22 +133,18 @@ function BDNonAssociatedSimulation(props) {
             return null;
         })
 
-        let basicRateCount = 0
 
-        tempArr && tempArr.map((li) => {
-
-            if (Number(li.OldBOPRate) === Number(li.NewBOPRate)) {
-                basicRateCount = basicRateCount + 1
+        let check = 0
+        tempArr && tempArr?.map(item => {
+            if (checkForNull(item?.OldNetLandedCost) !== checkForNull(item?.NewNetLandedCost)) {
+                check = check + 1
             }
-            return null;
         })
-
-        if (basicRateCount === list.length) {
-            Toaster.warning('There is no changes in net cost. Please change, then run simulation')
+        if (check === 0) {
+            Toaster.warning("There is no changes in net cost. Please change, then run simulation")
             return false
         }
         setIsDisable(true)
-        basicRateCount = 0
         obj.SimulationIds = tokenForMultiSimulation
         obj.SimulationBoughtOutPart = tempArr
         obj.EffectiveDate = DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss')
@@ -550,6 +548,7 @@ function BDNonAssociatedSimulation(props) {
                                             {list[0].CostingTypeId !== CBCTypeId && <AgGridColumn field="Vendor" editable='false' headerName="Vendor (Code)" minWidth={140} cellRenderer='vendorFormatter'></AgGridColumn>}
                                             {list[0].CostingTypeId === CBCTypeId && <AgGridColumn field="CustomerName" editable='false' headerName="Customer (Code)" minWidth={140} cellRenderer='customerFormatter'></AgGridColumn>}
                                             {<AgGridColumn field="Plants" editable='false' headerName="Plant (Code)" minWidth={140} cellRenderer='plantFormatter'></AgGridColumn>}
+                                            {<AgGridColumn field="NumberOfPieces" editable='false' headerName="Min Order Quantity" minWidth={140} ></AgGridColumn>}
 
                                             <AgGridColumn headerClass="justify-content-center" cellClass="text-center" headerName={Number(selectedMasterForSimulation?.value) === 5 ? "Basic Rate (Currency)" : "Basic Rate (INR)"} marryChildren={true} width={240}>
                                                 <AgGridColumn width={120} field="BasicRate" editable='false' cellRenderer='oldBasicRateFormatter' headerName="Existing" colId="BasicRate"></AgGridColumn>
