@@ -907,7 +907,7 @@ export const ZBCOperation = [
     { label: 'OtherCostCRMHead', value: 'OtherCostCRMHead' },
     { label: 'OtherCostDescription', value: 'OtherCostDescription' },
     { label: 'OtherCost', value: 'OtherCost' },
-    { label: 'IncludeInterestRateAndDepriciationInRjectionAndProfit', value: 'IncludeInterestRateAndDepriciationInRjectionAndProfit' },
+    { label: 'IsIncludeInterestRateAndDepriciationInRejectionAndProfit', value: 'IsIncludeInterestRateAndDepriciationInRejectionAndProfit' },
     { label: 'InterestAndDepriciationCRMHead', value: 'InterestAndDepriciationCRMHead' },
     { label: 'InterestAndDepriciationCost', value: 'InterestAndDepriciationCost' }
 ]
@@ -990,7 +990,7 @@ export const ZBCOperationTempData = [
         "OtherCostCRMHead": "Other Costs",
         "OtherCost": "20",
         "DetailedEntry": "Yes or No",
-        "IncludeInterestRateAndDepriciationInRjectionAndProfit": "Yes or No",
+        "IsIncludeInterestRateAndDepriciationInRejectionAndProfit": "Yes or No",
         "InterestAndDepriciationCRMHead": "Depreciation",
         "InterestAndDepriciationCost": '1500'
 
@@ -1056,7 +1056,7 @@ export const ZBCOperationTempData = [
         "OtherCostCRMHead": "Miscellaneous",
         "OtherCost": "50.00",
         "DetailedEntry": "Yes or No",
-        "IncludeInterestRateAndDepriciationInRjectionAndProfit": "Yes or No",
+        "IsIncludeInterestRateAndDepriciationInRejectionAndProfit": "Yes or No",
         "InterestAndDepriciationCRMHead": "Depreciation",
         "InterestAndDepriciationCost": '1600'
     },
@@ -1122,7 +1122,7 @@ export const ZBCOperationTempData = [
         "OtherCostCRMHead": "Other Costs",
         "OtherCost": "35",
         "DetailedEntry": "Yes or No",
-        "IncludeInterestRateAndDepriciationInRjectionAndProfit": "Yes or No",
+        "IsIncludeInterestRateAndDepriciationInRejectionAndProfit": "Yes or No",
         "InterestAndDepriciationCRMHead": "Depreciation",
         "InterestAndDepriciationCost": '1700'
     }
@@ -1197,7 +1197,7 @@ export const VBCOperation = [
     { label: 'OtherCostCRMHead', value: 'OtherCostCRMHead' },
     { label: 'OtherCostDescription', value: 'OtherCostDescription' },
     { label: 'OtherCost', value: 'OtherCost' },
-    { label: 'IncludeInterestRateAndDepriciationInRjectionAndProfit', value: 'IncludeInterestRateAndDepriciationInRjectionAndProfit' },
+    { label: 'IsIncludeInterestRateAndDepriciationInRejectionAndProfit', value: 'IsIncludeInterestRateAndDepriciationInRejectionAndProfit' },
     { label: 'InterestAndDepriciationCRMHead', value: 'InterestAndDepriciationCRMHead' },
     { label: 'InterestAndDepriciationCost', value: 'InterestAndDepriciationCost' }
 
@@ -1284,7 +1284,7 @@ export const VBCOperationTempData = [
         "OtherCostDescription": "Monthly maintenance cost for machinery",
         "OtherCost": '5000',
         "DetailedEntry": "Yes or No",
-        "IncludeInterestRateAndDepriciationInRjectionAndProfit": "Yes or No",
+        "IsIncludeInterestRateAndDepriciationInRejectionAndProfit": "Yes or No",
         "InterestAndDepriciationCRMHead": "Depreciation",
         "InterestAndDepriciationCost": '1500',
         "ForType": 'Welding'
@@ -1353,7 +1353,7 @@ export const VBCOperationTempData = [
         "OtherCostDescription": "Yearly maintenance cost for machinery",
         "OtherCost": '10000',
         "DetailedEntry": "Yes or No",
-        "IncludeInterestRateAndDepriciationInRjectionAndProfit": "Yes or No",
+        "IsIncludeInterestRateAndDepriciationInRejectionAndProfit": "Yes or No",
         "InterestAndDepriciationCRMHead": "Depreciation",
         "InterestAndDepriciationCost": '1200',
         "ForType": 'Welding'
@@ -1422,7 +1422,7 @@ export const VBCOperationTempData = [
         'OtherCostDescription': 'Monthly maintenance cost for machinery',
         'OtherCost': '3500',
         'DetailedEntry': "Yes or No",
-        'IncludeInterestRateAndDepriciationInRjectionAndProfit': "Yes or No",
+        'IsIncludeInterestRateAndDepriciationInRejectionAndProfit': "Yes or No",
         'InterestAndDepriciationCRMHead': 'Interest',
         "InterestAndDepriciationCost": '1200',
         "ForType": 'Welding'
@@ -1494,7 +1494,7 @@ export const CBCOperation = [
     { label: 'OtherCostCRMHead', value: 'OtherCostCRMHead' },
     { label: 'OtherCostDescription', value: 'OtherCostDescription' },
     { label: 'OtherCost', value: 'OtherCost' },
-    { label: 'IncludeInterestRateAndDepriciationInRjectionAndProfit', value: 'IncludeInterestRateAndDepriciationInRjectionAndProfit' },
+    { label: 'IsIncludeInterestRateAndDepriciationInRejectionAndProfit', value: 'IsIncludeInterestRateAndDepriciationInRejectionAndProfit' },
     { label: 'InterestAndDepriciationCRMHead', value: 'InterestAndDepriciationCRMHead' },
     { label: 'InterestAndDepriciationCost', value: 'InterestAndDepriciationCost' }
 
@@ -1580,7 +1580,7 @@ export const CBCOperationTempData = [
         "OtherCostDescription": "Monthly maintenance cost for machinery",
         "OtherCost": '5000',
         "DetailedEntry": "Yes or No",
-        "IncludeInterestRateAndDepriciationInRjectionAndProfit": "Yes or No",
+        "IsIncludeInterestRateAndDepriciationInRejectionAndProfit": "Yes or No",
         "InterestAndDepriciationCRMHead": "Depreciation",
         "InterestAndDepriciationCost": '1500',
         "ForType": 'Welding'
@@ -1649,7 +1649,7 @@ export const CBCOperationTempData = [
         'OtherCostDescription': 'Quarterly maintenance cost for machinery',
         'OtherCost': '3000',
         'DetailedEntry': "Yes or No",
-        'IncludeInterestRateAndDepriciationInRjectionAndProfit': "Yes or No",
+        'IsIncludeInterestRateAndDepriciationInRejectionAndProfit': "Yes or No",
         "InterestAndDepriciationCRMHead": "Depreciation",
         "InterestAndDepriciationCost": '1500',
         "ForType": 'Welding'
@@ -1715,7 +1715,7 @@ export const CBCOperationTempData = [
         'OtherCostDescription': 'Transportation cost for raw materials',
         'OtherCost': '4000',
         'DetailedEntry': "Yes or No",
-        'IncludeInterestRateAndDepriciationInRjectionAndProfit': "Yes or No",
+        'IsIncludeInterestRateAndDepriciationInRejectionAndProfit': "Yes or No",
         "InterestAndDepriciationCRMHead": "Interest",
         "InterestAndDepriciationCost": '1900',
         "ForType": 'Welding'
