@@ -1546,7 +1546,8 @@ function AddRfq(props) {
                                                                 placeholderText="Select"
                                                                 className="withBorder "
                                                                 autoComplete={'off'}
-                                                                showTimeInput={true}
+                                                                showTimeSelect={true}
+                                                                timeIntervals={1}
                                                                 errors={errors.startPlanDate}
                                                                 disabledKeyboardNavigation
                                                                 onChangeRaw={(e) => e.preventDefault()}
