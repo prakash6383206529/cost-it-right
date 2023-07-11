@@ -668,6 +668,7 @@ function RMImportListing(props) {
 
 
   const resetState = () => {
+    setNoData(false)
     setFilterModel({})
     setinRangeDate([])
     setIsFilterButtonClicked(false)
@@ -947,7 +948,7 @@ function RMImportListing(props) {
                     <AgGridColumn field="NetLandedCostConversion" headerName="Net Cost (INR)" cellRenderer='costFormatter'></AgGridColumn>
 
                     <AgGridColumn field="EffectiveDate" cellRenderer='effectiveDateRenderer' filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
-                    {(!isSimulation && !props.isMasterSummaryDrawer) && <AgGridColumn width={160} field="RawMaterialId" cellClass={"actions-wrapper"} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
+                    {(!isSimulation && !props.isMasterSummaryDrawer) && <AgGridColumn width={160} field="RawMaterialId" cellClass="ag-grid-action-container actions-wrapper" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
                     <AgGridColumn field="VendorId" hide={true}></AgGridColumn>
 
                     <AgGridColumn field="TechnologyId" hide={true}></AgGridColumn>

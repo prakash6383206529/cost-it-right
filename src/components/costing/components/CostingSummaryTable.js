@@ -1414,7 +1414,7 @@ const CostingSummaryTable = (props) => {
                     <tbody>
                       {
                         (!isApproval || approvalMode) ?
-                          <tr>
+                          <tr className={`${drawerDetailPDF ? "pdf-print" : ""}`} >
                             <td>
                               <span className="d-block">Costing Version</span>
                               <span className="d-block mt-2">PO Price (Effective from)</span>

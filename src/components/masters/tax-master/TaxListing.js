@@ -284,7 +284,7 @@ class TaxListing extends Component {
                       <AgGridColumn field="Rate" headerName="Rate (%)"></AgGridColumn>
                       <AgGridColumn field="OriginalFileName" headerName="File Name"></AgGridColumn>
                       <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer='effectiveDateFormatter'></AgGridColumn>
-                      <AgGridColumn field="TaxDetailId" headerName="Actions" cellRenderer='buttonFormatter'></AgGridColumn>
+                      <AgGridColumn field="TaxDetailId" cellClass="ag-grid-action-container" headerName="Actions" cellRenderer='buttonFormatter'></AgGridColumn>
                     </AgGridReact>
                     {<PaginationWrapper gridApi={this.gridApi} setPage={this.onPageSizeChanged} />}
                   </div>

@@ -290,7 +290,7 @@ function CustomerPoamListing(props) {
                                                 {<AgGridColumn field="TotalAmendmentAwaitedQuantity" headerName="Amendmend Awaited Quantity (No.)" width="130" floatingFilter={true} cellRenderer={hyphenFormatter}></AgGridColumn>}
                                                 {<AgGridColumn field="TotalImpact" headerName="Impact Cost (INR)" width="130" floatingFilter={true} cellRenderer={hyphenFormatter}></AgGridColumn>}
                                                 {<AgGridColumn field="Remark" headerName="Remark" width="130" floatingFilter={true}></AgGridColumn>}
-                                                <AgGridColumn width={160} field="TotalImpact" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                                                <AgGridColumn width={160} field="TotalImpact" cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                                             </AgGridReact>
                                             <PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />
                                         </div>
