@@ -564,3 +564,11 @@
     height: calc(38px * 80 / 100) !important;
   }
 }
+
+.pdf-print {
+  td {
+    span {
+      min-height: 30px;
+    }
+  }
+}

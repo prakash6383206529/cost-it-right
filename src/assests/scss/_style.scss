@@ -9038,3 +9038,19 @@ div[col-id="ApprovalNumber"] {
   top: 7px;
   left: 20px;
 }
+
+.ag-grid-action-container {
+  .ag-cell-wrapper {
+    justify-content: flex-end;
+
+    .ag-react-container {
+      padding-right: 0 !important;
+
+      button {
+        &:last-child {
+          margin-right: 0 !important;
+        }
+      }
+    }
+  }
+}
