@@ -955,7 +955,7 @@ const CostingSummaryTable = (props) => {
     }
 
     let costingSummary = []
-    let templateObj = viewCostingData[0]?.technologyId === LOGISTICS ? VIEW_COSTING_DATA_LOGISTICS : VIEW_COSTING_DATA
+    let templateObj = viewCostingData[0]?.technologyId === LOGISTICS ? { ...VIEW_COSTING_DATA_LOGISTICS } : { ...VIEW_COSTING_DATA }
 
     if (!(getConfigurationKey().IsShowNpvCost)) {
       delete templateObj.npvCost
@@ -970,6 +970,10 @@ const CostingSummaryTable = (props) => {
     }
     if (!(reactLocalStorage.getObject('cbcCostingPermission'))) {
       templateObj.costingHeadCheck = 'VBC/ZBC/NCC'
+    }
+    if ((viewCostingData && viewCostingData[0]?.technologyId && viewCostingData[0]?.technologyId !== DIE_CASTING)) {
+      delete templateObj.castingWeightExcel
+      delete templateObj.meltingLossExcel
     }
     for (var prop in templateObj) {
 
