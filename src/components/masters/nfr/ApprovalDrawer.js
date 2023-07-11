@@ -9,11 +9,13 @@ import { EMPTY_DATA, EMPTY_GUID, NFRAPPROVALTYPEID, NFRTypeId } from '../../../c
 import { useDispatch, useSelector } from 'react-redux';
 import { getAllApprovalDepartment, getAllApprovalUserFilterByDepartment, getReasonSelectList } from '../../costing/actions/Approval';
 import { costingTypeIdToApprovalTypeIdFunction } from '../../common/CommonFunctions';
-import { approvedCostingByApprover, nfrSendToApproverBySender } from './actions/nfr';
+import { approvedCostingByApprover, nfrSendToApproverBySender, pushNfrOnSap } from './actions/nfr';
 import _ from 'lodash';
 import { datalist } from 'react-dom-factories';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
+import { checkFinalUser } from '../../costing/actions/Costing';
+import WarningMessage from '../../common/WarningMessage';
 
 
 const ApprovalDrawer = (props) => {
@@ -32,6 +34,9 @@ const ApprovalDrawer = (props) => {
     const [approver, setApprover] = useState('')
     const [selectedApprover, setSelectedApprover] = useState('')
     const [selectedApproverLevelId, setSelectedApproverLevelId] = useState('')
+    const [isDisable, setIsDisable] = useState('')
+    const [editWarning, setEditWarning] = useState(false)
+    const [filterStatus, setFilterStatus] = useState('')
 
     useEffect(() => {
         dispatch(getReasonSelectList((res) => { }))
@@ -56,6 +61,28 @@ const ApprovalDrawer = (props) => {
                 })
                 setApprovalDropDown(tempDropdownList)
             }))
+        }))
+
+        let obj = {}
+        obj.DepartmentId = userDetails().DepartmentId
+        obj.UserId = loggedInUserId()
+        obj.TechnologyId = nfrData?.TechnologyId
+        obj.Mode = 'costing'
+        obj.approvalTypeId = costingTypeIdToApprovalTypeIdFunction(NFRTypeId)
+        dispatch(checkFinalUser(obj, (res) => {
+            if (res?.data?.Result) {
+                if (res?.data?.Data?.IsFinalApprover) {
+                    if (res?.data?.Data?.IsFinalApprover) {
+                        setIsDisable(true)
+                        setEditWarning(true)
+                        setFilterStatus("You are a final level user and cannot send NFR for approval.")
+                    } else {
+                        setIsDisable(false)
+                        setEditWarning(false)
+                        setFilterStatus("")
+                    }
+                }
+            }
         }))
 
         let dataListTemp = []
@@ -142,6 +169,25 @@ const ApprovalDrawer = (props) => {
                     //   setShowValidation(true)
                 }
                 setApprovalDropDown(tempDropdownList)
+                let obj = {}
+                obj.DepartmentId = userDetails().DepartmentId
+                obj.UserId = loggedInUserId()
+                obj.TechnologyId = nfrData?.TechnologyId
+                obj.Mode = 'costing'
+                obj.approvalTypeId = costingTypeIdToApprovalTypeIdFunction(NFRTypeId)
+                dispatch(checkFinalUser(obj, (res) => {
+                    if (res?.data?.Result) {
+                        if (res?.data?.Data?.IsFinalApprover) {
+                            setIsDisable(true)
+                            setEditWarning(true)
+                            setFilterStatus("You are a final level user and cannot send NFR for approval.")
+                        } else {
+                            setIsDisable(false)
+                            setEditWarning(false)
+                            setFilterStatus("")
+                        }
+                    }
+                }))
             }))
             //   setSelectedDepartment(newValue)
         } else {
@@ -177,12 +223,25 @@ const ApprovalDrawer = (props) => {
                     "IsFinalApprovalProcess": true,
                     "ReasonId": getValues('reason')?.value ? getValues('reason')?.value : 0,
                     "Reason": getValues('reason')?.label ? getValues('reason')?.label : "",
+                    "PushedCostingId": props?.pushData?.CostingId
                 }
             ]
+            let pushRequest = {
+                nfrGroupId: props?.nfrData?.NfrGroupId,
+                costingId: props?.pushData?.CostingId
+            }
+
             dispatch(approvedCostingByApprover(req, (res) => {
                 if (res?.data?.Result === true) {
                     if (type === 'Approve') {
                         Toaster.success(MESSAGES.NFR_APPROVED)
+                        if (props?.nfrData?.ApprovalTypeId === NFRAPPROVALTYPEID) {
+                            dispatch(pushNfrOnSap(pushRequest, res => {
+                                if (res?.data?.Result) {
+                                    Toaster.success(MESSAGES.NFR_PUSHED)
+                                }
+                            }))
+                        }
                     } else {
                         Toaster.success(MESSAGES.NFR_REJECTED)
                     }
@@ -206,6 +265,7 @@ const ApprovalDrawer = (props) => {
                         "Reason": "string",
                         "FinancialYear": "string",
                         "IsFinalApproved": false,
+                        "NfrPartWiseGroupDetailsId": item?.NfrPartWiseGroupDetailsId
                     }
                     arrayOfObj.push(obj)
                 }
@@ -219,13 +279,13 @@ const ApprovalDrawer = (props) => {
                 "ApproverId": getValues("approver")?.value,
                 "SenderLevelId": levelDetails?.LevelId,
                 "SenderId": userData?.LoggedInUserId,
-                "ApprovalTypeId": NFRAPPROVALTYPEID,
+                "ApprovalTypeId": NFRTypeId,
                 "NfrPartWiseGroupDetailsId": tempRowData[0]?.nfrPartWiseGroupDetailsId,
                 "SenderLevel": levelDetails?.Level,
-                "SenderRemark": "string",
+                "SenderRemark": getValues('remarks'),
                 "LoggedInUserId": loggedInUserId(),
-                "ReasonId": 0,
-                "Reason": "string",
+                "ReasonId": getValues('reason')?.value,
+                "Reason": getValues('reason')?.label,
                 "NfrGroupList": arrayOfObj
             }
             dispatch(nfrSendToApproverBySender(req, (res) => {
@@ -379,7 +439,7 @@ const ApprovalDrawer = (props) => {
                                     className="btn btn-primary save-btn"
                                     type="button"
                                     // className="submit-button save-btn"
-                                    // disabled={isDisable}
+                                    disabled={isDisable}
                                     onClick={onSubmit}
                                 >
                                     <div className={'save-icon'}></div>
@@ -387,6 +447,9 @@ const ApprovalDrawer = (props) => {
                                 </button>
                             </Col>
                         </Row>
+                        <div>
+                            {editWarning && <WarningMessage dClass="mr-3" message={filterStatus} />}
+                        </div>
                     </div>
                 </div>
             </Drawer>
