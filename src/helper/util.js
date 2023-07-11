@@ -797,7 +797,8 @@ export function formViewData(costingSummary, header = '', isBestCost = false) {
   obj.customer = dataFromAPI?.Customer ? dataFromAPI?.Customer : ''
   obj.plantExcel = dataFromAPI?.CostingTypeId === ZBCTypeId ? `${dataFromAPI?.PlantName}` : `${dataFromAPI?.DestinationPlantName}`
   obj.vendorExcel = dataFromAPI?.VendorName ? `${dataFromAPI?.VendorName} (${dataFromAPI?.VendorCode})` : ''
-
+  obj.castingWeightExcel = checkForDecimalAndNull(dataFromAPI?.CostingPartDetails?.CastingWeight, getConfigurationKey().NoOfDecimalForPrice)
+  obj.meltingLossExcel = `${checkForDecimalAndNull(dataFromAPI?.CostingPartDetails?.MeltingLoss, getConfigurationKey().NoOfDecimalForPrice)} (${dataFromAPI?.CostingPartDetails?.LossPercentage}%)`
   // FOR MULTIPLE TECHNOLOGY COSTING SUMMARY DATA
   obj.netChildPartsCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetChildPartsCost ? dataFromAPI?.CostingPartDetails?.NetChildPartsCost : 0
   obj.netOperationCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetOperationCost ? dataFromAPI?.CostingPartDetails?.NetOperationCost : 0
