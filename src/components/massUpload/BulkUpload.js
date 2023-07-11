@@ -414,6 +414,8 @@ class BulkUpload extends Component {
                                     fileHeads[i] = 'DestinationPlantCode'
                                 } else if ((fileName === 'RM Domestic' || fileName === 'RM Import') && fileHeads[i] === 'PlantName') {
                                     fileHeads[i] = 'DestinationPlantName'
+                                } else if ((fileName === 'BOP Domestic' || fileName === 'BOP Import') && fileHeads[i] === 'MinimumOrderQuantity') {
+                                    fileHeads[i] = 'NumberOfPieces'
                                 }
                                 obj[fileHeads[i]] = el;
                                 return null;
