@@ -330,6 +330,7 @@ function RMDomesticListing(props) {
 
 
     const resetState = () => {
+        setNoData(false)
         setinRangeDate([])
         setIsFilterButtonClicked(false)
         gridOptions?.columnApi?.resetColumnState(null);
