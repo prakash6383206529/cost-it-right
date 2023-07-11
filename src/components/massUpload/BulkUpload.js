@@ -434,6 +434,9 @@ class BulkUpload extends Component {
                                 if (fileHeads[i] === 'InsertCategory') {
                                     fileHeads[i] = 'CategoryName'
                                 }
+                                if (fileHeads[i] === 'MinimumOrderQuantity') {
+                                    fileHeads[i] = 'NumberOfPieces'
+                                }
 
                                 obj[fileHeads[i]] = el;
                                 return null;
