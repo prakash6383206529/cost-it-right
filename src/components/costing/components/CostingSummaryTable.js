@@ -410,13 +410,25 @@ const CostingSummaryTable = (props) => {
     let modelType = viewCostingData[index]?.modelType
     let IccPaymentData = viewCostingData[index]?.netPaymentIccCostView
     let isRmCutOffApplicable = viewCostingData[index]?.isRmCutOffApplicable
-
+    let rawMaterialCostWithCutOff = viewCostingData[index]?.rawMaterialCostWithCutOff
+    let isIncludeToolCostWithOverheadAndProfit = viewCostingData[index]?.isIncludeToolCostWithOverheadAndProfit
+    let isIncludeSurfaceTreatmentWithRejection = viewCostingData[index]?.isIncludeSurfaceTreatmentWithRejection
+    let isIncludeSurfaceTreatmentWithOverheadAndProfit = viewCostingData[index]?.isIncludeSurfaceTreatmentWithOverheadAndProfit
 
     setIsViewOverheadProfit(true)
     setViewOverheadData(overHeadData)
     setViewProfitData(profitData)
     setIccPaymentData(IccPaymentData)
-    setViewRejectAndModelType({ rejectData: rejectData, modelType: modelType, isRmCutOffApplicable: isRmCutOffApplicable })
+    let obj = {
+      rejectData: rejectData,
+      modelType: modelType,
+      isRmCutOffApplicable: isRmCutOffApplicable,
+      rawMaterialCostWithCutOff: rawMaterialCostWithCutOff,
+      isIncludeToolCostWithOverheadAndProfit: isIncludeToolCostWithOverheadAndProfit,
+      isIncludeSurfaceTreatmentWithRejection: isIncludeSurfaceTreatmentWithRejection,
+      isIncludeSurfaceTreatmentWithOverheadAndProfit: isIncludeSurfaceTreatmentWithOverheadAndProfit
+    }
+    setViewRejectAndModelType(obj)
   }
 
   /**
