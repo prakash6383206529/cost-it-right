@@ -4,6 +4,7 @@ import {
     API,
     API_FAILURE,
     NFR_DETAILS_FOR_DISCOUNT,
+    SET_OPEN_ALL_TABS,
     config,
 
 } from '../../../../config/constants';
@@ -99,9 +100,9 @@ export function nfrSendToApproverBySender(requestData, callback) {
  * @method getNFRApprovals
  * @description get NFR Approvals
  */
-export function getNFRApprovals(callback) {
+export function getNFRApprovals(userId, callback) {
     return (dispatch) => {
-        const request = axios.get(`${API.getNFRApprovals}`, config());
+        const request = axios.get(`${API.getNFRApprovals}?loggedInUserId=${userId}`, config());
         request.then((response) => {
             if (response.data.Result || response.status === 204) {
                 callback(response);
@@ -118,9 +119,9 @@ export function getNFRApprovals(callback) {
  * @method getNFRApprovalSummary
  * @description get NFR Approval Summary
  */
-export function getNFRApprovalSummary(nfrGroupId, loggedInUserId, callback) {
+export function getNFRApprovalSummary(approvalProcessId, loggedInUserId, callback) {
     return (dispatch) => {
-        const request = axios.get(`${API.getNFRApprovalSummary}/${nfrGroupId}/${loggedInUserId}`, config());
+        const request = axios.get(`${API.getNFRApprovalSummary}/${approvalProcessId}/${loggedInUserId}`, config());
         request.then((response) => {
             if (response.data.Result || response.status === 204) {
                 callback(response);
@@ -163,3 +164,157 @@ export function nfrDetailsForDiscountAction(data) {
         });
     }
 };
+
+export function pushNfrOnSap(requestData, callback) {
+    return (dispatch) => {
+        axios.post(API.pushNfrOnSap, requestData, config())
+            .then((response) => {
+                if (response && response.status === 200) {
+                    callback(response);
+                }
+            }).catch((error) => {
+                apiErrors(error);
+                callback(error);
+            });
+    };
+}
+
+export function fetchNfrDetailFromSap(callback) {
+    return (dispatch) => {
+        const request = axios.get(`${API.getSapnfrData}?fromDate=null&toDate=null`, config());
+        request.then((response) => {
+            if (response.data.Result || response.status === 204) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE, });
+            callback(error);
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method saveNFRCostingInfo
+ * @description save NFR Costing Info
+ */
+export function saveNFRCostingInfo(data, callback) {
+    return (dispatch) => {
+        const request = axios.get(`${API.saveNFRCostingInfo}?nfrGroupId=${data?.nfrGroupId}&vendorId=${data?.vendorId}&costingId=${data?.costingId}&loggedInUserId=${data?.loggedInUserId}`, config());
+        request.then((response) => {
+            if (response.data.Result || response.status === 204) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE, });
+            callback(error);
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method saveOutsourcingData
+ * @description save Outsourcing Data
+ */
+export function saveOutsourcingData(requestData, callback) {
+    return (dispatch) => {
+        axios.post(API.saveOutsourcingData, requestData, config())
+            .then((response) => {
+                if (response && response.status === 200) {
+                    callback(response);
+                }
+            }).catch((error) => {
+                apiErrors(error);
+                callback(error);
+            });
+    };
+}
+
+/**
+ * @method getNFRCostingOutsourcingDetails
+ * @description getNFRCostingOutsourcingDetails
+ */
+export function getNFRCostingOutsourcingDetails(baseCostingId, nfrRawMaterialAndBoughtOutPartDetailId, callback) {
+    return (dispatch) => {
+        const request = axios.get(`${API.getNFRCostingOutsourcingDetails}?baseCostingId=${baseCostingId ? baseCostingId : null}&nfrRawMaterialAndBoughtOutPartDetailId=${nfrRawMaterialAndBoughtOutPartDetailId ? nfrRawMaterialAndBoughtOutPartDetailId : null}`, config());
+        request.then((response) => {
+            if (response.data.Result || response.status === 204) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE, });
+            callback(error);
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+* @method getRMFromNFR
+ * @description getRMFromNFR
+ */
+export function getRMFromNFR(data, callback) {
+    return (dispatch) => {
+        const request = axios.get(`${API.getRMFromNFR}?technologyId=${data?.technologyId}&nfrId=${data?.nfrId}&partId=${data?.partId}&vendorId=${data?.vendorId}&plantId=${data?.plantId}&costingId=${data?.costingId}&effectiveDate=${data?.effectiveDate}`, config());
+        request.then((response) => {
+            if (response?.data?.Result || response?.status === 204) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE, });
+            callback(error);
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+* @method getRawMaterialByNFRPart
+ * @description getRawMaterialByNFRPart
+ */
+export function getRawMaterialByNFRPart(nfrPartWiseDetailId, callback) {
+    return (dispatch) => {
+        const request = axios.get(`${API.getRawMaterialByNFRPart}?nfrPartWiseDetailId=${nfrPartWiseDetailId}`, config());
+        request.then((response) => {
+            if (response?.data?.Result || response?.status === 204) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE, });
+            callback(error);
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method setOpenAll
+ * @description setOpenAll  
+ */
+export function setOpenAllTabs(data) {
+    return (dispatch) => {
+        dispatch({
+            type: SET_OPEN_ALL_TABS,
+            payload: data,
+        });
+    }
+};
+
+/**
+ * @method pushNfrRmBopOnSap
+ * @description push Nfr Rm Bop On Sap
+ */
+export function pushNfrRmBopOnSap(requestData, callback) {
+    return (dispatch) => {
+        axios.post(API.pushNfrRmBopOnSap, requestData, config())
+            .then((response) => {
+                if (response && response.status === 200) {
+                    callback(response);
+                }
+            }).catch((error) => {
+                apiErrors(error);
+                callback(error);
+            });
+    };
+}

@@ -33,7 +33,7 @@ export const API = {
 
   getMasterFilterUOMAPI: `${BASE_URL}/masters-unit-of-measurement/get`,
   getMaterialType: `${BASE_URL}/configuration/select-list-get-material-type`,
-  // getPlant: `${BASE_URL}/configuration/select-list-get-plant`,
+  getPlant: `${BASE_URL}/configuration/select-list-get-plant`,
   getTechnology: `${BASE_URL}/configuration/select-list-get-technology`,
   getSupplierCode: `${BASE_URL}/configuration/select-list-get-vendor-code`,
   getCategoryType: `${BASE_URL}/configuration/select-list-get-category-type`,
@@ -1481,6 +1481,7 @@ export const SET_OVERHEAD_PROFIT_ERRORS = 'SET_OVERHEAD_PROFIT_ERRORS'
 export const SET_TOOLS_ERRORS = 'SET_TOOLS_ERRORS'
 export const SET_DISCOUNT_ERRORS = 'SET_DISCOUNT_ERRORS'
 export const RESET_EXCHANGE_RATE_DATA = 'RESET_EXCHANGE_RATE_DATA'
+export const SET_REJECTED_COSTING_VIEW_DATA = 'SET_REJECTED_COSTING_VIEW_DATA';
 
 // YOY
 export const SET_YOY_COST_GRID = 'SET_YOY_COST_GRID'
@@ -1688,9 +1689,11 @@ export const GET_QUOTATION_LIST = 'GET_QUOTATION_LIST'
 export const CHECK_RFQ_BULK_UPLOAD = 'CHECK_RFQ_BULK_UPLOAD'
 export const SELECTED_ROW_ARRAY = 'SELECTED_ROW_ARRAY'
 export const GET_NFR_SELECT_LIST = 'GET_NFR_SELECT_LIST'
+export const SET_SAP_DATA = 'SET_SAP_DATA'
 
 // NFR
 export const NFR_DETAILS_FOR_DISCOUNT = 'NFR_DETAILS_FOR_DISCOUNT'
+export const SET_OPEN_ALL_TABS = 'SET_OPEN_ALL_TABS'
 
 //COSTING STATUS
 export const GET_COSTING_STATUS = 'GET_COSTING_STATUS'
@@ -1717,6 +1720,7 @@ export const SENT = 'Sent'
 export const EXTERNAL_REJECT = 'ExternalReject'
 export const DRAFTID = 1
 export const REJECTEDID = 4
+export const ERRORID = 12
 export const PENDING_FOR_APPROVAL_ID = 2
 export const AWAITING_APPROVAL_ID = 6
 
@@ -1855,6 +1859,9 @@ export const NCC = 'NCC'
 export const WAC = 'WAC'
 export const CBC = 'CBC'
 export const NFR = 'NFR'
+export const PFS1 = 'PFS1'
+export const PFS2 = 'PFS2'
+export const PFS3 = 'PFS3'
 //PART TYPE'S USED AT ASSEMBLY CHILD DRAWER
 export const ASSEMBLYNAME = 'Assembly'
 export const COMPONENT_PART = 'Component'
@@ -2519,6 +2526,9 @@ export const ZBCTypeIdFull = Number(reactLocalStorage.getObject('CostingHeadsLis
 export const VBCTypeIdFull = Number(reactLocalStorage.getObject('CostingHeadsListFullForm')[VBC])
 export const CBCTypeIdFull = Number(reactLocalStorage.getObject('CostingHeadsListFullForm')[CBC])
 export const NCCTypeIdFull = Number(reactLocalStorage.getObject('CostingHeadsListFullForm')[NCC])
+export const PFS1TypeId = Number(reactLocalStorage.getObject('CostingHeadsListShortForm')[PFS1])
+export const PFS2TypeId = Number(reactLocalStorage.getObject('CostingHeadsListShortForm')[PFS2])
+export const PFS3TypeId = Number(reactLocalStorage.getObject('CostingHeadsListShortForm')[PFS3])
 export const ZBCADDMORE = 15
 export const VBCADDMORE = 16
 export const CBCADDMORE = 17

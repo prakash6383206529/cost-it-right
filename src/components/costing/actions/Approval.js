@@ -1,7 +1,7 @@
 import axios from 'axios'
 import {
   API, API_FAILURE, GET_SEND_FOR_APPROVAL_SUCCESS, GET_ALL_APPROVAL_DEPARTMENT, GET_ALL_APPROVAL_USERS_BY_DEPARTMENT,
-  GET_ALL_APPROVAL_USERS_FILTER_BY_DEPARTMENT, GET_ALL_REASON_SELECTLIST, GET_APPROVAL_LIST, config, GET_APPROVAL_SUMMARY, GET_SELECTED_COSTING_STATUS, GET_APPROVAL_LIST_DRAFT,
+  GET_ALL_APPROVAL_USERS_FILTER_BY_DEPARTMENT, GET_ALL_REASON_SELECTLIST, GET_APPROVAL_LIST, config, GET_APPROVAL_SUMMARY, GET_SELECTED_COSTING_STATUS, GET_APPROVAL_LIST_DRAFT, SET_SAP_DATA,
 } from '../../../config/constants'
 import { apiErrors } from '../../../helper/util'
 import { MESSAGES } from '../../../config/message'
@@ -493,6 +493,19 @@ export function approvalPushedOnSap(data, callback) {
       })
   }
 }
+
+/**
+ * @method setSAPData
+ * @description SET SAP DATA
+ */
+export function setSAPData(data) {
+  return (dispatch) => {
+    dispatch({
+      type: SET_SAP_DATA,
+      payload: data,
+    });
+  }
+};
 
 
 
