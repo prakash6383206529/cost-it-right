@@ -694,7 +694,7 @@ class VendorListing extends Component {
                 {!this.state.isLoader && <div className={`ag-grid-wrapper height-width-wrapper ${(this.props.supplierDataList && this.props.supplierDataList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
                     <div className="ag-grid-header col-md-4 pl-0">
                     </div>
-                    <div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
+                    <div className={`ag-theme-material p-relative ${this.state.isLoader ? "max-loader-height" : ""}`}>
 
                         {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found vendor-listing" />}
                         <AgGridReact
@@ -741,12 +741,10 @@ class VendorListing extends Component {
                                 {this.state.pageSize.pageSize100 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{this.state.pageNo}</span> of {Math.ceil(this.state.totalRecordCount / 100)}</p>}
                                 <p><button className="next-btn" type="button" onClick={() => this.onBtNext(this)}> </button></p>
                             </div>
-
                         </div>
-                        <div className="text-right pb-3">
-                            <WarningMessage message="All the above details of supplier is entered through SAP." />
-                        </div>
-
+                    </div>
+                    <div className="text-right pb-3">
+                        <WarningMessage message="All the above details of supplier is entered through SAP." />
                     </div>
                 </div>}
 
