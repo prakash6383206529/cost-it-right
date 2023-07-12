@@ -260,6 +260,7 @@ class BOPDomesticListing extends Component {
 
             }
         }
+        this.props.callBackLoader(this.state.isLoader)
     }
 
     /**
