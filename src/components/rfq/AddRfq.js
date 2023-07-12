@@ -3,9 +3,9 @@ import { useForm, Controller } from "react-hook-form";
 import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, Tooltip, } from 'reactstrap';
 import { AsyncSearchableSelectHookForm, SearchableSelectHookForm, TextAreaHookForm, TextFieldHookForm } from '.././layout/HookFormInputs'
-import { getReporterList, getVendorNameByVendorSelectList, getPlantSelectListByType, getVendorWithVendorCodeSelectList, fetchPlantDataAPI, fetchSpecificationDataAPI } from '../.././actions/Common';
+import { getReporterList, getVendorNameByVendorSelectList, getPlantSelectListByType, fetchSpecificationDataAPI } from '../.././actions/Common';
 import { getCostingSpecificTechnology, } from '../costing/actions/Costing'
-import { addDays, checkForDecimalAndNull, getConfigurationKey, loggedInUserId } from '../.././helper';
+import { addDays, loggedInUserId } from '../.././helper';
 import { postiveNumber, maxLength10, nonZero, checkForNull } from '../.././helper/validation'
 import { EMPTY_DATA, FILE_URL, VBC_VENDOR_TYPE, ZBC, searchCount } from '../.././config/constants';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
@@ -206,6 +206,8 @@ function AddRfq(props) {
                     setPartList(convertToPartList(data.PartList))
                     setVendorList(data.VendorList)
                     setValue("remark", data.Remark)
+                    setValue("nfrId", { label: data?.NfrNumber, value: data?.NfrId })
+                    setNfrId({ label: data?.NfrNumber, value: data?.NfrId })
                     setData(data)
                 }
                 setTimeout(() => {
@@ -383,7 +385,6 @@ function AddRfq(props) {
             })
             return temp
         }
-
         if (label === 'nfrId') {
             nfrSelectList && nfrSelectList.map((item) => {
                 if (item.Value === '0') return false
@@ -462,20 +463,17 @@ function AddRfq(props) {
         let obj = {}
         obj.QuotationId = apiData.QuotationId ? apiData.QuotationId : ""
         obj.QuotationNumber = apiData.QuotationNumber ? apiData.QuotationNumber : ""
-
         obj.Remark = getValues('remark')
         obj.TechnologyId = getValues('technology').value
         obj.PlantId = getValues('plant')?.value
         obj.LoggedInUserId = loggedInUserId()
         obj.StatusId = ''
-
         obj.IsSent = isSent
         obj.IsConditionallyVisible = isConditionalVisible
         obj.VisibilityMode = visibilityMode?.label
         obj.VisibilityDate = dateAndTime
         obj.VisibilityDuration = getValues('Time')
         obj.LastSubmissionDate = DayTime(submissionDate).format('YYYY-MM-DD HH:mm:ss')
-
         obj.VendorList = vendorList
 
         let temppartArr = []
@@ -511,7 +509,7 @@ function AddRfq(props) {
         obj.PartList = temppartArr
         obj.Attachments = files
         obj.IsSent = isSent
-
+        obj.NfrId = nfrId?.value
         if (dataProps?.isEditFlag) {
             dispatch(updateRfqQuotation(obj, (res) => {
                 if (res?.data?.Result) {
@@ -856,8 +854,7 @@ function AddRfq(props) {
 
         const resultInput = inputValue.slice(0, searchCount)
         if (inputValue?.length >= searchCount && partName !== resultInput) {
-            const res = await getPartSelectListWtihRevNo(resultInput, technology.value)
-            // const res = await getPartSelectListWtihRevNo(resultInput, technology.value, nfrId?.value)
+            const res = await getPartSelectListWtihRevNo(resultInput, technology.value, nfrId?.value)
             setPartName(resultInput)
             let partDataAPI = res?.data?.DataList
             if (inputValue) {
@@ -1123,6 +1120,25 @@ function AddRfq(props) {
                                             // isLoading={VendorLoaderObj}
                                             />
                                         </Col> */}
+                                        {/* <Col md="3">
+                                            <SearchableSelectHookForm
+                                                label={"NFR No."}
+                                                name={"nfrId"}
+                                                placeholder={"Select"}
+                                                Controller={Controller}
+                                                control={control}
+                                                rules={{ required: false }}
+                                                register={register}
+                                                defaultValue={nfrId?.length !== 0 ? nfrId : ""}
+                                                options={renderListing("nfrId")}
+                                                mandatory={false}
+                                                handleChange={handleNfrChnage}
+                                                errors={errors.nfrId}
+                                                disabled={((dataProps?.isViewFlag || dataProps?.isEditFlag) ? true : false)
+                                                    || (partList?.length !== 0)}
+                                            // isLoading={VendorLoaderObj}
+                                            />
+                                        </Col> */}
                                         <Col md="3">
                                             <SearchableSelectHookForm
                                                 label={"Plant (Code)"}
@@ -1223,65 +1239,65 @@ function AddRfq(props) {
                                                 </div>
                                             </div>
                                         </Col>
-                                        {checkForNull(technology?.value) !== LOGISTICS && <> <Col md="3">
-                                            <SearchableSelectHookForm
-                                                label="RM Name"
-                                                name={"RMName"}
-                                                placeholder={"Select"}
-                                                Controller={Controller}
-                                                control={control}
-                                                selected={rmName ? rmName : ''}
-                                                rules={{ required: false }}
-                                                register={register}
-                                                customClassName="costing-version"
-                                                // defaultValue={costingOptionsSelectedObject[indexInside] ? costingOptionsSelectedObject[indexInside] : ''}
-                                                options={renderListingRM('rmname')}
-                                                mandatory={false}
-                                                handleChange={(newValue) => handleRMName(newValue)}
-                                                disabled={dataProps?.isAddFlag ? partNoDisable : (dataProps?.isViewFlag || !isEditAll)}
-                                            // errors={`${indexInside} CostingVersion`}
-                                            />
-                                        </Col>
-                                            <Col md="3">
+                                        {
+                                            checkForNull(technology?.value) !== LOGISTICS && <> <Col md="3">
                                                 <SearchableSelectHookForm
-                                                    label="RM Grade"
-                                                    name={"RMGrade"}
+                                                    label="RM Name"
+                                                    name={"RMName"}
                                                     placeholder={"Select"}
                                                     Controller={Controller}
                                                     control={control}
-                                                    selected={rmgrade ? rmgrade : ''}
+                                                    selected={rmName ? rmName : ''}
                                                     rules={{ required: false }}
                                                     register={register}
                                                     customClassName="costing-version"
                                                     // defaultValue={costingOptionsSelectedObject[indexInside] ? costingOptionsSelectedObject[indexInside] : ''}
-                                                    options={renderListingRM('rmgrade')}
+                                                    options={renderListingRM('rmname')}
                                                     mandatory={false}
-                                                    handleChange={(newValue) => handleRMGrade(newValue)}
+                                                    handleChange={(newValue) => handleRMName(newValue)}
                                                     disabled={dataProps?.isAddFlag ? partNoDisable : (dataProps?.isViewFlag || !isEditAll)}
                                                 // errors={`${indexInside} CostingVersion`}
                                                 />
                                             </Col>
-                                            <Col md="3">
-                                                <SearchableSelectHookForm
-                                                    label="RM Specification"
-                                                    name={"RMSpecification"}
-                                                    placeholder={"Select"}
-                                                    Controller={Controller}
-                                                    control={control}
-                                                    selected={rmspecification ? rmspecification : ''}
-                                                    rules={{ required: false }}
-                                                    register={register}
-                                                    customClassName="costing-version"
-                                                    // defaultValue={costingOptionsSelectedObject[indexInside] ? costingOptionsSelectedObject[indexInside] : ''}
-                                                    options={renderListingRM('rmspecification')}
-                                                    mandatory={false}
-                                                    handleChange={(newValue) => handleRMSpecification(newValue)}
-                                                    disabled={dataProps?.isAddFlag ? partNoDisable : (dataProps?.isViewFlag || !isEditAll)}
-                                                // errors={`${indexInside} CostingVersion`}
-                                                />
-
-                                            </Col>
-                                        </>}
+                                                <Col md="3">
+                                                    <SearchableSelectHookForm
+                                                        label="RM Grade"
+                                                        name={"RMGrade"}
+                                                        placeholder={"Select"}
+                                                        Controller={Controller}
+                                                        control={control}
+                                                        selected={rmgrade ? rmgrade : ''}
+                                                        rules={{ required: false }}
+                                                        register={register}
+                                                        customClassName="costing-version"
+                                                        // defaultValue={costingOptionsSelectedObject[indexInside] ? costingOptionsSelectedObject[indexInside] : ''}
+                                                        options={renderListingRM('rmgrade')}
+                                                        mandatory={false}
+                                                        handleChange={(newValue) => handleRMGrade(newValue)}
+                                                        disabled={dataProps?.isAddFlag ? partNoDisable : (dataProps?.isViewFlag || !isEditAll)}
+                                                    // errors={`${indexInside} CostingVersion`}
+                                                    />
+                                                </Col>
+                                                <Col md="3">
+                                                    <SearchableSelectHookForm
+                                                        label="RM Specification"
+                                                        name={"RMSpecification"}
+                                                        placeholder={"Select"}
+                                                        Controller={Controller}
+                                                        control={control}
+                                                        selected={rmspecification ? rmspecification : ''}
+                                                        rules={{ required: false }}
+                                                        register={register}
+                                                        customClassName="costing-version"
+                                                        // defaultValue={costingOptionsSelectedObject[indexInside] ? costingOptionsSelectedObject[indexInside] : ''}
+                                                        options={renderListingRM('rmspecification')}
+                                                        mandatory={false}
+                                                        handleChange={(newValue) => handleRMSpecification(newValue)}
+                                                        disabled={dataProps?.isAddFlag ? partNoDisable : (dataProps?.isViewFlag || !isEditAll)}
+                                                    // errors={`${indexInside} CostingVersion`}
+                                                    />
+                                                </Col>
+                                            </>}
                                         {/* <Col md="3">
                                             <NumberFieldHookForm
                                                 label="Annual Forecast Quantity"
@@ -1331,7 +1347,7 @@ function AddRfq(props) {
                                                 <div className={"upload mr-0"}></div>
                                             </button>}
                                         </Col>
-                                    </Row>
+                                    </Row >
                                     <div className='rfq-part-list'>
                                         {showTooltip && <Tooltip className="rfq-tooltip-left" placement={"top"} isOpen={viewTooltip} toggle={tooltipToggle} target={"quantity-tooltip"} >{"To edit the quantity please double click on the field."}</Tooltip>}
                                         {!loader ? <div className={`ag-grid-react`}>
@@ -1361,11 +1377,10 @@ function AddRfq(props) {
                                                                     enableBrowserTooltips={true}
                                                                 >
                                                                     <AgGridColumn width={"230px"} field="PartNumber" headerName="Part No" tooltipField="PartNumber" cellClass={"colorWhite"} cellRenderer={'partNumberFormatter'}></AgGridColumn>
-                                                                    <AgGridColumn width={"230px"} field="VendorListExisting" headerName="Vendor" cellClass={"colorWhite"} cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                                                                    <AgGridColumn width={"230px"} field="VendorListExisting" headerName="Existing Vendor" cellClass={"colorWhite"} cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                                                     {checkForNull(technology?.value) !== LOGISTICS && <AgGridColumn width={"230px"} field="RMName" headerName="RM Name" cellClass={"colorWhite"}></AgGridColumn>}
                                                                     {checkForNull(technology?.value) !== LOGISTICS && <AgGridColumn width={"230px"} field="RMGrade" headerName="RM Grade" cellClass={"colorWhite"}></AgGridColumn>}
                                                                     {checkForNull(technology?.value) !== LOGISTICS && <AgGridColumn width={"230px"} field="RMSpecification" headerName="RM Specification" cellClass={"colorWhite"}></AgGridColumn>}
-
                                                                     <AgGridColumn width={"230px"} field="YearName" headerName="Production Year" cellRenderer={'sopFormatter'}></AgGridColumn>
                                                                     <AgGridColumn width={"230px"} field="Quantity" headerName="Annual Forecast Quantity" headerComponent={'quantityHeader'} cellRenderer={'afcFormatter'} editable={EditableCallback} colId="Quantity"></AgGridColumn>
                                                                     <AgGridColumn width={"0px"} field="PartId" headerName="Part Id" hide={true} ></AgGridColumn>
@@ -1546,7 +1561,8 @@ function AddRfq(props) {
                                                                 placeholderText="Select"
                                                                 className="withBorder "
                                                                 autoComplete={'off'}
-                                                                showTimeInput={true}
+                                                                showTimeSelect={true}
+                                                                timeIntervals={1}
                                                                 errors={errors.startPlanDate}
                                                                 disabledKeyboardNavigation
                                                                 onChangeRaw={(e) => e.preventDefault()}
@@ -1728,7 +1744,7 @@ function AddRfq(props) {
                                             </button>
                                         </div>
                                     </Row>
-                                </form>
+                                </form >
 
                                 {
                                     isBulkUpload && (
@@ -1746,11 +1762,11 @@ function AddRfq(props) {
                                     )
                                 }
 
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+                            </div >
+                        </div >
+                    </div >
+                </div >
+            </div >
 
             {/* </Drawer > */}
             {

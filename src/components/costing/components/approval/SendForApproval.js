@@ -21,6 +21,7 @@ import Dropzone from 'react-dropzone-uploader'
 import { EMPTY_GUID, FILE_URL, NCC, NCCTypeId, VBC, VBCTypeId, ZBC, ZBCTypeId } from "../../../../config/constants";
 import redcrossImg from "../../../../assests/images/red-cross.png";
 import VerifyImpactDrawer from '../../../simulation/components/VerifyImpactDrawer';
+import PushSection from '../../../common/PushSection'
 import LoaderCustom from '../../../common/LoaderCustom'
 import TooltipCustom from '../../../common/Tooltip'
 import { getUsersTechnologyLevelAPI } from '../../../../actions/auth/AuthActions'
@@ -40,6 +41,9 @@ const SendForApproval = (props) => {
   const reasonsList = useSelector((state) => state.approval.reasonsList)
   const deptList = useSelector((state) => state.approval.approvalDepartmentList)
   const viewApprovalData = useSelector((state) => state.costing.costingApprovalData)
+  const SAPData = useSelector(state => state.approval.SAPObj)
+
+
   const partNo = useSelector((state) => state.costing.partNo)
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
 
@@ -50,6 +54,7 @@ const SendForApproval = (props) => {
   const [approvalDropDown, setApprovalDropDown] = useState([])
   const [showValidation, setShowValidation] = useState(false)
   const [approver, setApprover] = useState('')
+  const [dataToPush, setDataToPush] = useState({})
   const [isDisable, setIsDisable] = useState('')
   const [isRegularize, setIsRegularize] = useState(false);
   const [files, setFiles] = useState([]);
@@ -324,8 +329,8 @@ const SendForApproval = (props) => {
       let data = {
         "QuotationPartId": selectedRows[0]?.QuotationPartId,
         "NetRawMaterialsCost": tempData?.netRM,
-        "NetBoughtOutPartCost": tempData?.netBoughtOutPartCost,
-        "NetConversionCost": tempData?.netConversionCostView,
+        "NetBoughtOutPartCost": tempData?.netBOP,
+        "NetConversionCost": tempData?.nConvCost,
         "NetProcessCost": tempData?.netProcessCost,
         "NetOperationCost": tempData?.netOperationCost,
         "NetOtherOperationCost": tempData?.netOtherOperationCost,
@@ -519,6 +524,9 @@ const SendForApproval = (props) => {
         return null
       })
       obj.CostingsList = temp
+      obj.MaterialGroup = SAPData.MaterialGroup?.label
+      obj.DecimalOption = SAPData.DecimalOption?.value
+
       // debounce_fun()
       // 
       // props.closeDrawer()
@@ -530,8 +538,9 @@ const SendForApproval = (props) => {
         dispatch(setCostingViewData([]))
       }))
     }
-
   }), 500)
+
+
 
   const handleApproverChange = (data) => {
     setApprover(data.label)
@@ -911,14 +920,18 @@ const SendForApproval = (props) => {
                   // isFinalApproverShow === false ?
                   <>
                     {/* <Row className="px-3">
-                        <Col md="12">
-                          <div className="left-border">{"Push Drawer"}</div>
-                        </Col>
-                        <Col md="12">
-
-                          <PushSection />
-                        </Col>
-                      </Row> */}
+                      <Col md="12">
+                        <div className="left-border">{"SAP-Push Details"}</div>
+                      </Col>
+                      <div className="w-100">
+                        <PushSection
+                          Controller={Controller}
+                          register={register}
+                          errors={errors}
+                          control={control}
+                        />
+                      </div>
+                    </Row> */}
                     <Row className="px-3">
                       <Col md="4">
                         <div className="left-border">{"Approver"}</div>
