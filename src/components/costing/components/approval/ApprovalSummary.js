@@ -130,7 +130,7 @@ function ApprovalSummary(props) {
 
       const { PartDetails, ApprovalDetails, ApprovalLevelStep, DepartmentId, Technology, ApprovalProcessId,
         ApprovalProcessSummaryId, ApprovalNumber, IsSent, IsFinalLevelButtonShow, IsPushedButtonShow,
-        CostingId, PartId, LastCostingId, DecimalOption, VendorId, IsRegularizationLimitCrossed, CostingHead, NCCPartQuantity, IsRegularized, ApprovalTypeId, CostingTypeId, PurchasingGroup, MaterialGroup, BestCostAndShouldCostDetails } = res?.data?.Data?.Costings[0];
+        CostingId, PartId, LastCostingId, DecimalOption, VendorId, IsRegularizationLimitCrossed, CostingHead, NCCPartQuantity, IsRegularized, ApprovalTypeId, CostingTypeId, BestCostAndShouldCostDetails } = res?.data?.Data?.Costings[0];
       setApprovalTypeId(ApprovalTypeId)
 
       // let BestCostAndShouldCostDetails = {
@@ -195,8 +195,6 @@ function ApprovalSummary(props) {
         ApprovalNumber: ApprovalNumber,
         CostingId: CostingId,
         ReasonId: ApprovalDetails[0].ReasonId,
-        PurchasingGroup: PurchasingGroup,
-        MaterialGroup: MaterialGroup,
         DecimalOption: DecimalOption,
         LastCostingId: LastCostingId,
         EffectiveDate: ApprovalDetails[0].EffectiveDate,
@@ -358,15 +356,15 @@ function ApprovalSummary(props) {
       // purchasingGroup: 'O02'
 
     }
-    let obj = {
-      LoggedInUserId: loggedInUserId(),
-      Request: [pushdata]
-    }
-    dispatch(approvalPushedOnSap(obj, res => {
-      if (res && res.status && (res.status === 200 || res.status === 204)) {
-        Toaster.success('Approval pushed successfully.')
-      }
-    }))
+    // let obj = {
+    //   LoggedInUserId: loggedInUserId(),
+    //   Request: [pushdata]
+    // }
+    // dispatch(approvalPushedOnSap(obj, res => {
+    //   if (res && res.status && (res.status === 200 || res.status === 204)) {
+    //     Toaster.success('Approval pushed successfully.')
+    //   }
+    // }))
     setShowListing(true)
 
   }, 500)
@@ -696,7 +694,7 @@ function ApprovalSummary(props) {
               </div>
             </Row>
           }
-          {
+          {/* {
             showPushButton &&
             <Row className="sf-btn-footer no-gutters justify-content-between">
               <div className="col-sm-12 text-right bluefooter-butn">
@@ -708,7 +706,7 @@ function ApprovalSummary(props) {
                 </Fragment>
               </div>
             </Row>
-          }
+          } */}
 
 
           {
