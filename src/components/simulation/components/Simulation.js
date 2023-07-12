@@ -1079,7 +1079,6 @@ function Simulation(props) {
                                                 errors={errors.Masters}
                                             />
                                             {!bopLoader && <TooltipCustom id="association-tooltip" width="310px" tooltipText='To run a simulation on BOPs associated with costing, please select "Associate with Costing". Otherwise, select "Not Associate with Costing"' />}
-                                            {console.log('loader: ', bopLoader)}
                                         </div>
                                     </div>
                                 }
