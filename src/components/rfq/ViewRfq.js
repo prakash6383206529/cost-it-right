@@ -745,7 +745,8 @@ function RfqListing(props) {
         totalValueRenderer: buttonFormatter,
         linkableFormatter: linkableFormatter,
         dateFormatter: dateFormatter,
-        partNumberFormatter: partNumberFormatter
+        partNumberFormatter: partNumberFormatter,
+        customNoRowsOverlay: NoContentFound
     }
 
     const closeSendForApproval = (e = '', type) => {
@@ -944,7 +945,8 @@ function RfqListing(props) {
                     <div id='rfq-compare-drawer'>
                         {addComparisonToggle && (
 
-                            <CostingSummaryTable viewMode={true}
+                            <CostingSummaryTable
+                                viewMode={true}
                                 isRfqCosting={true}
                                 // costingID={approvalDetails.CostingId}
                                 approvalMode={true}
