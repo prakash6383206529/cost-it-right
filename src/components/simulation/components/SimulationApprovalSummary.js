@@ -302,8 +302,8 @@ function SimulationApprovalSummary(props) {
                 }))
                 // }
                 // if (simulationDetail.SimulationId) {
-                dispatch(getImpactedMasterData(simulationDetail.SimulationId, () => { }))
             }
+            dispatch(getImpactedMasterData(simulationDetail.SimulationId, () => { }))
         }
 
     }, [effectiveDate, costingList, simulationDetail.SimulationId, DataForAssemblyImpactForFg])
