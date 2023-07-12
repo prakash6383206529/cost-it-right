@@ -165,8 +165,8 @@ function RfqListing(props) {
         return (
             <>
                 {viewAccessibility && <button title='View' className="View mr-1" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, true)} />}
-                {((status !== CANCELLED) && editAccessibility) && <button title='Edit' className="Edit mr-1" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, false)} />}
-                {(status !== APPROVED && status !== UNDER_APPROVAL && status !== UNDER_REVISION && status !== CANCELLED && status !== RECEIVED) && <button title='Cancel' className="CancelIcon mr-1" type={'button'} onClick={() => cancelItem(cellValue)} />}
+                {((status !== APPROVED && status !== CANCELLED) && editAccessibility) && <button title='Edit' className="Edit mr-1" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, false)} />}
+                {(status !== APPROVED && status !== UNDER_APPROVAL && status !== CANCELLED) && <button title='Cancel' className="CancelIcon mr-1" type={'button'} onClick={() => cancelItem(cellValue)} />}
             </>
         )
     };
@@ -174,11 +174,9 @@ function RfqListing(props) {
 
     const formToggle = () => {
         setAddRfq(true)
-
         let data = {
             isAddFlag: true,
         }
-
         setAddRfqData(data)
     }
 
@@ -267,11 +265,18 @@ function RfqListing(props) {
         return <div className={cell}>{tempStatus}</div>
     }
 
+    const viewAttachmentData = (index) => {
+        setAttachment(true)
+        setViewAttachment(index)
+    }
+
+    const closeAttachmentDrawer = (e = '') => {
+        setAttachment(false)
+    }
     const dashFormatter = (props) => {
         const cellValue = props?.value;
         return cellValue ? cellValue : '-';
     }
-
     const dateFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '-';
@@ -280,15 +285,6 @@ function RfqListing(props) {
     const dateTimeFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY  hh:mm') : '-';
-    }
-
-    const viewAttachmentData = (index) => {
-        setAttachment(true)
-        setViewAttachment(index)
-    }
-
-    const closeAttachmentDrawer = (e = '') => {
-        setAttachment(false)
     }
     const onFloatingFilterChanged = (value) => {
         rowData.length !== 0 && setNoData(searchNocontentFilter(value, noData))
@@ -322,7 +318,10 @@ function RfqListing(props) {
         )
 
     }
-
+    const raisedOnFormatter = (props) => {
+        const cellValue = props?.value;
+        return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '-'
+    }
 
     const viewDetails = (rowData) => {
 
@@ -423,6 +422,7 @@ function RfqListing(props) {
                                                 enableBrowserTooltips={true}
                                             >
                                                 <AgGridColumn cellClass="has-checkbox" field="QuotationNumber" headerName='RFQ No.' cellRenderer={'linkableFormatter'} ></AgGridColumn>
+                                                {/* <AgGridColumn field="NfrId" headerName='NFR Id' width={150}></AgGridColumn> */}
                                                 <AgGridColumn field="PartNumber" tooltipField="PartNumber" headerName="Part No." width={150}></AgGridColumn>
                                                 <AgGridColumn field="NoOfQuotationReceived" headerName='No. of Quotation Received' maxWidth={150} cellRenderer={'quotationReceiveFormatter'}></AgGridColumn>
                                                 <AgGridColumn field="VendorName" tooltipField="VendorName" headerName='Vendor (Code)'></AgGridColumn>
@@ -436,8 +436,8 @@ function RfqListing(props) {
                                                 <AgGridColumn field="VisibilityDuration" width={"150px"} headerName='Visibility Duration' cellRenderer='dashFormatter'></AgGridColumn>
                                                 <AgGridColumn field="LastSubmissionDate" width={"160px"} headerName='Last Submission Date' cellRenderer='dateFormatter'></AgGridColumn>
                                                 <AgGridColumn field="QuotationNumber" headerName='Attachments' cellRenderer='attachmentFormatter'></AgGridColumn>
-                                                <AgGridColumn field="Status" headerName="Status" tooltipField="tooltipText" cellClass="text-center" headerClass={"text-center"} minWidth={170} cellRenderer="statusFormatter"></AgGridColumn>
-                                                {<AgGridColumn field="QuotationId" width={180} headerName="Action" type="rightAligned" cellClass={"rfq-listing-action"} floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
+                                                <AgGridColumn field="Status" headerName="Status" tooltipField="tooltipText" headerClass="justify-content-center" cellClass="text-center" minWidth={170} cellRenderer="statusFormatter"></AgGridColumn>
+                                                {<AgGridColumn field="QuotationId" width={180} cellClass="ag-grid-action-container rfq-listing-action" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
 
                                             </AgGridReact>
                                             <PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} globalTake={10} />
