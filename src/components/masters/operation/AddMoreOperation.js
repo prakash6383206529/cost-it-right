@@ -2486,29 +2486,6 @@ function AddMoreOperation(props) {
                                                     />
 
                                                 </Col>
-                                                    <Col md="3">
-                                                        <NumberFieldHookForm
-                                                            label={`Other Cost`}
-                                                            name={'otherCost'}
-                                                            Controller={Controller}
-                                                            control={control}
-                                                            register={register}
-                                                            mandatory={false}
-                                                            rules={{
-                                                                required: false,
-                                                                pattern: {
-                                                                    value: /^\d{0,4}(\.\d{0,7})?$/i,
-                                                                    message: 'Maximum length for integer is 4 and for decimal is 7',
-                                                                },
-                                                            }}
-                                                            handleChange={() => { }}
-                                                            defaultValue={''}
-                                                            className=""
-                                                            customClassName={'withBorder'}
-                                                            errors={errors.otherCost}
-                                                            disabled={isViewMode ? true : false}
-                                                        />
-                                                    </Col>
 
                                                     <Col md="3">
                                                         <TextFieldHookForm
@@ -2533,7 +2510,33 @@ function AddMoreOperation(props) {
                                                             customClassName={'withBorder'}
                                                             disabled={isViewMode}
                                                         />
-                                                    </Col> </>}
+                                                    </Col>
+
+                                                    <Col md="3">
+                                                        <NumberFieldHookForm
+                                                            label={`Other Cost`}
+                                                            name={'otherCost'}
+                                                            Controller={Controller}
+                                                            control={control}
+                                                            register={register}
+                                                            mandatory={false}
+                                                            rules={{
+                                                                required: false,
+                                                                pattern: {
+                                                                    value: /^\d{0,4}(\.\d{0,7})?$/i,
+                                                                    message: 'Maximum length for integer is 4 and for decimal is 7',
+                                                                },
+                                                            }}
+                                                            handleChange={() => { }}
+                                                            defaultValue={''}
+                                                            className=""
+                                                            customClassName={'withBorder'}
+                                                            errors={errors.otherCost}
+                                                            disabled={isViewMode ? true : false}
+                                                        />
+                                                    </Col>
+
+                                                </>}
                                             </>}
 
                                         {(isWelding || false) && <>
