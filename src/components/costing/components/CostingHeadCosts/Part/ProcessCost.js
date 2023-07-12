@@ -7,7 +7,7 @@ import { TextFieldHookForm, TextAreaHookForm, SearchableSelectHookForm } from '.
 import AddProcess from '../../Drawers/AddProcess';
 import { checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected, getConfigurationKey } from '../../../../../helper';
 import NoContentFound from '../../../../common/NoContentFound';
-import { CRMHeads, EMPTY_DATA, EMPTY_GUID, MASS, TIME, defaultPageSize } from '../../../../../config/constants';
+import { CRMHeads, DISPLAY_HOURS, DISPLAY_MINUTES, EMPTY_DATA, EMPTY_GUID, MASS, TIME, defaultPageSize } from '../../../../../config/constants';
 import Toaster from '../../../../common/Toaster';
 import VariableMhrDrawer from '../../Drawers/processCalculatorDrawer/VariableMhrDrawer'
 import { getProcessMachiningCalculation, getProcessDefaultCalculation } from '../../../actions/CostWorking';
@@ -1044,15 +1044,13 @@ function ProcessCost(props) {
   const processNetCostFormula = (value) => {
     let processNetCostFormulaText;
     switch (value) {
-      case 'Hours':
+      case DISPLAY_HOURS:
         processNetCostFormulaText = 'Net Cost = (Quantity * Machine Rate)/3600'
         break;
-      case 'Minutes':
+      case DISPLAY_MINUTES:
         processNetCostFormulaText = 'Net Cost = (Quantity * Machine Rate)/60'
         break;
       case undefined:
-        processNetCostFormulaText = 'Net Cost = Total cost of the sub process net cost'
-        break;
       case null:
         processNetCostFormulaText = 'Net Cost = Total cost of the sub process net cost'
         break;
