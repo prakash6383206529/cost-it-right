@@ -1907,6 +1907,8 @@ export const VIEW_COSTING_DATA = {
   scrapRate: 'Scrap Rate',
   gWeight: 'Gross Weight',
   fWeight: 'Finish Weight',
+  castingWeightExcel: 'Casting Weight',
+  meltingLossExcel: 'Melting Loss',
   BurningLossWeight: 'Burning Loss Weight',
   ScrapWeight: 'Scrap Weight',
   netRM: 'Net RM Cost',
