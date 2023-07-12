@@ -1271,7 +1271,6 @@ const CostingSummaryTable = (props) => {
                       {props.isRfqCosting && !isApproval && <button onClick={() => props?.crossButton()} title='Discard Summary' className='CancelIcon rfq-summary-discard'></button>}
                     </div>
                 }
-
                 {!simulationMode && !props.isRfqCosting && !props.isRfqCosting &&
                   <ReactToPrint
                     bodyClass='mx-2 mt-3 remove-space-border'
@@ -1430,7 +1429,6 @@ const CostingSummaryTable = (props) => {
                             </td>
                             {viewCostingData &&
                               viewCostingData?.map((data, index) => {
-
                                 return (
                                   <td className={tableDataClass(data)}>
                                     <span className={`d-flex justify-content-between ${(data?.bestCost === true) ? '' : 'bg-grey'} ${drawerDetailPDF ? 'p-0' : ''}`}>
@@ -1724,7 +1722,7 @@ const CostingSummaryTable = (props) => {
                                 {showLabourData && <span className={`d-block small-grey-text ${isApproval && viewCostingData?.length > 1 && highlightCostingSummaryValue(viewCostingData[0]?.StaffCost, viewCostingData[1]?.StaffCost)}`}>Staff Cost</span>}
                               </td>
                               {viewCostingData &&
-                                viewCostingData?.map((data) => {
+                                viewCostingData?.map((data, index) => {
                                   return (
                                     <td className={tableDataClass(data)}>
                                       <span className={`d-block small-grey-text ${isApproval && viewCostingData?.length > 1 && !props.isRfqCosting && highlightCostingSummaryValue(viewCostingData[0]?.pCost, viewCostingData[1]?.pCost)}`}>
