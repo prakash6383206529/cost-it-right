@@ -47,7 +47,8 @@ import {
   SET_YOY_COST_GRID,
   SET_YOY_COST_GRID_FOR_SAVE,
   SET_OTHER_COST,
-  RESET_EXCHANGE_RATE_DATA
+  RESET_EXCHANGE_RATE_DATA,
+  SET_REJECTED_COSTING_VIEW_DATA,
 } from '../../../config/constants'
 import { apiErrors } from '../../../helper/util'
 import { MESSAGES } from '../../../config/message'
@@ -2490,7 +2491,6 @@ export function setNPVData(data) {
   }
 };
 export function setOtherCostData(data) {
-  console.log('data: ', data);
   return (dispatch) => {
     dispatch({
       type: SET_OTHER_COST,
@@ -2608,3 +2608,15 @@ export function checkPartNoExistInBop(data, callback) {
 export const resetExchangeRateData = () => ({
   type: RESET_EXCHANGE_RATE_DATA,
 });
+
+export const setRejectedCostingViewData = (data) => (dispatch) => {
+  let temp = []
+  // temp.push(VIEW_COSTING_DATA)
+  data.map((val) => (
+    temp.push(val)
+  ))
+  dispatch({
+    type: SET_REJECTED_COSTING_VIEW_DATA,
+    payload: temp,
+  })
+}

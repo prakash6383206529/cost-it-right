@@ -96,7 +96,7 @@ function SimulationHistory(props) {
               <AgGridColumn field="ApprovedBy" headerName="Approved By"></AgGridColumn>
               <AgGridColumn field="ApprovedOn" headerName="Approved On"></AgGridColumn>
               <AgGridColumn field="CostingStatus" headerName="Status"></AgGridColumn>
-              <AgGridColumn field="SimulationId" headerName="Actions"></AgGridColumn>
+              <AgGridColumn field="SimulationId" cellClass="ag-grid-action-container" headerName="Actions"></AgGridColumn>
             </AgGridReact>
             {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />}
           </div>

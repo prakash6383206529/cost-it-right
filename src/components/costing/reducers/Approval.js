@@ -9,12 +9,15 @@ import {
   GET_APPROVAL_LIST,
   GET_APPROVAL_SUMMARY,
   GET_SELECTED_COSTING_STATUS,
-  GET_APPROVAL_LIST_DRAFT
+  GET_APPROVAL_LIST_DRAFT,
+  SET_SAP_DATA
 } from '../../../config/constants'
 import { tokenStatus, tokenStatusName } from '../../../config/masterData'
 import { checkForDecimalAndNull, getConfigurationKey } from '../../../helper'
 
-const initialState = {}
+const initialState = {
+  SAPObj: { PurchasingGroup: '', MaterialGroup: '' }
+}
 
 export default function ApprovalReducer(state = initialState, action) {
   switch (action.type) {
@@ -137,6 +140,12 @@ export default function ApprovalReducer(state = initialState, action) {
         loading: false,
         error: true,
         costingStatusList: action.payload
+      }
+    case SET_SAP_DATA:
+      return {
+        ...state,
+        loading: false,
+        SAPObj: action.payload
       }
     default:
       return state

@@ -16,8 +16,9 @@ import { checkPermission, searchNocontentFilter, userDetails } from '../../../he
 import DayTime from '../../common/DayTimeWrapper';
 import Attachament from '../../costing/components/Drawers/Attachament';
 import NfrPartsListing from './NfrPartsListing';
-import { getAllNfrList, nfrDetailsForDiscountAction } from './actions/nfr';
+import { fetchNfrDetailFromSap, getAllNfrList, nfrDetailsForDiscountAction } from './actions/nfr';
 import { StatusTooltip, hyphenFormatter } from '../masterUtil';
+import Toaster from '../../common/Toaster';
 const gridOptions = {};
 
 
@@ -25,6 +26,7 @@ function NfrListing(props) {
     const [gridApi, setgridApi] = useState(null);                      // DONT DELETE THIS STATE , IT IS USED BY AG GRID
     const [gridColumnApi, setgridColumnApi] = useState(null);          // DONT DELETE THIS STATE , IT IS USED BY AG GRID
     const [loader, setloader] = useState(false);
+    const [sapLoader, setSapLoader] = useState(false);
     const dispatch = useDispatch();
     const [addRfqData, setAddRfqData] = useState({});
     const [isEdit, setIsEdit] = useState(false);
@@ -43,7 +45,7 @@ function NfrListing(props) {
     const [selectedPartData, setSelectedPartData] = useState([]);
     const { topAndLeftMenuData } = useSelector(state => state.auth);
     const [addRfq, setAddRfq] = useState(props?.isFromDiscount ? true : false);
-
+    const [isHover, setIsHover] = useState(false)
     useEffect(() => {
         setloader(true)
         getDataList()
@@ -197,9 +199,9 @@ function NfrListing(props) {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         let tempStatus = '-'
-        tempStatus = row?.Status
-
-        return <div className={cell}>{tempStatus}</div>
+        tempStatus = row?.DisplayStatus
+        let displayCount = `${row?.ApprovalPartCount}/${row?.NumberOfParts}`
+        return <div className={cell}>{`${tempStatus} ${displayCount}`}</div>
     }
 
     const dateFormater = (props) => {
@@ -268,7 +270,27 @@ function NfrListing(props) {
         statusFormatter: statusFormatter,
         dateFormater: dateFormater
     }
+    const handleMouse = () => {
+        setIsHover(true)
+    }
+    /**
+    * @method handleMouseOut
+    * @description FOR FETCH BUTTON CHANGE CSS ON MOUSE LEAVE
+    */
+    const handleMouseOut = () => {
+        setIsHover(false)
+    }
 
+    const openFetchDrawer = () => {
+        setSapLoader(true)
+        dispatch(fetchNfrDetailFromSap(res => {
+            setSapLoader(false)
+            getDataList()
+            if (res && res.data && res.data.Result) {
+                Toaster.success('Data has been pulled successfully')
+            }
+        }))
+    }
 
     return (
         <>
@@ -276,29 +298,34 @@ function NfrListing(props) {
                 <div className={`ag-grid-react ${(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) ? "" : ""} ${true ? "show-table-btn" : ""} ${false ? 'simulation-height' : props?.isMasterSummaryDrawer ? '' : 'min-height100vh'}`}>
                     {(loader ? <LoaderCustom customClass="simulation-Loader" /> : !viewRfq && (
                         <>
+                            {sapLoader && <LoaderCustom message="Fetching data from SAP" />}
                             <Row className={`filter-row-large pt-2 ${props?.isSimulation ? 'zindex-0 ' : ''}`}>
 
                                 <Col md="3" lg="3" className='mb-2'>
                                     <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
                                 </Col>
-                                <Col md="9" lg="9" className="mb-3 d-flex justify-content-end">
-                                    {
-                                        // SHOW FILTER BUTTON ONLY FOR RM MASTER NOT FOR SIMULATION AMD MASTER APPROVAL SUMMARY
-                                        (!props.isMasterSummaryDrawer) &&
-                                        <>
 
-                                            <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}>
-                                                <div className="refresh mr-0"></div>
-                                            </button>
-                                        </>
-                                    }
+                                <Col md="9" className="mb-3 d-flex justify-content-end">
+                                    <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}>
+                                        <div className="refresh mr-0"></div>
+                                    </button>
+                                    <button
+                                        type="button"
+                                        className={'secondary-btn ml-1'}
+                                        title="Fetch"
+                                        onClick={openFetchDrawer}
+                                        onMouseOver={handleMouse}
+                                        onMouseOut={handleMouseOut}
+                                    >
+                                        <div className={`${isHover ? "swap-hover" : "swap"} mr-0`}></div>
+                                    </button>
                                 </Col>
 
                             </Row>
                             <Row>
                                 <Col>
                                     <div className={`ag-grid-wrapper ${(props?.isDataInMaster && noData) ? 'master-approval-overlay' : ''} ${(rowData && rowData?.length <= 0) || noData ? 'overlay-contain' : ''}`}>
-                                        <div className={`ag-theme-material ${(loader) && "max-loader-height"}`}>
+                                        <div className={`ag-theme-material`}>
                                             {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
                                             <AgGridReact
                                                 style={{ height: '100%', width: '100%' }}
@@ -322,14 +349,15 @@ function NfrListing(props) {
                                                 enableBrowserTooltips={true}
                                             >
                                                 {/* <AgGridColumn cellClass="has-checkbox" field="QuotationNumber" headerName='RFQ No.' cellRenderer={'linkableFormatter'} ></AgGridColumn> */}
-                                                <AgGridColumn field="NfrNumber" headerName="NFR ID" width={150} cellRenderer={hyphenFormatter}></AgGridColumn>
+                                                <AgGridColumn field="NfrNumber" headerName="NFR Id" width={150} cellRenderer={hyphenFormatter}></AgGridColumn>
                                                 <AgGridColumn field="ProductCode" headerName='Product Code' maxWidth={150} cellRenderer={hyphenFormatter}></AgGridColumn>
+                                                <AgGridColumn field="NfrRefNumber" headerName='Nfr Ref. Number' maxWidth={150} cellRenderer={hyphenFormatter}></AgGridColumn>
                                                 <AgGridColumn field="NfrVersion" headerName='Version/Revision' cellRenderer={hyphenFormatter}></AgGridColumn>
                                                 <AgGridColumn field="NumberOfParts" headerName='No. of Parts' cellRenderer={hyphenFormatter}></AgGridColumn>
                                                 <AgGridColumn field="SimulatedOn" headerName='Simulated On' cellRenderer={dateFormater}></AgGridColumn>
                                                 <AgGridColumn field="ApprovedOn" headerName='Approved On' cellRenderer={dateFormater}></AgGridColumn>
-                                                <AgGridColumn field="Status" tooltipField="tooltipText" headerName="Status" cellClass="text-center" minWidth={170} cellRenderer="statusFormatter"></AgGridColumn>
-                                                {<AgGridColumn field="Status" width={180} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
+                                                <AgGridColumn field="Status" tooltipField="tooltipText" cellClass="text-center" headerName="Status" headerClass="justify-content-center" minWidth={170} cellRenderer="statusFormatter"></AgGridColumn>
+                                                {<AgGridColumn field="Status" width={180} cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
                                             </AgGridReact>
                                             <PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} globalTake={10} />
                                         </div>
@@ -348,7 +376,8 @@ function NfrListing(props) {
                 </div >
             }
 
-            {addRfq &&
+            {
+                addRfq &&
 
                 <NfrPartsListing
                     data={selectedPartData}
