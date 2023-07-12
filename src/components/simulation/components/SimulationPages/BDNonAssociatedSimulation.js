@@ -197,14 +197,15 @@ function BDNonAssociatedSimulation(props) {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         let cellValue = cell
         if (cell && cell > 100) {
-            Toaster.warning("Percentage should be less than 100")
+            Toaster.warning("Percentage should be less than or equal to 100")
             cellValue = 0
         }
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const value = beforeSaveCell(cellValue)
         return (
             <>
                 {
-                    <span className={`${!isbulkUpload ? 'form-control' : ''}`} >{cell ? Number(cellValue) : (row?.Percentage ? row?.Percentage : 0)} </span>
+                    <span className={`${!isbulkUpload ? 'form-control' : ''}`} >{cell && value ? Number(cellValue) : (row?.Percentage ? row?.Percentage : 0)} </span>
                 }
 
             </>
@@ -269,8 +270,8 @@ function BDNonAssociatedSimulation(props) {
                 return false
             }
             return true
-        } else if (cellValue && !/^[+]?([0-9]+(?:[.][0-9]*)?|\.[0-9]+)$/.test(cellValue)) {
-            Toaster.warning('Please enter a valid positive numbers.')
+        } else if (cellValue && !/^[+-]?([0-9]+(?:[.][0-9]*)?|\.[0-9]+)$/.test(cellValue)) {
+            Toaster.warning('Please enter a valid numbers.')
             return false
         }
         return true
