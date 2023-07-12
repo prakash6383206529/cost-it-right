@@ -2269,6 +2269,8 @@ export const MICROSECONDS = 'Microseconds'
 export const DISPLAY_G = "g"
 export const DISPLAY_KG = "kg"
 export const DISPLAY_MG = "mg"
+export const DISPLAY_HOURS = "hrs"
+export const DISPLAY_MINUTES = "min"
 
 // export const INR = "INR"
 
