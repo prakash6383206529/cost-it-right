@@ -11,7 +11,9 @@ import TooltipCustom from '../../../common/Tooltip'
 function ViewOverheadProfit(props) {
   const { overheadData, profitData, rejectAndModelType, iccPaymentData, isPDFShow } = props
 
-  const { rejectData, modelType, isRmCutOffApplicable } = rejectAndModelType
+  const { rejectData, modelType, isRmCutOffApplicable, rawMaterialCostWithCutOff, isIncludeToolCostWithOverheadAndProfit, isIncludeSurfaceTreatmentWithRejection, isIncludeSurfaceTreatmentWithOverheadAndProfit } = rejectAndModelType;
+
+  const showTooltipForOH = [isRmCutOffApplicable, isIncludeToolCostWithOverheadAndProfit, isIncludeSurfaceTreatmentWithRejection, isIncludeSurfaceTreatmentWithOverheadAndProfit]
 
   const { register, control } = useForm({
     mode: 'onChange',
@@ -40,6 +42,13 @@ function ViewOverheadProfit(props) {
     }
     props.closeDrawer('')
   }
+
+  const overheadAndProfitTooltipText = <>
+    {isRmCutOffApplicable && <p>RM Cut Off Price {rawMaterialCostWithCutOff} is Applied</p>}
+    {isIncludeToolCostWithOverheadAndProfit && <p>Tool Cost Included</p>}
+    {isIncludeSurfaceTreatmentWithOverheadAndProfit && <p>Surface Treatment Cost Included</p>}
+
+  </>
   const modelShowData = () => {
     return <>
       <div className="input-group form-group col-md-4 input-withouticon pdf-download pl-0">
@@ -76,7 +85,7 @@ function ViewOverheadProfit(props) {
               <tr>
                 <th>{`Overhead On`}</th>
                 <th>{viewOverheadData.IsOverheadFixedApplicable ? 'Fixed' : 'Percentage (%)'}</th>
-                <th><div className='w-fit'>Cost (Applicability){isRmCutOffApplicable && !isPDFShow && <TooltipCustom customClass="mt-1 ml-1" id="overhead-rm-applicable" tooltipText="RM Cut Off Price is Applied" />}</div></th>
+                <th><div className='w-fit'>Cost (Applicability){showTooltipForOH.includes(true) && !isPDFShow && <TooltipCustom width="250px" customClass="mt-1 ml-1" id="overhead-rm-applicable" tooltipText={overheadAndProfitTooltipText} />}</div></th>
                 <th>{`Overhead`}</th>
                 <th>{`Remark`}</th>
 
@@ -192,7 +201,7 @@ function ViewOverheadProfit(props) {
               <tr>
                 <th>{`Profit On`}</th>
                 <th>{viewProfitData.IsProfitFixedApplicable ? 'Fixed' : 'Percentage (%)'}</th>
-                <th><div className='w-fit'>Cost (Applicability){isRmCutOffApplicable && !isPDFShow && <TooltipCustom customClass="mt-1 ml-1" id="profit-rm-applicable" tooltipText="RM Cut Off Price is Applied" />}</div></th>
+                <th><div className='w-fit'>Cost (Applicability){showTooltipForOH.includes(true) && !isPDFShow && <TooltipCustom width="250px" customClass="mt-1 ml-1" id="overhead-rm-applicable" tooltipText={overheadAndProfitTooltipText} />}</div></th>
                 <th>{`Profit`}</th>
                 <th>{`Remark`}</th>
               </tr>
@@ -313,7 +322,7 @@ function ViewOverheadProfit(props) {
 
                 <th>{`Applicability`}</th>
                 <th>{`Rejection ${rejectData?.RejectionApplicability === 'Fixed' ? '' : '(%)'}`}</th>
-                <th>{`Cost (Applicability)`}</th>
+                <th><div className='w-fit'>Cost (Applicability){isIncludeSurfaceTreatmentWithRejection && !isPDFShow && <TooltipCustom width="250px" customClass="mt-1 ml-1" id="rejection-table" tooltipText={'Surface Treatment Cost Included'} />}</div></th>
                 <th>{`Net Rejection`}</th>
                 <th>{`Remark`}</th>
               </tr>
