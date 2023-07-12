@@ -175,12 +175,11 @@ function Simulation(props) {
             setShowMasterList(true)
             setShowEditTable(false)
         } else {
-
             setShowMasterList(false)
             setShowEditTable(false)
+            setTechnology({ label: '', value: '' })
+            setValue('Technology', '')
         }
-
-
         dispatch(setIsMasterAssociatedWithCosting(value?.value === ASSOCIATED))
         setTimeout(() => {
             setAssociation(value)
