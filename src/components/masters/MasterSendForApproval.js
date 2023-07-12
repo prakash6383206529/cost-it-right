@@ -34,7 +34,6 @@ function MasterSendForApproval(props) {
     const dispatch = useDispatch()
     const reasonsList = useSelector((state) => state.approval.reasonsList)
     const { deptList } = useSelector((state) => state.material)
-    const Departments = userDetails().Department
 
     const { initialConfiguration } = useSelector(state => state.auth)
 
@@ -305,6 +304,8 @@ function MasterSendForApproval(props) {
                     //     }
                     // }
                     senderObj.ApprovalMasterId = MACHINETYPE
+
+                    //THIS CONDITION IS FOR SIMULATION SEND FOR APPROVAL
                     dispatch(masterApprovalAPI(senderObj, res => {
                         setIsDisable(false)
                         if (res?.data?.Result) {
@@ -313,6 +314,7 @@ function MasterSendForApproval(props) {
                         }
                     }))
                     break;
+
                 case 5:  //CASE 5 FOR BUDGET MASTER
 
                     let obj = {
@@ -473,14 +475,14 @@ function MasterSendForApproval(props) {
                                                 placeholder={"Select"}
                                                 Controller={Controller}
                                                 control={control}
-                                                rules={{ required: true }}
+                                                rules={{ required: false }}
                                                 register={register}
                                                 defaultValue={""}
                                                 options={renderDropdownListing("Dept")}
-                                                mandatory={true}
+                                                mandatory={false}
                                                 handleChange={handleDepartmentChange}
                                                 errors={errors.dept}
-                                                disabled={Departments.length > 1 ? false : true}
+                                                disabled={false}
                                             />
                                         </div>
                                         <div className="input-group form-group col-md-12 input-withouticon">
@@ -490,12 +492,12 @@ function MasterSendForApproval(props) {
                                                 placeholder={'Select'}
                                                 Controller={Controller}
                                                 control={control}
-                                                rules={{ required: true }}
+                                                rules={{ required: false }}
                                                 register={register}
                                                 options={approvalDropDown}
                                                 mandatory={true}
                                                 handleChange={() => { }}
-                                                disabled={Departments.length > 1 ? false : true}
+                                                disabled={false}
                                                 errors={errors.approver}
                                             />
                                         </div>
