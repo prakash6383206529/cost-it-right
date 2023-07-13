@@ -1013,19 +1013,22 @@ const CostingSummaryTable = (props) => {
       delete templateObj.meltingLossExcel
     }
     for (var prop in templateObj) {
-
-      if (partType) {// IF TECHNOLOGY WILL BE ASSEMBLY THIS BLOCK WILL BE EXCECUTED
-        if (prop !== "netRM" && prop !== "netBOP" && prop !== 'fWeight' && prop !== 'BurningLossWeight' && prop !== 'gWeight' && prop !== 'ScrapWeight' && prop !== 'scrapRate' && prop !== 'rmRate' && prop !== 'rm')
-          costingSummary.push({ label: VIEW_COSTING_DATA[prop], value: prop, })
-      }
-      else if (IsNccCosting) {
-        if (prop !== "netChildPartsCost" && prop !== "netBoughtOutPartCost" && prop !== "netProcessCost" && prop !== "netOperationCost" && prop !== "nTotalRMBOPCC") {  // THESE 5 KEYS WILL NOT BE VISIBLE FOR OTHER TECHNOLOGY ( VISIBLE ONLY FOR ASSEMBLY)
-          costingSummary.push({ label: VIEW_COSTING_DATA[prop], value: prop, })
-        }
-
+      if (viewCostingData[0]?.technologyId === LOGISTICS) {
+        costingSummary.push({ label: VIEW_COSTING_DATA_LOGISTICS[prop], value: prop, })
       } else {
-        if (prop !== "NCCPartQuantity" && prop !== "IsRegularized" && prop !== "netChildPartsCost" && prop !== "netBoughtOutPartCost" && prop !== "netProcessCost" && prop !== "netOperationCost" && prop !== "nTotalRMBOPCC")  // THESE 5 KEYS WILL NOT BE VISIBLE FOR OTHER TECHNOLOGY ( VISIBLE ONLY FOR ASSEMBLY)
-          costingSummary.push({ label: VIEW_COSTING_DATA[prop], value: prop, })
+        if (partType) {// IF TECHNOLOGY WILL BE ASSEMBLY THIS BLOCK WILL BE EXCECUTED
+          if (prop !== "netRM" && prop !== "netBOP" && prop !== 'fWeight' && prop !== 'BurningLossWeight' && prop !== 'gWeight' && prop !== 'ScrapWeight' && prop !== 'scrapRate' && prop !== 'rmRate' && prop !== 'rm')
+            costingSummary.push({ label: VIEW_COSTING_DATA[prop], value: prop, })
+        }
+        else if (IsNccCosting) {
+          if (prop !== "netChildPartsCost" && prop !== "netBoughtOutPartCost" && prop !== "netProcessCost" && prop !== "netOperationCost" && prop !== "nTotalRMBOPCC") {  // THESE 5 KEYS WILL NOT BE VISIBLE FOR OTHER TECHNOLOGY ( VISIBLE ONLY FOR ASSEMBLY)
+            costingSummary.push({ label: VIEW_COSTING_DATA[prop], value: prop, })
+          }
+
+        } else {
+          if (prop !== "NCCPartQuantity" && prop !== "IsRegularized" && prop !== "netChildPartsCost" && prop !== "netBoughtOutPartCost" && prop !== "netProcessCost" && prop !== "netOperationCost" && prop !== "nTotalRMBOPCC")  // THESE 5 KEYS WILL NOT BE VISIBLE FOR OTHER TECHNOLOGY ( VISIBLE ONLY FOR ASSEMBLY)
+            costingSummary.push({ label: VIEW_COSTING_DATA[prop], value: prop, })
+        }
       }
     }
 
@@ -2191,6 +2194,40 @@ const CostingSummaryTable = (props) => {
                             })}
                         </tr>
                         }
+                        {initialConfiguration?.IsShowNpvCost && <tr>
+                          <td>
+                            <span className={`d-block small-grey-text`}>Net NPV Cost</span>
+                          </td>
+                          {viewCostingData &&
+                            viewCostingData?.map((data) => {
+                              return (
+                                <td className={tableDataClass(data)}>
+                                  <span title={data?.netNpvCost} className={`d-block small-grey-text w-fit `}>
+                                    {data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.netNpvCost, initialConfiguration.NoOfDecimalForPrice) : ''}
+                                  </span>
+
+                                </td>
+                              )
+                            })}
+                        </tr>
+                        }
+                        {initialConfiguration?.IsBasicRateAndCostingConditionVisible && <tr>
+                          <td>
+                            <span className={`d-block small-grey-text`}>Net Condition Cost</span>
+                          </td>
+                          {viewCostingData &&
+                            viewCostingData?.map((data) => {
+                              return (
+                                <td className={tableDataClass(data)}>
+                                  <span title={data?.netConditionCost} className={`d-block small-grey-text w-fit `}>
+                                    {data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.netConditionCost, initialConfiguration.NoOfDecimalForPrice) : ''}
+                                  </span>
+
+                                </td>
+                              )
+                            })}
+                        </tr>
+                        }
                         {
                           initialConfiguration?.IsShowNpvCost && drawerDetailPDF && <tr><th colSpan={2}>
                             <ViewOtherCostDrawer
@@ -2636,4 +2673,3 @@ const CostingSummaryTable = (props) => {
   )
 }
 export default CostingSummaryTable
-  
