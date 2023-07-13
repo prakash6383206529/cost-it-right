@@ -1012,20 +1012,23 @@ const CostingSummaryTable = (props) => {
       delete templateObj.castingWeightExcel
       delete templateObj.meltingLossExcel
     }
-
     for (var prop in templateObj) {
-      if (partType) {// IF TECHNOLOGY WILL BE ASSEMBLY THIS BLOCK WILL BE EXCECUTED
-        if (prop !== "netRM" && prop !== "netBOP" && prop !== 'fWeight' && prop !== 'BurningLossWeight' && prop !== 'gWeight' && prop !== 'ScrapWeight' && prop !== 'scrapRate' && prop !== 'rmRate' && prop !== 'rm')
-          costingSummary.push({ label: VIEW_COSTING_DATA[prop], value: prop, })
-      }
-      else if (IsNccCosting) {
-        if (prop !== "netChildPartsCost" && prop !== "netBoughtOutPartCost" && prop !== "netProcessCost" && prop !== "netOperationCost" && prop !== "nTotalRMBOPCC") {  // THESE 5 KEYS WILL NOT BE VISIBLE FOR OTHER TECHNOLOGY ( VISIBLE ONLY FOR ASSEMBLY)
-          costingSummary.push({ label: VIEW_COSTING_DATA[prop], value: prop, })
-        }
-
+      if (viewCostingData[0]?.technologyId === LOGISTICS) {
+        costingSummary.push({ label: VIEW_COSTING_DATA_LOGISTICS[prop], value: prop, })
       } else {
-        if (prop !== "NCCPartQuantity" && prop !== "IsRegularized" && prop !== "netChildPartsCost" && prop !== "netBoughtOutPartCost" && prop !== "netProcessCost" && prop !== "netOperationCost" && prop !== "nTotalRMBOPCC")  // THESE 5 KEYS WILL NOT BE VISIBLE FOR OTHER TECHNOLOGY ( VISIBLE ONLY FOR ASSEMBLY)
-          costingSummary.push({ label: VIEW_COSTING_DATA[prop], value: prop, })
+        if (partType) {// IF TECHNOLOGY WILL BE ASSEMBLY THIS BLOCK WILL BE EXCECUTED
+          if (prop !== "netRM" && prop !== "netBOP" && prop !== 'fWeight' && prop !== 'BurningLossWeight' && prop !== 'gWeight' && prop !== 'ScrapWeight' && prop !== 'scrapRate' && prop !== 'rmRate' && prop !== 'rm')
+            costingSummary.push({ label: VIEW_COSTING_DATA[prop], value: prop, })
+        }
+        else if (IsNccCosting) {
+          if (prop !== "netChildPartsCost" && prop !== "netBoughtOutPartCost" && prop !== "netProcessCost" && prop !== "netOperationCost" && prop !== "nTotalRMBOPCC") {  // THESE 5 KEYS WILL NOT BE VISIBLE FOR OTHER TECHNOLOGY ( VISIBLE ONLY FOR ASSEMBLY)
+            costingSummary.push({ label: VIEW_COSTING_DATA[prop], value: prop, })
+          }
+
+        } else {
+          if (prop !== "NCCPartQuantity" && prop !== "IsRegularized" && prop !== "netChildPartsCost" && prop !== "netBoughtOutPartCost" && prop !== "netProcessCost" && prop !== "netOperationCost" && prop !== "nTotalRMBOPCC")  // THESE 5 KEYS WILL NOT BE VISIBLE FOR OTHER TECHNOLOGY ( VISIBLE ONLY FOR ASSEMBLY)
+            costingSummary.push({ label: VIEW_COSTING_DATA[prop], value: prop, })
+        }
       }
     }
 
