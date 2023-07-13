@@ -2278,6 +2278,8 @@ export const MICROSECONDS = 'Microseconds'
 export const DISPLAY_G = "g"
 export const DISPLAY_KG = "kg"
 export const DISPLAY_MG = "mg"
+export const DISPLAY_HOURS = "hrs"
+export const DISPLAY_MINUTES = "min"
 
 // export const INR = "INR"
 
@@ -2588,4 +2590,4 @@ export const RAW_MATERIAL_VENDOR_TYPE = Number(reactLocalStorage.getObject('vend
 export const VBC_VENDOR_TYPE = Number(reactLocalStorage.getObject('vendortype')[VENDOR_TYPE_VBC])
 
 //VERSION 
-export const VERSION = "V2.1.194";
+export const VERSION = "V2.1.198";
