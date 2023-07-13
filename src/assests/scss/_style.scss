@@ -8920,6 +8920,11 @@ table.group-process-table {
   z-index: 1;
 }
 
+.report-grid .ag-pinned-left-header {
+  z-index: 2;
+  background-color: #fff;
+}
+
 .report-grid .ag-focus-managed,
 .report-grid .ag-column-hover,
 .report-grid .ag-header-viewport,
