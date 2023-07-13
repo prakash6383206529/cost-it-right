@@ -1964,8 +1964,8 @@ export const VIEW_COSTING_DATA = {
   otherDiscountCost: 'Hundi/Discount Cost',
   anyOtherCostTotal: 'Any Other Cost',
   BasicRate: 'Basic Rate',
-  npvCost: 'NPV Cost',
-  conditionCost: 'Costing Condition',
+  npvCost: 'Net NPV Cost',
+  conditionCost: 'Net Costing Condition',
   nPOPrice: 'Net PO Price (INR)',
   currencyTitle: 'Currency',
   currencyRate: 'Currency Rate',
@@ -2590,4 +2590,4 @@ export const RAW_MATERIAL_VENDOR_TYPE = Number(reactLocalStorage.getObject('vend
 export const VBC_VENDOR_TYPE = Number(reactLocalStorage.getObject('vendortype')[VENDOR_TYPE_VBC])
 
 //VERSION 
-export const VERSION = "V2.1.198";
+export const VERSION = "V2.1.205";

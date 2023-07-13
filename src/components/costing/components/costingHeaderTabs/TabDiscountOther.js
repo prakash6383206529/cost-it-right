@@ -962,13 +962,13 @@ function TabDiscountOther(props) {
       totalNpvCost: sum
     })
 
-    if (data) {
-      let obj = {}
-      obj.CostingId = RMCCTabData && RMCCTabData[0]?.CostingId
-      obj.LoggedInUserId = loggedInUserId()
-      obj.NpvDetails = data
-      dispatch(saveCostingDetailNpv(obj, () => { }))
-    }
+    // if (data) {
+    //   let obj = {}
+    //   obj.CostingId = RMCCTabData && RMCCTabData[0]?.CostingId
+    //   obj.LoggedInUserId = loggedInUserId()
+    //   obj.NpvDetails = data
+    //   dispatch(saveCostingDetailNpv(obj, () => { }))
+    // }
   }
 
   const openAndCloseAddNpvDrawer = (type, data = npvTableData) => {
