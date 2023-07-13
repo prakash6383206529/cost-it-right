@@ -111,7 +111,10 @@ class BOPImportListing extends Component {
                 }
             }
         }, 300);
-        this.props.callBackLoader(this.state.isLoader)
+        if (this.props.isSimulation) {
+            this.props.callBackLoader(this.state.isLoader)
+        }
+
     }
 
     componentWillUnmount() {
