@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { reduxForm, } from "redux-form";
 import { Row, Col, } from 'reactstrap';
-import { EMPTY_DATA, BOP_MASTER_ID, BOPDOMESTIC, defaultPageSize, APPROVED_STATUS, RMDOMESTIC, ENTRY_TYPE_DOMESTIC } from '../../../config/constants';
+import { EMPTY_DATA, BOP_MASTER_ID, BOPDOMESTIC, defaultPageSize, APPROVED_STATUS, RMDOMESTIC, ENTRY_TYPE_DOMESTIC, FILE_URL } from '../../../config/constants';
 import {
     getBOPDataList, deleteBOP, getPlantSelectListByVendor,
 } from '../actions/BoughtOutParts';
@@ -29,6 +29,7 @@ import _ from 'lodash';
 import AnalyticsDrawer from '../material-master/AnalyticsDrawer';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { hideCustomerFromExcel } from '../../common/CommonFunctions';
+import Attachament from '../../costing/components/Drawers/Attachament';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -74,7 +75,9 @@ class BOPDomesticListing extends Component {
             pageSize: { pageSize10: true, pageSize50: false, pageSize100: false },
             globalTake: defaultPageSize,
             noData: false,
-            dataCount: 0
+            dataCount: 0,
+            attachment: false,
+            viewAttachment: []
         }
     }
 
@@ -115,7 +118,7 @@ class BOPDomesticListing extends Component {
         }
 
         // TO HANDLE FUTURE CONDITIONS LIKE [APPROVED_STATUS, DRAFT_STATUS] FOR MULTIPLE STATUS
-        let statusString = [APPROVED_STATUS].join(",")
+        let statusString = [this.props?.approvalStatus].join(",")
 
         const filterData = {
             bop_for: bopFor,
@@ -257,6 +260,7 @@ class BOPDomesticListing extends Component {
 
             }
         }
+        this.props.callBackLoader(this.state.isLoader)
     }
 
     /**
@@ -409,7 +413,42 @@ class BOPDomesticListing extends Component {
         }
 
     }
+    viewAttachmentData = (index) => {
+        this.setState({ viewAttachment: index, attachment: true })
+    }
+    closeAttachmentDrawer = (e = '') => {
+        this.setState({ attachment: false })
+    }
+    attachmentFormatter = (props) => {
+        const row = props?.data;
+        let files = row?.Attachements
+        if (files && files?.length === 0) {
+            return '-'
+        }
+        return (
+            <>
+                <div className={"attachment images"}>
+                    {files && files.length === 1 ?
+                        files.map((f) => {
+                            const withOutTild = f.FileURL?.replace("~", "");
+                            const fileURL = `${FILE_URL}${withOutTild}`;
+                            return (
+                                <a href={fileURL} target="_blank" rel="noreferrer">
+                                    {f.OriginalFileName}
+                                </a>
+                            )
 
+                        }) : <button
+                            type='button'
+                            title='View Attachment'
+                            className='btn-a pl-0'
+                            onClick={() => this.viewAttachmentData(row)}
+                        >View Attachment</button>}
+                </div>
+            </>
+        )
+
+    }
     formToggle = () => {
         this.props.displayForm()
     }
@@ -592,7 +631,8 @@ class BOPDomesticListing extends Component {
             costingHeadFormatter: this.costingHeadFormatter,
             effectiveDateFormatter: this.effectiveDateFormatter,
             checkBoxRenderer: this.checkBoxRenderer,
-            commonCostFormatter: this.commonCostFormatter
+            commonCostFormatter: this.commonCostFormatter,
+            attachmentFormatter: this.attachmentFormatter,
         };
 
         const closeAnalyticsDrawer = () => {
@@ -731,7 +771,7 @@ class BOPDomesticListing extends Component {
                     <Col>
 
                         <div className={`ag-grid-wrapper ${this.props?.isDataInMaster && !noData ? 'master-approval-overlay' : ''} ${(this.props.bopDomesticList && this.props.bopDomesticList?.length <= 0) || noData ? 'overlay-contain' : ''}`}>
-                            <div className={`ag-theme-material ${(this.state.isLoader && !this.props.isMasterSummaryDrawer) && "max-loader-height"}`}>
+                            <div className={`ag-theme-material p-relative ${(this.state.isLoader && !this.props.isMasterSummaryDrawer) && "max-loader-height"}`}>
                                 {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found bop-drawer" />}
                                 <AgGridReact
                                     defaultColDef={defaultColDef}
@@ -753,6 +793,7 @@ class BOPDomesticListing extends Component {
                                     onRowSelected={onRowSelect}
                                     onFilterModified={this.onFloatingFilterChanged}
                                     suppressRowClickSelection={true}
+                                    enableBrowserTooltips={true}
                                 >
                                     <AgGridColumn field="CostingHead" headerName="Costing Head" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
                                     <AgGridColumn field="BoughtOutPartNumber" headerName="BOP Part No."></AgGridColumn>
@@ -769,7 +810,9 @@ class BOPDomesticListing extends Component {
                                     <AgGridColumn field="BasicRate" headerName="Basic Rate" cellRenderer={'commonCostFormatter'} ></AgGridColumn>
                                     <AgGridColumn field="NetLandedCost" headerName="Net Cost" cellRenderer={'commonCostFormatter'} ></AgGridColumn>
                                     <AgGridColumn field="EffectiveDateNew" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'} filter="agDateColumnFilter" filterParams={filterParams} ></AgGridColumn>
-                                    {!this.props?.isSimulation && !this.props?.isMasterSummaryDrawer && <AgGridColumn field="BoughtOutPartId" width={170} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
+                                    {!this.props?.isSimulation && !this.props?.isMasterSummaryDrawer && <AgGridColumn field="BoughtOutPartId" width={170} cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
+                                    {this.props.isMasterSummaryDrawer && <AgGridColumn field="Attachements" headerName='Attachments' cellRenderer={'attachmentFormatter'}></AgGridColumn>}
+                                    {this.props.isMasterSummaryDrawer && <AgGridColumn field="Remark" tooltipField="Remark" ></AgGridColumn>}
                                 </AgGridReact>
                                 <div className={`button-wrapper ${this.props?.isMasterSummaryDrawer ? 'mb-5' : ''}`}>
                                     {!this.state.isLoader && <PaginationWrapper gridApi={this.gridApi} setPage={this.onPageSizeChanged} globalTake={this.state.globalTake} />}
@@ -815,7 +858,17 @@ class BOPDomesticListing extends Component {
                         rowData={this.state.selectedRowData}
                     />
                 }
-
+                {
+                    this.state.attachment && (
+                        <Attachament
+                            isOpen={this.state.attachment}
+                            index={this.state.viewAttachment}
+                            closeDrawer={this.closeAttachmentDrawer}
+                            anchor={'right'}
+                            gridListing={true}
+                        />
+                    )
+                }
 
 
                 {

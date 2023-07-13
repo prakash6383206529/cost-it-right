@@ -16,7 +16,7 @@ import {
     BOP_ZBC_IMPORT, BOP_ZBC_IMPORT_TempData, BOP_VBC_IMPORT, BOP_VBC_IMPORT_TempData,
     VOLUME_ACTUAL_ZBC, VOLUME_ACTUAL_ZBC_TEMPDATA, VOLUME_ACTUAL_VBC, VOLUME_ACTUAL_VBC_TEMPDATA,
     VOLUME_BUDGETED_ZBC, VOLUME_BUDGETED_ZBC_TEMPDATA, VOLUME_BUDGETED_VBC, VOLUME_BUDGETED_VBC_TEMPDATA,
-    ZBCInterestRate, ZBCInterestRateTempData, VBCInterestRate, VBCInterestRateTempData, RMDomesticCBC, RMDomesticCBCTempData, RMImportCBC, RMImportCBCTempData, MachineCBC, MachineCBCTempData, BOP_CBC_DOMESTIC, BOP_CBC_IMPORT, BOP_CBC_IMPORT_TempData, BOP_CBC_DOMESTIC_TempData, VOLUME_BUDGETED_CBC_TEMPDATA, VOLUME_ACTUAL_CBC_TEMPDATA, CBCOperationTempData, VOLUME_ACTUAL_CBC, VOLUME_BUDGETED_CBC, CBCOperation, CBCInterestRateTempData, CBCInterestRate, AddRFQUpload, AddRFQTempData, BUDGET_ZBC, BUDGET_ZBC_TEMPDATA, BUDGET_VBC_TEMPDATA, BUDGET_VBC, BUDGET_CBC_TEMPDATA, BUDGET_CBC
+    ZBCInterestRate, ZBCInterestRateTempData, VBCInterestRate, VBCInterestRateTempData, RMDomesticCBC, RMDomesticCBCTempData, RMImportCBC, RMImportCBCTempData, MachineCBC, MachineCBCTempData, BOP_CBC_DOMESTIC, BOP_CBC_IMPORT, BOP_CBC_IMPORT_TempData, BOP_CBC_DOMESTIC_TempData, VOLUME_BUDGETED_CBC_TEMPDATA, VOLUME_ACTUAL_CBC_TEMPDATA, CBCOperationTempData, VOLUME_ACTUAL_CBC, VOLUME_BUDGETED_CBC, CBCOperation, CBCInterestRateTempData, CBCInterestRate, AddRFQUpload, AddRFQTempData, BUDGET_ZBC, BUDGET_ZBC_TEMPDATA, BUDGET_VBC_TEMPDATA, BUDGET_VBC, BUDGET_CBC_TEMPDATA, BUDGET_CBC, ZBCOperationSmallForm, VBCOperationSmallForm, CBCOperationSmallForm
 } from '../../config/masterData';
 import { checkVendorPlantConfigurable, getConfigurationKey } from "../../helper";
 
@@ -90,6 +90,9 @@ export const checkVendorPlantConfig = (excelData, type = '') => {
             if (el.value === 'DestinationPlantCode') return false;
             if (el.value === 'PlantCode') return false;
         }
+        if (getConfigurationKey().IsShowClientVendorBOP === false) {
+            if (el.value === 'IsClientVendorBOP') return false;
+        }
         return true;
     })
 }
@@ -136,7 +139,7 @@ class Downloadxls extends React.Component {
             case 'RM Import':
                 return this.returnExcelColumn(checkRM_Process_OperationConfigurable(RMImportZBC), RMImportZBCTempData);
             case 'Operation':
-                return this.returnExcelColumn((ZBCOperation), ZBCOperationTempData);
+                return this.returnExcelColumn((getConfigurationKey().IsShowDetailedBreakup ? ZBCOperation : checkLabourRateConfigure(ZBCOperationSmallForm)), ZBCOperationTempData);
             case 'Machine':
                 return this.returnExcelColumn(checkVendorPlantConfig(MachineZBC), MachineZBCTempData);
             case ZBCADDMORE:
@@ -173,7 +176,7 @@ class Downloadxls extends React.Component {
             case 'RM Import':
                 return this.returnExcelColumn(checkVendorPlantConfig(RMImportVBC), RMImportVBCTempData);
             case 'Operation':
-                return this.returnExcelColumn((VBCOperation), VBCOperationTempData);
+                return this.returnExcelColumn((getConfigurationKey().IsShowDetailedBreakup ? VBCOperation : checkLabourRateConfigure(VBCOperationSmallForm)), VBCOperationTempData);
             case 'Machine':
                 return this.returnExcelColumn(checkVendorPlantConfig(MachineVBC), MachineVBCTempData);
             case 'BOP Domestic':
@@ -205,7 +208,7 @@ class Downloadxls extends React.Component {
             case 'RM Import':
                 return this.returnExcelColumn(checkVendorPlantConfig(RMImportCBC, CBCTypeId), RMImportCBCTempData);
             case 'Operation':
-                return this.returnExcelColumn((CBCOperation), CBCOperationTempData);
+                return this.returnExcelColumn((getConfigurationKey().IsShowDetailedBreakup ? CBCOperation : checkLabourRateConfigure(CBCOperationSmallForm)), CBCOperationTempData);
             case 'Machine':
                 return this.returnExcelColumn(checkVendorPlantConfig(MachineCBC, CBCTypeId), MachineCBCTempData);
             case 'BOP Domestic':

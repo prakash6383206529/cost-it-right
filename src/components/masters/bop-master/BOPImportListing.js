@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { reduxForm, } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import { checkForDecimalAndNull } from "../../../helper/validation";
-import { BOPIMPORT, EMPTY_DATA, defaultPageSize, APPROVED_STATUS, ENTRY_TYPE_IMPORT } from '../../../config/constants';
+import { BOPIMPORT, EMPTY_DATA, defaultPageSize, APPROVED_STATUS, ENTRY_TYPE_IMPORT, FILE_URL } from '../../../config/constants';
 import { getBOPDataList, deleteBOP } from '../actions/BoughtOutParts';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
@@ -29,6 +29,7 @@ import SelectRowWrapper from '../../common/SelectRowWrapper';
 import AnalyticsDrawer from '../material-master/AnalyticsDrawer';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { hideCustomerFromExcel } from '../../common/CommonFunctions';
+import Attachament from '../../costing/components/Drawers/Attachament';
 
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -73,7 +74,9 @@ class BOPImportListing extends Component {
             pageSize: { pageSize10: true, pageSize50: false, pageSize100: false },
             globalTake: defaultPageSize,
             noData: false,
-            dataCount: 0
+            dataCount: 0,
+            attachment: false,
+            viewAttachment: []
         }
     }
 
@@ -107,7 +110,7 @@ class BOPImportListing extends Component {
                 }
             }
         }, 300);
-
+        this.props.callBackLoader(this.state.isLoader)
     }
 
     componentWillUnmount() {
@@ -139,7 +142,7 @@ class BOPImportListing extends Component {
         }
 
         // TO HANDLE FUTURE CONDITIONS LIKE [APPROVED_STATUS, DRAFT_STATUS] FOR MULTIPLE STATUS
-        let statusString = [APPROVED_STATUS].join(",")
+        let statusString = [this.props?.approvalStatus].join(",")
 
         const filterData = {
             bop_for: bopFor,
@@ -405,7 +408,42 @@ class BOPImportListing extends Component {
 
         return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
     }
+    viewAttachmentData = (index) => {
+        this.setState({ viewAttachment: index, attachment: true })
+    }
+    closeAttachmentDrawer = (e = '') => {
+        this.setState({ attachment: false })
+    }
+    attachmentFormatter = (props) => {
+        const row = props?.data;
+        let files = row?.Attachements
+        if (files && files?.length === 0) {
+            return '-'
+        }
+        return (
+            <>
+                <div className={"attachment images"}>
+                    {files && files.length === 1 ?
+                        files.map((f) => {
+                            const withOutTild = f.FileURL?.replace("~", "");
+                            const fileURL = `${FILE_URL}${withOutTild}`;
+                            return (
+                                <a href={fileURL} target="_blank" rel="noreferrer">
+                                    {f.OriginalFileName}
+                                </a>
+                            )
 
+                        }) : <button
+                            type='button'
+                            title='View Attachment'
+                            className='btn-a pl-0'
+                            onClick={() => this.viewAttachmentData(row)}
+                        >View Attachment</button>}
+                </div>
+            </>
+        )
+
+    }
     formToggle = () => {
         this.props.displayForm()
     }
@@ -572,7 +610,8 @@ class BOPImportListing extends Component {
             hyphenFormatter: this.hyphenFormatter,
             costingHeadFormatter: this.costingHeadFormatter,
             effectiveDateFormatter: this.effectiveDateFormatter,
-            commonCostFormatter: this.commonCostFormatter
+            commonCostFormatter: this.commonCostFormatter,
+            attachmentFormatter: this.attachmentFormatter,
         };
 
 
@@ -704,7 +743,7 @@ class BOPImportListing extends Component {
                     <Col>
 
                         <div className={`ag-grid-wrapper height-width-wrapper ${(this.props.bopImportList && this.props.bopImportList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
-                            <div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`} >
+                            <div className={`ag-theme-material p-relative ${this.state.isLoader && "max-loader-height"}`} >
                                 {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
                                 <AgGridReact
                                     defaultColDef={defaultColDef}
@@ -748,7 +787,9 @@ class BOPImportListing extends Component {
                                     <AgGridColumn field="NetLandedCost" headerName="Net Cost (Currency)" cellRenderer='costFormatter'></AgGridColumn>
                                     <AgGridColumn field="NetLandedCostConversion" headerName="Net Cost (INR)" cellRenderer={'commonCostFormatter'}></AgGridColumn>
                                     <AgGridColumn field="EffectiveDateNew" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
-                                    {!this.props.isSimulation && <AgGridColumn field="BoughtOutPartId" width={160} headerName="Action" cellClass={"actions-wrapper"} type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
+                                    {!this.props.isSimulation && <AgGridColumn field="BoughtOutPartId" width={160} cellClass="ag-grid-action-container actions-wrapper" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
+                                    {this.props.isMasterSummaryDrawer && <AgGridColumn field="Attachements" headerName='Attachments' cellRenderer={'attachmentFormatter'}></AgGridColumn>}
+                                    {this.props.isMasterSummaryDrawer && <AgGridColumn field="Remark" tooltipField="Remark" ></AgGridColumn>}
                                 </AgGridReact>
                                 <div className='button-wrapper'>
                                     {!this.state.isLoader && <PaginationWrapper gridApi={this.gridApi} setPage={this.onPageSizeChanged} globalTake={this.state.globalTake} />}
@@ -796,6 +837,17 @@ class BOPImportListing extends Component {
                         rowData={this.state.selectedRowData}
                         import={true}
                     />
+                }
+                {
+                    this.state.attachment && (
+                        <Attachament
+                            isOpen={this.state.attachment}
+                            index={this.state.viewAttachment}
+                            closeDrawer={this.closeAttachmentDrawer}
+                            anchor={'right'}
+                            gridListing={true}
+                        />
+                    )
                 }
 
             </div >

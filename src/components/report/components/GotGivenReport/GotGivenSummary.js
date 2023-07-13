@@ -245,7 +245,7 @@ function GotGivenSummary(props) {
                                 >
                                     <AgGridColumn field="NetPOPriceDelta" headerName="Variance" cellRenderer={decimalFormatter}></AgGridColumn>
                                     <AgGridColumn field="NetPOPriceDeltaPercentage" headerName="Variance (%)" cellRenderer={decimalFormatter}></AgGridColumn>
-                                    <AgGridColumn field="PartId" headerName="Actions" cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                                    <AgGridColumn field="PartId" cellClass="ag-grid-action-container" headerName="Actions" cellRenderer={'totalValueRenderer'}></AgGridColumn>
                                 </AgGridReact>
                             </div>
                         </div>

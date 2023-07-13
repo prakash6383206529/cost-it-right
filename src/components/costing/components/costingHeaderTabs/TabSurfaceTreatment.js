@@ -3,7 +3,7 @@ import { useForm, } from "react-hook-form";
 import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, Table, } from 'reactstrap';
 import { getSurfaceTreatmentTabData, setSurfaceData, setMessageForAssembly } from '../../actions/Costing';
-import { costingInfoContext } from '../CostingDetailStepTwo';
+import { NetPOPriceContext, costingInfoContext } from '../CostingDetailStepTwo';
 import { checkForNull } from '../../../../helper';
 import PartSurfaceTreatment from '../CostingHeadCosts/SurfaceTreatMent/PartSurfaceTreatment';
 import AssemblySurfaceTreatment from '../CostingHeadCosts/SurfaceTreatMent/AssemblySurfaceTreatment';
@@ -13,6 +13,7 @@ import { setSubAssemblyTechnologyArray } from '../../actions/SubAssembly';
 import { SelectedCostingDetail, ViewCostingContext } from '../CostingDetails';
 import _ from 'lodash'
 import { reactLocalStorage } from 'reactjs-localstorage';
+import { findrmCctData } from '../../CostingUtil';
 
 function TabSurfaceTreatment(props) {
 
@@ -24,6 +25,8 @@ function TabSurfaceTreatment(props) {
   const { subAssemblyTechnologyArray } = useSelector(state => state.subAssembly)
   const partType = (IdForMultiTechnology.includes(String(costData?.TechnologyId)) || costData.CostingTypeId === WACTypeId)
   const vbcExistingCosting = useContext(SelectedCostingDetail);
+  const { ComponentItemData } = useSelector(state => state.costing)
+  const netPOPrice = useContext(NetPOPriceContext);
 
   useEffect(() => {
     if (Object.keys(costData).length > 0) {
@@ -819,6 +822,7 @@ function TabSurfaceTreatment(props) {
       let newItem = item
       let updatedArr = reactLocalStorage.getObject('surfaceCostingArray')
       let obj = updatedArr && updatedArr.find(updateditem => updateditem.PartNumber === newItem.PartNumber && updateditem.AssemblyPartNumber === newItem.AssemblyPartNumber)
+      let rmCcData = findrmCctData(item)
 
       if (obj && Object.keys(obj).length > 0) {
         newItem.CostingPartDetails.TransportationCost = checkForNull(obj?.CostingPartDetails?.TransportationCost)
@@ -838,6 +842,7 @@ function TabSurfaceTreatment(props) {
         newItem.CostingPartDetails.TotalCalculatedSurfaceTreatmentCostPerAssembly = checkForNull(obj?.CostingPartDetails?.TotalCalculatedSurfaceTreatmentCostPerAssembly)
         newItem.CostingPartDetails.TotalCalculatedSurfaceTreatmentCostPerSubAssembly = checkForNull(obj?.CostingPartDetails?.TotalCalculatedSurfaceTreatmentCostPerSubAssembly)
         newItem.CostingPartDetails.TotalCalculatedSurfaceTreatmentCostComponent = checkForNull(obj?.CostingPartDetails?.TotalCalculatedSurfaceTreatmentCostComponent)
+        newItem.CostingPartDetails.BasicRate = costData.IsAssemblyPart ? (rmCcData && Object.keys(rmCcData).length > 0) ? (checkForNull(rmCcData?.CostingPartDetails?.NetSurfaceTreatmentCost) + checkForNull(ComponentItemData?.CostingPartDetails?.TotalCalculatedRMBOPCCCost)) : checkForNull(obj?.CostingPartDetails?.TotalCalculatedRMBOPCCCost) : netPOPrice;
       }
 
       if (item.CostingChildPartDetails.length > 0) {

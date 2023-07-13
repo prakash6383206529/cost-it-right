@@ -110,7 +110,8 @@ class AddMachineRate extends Component {
       costingTypeId: ZBCTypeId,
       levelDetails: {},
       noApprovalCycle: false,
-      vendorFilterList: []
+      vendorFilterList: [],
+      CostingTypePermission: false
     }
   }
 
@@ -218,11 +219,11 @@ class AddMachineRate extends Component {
       this.setState({ finalApprovalLoader: true })
       this.props.checkFinalUser(obj, (res) => {
         if (res?.data?.Result) {
-          this.setState({ isFinalApprovar: res?.data?.Data?.IsFinalApprover })
+          this.setState({ isFinalApprovar: res?.data?.Data?.IsFinalApprover, CostingTypePermission: true })
           this.setState({ finalApprovalLoader: false })
         }
       })
-      this.setState({ noApprovalCycle: false })
+      this.setState({ noApprovalCycle: false, CostingTypePermission: false })
     } else {
       this.setState({ noApprovalCycle: true })
     }
@@ -776,7 +777,7 @@ class AddMachineRate extends Component {
         processName: [],
         UOM: isProcessGroup ? UOM : [],
         lockUOMAndRate: isProcessGroup
-      }, () => this.props.change('MachineRate', isProcessGroup ? MachineRate : 0));
+      }, () => this.props.change('MachineRate', isProcessGroup ? MachineRate : ''));
       this.setState({ DropdownChange: false, errorObj: { processName: false, processUOM: false, machineRate: false } })
     }, 200);
   }
@@ -835,7 +836,7 @@ class AddMachineRate extends Component {
       processGridEditIndex: '',
       isEditIndex: false,
 
-    }, () => this.props.change('MachineRate', isProcessGroup ? MachineRate : 0));
+    }, () => this.props.change('MachineRate', isProcessGroup ? MachineRate : ''));
   };
 
   /**
@@ -895,7 +896,7 @@ class AddMachineRate extends Component {
       UOM: tempData.length === 0 ? [] : !this.state.lockUOMAndRate ? [] : UOM,
       isEditIndex: false,
       processName: [],
-    }, () => this.props.change('MachineRate', tempData.length === 0 ? 0 : this.props.fieldsObj.MachineRate))
+    }, () => this.props.change('MachineRate', tempData.length === 0 ? '' : this.props.fieldsObj.MachineRate))
     this.setState({ DropdownChange: false })
   }
 
@@ -1368,7 +1369,7 @@ class AddMachineRate extends Component {
   */
   render() {
     const { handleSubmit, AddAccessibility, EditAccessibility, initialConfiguration, isMachineAssociated } = this.props;
-    const { isEditFlag, isOpenMachineType, isOpenProcessDrawer, disableMachineType, IsCopied, isViewFlag, isViewMode, setDisable, lockUOMAndRate, UniqueProcessId, costingTypeId, noApprovalCycle, IsDetailedEntry } = this.state;
+    const { isEditFlag, isOpenMachineType, isOpenProcessDrawer, disableMachineType, IsCopied, isViewFlag, isViewMode, setDisable, lockUOMAndRate, UniqueProcessId, costingTypeId, noApprovalCycle, IsDetailedEntry, CostingTypePermission } = this.state;
     const filterList = async (inputValue) => {
       const { vendorFilterList } = this.state
       if (inputValue && typeof inputValue === 'string' && inputValue.includes(' ')) {
@@ -1944,7 +1945,7 @@ class AddMachineRate extends Component {
                                 <div className={"cancel-icon"}></div> {'Cancel'}
                               </button>
 
-                              {!isViewMode && (CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true && !this.state.isFinalApprovar) && initialConfiguration.IsMasterApprovalAppliedConfigure ?
+                              {(!isViewMode && (CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true && !this.state.isFinalApprovar) && initialConfiguration.IsMasterApprovalAppliedConfigure) || !CostingTypePermission ?
                                 <button type="submit"
                                   class="user-btn approval-btn save-btn mr5"
                                   disabled={isViewMode || setDisable || noApprovalCycle || (isEditFlag && IsDetailedEntry)}

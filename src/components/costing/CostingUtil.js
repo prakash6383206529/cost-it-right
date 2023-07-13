@@ -42,7 +42,8 @@ export const createToprowObjAndSave = (tabData, surfaceTabData, PackageAndFreigh
           "BOPHandlingCharges": item.CostingPartDetails?.BOPHandlingCharges,
           "BOPHandlingChargeApplicability": item.CostingPartDetails?.BOPHandlingChargeApplicability,
           "RawMaterialCostWithCutOff": item && item.CostingPartDetails?.RawMaterialCostWithCutOff,
-          "BOPHandlingChargeType": item && item.CostingPartDetails?.BOPHandlingChargeType
+          "BOPHandlingChargeType": item && item.CostingPartDetails?.BOPHandlingChargeType,
+          "BasicRate": (sTSubAssembly !== undefined && Object.keys(sTSubAssembly).length > 0) ? checkForNull(item.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity) + checkForNull(sTSubAssembly.CostingPartDetails?.TotalCalculatedSurfaceTreatmentCostWithQuantitys) : item.CostingPartDetails?.TotalCalculatedRMBOPCCCost,
         }
         assemblyWorkingRow.push(subAssemblyObj)
       }
@@ -72,6 +73,7 @@ export const createToprowObjAndSave = (tabData, surfaceTabData, PackageAndFreigh
           "TotalCalculatedSurfaceTreatmentCostWithQuantitys": checkForNull(item.CostingPartDetails?.TotalCalculatedSurfaceTreatmentCostWithQuantitys),
           "TotalCalculatedSurfaceTreatmentCostComponent": checkForNull(item.CostingPartDetails?.TotalCalculatedSurfaceTreatmentCostComponent),
           "TotalCostINR": (rmCcTabSubAssembly !== undefined && Object.keys(rmCcTabSubAssembly).length > 0) ? checkForNull(item.CostingPartDetails?.TotalCalculatedSurfaceTreatmentCostWithQuantitys) + checkForNull(rmCcTabSubAssembly.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity) : checkForNull(item.CostingPartDetails?.TotalCalculatedSurfaceTreatmentCostWithQuantitys),
+          "BasicRate": (rmCcTabSubAssembly !== undefined && Object.keys(rmCcTabSubAssembly).length > 0) ? checkForNull(item.CostingPartDetails?.TotalCalculatedSurfaceTreatmentCostWithQuantitys) + checkForNull(rmCcTabSubAssembly.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity) : checkForNull(item.CostingPartDetails?.TotalCalculatedSurfaceTreatmentCostWithQuantitys),
         }
         assemblyWorkingRow.push(subAssemblyObj)
       }

@@ -48,7 +48,7 @@
 
 .margin-top {
     .ag-cell-wrapper {
-        margin-top: 9px;
+        margin-top: 17px;
     }
 
     &.ag-cell-focus {
@@ -73,13 +73,35 @@
     }
 }
 
-.rfq-calendar {
-    .react-datepicker {
-        display: flex;
-    }
-}
+// .rfq-calendar {
+//     .react-datepicker {
+//         display: flex;
+//     }
+// }
 
 .font-ellipsis {
     overflow: hidden;
     text-overflow: ellipsis;
+}
+
+.text-center {
+    .ag-cell-label-container {
+        .ag-header-cell-label {
+            justify-content: center;
+        }
+    }
+}
+
+.rfq-listing-action {
+    .ag-react-container {
+        text-align: right;
+        padding-right: 0 !important;
+        margin-right: -0.25rem !important;
+    }
+}
+
+.rfq-portal {
+    .ag-row-even {
+        z-index: 1;
+    }
 }

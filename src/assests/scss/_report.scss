@@ -90,6 +90,15 @@
 .cost-ratio-report {
     min-height: calc(100vh - 315px);
 
+    .react-datepicker-popper {
+        @extend .zindex-12;
+    }
+}
+
+.supplier-contribution {
+    .react-datepicker-popper {
+        @extend .zindex-12;
+    }
 }
 
 .h-298 {

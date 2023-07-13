@@ -450,6 +450,16 @@ function CostingDetails(props) {
           setvbcVendorOldArray(Data)
           setzbcPlantOldArray(Data)
           setIsLoader(false)
+
+          vbcArray && vbcArray.map((item, index) => {
+            setValue(`${vbcGridFields}.${index}.ShareOfBusinessPercent`, item.ShareOfBusinessPercent)
+            return null
+          })
+
+          zbvArray && zbvArray.map((item, index) => {
+            setValue(`${zbcPlantGridFields}.${index}.ShareOfBusinessPercent`, item.ShareOfBusinessPercent)
+            return null
+          })
         }
       }))
       /*********************UNCOMMENT IT WHEN NCC COME IS START****************************************/

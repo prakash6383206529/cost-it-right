@@ -3427,10 +3427,10 @@ input:focus,
 .other-costing-simulation {
   .ag-grid-react {
     .ag-grid-wrapper {
-      min-height: calc(100vh - 385px) !important;
+      min-height: calc(100vh - 332px) !important;
 
       @media screen and (min-width: $middleDesktop) {
-        min-height: calc(100vh - 385px) !important;
+        min-height: calc(100vh - 341px) !important;
       }
 
       &.assembly-simulaiton {
