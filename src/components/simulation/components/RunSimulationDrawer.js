@@ -429,7 +429,9 @@ function RunSimulationDrawer(props) {
         if (label === 'Applicability') {
             costingHead && costingHead.map(item => {
                 if (item.Value === '0' || item.Value === '8') return false;
-                temp.push({ label: item.Text, value: item.Value })
+                if (!item.Text.includes('Part')) {
+                    temp.push({ label: item.Text, value: item.Value })
+                }
                 return null;
             });
             return temp;
