@@ -352,7 +352,7 @@ function ViewConversionCost(props) {
         {/*OPERATION COST GRID */}
 
         <Col md="12">
-          <Table className="table cr-brdr-main" size="sm">
+          <Table className={`table cr-brdr-main conversion-cost ${isPDFShow ? 'mt-2' : ""}`} size="sm">
 
             <tbody>
               <tr className='thead'>
@@ -371,27 +371,30 @@ function ViewConversionCost(props) {
               {costingOperationCost &&
                 costingOperationCost.map((item, index) => {
                   return (
-                    <tr key={index}>
-                      {IsAssemblyCosting && partNumberList.length === 0 && <td>{item.PartNumber !== null || item.PartNumber !== "" ? item.PartNumber : ""}</td>}
-                      <td>
-                        {item.OperationName ? item.OperationName : '-'}
-                      </td>
-                      <td>
-                        {item.OperationCode ? item.OperationCode : '-'}
-                      </td>
-                      <td>{item.UOM ? item.UOM : '-'}</td>
-                      <td>{item.Rate ? item.Rate : '-'}</td>
-                      <td>{item.Quantity ? item.Quantity : '-'}</td>
-                      {costingOperationCost && costingOperationCost[0]?.IsLabourRateExist === true && <td>{item.IsLabourRateExist ? checkForDecimalAndNull(item.LabourRate, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>}
-                      {costingOperationCost && costingOperationCost[0]?.IsLabourRateExist === true && <td>{item.IsLabourRateExist ? checkForDecimalAndNull(item.LabourQuantity, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>}
-                      {/* <td>{netCost(item.OperationCost)}</td> */}
-                      <td>
-                        {item.OperationCost ? checkForDecimalAndNull(item.OperationCost, initialConfiguration.NoOfDecimalForPrice) : 0}
-                      </td>
-                      <td>
-                        {item.Remark !== null ? item.Remark : '-'}
-                      </td>
-                    </tr>
+                    <>
+
+                      <tr key={index}>
+                        {IsAssemblyCosting && partNumberList.length === 0 && <td>{item.PartNumber !== null || item.PartNumber !== "" ? item.PartNumber : ""}</td>}
+                        <td>
+                          {item.OperationName ? item.OperationName : '-'}
+                        </td>
+                        <td>
+                          {item.OperationCode ? item.OperationCode : '-'}
+                        </td>
+                        <td>{item.UOM ? item.UOM : '-'}</td>
+                        <td>{item.Rate ? item.Rate : '-'}</td>
+                        <td>{item.Quantity ? item.Quantity : '-'}</td>
+                        {costingOperationCost && costingOperationCost[0]?.IsLabourRateExist === true && <td>{item.IsLabourRateExist ? checkForDecimalAndNull(item.LabourRate, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>}
+                        {costingOperationCost && costingOperationCost[0]?.IsLabourRateExist === true && <td>{item.IsLabourRateExist ? checkForDecimalAndNull(item.LabourQuantity, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>}
+                        {/* <td>{netCost(item.OperationCost)}</td> */}
+                        <td>
+                          {item.OperationCost ? checkForDecimalAndNull(item.OperationCost, initialConfiguration.NoOfDecimalForPrice) : 0}
+                        </td>
+                        <td>
+                          {item.Remark !== null ? item.Remark : '-'}
+                        </td>
+                      </tr>
+                    </>
                   )
                 })}
               {costingOperationCost && costingOperationCost.length === 0 && (
